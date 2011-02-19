@@ -1,0 +1,3 @@
+[submodule "vendor/boost"]
+	path = vendor/boost
+	url = https://github.com/anhstudios/boost.git
