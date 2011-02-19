@@ -1,0 +1,5 @@
+# ignore directories created for the build process
+build/*
+
+# ignore OS generated files
+.DS_Store
