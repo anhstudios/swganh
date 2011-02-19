@@ -10,7 +10,7 @@ set(swganh_VERSION
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 	
 # set the path for custom cmake scripts
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # include commonly used cmake modules
 include(ExternalProject)
@@ -23,4 +23,5 @@ include(ExternalProject)
 OPTION(ENABLE_TEST_REPORT
     "Enables the generation of a test report when running tests" FALSE)
     
-
+## Build all necessary vendor libraries    
+add_subdirectory(vendor)

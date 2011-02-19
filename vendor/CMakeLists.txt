@@ -6,27 +6,27 @@
 option(swganh_USE_SYSTEM_BOOST
     "If false, swganh will download and build it's own copy of Boost" FALSE)
 option(swganh_USE_SYSTEM_GLM
-	"If false, swganh will download and build it's own copy of GLM" FALSE)
+    "If false, swganh will download and build it's own copy of GLM" FALSE)
 option(swganh_USE_SYSTEM_GLOG
-	"If false, swganh will download and build it's own copy of GLog" FALSE)
+    "If false, swganh will download and build it's own copy of GLog" FALSE)
 option(swganh_USE_SYSTEM_GMOCK
-	"If false, swganh will download and build it's own copy of GMock" FALSE)
+    "If false, swganh will download and build it's own copy of GMock" FALSE)
 option(swganh_USE_SYSTEM_GTEST
-	"If false, swganh will download and build it's own copy of GTest" FALSE)
+    "If false, swganh will download and build it's own copy of GTest" FALSE)
 option(swganh_USE_SYSTEM_MYSQL_CONNECTOR_C
-	"If false, swganh will download and build it's own copy of Mysql 
-		Connector/C" FALSE)
+    "If false, swganh will download and build it's own copy of Mysql 
+        Connector/C" FALSE)
 option(swganh_USE_SYSTEM_MYSQL_CONNECTOR_CPP
-	"If false, swganh will download and build it's own copy of Mysql 
-		Connector/C++" FALSE)
+    "If false, swganh will download and build it's own copy of Mysql 
+        Connector/C++" FALSE)
 option(swganh_USE_SYSTEM_TBB
-	"If false, swganh will download and build it's own copy of TBB" FALSE)
+    "If false, swganh will download and build it's own copy of TBB" FALSE)
 option(swganh_USE_SYSTEM_ZLIB
-	"If false, swganh will download and build it's own copy of ZLib" FALSE)
-		
+    "If false, swganh will download and build it's own copy of ZLib" FALSE)
+        
 ## Build and/or configure Boost
 if(NOT swganh_USE_SYSTEM_BOOST)
-	include(BuildExternalBoost)
+    include(BuildExternalBoost)
 else()
-	
+    
 endif()
