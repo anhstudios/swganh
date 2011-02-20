@@ -10,12 +10,11 @@ else()
 endif()
 
 ExternalProject_Add(tbb
-	DOWNLOAD_COMMAND ""
 	GIT_REPOSITORY https://github.com/anhstudios/tbb.git
-	GIT_TAG v3.0.5-custom
+	GIT_TAG 3.0.5-custom
 	UPDATE_COMMAND ""
 	SOURCE_DIR ${tbb_source}
-	BINARY_DIR ${tbb_source}
+	BINARY_DIR ${tbb_binary}
 	CONFIGURE_COMMAND ""
 	BUILD_COMMAND ${tbb_build}
 	INSTALL_COMMAND ""

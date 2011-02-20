@@ -16,7 +16,6 @@ else()
 endif()
 
 ExternalProject_Add(boost
-	DOWNLOAD_COMMAND ""
 	GIT_REPOSITORY https://github.com/anhstudios/boost.git
 	GIT_TAG 1.45.0
 	UPDATE_COMMAND ""
