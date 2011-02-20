@@ -30,3 +30,10 @@ if(NOT swganh_USE_SYSTEM_BOOST)
 else()
     
 endif()
+
+## Build and/or configure TBB
+if(NOT swganh_USE_SYSTEM_TBB)
+	include(BuildExternalTBB)
+else()
+	
+endif()
