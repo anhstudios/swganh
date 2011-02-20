@@ -22,6 +22,25 @@ include(ExternalProject)
 # following option is set with a default of false.
 OPTION(ENABLE_TEST_REPORT
     "Enables the generation of a test report when running tests" FALSE)
+
+
+## 3rd party libraries
+
+# Build and/or configure Boost
+option(swganh_USE_SYSTEM_BOOST
+    "If false, swganh will download and build it's own copy of Boost" FALSE)
+
+if(NOT swganh_USE_SYSTEM_BOOST)
+    include(BuildExternalBoost)
+else()
     
-## Build all necessary vendor libraries    
-add_subdirectory(vendor)
+endif()
+
+# Build and/or configure TBB
+option(swganh_USE_SYSTEM_TBB
+    "If false, swganh will download and build it's own copy of TBB" FALSE)
+if(NOT swganh_USE_SYSTEM_TBB)
+	include(BuildExternalTBB)
+else()
+	
+endif()

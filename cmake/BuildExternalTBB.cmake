@@ -1,16 +1,16 @@
 # Build the TBB vendor library
 
-set(tbb_source "${CMAKE_CURRENT_SOURCE_DIR}/tbb")
+set(tbb_source "${CMAKE_CURRENT_BINARY_DIR}/tbb")
 set(tbb_binary "${CMAKE_CURRENT_BINARY_DIR}/tbb_build")
 
 if(WIN32)
-	set(tbb_build msbuild "${CMAKE_CURRENT_SOURCE_DIR}/tbb/build/vc10/makefile.sln")
+	set(tbb_build msbuild "${CMAKE_CURRENT_BINARY_DIR}/tbb/build/vc10/makefile.sln")
 else()
 	set(tbb_build make)
 endif()
 
 ExternalProject_Add(tbb
-	DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}
+	DOWNLOAD_COMMAND ""
 	GIT_REPOSITORY https://github.com/anhstudios/tbb.git
 	GIT_TAG v3.0.5-custom
 	UPDATE_COMMAND ""
