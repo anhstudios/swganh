@@ -1,7 +1,7 @@
 # Build the Boost vendor library
 
-set(__boost_source "${CMAKE_CURRENT_BINARY_DIR}/boost")
-set(__boost_binary "${CMAKE_CURRENT_BINARY_DIR}/boost_build")
+set(__boost_source "${CMAKE_CURRENT_BINARY_DIR}/vendor/boost")
+set(__boost_binary "${CMAKE_CURRENT_BINARY_DIR}/vendor/boost-build")
 
 if(MSVC)
 	set(__boost_lib_args

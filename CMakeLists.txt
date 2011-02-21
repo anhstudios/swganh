@@ -39,8 +39,19 @@ endif()
 # Build and/or configure TBB
 option(swganh_USE_SYSTEM_TBB
     "If false, swganh will download and build it's own copy of TBB" FALSE)
+    	
 if(NOT swganh_USE_SYSTEM_TBB)
 	include(BuildExternalTBB)
+else()
+	
+endif()
+
+# Build and/or configure GLog
+option(swganh_USE_SYSTEM_GLog
+    "If false, swganh will download and build it's own copy of GLog" FALSE)
+    	
+if(NOT swganh_USE_SYSTEM_GLog)
+	include(BuildExternalGLog)
 else()
 	
 endif()
