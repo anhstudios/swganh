@@ -20,7 +20,7 @@ ExternalProject_Add(glog
 	UPDATE_COMMAND ""
 	SOURCE_DIR ${glog_source}
 	BINARY_DIR ${glog_binary}
-	CONFIGURE_COMMAND ${glog_configure}
+	CONFIGURE_COMMAND "${glog_configure}"
 	BUILD_COMMAND ${glog_build}
 	INSTALL_COMMAND ""
 )
