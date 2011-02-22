@@ -1,0 +1,9 @@
+[submodule "vendor/mysql-connector-c"]
+	path = vendor/mysql-connector-c
+	url = https://github.com/anhstudios/mysql-connector-c.git
+[submodule "vendor/mysql-connector-cpp"]
+	path = vendor/mysql-connector-cpp
+	url = https://github.com/anhstudios/mysql-connector-cpp.git
+[submodule "vendor/boost"]
+	path = vendor/boost
+	url = https://github.com/anhstudios/boost.git

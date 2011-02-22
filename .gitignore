@@ -1,7 +1,5 @@
 # ignore directories created for the build process
 build/*
-vendor/boost
-vendor/tbb
 
 # ignore OS generated files
 .DS_Store
