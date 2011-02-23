@@ -107,3 +107,17 @@ if(NOT swganh_USE_SYSTEM_MysqlConnectorCpp)
 else()
 	
 endif()
+# Add boost and tbb to the include and link directories as everything needs it.
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/ ${Boost_INCLUDE_DIR} ${GLog_INCLUDE_DIR} ${GLM_INCLUDE_DIR}  ${TBB_INCLUDE_DIR})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${TBB_LIBRARY_DIRS})
+MESSAGE("GLOG," ${GLog_INCLUDE_DIR})
+MESSAGE("GTEST," ${GTest_INCLUDE_DIR})
+MESSAGE("GMOCK," ${GMock_INCLUDE_DIR})
+MESSAGE("MSQL includes" ${MYSQL_INCLUDE_DIR},${MysqlConnectorCpp_INCLUDE_DIR})
+MESSAGE("GLM include " ${GLM_INCLUDE_DIR})
+MESSAGE("Boost includes " ${Boost_INCLUDE_DIR})
+# Enable testing and add gtest to the include directories.
+ENABLE_TESTING()
+
+ADD_SUBDIRECTORY(src)
+
