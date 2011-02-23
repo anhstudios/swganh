@@ -11,9 +11,9 @@ endif()
 
 ExternalProject_Add(gmock
 	PREFIX ${VENDOR_PREFIX}
-	URL ${gmock_source}
+	GIT_REPOSITORY https://github.com/anhstudios/gmock.git
+	GIT_TAG 6f315ddc
 	UPDATE_COMMAND ""
-	PATCH_COMMAND ""
 	CMAKE_ARGS
 		${gmock_lib_args}
 	INSTALL_COMMAND ""

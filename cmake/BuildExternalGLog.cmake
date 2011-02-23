@@ -16,7 +16,8 @@ endif()
 
 ExternalProject_Add(glog
 	PREFIX ${VENDOR_PREFIX}
-	URL ${glog_source}
+	GIT_REPOSITORY https://github.com/anhstudios/glog.git
+	GIT_TAG 92b92d0e
 	UPDATE_COMMAND ""
 	${glog_build_insource}
 	CONFIGURE_COMMAND "${glog_configure}"

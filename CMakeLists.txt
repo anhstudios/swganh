@@ -24,100 +24,68 @@ OPTION(ENABLE_TEST_REPORT
     "Enables the generation of a test report when running tests" FALSE)
 
 
-## 3rd party libraries
-
+## Vendor libraries
 set(VENDOR_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/vendor")
 
+# macro for locating or building vendor libraries
+macro(swganh_add_vendor name)
+	if(NOT swganh_USE_SYSTEM_${name})
+		include(BuildExternal${name})
+	endif()
+endmacro()
+
 # Build and/or configure Boost
-option(swganh_USE_SYSTEM_BOOST
+option(swganh_USE_SYSTEM_Boost
     "If false, swganh will download and build it's own copy of Boost" FALSE)
-
-if(NOT swganh_USE_SYSTEM_BOOST)
-    include(BuildExternalBoost)
-else()
-    
-endif()
-
-# Build and/or configure TBB
-option(swganh_USE_SYSTEM_TBB
-    "If false, swganh will download and build it's own copy of TBB" FALSE)
-    	
-if(NOT swganh_USE_SYSTEM_TBB)
-	include(BuildExternalTBB)
-else()
-	
-endif()
+swganh_add_vendor(Boost)
 
 # Build and/or configure GLog
 option(swganh_USE_SYSTEM_GLog
     "If false, swganh will download and build it's own copy of GLog" FALSE)
-    	
-if(NOT swganh_USE_SYSTEM_GLog)
-	include(BuildExternalGLog)
-else()
-	
-endif()
-
-# Build and/or configure ZLib
-option(swganh_USE_SYSTEM_ZLib
-    "If false, swganh will download and build it's own copy of ZLib" FALSE)
-    	
-if(NOT swganh_USE_SYSTEM_ZLib)
-	include(BuildExternalZLib)
-else()
-	
-endif()
+swganh_add_vendor(GLog)
 
 # Build and/or configure GTest
 option(swganh_USE_SYSTEM_GTest
     "If false, swganh will download and build it's own copy of GTest" FALSE)
-    	
-if(NOT swganh_USE_SYSTEM_GTest)
-	include(BuildExternalGTest)
-else()
-	
-endif()
+swganh_add_vendor(GTest)
 
 # Build and/or configure GMock
 option(swganh_USE_SYSTEM_GMock
     "If false, swganh will download and build it's own copy of GMock" FALSE)
-    	
-if(NOT swganh_USE_SYSTEM_GMock)
-	include(BuildExternalGMock)
-else()
-	
-endif()
+swganh_add_vendor(GMock)
 
 # Build and/or configure Mysql Connector/C
 option(swganh_USE_SYSTEM_MysqlConnectorC
     "If false, swganh will download and build it's own copy of MysqlConnectorC" FALSE)
-    	
-if(NOT swganh_USE_SYSTEM_MysqlConnectorC)
-	include(BuildExternalMysqlConnectorC)
-else()
-	
-endif()
+swganh_add_vendor(MysqlConnectorC)
 
 # Build and/or configure Mysql Connector/Cpp
 option(swganh_USE_SYSTEM_MysqlConnectorCpp
     "If false, swganh will download and build it's own copy of MysqlConnectorCpp" FALSE)
-    	
-if(NOT swganh_USE_SYSTEM_MysqlConnectorCpp)
-	include(BuildExternalMysqlConnectorCpp)
-else()
-	
-endif()
-# Add boost and tbb to the include and link directories as everything needs it.
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/ ${Boost_INCLUDE_DIR} ${GLog_INCLUDE_DIR} ${GLM_INCLUDE_DIR}  ${TBB_INCLUDE_DIR})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${TBB_LIBRARY_DIRS})
-MESSAGE("GLOG," ${GLog_INCLUDE_DIR})
-MESSAGE("GTEST," ${GTest_INCLUDE_DIR})
-MESSAGE("GMOCK," ${GMock_INCLUDE_DIR})
-MESSAGE("MSQL includes" ${MYSQL_INCLUDE_DIR},${MysqlConnectorCpp_INCLUDE_DIR})
-MESSAGE("GLM include " ${GLM_INCLUDE_DIR})
-MESSAGE("Boost includes " ${Boost_INCLUDE_DIR})
-# Enable testing and add gtest to the include directories.
-ENABLE_TESTING()
+swganh_add_vendor(MysqlConnectorCpp)
 
-ADD_SUBDIRECTORY(src)
+# Build and/or configure TBB
+option(swganh_USE_SYSTEM_TBB
+    "If false, swganh will download and build it's own copy of TBB" FALSE)
+swganh_add_vendor(TBB)
+
+# Build and/or configure ZLib
+option(swganh_USE_SYSTEM_ZLib
+    "If false, swganh will download and build it's own copy of ZLib" FALSE)
+swganh_add_vendor(ZLib)
+
+
+### Add boost and tbb to the include and link directories as everything needs it.
+#INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/ ${Boost_INCLUDE_DIR} ${GLog_INCLUDE_DIR} ${GLM_INCLUDE_DIR}  ${TBB_INCLUDE_DIR})
+#LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${TBB_LIBRARY_DIRS})
+#MESSAGE("GLOG," ${GLog_INCLUDE_DIR})
+#MESSAGE("GTEST," ${GTest_INCLUDE_DIR})
+#MESSAGE("GMOCK," ${GMock_INCLUDE_DIR})
+#MESSAGE("MSQL includes" ${MYSQL_INCLUDE_DIR},${MysqlConnectorCpp_INCLUDE_DIR})
+#MESSAGE("GLM include " ${GLM_INCLUDE_DIR})
+#MESSAGE("Boost includes " ${Boost_INCLUDE_DIR})
+## Enable testing and add gtest to the include directories.
+#ENABLE_TESTING()
+
+#ADD_SUBDIRECTORY(src)
 

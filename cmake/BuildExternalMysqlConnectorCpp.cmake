@@ -1,11 +1,12 @@
 # Build the MysqlConnectorCpp vendor library
 
-set(mysql_cpp_source "${CMAKE_CURRENT_SOURCE_DIR}/vendor/mysql-connector-cpp")
+set(mysql_cpp_source "${VENDOR_PREFIX}/src/mysql-connector-cpp")
 
 ExternalProject_Add(mysql-connector-cpp
 	DEPENDS boost mysql-connector-c
-	PREFIX ${VENDOR_PREFIX}
-	URL ${mysql_cpp_source}
+	PREFIX ${VENDOR_PREFIX}	
+	GIT_REPOSITORY https://github.com/anhstudios/mysql-connector-cpp.git
+	GIT_TAG 329bbc49
 	UPDATE_COMMAND ""
 	PATCH_COMMAND ""
 	BUILD_IN_SOURCE 1

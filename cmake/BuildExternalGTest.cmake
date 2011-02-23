@@ -1,17 +1,22 @@
 # Build the GTest vendor library
-set(gtest_source "${CMAKE_CURRENT_SOURCE_DIR}/vendor/gtest")
+set(gtest_source "${VENDOR_PREFIX}/src/gtest")
+
+# Set the path to the built GTest for use by other projects
+set(GTest_INCLUDE_DIR "${gtest_source}/include" CACHE PATH "" FORCE)
 
 if(MSVC)
 	set(gtest_lib_args
 		-Dgtest_force_shared_crt=ON
 	)
+	set(GTest_LIBRARY_DIRS "${VENDOR_PREFIX}/src/gtest-build/\$(Configuration)" CACHE PATH "" FORCE)
 else()	
 	set(gtest_lib_args)
 endif()
 
 ExternalProject_Add(gtest
-	PREFIX ${VENDOR_PREFIX}
-	URL ${gtest_source}
+	PREFIX ${VENDOR_PREFIX}	
+	GIT_REPOSITORY https://github.com/anhstudios/gtest.git
+	GIT_TAG 9b0cb547
 	UPDATE_COMMAND ""
 	PATCH_COMMAND ""
 	CMAKE_ARGS
@@ -19,9 +24,6 @@ ExternalProject_Add(gtest
 	INSTALL_COMMAND ""
 )
 
-# Set the path to the built GTest for use by other projects
-set(GTest_INCLUDE_DIR "${gtest_source}" CACHE PATH "" FORCE)
-set(GTest_LIBRARY_DIRS "${gtest_binary}/lib" CACHE PATH "" FORCE)
 
 ## GTEST functions
 function(GTEST_ADD_TESTS executable extra_args)

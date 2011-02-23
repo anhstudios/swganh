@@ -119,7 +119,7 @@ FUNCTION(AddANHLibrary name)
             ${Boost_REGEX_LIBRARY_DEBUG}
             ${Boost_SYSTEM_LIBRARY_DEBUG}
             ${Boost_THREAD_LIBRARY_DEBUG}
-            ${GLOG_LIBRARY_DEBUG}
+            ${GLog_LIBRARY_DEBUG}
             ${GMOCK_LIBRARY_DEBUG}
             ${TBB_LIBRARY_DEBUG}
             ${TBB_MALLOC_LIBRARY_DEBUG}     
@@ -127,7 +127,7 @@ FUNCTION(AddANHLibrary name)
             ${Boost_REGEX_LIBRARY_RELEASE}
             ${Boost_SYSTEM_LIBRARY_RELEASE}
             ${Boost_THREAD_LIBRARY_RELEASE}
-            ${GLOG_LIBRARY_RELEASE}
+            ${GLog_LIBRARY_RELEASE}
             ${GMOCK_LIBRARY_RELEASE}
             ${TBB_LIBRARY}
             ${TBB_MALLOC_LIBRARY})

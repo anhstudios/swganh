@@ -1,5 +1,5 @@
 # Build the Boost vendor library
-set(boost_source "${CMAKE_CURRENT_SOURCE_DIR}/vendor/boost")
+set(boost_source "${VENDOR_PREFIX}/src/boost")
 
 if(MSVC)
 	set(boost_lib_args
@@ -15,7 +15,8 @@ endif()
 
 ExternalProject_Add(boost
 	PREFIX ${VENDOR_PREFIX}
-	URL ${boost_source}
+	GIT_REPOSITORY https://github.com/anhstudios/boost.git
+	GIT_TAG 3e977d9f
 	UPDATE_COMMAND ""
 	CMAKE_ARGS
 		${boost_lib_args}
