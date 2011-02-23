@@ -1,7 +1,5 @@
 # Build the GMock vendor library
-
-set(gmock_source "${CMAKE_CURRENT_BINARY_DIR}/vendor/gmock")
-set(gmock_binary "${CMAKE_CURRENT_BINARY_DIR}/vendor/gmock-build")
+set(gmock_source "${CMAKE_CURRENT_SOURCE_DIR}/vendor/gmock")
 
 if(MSVC)
 	set(gmock_lib_args
@@ -12,12 +10,10 @@ else()
 endif()
 
 ExternalProject_Add(gmock
-	GIT_REPOSITORY https://github.com/anhstudios/gmock.git
-	GIT_TAG master
+	PREFIX ${VENDOR_PREFIX}
+	URL ${gmock_source}
 	UPDATE_COMMAND ""
 	PATCH_COMMAND ""
-	SOURCE_DIR ${gmock_source}
-	BINARY_DIR ${gmock_binary}
 	CMAKE_ARGS
 		${gmock_lib_args}
 	INSTALL_COMMAND ""

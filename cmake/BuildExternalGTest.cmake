@@ -1,7 +1,5 @@
 # Build the GTest vendor library
-
-set(gtest_source "${CMAKE_CURRENT_BINARY_DIR}/vendor/gtest")
-set(gtest_binary "${CMAKE_CURRENT_BINARY_DIR}/vendor/gtest-build")
+set(gtest_source "${CMAKE_CURRENT_SOURCE_DIR}/vendor/gtest")
 
 if(MSVC)
 	set(gtest_lib_args
@@ -12,12 +10,10 @@ else()
 endif()
 
 ExternalProject_Add(gtest
-	GIT_REPOSITORY https://github.com/anhstudios/gtest.git
-	GIT_TAG master
+	PREFIX ${VENDOR_PREFIX}
+	URL ${gtest_source}
 	UPDATE_COMMAND ""
 	PATCH_COMMAND ""
-	SOURCE_DIR ${gtest_source}
-	BINARY_DIR ${gtest_binary}
 	CMAKE_ARGS
 		${gtest_lib_args}
 	INSTALL_COMMAND ""

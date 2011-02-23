@@ -1,7 +1,5 @@
 # Build the ZLib vendor library
-
-set(zlib_source "${CMAKE_CURRENT_BINARY_DIR}/vendor/zlib")
-set(zlib_binary "${CMAKE_CURRENT_BINARY_DIR}/vendor/zlib-build")
+set(zlib_source "${CMAKE_CURRENT_SOURCE_DIR}/vendor/zlib")
 
 if(WIN32)
 	set(patch_command del zconf.h)
@@ -10,12 +8,10 @@ else()
 endif()
 
 ExternalProject_Add(zlib
-	GIT_REPOSITORY https://github.com/anhstudios/zlib.git
-	GIT_TAG master
+	PREFIX ${VENDOR_PREFIX}
+	URL ${zlib_source}
 	UPDATE_COMMAND ""
 	PATCH_COMMAND ${patch_command}
-	SOURCE_DIR ${zlib_source}
-	BINARY_DIR ${zlib_binary}
 	INSTALL_COMMAND ""
 )
 

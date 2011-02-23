@@ -7,3 +7,21 @@
 [submodule "vendor/boost"]
 	path = vendor/boost
 	url = https://github.com/anhstudios/boost.git
+[submodule "vendor/glm"]
+	path = vendor/glm
+	url = https://github.com/anhstudios/glm.git
+[submodule "vendor/glog"]
+	path = vendor/glog
+	url = https://github.com/anhstudios/glog.git
+[submodule "vendor/gmock"]
+	path = vendor/gmock
+	url = https://github.com/anhstudios/gmock.git
+[submodule "vendor/gtest"]
+	path = vendor/gtest
+	url = https://github.com/anhstudios/gtest.git
+[submodule "vendor/tbb"]
+	path = vendor/tbb
+	url = https://github.com/anhstudios/tbb.git
+[submodule "vendor/zlib"]
+	path = vendor/zlib
+	url = https://github.com/anhstudios/zlib.git

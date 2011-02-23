@@ -1,7 +1,5 @@
 # Build the Boost vendor library
-
 set(boost_source "${CMAKE_CURRENT_SOURCE_DIR}/vendor/boost")
-set(boost_binary "${CMAKE_CURRENT_BINARY_DIR}/vendor/boost-build")
 
 if(MSVC)
 	set(boost_lib_args
@@ -16,18 +14,17 @@ else()
 endif()
 
 ExternalProject_Add(boost
-	DOWNLOAD_COMMAND ""
+	PREFIX ${VENDOR_PREFIX}
+	URL ${boost_source}
 	UPDATE_COMMAND ""
-	SOURCE_DIR ${boost_source}
-	BINARY_DIR ${boost_binary}
 	CMAKE_ARGS
 		${boost_lib_args}
     	-DBUILD_SHARED_LIBS:BOOL=ON
     	-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-    	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG:PATH=${boost_binary}/lib
-    	-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG:PATH=${boost_binary}/lib
-    	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE:PATH=${boost_binary}/lib
-    	-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE:PATH=${boost_binary}/lib
+    	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG:PATH=${VENDOR_PREFIX}/src/boost-build/lib
+    	-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG:PATH=${VENDOR_PREFIX}/src/boost-build/lib
+    	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE:PATH=${VENDOR_PREFIX}/src/boost-build/lib
+    	-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE:PATH=${VENDOR_PREFIX}/src/boost-build/lib
     	-DBUILD_EXAMPLES:BOOL=OFF
     	-DBUILD_TESTING:BOOL=OFF
     	-DBUILD_VERSIONED:BOOL=OFF
@@ -40,4 +37,4 @@ ExternalProject_Add(boost
 
 # Set the path to the built Boost for use by other projects
 set(Boost_INCLUDE_DIR "${boost_source}" CACHE PATH "" FORCE)
-set(Boost_LIBRARY_DIRS "${boost_binary}/lib" CACHE PATH "" FORCE)
+set(Boost_LIBRARY_DIRS "${VENDOR_PREFIX}/src/boost-build/lib" CACHE PATH "" FORCE)

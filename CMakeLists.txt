@@ -26,6 +26,8 @@ OPTION(ENABLE_TEST_REPORT
 
 ## 3rd party libraries
 
+set(VENDOR_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/vendor")
+
 # Build and/or configure Boost
 option(swganh_USE_SYSTEM_BOOST
     "If false, swganh will download and build it's own copy of Boost" FALSE)
@@ -36,55 +38,55 @@ else()
     
 endif()
 
-## Build and/or configure TBB
-#option(swganh_USE_SYSTEM_TBB
-#    "If false, swganh will download and build it's own copy of TBB" FALSE)
-#    	
-#if(NOT swganh_USE_SYSTEM_TBB)
-#	include(BuildExternalTBB)
-#else()
-#	
-#endif()
+# Build and/or configure TBB
+option(swganh_USE_SYSTEM_TBB
+    "If false, swganh will download and build it's own copy of TBB" FALSE)
+    	
+if(NOT swganh_USE_SYSTEM_TBB)
+	include(BuildExternalTBB)
+else()
+	
+endif()
 
-## Build and/or configure GLog
-#option(swganh_USE_SYSTEM_GLog
-#    "If false, swganh will download and build it's own copy of GLog" FALSE)
-#    	
-#if(NOT swganh_USE_SYSTEM_GLog)
-#	include(BuildExternalGLog)
-#else()
-#	
-#endif()
+# Build and/or configure GLog
+option(swganh_USE_SYSTEM_GLog
+    "If false, swganh will download and build it's own copy of GLog" FALSE)
+    	
+if(NOT swganh_USE_SYSTEM_GLog)
+	include(BuildExternalGLog)
+else()
+	
+endif()
 
-## Build and/or configure ZLib
-#option(swganh_USE_SYSTEM_ZLib
-#    "If false, swganh will download and build it's own copy of ZLib" FALSE)
-#    	
-#if(NOT swganh_USE_SYSTEM_ZLib)
-#	include(BuildExternalZLib)
-#else()
-#	
-#endif()
+# Build and/or configure ZLib
+option(swganh_USE_SYSTEM_ZLib
+    "If false, swganh will download and build it's own copy of ZLib" FALSE)
+    	
+if(NOT swganh_USE_SYSTEM_ZLib)
+	include(BuildExternalZLib)
+else()
+	
+endif()
 
-## Build and/or configure GTest
-#option(swganh_USE_SYSTEM_GTest
-#    "If false, swganh will download and build it's own copy of GTest" FALSE)
-#    	
-#if(NOT swganh_USE_SYSTEM_GTest)
-#	include(BuildExternalGTest)
-#else()
-#	
-#endif()
+# Build and/or configure GTest
+option(swganh_USE_SYSTEM_GTest
+    "If false, swganh will download and build it's own copy of GTest" FALSE)
+    	
+if(NOT swganh_USE_SYSTEM_GTest)
+	include(BuildExternalGTest)
+else()
+	
+endif()
 
-## Build and/or configure GMock
-#option(swganh_USE_SYSTEM_GMock
-#    "If false, swganh will download and build it's own copy of GMock" FALSE)
-#    	
-#if(NOT swganh_USE_SYSTEM_GMock)
-#	include(BuildExternalGMock)
-#else()
-#	
-#endif()
+# Build and/or configure GMock
+option(swganh_USE_SYSTEM_GMock
+    "If false, swganh will download and build it's own copy of GMock" FALSE)
+    	
+if(NOT swganh_USE_SYSTEM_GMock)
+	include(BuildExternalGMock)
+else()
+	
+endif()
 
 # Build and/or configure Mysql Connector/C
 option(swganh_USE_SYSTEM_MysqlConnectorC
