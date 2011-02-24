@@ -6,7 +6,7 @@ set(mysql_c_source "${CMAKE_CURRENT_SOURCE_DIR}/vendor/mysql-connector-c")
 set(MysqlConnectorC_INCLUDE_DIR "${VENDOR_PREFIX}/src/mysql-connector-c-install/include/mysql" CACHE PATH "" FORCE)
 set(MysqlConnectorC_LIBRARY_DIRS "${VENDOR_PREFIX}/src/mysql-connector-c-install/lib/mysql" CACHE PATH "" FORCE)
 
-ExternalProject_Add(mysql-connector-c
+ExternalProject_Add(MysqlConnectorC
 	PREFIX ${VENDOR_PREFIX}	
 	GIT_REPOSITORY https://github.com/anhstudios/mysql-connector-c.git
 	GIT_TAG d31c0f88

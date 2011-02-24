@@ -13,7 +13,7 @@ else()
 	)
 endif()
 
-ExternalProject_Add(boost
+ExternalProject_Add(Boost
 	PREFIX ${VENDOR_PREFIX}
 	GIT_REPOSITORY https://github.com/anhstudios/boost.git
 	GIT_TAG 3e977d9f

@@ -11,7 +11,7 @@ else()
 	set(tbb_build make -f ${VENDOR_PREFIX}/src/tbb/Makefile tbb_root=${VENDOR_PREFIX}/src tbb_build_dir=${tbb_prefix}/lib tbb_build_prefix=gcc)
 endif()
 
-ExternalProject_Add(tbb
+ExternalProject_Add(TBB
 	PREFIX ${VENDOR_PREFIX}	
 	GIT_REPOSITORY https://github.com/anhstudios/tbb.git
 	GIT_TAG 5909edfd

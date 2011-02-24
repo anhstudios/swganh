@@ -2,8 +2,8 @@
 
 set(mysql_cpp_source "${VENDOR_PREFIX}/src/mysql-connector-cpp")
 
-ExternalProject_Add(mysql-connector-cpp
-	DEPENDS boost mysql-connector-c
+ExternalProject_Add(MysqlConnectorCpp
+	DEPENDS Boost MysqlConnectorC
 	PREFIX ${VENDOR_PREFIX}	
 	GIT_REPOSITORY https://github.com/anhstudios/mysql-connector-cpp.git
 	GIT_TAG 329bbc49

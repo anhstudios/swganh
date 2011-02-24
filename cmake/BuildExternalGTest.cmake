@@ -13,7 +13,7 @@ else()
 	set(gtest_lib_args)
 endif()
 
-ExternalProject_Add(gtest
+ExternalProject_Add(GTest
 	PREFIX ${VENDOR_PREFIX}	
 	GIT_REPOSITORY https://github.com/anhstudios/gtest.git
 	GIT_TAG 9b0cb547

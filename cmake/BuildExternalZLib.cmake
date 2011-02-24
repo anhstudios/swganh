@@ -7,7 +7,7 @@ else()
 	set(patch_command rm -f zconf.h)
 endif()
 
-ExternalProject_Add(zlib
+ExternalProject_Add(ZLib
 	PREFIX ${VENDOR_PREFIX}	
 	GIT_REPOSITORY https://github.com/anhstudios/zlib.git
 	GIT_TAG f3c9192b
