@@ -40,6 +40,7 @@ endmacro()
 option(bootstrap_USE_SYSTEM_Boost
     "If false, swganh will download and build it's own copy of Boost" FALSE)
 bootstrap_add_vendor(Boost)
+bootstrap_add_vendor(BoostShared)
 
 # Build and/or configure GLM
 option(bootstrap_USE_SYSTEM_Glm

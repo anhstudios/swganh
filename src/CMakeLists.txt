@@ -32,7 +32,12 @@ endif()
 ## find/configure vendor libraries
 set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 
-find_package(Boost 1.45.0 COMPONENTS date_time regex thread system REQUIRED)
+FIND_PACKAGE(PythonLibs REQUIRED)
+SET(Boost_USE_STATIC_LIBS ON)
+FIND_PACKAGE(Boost 1.45.0 COMPONENTS date_time regex thread system REQUIRED)
+SET(Boost_USE_STATIC_LIBS OFF)
+FIND_PACKAGE(Boost 1.45.0 COMPONENTS python REQUIRED)
+
 find_package(Glm REQUIRED)
 find_package(GLog REQUIRED)
 find_package(GTest REQUIRED)
@@ -41,6 +46,7 @@ find_package(MysqlConnectorC REQUIRED)
 find_package(MysqlConnectorCpp REQUIRED)
 find_package(TBB REQUIRED)
 find_package(ZLib REQUIRED)
+
 
 enable_testing()
 

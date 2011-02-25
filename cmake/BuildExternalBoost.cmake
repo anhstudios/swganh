@@ -31,7 +31,7 @@ ExternalProject_Add(Boost
     	-DBUILD_VERSIONED:BOOL=OFF
     	-DINSTALL_VERSIONED:BOOL=OFF
     	-DWITH_MPI:BOOL=OFF
-    	-DBUILD_PROJECTS:LIST=date_time^^program_options^^thread^^regex^^system
+    	-DBUILD_PROJECTS:LIST=date_time^^program_options^^thread^^regex^^system^^serialization^^program_options
     LIST_SEPARATOR ^^
     INSTALL_COMMAND ""
 )
