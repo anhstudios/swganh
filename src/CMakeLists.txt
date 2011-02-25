@@ -2,50 +2,52 @@ cmake_minimum_required(VERSION 2.8.2)
 
 project(swganh CXX)
 
-# current version
 set(swganh_VERSION_MAJOR 1)
 set(swganh_VERSION_MINOR 0)
 set(swganh_VERSION_PATCH 0)
 set(swganh_VERSION 
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 
-# set the path for custom cmake scripts
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+## compiler checks
 
-set(BOOST_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/Boost")
-set(Glm_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/Glm")
-set(GLog_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/GLog")
-set(GTest_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/GTest")
-set(GMock_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/GMock")
-set(MYSQL_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/MysqlConnectorC-install/lib/mysql")
-set(MYSQL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/MysqlConnectorC-install/include/mysql")
-set(MysqlConnectorCpp_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/MysqlConnectorCpp")
-set(TBB_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/TBB")
-set(ZLib_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../build/vendor/src/ZLib")
+include(CheckCXXCompilerFlag)
 
-# Use the static/multithreaded libraries.
-set(Boost_NO_SYSTEM_PATHS ON)
-SET(Boost_USE_MULTITHREADED ON)
-set(Boost_COMPILER "-vc")
+CHECK_CXX_COMPILER_FLAG(-Wno-invalid-offsetof HAS_NO_INVALID_OFFSETOF)
+if(HAS_NO_INVALID_OFFSETOF)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
+endif()
 
-FIND_PACKAGE(Boost 1.45.0 COMPONENTS date_time regex thread system REQUIRED)
-FIND_PACKAGE(Glm REQUIRED)
-FIND_PACKAGE(GLog REQUIRED)
-FIND_PACKAGE(GTest REQUIRED)
-FIND_PACKAGE(GMock REQUIRED)
-FIND_PACKAGE(MysqlConnectorC REQUIRED)
-FIND_PACKAGE(MysqlConnectorCpp REQUIRED)
-FIND_PACKAGE(TBB REQUIRED)
-FIND_PACKAGE(ZLib REQUIRED)
+CHECK_CXX_COMPILER_FLAG(-Wno-write-strings HAS_NO_WRITE_STRINGS)
+if(HAS_NO_WRITE_STRINGS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
+endif()
 
-# Add boost and tbb to the include and link directories as everything needs it.
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/ ${Boost_INCLUDE_DIRS} ${GLOG_INCLUDE_DIR} ${GLM_INCLUDE_DIR}  ${TBB_INCLUDE_DIRS})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${TBB_LIBRARY_DIRS})
+if(NOT MSVC EQUAL "" AND MSVC_VERSION LESS 1600)
+	message(FATAL_ERROR "Visual Studio 2010 or newer is required ")
+else()	
+	# any custom flags that need set for VS compilers only should be set here
+endif()
 
-# Enable testing and add gtest to the include directories.
-ENABLE_TESTING()
+## find/configure vendor libraries
+set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 
-# libraries
+find_package(Boost 1.45.0 COMPONENTS date_time regex thread system REQUIRED)
+find_package(Glm REQUIRED)
+find_package(GLog REQUIRED)
+find_package(GTest REQUIRED)
+find_package(GMock REQUIRED)
+find_package(MysqlConnectorC REQUIRED)
+find_package(MysqlConnectorCpp REQUIRED)
+find_package(TBB REQUIRED)
+find_package(ZLib REQUIRED)
+
+enable_testing()
+
+## project libraries
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_subdirectory(anh)
-# executables
-#add_subdirectory(login)
+
+## project executables

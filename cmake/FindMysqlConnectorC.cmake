@@ -1,11 +1,24 @@
 #   Copyright (c) 2008, 2010, Oracle and/or its affiliates. All rights reserved.
 #
-#   The MySQL Connector/C++ is licensed under the terms of the GPL
+#   The MySQL Connector/C++ is licensed under the terms of the GPLv2
 #   <http://www.gnu.org/licenses/old-licenses/gpl-2.0.html>, like most
 #   MySQL Connectors. There are special exceptions to the terms and
-#   conditions of the GPL as it is applied to this software, see the
+#   conditions of the GPLv2 as it is applied to this software, see the
 #   FLOSS License Exception
 #   <http://www.mysql.com/about/legal/licensing/foss-exception.html>.
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published
+#   by the Free Software Foundation; version 2 of the License.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+#   or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+#   for more details.
+#
+#   You should have received a copy of the GNU General Public License along
+#   with this program; if not, write to the Free Software Foundation, Inc.,
+#   51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 ##########################################################################
 MACRO(_MYSQL_CONFIG VAR _regex _opt)
@@ -23,9 +36,9 @@ ENDMACRO(_MYSQL_CONFIG _regex _opt)
 
 
 IF (NOT MYSQL_CONFIG_EXECUTABLE AND NOT WIN32)
-	IF (EXISTS "${MysqlConnectorC_ROOT}/bin/mysql_config")
-		SET(MYSQL_CONFIG_EXECUTABLE "${MysqlConnectorC_ROOT}/bin/mysql_config")
-	ELSE (EXISTS "${MysqlConnectorC_ROOT}/bin/mysql_config")
+	IF (EXISTS "$ENV{MYSQL_DIR}/bin/mysql_config")
+		SET(MYSQL_CONFIG_EXECUTABLE "$ENV{MYSQL_DIR}/bin/mysql_config")
+	ELSE (EXISTS "$ENV{MYSQL_DIR}/bin/mysql_config")
 		FIND_PROGRAM(MYSQL_CONFIG_EXECUTABLE
 			NAMES mysql_config
 			DOC "full path of mysql_config"
@@ -34,7 +47,7 @@ IF (NOT MYSQL_CONFIG_EXECUTABLE AND NOT WIN32)
 				/opt/mysql/mysql/bin
 				/usr/local/mysql/bin
 		)
-	ENDIF (EXISTS "${MysqlConnectorC_ROOT}/bin/mysql_config")
+	ENDIF (EXISTS "$ENV{MYSQL_DIR}/bin/mysql_config")
 ENDIF (NOT MYSQL_CONFIG_EXECUTABLE AND NOT WIN32)
 
 #-------------- FIND MYSQL_INCLUDE_DIR ------------------
@@ -49,10 +62,10 @@ IF(MYSQL_CONFIG_EXECUTABLE AND NOT WIN32)
 	STRING(REGEX REPLACE "[\r\n]$" "" MYSQL_CXXFLAGS "${_mysql_config_output}")
 #	ADD_DEFINITIONS("${MYSQL_CXXFLAGS}")
 ELSE (MYSQL_CONFIG_EXECUTABLE AND NOT WIN32)
-	MESSAGE(STATUS "ENV{MYSQL_DIR} = ${MysqlConnectorC_ROOT}")
+	MESSAGE(STATUS "ENV{MYSQL_DIR} = $ENV{MYSQL_DIR}")
 	FIND_PATH(MYSQL_INCLUDE_DIR mysql.h
 			$ENV{MYSQL_INCLUDE_DIR}
-			${MysqlConnectorC_ROOT}/include
+			$ENV{MYSQL_DIR}/include
 			/usr/include/mysql
 			/usr/local/include/mysql
 			/opt/mysql/mysql/include
@@ -69,21 +82,21 @@ IF (WIN32)
 	# Set lib path suffixes
 	# dist = for mysql binary distributions
 	# build = for custom built tree
-	IF (CMAKE_BUILD_TYPE STREQUAL Debug)
-		SET(libsuffixDist debug)
-		SET(libsuffixBuild Debug)
-	ELSE (CMAKE_BUILD_TYPE STREQUAL Debug)
+	IF (CMAKE_BUILD_TYPE STREQUAL Release)
 		SET(libsuffixDist opt)
 		SET(libsuffixBuild Release)
 		ADD_DEFINITIONS(-DDBUG_OFF)
-	ENDIF (CMAKE_BUILD_TYPE STREQUAL Debug)
-
+	ELSE (CMAKE_BUILD_TYPE STREQUAL Release)
+		SET(libsuffixDist debug)
+		SET(libsuffixBuild Debug)
+	ENDIF (CMAKE_BUILD_TYPE STREQUAL Release)
+    message(${libsuffixBuild})
 	FIND_LIBRARY(MYSQL_LIB NAMES mysqlclient
 				 PATHS
-				 ${MysqlConnectorC_ROOT}/lib/${libsuffixDist}
-				 ${MysqlConnectorC_ROOT}/lib 			#mysqlclient may be in lib for some c/c distros
-				 ${MysqlConnectorC_ROOT}/libmysql/${libsuffixBuild}
-				 ${MysqlConnectorC_ROOT}/client/${libsuffixBuild}
+				 $ENV{MYSQL_DIR}/lib/${libsuffixDist}
+				 $ENV{MYSQL_DIR}/lib 			#mysqlclient may be in lib for some c/c distros
+				 $ENV{MYSQL_DIR}/libmysql/${libsuffixBuild}
+				 $ENV{MYSQL_DIR}/client/${libsuffixBuild}
 				 $ENV{ProgramFiles}/MySQL/*/lib/${libsuffixDist}
 				 $ENV{ProgramFiles}/MySQL/*/lib
 				 $ENV{SystemDrive}/MySQL/*/lib/${libsuffixDist}
@@ -109,9 +122,9 @@ ELSE (WIN32)
 
 		FIND_LIBRARY(MYSQLCPPCONN_DYNLOAD_MYSQL_LIB NAMES mysqlclient_r
 					 PATHS
-					 ${MysqlConnectorC_ROOT}/libmysql_r/.libs
-					 ${MysqlConnectorC_ROOT}/lib
-					 ${MysqlConnectorC_ROOT}/lib/mysql
+					 $ENV{MYSQL_DIR}/libmysql_r/.libs
+					 $ENV{MYSQL_DIR}/lib
+					 $ENV{MYSQL_DIR}/lib/mysql
 					 /usr/lib/mysql
 					 /usr/local/lib/mysql
 					 /usr/local/mysql/lib
@@ -124,9 +137,9 @@ ELSE (WIN32)
 	ELSE (MYSQL_CONFIG_EXECUTABLE)
 		FIND_LIBRARY(MYSQL_LIB NAMES mysqlclient_r
 					 PATHS
-					 ${MysqlConnectorC_ROOT}/libmysql_r/.libs
-					 ${MysqlConnectorC_ROOT}/lib
-					 ${MysqlConnectorC_ROOT}/lib/mysql
+					 $ENV{MYSQL_DIR}/libmysql_r/.libs
+					 $ENV{MYSQL_DIR}/lib
+					 $ENV{MYSQL_DIR}/lib/mysql
 					 /usr/lib/mysql
 					 /usr/local/lib/mysql
 					 /usr/local/mysql/lib
