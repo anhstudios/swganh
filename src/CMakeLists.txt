@@ -28,6 +28,10 @@ if(NOT MSVC EQUAL "" AND MSVC_VERSION LESS 1600)
 	message(FATAL_ERROR "Visual Studio 2010 or newer is required ")
 else()	
 	# any custom flags that need set for VS compilers only should be set here
+	if(MSVC AND NOT CMAKE_GENERATOR MATCHES "Visual Studio 7")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4251")
+        message(STATUS "- MSVC: Disabled generic compiletime warnings")
+    endif()
 endif()
 
 ## find/configure vendor libraries
