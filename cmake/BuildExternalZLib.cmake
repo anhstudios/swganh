@@ -1,5 +1,5 @@
 # Build the ZLib vendor library
-set(zlib_source "${VENDOR_PREFIX}/src/zlib")
+set(ZLib_ROOT "${VENDOR_PREFIX}/src/zlib")
 
 if(WIN32)
 	set(patch_command del zconf.h)
@@ -13,9 +13,6 @@ ExternalProject_Add(ZLib
 	GIT_TAG f3c9192b
 	UPDATE_COMMAND ""
 	PATCH_COMMAND ${patch_command}
+	BUILD_IN_SOURCE 1
 	INSTALL_COMMAND ""
 )
-
-# Set the path to the built ZLib for use by other projects
-set(ZLib_INCLUDE_DIR "${zlib_source}" CACHE PATH "" FORCE)
-set(ZLib_LIBRARY_DIRS "${VENDOR_PREFIX}/src/zlib-build/$(Configuration)" CACHE PATH "" FORCE)
