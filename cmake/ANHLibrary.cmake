@@ -5,21 +5,21 @@
 #
 # Function Definition:
 #
-# AddMMOServerLibrary(library_name
-#                     MMOSERVER_DEPS [ARGS] [args1...]           # Dependencies on other MMOServer projects
-#                     ADDITIONAL_INCLUDE_DIRS [ARGS] [args1...]  # Additional directories to search for includes
-#                     ADDITIONAL_SOURCE_DIRS [ARGS] [args1...]   # Additional directories to search for files to include in the project
-#                     DEBUG_LIBRARIES [ARGS] [args1....]         # Additional debug libraries to link the project against
-#                     OPTIMIZED_LIBRARIES [ARGS] [args1...])     # Additional optimized libraries to link the project against
+# AddANHLibrary(library_name
+#     DEPENDS [ARGS] [args1...]           	     # Dependencies on other MMOServer projects
+#     ADDITIONAL_INCLUDE_DIRS [ARGS] [args1...]  # Additional directories to search for includes
+#     ADDITIONAL_SOURCE_DIRS [ARGS] [args1...]   # Additional directories to search for files to include in the project
+#     DEBUG_LIBRARIES [ARGS] [args1....]         # Additional debug libraries to link the project against
+#     OPTIMIZED_LIBRARIES [ARGS] [args1...])     # Additional optimized libraries to link the project against
 #
 #
 ########################
 # Simple Example Usage:
 ########################
 #
-# include(MMOServerLibrary)
+# include(ANHLibrary)
 # 
-# AddMMOServerLibrary(Common
+# AddANHLibrary(Common
 #     MMOSERVER_DEPS 
 #         Utils 
 # )
@@ -28,10 +28,10 @@
 #########################
 # Complex Example Usage:
 #########################
-# include(MMOServerLibrary)
+# include(ANHLibrary)
 #
-# AddMMOServerLibrary(ScriptEngine
-#     MMOSERVER_DEPS 
+# AddANHLibrary(ScriptEngine
+#     DEPENDS 
 #         Utils
 #         Common
 #     SOURCES # disables source lookup and uses this list
@@ -58,18 +58,19 @@
 INCLUDE(CMakeMacroParseArguments)
 
 FUNCTION(AddANHLibrary name)
-    PARSE_ARGUMENTS(MMOSERVERLIB "MMOSERVER_DEPS;SOURCES;TEST_SOURCES;ADDITIONAL_INCLUDE_DIRS;ADDITIONAL_SOURCE_DIRS;DEBUG_LIBRARIES;OPTIMIZED_LIBRARIES" "" ${ARGN})
+    PARSE_ARGUMENTS(ANHLIB "DEPENDS;SOURCES;TEST_SOURCES;ADDITIONAL_LINK_DIRS;ADDITIONAL_INCLUDE_DIRS;ADDITIONAL_SOURCE_DIRS;DEBUG_LIBRARIES;OPTIMIZED_LIBRARIES" "" ${ARGN})
     
     LIST(LENGTH SOURCES __source_files_list_length)
-    LIST(LENGTH MMOSERVERLIB_DEBUG_LIBRARIES _debug_list_length)
-    LIST(LENGTH MMOSERVERLIB_OPTIMIZED_LIBRARIES _optimized_list_length)
-    LIST(LENGTH MMOSERVERLIB_MMOSERVER_DEPS _project_deps_list_length)
-    LIST(LENGTH MMOSERVERLIB_ADDITIONAL_INCLUDE_DIRS _includes_list_length)
-    LIST(LENGTH MMOSERVERLIB_ADDITIONAL_SOURCE_DIRS _sources_list_length)
+    LIST(LENGTH ANHLIB_DEBUG_LIBRARIES _debug_list_length)
+    LIST(LENGTH ANHLIB_OPTIMIZED_LIBRARIES _optimized_list_length)
+    LIST(LENGTH ANHLIB_DEPENDS _project_deps_list_length)
+    LIST(LENGTH ANHLIB_ADDITIONAL_INCLUDE_DIRS _includes_list_length)
+    LIST(LENGTH ANHLIB_ADDITIONAL_LINK_DIRS _links_list_length)
+    LIST(LENGTH ANHLIB_ADDITIONAL_SOURCE_DIRS _sources_list_length)
             
     # Grab all of the source files and all of the unit test files.
-	IF(__source_files_list_length EQUAL 0)    
-		# load up all of the source and header files for the project
+    IF(__source_files_list_length EQUAL 0)    
+        # load up all of the source and header files for the project
         FILE(GLOB_RECURSE SOURCES *.cc *.cpp *.h)
         FILE(GLOB_RECURSE TEST_SOURCES *_unittest.cc *_unittest.cpp mock_*.h)
             
@@ -96,64 +97,55 @@ FUNCTION(AddANHLibrary name)
     IF(_tests_list_length GREATER 0)
         LIST(REMOVE_ITEM SOURCES ${TEST_SOURCES}) # Remove the unit tests from the sources list. 
     ENDIF()
-    
+        
     IF(_includes_list_length GREATER 0)
-        INCLUDE_DIRECTORIES(${MMOSERVERLIB_ADDITIONAL_INCLUDE_DIRS})
+        INCLUDE_DIRECTORIES(${ANHLIB_ADDITIONAL_INCLUDE_DIRS})
     ENDIF()
+        
+    IF(_links_list_length GREATER 0)
+        INCLUDE_DIRECTORIES(${ANHLIB_ADDITIONAL_LINK_DIRS})
+    ENDIF()
+    
     # Create the Common library
     ADD_LIBRARY(${name} STATIC ${SOURCES})    
     
     IF(_project_deps_list_length GREATER 0)
-		ADD_DEPENDENCIES(${name} ${MMOSERVERLIB_MMOSERVER_DEPS})
+        ADD_DEPENDENCIES(${name} ${ANHLIB_DEPENDS})
     ENDIF()
 
     IF(_tests_list_length GREATER 0)
         # Create an executable for the test and link it to gtest and anh
-        INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIR})
+        INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS} ${GMock_INCLUDE_DIR})
         ADD_EXECUTABLE(${name}_tests ${TEST_SOURCES})
         TARGET_LINK_LIBRARIES(${name}_tests 
             ${name}
-            ${MMOSERVERLIB_MMOSERVER_DEPS}
+            ${ANHLIB_DEPENDS}
             ${GTEST_BOTH_LIBRARIES}
-			${Boost_DATE_TIME_LIBRARY_DEBUG}
-            ${Boost_REGEX_LIBRARY_DEBUG}
-            ${Boost_SYSTEM_LIBRARY_DEBUG}
-            ${Boost_THREAD_LIBRARY_DEBUG}
-            ${GLog_LIBRARY_DEBUG}
             ${GMOCK_LIBRARY_DEBUG}
-            ${TBB_LIBRARY_DEBUG}
-            ${TBB_MALLOC_LIBRARY_DEBUG}     
-			${Boost_DATE_TIME_LIBRARY_RELEASE}
-            ${Boost_REGEX_LIBRARY_RELEASE}
-            ${Boost_SYSTEM_LIBRARY_RELEASE}
-            ${Boost_THREAD_LIBRARY_RELEASE}
-            ${GLog_LIBRARY_RELEASE}
-            ${GMOCK_LIBRARY_RELEASE}
-            ${TBB_LIBRARY}
-            ${TBB_MALLOC_LIBRARY})
+            ${GMOCK_LIBRARY_RELEASE})
                 
         IF(_project_deps_list_length GREATER 0)
-            ADD_DEPENDENCIES(${name}_tests ${MMOSERVERLIB_MMOSERVER_DEPS})
+            ADD_DEPENDENCIES(${name}_tests ${ANHLIB_DEPENDS})
         ENDIF()
     
         IF(_debug_list_length GREATER 0)
-            TARGET_LINK_LIBRARIES(${name}_tests debug ${MMOSERVERLIB_DEBUG_LIBRARIES})
+            TARGET_LINK_LIBRARIES(${name}_tests debug ${ANHLIB_DEBUG_LIBRARIES})
         ENDIF()
     
         IF(_optimized_list_length GREATER 0)
-            TARGET_LINK_LIBRARIES(${name}_tests optimized ${MMOSERVERLIB_OPTIMIZED_LIBRARIES})
+            TARGET_LINK_LIBRARIES(${name}_tests optimized ${ANHLIB_OPTIMIZED_LIBRARIES})
         ENDIF()
         
         IF(WIN32)
             # Set the default output directory for binaries for convenience.
             SET_TARGET_PROPERTIES(${name}_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
                                      
-    	    # After each executable project is built make sure the environment is
-    	    # properly set up (scripts, default configs, etc exist).
-    	    ADD_CUSTOM_COMMAND(TARGET ${name}_tests POST_BUILD
+            # After each executable project is built make sure the environment is
+            # properly set up (scripts, default configs, etc exist).
+            ADD_CUSTOM_COMMAND(TARGET ${name}_tests POST_BUILD
                 COMMAND call \"${PROJECT_BINARY_DIR}/bin/\$\(ConfigurationName\)/${name}_tests\"
             ) 
-    	ENDIF()
+        ENDIF()
         
         GTEST_ADD_TESTS(${name}_tests "" ${TEST_SOURCES})
       

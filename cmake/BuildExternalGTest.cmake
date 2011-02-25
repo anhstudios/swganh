@@ -1,14 +1,10 @@
 # Build the GTest vendor library
-set(gtest_source "${VENDOR_PREFIX}/src/gtest")
-
-# Set the path to the built GTest for use by other projects
-set(GTest_INCLUDE_DIR "${gtest_source}/include" CACHE PATH "" FORCE)
+set(GTest_ROOT "${VENDOR_PREFIX}/src/GTest")
 
 if(MSVC)
 	set(gtest_lib_args
 		-Dgtest_force_shared_crt=ON
 	)
-	set(GTest_LIBRARY_DIRS "${VENDOR_PREFIX}/src/gtest-build/\$(Configuration)" CACHE PATH "" FORCE)
 else()	
 	set(gtest_lib_args)
 endif()

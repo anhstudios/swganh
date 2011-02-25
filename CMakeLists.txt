@@ -93,8 +93,7 @@ ExternalProject_Add(swganh
 		-DGLog_ROOT:PATH=${GLog_ROOT}
 		-DGTest_ROOT:PATH=${GTest_ROOT}
 		-DGMock_ROOT:PATH=${GMock_ROOT}
-		-DMYSQL_INCLUDE_DIR:PATH=${MysqlConnectorC_INCLUDE_DIR}
-		-DMYSQL_LIB_DIR:PATH=${MysqlConnectorC_LIBRARY_DIRS}
+		-DMysqlConnectorC_ROOT:PATH=${MysqlConnectorC_ROOT}
 		-DMysqlConnectorCpp_ROOT:PATH=${MysqlConnectorCpp_ROOT}
 		-DTBB_INSTALL_DIR:PATH=${TBB_ROOT}
 		-DZLib_ROOT:PATH=${ZLib_ROOT}
