@@ -89,8 +89,7 @@ public:
 	const ObjectId& object_id(void);
 
 protected:
-
-	typedef	std::function<bool(const Message)>	MessageHandler;
+    typedef	std::function<bool(const Message)>	MessageHandler;
 
 	/**
 	 * \brief Registers a handler function for a specific Message Type.
@@ -101,7 +100,7 @@ protected:
 	 * \param type The type of message to bind the handler to.
 	 * \param handler The function which will handle the incoming message.
 	 */
-	void RegisterMessageHandler(const MessageType& type, MessageHandler handler);
+	bool RegisterMessageHandler(const MessageType& type, MessageHandler handler);
 
 	/**
 	 * \brief Unregisters a handler function for a specific Message Type.

@@ -37,3 +37,15 @@ FIND_PACKAGE(MysqlConnectorC REQUIRED)
 FIND_PACKAGE(MysqlConnectorCpp REQUIRED)
 FIND_PACKAGE(TBB REQUIRED)
 FIND_PACKAGE(ZLib REQUIRED)
+
+# Add boost and tbb to the include and link directories as everything needs it.
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/src/ ${Boost_INCLUDE_DIRS} ${GLOG_INCLUDE_DIR} ${GLM_INCLUDE_DIR}  ${TBB_INCLUDE_DIRS})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS} ${TBB_LIBRARY_DIRS})
+
+# Enable testing and add gtest to the include directories.
+ENABLE_TESTING()
+
+# libraries
+add_subdirectory(anh)
+# executables
+#add_subdirectory(login)

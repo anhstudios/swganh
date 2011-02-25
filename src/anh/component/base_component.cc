@@ -18,6 +18,7 @@
 */
 
 #include <anh/component/base_component.h>
+#include <glog/logging.h>
 
 namespace anh {
 namespace component {
@@ -41,10 +42,16 @@ void BaseComponent::HandleMessage(const Message message)
 	event_dispatcher_.trigger(message);
 }
 
-void BaseComponent::RegisterMessageHandler(const MessageType& type, MessageHandler handler)
+bool BaseComponent::RegisterMessageHandler(const MessageType& type, MessageHandler handler)
 {
-	event_dispatcher_.registerEventType(type);
-    event_dispatcher_.subscribe(type, anh::event_dispatcher::EventListenerCallback(MessageType("component"), handler));
+    try {
+	    event_dispatcher_.subscribe(type, handler);
+    }
+    catch(anh::event_dispatcher::InvalidEventType) {
+        LOG(INFO) << "invalid event type for component: " << this->component_info().type;
+        return false;
+    }
+    return true;
 }
 
 void BaseComponent::UnregisterMessageHandler(const MessageType& type)
