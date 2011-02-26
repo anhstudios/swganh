@@ -31,7 +31,17 @@ else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4251")
         message(STATUS "- MSVC: Disabled generic compiletime warnings")
     endif()
+    
+    ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS)
+    MESSAGE(STATUS "- MSVC: Disabled NON-SECURE warnings")
+        
+    ADD_DEFINITIONS (/D __TBB_NO_IMPLICIT_LINKAGE=1)
+    MESSAGE(STATUS "- MSVC: Disable automatic linking for TBB library")
 endif()
+
+# Use the static/multithreaded libraries.
+SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_USE_MULTITHREADED ON)
 
 ## find/configure vendor libraries
 set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})

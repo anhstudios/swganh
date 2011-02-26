@@ -5,6 +5,7 @@ if(MSVC)
 	set(boost_lib_args
 		-DENABLE_SHARED:BOOL=OFF
 		-DENABLE_STATIC:BOOL=ON
+		-DLIBPREFIX=lib
 	)
 else()	
 	set(boost_lib_args
@@ -16,7 +17,7 @@ endif()
 ExternalProject_Add(Boost
 	PREFIX ${VENDOR_PREFIX}
 	GIT_REPOSITORY https://github.com/anhstudios/boost.git
-	GIT_TAG 3e977d9f
+	GIT_TAG 7b35086
 	UPDATE_COMMAND ""
 	CMAKE_ARGS
 		${boost_lib_args}

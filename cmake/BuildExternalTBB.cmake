@@ -10,7 +10,7 @@ endif()
 ExternalProject_Add(TBB
 	PREFIX ${VENDOR_PREFIX}	
 	GIT_REPOSITORY https://github.com/anhstudios/tbb.git
-	GIT_TAG 5909edfd
+	GIT_TAG 6656acc
 	BUILD_IN_SOURCE 1
 	UPDATE_COMMAND ""
 	CONFIGURE_COMMAND ""
