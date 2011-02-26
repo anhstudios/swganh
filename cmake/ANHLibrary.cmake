@@ -103,7 +103,7 @@ FUNCTION(AddANHLibrary name)
     ENDIF()
         
     IF(_links_list_length GREATER 0)
-        INCLUDE_DIRECTORIES(${ANHLIB_ADDITIONAL_LINK_DIRS})
+        LINK_DIRECTORIES(${ANHLIB_ADDITIONAL_LINK_DIRS})
     ENDIF()
     
     # Create the Common library
@@ -120,20 +120,30 @@ FUNCTION(AddANHLibrary name)
         TARGET_LINK_LIBRARIES(${name}_tests 
             ${name}
             ${ANHLIB_DEPENDS}
-            ${GTEST_BOTH_LIBRARIES}
-            ${GMOCK_LIBRARY_DEBUG}
-            ${GMOCK_LIBRARY_RELEASE})
+            ${GTEST_BOTH_LIBRARIES})
+            
+        # add the gmock libraries to be added if found
+        list(APPEND ANHLIB_DEBUG_LIBRARIES ${GMock_LIBRARY_DEBUG})
+        list(APPEND ANHLIB_OPTIMIZED_LIBRARIES ${GMock_LIBRARY_RELEASE})
                 
         IF(_project_deps_list_length GREATER 0)
             ADD_DEPENDENCIES(${name}_tests ${ANHLIB_DEPENDS})
         ENDIF()
     
         IF(_debug_list_length GREATER 0)
-            TARGET_LINK_LIBRARIES(${name}_tests debug ${ANHLIB_DEBUG_LIBRARIES})
+            FOREACH(debug_library ${ANHLIB_DEBUG_LIBRARIES})
+                if (NOT ${debug_library} MATCHES ".*NOTFOUND")
+                    TARGET_LINK_LIBRARIES(${name}_tests debug ${debug_library})                    
+                endif()
+            ENDFOREACH()
         ENDIF()
     
         IF(_optimized_list_length GREATER 0)
-            TARGET_LINK_LIBRARIES(${name}_tests optimized ${ANHLIB_OPTIMIZED_LIBRARIES})
+            FOREACH(optimized_library ${ANHLIB_OPTIMIZED_LIBRARIES})
+                if (NOT ${optimized_library} MATCHES ".*NOTFOUND")
+                    TARGET_LINK_LIBRARIES(${name}_tests optimized ${optimized_library})                    
+                endif()
+            ENDFOREACH()
         ENDIF()
         
         IF(WIN32)
@@ -142,9 +152,9 @@ FUNCTION(AddANHLibrary name)
                                      
             # After each executable project is built make sure the environment is
             # properly set up (scripts, default configs, etc exist).
-            ADD_CUSTOM_COMMAND(TARGET ${name}_tests POST_BUILD
-                COMMAND call \"${PROJECT_BINARY_DIR}/bin/\$\(ConfigurationName\)/${name}_tests\"
-            ) 
+            #ADD_CUSTOM_COMMAND(TARGET ${name}_tests POST_BUILD
+            #    COMMAND call \"${PROJECT_BINARY_DIR}/bin/\$\(ConfigurationName\)/${name}_tests\"
+            #) 
         ENDIF()
         
         GTEST_ADD_TESTS(${name}_tests "" ${TEST_SOURCES})
