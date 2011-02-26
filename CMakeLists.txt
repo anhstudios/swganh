@@ -89,6 +89,8 @@ ExternalProject_Add(swganh
 	BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/swganh
 	CMAKE_ARGS 
 		-DBOOST_ROOT:PATH=${Boost_ROOT}
+        -DBoost_USE_STATIC_LIBS:BOOL=${Boost_USE_STATIC_LIBS}
+        -DBoost_USE_MULTITHREADED:BOOL=${Boost_USE_MULTITHREADED}
 		-DGlm_ROOT:PATH=${Glm_ROOT}
 		-DGLog_ROOT:PATH=${GLog_ROOT}
 		-DGTest_ROOT:PATH=${GTest_ROOT}
@@ -97,8 +99,5 @@ ExternalProject_Add(swganh
 		-DMysqlConnectorCpp_ROOT:PATH=${MysqlConnectorCpp_ROOT}
 		-DTBB_INSTALL_DIR:PATH=${TBB_ROOT}
 		-DZLib_ROOT:PATH=${ZLib_ROOT}
-		-DBoost_NO_SYSTEM_PATHS:BOOL=ON
-		-DBoost_USE_MULTITHREADED:BOOL=ON
-		-DBoost_COMPILER:STRING=-vc
 	INSTALL_COMMAND ""
 )
