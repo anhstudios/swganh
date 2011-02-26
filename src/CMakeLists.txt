@@ -43,10 +43,6 @@ endif()
 ## find/configure vendor libraries
 set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 
-# Use the static/multithreaded libraries.
-SET(Boost_USE_STATIC_LIBS ON)
-SET(Boost_USE_MULTITHREADED ON)
-
 find_package(Boost 1.45.0 COMPONENTS date_time regex thread system REQUIRED)
 find_package(Glm REQUIRED)
 find_package(GLog REQUIRED)
