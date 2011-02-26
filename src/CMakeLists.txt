@@ -40,6 +40,10 @@ else()
     MESSAGE(STATUS "- MSVC: Disable automatic linking for TBB library")
 endif()
 
+# Use the static/multithreaded libraries.
+SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_USE_MULTITHREADED ON)
+
 ## find/configure vendor libraries
 set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 
