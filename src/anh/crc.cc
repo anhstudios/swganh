@@ -18,6 +18,7 @@
 */
 
 #include "anh/crc.h"
+#include <glog/logging.h>
 
 using namespace anh;
 

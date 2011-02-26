@@ -59,5 +59,6 @@ enable_testing()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(anh)
+add_subdirectory(utils)
 
 ## project executables
