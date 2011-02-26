@@ -8,5 +8,12 @@ AddANHLibrary(libanh
 	    ${TBB_INCLUDE_DIRS}
 	ADDITIONAL_LINK_DIRS
 	    ${Boost_LIBRARY_DIRS}
-	    ${TBB_LIBRARY_DIRS}
+	DEBUG_LIBRARIES 
+        ${MYSQL_LIB}
+        ${MysqlConnectorCpp_LIBRARY_DEBUG}
+	    ${TBB_DEBUG_LIBRARIES}
+	OPTIMIZED_LIBRARIES 
+        ${MYSQL_LIB}
+        ${MysqlConnectorCpp_LIBRARY_RELEASE}
+	    ${TBB_LIBRARIES}
 )
