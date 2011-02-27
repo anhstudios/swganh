@@ -51,7 +51,7 @@ using namespace scripting;
 using namespace server_directory;
 using namespace boost::program_options;
 
-BaseApplication::BaseApplication(list<string> config_files, int argc, char* argv[]
+BaseApplication::BaseApplication(int argc, char* argv[], list<string> config_files
 , shared_ptr<EventDispatcherInterface> event_dispatcher
 , shared_ptr<DatabaseManagerInterface> db_manager
 , shared_ptr<ScriptingManagerInterface> scripting_manager
@@ -105,6 +105,7 @@ BaseApplication::BaseApplication(list<string> config_files
 BaseApplication::~BaseApplication() {}
 
 void BaseApplication::startup() {
+    setupLogging();
     addDefaultOptions_();
     // load the options
     loadOptions_(argc_, argv_, config_files_);
@@ -114,19 +115,22 @@ void BaseApplication::startup() {
             db_manager_ = createDatabaseManager(sql::mysql::get_driver_instance());
         }
         // loads the data sources from config into db_manager
-        addDataSourcesFromOptions_();
-        // sets up the server_directory
-        if (server_directory_ == nullptr) {
-            server_directory_ = createServerDirectory(db_manager_->getConnection
-                (configuration_variables_map_["cluster.datastore.name"].as<string>()));
+        if (addDataSourcesFromOptions_()) {
+            // sets up the server_directory
+            if (server_directory_ == nullptr) {
+                server_directory_ = createServerDirectory(db_manager_->getConnection
+                    (configuration_variables_map_["cluster.datastore.name"].as<string>()));
+            }
+            registerApp_();
         }
-        registerApp_();
         // Startup the event
         event_dispatcher_->trigger(startup_event_);
     }
-    catch(...)
-    {
-        throw runtime_error("Error in startup");
+    catch(exception e) {
+        cerr << e.what() << endl;
+    }
+    catch(...) {
+        cerr << "Error in startup";
         return;
     }
 }
@@ -213,12 +217,13 @@ void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> con
         else
         {
             try {
+                LOG(INFO) << "Loading config file " <<filename << " in boost options" << endl;
                  ::store(::parse_config_file(config_file, configuration_options_description_, true), configuration_variables_map_);
             } catch(...) { 
                 throw runtime_error("Could not parse config file. " + filename);
             }
         }
-    });
+    })(config_files.front());
 
     ::notify(configuration_variables_map_);
 

@@ -1,6 +1,8 @@
 include(ANHExecutable)
 
 AddANHExecutable(zone
+	DEPENDS
+		libanh
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}
@@ -10,6 +12,7 @@ AddANHExecutable(zone
 	    ${TBB_INCLUDE_DIRS}
 	ADDITIONAL_LINK_DIRS
 	    ${Boost_LIBRARY_DIRS}
+		${ANH_LIBRARY_DIRS}
 	DEBUG_LIBRARIES 
         ${MYSQL_LIB}
         ${MysqlConnectorCpp_LIBRARY_DEBUG}

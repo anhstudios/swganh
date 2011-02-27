@@ -7,7 +7,7 @@ namespace bp = boost::python;
 using namespace anh::test_components;
 #pragma warning( disable : 4172)
 
-
+namespace {
 // An abstract base class
 class Base
 {
@@ -138,6 +138,7 @@ void componentDerive() {
     bp::class_<ptree>("ptree", bp::init<>());
 }
 
+}
 }
 }
 #pragma warning( default : 4172)

@@ -53,8 +53,8 @@ public:
      * Initializes general configuration options used between all servers in the cluster.
      */
     BaseApplication(
-          std::list<std::string> config_files
-        , int argc, char* argv[]
+          int argc, char* argv[]
+        , std::list<std::string> config_files
         , std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher
         , std::shared_ptr<database::DatabaseManagerInterface> db_manager
         , std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager

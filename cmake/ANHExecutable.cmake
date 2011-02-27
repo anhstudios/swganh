@@ -92,7 +92,7 @@ FUNCTION(AddANHExecutable name)
         SET(__project_library "lib${name}")
     
         AddANHLibrary(${__project_library}
-            MMOSERVER_DEPS
+            DEPENDS
                 ${ANHEXE_DEPENDS}
             SOURCES
                 ${SOURCES}
