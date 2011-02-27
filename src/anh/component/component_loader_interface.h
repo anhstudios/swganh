@@ -20,7 +20,7 @@
 #ifndef LIBANH_COMPONENT_COMPONENT_LOADER_INTERFACE_H_
 #define LIBANH_COMPONENT_COMPONENT_LOADER_INTERFACE_H_
 
-#include <memory>
+#include <anh/memory.h>
 #include <anh/component/component_interface.h>
 
 namespace anh {

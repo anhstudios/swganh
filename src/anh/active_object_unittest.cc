@@ -2,7 +2,7 @@
 // Use of this source code is governed by a GPL-style license that can be
 // found in the COPYING file.
 
-#include "Utils/ActiveObject.h"
+#include "anh/active_object.h"
 
 #include <gtest/gtest.h>
 #include <boost/thread.hpp>

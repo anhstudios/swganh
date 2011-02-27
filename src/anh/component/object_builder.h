@@ -22,7 +22,7 @@
 
 #include <functional>
 #include <map>
-#include <Utils/Singleton.h>
+#include <anh/singleton.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -35,7 +35,7 @@ namespace anh {
 namespace component {
 
 class ObjectBuilder;
-#define gObjectBuilder utils::Singleton<ObjectBuilder>::Instance()
+#define gObjectBuilder anh::Singleton<ObjectBuilder>::Instance())
 
 typedef anh::HashString ObjectType;
 typedef std::function<std::shared_ptr<ComponentInterface>(const ObjectId&)> ComponentCreator;

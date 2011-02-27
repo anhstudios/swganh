@@ -29,7 +29,7 @@ namespace anh {
 namespace component {
 
 class ObjectManager;
-#define gObjectManager utils::Singleton<anh::component::ObjectManager>::Instance()
+#define gObjectManager anh::Singleton<anh::component::ObjectManager>::Instance()
 
 /**
  * \brief A front-end for handling the attaching, detaching and querying of object components.

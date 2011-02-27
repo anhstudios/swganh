@@ -23,7 +23,7 @@
 #include <cstdint>
 
 #include <list>
-#include <memory>
+#include <anh/memory.h>
 #include <string>
 
 #include "anh/server_directory/cluster.h"

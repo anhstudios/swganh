@@ -18,7 +18,7 @@
 */
 #include "scripting_manager.h"
 #include <boost/python.hpp>
-#include <anh/scripting/scripting_modules_unittest.h>
+#include <anh/scripting/scripting_modules_unittest.cc>
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -51,7 +51,7 @@ class ScriptEngineTest : public ::testing::Test
  protected:
      virtual void SetUp() 
      {
-         e = std::make_shared<ScriptingManager>("../../bin/debug/scripts/unittests/");
+         e = std::make_shared<ScriptingManager>("scripts/unittests/");
      }
      std::shared_ptr<ScriptingManager> e;
      std::vector<_inittab> modules;

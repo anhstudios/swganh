@@ -18,19 +18,18 @@
 */
 #ifndef _ANH_MOCK_SCRIPT_MANAGER_H_
 #define _ANH_MOCK_SCRIPT_MANAGER_
-#include <anh/scripting/scripting_manager.h>
+#include <anh/scripting/scripting_manager_interface.h>
 #include <gmock/gmock.h>
 
 namespace anh{
 namespace scripting{
 
-class MockScriptingManager : public IScriptingManager
+class MockScriptingManager : public ScriptingManagerInterface
 {
     MOCK_METHOD1(load, void(const std::string& filename));
     MOCK_METHOD1(run, void(const std::string& filename));
     MOCK_METHOD1(reload, void(const std::string& filename));
     MOCK_METHOD1(removeFile, void(const std::string& filename));
-    MOCK_METHOD0(getErrorMessage, std::string());
 };
 } // namespace scripting
 } // namespace anh

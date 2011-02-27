@@ -71,3 +71,4 @@ add_subdirectory(anh)
 #add_subdirectory(utils)
 
 ## project executables
+add_subdirectory(zone)

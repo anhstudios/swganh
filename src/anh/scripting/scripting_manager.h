@@ -21,6 +21,7 @@
 
 #include "scripting_manager_interface.h"
 #include <boost/python/object_core.hpp>
+#include <boost/filesystem.hpp>
 
 //forward declaration
 struct _inittab;
