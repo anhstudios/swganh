@@ -46,11 +46,10 @@ SET(Boost_USE_MULTITHREADED ON)
 ## find/configure vendor libraries
 set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 
-FIND_PACKAGE(PythonLibs REQUIRED)
-SET(Boost_USE_STATIC_LIBS ON)
-FIND_PACKAGE(Boost 1.45.0 COMPONENTS date_time regex thread system REQUIRED)
-SET(Boost_USE_STATIC_LIBS OFF)
-FIND_PACKAGE(Boost 1.45.0 COMPONENTS python REQUIRED)
+find_package(PythonLibs REQUIRED)
+find_package(Boost 1.45.0 COMPONENTS date_time regex thread system REQUIRED)
+#SET(Boost_USE_STATIC_LIBS OFF)
+#find_package(Boost 1.45.0 COMPONENTS python REQUIRED)
 
 find_package(Glm REQUIRED)
 find_package(GLog REQUIRED)
@@ -69,6 +68,6 @@ enable_testing()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(anh)
-add_subdirectory(utils)
+#add_subdirectory(utils)
 
 ## project executables

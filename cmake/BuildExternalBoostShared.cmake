@@ -4,7 +4,7 @@ FIND_PACKAGE(PythonLibs REQUIRED)
 ExternalProject_Add(BoostShared
 	PREFIX ${VENDOR_PREFIX}
 	GIT_REPOSITORY https://github.com/anhstudios/boost.git
-	GIT_TAG 3e977d9f
+	GIT_TAG 7b35086
 	UPDATE_COMMAND ""
 	CMAKE_ARGS
 		${boost_lib_args}
