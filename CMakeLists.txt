@@ -40,7 +40,6 @@ endmacro()
 option(bootstrap_USE_SYSTEM_Boost
     "If false, swganh will download and build it's own copy of Boost" FALSE)
 bootstrap_add_vendor(Boost)
-bootstrap_add_vendor(BoostShared)
 
 # Build and/or configure GLM
 option(bootstrap_USE_SYSTEM_Glm
@@ -101,6 +100,7 @@ ExternalProject_Add(swganh
 		-DGTest_LIBRARYDIR:PATH=${GTest_LIBRARYDIR}
 		-DGMock_INCLUDEDIR:PATH=${GMock_INCLUDEDIR}
 		-DGMock_LIBRARYDIR:PATH=${GMock_LIBRARYDIR}
+    	-DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
 		-DPYTHON_INCLUDE_PATH=${PYTHON_INCLUDE_DIR}
 		-DPYTHON_LIBRARIES=${PYTHON_LIBRARY}
 		-DPYTHON_DEBUG_LIBRARIES=${PYTHON_DEBUG_LIBRARY}
