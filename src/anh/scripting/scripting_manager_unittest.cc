@@ -18,7 +18,7 @@
 */
 #include "scripting_manager.h"
 #include <boost/python.hpp>
-#include <anh/scripting/scripting_modules_unittest.cc>
+#include <anh/scripting/scripting_modules_unittest.h>
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -28,6 +28,7 @@
 using namespace anh::scripting;
 using namespace anh::component;
 using namespace boost::python;
+using namespace std;
 
 // this is used for embedding, so we can have our bindings in another file
 void baseDerive();
@@ -120,7 +121,6 @@ TEST_F(ScriptEngineTest, reloadFile)
     e->reload("test.py");
     EXPECT_TRUE(e->isFileLoaded("test.py"));
 }
-using namespace anh::test_components;
 TEST_F(ScriptEngineTest, getValueFromPython)
 {
     module.name = "embedded_hello";

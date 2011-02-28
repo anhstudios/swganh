@@ -105,12 +105,12 @@ BaseApplication::BaseApplication(list<string> config_files
 BaseApplication::~BaseApplication() {}
 
 void BaseApplication::startup() {
-    setupLogging();
-    addDefaultOptions_();
-    // load the options
-    loadOptions_(argc_, argv_, config_files_);
-    // get a server_directory
     try {
+        //setupLogging();
+        addDefaultOptions_();
+        // load the options
+        loadOptions_(argc_, argv_, config_files_);
+        // get a server_directory
         if (db_manager_ == nullptr) {
             db_manager_ = createDatabaseManager(sql::mysql::get_driver_instance());
         }
@@ -118,20 +118,34 @@ void BaseApplication::startup() {
         if (addDataSourcesFromOptions_()) {
             // sets up the server_directory
             if (server_directory_ == nullptr) {
-                server_directory_ = createServerDirectory(db_manager_->getConnection
-                    (configuration_variables_map_["cluster.datastore.name"].as<string>()));
+                shared_ptr<sql::Connection> conn = db_manager_->getConnection(
+                    configuration_variables_map_["cluster.datastore.name"].as<string>());
+                if (conn != nullptr)
+                    server_directory_ = createServerDirectory(conn);
+                else {
+                    throw runtime_error("No valid database connection available");
+                }
             }
             registerApp_();
         }
+        else {
+            LOG(WARNING) << "NO Datasources Loaded from Config";
+        }
         // Startup the event
-        event_dispatcher_->trigger(startup_event_);
+        if (event_dispatcher_ != nullptr) {
+            event_dispatcher_->trigger(startup_event_);
+        }
+        else {
+            throw runtime_error("No Event Dispatcher Registered");
+        }
+
     }
     catch(exception e) {
         cerr << e.what() << endl;
+        LOG(FATAL) << "Exception: " << e.what() <<endl;
     }
     catch(...) {
         cerr << "Error in startup";
-        return;
     }
 }
 
@@ -160,7 +174,7 @@ shared_ptr<DatabaseManager> BaseApplication::createDatabaseManager(sql::Driver* 
 }
 void BaseApplication::setupLogging() {
     // Initialize the google logging.
-    google::InitGoogleLogging(argv_[0]);
+    google::InitGoogleLogging("logs");
 
     #ifndef _WIN32
         google::InstallFailureSignalHandler();
@@ -205,11 +219,12 @@ void BaseApplication::addDefaultOptions_() {
 
 void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> config_files)
 {
-    ::store(::parse_command_line(argc, argv, configuration_options_description_), configuration_variables_map_);
+    store(parse_command_line(argc, argv, configuration_options_description_), configuration_variables_map_);
 
     // Iterate through the configuration files
     // that are to be loaded. If a configuration file
     // is missing, throw a runtime_error.
+
     for_each(config_files.begin(), config_files.end(), [=] (const string& filename) {
         ifstream config_file(filename);
         if(!config_file)
@@ -218,14 +233,14 @@ void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> con
         {
             try {
                 LOG(INFO) << "Loading config file " <<filename << " in boost options" << endl;
-                 ::store(::parse_config_file(config_file, configuration_options_description_, true), configuration_variables_map_);
+                 store(parse_config_file(config_file, configuration_options_description_, true), configuration_variables_map_);
             } catch(...) { 
                 throw runtime_error("Could not parse config file. " + filename);
             }
         }
     })(config_files.front());
 
-    ::notify(configuration_variables_map_);
+    notify(configuration_variables_map_);
 
     // The help argument has been flagged, display the
     // server options and throw a runtime_error exception

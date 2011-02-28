@@ -1,3 +1,6 @@
+#ifndef LIBANH_SCRIPTING_TEST_MODULES_H_
+#define LIBANH_SCRIPTING_TEST_MODULES_H_
+
 #include <boost/python.hpp>
 #include <anh/component/component_interface.h>
 #include <anh/component/base_component.h>
@@ -7,7 +10,6 @@ namespace bp = boost::python;
 using namespace anh::test_components;
 #pragma warning( disable : 4172)
 
-namespace {
 // An abstract base class
 class Base
 {
@@ -76,7 +78,6 @@ void baseDerive() {
 
 ///COMPONENT MODULE START
 namespace anh { namespace component {
-
 // Familiar Boost.Python wrapper class for ComponentInterface
 // template magic!
 template<class DerivedT> class BaseComponentWrap : public DerivedT, public bp::wrapper<DerivedT>
@@ -138,7 +139,7 @@ void componentDerive() {
     bp::class_<ptree>("ptree", bp::init<>());
 }
 
-}
-}
-}
+} // component
+} // anh
+#endif //LIBANH_SCRIPTING_TEST_MODULES_H_
 #pragma warning( default : 4172)

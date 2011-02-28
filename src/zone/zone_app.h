@@ -12,6 +12,8 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team*/
 #include <anh/application.h>
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/scripting/scripting_manager.h>
+#include <anh/component/object_manager.h>
+#include <anh/component/object_builder.h>
 
 namespace zone {
 class ZoneApp : public anh::BaseApplication
@@ -36,6 +38,9 @@ private:
     ZoneApp();
     ZoneApp(const ZoneApp&);
     ZoneApp& operator=(const ZoneApp&);
+
+    anh::component::ObjectBuilder object_builder_;
+    anh::component::ObjectManager object_manager_;
 
 };
 

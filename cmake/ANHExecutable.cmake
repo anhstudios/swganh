@@ -28,26 +28,26 @@
 # include(ANHExecutable)
 # 
 # AddANHExecutable(ZoneServer
-#     MMOSERVER_DEPS 
-#         MessageLib
-#         SwgProtocol
-#         ScriptEngine
+#     DEPENDS 
+#         Utils
+#         Common
+#     SOURCES # disables source lookup and uses this list
+#         ${SOURCES}
+#     TEST_SOURCES # when source lookups are disabled use these tests
+#         ${TEST_SOURCES}
+#     ADDITIONAL_SOURCE_DIRS
+#         ${CMAKE_CURRENT_SOURCE_DIR}/glue_files
 #     ADDITIONAL_INCLUDE_DIRS
 #         ${LUA_INCLUDE_DIR} 
 #         ${NOISE_INCLUDE_DIR} 
-#         ${SpatialIndex_INCLUDE_DIR} 
 #         ${TOLUAPP_INCLUDE_DIR}
-#     ADDITIONAL_SOURCE_DIRS
-#         ${CMAKE_CURRENT_SOURCE_DIR}/objects
-#     DEBUG_LIBRARIES 
+#     DEBUG_LIBRARIES
 #         ${LUA_LIBRARY_DEBUG}
 #         ${NOISE_LIBRARY_DEBUG}
-#         ${SpatialIndex_LIBRARY_DEBUG}
 #         ${TOLUAPP_LIBRARY_DEBUG}
 #     OPTIMIZED_LIBRARIES
 #         ${LUA_LIBRARY_RELEASE}
 #         ${NOISE_LIBRARY_RELEASE}
-#         ${SpatialIndex_LIBRARY_RELEASE}
 #         ${TOLUAPP_LIBRARY_RELEASE}
 # )
 #

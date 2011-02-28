@@ -164,8 +164,8 @@ TEST_F(ApplicationTest, cantLoadConfigFile)
     list<string> config_list;
     config_list.push_back("notfound.cfg");
     shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory);
-    // expectation is an exception is thrown as file not found
-    EXPECT_ANY_THROW(
+    // expectation is caugh and an error message is displayed
+    EXPECT_NO_THROW(
        app->startup();
     ); 
 }
@@ -180,7 +180,7 @@ TEST_F(ApplicationTest, foundConfigNoValidValues)
     config_list.push_back("invalid_data.cfg");
     shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory);
     
-    EXPECT_ANY_THROW(
+    EXPECT_NO_THROW(
         app->startup();
     );
 }
@@ -218,7 +218,7 @@ TEST_F(ApplicationTest, doesHandleNullPtrEvent)
     manager = make_shared<NiceMock<MockDatabaseManager>>();
     directory = make_shared<NiceMock<MockServerDirectory>>();
     mock_dispatcher = nullptr;
-    // event dispatcher shouldn't throw an exception
+    // event dispatcher shouldn't throw an exception, but should give an error message
     shared_ptr<MockApplication> app = make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory);
     EXPECT_NO_THROW(
         app->startup();    

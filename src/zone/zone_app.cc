@@ -12,14 +12,16 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 
 using namespace std;
 using namespace anh::scripting;
+using namespace anh::component;
 using namespace anh::event_dispatcher;
+
 namespace zone {
 ZoneApp::ZoneApp(int argc, char* argv[], list<string> config_files
     , shared_ptr<EventDispatcherInterface> dispatcher
     , shared_ptr<ScriptingManagerInterface> scripting_manager)
     : BaseApplication(argc, argv, config_files, dispatcher, nullptr, scripting_manager, nullptr) 
 {
-    auto startupListener = [=] (shared_ptr<EventInterface> incoming_event)-> bool {
+    auto startupListener = [&] (shared_ptr<EventInterface> incoming_event)-> bool {
         cout << "Zone Application Startup" <<endl;
         started_ = true;
         return true;
