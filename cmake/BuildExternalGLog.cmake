@@ -6,16 +6,16 @@ if(WIN32)
 	set(glog_build msbuild "${GLog_SOURCEDIR}/google-glog_vc10.sln")
     set(glog_install "")
 
-    set(GLog_INCLUDEDIR "${GLog_SOURCEDIR}/src/GLog/src/windows")
-    set(GLog_LIBRARYDIR "${VENDOR_PREFIX}/src/GLog")
+    set(GLog_INCLUDEDIR "${GLog_SOURCEDIR}/src/windows")
+    set(GLog_LIBRARYDIR "${GLog_SOURCEDIR}")
 else()
     set(glog_configure ${GLog_SOURCEDIR}/configure --prefix=${GLog_SOURCEDIR})
 	set(glog_build make)
     set(glog_install make install)
 
 
-    set(GLog_INCLUDEDIR "${VENDOR_PREFIX}/src/GLog/include")
-    set(GLog_LIBRARYDIR "${VENDOR_PREFIX}/src/GLog/lib")
+    set(GLog_INCLUDEDIR "${GLog_SOURCEDIR}/include")
+    set(GLog_LIBRARYDIR "${GLog_SOURCEDIR}/lib")
 endif()
 
 ExternalProject_Add(GLog

@@ -1,5 +1,7 @@
 # Build the Boost vendor library
-set(Boost_ROOT "${VENDOR_PREFIX}/src/Boost" CACHE PATH "" FORCE)
+set(Boost_SOURCEDIR "${VENDOR_PREFIX}/src/Boost" CACHE PATH "" FORCE)
+set(Boost_INCLUDEDIR "${Boost_SOURCEDIR}" CACHE PATH "" FORCE)
+set(Boost_LIBRARYDIR "${Boost_SOURCEDIR}/../Boost-build/lib" CACHE PATH "" FORCE)
 
 if(MSVC)
 	set(boost_lib_args
@@ -23,6 +25,10 @@ ExternalProject_Add(Boost
 		${boost_lib_args}
 		-DENABLE_MULTITHREADED:BOOL=ON
     	-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG:PATH=${Boost_LIBRARYDIR}
+    	-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG:PATH=${Boost_LIBRARYDIR}
+    	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE:PATH=${Boost_LIBRARYDIR}
+    	-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE:PATH=${Boost_LIBRARYDIR}
     	-DBUILD_EXAMPLES:BOOL=OFF
     	-DBUILD_TESTING:BOOL=OFF
     	-DBUILD_VERSIONED:BOOL=OFF
@@ -33,6 +39,3 @@ ExternalProject_Add(Boost
     INSTALL_COMMAND ""
 )
 
-# Set the path to the built Boost for use by other projects
-set(Boost_INCLUDEDIR "${Boost_ROOT}" CACHE PATH "" FORCE)
-set(Boost_LIBRARYDIR "${Boost_ROOT}/../Boost-build/lib" CACHE PATH "" FORCE)

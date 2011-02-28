@@ -1,14 +1,14 @@
 find_path(GLOG_INCLUDE_DIR glog/logging.h
+    PATH_SUFFIXES include
     HINTS
         $ENV{GLog_ROOT}
-    PATH_SUFFIXES include src/windows
-    PATHS
         ${GLog_ROOT}
         ${GLog_INCLUDEDIR}
 )
 
 find_library(GLOG_LIBRARY 
-    NAMES glog
+    NAMES glog libglog
+    PATH_SUFFIXES Debug Release
     HINTS
         $ENV{GLog_ROOT}
         ${GLog_ROOT}
