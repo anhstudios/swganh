@@ -115,17 +115,14 @@ FUNCTION(AddANHLibrary name)
 
     IF(_tests_list_length GREATER 0)
         # Create an executable for the test and link it to gtest and anh
-        INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS} ${GMock_INCLUDE_DIR})
+        INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIR})
         ADD_EXECUTABLE(${name}_tests ${TEST_SOURCES})
         TARGET_LINK_LIBRARIES(${name}_tests 
             ${name}
             ${ANHLIB_DEPENDS}
-            ${GTEST_BOTH_LIBRARIES})
-            
-        # add the gmock libraries to be added if found
-        list(APPEND ANHLIB_DEBUG_LIBRARIES ${GMock_LIBRARY_DEBUG})
-        list(APPEND ANHLIB_OPTIMIZED_LIBRARIES ${GMock_LIBRARY_RELEASE})
-                
+            ${GTEST_BOTH_LIBRARIES}
+            ${GMOCK_LIBRARY})
+                            
         IF(_project_deps_list_length GREATER 0)
             ADD_DEPENDENCIES(${name}_tests ${ANHLIB_DEPENDS})
         ENDIF()

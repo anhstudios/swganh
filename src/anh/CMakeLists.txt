@@ -4,16 +4,25 @@ AddANHLibrary(libanh
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}
-        ${MysqlConnectorCpp_INCLUDE_DIR}
+        ${MYSQLCONNECTORCPP_INCLUDE_DIRS}
 	    ${TBB_INCLUDE_DIRS}
 	ADDITIONAL_LINK_DIRS
 	    ${Boost_LIBRARY_DIRS}
 	DEBUG_LIBRARIES 
         ${MYSQL_LIB}
-        ${MysqlConnectorCpp_LIBRARY_DEBUG}
+        ${MYSQLCONNECTORCPP_LIBRARY}
 	    ${TBB_DEBUG_LIBRARIES}
+        ${Boost_DATE_TIME_LIBRARY_DEBUG}
+        ${Boost_REGEX_LIBRARY_DEBUG}
+        ${Boost_SYSTEM_LIBRARY_DEBUG}
+        ${Boost_THREAD_LIBRARY_DEBUG}
 	OPTIMIZED_LIBRARIES 
         ${MYSQL_LIB}
-        ${MysqlConnectorCpp_LIBRARY_RELEASE}
 	    ${TBB_LIBRARIES}
+        ${Boost_DATE_TIME_LIBRARY_RELEASE}
+        ${Boost_REGEX_LIBRARY_RELEASE}
+        ${Boost_SYSTEM_LIBRARY_RELEASE}
+        ${Boost_THREAD_LIBRARY_RELEASE}
 )
+
+message(${Boost_LIBRARY_DIRS})

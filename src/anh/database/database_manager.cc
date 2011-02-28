@@ -21,6 +21,7 @@
 
 #include "anh/database/database_manager.h"
 
+#include <algorithm>
 #include <queue>
 
 #include <cppconn/driver.h>

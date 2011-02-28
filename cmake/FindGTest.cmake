@@ -102,6 +102,7 @@ function(_gtest_find_library _name)
         HINTS
             $ENV{GTest_ROOT}
             ${GTest_ROOT}
+            ${GTest_LIBRARYDIR}
         PATH_SUFFIXES ${_gtest_libpath_suffixes}
     )
     mark_as_advanced(${_name})
@@ -125,6 +126,7 @@ find_path(GTEST_INCLUDE_DIR gtest/gtest.h
     HINTS
         $ENV{GTest_ROOT}/include
         ${GTest_ROOT}/include
+        ${GTest_INCLUDEDIR}
 )
 mark_as_advanced(GTEST_INCLUDE_DIR)
 

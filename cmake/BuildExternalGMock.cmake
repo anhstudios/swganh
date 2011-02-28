@@ -1,5 +1,7 @@
 # Build the GMock vendor library
-set(GMock_ROOT "${VENDOR_PREFIX}/src/gmock")
+set(GMock_SOURCEDIR "${VENDOR_PREFIX}/src/GMock")
+set(GMock_INCLUDEDIR "${GMock_SOURCEDIR}/include")
+set(GMock_LIBRARYDIR "${GMock_SOURCEDIR}")
 
 if(MSVC)
 	set(gmock_lib_args -Dgtest_force_shared_crt=ON)

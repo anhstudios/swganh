@@ -1,5 +1,5 @@
 # Build the Glm vendor library
-set(Glm_ROOT "${VENDOR_PREFIX}/src/glm" CACHE PATH "" FORCE)
+set(Glm_INCLUDEDIR "${VENDOR_PREFIX}/src/Glm" CACHE PATH "" FORCE)
 
 ExternalProject_Add(Glm
 	PREFIX ${VENDOR_PREFIX}

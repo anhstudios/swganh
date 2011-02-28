@@ -162,7 +162,9 @@ if (NOT $ENV{TBB_ARCH_PLATFORM} STREQUAL "")
 else (NOT $ENV{TBB_ARCH_PLATFORM} STREQUAL "")
     # HH: deprecated
     set (_TBB_LIBRARY_DIR 
-        "${_TBB_INSTALL_DIR}/lib"        
+        "${_TBB_INSTALL_DIR}/lib"      
+        "${_TBB_INSTALL_DIR}/lib/gcc_debug"  
+        "${_TBB_INSTALL_DIR}/lib/gcc_release"     
         ${_TBB_INSTALL_DIR}/build/vc10/ia32/Debug
         ${_TBB_INSTALL_DIR}/build/vc10/ia32/Release
     )

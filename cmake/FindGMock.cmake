@@ -1,49 +1,25 @@
-FIND_PATH(GMock_INCLUDE_DIR gmock/gmock.h
-	PATH
-	    $ENV{GMock_ROOT}
-	    ${GMock_ROOT}
+find_path(GMOCK_INCLUDE_DIR gmock/gmock.h
     HINTS
-        $ENV{GMock_ROOT}/include
-        ${GMock_ROOT}/include
+        $ENV{GMock_ROOT}
+    PATH_SUFFIXES include
+    PATHS
+        ${GMock_ROOT}
+        ${GMock_INCLUDEDIR}
 )
-MARK_AS_ADVANCED(GMock_INCLUDE_DIR)
 
-FIND_LIBRARY(GMock_LIBRARY_DEBUG
-    NAMES gmock gmock.lib
-    PATH
+find_library(GMOCK_LIBRARY 
+    NAMES gmock
+    PATH_SUFFIXES lib
+    HINTS
         $ENV{GMock_ROOT}
         ${GMock_ROOT}
-    HINTS
-	    $ENV{GMock_ROOT}/lib
-	    ${GMock_ROOT}/lib
-        $ENV{GMock_ROOT}/Debug
-        ${GMock_ROOT}/Debug
+        ${GMock_LIBRARYDIR}
 )
 
-FIND_LIBRARY(GMock_LIBRARY_RELEASE
-    NAMES gmock gmock.lib
-    PATH
-        $ENV{GMock_ROOT}
-        ${GMock_ROOT}
-    HINTS
-		$ENV{GMock_ROOT}/lib
-	    ${GMock_ROOT}/lib
-        $ENV{GMock_ROOT}/Release
-        ${GMock_ROOT}/Release
-)
-        
-IF(GMock_INCLUDE_DIR)
-	if (GMock_LIBRARY_DEBUG OR GMock_LIBRARY_RELEASE)
-    	SET(GMock_FOUND TRUE)
-	endif()
-ENDIF()
+# handle the QUIETLY and REQUIRED arguments and set OPENAL_FOUND to TRUE if
+# all listed variables are TRUE
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(GMock DEFAULT_MSG GMOCK_LIBRARY GMOCK_INCLUDE_DIR)
 
-IF(GMock_FOUND)
-    IF (NOT GMock_FIND_QUIETLY)
-        MESSAGE(STATUS "Found GMock")
-    ENDIF()
-ELSE()
-    IF (GMock_FIND_REQUIRED)
-        MESSAGE(FATAL_ERROR "Could not find GMock")
-    ENDIF()
-ENDIF()
+mark_as_advanced(GMOCK_LIBRARY GMOCK_INCLUDE_DIR)
+

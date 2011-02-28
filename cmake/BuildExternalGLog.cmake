@@ -1,12 +1,21 @@
 # Build the GLog vendor library
-set(GLog_ROOT "${VENDOR_PREFIX}/src/GLog")
+set(GLog_SOURCEDIR "${VENDOR_PREFIX}/src/GLog")
 
 if(WIN32)
     set(glog_configure "")
-	set(glog_build msbuild "${GLog_ROOT}/google-glog_vc10.sln")
+	set(glog_build msbuild "${GLog_SOURCEDIR}/google-glog_vc10.sln")
+    set(glog_install "")
+
+    set(GLog_INCLUDEDIR "${GLog_SOURCEDIR}/src/GLog/src/windows")
+    set(GLog_LIBRARYDIR "${VENDOR_PREFIX}/src/GLog")
 else()
-    set(glog_configure ${GLog_ROOT}/configure)
+    set(glog_configure ${GLog_SOURCEDIR}/configure --prefix=${GLog_SOURCEDIR})
 	set(glog_build make)
+    set(glog_install make install)
+
+
+    set(GLog_INCLUDEDIR "${VENDOR_PREFIX}/src/GLog/include")
+    set(GLog_LIBRARYDIR "${VENDOR_PREFIX}/src/GLog/lib")
 endif()
 
 ExternalProject_Add(GLog
@@ -17,5 +26,5 @@ ExternalProject_Add(GLog
 	BUILD_IN_SOURCE 1
 	CONFIGURE_COMMAND "${glog_configure}"
 	BUILD_COMMAND ${glog_build}
-	INSTALL_COMMAND ""
+	INSTALL_COMMAND ${glog_install}
 )

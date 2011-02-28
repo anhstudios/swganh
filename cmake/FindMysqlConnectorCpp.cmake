@@ -1,74 +1,41 @@
-FIND_PATH(MysqlConnectorCpp_INCLUDE_DIR cppconn/connection.h
-    PATH
-        $ENV{MysqlConnectorCpp_ROOT}
-        ${MysqlConnectorCpp_ROOT}
-    HINTS
-	    $ENV{MysqlConnectorCpp_ROOT}
-	    ${MysqlConnectorCpp_ROOT}
-        $ENV{MysqlConnectorCpp_ROOT}/include
-        ${MysqlConnectorCpp_ROOT}/include
-)
-MARK_AS_ADVANCED(MysqlConnectorCpp_INCLUDE_DIR)
-
-FIND_PATH(MysqlConnectorCpp_DRIVER_INCLUDE_DIR mysql_driver.h
-    PATH
-        $ENV{MysqlConnectorCpp_ROOT}
-        ${MysqlConnectorCpp_ROOT}
+find_path(MYSQLCONNECTORCPP_INCLUDE_DIR cppconn/connection.h
     HINTS
         $ENV{MysqlConnectorCpp_ROOT}
+    PATH_SUFFIXES include
+    PATHS
         ${MysqlConnectorCpp_ROOT}
-        $ENV{MysqlConnectorCpp_ROOT}/driver
-        ${MysqlConnectorCpp_ROOT}/driver
-	    $ENV{MysqlConnectorCpp_ROOT}/include
-	    ${MysqlConnectorCpp_ROOT}/include
-	    $ENV{MysqlConnectorCpp_ROOT}/include/driver
-	    ${MysqlConnectorCpp_ROOT}/include/driver
+        ${MysqlConnectorCpp_INCLUDEDIR}
 )
-MARK_AS_ADVANCED(MysqlConnectorCpp_DRIVER_INCLUDE_DIR)
 
-FIND_LIBRARY(MysqlConnectorCpp_LIBRARY_DEBUG
-    NAMES mysqlcppconn mysqlcppconn.lib mysqlcppconn-static
-    PATH
+find_path(MYSQLCONNECTORCPP_DRIVER_INCLUDE_DIR mysql_driver.h
+    HINTS
+        $ENV{MysqlConnectorCpp_ROOT}
+    PATH_SUFFIXES include include/driver driver
+    PATHS
+        ${MysqlConnectorCpp_ROOT}
+        ${MysqlConnectorCpp_INCLUDEDIR}
+)
+
+find_library(MYSQLCONNECTORCPP_LIBRARY 
+    NAMES mysqlcppconn
+    PATH_SUFFIXES lib driver
+    HINTS
         $ENV{MysqlConnectorCpp_ROOT}
         ${MysqlConnectorCpp_ROOT}
-    HINTS
-	    $ENV{MysqlConnectorCpp_ROOT}/lib
-	    ${MysqlConnectorCpp_ROOT}/lib
-        $ENV{MysqlConnectorCpp_ROOT}/driver/Debug
-        ${MysqlConnectorCpp_ROOT}/driver/Debug
+        ${MysqlConnectorCpp_LIBRARYDIR}
 )
 
-FIND_LIBRARY(MysqlConnectorCpp_LIBRARY_RELEASE
-    NAMES mysqlcppconn mysqlcppconn.lib mysqlcppconn-static
-    PATH
-        $ENV{MysqlConnectorCpp_ROOT}
-        ${MysqlConnectorCpp_ROOT}
-    HINTS
-		$ENV{MysqlConnectorCpp_ROOT}/lib
-		${MysqlConnectorCpp_ROOT}/lib
-        $ENV{MysqlConnectorCpp_ROOT}/driver/Release
-        ${MysqlConnectorCpp_ROOT}/driver/Release
-)
+# handle the QUIETLY and REQUIRED arguments and set OPENAL_FOUND to TRUE if
+# all listed variables are TRUE
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(MysqlConnectorCpp DEFAULT_MSG MYSQLCONNECTORCPP_LIBRARY MYSQLCONNECTORCPP_INCLUDE_DIR MYSQLCONNECTORCPP_DRIVER_INCLUDE_DIR)
 
-IF(MysqlConnectorCpp_INCLUDE_DIR)
-	if (MysqlConnectorCpp_LIBRARY_DEBUG OR MysqlConnectorCpp_LIBRARY_RELEASE)
-    	SET(MysqlConnectorCpp_FOUND TRUE)
-	endif()
-ENDIF()
+mark_as_advanced(MYSQLCONNECTORCPP_LIBRARY MYSQLCONNECTORCPP_INCLUDE_DIR MYSQLCONNECTORCPP_DRIVER_INCLUDE_DIR)
 
-STRING(COMPARE NOTEQUAL MysqlConnectorCpp_INCLUDE_DIR MysqlConnectorCpp_DRIVER_INCLUDE_DIR MysqlConnectorCpp_INCLUDE_DIR_MISMATCH)
-IF (MysqlConnectorCpp_INCLUDE_DIR_MISMATCH)
-    SET(MysqlConnectorCpp_INCLUDES ${MysqlConnectorCpp_INCLUDE_DIR} ${MysqlConnectorCpp_DRIVER_INCLUDE_DIR})
-ELSE()
-    SET(MysqlConnectorCpp_INCLUDES ${MysqlConnectorCpp_INCLUDE_DIR})
-ENDIF()
+string(COMPARE NOTEQUAL MYSQLCONNECTORCPP_INCLUDE_DIR MYSQLCONNECTORCPP_DRIVER_INCLUDE_DIR MYSQLCONNECTORCPP_INCLUDE_DIR_MISMATCH)
+if(MYSQLCONNECTORCPP_INCLUDE_DIR_MISMATCH)
+    SET(MYSQLCONNECTORCPP_INCLUDE_DIRS ${MYSQLCONNECTORCPP_INCLUDE_DIR} ${MYSQLCONNECTORCPP_DRIVER_INCLUDE_DIR})
+else()
+    SET(MYSQLCONNECTORCPP_INCLUDE_DIRS ${MYSQLCONNECTORCPP_INCLUDE_DIR})
+endif()
 
-IF(MysqlConnectorCpp_FOUND)
-    IF (NOT MysqlConnectorCpp_FIND_QUIETLY)
-        MESSAGE(STATUS "Found MysqlConnectorCpp")
-    ENDIF()
-ELSE()
-    IF (MysqlConnectorCpp_FIND_REQUIRED)
-        MESSAGE(FATAL_ERROR "Could not find MysqlConnectorCpp")
-    ENDIF()
-ENDIF()

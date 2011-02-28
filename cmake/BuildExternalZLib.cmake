@@ -1,5 +1,7 @@
 # Build the ZLib vendor library
-set(ZLib_ROOT "${VENDOR_PREFIX}/src/zlib")
+set(ZLib_SOURCEDIR "${VENDOR_PREFIX}/src/ZLib")
+set(ZLib_INCLUDEDIR "${ZLib_SOURCEDIR}")
+set(ZLib_INCLUDEDIR "${ZLib_SOURCEDIR}")
 
 if(WIN32)
 	set(patch_command del zconf.h)

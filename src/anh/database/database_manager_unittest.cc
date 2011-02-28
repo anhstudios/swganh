@@ -119,7 +119,7 @@ TEST_F(DatabaseManagerTest, CanRequestConnectionAfterRegistering) {
 
     auto connection = manager.getConnection("my_storage_type");
 
-    EXPECT_TRUE(connection);
+    EXPECT_TRUE(connection != nullptr);
 
     EXPECT_FALSE(manager.hasConnection("my_storage_type"));
 }
@@ -140,10 +140,10 @@ TEST_F(DatabaseManagerTest, CanRequestMultipleConnections) {
     }
     
     std::shared_ptr<sql::Connection> conn1 = manager.getConnection("my_storage_type");
-    EXPECT_TRUE(conn1);
+    EXPECT_TRUE(conn1 != nullptr);
     
     std::shared_ptr<sql::Connection> conn2 = manager.getConnection("my_storage_type");
-    EXPECT_TRUE(conn2);
+    EXPECT_TRUE(conn2 != nullptr);
 }
 
 /// Connections return to the pool when they go out of scope
@@ -169,7 +169,7 @@ TEST_F(DatabaseManagerTest, DeletingConnectionReturnsItToThePool) {
     {
         auto connection = manager.getConnection("my_storage_type");
 
-        EXPECT_TRUE(connection);
+        EXPECT_TRUE(connection != nullptr);
 
         EXPECT_FALSE(manager.hasConnection("my_storage_type"));
     }

@@ -1,5 +1,7 @@
 # Build the GTest vendor library
-set(GTest_ROOT "${VENDOR_PREFIX}/src/GTest")
+set(GTest_SOURCEDIR "${VENDOR_PREFIX}/src/GTest")
+set(GTest_INCLUDEDIR "${GTest_SOURCEDIR}/include")
+set(GTest_LIBRARYDIR "${GTest_SOURCEDIR}")
 
 if(MSVC)
 	set(gtest_lib_args

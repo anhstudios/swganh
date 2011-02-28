@@ -1,10 +1,10 @@
 # Build the TBB vendor library
-set(TBB_ROOT "${VENDOR_PREFIX}/src/tbb")
+set(TBB_ROOT "${VENDOR_PREFIX}/src/TBB")
 
 if(WIN32)
-	set(tbb_build msbuild "${VENDOR_PREFIX}/src/tbb/build/vc10/makefile.sln")
+	set(tbb_build msbuild "${TBB_ROOT}/build/vc10/makefile.sln")
 else()
-	set(tbb_build make -f ${VENDOR_PREFIX}/src/tbb/Makefile tbb_root=${VENDOR_PREFIX}/src tbb_build_dir=${tbb_prefix}/lib tbb_build_prefix=gcc)
+	set(tbb_build make tbb_root=${TBB_ROOT} tbb_build_dir=${TBB_ROOT}/lib tbb_build_prefix=gcc)
 endif()
 
 ExternalProject_Add(TBB

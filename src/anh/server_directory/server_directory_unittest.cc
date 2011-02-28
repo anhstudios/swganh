@@ -236,7 +236,7 @@ TEST_F(ServerDirectoryTest, RemovingProcessNullifiesIt) {
         EXPECT_EQ("process_name", process->name());
         EXPECT_EQ("test_process", process->type());
 
-        server_directory.removeProcess(std::move(process));
+        server_directory.removeProcess(process);
 
         EXPECT_EQ(nullptr, process);
 

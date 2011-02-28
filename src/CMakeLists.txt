@@ -14,19 +14,29 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 
 include(CheckCXXCompilerFlag)
 
-CHECK_CXX_COMPILER_FLAG(-Wno-invalid-offsetof HAS_NO_INVALID_OFFSETOF)
-if(HAS_NO_INVALID_OFFSETOF)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    CHECK_CXX_COMPILER_FLAG(-Wno-invalid-offsetof HAS_NO_INVALID_OFFSETOF)
+    if(HAS_NO_INVALID_OFFSETOF)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
+    endif()
+
+    CHECK_CXX_COMPILER_FLAG(-Wno-write-strings HAS_NO_WRITE_STRINGS)
+    if(HAS_NO_WRITE_STRINGS)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
+    endif()
+
+    CHECK_CXX_COMPILER_FLAG(-std=c++0x HAS_CPP0X_SUPPORT)
+    IF(HAS_CPP0X_SUPPORT)
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    ENDIF()
 endif()
 
-CHECK_CXX_COMPILER_FLAG(-Wno-write-strings HAS_NO_WRITE_STRINGS)
-if(HAS_NO_WRITE_STRINGS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
-endif()
-
-if(NOT MSVC EQUAL "" AND MSVC_VERSION LESS 1600)
-	message(FATAL_ERROR "Visual Studio 2010 or newer is required ")
-else()	
+if(MSVC)
+    if(MSVC_VERSION LESS 1600)
+    	message(FATAL_ERROR "Visual Studio 2010 or newer is required ")
+    endif()
+	
 	# any custom flags that need set for VS compilers only should be set here
 	if(MSVC AND NOT CMAKE_GENERATOR MATCHES "Visual Studio 7")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4251")
