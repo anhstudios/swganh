@@ -26,5 +26,5 @@ ExternalProject_Add(GLog
 	BUILD_IN_SOURCE 1
 	CONFIGURE_COMMAND "${glog_configure}"
 	BUILD_COMMAND ${glog_build}
-	INSTALL_COMMAND ${glog_install}
+	INSTALL_COMMAND "${glog_install}"
 )
