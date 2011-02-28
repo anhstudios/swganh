@@ -57,9 +57,10 @@ SET(Boost_USE_MULTITHREADED ON)
 set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 
 find_package(PythonLibs REQUIRED)
-find_package(Boost 1.45.0 COMPONENTS date_time regex thread system REQUIRED)
-#SET(Boost_USE_STATIC_LIBS OFF)
-#find_package(Boost 1.45.0 COMPONENTS python REQUIRED)
+find_package(Boost 1.45.0 COMPONENTS date_time regex thread system filesystem serialization REQUIRED)
+
+SET(Boost_USE_STATIC_LIBS OFF)
+find_package(Boost 1.45.0 COMPONENTS python REQUIRED)
 
 find_package(Glm REQUIRED)
 find_package(GLog REQUIRED)
@@ -79,4 +80,4 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(anh)
 
 ## project executables
-add_subdirectory(zone)
+#add_subdirectory(zone)
