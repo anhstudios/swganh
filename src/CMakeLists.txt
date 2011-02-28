@@ -9,7 +9,6 @@ set(swganh_VERSION
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
-
 ## compiler checks
 
 include(CheckCXXCompilerFlag)
@@ -57,7 +56,11 @@ SET(Boost_USE_MULTITHREADED ON)
 ## find/configure vendor libraries
 set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 
+find_package(PythonLibs REQUIRED)
 find_package(Boost 1.45.0 COMPONENTS date_time regex thread system REQUIRED)
+#SET(Boost_USE_STATIC_LIBS OFF)
+#find_package(Boost 1.45.0 COMPONENTS python REQUIRED)
+
 find_package(Glm REQUIRED)
 find_package(GLog REQUIRED)
 find_package(GTest REQUIRED)
@@ -67,12 +70,13 @@ find_package(MysqlConnectorCpp REQUIRED)
 find_package(TBB REQUIRED)
 find_package(ZLib REQUIRED)
 
-enable_testing()
 
-## project libraries
+enable_testing()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+## project libraries
 add_subdirectory(anh)
 
 ## project executables
+add_subdirectory(zone)

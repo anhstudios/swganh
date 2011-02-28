@@ -21,12 +21,12 @@
 #define ANH_DATABASE_MOCK_DATABASE_MANAGER_H_
 
 #include <gmock/gmock.h>
-#include <anh/database/database_manager.h>
+#include <anh/database/database_manager_interface.h>
 
 namespace anh {
 namespace database{
 
-class MockDatabaseManager : public IDatabaseManager
+class MockDatabaseManager : public DatabaseManagerInterface
 {
 public:
     MOCK_CONST_METHOD1(hasStorageType, bool(const StorageType& storage_type));

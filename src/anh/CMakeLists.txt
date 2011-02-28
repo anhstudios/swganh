@@ -5,6 +5,8 @@ AddANHLibrary(libanh
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}
         ${MYSQLCONNECTORCPP_INCLUDE_DIRS}
+		${GLog_INCLUDE_DIR}
+		${PYTHON_INCLUDE_DIR}
 	    ${TBB_INCLUDE_DIRS}
 	ADDITIONAL_LINK_DIRS
 	    ${Boost_LIBRARY_DIRS}
@@ -16,6 +18,8 @@ AddANHLibrary(libanh
         ${Boost_REGEX_LIBRARY_DEBUG}
         ${Boost_SYSTEM_LIBRARY_DEBUG}
         ${Boost_THREAD_LIBRARY_DEBUG}
+		${PYTHON_LIBRARIES}
+		${GLog_LIBRARY_DEBUG}
 	OPTIMIZED_LIBRARIES 
         ${MYSQL_LIB}
 	    ${TBB_LIBRARIES}
@@ -23,6 +27,8 @@ AddANHLibrary(libanh
         ${Boost_REGEX_LIBRARY_RELEASE}
         ${Boost_SYSTEM_LIBRARY_RELEASE}
         ${Boost_THREAD_LIBRARY_RELEASE}
+		${PYTHON_LIBRARIES}
+		${GLog_LIBRARY_RELEASE}
 )
 
 message(${Boost_LIBRARY_DIRS})
