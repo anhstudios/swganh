@@ -15,7 +15,7 @@ endif()
 ExternalProject_Add(Boost
 	PREFIX ${VENDOR_PREFIX}
 	GIT_REPOSITORY https://github.com/anhstudios/boost.git
-	GIT_TAG 3960f21
+	GIT_TAG 11ad4dc
 	UPDATE_COMMAND ""
 	CMAKE_ARGS
 		${boost_lib_args}
