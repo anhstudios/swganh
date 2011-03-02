@@ -8,7 +8,7 @@ set(swganh_VERSION_PATCH 0)
 set(swganh_VERSION 
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../tools/cmake/modules")
 ## compiler checks
 
 include(CheckCXXCompilerFlag)

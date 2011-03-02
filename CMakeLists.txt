@@ -10,7 +10,7 @@ set(bootstrap_VERSION
 	${bootstrap_VERSION_MAJOR}.${bootstrap_VERSION_MINOR}.${bootstrap_VERSION_PATCH})
 	
 # set the path for custom cmake scripts
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake/modules")
 
 # include commonly used cmake modules
 include(ExternalProject)
