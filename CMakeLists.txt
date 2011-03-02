@@ -69,7 +69,6 @@ bootstrap_add_vendor(MysqlConnectorC)
 # Build and/or configure Mysql Connector/Cpp
 option(bootstrap_USE_SYSTEM_MysqlConnectorCpp
     "If false, swganh will download and build it's own copy of MysqlConnectorCpp" FALSE)
-
 bootstrap_add_vendor(MysqlConnectorCpp)
 
 # Build and/or configure TBB
