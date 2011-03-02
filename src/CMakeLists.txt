@@ -80,4 +80,4 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(anh)
 
 ## project executables
-#add_subdirectory(zone)
+add_subdirectory(zone)
