@@ -3,26 +3,5 @@ include(ANHExecutable)
 AddANHExecutable(zone
 	DEPENDS
 		libanh
-	ADDITIONAL_INCLUDE_DIRS
-	    ${Boost_INCLUDE_DIR}
-	    ${MYSQL_INCLUDE_DIR}
-		${GLog_INCLUDE_DIR}
-		${PYTHON_INCLUDE_DIR}
-        ${MysqlConnectorCpp_INCLUDE_DIR}
-	    ${TBB_INCLUDE_DIRS}
-	ADDITIONAL_LINK_DIRS
-	    ${Boost_LIBRARY_DIRS}
-		${ANH_LIBRARY_DIRS}
-	DEBUG_LIBRARIES 
-        ${MYSQL_LIB}
-        ${MysqlConnectorCpp_LIBRARY_DEBUG}
-	    ${TBB_DEBUG_LIBRARIES}
-		${PYTHON_LIBRARIES}
-		${GLog_LIBRARY_DEBUG}
-	OPTIMIZED_LIBRARIES 
-        ${MYSQL_LIB}
-        #${MysqlConnectorCpp_LIBRARY_RELEASE}
-	    #${TBB_LIBRARIES}
-		${PYTHON_LIBRARIES}
-		#${GLog_LIBRARY_RELEASE}
+
 )
