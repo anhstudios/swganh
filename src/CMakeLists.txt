@@ -8,7 +8,7 @@ set(swganh_VERSION_PATCH 0)
 set(swganh_VERSION 
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../tools/cmake/modules")
 ## compiler checks
 
 include(CheckCXXCompilerFlag)
@@ -59,6 +59,7 @@ set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 find_package(PythonLibs REQUIRED)
 find_package(Boost 1.45.0 COMPONENTS date_time regex thread system filesystem serialization REQUIRED)
 
+SET(BOOST_LIBRARYDIR ${BoostShared_LIBRARYDIR})
 SET(Boost_USE_STATIC_LIBS OFF)
 find_package(Boost 1.45.0 COMPONENTS python REQUIRED)
 

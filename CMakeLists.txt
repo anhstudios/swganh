@@ -10,7 +10,7 @@ set(bootstrap_VERSION
 	${bootstrap_VERSION_MAJOR}.${bootstrap_VERSION_MINOR}.${bootstrap_VERSION_PATCH})
 	
 # set the path for custom cmake scripts
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake/modules")
 
 # include commonly used cmake modules
 include(ExternalProject)
@@ -91,6 +91,7 @@ ExternalProject_Add(swganh
 	CMAKE_ARGS 
 		-DBOOST_INCLUDEDIR:PATH=${Boost_INCLUDEDIR}
         -DBOOST_LIBRARYDIR:PATH=${Boost_LIBRARYDIR}
+        -DBoostShared_LIBRARYDIR:PATH=${BoostShared_LIBRARYDIR}
         -DBoost_USE_STATIC_LIBS:BOOL=${Boost_USE_STATIC_LIBS}
         -DBoost_USE_MULTITHREADED:BOOL=${Boost_USE_MULTITHREADED}
 		-DGlm_INCLUDEDIR:PATH=${Glm_INCLUDEDIR}
