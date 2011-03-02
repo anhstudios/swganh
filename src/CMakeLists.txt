@@ -50,8 +50,8 @@ if(MSVC)
 endif()
 
 # Use the static/multithreaded libraries.
-SET(Boost_USE_STATIC_LIBS ON)
-SET(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
 
 ## find/configure vendor libraries
 set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
@@ -59,8 +59,8 @@ set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 find_package(PythonLibs REQUIRED)
 find_package(Boost 1.45.0 COMPONENTS date_time regex thread system filesystem serialization REQUIRED)
 
-SET(BOOST_LIBRARYDIR ${BoostShared_LIBRARYDIR})
-SET(Boost_USE_STATIC_LIBS OFF)
+set(BOOST_LIBRARYDIR ${BoostShared_LIBRARYDIR})
+set(Boost_USE_STATIC_LIBS OFF)
 find_package(Boost 1.45.0 COMPONENTS python REQUIRED)
 
 find_package(Glm REQUIRED)
@@ -72,6 +72,86 @@ find_package(MysqlConnectorCpp REQUIRED)
 find_package(TBB REQUIRED)
 find_package(ZLib REQUIRED)
 
+
+if(WIN32)
+    ## create a target that gathers up the necessary dll's from the above
+    ## dependencies and places them in the runtime directory for this project
+    add_custom_target(DEPS
+        DEPENDS Glm GLog GTest GMock MysqlConnectorC MysqlConnectorCpp TBB ZLib    
+    )
+
+    add_custom_command(
+        TARGET DEPS
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/bin/Debug/"
+        VERBATIM
+    )
+
+    get_filename_component(BOOST_PYTHON_DLL_NAME ${Boost_PYTHON_LIBRARY_DEBUG} NAME_WE)
+    get_filename_component(BOOST_PYTHON_DLL_PATH ${Boost_PYTHON_LIBRARY_DEBUG} PATH)
+    add_custom_command(
+        TARGET DEPS
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${BOOST_PYTHON_DLL_PATH}/${BOOST_PYTHON_DLL_NAME}.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        VERBATIM
+    )
+    
+    get_filename_component(GLOG_DLL_NAME ${GLOG_LIBRARY} NAME_WE)
+    get_filename_component(GLOG_DLL_PATH ${GLOG_LIBRARY} PATH)
+    add_custom_command(
+        TARGET DEPS
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${GLOG_DLL_PATH}/${GLOG_DLL_NAME}.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        VERBATIM
+    )
+    
+    get_filename_component(MYSQL_CONNECTOR_C_DLL_NAME ${MYSQL_LIB} NAME_WE)
+    get_filename_component(MYSQL_CONNECTOR_C_DLL_PATH ${MYSQL_LIB} PATH)
+    add_custom_command(
+        TARGET DEPS
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${MYSQL_CONNECTOR_C_DLL_PATH}/libmysql.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        VERBATIM
+    )
+    
+    
+    get_filename_component(MYSQL_CONNECTOR_CPP_DLL_NAME ${MYSQLCONNECTORCPP_LIBRARY} NAME_WE)
+    get_filename_component(MYSQL_CONNECTOR_CPP_DLL_PATH ${MYSQLCONNECTORCPP_LIBRARY} PATH)
+    add_custom_command(
+        TARGET DEPS
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${MYSQL_CONNECTOR_CPP_DLL_PATH}/${MYSQL_CONNECTOR_CPP_DLL_NAME}.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        VERBATIM
+    )
+    
+    get_filename_component(TBB_CPP_DLL_NAME ${TBB_LIBRARY_DEBUG} NAME_WE)
+    get_filename_component(TBB_CPP_DLL_PATH ${TBB_LIBRARY_DEBUG} PATH)
+    add_custom_command(
+        TARGET DEPS
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TBB_INSTALL_DIR}/build/vc10/ia32/Debug/tbb_debug.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        VERBATIM
+    )
+    
+    get_filename_component(TBB_CPP_DLL_NAME ${TBB_MALLOC_LIBRARY_DEBUG} NAME_WE)
+    get_filename_component(TBB_CPP_DLL_PATH ${TBB_MALLOC_LIBRARY_DEBUG} PATH)
+    add_custom_command(
+        TARGET DEPS
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TBB_INSTALL_DIR}/build/vc10/ia32/Debug/tbbmalloc_debug.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        VERBATIM
+    )
+    
+    get_filename_component(ZLIB_DLL_NAME ${ZLIB_LIBRARY} NAME_WE)
+    get_filename_component(ZLIB_DLL_PATH ${ZLIB_LIBRARY} PATH)
+    add_custom_command(
+        TARGET DEPS
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ZLIB_DLL_PATH}/zlibd1.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        VERBATIM
+    )
+    
+endif()
 
 enable_testing()
 
