@@ -59,6 +59,7 @@ set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 find_package(PythonLibs REQUIRED)
 find_package(Boost 1.45.0 COMPONENTS date_time regex thread system filesystem serialization REQUIRED)
 
+SET(BOOST_LIBRARYDIR ${BoostShared_LIBRARYDIR})
 SET(Boost_USE_STATIC_LIBS OFF)
 find_package(Boost 1.45.0 COMPONENTS python REQUIRED)
 
