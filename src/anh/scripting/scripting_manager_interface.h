@@ -19,6 +19,7 @@
 #ifndef _ANH_SCRIPTING_MANAGER_INTERFACE_H_
 #define _ANH_SCRIPTING_MANAGER_INTERFACE_H_
 
+#include <string>
 #include <map>
 #include <vector>
 

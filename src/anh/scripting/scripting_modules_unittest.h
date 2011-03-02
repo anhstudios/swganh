@@ -58,7 +58,7 @@ public:
     
 };
 
-Y& f(int z) { return Y(z); }
+const Y& f(int z) { return Y(z); }
 
 void testPolicies() {
     bp::class_<Y>("Y", bp::init<int>())
@@ -85,16 +85,16 @@ template<class DerivedT> class BaseComponentWrap : public DerivedT, public bp::w
 public:
     BaseComponentWrap(ObjectId obj_id) : DerivedT(obj_id) { }
     virtual void Init(boost::property_tree::ptree& pt){
-        return this->get_override("Init")(pt).as<void>();
+        return (void)this->get_override("Init")(pt);
     }
     virtual void Deinit(void) {
-        return this->get_override("Deinit")().as<void>();
+        return (void)this->get_override("Deinit")();
     }
     virtual void Update(const float timeout) {
-        return this->get_override("Update")().as<void>();
+        return (void)this->get_override("Update")();
     }
     virtual void HandleMessage(const Message message) {
-        return this->get_override("HandleMessage")(message).as<void>();
+        return (void)this->get_override("HandleMessage")(message);
     }
     virtual const ComponentInfo& component_info(void) {
         return this->get_override("component_info")();
