@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/component/component_interface.h>
 #include <anh/component/base_component.h>
 
+#include <boost/flyweight.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -66,10 +67,10 @@ class TransformComponentInterface : public BaseComponent {
     public:
 	TransformComponentInterface(const ObjectId& id)
 		: BaseComponent(id) { }
-    virtual ObjectId& parent_id() = 0;
-    virtual glm::vec3& position() = 0;
-    virtual glm::quat& rotation() = 0;
-    virtual float& speed() = 0;
+    virtual const ObjectId& parent_id() = 0;
+    virtual const glm::vec3& position() = 0;
+    virtual const glm::quat& rotation() = 0;
+    virtual const float& speed() = 0;
 
     // convenience commands
     virtual void rotate(const float& degrees) = 0;
@@ -89,9 +90,9 @@ public:
     NullTransformComponent()
 		: TransformComponentInterface(0) { }
 
-    ObjectId& parent_id() { return parent_id_; }
-	glm::vec3& position() { return position_; }
-	glm::quat& rotation() { return rotation_; }
+    const ObjectId& parent_id() { return parent_id_; }
+	const glm::vec3& position() { return position_; }
+	const glm::quat& rotation() { return rotation_; }
     void rotate(const float& degrees){};
     void rotate_left(const float& degrees){};
     void rotate_right(const float& degrees){};
@@ -100,14 +101,14 @@ public:
     void move_forward(const float& distance){};
     void move_back(const float& distance){};
     float rotation_angle() const{ return 0.0f; }
-    float& speed() { return speed_; }
+    const float& speed() { return speed_; }
     
 	const ComponentInfo& component_info() { return component_info_; }
 private:
-    ObjectId parent_id_;
+    boost::flyweight<ObjectId> parent_id_;
     glm::vec3 position_;
     glm::quat rotation_;
-    float speed_;
+    boost::flyweight<float> speed_;
     static ComponentInfo component_info_;
 };
 class TransformComponent : public TransformComponentInterface {
@@ -118,15 +119,15 @@ public:
     void HandleMessage(const Message message);
 
     void parent_id(const ObjectId& id) { parent_id_ = id; }
-    ObjectId& parent_id() { return parent_id_; }
+    const ObjectId& parent_id() { return parent_id_; }
     void position(const glm::vec3& position) { position_ = position; }
     void position(float x, float y, float z) { position_.x = x; position_.y = y; position_.z = z;}
-	glm::vec3& position() { return position_; }
+	const glm::vec3& position() { return position_; }
     void rotation(const glm::quat& rotation) { rotation_ = rotation; }
     void rotation(float x, float y, float z, float w) { rotation_.x = x; rotation_.y = y; rotation_.z = z; rotation_.w = w;}
-	glm::quat& rotation() { return rotation_; }
+	const glm::quat& rotation() { return rotation_; }
     void speed(const float& speed) { speed_ = speed; }
-    float& speed() { return speed_; }
+    const float& speed() { return speed_; }
 
     // convenience commands
     // rotate by degrees
@@ -142,10 +143,10 @@ public:
 	const ComponentInfo& component_info() { return component_info_; }
 private:
     TransformComponent();
-    ObjectId parent_id_;
+    boost::flyweight<ObjectId> parent_id_;
     glm::vec3 position_;
     glm::quat rotation_;
-    float speed_;
+    boost::flyweight<float> speed_;
     static ComponentInfo component_info_;
 };
 
