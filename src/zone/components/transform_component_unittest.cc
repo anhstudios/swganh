@@ -49,7 +49,7 @@ void TestTransformComponent::SetUp() {
     of << "<object name=\"test_pos\">" <<endl;
     of << "<component type=\"TransformComponent\">" <<endl;
 	of << "<parent_id>0</parent_id><position><x>324.4</x><y>231.13</y><z>0.0</z></position>" <<endl;
-    of << "<rotation><x>156</x><y>131</y><z>14</z><w>5</w></rotation><speed>3</speed>" <<endl;
+    of << "<rotation><x>0</x><y>0</y><z>0</z><w>0.5</w></rotation><speed>3</speed>" <<endl;
     of << "</component></object>" <<endl;
     // now we can init
     object_builder.Init("test_components");
@@ -68,13 +68,24 @@ TEST_F(TestTransformComponent, LoadPosition) {
 }
 TEST_F(TestTransformComponent, LoadRotation) {
     float w = transform_comp->rotation().w;
-    EXPECT_EQ(5.0f, w);
+    EXPECT_EQ(0.5f, w);
 }
 TEST_F(TestTransformComponent, SendTransformMessage){
     glm::vec3 pos(1100,200,35);
-    glm::vec4 rot(0,0,0,1);
+    glm::quat rot(0,0,0,1);
     trans = make_shared<TransformMessage>(0, pos, rot, 5.0f);
     transform_comp->HandleMessage(trans);
     float x = transform_comp->position().x;
     EXPECT_EQ(1100, x);
+}
+// test convenience methods
+TEST_F(TestTransformComponent, rotate45)
+{
+    transform_comp->rotate(45);
+    float x = transform_comp->rotation().x;
+    float y = transform_comp->rotation().y;
+    float z = transform_comp->rotation().z;
+    float w = transform_comp->rotation().w;
+    cout << x <<endl << y << endl << z << endl << w <<endl;
+    EXPECT_TRUE(true);
 }

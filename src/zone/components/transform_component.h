@@ -29,7 +29,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/component/component_interface.h>
 #include <anh/component/base_component.h>
+
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 using namespace anh::component;
 namespace zone { namespace components {
@@ -38,23 +40,23 @@ namespace zone { namespace components {
 class TransformMessage : public SimpleMessage
 {
 public:
-	TransformMessage(ObjectId parent, glm::vec3 position, glm::vec4 rotation, float speed)
+	TransformMessage(ObjectId parent, glm::vec3 position, glm::quat rotation, float speed)
         // 0 priority is the highest
 		: SimpleMessage(MessageType("Transform"), 0)
 		, parent_id_(parent)
         , position_(position)
         , rotation_(rotation)
         , speed_(speed) { }
-
+    
 	const ObjectId& parent_id()  { return parent_id_; }
     const glm::vec3& position()  { return position_; }
-    const glm::vec4& rotation()  { return rotation_; }
+    const glm::quat& rotation()  { return rotation_; }
     const float& speed() { return speed_; }
 
 private:
 	ObjectId parent_id_;
 	glm::vec3 position_;
-    glm::vec4 rotation_;
+    glm::quat rotation_;
     float speed_;
 };
 
@@ -66,8 +68,18 @@ class TransformComponentInterface : public BaseComponent {
 		: BaseComponent(id) { }
     virtual ObjectId& parent_id() = 0;
     virtual glm::vec3& position() = 0;
-    virtual glm::vec4& rotation() = 0;
+    virtual glm::quat& rotation() = 0;
     virtual float& speed() = 0;
+
+    // convenience commands
+    virtual void rotate(const float& degrees) = 0;
+    virtual void rotate_left(const float& degrees) = 0;
+    virtual void rotate_right(const float& degrees) = 0;
+    virtual void face(const glm::vec3& target_position) = 0;
+    virtual void move(const glm::quat& rotation, float distance) = 0;
+    virtual void move_forward(const float& distance) = 0;
+    virtual void move_back(const float& distance) = 0;
+    virtual float rotation_angle() const = 0;
 
     static std::shared_ptr<NullTransformComponent> NullComponent;
 };
@@ -79,14 +91,22 @@ public:
 
     ObjectId& parent_id() { return parent_id_; }
 	glm::vec3& position() { return position_; }
-	glm::vec4& rotation() { return rotation_; }
+	glm::quat& rotation() { return rotation_; }
+    void rotate(const float& degrees){};
+    void rotate_left(const float& degrees){};
+    void rotate_right(const float& degrees){};
+    void face(const glm::vec3& target_position){};
+    void move(const glm::quat& rotation, float distance){};
+    void move_forward(const float& distance){};
+    void move_back(const float& distance){};
+    float rotation_angle() const{ return 0.0f; }
     float& speed() { return speed_; }
     
 	const ComponentInfo& component_info() { return component_info_; }
 private:
     ObjectId parent_id_;
     glm::vec3 position_;
-    glm::vec4 rotation_;
+    glm::quat rotation_;
     float speed_;
     static ComponentInfo component_info_;
 };
@@ -102,18 +122,29 @@ public:
     void position(const glm::vec3& position) { position_ = position; }
     void position(float x, float y, float z) { position_.x = x; position_.y = y; position_.z = z;}
 	glm::vec3& position() { return position_; }
-    void rotation(const glm::vec4& rotation) { rotation_ = rotation; }
+    void rotation(const glm::quat& rotation) { rotation_ = rotation; }
     void rotation(float x, float y, float z, float w) { rotation_.x = x; rotation_.y = y; rotation_.z = z; rotation_.w = w;}
-	glm::vec4& rotation() { return rotation_; }
+	glm::quat& rotation() { return rotation_; }
     void speed(const float& speed) { speed_ = speed; }
     float& speed() { return speed_; }
+
+    // convenience commands
+    // rotate by degrees
+    void rotate(const float& degrees);
+    void rotate_left(const float& degrees);
+    void rotate_right(const float& degrees);
+    void face(const glm::vec3& target_position);
+    void move(const glm::quat& rotation, float distance);
+    void move_forward(const float& distance);
+    void move_back(const float& distance);
+    float rotation_angle() const;
     
 	const ComponentInfo& component_info() { return component_info_; }
 private:
     TransformComponent();
     ObjectId parent_id_;
     glm::vec3 position_;
-    glm::vec4 rotation_;
+    glm::quat rotation_;
     float speed_;
     static ComponentInfo component_info_;
 };

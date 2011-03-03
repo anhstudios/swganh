@@ -27,6 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <iostream>
 #include "transform_component.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
+
 using namespace std;
 namespace zone { namespace components {
 
@@ -59,5 +62,58 @@ void TransformComponent::HandleMessage(const Message message) {
     rotation(transform->rotation());
     speed(transform->speed());
 }
+void TransformComponent::rotate(const float& degrees) {
+    // Rotate the item left by the specified degrees
+    rotation_ = glm::rotate(rotation_, degrees, glm::vec3(0.0f, 1.0f, 0.0f));
+}
+void TransformComponent::rotate_left(const float& degrees) {
+    rotate(-degrees);
+}
+void TransformComponent::rotate_right(const float& degrees) {
+    rotate(degrees);
+}
+void TransformComponent::face(const glm::vec3& target_position) {
+    // Create a mirror direction vector for the direction we want to face.
+    glm::vec3 direction_vector = glm::normalize(target_position - position_);
+    direction_vector.x = -direction_vector.x;
+
+    // Create a lookat matrix from the direction vector and convert it to a quaternion.
+    rotation_ = glm::toQuat(glm::lookAt(
+                                 direction_vector, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)
+                             ));
+
+    // If in the 3rd quadrant the signs need to be flipped.
+    if (rotation_.y <= 0.0f && rotation_.w >= 0.0f) {
+        rotation_.y = -rotation_.y;
+        rotation_.w = -rotation_.w;
+    }
+}
+void TransformComponent::move(const glm::quat& rotation, float distance) {
+    // Create a vector of the length we want pointing down the x-axis.
+    glm::vec3 movement_vector(0.0f, 0.0f, distance);
+
+    // Rotate the movement vector by the direction it should be facing.
+    movement_vector = rotation_ * movement_vector;
+
+    // Add the movement vector to the current position to get the new position.
+    position_ += movement_vector;
+}
+void TransformComponent::move_forward(const float& distance) {
+    move(rotation_, distance);
+}
+void TransformComponent::move_back(const float& distance) {
+    move(rotation_, -distance);
+}
+float TransformComponent::rotation_angle() const {
+    glm::quat tmp = rotation_;
+
+    if (tmp.y < 0.0f && tmp.w > 0.0f) {
+        tmp.y *= -1;
+        tmp.w *= -1;
+    }
+
+    return glm::angle(tmp);
+}
+
 } // namespace zone
 } // namespace components
