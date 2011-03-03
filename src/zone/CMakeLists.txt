@@ -1,6 +1,6 @@
-include(ANHExecutable)
+include(ANHLibrary)
 
-AddANHExecutable(zone
+AddANHLibrary(zone
 	DEPENDS
 		libanh
 	ADDITIONAL_INCLUDE_DIRS
@@ -10,6 +10,7 @@ AddANHExecutable(zone
 		${GLOG_INCLUDE_DIR}
 		${PYTHON_INCLUDE_DIR}
 	    ${TBB_INCLUDE_DIRS}
+		${Glm_INCLUDEDIR}
 	ADDITIONAL_LINK_DIRS
 	    ${Boost_LIBRARY_DIRS}
 	DEBUG_LIBRARIES 
