@@ -105,17 +105,7 @@ class BaseComponentWrapped : public BaseComponentWrap<BaseComponent>
 public:
     BaseComponentWrapped() : BaseComponentWrap(0) {}
 };
-// HAM
-class HAMComponentWrap : public BaseComponentWrap<HAMComponentInterface>
-{   
-public:
 
-    HAMComponentWrap() : BaseComponentWrap(0) {}
-    
-    virtual HAM& ham(void) {
-       return this->get_override("ham")().as<HAM>();
-    }
-};
 class RadialComponentWrap : public BaseComponentWrap<RadialComponentInterface>
 {
 public:
@@ -126,14 +116,6 @@ using boost::property_tree::ptree;
 
 void componentDerive() { 
     bp::class_<BaseComponentWrapped, boost::noncopyable> BaseComponent("BaseComponent");
-    bp::class_<HAMComponentWrap, boost::noncopyable> HAMComponentInterface("HAMComponentInterface");
-    bp::class_<HAM> ("HAM")
-        .def_readwrite("health", &HAM::health)
-        .def_readwrite("max_health", &HAM::max_health)
-        .def_readwrite("action", &HAM::action)
-        .def_readwrite("max_action", &HAM::max_action)
-        .def_readwrite("mind", &HAM::max_mind)
-        .def_readwrite("max_mind", &HAM::max_mind);
 
     bp::class_<RadialComponentWrap, boost::noncopyable> RadialComponentInterface("RadialComponentInterface");
     bp::class_<ptree>("ptree", bp::init<>());
