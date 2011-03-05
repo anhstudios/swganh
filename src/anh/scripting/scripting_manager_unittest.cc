@@ -236,34 +236,4 @@ TEST_F(ScriptEngineTest, getRadialComponentFromPython)
         EXPECT_EQ(0, id);   
     }
 }
-
-TEST_F(ScriptEngineTest, getHAMComponentFromPython)
-{
-    module.name = "embedded_component";
-    module.initfunc = PyInit_embedded_component;
-    modules.push_back(module);
-    // load modules
-    if (e->loadModules(modules))
-    {
-        HAM ham_obj;
-        ham_obj.health = 1200;
-        ham_obj.action = 850;
-        ham_obj.mind = 650;
-        e->global()["HAM"] = object(&ham_obj);
-        object obj (e->embed("ham_component.py", "HamComponent"));
-
-        object py_base = obj();
-        HAMComponentInterface& comp = extract<HAMComponentInterface&>(py_base);
-        boost::property_tree::ptree pt;
-        //pt.add("health", 1200);
-        //pt.add("action", 850);
-        //pt.add("mind", 650);
-        
-        comp.Init(pt);
-        comp.Deinit();
-        ObjectId id = comp.object_id();
-        EXPECT_EQ(0, id);
-    }
-}
-
 } // anon namespace
