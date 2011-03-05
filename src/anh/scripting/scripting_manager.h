@@ -21,7 +21,6 @@
 
 #include "scripting_manager_interface.h"
 #include <boost/python/object_core.hpp>
-#include <boost/filesystem.hpp>
 
 //forward declaration
 struct _inittab;
@@ -119,18 +118,18 @@ public:
     * \returns true if load was successful
     */
     bool loadModules(std::vector<_inittab> modules);
+    
+    boost::python::api::object& main() { return main_; }
+    boost::python::api::object& global() { return global_; }
+private:
+    // hide default ctor
+    ScriptingManager();
     /**
     * \brief throws a c++ exception based off information from python
     *
     * \effect struct is filled out
     */
     void getExceptionFromPy();
-
-    boost::python::api::object& main() { return main_; }
-    boost::python::api::object& global() { return global_; }
-private:
-    // hide default ctor
-    ScriptingManager();
     // used by internal functions
     void setFullPath_(const std::string& filename, const std::string& root_path);
     void setFullPath_(const std::string& filename);

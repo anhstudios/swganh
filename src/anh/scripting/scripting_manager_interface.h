@@ -76,7 +76,6 @@ public:
     *       creates a friendly message
     *  
     */
-    //virtual std::string getErrorMessage() = 0;
 };
 
 } // namespace anh

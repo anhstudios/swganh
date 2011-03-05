@@ -194,8 +194,13 @@ TEST_F(ScriptEngineTest, referenceExistingObject)
         // the c++ object stays the same
         EXPECT_EQ(1 , g->x);
         EXPECT_EQ(21, g1.x);
+        // we can see here that g1.x has changed to 8, why is this?
+        // g1 is initially created in C++ on the stack and it's x value is 21.
+        // we run the script GameObject.py, which sets CGameObject1.x = 8
+        // we then extract that object from the global dictionary and confirm it's value in C++ is 8.
         g1 = extract<GameObject>(e->global()["CGameObject1"]);
         EXPECT_EQ(8, g1.x);
+        delete g;
     }
 };
 
@@ -245,7 +250,7 @@ TEST_F(ScriptEngineTest, getHAMComponentFromPython)
         ham_obj.mind = 650;
         e->global()["HAM"] = object(&ham_obj);
         object obj (e->embed("ham_component.py", "HamComponent"));
-        try {
+
         object py_base = obj();
         HAMComponentInterface& comp = extract<HAMComponentInterface&>(py_base);
         boost::property_tree::ptree pt;
@@ -257,11 +262,6 @@ TEST_F(ScriptEngineTest, getHAMComponentFromPython)
         comp.Deinit();
         ObjectId id = comp.object_id();
         EXPECT_EQ(0, id);
-        }
-        catch(...)
-        {
-            e->getExceptionFromPy();
-        }
     }
 }
 

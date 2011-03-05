@@ -224,5 +224,5 @@ void ScriptingManager::getExceptionFromPy()
     }
     PyErr_Clear();
     std::cerr << os.str() << endl;
-    //LOG(WARNING) << os.str();
+    LOG(WARNING) << os.str();
 }
