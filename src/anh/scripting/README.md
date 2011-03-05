@@ -17,7 +17,7 @@ can be run at a later point without needing to load the script again and then ru
 
 Lets take a look at a simple example of loading a python script and then running it.
 We heavily use the C++0x working standard in this project so I would recommend using smart pointers whenever able.
-`
+
     // lets create our ScriptingManager and pass it a directory that we want to use, 
     //this can be a full directory or just within the library you are using.
 
@@ -26,7 +26,7 @@ We heavily use the C++0x working standard in this project so I would recommend u
     script_engine->load("script.py");
     //run the script
     script_engine->run("script.py");
-`
+
 
 This runs script.py. Pretty simple right? Sure, but how can we actually get integration with C++ and pass values back and forth?
 
@@ -42,7 +42,7 @@ that you are requesting. Let me give a quick example of how this works and it wi
 
 Lets take a look at our unit tests in 'scripting_manager_unittest.cc' under "referenceExistingObject".
 
-	`module.name = "test_policies";
+    module.name = "test_policies";
     module.initfunc = PyInit_test_policies;
     modules.push_back(module);
     // load modules
@@ -67,9 +67,9 @@ Lets take a look at our unit tests in 'scripting_manager_unittest.cc' under "ref
         // we then extract that object from the global dictionary and confirm it's value in C++ is 8.
         g1 = extract<GameObject>(e->global()["CGameObject1"]);
         EXPECT_EQ(8, g1.x);
-    }`
-	and our python script
-	`from test_policies import *
+    }
+and our python script
+	from test_policies import *
 	print(GameObject.z)
 	print (CGameObject.x, CGameObject.y, CGameObject.z)
 	CGameObject.x = 5
@@ -79,7 +79,7 @@ Lets take a look at our unit tests in 'scripting_manager_unittest.cc' under "ref
 	print(CGameObject1.x)
 
 	GameObject = CGameObject
-	print(GameObject.z)`
+	print(GameObject.z)
 	
 Let me explain a bit more than what the comments are telling us here. First we are setting the 'module' which is a struct that tells our loadModules
 where it can find the needed information to do it's job. Then we are creating two GameObjects one is new'd up on the heap and the other on the stack.
