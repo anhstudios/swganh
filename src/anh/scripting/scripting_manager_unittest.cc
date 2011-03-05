@@ -52,7 +52,7 @@ class ScriptEngineTest : public ::testing::Test
  protected:
      virtual void SetUp() 
      {
-         e = std::make_shared<ScriptingManager>("scripts/unittests/");
+        e = std::make_shared<ScriptingManager>("scripts/unittests/");     
      }
      std::shared_ptr<ScriptingManager> e;
      std::vector<_inittab> modules;
@@ -126,6 +126,7 @@ TEST_F(ScriptEngineTest, getValueFromPython)
     module.name = "embedded_hello";
     module.initfunc = PyInit_embedded_hello;
     modules.push_back(module);
+
     // load modules
     if (e->loadModules(modules))
     {

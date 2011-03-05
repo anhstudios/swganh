@@ -164,9 +164,9 @@ TEST_F(ApplicationTest, cantLoadConfigFile)
     list<string> config_list;
     config_list.push_back("notfound.cfg");
     shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory);
-    // expectation is caugh and an error message is displayed
-    EXPECT_NO_THROW(
-       app->startup();
+    // expectation is caught but app is terminated due to fatal log
+    EXPECT_DEATH(
+       app->startup(), "Could not open configuration file"
     ); 
 }
 /// checks based on a test cfg file we are able to load and register two storage types
@@ -180,8 +180,8 @@ TEST_F(ApplicationTest, foundConfigNoValidValues)
     config_list.push_back("invalid_data.cfg");
     shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory);
     
-    EXPECT_NO_THROW(
-        app->startup();
+    EXPECT_DEATH(
+        app->startup(), "could not parse config file"
     );
 }
 /// checks to see that the virtual function onAddDefaultOptions is called
@@ -220,8 +220,8 @@ TEST_F(ApplicationTest, doesHandleNullPtrEvent)
     mock_dispatcher = nullptr;
     // event dispatcher shouldn't throw an exception, but should give an error message
     shared_ptr<MockApplication> app = make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory);
-    EXPECT_NO_THROW(
-        app->startup();    
+    EXPECT_DEATH(
+        app->startup(), "No Event Dispatcher Registered"
         );
 }
 TEST_F(ApplicationTest, doesHandleNullPtrDB)

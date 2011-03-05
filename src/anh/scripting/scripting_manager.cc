@@ -98,9 +98,13 @@ bool ScriptingManager::loadModules(std::vector<_inittab> modules)
 {
     int failures = 0;
     for_each(modules.begin(), modules.end(), [modules, &failures](_inittab module) {
-            failures += (PyImport_AppendInittab(module.name, module.initfunc) != -1);
+        if(PyImport_AppendInittab(module.name, module.initfunc) == -1) {
+            LOG(WARNING) << "Module " << module.name << " could not be loaded";
+            failures++;
+            }
         });
-    return failures > 0;
+    
+    return failures == 0;
 }
 void ScriptingManager::reload(const string& filename)
 {
