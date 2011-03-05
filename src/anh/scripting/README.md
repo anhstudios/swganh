@@ -18,14 +18,14 @@ can be run at a later point without needing to load the script again and then ru
 Lets take a look at a simple example of loading a python script and then running it.
 We heavily use the C++0x working standard in this project so I would recommend using smart pointers whenever able.
 `
-// lets create our ScriptingManager and pass it a directory that we want to use, 
-//this can be a full directory or just within the library you are using.
+    // lets create our ScriptingManager and pass it a directory that we want to use, 
+    //this can be a full directory or just within the library you are using.
 
-auto script_engine = std::make_shared<ScriptingManager>("scripts");
-// load up one of our scripts
-script_engine->load("script.py");
-//run the script
-script_engine->run("script.py");
+    auto script_engine = std::make_shared<ScriptingManager>("scripts");
+    // load up one of our scripts
+    script_engine->load("script.py");
+    //run the script
+    script_engine->run("script.py");
 `
 
 This runs script.py. Pretty simple right? Sure, but how can we actually get integration with C++ and pass values back and forth?
