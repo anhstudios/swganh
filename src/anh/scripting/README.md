@@ -31,7 +31,7 @@ We heavily use the C++0x working standard in this project so I would recommend u
 This runs script.py. Pretty simple right? Sure, but how can we actually get integration with C++ and pass values back and forth?
 
 Each class or function that we want to use in Python needs to be *wrapped* there are examples of this in the unit test and there are
-lots of intricaces that go along with this, but they can be found in the [boost python doc][1]. http://www.boost.org/doc/libs/1_46_0/libs/python/doc/
+lots of intricaces that go along with this, but they can be found in the [boost python doc][1].
 After they've been wrapped and formed into modules, we can load them directly into python. The other way to do it is to load them into compiled
 files (dlls) named .pyd, then these can be loaded into the python engine for use in scripts.
 
