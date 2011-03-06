@@ -49,10 +49,10 @@ public:
         , rotation_(rotation)
         , speed_(speed) { }
     
-	const ObjectId& parent_id()  { return parent_id_; }
+	const ObjectId parent_id()  { return parent_id_; }
     const glm::vec3& position()  { return position_; }
     const glm::quat& rotation()  { return rotation_; }
-    const float& speed() { return speed_; }
+    const float speed() { return speed_; }
 
 private:
 	ObjectId parent_id_;
@@ -65,12 +65,12 @@ class NullTransformComponent;
 
 class TransformComponentInterface : public BaseComponent {
     public:
-	TransformComponentInterface(const ObjectId& id)
+	TransformComponentInterface(const ObjectId id)
 		: BaseComponent(id) { }
-    virtual const ObjectId& parent_id() = 0;
+    virtual const ObjectId parent_id() = 0;
     virtual const glm::vec3& position() = 0;
     virtual const glm::quat& rotation() = 0;
-    virtual const float& speed() = 0;
+    virtual const float speed() = 0;
 
     // convenience commands
     virtual void rotate(const float& degrees) = 0;
@@ -90,7 +90,7 @@ public:
     NullTransformComponent()
 		: TransformComponentInterface(0) { }
 
-    const ObjectId& parent_id() { return parent_id_; }
+    const ObjectId parent_id() { return parent_id_; }
 	const glm::vec3& position() { return position_; }
 	const glm::quat& rotation() { return rotation_; }
     void rotate(const float& degrees){};
@@ -101,7 +101,7 @@ public:
     void move_forward(const float& distance){};
     void move_back(const float& distance){};
     float rotation_angle() const{ return 0.0f; }
-    const float& speed() { return speed_; }
+    const float speed() { return speed_; }
     
 	const ComponentInfo& component_info() { return component_info_; }
 private:
@@ -114,20 +114,21 @@ private:
 class TransformComponent : public TransformComponentInterface {
 public:
     TransformComponent(const ObjectId& id);
+    TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed);
 
 	void Init(boost::property_tree::ptree& pt);
     void HandleMessage(const Message message);
 
-    void parent_id(const ObjectId& id) { parent_id_ = id; }
-    const ObjectId& parent_id() { return parent_id_; }
+    void parent_id(const ObjectId id) { parent_id_ = id; }
+    const ObjectId parent_id() { return parent_id_; }
     void position(const glm::vec3& position) { position_ = position; }
-    void position(float x, float y, float z) { position_.x = x; position_.y = y; position_.z = z;}
+    void position(const float x, const float y, const float z) { position_.x = x; position_.y = y; position_.z = z;}
 	const glm::vec3& position() { return position_; }
     void rotation(const glm::quat& rotation) { rotation_ = rotation; }
-    void rotation(float x, float y, float z, float w) { rotation_.x = x; rotation_.y = y; rotation_.z = z; rotation_.w = w;}
+    void rotation(const float x, const float y, const float z, const float w) { rotation_.x = x; rotation_.y = y; rotation_.z = z; rotation_.w = w;}
 	const glm::quat& rotation() { return rotation_; }
-    void speed(const float& speed) { speed_ = speed; }
-    const float& speed() { return speed_; }
+    void speed(const float speed) { speed_ = speed; }
+    const float speed() { return speed_; }
 
     // convenience commands
     // rotate by degrees

@@ -181,7 +181,7 @@ TEST_F(ApplicationTest, foundConfigNoValidValues)
     shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory);
     
     EXPECT_DEATH(
-        app->startup(), "could not parse config file"
+        app->startup(), "Could not parse config file"
     );
 }
 /// checks to see that the virtual function onAddDefaultOptions is called

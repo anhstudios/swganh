@@ -162,3 +162,4 @@ add_subdirectory(anh)
 
 ## project executables
 add_subdirectory(zone)
+add_subdirectory(script_bindings)

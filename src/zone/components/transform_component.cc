@@ -41,6 +41,12 @@ ComponentInfo TransformComponent::component_info_ = ComponentInfo(ComponentType(
 TransformComponent::TransformComponent(const ObjectId& id)
 : TransformComponentInterface(id)
 {}
+TransformComponent::TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed)
+    : TransformComponentInterface(id)
+    , position_(position)
+    , rotation_(rotation)
+    , speed_(speed)
+{}
 void TransformComponent::Init(boost::property_tree::ptree& pt) {
     // initial default values
     parent_id_ = pt.get<ObjectId>("parent_id", 0); 
