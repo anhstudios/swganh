@@ -1,6 +1,6 @@
-include(ANHSharedLibrary)
+include(ANHPythonBinding)
 
-AddANHSharedLibrary(anh_python
+AddANHPythonBinding(anh_python
     DEPENDS 
     	libanh 
 		zone
