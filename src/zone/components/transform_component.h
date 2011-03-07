@@ -38,6 +38,7 @@ using namespace anh::component;
 namespace zone { namespace components {
 
 //From http://wiki.swganh.org/index.php/DataTransform_(00000071)
+
 class TransformMessage : public SimpleMessage
 {
 public:
@@ -48,7 +49,11 @@ public:
         , position_(position)
         , rotation_(rotation)
         , speed_(speed) { }
-    
+
+    static std::shared_ptr<TransformMessage> createTransformMessage(ObjectId id, glm::vec3 pos, glm::quat rot, float speed) {
+        return std::make_shared<TransformMessage>(id, pos, rot, speed); 
+    }
+
 	const ObjectId parent_id()  { return parent_id_; }
     const glm::vec3& position()  { return position_; }
     const glm::quat& rotation()  { return rotation_; }
