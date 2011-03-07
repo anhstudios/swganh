@@ -3,3 +3,4 @@ build/*
 
 # ignore OS generated files
 .DS_Store
+.redcar
