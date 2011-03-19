@@ -102,9 +102,9 @@ static boost::python::object wrapped_get_wrapped_item_by_key(self_t& Self, const
 template<typename target_t>
 void copy(const boost::python::list& Source, target_t& Target)
 {
-	const k3d::uint_t count = boost::python::len(Source);
+	const uint16_t count = boost::python::len(Source);
 	Target.resize(count);
-	for(k3d::uint_t i = 0; i != count; ++i)
+	for(uint16_t i = 0; i != count; ++i)
 		Target[i] = boost::python::extract<typename target_t::value_type>(Source[i]);
 }
 

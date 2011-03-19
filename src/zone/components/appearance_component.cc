@@ -42,7 +42,7 @@ AppearanceComponent::AppearanceComponent(const ObjectId& id)
 
 void AppearanceComponent::Init(boost::property_tree::ptree& pt) {
     // initial default values
-    gender_ = pt.get<bool>("sex", false);
+    gender_ = pt.get<bool>("gender", false);
     model_ = pt.get<std::string>("model", ""); 
 	name_ = pt.get<std::string>("name", ""); 
     name_file_ = pt.get<std::string>("name_file", "");

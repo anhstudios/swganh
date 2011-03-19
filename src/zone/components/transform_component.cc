@@ -24,9 +24,9 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#include <iostream>
 #include "transform_component.h"
 
+#include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
 
@@ -60,13 +60,13 @@ void TransformComponent::Init(boost::property_tree::ptree& pt) {
 
 }
 
-void TransformComponent::HandleMessage(const Message message) {
-    std::shared_ptr<TransformMessage> transform = std::dynamic_pointer_cast<TransformMessage>(message);
+void TransformComponent::HandleMessage(const shared_ptr<TransformMessage> message) {
+    //std::shared_ptr<TransformMessage> transform = std::dynamic_pointer_cast<TransformMessage>(message);
     
-    parent_id(transform->parent_id());
-    position(transform->position());
-    rotation(transform->rotation());
-    speed(transform->speed());
+    parent_id(message->parent_id());
+    position(message->position());
+    rotation(message->rotation());
+    speed(message->speed());
 }
 void TransformComponent::rotate(const float& degrees) {
     // Rotate the item left by the specified degrees

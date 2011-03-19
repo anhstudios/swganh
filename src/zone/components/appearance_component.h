@@ -41,7 +41,7 @@ public:
     AppearanceComponentInterface(const ObjectId& id)
 		: BaseComponent(id) { }
     virtual const int race() = 0;
-    virtual const bool sex() = 0;
+    virtual const bool gender() = 0;
     virtual const std::string& model() = 0;
     virtual const std::string& name() = 0;
     virtual const std::string& name_file() = 0;
@@ -57,7 +57,7 @@ public:
     NullAppearanceComponent()
 		: AppearanceComponentInterface(0) { }
     const int race() { return race_; }
-    const bool sex() { return gender_; }
+    const bool gender() { return gender_; }
     const std::string& model() { return model_; }
     const std::string& name() { return name_; }
     const std::string& name_file() { return name_file_; }
@@ -88,7 +88,7 @@ public:
     void Init(boost::property_tree::ptree& pt);
     //void HandleMessage(const Message message);
     const int race() { return race_; }
-    const bool sex() { return gender_; }
+    const bool gender() { return gender_; }
     const std::string& model() { return model_; }
     const std::string& name() { return name_; }
     const std::string& name_file() { return name_file_; }

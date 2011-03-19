@@ -31,8 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/component/base_component.h>
 
 #include <boost/flyweight.hpp>
-#include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/glm.hpp>
+
 
 using namespace anh::component;
 namespace zone { namespace components {
@@ -122,7 +123,7 @@ public:
     TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed);
 
 	void Init(boost::property_tree::ptree& pt);
-    void HandleMessage(const Message message);
+    virtual void HandleMessage(const std::shared_ptr<TransformMessage> message);
 
     void parent_id(const ObjectId id) { parent_id_ = id; }
     const ObjectId parent_id() { return parent_id_; }

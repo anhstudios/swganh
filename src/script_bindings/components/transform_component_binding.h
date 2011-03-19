@@ -32,27 +32,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 using namespace zone::components;
 using namespace std;
-// This creates an opaque pointer. It can be extended to expose members of any objects, 
-// or used as is to return opaque references to objects. For opaque references, the module 
-// must still be imported by the Python app. If anh_python.pyd is in a package directory, 
-// importing it in the __init__.py file in that directory seems to be a simple, workable solution.
-namespace boost {
-namespace python {
-        template <class T> struct pointee< shared_ptr<T> > {
-            typedef T type; 
-        };
-} // namespace python
-} // namespace boost
 
 namespace anh_python { namespace components {
 
-class TransformComponentBinding : public TransformComponent, public wrapper<TransformComponent>
-{
-    public:
-    TransformComponentBinding(const ObjectId& id) : TransformComponent(id) {}
-    TransformComponentBinding(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed)
-        : TransformComponent(id, position, rotation, speed) {}
-};
 void define_class_transform_component() {
     
     // overloads
@@ -66,6 +48,7 @@ void define_class_transform_component() {
     void (TransformComponent::*set_rot4)(const float, const float, const float, const float) = &TransformComponent::rotation;
     const float         (TransformComponent::*get_speed)(void)                  = &TransformComponent::speed;
     void                (TransformComponent::*set_speed)(const float)           = &TransformComponent::speed;
+    //void                (TransformComponent::*handle_message)(const shared_ptr<TransformMessage>) = &TransformComponent::HandleMessage;
     
     // TODO: add way to get internal TransformComponent based on id
     class_<TransformComponent, boost::noncopyable>("TransformComponent",
@@ -90,14 +73,22 @@ void define_class_transform_component() {
             "Sets entities rotation L{glm::quat} by passing in 4 floats representing w,x,y,z rotation of the entity")
         .def("speed", get_speed)
         .def("speed", set_speed)
-        .def("rotate", &TransformComponent::rotate)
-        .def("rotate_left", &TransformComponent::rotate_left)
-        .def("rotate_right", &TransformComponent::rotate_right)
-        .def("face", &TransformComponent::face)
-        .def("move", &TransformComponent::move)
-        .def("move_forward", &TransformComponent::move_forward)
-        .def("move_back", &TransformComponent::move_back)
-        .def("rotation_angle", &TransformComponent::rotation_angle)
+        .def("rotate", &TransformComponent::rotate,
+            "Changes the entities rotation by n-degrees, positive number rotates right, negative rotates left.")
+        .def("rotate_left", &TransformComponent::rotate_left,
+            "Changes the entities rotation to the left by n-degrees.")
+        .def("rotate_right", &TransformComponent::rotate_right,
+            "Changes the entities rotation to the right by n-degrees.")
+        .def("face", &TransformComponent::face,
+            "Makes the entity face the L{glm::vec3} object")
+        .def("move", &TransformComponent::move,
+            "Moves the entity in the direction of L{glm::quat}, by x meters")
+        .def("move_forward", &TransformComponent::move_forward,
+            "Moves the entity forward x meters")
+        .def("move_back", &TransformComponent::move_back,
+            "Moves the entity back x meters")
+        .def("rotation_angle", &TransformComponent::rotation_angle,
+            "Gets the current rotation object of the entity")
         .def("HandleMessage", &TransformComponent::HandleMessage)
         ;
 }
