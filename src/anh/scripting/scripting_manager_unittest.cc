@@ -52,7 +52,7 @@ class ScriptEngineTest : public ::testing::Test
  protected:
      virtual void SetUp() 
      {
-         e = std::make_shared<ScriptingManager>("scripts/unittests/");
+        e = std::make_shared<ScriptingManager>("scripts/unittests/");     
      }
      std::shared_ptr<ScriptingManager> e;
      std::vector<_inittab> modules;
@@ -126,6 +126,7 @@ TEST_F(ScriptEngineTest, getValueFromPython)
     module.name = "embedded_hello";
     module.initfunc = PyInit_embedded_hello;
     modules.push_back(module);
+
     // load modules
     if (e->loadModules(modules))
     {
@@ -194,8 +195,13 @@ TEST_F(ScriptEngineTest, referenceExistingObject)
         // the c++ object stays the same
         EXPECT_EQ(1 , g->x);
         EXPECT_EQ(21, g1.x);
+        // we can see here that g1.x has changed to 8, why is this?
+        // g1 is initially created in C++ on the stack and it's x value is 21.
+        // we run the script GameObject.py, which sets CGameObject1.x = 8
+        // we then extract that object from the global dictionary and confirm it's value in C++ is 8.
         g1 = extract<GameObject>(e->global()["CGameObject1"]);
         EXPECT_EQ(8, g1.x);
+        delete g;
     }
 };
 
@@ -230,5 +236,4 @@ TEST_F(ScriptEngineTest, getRadialComponentFromPython)
         EXPECT_EQ(0, id);   
     }
 }
-
 } // anon namespace

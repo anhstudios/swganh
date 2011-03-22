@@ -45,7 +45,6 @@ TEST_F(ModuleManagerTests, LoadModuleSuccess) {
 
 TEST_F(ModuleManagerTests, LoadModuleNotFound) {
     EXPECT_FALSE(module_manager->LoadModule("notFound"));
-    EXPECT_CALL(loader, LoadModule(anh::HashString("notFound")));
 }
 
 TEST_F(ModuleManagerTests, LoadModuleFromList) {

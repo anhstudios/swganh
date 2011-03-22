@@ -1,3 +1,6 @@
+#ifndef ANH_PYTHON_GLM_BINDINGS_H
+#define ANH_PYTHON_GLM_BINDINGS_H
+
 /*
 ---------------------------------------------------------------------------------------
 This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Emulator)
@@ -25,32 +28,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#include "appearance_component.h"
+namespace anh_python
+{
 
+namespace scripting
+{
 
-using namespace std;
-namespace zone { namespace components {
+void define_class_glm_vec3();
+void define_class_glm_quat();
 
-// statics
-std::shared_ptr<NullAppearanceComponent> AppearanceComponentInterface::NullComponent = std::shared_ptr<NullAppearanceComponent>(new NullAppearanceComponent());
-ComponentInfo NullAppearanceComponent::component_info_ = ComponentInfo(ComponentType("NullAppearanceComponent"), false);
-ComponentInfo AppearanceComponent::component_info_ = ComponentInfo(ComponentType("AppearanceComponent"), true);
+} // namespace anh_python
 
-AppearanceComponent::AppearanceComponent(const ObjectId& id)
-: AppearanceComponentInterface(id)
-{}
+} // namespace scripting
 
-void AppearanceComponent::Init(boost::property_tree::ptree& pt) {
-    // initial default values
-    gender_ = pt.get<bool>("gender", false);
-    model_ = pt.get<std::string>("model", ""); 
-	name_ = pt.get<std::string>("name", ""); 
-    name_file_ = pt.get<std::string>("name_file", "");
-    detail_file_ = pt.get<std::string>("detail_file", "");
-    color_ = pt.get<std::string>("color", "");
-    customization_string_ = pt.get<std::string>("customization_string", "");
-}
-
-
-} // namespace components
-} // namespace zone
+#endif // ANH_PYTHON_GLM_BINDINGS_H

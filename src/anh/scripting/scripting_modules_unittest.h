@@ -17,7 +17,13 @@ public:
   virtual ~Base() {};
   virtual std::string hello() = 0;
 };
-
+struct BaseCallback : Base {
+public:
+    BaseCallback(PyObject* p) : self(p) {}
+    std::string hello() { return bp::call_method<std::string>(self, "hello");  } 
+private:
+    PyObject* self;
+};
 // C++ derived class
 class CppDerived : public Base
 {
@@ -72,8 +78,10 @@ void testPolicies() {
             .def_readwrite("z", &GameObject::z);
 }
 void baseDerive() { 
-    bp::class_<BaseWrap, boost::noncopyable>("Base")
-        .def("hello", bp::pure_virtual(&Base::hello));
+  /*  bp::class_<BaseWrap, boost::noncopyable>("Base")
+        .def("hello", bp::pure_virtual(&Base::hello));*/
+    bp::class_<Base, boost::noncopyable, boost::shared_ptr<BaseCallback>>("Base")
+        .def("hello", &Base::hello);
 }
 
 ///COMPONENT MODULE START
