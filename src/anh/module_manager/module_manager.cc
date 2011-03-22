@@ -1,45 +1,50 @@
 #include "module_manager.h"
+#include <algorithm>
 using namespace std;
 namespace anh {
 namespace module_manager {
 
-bool ModuleManager::LoadModule(const string& module)
+bool ModuleManager::LoadModule(HashString module_name)
 {
     // check if we have already loaded this module
-    ModuleIterator i = loaded_modules_.find(module);
+    ModuleIterator i = loaded_modules_.find(module_name);
     if (i != loaded_modules_.end())
     {
-        shared_ptr<Package> package;
+        shared_ptr<Module> module;
         // load the library into an instance and pass into map for future use
-        // package = module_loader.loadModule(module);
-        //instance = make_shared<Package>(LoadLibrary(module.c_str()));
-        if (package != nullptr)
+        module = loader_.LoadModule(module_name);
+        if (module != nullptr)
         {
-            loaded_modules_.insert(ModulePair(module, package));
+            loaded_modules_.insert(ModulePair(module_name, module));
             return true;
         }
     }
     return false;
 }
-void ModuleManager::LoadModules(const vector<string> modules)
-{
-    vector<string>::const_iterator pos;
-    for(pos = modules.begin(); pos != modules.end(); ++pos)
-    {
-        LoadModule(*pos);
-    }
+void ModuleManager::LoadModules(vector<HashString> modules)
+{  
+    for_each(modules.begin(), modules.end(), [=] (HashString module_name) {
+        LoadModule(module_name);
+    });
 }
-bool ModuleManager::UnloadModule(const string& module)
+bool ModuleManager::isLoaded(HashString module_name)
 {
-    // check if this module is even loaded
-    ModuleIterator i = loaded_modules_.find(module);
+    ModuleIterator i = loaded_modules_.find(module_name);
     if (i != loaded_modules_.end())
     {
-        // module_loader.FreeModule(*i->second.get());
-        loaded_modules_.erase(i);
         return true;
     }
     return false;
+}
+void ModuleManager::UnloadModule(HashString module_name)
+{
+    // check if this module is even loaded
+    ModuleIterator i = loaded_modules_.find(module_name);
+    if (i != loaded_modules_.end())
+    {
+        loader_.FreeModule(i->first);
+        loaded_modules_.erase(i);
+    }
 }
 
 } // module_manager

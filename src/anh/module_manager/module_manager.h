@@ -1,26 +1,38 @@
 #ifndef ANH_MODULE_MANAGER_H
 #define ANH_MODULE_MANAGER_H
-
+#include <anh/hash_string.h>
 #include <map>
 #include <vector>
-#ifdef _WIN32 // win specific include
-#include <windows.h>
-#endif
+
 namespace anh {
 namespace module_manager {
-class Package;
+struct Module
+{
+public:
+    void * module_instance;
+    std::string module_name;
+
+};
+class ModuleLoader
+{
+public:
+    std::shared_ptr<Module> LoadModule(anh::HashString name) {return std::make_shared<Module>();}
+    void FreeModule(anh::HashString name) {}
+};
 class ModuleManager
 {
 public:
-    bool LoadModule(const std::string& module_name);
-    void LoadModules(const std::vector<std::string> modules);
-    bool UnloadModule(const std::string& module_name);
+    ModuleManager(ModuleLoader module_loader){ loader_ = module_loader; }
+    bool LoadModule(anh::HashString module_name);
+    void LoadModules(std::vector<anh::HashString> modules);
+    void UnloadModule(anh::HashString module_name);
+    bool isLoaded(anh::HashString module_name);
 private:
-    typedef std::map<const std::string, std::shared_ptr<Package>>	        ModuleLoaders;
-    typedef std::pair<const std::string, std::shared_ptr<Package>>          ModulePair;
-    typedef std::map<const std::string, std::shared_ptr<Package>>::iterator	ModuleIterator;
+    typedef std::map<anh::HashString, std::shared_ptr<Module>>	                    ModuleLoaders;
+    typedef std::map<anh::HashString, std::shared_ptr<Module>>::iterator	        ModuleIterator;
+    typedef std::pair<anh::HashString, std::shared_ptr<Module>>                     ModulePair;
     ModuleLoaders loaded_modules_;
-    
+    ModuleLoader loader_;
 };
 } // module_manager
 } // anh

@@ -18,8 +18,37 @@
 */
 
 #include <gtest/gtest.h>
+#include <anh/module_manager/mock_module_loader.h>
 
-/// This is an example test.
-TEST(ModuleManagerTests, TestSomething) {
-    EXPECT_TRUE(true);
+using namespace anh::module_manager;
+using namespace std;
+
+namespace {
+
+class ModuleManagerTests : public testing::Test
+{
+public:
+    shared_ptr<ModuleManager> module_manager;
+    MockModuleLoader loader;
+protected:
+    virtual void SetUp();
+    virtual void TearDown(){}
+};
+void ModuleManagerTests::SetUp() 
+{
+    module_manager = make_shared<ModuleManager>(loader);
+}
+TEST_F(ModuleManagerTests, LoadModuleSuccess) {
+    EXPECT_TRUE(module_manager->LoadModule("testModule"));
+    EXPECT_CALL(loader, LoadModule(anh::HashString("testModule")));
+}
+
+TEST_F(ModuleManagerTests, LoadModuleNotFound) {
+    EXPECT_FALSE(module_manager->LoadModule("notFound"));
+    EXPECT_CALL(loader, LoadModule(anh::HashString("notFound")));
+}
+
+TEST_F(ModuleManagerTests, LoadModuleFromList) {
+    
+}
 }

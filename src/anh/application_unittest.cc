@@ -164,10 +164,8 @@ TEST_F(ApplicationTest, cantLoadConfigFile)
     list<string> config_list;
     config_list.push_back("notfound.cfg");
     shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory);
-    // expectation is caugh and an error message is displayed
-    EXPECT_NO_THROW(
-       app->startup();
-    ); 
+    // logged, display message and terminate
+    EXPECT_DEATH(app->startup(), "Could not open"); 
 }
 /// checks based on a test cfg file we are able to load and register two storage types
 TEST_F(ApplicationTest, foundConfigNoValidValues)
