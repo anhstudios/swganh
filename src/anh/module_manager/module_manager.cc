@@ -8,7 +8,7 @@ bool ModuleManager::LoadModule(HashString module_name)
 {
     // check if we have already loaded this module
     ModuleIterator i = loaded_modules_.find(module_name);
-    if (i != loaded_modules_.end())
+    if (i == loaded_modules_.end())
     {
         shared_ptr<Module> module;
         // load the library into an instance and pass into map for future use
