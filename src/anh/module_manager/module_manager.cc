@@ -4,15 +4,15 @@ using namespace std;
 namespace anh {
 namespace module_manager {
 
-bool ModuleManager::LoadModule(HashString module_name)
+bool ModuleManager::LoadModule(HashString module_name, void * params)
 {
     // check if we have already loaded this module
     ModuleIterator i = loaded_modules_.find(module_name);
-    if (i != loaded_modules_.end())
+    if (i == loaded_modules_.end())
     {
         shared_ptr<Module> module;
         // load the library into an instance and pass into map for future use
-        module = loader_.LoadModule(module_name);
+        module = loader_->Load(module_name.ident_string(), params);
         if (module != nullptr)
         {
             loaded_modules_.insert(ModulePair(module_name, module));
@@ -21,11 +21,12 @@ bool ModuleManager::LoadModule(HashString module_name)
     }
     return false;
 }
-void ModuleManager::LoadModules(vector<HashString> modules)
+void ModuleManager::LoadModules(ModulesMap modules)
 {  
-    for_each(modules.begin(), modules.end(), [=] (HashString module_name) {
-        LoadModule(module_name);
-    });
+    for (auto it = modules.begin(); it != modules.end(); ++it)
+    {
+        LoadModule((*it).first, (*it).second);
+    }
 }
 bool ModuleManager::isLoaded(HashString module_name)
 {
@@ -42,7 +43,7 @@ void ModuleManager::UnloadModule(HashString module_name)
     ModuleIterator i = loaded_modules_.find(module_name);
     if (i != loaded_modules_.end())
     {
-        loader_.FreeModule(i->first);
+        loader_->Unload(i->second);
         loaded_modules_.erase(i);
     }
 }

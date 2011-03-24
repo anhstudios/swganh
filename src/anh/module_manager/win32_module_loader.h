@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_MODULE_MANAGER_WIN32_MODULE_LOADER_H_
 #define ANH_MODULE_MANAGER_WIN32_MODULE_LOADER_H_
 
-#include <anh/module_manager/module_loader_interface..h>
+#include <anh/module_manager/module_loader_interface.h>
 
 namespace anh {
 namespace module_manager {

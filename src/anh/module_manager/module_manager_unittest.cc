@@ -20,7 +20,9 @@
 #include <gtest/gtest.h>
 #include <anh/module_manager/mock_module_loader.h>
 
+using namespace testing;
 using namespace anh::module_manager;
+using namespace anh;
 using namespace std;
 
 namespace {
@@ -29,7 +31,7 @@ class ModuleManagerTests : public testing::Test
 {
 public:
     shared_ptr<ModuleManager> module_manager;
-    MockModuleLoader loader;
+    shared_ptr<MockModuleLoader> loader;
 protected:
     virtual void SetUp();
     virtual void TearDown(){}
@@ -39,15 +41,25 @@ void ModuleManagerTests::SetUp()
     module_manager = make_shared<ModuleManager>(loader);
 }
 TEST_F(ModuleManagerTests, LoadModuleSuccess) {
-    EXPECT_TRUE(module_manager->LoadModule("testModule"));
-    EXPECT_CALL(loader, LoadModule(anh::HashString("testModule")));
+    EXPECT_TRUE(module_manager->LoadModule("testModule", 0));
+    EXPECT_CALL(*loader, Load("testModule", 0));
 }
 
 TEST_F(ModuleManagerTests, LoadModuleNotFound) {
-    EXPECT_FALSE(module_manager->LoadModule("notFound"));
+    EXPECT_FALSE(module_manager->LoadModule("notFound", 0));
 }
 
-TEST_F(ModuleManagerTests, LoadModuleFromList) {
+TEST_F(ModuleManagerTests, LoadModuleFromMap) {
+    ModulesMap modules;
+    modules.insert(ModulesPair(HashString("test1"), nullptr));
+    modules.insert(ModulesPair(HashString("test2"), nullptr));
+    modules.insert(ModulesPair(HashString("test3"), nullptr));
+    modules.insert(ModulesPair(HashString("test4"), nullptr));
+    modules.insert(ModulesPair(HashString("test5"), nullptr));
+
+    module_manager->LoadModules(modules);
+    EXPECT_CALL(*loader,  Load(_, nullptr))
+        .Times(5);
     
 }
-}
+} // anon namespace
