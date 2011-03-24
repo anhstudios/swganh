@@ -27,10 +27,10 @@
 namespace anh {
 namespace module_manager{
 
-class MockModuleLoader : public ModuleLoader {
+class MockModuleLoader : public ModuleLoaderInterface {
 public:
-    MOCK_METHOD1(LoadModule, std::shared_ptr<Module>(anh::HashString name));
-    MOCK_METHOD1(FreeModule, void(anh::HashString name));
+    MOCK_METHOD2(Load, std::shared_ptr<Module>(const std::string&, void*));
+    MOCK_METHOD1(Free, bool(std::shared_ptr<Module> module));
 };
 
 }  // namespace event_dispatcher
