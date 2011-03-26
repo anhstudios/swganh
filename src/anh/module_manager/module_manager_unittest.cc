@@ -19,6 +19,8 @@
 
 #include <gtest/gtest.h>
 #include <anh/module_manager/mock_module_loader.h>
+#include <iostream>
+#include <fstream>
 
 using namespace testing;
 using namespace anh::module_manager;
@@ -39,6 +41,15 @@ protected:
 void ModuleManagerTests::SetUp() 
 {
     module_manager = make_shared<ModuleManager>(loader);
+    // create test files
+    ofstream of("modules.txt");
+    of << "test1" << endl;
+    of << "test2" << endl;
+    of << "test3" << endl;
+    of << "test4" << endl;
+    of << "test5" << endl;
+    of.flush();
+    of.close();
 }
 TEST_F(ModuleManagerTests, LoadModuleSuccess) {
     EXPECT_TRUE(module_manager->LoadModule("testModule", 0));
@@ -61,5 +72,13 @@ TEST_F(ModuleManagerTests, LoadModuleFromMap) {
     EXPECT_CALL(*loader,  Load(_, nullptr))
         .Times(5);
     
+}
+TEST_F(ModuleManagerTests, LoadModuleFromPlainTextFile_Success)
+{  
+    module_manager->LoadModules("modules.txt");
+}
+TEST_F(ModuleManagerTests, LoadModuleFromPlainTextFile_NotExists)
+{
+    EXPECT_DEATH(module_manager->LoadModules("notfound.txt"), "Could not load file");
 }
 } // anon namespace

@@ -1,6 +1,12 @@
 #include "module_manager.h"
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <algorithm>
+#include <iterator>
+#include <iostream>
+
 using namespace std;
+namespace fs = boost::filesystem;
 namespace anh {
 namespace module_manager {
 
@@ -27,6 +33,43 @@ void ModuleManager::LoadModules(ModulesMap modules)
     {
         LoadModule((*it).first, (*it).second);
     }
+}
+void ModuleManager::LoadModules(const string& file_name)
+{
+    ModulesMap modules;
+    modules = CreateModulesMapFromFile_(file_name);
+    if (modules.size() > 0)
+    {
+        LoadModules(modules);
+    }
+}
+ModulesMap ModuleManager::CreateModulesMapFromFile_(const string& file_name)
+{
+    fs::path file (file_name);
+    ModulesMap modules_map;
+    if(fs::exists(file))
+    {
+        if (fs::is_regular_file(file))
+        {
+            fs::ifstream in_stream(file);
+            vector<string> hs;
+            // this is copying from the file stream each string line into the vector hs
+            copy(istream_iterator<string>(in_stream), istream_iterator<string>(), back_inserter(hs));
+            if (hs.size() > 0)
+            {
+                // loops through each vector strign and inserts into modules_map
+                // TODO: change nullptr to something meaningful
+                for_each(hs.begin(), hs.end(), [&modules_map] (string mod_name){
+                    modules_map.insert(ModulesPair(HashString(mod_name), nullptr));
+                });
+            }
+        }
+    }
+    else
+    {
+        throw runtime_error("Could not load file " + file_name);
+    }
+    return modules_map;
 }
 bool ModuleManager::isLoaded(HashString module_name)
 {
