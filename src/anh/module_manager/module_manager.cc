@@ -1,4 +1,10 @@
 #include "module_manager.h"
+#if _WIN32
+#include "win32_module.h"
+#endif
+#if __unix
+#include "unix_module.h"
+#endif
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <algorithm>
@@ -10,15 +16,28 @@ namespace fs = boost::filesystem;
 namespace anh {
 namespace module_manager {
 
-bool ModuleManager::LoadModule(HashString module_name, void * params)
+shared_ptr<ModuleInterface> ModuleManager::CreateModule()
+{
+    shared_ptr<ModuleInterface> module;
+    #if _WIN32
+        module = make_shared<Win32Module>();
+    #endif
+    #if __unix
+        //module = make_shared<UnixModule>();
+    #endif
+
+    return module;
+}
+
+bool ModuleManager::LoadModule(HashString module_name, shared_ptr<PlatformServices> platform_services)
 {
     // check if we have already loaded this module
     ModuleIterator i = loaded_modules_.find(module_name);
     if (i == loaded_modules_.end())
     {
-        shared_ptr<Module> module;
+        shared_ptr<ModuleInterface> module = CreateModule();
         // load the library into an instance and pass into map for future use
-        module = loader_->Load(module_name.ident_string(), params);
+        module->Load(module_name.ident_string(), platform_services);
         if (module != nullptr)
         {
             loaded_modules_.insert(ModulePair(module_name, module));
@@ -86,7 +105,7 @@ void ModuleManager::UnloadModule(HashString module_name)
     ModuleIterator i = loaded_modules_.find(module_name);
     if (i != loaded_modules_.end())
     {
-        loader_->Unload(i->second);
+        (*i).second->Unload(services_);
         loaded_modules_.erase(i);
     }
 }

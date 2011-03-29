@@ -16,9 +16,8 @@
  You should have received a copy of the GNU General Public License
  along with SWGANH.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include <anh/module_manager/module_manager.h>
 #include <gtest/gtest.h>
-#include <anh/module_manager/mock_module_loader.h>
 #include <iostream>
 #include <fstream>
 
@@ -33,14 +32,13 @@ class ModuleManagerTests : public testing::Test
 {
 public:
     shared_ptr<ModuleManager> module_manager;
-    shared_ptr<MockModuleLoader> loader;
 protected:
     virtual void SetUp();
     virtual void TearDown(){}
 };
 void ModuleManagerTests::SetUp() 
 {
-    module_manager = make_shared<ModuleManager>(loader);
+    module_manager = make_shared<ModuleManager>();
     // create test files
     ofstream of("modules.txt");
     of << "test1" << endl;
@@ -53,7 +51,6 @@ void ModuleManagerTests::SetUp()
 }
 TEST_F(ModuleManagerTests, LoadModuleSuccess) {
     EXPECT_TRUE(module_manager->LoadModule("testModule", 0));
-    EXPECT_CALL(*loader, Load("testModule", 0));
 }
 
 TEST_F(ModuleManagerTests, LoadModuleNotFound) {
@@ -68,10 +65,7 @@ TEST_F(ModuleManagerTests, LoadModuleFromMap) {
     modules.insert(ModulesPair(HashString("test4"), nullptr));
     modules.insert(ModulesPair(HashString("test5"), nullptr));
 
-    module_manager->LoadModules(modules);
-    EXPECT_CALL(*loader,  Load(_, nullptr))
-        .Times(5);
-    
+    module_manager->LoadModules(modules);    
 }
 TEST_F(ModuleManagerTests, LoadModuleFromPlainTextFile_Success)
 {  

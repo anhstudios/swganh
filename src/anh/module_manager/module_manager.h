@@ -1,7 +1,7 @@
 #ifndef ANH_MODULE_MANAGER_MODULE_MANAGER_H
 #define ANH_MODULE_MANAGER_MODULE_MANAGER_H
 #include <anh/hash_string.h>
-#include <anh/module_manager/module_loader_interface.h>
+#include <anh/module_manager/module_interface.h>
 #include <map>
 #include <vector>
 
@@ -9,9 +9,9 @@ class PlatformServices;
 namespace anh {
 namespace module_manager {
 
-typedef std::map<anh::HashString, void*>                                       ModulesMap;
-typedef std::map<anh::HashString, void*>::iterator                             ModulesIterator;
-typedef std::pair<anh::HashString, void*>                                      ModulesPair;
+typedef std::map<anh::HashString, std::shared_ptr<PlatformServices> >                       ModulesMap;
+typedef std::map<anh::HashString, std::shared_ptr<PlatformServices> >::iterator             ModulesIterator;
+typedef std::pair<anh::HashString, std::shared_ptr<PlatformServices> >                      ModulesPair;
 
 /// \brief The Module Manager handles access to modules
 ///
@@ -19,14 +19,17 @@ class ModuleManager
 {
 public:
     /// \brief default ctor
-    /// \param[in] loader the appropriate module loader for the system.
-    ModuleManager(std::shared_ptr<ModuleLoaderInterface> loader){ loader_ = loader; }
+    ModuleManager() {};
+    /// \brief creates a module depending on the OS and returns it
+    ///
+    /// \returns shared_ptr module either Win32Module, UnixModule, or MacOSModule
+    std::shared_ptr<ModuleInterface> CreateModule();
     /// \brief Loads a module, passes services and stores values in ModuleLoaders
     ///
     /// \param[in] HashString of the module name to be loaded
     /// \param[in] PlatformServices object containing services to pass to module
     /// \returns true if the load was successful
-    bool LoadModule(anh::HashString module_name, void * params);
+    bool LoadModule(anh::HashString module_name, std::shared_ptr<PlatformServices> platform_services);
     /// \brief Loads a map of modules
     /// \param[in] ModulesMap of modules to be loaded
     /// \calls @LoadModule
@@ -43,17 +46,17 @@ public:
     /// \returns true if module is already loaded.
     bool isLoaded(anh::HashString module_name);
 private:
-    typedef std::map<anh::HashString, std::shared_ptr<Module>>	               ModuleLoaders;
-    typedef std::map<anh::HashString, std::shared_ptr<Module>>::iterator	   ModuleIterator;
-    typedef std::pair<anh::HashString, std::shared_ptr<Module>>                ModulePair;
+    typedef std::map<anh::HashString, std::shared_ptr<ModuleInterface>>	               ModuleLoaders;
+    typedef std::map<anh::HashString, std::shared_ptr<ModuleInterface>>::iterator	   ModuleIterator;
+    typedef std::pair<anh::HashString, std::shared_ptr<ModuleInterface>>                ModulePair;
     /// \brief Creates a ModulesMap from a plaintext file, used in @LoadModules(file_name)
     /// \param std::string file_name the file to create map from.
     /// \returns ModulesMap of modules.
     ModulesMap CreateModulesMapFromFile_(const std::string& file_name);
     /// \brief the map of the currently loaded modules
     ModuleLoaders loaded_modules_;
-    /// \brief shared_ptr of the module loader.
-    std::shared_ptr<ModuleLoaderInterface> loader_;
+    /// \brief shared_ptr of the shared services
+    std::shared_ptr<PlatformServices> services_;
 };
 } // module_manager
 } // anh

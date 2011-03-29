@@ -160,6 +160,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 ## project libraries
 add_subdirectory(anh)
 
+## project modules
+add_subdirectory(test_module)
+
 ## project executables
 add_subdirectory(zone)
 add_subdirectory(script_bindings)

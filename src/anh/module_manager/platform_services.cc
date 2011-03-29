@@ -25,35 +25,67 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_MODULE_MANAGER_MODULE_LOADER_INTERFACE_H_
-#define ANH_MODULE_MANAGER_MODULE_LOADER_INTERFACE_H_
-
-#include <memory>
-#include <anh/module_manager/module.h>
+#include <anh/module_manager/platform_services.h>
 
 namespace anh {
 namespace module_manager {
 
-/**
- * 
- */
-class ModuleLoaderInterface
+PlatformServices::PlatformServices(void)
 {
-public:
-	typedef bool (*LoadFunction)(void*);
-	typedef bool (*UnloadFunction)(void*);
-	typedef std::string (*GetNameFunction)(void);
-	typedef std::string (*GetVersionFunction)(void);
-	typedef std::string (*GetDescriptionFunction)(void);
+}
 
-	ModuleLoaderInterface() { }
-	virtual ~ModuleLoaderInterface() { }
+PlatformServices::~PlatformServices(void)
+{
+}
 
-	virtual std::shared_ptr<Module> Load(const std::string& file, void* params) = 0;
-	virtual bool Unload(std::shared_ptr<Module> module) = 0;
-};
+void PlatformServices::removeService(Service service_name)
+{
+	ServiceMapIterator i = services_.find(service_name);
+	if(i != services_.end())
+	{
+		services_.erase(i);
+	}
+}
+
+bool PlatformServices::addService(Service service_name, boost::any service)
+{
+	ServiceMapIterator i = services_.find(service_name);
+	if(i == services_.end())
+	{
+		services_.insert(ServiceMap::value_type(service_name, service));
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+boost::any PlatformServices::getService(Service service_name)
+{
+	ServiceMapIterator i = services_.find(service_name);
+	if(i != services_.end())
+	{
+		return (*i).second;
+	}
+	else
+	{
+		return boost::any();
+	}
+}
+
+bool PlatformServices::hasService(Service service_name)
+{
+	ServiceMapIterator i = services_.find(service_name);
+	if(i != services_.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 }
 }
-
-#endif
