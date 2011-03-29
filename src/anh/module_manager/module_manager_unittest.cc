@@ -17,6 +17,7 @@
  along with SWGANH.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <anh/module_manager/module_manager.h>
+#include <anh/module_manager/platform_services.h>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <fstream>
@@ -32,13 +33,14 @@ class ModuleManagerTests : public testing::Test
 {
 public:
     shared_ptr<ModuleManager> module_manager;
+    shared_ptr<anh::module_manager::PlatformServices> services;
 protected:
     virtual void SetUp();
     virtual void TearDown(){}
 };
 void ModuleManagerTests::SetUp() 
 {
-    module_manager = make_shared<ModuleManager>();
+    module_manager = make_shared<ModuleManager>(services);
     // create test files
     ofstream of("modules.txt");
     of << "test1" << endl;
@@ -57,16 +59,6 @@ TEST_F(ModuleManagerTests, LoadModuleNotFound) {
     EXPECT_FALSE(module_manager->LoadModule("notFound", 0));
 }
 
-TEST_F(ModuleManagerTests, LoadModuleFromMap) {
-    ModulesMap modules;
-    modules.insert(ModulesPair(HashString("test1"), nullptr));
-    modules.insert(ModulesPair(HashString("test2"), nullptr));
-    modules.insert(ModulesPair(HashString("test3"), nullptr));
-    modules.insert(ModulesPair(HashString("test4"), nullptr));
-    modules.insert(ModulesPair(HashString("test5"), nullptr));
-
-    module_manager->LoadModules(modules);    
-}
 TEST_F(ModuleManagerTests, LoadModuleFromPlainTextFile_Success)
 {  
     module_manager->LoadModules("modules.txt");

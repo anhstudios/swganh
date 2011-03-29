@@ -28,21 +28,23 @@ shared_ptr<ModuleInterface> ModuleManager::CreateModule()
 
     return module;
 }
-
-bool ModuleManager::LoadModule(HashString module_name, shared_ptr<PlatformServices> platform_services)
+bool ModuleManager::LoadModule(std::string file_name, std::shared_ptr<ModuleInterface> module)
 {
-    // check if we have already loaded this module
-    ModuleIterator i = loaded_modules_.find(module_name);
-    if (i == loaded_modules_.end())
+    // load the library into an instance and pass into map for future use
+    if (module->Load(file_name, services_))
     {
-        shared_ptr<ModuleInterface> module = CreateModule();
-        // load the library into an instance and pass into map for future use
-        module->Load(module_name.ident_string(), platform_services);
-        if (module != nullptr)
-        {
-            loaded_modules_.insert(ModulePair(module_name, module));
-            return true;
-        }
+        loaded_modules_.insert(ModulePair(file_name, module));
+        return true;
+    }
+    return false;
+}
+bool ModuleManager::LoadModule(HashString module_name)
+{
+    shared_ptr<ModuleInterface> module = CreateModule();
+    // load the library into an instance and pass into map for future use
+    if (LoadModule(module_name.ident_string(), module))
+    {
+        return true;
     }
     return false;
 }
@@ -76,10 +78,10 @@ ModulesMap ModuleManager::CreateModulesMapFromFile_(const string& file_name)
             copy(istream_iterator<string>(in_stream), istream_iterator<string>(), back_inserter(hs));
             if (hs.size() > 0)
             {
-                // loops through each vector strign and inserts into modules_map
-                // TODO: change nullptr to something meaningful
-                for_each(hs.begin(), hs.end(), [&modules_map] (string mod_name){
-                    modules_map.insert(ModulesPair(HashString(mod_name), nullptr));
+                // loops through each vector string and inserts into modules_vector
+                for_each(hs.begin(), hs.end(), [=,&modules_map] (string mod_name){
+                    auto module = CreateModule();
+                    modules_map.insert(ModulesPair(file_name, module));
                 });
             }
         }

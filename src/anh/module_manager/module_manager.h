@@ -9,9 +9,9 @@ class PlatformServices;
 namespace anh {
 namespace module_manager {
 
-typedef std::map<anh::HashString, std::shared_ptr<PlatformServices> >                       ModulesMap;
-typedef std::map<anh::HashString, std::shared_ptr<PlatformServices> >::iterator             ModulesIterator;
-typedef std::pair<anh::HashString, std::shared_ptr<PlatformServices> >                      ModulesPair;
+typedef std::map<std::string, std::shared_ptr<ModuleInterface> >                       ModulesMap;
+typedef std::map<std::string, std::shared_ptr<ModuleInterface> >::iterator             ModulesIterator;
+typedef std::pair<std::string, std::shared_ptr<ModuleInterface> >                      ModulesPair;
 
 /// \brief The Module Manager handles access to modules
 ///
@@ -19,17 +19,20 @@ class ModuleManager
 {
 public:
     /// \brief default ctor
-    ModuleManager() {};
+    ModuleManager(std::shared_ptr<PlatformServices> services) { services_ = services; }
     /// \brief creates a module depending on the OS and returns it
     ///
     /// \returns shared_ptr module either Win32Module, UnixModule, or MacOSModule
     std::shared_ptr<ModuleInterface> CreateModule();
-    /// \brief Loads a module, passes services and stores values in ModuleLoaders
+    /// \brief Load a module from a module object
+    ///
+    /// \param[in] module object to load into memory
+    bool LoadModule(std::string name, std::shared_ptr<ModuleInterface> module);
+    /// \brief Loads a module, passes module_name and stores values in ModuleLoaders
     ///
     /// \param[in] HashString of the module name to be loaded
-    /// \param[in] PlatformServices object containing services to pass to module
     /// \returns true if the load was successful
-    bool LoadModule(anh::HashString module_name, std::shared_ptr<PlatformServices> platform_services);
+    bool LoadModule(anh::HashString module_name);
     /// \brief Loads a map of modules
     /// \param[in] ModulesMap of modules to be loaded
     /// \calls @LoadModule
