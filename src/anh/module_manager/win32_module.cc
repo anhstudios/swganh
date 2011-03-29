@@ -25,35 +25,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#include <Windows.h>
-#include <anh/module_manager/win32_module_loader.h>
+#ifdef WIN32
+
+#include <anh/module_manager/win32_module.h>
 
 namespace anh {
 namespace module_manager {
 
-Win32ModuleLoader::Win32ModuleLoader(void)
+Win32Module::Win32Module(void) 
+{ 
+}
+
+Win32Module::~Win32Module(void)
 {
 }
 
-Win32ModuleLoader::~Win32ModuleLoader(void)
+bool Win32Module::Load(const std::string& filename, std::shared_ptr<PlatformServices> services)
 {
+	handle_ = LoadLibrary(filename.c_str());
+	if(!handle_)
+		return false;
+
+	load_func_ = (LoadFunc)GetProcAddress(handle_, "Load");
+	unload_func_ = (UnloadFunc)GetProcAddress(handle_, "Unload");
+	get_name_func_ = (GetNameFunc)GetProcAddress(handle_, "GetModuleName");
+	get_version_func_ = (GetVersionFunc)GetProcAddress(handle_, "GetModuleVersion");
+	get_description_func_ = (GetDescriptionFunc)GetProcAddress(handle_, "GetModuleDescription");
+
+	if(!load_func_(services))
+		return false;
+	else
+		return true;
 }
 
-std::shared_ptr<Module> Win32ModuleLoader::Load(const std::string& filename, void* params)
+void Win32Module::Unload(std::shared_ptr<PlatformServices> services)
 {
-	HINSTANCE dll = LoadLibrary(filename.c_str());
-	if(!dll)
-		return nullptr;
-
-	LoadFunction load_func = (LoadFunction)GetProcAddress(dll, "Load");
-	if(!load_func(params))
-		return nullptr;
+	unload_func_(services);
+	FreeLibrary(handle_);
 }
 
-bool Win32ModuleLoader::Unload(std::shared_ptr<Module> module)
-{
-	return true;
-}
+} // namespace module_manager
+} // namespace anh
 
-}
-}
+#endif

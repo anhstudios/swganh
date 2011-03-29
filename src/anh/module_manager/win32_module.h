@@ -25,35 +25,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_MODULE_MANAGER_MODULE_LOADER_INTERFACE_H_
-#define ANH_MODULE_MANAGER_MODULE_LOADER_INTERFACE_H_
+#ifndef ANH_MODULE_MANAGER_WIN32_MODULE_H_
+#define ANH_MODULE_MANAGER_WIN32_MODULE_H_
+#ifdef WIN32
 
-#include <memory>
-#include <anh/module_manager/module.h>
+#include <Windows.h>
+#include <anh/module_manager/module_interface.h>
 
 namespace anh {
 namespace module_manager {
 
-/**
- * 
- */
-class ModuleLoaderInterface
+class Win32Module : public IModule
 {
 public:
-	typedef bool (*LoadFunction)(void*);
-	typedef bool (*UnloadFunction)(void*);
-	typedef std::string (*GetNameFunction)(void);
-	typedef std::string (*GetVersionFunction)(void);
-	typedef std::string (*GetDescriptionFunction)(void);
+	Win32Module(void);
+	~Win32Module(void);
 
-	ModuleLoaderInterface() { }
-	virtual ~ModuleLoaderInterface() { }
+	bool Load(const std::string& filename, std::shared_ptr<PlatformServices> services);
+	void Unload(std::shared_ptr<PlatformServices> services);
 
-	virtual std::shared_ptr<Module> Load(const std::string& file, void* params) = 0;
-	virtual bool Unload(std::shared_ptr<Module> module) = 0;
+	const std::string name(void) { return get_name_func_(); }
+	const ModuleApiVersion version(void) { return get_version_func_(); }
+	const std::string description(void) { return get_description_func_(); }
+
+private:
+	HMODULE					handle_;
+	LoadFunc				load_func_;
+	UnloadFunc				unload_func_;
+	GetNameFunc				get_name_func_;
+	GetVersionFunc			get_version_func_;
+	GetDescriptionFunc		get_description_func_;
 };
 
-}
-}
+} // namespace module_manager
+} // namespace anh
 
+#endif
 #endif

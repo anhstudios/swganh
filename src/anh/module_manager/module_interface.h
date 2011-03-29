@@ -29,35 +29,88 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_MODULE_MANAGER_MODULE_H_
 
 #include <string>
+#include <cstdint>
+#include <memory>
 
 namespace anh {
 namespace module_manager {
 
+// FORWARD DELCARES
+class PlatformServices;
+
+/**
+ *
+ */
+typedef struct ModuleApiVersion
+{
+	ModuleApiVersion(uint32_t _major = 0, uint32_t _minor = 0, std::string _version_string ="0.0")
+		: major(_major)
+		, minor(_minor)
+		, version_string(_version_string) { }
+
+	~ModuleApiVersion(void) { }
+
+	bool operator ==(const ModuleApiVersion& other)
+	{
+		if((major == other.major) && (minor == other.minor))
+			return true;
+		else
+			return false;
+	}
+
+	uint32_t major;
+	uint32_t minor;
+	std::string version_string;
+} ModuleApiVersion;
+
 /**
  * 
  */
-class Module
+class IModule
 {
 public:
 	/**
 	 * Default constructor.
-	 *
-	 * @arg name Name of the module. (e.g. "Brainwashing Service")
-	 * @arg version Version of the module. (e.g. "0.1.5 Beta")
-	 * @arg description Description of the module.
 	 */
-	Module(const std::string& name, const std::string& version, const std::string& description) { };
+	IModule() { }
 
 	/**
 	 * Default destructor.
 	 */
-	~Module() { };
+	virtual ~IModule() { }
+
+	/**
+	 * 
+	 */
+	virtual bool Load(const std::string& filename, std::shared_ptr<PlatformServices> services) = 0;
+
+	/**
+	 *
+	 */
+	virtual void Unload(std::shared_ptr<PlatformServices> services) = 0;
+
+	/**
+	 *
+	 */
+	virtual const std::string name() = 0;
+
+	/**
+	 *
+	 */
+	virtual const ModuleApiVersion version() = 0;
+
+	/**
+	 *
+	 */
+	virtual const std::string description() = 0;
 
 protected:
-private:
-	std::string _name;
-	std::string _version;
-	std::string _description;
+	typedef bool (*LoadFunc)(std::shared_ptr<PlatformServices>);
+	typedef void (*UnloadFunc)(std::shared_ptr<PlatformServices>);
+	typedef const std::string (*GetNameFunc)(void);
+	typedef const ModuleApiVersion (*GetVersionFunc)(void);
+	typedef const std::string (*GetDescriptionFunc)(void);
+
 
 };
 

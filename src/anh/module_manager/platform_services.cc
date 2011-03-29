@@ -25,38 +25,67 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_MODULE_MANAGER_WIN32_MODULE_LOADER_H_
-#define ANH_MODULE_MANAGER_WIN32_MODULE_LOADER_H_
-
-#include <anh/module_manager/module_loader_interface..h>
+#include <anh/module_manager/platform_services.h>
 
 namespace anh {
 namespace module_manager {
 
-/**
- *
- */
-class Win32ModuleLoader : public ModuleLoaderInterface
+PlatformServices::PlatformServices(void)
 {
-public:
-	Win32ModuleLoader(void);
-	~Win32ModuleLoader(void);
+}
 
-	/**
-	 *
-	 */
-	std::shared_ptr<Module> Load(const std::string& filename, void* params);
+PlatformServices::~PlatformServices(void)
+{
+}
 
-	/**
-	 *
-	 */
-	bool Unload(std::shared_ptr<Module> module);
+void PlatformServices::removeService(Service service_name)
+{
+	ServiceMapIterator i = services_.find(service_name);
+	if(i != services_.end())
+	{
+		services_.erase(i);
+	}
+}
 
-protected:
-private:
-};
+bool PlatformServices::addService(Service service_name, boost::any service)
+{
+	ServiceMapIterator i = services_.find(service_name);
+	if(i == services_.end())
+	{
+		services_.insert(ServiceMap::value_type(service_name, service));
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+boost::any PlatformServices::getService(Service service_name)
+{
+	ServiceMapIterator i = services_.find(service_name);
+	if(i != services_.end())
+	{
+		return (*i).second;
+	}
+	else
+	{
+		return boost::any();
+	}
+}
+
+bool PlatformServices::hasService(Service service_name)
+{
+	ServiceMapIterator i = services_.find(service_name);
+	if(i != services_.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 }
 }
-
-#endif
