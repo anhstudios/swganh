@@ -24,13 +24,13 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#ifndef ZONE_TRANSFORM_COMPONENT_BINDING__H_
-#define ZONE_TRANSFORM_COMPONENT_BINDING__H_
+#ifndef SCRIPT_BINDINGS_TRANSFORM_COMPONENT_BINDING__H_
+#define SCRIPT_BINDINGS_TRANSFORM_COMPONENT_BINDING__H_
 
-#include "base_component_binding.h"
-#include <zone/components/transform_component.h>
+#include <script_bindings/components/base_component_binding.h>
+#include <components/transform_component.h>
 
-using namespace zone::components;
+using namespace components;
 using namespace std;
 
 namespace anh_python { namespace components {
@@ -108,4 +108,4 @@ void define_class_transform_message()
 }
 } // components
 } // anh_python
-#endif // ZONE_TRANSFORM_COMPONENT_BINDING__H_
+#endif // SCRIPT_BINDINGS_TRANSFORM_COMPONENT_BINDING__H_

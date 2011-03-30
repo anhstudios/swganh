@@ -23,10 +23,10 @@
 
 #include <anh/component/object_builder.h>
 #include <anh/component/object_manager.h>
-#include <zone/components/transform_component.h>
+#include <components/transform_component.h>
 
 using namespace boost::filesystem;
-using namespace zone::components;
+using namespace components;
 using namespace std;
 
 #define TEST_OBJECT_ID 0xDEADBEEF

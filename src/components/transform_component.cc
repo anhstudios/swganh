@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 using namespace std;
-namespace zone { namespace components {
+namespace components {
 
 // statics
 std::shared_ptr<NullTransformComponent> TransformComponentInterface::NullComponent = std::shared_ptr<NullTransformComponent>(new NullTransformComponent());
@@ -122,4 +122,3 @@ float TransformComponent::rotation_angle() const {
 }
 
 } // namespace zone
-} // namespace components

@@ -162,6 +162,7 @@ add_subdirectory(anh)
 
 ## project modules
 add_subdirectory(test_module)
+add_subdirectory(components)
 
 ## project executables
 add_subdirectory(zone)

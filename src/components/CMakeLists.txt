@@ -1,12 +1,8 @@
-include(ANHPythonBinding)
+include(ANHLibrary)
 
-AddANHPythonBinding(anh_python
+AddANHLibrary(components
     DEPENDS 
-    	libanh 
-		zone
-		${GLOG_LIBRARY}
-		${TBB_DEBUG_LIBRARIES}
-	${PYTHON_LIBRARIES}
+    	libanh    
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}
