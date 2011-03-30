@@ -25,38 +25,40 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_MODULE_MANAGER_WIN32_MODULE_LOADER_H_
-#define ANH_MODULE_MANAGER_WIN32_MODULE_LOADER_H_
+#ifndef ANH_MODULE_MANAGER_WIN32_MODULE_H_
+#define ANH_MODULE_MANAGER_WIN32_MODULE_H_
+#ifdef WIN32
 
-#include <anh/module_manager/module_loader_interface.h>
+#include <Windows.h>
+#include <anh/module_manager/module_interface.h>
 
 namespace anh {
 namespace module_manager {
 
-/**
- *
- */
-class Win32ModuleLoader : public ModuleLoaderInterface
+class Win32Module : public ModuleInterface
 {
 public:
-	Win32ModuleLoader(void);
-	~Win32ModuleLoader(void);
+	Win32Module(void);
+	~Win32Module(void);
 
-	/**
-	 *
-	 */
-	std::shared_ptr<Module> Load(const std::string& filename, void* params);
+	bool Load(const std::string& filename, std::shared_ptr<PlatformServices> services);
+	void Unload(std::shared_ptr<PlatformServices> services);
 
-	/**
-	 *
-	 */
-	bool Unload(std::shared_ptr<Module> module);
+	const std::string name(void) { return get_name_func_(); }
+	const ModuleApiVersion version(void) { return get_version_func_(); }
+	const std::string description(void) { return get_description_func_(); }
 
-protected:
 private:
+	HMODULE					handle_;
+	LoadFunc				load_func_;
+	UnloadFunc				unload_func_;
+	GetNameFunc				get_name_func_;
+	GetVersionFunc			get_version_func_;
+	GetDescriptionFunc		get_description_func_;
 };
 
-}
-}
+} // namespace module_manager
+} // namespace anh
 
+#endif
 #endif

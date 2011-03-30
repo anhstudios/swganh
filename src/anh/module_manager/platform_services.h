@@ -1,13 +1,10 @@
-#ifndef ANH_PYTHON_GLM_BINDINGS_H
-#define ANH_PYTHON_GLM_BINDINGS_H
-
 /*
 ---------------------------------------------------------------------------------------
 This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Emulator)
 
 For more information, visit http://www.swganh.com
 
-Copyright (c) 2006 - 2011 The SWG:ANH Team
+Copyright (c) 2006 - 2010 The SWG:ANH Team
 ---------------------------------------------------------------------------------------
 Use of this source code is governed by the GPL v3 license that can be found
 in the COPYING file or at http://www.gnu.org/licenses/gpl-3.0.html
@@ -17,7 +14,7 @@ modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
 version 2.1 of the License, or (at your option) any later version.
 
-This library is distributed in the hope that it will be useful,a
+This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License for more details.
@@ -28,17 +25,62 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-namespace anh_python
+#ifndef ANH_MODULE_MANAGER_PLATFORM_SERVICES_H_
+#define ANH_MODULE_MANAGER_PLATFORM_SERVICES_H_
+
+#include <map>
+#include <boost/any.hpp>
+#include <anh/hash_string.h>
+
+namespace anh {
+namespace module_manager {
+
+typedef HashString Service;
+
+/**
+ * Aggregates all core systems to the module.
+ */
+class PlatformServices
 {
+public:
+	/**
+	 * Default constructor.
+	 */
+	PlatformServices(void);
 
-namespace scripting
-{
+	/**
+	 * Default deconstructor.
+	 */
+	~PlatformServices(void);
 
-void define_class_glm_vec3();
-void define_class_glm_quat();
+	/**
+	 * Adds a service to the Platform Services.
+	 */
+	bool addService(Service service_name, boost::any service);
 
-} // namespace anh_python
+	/**
+	 * Removes a service from the Platform Services.
+	 */
+	void removeService(Service service_name);
 
-} // namespace scripting
+	/**
+	 * Finds and returns a service from the Platform Services.
+	 */
+	boost::any getService(Service service_name);
 
-#endif // ANH_PYTHON_GLM_BINDINGS_H
+	/**
+	 * 
+	 */
+	bool hasService(Service service_name);
+
+private:
+	typedef std::map<Service, boost::any>			ServiceMap;
+	typedef std::map<Service, boost::any>::iterator ServiceMapIterator;
+
+	ServiceMap services_;
+};
+
+}
+}
+
+#endif

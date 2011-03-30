@@ -24,36 +24,9 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
+#include <gtest/gtest.h>
 
-#ifndef ANH_MODULE_MANAGER_MODULE_LOADER_INTERFACE_H_
-#define ANH_MODULE_MANAGER_MODULE_LOADER_INTERFACE_H_
-
-#include <memory>
-#include <anh/module_manager/module.h>
-
-namespace anh {
-namespace module_manager {
-
-/**
- * 
- */
-class ModuleLoaderInterface
+TEST(UnixModuleTests, TestSomething)
 {
-public:
-	typedef bool (*LoadFunction)(void*);
-	typedef bool (*UnloadFunction)(void*);
-	typedef std::string (*GetNameFunction)(void);
-	typedef std::string (*GetVersionFunction)(void);
-	typedef std::string (*GetDescriptionFunction)(void);
-
-	ModuleLoaderInterface() { }
-	virtual ~ModuleLoaderInterface() { }
-
-	virtual std::shared_ptr<Module> Load(const std::string& file, void* params) = 0;
-	virtual bool Unload(std::shared_ptr<Module> module) = 0;
-};
-
+	EXPECT_TRUE(true);
 }
-}
-
-#endif

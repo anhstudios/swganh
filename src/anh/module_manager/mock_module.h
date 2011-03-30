@@ -1,7 +1,7 @@
 /*
  This file is part of MMOServer. For more information, visit http://swganh.com
  
- Copyright (c) 2006 - 2010 The SWG:ANH Team
+ Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  MMOServer is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -17,23 +17,29 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_MODULE_MANAGER_MOCK_MODULE_LOADER_H_
-#define ANH_MODULE_MANAGER_MOCK_MODULE_LOADER_H_
+#ifndef ANH_MOCK_SERVER_DIRECTORY_SERVER_DIRECTORY_H_
+#define ANH_MOCK_SERVER_DIRECTORY_SERVER_DIRECTORY_H_
 
 #include <gmock/gmock.h>
 
-#include "anh/module_manager/module_manager.h"
+#include "anh/module_manager/module_interface.h"
 
 namespace anh {
-namespace module_manager{
+namespace module_manager {
 
-class MockModuleLoader : public ModuleLoaderInterface {
+class MockModule : public ModuleInterface
+{
 public:
-    MOCK_METHOD2(Load, std::shared_ptr<Module>(const std::string&, void*));
-    MOCK_METHOD1(Free, bool(std::shared_ptr<Module> module));
+    MOCK_METHOD2( Load, bool (
+        const std::string& filename,
+        std::shared_ptr<PlatformServices> services));
+    MOCK_METHOD1( Unload, void (
+        std::shared_ptr<PlatformServices> services));
+    MOCK_METHOD0( name, const std::string name());
+    MOCK_METHOD0( version, const ModuleApiVersion version());
+    MOCK_METHOD0( description, const std::string description());
 };
 
-}  // namespace event_dispatcher
-}  // namespace anh
-
-#endif  // ANH_MODULE_MANAGER_MOCK_MODULE_LOADER_H_
+} // end module_manager
+} // end anh
+#endif // end ANH_MOCK_SERVER_DIRECTORY_SERVER_DIRECTORY_H_
