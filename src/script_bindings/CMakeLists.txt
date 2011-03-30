@@ -6,6 +6,7 @@ AddANHPythonBinding(anh_python
 		zone
 		${GLOG_LIBRARY}
 		${TBB_DEBUG_LIBRARIES}
+		${PYTHON_LIBRARIES}
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}
