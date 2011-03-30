@@ -1,8 +1,10 @@
-include(ANHLibrary)
+include(ANHSharedLibrary)
 
-AddANHLibrary(components
+AddANHSharedLibrary(components
     DEPENDS 
     	libanh    
+		${TBB_DEBUG_LIBRARIES}
+		${GLOG_LIBRARY}
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}
