@@ -28,9 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define SCRIPT_BINDINGS_TRANSFORM_COMPONENT_BINDING__H_
 
 #include <script_bindings/components/base_component_binding.h>
-#include <components/transform_component.h>
+#include <mod_anh_transform/transform_component.h>
 
-using namespace components;
+using namespace transform;
 using namespace std;
 
 namespace anh_python { namespace components {

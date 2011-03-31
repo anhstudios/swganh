@@ -1,11 +1,11 @@
 #include "glm_bindings.h"
-#include <components/transform_component.h>
+#include <mod_anh_transform/transform_component.h>
 #include <script_bindings/components/transform_component_binding.h>
 #include <script_bindings/components/base_component_binding.h>
 #include <boost/python.hpp>
 
 using namespace boost::python;
-using namespace components;
+using namespace transform;
 using namespace anh_python::components;
 
 namespace anh_python { namespace scripting {

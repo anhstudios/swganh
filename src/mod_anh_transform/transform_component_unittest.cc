@@ -23,10 +23,11 @@
 
 #include <anh/component/object_builder.h>
 #include <anh/component/object_manager.h>
-#include <components/transform_component.h>
+#include <mod_anh_transform/transform_component.h>
 
 using namespace boost::filesystem;
-using namespace components;
+using namespace anh::api::components;
+using namespace transform;
 using namespace std;
 
 #define TEST_OBJECT_ID 0xDEADBEEF

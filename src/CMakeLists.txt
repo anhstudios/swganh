@@ -162,7 +162,8 @@ add_subdirectory(anh)
 
 ## project modules
 add_subdirectory(test_module)
-add_subdirectory(components)
+add_subdirectory(mod_anh_transform)
+add_subdirectory(api)
 
 ## project executables
 add_subdirectory(zone)

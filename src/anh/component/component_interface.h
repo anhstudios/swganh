@@ -23,6 +23,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <anh/component/component_info.h>
 #include <anh/event_dispatcher/basic_event.h>
+#include <anh_definitions.h>
 
 namespace anh {
 namespace component {
@@ -37,7 +38,7 @@ typedef std::shared_ptr<anh::event_dispatcher::EventInterface>			MessagePtr;
 /**
  * \brief
  */
-class ComponentInterface
+class DLL_EXPORT ComponentInterface
 {
 public:
 	/**
