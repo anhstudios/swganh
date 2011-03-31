@@ -24,13 +24,12 @@
 
 #include "anh/hash_string.h"
 #include "anh/event_dispatcher/event_interface.h"
-#include <anh_definitions.h>
 
 namespace anh {
 namespace event_dispatcher {
 
 template<typename T>
-class DLL_EXPORT BasicEvent : public T, public EventInterface {
+class BasicEvent : public T, public EventInterface {
 public:
     BasicEvent()
         : type_(T::type())

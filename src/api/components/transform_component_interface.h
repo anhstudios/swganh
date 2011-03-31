@@ -33,14 +33,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <boost/flyweight.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/glm.hpp>
-#include <anh_definitions.h>
 
 using namespace anh::component;
 namespace anh {namespace api { namespace components {
 
 class NullTransformComponent;
 
-class DLL_EXPORT TransformComponentInterface : public BaseComponent {
+class TransformComponentInterface : public BaseComponent {
     public:
 	TransformComponentInterface(const ObjectId id)
 		: BaseComponent(id) { }
@@ -61,7 +60,7 @@ class DLL_EXPORT TransformComponentInterface : public BaseComponent {
 
     static std::shared_ptr<NullTransformComponent> NullComponent;
 };
-class DLL_EXPORT NullTransformComponent : public TransformComponentInterface {
+class NullTransformComponent : public TransformComponentInterface {
 public:
     NullTransformComponent()
 		: TransformComponentInterface(0) { }

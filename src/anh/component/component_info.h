@@ -21,7 +21,6 @@
 #define LIBANH_COMPONENT_COMPONENT_INFO
 
 #include <anh/hash_string.h>
-#include <anh_definitions.h>
 
 namespace anh {
 namespace component {
@@ -35,7 +34,7 @@ typedef anh::HashString ComponentType;
  * type - A Hashed string that specifies the type of component.
  * update_every_frame - If flagged true, the components update function will be called every frame.
  */
-struct DLL_EXPORT ComponentInfo
+struct ComponentInfo
 {
 	ComponentInfo(ComponentType _type, bool _update_every_frame = false)
 		: type(_type)

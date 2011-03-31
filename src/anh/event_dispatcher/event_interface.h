@@ -23,14 +23,13 @@
 #include <cstdint>
 
 #include "anh/hash_string.h"
-#include <anh_definitions.h>
 
 namespace anh {
 namespace event_dispatcher {
         
 typedef anh::HashString EventType;
 
-class DLL_EXPORT EventInterface {
+class EventInterface {
 public:
     virtual ~EventInterface() {}
 

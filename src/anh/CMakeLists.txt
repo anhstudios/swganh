@@ -1,9 +1,9 @@
-include(ANHSharedLibrary)
+include(ANHLibrary)
 
-AddANHSharedLibrary(libanh
+AddANHLibrary(libanh
 	DEPENDS
-		${Boost_LIBRARY_DIRS}
-		${GLOG_INCLUDE_DIR}
+		${TBB_DEBUG_LIBRARIES}
+		${GLOG_LIBRARY}
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}
@@ -13,7 +13,8 @@ AddANHSharedLibrary(libanh
 	    ${TBB_INCLUDE_DIRS}
 		${Glm_INCLUDE_DIR}
 	ADDITIONAL_LINK_DIRS
-	    
+	    ${Boost_LIBRARY_DIRS}
+		${GLOG_INCLUDE_DIR}
 	DEBUG_LIBRARIES 
         ${MYSQL_LIB}
         ${MYSQLCONNECTORCPP_LIBRARY}

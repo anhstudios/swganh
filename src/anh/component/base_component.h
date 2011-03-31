@@ -23,7 +23,6 @@
 #include <map>
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/component/component_interface.h>
-#include <anh_definitions.h>
 
 namespace anh {
 namespace component {
@@ -38,7 +37,7 @@ namespace component {
  * RegisterMessageHandler and UnregisterMessageHandler methods to bind specific incoming Message Types
  * to a member function of the component.
  */
-class DLL_EXPORT BaseComponent : public ComponentInterface
+class BaseComponent : public ComponentInterface
 {
 public:
 	/**
