@@ -3,6 +3,7 @@ include(ANHPythonBinding)
 AddANHPythonBinding(anh_python
     DEPENDS 
     	libanh 
+		mod_anh_transform
 		${GLOG_LIBRARY}
 		${TBB_DEBUG_LIBRARIES}
 		${PYTHON_LIBRARIES}

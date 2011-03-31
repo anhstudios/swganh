@@ -74,14 +74,14 @@ TEST_F(TestTransformComponent, LoadRotation) {
     float w = transform_comp->rotation().w;
     EXPECT_EQ(0.5f, w);
 }
-TEST_F(TestTransformComponent, SendTransformMessage){
-    glm::vec3 pos(1100,200,35);
-    glm::quat rot(0,0,0,1);
-    trans = make_shared<TransformMessage>(0, pos, rot, 5.0f);
-    transform_comp->HandleMessage(trans);
-    float x = transform_comp->position().x;
-    EXPECT_EQ(1100, x);
-}
+//TEST_F(TestTransformComponent, SendTransformMessage){
+//    glm::vec3 pos(1100,200,35);
+//    glm::quat rot(0,0,0,1);
+//    trans = make_shared<TransformMessage>(0, pos, rot, 5.0f);
+//    transform_comp->HandleMessage(trans);
+//    float x = transform_comp->position().x;
+//    EXPECT_EQ(1100, x);
+//}
 // test convenience methods
 TEST_F(TestTransformComponent, rotate45)
 {
