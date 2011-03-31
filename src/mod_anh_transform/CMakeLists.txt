@@ -4,6 +4,7 @@ AddANHSharedLibrary(mod_anh_transform
     DEPENDS 
 		libanh  
 		${TBB_DEBUG_LIBRARIES}  
+		${GLOG_LIBRARY}
 	ADDITIONAL_INCLUDE_DIRS
 	  ${Boost_INCLUDE_DIR}
 	  ${GLOG_INCLUDE_DIR}

@@ -31,6 +31,9 @@ using namespace transform;
 using namespace std;
 
 #define TEST_OBJECT_ID 0xDEADBEEF
+ComponentInfo NullTransformComponent::component_info_ = ComponentInfo(ComponentType("NullTransformComponent"), false);
+std::shared_ptr<NullTransformComponent> TransformComponentInterface::NullComponent = std::shared_ptr<NullTransformComponent>(new NullTransformComponent());
+ComponentInfo TransformComponent::component_info_ = ComponentInfo(ComponentType("TransformComponent"), true);
 
 /// This is used to test the Transform Component
 class TestTransformComponent : public testing::Test {

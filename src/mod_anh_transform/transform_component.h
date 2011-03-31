@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 using namespace anh::component;
 namespace anh_api = anh::api::components;
+
 namespace transform {
 
 //From http://wiki.swganh.org/index.php/DataTransform_(00000071)
