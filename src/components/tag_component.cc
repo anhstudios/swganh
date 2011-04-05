@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <vector>
 
 using namespace std;
-namespace zone { namespace components {
+namespace components {
 
 // statics
 std::shared_ptr<NullTagComponent> TagComponentInterface::NullComponent = std::shared_ptr<NullTagComponent>(new NullTagComponent());
@@ -91,4 +91,3 @@ bool TagComponent::has( std::string& string)
     return false;
 }
 } // components
-} // zone

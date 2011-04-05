@@ -1,8 +1,9 @@
 include(ANHLibrary)
 
-message(${MYSQLCONNECTORCPP_LIBRARY})
-
 AddANHLibrary(libanh
+	DEPENDS
+		${TBB_DEBUG_LIBRARIES}
+		${GLOG_LIBRARY}
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}
@@ -13,6 +14,7 @@ AddANHLibrary(libanh
 		${Glm_INCLUDE_DIR}
 	ADDITIONAL_LINK_DIRS
 	    ${Boost_LIBRARY_DIRS}
+		${GLOG_INCLUDE_DIR}
 	DEBUG_LIBRARIES 
         ${MYSQL_LIB}
         ${MYSQLCONNECTORCPP_LIBRARY}
@@ -40,5 +42,3 @@ AddANHLibrary(libanh
 		${PYTHON_LIBRARIES}
 		${GLOG_LIBRARY}
 )
-
-message(${Boost_LIBRARY_DIRS})

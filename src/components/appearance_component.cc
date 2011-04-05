@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 using namespace std;
-namespace zone { namespace components {
+namespace components {
 
 // statics
 std::shared_ptr<NullAppearanceComponent> AppearanceComponentInterface::NullComponent = std::shared_ptr<NullAppearanceComponent>(new NullAppearanceComponent());
@@ -53,4 +53,3 @@ void AppearanceComponent::Init(boost::property_tree::ptree& pt) {
 
 
 } // namespace components
-} // namespace zone

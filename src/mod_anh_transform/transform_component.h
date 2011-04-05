@@ -24,22 +24,22 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#ifndef ZONE_TRANSFORM_COMPONENT_H
-#define ZONE_TRANSFORM_COMPONENT_H
+#ifndef MOD_ANH_TRANSFORM_TRANFORM_COMPONENT_H
+#define MOD_ANH_TRANSFORM_TRANFORM_COMPONENT_H
 
-#include <anh/component/component_interface.h>
-#include <anh/component/base_component.h>
+#include <api/components/transform_component_interface.h>
 
 #include <boost/flyweight.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/glm.hpp>
-
+#include <anh_definitions.h>
 
 using namespace anh::component;
-namespace zone { namespace components {
+namespace anh_api = anh::api::components;
+
+namespace transform {
 
 //From http://wiki.swganh.org/index.php/DataTransform_(00000071)
-
 class TransformMessage : public SimpleMessage
 {
 public:
@@ -66,58 +66,7 @@ private:
     glm::quat rotation_;
     float speed_;
 };
-
-class NullTransformComponent;
-
-class TransformComponentInterface : public BaseComponent {
-    public:
-	TransformComponentInterface(const ObjectId id)
-		: BaseComponent(id) { }
-    virtual const ObjectId parent_id() = 0;
-    virtual const glm::vec3& position() = 0;
-    virtual const glm::quat& rotation() = 0;
-    virtual const float speed() = 0;
-
-    // convenience commands
-    virtual void rotate(const float& degrees) = 0;
-    virtual void rotate_left(const float& degrees) = 0;
-    virtual void rotate_right(const float& degrees) = 0;
-    virtual void face(const glm::vec3& target_position) = 0;
-    virtual void move(const glm::quat& rotation, float distance) = 0;
-    virtual void move_forward(const float& distance) = 0;
-    virtual void move_back(const float& distance) = 0;
-    virtual float rotation_angle() const = 0;
-
-    static std::shared_ptr<NullTransformComponent> NullComponent;
-};
-
-class NullTransformComponent : public TransformComponentInterface {
-public:
-    NullTransformComponent()
-		: TransformComponentInterface(0) { }
-
-    const ObjectId parent_id() { return parent_id_; }
-	const glm::vec3& position() { return position_; }
-	const glm::quat& rotation() { return rotation_; }
-    void rotate(const float& degrees){};
-    void rotate_left(const float& degrees){};
-    void rotate_right(const float& degrees){};
-    void face(const glm::vec3& target_position){};
-    void move(const glm::quat& rotation, float distance){};
-    void move_forward(const float& distance){};
-    void move_back(const float& distance){};
-    float rotation_angle() const{ return 0.0f; }
-    const float speed() { return speed_; }
-    
-	const ComponentInfo& component_info() { return component_info_; }
-private:
-    boost::flyweight<ObjectId> parent_id_;
-    glm::vec3 position_;
-    glm::quat rotation_;
-    boost::flyweight<float> speed_;
-    static ComponentInfo component_info_;
-};
-class TransformComponent : public TransformComponentInterface {
+class DLL_EXPORT TransformComponent : public anh_api::TransformComponentInterface {
 public:
     TransformComponent(const ObjectId& id);
     TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed);
@@ -157,6 +106,5 @@ private:
     static ComponentInfo component_info_;
 };
 
-} // components
-} // zone
-#endif //ZONE_TRANSFORM_COMPONENT_H
+} // transform
+#endif //MOD_ANH_TRANSFORM_TRANFORM_COMPONENT_H

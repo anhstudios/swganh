@@ -24,8 +24,8 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#ifndef ZONE_SPATIAL_COMPONENT_H
-#define ZONE_SPATIAL_COMPONENT_H
+#ifndef ANH_API_COMPONENTS_SPATIAL_COMPONENT_INTERFACE_H
+#define ANH_API_COMPONENTS_SPATIAL_COMPONENT_INTERFACE_H
 
 #include <anh/component/component_interface.h>
 #include <anh/component/base_component.h>
@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <boost/flyweight.hpp>
 
 using namespace anh::component;
-namespace zone { namespace components {
+namespace anh { namespace api { namespace components {
 enum REGION_TYPE
 {
     REGION_CITY				= 1,
@@ -74,26 +74,7 @@ private:
     
     static ComponentInfo component_info_;
 };
-
-class SpatialComponent : public SpatialComponentInterface {
-public:
-    SpatialComponent(const ObjectId& id);
-
-    void Init(boost::property_tree::ptree& pt);
-    std::vector<std::string> regions() { return regions_; }
-    const uint16_t spatial_location_id() { return spatial_location_id_; }
-    const uint32_t last_updated_ms() { return last_updated_ms_; }
-    const std::string& region_name(int index) { return regions_[index]; }
-    
-    const ComponentInfo& component_info() { return component_info_; }
-private:
-    std::vector<std::string> regions_;
-    boost::flyweight<uint16_t> spatial_location_id_;
-    boost::flyweight<uint32_t> last_updated_ms_;
-    
-    static ComponentInfo component_info_;
-};
-
 } // namespace components
-} // namespace zone
-#endif // ZONE_SPATIAL_COMPONENT_H
+} // namespace api
+} // namespace anh
+#endif // ANH_API_COMPONENTS_SPATIAL_COMPONENT_INTERFACE_H

@@ -24,8 +24,8 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#ifndef ZONE_TAG_COMPONENT_H
-#define ZONE_TAG_COMPONENT_H
+#ifndef COMPONENTS_TAG_COMPONENT_H
+#define COMPONENTS_TAG_COMPONENT_H
 
 #include <anh/component/component_interface.h>
 #include <anh/component/base_component.h>
@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <list>
 
 using namespace anh::component;
-namespace zone { namespace components {
+namespace components {
 class NullTagComponent;
 
 class TagComponentInterface : public BaseComponent {
@@ -87,6 +87,5 @@ private:
     static ComponentInfo component_info_;
 };
 } // components
-} // zone
 
-#endif //ZONE_TAG_COMPONENT_H
+#endif //COMPONENTS_TAG_COMPONENT_H

@@ -31,11 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
 using namespace std;
-namespace zone { namespace components {
+ComponentInfo anh_api::NullTransformComponent::component_info_ = ComponentInfo(ComponentType("NullTransformComponent"), false);
 
+namespace transform {
 // statics
-std::shared_ptr<NullTransformComponent> TransformComponentInterface::NullComponent = std::shared_ptr<NullTransformComponent>(new NullTransformComponent());
-ComponentInfo NullTransformComponent::component_info_ = ComponentInfo(ComponentType("NullTransformComponent"), false);
+std::shared_ptr<anh_api::NullTransformComponent> NullComponent = std::shared_ptr<anh_api::NullTransformComponent>(new anh_api::NullTransformComponent());
 ComponentInfo TransformComponent::component_info_ = ComponentInfo(ComponentType("TransformComponent"), true);
 
 TransformComponent::TransformComponent(const ObjectId& id)
@@ -57,7 +57,6 @@ void TransformComponent::Init(boost::property_tree::ptree& pt) {
 	rotation_.y = pt.get<float>("rotation.y", 0.0f);
 	rotation_.z = pt.get<float>("rotation.z", 0.0f);
 	rotation_.w = pt.get<float>("rotation.w", 1.0f);
-
 }
 
 void TransformComponent::HandleMessage(const shared_ptr<TransformMessage> message) {
@@ -122,4 +121,3 @@ float TransformComponent::rotation_angle() const {
 }
 
 } // namespace zone
-} // namespace components
