@@ -26,21 +26,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "main.h"
 #include <mod_anh_transform/transform_component.h>
-#include <anh/component/object_builder.h>
-#include <anh/component/object_manager.h>
-#include <anh/event_dispatcher/event_dispatcher_interface.h>
-#include <anh/database/database_manager_interface.h>
-//#include <glog/logging.h>
+#include <anh/module_manager/module_main.h>
+
+MODULE_STANDARD_SERVICES
 
 using namespace anh;
 using namespace api::components;
 using namespace transform;
 using namespace std;
-shared_ptr<event_dispatcher::EventDispatcherInterface> gEventDispatcher;
-shared_ptr<component::ObjectManager> gObjManager;
+
 // temp
 uint64_t guid = 0;
+
 bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
+
 	// register component to object manager
     gObjManager = 
         boost::any_cast<shared_ptr<component::ObjectManager>>(services->getService("ObjectManager"));
