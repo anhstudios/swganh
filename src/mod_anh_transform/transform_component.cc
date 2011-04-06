@@ -25,14 +25,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 #include "transform_component.h"
-
+#include <api/component_main.h>
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
 
+
 using namespace std;
 ComponentInfo anh_api::NullTransformComponent::component_info_ = ComponentInfo(ComponentType("NullTransformComponent"), false);
-
 namespace transform {
 // statics
 std::shared_ptr<anh_api::NullTransformComponent> NullComponent = std::shared_ptr<anh_api::NullTransformComponent>(new anh_api::NullTransformComponent());

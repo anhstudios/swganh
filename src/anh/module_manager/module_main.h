@@ -41,5 +41,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
     std::shared_ptr<anh::database::DatabaseManagerInterface> gDatabaseManager; \
     std::shared_ptr<anh::scripting::ScriptingManagerInterface> gScriptingManager; \
     std::shared_ptr<anh::server_directory::ServerDirectoryInterface> gServerDirectory; 
-
 #endif // ANH_MODULE_MANAGER_MODULE_MAIN_H
