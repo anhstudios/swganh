@@ -41,7 +41,7 @@ namespace event_dispatcher { class EventDispatcherInterface; class EventInterfac
 namespace database { class DatabaseManagerInterface; class DatabaseManager; }
 namespace scripting { class ScriptingManagerInterface; }
 namespace server_directory { class ServerDirectoryInterface; }
-namespace module_manager { class ModuleManager; }
+namespace module_manager { class ModuleManager; class PlatformServices; }
 
 /**
  * \brief Holds common functionality used between all servers in the cluster.
@@ -56,27 +56,15 @@ public:
     BaseApplication(
           int argc, char* argv[]
         , std::list<std::string> config_files
-        , std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher
-        , std::shared_ptr<database::DatabaseManagerInterface> db_manager
-        , std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager
-        , std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory
-        , std::shared_ptr<module_manager::ModuleManager> module_manager);
+        , std::shared_ptr<module_manager::PlatformServices> platform_services);
 
     BaseApplication(
           std::list<std::string> config_files
-        , std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher
-        , std::shared_ptr<database::DatabaseManagerInterface> db_manager
-        , std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager
-        , std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory
-        , std::shared_ptr<module_manager::ModuleManager> module_manager);
+        , std::shared_ptr<module_manager::PlatformServices> platform_services);
 
     BaseApplication(
           int argc, char* argv[]
-        , std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher
-        , std::shared_ptr<database::DatabaseManagerInterface> db_manager
-        , std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager
-        , std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory
-        , std::shared_ptr<module_manager::ModuleManager> module_manager);
+        , std::shared_ptr<module_manager::PlatformServices> platform_services);
     
     /**
      * Default Deconstructor.
@@ -109,8 +97,8 @@ public:
     std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory() { return server_directory_; }
 protected:
 
-    /// helper function to init certain objects
-    void init_();
+    /// helper function to init needed services
+    void init_services_();
 
     /**
     *   adds data source from default configuration loaded in
@@ -156,6 +144,7 @@ protected:
     std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager_;
     std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory_;
     std::shared_ptr<module_manager::ModuleManager> module_manager_;
+    std::shared_ptr<module_manager::PlatformServices> platform_services_;
 
     boost::program_options::options_description configuration_options_description_;
     boost::program_options::variables_map configuration_variables_map_;

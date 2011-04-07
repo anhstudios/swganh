@@ -43,6 +43,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/server_directory/server_directory.h>
 #include <anh/server_directory/datastore.h>
 #include <anh/module_manager/module_manager.h>
+#include <anh/module_manager/platform_services.h>
 
 using namespace std;
 using namespace anh;
@@ -54,59 +55,55 @@ using namespace module_manager;
 using namespace boost::program_options;
 
 BaseApplication::BaseApplication(int argc, char* argv[], list<string> config_files
-, shared_ptr<EventDispatcherInterface> event_dispatcher
-, shared_ptr<DatabaseManagerInterface> db_manager
-, shared_ptr<ScriptingManagerInterface> scripting_manager
-, shared_ptr<ServerDirectoryInterface> server_directory
-, shared_ptr<ModuleManager> module_manager)
+, shared_ptr<PlatformServices> platform_services)
     : configuration_options_description_("Configuration Options")
     , argc_(argc)
     , argv_(argv)
     , started_(false)
     , config_files_(config_files)
 {
-    event_dispatcher_ = event_dispatcher;
-    db_manager_ = db_manager;
-    scripting_manager_ = scripting_manager;
-    server_directory_ = server_directory;
-    module_manager_ = module_manager;
+    platform_services_ = platform_services;
+    init_services_();
 }
 
 BaseApplication::BaseApplication(int argc, char* argv[]
-, shared_ptr<EventDispatcherInterface> event_dispatcher
-, shared_ptr<DatabaseManagerInterface> db_manager
-, shared_ptr<ScriptingManagerInterface> scripting_manager
-, shared_ptr<ServerDirectoryInterface> server_directory
-, shared_ptr<ModuleManager> module_manager)
+, shared_ptr<PlatformServices> platform_services)
     : configuration_options_description_("Configuration Options")
     , argc_(argc)
     , argv_(argv)
     , started_(false)
     , config_files_(0)
 {
-    event_dispatcher_ = event_dispatcher;
-    db_manager_ = db_manager;
-    scripting_manager_ = scripting_manager;
-    server_directory_ = server_directory;
-    module_manager_ = module_manager;
+    platform_services_ = platform_services;
+    init_services_();
 }
 BaseApplication::BaseApplication(list<string> config_files
-, shared_ptr<EventDispatcherInterface> event_dispatcher
-, shared_ptr<DatabaseManagerInterface> db_manager
-, shared_ptr<ScriptingManagerInterface> scripting_manager
-, shared_ptr<ServerDirectoryInterface> server_directory
-, shared_ptr<ModuleManager> module_manager)
+, shared_ptr<PlatformServices> platform_services)
     : configuration_options_description_("Configuration Options")
     , argc_(0)
     , argv_(nullptr)
     , started_(false)
     , config_files_(config_files)
 {
-    event_dispatcher_ = event_dispatcher;
-    db_manager_ = db_manager;
-    scripting_manager_ = scripting_manager;
-    server_directory_ = server_directory;
-    module_manager_ = module_manager;
+    platform_services_ = platform_services;
+    init_services_();
+}
+
+void BaseApplication::init_services_() 
+{
+    try {
+        event_dispatcher_ = boost::any_cast<shared_ptr<EventDispatcherInterface>>(platform_services_->getService("EventDispatcher"));
+        scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
+    }
+    catch(boost::bad_any_cast e)
+    {
+        throw runtime_error("Required Services Missing: " + string(e.what()));
+    }
+    
+    // these are optional so they might not be passed in, the app can handle these values not being available.
+    db_manager_ = boost::any_cast<shared_ptr<DatabaseManagerInterface>>(platform_services_->getService("DatabaseManager"));
+    server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
+    module_manager_ = make_shared<ModuleManager>(platform_services_);
 }
 
 
@@ -118,7 +115,7 @@ void BaseApplication::startup() {
         addDefaultOptions_();
         // load the options
         loadOptions_(argc_, argv_, config_files_);
-        // get a server_directory
+        // get a database manager
         if (db_manager_ == nullptr) {
             db_manager_ = createDatabaseManager(sql::mysql::get_driver_instance());
         }
@@ -219,6 +216,8 @@ void BaseApplication::addDefaultOptions_() {
         ("optimization.min_threads", ::value<uint16_t>()->default_value(0), "Minimum number of threads to use for concurrency operations")
         ("optimization.max_threads", ::value<uint16_t>()->default_value(0), "Maximum number of threads to use for concurrency operations")
 
+        // TODO add in module initialization
+        ("modules", ::value<vector<string>>(), "modules to load on startup")
         /*("network.bind_address", ::value<string>()->default_value("localhost"), "Address to listen for incoming messages on")
         ("network.bind_port", ::value<uint16_t>(), "Port to listen for incoming messages on")*/
     ;

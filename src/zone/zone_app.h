@@ -10,11 +10,11 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team*/
 #define ZONE_APP_H_
 
 #include <anh/application.h>
-#include <anh/event_dispatcher/event_dispatcher.h>
-#include <anh/scripting/scripting_manager.h>
-#include <anh/component/object_manager.h>
-#include <anh/component/object_builder.h>
-#include <anh/module_manager/module_manager.h>
+
+namespace anh {
+namespace module_manager { class PlatformServices; }
+namespace component { class ObjectBuilder; class ObjectManager; }
+}
 
 namespace zone {
 class ZoneApp : public anh::BaseApplication
@@ -25,9 +25,7 @@ public:
     *
     */
     explicit ZoneApp(int argc, char* argv[], std::list<std::string> config_files
-        , std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> dispatcher
-        , std::shared_ptr<anh::scripting::ScriptingManagerInterface> scripting_manager
-        , std::shared_ptr<anh::module_manager::ModuleManager> module_manager);
+        , std::shared_ptr<anh::module_manager::PlatformServices> platform_services);
 
     // overrides
     virtual bool hasStarted() const { return started_; }
@@ -41,8 +39,8 @@ private:
     ZoneApp(const ZoneApp&);
     ZoneApp& operator=(const ZoneApp&);
 
-    anh::component::ObjectBuilder object_builder_;
-    anh::component::ObjectManager object_manager_;
+    std::shared_ptr<anh::component::ObjectBuilder> object_builder_;
+    std::shared_ptr<anh::component::ObjectManager> object_manager_;
 
 };
 

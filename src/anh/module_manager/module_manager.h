@@ -5,9 +5,10 @@
 #include <map>
 #include <vector>
 
-class PlatformServices;
+
 namespace anh {
 namespace module_manager {
+class PlatformServices;
 
 typedef std::map<std::string, std::shared_ptr<ModuleInterface> >                       ModulesMap;
 typedef std::map<std::string, std::shared_ptr<ModuleInterface> >::iterator             ModulesIterator;
@@ -55,6 +56,7 @@ public:
     *  \returns true if module is already loaded.
     */
     bool isLoaded(anh::HashString module_name);
+
 private:
     typedef std::map<anh::HashString, std::shared_ptr<ModuleInterface>>	               ModuleLoaders;
     typedef std::map<anh::HashString, std::shared_ptr<ModuleInterface>>::iterator	   ModuleIterator;
