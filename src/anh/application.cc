@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/scripting/scripting_manager.h>
 #include <anh/server_directory/server_directory.h>
 #include <anh/server_directory/datastore.h>
+#include <anh/module_manager/module_manager.h>
 
 using namespace std;
 using namespace anh;
@@ -49,13 +50,15 @@ using namespace event_dispatcher;
 using namespace database;
 using namespace scripting;
 using namespace server_directory;
+using namespace module_manager;
 using namespace boost::program_options;
 
 BaseApplication::BaseApplication(int argc, char* argv[], list<string> config_files
 , shared_ptr<EventDispatcherInterface> event_dispatcher
 , shared_ptr<DatabaseManagerInterface> db_manager
 , shared_ptr<ScriptingManagerInterface> scripting_manager
-, shared_ptr<ServerDirectoryInterface> server_directory)
+, shared_ptr<ServerDirectoryInterface> server_directory
+, shared_ptr<ModuleManager> module_manager)
     : configuration_options_description_("Configuration Options")
     , argc_(argc)
     , argv_(argv)
@@ -66,13 +69,15 @@ BaseApplication::BaseApplication(int argc, char* argv[], list<string> config_fil
     db_manager_ = db_manager;
     scripting_manager_ = scripting_manager;
     server_directory_ = server_directory;
+    module_manager_ = module_manager;
 }
 
 BaseApplication::BaseApplication(int argc, char* argv[]
 , shared_ptr<EventDispatcherInterface> event_dispatcher
 , shared_ptr<DatabaseManagerInterface> db_manager
 , shared_ptr<ScriptingManagerInterface> scripting_manager
-, shared_ptr<ServerDirectoryInterface> server_directory)
+, shared_ptr<ServerDirectoryInterface> server_directory
+, shared_ptr<ModuleManager> module_manager)
     : configuration_options_description_("Configuration Options")
     , argc_(argc)
     , argv_(argv)
@@ -83,12 +88,14 @@ BaseApplication::BaseApplication(int argc, char* argv[]
     db_manager_ = db_manager;
     scripting_manager_ = scripting_manager;
     server_directory_ = server_directory;
+    module_manager_ = module_manager;
 }
 BaseApplication::BaseApplication(list<string> config_files
 , shared_ptr<EventDispatcherInterface> event_dispatcher
 , shared_ptr<DatabaseManagerInterface> db_manager
 , shared_ptr<ScriptingManagerInterface> scripting_manager
-, shared_ptr<ServerDirectoryInterface> server_directory)
+, shared_ptr<ServerDirectoryInterface> server_directory
+, shared_ptr<ModuleManager> module_manager)
     : configuration_options_description_("Configuration Options")
     , argc_(0)
     , argv_(nullptr)
@@ -99,6 +106,7 @@ BaseApplication::BaseApplication(list<string> config_files
     db_manager_ = db_manager;
     scripting_manager_ = scripting_manager;
     server_directory_ = server_directory;
+    module_manager_ = module_manager;
 }
 
 

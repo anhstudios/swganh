@@ -41,6 +41,7 @@ namespace event_dispatcher { class EventDispatcherInterface; class EventInterfac
 namespace database { class DatabaseManagerInterface; class DatabaseManager; }
 namespace scripting { class ScriptingManagerInterface; }
 namespace server_directory { class ServerDirectoryInterface; }
+namespace module_manager { class ModuleManager; }
 
 /**
  * \brief Holds common functionality used between all servers in the cluster.
@@ -58,21 +59,24 @@ public:
         , std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher
         , std::shared_ptr<database::DatabaseManagerInterface> db_manager
         , std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager
-        , std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory);
+        , std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory
+        , std::shared_ptr<module_manager::ModuleManager> module_manager);
 
     BaseApplication(
           std::list<std::string> config_files
         , std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher
         , std::shared_ptr<database::DatabaseManagerInterface> db_manager
         , std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager
-        , std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory);
+        , std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory
+        , std::shared_ptr<module_manager::ModuleManager> module_manager);
 
     BaseApplication(
           int argc, char* argv[]
         , std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher
         , std::shared_ptr<database::DatabaseManagerInterface> db_manager
         , std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager
-        , std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory);
+        , std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory
+        , std::shared_ptr<module_manager::ModuleManager> module_manager);
     
     /**
      * Default Deconstructor.
@@ -151,6 +155,7 @@ protected:
     std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager_;
     std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory_;
+    std::shared_ptr<module_manager::ModuleManager> module_manager_;
 
     boost::program_options::options_description configuration_options_description_;
     boost::program_options::variables_map configuration_variables_map_;

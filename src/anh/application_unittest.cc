@@ -16,6 +16,8 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team*/
 #include <anh/server_directory/mock_server_directory.h>
 #include <anh/event_dispatcher/mock_event_dispatcher.h>
 #include <anh/scripting/scripting_manager.h>
+#include <anh/module_manager/module_manager.h>
+#include <anh/module_manager/platform_services.h>
 
 using namespace std;
 using namespace anh;
@@ -24,6 +26,7 @@ using namespace event_dispatcher;
 using namespace database;
 using namespace scripting;
 using namespace server_directory;
+using namespace module_manager;
 
 namespace {
 
@@ -31,8 +34,9 @@ class MockApplication : public BaseApplication {
 public:
     MockApplication(list<string> config_files, shared_ptr<EventDispatcherInterface> event_dispatcher
     , shared_ptr<DatabaseManagerInterface> db_manager, shared_ptr<ScriptingManagerInterface> scripting_manager
-    , shared_ptr<ServerDirectoryInterface> server_directory)
-    : BaseApplication(config_files, event_dispatcher, db_manager, scripting_manager, server_directory){};
+    , shared_ptr<ServerDirectoryInterface> server_directory
+    , shared_ptr<ModuleManager> module_manager)
+    : BaseApplication(config_files, event_dispatcher, db_manager, scripting_manager, server_directory, module_manager){};
     MOCK_CONST_METHOD0(hasStarted, bool());
     MOCK_METHOD0(onAddDefaultOptions_, void());
     MOCK_METHOD0(onRegisterApp_, void());
@@ -46,13 +50,17 @@ public:
     shared_ptr<NiceMock<MockDatabaseManager>> manager;
     shared_ptr<NiceMock<MockServerDirectory>> directory;
     shared_ptr<NiceMock<MockEventDispatcher>> mock_dispatcher;  
+    shared_ptr<ModuleManager> module_manager;
+    shared_ptr<module_manager::PlatformServices> services;
 
     shared_ptr<MockApplication> buildBasicApplication() {
         scripter = make_shared<MockScriptingManager>();
         manager = make_shared<NiceMock<MockDatabaseManager>>();
         directory = make_shared<NiceMock<MockServerDirectory>>();
         mock_dispatcher = make_shared<NiceMock<MockEventDispatcher>>();
-        return make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory);
+        services = make_shared<module_manager::PlatformServices>();
+        module_manager = make_shared<ModuleManager>(services);
+        return make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory, module_manager);
     }
 protected:
     virtual void SetUp();
@@ -163,7 +171,7 @@ TEST_F(ApplicationTest, cantLoadConfigFile)
     mock_dispatcher = make_shared<NiceMock<MockEventDispatcher>>();
     list<string> config_list;
     config_list.push_back("notfound.cfg");
-    shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory);
+    shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory, nullptr);
     // expectation is caught but app is terminated due to fatal log
     ASSERT_EXIT(
        app->startup(), ::testing::ExitedWithCode(0), "Could not open configuration file"
@@ -178,7 +186,7 @@ TEST_F(ApplicationTest, foundConfigNoValidValues)
     mock_dispatcher = make_shared<NiceMock<MockEventDispatcher>>();
     list<string> config_list;
     config_list.push_back("invalid_data.cfg");
-    shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory);
+    shared_ptr<MockApplication> app = make_shared<MockApplication>(config_list, mock_dispatcher, manager, scripter, directory, nullptr);
     
     ASSERT_EXIT(
         app->startup(), ::testing::ExitedWithCode(0), "Could not parse config file"
@@ -209,7 +217,7 @@ TEST_F(ApplicationTest, doesHandleNullPtrScripter)
     mock_dispatcher = make_shared<NiceMock<MockEventDispatcher>>();
 
     EXPECT_NO_THROW(
-        shared_ptr<MockApplication> app = make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory);
+        shared_ptr<MockApplication> app = make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory, nullptr);
         );
 }
 TEST_F(ApplicationTest, doesHandleNullPtrEvent)
@@ -219,7 +227,7 @@ TEST_F(ApplicationTest, doesHandleNullPtrEvent)
     directory = make_shared<NiceMock<MockServerDirectory>>();
     mock_dispatcher = nullptr;
     // event dispatcher shouldn't throw an exception, but should give an error message
-    shared_ptr<MockApplication> app = make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory);
+    shared_ptr<MockApplication> app = make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory, nullptr);
     ASSERT_EXIT(
         app->startup(), ::testing::ExitedWithCode(0), "No Event Dispatcher Registered"
         );
@@ -234,7 +242,7 @@ TEST_F(ApplicationTest, doesHandleNullPtrDB)
     mock_dispatcher = make_shared<NiceMock<MockEventDispatcher>>();
     // we'll build this up if they don't send one
     EXPECT_NO_THROW(
-        shared_ptr<MockApplication> app = make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory);
+        shared_ptr<MockApplication> app = make_shared<MockApplication>(config, mock_dispatcher, manager, scripter, directory, nullptr);
         );
 }
 

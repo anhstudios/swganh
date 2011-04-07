@@ -14,18 +14,20 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team*/
 #include <anh/scripting/scripting_manager.h>
 #include <anh/component/object_manager.h>
 #include <anh/component/object_builder.h>
+#include <anh/module_manager/module_manager.h>
 
 namespace zone {
 class ZoneApp : public anh::BaseApplication
 {
 public:
-    /*! \brief Star up the Zone Application which controls everything on a planet.
+    /*! \brief Start up the Zone Application which controls everything on a planet.
     *
     *
     */
     explicit ZoneApp(int argc, char* argv[], std::list<std::string> config_files
         , std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> dispatcher
-        , std::shared_ptr<anh::scripting::ScriptingManagerInterface> scripting_manager);
+        , std::shared_ptr<anh::scripting::ScriptingManagerInterface> scripting_manager
+        , std::shared_ptr<anh::module_manager::ModuleManager> module_manager);
 
     // overrides
     virtual bool hasStarted() const { return started_; }
