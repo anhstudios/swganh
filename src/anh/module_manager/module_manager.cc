@@ -1,3 +1,21 @@
+/*
+ This file is part of MMOServer. For more information, visit http://swganh.com
+ 
+ Copyright (c) 2006 - 2011 The SWG:ANH Team
+
+ MMOServer is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ MMOServer is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #include "module_manager.h"
 #if _WIN32
 #include "win32_module.h"
@@ -31,7 +49,7 @@ shared_ptr<ModuleInterface> ModuleManager::CreateModule()
 bool ModuleManager::LoadModule(std::string file_name, std::shared_ptr<ModuleInterface> module)
 {
     // load the library into an instance and pass into map for future use
-    if (module->Load(file_name, services_))
+    if (module->Load(file_name, services_, version_))
     {
         loaded_modules_.insert(ModulePair(file_name, module));
         return true;
@@ -70,7 +88,7 @@ void ModuleManager::LoadModules(ModulesVec modules_vec)
         // get new module of appropriate type
         auto module = CreateModule();
         // load module
-        if (module->Load(file_name, services_)) 
+        if (module->Load(file_name, services_, version_)) 
         {
             // add module to our stored modules map
             loaded_modules_.insert(ModulesPair(file_name, module));
@@ -95,7 +113,7 @@ ModulesMap ModuleManager::CreateModulesMapFromFile_(const string& file_name)
                 // loops through each vector string and inserts into modules_vector
                 for_each(hs.begin(), hs.end(), [=,&modules_map] (string mod_name){
                     auto module = CreateModule();
-                    module->Load(mod_name, services_);
+                    module->Load(mod_name, services_, version_);
                     loaded_modules_.insert(ModulesPair(mod_name, module));
                 });
             }

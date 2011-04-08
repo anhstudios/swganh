@@ -42,8 +42,6 @@ public:
     uint64_t	global_time() const;
     uint64_t	local_time() const;
 
-    void global_drift(int64_t drift);
-    
     //timegettime uses 8µs to execute
     //by stamping our timestamp every second and using it instead
     //we have a much lower resolution but save a lot of processing time
@@ -55,7 +53,6 @@ public:
     }
 
 private:
-    int64_t		global_drift_;      // The amount of time the local clock is from the global system clock
     uint64_t    stored_time_;
 };
 } // namespace anh

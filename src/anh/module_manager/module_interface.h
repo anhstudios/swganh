@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <string>
 #include <cstdint>
-#include <memory>
+#include <anh/memory.h>
 
 namespace anh {
 namespace module_manager {
@@ -57,6 +57,13 @@ typedef struct ModuleApiVersion
 		else
 			return false;
 	}
+    bool operator !=(const ModuleApiVersion& other)
+    {
+        if((major != other.major) && (minor != other.minor))
+			return true;
+		else
+			return false;
+    }
 
 	uint32_t major;
 	uint32_t minor;
@@ -82,7 +89,7 @@ public:
 	/**
 	 * 
 	 */
-	virtual bool Load(const std::string& filename, std::shared_ptr<PlatformServices> services) = 0;
+	virtual bool Load(const std::string& filename, std::shared_ptr<PlatformServices> services, std::shared_ptr<ModuleApiVersion> api_version) = 0;
 
 	/**
 	 *

@@ -110,7 +110,6 @@ void BaseApplication::init_services_()
     {
         // eat the exception, we don't care they failed.
     }
-    module_manager_ = make_shared<ModuleManager>(platform_services_);
 }
 
 
@@ -122,6 +121,8 @@ void BaseApplication::startup() {
         addDefaultOptions_();
         // load the options
         loadOptions_(argc_, argv_, config_files_);
+        // setup ModuleManager and load modules
+        setupModules_();
         // get a database manager
         if (db_manager_ == nullptr) {
             db_manager_ = createDatabaseManager(sql::mysql::get_driver_instance());
@@ -226,6 +227,8 @@ void BaseApplication::addDefaultOptions_() {
         ("optimization.max_threads", ::value<uint16_t>()->default_value(0), "Maximum number of threads to use for concurrency operations")
 
         ("modules", ::value<vector<string>>()->default_value(vector<string>(), ""), "modules to load on startup")
+        ("module_api_version_major",  ::value<uint32_t>()->default_value(0), "Major Module API Version Allowed")
+        ("module_api_version_minor",   ::value<uint32_t>()->default_value(1), "Minor Module API Version Allowed")
         // 
         /*("network.bind_address", ::value<string>()->default_value("localhost"), "Address to listen for incoming messages on")
         ("network.bind_port", ::value<uint16_t>(), "Port to listen for incoming messages on")*/
@@ -257,9 +260,7 @@ void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> con
     })(config_files.front());
 
     notify(configuration_variables_map_);
-    vector<string> modules = configuration_variables_map_["modules"].as<vector<string>>();
-    module_manager_->LoadModules(modules);
-    //cout << modules[0] <<endl << modules[1] <<endl;
+    
     // The help argument has been flagged, display the
     // server options and throw a runtime_error exception
     // to stop server startup.
@@ -267,6 +268,20 @@ void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> con
         cout << configuration_options_description_ << endl;
         throw runtime_error("Help option flagged.");
     }
+}
+void BaseApplication::setupModules_()
+{
+    // get modules_version
+    uint32_t major = configuration_variables_map_["module_api_version_major"].as<uint32_t>();
+    uint32_t minor = configuration_variables_map_["module_api_version_minor"].as<uint32_t>();
+    string str_version = major + "." + minor;
+    modules_version_ = make_shared<ModuleApiVersion>(major, minor, str_version);
+
+    module_manager_ = make_shared<ModuleManager>(platform_services_, modules_version_);
+    vector<string> modules = configuration_variables_map_["modules"].as<vector<string>>();
+    module_manager_->LoadModules(modules);
+    
+
 }
 bool BaseApplication::addDataSourcesFromOptions_()
 {

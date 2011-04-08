@@ -1,3 +1,22 @@
+/*
+ This file is part of MMOServer. For more information, visit http://swganh.com
+ 
+ Copyright (c) 2006 - 2011 The SWG:ANH Team
+
+ MMOServer is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ MMOServer is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef ANH_MODULE_MANAGER_MODULE_MANAGER_H
 #define ANH_MODULE_MANAGER_MODULE_MANAGER_H
 #include <anh/hash_string.h>
@@ -12,7 +31,7 @@ class PlatformServices;
 typedef std::map<std::string, std::shared_ptr<ModuleInterface> >                       ModulesMap;
 typedef std::map<std::string, std::shared_ptr<ModuleInterface> >::iterator             ModulesIterator;
 typedef std::pair<std::string, std::shared_ptr<ModuleInterface> >                      ModulesPair;
-typedef std::vector<std::string>                                                          ModulesVec;
+typedef std::vector<std::string>                                                       ModulesVec;
 
 /// \brief The Module Manager handles access to modules
 ///
@@ -20,7 +39,10 @@ class ModuleManager
 {
 public:
     /// \brief default ctor
-    ModuleManager(std::shared_ptr<PlatformServices> services) { services_ = services; }
+    ModuleManager(std::shared_ptr<PlatformServices> services, std::shared_ptr<ModuleApiVersion> api_version) {
+        services_ = services; 
+        version_ = api_version;
+    }
     /*  \brief creates a module depending on the OS and returns it
     *
     *   \returns shared_ptr module either Win32Module, UnixModule, or MacOSModule
@@ -42,7 +64,7 @@ public:
     *  \calls @LoadModule
     */
     void LoadModules(ModulesMap modules);
-    /// loads a set of modules
+    /// loads a vector of modules
     void LoadModules(ModulesVec modules_vec);
     /* \brief Loads modules from a plaintext file
     *  \param std::string of text file to be loaded
@@ -72,6 +94,7 @@ private:
     ModuleLoaders loaded_modules_;
     /// \brief shared_ptr of the shared services
     std::shared_ptr<PlatformServices> services_;
+    std::shared_ptr<ModuleApiVersion> version_;
 };
 } // module_manager
 } // anh

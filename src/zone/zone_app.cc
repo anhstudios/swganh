@@ -66,7 +66,6 @@ int main(int argc, char* argv[])
     services->addService("EventDispatcher", dispatcher);
     services->addService("ScriptingManager", scripter);
     
-    auto module_manager = make_shared<ModuleManager>(services);
     ZoneApp app(argc, argv, config, services);
     
     app.startup();

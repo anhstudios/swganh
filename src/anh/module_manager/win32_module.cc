@@ -40,7 +40,7 @@ Win32Module::~Win32Module(void)
 {
 }
 
-bool Win32Module::Load(const std::string& filename, std::shared_ptr<PlatformServices> services)
+bool Win32Module::Load(const std::string& filename, std::shared_ptr<PlatformServices> services, std::shared_ptr<ModuleApiVersion> api_version)
 {
 	handle_ = LoadLibrary(filename.c_str());
 	if(!handle_)
@@ -51,6 +51,9 @@ bool Win32Module::Load(const std::string& filename, std::shared_ptr<PlatformServ
 	get_name_func_ = (GetNameFunc)GetProcAddress(handle_, "GetModuleName");
 	get_version_func_ = (GetVersionFunc)GetProcAddress(handle_, "GetModuleVersion");
 	get_description_func_ = (GetDescriptionFunc)GetProcAddress(handle_, "GetModuleDescription");
+
+    if(*api_version.get() != get_version_func_())
+        return false;
 
 	if(!load_func_(services))
 		return false;

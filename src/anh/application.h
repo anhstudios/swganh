@@ -42,7 +42,7 @@ namespace event_dispatcher { class EventDispatcherInterface; class EventInterfac
 namespace database { class DatabaseManagerInterface; class DatabaseManager; }
 namespace scripting { class ScriptingManagerInterface; }
 namespace server_directory { class ServerDirectoryInterface; }
-namespace module_manager { class ModuleManager; class PlatformServices; }
+namespace module_manager { class ModuleManager; class PlatformServices; class ModuleApiVersion; }
 class Clock;
 
 /**
@@ -135,6 +135,8 @@ protected:
      * \param config_files The files to load the options from.
      */
     void loadOptions_(uint32_t argc, char* argv[], std::list<std::string> config_files);
+    // helper to setup modules and modules_manager
+    void setupModules_();
 
     // base events to be triggered
     std::shared_ptr<event_dispatcher::EventInterface> startup_event_;
@@ -155,6 +157,7 @@ protected:
     bool started_;
     std::shared_ptr<Clock> clock_;
     std::list<std::string> config_files_;
+    std::shared_ptr<module_manager::ModuleApiVersion> modules_version_;
 };
 
 }  // namespace anh

@@ -33,44 +33,48 @@ using namespace anh::module_manager;
 
 TEST(Win32ModuleTest, Load_Success)
 {
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
 	Win32Module module;
 	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	EXPECT_TRUE(module.Load("./test_module.dll", services));
+	EXPECT_TRUE(module.Load("./test_module.dll", services, module_version));
 }
 
 TEST(Win32ModuleTest, Unload_Success)
 {
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
 	Win32Module module;
 	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.dll", services);
+	module.Load("./test_module.dll", services, module_version);
 	module.Unload(services);
 }
 
 TEST(Win32ModuleTest, GetName_Success)
 {
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
 	Win32Module module;
 	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.dll", services);
+	module.Load("./test_module.dll", services, module_version);
 
 	EXPECT_EQ(std::string("DLLTest"), module.name());
 }
 
 TEST(Win32ModuleTest, GetVersion_Success)
 {
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
 	Win32Module module;
 	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.dll", services);
+	module.Load("./test_module.dll", services, module_version);
 
-	ModuleApiVersion module_version(0, 1, "0.1");
-	EXPECT_EQ(module_version.major, module.version().major);
-	EXPECT_EQ(module_version.minor, module.version().minor);
+	EXPECT_EQ(module_version->major, module.version().major);
+	EXPECT_EQ(module_version->minor, module.version().minor);
 }
 
 TEST(Win32ModuleTest, GetDescription_Success)
 {
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
 	Win32Module module;
 	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.dll", services);
+	module.Load("./test_module.dll", services, module_version);
 
 	std::string module_description = "A test module.";
 	EXPECT_EQ(module_description, module.description());

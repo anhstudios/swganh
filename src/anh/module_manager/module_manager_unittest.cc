@@ -33,7 +33,8 @@ namespace {
 class MockModuleManager : public ModuleManager
 {
 public:
-    MockModuleManager(std::shared_ptr<PlatformServices> services) : ModuleManager(services) {}
+    MockModuleManager(std::shared_ptr<PlatformServices> services, std::shared_ptr<ModuleApiVersion> version) 
+        : ModuleManager(services, version) {}
     MOCK_METHOD0(CreateModule, std::shared_ptr<ModuleInterface>() );
     MOCK_METHOD2(LoadModule, bool( std::string name, std::shared_ptr<ModuleInterface> module));
     MOCK_METHOD1(LoadModule, bool( anh::HashString module_name ));
@@ -49,13 +50,16 @@ class ModuleManagerTests : public testing::Test
 public:
     shared_ptr<ModuleManager> module_manager;
     shared_ptr<anh::module_manager::PlatformServices> services;
+    shared_ptr<anh::module_manager::ModuleApiVersion> version;
 protected:
     virtual void SetUp();
     virtual void TearDown(){}
 };
 void ModuleManagerTests::SetUp() 
 {
-    module_manager = make_shared<ModuleManager>(services);
+    version = make_shared<ModuleApiVersion>(0, 1);
+    module_manager = make_shared<ModuleManager>(services, version);
+
     // create test files
     ofstream of("modules.txt");
     of << "test1" << endl;
@@ -67,13 +71,13 @@ void ModuleManagerTests::SetUp()
     of.close();
 }
 TEST_F(ModuleManagerTests, LoadModuleSuccess) {
-    auto mod_manager = make_shared<MockModuleManager>(services);
+    auto mod_manager = make_shared<MockModuleManager>(services, version);
     EXPECT_CALL(*mod_manager, LoadModule(_));
     mod_manager->LoadModule("testModule");
 }
 
 TEST_F(ModuleManagerTests, LoadModuleNotFound) {
-    auto mod_manager = make_shared<MockModuleManager>(services);
+    auto mod_manager = make_shared<MockModuleManager>(services, version);
     EXPECT_CALL(*mod_manager, LoadModule(_));
     EXPECT_FALSE(mod_manager->LoadModule("notFound"));
 }

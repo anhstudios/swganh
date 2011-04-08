@@ -41,7 +41,7 @@ public:
 	Win32Module(void);
 	~Win32Module(void);
 
-	bool Load(const std::string& filename, std::shared_ptr<PlatformServices> services);
+	bool Load(const std::string& filename, std::shared_ptr<PlatformServices> services,  std::shared_ptr<ModuleApiVersion> api_version);
 	void Unload(std::shared_ptr<PlatformServices> services);
 
 	const std::string name(void) { return get_name_func_(); }
