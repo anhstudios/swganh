@@ -36,7 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <cppconn/driver.h>
 
 #include <glog/logging.h>
-
+#include <anh/clock.h>
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/database/database_manager.h>
 #include <anh/scripting/scripting_manager.h>
@@ -94,15 +94,22 @@ void BaseApplication::init_services_()
     try {
         event_dispatcher_ = boost::any_cast<shared_ptr<EventDispatcherInterface>>(platform_services_->getService("EventDispatcher"));
         scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
+        // clock
+        clock_ = boost::any_cast<shared_ptr<Clock>>(platform_services_->getService("Clock"));
     }
     catch(boost::bad_any_cast e)
     {
         throw runtime_error("Required Services Missing: " + string(e.what()));
     }
-    
+    try {
     // these are optional so they might not be passed in, the app can handle these values not being available.
     db_manager_ = boost::any_cast<shared_ptr<DatabaseManagerInterface>>(platform_services_->getService("DatabaseManager"));
     server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
+    }
+    catch(...)
+    {
+        // eat the exception, we don't care they failed.
+    }
     module_manager_ = make_shared<ModuleManager>(platform_services_);
 }
 
@@ -160,6 +167,7 @@ void BaseApplication::process() {
         return;
     }
     process_event_ = make_shared<SimpleEvent>("Process");
+    event_dispatcher_->tick(clock_->global_time());
     event_dispatcher_->trigger(process_event_);
 }
 
@@ -217,7 +225,8 @@ void BaseApplication::addDefaultOptions_() {
         ("optimization.max_threads", ::value<uint16_t>()->default_value(0), "Maximum number of threads to use for concurrency operations")
 
         // TODO add in module initialization
-        ("modules", ::value<vector<string>>(), "modules to load on startup")
+        ("modules", ::value<vector<string>>()->default_value(vector<string>(), ""), "modules to load on startup")
+        // 
         /*("network.bind_address", ::value<string>()->default_value("localhost"), "Address to listen for incoming messages on")
         ("network.bind_port", ::value<uint16_t>(), "Port to listen for incoming messages on")*/
     ;
@@ -232,9 +241,9 @@ void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> con
     // that are to be loaded. If a configuration file
     // is missing, throw a runtime_error.
 
-    for_each(config_files.begin(), config_files.end(), [=] (const string& filename) {
+    for_each(config_files.begin(), config_files.end(), [&] (const string& filename) {
         ifstream config_file(filename);
-        if(!config_file)
+        if(!config_file.is_open())
             throw runtime_error("Could not open configuration file.");
         else
         {

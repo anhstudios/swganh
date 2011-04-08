@@ -13,11 +13,13 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team*/
 #include <anh/database/mock_cppconn.h>
 #include <anh/database/mock_database_manager.h>
 #include <anh/scripting/mock_scripting_manager.h>
+#include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/server_directory/mock_server_directory.h>
 #include <anh/event_dispatcher/mock_event_dispatcher.h>
 #include <anh/scripting/scripting_manager.h>
 #include <anh/module_manager/module_manager.h>
 #include <anh/module_manager/platform_services.h>
+#include <anh/clock.h>
 
 using namespace std;
 using namespace anh;
@@ -52,15 +54,13 @@ public:
     shared_ptr<PlatformServices> services;
 
     shared_ptr<MockApplication> buildBasicApplication() {
-        scripter = make_shared<MockScriptingManager>();
-        manager = make_shared<NiceMock<MockDatabaseManager>>();
-        directory = make_shared<NiceMock<MockServerDirectory>>();
-        mock_dispatcher = make_shared<NiceMock<MockEventDispatcher>>();
+        shared_ptr<ScriptingManagerInterface> scripting_mgr = make_shared<ScriptingManager>("scripts");
+        shared_ptr<EventDispatcherInterface> event_dispatcher = make_shared<EventDispatcher>();
+        shared_ptr<Clock> clock = make_shared<Clock>();
         services = make_shared<PlatformServices>();
-        services->addService("ScriptingManager", scripter);
-        services->addService("EventDispatcher", mock_dispatcher);
-        services->addService("ServerDirectory", directory);
-        services->addService("DatabaseManager", manager);
+        services->addService("ScriptingManager", scripting_mgr);
+        services->addService("EventDispatcher", event_dispatcher);
+        services->addService("Clock", clock);
         return make_shared<MockApplication>(config, services);
     }
 protected:

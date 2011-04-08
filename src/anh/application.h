@@ -42,6 +42,7 @@ namespace database { class DatabaseManagerInterface; class DatabaseManager; }
 namespace scripting { class ScriptingManagerInterface; }
 namespace server_directory { class ServerDirectoryInterface; }
 namespace module_manager { class ModuleManager; class PlatformServices; }
+class Clock;
 
 /**
  * \brief Holds common functionality used between all servers in the cluster.
@@ -151,6 +152,7 @@ protected:
     int argc_;
     char** argv_;
     bool started_;
+    std::shared_ptr<Clock> clock_;
     std::list<std::string> config_files_;
 };
 

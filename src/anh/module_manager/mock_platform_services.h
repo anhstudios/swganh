@@ -17,29 +17,26 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_MOCK_MODULE_MANAGER_MODULE_H_
-#define ANH_MOCK_MODULE_MANAGER_MODULE_H_
+#ifndef ANH_MOCK_MODULE_MANAGER_PLATFORM_SERVICES_H_
+#define ANH_MOCK_MODULE_MANAGER_PLATFORM_SERVICES_H_
 
 #include <gmock/gmock.h>
 
-#include <anh/module_manager/module_interface.h>
+#include <anh/module_manager/platform_services.h>
 
 namespace anh {
 namespace module_manager {
 
-class MockModule : public ModuleInterface
+class MockPlatformServices : public PlatformServices
 {
 public:
-    MOCK_METHOD2( Load, bool (
-        const std::string& filename,
-        std::shared_ptr<PlatformServices> services));
-    MOCK_METHOD1( Unload, void (
-        std::shared_ptr<PlatformServices> services));
-    MOCK_METHOD0( name, const std::string name());
-    MOCK_METHOD0( version, const ModuleApiVersion version());
-    MOCK_METHOD0( description, const std::string description());
+    MOCK_METHOD2( addService, bool (
+        Service service_name, boost::any service));
+    MOCK_METHOD1( removeService, void (
+        Service service_name));
+    MOCK_METHOD0( hasService, Service service_name);
 };
 
 } // end module_manager
 } // end anh
-#endif // end ANH_MOCK_MODULE_MANAGER_MODULE_H_
+#endif // end ANH_MOCK_MODULE_MANAGER_PLATFORM_SERVICES_H_
