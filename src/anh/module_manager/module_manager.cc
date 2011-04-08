@@ -34,6 +34,10 @@ namespace fs = boost::filesystem;
 namespace anh {
 namespace module_manager {
 
+ModuleManager::~ModuleManager()
+{
+    UnloadModules();
+}
 shared_ptr<ModuleInterface> ModuleManager::CreateModule()
 {
     shared_ptr<ModuleInterface> module;
@@ -58,7 +62,7 @@ bool ModuleManager::LoadModule(std::string file_name, std::shared_ptr<ModuleInte
 }
 bool ModuleManager::LoadModule(HashString module_name)
 {
-    shared_ptr<ModuleInterface> module = CreateModule();
+    auto module = CreateModule();
     // load the library into an instance and pass into map for future use
     if (LoadModule(module_name.ident_string(), module))
     {
@@ -66,20 +70,27 @@ bool ModuleManager::LoadModule(HashString module_name)
     }
     return false;
 }
-void ModuleManager::LoadModules(ModulesMap modules)
-{  
-    for (auto it = modules.begin(); it != modules.end(); ++it)
-    {
-        LoadModule((*it).first, (*it).second);
-    }
-}
 void ModuleManager::LoadModules(const string& file_name)
 {
-    ModulesMap modules;
-    modules = CreateModulesMapFromFile_(file_name);
-    if (modules.size() > 0)
+    fs::path file (file_name);
+    ModuleLoaders modules_map;
+    if(fs::exists(file))
     {
-        LoadModules(modules);
+        if (fs::is_regular_file(file))
+        {
+            fs::ifstream in_stream(file);
+            vector<string> hs;
+            // this is copying from the file stream each string line into the vector hs
+            copy(istream_iterator<string>(in_stream), istream_iterator<string>(), back_inserter(hs));
+            if (hs.size() > 0)
+            {
+                LoadModules(hs);
+            }
+        }
+    }
+    else
+    {
+        throw runtime_error("Could not load file " + file_name);
     }
 }
 void ModuleManager::LoadModules(ModulesVec modules_vec)
@@ -91,39 +102,10 @@ void ModuleManager::LoadModules(ModulesVec modules_vec)
         if (module->Load(file_name, services_, version_)) 
         {
             // add module to our stored modules map
-            loaded_modules_.insert(ModulesPair(file_name, module));
+            loaded_modules_.insert(ModulePair(HashString(file_name), module));
         }
         // log couldn't load module
     });
-}
-ModulesMap ModuleManager::CreateModulesMapFromFile_(const string& file_name)
-{
-    fs::path file (file_name);
-    ModulesMap modules_map;
-    if(fs::exists(file))
-    {
-        if (fs::is_regular_file(file))
-        {
-            fs::ifstream in_stream(file);
-            vector<string> hs;
-            // this is copying from the file stream each string line into the vector hs
-            copy(istream_iterator<string>(in_stream), istream_iterator<string>(), back_inserter(hs));
-            if (hs.size() > 0)
-            {
-                // loops through each vector string and inserts into modules_vector
-                for_each(hs.begin(), hs.end(), [=,&modules_map] (string mod_name){
-                    auto module = CreateModule();
-                    module->Load(mod_name, services_, version_);
-                    loaded_modules_.insert(ModulesPair(mod_name, module));
-                });
-            }
-        }
-    }
-    else
-    {
-        throw runtime_error("Could not load file " + file_name);
-    }
-    return modules_map;
 }
 bool ModuleManager::isLoaded(HashString module_name)
 {
@@ -143,6 +125,13 @@ void ModuleManager::UnloadModule(HashString module_name)
         (*i).second->Unload(services_);
         loaded_modules_.erase(i);
     }
+}
+void ModuleManager::UnloadModules()
+{
+    for_each(loaded_modules_.begin(), loaded_modules_.end(), [&] (ModulePair module) {
+        module.second->Unload(services_);
+    });
+    loaded_modules_.empty();
 }
 
 } // module_manager

@@ -38,11 +38,11 @@ public:
     MOCK_METHOD0(CreateModule, std::shared_ptr<ModuleInterface>() );
     MOCK_METHOD2(LoadModule, bool( std::string name, std::shared_ptr<ModuleInterface> module));
     MOCK_METHOD1(LoadModule, bool( anh::HashString module_name ));
-    MOCK_METHOD1(LoadModules, void ( ModulesMap modules ));
     MOCK_METHOD1(LoadModules, void ( ModulesVec modules_vec ));
     MOCK_METHOD1(LoadModules, void ( const std::string& file_name ));
     MOCK_METHOD1(UnloadModule, void ( anh::HashString module_name ));
     MOCK_METHOD1(isLoaded, bool ( anh::HashString module_name ));
+    MOCK_METHOD0(UnloadModules, void ());
 };
 
 class ModuleManagerTests : public testing::Test
