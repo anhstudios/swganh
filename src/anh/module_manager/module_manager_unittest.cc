@@ -19,6 +19,7 @@
 #include <anh/module_manager/module_manager.h>
 #include <anh/module_manager/platform_services.h>
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <iostream>
 #include <fstream>
 
@@ -28,6 +29,20 @@ using namespace anh;
 using namespace std;
 
 namespace {
+
+class MockModuleManager : public ModuleManager
+{
+public:
+    MockModuleManager(std::shared_ptr<PlatformServices> services) : ModuleManager(services) {}
+    MOCK_METHOD0(CreateModule, std::shared_ptr<ModuleInterface>() );
+    MOCK_METHOD2(LoadModule, bool( std::string name, std::shared_ptr<ModuleInterface> module));
+    MOCK_METHOD1(LoadModule, bool( anh::HashString module_name ));
+    MOCK_METHOD1(LoadModules, void ( ModulesMap modules ));
+    MOCK_METHOD1(LoadModules, void ( ModulesVec modules_vec ));
+    MOCK_METHOD1(LoadModules, void ( const std::string& file_name ));
+    MOCK_METHOD1(UnloadModule, void ( anh::HashString module_name ));
+    MOCK_METHOD1(isLoaded, bool ( anh::HashString module_name ));
+};
 
 class ModuleManagerTests : public testing::Test
 {
@@ -52,11 +67,15 @@ void ModuleManagerTests::SetUp()
     of.close();
 }
 TEST_F(ModuleManagerTests, LoadModuleSuccess) {
-    EXPECT_TRUE(module_manager->LoadModule("testModule", 0));
+    auto mod_manager = make_shared<MockModuleManager>(services);
+    EXPECT_CALL(*mod_manager, LoadModule(_));
+    mod_manager->LoadModule("testModule");
 }
 
 TEST_F(ModuleManagerTests, LoadModuleNotFound) {
-    EXPECT_FALSE(module_manager->LoadModule("notFound", 0));
+    auto mod_manager = make_shared<MockModuleManager>(services);
+    EXPECT_CALL(*mod_manager, LoadModule(_));
+    EXPECT_FALSE(mod_manager->LoadModule("notFound"));
 }
 
 TEST_F(ModuleManagerTests, LoadModuleFromPlainTextFile_Success)
@@ -65,6 +84,8 @@ TEST_F(ModuleManagerTests, LoadModuleFromPlainTextFile_Success)
 }
 TEST_F(ModuleManagerTests, LoadModuleFromPlainTextFile_NotExists)
 {
-    EXPECT_DEATH(module_manager->LoadModules("notfound.txt"), "Could not load file");
+    EXPECT_ANY_THROW(
+        module_manager->LoadModules("notfound.txt")
+        );
 }
 } // anon namespace

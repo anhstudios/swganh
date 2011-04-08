@@ -138,7 +138,8 @@ void BaseApplication::startup() {
                     throw runtime_error("No valid database connection available");
                 }
             }
-            registerApp_();
+            // TODO: fix ServerDirectory database
+            //registerApp_();
         }
         else {
             LOG(WARNING) << "NO Datasources Loaded from Config";
@@ -224,7 +225,6 @@ void BaseApplication::addDefaultOptions_() {
         ("optimization.min_threads", ::value<uint16_t>()->default_value(0), "Minimum number of threads to use for concurrency operations")
         ("optimization.max_threads", ::value<uint16_t>()->default_value(0), "Maximum number of threads to use for concurrency operations")
 
-        // TODO add in module initialization
         ("modules", ::value<vector<string>>()->default_value(vector<string>(), ""), "modules to load on startup")
         // 
         /*("network.bind_address", ::value<string>()->default_value("localhost"), "Address to listen for incoming messages on")
@@ -257,7 +257,9 @@ void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> con
     })(config_files.front());
 
     notify(configuration_variables_map_);
-
+    vector<string> modules = configuration_variables_map_["modules"].as<vector<string>>();
+    module_manager_->LoadModules(modules);
+    //cout << modules[0] <<endl << modules[1] <<endl;
     // The help argument has been flagged, display the
     // server options and throw a runtime_error exception
     // to stop server startup.

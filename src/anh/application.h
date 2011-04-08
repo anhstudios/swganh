@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <cstdint>
 #include <list>
+#include <set>
 #include <boost/program_options.hpp>
 
 #include <anh/application_interface.h>

@@ -64,6 +64,20 @@ void ModuleManager::LoadModules(const string& file_name)
         LoadModules(modules);
     }
 }
+void ModuleManager::LoadModules(ModulesVec modules_vec)
+{
+    for_each(modules_vec.begin(), modules_vec.end(), [&] (string file_name) {
+        // get new module of appropriate type
+        auto module = CreateModule();
+        // load module
+        if (module->Load(file_name, services_)) 
+        {
+            // add module to our stored modules map
+            loaded_modules_.insert(ModulesPair(file_name, module));
+        }
+        // log couldn't load module
+    });
+}
 ModulesMap ModuleManager::CreateModulesMapFromFile_(const string& file_name)
 {
     fs::path file (file_name);
@@ -81,7 +95,8 @@ ModulesMap ModuleManager::CreateModulesMapFromFile_(const string& file_name)
                 // loops through each vector string and inserts into modules_vector
                 for_each(hs.begin(), hs.end(), [=,&modules_map] (string mod_name){
                     auto module = CreateModule();
-                    modules_map.insert(ModulesPair(file_name, module));
+                    module->Load(mod_name, services_);
+                    loaded_modules_.insert(ModulesPair(mod_name, module));
                 });
             }
         }

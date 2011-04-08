@@ -5,7 +5,6 @@
 #include <map>
 #include <vector>
 
-
 namespace anh {
 namespace module_manager {
 class PlatformServices;
@@ -13,6 +12,7 @@ class PlatformServices;
 typedef std::map<std::string, std::shared_ptr<ModuleInterface> >                       ModulesMap;
 typedef std::map<std::string, std::shared_ptr<ModuleInterface> >::iterator             ModulesIterator;
 typedef std::pair<std::string, std::shared_ptr<ModuleInterface> >                      ModulesPair;
+typedef std::vector<std::string>                                                          ModulesVec;
 
 /// \brief The Module Manager handles access to modules
 ///
@@ -42,6 +42,8 @@ public:
     *  \calls @LoadModule
     */
     void LoadModules(ModulesMap modules);
+    /// loads a set of modules
+    void LoadModules(ModulesVec modules_vec);
     /* \brief Loads modules from a plaintext file
     *  \param std::string of text file to be loaded
     *  \calls @LoadModule

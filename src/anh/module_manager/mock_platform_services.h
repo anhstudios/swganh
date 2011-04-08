@@ -34,7 +34,8 @@ public:
         Service service_name, boost::any service));
     MOCK_METHOD1( removeService, void (
         Service service_name));
-    MOCK_METHOD0( hasService, Service service_name);
+    MOCK_METHOD1( hasService, bool (
+        Service service_name));
 };
 
 } // end module_manager
