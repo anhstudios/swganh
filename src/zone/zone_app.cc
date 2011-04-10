@@ -12,6 +12,7 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 #include <anh/component/object_builder.h>
 #include <anh/module_manager/platform_services.h>
 #include <anh/module_manager/module_manager.h>
+#include <anh/clock.h>
 
 #include <iostream>
 #include <boost/thread/thread.hpp>
@@ -56,18 +57,21 @@ void ZoneApp::onRegisterApp_() {
 using namespace zone;
 int main(int argc, char* argv[])
 {
+
+    /// pre startup
     // config files
     list<string> config;
     config.push_back("config/general.cfg");
-    auto dispatcher = make_shared<EventDispatcher>();
-    auto scripter = make_shared<ScriptingManager>("scripts");
+    shared_ptr<EventDispatcherInterface> dispatcher = make_shared<EventDispatcher>();
+    shared_ptr<ScriptingManagerInterface> scripter = make_shared<ScriptingManager>("scripts");
+    shared_ptr<Clock> clock = make_shared<Clock>();
     auto services = make_shared<PlatformServices>();
     // add services
     services->addService("EventDispatcher", dispatcher);
     services->addService("ScriptingManager", scripter);
-    
+    services->addService("Clock", clock);
     ZoneApp app(argc, argv, config, services);
-    
+    ///
     app.startup();
     boost::this_thread::sleep(boost::posix_time::milliseconds(5));
     if (app.hasStarted()) {

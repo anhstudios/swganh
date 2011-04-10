@@ -1,6 +1,6 @@
-include(ANHLibrary)
+include(ANHExecutable)
 
-AddANHLibrary(zone
+AddANHExecutable(zone
     DEPENDS 
     	libanh    
 	ADDITIONAL_INCLUDE_DIRS
@@ -29,7 +29,7 @@ AddANHLibrary(zone
 	OPTIMIZED_LIBRARIES 
         ${MYSQL_LIB}
         ${MYSQLCONNECTORCPP_LIBRARY}
-	    ${TBB_LIBRARIES}
+	    #${TBB_LIBRARIES}
         ${Boost_DATE_TIME_LIBRARY_RELEASE}
         ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}
         ${Boost_PYTHON_LIBRARY_RELEASE}
