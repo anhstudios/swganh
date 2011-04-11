@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 #include "main.h"
+#include <iostream>
 #include <mod_anh_transform/transform_component.h>
 #include <anh/module_manager/module_main.h>
 
@@ -39,32 +40,40 @@ using namespace std;
 uint64_t guid = 0;
 
 bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
-
+    cout << GetModuleName() << " Loading..." <<endl;
 	// register component to object manager
     gObjManager = 
         boost::any_cast<shared_ptr<component::ObjectManager>>(services->getService("ObjectManager"));
-    if (gObjManager != nullptr)
+    if (gObjManager == nullptr)
     {
-        // get new GUID
-        shared_ptr<TransformComponentInterface> component( new TransformComponent(1) );
-        gObjManager->AttachComponent(guid+1, component);
+        throw runtime_error("No Object Manager Registered");
+    }
+    // get new GUID
+    for (int i = 0 ; i < 399; i++)
+    {
+        shared_ptr<TransformComponentInterface> component( new TransformComponent(i) );
+        gObjManager->AttachComponent(guid+i, component);
     }
     // subscribe to events
     gEventDispatcher =
         boost::any_cast<shared_ptr<event_dispatcher::EventDispatcherInterface>>(services->getService("EventDispatcher"));
-    if (gEventDispatcher != nullptr)
+    if (gEventDispatcher == nullptr)
     {
-     
-
+        throw runtime_error("No Event Dispatcher Registered");
     }
     // init specific logs
 
     // init db hooks
     
     // trigger 'loaded event'
+    //auto processListener = [&] (shared_ptr<event_dispatcher::EventInterface> incoming_event)->bool {
+    //    
+    //    return true;
+    //};
+    //gEventDispatcher->subscribe("Process", processListener);
     
-    //gEventDispatcher->trigger(event_dispatcher::BasicEvent("TransformLoaded"));
-
+    /*auto loaded_event = make_shared<event_dispatcher::SimpleEvent>("TransformLoaded");
+    gEventDispatcher->trigger(loaded_event);*/
     return true;
 }
 

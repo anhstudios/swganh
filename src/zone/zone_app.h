@@ -41,6 +41,7 @@ private:
 
     std::shared_ptr<anh::component::ObjectBuilder> object_builder_;
     std::shared_ptr<anh::component::ObjectManager> object_manager_;
+    std::string zone_name_;
 
 };
 

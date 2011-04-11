@@ -30,12 +30,21 @@ ZoneApp::ZoneApp(int argc, char* argv[], list<string> config_files
     : BaseApplication(argc, argv, config_files, platform_services) 
 {
     auto startupListener = [&] (shared_ptr<EventInterface> incoming_event)-> bool {
-        cout << "Zone Application Startup" <<endl;
+        // get zone name
+        if(configuration_variables_map_.count("ZoneName") == 0) {
+            std::cout << "Enter a zone: ";
+            std::cin >> zone_name_;
+        } else {
+            zone_name_ = configuration_variables_map_["ZoneName"].as<std::string>();
+        }
+
+        cout << "Zone Application Startup For [" << zone_name_ << "]" <<endl;
         started_ = true;
+        cout << "[" << zone_name_ << "] Started" << endl;
+
         return true;
     };
     auto processListener = [] (shared_ptr<EventInterface> incoming_event)-> bool {
-        cout << "Zone Application Process" <<endl;
         return true;
     };
     auto shutdownListener = [&] (shared_ptr<EventInterface> incoming_event)-> bool {
@@ -43,32 +52,38 @@ ZoneApp::ZoneApp(int argc, char* argv[], list<string> config_files
         started_ = false;
         return true;
     };
+
+    // event subscription
+    event_dispatcher_->subscribe("Startup", startupListener);
+    event_dispatcher_->subscribe("Process", processListener);
+    event_dispatcher_->subscribe("Shutdown", shutdownListener);
 }
 ZoneApp::~ZoneApp() {
     //destructor
 }
 void ZoneApp::onAddDefaultOptions_() {
-    cout<<"default options called" <<endl;
+    configuration_options_description_.add_options()
+    ("ZoneName", boost::program_options::value<std::string>());
 }
 void ZoneApp::onRegisterApp_() {
-    cout<<"on register app called" <<endl;
 }
 } //namespace zone
 using namespace zone;
 int main(int argc, char* argv[])
 {
-
     /// pre startup
     // config files
     list<string> config;
     config.push_back("config/general.cfg");
     shared_ptr<EventDispatcherInterface> dispatcher = make_shared<EventDispatcher>();
     shared_ptr<ScriptingManagerInterface> scripter = make_shared<ScriptingManager>("scripts");
+    shared_ptr<ObjectManager> object_manager = make_shared<ObjectManager>();
     shared_ptr<Clock> clock = make_shared<Clock>();
     auto services = make_shared<PlatformServices>();
     // add services
     services->addService("EventDispatcher", dispatcher);
     services->addService("ScriptingManager", scripter);
+    services->addService("ObjectManager", object_manager);
     services->addService("Clock", clock);
     ZoneApp app(argc, argv, config, services);
     ///
@@ -77,11 +92,15 @@ int main(int argc, char* argv[])
     if (app.hasStarted()) {
         while(true){
             app.process();
-            if(cin.get() == 'q')
+            if (app.kbHit())
             {
-                app.shutdown();
+                if(cin.get() == 'q')
+                {
+                    app.shutdown();
+                    return 0;
+                }
             }
+            boost::this_thread::sleep(boost::posix_time::milliseconds(1));
         }
     }
-    return 0;
 }

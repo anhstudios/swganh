@@ -30,6 +30,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <cassert>
 #include <iostream>
 #include <fstream>
+// kbhit
+#if defined(_MSC_VER)
+#include <conio.h>
+#else
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+#endif
 
 #include <driver/mysql_driver.h>
 #include <cppconn/connection.h>
@@ -117,15 +125,18 @@ BaseApplication::~BaseApplication() {}
 
 void BaseApplication::startup() {
     try {
-        //setupLogging();
+        // instantiate basic events
+        startup_event_ = make_shared<SimpleEvent>("Startup");
+        process_event_ = make_shared<SimpleEvent>("Process");
+        shutdown_event_ = make_shared<SimpleEvent>("Shutdown");
+        setupLogging();
         addDefaultOptions_();
         // load the options
         loadOptions_(argc_, argv_, config_files_);
-        // setup ModuleManager and load modules
-        setupModules_();
         // get a database manager
         if (db_manager_ == nullptr) {
             db_manager_ = createDatabaseManager(sql::mysql::get_driver_instance());
+            platform_services_->addService("DatabaseManager", db_manager_);
         }
         // loads the data sources from config into db_manager
         if (addDataSourcesFromOptions_()) {
@@ -134,7 +145,10 @@ void BaseApplication::startup() {
                 shared_ptr<sql::Connection> conn = db_manager_->getConnection(
                     configuration_variables_map_["cluster.datastore.name"].as<string>());
                 if (conn != nullptr)
+                {
                     server_directory_ = createServerDirectory(conn);
+                    platform_services_->addService("ServerDirectory", server_directory_);
+                }
                 else {
                     throw runtime_error("No valid database connection available");
                 }
@@ -152,6 +166,8 @@ void BaseApplication::startup() {
         else {
             throw runtime_error("No Event Dispatcher Registered");
         }
+        // setup ModuleManager and load modules
+        setupModules_();
 
     }
     catch(exception e) {
@@ -168,14 +184,12 @@ void BaseApplication::process() {
         assert(false && "Must call startup before process");
         return;
     }
-    process_event_ = make_shared<SimpleEvent>("Process");
     event_dispatcher_->tick(clock_->global_time());
     event_dispatcher_->trigger(process_event_);
 }
 
 void BaseApplication::shutdown() {
     // clean up code here before the server shuts down
-    shutdown_event_ = make_shared<SimpleEvent>("Shutdown");
     event_dispatcher_->trigger(shutdown_event_);
 }
 
@@ -239,7 +253,7 @@ void BaseApplication::addDefaultOptions_() {
 void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> config_files)
 {
     store(parse_command_line(argc, argv, configuration_options_description_), configuration_variables_map_);
-
+    
     // Iterate through the configuration files
     // that are to be loaded. If a configuration file
     // is missing, throw a runtime_error.
@@ -251,8 +265,7 @@ void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> con
         else
         {
             try {
-                LOG(INFO) << "Loading config file " <<filename << " in boost options" << endl;
-                 store(parse_config_file(config_file, configuration_options_description_, true), configuration_variables_map_);
+                store(parse_config_file(config_file, configuration_options_description_, true), configuration_variables_map_);
             } catch(...) { 
                 throw runtime_error("Could not parse config file. " + filename);
             }
@@ -339,4 +352,34 @@ void BaseApplication::registerApp_()
                 );
         }
     }
+}
+int BaseApplication::kbHit()
+{
+#if defined(_MSC_VER)
+    return _kbhit();
+#else
+    struct termios oldt, newt;
+    int ch;
+    int oldf;
+
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+
+    ch = getchar();
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+
+    if(ch != EOF)
+    {
+        ungetc(ch, stdin);
+        return 1;
+    }
+
+    return 0;
+#endif
 }

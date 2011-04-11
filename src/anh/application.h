@@ -42,7 +42,7 @@ namespace event_dispatcher { class EventDispatcherInterface; class EventInterfac
 namespace database { class DatabaseManagerInterface; class DatabaseManager; }
 namespace scripting { class ScriptingManagerInterface; }
 namespace server_directory { class ServerDirectoryInterface; }
-namespace module_manager { class ModuleManager; class PlatformServices; class ModuleApiVersion; }
+namespace module_manager { class ModuleManager; class PlatformServices; struct ModuleApiVersion; }
 class Clock;
 
 /**
@@ -91,6 +91,8 @@ public:
     *   \brief Sets up basic logging options for logging
     */
     virtual void setupLogging();
+
+    static int kbHit();
 
     boost::program_options::variables_map configuration_variables_map() { return configuration_variables_map_; }
     std::shared_ptr<database::DatabaseManagerInterface> database_manager() { return db_manager_; }
@@ -143,6 +145,7 @@ protected:
     std::shared_ptr<event_dispatcher::EventInterface> process_event_;
     std::shared_ptr<event_dispatcher::EventInterface> shutdown_event_;
 
+    // base services
     std::shared_ptr<database::DatabaseManagerInterface> db_manager_;
     std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager_;
