@@ -72,8 +72,8 @@ bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> serv
     //};
     //gEventDispatcher->subscribe("Process", processListener);
     
-    /*auto loaded_event = make_shared<event_dispatcher::SimpleEvent>("TransformLoaded");
-    gEventDispatcher->trigger(loaded_event);*/
+    auto loaded_event = make_shared<event_dispatcher::SimpleEvent>("TransformLoaded");
+    gEventDispatcher->trigger(loaded_event);
     return true;
 }
 

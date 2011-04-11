@@ -144,7 +144,7 @@ bool EventDispatcher::trigger(std::shared_ptr<EventInterface> incoming_event) {
     
     auto map_it = event_listeners_.find(event_type);
     if (map_it == event_listeners_.end()) {        
-        assert(false && "Inconsistency between listener map and event type set found");
+        // No Listeners attached of this event type, do nothing.
         return false;
     }
 
