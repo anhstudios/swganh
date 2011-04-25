@@ -127,7 +127,7 @@ const unsigned char* ByteBuffer::data() const {
     return &data_[0];
 }
 
-std::vector<unsigned char>& ByteBuffer::raw() {
+std::vector<unsigned char*>& ByteBuffer::raw() {
     return data_;
 }
 

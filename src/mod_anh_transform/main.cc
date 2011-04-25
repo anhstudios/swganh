@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "main.h"
 #include <iostream>
 #include <mod_anh_transform/transform_component.h>
+#include <mod_anh_transform/transform_db_mapper.h>
+#include <anh/database/database_manager_interface.h>
 #include <anh/module_manager/module_main.h>
 
 MODULE_STANDARD_SERVICES
@@ -64,6 +66,10 @@ bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> serv
     // init specific logs
 
     // init db hooks
+	gDatabaseManager = 
+		boost::any_cast<shared_ptr<database::DatabaseManagerInterface>>(services->getService("DatabaseManager"));
+
+	// pass db manager
     
     // trigger 'loaded event'
     //auto processListener = [&] (shared_ptr<event_dispatcher::EventInterface> incoming_event)->bool {

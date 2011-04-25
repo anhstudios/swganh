@@ -168,3 +168,4 @@ add_subdirectory(api)
 ## project executables
 add_subdirectory(zone)
 add_subdirectory(script_bindings)
+add_subdirectory(pipeline)
