@@ -17,12 +17,11 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LIBANH_COMPONENT_OBJECT_BUILDER
-#define LIBANH_COMPONENT_OBJECT_BUILDER
+#ifndef LIBANH_COMPONENT_ENTITY_BUILDER
+#define LIBANH_COMPONENT_ENTITY_BUILDER
 
 #include <functional>
 #include <map>
-#include <anh/singleton.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
@@ -30,95 +29,90 @@
 
 #include <anh/component/component_interface.h>
 #include <anh/component/component_loader_interface.h>
+#include <anh/component/entity_manager.h>
 
 namespace anh {
 namespace component {
 
-class ObjectBuilder;
-#define gObjectBuilder anh::Singleton<ObjectBuilder>::Instance())
+typedef anh::HashString EntityType;
+typedef std::function<std::shared_ptr<ComponentInterface>(const EntityId&)> ComponentCreator;
 
-typedef anh::HashString ObjectType;
-typedef std::function<std::shared_ptr<ComponentInterface>(const ObjectId&)> ComponentCreator;
-
-enum OBJECT_BUILD_STATUS {
-    BUILD_INCOMPLETE = -1,  // component doesn't have a registered creator, object still builds
-    BUILD_SUCCESSFUL = 0,   // no problems object built succesfully without issues
-    BUILD_FAILED = 1        // object is not built
+enum EntityBuildErrors {
+    BUILD_INCOMPLETE = -1,  /// component doesn't have a registered creator, entity still builds
+    BUILD_SUCCESSFUL = 0,   /// no problems object built succesfully without issues
+    BUILD_FAILED = 1        /// object is not built
 };
 
 /**
- * \brief This class handles the wiring and attachment of components to an entity id
+ * @brief Uses XML templates to build entities and add them to the EntityManager.
  */
-class ObjectBuilder
+class EntityBuilder : public boost::noncopyable
 {
 public:
 	/** 
-	 * \brief Default constructor
+	 * @brief Default constructor
 	 */
-	ObjectBuilder();
+	EntityBuilder(std::shared_ptr<EntityManager> entity_manager);
 
 	/**
-	 * \brief Default destructor
+	 * @brief Default destructor
 	 */
-	~ObjectBuilder();
+	~EntityBuilder();
 
 	/**
-	 * \brief loads all template xml files in the given directory
+	 * @brief loads all template xml files in the given directory
 	 */
 	void Init(std::string object_template_dir);
 
 	/**
-	 * \brief 
+	 * @brief 
 	 */
 	void Deinit(void);
 
 	/**
-	 * \brief Builds the Object given an id and hashstring Type
+	 * @brief Builds an Entity from an XML template, invoking creators and loaders and
+	 * adds it to the EntityManager.
      *
-     * \param ObjectId the id of the object to be built
-     * \param ObjectType the hashstring of the type to be built
+     * @param id Id of the entity that is being built.
+     * @param type The template to build for this object.
+	 * @param name The name of the new object.
      *
-     * \returns see @OBJECT_BUILD_STATUS
+     * @returns see @EntityBuildErrors
 	 */
-    OBJECT_BUILD_STATUS BuildObject(const ObjectId& id, const ObjectType& type);
+    EntityBuildErrors BuildEntity(const EntityId& entity_id, const EntityType& type, const std::string& name);
 
 	/**
-	 * \brief
-	 */
-	void DestroyObject(const ObjectId& id);
-
-	/**
-	 * \brief
+	 * @brief
 	 */
 	bool RegisterLoader(const ComponentType& type, std::shared_ptr<ComponentLoaderInterface> loader);
 
 	/**
-	 * \brief
+	 * @brief
 	 */
 	void UnregisterLoader(const ComponentType& type);
 
 	/**
-	 * \brief
+	 * @brief
 	 */
 	bool RegisterCreator(const ComponentType& type, ComponentCreator creator);
 
 	/**
-	 * \brief
+	 * @brief
 	 */
 	void UnregisterCreator(const ComponentType& type);
 	
 	/**
-	 * \brief
+	 * @brief
 	 */
-	bool TemplateExists(const ObjectType& type);
+	bool TemplateExists(const EntityType& type);
 
 	/**
-	 * \brief
+	 * @brief
 	 */
 	bool CreatorExists(const ComponentType& type);
 
 	/**
-	 * \brief
+	 * @brief
 	 */
 	bool LoaderExists(const ComponentType& type);
 
@@ -129,18 +123,23 @@ private:
 
 	typedef std::map<ComponentType, std::shared_ptr<ComponentLoaderInterface>>		ComponentLoaders;
 	typedef std::pair<ComponentType, std::shared_ptr<ComponentLoaderInterface>>		ComponentLoaderPair;
-	typedef std::map<ObjectType, boost::property_tree::ptree>						ObjectTemplates;
-	typedef std::pair<ObjectType, boost::property_tree::ptree>						ObjectTemplatePair;
+	typedef std::map<EntityType, boost::property_tree::ptree>						EntityTemplates;
+	typedef std::pair<EntityType, boost::property_tree::ptree>						EntityTemplatePair;
 	typedef std::map<ComponentType, ComponentCreator>								ComponentCreators;
 	typedef std::pair<ComponentType, ComponentCreator>								ComponentCreatorPair;
+	typedef std::map<EntityType, TagSet>											EntityTagSets;
+	typedef std::pair<EntityType, TagSet>											EntityTagSetPair;
 
 	ComponentLoaders	component_loaders_;
-	ObjectTemplates		object_templates_;
+	EntityTemplates		entity_templates_;
 	ComponentCreators	component_creators_;
+	EntityTagSets		entity_tag_sets_;
+	
+	std::shared_ptr<EntityManager>	entity_manager_;
 	
 };
 
 }
 }
 
-#endif
+#endif // ANH_COMPONENT_ENTITY_BUILDER_H_

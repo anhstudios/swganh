@@ -16,6 +16,8 @@
  You should have received a copy of the GNU General Public License
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+/*
 #include "scripting_manager.h"
 #include <boost/python.hpp>
 #include <anh/scripting/scripting_modules_unittest.h>
@@ -210,7 +212,7 @@ TEST_F(ScriptEngineTest, getComponentFromPython)
         object obj (e->embed("embedded_component.py", "Component"));
         object py_base = obj();
         BaseComponent& comp = extract<BaseComponent&>(py_base);
-        ObjectId id = comp.object_id();
+        EntityId id = comp.entity_id();
         EXPECT_EQ(0, id);
     }
 }
@@ -226,9 +228,10 @@ TEST_F(ScriptEngineTest, getRadialComponentFromPython)
         object obj (e->embed("radial_component.py", "RadialComponent"));
         object py_base = obj();
         RadialComponentInterface& comp = extract<RadialComponentInterface&>(py_base);
-        ObjectId id = comp.object_id();
+        EntityId id = comp.entity_id();
         EXPECT_EQ(0, id);   
     }
 }
 
 } // anon namespace
+*/

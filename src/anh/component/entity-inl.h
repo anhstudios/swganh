@@ -20,7 +20,7 @@
 #ifndef ANH_COMPONENT_ENTITY_INL_H_
 #define ANH_COMPONENT_ENTITY_INL_H_
 
-template<class T> std::shared_ptr<T> Entity::QueryInterface(const ComponentType& type)
+template<class T> std::shared_ptr<T> Entity::QueryInterface(const InterfaceType& type)
 {
 	ComponentsMapIterator i = components_.find(type);
 	if(i != components_.end())
