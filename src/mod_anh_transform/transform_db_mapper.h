@@ -19,7 +19,7 @@
 #ifndef MOD_ANH_TRANSFORM_TRANFORM_DB_MAPPER_H
 #define MOD_ANH_TRANSFORM_TRANFORM_DB_MAPPER_H
 #include <anh/database/base_db_mapper.h>
-#include "transform_component.h"
+#include <mod_anh_transform/transform_component.h>
 
 namespace transform {
 
@@ -28,7 +28,7 @@ class TransformDBMapper : public anh::database::BaseDBMapper
 public:
 	TransformDBMapper(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
 	virtual void persist(std::shared_ptr<void> ref);
-	virtual std::shared_ptr<sql::ResultSet> query_result();
+	virtual std::shared_ptr<sql::ResultSet> query_result(uint64_t entity_id);
 };
 
 } // transform

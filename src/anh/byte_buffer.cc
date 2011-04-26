@@ -127,9 +127,9 @@ const unsigned char* ByteBuffer::data() const {
     return &data_[0];
 }
 
-std::vector<unsigned char*>& ByteBuffer::raw() {
-    return data_;
-}
+//std::vector<unsigned char*>& ByteBuffer::raw() {
+//    return data_;
+//}
 
 template<>
 void ByteBuffer::swapEndian(uint16_t& data) const {

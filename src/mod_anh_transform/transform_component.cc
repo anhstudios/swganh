@@ -24,7 +24,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#include "transform_component.h"
+#include <mod_anh_transform/transform_component.h>
 #include <api/component_main.h>
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
@@ -40,14 +40,21 @@ ComponentInfo TransformComponent::component_info_ = ComponentInfo(ComponentType(
 TransformComponent::TransformComponent(const ObjectId& id)
 : TransformComponentInterface(id)
 {
-    db_mapper_ = make_shared<TransformDBMapper>(gDatabaseManager);
+
 }
 TransformComponent::TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed)
     : TransformComponentInterface(id)
     , position_(position)
     , rotation_(rotation)
     , speed_(speed)
-{}
+{
+
+}
+void TransformComponent::Update(float timeout)
+{
+
+}
+
 void TransformComponent::Init(boost::property_tree::ptree& pt) {
     // initial default values
     parent_id_ = pt.get<ObjectId>("parent_id", 0); 

@@ -21,14 +21,14 @@
 
 #include <anh/database/database_manager_interface.h>
 
-namespace sql { struct ResultSet; }
+namespace sql { class ResultSet; }
 namespace anh { namespace database {
 class BaseDBMapper
 {
 public:
 	BaseDBMapper(std::shared_ptr<database::DatabaseManagerInterface> db_manager) { db_manager_ = db_manager; }
 	virtual void persist(std::shared_ptr<void> ref) = 0;
-	virtual std::shared_ptr<sql::ResultSet> query_result() = 0;
+	virtual std::shared_ptr<sql::ResultSet> query_result(uint64_t entity_id) = 0;
 	std::shared_ptr<database::DatabaseManagerInterface> db_manager() { return db_manager_; }
 protected:
 	std::shared_ptr<database::DatabaseManagerInterface> db_manager_;

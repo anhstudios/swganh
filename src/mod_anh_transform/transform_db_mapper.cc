@@ -46,13 +46,17 @@ void TransformDBMapper::persist(std::shared_ptr<void> ref)
         prepared->setDouble(2, component->position().z); prepared->setDouble(3, component->rotation().w);
         prepared->setDouble(4, component->rotation().x); prepared->setDouble(5, component->rotation().y);
         prepared->setDouble(6, component->rotation().z); prepared->setInt64(7, component->parent_id());
-        prepared->executeQuery(query_string);
+        prepared->executeQuery();
     }
 }
-shared_ptr<sql::ResultSet> TransformDBMapper::query_result()
+shared_ptr<sql::ResultSet> TransformDBMapper::query_result(uint64_t entity_id)
 {
-	auto query_result = make_shared<sql::ResultSet>();
-	return query_result;
+	auto conn = db_manager_->getConnection("galaxy");
+        sql::SQLString query_string("select * from transform where entity_id = ?");
+    auto prepared = 
+            unique_ptr<sql::PreparedStatement>(conn->prepareStatement(query_string));
+	prepared->setInt64(0, entity_id);
+	return make_shared<sql::ResultSet>(prepared->executeQuery());	
 }
 
 } // transform

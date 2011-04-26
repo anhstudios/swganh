@@ -28,8 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MOD_ANH_TRANSFORM_TRANFORM_COMPONENT_H
 
 #include <api/components/transform_component_interface.h>
-#include "transform_db_mapper.h"
-
+#include <mod_anh_transform/transform_db_mapper.h>
 #include <boost/flyweight.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/glm.hpp>
@@ -73,6 +72,7 @@ public:
     TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed);
 
 	void Init(boost::property_tree::ptree& pt);
+	virtual void Update(float timeout);
     virtual void HandleMessage(const std::shared_ptr<TransformMessage> message);
 
     void parent_id(const ObjectId id) { parent_id_ = id; }
@@ -96,16 +96,16 @@ public:
     void move_forward(const float& distance);
     void move_back(const float& distance);
     float rotation_angle() const;
-    
 	const ComponentInfo& component_info() { return component_info_; }
+
 private:
     TransformComponent();
     boost::flyweight<ObjectId> parent_id_;
     glm::vec3 position_;
     glm::quat rotation_;
     boost::flyweight<float> speed_;
+
     static ComponentInfo component_info_;
-	std::shared_ptr<TransformDBMapper> db_mapper_;
 };
 
 } // transform
