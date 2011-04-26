@@ -18,6 +18,8 @@
 */
 #include "transform_db_mapper.h"
 #include <anh/database/database_manager_interface.h>
+#include <mod_anh_transform/transform_component.h>
+#include "main.h"
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
@@ -25,19 +27,14 @@
 #include <cppconn/sqlstring.h>
 
 using namespace std;
+using namespace anh::api::components;
+
 namespace transform {
-
-TransformDBMapper::TransformDBMapper(shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
-	: BaseDBMapper(db_manager)
+void TransformDBMapper::persist(std::shared_ptr<TransformComponentInterface> component)
 {
-
-}
-void TransformDBMapper::persist(std::shared_ptr<void> ref)
-{
-	auto component = dynamic_pointer_cast<transform::TransformComponent>(ref);
     if (component != nullptr)
     {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = gDatabaseManager->getConnection("galaxy");
         sql::SQLString query_string("update transform set x = ?, y = ?, z = ?, rW = ?, rX = ?, rY = ?, rZ = ?, parent_id = ?");
         auto prepared = 
             unique_ptr<sql::PreparedStatement>(conn->prepareStatement(query_string));
@@ -49,14 +46,20 @@ void TransformDBMapper::persist(std::shared_ptr<void> ref)
         prepared->executeQuery();
     }
 }
-shared_ptr<sql::ResultSet> TransformDBMapper::query_result(uint64_t entity_id)
+std::shared_ptr<TransformComponentInterface> TransformDBMapper::query_result(uint64_t entity_id)
 {
-	auto conn = db_manager_->getConnection("galaxy");
+	auto conn = gDatabaseManager->getConnection("galaxy");
         sql::SQLString query_string("select * from transform where entity_id = ?");
     auto prepared = 
             unique_ptr<sql::PreparedStatement>(conn->prepareStatement(query_string));
 	prepared->setInt64(0, entity_id);
-	return make_shared<sql::ResultSet>(prepared->executeQuery());	
+
+	auto result = unique_ptr<sql::ResultSet>(prepared->executeQuery());
+	auto transform = make_shared<TransformComponent>(0);
+	transform->position(result->getDouble("x"), result->getDouble("y"), result->getDouble("z"));
+	transform->rotation(result->getDouble("rX"), result->getDouble("rY"), result->getDouble("rZ"), result->getDouble("rW"));
+	
+	return transform;
 }
 
 } // transform

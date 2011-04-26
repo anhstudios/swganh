@@ -72,7 +72,6 @@ public:
     TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed);
 
 	void Init(boost::property_tree::ptree& pt);
-	virtual void Update(float timeout);
     virtual void HandleMessage(const std::shared_ptr<TransformMessage> message);
 
     void parent_id(const ObjectId id) { parent_id_ = id; }

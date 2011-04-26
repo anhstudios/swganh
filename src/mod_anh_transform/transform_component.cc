@@ -50,10 +50,6 @@ TransformComponent::TransformComponent(const ObjectId& id, const glm::vec3& posi
 {
 
 }
-void TransformComponent::Update(float timeout)
-{
-
-}
 
 void TransformComponent::Init(boost::property_tree::ptree& pt) {
     // initial default values

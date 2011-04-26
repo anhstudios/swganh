@@ -23,16 +23,17 @@
 
 namespace sql { class ResultSet; }
 namespace anh { namespace database {
+template<class ClassToMap>
 class BaseDBMapper
 {
 public:
 	BaseDBMapper(std::shared_ptr<database::DatabaseManagerInterface> db_manager) { db_manager_ = db_manager; }
-	virtual void persist(std::shared_ptr<void> ref) = 0;
-	virtual std::shared_ptr<sql::ResultSet> query_result(uint64_t entity_id) = 0;
+	virtual void persist(std::shared_ptr<ClassToMap> ref_class) = 0;
+	virtual std::shared_ptr<ClassToMap> query_result(uint64_t entity_id) = 0;
 	std::shared_ptr<database::DatabaseManagerInterface> db_manager() { return db_manager_; }
 protected:
 	std::shared_ptr<database::DatabaseManagerInterface> db_manager_;
-    // the last ms date the data was persisted
+    // the last ms the data was persisted
     uint32_t last_updated_;
     // the interval do you want the data to persist in ms
     uint32_t update_threshold_;
