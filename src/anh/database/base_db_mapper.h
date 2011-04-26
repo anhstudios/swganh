@@ -27,11 +27,15 @@ class BaseDBMapper
 {
 public:
 	BaseDBMapper(std::shared_ptr<database::DatabaseManagerInterface> db_manager) { db_manager_ = db_manager; }
-	virtual void persist() = 0;
+	virtual void persist(std::shared_ptr<void> ref) = 0;
 	virtual std::shared_ptr<sql::ResultSet> query_result() = 0;
 	std::shared_ptr<database::DatabaseManagerInterface> db_manager() { return db_manager_; }
-private:
+protected:
 	std::shared_ptr<database::DatabaseManagerInterface> db_manager_;
+    // the last ms date the data was persisted
+    uint32_t last_updated_;
+    // the interval do you want the data to persist in ms
+    uint32_t update_threshold_;
 };
 } // database
 } // anh

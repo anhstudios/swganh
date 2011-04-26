@@ -6,6 +6,7 @@
 
 #include <anh\module_manager\module_interface.h>
 #include <anh\module_manager\platform_services.h>
+#include <anh\module_manager\module_main.h>
 
 #define DLL_EXPORT __declspec(dllexport)
 
@@ -23,5 +24,7 @@ const std::string DLL_EXPORT GetModuleDescription(void);
 #ifdef __cplusplus
 }
 #endif
+
+MODULE_STANDARD_SERVICES
 
 #endif // __MAIN_H__

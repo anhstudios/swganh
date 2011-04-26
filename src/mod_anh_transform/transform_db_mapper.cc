@@ -18,22 +18,40 @@
 */
 #include "transform_db_mapper.h"
 #include <anh/database/database_manager_interface.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
 
+using namespace std;
 namespace transform {
 
-TransformDBMapper::TransformDBMapper(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+TransformDBMapper::TransformDBMapper(shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
 	: BaseDBMapper(db_manager)
 {
 
 }
-void TransformDBMapper::persist()
+void TransformDBMapper::persist(std::shared_ptr<void> ref)
 {
-	std::stringstream query_stream;
-	query_stream << "UPDATE ";
+	auto component = dynamic_pointer_cast<transform::TransformComponent>(ref);
+    if (component != nullptr)
+    {
+        auto conn = db_manager_->getConnection("galaxy");
+        sql::SQLString query_string("update transform set x = ?, y = ?, z = ?, rW = ?, rX = ?, rY = ?, rZ = ?, parent_id = ?");
+        auto prepared = 
+            unique_ptr<sql::PreparedStatement>(conn->prepareStatement(query_string));
+        // set the values in place of ?
+        prepared->setDouble(0, component->position().x); prepared->setDouble(1, component->position().y);
+        prepared->setDouble(2, component->position().z); prepared->setDouble(3, component->rotation().w);
+        prepared->setDouble(4, component->rotation().x); prepared->setDouble(5, component->rotation().y);
+        prepared->setDouble(6, component->rotation().z); prepared->setInt64(7, component->parent_id());
+        prepared->executeQuery(query_string);
+    }
 }
-std::shared_ptr<sql::ResultSet> TransformDBMapper::query_result()
+shared_ptr<sql::ResultSet> TransformDBMapper::query_result()
 {
-	auto query_result = std::make_shared<sql::ResultSet>();
+	auto query_result = make_shared<sql::ResultSet>();
 	return query_result;
 }
 

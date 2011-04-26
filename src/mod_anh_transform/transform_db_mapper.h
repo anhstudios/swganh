@@ -27,7 +27,7 @@ class TransformDBMapper : public anh::database::BaseDBMapper
 {
 public:
 	TransformDBMapper(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
-	virtual void persist();
+	virtual void persist(std::shared_ptr<void> ref);
 	virtual std::shared_ptr<sql::ResultSet> query_result();
 };
 

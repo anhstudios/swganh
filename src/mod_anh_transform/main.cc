@@ -31,8 +31,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/database/database_manager_interface.h>
 #include <anh/module_manager/module_main.h>
 
-MODULE_STANDARD_SERVICES
-
 using namespace anh;
 using namespace api::components;
 using namespace transform;

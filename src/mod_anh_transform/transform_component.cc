@@ -28,8 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <api/component_main.h>
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
-
-
+#include "main.h"
 
 using namespace std;
 ComponentInfo anh_api::NullTransformComponent::component_info_ = ComponentInfo(ComponentType("NullTransformComponent"), false);
@@ -40,7 +39,9 @@ ComponentInfo TransformComponent::component_info_ = ComponentInfo(ComponentType(
 
 TransformComponent::TransformComponent(const ObjectId& id)
 : TransformComponentInterface(id)
-{}
+{
+    db_mapper_ = make_shared<TransformDBMapper>(gDatabaseManager);
+}
 TransformComponent::TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed)
     : TransformComponentInterface(id)
     , position_(position)
