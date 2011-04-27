@@ -30,16 +30,57 @@ namespace component {
 
 class NullMockComponent;
 
-class MockComponent : public ComponentInterface {
+class MockComponentInterface : public ComponentInterface {
 public:
-	MOCK_METHOD1(Init, void (boost::property_tree::ptree& pt));
-	MOCK_METHOD0(Deinit, void ());
-	MOCK_METHOD1(Update, void (const float timeout));
-	MOCK_METHOD1(HandleMessage, void (const Message message));
-	MOCK_METHOD0(component_info, const ComponentInfo& ());
-	MOCK_METHOD0(object_id, const ObjectId& ());
+	static std::shared_ptr<NullMockComponent> NullComponent;
+};
 
-	static std::shared_ptr<MockComponent> NullComponent;
+class NullMockComponent : public MockComponentInterface {
+public:
+	NullMockComponent() 
+	: type_("NullMock")
+	, interface_("Mock")
+	, entity_id_(0) { }
+
+	virtual ~NullMockComponent() { }
+
+	void Init(boost::property_tree::ptree& pt) { }
+	void OnAttach() { }
+	void OnDetach() { }
+	void Update(const float deltaMilliseconds) { }
+	void HandleMessage(const Message message) { }
+	const EntityId& entity_id() const { return entity_id_; }
+	void set_entity_id(const EntityId& id) { }
+
+	const ComponentType& component_type() { return type_; }
+	const InterfaceType& interface_type() { return interface_; }
+
+	ComponentType type_;
+	InterfaceType interface_;
+	EntityId entity_id_;
+};
+
+class MockComponent : public MockComponentInterface {
+public:
+	MockComponent() 
+	: type_("Anh.Mock")
+	, interface_("Mock") { }
+
+	virtual ~MockComponent() { }
+
+	MOCK_METHOD1(Init, void (boost::property_tree::ptree& pt));
+	MOCK_METHOD0(OnAttach, void ());
+	MOCK_METHOD0(OnDetach, void ());
+	MOCK_METHOD1(Update, void (const float deltaMilliseconds));
+	MOCK_METHOD1(HandleMessage, void (const Message message));
+	MOCK_CONST_METHOD0(entity_id, const EntityId& ());
+	MOCK_METHOD1(set_entity_id, void (const EntityId& id));
+
+	const ComponentType& component_type() { return type_; }
+	const InterfaceType& interface_type() { return interface_; }
+
+	ComponentType type_;
+	InterfaceType interface_;
 };
 
 } // namespace component

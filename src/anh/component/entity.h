@@ -33,7 +33,7 @@ typedef std::set<Tag>::iterator		TagSetIterator;
 
 /**
  * A collection of components which represent a "seperate existance" or object. This class also
- * contains basic typing (tags) and identification (entity id) attributes. This class is
+ * contains basic typing (tags) and identification (entity id) attributes.
  */
 class Entity : public boost::noncopyable
 {
@@ -42,7 +42,7 @@ public:
 	/**
 	 * @brief Default constructor.
 	 */
-	Entity(const ObjectId& id = 0, const std::string name = "", const TagSet& tags = TagSet(), const ObjectId& parent_id = 0);
+	Entity(const EntityId& id = 0, const std::string name = "", const TagSet& tags = TagSet());
 
 	/**
 	 * @brief Default destructor.
@@ -50,44 +50,42 @@ public:
 	~Entity();
 
 	void AttachComponent(std::shared_ptr<ComponentInterface> component);
-	void DetachComponent(const ComponentType& type);
+	void DetachComponent(const InterfaceType& type);
 	void DetachAllComponents(void);
-	bool hasComponent(const ComponentType& type);
+	bool HasInterface(const InterfaceType& type);
 
 	/**
 	 * @brief Queries the entity for a component, if the component does not exist,
 	 * a "NulLComponent" will be returned.
 	 *
-	 * @param type The type of component you are requesting.
+	 * @param type The type of component interface you are requesting.
 	 * @returns T The found component or its null instance.
 	 */
-	template<class T> std::shared_ptr<T> QueryInterface(const ComponentType& type);
+	template<class T> std::shared_ptr<T> QueryInterface(const InterfaceType& type);
 
-	void addTag(const Tag& tag);
-	void removeTag(const Tag& tag);
-	bool hasTag(const Tag& tag);
+	void AddTag(const Tag& tag);
+	void RemoveTag(const Tag& tag);
+	bool HasTag(const Tag& tag);
 
 	/**
 	 * Updates each component that is attached to the entity.
 	 */
-	void Update(uint64_t ms_tick);
+	void Update(const float deltaMilliseconds);
 
 	/**
 	 * Sends a message to each of the entities components.
 	 */
 	void BroadcastMessage(Message message);
 
-	const ObjectId& id() const { return id_; }
-	const ObjectId& parent_id() const { return parent_id_; }
+	const EntityId& id() const { return id_; }
 	const std::string& name() const { return name_; }
 
 private:
-	typedef std::map<ComponentType, std::shared_ptr<ComponentInterface>>			ComponentsMap;
-	typedef std::map<ComponentType, std::shared_ptr<ComponentInterface>>::iterator	ComponentsMapIterator;
+	typedef std::map<InterfaceType, std::shared_ptr<ComponentInterface>>			ComponentsMap;
+	typedef std::map<InterfaceType, std::shared_ptr<ComponentInterface>>::iterator	ComponentsMapIterator;
 
 	std::string							name_;
-	ObjectId							id_;
-	ObjectId							parent_id_;
+	EntityId							id_;
 	TagSet								tags_;
 	ComponentsMap						components_;
 

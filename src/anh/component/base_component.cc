@@ -23,18 +23,15 @@
 namespace anh {
 namespace component {
 
-BaseComponent::BaseComponent(ObjectId id)
-	: object_id_(id)
+BaseComponent::BaseComponent(const ComponentType& interface, const ComponentType& type)
+	: entity_id_(0)
+	, type_(type)
+	, interface_(interface)
 {
 }
 
 BaseComponent::~BaseComponent()
 {
-}
-
-const ObjectId& BaseComponent::object_id(void)
-{
-	return object_id_;
 }
 
 void BaseComponent::HandleMessage(const Message message)
@@ -48,7 +45,7 @@ bool BaseComponent::RegisterMessageHandler(const MessageType& type, MessageHandl
 	    event_dispatcher_.subscribe(type, handler);
     }
     catch(anh::event_dispatcher::InvalidEventType) {
-        LOG(INFO) << "invalid event type for component: " << this->component_info().type;
+        LOG(INFO) << "invalid event type for component: " << this->component_type();
         return false;
     }
     return true;

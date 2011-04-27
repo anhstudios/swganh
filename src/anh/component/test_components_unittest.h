@@ -25,7 +25,9 @@
 
 using namespace anh::component;
 
-namespace anh { namespace test_components {
+namespace anh { 
+namespace test_components {
+
 //================================================================
 // Transform Component
 //================================================================
@@ -56,8 +58,7 @@ class NullTransformComponent;
 class TransformComponentInterface : public BaseComponent
 {
 public:
-	TransformComponentInterface(const ObjectId& id)
-		: BaseComponent(id) { }
+	TransformComponentInterface(const ComponentType& concrete_type) : BaseComponent("Transform", concrete_type) { }
 
 	virtual Vector3& position() = 0;
 	virtual Quaternion& rotation() = 0;
@@ -68,25 +69,20 @@ public:
 class NullTransformComponent : public TransformComponentInterface
 {
 public:
-	NullTransformComponent()
-		: TransformComponentInterface(0) { }
+	NullTransformComponent() : TransformComponentInterface("Anh.NullTransform") { }
 
 	Vector3& position() { return position_; }
 	Quaternion& rotation() { return rotation_; }
 
-	const ComponentInfo& component_info() { return component_info_; }
-
 private:
 	Vector3 position_;
 	Quaternion rotation_;
-	static ComponentInfo component_info_;
 };
 
 class TransformComponent : public TransformComponentInterface
 {
 public:
-	TransformComponent(const ObjectId& id)
-		: TransformComponentInterface(id) { }
+	TransformComponent() : TransformComponentInterface("Anh.Transform") { }
 
 	void Init(boost::property_tree::ptree& pt) {
 		position_.x = pt.get<float>("position.x", 0.0f);
@@ -101,12 +97,9 @@ public:
 	Vector3& position() { return position_; }
 	Quaternion& rotation() { return rotation_; }
 
-	const ComponentInfo& component_info() { return component_info_; }
-
 private:
 	Vector3 position_;
 	Quaternion rotation_;
-	static ComponentInfo component_info_;
 };
 
 class TransformComponentLoader : public ComponentLoaderInterface
@@ -123,24 +116,6 @@ public:
 
 	void Unload(std::shared_ptr<ComponentInterface> comp) {
 	}
-};
-
-//================================================================
-// Radial Component
-//================================================================
-class RadialComponentInterface : public BaseComponent
-{
-public:
-    RadialComponentInterface(const ObjectId& id)
-	: BaseComponent(id) { }
-};
-
-class NullRadialComponent : public RadialComponentInterface
-{
-};
-
-class RadialComponent : public RadialComponentInterface
-{
 };
 
 //================================================================
@@ -166,8 +141,7 @@ class NullAppearanceComponent;
 class AppearanceComponentInterface : public BaseComponent
 {
 public:
-	AppearanceComponentInterface(const ObjectId& id)
-		: BaseComponent(id) { }
+	AppearanceComponentInterface(const ComponentType& concrete_type) : BaseComponent("Appearance", concrete_type) { }
     virtual Appearance& appearance() =0;
 	static std::shared_ptr<NullAppearanceComponent> NullComponent;
 };
@@ -175,8 +149,7 @@ public:
 class NullAppearanceComponent : public AppearanceComponentInterface
 {
 public:
-    NullAppearanceComponent()
-		: AppearanceComponentInterface(0) { }
+    NullAppearanceComponent() : AppearanceComponentInterface("Anh.NullAppearance") { }
 
     virtual std::string& iff() { return appearance_.iff; }
     virtual std::string& client_file() { return appearance_.client_file; }
@@ -188,18 +161,15 @@ public:
     virtual float& size() { return appearance_.size; }
     virtual uint32_t& crc() { return appearance_.crc; }
 
-	const ComponentInfo& component_info() { return component_info_; }
     virtual Appearance& appearance() { return appearance_; }
 private:
     Appearance appearance_;
-    static ComponentInfo component_info_;
 };
 
 class AppearanceComponent : public AppearanceComponentInterface
 {    
 public:
-	AppearanceComponent(const ObjectId& id)
-		: AppearanceComponentInterface(id) { }
+	AppearanceComponent() : AppearanceComponentInterface("Anh.Appearance") { }
 
 	void Init(boost::property_tree::ptree& pt) {
         appearance_.iff = pt.get<char>("appearance.iff", "object/mobile/tatooine_npc/shared_windom_starkiller.iff");
@@ -214,11 +184,8 @@ public:
 	}
     Appearance& appearance() { return appearance_; }
 
-	const ComponentInfo& component_info() { return component_info_; }
-
 private:
 	Appearance appearance_;
-	static ComponentInfo component_info_;
 };
 class AppearanceComponentLoader : public ComponentLoaderInterface
 {
@@ -237,6 +204,28 @@ public:
 };
 
 //================================================================
+// Radial Component
+//================================================================
+class RadialComponentInterface : public BaseComponent
+{
+public:
+    RadialComponentInterface(const ComponentType& concrete_type)
+	: BaseComponent("Radial", concrete_type) { }
+};
+
+class NullRadialComponent : public RadialComponentInterface
+{
+public:
+	NullRadialComponent() : RadialComponentInterface("Anh.NullRadial") { }
+};
+
+class RadialComponent : public RadialComponentInterface
+{
+public:
+	RadialComponent() : RadialComponentInterface("Anh.Radial") { }
+};
+
+//================================================================
 // Tickable Component
 //================================================================
 
@@ -245,8 +234,7 @@ class NullTickableComponent;
 class TickableComponentInterface : public BaseComponent
 {
 public:
-	TickableComponentInterface(const ObjectId& id)
-		: BaseComponent(id) { }
+	TickableComponentInterface(const ComponentType& concrete_type) : BaseComponent("Tickable", concrete_type) { }
 
 	virtual bool ticked() = 0;
 	static std::shared_ptr<NullTickableComponent> NullComponent;
@@ -255,30 +243,25 @@ public:
 class NullTickableComponent : public TickableComponentInterface
 {
 public:
-	NullTickableComponent()
-		: TickableComponentInterface(0) { }
+	NullTickableComponent() : TickableComponentInterface("Anh.NullTickable") { }
 
 	bool ticked() { return false; }
-	const ComponentInfo& component_info() { return s_component_info_; }
 
 private:
-	static ComponentInfo s_component_info_;
 };
 
 class TickableComponent : public TickableComponentInterface
 {
 public:
-	TickableComponent(const ObjectId& id)
-		: TickableComponentInterface(id)
+	TickableComponent()
+		: TickableComponentInterface("Anh.Tickable")
 		, ticked_(false) { }
 
 	bool ticked() { return ticked_; }
 	void Update(const float timeout) { ticked_ = true; }
-	const ComponentInfo& component_info() { return s_component_info_; }
 
 private:
 	bool ticked_;
-	static ComponentInfo s_component_info_;
 };
 
 //================================================================
@@ -318,8 +301,7 @@ class NullHAMComponent;
 class HAMComponentInterface : public BaseComponent
 {
 public:
-	HAMComponentInterface(const ObjectId& id)
-		: BaseComponent(id) { }
+	HAMComponentInterface(const ComponentType& concrete_type) : BaseComponent("Ham", concrete_type) { }
     /*void Init(boost::property_tree::ptree pt)
 	{
 		ham_.max_health = pt.get<unsigned int>("health", 1);
@@ -340,22 +322,18 @@ private:
 class NullHAMComponent : public HAMComponentInterface
 {
 public:
-	NullHAMComponent()
-		: HAMComponentInterface(0) { }
+	NullHAMComponent() : HAMComponentInterface("Anh.NullHam") { }
 
 	HAM& ham() { return ham_; }
-	const ComponentInfo& component_info() { return component_info_; }
 
 private:
 	HAM ham_;
-	static ComponentInfo component_info_;
 };
 
 class HAMComponent : public HAMComponentInterface
 {
 public:
-	HAMComponent(const ObjectId& id)
-		: HAMComponentInterface(id) 
+	HAMComponent() : HAMComponentInterface("Anh.Ham")
 	{ 
 		RegisterMessageHandler(MessageType("DoDamage"), std::bind(&HAMComponent::handleDoDamage, this, std::placeholders::_1));
 	}
@@ -376,11 +354,9 @@ public:
 	}
 
 	HAM& ham() { return ham_; }
-	const ComponentInfo& component_info() { return component_info_; }
 
 private:
 	HAM ham_;
-	static ComponentInfo component_info_;
 
 	bool handleDoDamage(const Message m)
 	{
@@ -405,6 +381,7 @@ private:
 	}
 };
 
-}} // namespaces
+} // namespace test_components
+} // namespace anh
 
 #endif // LIBANH_COMPONENT_TEST_COMPONENTS_H_

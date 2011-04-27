@@ -22,11 +22,10 @@
 namespace anh {
 namespace component {
 
-Entity::Entity(const ObjectId& id, const std::string name, const TagSet& tags, const ObjectId& parent_id)
+Entity::Entity(const EntityId& id, const std::string name, const TagSet& tags)
 	: id_(id)
 	, name_(name)
 	, tags_(tags)
-	, parent_id_(parent_id)
 {
 }
 
@@ -37,17 +36,20 @@ Entity::~Entity()
 
 void Entity::AttachComponent(std::shared_ptr<ComponentInterface> component)
 {
-	ComponentsMapIterator i = components_.find(component->component_info().type);
-	if(i == components_.end())
-		components_.insert(ComponentsMap::value_type(component->component_info().type, component));
+	ComponentsMapIterator i = components_.find(component->interface_type());
+	if(i == components_.end()) {
+		components_.insert(ComponentsMap::value_type(component->interface_type(), component));
+		component->set_entity_id(id_);
+		component->OnAttach();
+	}
 }
 
-void Entity::DetachComponent(const ComponentType& type)
+void Entity::DetachComponent(const InterfaceType& type)
 {
 	ComponentsMapIterator i = components_.find(type);
 	if(i != components_.end())
 	{
-		i->second->Deinit();
+		i->second->OnDetach();
 		components_.erase(i);
 	}
 }
@@ -55,13 +57,14 @@ void Entity::DetachComponent(const ComponentType& type)
 void Entity::DetachAllComponents(void)
 {
 	std::for_each(components_.begin(), components_.end(), [=](ComponentsMap::value_type& pair) {
-		pair.second->Deinit();
+		pair.second->OnDetach();
+		pair.second.reset();
 	});
 
 	components_.clear();
 }
 
-bool Entity::hasComponent(const ComponentType& type)
+bool Entity::HasInterface(const InterfaceType& type)
 {
 	ComponentsMapIterator i = components_.find(type);
 	if(i != components_.end())
@@ -70,19 +73,19 @@ bool Entity::hasComponent(const ComponentType& type)
 		return false;
 }
 
-void Entity::addTag(const Tag& tag)
+void Entity::AddTag(const Tag& tag)
 {
 	tags_.insert(tag);
 }
 
-void Entity::removeTag(const Tag& tag)
+void Entity::RemoveTag(const Tag& tag)
 {
 	TagSetIterator i = tags_.find(tag);
 	if(i != tags_.end())
 		tags_.erase(i);
 }
 
-bool Entity::hasTag(const Tag& tag)
+bool Entity::HasTag(const Tag& tag)
 {
 	TagSetIterator i = tags_.find(tag);
 	if(i != tags_.end())
@@ -91,10 +94,10 @@ bool Entity::hasTag(const Tag& tag)
 		return false;
 }
 
-void Entity::Update(uint64_t ms_tick)
+void Entity::Update(const float deltaMilliseconds)
 {
 	std::for_each(components_.begin(), components_.end(), [=](ComponentsMap::value_type& pair) {
-		pair.second->Update(ms_tick);
+		pair.second->Update(deltaMilliseconds);
 	});
 }
 
