@@ -27,16 +27,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_MODULE_MANAGER_MODULE_MAIN_H
 #define ANH_MODULE_MANAGER_MODULE_MAIN_H
 
-#include <anh/component/object_builder.h>
-#include <anh/component/object_manager.h>
+#include <anh/component/entity_builder.h>
+#include <anh/component/entity_manager.h>
 #include <anh/event_dispatcher/event_dispatcher_interface.h>
 #include <anh/database/database_manager_interface.h>
 #include <anh/scripting/scripting_manager_interface.h>
 #include <anh/server_directory/server_directory_interface.h>
 
 #define MODULE_STANDARD_SERVICES \
-    std::shared_ptr<anh::component::ObjectBuilder> gObjBuilder; \
-    std::shared_ptr<anh::component::ObjectManager> gObjManager; \
+    std::shared_ptr<anh::component::EntityBuilder> gObjBuilder; \
+    std::shared_ptr<anh::component::EntityManager> gObjManager; \
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> gEventDispatcher; \
     std::shared_ptr<anh::database::DatabaseManagerInterface> gDatabaseManager; \
     std::shared_ptr<anh::scripting::ScriptingManagerInterface> gScriptingManager; \

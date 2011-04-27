@@ -38,7 +38,7 @@ class NullAppearanceComponent;
 
 class AppearanceComponentInterface : public BaseComponent {
 public:
-    AppearanceComponentInterface(const ObjectId& id)
+    AppearanceComponentInterface(const EntityId& id)
 		: BaseComponent(id) { }
     virtual const int race() = 0;
     virtual const bool gender() = 0;

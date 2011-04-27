@@ -21,8 +21,8 @@
 
 #include <boost/filesystem.hpp>
 
-#include <anh/component/object_builder.h>
-#include <anh/component/object_manager.h>
+#include <anh/component/entity_builder.h>
+#include <anh/component/entity_manager.h>
 #include <mod_anh_transform/transform_component.h>
 
 using namespace boost::filesystem;
@@ -31,14 +31,11 @@ using namespace transform;
 using namespace std;
 
 #define TEST_OBJECT_ID 0xDEADBEEF
-ComponentInfo NullTransformComponent::component_info_ = ComponentInfo(ComponentType("NullTransformComponent"), false);
-std::shared_ptr<NullTransformComponent> TransformComponentInterface::NullComponent = std::shared_ptr<NullTransformComponent>(new NullTransformComponent());
-ComponentInfo TransformComponent::component_info_ = ComponentInfo(ComponentType("TransformComponent"), true);
 
 /// This is used to test the Transform Component
 class TestTransformComponent : public testing::Test {
 public:
-    ObjectBuilder object_builder;
+    EntityBuilder object_builder;
     
     shared_ptr<TransformComponentInterface> transform_comp;
     shared_ptr<TransformMessage> trans;
@@ -57,9 +54,9 @@ void TestTransformComponent::SetUp() {
     of << "</component></object>" <<endl;
     // now we can init
     object_builder.Init("test_components");
-    object_builder.RegisterCreator("TransformComponent", [=](const ObjectId& id){ return shared_ptr<TransformComponentInterface>( new TransformComponent(id) ); });
-    if (object_builder.BuildObject(TEST_OBJECT_ID, "test_pos") != BUILD_FAILED) {
-        transform_comp = gObjectManager.QueryInterface<TransformComponentInterface>(TEST_OBJECT_ID, "TransformComponent");
+    object_builder.RegisterCreator("TransformComponent", [=](const EntityId& id){ return shared_ptr<TransformComponentInterface>( new TransformComponent(id) ); });
+    if (object_builder.BuildEntity(TEST_OBJECT_ID, "test_pos") != BUILD_FAILED) {
+        transform_comp = gEntityManager.QueryInterface<TransformComponentInterface>(TEST_OBJECT_ID, "TransformComponent");
     }
 }
 void TestTransformComponent::TearDown() {

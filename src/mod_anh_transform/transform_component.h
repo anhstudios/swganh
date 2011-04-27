@@ -43,7 +43,7 @@ namespace transform {
 class TransformMessage : public SimpleMessage
 {
 public:
-	TransformMessage(ObjectId parent, glm::vec3 position, glm::quat rotation, float speed)
+	TransformMessage(EntityId parent, glm::vec3 position, glm::quat rotation, float speed)
         // 0 priority is the highest
 		: SimpleMessage(MessageType("Transform"), 0)
 		, parent_id_(parent)
@@ -51,32 +51,32 @@ public:
         , rotation_(rotation)
         , speed_(speed) { }
 
-    static std::shared_ptr<TransformMessage> createTransformMessage(ObjectId id, glm::vec3 pos, glm::quat rot, float speed) {
+    static std::shared_ptr<TransformMessage> createTransformMessage(EntityId id, glm::vec3 pos, glm::quat rot, float speed) {
         return std::make_shared<TransformMessage>(id, pos, rot, speed); 
     }
 
-	const ObjectId parent_id()  { return parent_id_; }
+	const EntityId parent_id()  { return parent_id_; }
     const glm::vec3& position()  { return position_; }
     const glm::quat& rotation()  { return rotation_; }
     const float speed() { return speed_; }
 
 private:
-	ObjectId parent_id_;
+	EntityId parent_id_;
 	glm::vec3 position_;
     glm::quat rotation_;
     float speed_;
 };
 class DLL_EXPORT TransformComponent : public anh_api::TransformComponentInterface {
 public:
-    TransformComponent(const ObjectId& id);
-    TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed);
+    TransformComponent(const EntityId& id);
+    TransformComponent(const EntityId& id, const glm::vec3& position, const glm::quat& rotation, const float speed);
 
 	void Init(boost::property_tree::ptree& pt);
-	virtual void Update(float timeout);
+	virtual void Update(const float timeout);
     virtual void HandleMessage(const std::shared_ptr<TransformMessage> message);
 
-    void parent_id(const ObjectId id) { parent_id_ = id; }
-    const ObjectId parent_id() { return parent_id_; }
+    void parent_id(const EntityId id) { parent_id_ = id; }
+    const EntityId parent_id() { return parent_id_; }
     void position(const glm::vec3& position) { position_ = position; }
     void position(const float x, const float y, const float z) { position_.x = x; position_.y = y; position_.z = z;}
 	const glm::vec3& position() { return position_; }
@@ -96,16 +96,13 @@ public:
     void move_forward(const float& distance);
     void move_back(const float& distance);
     float rotation_angle() const;
-	const ComponentInfo& component_info() { return component_info_; }
 
 private:
     TransformComponent();
-    boost::flyweight<ObjectId> parent_id_;
+    boost::flyweight<EntityId> parent_id_;
     glm::vec3 position_;
     glm::quat rotation_;
     boost::flyweight<float> speed_;
-
-    static ComponentInfo component_info_;
 };
 
 } // transform

@@ -48,7 +48,7 @@ class NullSpatialComponent;
 
 class SpatialComponentInterface : public BaseComponent {
 public:
-    SpatialComponentInterface(const ObjectId& id)
+    SpatialComponentInterface(const EntityId& id)
 		: BaseComponent(id) { }
     virtual std::vector<std::string> regions() = 0;
     virtual const uint16_t spatial_location_id() = 0;

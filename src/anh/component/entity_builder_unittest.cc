@@ -63,8 +63,8 @@ TEST_F(EntityBuilderTests, NoTemplatesByDefault) {
 	EXPECT_FALSE(entity_builder.TemplateExists("mock_template"));
 }
 
-/// When a new ObjectBuilder is initialized, all the templates in the passed in
-/// directory path should be loaded and stored within the ObjectBuilder.
+/// When a new EntityBuilder is initialized, all the templates in the passed in
+/// directory path should be loaded and stored within the EntityBuilder.
 TEST_F(EntityBuilderTests, Init) {
 	EntityBuilder entity_builder(std::make_shared<EntityManager>());
 	entity_builder.Init("templates.temp");

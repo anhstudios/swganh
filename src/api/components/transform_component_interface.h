@@ -41,9 +41,9 @@ class NullTransformComponent;
 
 class TransformComponentInterface : public BaseComponent {
     public:
-	TransformComponentInterface(const ObjectId id)
-		: BaseComponent(id) { }
-    virtual const ObjectId parent_id() = 0;
+	TransformComponentInterface(const EntityId& id)
+		: BaseComponent(ComponentType("TransformComponentInterface"), ComponentType("Anh.Transform")) { }
+    virtual const EntityId parent_id() = 0;
     virtual const glm::vec3& position() = 0;
     virtual const glm::quat& rotation() = 0;
     virtual const float speed() = 0;
@@ -65,7 +65,7 @@ public:
     NullTransformComponent()
 		: TransformComponentInterface(0) { }
 
-    const ObjectId parent_id() { return parent_id_; }
+    const EntityId parent_id() { return parent_id_; }
 	const glm::vec3& position() { return position_; }
 	const glm::quat& rotation() { return rotation_; }
     void rotate(const float& degrees){};
@@ -77,14 +77,11 @@ public:
     void move_back(const float& distance){};
     float rotation_angle() const{ return 0.0f; }
     const float speed() { return speed_; }
-    
-	const ComponentInfo& component_info() { return component_info_; }
 private:
-    boost::flyweight<ObjectId> parent_id_;
+    boost::flyweight<EntityId> parent_id_;
     glm::vec3 position_;
     glm::quat rotation_;
     boost::flyweight<float> speed_;
-    static ComponentInfo component_info_;
 };
 } // components
 } // api

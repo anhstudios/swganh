@@ -43,7 +43,7 @@ bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> serv
     cout << GetModuleName() << " Loading..." <<endl;
 	// register component to object manager
     gObjManager = 
-        boost::any_cast<shared_ptr<component::ObjectManager>>(services->getService("ObjectManager"));
+        boost::any_cast<shared_ptr<component::EntityManager>>(services->getService("EntityManager"));
     if (gObjManager == nullptr)
     {
         throw runtime_error("No Object Manager Registered");

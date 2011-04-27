@@ -42,8 +42,8 @@ namespace anh_python { namespace components {
 void define_class_transform_component() {
     
     // overloads
-    const ObjectId      (TransformComponent::*get_parent_id)(void)              = &TransformComponent::parent_id; 
-    void                (TransformComponent::*set_parent_id)(const ObjectId)    = &TransformComponent::parent_id;
+    const EntityId      (TransformComponent::*get_parent_id)(void)              = &TransformComponent::parent_id; 
+    void                (TransformComponent::*set_parent_id)(const EntityId)    = &TransformComponent::parent_id;
     const glm::vec3&    (TransformComponent::*get_pos)(void)                    = &TransformComponent::position;
     void                (TransformComponent::*set_pos)(const glm::vec3&)        = &TransformComponent::position;
     void (TransformComponent::*set_pos3)(const float, const float, const float) = &TransformComponent::position;
@@ -58,10 +58,10 @@ void define_class_transform_component() {
     class_<TransformComponent, boost::noncopyable>("TransformComponent",
         "A component controlling everything about an entities position in the world. \n"
         "@note: It is almost always prefered to get this object from an existing entity Id. "
-        "Components use the ObjectManager to get a shared_ptr reference to the existing TransformComponent "
+        "Components use the EntityManager to get a shared_ptr reference to the existing TransformComponent "
         "which relates to the specific ID.",
-        init<const ObjectId>())
-        .def(init< const ObjectId, const glm::vec3&, const glm::quat&, const float >())
+        init<const EntityId>())
+        .def(init< const EntityId, const glm::vec3&, const glm::quat&, const float >())
         .def("object_id", &TransformComponent::object_id, return_value_policy<copy_const_reference>())
         .def("parent_id", get_parent_id)
         .def("parent_id", set_parent_id)

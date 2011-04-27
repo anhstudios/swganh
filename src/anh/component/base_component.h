@@ -37,7 +37,7 @@ namespace component {
 class BaseComponent : public ComponentInterface
 {
 public:
-	BaseComponent(const ComponentType& interface, const ComponentType& type);
+	BaseComponent(const ComponentType& component_interface, const ComponentType& type);
 	virtual ~BaseComponent();
 
 	virtual void Init(boost::property_tree::ptree& pt) { };
