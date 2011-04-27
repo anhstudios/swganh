@@ -68,11 +68,11 @@ private:
 };
 class DLL_EXPORT TransformComponent : public anh_api::TransformComponentInterface {
 public:
-    TransformComponent(const EntityId& id);
-    TransformComponent(const EntityId& id, const glm::vec3& position, const glm::quat& rotation, const float speed);
+    TransformComponent();
+    TransformComponent(const glm::vec3& position, const glm::quat& rotation, const float speed);
 
 	void Init(boost::property_tree::ptree& pt);
-	virtual void Update(const float timeout);
+	virtual void Update(const float deltaMilliseconds);
     virtual void HandleMessage(const std::shared_ptr<TransformMessage> message);
 
     void parent_id(const EntityId id) { parent_id_ = id; }
@@ -98,7 +98,6 @@ public:
     float rotation_angle() const;
 
 private:
-    TransformComponent();
     boost::flyweight<EntityId> parent_id_;
     glm::vec3 position_;
     glm::quat rotation_;

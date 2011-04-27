@@ -34,9 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 using namespace anh::api::components;
 using namespace transform;
 using namespace std;
-ComponentInfo NullTransformComponent::component_info_ = ComponentInfo(ComponentType("NullTransformComponent"), false);
 std::shared_ptr<NullTransformComponent> TransformComponentInterface::NullComponent = std::shared_ptr<NullTransformComponent>(new NullTransformComponent());
-ComponentInfo TransformComponent::component_info_ = ComponentInfo(ComponentType("TransformComponent"), true);
 namespace anh_python { namespace components {
 
 void define_class_transform_component() {
@@ -60,9 +58,9 @@ void define_class_transform_component() {
         "@note: It is almost always prefered to get this object from an existing entity Id. "
         "Components use the EntityManager to get a shared_ptr reference to the existing TransformComponent "
         "which relates to the specific ID.",
-        init<const EntityId>())
-        .def(init< const EntityId, const glm::vec3&, const glm::quat&, const float >())
-        .def("object_id", &TransformComponent::object_id, return_value_policy<copy_const_reference>())
+        init<>())
+        .def(init< const glm::vec3&, const glm::quat&, const float >())
+        .def("object_id", &TransformComponent::entity_id, return_value_policy<copy_const_reference>())
         .def("parent_id", get_parent_id)
         .def("parent_id", set_parent_id)
         .def("position", get_pos, return_internal_reference<>(),

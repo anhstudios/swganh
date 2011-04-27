@@ -42,17 +42,18 @@ uint64_t guid = 0;
 bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
     cout << GetModuleName() << " Loading..." <<endl;
 	// register component to object manager
-    gObjManager = 
+    gEntityManager = 
         boost::any_cast<shared_ptr<component::EntityManager>>(services->getService("EntityManager"));
-    if (gObjManager == nullptr)
+    if (gEntityManager == nullptr)
     {
         throw runtime_error("No Object Manager Registered");
     }
     // get new GUID
     for (int i = 0 ; i < 399; i++)
     {
-        shared_ptr<TransformComponentInterface> component( new TransformComponent(i) );
-        gObjManager->AttachComponent(guid+i, component);
+        shared_ptr<TransformComponentInterface> component( new TransformComponent() );
+		gEntityBuilder->BuildEntity(guid+i, "T21", "T21" + guid);
+        gEntityManager->AttachComponent(guid+i, component);
     }
     // subscribe to events
     gEventDispatcher =
@@ -83,7 +84,7 @@ bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> serv
 
 bool DLL_EXPORT Unload(std::shared_ptr<anh::module_manager::PlatformServices> services) {
 	// unregister components
-    //gObjManager->DetachComponent(1, ComponentType("TransformComponent"));
+    //gEntityManager->DetachComponent(1, ComponentType("TransformComponent"));
 
     // unsubscribes
 

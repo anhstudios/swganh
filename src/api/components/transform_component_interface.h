@@ -41,8 +41,9 @@ class NullTransformComponent;
 
 class TransformComponentInterface : public BaseComponent {
     public:
-	TransformComponentInterface(const EntityId& id)
-		: BaseComponent(ComponentType("TransformComponentInterface"), ComponentType("Anh.Transform")) { }
+	TransformComponentInterface(const ComponentType& type)
+		: BaseComponent("Transform", type) { }
+
     virtual const EntityId parent_id() = 0;
     virtual const glm::vec3& position() = 0;
     virtual const glm::quat& rotation() = 0;
@@ -63,8 +64,8 @@ class TransformComponentInterface : public BaseComponent {
 class NullTransformComponent : public TransformComponentInterface {
 public:
     NullTransformComponent()
-		: TransformComponentInterface(0) { }
-
+		: TransformComponentInterface("Anh.NullTransform") { }
+	
     const EntityId parent_id() { return parent_id_; }
 	const glm::vec3& position() { return position_; }
 	const glm::quat& rotation() { return rotation_; }

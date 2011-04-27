@@ -28,7 +28,8 @@ using namespace anh::component;
 class EntityBuilderTests : public testing::Test
 {
 public:
-    EntityBuilder entity_builder;
+	std::shared_ptr<EntityManager> entity_manager;
+	std::shared_ptr<EntityBuilder> entity_builder;
 
 protected:
     virtual void SetUp();
@@ -38,7 +39,7 @@ protected:
 };
 
 void EntityBuilderTests::SetUp() {
-    
+    entity_builder = std::make_shared<EntityBuilder>(entity_manager);
 	// Create "Virtual" Template Bank
 	boost::filesystem::create_directory("templates.temp");
 
@@ -54,20 +55,19 @@ void EntityBuilderTests::SetUp() {
     of.close();
 }
 void EntityBuilderTests::TearDown() {
-    entity_builder.Deinit();
+    entity_builder->Deinit();
 	boost::filesystem::remove_all("templates.temp");
 }
 
 /// When a new EntityBuilder is created, no entity templates should be registered.
 TEST_F(EntityBuilderTests, NoTemplatesByDefault) {
-	EXPECT_FALSE(entity_builder.TemplateExists("mock_template"));
+	EXPECT_FALSE(entity_builder->TemplateExists("mock_template"));
 }
 
 /// When a new EntityBuilder is initialized, all the templates in the passed in
 /// directory path should be loaded and stored within the EntityBuilder.
 TEST_F(EntityBuilderTests, Init) {
-	EntityBuilder entity_builder(std::make_shared<EntityManager>());
-	entity_builder.Init("templates.temp");
+	entity_builder->Init("templates.temp");
 }
 
 /// A newly registered creator should return true.

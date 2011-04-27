@@ -35,10 +35,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/server_directory/server_directory_interface.h>
 
 #define MODULE_STANDARD_SERVICES \
-    std::shared_ptr<anh::component::EntityBuilder> gObjBuilder; \
-    std::shared_ptr<anh::component::EntityManager> gObjManager; \
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> gEventDispatcher; \
-    std::shared_ptr<anh::database::DatabaseManagerInterface> gDatabaseManager; \
-    std::shared_ptr<anh::scripting::ScriptingManagerInterface> gScriptingManager; \
-    std::shared_ptr<anh::server_directory::ServerDirectoryInterface> gServerDirectory; 
+    static std::shared_ptr<anh::component::EntityBuilder> gEntityBuilder; \
+    static std::shared_ptr<anh::component::EntityManager> gEntityManager; \
+    static std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> gEventDispatcher; \
+    static std::shared_ptr<anh::database::DatabaseManagerInterface> gDatabaseManager; \
+    static std::shared_ptr<anh::scripting::ScriptingManagerInterface> gScriptingManager; \
+    static std::shared_ptr<anh::server_directory::ServerDirectoryInterface> gServerDirectory; 
+
 #endif // ANH_MODULE_MANAGER_MODULE_MAIN_H

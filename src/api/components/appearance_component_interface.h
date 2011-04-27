@@ -38,8 +38,8 @@ class NullAppearanceComponent;
 
 class AppearanceComponentInterface : public BaseComponent {
 public:
-    AppearanceComponentInterface(const EntityId& id)
-		: BaseComponent(id) { }
+    AppearanceComponentInterface(const ComponentType& type)
+		: BaseComponent(ComponentType("AppearanceComponentInterface"), type) { }
     virtual const int race() = 0;
     virtual const bool gender() = 0;
     virtual const std::string& model() = 0;
@@ -65,8 +65,6 @@ public:
     const std::string& color() { return color_; }
     const std::string& customization_string() { return customization_string_; }
     std::map<std::string, uint16_t> customization_map() { return customization_map_; }
-
-    const ComponentInfo& component_info() { return component_info_; }
 private:
     boost::flyweight<int> race_;
     bool gender_;
@@ -78,7 +76,6 @@ private:
     boost::flyweight<std::string> customization_string_;
     boost::flyweight<std::map<std::string, uint16_t>> customization_map_;
 
-    static ComponentInfo component_info_;
 };
 
 } // namespace components

@@ -48,8 +48,8 @@ class NullSpatialComponent;
 
 class SpatialComponentInterface : public BaseComponent {
 public:
-    SpatialComponentInterface(const EntityId& id)
-		: BaseComponent(id) { }
+    SpatialComponentInterface(const ComponentType& type)
+		: BaseComponent(ComponentType("Spatial"), type) { }
     virtual std::vector<std::string> regions() = 0;
     virtual const uint16_t spatial_location_id() = 0;
     virtual const uint32_t last_updated_ms() = 0;
@@ -66,13 +66,11 @@ public:
     const uint32_t last_updated_ms() { return last_updated_ms_; }
     const std::string& region_name(int index) { return regions_[index]; }
     
-    const ComponentInfo& component_info() { return component_info_; }
 private:
     std::vector<std::string> regions_;
     boost::flyweight<uint16_t> spatial_location_id_;
     boost::flyweight<uint32_t> last_updated_ms_;
     
-    static ComponentInfo component_info_;
 };
 } // namespace components
 } // namespace api

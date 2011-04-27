@@ -31,22 +31,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "main.h"
 
 using namespace std;
-namespace transform {
 // statics
-std::shared_ptr<anh_api::NullTransformComponent> NullComponent = std::shared_ptr<anh_api::NullTransformComponent>(new anh_api::NullTransformComponent());
+std::shared_ptr<anh::api::components::NullTransformComponent> anh::api::components::TransformComponentInterface::NullComponent = 
+	std::make_shared<anh::api::components::NullTransformComponent>();
 
-TransformComponent::TransformComponent(const EntityId& id)
-: TransformComponentInterface(id)
+namespace transform {
+
+TransformComponent::TransformComponent()
+: TransformComponentInterface(ComponentType("Anh.Transform"))
 {
-    set_entity_id(id);
 }
-TransformComponent::TransformComponent(const EntityId& id, const glm::vec3& position, const glm::quat& rotation, const float speed)
-    : TransformComponentInterface(id)
+TransformComponent::TransformComponent(const glm::vec3& position, const glm::quat& rotation, const float speed)
+    : TransformComponentInterface(ComponentType("Anh.Transform"))
     , position_(position)
     , rotation_(rotation)
     , speed_(speed)
 {
-    set_entity_id(id);
 }
 void TransformComponent::Update(const float timeout)
 {
