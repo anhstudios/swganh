@@ -1,7 +1,6 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
-#include <windows.h>
 #include <string>
 
 #include <anh\module_manager\module_interface.h>

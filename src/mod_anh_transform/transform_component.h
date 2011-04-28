@@ -65,7 +65,7 @@ private:
     glm::quat rotation_;
     float speed_;
 };
-class API TransformComponent : public anh::api::components::TransformComponentInterface {
+class __declspec(dllexport) TransformComponent : public anh::api::components::TransformComponentInterface {
 public:
     TransformComponent();
     TransformComponent(const glm::vec3& position, const glm::quat& rotation, const float speed);

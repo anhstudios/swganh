@@ -34,11 +34,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/scripting/scripting_manager_interface.h>
 #include <anh/server_directory/server_directory_interface.h>
 
-
-#ifdef DLL_EXPORTS
-#define API __declspec(dllexport)
-#else
-#define API __declspec(dllimport)
+#ifdef _WIN32
+    #include <windows.h>
+    #ifdef DLL_EXPORTS
+        #define API __declspec(dllexport)
+    #else
+        #define API __declspec(dllimport)
+    #endif
 #endif
 
 #define MODULE_STANDARD_SERVICES \
