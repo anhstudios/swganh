@@ -39,7 +39,7 @@ using namespace std;
 // temp
 uint64_t guid = 0;
 
-bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
+bool API Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
     cout << GetModuleName() << " Loading..." <<endl;
 	// register component to object manager
     gEntityManager = 
@@ -82,7 +82,7 @@ bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> serv
     return true;
 }
 
-bool DLL_EXPORT Unload(std::shared_ptr<anh::module_manager::PlatformServices> services) {
+bool API Unload(std::shared_ptr<anh::module_manager::PlatformServices> services) {
 	// unregister components
     //gEntityManager->DetachComponent(1, ComponentType("TransformComponent"));
 
@@ -92,14 +92,14 @@ bool DLL_EXPORT Unload(std::shared_ptr<anh::module_manager::PlatformServices> se
     return true;
 }
 
-const std::string DLL_EXPORT GetModuleName(void) {
+const std::string API GetModuleName(void) {
 	return "ANH.Transform";
 }
 
-const anh::module_manager::ModuleApiVersion DLL_EXPORT GetModuleVersion(void) {
+const anh::module_manager::ModuleApiVersion API GetModuleVersion(void) {
 	return anh::module_manager::ModuleApiVersion(0, 1, "0.1");
 }
 
-const std::string DLL_EXPORT GetModuleDescription(void) {
+const std::string API GetModuleDescription(void) {
 	return "ANH's Transform Module";
 }

@@ -34,15 +34,15 @@ using namespace std;
 // statics
 std::shared_ptr<anh::api::components::NullTransformComponent> anh::api::components::TransformComponentInterface::NullComponent = 
 	std::make_shared<anh::api::components::NullTransformComponent>();
-
 namespace transform {
 
+
 TransformComponent::TransformComponent()
-: TransformComponentInterface(ComponentType("Anh.Transform"))
+: TransformComponentInterface("Anh.Transform")
 {
 }
 TransformComponent::TransformComponent(const glm::vec3& position, const glm::quat& rotation, const float speed)
-    : TransformComponentInterface(ComponentType("Anh.Transform"))
+    : TransformComponentInterface("Anh.Transform")
     , position_(position)
     , rotation_(rotation)
     , speed_(speed)
@@ -50,7 +50,7 @@ TransformComponent::TransformComponent(const glm::vec3& position, const glm::qua
 }
 void TransformComponent::Update(const float timeout)
 {
-
+    float v = timeout;
 }
 
 void TransformComponent::Init(boost::property_tree::ptree& pt) {

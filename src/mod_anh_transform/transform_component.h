@@ -35,7 +35,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh_definitions.h>
 
 using namespace anh::component;
-namespace anh_api = anh::api::components;
 
 namespace transform {
 
@@ -66,7 +65,7 @@ private:
     glm::quat rotation_;
     float speed_;
 };
-class DLL_EXPORT TransformComponent : public anh_api::TransformComponentInterface {
+class API TransformComponent : public anh::api::components::TransformComponentInterface {
 public:
     TransformComponent();
     TransformComponent(const glm::vec3& position, const glm::quat& rotation, const float speed);

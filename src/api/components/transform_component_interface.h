@@ -64,7 +64,7 @@ class TransformComponentInterface : public BaseComponent {
 class NullTransformComponent : public TransformComponentInterface {
 public:
     NullTransformComponent()
-		: TransformComponentInterface("Anh.NullTransform") { }
+		: TransformComponentInterface("NullTransform") { }
 	
     const EntityId parent_id() { return parent_id_; }
 	const glm::vec3& position() { return position_; }
