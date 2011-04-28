@@ -17,7 +17,7 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
+
 #include "scripting_manager.h"
 #include <boost/python.hpp>
 #include <anh/scripting/scripting_modules_unittest.h>
@@ -223,7 +223,7 @@ TEST_F(ScriptingManagerTest, getComponentFromPython)
     }
 }
 
-TEST_F(ScriptingManagerTest, getRadialComponentFromPython)
+TEST_F(ScriptingManagerTest, getMockComponentFromPython)
 {
     module.name = "embedded_component";
     module.initfunc = PyInit_embedded_component;
@@ -231,12 +231,11 @@ TEST_F(ScriptingManagerTest, getRadialComponentFromPython)
     // load modules
     if (e->loadModules(modules))
     {
-        object obj (e->embed("radial_component.py", "RadialComponent"));
+        object obj (e->embed("radial_component.py", "MockComponent"));
         object py_base = obj();
-        RadialComponentInterface& comp = extract<RadialComponentInterface&>(py_base);
+        MockComponentInterface& comp = extract<MockComponentInterface&>(py_base);
         EntityId id = comp.entity_id();
         EXPECT_EQ(0, id);   
     }
 }
 } // anon namespace
-*/

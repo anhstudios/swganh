@@ -30,6 +30,9 @@ using namespace anh::api::components;
 using namespace transform;
 using namespace std;
 
+std::shared_ptr<anh::api::components::NullTransformComponent> anh::api::components::TransformComponentInterface::NullComponent = 
+	std::make_shared<anh::api::components::NullTransformComponent>();
+
 #define TEST_OBJECT_ID 0xDEADBEEF
 
 /// This is used to test the Transform Component
