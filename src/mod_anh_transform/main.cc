@@ -46,13 +46,13 @@ bool API Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
         boost::any_cast<shared_ptr<component::EntityManager>>(services->getService("EntityManager"));
     if (gEntityManager == nullptr)
     {
-        throw runtime_error("No Object Manager Registered");
+        throw runtime_error("No Entity Manager Registered");
     }
     // get new GUID
     for (int i = 0 ; i < 399; i++)
     {
         shared_ptr<TransformComponentInterface> component( new TransformComponent() );
-		gEntityBuilder->BuildEntity(guid+i, "T21", "T21" + guid);
+		gEntityBuilder->BuildEntity(guid+i, "T21", "T21." + guid);
         gEntityManager->AttachComponent(guid+i, component);
     }
     // subscribe to events

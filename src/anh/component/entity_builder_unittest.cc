@@ -120,10 +120,6 @@ TEST_F(EntityBuilderTests, BuildSingleComponentEntityNoLoader) {
     EXPECT_EQ(component->component_type(), "NullMock");
 }
 
-// verify that we can build a component entity with multiple components even with no loaders
-TEST_F(EntityBuilderTests, BuildMultiComponentEntityNoLoaders) {
-}
-
 // a single component object built with a loder, should build and validate the loader exists.
 TEST_F(EntityBuilderTests, BuildSingleComponentEntityWithLoader) {
     entity_builder->Init("templates.temp");
@@ -135,12 +131,4 @@ TEST_F(EntityBuilderTests, BuildSingleComponentEntityWithLoader) {
     std::shared_ptr<MockComponentInterface> component = 
         entity_manager->QueryInterface<MockComponentInterface>(entity_id_, "Mock");
     EXPECT_EQ(component->component_type(), "NullMock");
-}
-
-// a multiple component object built with multiple loders, should build and validate the loaders exists.
-TEST_F(EntityBuilderTests, BuildMultiComponentEntityWithLoaders) {
-}
-
-//
-TEST_F(EntityBuilderTests, BuildMultiComponentObjectWithMixedLoaders) {
 }

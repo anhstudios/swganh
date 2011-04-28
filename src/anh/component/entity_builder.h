@@ -82,37 +82,65 @@ public:
     EntityBuildErrors BuildEntity(const EntityId& entity_id, const EntityType& type, const std::string& name);
 
 	/**
-	 * @brief
+	 * @brief Registers a loader that will be called on @BuildEntity
+     *
+     * @param type the template type to associate this to (type is usually set in the concrete implementation)
+     * @param loader the ComponentLoader class associated to the component
+     *
+     * @returns bool true if the Loader was properly registered.
 	 */
 	bool RegisterLoader(const ComponentType& type, std::shared_ptr<ComponentLoaderInterface> loader);
 
 	/**
-	 * @brief
+	 * @brief Unregisters a loader for a given ComponentType
+     *
+     * @param type the template type to remove the associate from
+     *
 	 */
 	void UnregisterLoader(const ComponentType& type);
 
 	/**
-	 * @brief
+	 * @brief Registers a creator that will be called on @BuildEntity
+     *
+     * @param type the template type to associate this to (type is usually set in the concrete implementation)
+     * @param creator the ComponentCreator to create this component
+     *
+     * @returns bool true if the Loader was properly registered.
 	 */
 	bool RegisterCreator(const ComponentType& type, ComponentCreator creator);
 
 	/**
-	 * @brief
+	 * @brief UnRegisters the creator
+     *
+     * @param type the template type to remove association
+     *
 	 */
 	void UnregisterCreator(const ComponentType& type);
 	
 	/**
-	 * @brief
+	 * @brief Checks to see if the given Template exists
+     *
+     * @param type the EntityType to see if a template exists for it
+     *
+     * @returns bool true if the template was found
 	 */
 	bool TemplateExists(const EntityType& type);
 
 	/**
-	 * @brief
+	 * @brief Checks to see if a creator exists for the given type
+     *
+     * @param type the ComponentType
+     *
+     * @returns bool true if the Creator exists for the given type
 	 */
 	bool CreatorExists(const ComponentType& type);
 
 	/**
-	 * @brief
+	 * @brief Checks to see if a loader exists for the given type
+     *
+     * @param type the ComponentType
+     *
+     * @returns bool true if the Loader exists for the given type
 	 */
 	bool LoaderExists(const ComponentType& type);
 
@@ -129,10 +157,13 @@ private:
 	typedef std::pair<ComponentType, ComponentCreator>								ComponentCreatorPair;
 	typedef std::map<EntityType, TagSet>											EntityTagSets;
 	typedef std::pair<EntityType, TagSet>											EntityTagSetPair;
-
+    // map holding the component loaders and their implementation
 	ComponentLoaders	component_loaders_;
+    // map holding the entity templates and their xml stored in property tree
 	EntityTemplates		entity_templates_;
+    // map holding the component creators and their implmentation
 	ComponentCreators	component_creators_;
+    // map holding the TagSet for a given EntityType
 	EntityTagSets		entity_tag_sets_;
 	
 	std::shared_ptr<EntityManager>	entity_manager_;
