@@ -17,7 +17,7 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "transform_db_mapper.h"
-#include <anh/database/database_manager_interface.h>
+#include <anh/database/database_manager.h>
 #include <mod_anh_transform/transform_component.h>
 #include "main.h"
 #include <cppconn/connection.h>
@@ -49,13 +49,13 @@ void TransformDBMapper::persist(std::shared_ptr<TransformComponentInterface> com
 std::shared_ptr<TransformComponentInterface> TransformDBMapper::query_result(uint64_t entity_id)
 {
 	auto conn = gDatabaseManager->getConnection("galaxy");
-        sql::SQLString query_string("select * from transform where entity_id = ?");
+    sql::SQLString query_string("select * from transform where entity_id = ?");
     auto prepared = 
             unique_ptr<sql::PreparedStatement>(conn->prepareStatement(query_string));
 	prepared->setInt64(0, entity_id);
 
 	auto result = unique_ptr<sql::ResultSet>(prepared->executeQuery());
-	auto transform = make_shared<TransformComponent>(0);
+	auto transform = make_shared<TransformComponent>();
 	transform->position(result->getDouble("x"), result->getDouble("y"), result->getDouble("z"));
 	transform->rotation(result->getDouble("rX"), result->getDouble("rY"), result->getDouble("rZ"), result->getDouble("rW"));
 	

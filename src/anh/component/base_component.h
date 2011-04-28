@@ -28,91 +28,66 @@ namespace anh {
 namespace component {
 
 /**
- * \brief A basic object component.
+ * \brief A basic entity component.
  *
- * This class implements the Object Id handling interface functions.
- *
- * This class also does a basic message handling implementation of the HandleMessage function
- * which uses the EventDispatcher. Components deriving from this class need only to call the
- * RegisterMessageHandler and UnregisterMessageHandler methods to bind specific incoming Message Types
- * to a member function of the component.
+ * This class hosts a basic message handling implementation for use with the HandleMessage function. 
+ * Components deriving from this class need only to call the RegisterMessageHandler and UnregisterMessageHandler 
+ * methods to bind specific incoming Message Types to a member function of the component.
  */
 class BaseComponent : public ComponentInterface
 {
 public:
-	/**
-	 * \brief Default constructor.
-	 */
-	BaseComponent(ObjectId id);
-	
-	/**
-	 * \brief Default deconstructor.
-	 */
-	~BaseComponent();
+	BaseComponent(const ComponentType& component_interface, const ComponentType& type);
+	virtual ~BaseComponent();
 
-	/**
-	 * \brief Initializes the component.
-	 *
-	 * \param pt Template properties passed by the ObjectBuilder.
-	 */
 	virtual void Init(boost::property_tree::ptree& pt) { };
-
-	/**
-	 * \brief Releases any resources the component holds.
-	 */
 	virtual void Deinit(void) { };
 
-	/**
-	 * \brief Called every tick if the option is enabled in the ComponentType.
-	 * \see ComponentType
-	 */
-	virtual void Update(const float timeout) { };
+	virtual void OnAttach(void) { };
+	virtual void OnDetach(void) { };
+	virtual void Update(const float deltaMilliseconds) { };
 
 	/**
-	 * \breif Called to handle a message passed to this component by the Object Manager.
+	 * @breif Called to handle a message passed to this component by the Object Manager.
 	 * Messages are derived from the event dispatchers IEvent.
-	 * \see IEvent
+	 * @see IEvent
 	 *
-	 * \param Message The message being passed to this component.
+	 * @param Message The message being passed to this component.
 	 */
 	virtual void HandleMessage(const Message message);
 
-	/**
-	 * \returns The type of component this is in the form of a hashed string.
-	 * \see HashString
-	 */
-	virtual const ComponentInfo& component_info(void) = 0;
-
-	/**
-	 * \returns The Object Id of the entity that owns this component.
-	 */
-	const ObjectId& object_id(void);
+	virtual const ComponentType& component_type(void) { return type_; }
+	virtual const ComponentType& interface_type(void) { return interface_; }
+	const EntityId& entity_id(void) const { return entity_id_; }
+	void set_entity_id(const EntityId& id) { entity_id_ = id; }
 
 protected:
     typedef	std::function<bool(const Message)>	MessageHandler;
 
 	/**
-	 * \brief Registers a handler function for a specific Message Type.
+	 * @brief Registers a handler function for a specific Message Type.
 	 *
 	 * Any time a message is passed to this component with the corresponding MessageType,
 	 * the bound Handler function will be called to process the message.
 	 *
-	 * \param type The type of message to bind the handler to.
-	 * \param handler The function which will handle the incoming message.
+	 * @param type The type of message to bind the handler to.
+	 * @param handler The function which will handle the incoming message.
 	 */
 	bool RegisterMessageHandler(const MessageType& type, MessageHandler handler);
 
 	/**
-	 * \brief Unregisters a handler function for a specific Message Type.
+	 * @brief Unregisters a handler function for a specific Message Type.
 	 *
-	 * \param type The type of message to clear the bindings for.
+	 * @param type The type of message to clear the bindings for.
 	 */
 	void UnregisterMessageHandler(const MessageType& type);
 
 private:
 	
-	ObjectId									object_id_;
+	EntityId									entity_id_;
 	anh::event_dispatcher::EventDispatcher		event_dispatcher_;
+	ComponentType								type_;
+	ComponentType								interface_;
 };
 
 } // namespace anh

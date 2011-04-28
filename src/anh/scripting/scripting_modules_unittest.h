@@ -91,7 +91,7 @@ namespace anh { namespace component {
 template<class DerivedT> class BaseComponentWrap : public DerivedT, public bp::wrapper<DerivedT>
 {
 public:
-    BaseComponentWrap(ObjectId obj_id) : DerivedT(obj_id) { }
+    BaseComponentWrap(const ComponentType& concrete_type) : DerivedT(concrete_type)  { }
     virtual void Init(boost::property_tree::ptree& pt){
         return (void)this->get_override("Init")(pt);
     }
@@ -104,20 +104,20 @@ public:
     virtual void HandleMessage(const Message message) {
         return (void)this->get_override("HandleMessage")(message);
     }
-    virtual const ComponentInfo& component_info(void) {
-        return this->get_override("component_info")();
+    virtual const ComponentType& component_type(void) {
+        return this->get_override("component_type")();
     }
 };
 class BaseComponentWrapped : public BaseComponentWrap<BaseComponent>
 {
 public:
-    BaseComponentWrapped() : BaseComponentWrap(0) {}
+    BaseComponentWrapped(const ComponentType& concrete_type) : BaseComponentWrap<BaseComponent>(concrete_type) {}
 };
 
 class RadialComponentWrap : public BaseComponentWrap<RadialComponentInterface>
 {
 public:
-    RadialComponentWrap() : BaseComponentWrap(0) {}
+    RadialComponentWrap(const ComponentType& concrete_type) : BaseComponentWrap<RadialComponentInterface>(concrete_type) {}
 };
 
 using boost::property_tree::ptree;

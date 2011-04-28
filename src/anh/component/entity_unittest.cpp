@@ -18,163 +18,162 @@
 */
 
 #include <gtest/gtest.h>
+
 #include <anh/component/entity.h>
 #include <anh/component/mock_component.h>
-#include <anh/component/test_components_unittest.h>
-#include <memory.h>
 
 using namespace anh::component;
-using namespace anh::test_components;
 using namespace testing;
 
-std::shared_ptr<MockComponent> MockComponent::NullComponent;
+std::shared_ptr<NullMockComponent> MockComponentInterface::NullComponent(new NullMockComponent);
 
 /// Test fixture for testing the Entity class, provides setup/teardown.
-class EntityTest : public testing::Test {
+class EntityTests : public testing::Test {
 protected:
 	virtual void SetUp();
 	virtual void TearDown();
 
-	ObjectId entity_id_;
+	EntityId entity_id_;
 };
 
 /// By default, no tags should be attached to the entity if no TagSet is passed
 /// in through the constructor.
-TEST_F(EntityTest, NoTagsByDefault)
+TEST_F(EntityTests, NoTagsByDefault)
 {
 	Entity entity;
-	EXPECT_FALSE(entity.hasTag("test.tag"));
+	EXPECT_FALSE(entity.HasTag("test"));
 }
 
 /// Tests the ability to add and remove (as well as validate the existance of) tags
 /// on an entity.
-TEST_F(EntityTest, CanAddRemoveTags)
+TEST_F(EntityTests, CanAddRemoveTags)
 {
 	Entity entity;
 
-	entity.addTag("test.tag");
-	EXPECT_TRUE(entity.hasTag("test.tag"));
+	entity.AddTag("test");
+	EXPECT_TRUE(entity.HasTag("test"));
 
-	entity.removeTag("test.tag");
-	EXPECT_FALSE(entity.hasTag("test.tag"));
+	entity.RemoveTag("test");
+	EXPECT_FALSE(entity.HasTag("test"));
 }
 
 /// By default, no components should be attached to our entity.
-TEST_F(EntityTest, NoComponentsAttachedByDefault)
+TEST_F(EntityTests, NoComponentsAttachedByDefault)
 {
 	Entity entity;
-	EXPECT_FALSE(entity.hasComponent("mock_component"));
+	EXPECT_FALSE(entity.HasInterface("Mock"));
 }
 
-/// Tests the ability to add and remove ( as well as validate the existance of) components
-/// on an entity.
-TEST_F(EntityTest, CanAttachDetachComponent)
+/// Tests the ability to add and remove (as well as validate the existance of) components
+/// an entity holds.
+TEST_F(EntityTests, CanAttachDetachComponent)
 {
 	Entity entity(entity_id_);
-	std::shared_ptr<TransformComponentInterface> transform_component(new TransformComponent(entity_id_));
+	std::shared_ptr<MockComponent> component(new MockComponent());
 
-	entity.AttachComponent(transform_component);
-	EXPECT_TRUE(entity.hasComponent("TransformComponent"));
+	// Setup Expectations
+	EXPECT_CALL(*component, set_entity_id(entity_id_))
+		.Times(1);
 
-	entity.DetachComponent("TransformComponent");
-	EXPECT_FALSE(entity.hasComponent("TransformComponent"));
+	EXPECT_CALL(*component, OnAttach())
+		.Times(1);
+
+	EXPECT_CALL(*component, OnDetach())
+		.Times(1);
+
+	// Attach
+	entity.AttachComponent(component);
+	EXPECT_TRUE(entity.HasInterface("Mock"));
+
+	// Detach
+	entity.DetachComponent("Mock");
+	EXPECT_FALSE(entity.HasInterface("Mock"));
 }
 
-///
-TEST_F(EntityTest, CanBroadcastMessage)
+/// Varifies the HandleMessage function is called on each component when the BroadcastMessage
+/// function is called.
+TEST_F(EntityTests, CanBroadcastMessage)
 {
 	Entity entity(entity_id_);
-	std::shared_ptr<HAMComponentInterface> ham_component(new HAMComponent(entity_id_));
+	std::shared_ptr<NiceMock<MockComponent>> component(new NiceMock<MockComponent>());
+	MessagePtr message(new SimpleMessage("mock_message"));
 
-	ham_component->ham().health = 1000;
-	ham_component->ham().action = 1000;
-	ham_component->ham().mind = 1000;
+	// Setup Expectations
+	EXPECT_CALL(*component, HandleMessage(message))
+		.Times(1);
 
-	entity.AttachComponent(ham_component);
-	entity.BroadcastMessage(anh::component::Message(new DoDamageMessage(1, 10)));
-	entity.BroadcastMessage(anh::component::Message(new DoDamageMessage(2, 20)));
-	entity.BroadcastMessage(anh::component::Message(new DoDamageMessage(3, 30)));
+	// Attach
+	entity.AttachComponent(component);
 
-	EXPECT_EQ(990, ham_component->ham().health);
-	EXPECT_EQ(980, ham_component->ham().action);
-	EXPECT_EQ(970, ham_component->ham().mind);
+	// Broadcast
+	entity.BroadcastMessage(message);
 
-	entity.DetachAllComponents();
+	// Detach
+	entity.DetachComponent("Mock");
 }
 
-///
-TEST_F(EntityTest, CanQueryInterface)
+/// Attaches a mock component to the test Entity, then varifies that the
+/// QueryInterface successfully returns the same component when called.
+TEST_F(EntityTests, CanQueryInterface)
 {
-	/*
-	Entity entity(100);
-	MockComponent mock_component;
-	ObjectId id = 100;
-	ComponentType mock_component_type_("mock_component");
+	Entity entity(entity_id_);
+	std::shared_ptr<NiceMock<MockComponent>> component(new NiceMock<MockComponent>());
 
-	ON_CALL(mock_component, component_info())
-		.WillByDefault(ReturnRef(mock_component_type_));
+	// Setup Expectations
+	EXPECT_CALL(*component, entity_id())
+		.WillRepeatedly(ReturnRef(entity_id_));
 
-	EXPECT_EQ( mock_component_type_.ident(), mock_component.component_info().type.ident() ) << "mock_component_type.ident() = " << mock_component_type_.ident() << " ComponentType.ident() = " << mock_component.component_info().type.ident();
+	// Attach
+	entity.AttachComponent(component);
+
+	// Query Interface
+	EXPECT_EQ(ComponentType("Anh.Mock"), entity.QueryInterface<MockComponentInterface>("Mock")->component_type());
+	EXPECT_EQ(entity_id_, entity.QueryInterface<MockComponentInterface>("Mock")->entity_id());
+
+	// Detach
+	entity.DetachComponent("Mock");
+}
+
+/// Varifies that a NullComponent will be returned if there is no concrete
+/// implimentation bound to the interface.
+TEST_F(EntityTests, CanQueryInterfaceNullReturn)
+{
+	Entity entity(entity_id_);
 	
-	//ON_CALL(mock_component, object_id())
-	//	.WillByDefault(ReturnRef(id));
-
-	//EXPECT_EQ(100, mock_component.object_id());
-
-	//entity.AttachComponent(std::shared_ptr<ComponentInterface>(&mock_component));
-	//EXPECT_EQ(id_, entity.QueryInterface<MockComponent>("mock_component")->object_id());
-	//entity.DetachAllComponents();
-	*/
-
-	Entity entity(entity_id_);
-	std::shared_ptr<TransformComponentInterface> transform_component(new TransformComponent(entity_id_));
-
-	// Attach
-	entity.AttachComponent(transform_component);
-	EXPECT_TRUE(entity.hasComponent("TransformComponent"));
-
-	// Check to make sure the components information matches and that this is infact, that same instance.
-	EXPECT_EQ(entity_id_, entity.QueryInterface<TransformComponentInterface>("TransformComponent")->object_id());
-	EXPECT_EQ(ComponentType("TransformComponent"), entity.QueryInterface<TransformComponentInterface>("TransformComponent")->component_info().type);
-
-	// Detach
-	entity.DetachComponent("TransformComponent");
-	EXPECT_FALSE(entity.hasComponent("TransformComponent"));
+	// Query Interface
+	EXPECT_EQ(ComponentType("NullMock"), entity.QueryInterface<MockComponentInterface>("Mock")->component_type());
+	EXPECT_EQ(0, entity.QueryInterface<MockComponentInterface>("Mock")->entity_id());
 }
 
-///
-TEST_F(EntityTest, CanUpdate)
+/// Varifies that the Update function is called for all componeonts
+/// attached to an entity when the entity Update function is called.
+TEST_F(EntityTests, CanUpdate)
 {
 	Entity entity(entity_id_);
-	std::shared_ptr<TickableComponent> tickable_component(new TickableComponent(entity_id_));
+	std::shared_ptr<NiceMock<MockComponent>> component(new NiceMock<MockComponent>());
+
+	// Setup Expectations
+	EXPECT_CALL(*component, Update(0.0f))
+		.Times(1);
 
 	// Attach
-	entity.AttachComponent(tickable_component);
-	EXPECT_TRUE(entity.hasComponent("TickableComponent"));
+	entity.AttachComponent(component);
 
-	entity.Update(0);
-	EXPECT_TRUE(tickable_component->ticked());
+	// Update
+	entity.Update(0.0f);
 
 	// Detach
-	entity.DetachAllComponents();
-	EXPECT_FALSE(entity.hasComponent("TickableComponent"));
+	entity.DetachComponent("Mock");
 }
 
 /*****************************************************************************/
 // Implementation for the test fixture //
 
-void EntityTest::SetUp(void)
+void EntityTests::SetUp(void)
 {
-	//MockComponent::NullComponent = std::shared_ptr<MockComponent>(new MockComponent());
-
-	//ON_CALL(*MockComponent::NullComponent, component_info())
-	//	.WillByDefault(ReturnRef(ComponentType("null_mock_component")));
-
 	entity_id_ = 0xDEADBABE;
-
 }
 
-void EntityTest::TearDown(void)
+void EntityTests::TearDown(void)
 {
-	//delete MockComponent::NullComponent.get();
 }

@@ -40,7 +40,7 @@ class NullTagComponent;
 
 class TagComponentInterface : public BaseComponent {
 public:
-    TagComponentInterface(const ObjectId& id)
+    TagComponentInterface(const EntityId& id)
 		: BaseComponent(id) { }
     virtual std::list<anh::HashString> tag_list() = 0;
     virtual uint32_t hash_tag(const std::string& tag) = 0;

@@ -31,29 +31,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "main.h"
 
 using namespace std;
-ComponentInfo anh_api::NullTransformComponent::component_info_ = ComponentInfo(ComponentType("NullTransformComponent"), false);
-namespace transform {
 // statics
-std::shared_ptr<anh_api::NullTransformComponent> NullComponent = std::shared_ptr<anh_api::NullTransformComponent>(new anh_api::NullTransformComponent());
-ComponentInfo TransformComponent::component_info_ = ComponentInfo(ComponentType("TransformComponent"), true);
+std::shared_ptr<anh::api::components::NullTransformComponent> anh::api::components::TransformComponentInterface::NullComponent = 
+	std::make_shared<anh::api::components::NullTransformComponent>();
+namespace transform {
 
-TransformComponent::TransformComponent(const ObjectId& id)
-: TransformComponentInterface(id)
+
+TransformComponent::TransformComponent()
+: TransformComponentInterface("Anh.Transform")
 {
-
 }
-TransformComponent::TransformComponent(const ObjectId& id, const glm::vec3& position, const glm::quat& rotation, const float speed)
-    : TransformComponentInterface(id)
+TransformComponent::TransformComponent(const glm::vec3& position, const glm::quat& rotation, const float speed)
+    : TransformComponentInterface("Anh.Transform")
     , position_(position)
     , rotation_(rotation)
     , speed_(speed)
 {
+}
 
+void TransformComponent::Update(const float timeout)
+{
 }
 
 void TransformComponent::Init(boost::property_tree::ptree& pt) {
     // initial default values
-    parent_id_ = pt.get<ObjectId>("parent_id", 0); 
+    parent_id_ = pt.get<EntityId>("parent_id", 0); 
 	position_.x = pt.get<float>("position.x", 0.0f);
 	position_.y = pt.get<float>("position.y", 0.0f);
 	position_.z = pt.get<float>("position.z", 0.0f);

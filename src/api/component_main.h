@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_API_COMPONENT_MAIN_H
 #define ANH_API_COMPONENT_MAIN_H
 
-#include <anh/component/object_builder.h>
-#include <anh/component/object_manager.h>
+#include <anh/component/entity_builder.h>
+#include <anh/component/entity_manager.h>
 #include <api/components/components.hpp>
 
 #define COMPONENT_STATICS_NAMESPACE(name) \

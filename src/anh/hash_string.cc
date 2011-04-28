@@ -73,8 +73,18 @@ bool HashString::operator==(const HashString& other) const {
     return r;
 }
 
+bool HashString::operator==(const char* other) const {
+    bool r = (ident_string() == other);
+    return r;
+}
+
 bool HashString::operator!=(const HashString& other) const {
     bool r = (ident() != other.ident());
+    return r;
+}
+
+bool HashString::operator!=(const char* other) const {
+    bool r = (ident_string() != other);
     return r;
 }
 

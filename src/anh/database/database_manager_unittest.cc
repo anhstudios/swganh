@@ -24,7 +24,7 @@
 
 #include "anh/database/database_manager.h"
 
-using namespace anh::database;
+using namespace anh::database; 
 using namespace testing;
 
 

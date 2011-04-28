@@ -81,12 +81,26 @@ public:
      */
     bool operator==(const HashString& other) const;
 
+    /*! Compares a char* and a HashString to determine if they are equal.
+     *
+     * \param other The char* to compare to the current HashString.
+     * \returns True if the HashString and char* are equal, false if not.
+     */
+    bool operator==(const char* other) const;
+
     /*! Compares two HashStrings to determine if they are not equal.
      *
      * \param other The HashString to compare to the current one.
      * \returns True if the two HashStrings are not equal, false if they are.
      */
     bool operator!=(const HashString& other) const;
+
+    /*! Compares a char* and a HashString to determine if they are not equal.
+     *
+     * \param other The char* to compare to the current HashString.
+     * \returns True if the HashString and char * are not equal, false if they are.
+     */
+    bool operator!=(const char* other) const;
 
     /// Returns a 32bit hash representation of the string.
     uint32_t ident() const;

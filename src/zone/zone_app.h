@@ -13,7 +13,7 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team*/
 
 namespace anh {
 namespace module_manager { class PlatformServices; }
-namespace component { class ObjectBuilder; class ObjectManager; }
+namespace component { class EntityBuilder; class EntityManager; }
 }
 
 namespace zone {
@@ -39,8 +39,8 @@ private:
     ZoneApp(const ZoneApp&);
     ZoneApp& operator=(const ZoneApp&);
 
-    std::shared_ptr<anh::component::ObjectBuilder> object_builder_;
-    std::shared_ptr<anh::component::ObjectManager> object_manager_;
+    std::shared_ptr<anh::component::EntityBuilder> object_builder_;
+    std::shared_ptr<anh::component::EntityManager> object_manager_;
     std::string zone_name_;
 
 };

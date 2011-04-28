@@ -21,8 +21,8 @@
 
 #include <boost/filesystem.hpp>
 
-#include <anh/component/object_builder.h>
-#include <anh/component/object_manager.h>
+#include <anh/component/entity_builder.h>
+#include <anh/component/entity_manager.h>
 #include <mod_anh_transform/transform_component.h>
 
 using namespace boost::filesystem;
@@ -31,15 +31,12 @@ using namespace transform;
 using namespace std;
 
 #define TEST_OBJECT_ID 0xDEADBEEF
-ComponentInfo NullTransformComponent::component_info_ = ComponentInfo(ComponentType("NullTransformComponent"), false);
-std::shared_ptr<NullTransformComponent> TransformComponentInterface::NullComponent = std::shared_ptr<NullTransformComponent>(new NullTransformComponent());
-ComponentInfo TransformComponent::component_info_ = ComponentInfo(ComponentType("TransformComponent"), true);
 
 /// This is used to test the Transform Component
 class TestTransformComponent : public testing::Test {
 public:
-    ObjectBuilder object_builder;
-    
+    shared_ptr<EntityBuilder> entity_builder;
+    shared_ptr<EntityManager> entity_manager;
     shared_ptr<TransformComponentInterface> transform_comp;
     shared_ptr<TransformMessage> trans;
 protected:
@@ -55,15 +52,16 @@ void TestTransformComponent::SetUp() {
 	of << "<parent_id>0</parent_id><position><x>324.4</x><y>231.13</y><z>0.0</z></position>" <<endl;
     of << "<rotation><x>0</x><y>0</y><z>0</z><w>0.5</w></rotation><speed>3</speed>" <<endl;
     of << "</component></object>" <<endl;
+	entity_builder = make_shared<EntityBuilder>(entity_manager);
     // now we can init
-    object_builder.Init("test_components");
-    object_builder.RegisterCreator("TransformComponent", [=](const ObjectId& id){ return shared_ptr<TransformComponentInterface>( new TransformComponent(id) ); });
-    if (object_builder.BuildObject(TEST_OBJECT_ID, "test_pos") != BUILD_FAILED) {
-        transform_comp = gObjectManager.QueryInterface<TransformComponentInterface>(TEST_OBJECT_ID, "TransformComponent");
+    entity_builder->Init("test_components");
+    entity_builder->RegisterCreator("TransformComponent", [=](const EntityId& id){ return shared_ptr<TransformComponentInterface>( new TransformComponent() ); });
+    if (entity_builder->BuildEntity(TEST_OBJECT_ID, "Transform", "test_pos") != BUILD_FAILED) {
+        transform_comp = entity_manager->QueryInterface<TransformComponentInterface>(TEST_OBJECT_ID, "TransformComponent");
     }
 }
 void TestTransformComponent::TearDown() {
-    object_builder.Deinit();
+    entity_builder->Deinit();
     remove_all("test_components");
 }
 TEST_F(TestTransformComponent, LoadPosition) {

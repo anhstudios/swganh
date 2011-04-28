@@ -39,20 +39,21 @@ using namespace std;
 // temp
 uint64_t guid = 0;
 
-bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
+bool API Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
     cout << GetModuleName() << " Loading..." <<endl;
 	// register component to object manager
-    gObjManager = 
-        boost::any_cast<shared_ptr<component::ObjectManager>>(services->getService("ObjectManager"));
-    if (gObjManager == nullptr)
+    gEntityManager = 
+        boost::any_cast<shared_ptr<component::EntityManager>>(services->getService("EntityManager"));
+    if (gEntityManager == nullptr)
     {
-        throw runtime_error("No Object Manager Registered");
+        throw runtime_error("No Entity Manager Registered");
     }
     // get new GUID
     for (int i = 0 ; i < 399; i++)
     {
-        shared_ptr<TransformComponentInterface> component( new TransformComponent(i) );
-        gObjManager->AttachComponent(guid+i, component);
+        shared_ptr<TransformComponentInterface> component( new TransformComponent() );
+		gEntityBuilder->BuildEntity(guid+i, "T21", "T21." + guid);
+        gEntityManager->AttachComponent(guid+i, component);
     }
     // subscribe to events
     gEventDispatcher =
@@ -81,9 +82,9 @@ bool DLL_EXPORT Load(std::shared_ptr<anh::module_manager::PlatformServices> serv
     return true;
 }
 
-bool DLL_EXPORT Unload(std::shared_ptr<anh::module_manager::PlatformServices> services) {
+bool API Unload(std::shared_ptr<anh::module_manager::PlatformServices> services) {
 	// unregister components
-    //gObjManager->DetachComponent(1, ComponentType("TransformComponent"));
+    //gEntityManager->DetachComponent(1, ComponentType("TransformComponent"));
 
     // unsubscribes
 
@@ -91,14 +92,14 @@ bool DLL_EXPORT Unload(std::shared_ptr<anh::module_manager::PlatformServices> se
     return true;
 }
 
-const std::string DLL_EXPORT GetModuleName(void) {
+const std::string API GetModuleName(void) {
 	return "ANH.Transform";
 }
 
-const anh::module_manager::ModuleApiVersion DLL_EXPORT GetModuleVersion(void) {
+const anh::module_manager::ModuleApiVersion API GetModuleVersion(void) {
 	return anh::module_manager::ModuleApiVersion(0, 1, "0.1");
 }
 
-const std::string DLL_EXPORT GetModuleDescription(void) {
+const std::string API GetModuleDescription(void) {
 	return "ANH's Transform Module";
 }
