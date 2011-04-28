@@ -84,7 +84,7 @@ EntityBuildErrors EntityBuilder::BuildEntity(const EntityId& entity_id, const En
 			ComponentType type(xml_component->second.get<std::string>("<xmlattr>.type").c_str());
 
 			// Search for the components creator function by the type we extracted from xml.
-			ComponentCreators::iterator creators_iter = component_creators_.find(type);
+            ComponentCreators::iterator creators_iter = component_creators_.find(type);
 			if(creators_iter == component_creators_.end()) {
 				status = BUILD_INCOMPLETE;
 				continue;
@@ -99,8 +99,11 @@ EntityBuildErrors EntityBuilder::BuildEntity(const EntityId& entity_id, const En
 				(*loader_iter).second->Load(component);
 		}
     }
-
-	entity_manager_->AddEntity(entity);
+    // if we can't add the entity for some reason, this is a total failure.
+	if (!entity_manager_->AddEntity(entity))
+    {
+        status = BUILD_FAILED;
+    }
 
 	return status;
 }
@@ -198,5 +201,5 @@ void EntityBuilder::LoadTemplates_(const boost::filesystem::path p)
 	}
 }
 
-}
-}
+} // component
+} // anh

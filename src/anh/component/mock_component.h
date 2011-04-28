@@ -22,6 +22,7 @@
 
 #include <gmock/gmock.h>
 #include <anh/component/component_interface.h>
+#include <anh/component/component_loader_interface.h>
 
 // Generate mock Component.
 
@@ -81,6 +82,11 @@ public:
 
 	ComponentType type_;
 	InterfaceType interface_;
+};
+class MockLoader : public ComponentLoaderInterface {
+public:
+    MOCK_METHOD1(Load, bool(std::shared_ptr<ComponentInterface> comp));
+    MOCK_METHOD1(Unload, void(std::shared_ptr<ComponentInterface> comp));
 };
 
 } // namespace component

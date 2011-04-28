@@ -65,7 +65,7 @@ public:
 	void Init(std::string object_template_dir);
 
 	/**
-	 * @brief 
+	 * @brief Deinitializes
 	 */
 	void Deinit(void);
 
@@ -139,7 +139,7 @@ private:
 	
 };
 
-}
-}
+} // component
+} // anh
 
 #endif // ANH_COMPONENT_ENTITY_BUILDER_H_

@@ -50,7 +50,6 @@ TransformComponent::TransformComponent(const glm::vec3& position, const glm::qua
 }
 void TransformComponent::Update(const float timeout)
 {
-    float v = timeout;
 }
 
 void TransformComponent::Init(boost::property_tree::ptree& pt) {
