@@ -4,10 +4,10 @@
 #include <boost/python.hpp>
 #include <anh/component/component_interface.h>
 #include <anh/component/base_component.h>
-#include <anh/component/test_components_unittest.h>
+#include <anh/component/mock_component.h>
 
+using namespace anh::component;
 namespace bp = boost::python;
-using namespace anh::test_components;
 #pragma warning( disable : 4172)
 
 // An abstract base class
@@ -91,7 +91,7 @@ namespace anh { namespace component {
 template<class DerivedT> class BaseComponentWrap : public DerivedT, public bp::wrapper<DerivedT>
 {
 public:
-    BaseComponentWrap(const ComponentType& concrete_type) : DerivedT(concrete_type)  { }
+    BaseComponentWrap(){ }
     virtual void Init(boost::property_tree::ptree& pt){
         return (void)this->get_override("Init")(pt);
     }
@@ -108,24 +108,17 @@ public:
         return this->get_override("component_type")();
     }
 };
-class BaseComponentWrapped : public BaseComponentWrap<BaseComponent>
-{
-public:
-    BaseComponentWrapped(const ComponentType& concrete_type) : BaseComponentWrap<BaseComponent>(concrete_type) {}
-};
 
-class RadialComponentWrap : public BaseComponentWrap<RadialComponentInterface>
+class MockComponentWrap : public BaseComponentWrap<MockComponent>
 {
 public:
-    RadialComponentWrap(const ComponentType& concrete_type) : BaseComponentWrap<RadialComponentInterface>(concrete_type) {}
+    MockComponentWrap(){}
 };
 
 using boost::property_tree::ptree;
 
 void componentDerive() { 
-    bp::class_<BaseComponentWrapped, boost::noncopyable> BaseComponent("BaseComponent");
-
-    bp::class_<RadialComponentWrap, boost::noncopyable> RadialComponentInterface("RadialComponentInterface");
+    bp::class_<MockComponentWrap, boost::noncopyable> MockComponentInterface();
     bp::class_<ptree>("ptree", bp::init<>());
 }
 
