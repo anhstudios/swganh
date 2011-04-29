@@ -46,6 +46,10 @@ public:
 	virtual void OnAttach(void) { };
 	virtual void OnDetach(void) { };
 	virtual void Update(const float deltaMilliseconds) { };
+    virtual void set_dirty(bool dirty = true) { dirty_ = dirty; }
+    virtual bool dirty() { return dirty_; }
+    virtual std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper() { return db_mapper_; }
+    virtual void db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) { db_mapper_ = mapper; }
 
 	/**
 	 * @breif Called to handle a message passed to this component by the Object Manager.
@@ -88,6 +92,8 @@ private:
 	anh::event_dispatcher::EventDispatcher		event_dispatcher_;
 	ComponentType								type_;
 	ComponentType								interface_;
+    std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper_;
+    bool                                        dirty_;
 };
 
 } // namespace anh

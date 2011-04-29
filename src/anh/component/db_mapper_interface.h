@@ -16,23 +16,22 @@
  You should have received a copy of the GNU General Public License
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef MOD_ANH_TRANSFORM_TRANFORM_DB_MAPPER_H
-#define MOD_ANH_TRANSFORM_TRANFORM_DB_MAPPER_H
-#include <anh/component/attribute_mapper_interface.h>
-#include <mod_anh_transform/transform_component.h>
+#ifndef ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_
+#define ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_
 
-namespace transform {
-
-class TransformDBMapper : public anh::component::AttributeMapperInterface<anh::api::components::TransformComponentInterface>
+namespace sql { class ResultSet; }
+namespace anh { namespace component {
+template<class ClassToMap>
+class AttributeMapperInterface
 {
 public:
-	TransformDBMapper();
-	virtual void Persist(std::shared_ptr<anh::api::components::TransformComponentInterface> ref_class);
-    virtual void Populate(std::shared_ptr<anh::api::components::TransformComponentInterface> component);
-	virtual std::shared_ptr<anh::api::components::TransformComponentInterface> query_result (uint64_t entity_id);
+    virtual void Persist(std::shared_ptr<ClassToMap> component) = 0;
+    virtual void Populate(std::shared_ptr<ClassToMap> component) = 0;
+	virtual std::shared_ptr<ClassToMap> query_result(uint64_t entity_id) = 0;
+protected:
 };
+} // database
+} // anh
 
-} // transform
 
-
-#endif //MOD_ANH_TRANSFORM_TRANFORM_DB_MAPPER_H
+#endif // ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_

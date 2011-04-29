@@ -30,12 +30,13 @@ using namespace std;
 using namespace anh::api::components;
 
 namespace transform {
-void TransformDBMapper::persist(std::shared_ptr<TransformComponentInterface> component)
+void TransformDBMapper::Persist(std::shared_ptr<TransformComponentInterface> component)
 {
     if (component != nullptr)
     {
         auto conn = gDatabaseManager->getConnection("galaxy");
-        sql::SQLString query_string("update transform set x = ?, y = ?, z = ?, rW = ?, rX = ?, rY = ?, rZ = ?, parent_id = ?");
+        sql::SQLString query_string
+            ("update transform set x = ?, y = ?, z = ?, rW = ?, rX = ?, rY = ?, rZ = ?, parent_id = ?");
         auto prepared = 
             unique_ptr<sql::PreparedStatement>(conn->prepareStatement(query_string));
         // set the values in place of ?
@@ -45,6 +46,19 @@ void TransformDBMapper::persist(std::shared_ptr<TransformComponentInterface> com
         prepared->setDouble(6, component->rotation().z); prepared->setInt64(7, component->parent_id());
         prepared->executeQuery();
     }
+}
+void TransformDBMapper::Populate(std::shared_ptr<anh::api::components::TransformComponentInterface> component)
+{
+    auto conn = gDatabaseManager->getConnection("galaxy");
+    sql::SQLString query_string("select * from transform where entity_id = ?");
+    auto prepared = 
+            unique_ptr<sql::PreparedStatement>(conn->prepareStatement(query_string));
+	prepared->setInt64(0, component->entity_id());
+    // get result
+    auto result = unique_ptr<sql::ResultSet>(prepared->executeQuery());
+    // fill in result
+    component->position(result->getDouble("x"), result->getDouble("y"), result->getDouble("z"));
+    component->rotation(result->getDouble("rX"), result->getDouble("rY"), result->getDouble("rZ"), result->getDouble("rW"));
 }
 std::shared_ptr<TransformComponentInterface> TransformDBMapper::query_result(uint64_t entity_id)
 {

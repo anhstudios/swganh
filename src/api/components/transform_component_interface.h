@@ -46,7 +46,9 @@ class TransformComponentInterface : public BaseComponent {
 
     virtual const EntityId parent_id() = 0;
     virtual const glm::vec3& position() = 0;
+    virtual void position(const float x, const float y, const float z) = 0;
     virtual const glm::quat& rotation() = 0;
+    virtual void rotation(const float x, const float y, const float z, const float w) = 0;
     virtual const float speed() = 0;
 
     // convenience commands
@@ -67,8 +69,10 @@ public:
 		: TransformComponentInterface("NullTransform") { }
 	
     const EntityId parent_id() { return parent_id_; }
-	const glm::vec3& position() { return position_; }
-	const glm::quat& rotation() { return rotation_; }
+    virtual const glm::vec3& position() { return position_; }
+    void position(const float x, const float y, const float z){}
+    const glm::quat& rotation() { return rotation_; }
+    void rotation(const float x, const float y, const float z, const float w){};
     void rotate(const float& degrees){};
     void rotate_left(const float& degrees){};
     void rotate_right(const float& degrees){};

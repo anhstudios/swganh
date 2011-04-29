@@ -28,7 +28,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 #include <anh/component/component_interface.h>
-#include <anh/component/component_loader_interface.h>
+#include <anh/component/attribute_mapper_interface.h>
 #include <anh/component/entity_manager.h>
 
 namespace anh {
@@ -70,7 +70,7 @@ public:
 	void Deinit(void);
 
 	/**
-	 * @brief Builds an Entity from an XML template, invoking creators and loaders and
+	 * @brief Builds an Entity from an XML template, invoking creators and DBMappers and
 	 * adds it to the EntityManager.
      *
      * @param id Id of the entity that is being built.
@@ -82,22 +82,23 @@ public:
     EntityBuildErrors BuildEntity(const EntityId& entity_id, const EntityType& type, const std::string& name);
 
 	/**
-	 * @brief Registers a loader that will be called on @BuildEntity
+	 * @brief Registers a db_mapper that will be called on @BuildEntity
      *
      * @param type the template type to associate this to (type is usually set in the concrete implementation)
-     * @param loader the ComponentLoader class associated to the component
+     * @param db_mapper the ComponentLoader class associated to the component
      *
      * @returns bool true if the Loader was properly registered.
 	 */
-	bool RegisterLoader(const ComponentType& type, std::shared_ptr<ComponentLoaderInterface> loader);
+	bool RegisterDBMapper(const ComponentType& type, std::shared_ptr
+        <anh::component::AttributeMapperInterface<ComponentInterface>> mapper);
 
 	/**
-	 * @brief Unregisters a loader for a given ComponentType
+	 * @brief Unregisters a db_mapper for a given ComponentType
      *
      * @param type the template type to remove the associate from
      *
 	 */
-	void UnregisterLoader(const ComponentType& type);
+	void UnregisterDBMapper(const ComponentType& type);
 
 	/**
 	 * @brief Registers a creator that will be called on @BuildEntity
@@ -142,23 +143,23 @@ public:
      *
      * @returns bool true if the Loader exists for the given type
 	 */
-	bool LoaderExists(const ComponentType& type);
+	bool DBMapperExists(const ComponentType& type);
 
 protected:
 private:
 
 	void LoadTemplates_(const boost::filesystem::path p);
 
-	typedef std::map<ComponentType, std::shared_ptr<ComponentLoaderInterface>>		ComponentLoaders;
-	typedef std::pair<ComponentType, std::shared_ptr<ComponentLoaderInterface>>		ComponentLoaderPair;
+	typedef std::map<ComponentType, std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>>> ComponentAttributeMappers;
+	typedef std::pair<ComponentType, std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>>> ComponentAttributeMapperPair;
 	typedef std::map<EntityType, boost::property_tree::ptree>						EntityTemplates;
 	typedef std::pair<EntityType, boost::property_tree::ptree>						EntityTemplatePair;
 	typedef std::map<ComponentType, ComponentCreator>								ComponentCreators;
 	typedef std::pair<ComponentType, ComponentCreator>								ComponentCreatorPair;
 	typedef std::map<EntityType, TagSet>											EntityTagSets;
 	typedef std::pair<EntityType, TagSet>											EntityTagSetPair;
-    // map holding the component loaders and their implementation
-	ComponentLoaders	component_loaders_;
+    // map holding the component mappers and their implementation
+	ComponentAttributeMappers	component_mappers_;
     // map holding the entity templates and their xml stored in property tree
 	EntityTemplates		entity_templates_;
     // map holding the component creators and their implmentation

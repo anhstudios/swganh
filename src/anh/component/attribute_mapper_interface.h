@@ -16,30 +16,24 @@
  You should have received a copy of the GNU General Public License
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef ANH_DATABASE_BASE_DB_UPDATER_H_
-#define ANH_DATABASE_BASE_DB_UPDATER_H_
-
-#include <anh/database/database_manager_interface.h>
+#ifndef ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_
+#define ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_
+#include <anh/memory.h>
+#include <cstdint>
 
 namespace sql { class ResultSet; }
-namespace anh { namespace database {
+namespace anh { namespace component {
 template<class ClassToMap>
-class BaseDBMapper
+class AttributeMapperInterface
 {
 public:
-	BaseDBMapper(std::shared_ptr<database::DatabaseManagerInterface> db_manager) { db_manager_ = db_manager; }
-	virtual void persist(std::shared_ptr<ClassToMap> ref_class) = 0;
+    virtual void Persist(std::shared_ptr<ClassToMap> component) = 0;
+    virtual void Populate(std::shared_ptr<ClassToMap> component) = 0;
 	virtual std::shared_ptr<ClassToMap> query_result(uint64_t entity_id) = 0;
-	std::shared_ptr<database::DatabaseManagerInterface> db_manager() { return db_manager_; }
 protected:
-	std::shared_ptr<database::DatabaseManagerInterface> db_manager_;
-    // the last ms the data was persisted
-    uint32_t last_updated_;
-    // the interval do you want the data to persist in ms
-    uint32_t update_threshold_;
 };
 } // database
 } // anh
 
 
-#endif // ANH_DATABASE_BASE_DB_UPDATER_H_
+#endif // ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_

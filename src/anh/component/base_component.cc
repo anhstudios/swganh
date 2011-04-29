@@ -27,6 +27,7 @@ BaseComponent::BaseComponent(const ComponentType& interface, const ComponentType
 	: entity_id_(0)
 	, type_(type)
 	, interface_(interface)
+    , dirty_(false)
 {
 }
 

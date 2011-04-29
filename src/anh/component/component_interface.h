@@ -22,6 +22,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <anh/event_dispatcher/basic_event.h>
+#include <anh/component/attribute_mapper_interface.h>
 
 namespace anh {
 namespace component {
@@ -35,12 +36,17 @@ typedef std::shared_ptr<anh::event_dispatcher::EventInterface>			MessagePtr;
 typedef anh::HashString													ComponentType;
 typedef anh::HashString													InterfaceType;
 
+class EntityBuilder;
+class Entity;
+
 /**
  * @brief
  */
 class ComponentInterface
 {
 public:
+    friend class EntityBuilder;
+    friend class Entity;
 	/**
 	 * @brief Default constructor.
 	 */
@@ -103,7 +109,25 @@ public:
 	 * Use with Caution! Only "the wise ones" are allowed to use this function.
 	 */
 	virtual void set_entity_id(const EntityId& id) = 0;
-
+    /**
+    * @brief sets the dirty flag of the component to signal the db update
+    *
+    * @param dirty 
+    */
+    virtual void set_dirty(bool dirty = true) = 0;
+    /**
+    * @brief gets the dirty flag value from the component
+    */
+    virtual bool dirty()= 0;
+private:
+    /**
+    * @brief gets DB Mapper associated with the component
+    */
+    virtual std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper() = 0;
+    /**
+    *  @brief Assigns a db mapper to the component
+    */
+    virtual void db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) = 0;
 };
 
 }  // namespace component

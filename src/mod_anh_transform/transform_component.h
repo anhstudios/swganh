@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define MOD_ANH_TRANSFORM_TRANFORM_COMPONENT_H
 
 #include <api/components/transform_component_interface.h>
+#include <mod_anh_transform/transform_db_mapper.h>
 #include <anh/module_manager/module_main.h>
 #include <boost/flyweight.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -67,6 +68,7 @@ private:
 };
 class API TransformComponent : public anh::api::components::TransformComponentInterface {
 public:
+    friend class TransformDBMapper;
     TransformComponent();
     TransformComponent(const glm::vec3& position, const glm::quat& rotation, const float speed);
 

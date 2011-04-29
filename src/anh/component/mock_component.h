@@ -18,7 +18,7 @@
 */
 
 #ifndef ANH_COMPONENT_MOCK_COMPONENT_H_
-#define ANH_COMPONENT_MCOK_COMPONENT_H_
+#define ANH_COMPONENT_MOCK_COMPONENT_H_
 
 #include <gmock/gmock.h>
 #include <anh/component/component_interface.h>
@@ -52,13 +52,18 @@ public:
 	void HandleMessage(const Message message) { }
 	const EntityId& entity_id() const { return entity_id_; }
 	void set_entity_id(const EntityId& id) { }
-
+    void set_dirty(bool dirty) { dirty_ = dirty; }
+    bool dirty() { return dirty_; }
+    std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper() { return db_mapper_; }
+    void db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) {}
 	const ComponentType& component_type() { return type_; }
 	const InterfaceType& interface_type() { return interface_; }
 
 	ComponentType type_;
 	InterfaceType interface_;
 	EntityId entity_id_;
+    std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper_;
+    bool dirty_;
 };
 
 class MockComponent : public MockComponentInterface {
@@ -76,6 +81,10 @@ public:
 	MOCK_METHOD1(HandleMessage, void (const Message message));
 	MOCK_CONST_METHOD0(entity_id, const EntityId& ());
 	MOCK_METHOD1(set_entity_id, void (const EntityId& id));
+    MOCK_METHOD1(set_dirty, void(bool dirty));
+    MOCK_METHOD0(dirty, bool());
+    MOCK_METHOD0(db_mapper, std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>>());
+    MOCK_METHOD1(db_mapper, void(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper));
 
 	const ComponentType& component_type() { return type_; }
 	const InterfaceType& interface_type() { return interface_; }
@@ -83,10 +92,11 @@ public:
 	ComponentType type_;
 	InterfaceType interface_;
 };
-class MockLoader : public ComponentLoaderInterface {
+class MockDBMapper : public anh::component::AttributeMapperInterface<ComponentInterface> {
 public:
-    MOCK_METHOD1(Load, bool(std::shared_ptr<ComponentInterface> comp));
-    MOCK_METHOD1(Unload, void(std::shared_ptr<ComponentInterface> comp));
+    MOCK_METHOD1(Persist, void(std::shared_ptr<ComponentInterface> comp));
+    MOCK_METHOD1(Populate, void(std::shared_ptr<ComponentInterface> comp));
+    MOCK_METHOD1(query_result, std::shared_ptr<ComponentInterface>(uint64_t entity_id));
 };
 
 } // namespace component

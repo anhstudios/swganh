@@ -77,58 +77,58 @@ TEST_F(EntityBuilderTests, CanRegisterAndUnregisterCreator) {
     entity_builder->RegisterCreator("Mock", [=](const EntityId& id){ return std::make_shared<MockComponent>(); });
     EXPECT_TRUE(entity_builder->CreatorExists("Mock"));
 }
-
-/// verifies that Loader Exists after registration and does not exist after unregister
-TEST_F(EntityBuilderTests, CanRegisterAndUnregisterLoader) {
-    entity_builder->RegisterLoader("Mock", std::make_shared<MockLoader>());
-    EXPECT_TRUE(entity_builder->LoaderExists("Mock"));
-    entity_builder->UnregisterLoader("Mock");
-    EXPECT_FALSE(entity_builder->LoaderExists("Mock"));
-}
-
-/// We shouldn't be able to register two creators for a single component type.
-TEST_F(EntityBuilderTests, CannotRegisterTwoCreators) {
-    EXPECT_TRUE(entity_builder->RegisterCreator("Mock", [=](const EntityId& id){ return std::make_shared<MockComponent>(); }));
-    EXPECT_FALSE(entity_builder->RegisterCreator("Mock", [=](const EntityId& id){ return std::make_shared<MockComponent>(); }));
-}
-
-/// We shouldn't be able to register two loaders for a single component type.
-TEST_F(EntityBuilderTests, CannotRegisterTwoLoaders) {
-    EXPECT_TRUE(entity_builder->RegisterLoader("Mock", std::make_shared<MockLoader>()));
-    EXPECT_FALSE(entity_builder->RegisterLoader("Mock", std::make_shared<MockLoader>()));
-}
-
-/// Test to make sure we are not able to construct an entity that doesnt have a
-/// template.
-TEST_F(EntityBuilderTests, CannotBuildEntityWithoutTemplate) {
-    EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "Mock", "test.Mock"), BUILD_FAILED);
-}
-
-/// Make sure that if there are no component registrations whatsoever we fail to build the entity
-TEST_F(EntityBuilderTests, BuildWithMissingComponentRegistration) {
-    entity_builder->Init("templates.temp");
-    EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "Mock", "test.Mock"), BUILD_FAILED);
-}
-
-/// verifies we can still build an entity and use it, if there is no loader attached
-TEST_F(EntityBuilderTests, BuildSingleComponentEntityNoLoader) {
-    entity_builder->Init("templates.temp");
-    EXPECT_TRUE(entity_builder->RegisterCreator("Mock", [=](const EntityId& id){ return std::make_shared<MockComponent>(); }));
-    EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "mock_entity", "test.Mock"), BUILD_INCOMPLETE);
-    std::shared_ptr<MockComponentInterface> component = 
-        entity_manager->QueryInterface<MockComponentInterface>(entity_id_, "Mock");
-    EXPECT_EQ(component->component_type(), "NullMock");
-}
-
-// a single component object built with a loder, should build and validate the loader exists.
-TEST_F(EntityBuilderTests, BuildSingleComponentEntityWithLoader) {
-    entity_builder->Init("templates.temp");
-    EXPECT_TRUE(entity_builder->RegisterCreator("anh.mock", [=](const EntityId& id){ return std::make_shared<::testing::NiceMock<MockComponent>>(); }));
-    EXPECT_TRUE(entity_builder->RegisterLoader("anh.mock", std::make_shared<::testing::NiceMock<MockLoader>>()));
-    EXPECT_TRUE(entity_builder->CreatorExists("anh.mock"));
-    EXPECT_TRUE(entity_builder->LoaderExists("anh.mock"));
-    EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "mock_entity", "test.Mock"), BUILD_SUCCESSFUL);
-    std::shared_ptr<MockComponentInterface> component = 
-        entity_manager->QueryInterface<MockComponentInterface>(entity_id_, "Mock");
-    EXPECT_EQ(component->component_type(), "NullMock");
-}
+//
+///// verifies that Loader Exists after registration and does not exist after unregister
+//TEST_F(EntityBuilderTests, CanRegisterAndUnregisterLoader) {
+//    entity_builder->RegisterLoader("Mock", std::make_shared<MockLoader>());
+//    EXPECT_TRUE(entity_builder->LoaderExists("Mock"));
+//    entity_builder->UnregisterLoader("Mock");
+//    EXPECT_FALSE(entity_builder->LoaderExists("Mock"));
+//}
+//
+///// We shouldn't be able to register two creators for a single component type.
+//TEST_F(EntityBuilderTests, CannotRegisterTwoCreators) {
+//    EXPECT_TRUE(entity_builder->RegisterCreator("Mock", [=](const EntityId& id){ return std::make_shared<MockComponent>(); }));
+//    EXPECT_FALSE(entity_builder->RegisterCreator("Mock", [=](const EntityId& id){ return std::make_shared<MockComponent>(); }));
+//}
+//
+///// We shouldn't be able to register two loaders for a single component type.
+//TEST_F(EntityBuilderTests, CannotRegisterTwoLoaders) {
+//    EXPECT_TRUE(entity_builder->RegisterLoader("Mock", std::make_shared<MockLoader>()));
+//    EXPECT_FALSE(entity_builder->RegisterLoader("Mock", std::make_shared<MockLoader>()));
+//}
+//
+///// Test to make sure we are not able to construct an entity that doesnt have a
+///// template.
+//TEST_F(EntityBuilderTests, CannotBuildEntityWithoutTemplate) {
+//    EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "Mock", "test.Mock"), BUILD_FAILED);
+//}
+//
+///// Make sure that if there are no component registrations whatsoever we fail to build the entity
+//TEST_F(EntityBuilderTests, BuildWithMissingComponentRegistration) {
+//    entity_builder->Init("templates.temp");
+//    EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "Mock", "test.Mock"), BUILD_FAILED);
+//}
+//
+///// verifies we can still build an entity and use it, if there is no loader attached
+//TEST_F(EntityBuilderTests, BuildSingleComponentEntityNoLoader) {
+//    entity_builder->Init("templates.temp");
+//    EXPECT_TRUE(entity_builder->RegisterCreator("Mock", [=](const EntityId& id){ return std::make_shared<MockComponent>(); }));
+//    EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "mock_entity", "test.Mock"), BUILD_INCOMPLETE);
+//    std::shared_ptr<MockComponentInterface> component = 
+//        entity_manager->QueryInterface<MockComponentInterface>(entity_id_, "Mock");
+//    EXPECT_EQ(component->component_type(), "NullMock");
+//}
+//
+//// a single component object built with a loder, should build and validate the loader exists.
+//TEST_F(EntityBuilderTests, BuildSingleComponentEntityWithLoader) {
+//    entity_builder->Init("templates.temp");
+//    EXPECT_TRUE(entity_builder->RegisterCreator("anh.mock", [=](const EntityId& id){ return std::make_shared<::testing::NiceMock<MockComponent>>(); }));
+//    EXPECT_TRUE(entity_builder->RegisterLoader("anh.mock", std::make_shared<::testing::NiceMock<MockLoader>>()));
+//    EXPECT_TRUE(entity_builder->CreatorExists("anh.mock"));
+//    EXPECT_TRUE(entity_builder->LoaderExists("anh.mock"));
+//    EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "mock_entity", "test.Mock"), BUILD_SUCCESSFUL);
+//    std::shared_ptr<MockComponentInterface> component = 
+//        entity_manager->QueryInterface<MockComponentInterface>(entity_id_, "Mock");
+//    EXPECT_EQ(component->component_type(), "NullMock");
+//}

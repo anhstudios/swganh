@@ -28,12 +28,13 @@ namespace component {
 EntityBuilder::EntityBuilder(std::shared_ptr<EntityManager> entity_manager)
 	: entity_manager_(entity_manager)
 {
+
 }
 
 EntityBuilder::~EntityBuilder()
 {
 	entity_templates_.clear();
-	component_loaders_.clear();
+	component_mappers_.clear();
 	component_creators_.clear();
 	entity_tag_sets_.clear();
 }
@@ -92,11 +93,16 @@ EntityBuildErrors EntityBuilder::BuildEntity(const EntityId& entity_id, const En
 
 			std::shared_ptr<ComponentInterface> component = (*creators_iter).second(entity_id);
 			component->Init(xml_component->second);
-
-			// Search for a component loader, if it exists, call it.
-			ComponentLoaders::iterator loader_iter = component_loaders_.find(type);
-			if(loader_iter != component_loaders_.end())
-				(*loader_iter).second->Load(component);
+            
+			// Search for a component mapper, if it exists, call it.
+			ComponentAttributeMappers::iterator mapper_iter = component_mappers_.find(type);
+			if(mapper_iter != component_mappers_.end())
+            {
+                // set db mapper for component
+                component->db_mapper((*mapper_iter).second);
+                // call populate
+				(*mapper_iter).second->Populate(component);
+            }
 		}
     }
     // if we can't add the entity for some reason, this is a total failure.
@@ -108,22 +114,23 @@ EntityBuildErrors EntityBuilder::BuildEntity(const EntityId& entity_id, const En
 	return status;
 }
 
-bool EntityBuilder::RegisterLoader(const ComponentType& type, std::shared_ptr<ComponentLoaderInterface> loader)
+bool EntityBuilder::RegisterDBMapper(const ComponentType& type, std::shared_ptr
+    <anh::component::AttributeMapperInterface<ComponentInterface>> mapper)
 {
-	ComponentLoaders::iterator i = component_loaders_.find(type);
-	if(i != component_loaders_.end()) {
+	ComponentAttributeMappers::iterator i = component_mappers_.find(type);
+	if(i != component_mappers_.end()) {
 		return false;
 	}
 
-	component_loaders_.insert(ComponentLoaderPair(type, loader));
+	component_mappers_.insert(ComponentAttributeMapperPair(type, mapper));
 	return true;
 }
 
-void EntityBuilder::UnregisterLoader(const ComponentType& type)
+void EntityBuilder::UnregisterDBMapper(const ComponentType& type)
 {
-	ComponentLoaders::iterator i = component_loaders_.find(type);
-	if(i != component_loaders_.end())
-		component_loaders_.erase(i);
+	ComponentAttributeMappers::iterator i = component_mappers_.find(type);
+	if(i != component_mappers_.end())
+		component_mappers_.erase(i);
 }
 
 bool EntityBuilder::RegisterCreator(const ComponentType& type, ComponentCreator creator)
@@ -162,10 +169,10 @@ bool EntityBuilder::CreatorExists(const ComponentType& type)
 		return true;
 }
 
-bool EntityBuilder::LoaderExists(const ComponentType& type)
+bool EntityBuilder::DBMapperExists(const ComponentType& type)
 {
-	ComponentLoaders::iterator i = component_loaders_.find(type);
-	if(i == component_loaders_.end())
+	ComponentAttributeMappers::iterator i = component_mappers_.find(type);
+	if(i == component_mappers_.end())
 		return false;
 	else
 		return true;

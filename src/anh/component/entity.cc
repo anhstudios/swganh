@@ -98,6 +98,14 @@ void Entity::Update(const float deltaMilliseconds)
 {
 	std::for_each(components_.begin(), components_.end(), [=](ComponentsMap::value_type& pair) {
 		pair.second->Update(deltaMilliseconds);
+        // dirty
+        if (pair.second->dirty())
+        {
+            // persist to associated db mapper
+            if (pair.second->db_mapper() != nullptr) {
+                pair.second->db_mapper()->Persist(pair.second);
+            }
+        }
 	});
 }
 
