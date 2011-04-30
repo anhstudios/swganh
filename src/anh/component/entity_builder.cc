@@ -99,8 +99,8 @@ EntityBuildErrors EntityBuilder::BuildEntity(const EntityId& entity_id, const En
 			if(mapper_iter != component_mappers_.end())
             {
                 // set db mapper for component
-                component->db_mapper((*mapper_iter).second);
-                // call populate
+                component->set_db_mapper((*mapper_iter).second);
+                // call populate to get initial values for component
 				(*mapper_iter).second->Populate(component);
             }
 		}

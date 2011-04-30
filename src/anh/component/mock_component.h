@@ -22,7 +22,7 @@
 
 #include <gmock/gmock.h>
 #include <anh/component/component_interface.h>
-#include <anh/component/component_loader_interface.h>
+#include <anh/component/attribute_mapper_interface.h>
 
 // Generate mock Component.
 
@@ -55,7 +55,7 @@ public:
     void set_dirty(bool dirty) { dirty_ = dirty; }
     bool dirty() { return dirty_; }
     std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper() { return db_mapper_; }
-    void db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) {}
+    void set_db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) {}
 	const ComponentType& component_type() { return type_; }
 	const InterfaceType& interface_type() { return interface_; }
 
@@ -84,7 +84,7 @@ public:
     MOCK_METHOD1(set_dirty, void(bool dirty));
     MOCK_METHOD0(dirty, bool());
     MOCK_METHOD0(db_mapper, std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>>());
-    MOCK_METHOD1(db_mapper, void(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper));
+    MOCK_METHOD1(set_db_mapper, void(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper));
 
 	const ComponentType& component_type() { return type_; }
 	const InterfaceType& interface_type() { return interface_; }
@@ -92,7 +92,7 @@ public:
 	ComponentType type_;
 	InterfaceType interface_;
 };
-class MockDBMapper : public anh::component::AttributeMapperInterface<ComponentInterface> {
+class MockAttributeMapper : public anh::component::AttributeMapperInterface<ComponentInterface> {
 public:
     MOCK_METHOD1(Persist, void(std::shared_ptr<ComponentInterface> comp));
     MOCK_METHOD1(Populate, void(std::shared_ptr<ComponentInterface> comp));

@@ -49,7 +49,7 @@ public:
     virtual void set_dirty(bool dirty = true) { dirty_ = dirty; }
     virtual bool dirty() { return dirty_; }
     virtual std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper() { return db_mapper_; }
-    virtual void db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) { db_mapper_ = mapper; }
+    virtual void set_db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) { db_mapper_ = mapper; }
 
 	/**
 	 * @breif Called to handle a message passed to this component by the Object Manager.

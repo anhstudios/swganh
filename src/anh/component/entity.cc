@@ -104,6 +104,7 @@ void Entity::Update(const float deltaMilliseconds)
             // persist to associated db mapper
             if (pair.second->db_mapper() != nullptr) {
                 pair.second->db_mapper()->Persist(pair.second);
+                pair.second->set_dirty(false);
             }
         }
 	});

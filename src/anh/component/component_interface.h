@@ -127,7 +127,7 @@ private:
     /**
     *  @brief Assigns a db mapper to the component
     */
-    virtual void db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) = 0;
+    virtual void set_db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) = 0;
 };
 
 }  // namespace component
