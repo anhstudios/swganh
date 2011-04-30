@@ -206,36 +206,4 @@ TEST_F(ScriptingManagerTest, referenceExistingObject)
         delete g;
     }
 };
-
-TEST_F(ScriptingManagerTest, getComponentFromPython)
-{
-    module.name = "embedded_component";
-    module.initfunc = PyInit_embedded_component;
-    modules.push_back(module);
-    // load modules
-    if (e->loadModules(modules))
-    {
-        object obj (e->embed("embedded_component.py", "Component"));
-        object py_base = obj();
-        BaseComponent& comp = extract<BaseComponent&>(py_base);
-        EntityId id = comp.entity_id();
-        EXPECT_EQ(0, id);
-    }
-}
-
-TEST_F(ScriptingManagerTest, getMockComponentFromPython)
-{
-    module.name = "embedded_component";
-    module.initfunc = PyInit_embedded_component;
-    modules.push_back(module);
-    // load modules
-    if (e->loadModules(modules))
-    {
-        object obj (e->embed("radial_component.py", "MockComponent"));
-        object py_base = obj();
-        MockComponentInterface& comp = extract<MockComponentInterface&>(py_base);
-        EntityId id = comp.entity_id();
-        EXPECT_EQ(0, id);   
-    }
-}
 } // anon namespace

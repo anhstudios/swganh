@@ -42,8 +42,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <driver/mysql_driver.h>
 #include <cppconn/connection.h>
 #include <cppconn/driver.h>
-
 #include <glog/logging.h>
+
 #include <anh/clock.h>
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/database/database_manager.h>
@@ -129,7 +129,6 @@ void BaseApplication::startup() {
         startup_event_ = make_shared<SimpleEvent>("Startup");
         process_event_ = make_shared<SimpleEvent>("Process");
         shutdown_event_ = make_shared<SimpleEvent>("Shutdown");
-        setupLogging();
         addDefaultOptions_();
         // load the options
         loadOptions_(argc_, argv_, config_files_);
@@ -203,11 +202,15 @@ shared_ptr<DatabaseManager> BaseApplication::createDatabaseManager(sql::Driver* 
 }
 void BaseApplication::setupLogging() {
     // Initialize the google logging.
-    google::InitGoogleLogging("logs");
+    google::InitGoogleLogging(argv_[0]);
 
     #ifndef _WIN32
         google::InstallFailureSignalHandler();
     #endif
+
+    FLAGS_log_dir = "./logs";
+    FLAGS_stderrthreshold = 1;
+    setvbuf( stdout, NULL, _IONBF, 0);
 }
 
 void BaseApplication::addDefaultOptions_() {

@@ -15,6 +15,7 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 #include <anh/clock.h>
 
 #include <iostream>
+#include <glog/logging.h>
 #include <boost/thread/thread.hpp>
 
 using namespace std;
@@ -72,6 +73,16 @@ using namespace zone;
 int main(int argc, char* argv[])
 {
     /// pre startup
+    // Initialize the google logging.
+    google::InitGoogleLogging(argv[0]);
+
+    #ifndef _WIN32
+        google::InstallFailureSignalHandler();
+    #endif
+
+    FLAGS_log_dir = "./logs";
+    FLAGS_stderrthreshold = 1;
+    setvbuf( stdout, NULL, _IONBF, 0);
     // config files
     list<string> config;
     config.push_back("config/general.cfg");
