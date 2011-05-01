@@ -167,4 +167,7 @@ add_subdirectory(api)
 
 ## project executables
 add_subdirectory(zone)
+add_subdirectory(login)
+add_subdirectory(connection)
+add_subdirectory(shared_services)
 add_subdirectory(script_bindings)
