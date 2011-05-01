@@ -46,6 +46,11 @@ public:
 	 */
     virtual void Populate(std::shared_ptr<ClassToMap> component) = 0;
 
+    /**
+    * @brief used to fill a component object from an outside source.
+    *
+    * @param entity_id, the id of the entity to grab data from.
+    */
 	virtual std::shared_ptr<ClassToMap> query_result(uint64_t entity_id) = 0;
 protected:
 };
