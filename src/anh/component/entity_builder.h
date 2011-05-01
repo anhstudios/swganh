@@ -82,14 +82,14 @@ public:
     EntityBuildErrors BuildEntity(const EntityId& entity_id, const EntityType& type, const std::string& name);
 
 	/**
-	 * @brief Registers a db_mapper that will be called on @BuildEntity
+	 * @brief Registers an attribute maper that will be called on @BuildEntity
      *
      * @param type the template type to associate this to (type is usually set in the concrete implementation)
-     * @param db_mapper the ComponentLoader class associated to the component
+     * @param mapper the ComponentLoader class associated to the component
      *
      * @returns bool true if the Loader was properly registered.
 	 */
-	bool RegisterDBMapper(const ComponentType& type, std::shared_ptr
+	bool RegisterAttributeMapper(const ComponentType& type, std::shared_ptr
         <anh::component::AttributeMapperInterface<ComponentInterface>> mapper);
 
 	/**
@@ -98,7 +98,7 @@ public:
      * @param type the template type to remove the associate from
      *
 	 */
-	void UnregisterDBMapper(const ComponentType& type);
+	void UnregisterAttributeMapper(const ComponentType& type);
 
 	/**
 	 * @brief Registers a creator that will be called on @BuildEntity
@@ -137,13 +137,13 @@ public:
 	bool CreatorExists(const ComponentType& type);
 
 	/**
-	 * @brief Checks to see if a loader exists for the given type
+	 * @brief Checks to see if a attribute mapper exists for the given type.
      *
      * @param type the ComponentType
      *
      * @returns bool true if the Loader exists for the given type
 	 */
-	bool DBMapperExists(const ComponentType& type);
+	bool AttributeMapperExists(const ComponentType& type);
 
 protected:
 private:

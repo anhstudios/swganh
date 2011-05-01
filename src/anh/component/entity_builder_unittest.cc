@@ -80,10 +80,10 @@ TEST_F(EntityBuilderTests, CanRegisterAndUnregisterCreator) {
 //
 ///// verifies that a db Mapper Exists after registration and does not exist after unregister
 TEST_F(EntityBuilderTests, CanRegisterAndUnregisterLoader) {
-    entity_builder->RegisterDBMapper("Mock", std::make_shared<MockAttributeMapper>());
-    EXPECT_TRUE(entity_builder->DBMapperExists("Mock"));
-    entity_builder->UnregisterDBMapper("Mock");
-    EXPECT_FALSE(entity_builder->DBMapperExists("Mock"));
+    entity_builder->RegisterAttributeMapper("Mock", std::make_shared<MockAttributeMapper>());
+    EXPECT_TRUE(entity_builder->AttributeMapperExists("Mock"));
+    entity_builder->UnregisterAttributeMapper("Mock");
+    EXPECT_FALSE(entity_builder->AttributeMapperExists("Mock"));
 }
 
 ///// We shouldn't be able to register two creators for a single component type.
@@ -93,9 +93,9 @@ TEST_F(EntityBuilderTests, CannotRegisterTwoCreators) {
 }
 //
 ///// We shouldn't be able to register two loaders for a single component type.
-TEST_F(EntityBuilderTests, CannotRegisterTwoLoaders) {
-    EXPECT_TRUE(entity_builder->RegisterDBMapper("Mock", std::make_shared<MockAttributeMapper>()));
-    EXPECT_FALSE(entity_builder->RegisterDBMapper("Mock", std::make_shared<MockAttributeMapper>()));
+TEST_F(EntityBuilderTests, CannotRegisterTwoAttributeMapper) {
+    EXPECT_TRUE(entity_builder->RegisterAttributeMapper("Mock", std::make_shared<MockAttributeMapper>()));
+    EXPECT_FALSE(entity_builder->RegisterAttributeMapper("Mock", std::make_shared<MockAttributeMapper>()));
 }
 //
 ///// Test to make sure we are not able to construct an entity that doesnt have a
@@ -121,12 +121,12 @@ TEST_F(EntityBuilderTests, BuildSingleComponentEntityNoDBMapper) {
 }
 //
 //// a single component object built with a loder, should build and validate the loader exists.
-TEST_F(EntityBuilderTests, BuildSingleComponentEntityWithLoader) {
+TEST_F(EntityBuilderTests, BuildSingleComponentEntityWithAttributeMapper) {
     entity_builder->Init("templates.temp");
     EXPECT_TRUE(entity_builder->RegisterCreator("anh.mock", [=](const EntityId& id){ return std::make_shared<::testing::NiceMock<MockComponent>>(); }));
-    EXPECT_TRUE(entity_builder->RegisterDBMapper("anh.mock", std::make_shared<::testing::NiceMock<MockAttributeMapper>>()));
+    EXPECT_TRUE(entity_builder->RegisterAttributeMapper("anh.mock", std::make_shared<::testing::NiceMock<MockAttributeMapper>>()));
     EXPECT_TRUE(entity_builder->CreatorExists("anh.mock"));
-    EXPECT_TRUE(entity_builder->DBMapperExists("anh.mock"));
+    EXPECT_TRUE(entity_builder->AttributeMapperExists("anh.mock"));
     EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "mock_entity", "test.Mock"), BUILD_SUCCESSFUL);
     std::shared_ptr<MockComponentInterface> component = 
         entity_manager->QueryInterface<MockComponentInterface>(entity_id_, "Mock");

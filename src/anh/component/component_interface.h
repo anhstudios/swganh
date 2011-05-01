@@ -71,7 +71,6 @@ public:
 
 	/**
 	 * @brief Called when the component gets detached from an Entity.
-	 * @see Entity
 	 */
 	virtual void OnDetach(void) = 0;
 
@@ -81,7 +80,7 @@ public:
 	virtual void Update(const float deltaMilliseconds) = 0;
 
 	/**
-	 * @breif 
+	 * @breif Handles an incoming message from an out-side source.
 	 * @see IEvent
 	 *
 	 * @param Message The message being passed to this component.
@@ -121,13 +120,13 @@ public:
     virtual bool dirty()= 0;
 private:
     /**
-    * @brief gets DB Mapper associated with the component
+    * @brief Gets the attribute mapper associated with the component.
     */
-    virtual std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper() = 0;
+    virtual std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> attribute_mapper() = 0;
     /**
-    *  @brief Assigns a db mapper to the component
+    *  @brief Assigns an attribute mapper to the component.
     */
-    virtual void set_db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) = 0;
+    virtual void set_attribute_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> attribute_mapper) = 0;
 };
 
 }  // namespace component

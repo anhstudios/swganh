@@ -54,15 +54,15 @@ public:
 	void set_entity_id(const EntityId& id) { }
     void set_dirty(bool dirty) { dirty_ = dirty; }
     bool dirty() { return dirty_; }
-    std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper() { return db_mapper_; }
-    void set_db_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) {}
+    std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> attribute_mapper() { return attribute_mapper_; }
+    void set_attribute_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) {}
 	const ComponentType& component_type() { return type_; }
 	const InterfaceType& interface_type() { return interface_; }
 
 	ComponentType type_;
 	InterfaceType interface_;
 	EntityId entity_id_;
-    std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> db_mapper_;
+    std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> attribute_mapper_;
     bool dirty_;
 };
 
@@ -83,8 +83,8 @@ public:
 	MOCK_METHOD1(set_entity_id, void (const EntityId& id));
     MOCK_METHOD1(set_dirty, void(bool dirty));
     MOCK_METHOD0(dirty, bool());
-    MOCK_METHOD0(db_mapper, std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>>());
-    MOCK_METHOD1(set_db_mapper, void(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper));
+    MOCK_METHOD0(attribute_mapper, std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>>());
+    MOCK_METHOD1(set_attribute_mapper, void(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper));
 
 	const ComponentType& component_type() { return type_; }
 	const InterfaceType& interface_type() { return interface_; }

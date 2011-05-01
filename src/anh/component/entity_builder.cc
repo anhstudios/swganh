@@ -99,7 +99,7 @@ EntityBuildErrors EntityBuilder::BuildEntity(const EntityId& entity_id, const En
 			if(mapper_iter != component_mappers_.end())
             {
                 // set db mapper for component
-                component->set_db_mapper((*mapper_iter).second);
+                component->set_attribute_mapper((*mapper_iter).second);
                 // call populate to get initial values for component
 				(*mapper_iter).second->Populate(component);
             }
@@ -114,7 +114,7 @@ EntityBuildErrors EntityBuilder::BuildEntity(const EntityId& entity_id, const En
 	return status;
 }
 
-bool EntityBuilder::RegisterDBMapper(const ComponentType& type, std::shared_ptr
+bool EntityBuilder::RegisterAttributeMapper(const ComponentType& type, std::shared_ptr
     <anh::component::AttributeMapperInterface<ComponentInterface>> mapper)
 {
 	ComponentAttributeMappers::iterator i = component_mappers_.find(type);
@@ -126,7 +126,7 @@ bool EntityBuilder::RegisterDBMapper(const ComponentType& type, std::shared_ptr
 	return true;
 }
 
-void EntityBuilder::UnregisterDBMapper(const ComponentType& type)
+void EntityBuilder::UnregisterAttributeMapper(const ComponentType& type)
 {
 	ComponentAttributeMappers::iterator i = component_mappers_.find(type);
 	if(i != component_mappers_.end())
@@ -169,7 +169,7 @@ bool EntityBuilder::CreatorExists(const ComponentType& type)
 		return true;
 }
 
-bool EntityBuilder::DBMapperExists(const ComponentType& type)
+bool EntityBuilder::AttributeMapperExists(const ComponentType& type)
 {
 	ComponentAttributeMappers::iterator i = component_mappers_.find(type);
 	if(i == component_mappers_.end())

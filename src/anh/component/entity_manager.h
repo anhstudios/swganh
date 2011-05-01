@@ -27,7 +27,7 @@ namespace anh {
 namespace component {
 
 /**
- * @brief A front-end entity
+ * @brief Proxys function calls to entitys by id.
  */
 class EntityManager : public boost::noncopyable
 {
@@ -55,14 +55,7 @@ public:
 
 
 	bool HasInterface(const EntityId& id, const ComponentType& type);
-
-	/**
-	 * @brief
-	 */
 	template<class T> std::shared_ptr<T> QueryInterface(const EntityId& id, const InterfaceType& type);
-
-
-
 	void AttachComponent(const EntityId& entity_id, std::shared_ptr<ComponentInterface> component);
 	void DetachComponent(const EntityId& entity_id, const ComponentType& type);
 

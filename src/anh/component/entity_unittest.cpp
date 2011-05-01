@@ -165,7 +165,7 @@ TEST_F(EntityTests, CanUpdate)
 	// Detach
 	entity.DetachComponent("Mock");
 }
-// verifies the entity calls the Persist function on a DB Mapper on update, if dirty
+// verifies the entity calls the Persist function on a attribute mapper on update, if dirty
 TEST_F(EntityTests, CallsDBMapperOnUpdateIfDirty)
 {
 	Entity entity(entity_id_);
@@ -183,7 +183,7 @@ TEST_F(EntityTests, CallsDBMapperOnUpdateIfDirty)
 
     component->set_dirty(true);
 
-    EXPECT_CALL(*component, db_mapper())
+    EXPECT_CALL(*component, attribute_mapper())
         .Times(1)
         .WillRepeatedly(Return(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>>()));
 
@@ -193,8 +193,8 @@ TEST_F(EntityTests, CallsDBMapperOnUpdateIfDirty)
 	// Detach
 	entity.DetachComponent("Mock");
 }
-// verifies the entity wont call the Persist function on a DB Mapper on update, if NOT dirty
-TEST_F(EntityTests, DoesntCallsDBMapperOnUpdateIfNotDirty)
+// verifies the entity wont call the Persist function on a attribute mapper on update, if NOT dirty
+TEST_F(EntityTests, DoesntCallsAttributeMapperOnUpdateIfNotDirty)
 {
 	Entity entity(entity_id_);
 	std::shared_ptr<NiceMock<MockComponent>> component(new NiceMock<MockComponent>());
@@ -209,7 +209,7 @@ TEST_F(EntityTests, DoesntCallsDBMapperOnUpdateIfNotDirty)
     EXPECT_CALL(*component, dirty())
         .WillOnce(Return(false));
     // ensure it doesn't get called
-    EXPECT_CALL(*component, db_mapper())
+    EXPECT_CALL(*component, attribute_mapper())
         .Times(0);
 
 	// Update

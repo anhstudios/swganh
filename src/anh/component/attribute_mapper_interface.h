@@ -18,22 +18,40 @@
 */
 #ifndef ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_
 #define ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_
+
 #include <anh/memory.h>
 #include <cstdint>
 
-namespace sql { class ResultSet; }
-namespace anh { namespace component {
+namespace anh { 
+namespace component {
+
+/**
+ * @brief Maps/Serializes component attributes to an outside source.
+ */
 template<class ClassToMap>
 class AttributeMapperInterface
 {
 public:
+	/**
+	 * @brief Called when the component is being presisted to the outside source.
+	 *
+	  * @param The component to persist.
+	 */
     virtual void Persist(std::shared_ptr<ClassToMap> component) = 0;
+
+	/**
+	 * @brief Called initially to populate a components attributes.
+	 *
+	 * @param component The component to aggregate data to.
+	 */
     virtual void Populate(std::shared_ptr<ClassToMap> component) = 0;
+
 	virtual std::shared_ptr<ClassToMap> query_result(uint64_t entity_id) = 0;
 protected:
 };
-} // database
-} // anh
+
+} // namespace database
+} // namespace anh
 
 
 #endif // ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_
