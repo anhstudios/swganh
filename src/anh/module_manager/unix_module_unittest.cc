@@ -25,8 +25,60 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 #include <gtest/gtest.h>
+#include <anh/module_manager/unix_module.h>
+#include <anh/module_manager/platform_services.h>
 
-TEST(UnixModuleTests, TestSomething)
+using namespace anh::module_manager;
+
+#ifdef UNIX
+
+TEST(UnixModuleTests, Load_Success)
 {
-	EXPECT_TRUE(true);
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
+	UnixModule module;
+	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+	EXPECT_TRUE(module.Load("./test_module.so", services, module_version));
 }
+
+TEST(UnixModuleTests, Unload_Success)
+{
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
+	UnixModule module;
+	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+	module.Load("./test_module.so", services, module_version);
+	module.Unload(services);
+}
+
+TEST(UnixModuleTests, GetName_Success)
+{
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
+	UnixModule module;
+	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+	module.Load("./test_module.so", services, module_version);
+
+	EXPECT_EQ(std::string("DLLTest"), module.name());
+}
+
+TEST(UnixModuleTests, GetVersion_Success)
+{
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
+	UnixModule module;
+	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+	module.Load("./test_module.so", services, module_version);
+
+	EXPECT_EQ(module_version->major, module.version().major);
+	EXPECT_EQ(module_version->minor, module.version().minor);
+}
+
+TEST(UnixModuleTests, GetDescription_Success)
+{
+    auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
+	UnixModule module;
+	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+	module.Load("./test_module.so", services, module_version);
+
+	std::string module_description = "A test module.";
+	EXPECT_EQ(module_description, module.description());
+}
+
+#endif
