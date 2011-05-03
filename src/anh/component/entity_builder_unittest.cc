@@ -123,8 +123,8 @@ TEST_F(EntityBuilderTests, BuildSingleComponentEntityNoDBMapper) {
 //// a single component object built with a loder, should build and validate the loader exists.
 TEST_F(EntityBuilderTests, BuildSingleComponentEntityWithAttributeMapper) {
     entity_builder->Init("templates.temp");
-    EXPECT_TRUE(entity_builder->RegisterCreator("anh.mock", [=](const EntityId& id){ return std::make_shared<::testing::NiceMock<MockComponent>>(); }));
-    EXPECT_TRUE(entity_builder->RegisterAttributeMapper("anh.mock", std::make_shared<::testing::NiceMock<MockAttributeMapper>>()));
+    EXPECT_TRUE(entity_builder->RegisterCreator("anh.mock", [=](const EntityId& id){ return std::make_shared<testing::NiceMock<MockComponent>>(); }));
+    EXPECT_TRUE(entity_builder->RegisterAttributeMapper("anh.mock", std::make_shared<testing::NiceMock<MockAttributeMapper>>()));
     EXPECT_TRUE(entity_builder->CreatorExists("anh.mock"));
     EXPECT_TRUE(entity_builder->AttributeMapperExists("anh.mock"));
     EXPECT_EQ(entity_builder->BuildEntity(entity_id_, "mock_entity", "test.Mock"), BUILD_SUCCESSFUL);

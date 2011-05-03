@@ -17,10 +17,10 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "module_manager.h"
-#if _WIN32
+#ifdef _WIN32
 #include "win32_module.h"
 #endif
-#if __unix
+#ifdef UNIX
 #include "unix_module.h"
 #endif
 #include <boost/filesystem.hpp>
@@ -44,8 +44,8 @@ shared_ptr<ModuleInterface> ModuleManager::CreateModule()
     #if _WIN32
         module = make_shared<Win32Module>();
     #endif
-    #if __unix
-        //module = make_shared<UnixModule>();
+    #if _unix
+        module = make_shared<UnixModule>();
     #endif
 
     return module;

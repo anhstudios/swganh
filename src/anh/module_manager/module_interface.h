@@ -43,30 +43,30 @@ class PlatformServices;
  */
 typedef struct ModuleApiVersion
 {
-	ModuleApiVersion(uint32_t _major = 0, uint32_t _minor = 0, std::string _version_string ="0.0")
-		: major(_major)
-		, minor(_minor)
-		, version_string(_version_string) { }
+	ModuleApiVersion(uint32_t major_ver_ = 0, uint32_t minor_ver_ = 0, std::string version_string_ ="0.0")
+		: major_ver(major_ver_)
+		, minor_ver(minor_ver_)
+		, version_string(version_string_) { }
 
 	~ModuleApiVersion(void) { }
 
 	bool operator ==(const ModuleApiVersion& other)
 	{
-		if((major == other.major) && (minor == other.minor))
+		if((major_ver == other.major_ver) && (minor_ver == other.minor_ver))
 			return true;
 		else
 			return false;
 	}
-    bool operator !=(const ModuleApiVersion& other)
-    {
-        if((major != other.major) && (minor != other.minor))
+	bool operator !=(const ModuleApiVersion& other)
+	{
+		if((major_ver != other.major_ver) || (minor_ver != other.minor_ver))
 			return true;
 		else
 			return false;
-    }
+	}
 
-	uint32_t major;
-	uint32_t minor;
+	uint32_t major_ver;
+	uint32_t minor_ver;
 	std::string version_string;
 } ModuleApiVersion;
 

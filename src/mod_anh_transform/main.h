@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include <anh\module_manager\module_interface.h>
-#include <anh\module_manager\platform_services.h>
-#include <anh\module_manager\module_main.h>
+#include <anh/module_manager/module_interface.h>
+#include <anh/module_manager/platform_services.h>
+#include <anh/module_manager/module_main.h>
 
 #ifdef __cplusplus
 extern "C"

@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <boost/flyweight.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/glm.hpp>
-#include <anh_definitions.h>
 
 using namespace anh::component;
 

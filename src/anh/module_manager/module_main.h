@@ -41,6 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
     #else
         #define API __declspec(dllimport)
     #endif
+#else
+	#define API 
 #endif
 
 #define MODULE_STANDARD_SERVICES \
