@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/module_manager/win32_module.h>
 #include <anh/module_manager/platform_services.h>
 
+#ifdef WIN32
+
 using namespace anh::module_manager;
 
 TEST(Win32ModuleTest, Load_Success)
@@ -79,3 +81,5 @@ TEST(Win32ModuleTest, GetDescription_Success)
 	std::string module_description = "A test module.";
 	EXPECT_EQ(module_description, module.description());
 }
+
+#endif

@@ -60,5 +60,5 @@ private:
 } // namespace module_manager
 } // namespace anh
 
-#endif
-#endif
+#endif // UNIX
+#endif // ANH_MODULE_MANAGER_UNIX_MODULE_H_
