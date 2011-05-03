@@ -67,8 +67,8 @@ TEST(Win32ModuleTest, GetVersion_Success)
 	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
 	module.Load("./test_module.dll", services, module_version);
 
-	EXPECT_EQ(module_version->major, module.version().major);
-	EXPECT_EQ(module_version->minor, module.version().minor);
+	EXPECT_EQ(module_version->major_ver, module.version().major_ver);
+	EXPECT_EQ(module_version->minor_ver, module.version().minor_ver);
 }
 
 TEST(Win32ModuleTest, GetDescription_Success)
