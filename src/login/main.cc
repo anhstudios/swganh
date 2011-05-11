@@ -13,6 +13,10 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team */
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
 #include <iostream>
 #include <glog/logging.h>
 #include <boost/thread/thread.hpp>

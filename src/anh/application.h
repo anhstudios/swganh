@@ -73,9 +73,9 @@ public:
      */
     ~BaseApplication();
 
-    void startup();
-    void process();
-    void shutdown();
+    virtual void startup();
+    virtual void process();
+    virtual void shutdown();
 
     /**
     *   creates a server directory from sql connection
