@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     setvbuf( stdout, NULL, _IONBF, 0);
     // config files
     list<string> config;
-    config.push_back("config/general.cfg");
+    config.push_back("config/login.cfg");
     shared_ptr<EventDispatcherInterface> dispatcher = make_shared<EventDispatcher>();
     shared_ptr<ScriptingManagerInterface> scripter = make_shared<ScriptingManager>("scripts");
     shared_ptr<Clock> clock = make_shared<Clock>();
