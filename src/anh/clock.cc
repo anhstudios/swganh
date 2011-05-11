@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #if _WIN32
 #include <windows.h>
+#include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 #else
 #include <sys/time.h>

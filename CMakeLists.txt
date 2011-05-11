@@ -23,7 +23,6 @@ include(ExternalProject)
 option(ENABLE_TEST_REPORT
     "Enables the generation of a test report when running tests" false)
 
-
 ## Vendor libraries
 set(VENDOR_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/vendor")
 set(vendor_libraries "")
@@ -33,7 +32,7 @@ option(BUILD_DEPENDENCIES
     "Forces the downloading and building of the dependencies from source" false
 )
 
-if(MSVC and not BUILD_DEPENDENCIES)
+if(MSVC10 AND NOT BUILD_DEPENDENCIES)
 	include(FetchPreBuiltDependencies)
 else()
 	include(BuildDependencies)
@@ -47,5 +46,6 @@ ExternalProject_Add(swganh
 	BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/swganh
 	CMAKE_ARGS 
 		${vendor_args}
+		-DENABLE_TEST_REPORT:BOOL=${ENABLE_TEST_REPORT}
 	INSTALL_COMMAND ""
 )
