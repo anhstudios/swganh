@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <fcntl.h>
 #endif
 
-#include <driver/mysql_driver.h>
+#include <mysql_driver.h>
 #include <cppconn/connection.h>
 #include <cppconn/driver.h>
 #include <glog/logging.h>
