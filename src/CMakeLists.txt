@@ -42,7 +42,7 @@ if(MSVC)
         message(STATUS "- MSVC: Disabled generic compiletime warnings")
     endif()
     
-    ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS)
+    ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D WIN32_LEAN_AND_MEAN)
     MESSAGE(STATUS "- MSVC: Disabled NON-SECURE warnings")
         
     ADD_DEFINITIONS (/D __TBB_NO_IMPLICIT_LINKAGE=1)
@@ -73,7 +73,9 @@ find_package(TBB REQUIRED)
 find_package(ZLib REQUIRED)
 
 
-if(WIN32)
+if(WIN32)    
+    string(REPLACE "/" "\\" WIN_PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}")
+    
     ## create a target that gathers up the necessary dll's from the above
     ## dependencies and places them in the runtime directory for this project
     add_custom_target(DEPS
@@ -83,74 +85,77 @@ if(WIN32)
     add_custom_command(
         TARGET DEPS
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/bin/Debug/"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${WIN_PROJECT_BINARY_DIR}\\bin"
+        VERBATIM
+    )
+
+    add_custom_command(
+        TARGET DEPS
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)"
         VERBATIM
     )
 
     get_filename_component(BOOST_PYTHON_DLL_NAME ${Boost_PYTHON_LIBRARY_DEBUG} NAME_WE)
     get_filename_component(BOOST_PYTHON_DLL_PATH ${Boost_PYTHON_LIBRARY_DEBUG} PATH)
+    string(REPLACE "/" "\\" BOOST_PYTHON_DLL_PATH "${BOOST_PYTHON_DLL_PATH}")
     add_custom_command(
         TARGET DEPS
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${BOOST_PYTHON_DLL_PATH}/${BOOST_PYTHON_DLL_NAME}.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        COMMAND xcopy "${BOOST_PYTHON_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
         VERBATIM
     )
     
     get_filename_component(GLOG_DLL_NAME ${GLOG_LIBRARY} NAME_WE)
     get_filename_component(GLOG_DLL_PATH ${GLOG_LIBRARY} PATH)
+    string(REPLACE "/" "\\" GLOG_DLL_PATH "${GLOG_DLL_PATH}")
     add_custom_command(
         TARGET DEPS
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${GLOG_DLL_PATH}/${GLOG_DLL_NAME}.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        COMMAND xcopy "${GLOG_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
         VERBATIM
     )
     
     get_filename_component(MYSQL_CONNECTOR_C_DLL_NAME ${MYSQL_LIB} NAME_WE)
     get_filename_component(MYSQL_CONNECTOR_C_DLL_PATH ${MYSQL_LIB} PATH)
+    string(REPLACE "/" "\\" MYSQL_CONNECTOR_C_DLL_PATH "${MYSQL_CONNECTOR_C_DLL_PATH}")
     add_custom_command(
         TARGET DEPS
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${MYSQL_CONNECTOR_C_DLL_PATH}/libmysql.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
         VERBATIM
     )
     
     
     get_filename_component(MYSQL_CONNECTOR_CPP_DLL_NAME ${MYSQLCONNECTORCPP_LIBRARY} NAME_WE)
     get_filename_component(MYSQL_CONNECTOR_CPP_DLL_PATH ${MYSQLCONNECTORCPP_LIBRARY} PATH)
+    string(REPLACE "/" "\\" MYSQL_CONNECTOR_CPP_DLL_PATH "${MYSQL_CONNECTOR_CPP_DLL_PATH}")
     add_custom_command(
         TARGET DEPS
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${MYSQL_CONNECTOR_CPP_DLL_PATH}/${MYSQL_CONNECTOR_CPP_DLL_NAME}.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        COMMAND xcopy "${MYSQL_CONNECTOR_CPP_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
         VERBATIM
     )
     
     get_filename_component(TBB_CPP_DLL_NAME ${TBB_LIBRARY_DEBUG} NAME_WE)
     get_filename_component(TBB_CPP_DLL_PATH ${TBB_LIBRARY_DEBUG} PATH)
+    string(REPLACE "/" "\\" TBB_CPP_DLL_PATH "${TBB_CPP_DLL_PATH}")
     add_custom_command(
         TARGET DEPS
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TBB_INSTALL_DIR}/build/vc10/ia32/Debug/tbb_debug.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
-        VERBATIM
-    )
-    
-    get_filename_component(TBB_CPP_DLL_NAME ${TBB_MALLOC_LIBRARY_DEBUG} NAME_WE)
-    get_filename_component(TBB_CPP_DLL_PATH ${TBB_MALLOC_LIBRARY_DEBUG} PATH)
-    add_custom_command(
-        TARGET DEPS
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TBB_INSTALL_DIR}/build/vc10/ia32/Debug/tbbmalloc_debug.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        COMMAND xcopy "${TBB_CPP_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
         VERBATIM
     )
     
     get_filename_component(ZLIB_DLL_NAME ${ZLIB_LIBRARY} NAME_WE)
     get_filename_component(ZLIB_DLL_PATH ${ZLIB_LIBRARY} PATH)
+    string(REPLACE "/" "\\" ZLIB_DLL_PATH "${ZLIB_DLL_PATH}")
     add_custom_command(
         TARGET DEPS
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${ZLIB_DLL_PATH}/zlibd1.dll" "${PROJECT_BINARY_DIR}/bin/Debug/"
+        COMMAND xcopy "${ZLIB_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
         VERBATIM
-    )
-    
+    )    
 endif()
 
 enable_testing()
