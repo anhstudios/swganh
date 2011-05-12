@@ -32,6 +32,10 @@ option(BUILD_DEPENDENCIES
     "Forces the downloading and building of the dependencies from source" false
 )
 
+# make sure there's a system python available
+FIND_PACKAGE(PythonLibs REQUIRED)
+FIND_PACKAGE(PythonInterp REQUIRED)
+
 if(MSVC10 AND NOT BUILD_DEPENDENCIES)
 	include(FetchPreBuiltDependencies)
 else()

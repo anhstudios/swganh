@@ -56,10 +56,7 @@ set(Boost_USE_MULTITHREADED ON)
 ## find/configure vendor libraries
 set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
 
-if(NOT DEFINED PYTHON_EXECUTABLE OR NOT DEFINED PYTHON_INCLUDE_PATH OR NOT DEFINED PYTHON_LIBRARIES)
-    find_package(PythonLibs REQUIRED)
-endif()
-
+find_package(PythonLibs REQUIRED)
 find_package(Boost 1.45.0 COMPONENTS date_time regex thread system program_options filesystem serialization REQUIRED)
 
 set(BOOST_LIBRARYDIR ${BoostShared_LIBRARYDIR})
