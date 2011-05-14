@@ -31,14 +31,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/byte_buffer.h>
 
 #include <boost/asio.hpp>
-
-#include <vector>
+#include <boost/array.hpp>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-typedef std::function<void(boost::asio::ip::udp::endpoint&, anh::ByteBuffer&)> NetworkCallback;
+typedef std::function<void(boost::asio::ip::udp::endpoint&, std::shared_ptr<anh::ByteBuffer>)> NetworkCallback;
 
 /**
  * @brief A basic UDP Callback Socket.
@@ -66,6 +65,11 @@ public:
 	~Socket(void);
 
 	/**
+	 * @brief Sends a message on the wire to the target endpoint.
+	 */
+	void Send(boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer& buffer);
+
+	/**
 	 * @returns The amount of bytes received on the socket.
 	 */
 	const uint64_t& bytes_recv() { return bytes_recv_; }
@@ -84,7 +88,7 @@ private:
 
 	boost::asio::ip::udp::socket		socket_;
 	boost::asio::ip::udp::endpoint		current_remote_endpoint_;
-	std::vector<uint8_t>				recv_buffer_;
+	boost::array<char, 456>				recv_buffer_;
 };
 
 } // namespace soe

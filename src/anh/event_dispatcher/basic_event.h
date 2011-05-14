@@ -66,6 +66,9 @@ public:
         timestamp_ = timestamp;
     }
 
+	void serialize(ByteBuffer& buffer) {}
+	void deserialize(const ByteBuffer& buffer) {}
+
 private:
     EventType type_;
     uint64_t timestamp_;

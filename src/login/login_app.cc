@@ -84,7 +84,7 @@ LoginApp::~LoginApp() {
 
 void LoginApp::startup()
 {
-	soe_service_.Start(configuration_variables_map_["soe_service.port"].as<uint16_t>());
+	soe_service_.Start(44453);
 }
 
 void LoginApp::process()

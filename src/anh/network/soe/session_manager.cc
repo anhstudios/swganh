@@ -25,26 +25,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_NETWORK_SOE_SESSION_VALIDATION_FILTER_H_
-#define ANH_NETWORK_SOE_SESSION_VALIDATION_FILTER_H_
-
-#include <tbb/pipeline.h>
+#include <anh/network/soe/session_manager.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-class SessionValidationFilter : public tbb::filter
+SessionManager::SessionManager()
 {
-public:
-	SessionValidationFilter(void);
-	~SessionValidationFilter(void);
+}
 
-	void* operator()(void* item);
-};
+SessionManager::~SessionManager()
+{
+}
+
+std::shared_ptr<Session> SessionManager::GetSession(boost::asio::ip::udp::endpoint& endpoint)
+{
+	return nullptr;
+}
 
 } // namespace soe
 } // namespace network
-} // namespace anh
-
-#endif // ANH_NETWORK_SOE_SESSION_VALIDATION_FILTER_H_
+} // namespace soe

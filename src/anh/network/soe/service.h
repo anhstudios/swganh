@@ -29,42 +29,69 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_NETWORK_SOE_SERVICE_H_
 
 #include <anh/byte_buffer.h>
+#include <anh/network/soe/session_manager.h>
+#include <anh/network/soe/socket.h>
+#include <anh/network/soe/session_request_filter.h>
+#include <anh/network/soe/crc_filter.h>
 
 #include <map>
 #include <stdint.h>
-
+#include <queue>
 #include <boost/asio.hpp>
-
 #include <tbb/pipeline.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-// FORWARD DECLARATIONS
-class Socket;
+// FORWARD DECLARATION
+class IncomingSessionlessPacket;
+class SessionRequestFilter;
 
 /**
  * @brief Represent an SOE Service, which takes incoming SOE Protocol packets on a specific port and filters them down to events and vise versa.
  */
-class Service
+class Service : public std::enable_shared_from_this<Service>
 {
 public:
 	Service(void);
 	~Service(void);
 
+	/**
+	 * @brief Starts the SOE Frontend Service.
+	 * 
+	 * @parama port The port to listen for messages on.
+	 */
 	void Start(uint16_t port);
 	void Update(void);
 	void Shutdown(void);
 
+	friend class SessionRequestFilter;
+
 private:
-	void OnSocketRecv_(boost::asio::ip::udp::endpoint& remote_endpoint, anh::ByteBuffer& message);
+	/**
+	 * @brief Called when the socket receives a message.
+	 *
+	 * This function will also attempt to find the session in the SessionManager,
+	 * if it fails to find a Session it will check if the incoming message is a
+	 * Session Request in which case, it will create a new Session.
+	 */
+	void OnSocketRecv_(boost::asio::ip::udp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
 
 	std::shared_ptr<Socket>		socket_;
+	SessionManager				session_manager_;
 	boost::asio::io_service		io_service_;
 
-	tbb::pipeline	incoming_message_pipeline_;
-	tbb::pipeline	outgoing_message_pipeline_;
+	// Pipelines
+	tbb::pipeline				sessionless_incoming_pipeline_;
+	tbb::pipeline				incoming_pipeline_;
+	tbb::pipeline				outgoing_pipeline_;
+
+	std::queue<std::shared_ptr<IncomingSessionlessPacket>> sessionless_messages_;
+
+	// Filters
+	SessionRequestFilter		session_request_filter_;
+
 };
 
 } // namespace soe

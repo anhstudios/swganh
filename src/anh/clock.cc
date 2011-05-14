@@ -31,7 +31,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <ctime>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #if _WIN32
-#include <windows.h>
+#include <Windows.h>
+#include <MMSystem.h>
 #pragma comment(lib, "winmm.lib")
 #else
 #include <sys/time.h>
@@ -64,6 +65,7 @@ uint64_t Clock::global_time() const
 uint64_t Clock::local_time() const
 {
 #if _WIN32
+	return 0;
     return timeGetTime();
 #else
     struct timeval tv;

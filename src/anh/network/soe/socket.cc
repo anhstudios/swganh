@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/network/soe/socket.h>
 
+#include <boost/bind.hpp>
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -45,14 +47,25 @@ Socket::~Socket(void)
 
 }
 
+void Socket::Send(boost::asio::ip::udp::endpoint& endpoint, ByteBuffer& buffer)
+{
+	socket_.async_send_to(boost::asio::buffer(buffer.data(), buffer.size()), 
+		endpoint, 
+		[this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
+	{
+		bytes_sent_ += bytes_transferred;
+	});
+}
+
 void Socket::StartSocketRecv_()
 {
 	socket_.async_receive_from(boost::asio::buffer(recv_buffer_), current_remote_endpoint_,
-		[this] (const boost::system::error_code& error, std::size_t bytes_transfered) {
-			bytes_recv_ += bytes_transfered;
-
-			anh::ByteBuffer buffer(&recv_buffer_[0], bytes_transfered);
-			callback_(current_remote_endpoint_, std::move(buffer));
+		[&] (const boost::system::error_code& error, std::size_t bytes_transferred) {
+			if(bytes_transferred > 2 || !error || error == boost::asio::error::message_size)
+			{
+				bytes_recv_ += bytes_transferred;
+				callback_(current_remote_endpoint_, std::make_shared<ByteBuffer>((const unsigned char*)recv_buffer_.data(), bytes_transferred));
+			}
 
 			StartSocketRecv_();
 	});
