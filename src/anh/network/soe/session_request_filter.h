@@ -24,3 +24,38 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
+
+#ifndef ANH_NETWORK_SOE_SESSION_REQUEST_FILTER_H_
+#define ANH_NETWORK_SOE_SESSION_REQUEST_FILTER_H_
+
+#include <anh/memory.h>
+#include <tbb/pipeline.h>
+
+namespace anh {
+namespace network {
+namespace soe {
+
+// FORWARD DECLARATIONS
+class Service;
+class SessionManager;
+
+/**
+ * @brief Checks for a SOE Protocol Session Request and dispatches a response.
+ */
+class SessionRequestFilter : public tbb::filter
+{
+public:
+	SessionRequestFilter(Service* service);
+	~SessionRequestFilter(void);
+
+	void* operator()(void* item);
+
+private:
+	Service*						service_;
+};
+
+} // namespace soe
+} // namespace network
+} // namespace anh
+
+#endif // ANH_NETWORK_SOE_SESSION_REQUEST_FILTER_H_

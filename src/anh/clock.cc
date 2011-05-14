@@ -65,6 +65,7 @@ uint64_t Clock::global_time() const
 uint64_t Clock::local_time() const
 {
 #if _WIN32
+	return 0;
     return timeGetTime();
 #else
     struct timeval tv;

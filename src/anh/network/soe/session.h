@@ -28,34 +28,74 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_SESSION_H_
 #define ANH_NETWORK_SOE_SESSION_H_
 
+#include <anh/network/soe/session_manager.h>
+
+#include <queue>
 #include <boost/asio.hpp>
 
-#include <anh/byte_buffer.h>
-#include <anh/event_dispatcher/event_interface.h>
-
 namespace anh {
+
+// FORWARD DECLARATIONS
+class ByteBuffer;
+namespace event_dispatcher { class EventInterface; }
+
 namespace network {
 namespace soe {
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
  */
-class Session
+class Session : public std::enable_shared_from_this<Session>
 {
 public:
-	Session(boost::asio::ip::udp::endpoint& remote_endpoint);
+	/**
+	 * @brief Adds itself to the Session Manager.
+	 */
+	Session(boost::asio::ip::udp::endpoint& remote_endpoint, SessionManager& session_manager);
 	~Session(void);
 
 	void SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
 	void SendMessage(std::shared_ptr<anh::ByteBuffer> message);
 	void SendMessage(char* buffer, uint16_t len);
-	
-	void SendProtocolMessage(std::shared_ptr<anh::ByteBuffer> message);
-	void SendProtocolMessage(char* buffer, uint16_t len);
 
+	/**
+	 * @brief Called by the Sessions Service when a message comes in for this Session.
+	 */
+	void QueueIncomingMessage(std::shared_ptr<ByteBuffer> message);
+
+	/**
+	 * Clears each message pump.
+	 */
+	void Update(void);
+
+	/**
+	 * Closes the Session.
+	 */
 	void Disconnect(void);
+
+	bool connected() { return connected_; }
+
+	uint32_t connection_id() { return connection_id_; }
+	void set_connection_id(uint32_t connection_id) { connection_id_ = connection_id; }
+
+	uint32_t recv_buffer_size() { return recv_buffer_size_; }
+	void set_recv_buffer_size(uint32_t size) { recv_buffer_size_ = size; }
+
+	boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
+
 private:
 	boost::asio::ip::udp::endpoint		remote_endpoint_;
+	SessionManager&						session_manager_;
+
+	std::queue<std::shared_ptr<anh::ByteBuffer>>			fragmented_messages_;
+	std::queue<std::shared_ptr<anh::ByteBuffer>>			outgoing_messages_;
+	std::queue<std::shared_ptr<anh::ByteBuffer>>			incoming_messages_;
+
+	bool								connected_;
+
+	// SOE Session Variables
+	uint32_t							connection_id_;
+	uint32_t							recv_buffer_size_;
 };
 
 } // namespace soe

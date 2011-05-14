@@ -1,4 +1,4 @@
-/*
+/*7262626262676
 ---------------------------------------------------------------------------------------
 This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Emulator)
 
@@ -24,67 +24,61 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#include <iostream>
-#include <anh/byte_buffer.h>
 
-#include <anh/network/soe/incoming_sessionless_packet.h>
-#include <anh/network/soe/service.h>
 #include <anh/network/soe/session.h>
+#include <anh/network/soe/session_manager.h>
 #include <anh/network/soe/socket.h>
-#include <anh/network/soe/protocol_packets.h>
+#include <anh/network/soe/protocol_opcodes.h>
+#include <anh/utilities.h>
+#include <anh/event_dispatcher/event_interface.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-Service::Service(void)
-	: session_request_filter_(this)
+Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, SessionManager& session_manager)
+	: std::enable_shared_from_this<Session>()
+	, remote_endpoint_(remote_endpoint)
+	, session_manager_(session_manager_)
+	, connected_(false)
 {
-	// Setup Pipelines
-	sessionless_incoming_pipeline_.add_filter(session_request_filter_);
+	//session_manager_->AddSession(shared_from_this());
 }
 
-Service::~Service(void)
-{	
-}
-
-void Service::Start(uint16_t port)
+Session::~Session(void)
 {
-	// Create our socket.
-	socket_ = std::make_shared<Socket>(io_service_, port, std::bind(&Service::OnSocketRecv_, this, std::placeholders::_1, std::placeholders::_2));
+	if(connected_)
+		Disconnect();
 }
 
-void Service::Update(void)
+void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message)
 {
-	// Run attached services.
-	io_service_.poll();
-
-	if(sessionless_messages_.size() > 0)
-		sessionless_incoming_pipeline_.run(sessionless_messages_.size());
+	auto buffer = std::make_shared<ByteBuffer>();
+	message->serialize(*buffer);
+	outgoing_messages_.push(buffer);
 }
 
-void Service::Shutdown(void)
+void Session::SendMessage(std::shared_ptr<anh::ByteBuffer> message)
 {
-	sessionless_incoming_pipeline_.clear();
-	socket_.reset();
+	outgoing_messages_.push(message);
 }
 
-void Service::OnSocketRecv_(boost::asio::ip::udp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message)
+void Session::SendMessage(char* buffer, uint16_t len)
 {
-	// Query the SessionManager for the Session.
-	std::shared_ptr<Session> session = session_manager_.GetSession(remote_endpoint);
-
-	// If the Session doesnt exist, check for a Session Requesst.
-	if(session == nullptr)
-	{
-		sessionless_messages_.push(std::make_shared<IncomingSessionlessPacket>(remote_endpoint, message));
-	}
-	else
-	{
-		
-	}
+	outgoing_messages_.push(std::make_shared<ByteBuffer>((const unsigned char*)buffer, len));
 }
 
-} // namespace soe
-} // namespace network
+void Session::QueueIncomingMessage(std::shared_ptr<ByteBuffer> message)
+{
+	incoming_messages_.push(message);
+}
+
+void Session::Disconnect(void)
+{
+	//session_manager_->RemoveSession(remote_endpoint_);
+	connected_ = false;
+}
+
 } // namespace anh
+} // namespace network
+} // namespace soe

@@ -24,3 +24,44 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
+
+#ifndef ANH_NETWORK_SOE_INCOMING_SESSIONLESS_PACKET_H_
+#define ANH_NETWORK_SOE_INCOMING_SESSIONLESS_PACKET_H_
+
+#include <boost/asio.hpp>
+
+// FORWARD DECLARATIONS
+namespace anh { class ByteBuffer; }
+
+namespace anh {
+namespace network {
+namespace soe {
+
+/**
+ * @brief
+ */
+class IncomingSessionlessPacket
+{
+public:
+	IncomingSessionlessPacket(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message)
+		: remote_endpoint_(remote_endpoint)
+		, message_(message)
+	{
+	}
+
+	~IncomingSessionlessPacket(void)
+	{
+	}
+
+	boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
+	std::shared_ptr<anh::ByteBuffer> message() { return message_; }
+private:
+	boost::asio::ip::udp::endpoint		remote_endpoint_;
+	std::shared_ptr<anh::ByteBuffer>	message_;
+};
+
+} // namespace soe
+} // namespace network
+} // namespacce anh
+
+#endif // ANH_NETWORK_SOE_SESSIONLESS_INCOMING_PACKET_H_

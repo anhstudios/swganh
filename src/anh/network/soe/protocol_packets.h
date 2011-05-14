@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_PROTOCOL_PACKETS_H_
 #define ANH_NETWORK_SOE_PROTOCOL_PACKETS_H_
 
+#include <anh/network/soe/protocol_opcodes.h>
 #include <stdint.h>
 
 namespace anh {
@@ -36,6 +37,7 @@ namespace soe {
 
 struct SessionRequest
 {
+	uint32_t	opcode;
 	uint32_t	crc_length;
 	uint32_t	connection_id;
 	uint32_t	client_udp_buffer_size;
