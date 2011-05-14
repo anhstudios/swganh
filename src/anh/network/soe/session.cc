@@ -42,13 +42,16 @@ Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, SessionManager
 	, session_manager_(session_manager_)
 	, connected_(false)
 {
-	//session_manager_->AddSession(shared_from_this());
 }
 
 Session::~Session(void)
 {
 	if(connected_)
 		Disconnect();
+}
+
+void Session::Update(void)
+{
 }
 
 void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message)
@@ -75,7 +78,6 @@ void Session::QueueIncomingMessage(std::shared_ptr<ByteBuffer> message)
 
 void Session::Disconnect(void)
 {
-	//session_manager_->RemoveSession(remote_endpoint_);
 	connected_ = false;
 }
 

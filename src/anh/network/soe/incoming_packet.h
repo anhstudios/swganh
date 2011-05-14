@@ -25,44 +25,46 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_NETWORK_SOE_SESSION_MANAGER_H_
-#define ANH_NETWORK_SOE_SESSION_MANAGER_H_
+#ifndef ANH_NETWORK_SOE_INCOMING_PACKET_H_
+#define ANH_NETWORK_SOE_INCOMING_PACKET_H_
 
-#include <map>
 #include <boost/asio.hpp>
+
+// FORWARD DECLARATIONS
+namespace anh { class ByteBuffer; }
 
 namespace anh {
 namespace network {
 namespace soe {
 
-// FORWARD DECLARATION
+// FORWARD DECLARATIONS
 class Session;
 
-class SessionManager
+/**
+ * @brief
+ */
+class IncomingPacket
 {
 public:
-	SessionManager(void);
-	~SessionManager(void);
+	IncomingPacket(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message)
+		: session_(session)
+		, message_(message)
+	{
+	}
 
-	/**
-	 * @brief Updates each session in the manager.
-	 */
-	void Update(void);
+	~IncomingPacket(void)
+	{
+	}
 
-	void AddSession(std::shared_ptr<Session> session);
-	void RemoveSession(std::shared_ptr<Session> session);
-	bool SessionExists(void);
-	std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
+	std::shared_ptr<Session> session() { return session_; }
+	std::shared_ptr<anh::ByteBuffer> message() { return message_; }
 private:
-
-	typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<Session>>				SessionMap;
-	typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<Session>>::iterator	SessionMapIterator;
-
-	SessionMap	sessions_;
+	std::shared_ptr<Session>			session_;
+	std::shared_ptr<anh::ByteBuffer>	message_;
 };
 
 } // namespace soe
 } // namespace network
-} // namespace soe
+} // namespacce anh
 
-#endif // ANH_NETWORK_SOE_SESSION_MANAGER_H_
+#endif // ANH_NETWORK_SOE_INCOMING_PACKET_H_

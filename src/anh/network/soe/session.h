@@ -81,6 +81,9 @@ public:
 	uint32_t recv_buffer_size() { return recv_buffer_size_; }
 	void set_recv_buffer_size(uint32_t size) { recv_buffer_size_ = size; }
 
+	uint32_t crc_len() { return crc_len_; }
+	void set_crc_len(uint32_t crc_len) { crc_len_ = crc_len; }
+
 	boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
 
 private:
@@ -96,6 +99,7 @@ private:
 	// SOE Session Variables
 	uint32_t							connection_id_;
 	uint32_t							recv_buffer_size_;
+	uint32_t							crc_len_;
 };
 
 } // namespace soe

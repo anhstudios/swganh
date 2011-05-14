@@ -45,7 +45,10 @@ namespace network {
 namespace soe {
 
 // FORWARD DECLARATION
+class IncomingPacket;
 class IncomingSessionlessPacket;
+
+class CrcFilter;
 class SessionRequestFilter;
 
 /**
@@ -66,6 +69,7 @@ public:
 	void Update(void);
 	void Shutdown(void);
 
+	friend class CrcFilter;
 	friend class SessionRequestFilter;
 
 private:
@@ -88,8 +92,10 @@ private:
 	tbb::pipeline				outgoing_pipeline_;
 
 	std::queue<std::shared_ptr<IncomingSessionlessPacket>> sessionless_messages_;
+	std::queue<std::shared_ptr<IncomingPacket>> incoming_messages_;
 
 	// Filters
+	CrcFilter					crc_filter_;
 	SessionRequestFilter		session_request_filter_;
 
 };

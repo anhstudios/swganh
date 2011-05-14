@@ -51,13 +51,16 @@ SessionRequestFilter::~SessionRequestFilter(void)
 void* SessionRequestFilter::operator()(void* item)
 {
 	std::shared_ptr<IncomingSessionlessPacket> sessionless_message = service_->sessionless_messages_.back();
+	service_->sessionless_messages_.pop();
+
 	if(sessionless_message->message()->read<uint16_t>(true) == SESSION_REQUEST)
 	{
 		// Create Session
 		auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), service_->session_manager_);
+		service_->session_manager_.AddSession(session);
 
 		// Get packet values.
-		sessionless_message->message()->read<uint32_t>(true); // crc length
+		session->set_crc_len(sessionless_message->message()->read<uint32_t>(true)); // crc length
 		session->set_connection_id(sessionless_message->message()->read<uint32_t>(true)); // connection id
 		session->set_recv_buffer_size(sessionless_message->message()->read<uint32_t>(true)); // udp buffer size
 
@@ -65,15 +68,14 @@ void* SessionRequestFilter::operator()(void* item)
 		anh::ByteBuffer session_response;
 		session_response.write<uint16_t>(anh::bigToHost<uint16_t>(SESSION_RESPONSE));
 		session_response.write<uint32_t>(anh::bigToHost<uint32_t>(session->connection_id()));
-		session_response.write<uint32_t>(0xDEADBABE); // crc seed
+		session_response.write<uint32_t>(anh::bigToHost<uint32_t>(service_->crc_filter_.seed())); // crc seed
 		session_response.write<uint8_t>(2); // crc len
-		session_response.write<uint8_t>(2); // encryption type
+		session_response.write<uint8_t>(1); // encryption type
 		session_response.write<uint8_t>(4); // seed length
 		session_response.write<uint32_t>(anh::bigToHost<uint32_t>(456)); // Server UDP Max Buffer
 		service_->socket_->Send(session->remote_endpoint(), session_response);
 	}
 
-	service_->sessionless_messages_.pop();
 	return 0;
 }
 

@@ -28,19 +28,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_CRC_FILTER_H_
 #define ANH_NETWORK_SOE_CRC_FILTER_H_
 
+#include <cstdint>
 #include <tbb/pipeline.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
+// FORWARD DECLARATIONS
+class Service;
+
 class CrcFilter : public tbb::filter
 {
 public:
-	CrcFilter(void);
+	CrcFilter(Service& service, uint32_t seed);
 	~CrcFilter(void);
 
+	const uint32_t& seed() { return seed_; }
+
 	void* operator()(void* item);
+
+private:
+	Service&	service_;
+	uint32_t	seed_;
 };
 
 } // namespace soe
