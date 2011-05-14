@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <iostream>
 #include <anh/byte_buffer.h>
 
+#include <anh/network/soe/incoming_packet.h>
 #include <anh/network/soe/incoming_sessionless_packet.h>
 #include <anh/network/soe/service.h>
 #include <anh/network/soe/session.h>
@@ -39,9 +40,12 @@ namespace soe {
 
 Service::Service(void)
 	: session_request_filter_(this)
+	, crc_filter_(*this, 0xDEADBABE)
 {
 	// Setup Pipelines
 	sessionless_incoming_pipeline_.add_filter(session_request_filter_);
+
+	incoming_pipeline_.add_filter(crc_filter_);
 }
 
 Service::~Service(void)
@@ -61,6 +65,9 @@ void Service::Update(void)
 
 	if(sessionless_messages_.size() > 0)
 		sessionless_incoming_pipeline_.run(sessionless_messages_.size());
+
+	if(incoming_messages_.size() > 0)
+		incoming_pipeline_.run(incoming_messages_.size());
 }
 
 void Service::Shutdown(void)
@@ -81,7 +88,7 @@ void Service::OnSocketRecv_(boost::asio::ip::udp::endpoint& remote_endpoint, std
 	}
 	else
 	{
-		
+		incoming_messages_.push(std::make_shared<IncomingPacket>(session, message));
 	}
 }
 

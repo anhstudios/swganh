@@ -35,6 +35,7 @@ namespace anh {
 namespace network {
 namespace soe {
 
+#pragma pack(push, 1)
 struct SessionRequest
 {
 	uint32_t	opcode;
@@ -126,6 +127,7 @@ struct Footer
 	uint8_t crc_byte_two;
 };
 
+#pragma pack(pop)
 } // namespace soe
 } // namespace network
 } // namespace anh

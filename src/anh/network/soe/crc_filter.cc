@@ -25,44 +25,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_NETWORK_SOE_SESSION_MANAGER_H_
-#define ANH_NETWORK_SOE_SESSION_MANAGER_H_
+#include <anh/network/soe/service.h>
+#include <anh/network/soe/crc_filter.h>
+#include <anh/network/soe/incoming_packet.h>
+#include <anh/byte_buffer.h>
+#include <anh/crc.h>
 
-#include <map>
-#include <boost/asio.hpp>
+#ifdef ERROR
+#undef ERROR
+#endif
+
+#include <glog/logging.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-// FORWARD DECLARATION
-class Session;
-
-class SessionManager
+CrcFilter::CrcFilter(Service& service, uint32_t seed)
+	: tbb::filter(false)
+	, service_(service)
+	, seed_(seed)
 {
-public:
-	SessionManager(void);
-	~SessionManager(void);
+}
 
-	/**
-	 * @brief Updates each session in the manager.
-	 */
-	void Update(void);
+CrcFilter::~CrcFilter(void)
+{
+}
 
-	void AddSession(std::shared_ptr<Session> session);
-	void RemoveSession(std::shared_ptr<Session> session);
-	bool SessionExists(void);
-	std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
-private:
+void* CrcFilter::operator()(void* item)
+{
+	// TODO: ENDIANNESS?
+	std::shared_ptr<IncomingPacket> packet = service_.incoming_messages_.back();
+	service_.incoming_messages_.pop();
+	
+	uint32_t packet_crc = anh::memcrc((const char*)packet->message()->data(), packet->message()->size()-2, seed_);
+	uint8_t crc_low = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 1));
+	uint8_t crc_high = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 2));
 
-	typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<Session>>				SessionMap;
-	typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<Session>>::iterator	SessionMapIterator;
+	if(crc_low != (uint8_t)packet_crc || crc_high != (uint8_t)(packet_crc >> 8))
+	{
+		return NULL;
+	}
 
-	SessionMap	sessions_;
-};
+	return item;
+}
 
 } // namespace soe
 } // namespace network
-} // namespace soe
-
-#endif // ANH_NETWORK_SOE_SESSION_MANAGER_H_
+} // namespace anh
