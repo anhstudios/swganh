@@ -34,6 +34,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/incoming_sessionless_packet.h>
 #include <anh/utilities.h>
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
+#include <glog/logging.h>
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -59,10 +65,11 @@ void* SessionRequestFilter::operator()(void* item)
 	IncomingSessionlessPacket* sessionless_message = service_->sessionless_messages_.front();
 	service_->sessionless_messages_.pop_front();
 
-	if(sessionless_message->message()->read<uint16_t>(true) == SESSION_REQUEST)
+	if(sessionless_message->message()->read<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14)
 	{
+		LOG(WARNING) << "Creating Session... [" << sessionless_message->remote_endpoint().address().to_string() << ":" << sessionless_message->remote_endpoint().port() << "]";
 		// Create Session
-		auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), service_->session_manager_);
+		auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), service_->socket_);
 		service_->session_manager_.AddSession(session);
 
 		// Get packet values.

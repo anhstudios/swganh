@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_SESSION_H_
 #define ANH_NETWORK_SOE_SESSION_H_
 
-#include <anh/network/soe/session_manager.h>
+#include <anh/network/soe/socket.h>
 
 #include <queue>
 #include <boost/asio.hpp>
@@ -51,17 +51,12 @@ public:
 	/**
 	 * @brief Adds itself to the Session Manager.
 	 */
-	Session(boost::asio::ip::udp::endpoint& remote_endpoint, SessionManager& session_manager);
+	Session(boost::asio::ip::udp::endpoint& remote_endpoint, std::shared_ptr<Socket> socket);
 	~Session(void);
 
 	void SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
 	void SendMessage(std::shared_ptr<anh::ByteBuffer> message);
 	void SendMessage(char* buffer, uint16_t len);
-
-	/**
-	 * @brief Called by the Sessions Service when a message comes in for this Session.
-	 */
-	void QueueIncomingMessage(std::shared_ptr<ByteBuffer> message);
 
 	/**
 	 * Clears each message pump.
@@ -88,7 +83,7 @@ public:
 
 private:
 	boost::asio::ip::udp::endpoint		remote_endpoint_;
-	SessionManager&						session_manager_;
+	std::shared_ptr<Socket>				socket_;
 
 	std::queue<std::shared_ptr<anh::ByteBuffer>>			fragmented_messages_;
 	std::queue<std::shared_ptr<anh::ByteBuffer>>			outgoing_messages_;

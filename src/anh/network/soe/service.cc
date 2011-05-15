@@ -50,6 +50,7 @@ Service::Service(void)
 	, crc_filter_(this, 0xDEADBABE)
 	, decryption_filter_(this)
 	, decompression_filter_(this)
+	, soe_protocol_filter_(this)
 {
 	sessionless_incoming_pipeline_.add_filter(session_request_filter_);
 
@@ -57,6 +58,7 @@ Service::Service(void)
 	incoming_pipeline_.add_filter(crc_filter_);
 	incoming_pipeline_.add_filter(decryption_filter_);
 	incoming_pipeline_.add_filter(decompression_filter_);
+	incoming_pipeline_.add_filter(soe_protocol_filter_);
 }
 
 Service::~Service(void)
