@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/decryption_filter.h>
 #include <anh/network/soe/recv_packet_filter.h>
 #include <anh/network/soe/session_request_filter.h>
+#include <anh/network/soe/soe_protocol_filter.h>
 
 #include <map>
 #include <list>
@@ -80,6 +81,7 @@ public:
 	friend class DecryptionFilter;
 	friend class RecvPacketFilter;
 	friend class SessionRequestFilter;
+	friend class SoeProtocolFilter;
 
 private:
 	/**
@@ -110,6 +112,7 @@ private:
 	DecryptionFilter			decryption_filter_;
 	RecvPacketFilter			recv_packet_filter_;
 	SessionRequestFilter		session_request_filter_;
+	SoeProtocolFilter			soe_protocol_filter_;
 
 };
 

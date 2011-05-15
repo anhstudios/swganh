@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_NETWORK_SOE_SOE_PROTOCOL_FILTER_H_
 
 #include <tbb/pipeline.h>
+#include <anh/network/soe/protocol_packets.h>
 
 namespace anh {
 namespace network {
@@ -36,7 +37,11 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
+class IncomingPacket;
 
+/**
+ * @brief
+ */
 class SoeProtocolFilter : public tbb::filter
 {
 public:
@@ -44,6 +49,19 @@ public:
 	~SoeProtocolFilter(void);
 
 	void* operator()(void* item);
+
+private:
+	void HandleMultiPacket_(IncomingPacket* packet);
+	void HandleDisconnect_(IncomingPacket* packet);
+	void HandlePing_(IncomingPacket* packet);
+	void HandleNetStatsClient_(IncomingPacket* packet);
+	void HandleChildDataA_(IncomingPacket* packet);
+	void HandleDataFragA_(IncomingPacket* packet);
+	void HandleOutOfOrderA_(IncomingPacket* packet);
+	void HandleAckA_(IncomingPacket* packet);
+	void HandleFatalError_(IncomingPacket* packet);
+
+	Service* service_;
 };
 
 } // namespace soe

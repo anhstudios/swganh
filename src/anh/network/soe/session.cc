@@ -36,11 +36,11 @@ namespace anh {
 namespace network {
 namespace soe {
 
-Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, SessionManager& session_manager)
+Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, std::shared_ptr<Socket> socket)
 	: std::enable_shared_from_this<Session>()
 	, remote_endpoint_(remote_endpoint)
-	, session_manager_(session_manager_)
 	, connected_(false)
+	, socket_(socket)
 {
 }
 
@@ -69,11 +69,6 @@ void Session::SendMessage(std::shared_ptr<anh::ByteBuffer> message)
 void Session::SendMessage(char* buffer, uint16_t len)
 {
 	outgoing_messages_.push(std::make_shared<ByteBuffer>((const unsigned char*)buffer, len));
-}
-
-void Session::QueueIncomingMessage(std::shared_ptr<ByteBuffer> message)
-{
-	incoming_messages_.push(message);
 }
 
 void Session::Disconnect(void)
