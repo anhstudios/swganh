@@ -25,42 +25,26 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
-#define ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
-
-#include <anh/byte_buffer.h>
-#include <zlib.h>
-#include <cstdint>
-#include <tbb/pipeline.h>
-
+#include <anh/network/soe/encryption_filter.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-// FORWARD DECLARATIONS
-class Service;
-
-/**
- * @brief Decompresses packet data that is flagged as compressed.
- */
-class DecompressionFilter : public tbb::filter
+EncryptionFilter::EncryptionFilter()
+	: tbb::filter(false)
 {
-public:
-	DecompressionFilter(Service* service);
-	~DecompressionFilter(void);
+}
 
-	void* operator()(void* item);
+EncryptionFilter::~EncryptionFilter(void)
+{
+}
 
-private:
-	void Decompress_(std::shared_ptr<anh::ByteBuffer> buffer);
-
-	z_stream		zstream_;
-	Service*		service_;
-};
+void* EncryptionFilter::operator()(void* item)
+{
+	return NULL;
+}
 
 } // namespace soe
 } // namespace network
 } // namespace anh
-
-#endif // ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_

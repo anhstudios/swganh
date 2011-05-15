@@ -49,12 +49,14 @@ Service::Service(void)
 	, recv_packet_filter_(this)
 	, crc_filter_(this, 0xDEADBABE)
 	, decryption_filter_(this)
+	, decompression_filter_(this)
 {
 	sessionless_incoming_pipeline_.add_filter(session_request_filter_);
 
 	incoming_pipeline_.add_filter(recv_packet_filter_);
 	incoming_pipeline_.add_filter(crc_filter_);
 	incoming_pipeline_.add_filter(decryption_filter_);
+	incoming_pipeline_.add_filter(decompression_filter_);
 }
 
 Service::~Service(void)
@@ -69,13 +71,12 @@ void Service::Start(uint16_t port)
 
 void Service::Update(void)
 {
-	if(incoming_messages_.empty() == false)
-		incoming_pipeline_.run(incoming_messages_.size());
-
-	if(sessionless_messages_.empty() == false)
-		sessionless_incoming_pipeline_.run(sessionless_messages_.size());
+	incoming_pipeline_.run(1000);
+	sessionless_incoming_pipeline_.run(1000);
 
 	io_service_.poll();
+
+	session_manager_.Update();
 }
 
 void Service::Shutdown(void)

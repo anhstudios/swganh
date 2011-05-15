@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 // Filters
 #include <anh/network/soe/crc_filter.h>
+#include <anh/network/soe/decompression_filter.h>
 #include <anh/network/soe/decryption_filter.h>
 #include <anh/network/soe/recv_packet_filter.h>
 #include <anh/network/soe/session_request_filter.h>
@@ -55,12 +56,6 @@ namespace soe {
 class IncomingPacket;
 class IncomingSessionlessPacket;
 
-// filters:
-class CrcFilter;
-class DecryptionFilter;
-class RecvPacketFilter;
-class SessionRequestFilter;
-
 /**
  * @brief Represent an SOE Service, which takes incoming SOE Protocol packets on a specific port and filters them down to events and vise versa.
  */
@@ -81,6 +76,7 @@ public:
 
 	// Friended Filters
 	friend class CrcFilter;
+	friend class DecompressionFilter;
 	friend class DecryptionFilter;
 	friend class RecvPacketFilter;
 	friend class SessionRequestFilter;
@@ -103,12 +99,14 @@ private:
 	tbb::pipeline				sessionless_incoming_pipeline_;
 	tbb::pipeline				incoming_pipeline_;
 	tbb::pipeline				outgoing_pipeline_;
+	tbb::pipeline				data_message_pipeline_;
 
 	std::list<IncomingSessionlessPacket*>		sessionless_messages_;
 	std::list<IncomingPacket*>					incoming_messages_;
 
 	// Filters
 	CrcFilter					crc_filter_;
+	DecompressionFilter			decompression_filter_;
 	DecryptionFilter			decryption_filter_;
 	RecvPacketFilter			recv_packet_filter_;
 	SessionRequestFilter		session_request_filter_;

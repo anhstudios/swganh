@@ -25,42 +25,63 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
-#define ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
-
 #include <anh/byte_buffer.h>
-#include <zlib.h>
-#include <cstdint>
-#include <tbb/pipeline.h>
+#include <anh/network/soe/service.h>
+#include <anh/network/soe/incoming_packet.h>
+#include <anh/network/soe/decryption_filter.h>
+#include <anh/network/soe/protocol_opcodes.h>
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
+#include <iostream>
+#include <glog/logging.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-// FORWARD DECLARATIONS
-class Service;
-
-/**
- * @brief Decompresses packet data that is flagged as compressed.
- */
-class DecompressionFilter : public tbb::filter
+DecryptionFilter::DecryptionFilter(Service* service)
+	: tbb::filter(serial_in_order)
+	, service_(service)
 {
-public:
-	DecompressionFilter(Service* service);
-	~DecompressionFilter(void);
+}
 
-	void* operator()(void* item);
+DecryptionFilter::~DecryptionFilter(void)
+{
+}
 
-private:
-	void Decompress_(std::shared_ptr<anh::ByteBuffer> buffer);
+void* DecryptionFilter::operator()(void* item)
+{
+	IncomingPacket* packet = (IncomingPacket*)item;
+	Decrypt_((char*)packet->message()->data()+2, packet->message()->size()-4, service_->crc_filter_.seed());
+	return packet;
+}
 
-	z_stream		zstream_;
-	Service*		service_;
-};
+int DecryptionFilter::Decrypt_(char* buffer, uint32_t len, uint32_t seed)
+{
+	int retVal = 0;
+
+    uint32_t tempSeed = 0;
+    uint32_t blockCount = (len / 4);
+    uint32_t byteCount = (len % 4);
+
+    for(uint32_t count = 0; count < blockCount; count++)
+    {
+        tempSeed = ((uint32_t*)buffer)[count];
+        ((uint32_t*)buffer)[count] ^= seed;
+        seed = tempSeed;
+    }
+
+    for(uint32_t count = blockCount * 4; count < blockCount * 4 + byteCount; count++)
+    {
+        buffer[count] ^= seed;
+    }
+
+    return retVal;
+}
 
 } // namespace soe
 } // namespace network
 } // namespace anh
-
-#endif // ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_

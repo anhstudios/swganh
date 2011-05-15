@@ -25,42 +25,60 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
-#define ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
+#include <anh/network/soe/decompression_filter.h>
+#include <anh/network/soe/service.h>
+#include <anh/network/soe/incoming_packet.h>
 
-#include <anh/byte_buffer.h>
 #include <zlib.h>
-#include <cstdint>
-#include <tbb/pipeline.h>
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
+#include <glog/logging.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-// FORWARD DECLARATIONS
-class Service;
-
-/**
- * @brief Decompresses packet data that is flagged as compressed.
- */
-class DecompressionFilter : public tbb::filter
+DecompressionFilter::DecompressionFilter(Service* service)
+	: tbb::filter(parallel)
+	, service_(service)
 {
-public:
-	DecompressionFilter(Service* service);
-	~DecompressionFilter(void);
+}
 
-	void* operator()(void* item);
+DecompressionFilter::~DecompressionFilter(void)
+{
+}
 
-private:
-	void Decompress_(std::shared_ptr<anh::ByteBuffer> buffer);
+void* DecompressionFilter::operator()(void* item)
+{
+	IncomingPacket* packet = (IncomingPacket*)item;
+	if((uint8_t)*(packet->message()->data() + (packet->message()->size() - 3)) == 1) // Check the 3rd to last byte of the packet for a compression flag.
+	{
+		Decompress_(packet->message());
+	}
 
-	z_stream		zstream_;
-	Service*		service_;
-};
+	return packet;
+}
+
+void DecompressionFilter::Decompress_(std::shared_ptr<anh::ByteBuffer> buffer)
+{
+	zstream_.zalloc = Z_NULL;
+	zstream_.zfree = Z_NULL;
+	zstream_.opaque = Z_NULL;
+	zstream_.avail_in= Z_NULL;
+	zstream_.next_in = Z_NULL;
+	inflateInit(&zstream_);
+
+	zstream_.next_in = (Bytef*)buffer->data()+ 2; // Start of the packet + 2 to pass opcode.
+	zstream_.avail_in = buffer->size()-5; // Do not process the SOE Opcode or the Footer.
+	zstream_.next_out = (Bytef*)buffer->data()+ 2;
+	zstream_.avail_out = buffer->capacity();
+
+	inflateEnd(&zstream_);
+}
 
 } // namespace soe
 } // namespace network
 } // namespace anh
-
-#endif // ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
