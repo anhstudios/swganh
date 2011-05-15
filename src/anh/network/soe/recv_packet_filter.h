@@ -25,30 +25,47 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_NETWORK_SOE_ENCRYPTION_FILTER_H_
-#define ANH_NETWORK_SOE_ENCRYPTION_FILTER_H_
+#ifndef ANH_NETWORK_SOE_RECV_PACKET_FILTER_H_
+#define ANH_NETWORK_SOE_RECV_PACKET_FILTER_H_
 
-#include <cstdint>
 #include <tbb/pipeline.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-class EncryptionFilter : public tbb::filter
+// FORWARD DELCARATIONS
+class Service;
+
+/**
+ * @brief Pops an IncomingPacket off a Services incoming_message queue.
+ *
+ * This serial_in_order filter ensures the pipeline doesnt pop messages faster then its processing
+ * them from the Service incoming_message queue.
+ */
+class RecvPacketFilter : public tbb::filter
 {
 public:
-	EncryptionFilter(void);
-	~EncryptionFilter(void);
+	/**
+	 * @brief Constructor
+	 *
+	 * @param service The service this filter is associated with.
+	 */
+	RecvPacketFilter(Service* service);
+
+	/**
+	 * @brief Destructor
+	 */
+	~RecvPacketFilter(void);
 
 	void* operator()(void* item);
 
 private:
-	int Encrypt_(char* buffer, uint32_t len, uint32_t seed);
+	Service*	service_;
 };
 
 } // namespace soe
 } // namespace network
 } // namespace anh
 
-#endif // ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
+#endif

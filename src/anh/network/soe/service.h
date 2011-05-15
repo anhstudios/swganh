@@ -31,14 +31,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/byte_buffer.h>
 #include <anh/network/soe/session_manager.h>
 #include <anh/network/soe/socket.h>
-#include <anh/network/soe/session_request_filter.h>
+
+// Filters
 #include <anh/network/soe/crc_filter.h>
+#include <anh/network/soe/decryption_filter.h>
+#include <anh/network/soe/recv_packet_filter.h>
+#include <anh/network/soe/session_request_filter.h>
 
 #include <map>
+#include <list>
 #include <stdint.h>
-#include <queue>
+
 #include <boost/asio.hpp>
+
 #include <tbb/pipeline.h>
+#include <tbb/concurrent_vector.h>
 
 namespace anh {
 namespace network {
@@ -48,7 +55,10 @@ namespace soe {
 class IncomingPacket;
 class IncomingSessionlessPacket;
 
+// filters:
 class CrcFilter;
+class DecryptionFilter;
+class RecvPacketFilter;
 class SessionRequestFilter;
 
 /**
@@ -69,7 +79,10 @@ public:
 	void Update(void);
 	void Shutdown(void);
 
+	// Friended Filters
 	friend class CrcFilter;
+	friend class DecryptionFilter;
+	friend class RecvPacketFilter;
 	friend class SessionRequestFilter;
 
 private:
@@ -91,11 +104,13 @@ private:
 	tbb::pipeline				incoming_pipeline_;
 	tbb::pipeline				outgoing_pipeline_;
 
-	std::queue<std::shared_ptr<IncomingSessionlessPacket>> sessionless_messages_;
-	std::queue<std::shared_ptr<IncomingPacket>> incoming_messages_;
+	std::list<IncomingSessionlessPacket*>		sessionless_messages_;
+	std::list<IncomingPacket*>					incoming_messages_;
 
 	// Filters
 	CrcFilter					crc_filter_;
+	DecryptionFilter			decryption_filter_;
+	RecvPacketFilter			recv_packet_filter_;
 	SessionRequestFilter		session_request_filter_;
 
 };

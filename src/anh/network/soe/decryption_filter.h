@@ -28,19 +28,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_DECRYPTION_FILTER_H_
 #define ANH_NETWORK_SOE_DECRYPTION_FILTER_H_
 
+#include <cstdint>
 #include <tbb/pipeline.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
+// FORWARD DECLARATIONS
+class Service;
+
 class DecryptionFilter : public tbb::filter
 {
 public:
-	DecryptionFilter(void);
+	DecryptionFilter(Service* service);
 	~DecryptionFilter(void);
 
 	void* operator()(void* item);
+private:
+	int Decrypt_(char* buffer, uint32_t len, uint32_t seed);
+
+	Service* service_;
 };
 
 } // namespace soe

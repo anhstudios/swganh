@@ -25,30 +25,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_NETWORK_SOE_ENCRYPTION_FILTER_H_
-#define ANH_NETWORK_SOE_ENCRYPTION_FILTER_H_
+#include <anh/network/soe/recv_packet_filter.h>
+#include <anh/network/soe/service.h>
 
-#include <cstdint>
-#include <tbb/pipeline.h>
+#ifdef ERROR
+#undef ERROR
+#endif
+
+#include <glog/logging.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-class EncryptionFilter : public tbb::filter
+RecvPacketFilter::RecvPacketFilter(Service* service)
+	: tbb::filter(true)
+	, service_(service)
 {
-public:
-	EncryptionFilter(void);
-	~EncryptionFilter(void);
+}
 
-	void* operator()(void* item);
+RecvPacketFilter::~RecvPacketFilter(void)
+{
+}
 
-private:
-	int Encrypt_(char* buffer, uint32_t len, uint32_t seed);
-};
+void* RecvPacketFilter::operator()(void* item)
+{
+	// No more packets to process.
+	if(service_->incoming_messages_.empty())
+	{
+		return NULL;
+	}
+
+	IncomingPacket* packet = service_->incoming_messages_.front();
+	service_->incoming_messages_.pop_front();
+
+	return (void*)packet;
+}
 
 } // namespace soe
 } // namespace network
 } // namespace anh
-
-#endif // ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_

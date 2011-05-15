@@ -34,18 +34,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/socket.h>
 #include <anh/network/soe/protocol_packets.h>
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
+#include <glog/logging.h>
+
 namespace anh {
 namespace network {
 namespace soe {
 
 Service::Service(void)
 	: session_request_filter_(this)
-	, crc_filter_(*this, 0xDEADBABE)
+	, recv_packet_filter_(this)
+	, crc_filter_(this, 0xDEADBABE)
+	, decryption_filter_(this)
 {
-	// Setup Pipelines
 	sessionless_incoming_pipeline_.add_filter(session_request_filter_);
 
+	incoming_pipeline_.add_filter(recv_packet_filter_);
 	incoming_pipeline_.add_filter(crc_filter_);
+	incoming_pipeline_.add_filter(decryption_filter_);
 }
 
 Service::~Service(void)
@@ -60,19 +69,19 @@ void Service::Start(uint16_t port)
 
 void Service::Update(void)
 {
-	// Run attached services.
-	io_service_.poll();
+	if(incoming_messages_.empty() == false)
+		incoming_pipeline_.run(incoming_messages_.size());
 
-	if(sessionless_messages_.size() > 0)
+	if(sessionless_messages_.empty() == false)
 		sessionless_incoming_pipeline_.run(sessionless_messages_.size());
 
-	if(incoming_messages_.size() > 0)
-		incoming_pipeline_.run(incoming_messages_.size());
+	io_service_.poll();
 }
 
 void Service::Shutdown(void)
 {
 	sessionless_incoming_pipeline_.clear();
+	incoming_pipeline_.clear();
 	socket_.reset();
 }
 
@@ -84,11 +93,11 @@ void Service::OnSocketRecv_(boost::asio::ip::udp::endpoint& remote_endpoint, std
 	// If the Session doesnt exist, check for a Session Requesst.
 	if(session == nullptr)
 	{
-		sessionless_messages_.push(std::make_shared<IncomingSessionlessPacket>(remote_endpoint, message));
+		sessionless_messages_.push_back(new IncomingSessionlessPacket(remote_endpoint, message));
 	}
 	else
 	{
-		incoming_messages_.push(std::make_shared<IncomingPacket>(session, message));
+		incoming_messages_.push_back(new IncomingPacket(session, message));
 	}
 }
 
