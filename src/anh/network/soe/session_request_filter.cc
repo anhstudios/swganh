@@ -39,7 +39,7 @@ namespace network {
 namespace soe {
 
 SessionRequestFilter::SessionRequestFilter(Service* service)
-	: tbb::filter(false)
+	: tbb::filter(true)
 	, service_(service)
 {
 }
@@ -50,8 +50,14 @@ SessionRequestFilter::~SessionRequestFilter(void)
 
 void* SessionRequestFilter::operator()(void* item)
 {
-	std::shared_ptr<IncomingSessionlessPacket> sessionless_message = service_->sessionless_messages_.back();
-	service_->sessionless_messages_.pop();
+	// No more packets to process.
+	if(service_->sessionless_messages_.empty())
+	{
+		return NULL;
+	}
+
+	IncomingSessionlessPacket* sessionless_message = service_->sessionless_messages_.front();
+	service_->sessionless_messages_.pop_front();
 
 	if(sessionless_message->message()->read<uint16_t>(true) == SESSION_REQUEST)
 	{
@@ -76,6 +82,7 @@ void* SessionRequestFilter::operator()(void* item)
 		service_->socket_->Send(session->remote_endpoint(), session_response);
 	}
 
+	delete sessionless_message;
 	return 0;
 }
 

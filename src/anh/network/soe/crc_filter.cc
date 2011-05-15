@@ -41,8 +41,8 @@ namespace anh {
 namespace network {
 namespace soe {
 
-CrcFilter::CrcFilter(Service& service, uint32_t seed)
-	: tbb::filter(false)
+CrcFilter::CrcFilter(Service* service, uint32_t seed)
+	: tbb::filter(serial_in_order)
 	, service_(service)
 	, seed_(seed)
 {
@@ -55,8 +55,7 @@ CrcFilter::~CrcFilter(void)
 void* CrcFilter::operator()(void* item)
 {
 	// TODO: ENDIANNESS?
-	std::shared_ptr<IncomingPacket> packet = service_.incoming_messages_.back();
-	service_.incoming_messages_.pop();
+	IncomingPacket* packet = (IncomingPacket*)item;
 	
 	uint32_t packet_crc = anh::memcrc((const char*)packet->message()->data(), packet->message()->size()-2, seed_);
 	uint8_t crc_low = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 1));
@@ -64,10 +63,12 @@ void* CrcFilter::operator()(void* item)
 
 	if(crc_low != (uint8_t)packet_crc || crc_high != (uint8_t)(packet_crc >> 8))
 	{
+		LOG(WARNING) << "Crc Mismatch [packet_crc = "<< std::hex << packet_crc << " high_byte = " << std::hex << crc_high << " low_byte = " << std::hex << crc_low << "]";
+		delete packet;
 		return NULL;
 	}
 
-	return item;
+	return packet;
 }
 
 } // namespace soe

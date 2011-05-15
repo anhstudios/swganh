@@ -41,7 +41,7 @@ class Service;
 class CrcFilter : public tbb::filter
 {
 public:
-	CrcFilter(Service& service, uint32_t seed);
+	CrcFilter(Service* service, uint32_t seed);
 	~CrcFilter(void);
 
 	const uint32_t& seed() { return seed_; }
@@ -49,7 +49,7 @@ public:
 	void* operator()(void* item);
 
 private:
-	Service&	service_;
+	Service*	service_;
 	uint32_t	seed_;
 };
 
