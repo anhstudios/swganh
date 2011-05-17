@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/network/soe/session_request_filter.h>
 #include <anh/byte_buffer.h>
-#include <anh/network/soe/protocol_opcodes.h>
+#include <anh/network/soe/protocol_packets.h>
 #include <anh/network/soe/session.h>
 #include <anh/network/soe/session_manager.h>
 #include <anh/network/soe/service.h>
@@ -65,28 +65,25 @@ void* SessionRequestFilter::operator()(void* item)
 	IncomingSessionlessPacket* sessionless_message = service_->sessionless_messages_.front();
 	service_->sessionless_messages_.pop_front();
 
-	if(sessionless_message->message()->read<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14)
+	if(sessionless_message->message()->peek<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14)
 	{
+		SessionRequest request(*sessionless_message->message());
+
 		LOG(WARNING) << "Creating Session... [" << sessionless_message->remote_endpoint().address().to_string() << ":" << sessionless_message->remote_endpoint().port() << "]";
 		// Create Session
-		auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), service_->socket_);
+		auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), service_);
 		service_->session_manager_.AddSession(session);
 
 		// Get packet values.
-		session->set_crc_len(sessionless_message->message()->read<uint32_t>(true)); // crc length
-		session->set_connection_id(sessionless_message->message()->read<uint32_t>(true)); // connection id
-		session->set_recv_buffer_size(sessionless_message->message()->read<uint32_t>(true)); // udp buffer size
+		session->set_crc_len(request.crc_length); // crc length
+		session->set_connection_id(request.connection_id); // connection id
+		session->set_recv_buffer_size(request.client_udp_buffer_size); // udp buffer size
 
 		// Send Session Response
-		anh::ByteBuffer session_response;
-		session_response.write<uint16_t>(anh::bigToHost<uint16_t>(SESSION_RESPONSE));
-		session_response.write<uint32_t>(anh::bigToHost<uint32_t>(session->connection_id()));
-		session_response.write<uint32_t>(anh::bigToHost<uint32_t>(service_->crc_filter_.seed())); // crc seed
-		session_response.write<uint8_t>(2); // crc len
-		session_response.write<uint8_t>(1); // encryption type
-		session_response.write<uint8_t>(4); // seed length
-		session_response.write<uint32_t>(anh::bigToHost<uint32_t>(456)); // Server UDP Max Buffer
-		service_->socket_->Send(session->remote_endpoint(), session_response);
+		SessionResponse session_response(session->connection_id(), service_->crc_filter_.seed());
+		anh::ByteBuffer session_response_buffer;
+		session_response.serialize(session_response_buffer);
+		service_->socket_->Send(session->remote_endpoint(), session_response_buffer);
 	}
 
 	delete sessionless_message;

@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_NETWORK_SOE_SESSION_H_
 
 #include <anh/network/soe/socket.h>
+#include <anh/network/soe/protocol_packets.h>
 
 #include <queue>
 #include <boost/asio.hpp>
@@ -42,6 +43,10 @@ namespace event_dispatcher { class EventInterface; }
 namespace network {
 namespace soe {
 
+// FORWARD DECLARATION
+class Service;
+class SoeProtocolFilter;
+
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
  */
@@ -51,7 +56,7 @@ public:
 	/**
 	 * @brief Adds itself to the Session Manager.
 	 */
-	Session(boost::asio::ip::udp::endpoint& remote_endpoint, std::shared_ptr<Socket> socket);
+	Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* service);
 	~Session(void);
 
 	void SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
@@ -66,7 +71,7 @@ public:
 	/**
 	 * Closes the Session.
 	 */
-	void Disconnect(void);
+	void disconnect(void);
 
 	bool connected() { return connected_; }
 
@@ -81,9 +86,21 @@ public:
 
 	boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
 
+	friend class SoeProtocolFilter;
+
 private:
+
+	void handleSesionRequest_(SessionRequest& packet);
+	void handleMultiPacket_(MultiPacket& packet);
+	void handleDisconnect_(Disconnect& packet);
+	void handlePing_(Ping& packet);
+	void handleNetStatsClient_(NetStatsClient& packet);
+	void handleChildDataA_(ChildDataA& packet);
+	void handleDataFragA_(DataFragA& packet);
+	void handleAckA_(AckA& packet);
+
 	boost::asio::ip::udp::endpoint		remote_endpoint_;
-	std::shared_ptr<Socket>				socket_;
+	Service*							service_;
 
 	std::queue<std::shared_ptr<anh::ByteBuffer>>			fragmented_messages_;
 	std::queue<std::shared_ptr<anh::ByteBuffer>>			outgoing_messages_;

@@ -73,10 +73,10 @@ void Service::Start(uint16_t port)
 
 void Service::Update(void)
 {
+	io_service_.poll();
+
 	incoming_pipeline_.run(1000);
 	sessionless_incoming_pipeline_.run(1000);
-
-	io_service_.poll();
 
 	session_manager_.Update();
 }
