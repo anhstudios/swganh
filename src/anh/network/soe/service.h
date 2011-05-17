@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_NETWORK_SOE_SERVICE_H_
 
 #include <anh/byte_buffer.h>
+#include <anh/network/soe/session.h>
 #include <anh/network/soe/session_manager.h>
 #include <anh/network/soe/socket.h>
 
@@ -82,6 +83,8 @@ public:
 	friend class RecvPacketFilter;
 	friend class SessionRequestFilter;
 	friend class SoeProtocolFilter;
+
+	friend class Session;
 
 private:
 	/**

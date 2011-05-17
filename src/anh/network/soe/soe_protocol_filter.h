@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_NETWORK_SOE_SOE_PROTOCOL_FILTER_H_
 
 #include <tbb/pipeline.h>
+#include <anh/network/soe/incoming_packet.h>
 #include <anh/network/soe/protocol_packets.h>
 
 namespace anh {
@@ -37,7 +38,6 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
-class IncomingPacket;
 
 /**
  * @brief

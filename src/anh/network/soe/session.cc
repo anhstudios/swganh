@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/network/soe/session.h>
 #include <anh/network/soe/session_manager.h>
-#include <anh/network/soe/socket.h>
+#include <anh/network/soe/service.h>
 #include <anh/network/soe/protocol_opcodes.h>
 #include <anh/utilities.h>
 #include <anh/event_dispatcher/event_interface.h>
@@ -36,18 +36,18 @@ namespace anh {
 namespace network {
 namespace soe {
 
-Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, std::shared_ptr<Socket> socket)
+Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* service)
 	: std::enable_shared_from_this<Session>()
 	, remote_endpoint_(remote_endpoint)
 	, connected_(false)
-	, socket_(socket)
+	, service_(service)
 {
 }
 
 Session::~Session(void)
 {
 	if(connected_)
-		Disconnect();
+		disconnect();
 }
 
 void Session::Update(void)
@@ -71,9 +71,41 @@ void Session::SendMessage(char* buffer, uint16_t len)
 	outgoing_messages_.push(std::make_shared<ByteBuffer>((const unsigned char*)buffer, len));
 }
 
-void Session::Disconnect(void)
+void Session::disconnect(void)
 {
 	connected_ = false;
+}
+
+void Session::handleSesionRequest_(SessionRequest& packet)
+{
+}
+
+void Session::handleMultiPacket_(MultiPacket& packet)
+{
+}
+
+void Session::handleDisconnect_(Disconnect& packet)
+{
+}
+
+void Session::handlePing_(Ping& packet)
+{
+}
+
+void Session::handleNetStatsClient_(NetStatsClient& packet)
+{
+}
+
+void Session::handleChildDataA_(ChildDataA& packet)
+{
+}
+
+void Session::handleDataFragA_(DataFragA& packet)
+{
+}
+
+void Session::handleAckA_(AckA& packet)
+{
 }
 
 } // namespace anh

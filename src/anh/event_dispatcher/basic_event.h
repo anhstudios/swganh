@@ -66,8 +66,8 @@ public:
         timestamp_ = timestamp;
     }
 
-	void serialize(ByteBuffer& buffer) {}
-	void deserialize(const ByteBuffer& buffer) {}
+	virtual void serialize(ByteBuffer& buffer) {}
+	virtual void deserialize(const ByteBuffer& buffer) {}
 
 private:
     EventType type_;

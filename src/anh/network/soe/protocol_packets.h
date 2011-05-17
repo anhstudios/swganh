@@ -28,106 +28,472 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_PROTOCOL_PACKETS_H_
 #define ANH_NETWORK_SOE_PROTOCOL_PACKETS_H_
 
+#include <list>
+#include <algorithm>
+
+#include <anh/byte_buffer.h>
+#include <anh/utilities.h>
 #include <anh/network/soe/protocol_opcodes.h>
-#include <stdint.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-#pragma pack(push, 1)
+struct Footer
+{
+	Footer(bool compressed_, uint8_t crc_byte_one_ = 0x00, uint8_t crc_byte_two_ = 0x00)
+		: compressed(compressed_)
+		, crc_byte_one(crc_byte_one_)
+		, crc_byte_two(crc_byte_two_)
+	{
+	}
+
+	Footer(anh::ByteBuffer& buffer) {
+		deserialize(buffer);
+	}
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint8_t>(compressed);
+		buffer.write<uint8_t>(crc_byte_one);
+		buffer.write<uint8_t>(crc_byte_two);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		compressed = buffer.read<uint8_t>();
+		crc_byte_one = buffer.read<uint8_t>();
+		crc_byte_two = buffer.read<uint8_t>();
+	}
+
+	uint8_t	compressed;
+	uint8_t	crc_byte_one;
+	uint8_t crc_byte_two;
+};
+
 struct SessionRequest
 {
-	uint32_t	opcode;
+	SessionRequest(uint32_t crc_length_, uint32_t connection_id_, uint32_t client_udp_buffer_size_)
+		: soe_opcode(SESSION_REQUEST)
+		, crc_length(crc_length_)
+		, connection_id(connection_id_)
+		, client_udp_buffer_size(client_udp_buffer_size_)
+		, footer(false) { }
+
+	SessionRequest(anh::ByteBuffer& buffer)
+		: footer(false) {
+		deserialize(buffer);
+	}
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(crc_length));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(connection_id));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(client_udp_buffer_size));
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		crc_length = buffer.read<uint16_t>(true);
+		connection_id = buffer.read<uint16_t>(true);
+		client_udp_buffer_size = buffer.read<uint32_t>(true);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
 	uint32_t	crc_length;
 	uint32_t	connection_id;
 	uint32_t	client_udp_buffer_size;
+	Footer		footer;
 };
 
 struct SessionResponse
 {
+	SessionResponse(uint32_t connection_id_, uint32_t crc_seed_, uint8_t encryption_type_ = 1, uint32_t server_udp_buffer_size = 456)
+		: soe_opcode(SESSION_RESPONSE)
+		, connection_id(connection_id_)
+		, crc_seed(crc_seed_)
+		, crc_length(sizeof(crc_seed_))
+		, encryption_type(encryption_type_)
+		, seed_length(2)
+		, server_udp_buffer_size(server_udp_buffer_size)
+		, footer(false)
+	{
+	}
+
+	SessionResponse(ByteBuffer& buffer)
+		: footer(false) {
+		deserialize(buffer);
+	}
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(connection_id));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(crc_seed));
+		buffer.write<uint8_t>(crc_length);
+		buffer.write<uint8_t>(encryption_type);
+		buffer.write<uint8_t>(seed_length);
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(server_udp_buffer_size));
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		connection_id = buffer.read<uint32_t>(true);
+		crc_seed = buffer.read<uint32_t>(true);
+		crc_length = buffer.read<uint8_t>();
+		encryption_type = buffer.read<uint8_t>();
+		seed_length = buffer.read<uint8_t>();
+		server_udp_buffer_size = buffer.read<uint32_t>(true);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
 	uint32_t	connection_id;
 	uint32_t	crc_seed;
 	uint8_t		crc_length;
 	uint8_t		encryption_type;
 	uint8_t		seed_length;
 	uint32_t	server_udp_buffer_size;
+	Footer		footer;
 };
 
 struct MultiPacket
 {
+	MultiPacket(std::list<ByteBuffer> packets_)
+		: soe_opcode(MULTI_PACKET)
+		, packets(packets_)
+		, footer(false) { }
+
+	MultiPacket(anh::ByteBuffer& buffer) 
+		: footer(false) {
+		deserialize(buffer); 
+	}
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		std::for_each(packets.begin(), packets.end(), [=, &buffer](ByteBuffer& other_buffer) {
+			buffer.write<uint16_t>(anh::bigToHost<uint16_t>(other_buffer.size()));
+			buffer.append(other_buffer);
+		});
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		
+		// Loop until there are only three bytes left, or break
+		// in the loop if we run out of buffer space.
+		while(true)
+		{
+			uint16_t next_chunk_size = buffer.read<uint16_t>(true);
+			
+			// Take the size of the buffer minus 3 (for the footer) and
+			// subtract it from the read position to get the amount of bytes
+			// left in the buffer and compare that against the next_chunk_size.
+			if(((buffer.size() - 3) - buffer.read_position()) >= next_chunk_size)
+			{
+				packets.push_back(ByteBuffer(buffer.data() + buffer.read_position(), next_chunk_size));
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		// Explicitly set the read position to the size of the buffer minus three just
+		// incase we had an incomplete/malformed multi.
+		buffer.read_position(buffer.size() - 3);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
+	std::list<ByteBuffer>	packets;
+	Footer		footer;
 };
 
 struct Disconnect
 {
+	Disconnect(uint32_t connection_id_, uint16_t reason_id_ = 6)
+		: soe_opcode(DISCONNECT)
+		, connection_id(connection_id_)
+		, reason_id(reason_id_)
+		, footer(false) { }
+
+	Disconnect(anh::ByteBuffer& buffer)
+		: footer(false) { deserialize(buffer); }
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(connection_id));
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(reason_id));
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		connection_id = buffer.read<uint32_t>(true);
+		reason_id = buffer.read<uint16_t>(true);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
 	uint32_t	connection_id;
 	uint16_t	reason_id;
+	Footer		footer;
 };
 
 struct Ping
 {
+	Ping()
+		: footer(false) { }
+
+	Ping(anh::ByteBuffer& buffer)
+		: footer(false) { deserialize(buffer); }
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
+	Footer		footer;
 };
 
 struct NetStatsClient
 {
+	NetStatsClient(uint16_t client_tick_count_, uint32_t last_update_, uint32_t average_update_,
+		uint32_t shortest_update_, uint32_t longest_update_, uint64_t packets_sent_, uint64_t packets_received_)
+		: soe_opcode(NET_STATS_CLIENT)
+		, client_tick_count(client_tick_count_)
+		, last_update(last_update_)
+		, average_update(average_update_)
+		, shortest_update(shortest_update_)
+		, longest_update(longest_update_)
+		, packets_sent(packets_sent_)
+		, packets_received(packets_received_)
+		, footer(true) { }
+
+	NetStatsClient(anh::ByteBuffer& buffer)
+		: footer(true) { deserialize(buffer); }
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(client_tick_count));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(last_update));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(average_update));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(shortest_update));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(longest_update));
+		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(packets_sent));
+		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(packets_received));
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		client_tick_count = buffer.read<uint16_t>(true);
+		last_update = buffer.read<uint32_t>(true);
+		average_update = buffer.read<uint32_t>(true);
+		shortest_update = buffer.read<uint32_t>(true);
+		longest_update = buffer.read<uint32_t>(true);
+
+	}
+
+	uint16_t	soe_opcode;
 	uint16_t	client_tick_count;
 	uint32_t	last_update;
 	uint32_t	average_update;
 	uint32_t	shortest_update;
 	uint32_t	longest_update;
 	uint64_t	packets_sent;
-	uint64_t	packets_recieved;
+	uint64_t	packets_received;
+	Footer		footer;
 };
 
 struct NetStatsServer
 {
+	NetStatsServer(uint16_t client_tick_count_, uint32_t server_tick_count_, uint64_t client_packets_sent_, uint64_t client_packets_receieved_, uint64_t server_packets_sent_,uint64_t server_packets_received_)
+		: soe_opcode(NET_STATS_SERVER)
+		, client_tick_count(client_tick_count_)
+		, server_tick_count(server_tick_count_)
+		, client_packets_sent(client_packets_sent_)
+		, client_packets_received(client_packets_receieved_)
+		, server_packets_sent(server_packets_sent_)
+		, server_packets_received(server_packets_received_)
+		, footer(true) { }
+
+	NetStatsServer(anh::ByteBuffer& buffer)
+		: footer(true) { deserialize(buffer); }
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(client_tick_count));
+		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(server_tick_count));
+		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(client_packets_sent));
+		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(client_packets_received));
+		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(server_packets_sent));
+		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(server_packets_received));
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		client_tick_count = buffer.read<uint16_t>(true);
+		server_tick_count = buffer.read<uint32_t>(true);
+		client_packets_sent = buffer.read<uint64_t>(true);
+		client_packets_received = buffer.read<uint64_t>(true);
+		server_packets_sent = buffer.read<uint64_t>(true);
+		server_packets_received = buffer.read<uint64_t>(true);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
 	uint16_t	client_tick_count;
 	uint32_t	server_tick_count;
 	uint64_t	client_packets_sent;
-	uint64_t	client_packets_recieved;
+	uint64_t	client_packets_received;
 	uint64_t	server_packets_sent;
-	uint64_t	server_packets_recieved;
+	uint64_t	server_packets_received;
+	Footer		footer;
 };
 
 struct ChildDataA
 {
+	ChildDataA(uint16_t sequence_, ByteBuffer& data_)
+		: soe_opcode(CHILD_DATA_A)
+		, sequence(sequence_)
+		, data(data_)
+		, footer(false) { }
+
+	ChildDataA(anh::ByteBuffer& buffer)
+		: footer(false) { }
+	
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(sequence));
+		buffer.append(data);
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		sequence = buffer.read<uint16_t>(true);
+		// Copy the data between the SOE Opcode / Sequence and the footer.
+		data = ByteBuffer((const unsigned char*)buffer.data() + 2, buffer.size() - 5);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
 	uint16_t	sequence;
-	char*		data;
+	ByteBuffer	data;
+	Footer		footer;
 };
 
 struct DataFragA
 {
+	DataFragA(uint16_t sequence_, uint16_t frag_size_, ByteBuffer& buf_)
+		: soe_opcode(DATA_FRAG_A)
+		, sequence(sequence_)
+		, frag_size(frag_size_)
+		, data(buf_)
+		, footer(true) { }
+
+	DataFragA(anh::ByteBuffer& buffer)
+		: footer(true) { deserialize(buffer); }
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(sequence));
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(frag_size));
+		buffer.append(data);
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		sequence = buffer.read<uint16_t>(true);
+		frag_size = buffer.read<uint16_t>(true);
+		data = ByteBuffer(buffer.data(), frag_size);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
 	uint16_t	sequence;
 	uint16_t	frag_size;
-	char*		data;
+	ByteBuffer	data;
+	Footer		footer;
 };
 
 struct OutOfOrderA
 {
+	OutOfOrderA(uint16_t sequence_)
+		: soe_opcode(OUT_OF_ORDER_A)
+		, sequence(sequence_)
+		, footer(false) { }
+
+	OutOfOrderA(anh::ByteBuffer& buffer)
+		: footer(false) { deserialize(buffer); }
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(sequence));
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		sequence = buffer.read<uint16_t>(true);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
 	uint16_t	sequence;
+	Footer		footer;
 };
 
 struct AckA
 {
+	AckA(uint16_t sequence_)
+		: soe_opcode(ACK_A)
+		, sequence(sequence_)
+		, footer(false) { }
+
+	AckA(anh::ByteBuffer& buffer)
+		: footer(false) { deserialize(buffer); }
+
+	void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
+		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(sequence));
+		footer.serialize(buffer);
+	}
+
+	void deserialize(anh::ByteBuffer& buffer) {
+		soe_opcode = buffer.read<uint16_t>(true);
+		sequence = buffer.read<uint16_t>(true);
+		footer.deserialize(buffer);
+	}
+
+	uint16_t	soe_opcode;
 	uint16_t	sequence;
+	Footer		footer;
 };
 
 struct FatalError
 {
+	uint16_t	soe_opcode;
+	Footer		footer;
 };
 
 struct FatalErrorResponse
 {
+	uint16_t	soe_opcode;
+	Footer		footer;
 };
 
-struct Footer
-{
-	uint8_t	compressed;
-	uint8_t	crc_byte_one;
-	uint8_t crc_byte_two;
-};
-
-#pragma pack(pop)
 } // namespace soe
 } // namespace network
 } // namespace anh

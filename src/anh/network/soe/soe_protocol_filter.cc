@@ -25,12 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#include <anh/network/soe/protocol_opcodes.h>
 #include <anh/network/soe/soe_protocol_filter.h>
 #include <anh/network/soe/service.h>
-#include <anh/network/soe/session.h>
-#include <anh/network/soe/session_manager.h>
-#include <anh/network/soe/incoming_packet.h>
+#include <anh/utilities.h>
 
 #ifdef ERROR
 #undef ERROR
@@ -58,78 +55,68 @@ void* SoeProtocolFilter::operator()(void* item)
 	
 	switch(packet->message()->peek<uint16_t>(true))
 	{
+	// A SESSION_REQUEST should never happen here.
 	case SESSION_REQUEST:
-		// This should never happen, because a session is already instantiated, just break.
-		break;
+		{
+			break;
+		}
+
 	case MULTI_PACKET:
-		HandleMultiPacket_(packet);
-		break;
+		{
+			packet->session()->handleMultiPacket_(MultiPacket(*packet->message()));
+			break;
+		}
+
 	case DISCONNECT:
-		HandleDisconnect_(packet);
-		break;
+		{
+			packet->session()->handleDisconnect_(Disconnect(*packet->message()));
+			break;
+		}
+
 	case PING:
-		HandlePing_(packet);
-		break;
+		{
+			packet->session()->handlePing_(Ping(*packet->message()));
+			break;
+		}
+
 	case NET_STATS_CLIENT:
-		HandleNetStatsClient_(packet);
-		break;
+		{
+			packet->session()->handleNetStatsClient_(NetStatsClient(*packet->message()));
+			break;
+		}
+
 	case CHILD_DATA_A:
-		HandleChildDataA_(packet);
-		break;
+		{
+			ChildDataA* packet_ = new ChildDataA(*packet->message());
+			packet->session()->handleChildDataA_(*packet_);
+			delete packet;
+			return packet_;
+			break;
+		}
+
 	case DATA_FRAG_A:
-		HandleDataFragA_(packet);
-		break;
-	case OUT_OF_ORDER_A:
-		HandleOutOfOrderA_(packet);
-		break;
+		{
+			packet->session()->handleDataFragA_(DataFragA(*packet->message()));
+			break;
+		}
+
 	case ACK_A:
-		HandleAckA_(packet);
-		break;
+		{
+			packet->session()->handleAckA_(AckA(*packet->message()));
+			break;
+		}
+
 	case FATAL_ERROR:
-		HandleFatalError_(packet);
-		break;
+		{
+			break;
+		}
+
+	default:
+		LOG(WARNING) << "Unhandled SOE Opcode" << packet->message()->peek<uint16_t>(true);
 	}
 
+	delete packet;
 	return NULL;
-}
-
-void SoeProtocolFilter::HandleMultiPacket_(IncomingPacket* packet)
-{
-}
-
-void SoeProtocolFilter::HandleDisconnect_(IncomingPacket* packet)
-{
-	LOG(WARNING) << "Session Disconnected. [" << packet->session()->remote_endpoint().address().to_string() << ":" << packet->session()->remote_endpoint().port() << "]";
-	service_->session_manager_.RemoveSession(packet->session());
-	packet->session()->Disconnect();
-}
-
-void SoeProtocolFilter::HandlePing_(IncomingPacket* packet)
-{
-}
-
-void SoeProtocolFilter::HandleDataFragA_(IncomingPacket* packet)
-{
-}
-
-void SoeProtocolFilter::HandleNetStatsClient_(IncomingPacket* packet)
-{
-}
-
-void SoeProtocolFilter::HandleChildDataA_(IncomingPacket* packet)
-{
-}
-
-void SoeProtocolFilter::HandleAckA_(IncomingPacket* packet)
-{
-}
-
-void SoeProtocolFilter::HandleFatalError_(IncomingPacket* packet)
-{
-}
-
-void SoeProtocolFilter::HandleOutOfOrderA_(IncomingPacket* packet)
-{
 }
 
 } // namespace soe
