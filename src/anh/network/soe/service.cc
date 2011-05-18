@@ -24,21 +24,14 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#include <iostream>
-#include <anh/byte_buffer.h>
 
+#include <anh/network/soe/service.h>
+#include <anh/byte_buffer.h>
 #include <anh/network/soe/incoming_packet.h>
 #include <anh/network/soe/incoming_sessionless_packet.h>
-#include <anh/network/soe/service.h>
 #include <anh/network/soe/session.h>
 #include <anh/network/soe/socket.h>
 #include <anh/network/soe/protocol_packets.h>
-
-#ifdef ERROR
-#undef ERROR
-#endif
-
-#include <glog/logging.h>
 
 namespace anh {
 namespace network {
@@ -75,8 +68,8 @@ void Service::Update(void)
 {
 	io_service_.poll();
 
-	incoming_pipeline_.run(1000);
 	sessionless_incoming_pipeline_.run(1000);
+	incoming_pipeline_.run(1000);
 
 	session_manager_.Update();
 }
@@ -85,6 +78,7 @@ void Service::Shutdown(void)
 {
 	sessionless_incoming_pipeline_.clear();
 	incoming_pipeline_.clear();
+
 	socket_.reset();
 }
 

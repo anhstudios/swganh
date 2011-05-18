@@ -31,7 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/socket.h>
 #include <anh/network/soe/protocol_packets.h>
 
-#include <queue>
+#include <deque>
+
+#include <tbb/concurrent_queue.h>
 #include <boost/asio.hpp>
 
 namespace anh {
@@ -46,6 +48,7 @@ namespace soe {
 // FORWARD DECLARATION
 class Service;
 class SoeProtocolFilter;
+class SessionRequestFilter;
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
@@ -54,14 +57,15 @@ class Session : public std::enable_shared_from_this<Session>
 {
 public:
 	/**
-	 * @brief Adds itself to the Session Manager.
+	 * Adds itself to the Session Manager.
 	 */
 	Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* service);
 	~Session(void);
 
+	/**
+	 * 
+	 */
 	void SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
-	void SendMessage(std::shared_ptr<anh::ByteBuffer> message);
-	void SendMessage(char* buffer, uint16_t len);
 
 	/**
 	 * Clears each message pump.
@@ -71,26 +75,21 @@ public:
 	/**
 	 * Closes the Session.
 	 */
-	void disconnect(void);
+	void Close(void);
 
 	bool connected() { return connected_; }
 
 	uint32_t connection_id() { return connection_id_; }
-	void set_connection_id(uint32_t connection_id) { connection_id_ = connection_id; }
-
-	uint32_t recv_buffer_size() { return recv_buffer_size_; }
-	void set_recv_buffer_size(uint32_t size) { recv_buffer_size_ = size; }
-
-	uint32_t crc_len() { return crc_len_; }
-	void set_crc_len(uint32_t crc_len) { crc_len_ = crc_len; }
 
 	boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
 
 	friend class SoeProtocolFilter;
+	friend class SessionRequestFilter;
 
 private:
 
-	void handleSesionRequest_(SessionRequest& packet);
+	void HandleSoeMessage(anh::ByteBuffer& message);
+	void handleSessionRequest_(SessionRequest& packet);
 	void handleMultiPacket_(MultiPacket& packet);
 	void handleDisconnect_(Disconnect& packet);
 	void handlePing_(Ping& packet);
@@ -102,16 +101,19 @@ private:
 	boost::asio::ip::udp::endpoint		remote_endpoint_;
 	Service*							service_;
 
-	std::queue<std::shared_ptr<anh::ByteBuffer>>			fragmented_messages_;
-	std::queue<std::shared_ptr<anh::ByteBuffer>>			outgoing_messages_;
-	std::queue<std::shared_ptr<anh::ByteBuffer>>			incoming_messages_;
+	//tbb::concurrent_queue<DataFragA>								incoming_fragmented_messages_;
+	std::deque<anh::ByteBuffer>										sent_messages_;
 
 	bool								connected_;
 
 	// SOE Session Variables
 	uint32_t							connection_id_;
 	uint32_t							recv_buffer_size_;
-	uint32_t							crc_len_;
+	uint32_t							crc_length_;
+
+	// Net Stats
+	NetStatsServer						server_net_stats_;
+
 };
 
 } // namespace soe

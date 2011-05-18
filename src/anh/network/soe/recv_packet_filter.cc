@@ -56,6 +56,8 @@ void* RecvPacketFilter::operator()(void* item)
 		return NULL;
 	}
 
+	LOG(WARNING) << "Processing Session Packet.";
+
 	IncomingPacket* packet = service_->incoming_messages_.front();
 	service_->incoming_messages_.pop_front();
 

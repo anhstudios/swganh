@@ -43,12 +43,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <map>
 #include <list>
-#include <stdint.h>
 
 #include <boost/asio.hpp>
 
 #include <tbb/pipeline.h>
-#include <tbb/concurrent_vector.h>
 
 namespace anh {
 namespace network {
@@ -57,6 +55,7 @@ namespace soe {
 // FORWARD DECLARATION
 class IncomingPacket;
 class IncomingSessionlessPacket;
+class OutgoingPacket;
 
 /**
  * @brief Represent an SOE Service, which takes incoming SOE Protocol packets on a specific port and filters them down to events and vise versa.
@@ -73,10 +72,21 @@ public:
 	 * @parama port The port to listen for messages on.
 	 */
 	void Start(uint16_t port);
+
+	/**
+	 * @brief Performs any work the pipelines have waiting and receives and sends
+	 * any waiting messages. (Blocking)
+	 */
 	void Update(void);
+	
+	/**
+	 * @brief
+	 */
 	void Shutdown(void);
 
-	// Friended Filters
+	// Friended Filters. Filters are considered extensions of the
+	// Service class, as the operations performed in them are specific
+	// to this Service type (SOE).
 	friend class CrcFilter;
 	friend class DecompressionFilter;
 	friend class DecryptionFilter;
@@ -84,6 +94,9 @@ public:
 	friend class SessionRequestFilter;
 	friend class SoeProtocolFilter;
 
+	// We friend the Session class to gain access to the Socket
+	// and packet processing queues/pipelines without exposing
+	// such volitle tools to the global space.
 	friend class Session;
 
 private:
@@ -97,17 +110,20 @@ private:
 	void OnSocketRecv_(boost::asio::ip::udp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
 
 	std::shared_ptr<Socket>		socket_;
-	SessionManager				session_manager_;
 	boost::asio::io_service		io_service_;
+
+	SessionManager				session_manager_;
 
 	// Pipelines
 	tbb::pipeline				sessionless_incoming_pipeline_;
 	tbb::pipeline				incoming_pipeline_;
 	tbb::pipeline				outgoing_pipeline_;
-	tbb::pipeline				data_message_pipeline_;
+	tbb::pipeline				outgoing_data_message_pipeline_;
+	tbb::pipeline				incoming_data_message_pipeline_;
 
 	std::list<IncomingSessionlessPacket*>		sessionless_messages_;
 	std::list<IncomingPacket*>					incoming_messages_;
+	std::list<OutgoingPacket*>					outgoing_messages_;
 
 	// Filters
 	CrcFilter					crc_filter_;
