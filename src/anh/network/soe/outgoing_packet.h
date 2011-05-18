@@ -24,32 +24,45 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#include <iostream>
-#include <anh/network/soe/soe_protocol_filter.h>
-#include <anh/network/soe/service.h>
+
+#ifndef ANH_NETWORK_SOE_OUTGOING_PACKET_H_
+#define ANH_NETWORK_SOE_OUTGOING_PACKET_H_
+
+#include <anh/memory.h>
 
 namespace anh {
+
+// FORWARD DECLARATIONS
+class ByteBuffer;
+
 namespace network {
 namespace soe {
 
-SoeProtocolFilter::SoeProtocolFilter(Service* service)
-	: tbb::filter(true)
-	, service_(service)
-{
-}
+// FORWARD DECLARATIONS
+class Session;
 
-SoeProtocolFilter::~SoeProtocolFilter(void)
+/**
+ * @brief
+ */
+class OutgoingPacket
 {
-}
+public:
+	OutgoingPacket(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> buffer)
+		: session_(session)
+		, buffer_(buffer) { }
 
-void* SoeProtocolFilter::operator()(void* item)
-{
-	IncomingPacket* packet = (IncomingPacket*)item;
-	packet->session()->HandleSoeMessage(*packet->message());
-	delete packet;
-	return NULL;
-}
+	~OutgoingPacket() { }
+
+	std::shared_ptr<Session> session() { return session_; }
+	std::shared_ptr<anh::ByteBuffer> message() { return buffer_; }
+
+private:
+	std::shared_ptr<Session> session_;
+	std::shared_ptr<anh::ByteBuffer> buffer_;
+};
 
 } // namespace soe
 } // namespace network
 } // namespace anh
+
+#endif // ANH_NETWORK_SOE_OUTGOING_PACKET_H_

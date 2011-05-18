@@ -75,11 +75,9 @@ struct SessionRequest
 		: soe_opcode(SESSION_REQUEST)
 		, crc_length(crc_length_)
 		, connection_id(connection_id_)
-		, client_udp_buffer_size(client_udp_buffer_size_)
-		, footer(false) { }
+		, client_udp_buffer_size(client_udp_buffer_size_) { }
 
-	SessionRequest(anh::ByteBuffer& buffer)
-		: footer(false) {
+	SessionRequest(anh::ByteBuffer& buffer) {
 		deserialize(buffer);
 	}
 
@@ -88,40 +86,35 @@ struct SessionRequest
 		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(crc_length));
 		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(connection_id));
 		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(client_udp_buffer_size));
-		footer.serialize(buffer);
 	}
 
 	void deserialize(anh::ByteBuffer& buffer) {
 		soe_opcode = buffer.read<uint16_t>(true);
-		crc_length = buffer.read<uint16_t>(true);
-		connection_id = buffer.read<uint16_t>(true);
+		crc_length = buffer.read<uint32_t>(true);
+		connection_id = buffer.read<uint32_t>(true);
 		client_udp_buffer_size = buffer.read<uint32_t>(true);
-		footer.deserialize(buffer);
 	}
 
 	uint16_t	soe_opcode;
 	uint32_t	crc_length;
 	uint32_t	connection_id;
 	uint32_t	client_udp_buffer_size;
-	Footer		footer;
 };
 
 struct SessionResponse
 {
-	SessionResponse(uint32_t connection_id_, uint32_t crc_seed_, uint8_t encryption_type_ = 1, uint32_t server_udp_buffer_size = 456)
+	SessionResponse(uint32_t connection_id_, uint32_t crc_seed_, uint8_t encryption_type_ = 1, uint32_t server_udp_buffer_size = 496)
 		: soe_opcode(SESSION_RESPONSE)
 		, connection_id(connection_id_)
 		, crc_seed(crc_seed_)
-		, crc_length(sizeof(crc_seed_))
+		, crc_length(2)
 		, encryption_type(encryption_type_)
-		, seed_length(2)
+		, seed_length(4)
 		, server_udp_buffer_size(server_udp_buffer_size)
-		, footer(false)
 	{
 	}
 
-	SessionResponse(ByteBuffer& buffer)
-		: footer(false) {
+	SessionResponse(ByteBuffer& buffer) {
 		deserialize(buffer);
 	}
 
@@ -131,9 +124,8 @@ struct SessionResponse
 		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(crc_seed));
 		buffer.write<uint8_t>(crc_length);
 		buffer.write<uint8_t>(encryption_type);
-		buffer.write<uint8_t>(seed_length);
+		buffer.write<uint8_t>(4);
 		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(server_udp_buffer_size));
-		footer.serialize(buffer);
 	}
 
 	void deserialize(anh::ByteBuffer& buffer) {
@@ -144,7 +136,6 @@ struct SessionResponse
 		encryption_type = buffer.read<uint8_t>();
 		seed_length = buffer.read<uint8_t>();
 		server_udp_buffer_size = buffer.read<uint32_t>(true);
-		footer.deserialize(buffer);
 	}
 
 	uint16_t	soe_opcode;
@@ -154,7 +145,6 @@ struct SessionResponse
 	uint8_t		encryption_type;
 	uint8_t		seed_length;
 	uint32_t	server_udp_buffer_size;
-	Footer		footer;
 };
 
 struct MultiPacket
