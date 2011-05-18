@@ -28,19 +28,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_COMPRESSION_FILTER_H_
 #define ANH_NETWORK_SOE_COMPRESSION_FILTER_H_
 
+#include <anh/byte_buffer.h>
+
 #include <tbb/pipeline.h>
+#include <zlib.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
+// FORWARD DECLARATIONS
+class Service;
+
 class CompressionFilter : public tbb::filter
 {
 public:
-	CompressionFilter(void);
+	CompressionFilter(Service* service);
 	~CompressionFilter(void);
 
 	void* operator()(void* item);
+private:
+	void Compress_(anh::ByteBuffer& buffer);
+
+	z_stream		zstream_;
+	Service*		service_;
 };
 
 } // namespace soe

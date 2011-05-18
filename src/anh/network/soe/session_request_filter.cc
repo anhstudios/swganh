@@ -45,7 +45,7 @@ namespace network {
 namespace soe {
 
 SessionRequestFilter::SessionRequestFilter(Service* service)
-	: tbb::filter(true)
+	: tbb::filter(serial_in_order)
 	, service_(service)
 {
 }
@@ -67,23 +67,13 @@ void* SessionRequestFilter::operator()(void* item)
 
 	if(sessionless_message->message()->peek<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14)
 	{
-		SessionRequest request(*sessionless_message->message());
-
 		LOG(WARNING) << "Creating Session... [" << sessionless_message->remote_endpoint().address().to_string() << ":" << sessionless_message->remote_endpoint().port() << "]";
+		
 		// Create Session
 		auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), service_);
-		service_->session_manager_.AddSession(session);
 
-		// Get packet values.
-		session->set_crc_len(request.crc_length); // crc length
-		session->set_connection_id(request.connection_id); // connection id
-		session->set_recv_buffer_size(request.client_udp_buffer_size); // udp buffer size
-
-		// Send Session Response
-		SessionResponse session_response(session->connection_id(), service_->crc_filter_.seed());
-		anh::ByteBuffer session_response_buffer;
-		session_response.serialize(session_response_buffer);
-		service_->socket_->Send(session->remote_endpoint(), session_response_buffer);
+		SessionRequest request(*sessionless_message->message());
+		session->handleSessionRequest_(request);
 	}
 
 	delete sessionless_message;

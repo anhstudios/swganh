@@ -25,51 +25,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#include <anh/network/soe/service.h>
-#include <anh/network/soe/crc_filter.h>
-#include <anh/network/soe/incoming_packet.h>
-#include <anh/byte_buffer.h>
-#include <anh/crc.h>
+#ifndef ANH_NETWORK_SOE_OUTGOING_PACKET_H_
+#define ANH_NETWORK_SOE_OUTGOING_PACKET_H_
 
-#ifdef ERROR
-#undef ERROR
-#endif
-
-#include <glog/logging.h>
+#include <anh/memory.h>
 
 namespace anh {
+
+// FORWARD DECLARATIONS
+class ByteBuffer;
+
 namespace network {
 namespace soe {
 
-CrcFilter::CrcFilter(Service* service)
-	: tbb::filter(parallel)
-	, service_(service)
+// FORWARD DECLARATIONS
+class Session;
+
+/**
+ * @brief
+ */
+class OutgoingPacket
 {
-}
+public:
+	OutgoingPacket(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> buffer)
+		: session_(session)
+		, buffer_(buffer) { }
 
-CrcFilter::~CrcFilter(void)
-{
-}
+	~OutgoingPacket() { }
 
-void* CrcFilter::operator()(void* item)
-{
-	// TODO: ENDIANNESS?
-	IncomingPacket* packet = (IncomingPacket*)item;
-	
-	uint32_t packet_crc = anh::memcrc((const char*)packet->message()->data(), packet->message()->size()-2, service_->crc_seed_);
-	uint8_t crc_low = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 1));
-	uint8_t crc_high = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 2));
+	std::shared_ptr<Session> session() { return session_; }
+	std::shared_ptr<anh::ByteBuffer> message() { return buffer_; }
 
-	if(crc_low != (uint8_t)packet_crc || crc_high != (uint8_t)(packet_crc >> 8))
-	{
-		LOG(WARNING) << "Crc Mismatch [packet_crc = "<< std::hex << packet_crc << " high_byte = " << std::hex << crc_high << " low_byte = " << std::hex << crc_low << "]";
-		delete packet;
-		return NULL;
-	}
-
-	return packet;
-}
+private:
+	std::shared_ptr<Session> session_;
+	std::shared_ptr<anh::ByteBuffer> buffer_;
+};
 
 } // namespace soe
 } // namespace network
 } // namespace anh
+
+#endif // ANH_NETWORK_SOE_OUTGOING_PACKET_H_

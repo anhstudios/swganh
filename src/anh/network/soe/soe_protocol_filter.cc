@@ -24,16 +24,9 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-
+#include <iostream>
 #include <anh/network/soe/soe_protocol_filter.h>
 #include <anh/network/soe/service.h>
-#include <anh/utilities.h>
-
-#ifdef ERROR
-#undef ERROR
-#endif
-
-#include <glog/logging.h>
 
 namespace anh {
 namespace network {
@@ -52,69 +45,7 @@ SoeProtocolFilter::~SoeProtocolFilter(void)
 void* SoeProtocolFilter::operator()(void* item)
 {
 	IncomingPacket* packet = (IncomingPacket*)item;
-	
-	switch(packet->message()->peek<uint16_t>(true))
-	{
-	// A SESSION_REQUEST should never happen here.
-	case SESSION_REQUEST:
-		{
-			break;
-		}
-
-	case MULTI_PACKET:
-		{
-			packet->session()->handleMultiPacket_(MultiPacket(*packet->message()));
-			break;
-		}
-
-	case DISCONNECT:
-		{
-			packet->session()->handleDisconnect_(Disconnect(*packet->message()));
-			break;
-		}
-
-	case PING:
-		{
-			packet->session()->handlePing_(Ping(*packet->message()));
-			break;
-		}
-
-	case NET_STATS_CLIENT:
-		{
-			packet->session()->handleNetStatsClient_(NetStatsClient(*packet->message()));
-			break;
-		}
-
-	case CHILD_DATA_A:
-		{
-			ChildDataA* packet_ = new ChildDataA(*packet->message());
-			packet->session()->handleChildDataA_(*packet_);
-			delete packet;
-			return packet_;
-			break;
-		}
-
-	case DATA_FRAG_A:
-		{
-			packet->session()->handleDataFragA_(DataFragA(*packet->message()));
-			break;
-		}
-
-	case ACK_A:
-		{
-			packet->session()->handleAckA_(AckA(*packet->message()));
-			break;
-		}
-
-	case FATAL_ERROR:
-		{
-			break;
-		}
-
-	default:
-		LOG(WARNING) << "Unhandled SOE Opcode" << packet->message()->peek<uint16_t>(true);
-	}
-
+	packet->session()->HandleSoeMessage(*packet->message());
 	delete packet;
 	return NULL;
 }

@@ -24,33 +24,32 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#include <iostream>
-#include <anh/byte_buffer.h>
 
+#include <anh/network/soe/service.h>
+#include <anh/byte_buffer.h>
 #include <anh/network/soe/incoming_packet.h>
 #include <anh/network/soe/incoming_sessionless_packet.h>
-#include <anh/network/soe/service.h>
 #include <anh/network/soe/session.h>
 #include <anh/network/soe/socket.h>
 #include <anh/network/soe/protocol_packets.h>
-
-#ifdef ERROR
-#undef ERROR
-#endif
-
-#include <glog/logging.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
 Service::Service(void)
-	: session_request_filter_(this)
+	: crc_seed_(0xDEADBABE)
+	, session_request_filter_(this)
 	, recv_packet_filter_(this)
-	, crc_filter_(this, 0xDEADBABE)
+	, compression_filter_(this)
+	, crc_filter_(this)
 	, decryption_filter_(this)
 	, decompression_filter_(this)
 	, soe_protocol_filter_(this)
+	, outgoing_start_filter_(this)
+	, encryption_filter_(this)
+	, crc_out_filter_(this)
+	, send_packet_filter_(this)
 {
 	sessionless_incoming_pipeline_.add_filter(session_request_filter_);
 
@@ -59,6 +58,12 @@ Service::Service(void)
 	incoming_pipeline_.add_filter(decryption_filter_);
 	incoming_pipeline_.add_filter(decompression_filter_);
 	incoming_pipeline_.add_filter(soe_protocol_filter_);
+
+	outgoing_pipeline_.add_filter(outgoing_start_filter_);
+	//outgoing_pipeline_.add_filter(compression_filter_);
+	outgoing_pipeline_.add_filter(encryption_filter_);
+	outgoing_pipeline_.add_filter(crc_out_filter_);
+	outgoing_pipeline_.add_filter(send_packet_filter_);
 }
 
 Service::~Service(void)
@@ -75,8 +80,9 @@ void Service::Update(void)
 {
 	io_service_.poll();
 
-	incoming_pipeline_.run(1000);
 	sessionless_incoming_pipeline_.run(1000);
+	incoming_pipeline_.run(1000);
+	outgoing_pipeline_.run(1000);
 
 	session_manager_.Update();
 }
@@ -85,6 +91,7 @@ void Service::Shutdown(void)
 {
 	sessionless_incoming_pipeline_.clear();
 	incoming_pipeline_.clear();
+
 	socket_.reset();
 }
 

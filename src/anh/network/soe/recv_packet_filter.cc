@@ -39,7 +39,7 @@ namespace network {
 namespace soe {
 
 RecvPacketFilter::RecvPacketFilter(Service* service)
-	: tbb::filter(true)
+	: tbb::filter(serial_in_order)
 	, service_(service)
 {
 }

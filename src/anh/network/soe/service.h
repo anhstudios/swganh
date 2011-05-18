@@ -34,21 +34,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/socket.h>
 
 // Filters
+#include <anh/network/soe/compression_filter.h>
 #include <anh/network/soe/crc_filter.h>
+#include <anh/network/soe/crc_out_filter.h>
 #include <anh/network/soe/decompression_filter.h>
 #include <anh/network/soe/decryption_filter.h>
+#include <anh/network/soe/encryption_filter.h>
 #include <anh/network/soe/recv_packet_filter.h>
+#include <anh/network/soe/outgoing_start_filter.h>
+#include <anh/network/soe/send_packet_filter.h>
 #include <anh/network/soe/session_request_filter.h>
 #include <anh/network/soe/soe_protocol_filter.h>
 
 #include <map>
 #include <list>
-#include <stdint.h>
 
 #include <boost/asio.hpp>
 
 #include <tbb/pipeline.h>
-#include <tbb/concurrent_vector.h>
 
 namespace anh {
 namespace network {
@@ -57,6 +60,7 @@ namespace soe {
 // FORWARD DECLARATION
 class IncomingPacket;
 class IncomingSessionlessPacket;
+class OutgoingPacket;
 
 /**
  * @brief Represent an SOE Service, which takes incoming SOE Protocol packets on a specific port and filters them down to events and vise versa.
@@ -73,17 +77,36 @@ public:
 	 * @parama port The port to listen for messages on.
 	 */
 	void Start(uint16_t port);
+
+	/**
+	 * @brief Performs any work the pipelines have waiting and receives and sends
+	 * any waiting messages. (Blocking)
+	 */
 	void Update(void);
+	
+	/**
+	 * @brief
+	 */
 	void Shutdown(void);
 
-	// Friended Filters
+	// Friended Filters. Filters are considered extensions of the
+	// Service class, as the operations performed in them are specific
+	// to this Service type (SOE).
+	friend class CompressionFilter;
 	friend class CrcFilter;
+	friend class CrcOutFilter;
 	friend class DecompressionFilter;
 	friend class DecryptionFilter;
+	friend class EncryptionFilter;
+	friend class OutgoingStartFilter;
 	friend class RecvPacketFilter;
+	friend class SendPacketFilter;
 	friend class SessionRequestFilter;
 	friend class SoeProtocolFilter;
 
+	// We friend the Session class to gain access to the Socket
+	// and packet processing queues/pipelines without exposing
+	// such volitle tools to the global space.
 	friend class Session;
 
 private:
@@ -97,23 +120,33 @@ private:
 	void OnSocketRecv_(boost::asio::ip::udp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
 
 	std::shared_ptr<Socket>		socket_;
-	SessionManager				session_manager_;
 	boost::asio::io_service		io_service_;
+
+	SessionManager				session_manager_;
+
+	uint32_t					crc_seed_;
 
 	// Pipelines
 	tbb::pipeline				sessionless_incoming_pipeline_;
 	tbb::pipeline				incoming_pipeline_;
 	tbb::pipeline				outgoing_pipeline_;
-	tbb::pipeline				data_message_pipeline_;
+	tbb::pipeline				outgoing_data_message_pipeline_;
+	tbb::pipeline				incoming_data_message_pipeline_;
 
 	std::list<IncomingSessionlessPacket*>		sessionless_messages_;
 	std::list<IncomingPacket*>					incoming_messages_;
+	std::list<OutgoingPacket*>					outgoing_messages_;
 
 	// Filters
+	CompressionFilter			compression_filter_;
 	CrcFilter					crc_filter_;
+	CrcOutFilter				crc_out_filter_;
 	DecompressionFilter			decompression_filter_;
 	DecryptionFilter			decryption_filter_;
+	EncryptionFilter			encryption_filter_;
 	RecvPacketFilter			recv_packet_filter_;
+	OutgoingStartFilter			outgoing_start_filter_;
+	SendPacketFilter			send_packet_filter_;
 	SessionRequestFilter		session_request_filter_;
 	SoeProtocolFilter			soe_protocol_filter_;
 

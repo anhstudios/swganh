@@ -40,7 +40,7 @@ namespace soe {
 class Service;
 
 /**
- * @brief
+ * @brief Sends the message to the session for SOE header processing.
  */
 class SoeProtocolFilter : public tbb::filter
 {
@@ -51,16 +51,6 @@ public:
 	void* operator()(void* item);
 
 private:
-	void HandleMultiPacket_(IncomingPacket* packet);
-	void HandleDisconnect_(IncomingPacket* packet);
-	void HandlePing_(IncomingPacket* packet);
-	void HandleNetStatsClient_(IncomingPacket* packet);
-	void HandleChildDataA_(IncomingPacket* packet);
-	void HandleDataFragA_(IncomingPacket* packet);
-	void HandleOutOfOrderA_(IncomingPacket* packet);
-	void HandleAckA_(IncomingPacket* packet);
-	void HandleFatalError_(IncomingPacket* packet);
-
 	Service* service_;
 };
 
