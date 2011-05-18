@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 // Filters
 #include <anh/network/soe/compression_filter.h>
-#include <anh/network/soe/crc_filter.h>
+#include <anh/network/soe/crc_in_filter.h>
 #include <anh/network/soe/crc_out_filter.h>
 #include <anh/network/soe/decompression_filter.h>
 #include <anh/network/soe/decryption_filter.h>
@@ -93,7 +93,7 @@ public:
 	// Service class, as the operations performed in them are specific
 	// to this Service type (SOE).
 	friend class CompressionFilter;
-	friend class CrcFilter;
+	friend class CrcInFilter;
 	friend class CrcOutFilter;
 	friend class DecompressionFilter;
 	friend class DecryptionFilter;
@@ -139,7 +139,7 @@ private:
 
 	// Filters
 	CompressionFilter			compression_filter_;
-	CrcFilter					crc_filter_;
+	CrcInFilter					crc_in_filter_;
 	CrcOutFilter				crc_out_filter_;
 	DecompressionFilter			decompression_filter_;
 	DecryptionFilter			decryption_filter_;

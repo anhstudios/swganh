@@ -42,7 +42,7 @@ Service::Service(void)
 	, session_request_filter_(this)
 	, recv_packet_filter_(this)
 	, compression_filter_(this)
-	, crc_filter_(this)
+	, crc_in_filter_(this)
 	, decryption_filter_(this)
 	, decompression_filter_(this)
 	, soe_protocol_filter_(this)
@@ -54,13 +54,13 @@ Service::Service(void)
 	sessionless_incoming_pipeline_.add_filter(session_request_filter_);
 
 	incoming_pipeline_.add_filter(recv_packet_filter_);
-	incoming_pipeline_.add_filter(crc_filter_);
+	incoming_pipeline_.add_filter(crc_in_filter_);
 	incoming_pipeline_.add_filter(decryption_filter_);
 	incoming_pipeline_.add_filter(decompression_filter_);
 	incoming_pipeline_.add_filter(soe_protocol_filter_);
 
 	outgoing_pipeline_.add_filter(outgoing_start_filter_);
-	//outgoing_pipeline_.add_filter(compression_filter_);
+	outgoing_pipeline_.add_filter(compression_filter_);
 	outgoing_pipeline_.add_filter(encryption_filter_);
 	outgoing_pipeline_.add_filter(crc_out_filter_);
 	outgoing_pipeline_.add_filter(send_packet_filter_);
