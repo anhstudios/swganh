@@ -360,7 +360,7 @@ struct ChildDataA
 		, footer(false) { }
 
 	ChildDataA(anh::ByteBuffer& buffer)
-		: footer(false) { }
+		: footer(false) { deserialize(buffer); }
 	
 	void serialize(anh::ByteBuffer& buffer) {
 		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));

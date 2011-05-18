@@ -103,7 +103,7 @@ void Session::handleSessionRequest_(SessionRequest& packet)
 	crc_length_ = packet.crc_length;
 	recv_buffer_size_ = packet.client_udp_buffer_size;
 
-	SessionResponse session_response(connection_id_, service_->crc_filter_.seed());
+	SessionResponse session_response(connection_id_, service_->crc_seed_);
 	anh::ByteBuffer session_response_buffer;
 	session_response.serialize(session_response_buffer);
 
@@ -140,16 +140,22 @@ void Session::handleNetStatsClient_(NetStatsClient& packet)
 	server_net_stats_.client_tick_count = packet.client_tick_count;
 
 	// Serialize.
-	std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
-	server_net_stats_.serialize(*buffer);
+	//std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+	//server_net_stats_.serialize(*buffer);
 
 	// Queue for outgoing.
-	// service_->outgoing_messages_.push_back(new OutgoingPacket(shared_from_this(), buffer));
+	//service_->outgoing_messages_.push_back(new OutgoingPacket(shared_from_this(), buffer));
 }
 
 void Session::handleChildDataA_(ChildDataA& packet)
 {
-	LOG(WARNING) << "Handling Child Data A.";
+	LOG(WARNING) << "Handling Child Data A [" << std::hex << packet.data.peekAt<uint32_t>(4) << "] Sequence: [" << packet.sequence << "]";
+	AckA ack(packet.sequence);
+
+	std::shared_ptr<anh::ByteBuffer> ack_buffer = std::make_shared<anh::ByteBuffer>();
+	ack.serialize(*ack_buffer);
+
+	service_->outgoing_messages_.push_back(new OutgoingPacket(shared_from_this(), ack_buffer));
 }
 
 void Session::handleDataFragA_(DataFragA& packet)

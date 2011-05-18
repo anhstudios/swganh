@@ -34,10 +34,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/socket.h>
 
 // Filters
+#include <anh/network/soe/compression_filter.h>
 #include <anh/network/soe/crc_filter.h>
+#include <anh/network/soe/crc_out_filter.h>
 #include <anh/network/soe/decompression_filter.h>
 #include <anh/network/soe/decryption_filter.h>
+#include <anh/network/soe/encryption_filter.h>
 #include <anh/network/soe/recv_packet_filter.h>
+#include <anh/network/soe/outgoing_start_filter.h>
+#include <anh/network/soe/send_packet_filter.h>
 #include <anh/network/soe/session_request_filter.h>
 #include <anh/network/soe/soe_protocol_filter.h>
 
@@ -87,10 +92,15 @@ public:
 	// Friended Filters. Filters are considered extensions of the
 	// Service class, as the operations performed in them are specific
 	// to this Service type (SOE).
+	friend class CompressionFilter;
 	friend class CrcFilter;
+	friend class CrcOutFilter;
 	friend class DecompressionFilter;
 	friend class DecryptionFilter;
+	friend class EncryptionFilter;
+	friend class OutgoingStartFilter;
 	friend class RecvPacketFilter;
+	friend class SendPacketFilter;
 	friend class SessionRequestFilter;
 	friend class SoeProtocolFilter;
 
@@ -114,6 +124,8 @@ private:
 
 	SessionManager				session_manager_;
 
+	uint32_t					crc_seed_;
+
 	// Pipelines
 	tbb::pipeline				sessionless_incoming_pipeline_;
 	tbb::pipeline				incoming_pipeline_;
@@ -126,10 +138,15 @@ private:
 	std::list<OutgoingPacket*>					outgoing_messages_;
 
 	// Filters
+	CompressionFilter			compression_filter_;
 	CrcFilter					crc_filter_;
+	CrcOutFilter				crc_out_filter_;
 	DecompressionFilter			decompression_filter_;
 	DecryptionFilter			decryption_filter_;
+	EncryptionFilter			encryption_filter_;
 	RecvPacketFilter			recv_packet_filter_;
+	OutgoingStartFilter			outgoing_start_filter_;
+	SendPacketFilter			send_packet_filter_;
 	SessionRequestFilter		session_request_filter_;
 	SoeProtocolFilter			soe_protocol_filter_;
 

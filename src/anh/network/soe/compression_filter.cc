@@ -25,50 +25,53 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#include <anh/network/soe/service.h>
-#include <anh/network/soe/crc_filter.h>
-#include <anh/network/soe/incoming_packet.h>
-#include <anh/byte_buffer.h>
-#include <anh/crc.h>
-
-#ifdef ERROR
-#undef ERROR
-#endif
-
-#include <glog/logging.h>
+#include <anh/network/soe/compression_filter.h>
+#include <anh/network/soe/outgoing_packet.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-CrcFilter::CrcFilter(Service* service)
+CompressionFilter::CompressionFilter(Service* service)
 	: tbb::filter(parallel)
-	, service_(service)
+	, service_(service) 
+{ 
+}
+
+
+CompressionFilter::~CompressionFilter(void)
 {
 }
 
-CrcFilter::~CrcFilter(void)
+void* CompressionFilter::operator()(void* item)
 {
-}
+	OutgoingPacket* packet = (OutgoingPacket*)item;
 
-void* CrcFilter::operator()(void* item)
-{
-	// TODO: ENDIANNESS?
-	IncomingPacket* packet = (IncomingPacket*)item;
+	// See if compression is flagged for this message.
+	if(packet->message()->peekAt<uint8_t>(packet->message()->size() - 3) == 0x01)
+		Compress_(*packet->message());
 	
-	uint32_t packet_crc = anh::memcrc((const char*)packet->message()->data(), packet->message()->size()-2, service_->crc_seed_);
-	uint8_t crc_low = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 1));
-	uint8_t crc_high = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 2));
-
-	if(crc_low != (uint8_t)packet_crc || crc_high != (uint8_t)(packet_crc >> 8))
-	{
-		LOG(WARNING) << "Crc Mismatch [packet_crc = "<< std::hex << packet_crc << " high_byte = " << std::hex << crc_high << " low_byte = " << std::hex << crc_low << "]";
-		delete packet;
-		return NULL;
-	}
-
 	return packet;
 }
+
+void CompressionFilter::Compress_(anh::ByteBuffer& buffer)
+{
+	zstream_.zalloc = Z_NULL;
+	zstream_.zfree = Z_NULL;
+	zstream_.opaque = Z_NULL;
+	zstream_.avail_in = Z_NULL;
+	zstream_.next_in = Z_NULL;
+	deflateInit(&zstream_, Z_DEFAULT_COMPRESSION);
+
+	zstream_.next_in = (Bytef*)buffer.data();
+	zstream_.avail_in = buffer.size();
+	zstream_.next_out = (Bytef*)buffer.data();
+	zstream_.avail_out = buffer.capacity();
+
+	deflate(&zstream_, Z_FINISH);
+	deflateEnd(&zstream_);
+}
+
 
 } // namespace soe
 } // namespace network
