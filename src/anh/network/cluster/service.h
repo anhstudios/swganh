@@ -56,7 +56,7 @@ public:
 	 * 
 	 * @parama port The port to listen for messages on.
 	 */
-	void Start(uint16_t port);
+	void Start(void);
 	void Update(void);
 	void Shutdown(void);
 
@@ -72,7 +72,7 @@ private:
 
 	std::shared_ptr<Socket>		socket_;
 	boost::asio::io_service		io_service_;
-
+    
 	// Pipelines
 	tbb::pipeline				incoming_pipeline_;
 	tbb::pipeline				outgoing_pipeline_;

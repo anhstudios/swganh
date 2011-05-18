@@ -49,10 +49,9 @@ Service::~Service(void)
 {	
 }
 
-void Service::Start(uint16_t port)
+void Service::Start(void)
 {
-	// Create our socket.
-	socket_ = std::make_shared<Socket>(io_service_, port, std::bind(&Service::OnSocketRecv_, this, std::placeholders::_1, std::placeholders::_2));
+	
 }
 
 void Service::Update(void)
