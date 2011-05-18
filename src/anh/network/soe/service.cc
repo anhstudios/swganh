@@ -38,12 +38,18 @@ namespace network {
 namespace soe {
 
 Service::Service(void)
-	: session_request_filter_(this)
+	: crc_seed_(0xDEADBABE)
+	, session_request_filter_(this)
 	, recv_packet_filter_(this)
-	, crc_filter_(this, 0xDEADBABE)
+	, compression_filter_(this)
+	, crc_filter_(this)
 	, decryption_filter_(this)
 	, decompression_filter_(this)
 	, soe_protocol_filter_(this)
+	, outgoing_start_filter_(this)
+	, encryption_filter_(this)
+	, crc_out_filter_(this)
+	, send_packet_filter_(this)
 {
 	sessionless_incoming_pipeline_.add_filter(session_request_filter_);
 
@@ -52,6 +58,12 @@ Service::Service(void)
 	incoming_pipeline_.add_filter(decryption_filter_);
 	incoming_pipeline_.add_filter(decompression_filter_);
 	incoming_pipeline_.add_filter(soe_protocol_filter_);
+
+	outgoing_pipeline_.add_filter(outgoing_start_filter_);
+	//outgoing_pipeline_.add_filter(compression_filter_);
+	outgoing_pipeline_.add_filter(encryption_filter_);
+	outgoing_pipeline_.add_filter(crc_out_filter_);
+	outgoing_pipeline_.add_filter(send_packet_filter_);
 }
 
 Service::~Service(void)
@@ -70,6 +82,7 @@ void Service::Update(void)
 
 	sessionless_incoming_pipeline_.run(1000);
 	incoming_pipeline_.run(1000);
+	outgoing_pipeline_.run(1000);
 
 	session_manager_.Update();
 }

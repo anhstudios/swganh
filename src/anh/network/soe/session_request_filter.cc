@@ -45,7 +45,7 @@ namespace network {
 namespace soe {
 
 SessionRequestFilter::SessionRequestFilter(Service* service)
-	: tbb::filter(true)
+	: tbb::filter(serial_in_order)
 	, service_(service)
 {
 }

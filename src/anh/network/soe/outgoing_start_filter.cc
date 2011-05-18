@@ -25,48 +25,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
+#include <anh/network/soe/outgoing_start_filter.h>
 #include <anh/network/soe/service.h>
-#include <anh/network/soe/crc_filter.h>
-#include <anh/network/soe/incoming_packet.h>
-#include <anh/byte_buffer.h>
-#include <anh/crc.h>
-
-#ifdef ERROR
-#undef ERROR
-#endif
-
-#include <glog/logging.h>
+#include <anh/network/soe/outgoing_packet.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-CrcFilter::CrcFilter(Service* service)
-	: tbb::filter(parallel)
-	, service_(service)
+OutgoingStartFilter::OutgoingStartFilter(Service* service)
+	: tbb::filter(serial_in_order)
+	, service_(service) 
 {
 }
 
-CrcFilter::~CrcFilter(void)
+OutgoingStartFilter::~OutgoingStartFilter(void)
 {
 }
 
-void* CrcFilter::operator()(void* item)
+void* OutgoingStartFilter::operator()(void* item)
 {
-	// TODO: ENDIANNESS?
-	IncomingPacket* packet = (IncomingPacket*)item;
-	
-	uint32_t packet_crc = anh::memcrc((const char*)packet->message()->data(), packet->message()->size()-2, service_->crc_seed_);
-	uint8_t crc_low = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 1));
-	uint8_t crc_high = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 2));
-
-	if(crc_low != (uint8_t)packet_crc || crc_high != (uint8_t)(packet_crc >> 8))
-	{
-		LOG(WARNING) << "Crc Mismatch [packet_crc = "<< std::hex << packet_crc << " high_byte = " << std::hex << crc_high << " low_byte = " << std::hex << crc_low << "]";
-		delete packet;
+	// Cut the pipeline loop if we run out of messages.
+	if(service_->outgoing_messages_.empty())
 		return NULL;
-	}
 
+	OutgoingPacket* packet = service_->outgoing_messages_.front();
+	service_->outgoing_messages_.pop_front();
 	return packet;
 }
 

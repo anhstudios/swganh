@@ -26,13 +26,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include <anh/network/soe/encryption_filter.h>
+#include <anh/network/soe/outgoing_packet.h>
+#include <anh/network/soe/service.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-EncryptionFilter::EncryptionFilter()
-	: tbb::filter(false)
+EncryptionFilter::EncryptionFilter(Service* service)
+	: tbb::filter(parallel)
+	, service_(service)
 {
 }
 
@@ -42,7 +45,27 @@ EncryptionFilter::~EncryptionFilter(void)
 
 void* EncryptionFilter::operator()(void* item)
 {
-	return NULL;
+	OutgoingPacket* packet = (OutgoingPacket*) item;
+	Encrypt_((char*)packet->message()->data()+2, packet->message()->size()-4, service_->crc_seed_);
+	return packet;
+}
+
+void EncryptionFilter::Encrypt_(char* data, uint32_t len, uint32_t seed)
+{
+    uint32_t blockCount = (len / 4);
+    uint32_t byteCount = (len % 4);
+
+    for(uint32_t count = 0; count < blockCount; count++)
+    {
+        ((uint32_t*)data)[count] ^= seed;
+        seed = ((uint32_t*)data)[count];
+    }
+
+    for(uint32_t count = blockCount * 4; count < blockCount * 4 + byteCount; count++)
+    {
+        data[count] ^= seed;
+    }
+
 }
 
 } // namespace soe

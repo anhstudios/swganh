@@ -39,7 +39,7 @@ namespace network {
 namespace soe {
 
 RecvPacketFilter::RecvPacketFilter(Service* service)
-	: tbb::filter(true)
+	: tbb::filter(serial_in_order)
 	, service_(service)
 {
 }
@@ -55,8 +55,6 @@ void* RecvPacketFilter::operator()(void* item)
 	{
 		return NULL;
 	}
-
-	LOG(WARNING) << "Processing Session Packet.";
 
 	IncomingPacket* packet = service_->incoming_messages_.front();
 	service_->incoming_messages_.pop_front();

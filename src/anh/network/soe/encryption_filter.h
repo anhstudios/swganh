@@ -35,16 +35,21 @@ namespace anh {
 namespace network {
 namespace soe {
 
+// FORWARD DECLARATIONS
+class Service;
+
 class EncryptionFilter : public tbb::filter
 {
 public:
-	EncryptionFilter(void);
+	EncryptionFilter(Service* service);
 	~EncryptionFilter(void);
 
 	void* operator()(void* item);
 
 private:
-	int Encrypt_(char* buffer, uint32_t len, uint32_t seed);
+	void Encrypt_(char* buffer, uint32_t len, uint32_t seed);
+
+	Service*	service_;
 };
 
 } // namespace soe
