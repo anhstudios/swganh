@@ -103,6 +103,9 @@ private:
 
 	void SendSoePacket(std::shared_ptr<anh::ByteBuffer> message);
 
+	bool SequenceIsValid_(const uint16_t& sequence);
+	void AcknowledgeSequence_(const uint16_t& sequence);
+
 	boost::asio::ip::udp::endpoint		remote_endpoint_;
 	Service*							service_;
 
@@ -119,8 +122,11 @@ private:
 
 	// Sequences
 	uint16_t							last_acknowledged_sequence_;
-	uint16_t							client_sequence_;
+	uint16_t							next_client_sequence_;
+	uint16_t							current_client_sequence_;
 	uint16_t							server_sequence_;
+
+	uint32_t							next_frag_size_;
 
 	// Net Stats
 	NetStatsServer						server_net_stats_;
