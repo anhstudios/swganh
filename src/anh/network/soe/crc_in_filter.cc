@@ -25,38 +25,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef ANH_NETWORK_SOE_COMPRESSION_FILTER_H_
-#define ANH_NETWORK_SOE_COMPRESSION_FILTER_H_
-
+#include <anh/network/soe/service.h>
+#include <anh/network/soe/crc_in_filter.h>
+#include <anh/network/soe/incoming_packet.h>
 #include <anh/byte_buffer.h>
+#include <anh/crc.h>
 
-#include <tbb/pipeline.h>
-#include <zlib.h>
+#ifdef ERROR
+#undef ERROR
+#endif
+
+#include <glog/logging.h>
 
 namespace anh {
 namespace network {
 namespace soe {
 
-// FORWARD DECLARATIONS
-class Service;
-
-class CompressionFilter : public tbb::filter
+CrcInFilter::CrcInFilter(Service* service)
+	: tbb::filter(parallel)
+	, service_(service)
 {
-public:
-	CompressionFilter(Service* service);
-	~CompressionFilter(void);
+}
 
-	void* operator()(void* item);
-private:
-	void Compress_(anh::ByteBuffer& buffer);
+CrcInFilter::~CrcInFilter(void)
+{
+}
 
-	z_stream		zstream_;
-	Service*		service_;
-	char*			compression_buffer_;
-};
+void* CrcInFilter::operator()(void* item)
+{
+	// TODO: ENDIANNESS?
+	IncomingPacket* packet = (IncomingPacket*)item;
+	
+	uint32_t packet_crc = anh::memcrc((const char*)packet->message()->data(), packet->message()->size()-2, service_->crc_seed_);
+	uint8_t crc_low = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 1));
+	uint8_t crc_high = (uint8_t)*(packet->message()->data() + (packet->message()->size() - 2));
+
+	if(crc_low != (uint8_t)packet_crc || crc_high != (uint8_t)(packet_crc >> 8))
+	{
+		LOG(WARNING) << "Crc Mismatch [packet_crc = "<< std::hex << packet_crc << " high_byte = " << std::hex << crc_high << " low_byte = " << std::hex << crc_low << "]";
+		delete packet;
+		return NULL;
+	}
+
+	return packet;
+}
 
 } // namespace soe
 } // namespace network
 } // namespace anh
-
-#endif // ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
