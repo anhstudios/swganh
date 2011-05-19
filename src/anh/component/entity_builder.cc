@@ -188,7 +188,7 @@ void EntityBuilder::LoadTemplates_(const boost::filesystem::path p)
 		else if(boost::filesystem::is_regular_file(iter->status()))
 		{
 			boost::property_tree::ptree pt;
-			boost::property_tree::read_xml(iter->string(), pt);
+            boost::property_tree::read_xml(iter->path().string(), pt);
 
 			EntityType entity_type(pt.get<std::string>("entity.<xmlattr>.type").c_str());
 			entity_templates_.insert(EntityTemplatePair(entity_type,pt));
