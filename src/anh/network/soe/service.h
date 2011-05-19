@@ -63,7 +63,9 @@ class IncomingSessionlessPacket;
 class OutgoingPacket;
 
 /**
- * @brief Represent an SOE Service, which takes incoming SOE Protocol packets on a specific port and filters them down to events and vise versa.
+ * @brief An SOE Protocol Service.
+ *
+ * 
  */
 class Service : public std::enable_shared_from_this<Service>
 {
@@ -112,10 +114,6 @@ public:
 private:
 	/**
 	 * @brief Called when the socket receives a message.
-	 *
-	 * This function will also attempt to find the session in the SessionManager,
-	 * if it fails to find a Session it will check if the incoming message is a
-	 * Session Request in which case, it will create a new Session.
 	 */
 	void OnSocketRecv_(boost::asio::ip::udp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
 
@@ -129,27 +127,31 @@ private:
 	// Pipelines
 	tbb::pipeline				sessionless_incoming_pipeline_;
 	tbb::pipeline				incoming_pipeline_;
-	tbb::pipeline				outgoing_pipeline_;
-	tbb::pipeline				outgoing_data_message_pipeline_;
-	tbb::pipeline				incoming_data_message_pipeline_;
+	tbb::pipeline				outgoing_pipeline_;;
 
 	std::list<IncomingSessionlessPacket*>		sessionless_messages_;
 	std::list<IncomingPacket*>					incoming_messages_;
 	std::list<OutgoingPacket*>					outgoing_messages_;
 
-	// Filters
-	CompressionFilter			compression_filter_;
-	CrcInFilter					crc_in_filter_;
-	CrcOutFilter				crc_out_filter_;
-	DecompressionFilter			decompression_filter_;
-	DecryptionFilter			decryption_filter_;
-	EncryptionFilter			encryption_filter_;
-	RecvPacketFilter			recv_packet_filter_;
+	// Outgoing Packet Pipeline Filters
+	//
 	OutgoingStartFilter			outgoing_start_filter_;
+	CompressionFilter			compression_filter_;
+	EncryptionFilter			encryption_filter_;
+	CrcOutFilter				crc_out_filter_;
 	SendPacketFilter			send_packet_filter_;
+	
+	// Sessionless Packet Pipeline Filters
+	//
 	SessionRequestFilter		session_request_filter_;
-	SoeProtocolFilter			soe_protocol_filter_;
 
+	// Incoming Packet Pipeline Filters
+	//
+	RecvPacketFilter			recv_packet_filter_;
+	CrcInFilter					crc_in_filter_;
+	DecryptionFilter			decryption_filter_;
+	DecompressionFilter			decompression_filter_;
+	SoeProtocolFilter			soe_protocol_filter_;
 };
 
 } // namespace soe

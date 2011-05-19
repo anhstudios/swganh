@@ -280,7 +280,7 @@ struct NetStatsClient
 		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(longest_update));
 		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(packets_sent));
 		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(packets_received));
-		footer.serialize(buffer);
+		//footer.serialize(buffer);
 	}
 
 	void deserialize(anh::ByteBuffer& buffer) {
@@ -290,7 +290,9 @@ struct NetStatsClient
 		average_update = buffer.read<uint32_t>(true);
 		shortest_update = buffer.read<uint32_t>(true);
 		longest_update = buffer.read<uint32_t>(true);
-
+		packets_sent = buffer.read<uint64_t>(true);
+		packets_received = buffer.read<uint64_t>(true);
+		footer.deserialize(buffer);
 	}
 
 	uint16_t	soe_opcode;

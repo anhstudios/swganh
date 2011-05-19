@@ -49,6 +49,9 @@ Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* servi
 	, connected_(false)
 	, service_(service)
 	, server_net_stats_(0, 0, 0, 0, 0, 0)
+	, last_acknowledged_sequence_(0)
+	, client_sequence_(0)
+	, server_sequence_(0)
 {
 }
 
@@ -62,9 +65,7 @@ void Session::Update(void)
 }
 
 void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message)
-{
-	auto buffer = std::make_shared<ByteBuffer>();
-	message->serialize(*buffer);
+{ 
 }
 
 void Session::Close(void)
@@ -74,6 +75,12 @@ void Session::Close(void)
 		connected_ = false;
 		service_->session_manager_.RemoveSession(shared_from_this());
 	}
+
+	Disconnect disconnect(connection_id_);
+	std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+
+	disconnect.serialize(*buffer);
+	SendSoePacket(buffer);
 
 	LOG(WARNING) << "Session Closed.";
 }
@@ -124,13 +131,18 @@ void Session::handleMultiPacket_(MultiPacket& packet)
 
 void Session::handleDisconnect_(Disconnect& packet)
 {
-	LOG(WARNING) << "Closing Session...";
 	Close();
 }
 
 void Session::handlePing_(Ping& packet)
 {
 	LOG(WARNING) << "Processing Ping.";
+	Ping pong;
+	
+	std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+	pong.serialize(*buffer);
+
+	SendSoePacket(buffer);
 }
 
 void Session::handleNetStatsClient_(NetStatsClient& packet)
@@ -139,23 +151,22 @@ void Session::handleNetStatsClient_(NetStatsClient& packet)
 
 	server_net_stats_.client_tick_count = packet.client_tick_count;
 
-	// Serialize.
-	//std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
-	//server_net_stats_.serialize(*buffer);
-
-	// Queue for outgoing.
-	//service_->outgoing_messages_.push_back(new OutgoingPacket(shared_from_this(), buffer));
+	std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+	server_net_stats_.serialize(*buffer);
+	SendSoePacket(buffer);
 }
 
 void Session::handleChildDataA_(ChildDataA& packet)
 {
 	LOG(WARNING) << "Handling Child Data A [" << std::hex << packet.data.peekAt<uint32_t>(4) << "] Sequence: [" << packet.sequence << "]";
+	
+	// Acknowledge Sequence.
 	AckA ack(packet.sequence);
-
 	std::shared_ptr<anh::ByteBuffer> ack_buffer = std::make_shared<anh::ByteBuffer>();
 	ack.serialize(*ack_buffer);
+	SendSoePacket(ack_buffer);
 
-	service_->outgoing_messages_.push_back(new OutgoingPacket(shared_from_this(), ack_buffer));
+	// Queue for conversion to event.
 }
 
 void Session::handleDataFragA_(DataFragA& packet)
@@ -166,6 +177,15 @@ void Session::handleDataFragA_(DataFragA& packet)
 void Session::handleAckA_(AckA& packet)
 {
 	LOG(WARNING) << "Handling Ack A.";
+
+	SequencedMessageMapIterator begin = sent_messages_.find(last_acknowledged_sequence_);
+	SequencedMessageMapIterator end = sent_messages_.find(packet.sequence);
+	sent_messages_.erase(begin, end);
+}
+
+void Session::SendSoePacket(std::shared_ptr<anh::ByteBuffer> message)
+{
+	service_->outgoing_messages_.push_back(new OutgoingPacket(shared_from_this(), message));
 }
 
 } // namespace anh

@@ -72,7 +72,6 @@ Service::~Service(void)
 
 void Service::Start(uint16_t port)
 {
-	// Create our socket.
 	socket_ = std::make_shared<Socket>(io_service_, port, std::bind(&Service::OnSocketRecv_, this, std::placeholders::_1, std::placeholders::_2));
 }
 
@@ -91,6 +90,7 @@ void Service::Shutdown(void)
 {
 	sessionless_incoming_pipeline_.clear();
 	incoming_pipeline_.clear();
+	outgoing_pipeline_.clear();
 
 	socket_.reset();
 }

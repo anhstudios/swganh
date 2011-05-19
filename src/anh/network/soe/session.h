@@ -88,6 +88,9 @@ public:
 
 private:
 
+	typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
+	typedef std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>::iterator		SequencedMessageMapIterator;
+
 	void HandleSoeMessage(anh::ByteBuffer& message);
 	void handleSessionRequest_(SessionRequest& packet);
 	void handleMultiPacket_(MultiPacket& packet);
@@ -98,11 +101,14 @@ private:
 	void handleDataFragA_(DataFragA& packet);
 	void handleAckA_(AckA& packet);
 
+	void SendSoePacket(std::shared_ptr<anh::ByteBuffer> message);
+
 	boost::asio::ip::udp::endpoint		remote_endpoint_;
 	Service*							service_;
 
-	//tbb::concurrent_queue<DataFragA>								incoming_fragmented_messages_;
-	std::deque<anh::ByteBuffer>										sent_messages_;
+	tbb::concurrent_queue<DataFragA*>								incoming_fragmented_messages_;
+	tbb::concurrent_queue<ChildDataA*>								outgoing_data_messages_;
+	SequencedMessageMap												sent_messages_;
 
 	bool								connected_;
 
@@ -110,6 +116,11 @@ private:
 	uint32_t							connection_id_;
 	uint32_t							recv_buffer_size_;
 	uint32_t							crc_length_;
+
+	// Sequences
+	uint16_t							last_acknowledged_sequence_;
+	uint16_t							client_sequence_;
+	uint16_t							server_sequence_;
 
 	// Net Stats
 	NetStatsServer						server_net_stats_;
