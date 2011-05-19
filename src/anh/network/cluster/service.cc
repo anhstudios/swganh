@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/network/cluster/service.h>
 #include <anh/network/cluster/socket.h>
+#include <anh/server_directory/server_directory_interface.h>
 
 #ifdef ERROR
 #undef ERROR
@@ -40,9 +41,10 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-Service::Service(void)
+Service::Service(std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory)
+    : directory_(directory)
 {
-	//incoming_pipeline_.add_filter();
+
 }
 
 Service::~Service(void)

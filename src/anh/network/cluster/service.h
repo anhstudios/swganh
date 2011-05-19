@@ -38,6 +38,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <tbb/pipeline.h>
 #include <tbb/concurrent_vector.h>
 
+namespace anh { namespace server_directory { class ServerDirectoryInterface; } }
+
 namespace anh {
 namespace network {
 namespace cluster {
@@ -48,7 +50,7 @@ namespace cluster {
 class Service : public std::enable_shared_from_this<Service>
 {
 public:
-	Service(void);
+	Service(std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory);
 	~Service(void);
 
 	/**
@@ -79,6 +81,8 @@ private:
 	
 	// Filters
 
+    std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory_;
+    typedef std::map<boost::asio::ip::tcp::endpoint, boost::asio::ip::tcp::socket> SocketMap;
 };
 
 } // namespace cluster
