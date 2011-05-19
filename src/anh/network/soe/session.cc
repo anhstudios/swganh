@@ -59,6 +59,8 @@ Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* servi
 Session::~Session(void)
 {
 	Close();
+
+	LOG(WARNING) << "Session [" << connection_id_ << "] Closed.";
 }
 
 void Session::Update(void)
@@ -75,30 +77,28 @@ void Session::Close(void)
 	{
 		connected_ = false;
 		service_->session_manager_.RemoveSession(shared_from_this());
+
+		Disconnect disconnect(connection_id_);
+		std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+
+		disconnect.serialize(*buffer);
+		SendSoePacket(buffer);
 	}
-
-	Disconnect disconnect(connection_id_);
-	std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
-
-	disconnect.serialize(*buffer);
-	SendSoePacket(buffer);
-
-	LOG(WARNING) << "Session [" << connection_id_ << "] Closed.";
 }
 
 void Session::HandleSoeMessage(anh::ByteBuffer& message)
 {
 	switch(message.peek<uint16_t>(true))
 	{
-	case SESSION_REQUEST: { handleSessionRequest_(SessionRequest(message)); break; }
-	case MULTI_PACKET: { handleMultiPacket_(MultiPacket(message)); break; }
-	case DISCONNECT: { handleDisconnect_(Disconnect(message)); break; }
-	case PING: { handlePing_(Ping(message)); break; }
-	case NET_STATS_CLIENT: { handleNetStatsClient_(NetStatsClient(message)); break; }
-	case CHILD_DATA_A: { handleChildDataA_(ChildDataA(message)); break; }
-	case DATA_FRAG_A: { handleDataFragA_(DataFragA(message)); break; }
-	case ACK_A: { handleAckA_(AckA(message)); break; }
-	case FATAL_ERROR: { break; }
+	case SESSION_REQUEST:					{ handleSessionRequest_(SessionRequest(message)); break; }
+	case MULTI_PACKET:						{ handleMultiPacket_(MultiPacket(message)); break; }
+	case DISCONNECT:						{ handleDisconnect_(Disconnect(message)); break; }
+	case PING:								{ handlePing_(Ping(message)); break; }
+	case NET_STATS_CLIENT:					{ handleNetStatsClient_(NetStatsClient(message)); break; }
+	case CHILD_DATA_A:						{ handleChildDataA_(ChildDataA(message)); break; }
+	case DATA_FRAG_A:						{ handleDataFragA_(DataFragA(message)); break; }
+	case ACK_A:								{ handleAckA_(AckA(message)); break; }
+	case FATAL_ERROR:						{ Close(); break; }
 	default:
 		LOG(INFO) << "Unhandled SOE Opcode" << message.peek<uint16_t>(true);
 	}
@@ -118,7 +118,7 @@ void Session::handleSessionRequest_(SessionRequest& packet)
 	service_->socket_->Send(remote_endpoint_, session_response_buffer);
 
 	service_->session_manager_.AddSession(shared_from_this());
-
+	connected_ = true;
 	LOG(WARNING) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
 }
 
@@ -165,6 +165,11 @@ void Session::handleChildDataA_(ChildDataA& packet)
 
 	AcknowledgeSequence_(packet.sequence);
 
+	// HARDCODED LOGIN
+	if(packet.sequence == 0)
+	{
+	}
+
 }
 
 void Session::handleDataFragA_(DataFragA& packet)
@@ -183,7 +188,17 @@ void Session::handleAckA_(AckA& packet)
 	DLOG(WARNING) << "Handling ACK_A";
 	SequencedMessageMapIterator begin = sent_messages_.find(last_acknowledged_sequence_);
 	SequencedMessageMapIterator end = sent_messages_.find(packet.sequence);
-	sent_messages_.erase(begin, end);
+
+	if(begin == end)
+	{
+		sent_messages_.erase(begin);
+		return;
+	}
+	else if((begin != sent_messages_.end()) && (end != sent_messages_.end()))
+	{
+		sent_messages_.erase(begin, end);
+		return;
+	}
 }
 
 void Session::SendSoePacket(std::shared_ptr<anh::ByteBuffer> message)

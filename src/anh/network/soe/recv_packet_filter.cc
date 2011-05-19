@@ -59,6 +59,13 @@ void* RecvPacketFilter::operator()(void* item)
 	IncomingPacket* packet = service_->incoming_messages_.front();
 	service_->incoming_messages_.pop_front();
 
+	// Do not process if our session is not connected.
+	if(packet->session()->connected() == false)
+	{
+		delete packet;
+		return NULL;
+	}
+
 	return (void*)packet;
 }
 
