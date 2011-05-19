@@ -387,10 +387,9 @@ struct ChildDataA
 
 struct DataFragA
 {
-	DataFragA(uint16_t sequence_, uint16_t frag_size_, ByteBuffer& buf_)
+	DataFragA(uint16_t sequence_, ByteBuffer& buf_)
 		: soe_opcode(DATA_FRAG_A)
 		, sequence(sequence_)
-		, frag_size(frag_size_)
 		, data(buf_)
 		, footer(true) { }
 
@@ -400,7 +399,6 @@ struct DataFragA
 	void serialize(anh::ByteBuffer& buffer) {
 		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
 		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(sequence));
-		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(frag_size));
 		buffer.append(data);
 		footer.serialize(buffer);
 	}
@@ -408,14 +406,12 @@ struct DataFragA
 	void deserialize(anh::ByteBuffer& buffer) {
 		soe_opcode = buffer.read<uint16_t>(true);
 		sequence = buffer.read<uint16_t>(true);
-		frag_size = buffer.read<uint16_t>(true);
-		data = ByteBuffer(buffer.data(), frag_size);
+		data = ByteBuffer(buffer.data(), buffer.size()-7);
 		footer.deserialize(buffer);
 	}
 
 	uint16_t	soe_opcode;
 	uint16_t	sequence;
-	uint16_t	frag_size;
 	ByteBuffer	data;
 	Footer		footer;
 };

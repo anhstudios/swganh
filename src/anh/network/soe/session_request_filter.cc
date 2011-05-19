@@ -67,11 +67,7 @@ void* SessionRequestFilter::operator()(void* item)
 
 	if(sessionless_message->message()->peek<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14)
 	{
-		LOG(WARNING) << "Creating Session... [" << sessionless_message->remote_endpoint().address().to_string() << ":" << sessionless_message->remote_endpoint().port() << "]";
-		
-		// Create Session
 		auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), service_);
-
 		SessionRequest request(*sessionless_message->message());
 		session->handleSessionRequest_(request);
 	}
