@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/byte_buffer.h>
 #include <anh/network/cluster/socket.h>
+#include <anh/network/cluster/tcp_connection.h>
 
 #include <map>
 #include <list>
@@ -38,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <tbb/pipeline.h>
 #include <tbb/concurrent_vector.h>
 
-namespace anh { namespace server_directory { class ServerDirectoryInterface; } }
+namespace anh { namespace server_directory { class ServerDirectoryInterface; class ProcessList; } }
 
 namespace anh {
 namespace network {
@@ -70,10 +71,12 @@ private:
 	 * if it fails to find a Session it will check if the incoming message is a
 	 * Session Request in which case, it will create a new Session.
 	 */
-	void OnSocketRecv_(boost::asio::ip::tcp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
+	void OnNewConnection_(boost::asio::ip::tcp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
 
-	std::shared_ptr<Socket>		socket_;
-	boost::asio::io_service		io_service_;
+	std::shared_ptr<Socket>		        socket_;
+    std::shared_ptr<TCPConnection>      connection_;
+    anh::server_directory::ProcessList  proc_list_;
+	boost::asio::io_service		        io_service_;
     
 	// Pipelines
 	tbb::pipeline				incoming_pipeline_;

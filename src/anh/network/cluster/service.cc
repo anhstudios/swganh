@@ -37,14 +37,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <glog/logging.h>
 
+using namespace anh::server_directory;
+using namespace std;
+
 namespace anh {
 namespace network {
 namespace cluster {
 
-Service::Service(std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory)
+Service::Service(shared_ptr<ServerDirectoryInterface> directory)
     : directory_(directory)
 {
-
+    proc_list_ = directory_->getProcessSnapshot(directory_->cluster());
+    // nee
 }
 
 Service::~Service(void)
@@ -53,6 +57,8 @@ Service::~Service(void)
 
 void Service::Start(void)
 {
+    // startup all connections
+    
 	
 }
 
@@ -70,7 +76,7 @@ void Service::Shutdown(void)
 	socket_.reset();
 }
 
-void Service::OnSocketRecv_(boost::asio::ip::tcp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message)
+void Service::OnNewConnection_(boost::asio::ip::tcp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message)
 {
 	
 }

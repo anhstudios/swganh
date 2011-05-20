@@ -123,22 +123,6 @@ TEST_F(ScriptingManagerTest, reloadFile)
     e->reload("test.py");
     EXPECT_TRUE(e->isFileLoaded("test.py"));
 }
-//TEST_F(ScriptingManagerTest, getValueFromPython)
-//{
-//    module.name = "embedded_hello";
-//    module.initfunc = PyInit_embedded_hello;
-//    modules.push_back(module);
-//
-//    // load modules
-//    if (e->loadModules(modules))
-//    {
-//        object obj (e->embed("embedded_hello.py", "PythonDerived"));
-//        object py_base = obj();
-//        Base& py = extract<Base&>(py_base);
-//        EXPECT_EQ("Hello from Python!", py.hello());
-//    }
-//}
-/// CALL POLICIES TESTING
 
 //Ties lifetime of Y.x to C++ argument to that of result
 TEST_F(ScriptingManagerTest, getInternalReference)
