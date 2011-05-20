@@ -16,25 +16,25 @@ struct Cluster {
 };
 struct LoginEnumCluster : public BasePacket
 {
-    LoginEnumCluster(std::shared_ptr<network::Session> session_  = nullptr, uint32_t server_count_ = 0, 
-        std::list<Cluster> servers_ = std::list<Cluster>(), uint32_t max_account_chars_ = 0)
+    LoginEnumCluster(uint32_t max_account_chars_ = 0,
+        std::list<Cluster> servers_ = std::list<Cluster>(), std::shared_ptr<network::Session> session_  = nullptr)
         : BasePacket(session_, CLIENT) 
-        , server_count(server_count_)
         , servers(servers_)
         , max_account_chars(max_account_chars_)
     {}
-    uint32_t server_count;
     std::list<Cluster> servers;
     uint32_t max_account_chars;
 };
 
 class LoginEnumClusterEvent : public anh::event_dispatcher::BasicEvent<LoginEnumCluster>{
 public:    
-    LoginEnumClusterEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t server_count_ = 0, 
-        std::list<Cluster> servers_ = std::list<Cluster>(), uint32_t max_account_chars_ = 0) 
+    LoginEnumClusterEvent(uint32_t max_account_chars_ = 0,
+        std::list<Cluster> servers_ = std::list<Cluster>(), std::shared_ptr<network::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<LoginEnumCluster>("LoginEnumCluster"){}
     virtual ~LoginEnumClusterEvent() {}
     void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(3);
+		buffer.write<uint32_t>(0xC11C63B9);
         buffer.write<uint32_t>(servers.size());
         std::for_each(servers.begin(), servers.end(), [&buffer] (Cluster cluster){
             buffer.write<int32_t>(cluster.server_id);

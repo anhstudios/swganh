@@ -38,22 +38,22 @@ struct ClusterServer
 };
 struct LoginClusterStatus : public BasePacket
 {
-    LoginClusterStatus(std::shared_ptr<network::Session> session_  = nullptr, uint32_t server_count_ = 0, 
+    LoginClusterStatus(std::shared_ptr<network::Session> session_  = nullptr,
         std::list<ClusterServer> servers_ = std::list<ClusterServer>())
         : BasePacket(session_, CLIENT)
-        , server_count(server_count_)
         , servers(servers_) {}
-    uint32_t server_count;
     std::list<ClusterServer> servers;
 };
 
 class LoginClusterStatusEvent : public anh::event_dispatcher::BasicEvent<LoginClusterStatus>{
 public:    
-    LoginClusterStatusEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t server_count_ = 0, 
-        std::list<ClusterServer> servers_ = std::list<ClusterServer>()) 
+    LoginClusterStatusEvent(
+        std::list<ClusterServer> servers_ = std::list<ClusterServer>(), std::shared_ptr<network::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<LoginClusterStatus>("LoginClusterStatus"){}
     virtual ~LoginClusterStatusEvent() {}
     void serialize(anh::ByteBuffer& buffer) {
+		buffer.write<uint16_t>(2);
+		buffer.write<uint32_t>(0x3436AEB6);
         buffer.write<uint32_t>(servers.size());
         std::for_each(servers.begin(), servers.end(), [&buffer] (ClusterServer server) {
             buffer.write<uint32_t>(server.server_id);

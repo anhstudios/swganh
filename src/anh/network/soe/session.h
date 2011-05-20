@@ -131,6 +131,7 @@ private:
 	// Net Stats
 	NetStatsServer						server_net_stats_;
 
+	ChildDataA							outgoing_data_message_;
 };
 
 } // namespace soe

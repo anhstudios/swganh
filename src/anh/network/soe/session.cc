@@ -33,6 +33,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/utilities.h>
 #include <anh/event_dispatcher/event_interface.h>
 
+#include <packets/Login/LoginClientId.h>
+#include <packets/Login/LoginClientToken.h>
+#include <packets/Login/LoginEnumCluster.h>
+#include <packets/Login/EnumerateCharacterId.h>
+#include <packets/Login/LoginClusterStatus.h>
+
+#include <iostream>
+
 #ifdef ERROR
 #undef ERROR
 #endif
@@ -53,6 +61,7 @@ Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* servi
 	, current_client_sequence_(0)
 	, next_client_sequence_(0)
 	, server_sequence_(0)
+	, outgoing_data_message_(0)
 {
 }
 
@@ -65,10 +74,28 @@ Session::~Session(void)
 
 void Session::Update(void)
 {
+	// If we have waiting messages that need to be sent.
+	if(outgoing_data_message_.messages.size() > 0)
+	{
+		std::shared_ptr<ByteBuffer> message = std::make_shared<ByteBuffer>();
+		outgoing_data_message_.serialize(*message);
+		SendSoePacket(message);
+
+		sent_messages_.insert(SequencedMessageMap::value_type(outgoing_data_message_.sequence, message));
+
+		outgoing_data_message_.sequence++;
+		server_sequence_++;
+		outgoing_data_message_.messages.clear();
+	}
 }
 
 void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message)
 { 
+	ByteBuffer message_buffer;
+	//message_buffer.write<uint16_t>(message->priority());
+	//message_buffer.write<uint32_t>(anh::hostToBig<uint32_t>(message->type().ident()));
+	message->serialize(message_buffer);
+	outgoing_data_message_.messages.push_back(message_buffer);
 }
 
 void Session::Close(void)
@@ -165,10 +192,47 @@ void Session::handleChildDataA_(ChildDataA& packet)
 
 	AcknowledgeSequence_(packet.sequence);
 
-	// HARDCODED LOGIN
+	// =================================================
+	//	Temp Begin
+	// =================================================
 	if(packet.sequence == 0)
 	{
+		LOG(WARNING) << "Priority: " << packet.messages.front().read<uint16_t>();
+		LOG(WARNING) << "SWGOpcode: " << std::hex << packet.messages.front().read<uint32_t>();
+
+		std::shared_ptr<packets::LoginClientTokenEvent> lct = std::make_shared<packets::LoginClientTokenEvent>();
+
+		packets::Cluster cluster;
+		cluster.server_id = 3;
+		cluster.server_name = "Anh Dev Den";
+		cluster.distance = 4;
+
+		std::shared_ptr<packets::LoginEnumClusterEvent> lec = std::make_shared<packets::LoginEnumClusterEvent>(8);
+		lec->servers.push_back(cluster);
+
+
+		packets::Character dead1ock;
+		dead1ock.character_id = 0xDEADDEAD;
+		dead1ock.name = L"Dead1ock";
+		dead1ock.server_id = 3;
+		dead1ock.status = 1;
+		dead1ock.race_gender_crc = 0x060E51D5;
+
+		std::shared_ptr<packets::EnumerateCharacterIdEvent> eci = std::make_shared<packets::EnumerateCharacterIdEvent>();
+		eci->characters.push_back(dead1ock);
+
+		std::shared_ptr<packets::LoginClusterStatusEvent> lcs = std::make_shared<packets::LoginClusterStatusEvent>();
+		lcs->servers.push_back(packets::ClusterServer(3, std::string("127.0.0.1"), 44462, 44463, 0, 3000, 8, 7, 2, 0));
+		
+		SendMessage(lct);
+		SendMessage(lec);
+		SendMessage(eci);
+		SendMessage(lcs);
+
 	}
+	// =================================================
+	//	Temp End
+	// =================================================
 
 }
 
@@ -177,7 +241,7 @@ void Session::handleDataFragA_(DataFragA& packet)
 	DLOG(WARNING) << "Handling DATA_FRAG_A";
 	if(!SequenceIsValid_(packet.sequence))
 		return;
-
+	
 	AcknowledgeSequence_(packet.sequence);
 
 	
