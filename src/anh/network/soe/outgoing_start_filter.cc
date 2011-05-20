@@ -51,6 +51,14 @@ void* OutgoingStartFilter::operator()(void* item)
 
 	OutgoingPacket* packet = service_->outgoing_messages_.front();
 	service_->outgoing_messages_.pop_front();
+
+	// If we are no longer connected, skip.
+	if(packet->session()->connected() == false)
+	{
+		delete packet;
+		return NULL;
+	}
+
 	return packet;
 }
 

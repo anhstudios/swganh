@@ -59,12 +59,15 @@ LoginApp::LoginApp(int argc, char* argv[], list<string> config_files
 {
     auto startupListener = [&] (shared_ptr<EventInterface> incoming_event)-> bool {
         cout << "Login Application Startup" <<endl;
+        
         started_ = true;
         cout << "Login Application Started" << endl;
 
         return true;
     };
     auto processListener = [] (shared_ptr<EventInterface> incoming_event)-> bool {
+        // return galaxy status list every 5s
+        // heartbeat
         return true;
     };
     auto shutdownListener = [&] (shared_ptr<EventInterface> incoming_event)-> bool {
@@ -107,4 +110,5 @@ void LoginApp::onAddDefaultOptions_()
 void LoginApp::onRegisterApp_() 
 {
 }
+
 } //namespace login

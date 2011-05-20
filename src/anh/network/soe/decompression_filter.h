@@ -55,8 +55,9 @@ public:
 private:
 	void Decompress_(std::shared_ptr<anh::ByteBuffer> buffer);
 
-	z_stream		zstream_;
-	Service*		service_;
+	z_stream					zstream_;
+	Service*					service_;
+	char* 						decompression_buffer_;
 };
 
 } // namespace soe

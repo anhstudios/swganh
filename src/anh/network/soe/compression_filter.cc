@@ -35,6 +35,7 @@ namespace soe {
 CompressionFilter::CompressionFilter(Service* service)
 	: tbb::filter(parallel)
 	, service_(service) 
+	, compression_buffer_(new char[496])
 { 
 }
 
@@ -63,13 +64,17 @@ void CompressionFilter::Compress_(anh::ByteBuffer& buffer)
 	zstream_.next_in = Z_NULL;
 	deflateInit(&zstream_, Z_DEFAULT_COMPRESSION);
 
-	zstream_.next_in = (Bytef*)buffer.data();
-	zstream_.avail_in = buffer.size();
-	zstream_.next_out = (Bytef*)buffer.data();
-	zstream_.avail_out = buffer.capacity();
+	zstream_.next_in = (Bytef*)buffer.data() + 2;
+	zstream_.avail_in = buffer.size() - 5;
+	zstream_.next_out = (Bytef*)compression_buffer_+2;
+	zstream_.avail_out = 496 - 5;
 
+	memcpy(compression_buffer_, buffer.data(), 2); // copy opcode.
 	deflate(&zstream_, Z_FINISH);
 	deflateEnd(&zstream_);
+
+	memcpy(compression_buffer_+(zstream_.total_out - 3), buffer.data()-(buffer.size() - 3), 3); // copy footer
+	buffer.swap(anh::ByteBuffer((const unsigned char*)compression_buffer_, zstream_.total_out));
 }
 
 

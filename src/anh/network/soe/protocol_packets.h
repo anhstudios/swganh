@@ -280,7 +280,7 @@ struct NetStatsClient
 		buffer.write<uint32_t>(anh::bigToHost<uint32_t>(longest_update));
 		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(packets_sent));
 		buffer.write<uint64_t>(anh::bigToHost<uint64_t>(packets_received));
-		footer.serialize(buffer);
+		//footer.serialize(buffer);
 	}
 
 	void deserialize(anh::ByteBuffer& buffer) {
@@ -290,7 +290,9 @@ struct NetStatsClient
 		average_update = buffer.read<uint32_t>(true);
 		shortest_update = buffer.read<uint32_t>(true);
 		longest_update = buffer.read<uint32_t>(true);
-
+		packets_sent = buffer.read<uint64_t>(true);
+		packets_received = buffer.read<uint64_t>(true);
+		footer.deserialize(buffer);
 	}
 
 	uint16_t	soe_opcode;
@@ -353,10 +355,9 @@ struct NetStatsServer
 
 struct ChildDataA
 {
-	ChildDataA(uint16_t sequence_, ByteBuffer& data_)
+	ChildDataA(uint16_t sequence_)
 		: soe_opcode(CHILD_DATA_A)
 		, sequence(sequence_)
-		, data(data_)
 		, footer(false) { }
 
 	ChildDataA(anh::ByteBuffer& buffer)
@@ -365,30 +366,70 @@ struct ChildDataA
 	void serialize(anh::ByteBuffer& buffer) {
 		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
 		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(sequence));
-		buffer.append(data);
+
+		// Serialize as a Multi-Data
+		if(messages.size() > 1)
+		{
+			buffer.write<uint16_t>(anh::bigToHost<uint16_t>(0x19));
+			std::for_each(messages.begin(), messages.end(), [=, &buffer](anh::ByteBuffer& item){
+				uint8_t sizezz = item.size();
+				buffer.write<uint8_t>(item.size());
+				buffer.write((const unsigned char*)item.data(), item.size());
+			});
+		}
+		else
+		{
+			buffer.write<uint16_t>(anh::bigToHost<uint16_t>(priority));
+			buffer.append(messages.front());
+
+		}
+
 		footer.serialize(buffer);
 	}
 
 	void deserialize(anh::ByteBuffer& buffer) {
 		soe_opcode = buffer.read<uint16_t>(true);
 		sequence = buffer.read<uint16_t>(true);
-		// Copy the data between the SOE Opcode / Sequence and the footer.
-		data = ByteBuffer((const unsigned char*)buffer.data() + 2, buffer.size() - 5);
+		priority = buffer.read<uint16_t>();
+		
+		// Check for multi-data packet.
+		if(priority == 0x0019)
+		{
+			while(true)
+			{
+				uint8_t next_chunk_size = buffer.read<uint8_t>();
+
+				// Varify that we have enough bytes left to copy.
+				if((buffer.size() - 3) - buffer.read_position() >= next_chunk_size)
+				{
+					messages.push_back(anh::ByteBuffer((const unsigned char*)buffer.data() + buffer.read_position(), next_chunk_size));
+				}
+				else
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			messages.push_back(ByteBuffer((const unsigned char*)buffer.data() + 4, buffer.size() - 7));
+		}
+
 		footer.deserialize(buffer);
 	}
 
-	uint16_t	soe_opcode;
-	uint16_t	sequence;
-	ByteBuffer	data;
-	Footer		footer;
+	uint16_t							soe_opcode;
+	uint16_t							sequence;
+	uint16_t							priority;
+	std::list<anh::ByteBuffer>			messages;
+	Footer								footer;
 };
 
 struct DataFragA
 {
-	DataFragA(uint16_t sequence_, uint16_t frag_size_, ByteBuffer& buf_)
+	DataFragA(uint16_t sequence_, ByteBuffer& buf_)
 		: soe_opcode(DATA_FRAG_A)
 		, sequence(sequence_)
-		, frag_size(frag_size_)
 		, data(buf_)
 		, footer(true) { }
 
@@ -398,7 +439,6 @@ struct DataFragA
 	void serialize(anh::ByteBuffer& buffer) {
 		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(soe_opcode));
 		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(sequence));
-		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(frag_size));
 		buffer.append(data);
 		footer.serialize(buffer);
 	}
@@ -406,14 +446,12 @@ struct DataFragA
 	void deserialize(anh::ByteBuffer& buffer) {
 		soe_opcode = buffer.read<uint16_t>(true);
 		sequence = buffer.read<uint16_t>(true);
-		frag_size = buffer.read<uint16_t>(true);
-		data = ByteBuffer(buffer.data(), frag_size);
+		data = ByteBuffer(buffer.data(), buffer.size()-7);
 		footer.deserialize(buffer);
 	}
 
 	uint16_t	soe_opcode;
 	uint16_t	sequence;
-	uint16_t	frag_size;
 	ByteBuffer	data;
 	Footer		footer;
 };

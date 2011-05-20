@@ -44,6 +44,7 @@ namespace soe {
 DecompressionFilter::DecompressionFilter(Service* service)
 	: tbb::filter(parallel)
 	, service_(service)
+	, decompression_buffer_(new char[496])
 {
 }
 
@@ -71,12 +72,17 @@ void DecompressionFilter::Decompress_(std::shared_ptr<anh::ByteBuffer> buffer)
 	zstream_.next_in = Z_NULL;
 	inflateInit(&zstream_);
 
-	zstream_.next_in = (Bytef*)buffer->data()+ 2; // Start of the packet + 2 to pass opcode.
-	zstream_.avail_in = buffer->size()-5; // Do not process the SOE Opcode or the Footer.
-	zstream_.next_out = (Bytef*)buffer->data()+ 2;
-	zstream_.avail_out = buffer->capacity();
+	zstream_.next_in = (Bytef*)buffer->data() + 2; // Start of the packet + 2 to pass opcode.
+	zstream_.avail_in = buffer->size() - 5; // Do not process the SOE Opcode or the Footer.
+	zstream_.next_out = (Bytef*)decompression_buffer_ + 2; // Write passed the opcode.
+	zstream_.avail_out = 496 - 5; // Don't write over the opcode.
 
+	memcpy(decompression_buffer_, buffer->data(), 2); // copy opcode.
+	inflate(&zstream_, Z_FINISH); // Decompress Data
 	inflateEnd(&zstream_);
+
+	memcpy(decompression_buffer_+(zstream_.total_out - 3), buffer->data()+(buffer->size()-3), 3); // Copy Footer.
+	buffer->swap(anh::ByteBuffer((const unsigned char*)decompression_buffer_, zstream_.total_out + 5));
 }
 
 } // namespace soe

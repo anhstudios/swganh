@@ -52,6 +52,7 @@ private:
 
 	z_stream		zstream_;
 	Service*		service_;
+	char*			compression_buffer_;
 };
 
 } // namespace soe

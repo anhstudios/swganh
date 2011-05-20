@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     ///
     app.startup();
     boost::this_thread::sleep(boost::posix_time::milliseconds(5));
-    if (/*app.hasStarted()*/true) {
+    if (true) {
         while(true){
             app.process();
             if (app.kbHit())

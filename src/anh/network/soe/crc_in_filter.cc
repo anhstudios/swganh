@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include <anh/network/soe/service.h>
-#include <anh/network/soe/crc_filter.h>
+#include <anh/network/soe/crc_in_filter.h>
 #include <anh/network/soe/incoming_packet.h>
 #include <anh/byte_buffer.h>
 #include <anh/crc.h>
@@ -41,17 +41,17 @@ namespace anh {
 namespace network {
 namespace soe {
 
-CrcFilter::CrcFilter(Service* service)
+CrcInFilter::CrcInFilter(Service* service)
 	: tbb::filter(parallel)
 	, service_(service)
 {
 }
 
-CrcFilter::~CrcFilter(void)
+CrcInFilter::~CrcInFilter(void)
 {
 }
 
-void* CrcFilter::operator()(void* item)
+void* CrcInFilter::operator()(void* item)
 {
 	// TODO: ENDIANNESS?
 	IncomingPacket* packet = (IncomingPacket*)item;
