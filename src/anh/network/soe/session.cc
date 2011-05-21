@@ -81,7 +81,7 @@ void Session::Update(void)
 		outgoing_data_message_.serialize(*message);
 		SendSoePacket(message);
 
-		sent_messages_.insert(SequencedMessageMap::value_type(outgoing_data_message_.sequence, message));
+		sent_messages_.insert(SequencedMessageMap::value_type(0, message));
 
 		outgoing_data_message_.sequence++;
 		server_sequence_++;
@@ -125,6 +125,7 @@ void Session::HandleSoeMessage(anh::ByteBuffer& message)
 	case CHILD_DATA_A:						{ handleChildDataA_(ChildDataA(message)); break; }
 	case DATA_FRAG_A:						{ handleDataFragA_(DataFragA(message)); break; }
 	case ACK_A:								{ handleAckA_(AckA(message)); break; }
+	case OUT_OF_ORDER_A:					{ handleOutOfOrderA_(OutOfOrderA(message)); break; }
 	case FATAL_ERROR:						{ Close(); break; }
 	default:
 		LOG(INFO) << "Unhandled SOE Opcode" << message.peek<uint16_t>(true);
@@ -265,6 +266,19 @@ void Session::handleAckA_(AckA& packet)
 	}
 }
 
+void Session::handleOutOfOrderA_(OutOfOrderA& packet)
+{
+	DLOG(WARNING) << "Handle OUT_OF_ORDER_A";
+
+	SequencedMessageMapIterator begin = sent_messages_.find(last_acknowledged_sequence_);
+	SequencedMessageMapIterator end = sent_messages_.end();
+
+	std::for_each(begin, end, [=](SequencedMessageMap::value_type& item) {
+		SendSoePacket(item.second);
+	});
+
+}
+
 void Session::SendSoePacket(std::shared_ptr<anh::ByteBuffer> message)
 {
 	service_->outgoing_messages_.push_back(new OutgoingPacket(shared_from_this(), message));
@@ -279,7 +293,7 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
 	else
 	{
 		// Tell the client we have received an Out of Order sequence.
-		OutOfOrderA	out_of_order(current_client_sequence_ + 1);
+		OutOfOrderA	out_of_order(sequence);
 		std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
 		out_of_order.serialize(*buffer);
 		SendSoePacket(buffer);

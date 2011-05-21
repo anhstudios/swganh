@@ -100,6 +100,7 @@ private:
 	void handleChildDataA_(ChildDataA& packet);
 	void handleDataFragA_(DataFragA& packet);
 	void handleAckA_(AckA& packet);
+	void handleOutOfOrderA_(OutOfOrderA& packet);
 
 	void SendSoePacket(std::shared_ptr<anh::ByteBuffer> message);
 
