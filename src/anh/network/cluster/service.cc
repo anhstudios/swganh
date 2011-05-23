@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/network/cluster/service.h>
 #include <anh/network/cluster/socket.h>
-#include <anh/server_directory/server_directory_interface.h>
 
 #ifdef ERROR
 #undef ERROR
@@ -44,21 +43,35 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-Service::Service(shared_ptr<ServerDirectoryInterface> directory)
+Service::Service(boost::asio::io_service& io_service, uint16_t port, shared_ptr<ServerDirectoryInterface> directory)
     : directory_(directory)
+    , io_service_(io_service)
+    , acceptor_(io_service, tcp::endpoint(tcp::v4(), port ))
 {
     proc_list_ = directory_->getProcessSnapshot(directory_->cluster());
-    // nee
 }
 
 Service::~Service(void)
 {	
+    Shutdown();
 }
 
 void Service::Start(void)
 {
-    // startup all connections
-    
+    auto conn = std::make_shared<TCPConnection>(io_service_);
+    acceptor_.async_accept(conn->socket(), std::bind(&Service::OnNewConnection_, this, 
+        std::placeholders::_1));
+
+    // open up a connection for each cluster
+    //std::for_each(proc_list_.begin(), proc_list_.end(), [&] (anh::server_directory::Process process) {
+    //    auto conn = std::make_shared<TCPConnection>(io_service_);
+    //    // create endpoint
+    //    auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4(), process.tcp_port());
+    //    // open connection to endpoint
+    //    conn->socket().connect(endpoint);
+    //    // insert into a map for later use...
+    //    socket_map_.insert(SocketPair(endpoint, conn->socket()));
+    //});
 	
 }
 
@@ -76,9 +89,19 @@ void Service::Shutdown(void)
 	socket_.reset();
 }
 
-void Service::OnNewConnection_(boost::asio::ip::tcp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message)
+void Service::OnNewConnection_(const boost::system::error_code& error)
 {
-	
+    auto conn = std::make_shared<TCPConnection>(io_service_);
+    if (! error)
+    {
+        conn->Start();
+        conn = std::make_shared<TCPConnection>(io_service_);
+        acceptor_.async_accept(conn->socket(), std::bind(&Service::OnNewConnection_, shared_from_this(), 
+            std::placeholders::_1));
+
+        // insert into map  ??
+        //connection_map_.insert(ConnectionPair(1,2));
+    }
 }
 
 } // namespace soe

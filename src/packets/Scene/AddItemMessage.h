@@ -8,9 +8,9 @@
 namespace packets {
 struct AddItemMessage : public BasePacket
 {
-explicit AddItemMessage(std::shared_ptr<network::Session> session_ = nullptr)
+explicit AddItemMessage(std::shared_ptr<anh::network::soe::Session> session_ = nullptr)
         : BasePacket(session_, ZONE){}
-    AddItemMessage(std::shared_ptr<network::Session> session_ = nullptr, uint64_t object_id_ = 0)
+    AddItemMessage(std::shared_ptr<anh::network::soe::Session> session_ = nullptr, uint64_t object_id_ = 0)
         : BasePacket(session_, CLIENT)
         , object_id(object_id_)
     {}
@@ -19,7 +19,7 @@ explicit AddItemMessage(std::shared_ptr<network::Session> session_ = nullptr)
 
 class AddItemMessageEvent : public anh::event_dispatcher::BasicEvent<AddItemMessage>{
 public:    
-    AddItemMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0) 
+    AddItemMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<AddItemMessage>("AddItemMessage"){}
     virtual ~AddItemMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

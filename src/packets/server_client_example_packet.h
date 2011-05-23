@@ -7,9 +7,9 @@
 namespace packets {
 struct ClientServerExampleMessage : public BasePacket
 {
-    ClientServerExampleMessage(std::shared_ptr<network::Session> session_ )
+    ClientServerExampleMessage(std::shared_ptr<anh::network::soe::Session> session_ )
         : BasePacket(session_, ZONE){}
-    ClientServerExampleMessage(std::shared_ptr<network::Session> session_ = nullptr, std::string ASCII_ = std::string()
+    ClientServerExampleMessage(std::shared_ptr<anh::network::soe::Session> session_ = nullptr, std::string ASCII_ = std::string()
 	, std::wstring UNICODE_ = std::wstring(), uint8_t byte_ = 0, uint16_t positive_SHORT_ = 0, int16_t negative_SHORT_ = 0, uint32_t positive_INT_ = 0, int32_t negative_INT_ = 0, uint64_t positive_LONG_ = 0, int64_t negative_LONG_ = 0, float 	float_var_ = 0.0f)
         : BasePacket(session_, CLIENT)
 		, ASCII(ASCII_)
@@ -38,7 +38,7 @@ struct ClientServerExampleMessage : public BasePacket
 
 class ClientServerExampleMessageEvent : public anh::event_dispatcher::BasicEvent<ClientServerExampleMessage>{
 public:    
-    ClientServerExampleMessageEvent(std::shared_ptr<network::Session> session_ = nullptr, std::string ASCII_ = std::string()
+    ClientServerExampleMessageEvent(std::shared_ptr<anh::network::soe::Session> session_ = nullptr, std::string ASCII_ = std::string()
 	, std::wstring UNICODE_ = std::wstring(), uint8_t byte_ = 0, uint16_t positive_SHORT_ = 0, int16_t negative_SHORT_ = 0, uint32_t positive_INT_ = 0, int32_t negative_INT_ = 0, uint64_t positive_LONG_ = 0, int64_t negative_LONG_ = 0, float 	float_var_ = 0.0f) 
 	: anh::event_dispatcher::BasicEvent<ClientServerExampleMessage>("ClientServerExampleMessage"){}
     virtual ~ClientServerExampleMessageEvent() {}

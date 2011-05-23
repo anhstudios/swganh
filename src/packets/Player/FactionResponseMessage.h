@@ -18,7 +18,7 @@ struct FactionPoints {
 
 struct FactionResponseMessage  : public BasePacket
 {
-    FactionResponseMessage (std::shared_ptr<network::Session> session_  = nullptr, std::string& faction_rank_ = std::string(), int32_t rebel_points_ = 0
+    FactionResponseMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& faction_rank_ = std::string(), int32_t rebel_points_ = 0
         , int32_t imperial_points_ = 0, uint32_t faction_names_list_count_ = 0, std::list<FactionName> faction_names_list_ = std::list<FactionName>()
         , uint32_t faction_points_list_count_ = 0, std::list<FactionPoints> faction_points_list_ = std::list<FactionPoints>())
         : BasePacket(session_, CLIENT)
@@ -40,7 +40,7 @@ struct FactionResponseMessage  : public BasePacket
 
 class FactionResponseMessageEvent : public anh::event_dispatcher::BasicEvent<FactionResponseMessage >{
 public:    
-    FactionResponseMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& faction_rank_ = std::string(), int32_t rebel_points_ = 0
+    FactionResponseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& faction_rank_ = std::string(), int32_t rebel_points_ = 0
         , int32_t imperial_points_ = 0, uint32_t faction_names_list_count_ = 0, std::list<FactionName> faction_names_list_ = std::list<FactionName>()
         , uint32_t faction_points_list_count_ = 0, std::list<FactionPoints> faction_points_list_ = std::list<FactionPoints>())
         : anh::event_dispatcher::BasicEvent<FactionResponseMessage >("FactionResponseMessage"){}

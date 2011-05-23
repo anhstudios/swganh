@@ -7,7 +7,7 @@
 namespace packets {
 struct SurveyMessage  : public BasePacket
 {
-    SurveyMessage (std::shared_ptr<network::Session> session_  = nullptr, uint32_t survey_size_ = 0, float x_ = 0.0f
+    SurveyMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t survey_size_ = 0, float x_ = 0.0f
         , float y_ = 0.0f, float z_ = 0.0f, float ratio_ = 0.0f)
         : BasePacket(session_, CLIENT)
         , survey_size(survey_size_)
@@ -22,7 +22,7 @@ struct SurveyMessage  : public BasePacket
 
 class SurveyMessageEvent : public anh::event_dispatcher::BasicEvent<SurveyMessage>{
 public:    
-    SurveyMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t survey_size_ = 0, float x_ = 0.0f
+    SurveyMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t survey_size_ = 0, float x_ = 0.0f
         , float y_ = 0.0f, float z_ = 0.0f, float ratio_ = 0.0f) 
         : anh::event_dispatcher::BasicEvent<SurveyMessage>("SurveyMessage"){}
     virtual ~SurveyMessageEvent() {}

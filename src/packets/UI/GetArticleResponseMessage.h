@@ -7,7 +7,7 @@
 namespace packets {
 struct GetArticleResponseMessage  : public BasePacket
 {
-    GetArticleResponseMessage (std::shared_ptr<network::Session> session_  = nullptr, int32_t options_ = 0
+    GetArticleResponseMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, int32_t options_ = 0
         , std::wstring& text_ = std::wstring())
         : BasePacket(session_, CLIENT)
         , options(options_)
@@ -19,7 +19,7 @@ struct GetArticleResponseMessage  : public BasePacket
 
 class GetArticleResponseMessageEvent : public anh::event_dispatcher::BasicEvent<GetArticleResponseMessage >{
 public:    
-    GetArticleResponseMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, int32_t options_ = 0
+    GetArticleResponseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, int32_t options_ = 0
         , std::wstring& text_ = std::wstring()) 
         : anh::event_dispatcher::BasicEvent<GetArticleResponseMessage >("GetArticleResponseMessage"){}
     virtual ~GetArticleResponseMessageEvent() {}

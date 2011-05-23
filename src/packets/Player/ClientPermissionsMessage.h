@@ -7,7 +7,7 @@
 namespace packets {
 struct ClientPermissionsMessage : public BasePacket
 {
-    ClientPermissionsMessage(std::shared_ptr<network::Session> session_ = nullptr, uint8_t galaxy_open_ = 0
+    ClientPermissionsMessage(std::shared_ptr<anh::network::soe::Session> session_ = nullptr, uint8_t galaxy_open_ = 0
         , uint8_t charslot_open_ = 0, uint8_t unl_char_creation_ = 0)
         : BasePacket(session_, CLIENT)
         , galaxy_open(galaxy_open_)
@@ -21,7 +21,7 @@ struct ClientPermissionsMessage : public BasePacket
 
 class ClientPermissionsMessageEvent : public anh::event_dispatcher::BasicEvent<ClientPermissionsMessage>{
 public:    
-    ClientPermissionsMessageEvent(std::shared_ptr<network::Session> session_ = nullptr, uint8_t galaxy_open_ = 0
+    ClientPermissionsMessageEvent(std::shared_ptr<anh::network::soe::Session> session_ = nullptr, uint8_t galaxy_open_ = 0
         , uint8_t charslot_open_ = 0, uint8_t unl_char_creation_ = 0) 
         : anh::event_dispatcher::BasicEvent<ClientPermissionsMessage>("ClientPermissionsMessage"){}
     virtual ~ClientPermissionsMessageEvent() {}

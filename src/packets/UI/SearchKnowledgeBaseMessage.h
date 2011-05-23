@@ -7,7 +7,7 @@
 namespace packets {
 struct SearchKnowledgeBaseMessage : public BasePacket
 {
-    SearchKnowledgeBaseMessage(std::shared_ptr<network::Session> session_  = nullptr, std::wstring search_text_ = std::wstring() )
+    SearchKnowledgeBaseMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::wstring search_text_ = std::wstring() )
         : BasePacket(session_, ZONE)
     , search_text(search_text_) {}
     std::wstring search_text;
@@ -15,7 +15,7 @@ struct SearchKnowledgeBaseMessage : public BasePacket
 
 class SearchKnowledgeBaseMessageEvent : public anh::event_dispatcher::BasicEvent<SearchKnowledgeBaseMessage>{
 public:    
-    SearchKnowledgeBaseMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, std::wstring search_text_ = std::wstring()) 
+    SearchKnowledgeBaseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::wstring search_text_ = std::wstring()) 
         : anh::event_dispatcher::BasicEvent<SearchKnowledgeBaseMessage>("SearchKnowledgeBaseMessage"){}
     virtual ~SearchKnowledgeBaseMessageEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {

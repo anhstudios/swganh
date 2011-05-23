@@ -18,7 +18,7 @@ struct Character
 };
 struct EnumerateCharacterId : public BasePacket
 {
-    EnumerateCharacterId(std::shared_ptr<network::Session> session_  = nullptr,
+    EnumerateCharacterId(std::shared_ptr<anh::network::soe::Session> session_  = nullptr,
         std::list<Character> characters_ =  std::list<Character>())
         : BasePacket(session_, CLIENT)
         , characters(characters_)
@@ -29,7 +29,7 @@ struct EnumerateCharacterId : public BasePacket
 class EnumerateCharacterIdEvent : public anh::event_dispatcher::BasicEvent<EnumerateCharacterId>{
 public:    
     EnumerateCharacterIdEvent(
-        std::list<Character> characters_ =  std::list<Character>(), std::shared_ptr<network::Session> session_  = nullptr) 
+        std::list<Character> characters_ =  std::list<Character>(), std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<EnumerateCharacterId>("EnumerateCharacterId"){}
     virtual ~EnumerateCharacterIdEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

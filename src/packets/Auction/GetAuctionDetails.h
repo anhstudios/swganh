@@ -7,7 +7,7 @@
 namespace packets {
 struct GetAuctionDetails  : public BasePacket
 {
-    explicit GetAuctionDetails (std::shared_ptr<network::Session> session_  = nullptr)
+    explicit GetAuctionDetails (std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, SHARED_SERVICE)
         {}
     uint64_t auction_id;
@@ -15,7 +15,7 @@ struct GetAuctionDetails  : public BasePacket
 
 class GetAuctionDetailsEvent : public anh::event_dispatcher::BasicEvent<GetAuctionDetails >{
 public:    
-    GetAuctionDetailsEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    GetAuctionDetailsEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<GetAuctionDetails >("GetAuctionDetails"){}
     virtual ~GetAuctionDetailsEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {

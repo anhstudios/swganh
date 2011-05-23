@@ -12,7 +12,7 @@ struct LocationCoords {
 };
 struct PlanetTravelPointListResponse  : public BasePacket
 {
-    PlanetTravelPointListResponse (std::shared_ptr<network::Session> session_  = nullptr, std::string& planet_string_ = std::string(),
+    PlanetTravelPointListResponse (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& planet_string_ = std::string(),
         std::list<std::string> location_names_ = std::list<std::string>(), std::list<LocationCoords> location_coords_ = std::list<LocationCoords>(), 
         std::list<int32_t> location_taxes_ = std::list<int32_t>(), std::list<uint8_t> location_startport_flag_ = std::list<uint8_t>())
         : BasePacket(session_, CLIENT)
@@ -30,7 +30,7 @@ struct PlanetTravelPointListResponse  : public BasePacket
 
 class PlanetTravelPointListResponseEvent : public anh::event_dispatcher::BasicEvent<PlanetTravelPointListResponse >{
 public:    
-    PlanetTravelPointListResponseEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& planet_string_ = std::string(),
+    PlanetTravelPointListResponseEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& planet_string_ = std::string(),
         std::list<std::string> location_names_ = std::list<std::string>(), std::list<LocationCoords> location_coords_ = std::list<LocationCoords>(), 
         std::list<int32_t> location_taxes_ = std::list<int32_t>(), std::list<uint8_t> location_startport_flag_ = std::list<uint8_t>()) 
         : anh::event_dispatcher::BasicEvent<PlanetTravelPointListResponse >("PlanetTravelPointListResponse"){}

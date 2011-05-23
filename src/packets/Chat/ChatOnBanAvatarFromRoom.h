@@ -8,7 +8,7 @@
 namespace packets {
 struct ChatOnBanAvatarFromRoom   : public BasePacket
 {
-    ChatOnBanAvatarFromRoom  (std::shared_ptr<network::Session> session_  = nullptr, std::string& room_name_ = std::string(""),
+    ChatOnBanAvatarFromRoom  (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& room_name_ = std::string(""),
         std::string& game_from_name_ = std::string(""), std::string& server_from_name_ = std::string(""),std::string& moderator_name_ = std::string(""),
         std::string& game_to_name_ = std::string(""), std::string& server_to_name_ = std::string(""), std::string& player_name_ = std::string("") , 
         int32_t success_bitmask_ = 0, int32_t req_id_ = 0)
@@ -35,7 +35,7 @@ struct ChatOnBanAvatarFromRoom   : public BasePacket
 
 class ChatOnBanAvatarFromRoomEvent : public anh::event_dispatcher::BasicEvent<ChatOnBanAvatarFromRoom >{
 public:    
-    ChatOnBanAvatarFromRoomEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& room_name_ = std::string(""),
+    ChatOnBanAvatarFromRoomEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& room_name_ = std::string(""),
         std::string& game_from_name_ = std::string(""), std::string& server_from_name_ = std::string(""),std::string& moderator_name_ = std::string(""),
         std::string& game_to_name_ = std::string(""), std::string& server_to_name_ = std::string(""), std::string& player_name_ = std::string("") , 
         int32_t success_bitmask_ = 0, int32_t req_id_ = 0) 

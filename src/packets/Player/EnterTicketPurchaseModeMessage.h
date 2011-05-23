@@ -7,7 +7,7 @@
 namespace packets {
 struct EnterTicketPurchaseModeMessage  : public BasePacket
 {
-    EnterTicketPurchaseModeMessage (std::shared_ptr<network::Session> session_  = nullptr, std::string& planet_ = std::string()
+    EnterTicketPurchaseModeMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& planet_ = std::string()
         , std::string& destination_ = std::string())
         : BasePacket(session_, CLIENT)
         , planet(planet_)
@@ -19,7 +19,7 @@ struct EnterTicketPurchaseModeMessage  : public BasePacket
 
 class EnterTicketPurchaseModeMessageEvent : public anh::event_dispatcher::BasicEvent<EnterTicketPurchaseModeMessage >{
 public:    
-    EnterTicketPurchaseModeMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& planet_ = std::string()
+    EnterTicketPurchaseModeMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& planet_ = std::string()
         , std::string& destination_ = std::string()) 
         : anh::event_dispatcher::BasicEvent<EnterTicketPurchaseModeMessage >("EnterTicketPurchaseModeMessage"){}
     virtual ~EnterTicketPurchaseModeMessageEvent() {}

@@ -7,7 +7,7 @@
 namespace packets {
 struct IsVendorOwnerResponseMessage  : public BasePacket
 {
-    IsVendorOwnerResponseMessage (std::shared_ptr<network::Session> session_  = nullptr, uint32_t permission_flag_ = 0, uint32_t error_message_ = 0
+    IsVendorOwnerResponseMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t permission_flag_ = 0, uint32_t error_message_ = 0
         , uint64_t terminal_id_ = 0, std::string& vendor_info_ = std::string(""), uint16_t unknown_ = 0x64)
         : BasePacket(session_, CLIENT)
 		, permission_flag(permission_flag_)
@@ -25,7 +25,7 @@ struct IsVendorOwnerResponseMessage  : public BasePacket
 
 class IsVendorOwnerResponseMessageEvent : public anh::event_dispatcher::BasicEvent<IsVendorOwnerResponseMessage >{
 public:    
-    IsVendorOwnerResponseMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t permission_flag_ = 0, uint32_t error_message_ = 0
+    IsVendorOwnerResponseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t permission_flag_ = 0, uint32_t error_message_ = 0
         , uint64_t terminal_id_ = 0, std::string& vendor_info_ = std::string(""), uint16_t unknown_ = 0x64) 
         : anh::event_dispatcher::BasicEvent<IsVendorOwnerResponseMessage >("IsVendorOwnerResponseMessage"){}
     virtual ~IsVendorOwnerResponseMessageEvent() {}

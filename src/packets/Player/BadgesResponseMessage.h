@@ -10,7 +10,7 @@
 namespace packets {
 struct BadgesResponseMessage : public BasePacket
 {
-    BadgesResponseMessage(std::shared_ptr<network::Session> session_= nullptr, uint64_t character_id_ = 0, 
+    BadgesResponseMessage(std::shared_ptr<anh::network::soe::Session> session_= nullptr, uint64_t character_id_ = 0, 
         uint32_t bit_mask_count_ = 0, std::list<int32_t> bitmask_ = std::list<int32_t>())
         : BasePacket(session_, CLIENT)
         , character_id(character_id_)
@@ -24,7 +24,7 @@ struct BadgesResponseMessage : public BasePacket
 
 class BadgesResponseMessageEvent : public anh::event_dispatcher::BasicEvent<BadgesResponseMessage>{
 public:    
-    BadgesResponseMessageEvent(std::shared_ptr<network::Session> session_= nullptr, uint64_t character_id_ = 0, 
+    BadgesResponseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_= nullptr, uint64_t character_id_ = 0, 
         uint32_t bit_mask_count_ = 0, std::list<int32_t> bitmask_ = std::list<int32_t>()) 
         : anh::event_dispatcher::BasicEvent<BadgesResponseMessage>("BadgesResponseMessage"){}
     virtual ~BadgesResponseMessageEvent() {}

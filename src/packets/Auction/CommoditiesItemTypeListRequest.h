@@ -7,7 +7,7 @@
 namespace packets {
 struct CommoditiesItemTypeListRequest : public BasePacket
 {
-    explicit CommoditiesItemTypeListRequest(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit CommoditiesItemTypeListRequest(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, SHARED_SERVICE){}
 
     std::string from_string;

@@ -9,7 +9,7 @@ struct ConGenericMessage : public BasePacket
 {
     ConGenericMessage()
         : BasePacket() {}
-    explicit ConGenericMessage(std::shared_ptr<network::Session> session_  = nullptr, std::string& message_ = std::string("")
+    explicit ConGenericMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& message_ = std::string("")
         , uint32_t spacer_ = 0 )
     : BasePacket(session_, CLIENT)
     , message(message_)
@@ -21,7 +21,7 @@ struct ConGenericMessage : public BasePacket
 
 class ConGenericMessageEvent : public anh::event_dispatcher::BasicEvent<ConGenericMessage>{
 public:    
-    ConGenericMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& message_ = std::string("")
+    ConGenericMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& message_ = std::string("")
         , uint32_t spacer_ = 0) : anh::event_dispatcher::BasicEvent<ConGenericMessage>("ConGenericMessage"){}
     virtual ~ConGenericMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

@@ -7,7 +7,7 @@
 namespace packets {
 struct CmdStartScene : public BasePacket
 {
-    explicit CmdStartScene(std::shared_ptr<network::Session> session_  = nullptr, uint8_t ignore_layout_files_ = 0
+    explicit CmdStartScene(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint8_t ignore_layout_files_ = 0
         , uint64_t character_id_ = 0, std::string& terrain_map_ = std::string(), float x_= 0.0f, float y_= 0.0f, float z_ = 0.0f
         , std::string& shared_race_template_ = std::string(), uint64_t galactic_time_ = 0)
     : BasePacket(session_, CLIENT)
@@ -32,7 +32,7 @@ struct CmdStartScene : public BasePacket
 
 class CmdStartSceneEvent : public anh::event_dispatcher::BasicEvent<CmdStartScene>{
 public:    
-    CmdStartSceneEvent(std::shared_ptr<network::Session> session_  = nullptr, uint8_t ignore_layout_files_ = 0
+    CmdStartSceneEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint8_t ignore_layout_files_ = 0
         , uint64_t character_id_ = 0, std::string& terrain_map_ = std::string(), float x_= 0.0f, float y_= 0.0f, float z_ = 0.0f
         , std::string& shared_race_template_ = std::string(), uint64_t galactic_time_ = 0) 
         : anh::event_dispatcher::BasicEvent<CmdStartScene>("CmdStartScene"){}

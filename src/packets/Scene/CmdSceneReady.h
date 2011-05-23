@@ -8,15 +8,15 @@
 namespace packets {
 struct CmdSceneReady : public BasePacket
 {
-    explicit CmdSceneReady(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit CmdSceneReady(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, ZONE){}
-    CmdSceneReady(std::shared_ptr<network::Session> session_, RoutingDestination dest)
+    CmdSceneReady(std::shared_ptr<anh::network::soe::Session> session_, RoutingDestination dest)
         : BasePacket(session_, dest){}
 };
 
 class CmdSceneReadyEvent : public anh::event_dispatcher::BasicEvent<CmdSceneReady>{
 public:    
-    CmdSceneReadyEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    CmdSceneReadyEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<CmdSceneReady>("CmdSceneReady"){}
     virtual ~CmdSceneReadyEvent() {}
 };

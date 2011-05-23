@@ -7,14 +7,14 @@
 namespace packets {
 struct DenyTradeMessage : public BasePacket
 {
-    DenyTradeMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    DenyTradeMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, CLIENT)
         {}
 };
 
 class DenyTradeMessageEvent : public anh::event_dispatcher::BasicEvent<DenyTradeMessage>{
 public:    
-    DenyTradeMessageEvent(std::shared_ptr<network::Session> session_  = nullptr)
+    DenyTradeMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : anh::event_dispatcher::BasicEvent<DenyTradeMessage>("DenyTradeMessage"){}
     virtual ~DenyTradeMessageEvent() {}
 };

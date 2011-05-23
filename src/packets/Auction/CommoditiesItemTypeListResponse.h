@@ -7,7 +7,7 @@
 namespace packets {
 struct CommoditiesItemTypeListResponse : public BasePacket
 {
-    explicit CommoditiesItemTypeListResponse(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit CommoditiesItemTypeListResponse(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, SHARED_SERVICE){}
     // server.total items ex: Shadowfire.4606
     std::string server_num_items;
@@ -21,7 +21,7 @@ struct CommoditiesItemTypeListResponse : public BasePacket
 
 class CommoditiesItemTypeListResponseEvent : public anh::event_dispatcher::BasicEvent<CommoditiesItemTypeListResponse>{
 public:    
-    CommoditiesItemTypeListResponseEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    CommoditiesItemTypeListResponseEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<CommoditiesItemTypeListResponse>("CommoditiesItemTypeListResponse"){}
     virtual ~CommoditiesItemTypeListResponseEvent() {}
     void deserialize(anh::ByteBuffer& buffer) { 

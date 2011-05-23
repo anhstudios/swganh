@@ -45,6 +45,8 @@ public:
         int32_t new_status));
     MOCK_METHOD1(makePrimaryProcess, bool(std::shared_ptr<Process> process));
     MOCK_METHOD0(pulse, void());
+    MOCK_CONST_METHOD0(cluster, std::shared_ptr<Cluster>());
+    MOCK_CONST_METHOD0(process, std::shared_ptr<Process>());
     MOCK_CONST_METHOD0(getClusterSnapshot, ClusterList());
     MOCK_CONST_METHOD1(getProcessSnapshot, ProcessList(
         std::shared_ptr<Cluster> cluster));

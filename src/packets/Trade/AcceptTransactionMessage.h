@@ -8,12 +8,12 @@
 namespace packets {
 struct AcceptTransactionMessage : public BasePacket
 {
-    explicit AcceptTransactionMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit AcceptTransactionMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, CLIENT){}
 };
 class AcceptTransactionMessageEvent : public anh::event_dispatcher::BasicEvent<AcceptTransactionMessage>{
 public:    
-    AcceptTransactionMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    AcceptTransactionMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<AcceptTransactionMessage>("AcceptTransactionMessage"){}
     virtual ~AcceptTransactionMessageEvent() {}
 };

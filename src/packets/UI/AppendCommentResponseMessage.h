@@ -8,7 +8,7 @@
 namespace packets {
 struct AppendCommentResponseMessage : public BasePacket
 {
-    AppendCommentResponseMessage(std::shared_ptr<network::Session> session_  = nullptr, int32_t message_ = 0,int32_t ticket_ = 0)
+    AppendCommentResponseMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, int32_t message_ = 0,int32_t ticket_ = 0)
         : BasePacket(session_, CLIENT)
         , message(message_)
         , ticket(ticket_)
@@ -19,7 +19,7 @@ struct AppendCommentResponseMessage : public BasePacket
 
 class AppendCommentResponseMessageEvent : public anh::event_dispatcher::BasicEvent<AppendCommentResponseMessage>{
 public:    
-    AppendCommentResponseMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, int32_t message_ = 0,int32_t ticket_ = 0) 
+    AppendCommentResponseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, int32_t message_ = 0,int32_t ticket_ = 0) 
         : anh::event_dispatcher::BasicEvent<AppendCommentResponseMessage>("AppendCommentResponseMessage"){}
     virtual ~AppendCommentResponseMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

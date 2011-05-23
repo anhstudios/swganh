@@ -7,7 +7,7 @@
 namespace packets {
 struct UpdateTransformMessage  : public BasePacket
 {
-    UpdateTransformMessage (std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_= 0
+    UpdateTransformMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_= 0
         , float x_ = 0.0f, float y_ = 0.0f, float z_ = 0.0f, uint32_t update_counter_ = 0
         , int8_t posture_ = 0, int8_t direction_ = 0)
         : BasePacket(session_, CLIENT)
@@ -27,7 +27,7 @@ struct UpdateTransformMessage  : public BasePacket
 
 class UpdateTransformMessageEvent : public anh::event_dispatcher::BasicEvent<UpdateTransformMessage>{
 public:    
-    UpdateTransformMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_= 0
+    UpdateTransformMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_= 0
         , float x_ = 0.0f, float y_ = 0.0f, float z_ = 0.0f, uint32_t update_counter_ = 0
         , int8_t posture_ = 0, int8_t direction_ = 0 
         : anh::event_dispatcher::BasicEvent<UpdateTransformMessage>("UpdateTransformMessage"){}

@@ -1,10 +1,10 @@
 #ifndef ANH_PACKETS_BASE_PACKET_H
 #define ANH_PACKETS_BASE_PACKET_H
 
+#include <anh/network/soe/session.h>
 #include <anh/event_dispatcher/basic_event.h>
 #include <anh/memory.h>
 #include <packets/opcodes.h>
-#include "session.h"
 #include <cstdint>
 
 // Originates on Client
@@ -19,12 +19,12 @@ enum RoutingDestination
 struct BasePacket
 {
     BasePacket(){}
-    explicit BasePacket(std::shared_ptr<network::Session> session_, RoutingDestination destination_)
+    explicit BasePacket(std::shared_ptr<anh::network::soe::Session> session_, RoutingDestination destination_)
     : destination(destination_)
     , session(session_)
 	{}
     RoutingDestination destination;
-    std::shared_ptr<network::Session> session;
+    std::shared_ptr<anh::network::soe::Session> session;
 };
 typedef anh::event_dispatcher::BasicEvent<BasePacket> BasePacketEvent;
 } // packets

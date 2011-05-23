@@ -7,7 +7,7 @@
 namespace packets {
 struct UpdatePvpStatusMessage  : public BasePacket
 {
-    UpdatePvpStatusMessage (std::shared_ptr<network::Session> session_  = nullptr, uint32_t pvp_status_ = 0
+    UpdatePvpStatusMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t pvp_status_ = 0
         , uint32_t faction_= 0, uint64_t object_id_ = 0)
         : BasePacket(session_, CLIENT)
         , pvp_status(pvp_status_)
@@ -21,7 +21,7 @@ struct UpdatePvpStatusMessage  : public BasePacket
 
 class UpdatePvpStatusMessageEvent : public anh::event_dispatcher::BasicEvent<UpdatePvpStatusMessage>{
 public:    
-    UpdatePvpStatusMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t pvp_status_ = 0
+    UpdatePvpStatusMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t pvp_status_ = 0
         , uint32_t faction_= 0, uint64_t object_id_ = 0 
         : anh::event_dispatcher::BasicEvent<UpdatePvpStatusMessage>("UpdatePvpStatusMessage"){}
     virtual ~UpdatePvpStatusMessageEvent() {}

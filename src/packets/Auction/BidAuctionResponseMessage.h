@@ -8,7 +8,7 @@
 namespace packets {
 struct BidAuctionResponseMessage : public BasePacket
 {
-    BidAuctionResponseMessage(std::shared_ptr<network::Session> session_  = nullptr, uint64_t auction_id_ = 0, uint32_t error_id_ = 0)
+    BidAuctionResponseMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t auction_id_ = 0, uint32_t error_id_ = 0)
         : BasePacket(session_, CLIENT)
         , auction_id(auction_id_)
         , error_id(error_id_)
@@ -19,7 +19,7 @@ struct BidAuctionResponseMessage : public BasePacket
 
 class BidAuctionResponseMessageEvent : public anh::event_dispatcher::BasicEvent<BidAuctionResponseMessage>{
 public:    
-    BidAuctionResponseMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t auction_id_ = 0, uint32_t error_id_ = 0) 
+    BidAuctionResponseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t auction_id_ = 0, uint32_t error_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<BidAuctionResponseMessage>("BidAuctionResponseMessage"){}
     virtual ~BidAuctionResponseMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

@@ -7,7 +7,7 @@
 namespace packets {
 struct LoginClientId : public BasePacket
 {
-    explicit LoginClientId(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit LoginClientId(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, NONE){}
     std::string username;
     std::string password;
@@ -16,7 +16,7 @@ struct LoginClientId : public BasePacket
 
 class LoginClientIdEvent : public anh::event_dispatcher::BasicEvent<LoginClientId>{
 public:    
-    LoginClientIdEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    LoginClientIdEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<LoginClientId>("LoginClientId"){}
     virtual ~LoginClientIdEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {

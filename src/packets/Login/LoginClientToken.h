@@ -7,7 +7,7 @@
 namespace packets {
 struct LoginClientToken : public BasePacket
 {
-    explicit LoginClientToken(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit LoginClientToken(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, NONE){}
 	anh::ByteBuffer session_key;
     int32_t account_id;
@@ -17,7 +17,7 @@ struct LoginClientToken : public BasePacket
 
 class LoginClientTokenEvent : public anh::event_dispatcher::BasicEvent<LoginClientToken>{
 public:
-    LoginClientTokenEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    LoginClientTokenEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<LoginClientToken>("LoginClientToken")
 	{ 
 		account_id = 0xDEADBABE;

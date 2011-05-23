@@ -7,7 +7,7 @@
 namespace packets {
 struct ClientInactivityMessage : public BasePacket
 {
-    ClientInactivityMessage(std::shared_ptr<network::Session> session_  = nullptr, uint8_t afk_flag_ = 0)
+    ClientInactivityMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint8_t afk_flag_ = 0)
         : BasePacket(session_, CLIENT)
         , afk_flag(afk_flag_)
     {}
@@ -16,7 +16,7 @@ struct ClientInactivityMessage : public BasePacket
 
 class ClientInactivityMessageEvent : public anh::event_dispatcher::BasicEvent<ClientInactivityMessage>{
 public:    
-    ClientInactivityMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint8_t afk_flag_ = 0) 
+    ClientInactivityMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint8_t afk_flag_ = 0) 
         : anh::event_dispatcher::BasicEvent<ClientInactivityMessage>("ClientInactivityMessage"){}
     virtual ~ClientInactivityMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

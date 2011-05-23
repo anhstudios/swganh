@@ -7,7 +7,7 @@
 namespace packets {
 struct GetMapLocationsMessage  : public BasePacket
 {
-    GetMapLocationsMessage (std::shared_ptr<network::Session> session_  = nullptr)
+    GetMapLocationsMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, ZONE)
         {}
     std::string planet;
@@ -17,7 +17,7 @@ struct GetMapLocationsMessage  : public BasePacket
 
 class GetMapLocationsMessageEvent : public anh::event_dispatcher::BasicEvent<GetMapLocationsMessage >{
 public:    
-    GetMapLocationsMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    GetMapLocationsMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<GetMapLocationsMessage >("GetMapLocationsMessage"){}
     virtual ~GetMapLocationsMessageEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {

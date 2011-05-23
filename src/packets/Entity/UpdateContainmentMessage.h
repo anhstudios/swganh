@@ -7,7 +7,7 @@
 namespace packets {
 struct UpdateContainmentMessage  : public BasePacket
 {
-    UpdateContainmentMessage (std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0
+    UpdateContainmentMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0
         , uint64_t container_id_ = 0, int32_t slot_index_ = 0)
         : BasePacket(session_, CLIENT)
         , object_id(object_id_)
@@ -21,7 +21,7 @@ struct UpdateContainmentMessage  : public BasePacket
 
 class UpdateContainmentMessageEvent : public anh::event_dispatcher::BasicEvent<UpdateContainmentMessage>{
 public:    
-    UpdateContainmentMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0
+    UpdateContainmentMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0
         , uint64_t container_id_ = 0, int32_t slot_index_ = 0) 
         : anh::event_dispatcher::BasicEvent<UpdateContainmentMessage>("UpdateContainmentMessage"){}
     virtual ~UpdateContainmentMessageEvent() {}

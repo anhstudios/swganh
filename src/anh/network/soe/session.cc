@@ -213,7 +213,7 @@ void Session::handleChildDataA_(ChildDataA& packet)
 
 		packets::Character dead1ock;
 		dead1ock.character_id = 0xDEADDEAD;
-		dead1ock.name = L"Dead1ock";
+		dead1ock.name = L"Kronos";
 		dead1ock.server_id = 3;
 		dead1ock.status = 1;
 		dead1ock.race_gender_crc = 0x060E51D5;

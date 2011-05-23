@@ -7,7 +7,7 @@
 namespace packets {
 struct EnterStructurePlacementModeMessage  : public BasePacket
 {
-    EnterStructurePlacementModeMessage (std::shared_ptr<network::Session> session_  = nullptr, 
+    EnterStructurePlacementModeMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, 
         uint64_t deed_id_ = 0, std::string& obj_iff_ = std::string())
         : BasePacket(session_, CLIENT)
         , deed_id(deed_id_)
@@ -19,7 +19,7 @@ struct EnterStructurePlacementModeMessage  : public BasePacket
 
 class EnterStructurePlacementModeMessageEvent : public anh::event_dispatcher::BasicEvent<EnterStructurePlacementModeMessage >{
 public:    
-    EnterStructurePlacementModeMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, 
+    EnterStructurePlacementModeMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, 
         uint64_t deed_id_ = 0, std::string& obj_iff_ = std::string()) 
         : anh::event_dispatcher::BasicEvent<EnterStructurePlacementModeMessage >("EnterStructurePlacementModeMessage"){}
     virtual ~EnterStructurePlacementModeMessageEvent() {}

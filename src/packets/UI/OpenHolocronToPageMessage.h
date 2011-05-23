@@ -7,14 +7,14 @@
 namespace packets {
 struct OpenHolocronToPageMessage  : public BasePacket
 {
-    OpenHolocronToPageMessage (std::shared_ptr<network::Session> session_  = nullptr)
+    OpenHolocronToPageMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, CLIENT)
         {}
 };
 
 class OpenHolocronToPageMessageEvent : public anh::event_dispatcher::BasicEvent<OpenHolocronToPageMessage >{
 public:    
-    OpenHolocronToPageMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    OpenHolocronToPageMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<OpenHolocronToPageMessage >("OpenHolocronToPageMessage"){}
     virtual ~OpenHolocronToPageMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

@@ -9,7 +9,7 @@
 namespace packets {
 struct GiveMoneyMessage  : public BasePacket
 {
-    GiveMoneyMessage (std::shared_ptr<network::Session> session_  = nullptr, uint32_t money_ = 0)
+    GiveMoneyMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t money_ = 0)
         : BasePacket(session_, CLIENT)
         , money(money_)
         {}
@@ -18,7 +18,7 @@ struct GiveMoneyMessage  : public BasePacket
 
 class GiveMoneyMessageEvent : public anh::event_dispatcher::BasicEvent<GiveMoneyMessage>{
 public:    
-    GiveMoneyMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t money_ = 0) 
+    GiveMoneyMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t money_ = 0) 
         : anh::event_dispatcher::BasicEvent<GiveMoneyMessage>("GiveMoneyMessage"){}
     virtual ~GiveMoneyMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

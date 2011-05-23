@@ -7,7 +7,7 @@
 namespace packets {
 struct PlayClientEffectObjectMessage  : public BasePacket
 {
-    PlayClientEffectObjectMessage (std::shared_ptr<network::Session> session_  = nullptr, std::string& file_ = std::string(""), 
+    PlayClientEffectObjectMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& file_ = std::string(""), 
         std::string& aux_string_ = std::string(""),uint64_t object_id_ = 0)
         : BasePacket(session_, CLIENT)
         , file(file_)
@@ -21,7 +21,7 @@ struct PlayClientEffectObjectMessage  : public BasePacket
 
 class PlayClientEffectObjectMessageEvent : public anh::event_dispatcher::BasicEvent<PlayClientEffectObjectMessage >{
 public:    
-    PlayClientEffectObjectMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& file_ = std::string(""), 
+    PlayClientEffectObjectMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& file_ = std::string(""), 
         std::string& aux_string_ = std::string(""),uint64_t object_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<PlayClientEffectObjectMessage >("PlayClientEffectObjectMessage"){}
     virtual ~PlayClientEffectObjectMessageEvent() {}

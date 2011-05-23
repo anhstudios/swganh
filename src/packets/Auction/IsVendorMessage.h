@@ -7,7 +7,7 @@
 namespace packets {
 struct IsVendorMessage : public BasePacket
 {
-    explicit IsVendorMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit IsVendorMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, ZONE){}
 	int64_t terminal_id;
     
@@ -15,7 +15,7 @@ struct IsVendorMessage : public BasePacket
 
 class IsVendorMessageEvent : public anh::event_dispatcher::BasicEvent<IsVendorMessage>{
 public:    
-    IsVendorMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    IsVendorMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<IsVendorMessage>("IsVendorMessage"){}
     virtual ~IsVendorMessageEvent() {}
 	void deserialize(anh::ByteBuffer& buffer) {

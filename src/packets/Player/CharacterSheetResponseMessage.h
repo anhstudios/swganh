@@ -8,7 +8,7 @@
 namespace packets {
 struct CharacterSheetResponseMessage : public BasePacket
 {
-    CharacterSheetResponseMessage(std::shared_ptr<network::Session> session_  = nullptr, float bind_x_= 0.0f, float bind_y_= 0.0f, float bind_z_ = 0.0f,
+    CharacterSheetResponseMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, float bind_x_= 0.0f, float bind_y_= 0.0f, float bind_z_ = 0.0f,
         std::string& bind_planet_ = std::string(), float bank_x_ = 0.0f, float bank_y_ = 0.0f, float bank_z_ = 0.0f, std::string& bank_planet_ = std::string(), float home_loc_x_ = 0.0f,
         float home_loc_y_ = 0.0f, float home_loc_z_ = 0.0f, std::string& home_planet_ = std::string(), std::wstring& spouse_name_ = std::wstring(),
         uint32_t lots_remaining_ = 0, int32_t faction_crc_ = 0, int32_t faction_status_ = 0)
@@ -54,7 +54,7 @@ struct CharacterSheetResponseMessage : public BasePacket
 
 class CharacterSheetResponseMessageEvent : public anh::event_dispatcher::BasicEvent<CharacterSheetResponseMessage>{
 public:    
-    CharacterSheetResponseMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, float bind_x_= 0.0f, float bind_y_= 0.0f, float bind_z_ = 0.0f,
+    CharacterSheetResponseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, float bind_x_= 0.0f, float bind_y_= 0.0f, float bind_z_ = 0.0f,
         std::string& bind_planet_ = std::string(), float bank_x_ = 0.0f, float bank_y_ = 0.0f, float bank_z_ = 0.0f, std::string& bank_planet_ = std::string(), float home_loc_x_ = 0.0f,
         float home_loc_y_ = 0.0f, float home_loc_z_ = 0.0f, std::string& home_planet_ = std::string(), std::wstring& spouse_name_ = std::wstring(),
         uint32_t lots_remaining_ = 0, int32_t faction_crc_ = 0, int32_t faction_status_ = 0) 

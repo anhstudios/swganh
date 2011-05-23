@@ -7,7 +7,7 @@
 namespace packets {
 struct ClientCreateCharacterSuccess : public BasePacket
 {
-    ClientCreateCharacterSuccess(std::shared_ptr<network::Session> session_  = nullptr, uint64_t character_id_ = 0)
+    ClientCreateCharacterSuccess(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t character_id_ = 0)
         : BasePacket(session_, CLIENT)
         , character_id(character_id_)
     {}
@@ -16,7 +16,7 @@ struct ClientCreateCharacterSuccess : public BasePacket
 
 class ClientCreateCharacterSuccessEvent : public anh::event_dispatcher::BasicEvent<ClientCreateCharacterSuccess>{
 public:    
-    ClientCreateCharacterSuccessEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t character_id_ = 0) 
+    ClientCreateCharacterSuccessEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t character_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<ClientCreateCharacterSuccess>("ClientCreateCharacterSuccess"){}
     virtual ~ClientCreateCharacterSuccessEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

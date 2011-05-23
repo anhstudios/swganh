@@ -7,7 +7,7 @@
 namespace packets {
 struct GetArticleMessage  : public BasePacket
 {
-    GetArticleMessage (std::shared_ptr<network::Session> session_  = nullptr)
+    GetArticleMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, ZONE)
         {}
     std::string article_id;
@@ -15,7 +15,7 @@ struct GetArticleMessage  : public BasePacket
 
 class GetArticleMessageEvent : public anh::event_dispatcher::BasicEvent<GetArticleMessage >{
 public:    
-    GetArticleMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    GetArticleMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<GetArticleMessage >("GetArticleMessage"){}
     virtual ~GetArticleMessageEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {

@@ -8,7 +8,7 @@
 namespace packets {
 struct DeleteCharacterMessage : public BasePacket
 {
-    explicit DeleteCharacterMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit DeleteCharacterMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, NONE){}
     int32_t server_id;
     uint64_t character_id;
@@ -16,7 +16,7 @@ struct DeleteCharacterMessage : public BasePacket
 
 class DeleteCharacterMessageEvent : public anh::event_dispatcher::BasicEvent<DeleteCharacterMessage>{
 public:    
-    DeleteCharacterMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    DeleteCharacterMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<DeleteCharacterMessage>("DeleteCharacterMessage"){}
     virtual ~DeleteCharacterMessageEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {

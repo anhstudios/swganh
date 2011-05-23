@@ -9,7 +9,7 @@
 namespace packets {
 struct StopClientEffectByLabelMessage  : public BasePacket
 {
-    StopClientEffectByLabelMessage (std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0,
+    StopClientEffectByLabelMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0,
         std::string effect_label_ = std::string())
         : BasePacket(session_, CLIENT)
         , object_id(object_id_)
@@ -21,7 +21,7 @@ struct StopClientEffectByLabelMessage  : public BasePacket
 
 class StopClientEffectByLabelMessageEvent : public anh::event_dispatcher::BasicEvent<StopClientEffectByLabelMessage>{
 public:    
-    StopClientEffectByLabelMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0,
+    StopClientEffectByLabelMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0,
         std::string effect_label_ = std::string()) 
         : anh::event_dispatcher::BasicEvent<StopClientEffectByLabelMessage>("StopClientEffectByLabelMessage"){}
     virtual ~StopClientEffectByLabelMessageEvent() {}

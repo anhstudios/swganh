@@ -7,7 +7,7 @@
 namespace packets {
 struct ServerTimeMessage  : public BasePacket
 {
-    ServerTimeMessage (std::shared_ptr<network::Session> session_  = nullptr, uint64_t galactic_time_ = 0)
+    ServerTimeMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t galactic_time_ = 0)
         : BasePacket(session_, CLIENT)
         , galactic_time(galactic_time_)
         {}
@@ -16,7 +16,7 @@ struct ServerTimeMessage  : public BasePacket
 
 class ServerTimeMessageEvent : public anh::event_dispatcher::BasicEvent<ServerTimeMessage>{
 public:    
-    ServerTimeMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t galactic_time_ = 0) 
+    ServerTimeMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t galactic_time_ = 0) 
         : anh::event_dispatcher::BasicEvent<ServerTimeMessage>("ServerTimeMessage"){}
     virtual ~ServerTimeMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

@@ -57,9 +57,9 @@ public:
     
     virtual bool makePrimaryProcess(std::shared_ptr<Process> process) = 0;
 
-    virtual std::shared_ptr<Cluster> cluster() const;
+    virtual std::shared_ptr<Cluster> cluster() const = 0;
 
-    virtual std::shared_ptr<Process> process() const;
+    virtual std::shared_ptr<Process> process() const = 0;
 
     virtual void pulse() = 0;
     

@@ -7,14 +7,14 @@
 namespace packets {
 struct UnAcceptTransactionMessage  : public BasePacket
 {
-    UnAcceptTransactionMessage (std::shared_ptr<network::Session> session_  = nullptr)
+    UnAcceptTransactionMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, CLIENT)
         {}
 };
 
 class UnAcceptTransactionMessageEvent : public anh::event_dispatcher::BasicEvent<UnAcceptTransactionMessage>{
 public:    
-    UnAcceptTransactionMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    UnAcceptTransactionMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<UnAcceptTransactionMessage>("UnAcceptTransactionMessage"){}
     virtual ~UnAcceptTransactionMessageEvent() {}
 };

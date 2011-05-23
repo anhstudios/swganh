@@ -7,13 +7,13 @@
 namespace packets {
 struct CloseHolocronMessage : public BasePacket
 {
-    explicit CloseHolocronMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit CloseHolocronMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, CLIENT){}
 };
 
 class CloseHolocronMessageEvent : public anh::event_dispatcher::BasicEvent<CloseHolocronMessage>{
 public:    
-    CloseHolocronMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    CloseHolocronMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<CloseHolocronMessage>("CloseHolocronMessage"){}
     virtual ~CloseHolocronMessageEvent() {}
 };

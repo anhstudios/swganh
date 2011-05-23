@@ -7,7 +7,7 @@
 namespace packets {
 struct ResourceHarvesterActivatePageMessage  : public BasePacket
 {
-    ResourceHarvesterActivatePageMessage (std::shared_ptr<network::Session> session_  = nullptr, uint64_t harvester_id_ = 0)
+    ResourceHarvesterActivatePageMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t harvester_id_ = 0)
         : BasePacket(session_, CLIENT)
         , harvester_id(harvester_id_)
         {}
@@ -16,7 +16,7 @@ struct ResourceHarvesterActivatePageMessage  : public BasePacket
 
 class RemoveItemMessageEvent : public anh::event_dispatcher::BasicEvent<ResourceHarvesterActivatePageMessage >{
 public:    
-    RemoveItemMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0) 
+    RemoveItemMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<ResourceHarvesterActivatePageMessage >("ResourceHarvesterActivatePageMessage"){}
     virtual ~RemoveItemMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

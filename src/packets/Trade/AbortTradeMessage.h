@@ -8,13 +8,13 @@
 namespace packets {
 struct AbortTradeMessage : public BasePacket
 {
-    explicit AbortTradeMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit AbortTradeMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, CLIENT){}
 };
 
 class AbortTradeMessageEvent : public anh::event_dispatcher::BasicEvent<AbortTradeMessage>{
 public:    
-    AbortTradeMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    AbortTradeMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<AbortTradeMessage>("AbortTradeMessage"){}
     virtual ~AbortTradeMessageEvent() {}
 };

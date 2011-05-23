@@ -8,7 +8,7 @@
 namespace packets {
 struct ChatFriendsListUpdate   : public BasePacket
 {
-    ChatFriendsListUpdate  (std::shared_ptr<network::Session> session_  = nullptr, std::string& game_name_ = std::string(""),
+    ChatFriendsListUpdate  (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& game_name_ = std::string(""),
         std::string& server_name_ = std::string(""), std::string& friend_name_ = std::string(""), uint8_t online_flag_ = 0)
         : BasePacket(session_, SHARED_SERVICE)
         , game_name(game_name_)
@@ -24,7 +24,7 @@ struct ChatFriendsListUpdate   : public BasePacket
 
 class ChatFriendsListUpdateEvent : public anh::event_dispatcher::BasicEvent<ChatFriendsListUpdate >{
 public:    
-    ChatFriendsListUpdateEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& game_name_ = std::string(""),
+    ChatFriendsListUpdateEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& game_name_ = std::string(""),
         std::string& server_name_ = std::string(""), std::string& friend_name_ = std::string(""), uint8_t online_flag_ = 0) 
         : anh::event_dispatcher::BasicEvent<ChatFriendsListUpdate >("ChatFriendsListUpdate"){}
     virtual ~ChatFriendsListUpdateEvent() {}

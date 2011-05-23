@@ -7,7 +7,7 @@
 namespace packets {
 struct SceneDestroyObject  : public BasePacket
 {
-    SceneDestroyObject (std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0)
+    SceneDestroyObject (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0)
         : BasePacket(session_, CLIENT)
         , object_id(object_id_)
         {}
@@ -16,7 +16,7 @@ struct SceneDestroyObject  : public BasePacket
 
 class SceneDestroyObjectEvent : public anh::event_dispatcher::BasicEvent<SceneDestroyObject>{
 public:    
-    SceneDestroyObjectEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0) 
+    SceneDestroyObjectEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<SceneDestroyObject >("SceneDestroyObject"){}
     virtual ~SceneDestroyObjectEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

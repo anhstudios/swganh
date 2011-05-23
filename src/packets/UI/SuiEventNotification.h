@@ -9,7 +9,7 @@
 namespace packets {
 struct SuiEventNotification : public BasePacket
 {
-    SuiEventNotification(std::shared_ptr<network::Session> session_  = nullptr, uint32_t window_id_ = 0
+    SuiEventNotification(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t window_id_ = 0
         , uint32_t action_ = 0, std::list<std::wstring> arguments_ = std::list<std::wstring>())
         : BasePacket(session_, ZONE)
     , window_id(window_id_)
@@ -18,7 +18,7 @@ struct SuiEventNotification : public BasePacket
     , list_size2(0)
     , arguments(arguments_)
     {}
-    SuiEventNotification(std::shared_ptr<network::Session> session_, RoutingDestination dest)
+    SuiEventNotification(std::shared_ptr<anh::network::soe::Session> session_, RoutingDestination dest)
         : BasePacket(session_, dest){}
     uint32_t window_id;
     uint32_t action;
@@ -29,7 +29,7 @@ struct SuiEventNotification : public BasePacket
 
 class SuiEventNotificationEvent : public anh::event_dispatcher::BasicEvent<SuiEventNotification>{
 public:    
-    SuiEventNotificationEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t window_id_ = 0
+    SuiEventNotificationEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t window_id_ = 0
         , uint32_t action_ = 0, std::list<std::wstring> arguments_ = std::list<std::wstring>()) 
         : anh::event_dispatcher::BasicEvent<SuiEventNotification>("SuiEventNotification"){}
     virtual ~SuiEventNotificationEvent() {}

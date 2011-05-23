@@ -8,7 +8,7 @@
 namespace packets {
 struct ChatInstantMessageToClient   : public BasePacket
 {
-    ChatInstantMessageToClient(std::shared_ptr<network::Session> session_  = nullptr, std::string& game_name_ = std::string(""), 
+    ChatInstantMessageToClient(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& game_name_ = std::string(""), 
         std::string& server_name_ = std::string(""), std::string& player_name_ = std::string(""), std::wstring& message_ = std::wstring(L""), int32_t unknown_ = 0)
         : BasePacket(session_, SHARED_SERVICE)
         , game_name(game_name_)
@@ -26,7 +26,7 @@ struct ChatInstantMessageToClient   : public BasePacket
 
 class ChatInstantMessageToClientEvent : public anh::event_dispatcher::BasicEvent<ChatInstantMessageToClient >{
 public:    
-    ChatInstantMessageToClientEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& game_name_ = std::string(""), 
+    ChatInstantMessageToClientEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& game_name_ = std::string(""), 
         std::string& server_name_ = std::string(""), std::string& player_name_ = std::string(""), std::wstring& message_ = std::wstring(L""), int32_t unknown_ = 0) 
         : anh::event_dispatcher::BasicEvent<ChatInstantMessageToClient >("ChatInstantMessageToClient"){}
     virtual ~ChatInstantMessageToClientEvent() {}

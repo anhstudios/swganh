@@ -7,7 +7,7 @@
 namespace packets {
 struct ClientMfdStatusUpdateMessage : public BasePacket
 {
-    ClientMfdStatusUpdateMessage(std::shared_ptr<network::Session> session_  = nullptr, std::string& planet_ = std::string(),
+    ClientMfdStatusUpdateMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& planet_ = std::string(),
         uint64_t object_id_ = 0, float x_= 0.0f, float y_= 0.0f, float z_ = 0.0f)
         : BasePacket(session_, CLIENT)
         , planet(planet_)
@@ -25,7 +25,7 @@ struct ClientMfdStatusUpdateMessage : public BasePacket
 
 class ClientMfdStatusUpdateMessageEvent : public anh::event_dispatcher::BasicEvent<ClientMfdStatusUpdateMessage>{
 public:    
-    ClientMfdStatusUpdateMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& planet_ = std::string(),
+    ClientMfdStatusUpdateMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& planet_ = std::string(),
         uint64_t object_id_ = 0, float x_= 0.0f, float y_= 0.0f, float z_ = 0.0f) : anh::event_dispatcher::BasicEvent<ClientMfdStatusUpdateMessage>("ClientMfdStatusUpdateMessage"){}
     virtual ~ClientMfdStatusUpdateMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

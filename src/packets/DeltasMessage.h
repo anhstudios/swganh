@@ -7,7 +7,7 @@
 namespace packets {
 struct DeltasMessage : public BasePacket
 {
-    DeltasMessage(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0, uint32_t object_type_ = 0,
+    DeltasMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0, uint32_t object_type_ = 0,
         uint8_t update_type_ = 0, uint32_t object_data_size_ = 0)
         : BasePacket(session_, CLIENT)
         , object_id(object_id_)
@@ -23,7 +23,7 @@ struct DeltasMessage : public BasePacket
 
 class DeltasMessageEvent : public anh::event_dispatcher::BasicEvent<DeltasMessage>{
 public:    
-    DeltasMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0, uint32_t object_type_ = 0,
+    DeltasMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0, uint32_t object_type_ = 0,
         uint8_t update_type_ = 0, uint32_t object_data_size_ = 0) 
         : anh::event_dispatcher::BasicEvent<DeltasMessage>("DeltasMessage"){}
     virtual ~DeltasMessageEvent() {}

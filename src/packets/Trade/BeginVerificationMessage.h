@@ -8,12 +8,12 @@
 namespace packets {
 struct BeginVerificationMessage : public BasePacket
 {
-    explicit BeginVerificationMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit BeginVerificationMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, CLIENT){}
 };
 class BeginVerificationMessageEvent : public anh::event_dispatcher::BasicEvent<BeginVerificationMessage>{
 public:    
-    BeginVerificationMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    BeginVerificationMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<BeginVerificationMessage>("BeginVerificationMessage"){}
     virtual ~BeginVerificationMessageEvent() {}
 };

@@ -8,7 +8,7 @@
 namespace packets {
 struct BidAuctionMessage : public BasePacket
 {
-    explicit BidAuctionMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit BidAuctionMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, SHARED_SERVICE){}
 
     uint64_t auction_id;    
@@ -18,7 +18,7 @@ struct BidAuctionMessage : public BasePacket
 
 class BidAuctionMessageEvent : public anh::event_dispatcher::BasicEvent<BidAuctionMessage>{
 public:    
-    BidAuctionMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    BidAuctionMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<BidAuctionMessage>("BidAuctionMessage"){}
     virtual ~BidAuctionMessageEvent() {}
     void deserialize(anh::ByteBuffer& buffer)

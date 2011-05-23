@@ -11,7 +11,7 @@ struct GuildRequestMessage  : public BasePacket
 {
     GuildRequestMessage ()
         : BasePacket() {}
-    GuildRequestMessage (std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0)
+    GuildRequestMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0)
         : BasePacket(session_, CLIENT)
         , object_id(object_id_)
         {}
@@ -20,7 +20,7 @@ struct GuildRequestMessage  : public BasePacket
 
 class GuildRequestMessageEvent : public anh::event_dispatcher::BasicEvent<GuildRequestMessage>{
 public:    
-    GuildRequestMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0) 
+    GuildRequestMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<GuildRequestMessage>("GuildRequestMessage"){}
     virtual ~GuildRequestMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

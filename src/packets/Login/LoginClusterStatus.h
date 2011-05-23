@@ -38,7 +38,7 @@ struct ClusterServer
 };
 struct LoginClusterStatus : public BasePacket
 {
-    LoginClusterStatus(std::shared_ptr<network::Session> session_  = nullptr,
+    LoginClusterStatus(std::shared_ptr<anh::network::soe::Session> session_  = nullptr,
         std::list<ClusterServer> servers_ = std::list<ClusterServer>())
         : BasePacket(session_, CLIENT)
         , servers(servers_) {}
@@ -48,7 +48,7 @@ struct LoginClusterStatus : public BasePacket
 class LoginClusterStatusEvent : public anh::event_dispatcher::BasicEvent<LoginClusterStatus>{
 public:    
     LoginClusterStatusEvent(
-        std::list<ClusterServer> servers_ = std::list<ClusterServer>(), std::shared_ptr<network::Session> session_  = nullptr) 
+        std::list<ClusterServer> servers_ = std::list<ClusterServer>(), std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<LoginClusterStatus>("LoginClusterStatus"){}
     virtual ~LoginClusterStatusEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

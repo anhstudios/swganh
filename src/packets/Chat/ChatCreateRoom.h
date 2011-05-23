@@ -8,7 +8,7 @@
 namespace packets {
 struct ChatCreateRoom  : public BasePacket
 {
-    explicit ChatCreateRoom (std::shared_ptr<network::Session> session_  = nullptr)
+    explicit ChatCreateRoom (std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, SHARED_SERVICE){}
     int32_t error_code;     int32_t chatroom_id;     int32_t private_flag;    uint8_t moderation_flag;    std::string room_full_address;
     std::string game_from;  std::string server_from;    std::string creator;    std::string game_to;    std::string server_to;
@@ -19,7 +19,7 @@ struct ChatCreateRoom  : public BasePacket
 
 class ChatCreateRoomEvent : public anh::event_dispatcher::BasicEvent<ChatCreateRoom>{
 public:    
-    ChatCreateRoomEvent(std::shared_ptr<network::Session> session_  = nullptr) : anh::event_dispatcher::BasicEvent<ChatCreateRoom>("ChatCreateRoom"){}
+    ChatCreateRoomEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) : anh::event_dispatcher::BasicEvent<ChatCreateRoom>("ChatCreateRoom"){}
     virtual ~ChatCreateRoomEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {
         error_code = buffer.read<int32_t>();

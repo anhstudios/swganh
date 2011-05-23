@@ -7,7 +7,7 @@
 namespace packets {
 struct VerifyPlayerNameResponseMessage  : public BasePacket
 {
-    VerifyPlayerNameResponseMessage (std::shared_ptr<network::Session> session_  = nullptr, uint8_t result_ = 0
+    VerifyPlayerNameResponseMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint8_t result_ = 0
         , uint32_t null_ = 0)
         : BasePacket(session_, CLIENT)
         , result(result_)
@@ -19,7 +19,7 @@ struct VerifyPlayerNameResponseMessage  : public BasePacket
 
 class VerifyPlayerNameResponseMessageEvent : public anh::event_dispatcher::BasicEvent<VerifyPlayerNameResponseMessage>{
 public:    
-    VerifyPlayerNameResponseMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint8_t result_ = 0
+    VerifyPlayerNameResponseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint8_t result_ = 0
         , uint32_t null_ = 0 
         : anh::event_dispatcher::BasicEvent<VerifyPlayerNameResponseMessage>("VerifyPlayerNameResponseMessage"){}
     virtual ~VerifyPlayerNameResponseMessageEvent() {}

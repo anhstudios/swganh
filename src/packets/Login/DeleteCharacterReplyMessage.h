@@ -8,7 +8,7 @@
 namespace packets {
 struct DeleteCharacterReplyMessage : public BasePacket
 {
-    DeleteCharacterReplyMessage(std::shared_ptr<network::Session> session_  = nullptr, int32_t failure_flag_ = 0)
+    DeleteCharacterReplyMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, int32_t failure_flag_ = 0)
         : BasePacket(session_, CLIENT)
         , failure_flag(failure_flag_){}
     int32_t failure_flag;
@@ -16,7 +16,7 @@ struct DeleteCharacterReplyMessage : public BasePacket
 
 class DeleteCharacterReplyMessageEvent : public anh::event_dispatcher::BasicEvent<DeleteCharacterReplyMessage>{
 public:    
-    DeleteCharacterReplyMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, int32_t failure_flag_ = 0) 
+    DeleteCharacterReplyMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, int32_t failure_flag_ = 0) 
         : anh::event_dispatcher::BasicEvent<DeleteCharacterReplyMessage>("DeleteCharacterReplyMessage"){}
     virtual ~DeleteCharacterReplyMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

@@ -7,7 +7,7 @@
 namespace packets {
 struct ClientRandomNameResponse : public BasePacket
 {
-    ClientRandomNameResponse(std::shared_ptr<network::Session> session_  = nullptr, std::string& player_race_iff_ = std::string(), std::wstring& random_name_ = std::wstring(),
+    ClientRandomNameResponse(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& player_race_iff_ = std::string(), std::wstring& random_name_ = std::wstring(),
         std::string& stf_file_ = std::string(), uint32_t string_spacer_ = 0, std::string& approval_string_ = std::string())
         : BasePacket(session_, CLIENT)
         , player_race_iff(player_race_iff_)
@@ -25,7 +25,7 @@ struct ClientRandomNameResponse : public BasePacket
 
 class ClientRandomNameResponseEvent : public anh::event_dispatcher::BasicEvent<ClientRandomNameResponse>{
 public:    
-    ClientRandomNameResponseEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& player_race_iff_ = std::string(), std::wstring& random_name_ = std::wstring(),
+    ClientRandomNameResponseEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& player_race_iff_ = std::string(), std::wstring& random_name_ = std::wstring(),
         std::string& stf_file_ = std::string(), uint32_t string_spacer_ = 0, std::string& approval_string_ = std::string()) 
         : anh::event_dispatcher::BasicEvent<ClientRandomNameResponse>("ClientRandomNameResponse"){}
     virtual ~ClientRandomNameResponseEvent() {}

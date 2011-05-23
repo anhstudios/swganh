@@ -12,9 +12,9 @@ using boost::asio::ip::tcp;
 
 class TCPConnection : public std::enable_shared_from_this<TCPConnection> {
 public:
-    static std::shared_ptr<TCPConnection> create(boost::asio::io_service& io_service)
+    TCPConnection(boost::asio::io_service& io_service)
+    : socket_(io_service) 
     {
-        return std::shared_ptr<TCPConnection>(new TCPConnection(io_service));
     }
     tcp::socket& socket() { return socket_; }
     /**
@@ -34,15 +34,10 @@ public:
     
 
 private:
-    /**
-    *  @brief private ctor to ensure we always get a shared_ptr
-    */
-    TCPConnection(boost::asio::io_service& io_service)
-        : socket_(io_service) 
-    {
-    }
     void HandleWrite_();
     tcp::socket socket_;
+    boost::array<char, 456>				recv_buffer_;
+
 };
 
 

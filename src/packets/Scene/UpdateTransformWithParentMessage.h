@@ -7,7 +7,7 @@
 namespace packets {
 struct UpdateTransformWithParentMessage  : public BasePacket
 {
-    UpdateTransformWithParentMessage (std::shared_ptr<network::Session> session_  = nullptr, uint64_t cell_id_ = 0,
+    UpdateTransformWithParentMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t cell_id_ = 0,
         uint64_t object_id_= 0, float x_ = 0.0f, float y_ = 0.0f, float z_ = 0.0f, uint32_t update_counter_ = 0
         , int8_t posture_ = 0, int8_t direction_ = 0)
         : BasePacket(session_, CLIENT)
@@ -28,7 +28,7 @@ struct UpdateTransformWithParentMessage  : public BasePacket
 
 class UpdateTransformWithParentMessageEvent : public anh::event_dispatcher::BasicEvent<UpdateTransformWithParentMessage>{
 public:    
-    UpdateTransformWithParentMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_= 0
+    UpdateTransformWithParentMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_= 0
         , float x_ = 0.0f, float y_ = 0.0f, float z_ = 0.0f, uint32_t update_counter_ = 0
         , int8_t posture_ = 0, int8_t direction_ = 0 
         : anh::event_dispatcher::BasicEvent<UpdateTransformWithParentMessage>("UpdateTransformWithParentMessage"){}

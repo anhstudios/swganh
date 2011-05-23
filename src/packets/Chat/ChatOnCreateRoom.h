@@ -8,7 +8,7 @@
 namespace packets {
 struct ChatOnCreateRoom   : public BasePacket
 {
-    ChatOnCreateRoom  (std::shared_ptr<network::Session> session_  = nullptr, std::string& game_from_name_= std::string("SWG"), std::string& server_from_name_= std::string(""),
+    ChatOnCreateRoom  (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& game_from_name_= std::string("SWG"), std::string& server_from_name_= std::string(""),
         std::string& player_from_name_ = std::string(""), std::string& game_to_name_ = std::string("SWG"), std::string& server_to_name_ = std::string(""), std::string& moderator_name_ = std::string(""), int32_t error_code_ = 0,
         std::string& room_path_name_= std::string(""), int32_t req_id_=0)
         : BasePacket(session_, SHARED_SERVICE)
@@ -34,7 +34,7 @@ struct ChatOnCreateRoom   : public BasePacket
 
 class ChatOnAddModeratorToRoomEvent : public anh::event_dispatcher::BasicEvent<ChatOnCreateRoom >{
 public:    
-    ChatOnAddModeratorToRoomEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& game_from_name_= std::string("SWG"), std::string& server_from_name_= std::string(""),
+    ChatOnAddModeratorToRoomEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& game_from_name_= std::string("SWG"), std::string& server_from_name_= std::string(""),
         std::string& player_from_name_ = std::string(""), std::string& game_to_name_ = std::string("SWG"), std::string& server_to_name_ = std::string(""), std::string& moderator_name_ = std::string(""), int32_t error_code_ = 0,
         std::string& room_path_name_= std::string(""), int32_t req_id_=0) 
         : anh::event_dispatcher::BasicEvent<ChatOnCreateRoom >("ChatOnCreateRoom"){}

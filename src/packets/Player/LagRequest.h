@@ -7,13 +7,13 @@
 namespace packets {
 struct LagRequest : public BasePacket
 {
-    explicit LagRequest(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit LagRequest(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, ZONE){}
 };
 
 class LagRequestEvent : public anh::event_dispatcher::BasicEvent<LagRequest>{
 public:    
-    LagRequestEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    LagRequestEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<LagRequest>("LagRequest"){}
     virtual ~LagRequestEvent() {}
 };

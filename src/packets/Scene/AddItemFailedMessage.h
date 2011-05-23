@@ -8,7 +8,7 @@
 namespace packets {
 struct AddItemFailedMessage : public BasePacket
 {
-    AddItemFailedMessage(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0)
+    AddItemFailedMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0)
         : BasePacket(session_, CLIENT)
         , object_id(object_id_)
     {}
@@ -17,7 +17,7 @@ struct AddItemFailedMessage : public BasePacket
 
 class AddItemFailedMessageEvent : public anh::event_dispatcher::BasicEvent<AddItemFailedMessage>{
 public:    
-    AddItemFailedMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0) 
+    AddItemFailedMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<AddItemFailedMessage>("AddItemFailedMessage"){}
     virtual ~AddItemFailedMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

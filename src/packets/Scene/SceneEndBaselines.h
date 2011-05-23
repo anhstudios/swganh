@@ -7,7 +7,7 @@
 namespace packets {
 struct SceneEndBaselines  : public BasePacket
 {
-    SceneEndBaselines (std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0)
+    SceneEndBaselines (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0)
         : BasePacket(session_, CLIENT)
         , object_id(object_id_)
         {}
@@ -16,7 +16,7 @@ struct SceneEndBaselines  : public BasePacket
 
 class SceneEndBaselinesEvent : public anh::event_dispatcher::BasicEvent<SceneEndBaselines>{
 public:    
-    SceneEndBaselinesEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0) 
+    SceneEndBaselinesEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<SceneEndBaselines >("SceneEndBaselines"){}
     virtual ~SceneEndBaselinesEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

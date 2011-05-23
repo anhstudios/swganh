@@ -8,7 +8,7 @@
 namespace packets {
 struct BeginTradeMessage : public BasePacket
 {
-    BeginTradeMessage(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0)
+    BeginTradeMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0)
         : BasePacket(session_, CLIENT)
         , object_id(object_id_) {}
     uint64_t object_id;    
@@ -16,7 +16,7 @@ struct BeginTradeMessage : public BasePacket
 
 class BeginTradeMessageEvent : public anh::event_dispatcher::BasicEvent<BeginTradeMessage>{
 public:    
-    BeginTradeMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0) 
+    BeginTradeMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<BeginTradeMessage>("BeginTradeMessage"){}
     virtual ~BeginTradeMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer)

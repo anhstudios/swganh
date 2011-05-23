@@ -8,7 +8,7 @@
 namespace packets {
 struct CancelTicketResponseMessage : public BasePacket
 {
-    CancelTicketResponseMessage(std::shared_ptr<network::Session> session_  = nullptr, uint32_t message_ = 0
+    CancelTicketResponseMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t message_ = 0
         , uint64_t ticket_number_ = 0)
         : BasePacket(session_, CLIENT)
         , message(message_)
@@ -20,7 +20,7 @@ struct CancelTicketResponseMessage : public BasePacket
 
 class CancelTicketResponseMessageEvent : public anh::event_dispatcher::BasicEvent<CancelTicketResponseMessage>{
 public:    
-    CancelTicketResponseMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t message_ = 0
+    CancelTicketResponseMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t message_ = 0
         , uint64_t ticket_number_ = 0) 
         : anh::event_dispatcher::BasicEvent<CancelTicketResponseMessage>("CancelTicketResponseMessage"){}
     virtual ~CancelTicketResponseMessageEvent() {}

@@ -13,7 +13,7 @@ struct coordinates
 };
 struct CreateClientPathMessage : public BasePacket
 {
-    explicit CreateClientPathMessage(std::shared_ptr<network::Session> session_  = nullptr, uint32_t coordinates_count_ = 0,
+    explicit CreateClientPathMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t coordinates_count_ = 0,
         std::list<coordinates> coordinates_list_ = std::list<coordinates>())
     : BasePacket(session_, CLIENT)
     , coordinates_count(coordinates_count_)
@@ -25,7 +25,7 @@ struct CreateClientPathMessage : public BasePacket
 
 class CreateClientPathMessageEvent : public anh::event_dispatcher::BasicEvent<CreateClientPathMessage>{
 public:    
-    CreateClientPathMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t coordinates_count_ = 0,
+    CreateClientPathMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t coordinates_count_ = 0,
         std::list<coordinates> coordinates_list_ = std::list<coordinates>()) 
         : anh::event_dispatcher::BasicEvent<CreateClientPathMessage>("CreateClientPathMessage"){}
     virtual ~CreateClientPathMessageEvent() {}

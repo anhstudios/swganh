@@ -7,7 +7,7 @@
 namespace packets {
 struct SelectCharacter : public BasePacket
 {
-    SelectCharacter(std::shared_ptr<network::Session> session_  = nullptr, uint64_t character_id_ = 0 )
+    SelectCharacter(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t character_id_ = 0 )
         : BasePacket(session_, NONE)
     , character_id(character_id_) {}
     uint64_t character_id;
@@ -15,7 +15,7 @@ struct SelectCharacter : public BasePacket
 
 class SelectCharacterEvent : public anh::event_dispatcher::BasicEvent<SelectCharacter>{
 public:    
-    SelectCharacterEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t character_id_ = 0) 
+    SelectCharacterEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t character_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<SelectCharacter>("SelectCharacter"){}
     virtual ~SelectCharacterEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {

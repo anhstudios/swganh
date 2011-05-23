@@ -7,14 +7,14 @@
 namespace packets {
 struct ConnectPlayerMessage : public BasePacket
 {
-    explicit ConnectPlayerMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit ConnectPlayerMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, SHARED_SERVICE){}
     uint32_t always_zero;
 };
 
 class ConnectPlayerMessageEvent : public anh::event_dispatcher::BasicEvent<ConnectPlayerMessage>{
 public:    
-    ConnectPlayerMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    ConnectPlayerMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<ConnectPlayerMessage>("ConnectPlayerMessage"){}
     virtual ~ConnectPlayerMessageEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {

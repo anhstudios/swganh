@@ -7,14 +7,14 @@
 namespace packets {
 struct LogoutMessage  : public BasePacket
 {
-    LogoutMessage (std::shared_ptr<network::Session> session_  = nullptr)
+    LogoutMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, CLIENT)
         {}
 };
 
 class LogoutMessageEvent : public anh::event_dispatcher::BasicEvent<LogoutMessage >{
 public:    
-    LogoutMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    LogoutMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<LogoutMessage >("LogoutMessage"){}
     virtual ~LogoutMessageEvent() {}
 };

@@ -7,7 +7,7 @@
 namespace packets {
 struct ServerOnlyExampleMessage  : public BasePacket
 {
-    ServerOnlyExampleMessage (std::shared_ptr<network::Session> session_ = nullptr, std::string ASCII_ = std::string(), std::wstring UNICODE_ = std::wstring(), uint8_t byte_ = 0
+    ServerOnlyExampleMessage (std::shared_ptr<anh::network::soe::Session> session_ = nullptr, std::string ASCII_ = std::string(), std::wstring UNICODE_ = std::wstring(), uint8_t byte_ = 0
 							 , uint16_t positive_SHORT_ = 0, int16_t negative_SHORT_ = 0, uint32_t positive_INT_ = 0, int32_t negative_INT_ = 0
 							 , uint64_t positive_LONG_ = 0, int64_t negative_LONG_ = 0, float float_var_ = 0.0f)
         : BasePacket(session_, CLIENT)
@@ -36,7 +36,7 @@ struct ServerOnlyExampleMessage  : public BasePacket
 
 class ServerOnlyExampleMessageEvent : public anh::event_dispatcher::BasicEvent<ServerOnlyExampleMessage >{
 public:    
-    ServerOnlyExampleMessageEvent(std::shared_ptr<network::Session> session_ = nullptr, std::string ASCII_ = std::string(),
+    ServerOnlyExampleMessageEvent(std::shared_ptr<anh::network::soe::Session> session_ = nullptr, std::string ASCII_ = std::string(),
 	std::wstring UNICODE_ = std::wstring(), uint8_t byte_ = 0, uint16_t positive_SHORT_ = 0, int16_t negative_SHORT_ = 0, uint32_t positive_INT_ = 0, int32_t negative_INT_ = 0, uint64_t positive_LONG_ = 0, int64_t negative_LONG_ = 0, float float_var_ = 0.0f) 
 	 : anh::event_dispatcher::BasicEvent<ServerOnlyExampleMessage >("ServerOnlyExampleMessage "){}
     virtual ~ServerOnlyExampleMessageEvent() {}

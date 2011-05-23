@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/byte_buffer.h>
 #include <anh/network/cluster/socket.h>
 #include <anh/network/cluster/tcp_connection.h>
+#include <anh/server_directory/server_directory_interface.h>
 
 #include <map>
 #include <list>
@@ -39,19 +40,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <tbb/pipeline.h>
 #include <tbb/concurrent_vector.h>
 
-namespace anh { namespace server_directory { class ServerDirectoryInterface; class ProcessList; } }
-
 namespace anh {
 namespace network {
 namespace cluster {
 
+typedef std::pair<std::shared_ptr<TCPConnection>, std::shared_ptr<anh::server_directory::Process>> ConnectionPair;
+typedef std::map<std::shared_ptr<TCPConnection>, std::shared_ptr<anh::server_directory::Process>> ConnectionMap;
 /**
  * @brief Represent a Cluster Service
  */
 class Service : public std::enable_shared_from_this<Service>
 {
 public:
-	Service(std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory);
+	Service(boost::asio::io_service& io_service, uint16_t port, 
+        std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory);
 	~Service(void);
 
 	/**
@@ -71,12 +73,13 @@ private:
 	 * if it fails to find a Session it will check if the incoming message is a
 	 * Session Request in which case, it will create a new Session.
 	 */
-	void OnNewConnection_(boost::asio::ip::tcp::endpoint& remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
+	void OnNewConnection_(const boost::system::error_code& error);
 
 	std::shared_ptr<Socket>		        socket_;
     std::shared_ptr<TCPConnection>      connection_;
     anh::server_directory::ProcessList  proc_list_;
-	boost::asio::io_service		        io_service_;
+	boost::asio::io_service&		    io_service_;
+    boost::asio::ip::tcp::acceptor      acceptor_;
     
 	// Pipelines
 	tbb::pipeline				incoming_pipeline_;
@@ -85,7 +88,7 @@ private:
 	// Filters
 
     std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory_;
-    typedef std::map<boost::asio::ip::tcp::endpoint, boost::asio::ip::tcp::socket> SocketMap;
+    ConnectionMap connection_map_;
 };
 
 } // namespace cluster

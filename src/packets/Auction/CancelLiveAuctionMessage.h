@@ -8,14 +8,14 @@
 namespace packets {
 struct CancelLiveAuctionMessage : public BasePacket
 {
-    explicit CancelLiveAuctionMessage(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit CancelLiveAuctionMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, SHARED_SERVICE){}
     uint64_t auction_id;    
 };
 
 class CancelLiveAuctionMessageEvent : public anh::event_dispatcher::BasicEvent<CancelLiveAuctionMessage>{
 public:    
-    CancelLiveAuctionMessageEvent(std::shared_ptr<network::Session> session_  = nullptr) : anh::event_dispatcher::BasicEvent<CancelLiveAuctionMessage>("CancelLiveAuctionMessage"){}
+    CancelLiveAuctionMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) : anh::event_dispatcher::BasicEvent<CancelLiveAuctionMessage>("CancelLiveAuctionMessage"){}
     virtual ~CancelLiveAuctionMessageEvent() {}
     void deserialize(anh::ByteBuffer& buffer)
     {

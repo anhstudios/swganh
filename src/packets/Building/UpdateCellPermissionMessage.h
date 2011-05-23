@@ -7,7 +7,7 @@
 namespace packets {
 struct UpdateCellPermissionMessage  : public BasePacket
 {
-    UpdateCellPermissionMessage (std::shared_ptr<network::Session> session_  = nullptr, uint8_t permission_flag_ = 0
+    UpdateCellPermissionMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint8_t permission_flag_ = 0
         , uint64_t cell_id_ = 0)
         : BasePacket(session_, CLIENT)
         , permission_flag(permission_flag_)
@@ -19,7 +19,7 @@ struct UpdateCellPermissionMessage  : public BasePacket
 
 class UpdateCellPermissionMessageEvent : public anh::event_dispatcher::BasicEvent<UpdateCellPermissionMessage>{
 public:    
-    UpdateCellPermissionMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint8_t permission_flag_ = 0
+    UpdateCellPermissionMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint8_t permission_flag_ = 0
         , uint64_t cell_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<UpdateCellPermissionMessage>("UpdateCellPermissionMessage"){}
     virtual ~UpdateCellPermissionMessageEvent() {}

@@ -8,7 +8,7 @@
 namespace packets {
 struct ChatOnAddModeratorToRoom   : public BasePacket
 {
-    explicit ChatOnAddModeratorToRoom (std::shared_ptr<network::Session> session_  = nullptr)
+    explicit ChatOnAddModeratorToRoom (std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, SHARED_SERVICE){}
     std::string game_from_name;
     std::string server_from_name;
@@ -23,7 +23,7 @@ struct ChatOnAddModeratorToRoom   : public BasePacket
 
 class ChatOnAddModeratorToRoomEvent : public anh::event_dispatcher::BasicEvent<ChatOnAddModeratorToRoom >{
 public:    
-    ChatOnAddModeratorToRoomEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    ChatOnAddModeratorToRoomEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<ChatOnAddModeratorToRoom >("ChatOnAddModeratorToRoom"){}
     virtual ~ChatOnAddModeratorToRoomEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {

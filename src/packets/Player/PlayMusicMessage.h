@@ -7,7 +7,7 @@
 namespace packets {
 struct PlayMusicMessage  : public BasePacket
 {
-    PlayMusicMessage (std::shared_ptr<network::Session> session_  = nullptr, std::string& sound_file_ = std::string(""),
+    PlayMusicMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& sound_file_ = std::string(""),
         int32_t unk1_ = 0x00, int32_t unk2_ = 0x01, int32_t unk3_ = 0)
         : BasePacket(session_, CLIENT)
         , sound_file(sound_file_)
@@ -23,7 +23,7 @@ struct PlayMusicMessage  : public BasePacket
 
 class PlayMusicMessageEvent : public anh::event_dispatcher::BasicEvent<PlayMusicMessage >{
 public:    
-    PlayMusicMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& sound_file_ = std::string(""),
+    PlayMusicMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& sound_file_ = std::string(""),
         int32_t unk1_ = 0x00, int32_t unk2_ = 0x01, int32_t unk3_ = 0) 
         : anh::event_dispatcher::BasicEvent<PlayMusicMessage >("PlayMusicMessage"){}
     virtual ~PlayMusicMessageEvent() {}

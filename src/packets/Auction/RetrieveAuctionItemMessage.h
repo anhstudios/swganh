@@ -7,7 +7,7 @@
 namespace packets {
 struct RetrieveAuctionItemMessage  : public BasePacket
 {
-    RetrieveAuctionItemMessage (std::shared_ptr<network::Session> session_  = nullptr, uint64_t auction_id_ = 0
+    RetrieveAuctionItemMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t auction_id_ = 0
         , uint64_t terminal_id_ = 0)
         : BasePacket(session_, CLIENT)
         , auction_id(auction_id_)
@@ -19,7 +19,7 @@ struct RetrieveAuctionItemMessage  : public BasePacket
 
 class RetrieveAuctionItemMessageEvent : public anh::event_dispatcher::BasicEvent<RetrieveAuctionItemMessage >{
 public:    
-    RetrieveAuctionItemMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t auction_id_ = 0
+    RetrieveAuctionItemMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t auction_id_ = 0
         , uint64_t terminal_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<RetrieveAuctionItemMessage >("RetrieveAuctionItemMessage"){}
     virtual ~RetrieveAuctionItemMessageEvent() {}

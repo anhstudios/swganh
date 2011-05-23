@@ -14,7 +14,7 @@ struct AuctionDescription
 };
 struct GetAuctionDetailsResponse  : public BasePacket
 {
-    GetAuctionDetailsResponse (std::shared_ptr<network::Session> session_  = nullptr, uint64_t item_id_ = 0,
+    GetAuctionDetailsResponse (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t item_id_ = 0,
         std::list<AuctionDescription> descriptions_ = std::list<AuctionDescription>() )
         : BasePacket(session_, CLIENT)
         , item_id(item_id_)
@@ -26,7 +26,7 @@ struct GetAuctionDetailsResponse  : public BasePacket
 
 class GetAuctionDetailsResponseEvent : public anh::event_dispatcher::BasicEvent<GetAuctionDetailsResponse >{
 public:    
-    GetAuctionDetailsResponseEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t item_id_ = 0,
+    GetAuctionDetailsResponseEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t item_id_ = 0,
         std::list<AuctionDescription> descriptions_ = std::list<AuctionDescription>()) : anh::event_dispatcher::BasicEvent<GetAuctionDetailsResponse >("GetAuctionDetailsResponse"){}
     virtual ~GetAuctionDetailsResponseEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

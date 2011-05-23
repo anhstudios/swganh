@@ -7,7 +7,7 @@
 namespace packets {
 struct ServerWeatherMessage  : public BasePacket
 {
-    ServerWeatherMessage (std::shared_ptr<network::Session> session_  = nullptr, uint32_t weather_id_ = 0
+    ServerWeatherMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t weather_id_ = 0
         , float cloud_x_ = 0.0f, float cloud_z_ = 0.0f, float cloud_y_ = 0.0f)
         : BasePacket(session_, CLIENT)
         , weather_id(weather_id_)
@@ -21,7 +21,7 @@ struct ServerWeatherMessage  : public BasePacket
 
 class ServerWeatherMessageEvent : public anh::event_dispatcher::BasicEvent<ServerWeatherMessage>{
 public:    
-    ServerWeatherMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t weather_id_ = 0
+    ServerWeatherMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t weather_id_ = 0
         , float cloud_x_ = 0.0f, float cloud_z_ = 0.0f, float cloud_y_ = 0.0f) 
         : anh::event_dispatcher::BasicEvent<ServerWeatherMessage>("ServerWeatherMessage"){}
     virtual ~ServerWeatherMessageEvent() {}

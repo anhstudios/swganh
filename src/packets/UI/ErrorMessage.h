@@ -8,7 +8,7 @@
 namespace packets {
 struct ErrorMessage : public BasePacket
 {
-    ErrorMessage(std::shared_ptr<network::Session> session_  = nullptr, std::string& error_type_ = std::string()
+    ErrorMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& error_type_ = std::string()
         , std::string& error_message_ = std::string(), uint8_t force_fatal_ = 0)
         : BasePacket(session_, CLIENT) 
         , error_type(error_type_)
@@ -20,7 +20,7 @@ struct ErrorMessage : public BasePacket
 };
 class ErrorMessageEvent : public anh::event_dispatcher::BasicEvent<ErrorMessage>{
 public:    
-    ErrorMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, std::string& error_type_ = std::string()
+    ErrorMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, std::string& error_type_ = std::string()
         , std::string& error_message_ = std::string(), uint8_t force_fatal_ = 0) : anh::event_dispatcher::BasicEvent<ErrorMessage>("ErrorMessage"){}
     virtual ~ErrorMessageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

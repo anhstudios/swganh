@@ -7,7 +7,7 @@
 namespace packets {
 struct SuiForceClosePage  : public BasePacket
 {
-    SuiForceClosePage (std::shared_ptr<network::Session> session_  = nullptr, uint32_t window_id_ = 0)
+    SuiForceClosePage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t window_id_ = 0)
         : BasePacket(session_, CLIENT)
         , window_id(window_id_)
         {}
@@ -16,7 +16,7 @@ struct SuiForceClosePage  : public BasePacket
 
 class SuiForceClosePageEvent : public anh::event_dispatcher::BasicEvent<SuiForceClosePage>{
 public:    
-    SuiForceClosePageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint32_t window_id_ = 0) 
+    SuiForceClosePageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint32_t window_id_ = 0) 
         : anh::event_dispatcher::BasicEvent<SuiForceClosePage>("SuiForceClosePage"){}
     virtual ~SuiForceClosePageEvent() {}
     void serialize(anh::ByteBuffer& buffer) {

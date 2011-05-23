@@ -101,7 +101,6 @@ void BaseApplication::init_services_()
 {
     try {
         event_dispatcher_ = boost::any_cast<shared_ptr<EventDispatcherInterface>>(platform_services_->getService("EventDispatcher"));
-        scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
         // clock
         clock_ = boost::any_cast<shared_ptr<Clock>>(platform_services_->getService("Clock"));
     }
@@ -113,6 +112,7 @@ void BaseApplication::init_services_()
     // these are optional so they might not be passed in, the app can handle these values not being available.
     db_manager_ = boost::any_cast<shared_ptr<DatabaseManagerInterface>>(platform_services_->getService("DatabaseManager"));
     server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
+    scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
     }
     catch(...)
     {

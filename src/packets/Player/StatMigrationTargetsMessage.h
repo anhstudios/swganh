@@ -9,7 +9,7 @@
 namespace packets {
 struct StatMigrationTargetsMessage  : public BasePacket
 {
-    StatMigrationTargetsMessage (std::shared_ptr<network::Session> session_  = nullptr, int32_t health_ = 0
+    StatMigrationTargetsMessage (std::shared_ptr<anh::network::soe::Session> session_  = nullptr, int32_t health_ = 0
     ,int32_t strength_ = 0, int32_t constitution_ = 0, int32_t action_ = 0,int32_t quickness_ = 0, int32_t stamina_ = 0
     ,int32_t mind_ = 0, int32_t focus_ = 0, int32_t willpower_ = 0,int32_t points_left_ = 0)
         : BasePacket(session_, CLIENT)
@@ -38,7 +38,7 @@ struct StatMigrationTargetsMessage  : public BasePacket
 
 class StatMigrationTargetsMessageEvent : public anh::event_dispatcher::BasicEvent<StatMigrationTargetsMessage>{
 public:    
-    StatMigrationTargetsMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, int32_t health_ = 0
+    StatMigrationTargetsMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, int32_t health_ = 0
     ,int32_t strength_ = 0, int32_t constitution_ = 0, int32_t action_ = 0,int32_t quickness_ = 0, int32_t stamina_ = 0
     ,int32_t mind_ = 0, int32_t focus_ = 0, int32_t willpower_ = 0,int32_t points_left_ = 0) 
         : anh::event_dispatcher::BasicEvent<StatMigrationTargetsMessage>("StatMigrationTargetsMessage"){}

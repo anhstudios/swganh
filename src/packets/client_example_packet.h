@@ -7,7 +7,7 @@
 namespace packets {
 struct ClientOnlyExampleMessage : public BasePacket
 {
-    ClientOnlyExampleMessage(std::shared_ptr<network::Session> session_ = nullptr)
+    ClientOnlyExampleMessage(std::shared_ptr<anh::network::soe::Session> session_ = nullptr)
         : BasePacket(session_, ZONE){}
 	std::string	ASCII;
 	std::wstring UNICODE;
@@ -24,7 +24,7 @@ struct ClientOnlyExampleMessage : public BasePacket
 
 class ClientOnlyExampleMessageEvent : public anh::event_dispatcher::BasicEvent<ClientOnlyExampleMessage>{
 public:    
-    ClientOnlyExampleMessageEvent(std::shared_ptr<network::Session> session_ = nullptr) 
+    ClientOnlyExampleMessageEvent(std::shared_ptr<anh::network::soe::Session> session_ = nullptr) 
 	: anh::event_dispatcher::BasicEvent<ClientOnlyExampleMessage>("ClientOnlyExampleMessage"){}
     virtual ~ClientOnlyExampleMessageEvent() {}
 	void deserialize(anh::ByteBuffer& buffer) {

@@ -15,7 +15,7 @@ struct Attributes
 };
 struct AttributeListMessage : public BasePacket
 {
-    AttributeListMessage(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0, 
+    AttributeListMessage(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0, 
         uint32_t list_count_ = 0, std::list<Attributes> attributes_ = std::list<Attributes>())
         : BasePacket(session_, CLIENT)
         , object_id(object_id_)
@@ -29,7 +29,7 @@ struct AttributeListMessage : public BasePacket
 
 class AttributeListMessageEvent : public anh::event_dispatcher::BasicEvent<AttributeListMessage>{
 public:    
-    AttributeListMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, uint64_t object_id_ = 0, 
+    AttributeListMessageEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr, uint64_t object_id_ = 0, 
         uint32_t list_count_ = 0, std::list<Attributes> attributes_ = std::list<Attributes>()) 
         : anh::event_dispatcher::BasicEvent<AttributeListMessage>("AttributeListMessage"){}
     virtual ~AttributeListMessageEvent() {}

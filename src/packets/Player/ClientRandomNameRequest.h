@@ -7,7 +7,7 @@
 namespace packets {
 struct ClientRandomNameRequest : public BasePacket
 {
-    explicit ClientRandomNameRequest(std::shared_ptr<network::Session> session_  = nullptr)
+    explicit ClientRandomNameRequest(std::shared_ptr<anh::network::soe::Session> session_  = nullptr)
         : BasePacket(session_, SHARED_SERVICE){}
 
     std::string player_race_iff;
@@ -15,7 +15,7 @@ struct ClientRandomNameRequest : public BasePacket
 
 class ClientRandomNameRequestEvent : public anh::event_dispatcher::BasicEvent<ClientRandomNameRequest>{
 public:    
-    ClientRandomNameRequestEvent(std::shared_ptr<network::Session> session_  = nullptr) 
+    ClientRandomNameRequestEvent(std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
         : anh::event_dispatcher::BasicEvent<ClientRandomNameRequest>("ClientRandomNameRequest"){}
     virtual ~ClientRandomNameRequestEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {
