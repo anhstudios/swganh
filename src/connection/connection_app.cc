@@ -5,6 +5,7 @@ This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Em
 For more information, visit http://www.swganh.com
 
 Copyright (c) 2006 - 2010 The SWG:ANH Team */
+
 #include "connection_app.h"
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/scripting/scripting_manager.h>
@@ -12,8 +13,13 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
 #include <iostream>
 #include <glog/logging.h>
+
 #include <boost/thread/thread.hpp>
 
 using namespace std;
@@ -27,6 +33,7 @@ namespace connection {
 ConnectionApp::ConnectionApp(int argc, char* argv[], list<string> config_files
     , shared_ptr<anh::module_manager::PlatformServices> platform_services)
     : BaseApplication(argc, argv, config_files, platform_services) 
+    , cluster_service_(server_directory_)
 {
     auto startupListener = [&] (shared_ptr<EventInterface> incoming_event)-> bool {
         cout << "Connection Application Startup" <<endl;
@@ -52,8 +59,20 @@ ConnectionApp::ConnectionApp(int argc, char* argv[], list<string> config_files
 ConnectionApp::~ConnectionApp() {
     //destructor
 }
+void ConnectionApp::startup() {
+    cluster_service_.Start(45566);
+}
+void ConnectionApp::update() {
+    cluster_service_.Update();
+}
+void ConnectionApp::shutdown() {
+    cluster_service_.Shutdown();
+}
+
 void ConnectionApp::onAddDefaultOptions_() {
 }
 void ConnectionApp::onRegisterApp_() {
 }
+
+
 } //namespace connection

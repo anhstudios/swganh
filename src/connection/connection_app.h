@@ -10,6 +10,7 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team*/
 #define CONNECTION_APP_H_
 
 #include <anh/application.h>
+#include <anh/network/cluster/service.h>
 
 namespace anh {
 namespace module_manager { class PlatformServices; }
@@ -29,6 +30,9 @@ public:
         , std::shared_ptr<anh::module_manager::PlatformServices> platform_services);
 
     // overrides
+    virtual void startup();
+    virtual void update();
+    virtual void shutdown();
     virtual bool hasStarted() const { return started_; }
     virtual void onAddDefaultOptions_();
     virtual void onRegisterApp_();
@@ -39,6 +43,8 @@ private:
     ConnectionApp();
     ConnectionApp(const ConnectionApp&);
     ConnectionApp& operator=(const ConnectionApp&);
+
+    anh::network::cluster::Service           cluster_service_;
 };
 } // end namespace zone
 #endif // CONNECTION_APP_H_

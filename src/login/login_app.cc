@@ -55,8 +55,10 @@ namespace login {
 LoginApp::LoginApp(int argc, char* argv[], list<string> config_files
     , shared_ptr<anh::module_manager::PlatformServices> platform_services)
     : BaseApplication(argc, argv, config_files, platform_services) 
-	, soe_service_()
+    , soe_service_()
+    , cluster_service_(server_directory_)
 {
+
     auto startupListener = [&] (shared_ptr<EventInterface> incoming_event)-> bool {
         cout << "Login Application Startup" <<endl;
         
@@ -87,24 +89,33 @@ LoginApp::~LoginApp() {
 
 void LoginApp::startup()
 {
-	soe_service_.Start(44453);
+    soe_service_.Start(44453);
+    cluster_service_.Start(44555);
+    
+    
+    auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4(127001), 45566);
+    cluster_service_.connection()->socket().connect(endpoint);
+    std::string str = "123456";
+    cluster_service_.connection()->socket().write_some(boost::asio::buffer(str, str.size()));
 }
 
 void LoginApp::process()
 {
-	soe_service_.Update();
+    soe_service_.Update();
+    cluster_service_.Update();
 }
 
 void LoginApp::shutdown()
 {
-	soe_service_.Shutdown();
+    soe_service_.Shutdown();
+    cluster_service_.Shutdown();
 }
 
 void LoginApp::onAddDefaultOptions_() 
 {
-	configuration_options_description_.add_options()
-		("soe_service.port", value<uint16_t>()->default_value(44453), "Port to run the SOE Frontend Service on.")
-		;
+    configuration_options_description_.add_options()
+        ("soe_service.port", value<uint16_t>()->default_value(44453), "Port to run the SOE Frontend Service on.")
+        ;
 }
 
 void LoginApp::onRegisterApp_() 

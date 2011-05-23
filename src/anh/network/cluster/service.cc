@@ -43,12 +43,10 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-Service::Service(boost::asio::io_service& io_service, uint16_t port, shared_ptr<ServerDirectoryInterface> directory)
+Service::Service(shared_ptr<ServerDirectoryInterface> directory)
     : directory_(directory)
-    , io_service_(io_service)
-    , acceptor_(io_service, tcp::endpoint(tcp::v4(), port ))
 {
-    proc_list_ = directory_->getProcessSnapshot(directory_->cluster());
+    //proc_list_ = directory_->getProcessSnapshot(directory_->cluster());
 }
 
 Service::~Service(void)
@@ -56,10 +54,12 @@ Service::~Service(void)
     Shutdown();
 }
 
-void Service::Start(void)
+void Service::Start(uint16_t port)
 {
-    auto conn = std::make_shared<TCPConnection>(io_service_);
-    acceptor_.async_accept(conn->socket(), std::bind(&Service::OnNewConnection_, this, 
+    acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port ));
+    auto conn = std::make_shared<TCPConnection>
+        (io_service_, std::bind(&Service::OnNewConnection_, std::placeholders::_1, std::placeholders::_2));
+    acceptor_->async_accept(conn->socket(), std::bind(&Service::OnNewConnection_, this, 
         std::placeholders::_1));
 
     // open up a connection for each cluster
@@ -72,32 +72,32 @@ void Service::Start(void)
     //    // insert into a map for later use...
     //    socket_map_.insert(SocketPair(endpoint, conn->socket()));
     //});
-	
+    
 }
 
 void Service::Update(void)
 {
-	io_service_.poll();
-	outgoing_pipeline_.run(1000);
-	incoming_pipeline_.run(1000);
+    io_service_.poll();
+    //outgoing_pipeline_.run(1000);
+    //incoming_pipeline_.run(1000);
 }
 
 void Service::Shutdown(void)
 {
-	outgoing_pipeline_.clear();
-	incoming_pipeline_.clear();
-	socket_.reset();
+    outgoing_pipeline_.clear();
+    incoming_pipeline_.clear();
+    socket_.reset();
 }
 
 void Service::OnNewConnection_(const boost::system::error_code& error)
 {
-    auto conn = std::make_shared<TCPConnection>(io_service_);
+    auto conn = std::make_shared<TCPConnection>
+        (io_service_, std::bind(&Service::OnNewConnection_, std::placeholders::_1, std::placeholders::_2));
     if (! error)
     {
         conn->Start();
-        conn = std::make_shared<TCPConnection>(io_service_);
-        acceptor_.async_accept(conn->socket(), std::bind(&Service::OnNewConnection_, shared_from_this(), 
-            std::placeholders::_1));
+        acceptor_->async_accept(conn->socket(), std::bind(&Service::OnNewConnection_, shared_from_this(), 
+            std::placeholders::_1,std::placeholders::_2));
 
         // insert into map  ??
         //connection_map_.insert(ConnectionPair(1,2));

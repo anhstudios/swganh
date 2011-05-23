@@ -52,40 +52,40 @@ typedef std::map<std::shared_ptr<TCPConnection>, std::shared_ptr<anh::server_dir
 class Service : public std::enable_shared_from_this<Service>
 {
 public:
-	Service(boost::asio::io_service& io_service, uint16_t port, 
-        std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory);
-	~Service(void);
+    Service(std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory);
+    ~Service(void);
 
-	/**
-	 * @brief Starts the Cluster Service.
-	 * 
-	 * @parama port The port to listen for messages on.
-	 */
-	void Start(void);
-	void Update(void);
-	void Shutdown(void);
+    /**
+     * @brief Starts the Cluster Service.
+     * 
+     * @parama port The port to listen for messages on.
+     */
+    void Start(uint16_t port);
+    void Update(void);
+    void Shutdown(void);
 
+    std::shared_ptr<TCPConnection>  connection() { return connection_; }
 private:
-	/**
-	 * @brief Called when the socket receives a message.
-	 *
-	 * This function will also attempt to find the session in the SessionManager,
-	 * if it fails to find a Session it will check if the incoming message is a
-	 * Session Request in which case, it will create a new Session.
-	 */
-	void OnNewConnection_(const boost::system::error_code& error);
+    /**
+     * @brief Called when the socket receives a message.
+     *
+     * This function will also attempt to find the session in the SessionManager,
+     * if it fails to find a Session it will check if the incoming message is a
+     * Session Request in which case, it will create a new Session.
+     */
+    void OnNewConnection_(const boost::system::error_code& error);
 
-	std::shared_ptr<Socket>		        socket_;
-    std::shared_ptr<TCPConnection>      connection_;
-    anh::server_directory::ProcessList  proc_list_;
-	boost::asio::io_service&		    io_service_;
-    boost::asio::ip::tcp::acceptor      acceptor_;
+    std::shared_ptr<Socket>		                        socket_;
+    std::shared_ptr<TCPConnection>                      connection_;
+    anh::server_directory::ProcessList                  proc_list_;
+    boost::asio::io_service 		                    io_service_;
+    std::shared_ptr<boost::asio::ip::tcp::acceptor>     acceptor_;
     
-	// Pipelines
-	tbb::pipeline				incoming_pipeline_;
-	tbb::pipeline				outgoing_pipeline_;
-	
-	// Filters
+    // Pipelines
+    tbb::pipeline				incoming_pipeline_;
+    tbb::pipeline				outgoing_pipeline_;
+    
+    // Filters
 
     std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory_;
     ConnectionMap connection_map_;
