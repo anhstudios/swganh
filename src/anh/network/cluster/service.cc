@@ -55,14 +55,24 @@ void Service::Connect(const std::string& host, const std::string& port)
 {
     try {
         auto client = std::make_shared<tcp_client>(io_service_, host, port);
-        tcp_client_list_.push_back(client);
+        tcp_client_map_.insert(ClientPair(std::string(host+":"+port), client));
     }
     catch (exception e)
     {
         std::cout << "Exception in Service::Connect " << e.what() << std::endl;
     }
 }
-
+void Service::SendMessage(const std::string& host_and_port, anh::ByteBuffer& buffer)
+{
+    auto iter = tcp_client_map_.find(host_and_port);
+    if (iter != tcp_client_map_.end())
+    {
+        std::string host = host_and_port.substr(host_and_port.front(), host_and_port.find(":"));
+        std::string port = host_and_port.substr(host_and_port.find(":"), host_and_port.back());
+        Connect(host, port);
+    }
+    
+}
 void Service::Start(uint16_t port)
 {
     acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port ));
@@ -92,7 +102,6 @@ void Service::Shutdown(void)
 {
     io_service_.reset();
     resolver_.cancel();
-    acceptor_->cancel();
     acceptor_->close();
 }
 
@@ -106,6 +115,10 @@ void Service::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system
         acceptor_->async_accept(host->socket(),
             std::bind(&Service::handle_accept_, this, host, 
             std::placeholders::_1));
+    }
+    else
+    {
+        std::cout << "Error: " << error.message() << std::endl;
     }
 }
 

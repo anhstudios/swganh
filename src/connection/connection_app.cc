@@ -59,6 +59,7 @@ void ConnectionApp::startup() {
     
     started_ = true;
     BaseApplication::startup();
+    cluster_io_service_.run();
 }
 void ConnectionApp::update() {
     cluster_service_->Update();

@@ -15,7 +15,8 @@ void tcp_host::Start() {
         if (!error)
         {
             auto buffer = std::make_shared<anh::ByteBuffer>((const unsigned char*)data_, bytes_transferred);
-            std::cout << "trigger event";
+            std::string str = buffer->read<std::string>();
+            std::cout << "trigger message received: " << str;
             // create event and trigger
         }
         else

@@ -69,7 +69,9 @@ void tcp_client::handle_connect_(const boost::system::error_code& error, tcp::re
     {
         std::cout << "Connection Successful, sending request..." << std::endl;
         tcp::endpoint endpoint = *endpoint_iterator;
-        anh::ByteBuffer buffer((const unsigned char)"Hello");
+        anh::ByteBuffer buffer;
+        buffer.write<std::string>("Hello");
+        
         Send(endpoint, buffer);
     }
     else if (endpoint_iterator != tcp::resolver::iterator())
@@ -88,13 +90,14 @@ void tcp_client::handle_connect_(const boost::system::error_code& error, tcp::re
 }
 tcp_client::~tcp_client(void)
 {
+    resolver_.cancel();
     socket_.close();
 }
 
 void tcp_client::Send(boost::asio::ip::tcp::endpoint& endpoint, ByteBuffer& buffer)
 {
-	
-	socket_.async_send(boost::asio::buffer(buffer.data(), buffer.size()), 		 
+	std::cout << "buffer sent size : " << buffer.size() << std::endl;
+	socket_.async_write_some(boost::asio::buffer(buffer.data(), buffer.size()), 		 
 		[this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
 	{
 		bytes_sent_ += bytes_transferred;

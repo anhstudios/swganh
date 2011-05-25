@@ -46,6 +46,8 @@ namespace cluster {
 
 typedef std::pair<std::shared_ptr<tcp_client>, std::shared_ptr<anh::server_directory::Process>> ConnectionPair;
 typedef std::map<std::shared_ptr<tcp_client>, std::shared_ptr<anh::server_directory::Process>> ConnectionMap;
+typedef std::map<std::string, std::shared_ptr<tcp_client>>            ClientMap;
+typedef std::pair<std::string, std::shared_ptr<tcp_client>>           ClientPair;
 /**
  * @brief Represent a Cluster Service
  */
@@ -65,6 +67,7 @@ public:
     void Shutdown(void);
 
     void Connect(const std::string& host, const std::string& port);
+    void SendMessage(const std::string& host_and_port, anh::ByteBuffer& buffer);
 
     std::shared_ptr<tcp_host>  connection() { return connection_; }
 private:
@@ -77,15 +80,15 @@ private:
      */
     void handle_accept_(std::shared_ptr<tcp_host> conn, const boost::system::error_code& error);
 
-    tcp::resolver                                       resolver_;
-    std::shared_ptr<tcp_host>                           connection_;
-    anh::server_directory::ProcessList                  proc_list_;
-    boost::asio::io_service& 		                    io_service_;
-    std::shared_ptr<boost::asio::ip::tcp::acceptor>     acceptor_;
-    std::shared_ptr<tcp_host>                           tcp_host_;
-    std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory_;
-    std::vector<std::shared_ptr<tcp_client>>      tcp_client_list_;
-    ConnectionMap connection_map_;
+    tcp::resolver                                                       resolver_;
+    std::shared_ptr<tcp_host>                                           connection_;
+    anh::server_directory::ProcessList                                  proc_list_;
+    boost::asio::io_service& 		                                    io_service_;
+    std::shared_ptr<boost::asio::ip::tcp::acceptor>                     acceptor_;
+    std::shared_ptr<tcp_host>                                           tcp_host_;
+    std::shared_ptr<anh::server_directory::ServerDirectoryInterface>    directory_;
+    ClientMap                                                           tcp_client_map_;
+    
 };
 
 } // namespace cluster
