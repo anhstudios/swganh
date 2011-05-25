@@ -2,15 +2,12 @@ cmake_minimum_required(VERSION 2.8.2)
 
 project(swganh CXX)
 
-set(swganh_VERSION_MAJOR 1)
-set(swganh_VERSION_MINOR 0)
-set(swganh_VERSION_PATCH 0)
-set(swganh_VERSION 
-	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../tools/cmake/modules")
+configure_file (
+  "${PROJECT_SOURCE_DIR}/version.h.in"
+  "${PROJECT_BINARY_DIR}/version.h"
+  )
+  
 ## compiler checks
-
 include(CheckCXXCompilerFlag)
 
 
@@ -35,12 +32,18 @@ if(MSVC)
     if(MSVC_VERSION LESS 1600)
     	message(FATAL_ERROR "Visual Studio 2010 or newer is required ")
     endif()
+    
+    SET(_WIN32_WINNT 0x0501 CACHE INTERNAL "Setting _WIN32_WINNT to 0x0501 for Windows XP minimum APIs")
+    SET(WINVER 0x0501 CACHE INTERNAL "Setting WINVER to 0x0501 for Windows XP minimum APIs")
 	
 	# any custom flags that need set for VS compilers only should be set here
 	if(MSVC AND NOT CMAKE_GENERATOR MATCHES "Visual Studio 7")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4251")
         message(STATUS "- MSVC: Disabled generic compiletime warnings")
     endif()
+    
+    ADD_DEFINITIONS (/D _WIN32_WINNT=${_WIN32_WINNT})
+    MESSAGE(STATUS "- MSVC: Set minimum Windows API version")
     
     ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D WIN32_LEAN_AND_MEAN)
     MESSAGE(STATUS "- MSVC: Disabled NON-SECURE warnings")
@@ -53,13 +56,25 @@ endif()
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
-## find/configure vendor libraries
-set(ENV{MYSQL_DIR} ${MysqlConnectorC_ROOT})
+if(NOT USE_SYSTEM_LIBRARIES)
+    set(BOOST_ROOT ${VENDOR_PREFIX}/boost)
+    set(GLM_ROOT ${VENDOR_PREFIX}/glm)
+    set(GLOG_ROOT ${VENDOR_PREFIX}/glog)
+    set(GTEST_ROOT ${VENDOR_PREFIX}/gtest)
+    set(GMOCK_ROOT ${VENDOR_PREFIX}/gmock)
+    set(LUA_ROOT ${VENDOR_PREFIX}/lua)
+    set(ENV{MYSQL_DIR} ${VENDOR_PREFIX}/mysql-connector-c)
+    set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX}/mysql-connector-cpp)
+    set(NOISE_ROOT ${VENDOR_PREFIX}/noise)
+    set(PYTHON_ROOT ${VENDOR_PREFIX}/python)
+    set(TBB_INSTALL_DIR ${VENDOR_PREFIX}/tbb)
+    set(TOLUAPP_ROOT ${VENDOR_PREFIX}/tolua++)
+    set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
+endif()
 
 find_package(PythonLibs REQUIRED)
 find_package(Boost 1.45.0 COMPONENTS date_time regex thread system program_options filesystem serialization REQUIRED)
 
-set(BOOST_LIBRARYDIR ${BoostShared_LIBRARYDIR})
 set(Boost_USE_STATIC_LIBS OFF)
 find_package(Boost 1.45.0 COMPONENTS python REQUIRED)
 
@@ -73,94 +88,15 @@ find_package(TBB REQUIRED)
 find_package(ZLib REQUIRED)
 
 
-if(WIN32)    
-    string(REPLACE "/" "\\" WIN_PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}")
-    
-    ## create a target that gathers up the necessary dll's from the above
-    ## dependencies and places them in the runtime directory for this project
-    add_custom_target(DEPS
-        DEPENDS Glm GLog GTest GMock MysqlConnectorC MysqlConnectorCpp TBB ZLib    
-    )
-
-    add_custom_command(
-        TARGET DEPS
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${WIN_PROJECT_BINARY_DIR}\\bin"
-        VERBATIM
-    )
-
-    add_custom_command(
-        TARGET DEPS
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)"
-        VERBATIM
-    )
-
-    get_filename_component(BOOST_PYTHON_DLL_NAME ${Boost_PYTHON_LIBRARY_DEBUG} NAME_WE)
-    get_filename_component(BOOST_PYTHON_DLL_PATH ${Boost_PYTHON_LIBRARY_DEBUG} PATH)
-    string(REPLACE "/" "\\" BOOST_PYTHON_DLL_PATH "${BOOST_PYTHON_DLL_PATH}")
-    add_custom_command(
-        TARGET DEPS
-        POST_BUILD
-        COMMAND xcopy "${BOOST_PYTHON_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
-        VERBATIM
-    )
-    
-    get_filename_component(GLOG_DLL_NAME ${GLOG_LIBRARY} NAME_WE)
-    get_filename_component(GLOG_DLL_PATH ${GLOG_LIBRARY} PATH)
-    string(REPLACE "/" "\\" GLOG_DLL_PATH "${GLOG_DLL_PATH}")
-    add_custom_command(
-        TARGET DEPS
-        POST_BUILD
-        COMMAND xcopy "${GLOG_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
-        VERBATIM
-    )
-    
-    get_filename_component(MYSQL_CONNECTOR_C_DLL_NAME ${MYSQL_LIB} NAME_WE)
-    get_filename_component(MYSQL_CONNECTOR_C_DLL_PATH ${MYSQL_LIB} PATH)
-    string(REPLACE "/" "\\" MYSQL_CONNECTOR_C_DLL_PATH "${MYSQL_CONNECTOR_C_DLL_PATH}")
-    add_custom_command(
-        TARGET DEPS
-        POST_BUILD
-        COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
-        VERBATIM
-    )
-    
-    
-    get_filename_component(MYSQL_CONNECTOR_CPP_DLL_NAME ${MYSQLCONNECTORCPP_LIBRARY} NAME_WE)
-    get_filename_component(MYSQL_CONNECTOR_CPP_DLL_PATH ${MYSQLCONNECTORCPP_LIBRARY} PATH)
-    string(REPLACE "/" "\\" MYSQL_CONNECTOR_CPP_DLL_PATH "${MYSQL_CONNECTOR_CPP_DLL_PATH}")
-    add_custom_command(
-        TARGET DEPS
-        POST_BUILD
-        COMMAND xcopy "${MYSQL_CONNECTOR_CPP_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
-        VERBATIM
-    )
-    
-    get_filename_component(TBB_CPP_DLL_NAME ${TBB_LIBRARY_DEBUG} NAME_WE)
-    get_filename_component(TBB_CPP_DLL_PATH ${TBB_LIBRARY_DEBUG} PATH)
-    string(REPLACE "/" "\\" TBB_CPP_DLL_PATH "${TBB_CPP_DLL_PATH}")
-    add_custom_command(
-        TARGET DEPS
-        POST_BUILD
-        COMMAND xcopy "${TBB_CPP_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
-        VERBATIM
-    )
-    
-    get_filename_component(ZLIB_DLL_NAME ${ZLIB_LIBRARY} NAME_WE)
-    get_filename_component(ZLIB_DLL_PATH ${ZLIB_LIBRARY} PATH)
-    string(REPLACE "/" "\\" ZLIB_DLL_PATH "${ZLIB_DLL_PATH}")
-    add_custom_command(
-        TARGET DEPS
-        POST_BUILD
-        COMMAND xcopy "${ZLIB_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /I /Y /s
-        VERBATIM
-    )    
+if(WIN32)
+    include(Win32PostBuild)
 endif()
 
 enable_testing()
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+# make sure the source directory and the binary directory (where any generated
+# files will be found) are automatically searched for includes
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 ## project libraries
 add_subdirectory(anh)
