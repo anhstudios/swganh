@@ -42,38 +42,38 @@ using boost::asio::ip::tcp;
 class tcp_client
 {
 public:
-	tcp_client(boost::asio::io_service& service, const std::string& host, const std::string& port);
-
-	/**
-	 * @brief Default Deconstructor.
-	 */
-	~tcp_client(void);
-
-	/**
-	 * @brief Sends a message on the wire to the target endpoint.
-	 */
-	void Send(tcp::endpoint& endpoint, anh::ByteBuffer& buffer);
+    tcp_client(boost::asio::io_service& service, const std::string& host, uint16_t port);
 
     /**
-	 * @returns The amount of bytes received on the socket.
-	 */
-	const uint64_t& bytes_recv() { return bytes_recv_; }
+     * @brief Default Deconstructor.
+     */
+    ~tcp_client(void);
 
-	/**
-	 * @returns The amount of bytes sent on the socket.
-	 */
-	const uint64_t& bytes_sent() { return bytes_sent_; }
+    /**
+     * @brief Sends a message on the wire
+     */
+    void Send(anh::ByteBuffer& buffer);
+
+    /**
+     * @returns The amount of bytes received on the socket.
+     */
+    const uint64_t& bytes_recv() { return bytes_recv_; }
+
+    /**
+     * @returns The amount of bytes sent on the socket.
+     */
+    const uint64_t& bytes_sent() { return bytes_sent_; }
 
 private:
-    void handle_connect_(const boost::system::error_code& error, tcp::resolver::iterator endpoint_iterator);
+    void handle_connect_(const boost::system::error_code& error, boost::asio::ip::tcp::endpoint endpoint);
 
-	uint64_t	bytes_recv_;
-	uint64_t	bytes_sent_;
-	
-	tcp::socket		                    socket_;
-	tcp::endpoint		                current_remote_endpoint_;
+    uint64_t	bytes_recv_;
+    uint64_t	bytes_sent_;
+    
+    tcp::socket		                    socket_;
+    tcp::endpoint		                current_remote_endpoint_;
     tcp::resolver                       resolver_;
-	boost::array<char, 456>				recv_buffer_;
+    boost::array<char, 456>				recv_buffer_;
 };
 
 } // namespace cluster

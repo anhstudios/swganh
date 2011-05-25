@@ -65,6 +65,17 @@ public:
 
     /// Universal assignment operator.
     Process& operator=(Process other);
+
+    /// Equals Operator.
+    bool operator==(Process other)
+    {
+        return this->id_ == other.id_;
+    }
+    /// Not Equals Operator.
+    bool operator!=(Process other)
+    {
+        return this->id_ != other.id_;
+    }
         
     /*! Returns the id of the process in the data store.
     *

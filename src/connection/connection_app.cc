@@ -12,12 +12,14 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 #include <anh/module_manager/platform_services.h>
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
+// TEST
+#include <packets/Login/LoginClientId.h>
 
 #include <iostream>
 #include <glog/logging.h>
 
 #include <boost/thread/thread.hpp>
-
+#undef SendMessage;
 using namespace std;
 using namespace anh;
 using namespace scripting;
@@ -56,8 +58,15 @@ ConnectionApp::~ConnectionApp() {
 }
 void ConnectionApp::startup() {
     cluster_service_->Start(45566);
+    auto process = std::make_shared<anh::server_directory::Process>(1,
+            1, "ANH.Login","Login","1.0","127.0.0.1",44555,0,0);
+    cluster_service_->Connect(process);
+    auto test_packet = std::make_shared<packets::LoginClientIdEvent>();
+    test_packet->username = "Test";
+    test_packet->password = "test";
+    test_packet->client_version = "1.0";
+    cluster_service_->SendMessage("ANH.Login", test_packet);
     
-    started_ = true;
     BaseApplication::startup();
     cluster_io_service_.run();
 }

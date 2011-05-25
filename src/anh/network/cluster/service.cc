@@ -28,10 +28,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/byte_buffer.h>
 
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 #include <anh/network/cluster/service.h>
 
 #include <glog/logging.h>
-
 using namespace anh::server_directory;
 using namespace std;
 
@@ -51,28 +51,80 @@ Service::~Service(void)
 {	
     Shutdown();
 }
-void Service::Connect(const std::string& host, const std::string& port)
+bool Service::isConnected(const std::string& name)
 {
-    try {
-        auto client = std::make_shared<tcp_client>(io_service_, host, port);
-        tcp_client_map_.insert(ClientPair(std::string(host+":"+port), client));
+    auto find_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [name] (ClusterPair pair) {
+        return (pair.first->name() == name);
+    });
+    return find_it != tcp_client_map_.end();
+}
+bool Service::isConnected(std::shared_ptr<Process> process)
+{
+    auto find_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [process] (ClusterPair pair) {
+        return process == pair.first;
+    });
+
+    return find_it != tcp_client_map_.end();
+}
+void Service::Connect(std::shared_ptr<anh::server_directory::Process> process)
+{
+    try 
+    {
+        // make sure we aren't already connected
+        if (!isConnected(process))
+        {
+            auto client = std::make_shared<tcp_client>(io_service_, process->address(), process->tcp_port());
+            tcp_client_map_.insert(ClusterPair(process, client));
+        }
     }
     catch (exception e)
     {
         std::cout << "Exception in Service::Connect " << e.what() << std::endl;
     }
 }
-void Service::SendMessage(const std::string& host_and_port, anh::ByteBuffer& buffer)
+void Service::SendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out)
 {
-    auto iter = tcp_client_map_.find(host_and_port);
-    if (iter != tcp_client_map_.end())
+    // make sure we have a connection
+    auto conn = getConnection(name);
+    if (conn != nullptr)
     {
-        std::string host = host_and_port.substr(host_and_port.front(), host_and_port.find(":"));
-        std::string port = host_and_port.substr(host_and_port.find(":"), host_and_port.back());
-        Connect(host, port);
+        anh::ByteBuffer buffer;
+        event_out->serialize(buffer);
+        conn->Send(buffer);
     }
-    
 }
+void Service::SendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer)
+{
+    // check for a connection
+    auto conn = getConnection(host, port);
+    if (conn != nullptr)
+    {
+        conn->Send(buffer);
+    }
+}
+std::shared_ptr<tcp_client> Service::getConnection(const std::string& host, uint16_t port)
+{
+    auto conn_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [host, port] (ClusterPair pair) {
+        return (pair.first->address() == host && pair.first->tcp_port() == port);
+    });
+    if (conn_it != tcp_client_map_.end())
+    {
+        return (*conn_it).second;
+    }
+    return nullptr;
+}
+std::shared_ptr<tcp_client> Service::getConnection(const std::string& name)
+{
+    auto conn_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [name] (ClusterPair pair) {
+        return (pair.first->name() == name);
+    });
+    if (conn_it != tcp_client_map_.end())
+    {
+        return (*conn_it).second;
+    }
+    return nullptr;
+}
+
 void Service::Start(uint16_t port)
 {
     acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port ));

@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/cluster/tcp_client.h>
 #include <anh/network/cluster/tcp_host.h>
 #include <anh/server_directory/server_directory_interface.h>
+#include <anh/event_dispatcher/event_interface.h>
 
 #include <map>
 #include <list>
@@ -39,15 +40,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <tbb/pipeline.h>
 #include <tbb/concurrent_vector.h>
-
+#undef SendMessage;
 namespace anh {
 namespace network {
 namespace cluster {
 
-typedef std::pair<std::shared_ptr<tcp_client>, std::shared_ptr<anh::server_directory::Process>> ConnectionPair;
-typedef std::map<std::shared_ptr<tcp_client>, std::shared_ptr<anh::server_directory::Process>> ConnectionMap;
-typedef std::map<std::string, std::shared_ptr<tcp_client>>            ClientMap;
-typedef std::pair<std::string, std::shared_ptr<tcp_client>>           ClientPair;
+typedef std::map<std::shared_ptr<anh::server_directory::Process>, std::shared_ptr<tcp_client>>            ClusterMap;
+typedef std::pair<std::shared_ptr<anh::server_directory::Process>, std::shared_ptr<tcp_client>>           ClusterPair;
 /**
  * @brief Represent a Cluster Service
  */
@@ -60,16 +59,63 @@ public:
     /**
      * @brief Starts the Cluster Service.
      * 
-     * @parama port The port to listen for messages on.
+     * @param port The port to listen for messages on.
      */
     void Start(uint16_t port);
     void Update(void);
     void Shutdown(void);
+    /**
+     * @brief Opens a TCP connection to the given host
+     * 
+     * @param process the server directory process to connect to.
+     */
+    void Connect(std::shared_ptr<anh::server_directory::Process> process);
+    /**
+     * @brief Sends a message to given the name of the service
+     * 
+     * @param name The service name to send a message to.
+     * @param event_out the event that will be sent out.
+     */
+    void SendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out);
+    /**
+     * @brief Sends a message to given the name of the service
+     * 
+     * @param host The host address to send a message to.
+     * @param port The port to the host.
+     * @param buffer The ByteBuffer message to send
+     */
+    void SendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer);
+    /**
+     * @brief Checks to see if there is a connection to the given service
+     * 
+     * @param name the service name to check
+     * @returns true if the service was found.
+     */
+    bool isConnected(const std::string& name);
+    /**
+     * @brief Checks to see if there is a connection to the given service
+     * 
+     * @param process the service process to check
+     * @returns true if the service was found.
+     */
+    bool isConnected(std::shared_ptr<anh::server_directory::Process> process);
+    /**
+     * @brief Checks to see if there is a connection to the given address and port
+     * 
+     * @param host the address to send to
+     * @param port the host port
+     * @returns connection if found, else nullptr
+     */
+    std::shared_ptr<tcp_client> getConnection(const std::string& host, uint16_t port);
+    /**
+    * @brief Gets the named connection
+    *
+    * @param name the name of the connection to grab
+    * @returns tcp_client if found, else nullptr
+    */
+    std::shared_ptr<tcp_client> getConnection(const std::string& name);
 
-    void Connect(const std::string& host, const std::string& port);
-    void SendMessage(const std::string& host_and_port, anh::ByteBuffer& buffer);
-
-    std::shared_ptr<tcp_host>  connection() { return connection_; }
+    std::shared_ptr<tcp_host>  host() { return tcp_host_; }
 private:
     /**
      * @brief Called when the socket receives a message.
@@ -81,13 +127,12 @@ private:
     void handle_accept_(std::shared_ptr<tcp_host> conn, const boost::system::error_code& error);
 
     tcp::resolver                                                       resolver_;
-    std::shared_ptr<tcp_host>                                           connection_;
     anh::server_directory::ProcessList                                  proc_list_;
     boost::asio::io_service& 		                                    io_service_;
     std::shared_ptr<boost::asio::ip::tcp::acceptor>                     acceptor_;
     std::shared_ptr<tcp_host>                                           tcp_host_;
     std::shared_ptr<anh::server_directory::ServerDirectoryInterface>    directory_;
-    ClientMap                                                           tcp_client_map_;
+    ClusterMap                                                          tcp_client_map_;
     
 };
 

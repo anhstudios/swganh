@@ -1,6 +1,7 @@
 #include <anh/network/cluster/tcp_host.h>
 #include <boost/bind.hpp>
 #include <iostream>
+#include <packets/Login/LoginClientId.h>
 
 namespace anh {
 namespace network {
@@ -15,8 +16,10 @@ void tcp_host::Start() {
         if (!error)
         {
             auto buffer = std::make_shared<anh::ByteBuffer>((const unsigned char*)data_, bytes_transferred);
-            std::string str = buffer->read<std::string>();
-            std::cout << "trigger message received: " << str;
+            // TEMP
+            auto login_packet = std::make_shared<packets::LoginClientIdEvent>();
+            login_packet->deserialize(*buffer);
+            std::cout << "trigger message received: " << login_packet->username ;
             // create event and trigger
         }
         else

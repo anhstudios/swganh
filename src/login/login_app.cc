@@ -81,7 +81,7 @@ void LoginApp::startup()
 {
     soe_service_.Start(44453);
     cluster_service_->Start(44555);
-    cluster_service_->Connect("127.0.0.1", "45566");
+    
     BaseApplication::startup();
     cluster_io_service_.run();
 }

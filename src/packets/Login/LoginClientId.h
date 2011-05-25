@@ -20,9 +20,20 @@ public:
         : anh::event_dispatcher::BasicEvent<LoginClientId>("LoginClientId"){}
     virtual ~LoginClientIdEvent() {}
     void deserialize(anh::ByteBuffer& buffer) {
+        uint8_t size = buffer.read<uint8_t>();
+        uint32_t pack = buffer.read<uint32_t>();
+        // TEMP TODO
         username = buffer.read<std::string>();
         password = buffer.read<std::string>();
         client_version = buffer.read<std::string>();
+    }
+    void serialize(anh::ByteBuffer& buffer) {
+        buffer.write<uint8_t>(3);
+        //TODO REPLACE!!!!!!!!!!
+        buffer.write<uint32_t>(0x41131F96);
+        buffer.write<std::string>(username);
+        buffer.write<std::string>(password);
+        buffer.write<std::string>(client_version);
     }
 };
 
