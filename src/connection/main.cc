@@ -3,11 +3,9 @@
 #include <anh/scripting/scripting_manager.h>
 #include <anh/module_manager/platform_services.h>
 #include <anh/module_manager/module_manager.h>
+#include <anh/network/cluster/service.h>
 #include <anh/clock.h>
 
-#ifdef ERROR
-#undef ERROR
-#endif
 #include <iostream>
 #include <glog/logging.h>
 #include <boost/thread/thread.hpp>
@@ -19,6 +17,7 @@ using namespace component;
 using namespace event_dispatcher;
 using namespace module_manager;
 using namespace connection;
+using namespace network::cluster;
 
 int main(int argc, char* argv[])
 {
@@ -37,13 +36,12 @@ int main(int argc, char* argv[])
     list<string> config;
     config.push_back("config/general.cfg");
     shared_ptr<EventDispatcherInterface> dispatcher = make_shared<EventDispatcher>();
-    shared_ptr<ScriptingManagerInterface> scripter = make_shared<ScriptingManager>("scripts");
     shared_ptr<Clock> clock = make_shared<Clock>();
     auto services = make_shared<PlatformServices>();
     // add services
     services->addService("EventDispatcher", dispatcher);
-    services->addService("ScriptingManager", scripter);
     services->addService("Clock", clock);
+    boost::asio::io_service io_service();
     ConnectionApp app(argc, argv, config, services);
     ///
     app.startup();

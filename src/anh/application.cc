@@ -24,7 +24,6 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-
 #include "anh/application.h"
 
 #include <cassert>
@@ -42,8 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <mysql_driver.h>
 #include <cppconn/connection.h>
 #include <cppconn/driver.h>
-#include <glog/logging.h>
 
+#include <glog/logging.h>
 #include <anh/clock.h>
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/database/database_manager.h>
@@ -52,6 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/server_directory/datastore.h>
 #include <anh/module_manager/module_manager.h>
 #include <anh/module_manager/platform_services.h>
+#include <anh/network/cluster/service.h>
 
 using namespace std;
 using namespace anh;
@@ -109,10 +109,12 @@ void BaseApplication::init_services_()
         throw runtime_error("Required Services Missing: " + string(e.what()));
     }
     try {
+    setupCluster_();
     // these are optional so they might not be passed in, the app can handle these values not being available.
     db_manager_ = boost::any_cast<shared_ptr<DatabaseManagerInterface>>(platform_services_->getService("DatabaseManager"));
     server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
     scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
+    
     }
     catch(...)
     {
@@ -176,6 +178,7 @@ void BaseApplication::startup() {
     catch(...) {
         cerr << "Error in startup";
     }
+    started_ = true;
 }
 
 void BaseApplication::process() {
@@ -264,13 +267,13 @@ void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> con
     for_each(config_files.begin(), config_files.end(), [&] (const string& filename) {
         ifstream config_file(filename);
         if(!config_file.is_open())
-            throw runtime_error("Could not open configuration file.");
+            throw runtime_error("Could not open configuration file: " + filename);
         else
         {
             try {
                 store(parse_config_file(config_file, configuration_options_description_, true), configuration_variables_map_);
             } catch(...) { 
-                throw runtime_error("Could not parse config file. " + filename);
+                throw runtime_error("Could not parse config file: " + filename);
             }
         }
     })(config_files.front());
@@ -355,6 +358,12 @@ void BaseApplication::registerApp_()
                 );
         }
     }
+}
+void BaseApplication::setupCluster_() 
+{
+    // setup cluster_service
+    cluster_service_ = std::make_shared<network::cluster::Service>(cluster_io_service_, server_directory_);
+    // loop through processes in server_directory and open a tcp connection to each?
 }
 int BaseApplication::kbHit()
 {

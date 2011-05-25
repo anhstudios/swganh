@@ -13,10 +13,6 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team */
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
 
-#ifdef ERROR
-#undef ERROR
-#endif
-
 #include <iostream>
 #include <glog/logging.h>
 #include <boost/thread/thread.hpp>
@@ -44,12 +40,10 @@ int main(int argc, char* argv[])
     list<string> config;
     config.push_back("config/login.cfg");
     shared_ptr<EventDispatcherInterface> dispatcher = make_shared<EventDispatcher>();
-    //shared_ptr<ScriptingManagerInterface> scripter = make_shared<ScriptingManager>("scripts");
     shared_ptr<Clock> clock = make_shared<Clock>();
     auto services = make_shared<PlatformServices>();
     // add services
     services->addService("EventDispatcher", dispatcher);
-    //services->addService("ScriptingManager", scripter);
     services->addService("Clock", clock);
     LoginApp app(argc, argv, config, services);
     ///

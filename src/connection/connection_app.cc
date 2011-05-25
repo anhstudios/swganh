@@ -13,10 +13,6 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
 
-#ifdef ERROR
-#undef ERROR
-#endif
-
 #include <iostream>
 #include <glog/logging.h>
 
@@ -33,13 +29,12 @@ namespace connection {
 ConnectionApp::ConnectionApp(int argc, char* argv[], list<string> config_files
     , shared_ptr<anh::module_manager::PlatformServices> platform_services)
     : BaseApplication(argc, argv, config_files, platform_services) 
-    , cluster_service_(server_directory_)
 {
     auto startupListener = [&] (shared_ptr<EventInterface> incoming_event)-> bool {
         cout << "Connection Application Startup" <<endl;
-        started_ = true;
+        
         cout << "Connection Application Started" << endl;
-
+        started_ = true;
         return true;
     };
     auto processListener = [] (shared_ptr<EventInterface> incoming_event)-> bool {
@@ -60,13 +55,16 @@ ConnectionApp::~ConnectionApp() {
     //destructor
 }
 void ConnectionApp::startup() {
-    cluster_service_.Start(45566);
+    cluster_service_->Start(45566);
+    
+    started_ = true;
+    BaseApplication::startup();
 }
 void ConnectionApp::update() {
-    cluster_service_.Update();
+    cluster_service_->Update();
 }
 void ConnectionApp::shutdown() {
-    cluster_service_.Shutdown();
+    cluster_service_->Shutdown();
 }
 
 void ConnectionApp::onAddDefaultOptions_() {

@@ -27,12 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <iostream>
 #include <anh/byte_buffer.h>
 
+#include <boost/bind.hpp>
 #include <anh/network/cluster/service.h>
-#include <anh/network/cluster/socket.h>
-
-#ifdef ERROR
-#undef ERROR
-#endif
 
 #include <glog/logging.h>
 
@@ -43,8 +39,10 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-Service::Service(shared_ptr<ServerDirectoryInterface> directory)
+Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectoryInterface> directory)
     : directory_(directory)
+    , io_service_(io_service)
+    , resolver_(io_service)
 {
     //proc_list_ = directory_->getProcessSnapshot(directory_->cluster());
 }
@@ -53,14 +51,25 @@ Service::~Service(void)
 {	
     Shutdown();
 }
+void Service::Connect(const std::string& host, const std::string& port)
+{
+    try {
+        auto client = std::make_shared<tcp_client>(io_service_, host, port);
+        tcp_client_list_.push_back(client);
+    }
+    catch (exception e)
+    {
+        std::cout << "Exception in Service::Connect " << e.what() << std::endl;
+    }
+}
 
 void Service::Start(uint16_t port)
 {
     acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port ));
-    auto conn = std::make_shared<TCPConnection>
-        (io_service_, std::bind(&Service::OnNewConnection_, std::placeholders::_1, std::placeholders::_2));
-    acceptor_->async_accept(conn->socket(), std::bind(&Service::OnNewConnection_, this, 
-        std::placeholders::_1));
+    tcp_host_ = std::make_shared<tcp_host>(io_service_);
+
+    acceptor_->async_accept(tcp_host_->socket(), boost::bind(&Service::handle_accept_, this, 
+       tcp_host_ , boost::asio::placeholders::error));
 
     // open up a connection for each cluster
     //std::for_each(proc_list_.begin(), proc_list_.end(), [&] (anh::server_directory::Process process) {
@@ -72,35 +81,31 @@ void Service::Start(uint16_t port)
     //    // insert into a map for later use...
     //    socket_map_.insert(SocketPair(endpoint, conn->socket()));
     //});
-    
 }
 
 void Service::Update(void)
 {
     io_service_.poll();
-    //outgoing_pipeline_.run(1000);
-    //incoming_pipeline_.run(1000);
 }
 
 void Service::Shutdown(void)
 {
-    outgoing_pipeline_.clear();
-    incoming_pipeline_.clear();
-    socket_.reset();
+    io_service_.reset();
+    resolver_.cancel();
+    acceptor_->cancel();
+    acceptor_->close();
 }
 
-void Service::OnNewConnection_(const boost::system::error_code& error)
+void Service::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system::error_code& error)
 {
-    auto conn = std::make_shared<TCPConnection>
-        (io_service_, std::bind(&Service::OnNewConnection_, std::placeholders::_1, std::placeholders::_2));
-    if (! error)
+    if (!error)
     {
-        conn->Start();
-        acceptor_->async_accept(conn->socket(), std::bind(&Service::OnNewConnection_, shared_from_this(), 
-            std::placeholders::_1,std::placeholders::_2));
-
-        // insert into map  ??
-        //connection_map_.insert(ConnectionPair(1,2));
+        std::cout << "handle accept" << std::endl;
+        host->Start();
+        host = std::make_shared<tcp_host>(io_service_);
+        acceptor_->async_accept(host->socket(),
+            std::bind(&Service::handle_accept_, this, host, 
+            std::placeholders::_1));
     }
 }
 

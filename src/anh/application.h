@@ -31,8 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <cstdint>
 #include <list>
 #include <set>
-#include <boost/program_options.hpp>
 
+#include <boost/program_options.hpp>
+#include <boost/asio.hpp>
 #include <anh/application_interface.h>
 
 namespace sql { class Connection; class Driver; }
@@ -43,6 +44,7 @@ namespace database { class DatabaseManagerInterface; class DatabaseManager; }
 namespace scripting { class ScriptingManagerInterface; }
 namespace server_directory { class ServerDirectoryInterface; }
 namespace module_manager { class ModuleManager; class PlatformServices; struct ModuleApiVersion; }
+namespace network { namespace cluster { class Service; } }
 class Clock;
 
 /**
@@ -99,6 +101,7 @@ public:
     std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher() { return event_dispatcher_; }
     std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager() { return scripting_manager_; }
     std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory() { return server_directory_; }
+    std::shared_ptr<network::cluster::Service>                  cluster_service() { return cluster_service_; }
 protected:
 
     /// helper function to init needed services
@@ -139,6 +142,10 @@ protected:
     void loadOptions_(uint32_t argc, char* argv[], std::list<std::string> config_files);
     // helper to setup modules and modules_manager
     void setupModules_();
+    /**
+    * @brief sets up the TCP services to the available processes.
+    */
+    void setupCluster_();
 
     // base events to be triggered
     std::shared_ptr<event_dispatcher::EventInterface> startup_event_;
@@ -150,9 +157,11 @@ protected:
     std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager_;
     std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory_;
+    std::shared_ptr<network::cluster::Service>                  cluster_service_;
     std::shared_ptr<module_manager::ModuleManager> module_manager_;
     std::shared_ptr<module_manager::PlatformServices> platform_services_;
 
+    boost::asio::io_service                     cluster_io_service_;
     boost::program_options::options_description configuration_options_description_;
     boost::program_options::variables_map configuration_variables_map_;
     int argc_;

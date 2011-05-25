@@ -31,10 +31,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/decryption_filter.h>
 #include <anh/network/soe/protocol_opcodes.h>
 
-#ifdef ERROR
-#undef ERROR
-#endif
-
 #include <iostream>
 #include <glog/logging.h>
 

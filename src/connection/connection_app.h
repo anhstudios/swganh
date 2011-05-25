@@ -43,8 +43,6 @@ private:
     ConnectionApp();
     ConnectionApp(const ConnectionApp&);
     ConnectionApp& operator=(const ConnectionApp&);
-
-    anh::network::cluster::Service           cluster_service_;
 };
 } // end namespace zone
 #endif // CONNECTION_APP_H_

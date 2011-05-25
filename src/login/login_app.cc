@@ -24,21 +24,12 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-
-#ifdef ERROR
-#undef ERROR
-#endif
-
 #include "login_app.h"
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/scripting/scripting_manager.h>
 #include <anh/module_manager/platform_services.h>
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
-
-#ifdef ERROR
-#undef ERROR
-#endif
 
 #include <iostream>
 #include <glog/logging.h>
@@ -50,15 +41,14 @@ using namespace scripting;
 using namespace event_dispatcher;
 using namespace module_manager;
 using namespace boost::program_options;
+using namespace boost::asio::ip;
 
 namespace login {
 LoginApp::LoginApp(int argc, char* argv[], list<string> config_files
     , shared_ptr<anh::module_manager::PlatformServices> platform_services)
     : BaseApplication(argc, argv, config_files, platform_services) 
     , soe_service_()
-    , cluster_service_(server_directory_)
 {
-
     auto startupListener = [&] (shared_ptr<EventInterface> incoming_event)-> bool {
         cout << "Login Application Startup" <<endl;
         
@@ -90,25 +80,21 @@ LoginApp::~LoginApp() {
 void LoginApp::startup()
 {
     soe_service_.Start(44453);
-    cluster_service_.Start(44555);
-    
-    
-    auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4(127001), 45566);
-    cluster_service_.connection()->socket().connect(endpoint);
-    std::string str = "123456";
-    cluster_service_.connection()->socket().write_some(boost::asio::buffer(str, str.size()));
+    cluster_service_->Start(44555);
+    cluster_service_->Connect("127.0.0.1", "45566");
+    BaseApplication::startup();
 }
 
 void LoginApp::process()
 {
     soe_service_.Update();
-    cluster_service_.Update();
+    cluster_service_->Update();
 }
 
 void LoginApp::shutdown()
 {
     soe_service_.Shutdown();
-    cluster_service_.Shutdown();
+    cluster_service_->Shutdown();
 }
 
 void LoginApp::onAddDefaultOptions_() 

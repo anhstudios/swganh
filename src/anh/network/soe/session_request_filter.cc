@@ -34,10 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/incoming_sessionless_packet.h>
 #include <anh/utilities.h>
 
-#ifdef ERROR
-#undef ERROR
-#endif
-
 #include <glog/logging.h>
 
 namespace anh {

@@ -28,10 +28,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/recv_packet_filter.h>
 #include <anh/network/soe/service.h>
 
-#ifdef ERROR
-#undef ERROR
-#endif
-
 #include <glog/logging.h>
 
 namespace anh {

@@ -29,8 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_NETWORK_CLUSTER_SERVICE_H_
 
 #include <anh/byte_buffer.h>
-#include <anh/network/cluster/socket.h>
-#include <anh/network/cluster/tcp_connection.h>
+#include <anh/network/cluster/tcp_client.h>
+#include <anh/network/cluster/tcp_host.h>
 #include <anh/server_directory/server_directory_interface.h>
 
 #include <map>
@@ -44,15 +44,15 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-typedef std::pair<std::shared_ptr<TCPConnection>, std::shared_ptr<anh::server_directory::Process>> ConnectionPair;
-typedef std::map<std::shared_ptr<TCPConnection>, std::shared_ptr<anh::server_directory::Process>> ConnectionMap;
+typedef std::pair<std::shared_ptr<tcp_client>, std::shared_ptr<anh::server_directory::Process>> ConnectionPair;
+typedef std::map<std::shared_ptr<tcp_client>, std::shared_ptr<anh::server_directory::Process>> ConnectionMap;
 /**
  * @brief Represent a Cluster Service
  */
 class Service : public std::enable_shared_from_this<Service>
 {
 public:
-    Service(std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory);
+    Service(boost::asio::io_service& io_service, std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory);
     ~Service(void);
 
     /**
@@ -64,7 +64,9 @@ public:
     void Update(void);
     void Shutdown(void);
 
-    std::shared_ptr<TCPConnection>  connection() { return connection_; }
+    void Connect(const std::string& host, const std::string& port);
+
+    std::shared_ptr<tcp_host>  connection() { return connection_; }
 private:
     /**
      * @brief Called when the socket receives a message.
@@ -73,21 +75,16 @@ private:
      * if it fails to find a Session it will check if the incoming message is a
      * Session Request in which case, it will create a new Session.
      */
-    void OnNewConnection_(const boost::system::error_code& error);
+    void handle_accept_(std::shared_ptr<tcp_host> conn, const boost::system::error_code& error);
 
-    std::shared_ptr<Socket>		                        socket_;
-    std::shared_ptr<TCPConnection>                      connection_;
+    tcp::resolver                                       resolver_;
+    std::shared_ptr<tcp_host>                           connection_;
     anh::server_directory::ProcessList                  proc_list_;
-    boost::asio::io_service 		                    io_service_;
+    boost::asio::io_service& 		                    io_service_;
     std::shared_ptr<boost::asio::ip::tcp::acceptor>     acceptor_;
-    
-    // Pipelines
-    tbb::pipeline				incoming_pipeline_;
-    tbb::pipeline				outgoing_pipeline_;
-    
-    // Filters
-
+    std::shared_ptr<tcp_host>                           tcp_host_;
     std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory_;
+    std::vector<std::shared_ptr<tcp_client>>      tcp_client_list_;
     ConnectionMap connection_map_;
 };
 

@@ -45,7 +45,6 @@ private:
 
     // SOE Frontend Service
     anh::network::soe::Service	soe_service_;
-    anh::network::cluster::Service cluster_service_;
 };
 
 
