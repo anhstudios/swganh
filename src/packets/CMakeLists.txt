@@ -8,6 +8,6 @@ AddANHHeaderOnly(packets
 	${GLOG_INCLUDE_DIR}
 	${PYTHON_INCLUDE_DIR}
 	${TBB_INCLUDE_DIRS}
-	${Glm_INCLUDE_DIR}
+	${GLM_INCLUDE_DIR}
 	anhlib
 )
