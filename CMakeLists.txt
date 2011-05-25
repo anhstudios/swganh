@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 2.8.2)
 project(bootstrap CXX)
 
 # current version
-set(bootstrap_VERSION_MAJOR 1)
-set(bootstrap_VERSION_MINOR 0)
-set(bootstrap_VERSION_PATCH 0)
-set(bootstrap_VERSION 
-	${bootstrap_VERSION_MAJOR}.${bootstrap_VERSION_MINOR}.${bootstrap_VERSION_PATCH})
+set(swganh_VERSION_MAJOR 1)
+set(swganh_VERSION_MINOR 0)
+set(swganh_VERSION_PATCH 1)
+set(swganh_VERSION 
+	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 	
 # set the path for custom cmake scripts
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake/modules")
@@ -23,37 +23,33 @@ include(ExternalProject)
 option(ENABLE_TEST_REPORT
     "Enables the generation of a test report when running tests" false)
 
+option(USE_SYSTEM_LIBRARIES
+    "Uses system libraries instead of downloading them" FALSE)
+    
 ## Vendor libraries
-set(VENDOR_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/vendor")
 set(vendor_libraries "")
 set(vendor_args "")
 
-option(BUILD_DEPENDENCIES
-    "Forces the downloading and building of the dependencies from source" false
-)
-
-# make sure there's a system python available
-FIND_PACKAGE(PythonLibs REQUIRED)
-FIND_PACKAGE(PythonInterp REQUIRED)
-
-if(MSVC10 AND NOT BUILD_DEPENDENCIES)
+if(MSVC10 AND NOT DEFINED VENDOR_PREFIX AND NOT USE_SYSTEM_LIBRARIES)
 	include(FetchPreBuiltDependencies)
+	
+    # Configure and build the SWGANH project
+    ExternalProject_Add(swganh
+    	DEPENDS ${vendor_libraries}
+    	DOWNLOAD_COMMAND ""
+    	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
+    	BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/swganh
+    	CMAKE_ARGS 
+            ${vendor_args}
+            -DVENDOR_PREFIX:PATH=${VENDOR_PREFIX}
+            -Dswganh_VERSION_MAJOR=${swganh_VERSION_MAJOR}
+            -Dswganh_VERSION_MINOR=${swganh_VERSION_MINOR}
+            -Dswganh_VERSION_PATCH=${swganh_VERSION_PATCH}
+            -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
+            -DUSE_SYSTEM_LIBRARIES:BOOL=${USE_SYSTEM_LIBRARIES}
+            -DENABLE_TEST_REPORT:BOOL=${ENABLE_TEST_REPORT}
+    	INSTALL_COMMAND ""
+    )
 else()
-	include(BuildDependencies)
+	add_subdirectory(src)
 endif()
-
-# Configure and build the SWGANH project
-ExternalProject_Add(swganh
-	DEPENDS ${vendor_libraries}
-	DOWNLOAD_COMMAND ""
-	SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src
-	BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/swganh
-	CMAKE_ARGS 
-		${vendor_args}
-    	-DPYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
-		-DPYTHON_INCLUDE_PATH=${PYTHON_INCLUDE_DIR}
-		-DPYTHON_LIBRARIES=${PYTHON_LIBRARY}
-		-DPYTHON_DEBUG_LIBRARIES=${PYTHON_DEBUG_LIBRARY}
-		-DENABLE_TEST_REPORT:BOOL=${ENABLE_TEST_REPORT}
-	INSTALL_COMMAND ""
-)
