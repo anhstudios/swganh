@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/socket.h>
 #include <anh/network/soe/protocol_packets.h>
 
-#include <deque>
+#include <list>
 
 #include <tbb/concurrent_queue.h>
 #include <boost/asio.hpp>
@@ -107,11 +107,9 @@ private:
 	bool SequenceIsValid_(const uint16_t& sequence);
 	void AcknowledgeSequence_(const uint16_t& sequence);
 
-	boost::asio::ip::udp::endpoint		remote_endpoint_;
-	Service*							service_;
+	boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
+	Service*							service_; // owner
 
-	tbb::concurrent_queue<DataFragA*>								incoming_fragmented_messages_;
-	tbb::concurrent_queue<ChildDataA*>								outgoing_data_messages_;
 	SequencedMessageMap												sent_messages_;
 
 	bool								connected_;
@@ -133,6 +131,10 @@ private:
 	NetStatsServer						server_net_stats_;
 
 	ChildDataA							outgoing_data_message_;
+
+	std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
+	uint16_t							incoming_fragmented_total_len_;
+	uint16_t							incoming_fragmented_curr_len_;
 };
 
 } // namespace soe

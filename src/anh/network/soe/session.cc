@@ -81,7 +81,7 @@ void Session::Update(void)
 		outgoing_data_message_.serialize(*message);
 		SendSoePacket(message);
 
-		sent_messages_.insert(SequencedMessageMap::value_type(0, message));
+		sent_messages_.insert(SequencedMessageMap::value_type(server_sequence_, message));
 
 		outgoing_data_message_.sequence++;
 		server_sequence_++;
@@ -145,8 +145,10 @@ void Session::handleSessionRequest_(SessionRequest& packet)
 	// Directly put this on the wire, it requires no outgoing processing.
 	service_->socket_->Send(remote_endpoint_, session_response_buffer);
 
+	// Add our Session to the SessionManager and flag ourselves as connected.
 	service_->session_manager_.AddSession(shared_from_this());
 	connected_ = true;
+
 	LOG(WARNING) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
 }
 
@@ -245,6 +247,26 @@ void Session::handleDataFragA_(DataFragA& packet)
 	
 	AcknowledgeSequence_(packet.sequence);
 
+	// Continuing a frag
+	if(incoming_fragmented_total_len_ > 0)
+	{
+		incoming_fragmented_curr_len_ += packet.data.size();
+		incoming_fragmented_messages_.push_back(packet.data);
+
+		if(incoming_fragmented_total_len_ == incoming_fragmented_curr_len_)
+		{
+			// Send to translator.
+			incoming_fragmented_total_len_ = 0;
+			incoming_fragmented_curr_len_ = 0;
+		}
+	}
+	// Starting a new frag
+	else
+	{
+		incoming_fragmented_total_len_ = packet.data.read<uint16_t>();
+		incoming_fragmented_curr_len_ += packet.data.size();
+		incoming_fragmented_messages_.push_back(anh::ByteBuffer(packet.data.data()+2, packet.data.size()-2));
+	}
 	
 }
 
@@ -259,7 +281,7 @@ void Session::handleAckA_(AckA& packet)
 		sent_messages_.erase(begin);
 		return;
 	}
-	else if((begin != sent_messages_.end()) && (end != sent_messages_.end()))
+	else
 	{
 		sent_messages_.erase(begin, end);
 		return;
