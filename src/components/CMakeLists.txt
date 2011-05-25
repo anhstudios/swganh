@@ -26,7 +26,7 @@ AddANHSharedLibrary(components
         ${Boost_SYSTEM_LIBRARY_DEBUG}
         ${Boost_THREAD_LIBRARY_DEBUG}
         ${Boost_FILESYSTEM_LIBRARY_DEBUG}
-		${PYTHON_LIBRARIES}
+		${PYTHON_LIBRARY}
 		${GLOG_LIBRARY}
 	OPTIMIZED_LIBRARIES 
         ${MYSQL_LIB}
@@ -39,6 +39,6 @@ AddANHSharedLibrary(components
         ${Boost_SYSTEM_LIBRARY_RELEASE}
         ${Boost_THREAD_LIBRARY_RELEASE}
         ${Boost_FILESYSTEM_LIBRARY_RELEASE}
-		${PYTHON_LIBRARIES}
+		${PYTHON_LIBRARY}
 		${GLOG_LIBRARY}
 )
