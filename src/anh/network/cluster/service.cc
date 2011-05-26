@@ -24,14 +24,17 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
+#include <anh/network/cluster/tcp_message.h>
+#include <anh/network/cluster/service.h>
+
 #include <iostream>
 #include <anh/byte_buffer.h>
 
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
-#include <anh/network/cluster/service.h>
 
 #include <glog/logging.h>
+
 using namespace anh::server_directory;
 using namespace std;
 
@@ -43,14 +46,47 @@ Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectory
     : directory_(directory)
     , io_service_(io_service)
     , resolver_(io_service)
+    , send_packet_filter_(this)
+    , receive_packet_filter_(this)
+    , outgoing_start_filter_(this)
 {
     //proc_list_ = directory_->getProcessSnapshot(directory_->cluster());
+    outgoing_pipeline_.add_filter(outgoing_start_filter_);
+    outgoing_pipeline_.add_filter(send_packet_filter_);
+    incoming_pipeline_.add_filter(receive_packet_filter_);
 }
 
 Service::~Service(void)
 {	
     Shutdown();
 }
+
+void Service::Start(uint16_t port)
+{
+    acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port ));
+    tcp_host_ = std::make_shared<tcp_host>(io_service_);
+
+    acceptor_->async_accept(tcp_host_->socket(), boost::bind(&Service::handle_accept_, this, 
+       tcp_host_ , boost::asio::placeholders::error));
+}
+
+void Service::Update(void)
+{
+    io_service_.poll();
+
+    incoming_pipeline_.run(8);
+    outgoing_pipeline_.run(8);
+ }
+
+void Service::Shutdown(void)
+{
+    io_service_.reset();
+    resolver_.cancel();
+    acceptor_->close();
+    incoming_pipeline_.clear();
+	outgoing_pipeline_.clear();
+}
+
 bool Service::isConnected(const std::string& name)
 {
     auto find_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [name] (ClusterPair pair) {
@@ -79,28 +115,49 @@ void Service::Connect(std::shared_ptr<anh::server_directory::Process> process)
     }
     catch (exception e)
     {
-        std::cout << "Exception in Service::Connect " << e.what() << std::endl;
+        LOG(WARNING) << "Exception in Service::Connect " << e.what() << std::endl;
     }
 }
-void Service::SendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out)
+void Service::sendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out, Destination dest)
 {
     // make sure we have a connection
     auto conn = getConnection(name);
     if (conn != nullptr)
     {
-        anh::ByteBuffer buffer;
-        event_out->serialize(buffer);
-        conn->Send(buffer);
+        auto buffer = std::make_shared<anh::ByteBuffer>();
+        event_out->serialize(*buffer);
+        auto tcp_message = new TCPMessage(conn, buffer, dest);
+        outgoing_messages_.push_back(tcp_message);
     }
 }
-void Service::SendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer)
+void Service::sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer, Destination dest)
 {
     // check for a connection
     auto conn = getConnection(host, port);
     if (conn != nullptr)
     {
-        conn->Send(buffer);
+        auto buffer = std::make_shared<anh::ByteBuffer>();
+        auto tcp_message = new TCPMessage(conn, buffer, dest);
+        outgoing_messages_.push_back(tcp_message);
     }
+}
+void Service::sendMessageByType_(const std::string& type, anh::ByteBuffer& buffer)
+{
+    // get all connections by type
+    std::for_each(tcp_client_map_.begin(), tcp_client_map_.end(), [=, &buffer] (ClusterPair pair) {
+        if (pair.first->type() == type)
+        {
+            // send message to each
+            pair.second->Send(buffer);
+        }
+    });
+}
+void Service::sendMessageToAll_(anh::ByteBuffer& buffer) 
+{
+    std::for_each(tcp_client_map_.begin(), tcp_client_map_.end(), [=, &buffer] (ClusterPair pair) {
+            // send message to each
+            pair.second->Send(buffer);
+    });
 }
 std::shared_ptr<tcp_client> Service::getConnection(const std::string& host, uint16_t port)
 {
@@ -125,43 +182,10 @@ std::shared_ptr<tcp_client> Service::getConnection(const std::string& name)
     return nullptr;
 }
 
-void Service::Start(uint16_t port)
-{
-    acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port ));
-    tcp_host_ = std::make_shared<tcp_host>(io_service_);
-
-    acceptor_->async_accept(tcp_host_->socket(), boost::bind(&Service::handle_accept_, this, 
-       tcp_host_ , boost::asio::placeholders::error));
-
-    // open up a connection for each cluster
-    //std::for_each(proc_list_.begin(), proc_list_.end(), [&] (anh::server_directory::Process process) {
-    //    auto conn = std::make_shared<TCPConnection>(io_service_);
-    //    // create endpoint
-    //    auto endpoint = boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4(), process.tcp_port());
-    //    // open connection to endpoint
-    //    conn->socket().connect(endpoint);
-    //    // insert into a map for later use...
-    //    socket_map_.insert(SocketPair(endpoint, conn->socket()));
-    //});
-}
-
-void Service::Update(void)
-{
-    io_service_.poll();
-}
-
-void Service::Shutdown(void)
-{
-    io_service_.reset();
-    resolver_.cancel();
-    acceptor_->close();
-}
-
 void Service::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system::error_code& error)
 {
     if (!error)
     {
-        std::cout << "handle accept" << std::endl;
         host->Start();
         host = std::make_shared<tcp_host>(io_service_);
         acceptor_->async_accept(host->socket(),
@@ -170,7 +194,7 @@ void Service::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system
     }
     else
     {
-        std::cout << "Error: " << error.message() << std::endl;
+        LOG(WARNING) << "Error in Service::handle_accept: " << error.message() << std::endl;
     }
 }
 

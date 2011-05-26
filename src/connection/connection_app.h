@@ -31,7 +31,7 @@ public:
 
     // overrides
     virtual void startup();
-    virtual void update();
+    virtual void process();
     virtual void shutdown();
     virtual bool hasStarted() const { return started_; }
     virtual void onAddDefaultOptions_();

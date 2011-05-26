@@ -127,7 +127,7 @@ private:
 	// Pipelines
 	tbb::pipeline				sessionless_incoming_pipeline_;
 	tbb::pipeline				incoming_pipeline_;
-	tbb::pipeline				outgoing_pipeline_;;
+	tbb::pipeline				outgoing_pipeline_;
 
 	std::list<IncomingSessionlessPacket*>		sessionless_messages_;
 	std::list<IncomingPacket*>					incoming_messages_;

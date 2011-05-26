@@ -83,19 +83,20 @@ void LoginApp::startup()
     cluster_service_->Start(44555);
     
     BaseApplication::startup();
-    cluster_io_service_.run();
 }
 
 void LoginApp::process()
 {
     soe_service_.Update();
     cluster_service_->Update();
+    BaseApplication::process();
 }
 
 void LoginApp::shutdown()
 {
     soe_service_.Shutdown();
     cluster_service_->Shutdown();
+    BaseApplication::shutdown();
 }
 
 void LoginApp::onAddDefaultOptions_() 

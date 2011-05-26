@@ -31,16 +31,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/byte_buffer.h>
 #include <anh/network/cluster/tcp_client.h>
 #include <anh/network/cluster/tcp_host.h>
+#include <anh/network/cluster/tcp_message.h>
 #include <anh/server_directory/server_directory_interface.h>
 #include <anh/event_dispatcher/event_interface.h>
+//Filters
+#include <anh/network/cluster/send_packet_filter.h>
+#include <anh/network/cluster/outgoing_start_filter.h>
+#include <anh/network/cluster/packet_event_filter.h>
+#include <anh/network/cluster/receive_packet_filter.h>
 
 #include <map>
-#include <list>
 #include <stdint.h>
 
 #include <tbb/pipeline.h>
-#include <tbb/concurrent_vector.h>
-#undef SendMessage;
+
 namespace anh {
 namespace network {
 namespace cluster {
@@ -76,7 +80,8 @@ public:
      * @param name The service name to send a message to.
      * @param event_out the event that will be sent out.
      */
-    void SendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out);
+    void sendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out
+        , Destination dest = SINGLE);
     /**
      * @brief Sends a message to given the name of the service
      * 
@@ -84,7 +89,9 @@ public:
      * @param port The port to the host.
      * @param buffer The ByteBuffer message to send
      */
-    void SendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer);
+    void sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer
+        , Destination dest = SINGLE);
+    
     /**
      * @brief Checks to see if there is a connection to the given service
      * 
@@ -116,6 +123,14 @@ public:
     std::shared_ptr<tcp_client> getConnection(const std::string& name);
 
     std::shared_ptr<tcp_host>  host() { return tcp_host_; }
+
+    // Friend Filters. Filters are considered extensions of the
+    // Service class as the operations performed in them are specific
+    // to the TCP Cluster Service
+    friend class SendPacketFilter;
+    friend class OutgoingStartFilter;
+    friend class ReceivePacketFilter;
+
 private:
     /**
      * @brief Called when the socket receives a message.
@@ -125,11 +140,36 @@ private:
      * Session Request in which case, it will create a new Session.
      */
     void handle_accept_(std::shared_ptr<tcp_host> conn, const boost::system::error_code& error);
+    /**
+     * @brief Sends a message to all services
+     * 
+     * @param buffer The ByteBuffer message to send
+     */
+    void sendMessageToAll_(anh::ByteBuffer& buffer);
+    /**
+     * @brief Sends a message to all types of the service
+     * 
+     * @param type the type of service to send to
+     * @param buffer The ByteBuffer message to send
+     */
+    void sendMessageByType_(const std::string& type, anh::ByteBuffer& buffer);
+    
+    // Pipelines
+    tbb::pipeline			incoming_pipeline_;
+	tbb::pipeline			outgoing_pipeline_;
+    // outgoing pipeline filters
+    OutgoingStartFilter     outgoing_start_filter_;
+    SendPacketFilter        send_packet_filter_;
+    ReceivePacketFilter     receive_packet_filter_;
+    // message lists
+    std::list<TCPMessage*>  incoming_messages_;
+    std::list<TCPMessage*>  outgoing_messages_;
+    // asio needs
+    tcp::resolver                                       resolver_;
+    anh::server_directory::ProcessList                  proc_list_;
+    boost::asio::io_service& 		                    io_service_;
+    std::shared_ptr<boost::asio::ip::tcp::acceptor>     acceptor_;
 
-    tcp::resolver                                                       resolver_;
-    anh::server_directory::ProcessList                                  proc_list_;
-    boost::asio::io_service& 		                                    io_service_;
-    std::shared_ptr<boost::asio::ip::tcp::acceptor>                     acceptor_;
     std::shared_ptr<tcp_host>                                           tcp_host_;
     std::shared_ptr<anh::server_directory::ServerDirectoryInterface>    directory_;
     ClusterMap                                                          tcp_client_map_;

@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <boost/bind.hpp>
 #include <iostream>
+#include <glog/logging.h>
 
 namespace anh {
 namespace network {
@@ -51,11 +52,11 @@ void tcp_client::handle_connect_(const boost::system::error_code& error, boost::
 {
     if(!error)
     {
-        std::cout << "Connection To Endpoint " << endpoint.address() << " Successful..." << std::endl;
+        DLOG(WARNING) << "Connection To Endpoint " << endpoint.address() << " Successful..." << std::endl;
     }
     else
     {
-        std::cout << "Error: " << error.message() << std::endl;
+        LOG(WARNING) << "Error in tcp_client::handle_connect_: " << error.message() << std::endl;
     }
 }
 tcp_client::~tcp_client(void)
@@ -66,11 +67,11 @@ tcp_client::~tcp_client(void)
 
 void tcp_client::Send(ByteBuffer& buffer)
 {
-    std::cout << "buffer sent size : " << buffer.size() << std::endl;
     socket_.async_write_some(boost::asio::buffer(buffer.data(), buffer.size()), 		 
         [this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
     {
         bytes_sent_ += bytes_transferred;
+        DLOG(WARNING) << "Send of " << bytes_sent_ << " bytes successful..." << std::endl;
     });
 }
 

@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     // add services
     services->addService("EventDispatcher", dispatcher);
     services->addService("Clock", clock);
-    boost::asio::io_service io_service();
+
     ConnectionApp app(argc, argv, config, services);
     ///
     app.startup();

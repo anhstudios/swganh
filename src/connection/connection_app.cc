@@ -19,7 +19,7 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 #include <glog/logging.h>
 
 #include <boost/thread/thread.hpp>
-#undef SendMessage;
+
 using namespace std;
 using namespace anh;
 using namespace scripting;
@@ -65,16 +65,16 @@ void ConnectionApp::startup() {
     test_packet->username = "Test";
     test_packet->password = "test";
     test_packet->client_version = "1.0";
-    cluster_service_->SendMessage("ANH.Login", test_packet);
-    
+    cluster_service_->sendMessage("ANH.Login", test_packet);
     BaseApplication::startup();
-    cluster_io_service_.run();
 }
-void ConnectionApp::update() {
+void ConnectionApp::process() {
     cluster_service_->Update();
+    BaseApplication::process();
 }
 void ConnectionApp::shutdown() {
     cluster_service_->Shutdown();
+    BaseApplication::shutdown();
 }
 
 void ConnectionApp::onAddDefaultOptions_() {
