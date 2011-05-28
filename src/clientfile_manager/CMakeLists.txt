@@ -2,7 +2,6 @@ include(ANHSharedLibrary)
 
 AddANHSharedLibrary(clientfile_manager
     DEPENDS 
-    	libanh  
 		${TBB_DEBUG_LIBRARIES}  
 	ADDITIONAL_INCLUDE_DIRS
 	  ${Boost_INCLUDE_DIR}
