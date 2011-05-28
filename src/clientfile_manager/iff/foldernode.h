@@ -8,7 +8,7 @@ namespace ClientFileManager
 		class FolderNode : public Node
 		{
 		public:
-			FolderNode(boost::shared_ptr<std::string> name, unsigned int size) : Node(name, size) 
+			FolderNode(std::shared_ptr<std::string> name, unsigned int size) : Node(name, size) 
 			{
 
 			}
@@ -16,13 +16,13 @@ namespace ClientFileManager
 			virtual ClientFileManager::NODE_TYPE type() {return ClientFileManager::NODE_TYPE_FOLDER;}
 
 			unsigned int children_count() { return children.size();}
-			boost::shared_ptr<IFF::Node> get(unsigned int id) {children[id];}
+			std::shared_ptr<IFF::Node> get(unsigned int id) {children[id];}
 
-			void add(boost::shared_ptr<IFF::Node> child) {children.push_back(child);}
+			void add(std::shared_ptr<IFF::Node> child) {children.push_back(child);}
 			void remove(unsigned int id) {children.erase(children.begin()+id);}
 
 		private:
-			std::vector<boost::shared_ptr<IFF::Node>> children;
+			std::vector<std::shared_ptr<IFF::Node>> children;
 		};
 	};
 };

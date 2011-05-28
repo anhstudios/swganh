@@ -2,6 +2,7 @@
 #define IFF_FILENODE_H
 
 #include "node.h"
+#include <boost/shared_array.hpp>
 
 namespace ClientFileManager
 {
@@ -10,16 +11,15 @@ namespace ClientFileManager
 		class FileNode : public Node
 		{
 		public:
-			FileNode(boost::shared_ptr<std::string> name, unsigned int size)
+			FileNode(std::shared_ptr<std::string> name, unsigned int size)
 				: Node(name, size), data_(nullptr)
 			{
 			}
 
-			virtual void loadData(std::istream& input, unsigned int size)
+			virtual void loadData(FILE* input)
 			{
-				char* buf = new char[size];
-				input >> buf;
-
+				char* buf = new char[size()];
+				fread(buf, size(), 1, input);
 				data_ = boost::shared_array<char>(buf);
 			}
 

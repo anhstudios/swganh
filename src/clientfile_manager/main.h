@@ -1,3 +1,4 @@
+/*
 #ifndef __MAIN_H__
 #define __MAIN_H__
 #if _WIN32
@@ -26,3 +27,4 @@ const std::string API GetModuleDescription(void);
 #endif
 
 #endif // __MAIN_H__
+*/

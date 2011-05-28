@@ -1,12 +1,14 @@
-include(ANHSharedLibrary)
+include(ANHExecutable)
 
-AddANHSharedLibrary(clientfile_manager
+AddANHExecutable(clientfile_manager
     DEPENDS 
 		${TBB_DEBUG_LIBRARIES}  
 	ADDITIONAL_INCLUDE_DIRS
 	  ${Boost_INCLUDE_DIR}
 	  ${GLOG_INCLUDE_DIR}
 	  ${TBB_INCLUDE_DIRS}
+	ADDITIONAL_LIBRARY_DIRS
+		${Boost_LIBRARY_DIRS}
 	ADDITIONAL_LINK_DIRS
 	  ${Boost_LIBRARY_DIRS}
 	DEBUG_LIBRARIES 

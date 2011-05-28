@@ -1,5 +1,7 @@
 #include "node.h"
 
+#include <cstdint>
+
 using namespace ClientFileManager::IFF;
 
 unsigned int Node::getNameSize(char namedata[], unsigned int size)
@@ -15,32 +17,27 @@ unsigned int Node::getNameSize(char namedata[], unsigned int size)
 	return i;
 }
 
-boost::shared_ptr<std::string> Node::getIFFName(std::istream& input)
+std::shared_ptr<std::string> Node::getIFFName(FILE* input)
 {
 	char name_buffer[8];
-	input >> name_buffer;
+	fread(name_buffer, 8, 1, input);
 
 	unsigned int namesize = getNameSize(name_buffer, 8);
+
 	if(namesize < 4) 
 	{
 		namesize = 0;
-		input.seekg(-8, std::ios_base::cur);
+		fseek(input, -8L, SEEK_CUR);
 	}
 	else if(namesize < 8)
 	{
 		namesize = 4;
-		input.seekg(-4, std::ios_base::cur);
+		fseek(input, -4L, SEEK_CUR);
 	}
 	else 
 	{
 		namesize = 8;
 	}
 
-	return boost::shared_ptr<std::string>(new std::string(name_buffer, namesize));
-}
-
-ClientFileManager::IFF::Node::Node(std::istream& input)
-{
-	name_ = getIFFName(input);
-	size_ = readNet<unsigned int>(input);
+	return std::shared_ptr<std::string>(new std::string(name_buffer, namesize));
 }
