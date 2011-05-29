@@ -2,11 +2,16 @@
 
 #include "iff/iff.h"
 
+#include "POBInterpreter.h"
+
 using namespace ClientFileManager::IFF;
 
 int main(int argc, char* argv[])
 {
 	IFFFile iff("I:\\SWGDATA\\appearance\\ply_tato_house_sm_s01_fp1.pob");
+
+	ClientFileManager::POB pob(&iff);
+
 }
 
 /*

@@ -35,6 +35,11 @@ namespace ClientFileManager
 					float z;
 				};
 
+				std::uint32_t getVertexCount() {return vertex_count;}
+				vertex* getVertex(std::uint32_t i) { return &vertices[i]; }
+
+			private:
+
 				std::uint32_t vertex_count;
 				std::vector<vertex> vertices;
 			};
