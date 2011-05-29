@@ -77,6 +77,7 @@ template <class T> T readHost(FILE* input)
 	return t;
 }
 
+
 template<class T> T readNet(FILE* input)
 {
 	char* buf = new char[sizeof(T)];
@@ -89,5 +90,7 @@ template<class T> T readNet(FILE* input)
 	delete[] buf;
 	return t;
 }
+
+template <> std::string readHost <std::string> (FILE* input);
 
 #endif

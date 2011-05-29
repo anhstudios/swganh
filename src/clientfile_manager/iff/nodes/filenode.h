@@ -16,6 +16,8 @@ namespace ClientFileManager
 			{
 			}
 
+			virtual NODE_TYPE type() {return ClientFileManager::NODE_TYPE_FILE;}
+
 			virtual void loadData(FILE* input)
 			{
 				char* buf = new char[size()];

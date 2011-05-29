@@ -1,12 +1,12 @@
 #include "main.h"
 
-#include "iff.h"
+#include "iff/iff.h"
 
 using namespace ClientFileManager::IFF;
 
 int main(int argc, char* argv[])
 {
-	IFFFile iff("I:\\SWGDATA\\appearance\\mesh\\mun_corl_capitol_s01_r0_mesh_l0_c7_l0_c7.msh");
+	IFFFile iff("I:\\SWGDATA\\appearance\\ply_tato_house_sm_s01_fp1.pob");
 }
 
 /*

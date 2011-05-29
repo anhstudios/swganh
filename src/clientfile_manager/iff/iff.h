@@ -1,24 +1,46 @@
 #include <stdio.h>
 #include <vector>
 #include <map>
+#include <cstdint>
 #include <memory>
+#include <functional>
 #include <exception>
-
-#include "node.h"
 
 namespace ClientFileManager
 {
 	namespace IFF
 	{
-		static class NotFoundException : public std::exception
-		{
-			virtual const char* what() const throw() { return "IFF Not Found.";} 
-		} IFFNotFound;
+		class Node;
 
-		static class BadFileException : public std::exception
+		typedef std::function<std::shared_ptr<IFF::Node>(std::shared_ptr<std::string>, std::uint32_t)> IFFCreatorCallback;
+		typedef std::map<std::string, IFFCreatorCallback> NodeIndex;
+		typedef std::map<std::string, IFFCreatorCallback>::iterator NodeIndexIterator;
+
+		class NotFoundException : public std::exception
 		{
-			virtual const char* what() const throw() { return "Bad IFF File."; }
-		} BadIFF;
+		public:
+			NotFoundException(std::string message)
+				: message_(message)
+			{
+			}
+			
+			virtual const char* what() const throw() { return message_.c_str();} 
+		private:
+			std::string message_;
+		};
+
+		class BadIFFException : public std::exception
+		{
+		public:
+			BadIFFException(std::string message)
+				: message_(message)
+			{
+			}
+
+			virtual const char* what() const throw() { return message_.c_str(); }
+		private:
+			std::string message_;
+		};
 
 		class IFFFile
 		{
@@ -28,8 +50,6 @@ namespace ClientFileManager
 
 			std::shared_ptr<ClientFileManager::IFF::Node> headnode(unsigned int i) {return headNodes[i];}
 			unsigned int headnode_count() {return headNodes.size();}
-
-		protected:
 		private:
 			void _loadIFF(FILE* inputstream);
 
@@ -37,6 +57,8 @@ namespace ClientFileManager
 			
 			static std::shared_ptr<ClientFileManager::IFF::Node> createNode(std::shared_ptr<std::string> name, unsigned int size);
 
+			static void IFFFile::prepIndex();
+			static NodeIndex index;
 		};
 	};
 };

@@ -4,6 +4,19 @@
 
 using namespace ClientFileManager::IFF;
 
+template <> std::string readHost <std::string> (FILE* input)
+{
+	std::string result;
+	char buf = fgetc(input);
+	while(buf != 0)
+	{
+		result.push_back(buf);
+		buf = fgetc(input);
+	}
+	result.push_back(0);
+	return result;
+}
+
 unsigned int Node::getNameSize(char namedata[], unsigned int size)
 {
 	unsigned int i = 0;

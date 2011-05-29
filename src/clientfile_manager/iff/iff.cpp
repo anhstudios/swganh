@@ -1,13 +1,11 @@
-#include "iff.h"
-
-#include "foldernode.h"
-#include "filenode.h"
-
-#include <iostream>
-#include <fstream>
 #include <stack>
 
+#include "iff.h"
+#include "swg_nodes.h"
+
 using namespace ClientFileManager::IFF;
+
+NodeIndex IFFFile::index;
 
 IFFFile::IFFFile(std::string filename)
 {
@@ -16,7 +14,7 @@ IFFFile::IFFFile(std::string filename)
 
 	if(pFile == nullptr)
 	{
-		throw IFFNotFound;
+		throw new NotFoundException(filename + " not found!");
 	}
 	else
 	{
@@ -25,7 +23,7 @@ IFFFile::IFFFile(std::string filename)
 			_loadIFF(pFile);
 			fclose(pFile);
 		} 
-		catch(BadFileException& e)
+		catch(BadIFFException& e)
 		{
 			fclose(pFile);
 			throw e;
@@ -40,16 +38,16 @@ IFFFile::IFFFile(FILE* inputstream)
 
 void IFFFile::_loadIFF(FILE* inputstream)
 {
+	prepIndex();
+
+	fseek(inputstream, 0, SEEK_END);
+	long size = ftell(inputstream);
+	fseek(inputstream, 0, SEEK_SET);
+
 	std::stack<std::pair<std::shared_ptr<IFF::Node>, unsigned int>> loader;
-	while(!feof(inputstream))
+	while(ftell(inputstream) < size)
 	{
-		int arg1 = ftell(inputstream);
-		int arg2 = 0;
-
-		if(!loader.empty())
-			int arg2 = loader.top().second;
-
-		if(!loader.empty() && arg1 == arg2)
+		if(!loader.empty() && ftell(inputstream) == loader.top().second)
 		{
 			loader.pop();
 		}
@@ -59,12 +57,16 @@ void IFFFile::_loadIFF(FILE* inputstream)
 
 			if(name->size() == 0)
 			{
-				break;
+				throw new IFF::BadIFFException("FATAL: A File node was mistaken for a folder.");
+			}
+			else if(*name == "NULL")
+			{
+				continue;
 			}
 
 			std::uint32_t size = readNet<std::uint32_t>(inputstream);
 			
-			std::cout << ftell(inputstream) << " : " << *name << " " << size << std::endl;
+			//printf("%d : %s : %d\n", ftell(inputstream), name->c_str(), size);
 			std::shared_ptr<IFF::Node> node = createNode(name, size);
 			
 			if(loader.empty())
@@ -74,6 +76,12 @@ void IFFFile::_loadIFF(FILE* inputstream)
 			else
 			{
 				IFF::FolderNode* folder = dynamic_cast<IFF::FolderNode*>(loader.top().first.get());
+
+				if(folder == nullptr)
+				{
+					throw new IFF::BadIFFException("FATAL: The stack contained a file when it MUST contain a folder");
+				}
+
 				folder->add(node);
 			}
 
@@ -86,84 +94,96 @@ void IFFFile::_loadIFF(FILE* inputstream)
 			{
 				//FILE
 				IFF::FileNode* file = dynamic_cast<IFF::FileNode*>(node.get());
+
+				if(file == nullptr)
+				{
+					throw new IFF::BadIFFException("FATAL: The node we thought was a file was not 0_o.");
+				}
+
 				file->loadData(inputstream);
 			}
 		}
-
 	}
+}
+
+void IFFFile::prepIndex() {
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"0003DATA", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new Nodes::Node_0003DATA(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"PRTSPRTL", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new Nodes::Node_PRTL(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"PRTL", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new Nodes::Node_PRTL(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"0005DATA", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+		return std::shared_ptr<IFF::Node>(new Nodes::Node_0005DATA(name, size));
+	}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"0000VERT", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new Nodes::Node_0000VERT(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"INDX", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new Nodes::Node_INDX(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"0001META", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new FileNode(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"PNOD", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new FileNode(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"PEDG", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new FileNode(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"ECNT", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new FileNode(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"ESTR", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new FileNode(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"PRTL0004", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new Nodes::Node_PRTL0004(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"LGHT", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new FileNode(name, size));
+		}));
+
+	index.insert(std::make_pair<std::string, IFFCreatorCallback>(
+		"CRC ", [] (std::shared_ptr<std::string> name, std::uint32_t size) -> std::shared_ptr<IFF::Node> {
+			return std::shared_ptr<IFF::Node>(new FileNode(name, size));
+		}));
 }
 
 std::shared_ptr<ClientFileManager::IFF::Node> IFFFile::createNode(std::shared_ptr<std::string> name, std::uint32_t size)
 {
-	if	(	*name == "0003DATA" ||
-			*name == "PRTSPRTL" ||
-			*name == "0000NAME" ||
-			*name == "0001NAME" ||
-			*name == "0002NAME" ||
-			*name == "0003NAME" ||
-			*name == "0004NAME" ||
-			*name == "0005NAME" ||
-			*name == "0006NAME" ||
-			*name == "0007NAME" ||
-			*name == "0000BASE" ||
-			*name == "LGHTCOLR" ||
-			*name == "BLADSHDR" ||
-			*name == "0005DATA" ||
-			*name == "0000VERT" || 
-			*name == "PRTL0004" ||
-			*name == "0001META" ||
-			*name == "ASND" ||
-			*name == "RANG" ||
-			*name == "TIME"	||
-			*name == "DAYN"	||
-			*name == "LGTH" ||
-			*name == "WDTH"	||
-			*name == "OPEN"	||
-			*name == "CLOS" ||
-			*name == "INDX" ||
-			*name == "LGHT" ||
-			*name == "PRTL" ||
-			*name == "PNOD" ||
-			*name == "PEDG" ||
-			*name == "ECNT" ||
-			*name == "ESTR" ||
-			*name == "CRC" ||
-			*name == "0003INFO" ||
-			*name == "MSGN" ||
-			*name == "SKTI" ||
-			*name == "LATX" ||
-			*name == "SPRT0000" ||
-			*name == "0000INFO" ||
-			*name == "NAME" ||
-			*name == "0004INFO" ||
-			*name == "SKTM" ||
-			*name == "XFNM" ||
-			*name == "POSN" ||
-			*name == "TWDH" ||
-			*name == "TWDT" ||
-			*name == "NORM" ||
-			*name == "DOT3" ||
-			*name == "OZN " ||
-			*name == "PSDTNAME" ||
-			*name == "PIDX" ||
-			*name == "NIDX" ||
-			*name == "TXCI" ||
-			*name == "TCSFTCSD" ||
-			*name == "PRIMINFO" ||
-			*name == "ITL " ||
-			*name == "0001SPHR" ||
-			*name == "BOX " ||
-			*name == "NULL" ||
-			*name == "HPTS" ||
-			*name == "FLORDATA" ||
-			*name == "0001CNT " ||
-			*name == "INFO" ||
-			*name == "0001INFO" ||
-			*name == "0003INFO" ||
-			*name == "DATA" ||
-			*name == "INDX") 
+	NodeIndexIterator it = index.find(*name);
+	if(it != index.end())
 	{
-		return std::shared_ptr<IFF::Node>(new FileNode(name, size));
+		return it->second(name, size);
 	}
 	else 
 	{
