@@ -2,11 +2,13 @@ include(ANHExecutable)
 
 AddANHExecutable(clientfile_manager
     DEPENDS 
+		libanh
 		${TBB_DEBUG_LIBRARIES}  
 	ADDITIONAL_INCLUDE_DIRS
 	  ${Boost_INCLUDE_DIR}
 	  ${GLOG_INCLUDE_DIR}
 	  ${TBB_INCLUDE_DIRS}
+	  ${GLM_INCLUDE_DIR}
 	ADDITIONAL_LIBRARY_DIRS
 		${Boost_LIBRARY_DIRS}
 	ADDITIONAL_LINK_DIRS

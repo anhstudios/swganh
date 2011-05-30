@@ -1,8 +1,9 @@
 #ifndef IFF_FILENODE_H
 #define IFF_FILENODE_H
 
-#include "node.h"
+#include "nodes/node.h"
 #include <boost/shared_array.hpp>
+#include <anh/byte_buffer.h>
 
 namespace ClientFileManager
 {
@@ -11,8 +12,8 @@ namespace ClientFileManager
 		class FileNode : public Node
 		{
 		public:
-			FileNode(std::shared_ptr<std::string> name, unsigned int size)
-				: Node(name, size), data_(nullptr)
+			FileNode(std::string& name, unsigned int size)
+				: Node(name, size), data_(size)
 			{
 			}
 
@@ -22,13 +23,14 @@ namespace ClientFileManager
 			{
 				char* buf = new char[size()];
 				fread(buf, size(), 1, input);
-				data_ = boost::shared_array<char>(buf);
+				data_.write(buf);
+				delete[] buf;
 			}
 
-			boost::shared_array<char> data() { return data_; }
+			anh::ByteBuffer& data() { return data_; }
 
 		private:
-			boost::shared_array<char> data_;
+			anh::ByteBuffer data_;
 		};
 	};
 };

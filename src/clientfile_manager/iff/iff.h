@@ -11,6 +11,10 @@ namespace ClientFileManager
 	namespace IFF
 	{
 		class Node;
+		namespace Interpreters
+		{
+			class IFFInterpreter;
+		};
 
 		typedef std::function<std::shared_ptr<IFF::Node>(std::shared_ptr<std::string>, std::uint32_t)> IFFCreatorCallback;
 		typedef std::map<std::string, IFFCreatorCallback> NodeIndex;
@@ -28,7 +32,6 @@ namespace ClientFileManager
 		private:
 			std::string message_;
 		};
-
 		class BadIFFException : public std::exception
 		{
 		public:
@@ -45,20 +48,17 @@ namespace ClientFileManager
 		class IFFFile
 		{
 		public:
-			IFFFile(std::string filename);
-			IFFFile(FILE* inputstream);
+			IFFFile(std::string filename, Interpreters::IFFInterpreter* interpret = nullptr);
+			IFFFile(FILE* inputstream, Interpreters::IFFInterpreter* interpret = nullptr);
 
-			std::shared_ptr<ClientFileManager::IFF::Node> headnode(unsigned int i) {return headNodes[i];}
+			Interpreters::IFFInterpreter* getInterpreter() { return interpreter_;}
+			ClientFileManager::IFF::Node* headnode(unsigned int i) {return headNodes[i];}
 			unsigned int headnode_count() {return headNodes.size();}
+		protected:
 		private:
 			void _loadIFF(FILE* inputstream);
-
-			std::vector<std::shared_ptr<ClientFileManager::IFF::Node>> headNodes;
-			
-			static std::shared_ptr<ClientFileManager::IFF::Node> createNode(std::shared_ptr<std::string> name, unsigned int size);
-
-			static void IFFFile::prepIndex();
-			static NodeIndex index;
+			std::vector<ClientFileManager::IFF::Node*> headNodes;
+			Interpreters::IFFInterpreter* interpreter_;
 		};
 	};
 };

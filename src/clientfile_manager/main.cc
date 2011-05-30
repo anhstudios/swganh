@@ -1,17 +1,24 @@
+#include <iostream>
+#include <string>
 #include "main.h"
-
 #include "iff/iff.h"
-
-#include "POBInterpreter.h"
 
 using namespace ClientFileManager::IFF;
 
 int main(int argc, char* argv[])
 {
-	IFFFile iff("I:\\SWGDATA\\appearance\\ply_tato_house_sm_s01_fp1.pob");
+	std::string s;
+	printf("Filename: ");
+	std::getline(std::cin, s);
 
-	ClientFileManager::POB pob(&iff);
-
+	try
+	{
+		IFFFile iff(s);
+	}
+	catch(NotFoundException* e)
+	{
+		printf("That file does not exist!");
+	}
 }
 
 /*
