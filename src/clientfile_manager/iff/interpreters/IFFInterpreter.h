@@ -1,4 +1,10 @@
 #include <memory>
+#include <string>
+
+namespace anh
+{
+	class ByteBuffer;
+}
 
 namespace ClientFileManager
 {
@@ -13,6 +19,7 @@ namespace ClientFileManager
 			public:
 				virtual void interpret(IFF::FileNode* node) = 0;
 			protected:
+				std::string readStringFromByteBuffer(anh::ByteBuffer& b);
 			private:
 			};
 		};

@@ -3,6 +3,8 @@
 #include "main.h"
 #include "iff/iff.h"
 
+#include "iff/interpreters/POBInterpreter.h"
+
 using namespace ClientFileManager::IFF;
 
 int main(int argc, char* argv[])
@@ -11,14 +13,19 @@ int main(int argc, char* argv[])
 	printf("Filename: ");
 	std::getline(std::cin, s);
 
+	Interpreters::POBInterpreter* pob = new Interpreters::POBInterpreter();
+
 	try
 	{
-		IFFFile iff(s);
+		IFFFile iff(s, pob);
 	}
 	catch(NotFoundException* e)
 	{
 		printf("That file does not exist!");
 	}
+
+	pob->debug();
+
 }
 
 /*

@@ -21,9 +21,9 @@ namespace ClientFileManager
 
 			virtual void loadData(FILE* input)
 			{
-				char* buf = new char[size()];
+				unsigned char* buf = new unsigned char[size()];
 				fread(buf, size(), 1, input);
-				data_.write(buf);
+				data_.write(buf,size());
 				delete[] buf;
 			}
 

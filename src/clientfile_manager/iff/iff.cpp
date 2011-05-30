@@ -16,9 +16,9 @@ void memflip(void* dst, unsigned int size)
 	unsigned int half = size/2;
 	for(unsigned int i=0; i < half; ++i)
 	{
-		buf[i] ^= buf[size-1-half];
-		buf[size-1-half] ^= buf[i];
-		buf[i] ^= buf[size-1-half];
+		buf[i] ^= buf[size-1-i];
+		buf[size-1-i] ^= buf[i];
+		buf[i] ^= buf[size-1-i];
 	}
 };
 
@@ -136,7 +136,7 @@ void IFFFile::_loadIFF(FILE* inputstream)
 			
 			if(name->size() == 0 || *name == "NULL") { continue; }
 			
-			printf("%s\n",name->c_str());
+			//printf("%s\n",name->c_str());
 			std::uint32_t size = readNet<std::uint32_t>(inputstream);
 		
 			IFF::Node* node;

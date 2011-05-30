@@ -5,7 +5,6 @@
 #include <memory>
 #include <iostream>
 #include <cstdint>
-#include <boost/flyweight.hpp>
 
 #include "nodetypes.h"
 
@@ -17,7 +16,7 @@ namespace ClientFileManager
 		{
 		public:
 
-			std::string name() {return name_;}
+			std::string& name() {return name_;}
 			std::uint32_t size() {return size_;}
 			Node* parent() {return parent_;}
 			void parent(Node* p) {parent_ = p;}
@@ -37,7 +36,7 @@ namespace ClientFileManager
 			Node();
 			Node(const Node& n);
 
-			boost::flyweight<std::string> name_;
+			std::string name_;
 			std::uint32_t size_;
 		};
 	};
