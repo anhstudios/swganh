@@ -10,30 +10,33 @@ namespace cluster {
 
 using boost::asio::ip::tcp;
 
+typedef std::function<void(std::shared_ptr<anh::ByteBuffer>)> NetworkCallback;
+
 class tcp_host : public std::enable_shared_from_this<tcp_host> {
 public:
-    tcp_host(boost::asio::io_service& io_service)
+    tcp_host(boost::asio::io_service& io_service, NetworkCallback callback)
     : socket_(io_service) 
+    , callback_(callback)
     {
     }
     tcp_host::~tcp_host();
     tcp::socket& socket() { return socket_; }
     /**
-    * @brief starts the connection
+    * @brief starts the TCP Host connection
     */
     void Start();
 
     /**
     *  @brief
     */
-    // broadcast to all servers
-
-    // broadcast to server group
-
-    // send message to a single server
     
 private:
+    uint64_t	bytes_recv_;
+	uint64_t	bytes_sent_;
+
     tcp::socket socket_;
+    NetworkCallback callback_;
+
     enum { max_length = 1024 };
     char data_[max_length];
 

@@ -132,13 +132,9 @@ public:
     friend class ReceivePacketFilter;
 
 private:
-    /**
-     * @brief Called when the socket receives a message.
-     *
-     * This function will also attempt to find the session in the SessionManager,
-     * if it fails to find a Session it will check if the incoming message is a
-     * Session Request in which case, it will create a new Session.
-     */
+
+    void OnTCPHostReceive_(std::shared_ptr<anh::ByteBuffer> buffer);
+
     void handle_accept_(std::shared_ptr<tcp_host> conn, const boost::system::error_code& error);
     /**
      * @brief Sends a message to all services

@@ -17,7 +17,7 @@ void tcp_host::Start() {
         {
             auto buffer = std::make_shared<anh::ByteBuffer>((const unsigned char*)data_, bytes_transferred);
             DLOG(WARNING) << "message received: " << buffer->size();
-            // create event and trigger
+            callback_(buffer);
         }
         else
         {

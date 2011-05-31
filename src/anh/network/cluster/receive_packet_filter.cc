@@ -56,13 +56,13 @@ void* ReceivePacketFilter::operator()(void* item)
 	TCPMessage* packet = service_->incoming_messages_.front();
 	service_->incoming_messages_.pop_front();
     
-    // Do not process if we don't have a valid connection/client
-    if(packet->client() == nullptr)
+    // Do not process if we don't have any valid data
+    if(packet->message() == nullptr)
 	{
 		delete packet;
 		return NULL;
 	}
-
+    DLOG(WARNING) << "Received Packet, processing data of size: " << packet->message()->size();
 	return (void*)packet;
 }
 

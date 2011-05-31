@@ -64,10 +64,11 @@ Service::~Service(void)
 void Service::Start(uint16_t port)
 {
     acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port ));
-    tcp_host_ = std::make_shared<tcp_host>(io_service_);
+    tcp_host_ = std::make_shared<tcp_host>(io_service_, std::bind(&Service::OnTCPHostReceive_, this, std::placeholders::_1));
 
     acceptor_->async_accept(tcp_host_->socket(), boost::bind(&Service::handle_accept_, this, 
        tcp_host_ , boost::asio::placeholders::error));
+    DLOG(WARNING) << "Now listening for TCP Messages on: " << port;
 }
 
 void Service::Update(void)
@@ -136,8 +137,8 @@ void Service::sendMessage(const std::string& host, uint16_t port, anh::ByteBuffe
     auto conn = getConnection(host, port);
     if (conn != nullptr)
     {
-        auto buffer = std::make_shared<anh::ByteBuffer>();
-        auto tcp_message = new TCPMessage(conn, buffer, dest);
+        auto bufferz = std::make_shared<anh::ByteBuffer>(buffer);
+        auto tcp_message = new TCPMessage(conn, bufferz, dest);
         outgoing_messages_.push_back(tcp_message);
     }
 }
@@ -187,7 +188,7 @@ void Service::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system
     if (!error)
     {
         host->Start();
-        host = std::make_shared<tcp_host>(io_service_);
+        host = std::make_shared<tcp_host>(io_service_, std::bind(&Service::OnTCPHostReceive_, this, std::placeholders::_1));
         acceptor_->async_accept(host->socket(),
             std::bind(&Service::handle_accept_, this, host, 
             std::placeholders::_1));
@@ -196,6 +197,12 @@ void Service::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system
     {
         LOG(WARNING) << "Error in Service::handle_accept: " << error.message() << std::endl;
     }
+}
+
+void Service::OnTCPHostReceive_(std::shared_ptr<anh::ByteBuffer> buffer)
+{
+    // add to the pipeline list
+    incoming_messages_.push_back(new TCPMessage(nullptr, buffer));
 }
 
 } // namespace soe
