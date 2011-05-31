@@ -85,7 +85,7 @@ void Service::Shutdown(void)
     resolver_.cancel();
     acceptor_->close();
     incoming_pipeline_.clear();
-	outgoing_pipeline_.clear();
+    outgoing_pipeline_.clear();
 }
 
 bool Service::isConnected(const std::string& name)

@@ -36,8 +36,8 @@ namespace network {
 namespace cluster {
 
 ReceivePacketFilter::ReceivePacketFilter(Service* service)
-	: tbb::filter(serial_in_order)
-	, service_(service)
+    : tbb::filter(serial_in_order)
+    , service_(service)
 {
 }
 
@@ -47,23 +47,23 @@ ReceivePacketFilter::~ReceivePacketFilter(void)
 
 void* ReceivePacketFilter::operator()(void* item)
 {
-	// No more packets to process.
-	if(service_->incoming_messages_.empty())
-	{
-		return NULL;
-	}
+    // No more packets to process.
+    if(service_->incoming_messages_.empty())
+    {
+        return NULL;
+    }
 
-	TCPMessage* packet = service_->incoming_messages_.front();
-	service_->incoming_messages_.pop_front();
+    TCPMessage* packet = service_->incoming_messages_.front();
+    service_->incoming_messages_.pop_front();
     
     // Do not process if we don't have any valid data
     if(packet->message() == nullptr)
-	{
-		delete packet;
-		return NULL;
-	}
+    {
+        delete packet;
+        return NULL;
+    }
     DLOG(WARNING) << "Received Packet, processing data of size: " << packet->message()->size();
-	return (void*)packet;
+    return (void*)packet;
 }
 
 } // namespace soe
