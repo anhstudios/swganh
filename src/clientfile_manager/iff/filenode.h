@@ -19,12 +19,10 @@ namespace ClientFileManager
 
 			virtual NODE_TYPE type() {return ClientFileManager::NODE_TYPE_FILE;}
 
-			virtual void loadData(FILE* input)
+			virtual void loadData(anh::ByteBuffer& input)
 			{
-				unsigned char* buf = new unsigned char[size()];
-				fread(buf, size(), 1, input);
-				data_.write(buf,size());
-				delete[] buf;
+				data_.write(input.data()+input.read_position(), size());
+				input.read_position(input.read_position()+size());
 			}
 
 			anh::ByteBuffer& data() { return data_; }

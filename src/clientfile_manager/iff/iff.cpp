@@ -9,27 +9,6 @@
 
 using namespace ClientFileManager::IFF;
 
-void memflip(void* dst, unsigned int size)
-{
-	char* buf = reinterpret_cast<char*>(dst);
-
-	unsigned int half = size/2;
-	for(unsigned int i=0; i < half; ++i)
-	{
-		buf[i] ^= buf[size-1-i];
-		buf[size-1-i] ^= buf[i];
-		buf[i] ^= buf[size-1-i];
-	}
-};
-
-template <class T> T readNet(FILE* inputstream) 
-{
-	T t;
-	fread(&t, sizeof(T), 1, inputstream);
-	memflip(&t, sizeof(T));
-	return t;
-}
-
 IFFFile::IFFFile(std::string filename, Interpreters::IFFInterpreter* interpreter) throw (NotFoundException)
 {
 	interpreter_ = interpreter;
@@ -59,8 +38,14 @@ IFFFile::IFFFile(std::string filename, Interpreters::IFFInterpreter* interpreter
 IFFFile::IFFFile(FILE* inputstream, Interpreters::IFFInterpreter* interpreter)
 {
 	interpreter_ = interpreter;
-
 	_loadIFF(inputstream);
+}
+
+IFFFile::IFFFile(anh::ByteBuffer& input, Interpreters::IFFInterpreter* interpreter)
+{
+	interpreter_ = interpreter;
+
+	_loadIFF(input);
 }
 
 bool isNodeNameCharacter(char c)
@@ -84,49 +69,42 @@ unsigned int getNameSize(char namedata[], unsigned int size)
 	return i;
 }
 
-std::string* getIFFName(FILE* input)
+std::string* getIFFName(anh::ByteBuffer& input)
 {
-	char name_buffer[8];
-	fread(name_buffer, 8, 1, input);
-
-	unsigned int namesize = getNameSize(name_buffer, 8);
+	std::uint64_t name_buf = input.read<std::uint64_t>();
+	unsigned int namesize = getNameSize((char*)&name_buf, 8);
 
 	if(namesize < 4) 
 	{
 		namesize = 0;
-		fseek(input, -8L, SEEK_CUR);
+		input.read_position(input.read_position()-8);
 	}
 	else if(namesize < 8)
 	{
 		namesize = 4;
-		fseek(input, -4L, SEEK_CUR);
+		input.read_position(input.read_position()-4);
 	}
 	else 
 	{
 		namesize = 8;
 	}
 
-	return new std::string(name_buffer, namesize);
+	return new std::string((char*)&name_buf, namesize);
 }
 
-bool childIsNode(FILE* input)
+bool childIsNode(anh::ByteBuffer& input)
 {
-	char name_buffer[4];
-	fread(name_buffer, 4, 1, input);
-	fseek(input, -4, SEEK_CUR);
-	return !(getNameSize(name_buffer, 4) < 4);
+	std::uint32_t name_buf = input.read<std::uint32_t>();
+	input.read_position(input.read_position()-4);
+	return !(getNameSize((char*)&name_buf, 4) < 4);
 }
 
-void IFFFile::_loadIFF(FILE* inputstream)
+void IFFFile::_loadIFF(anh::ByteBuffer& inputstream)
 {
-	fseek(inputstream, 0, SEEK_END);
-	long size = ftell(inputstream);
-	fseek(inputstream, 0, SEEK_SET);
-
 	std::stack<std::pair<IFF::Node*, unsigned int>> loader;
-	while(ftell(inputstream) < size)
+	while(inputstream.read_position() < inputstream.size())
 	{
-		if(!loader.empty() && ftell(inputstream) == loader.top().second)
+		if(!loader.empty() && inputstream.read_position() == loader.top().second)
 		{
 			loader.pop();
 		}
@@ -137,7 +115,7 @@ void IFFFile::_loadIFF(FILE* inputstream)
 			if(name->size() == 0 || *name == "NULL") { continue; }
 			
 			//printf("%s\n",name->c_str());
-			std::uint32_t size = readNet<std::uint32_t>(inputstream);
+			std::uint32_t size = inputstream.read<std::uint32_t>(true);
 		
 			IFF::Node* node;
 			if(size >= 4 && childIsNode(inputstream))
@@ -164,7 +142,7 @@ void IFFFile::_loadIFF(FILE* inputstream)
 				headNodes.push_back(node);
 				if(node->type() == NODE_TYPE_FOLDER)
 				{
-					loader.push(std::make_pair<IFF::Node*,unsigned int>(node, ftell(inputstream)+size));
+					loader.push(std::make_pair<IFF::Node*,unsigned int>(node, inputstream.read_position()+size));
 				}
 			}
 			else
@@ -177,4 +155,19 @@ void IFFFile::_loadIFF(FILE* inputstream)
 			}
 		}
 	}
+}
+
+void IFFFile::_loadIFF(FILE* stream)
+{
+	unsigned char buffer[1024];
+	anh::ByteBuffer theBuf;
+	size_t bytesRead = fread(buffer, 1, 1024, stream);
+	while(bytesRead == 1024)
+	{
+		theBuf.write(buffer, bytesRead);
+		bytesRead = fread(buffer, 1, 1024, stream);
+	}
+	theBuf.write(buffer, bytesRead);
+
+	_loadIFF(theBuf);
 }

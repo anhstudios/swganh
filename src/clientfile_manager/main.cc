@@ -3,29 +3,30 @@
 #include "main.h"
 #include "iff/iff.h"
 
+#include "filemanager.h"
+
 #include "iff/interpreters/POBInterpreter.h"
 
-using namespace ClientFileManager::IFF;
+using namespace ClientFileManager;
 
 int main(int argc, char* argv[])
 {
 	std::string s;
-	printf("Filename: ");
+	printf("Input SWG Directory (contains swg2uu_live.cfg): ");
 	std::getline(std::cin, s);
 
-	Interpreters::POBInterpreter* pob = new Interpreters::POBInterpreter();
-
+	FileManager f(s);
+	IFF::Interpreters::POBInterpreter* pob = new IFF::Interpreters::POBInterpreter();
+	
 	try
 	{
-		IFFFile iff(s, pob);
+		f.getFile("appearance/ply_nboo_assoc_hall_civ_s01.pob", pob);
 	}
-	catch(NotFoundException* e)
+	catch(IFF::NotFoundException* e)
 	{
 		printf("That file does not exist!");
 	}
-
 	pob->debug();
-
 }
 
 /*

@@ -6,6 +6,8 @@
 #include <functional>
 #include <exception>
 
+#include <anh/byte_buffer.h>
+
 namespace ClientFileManager
 {
 	namespace IFF
@@ -50,13 +52,15 @@ namespace ClientFileManager
 		public:
 			IFFFile(std::string filename, Interpreters::IFFInterpreter* interpret = nullptr);
 			IFFFile(FILE* inputstream, Interpreters::IFFInterpreter* interpret = nullptr);
+			IFFFile(anh::ByteBuffer& input, Interpreters::IFFInterpreter* interpret = nullptr);
 
 			Interpreters::IFFInterpreter* getInterpreter() { return interpreter_;}
 			ClientFileManager::IFF::Node* headnode(unsigned int i) {return headNodes[i];}
 			unsigned int headnode_count() {return headNodes.size();}
 		protected:
 		private:
-			void _loadIFF(FILE* inputstream);
+			void _loadIFF(FILE* stream);
+			void _loadIFF(anh::ByteBuffer& inputstream);
 			std::vector<ClientFileManager::IFF::Node*> headNodes;
 			Interpreters::IFFInterpreter* interpreter_;
 		};
