@@ -31,6 +31,8 @@ set(vendor_libraries "")
 set(vendor_args "")
 
 if(MSVC10 AND NOT DEFINED VENDOR_PREFIX AND NOT USE_SYSTEM_LIBRARIES)
+    set(VENDOR_MD5 09dfb24228fe51be1bbe32400e7ffe7e)
+    
 	include(FetchPreBuiltDependencies)
 	
     # Configure and build the SWGANH project
