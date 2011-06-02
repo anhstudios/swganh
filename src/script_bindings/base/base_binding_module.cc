@@ -14,7 +14,7 @@ namespace anh_python { namespace scripting {
         define_class_glm_vec3();
         define_class_glm_quat();
         define_class_transform_component();
-        define_class_transform_message();
+//        define_class_transform_message();
     }
 
 

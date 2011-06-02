@@ -42,15 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
         #define API __declspec(dllimport)
     #endif
 #else
-	#define API 
+    #define API 
 #endif
-
-#define MODULE_STANDARD_SERVICES \
-    static std::shared_ptr<anh::component::EntityBuilder> gEntityBuilder; \
-    static std::shared_ptr<anh::component::EntityManager> gEntityManager; \
-    static std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> gEventDispatcher; \
-    static std::shared_ptr<anh::database::DatabaseManagerInterface> gDatabaseManager; \
-    static std::shared_ptr<anh::scripting::ScriptingManagerInterface> gScriptingManager; \
-    static std::shared_ptr<anh::server_directory::ServerDirectoryInterface> gServerDirectory; 
 
 #endif // ANH_MODULE_MANAGER_MODULE_MAIN_H
