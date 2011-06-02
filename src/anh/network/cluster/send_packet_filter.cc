@@ -34,8 +34,8 @@ namespace network {
 namespace cluster {
 
 SendPacketFilter::SendPacketFilter(Service* service)
-	: tbb::filter(serial_in_order)
-	, service_(service)
+    : tbb::filter(serial_in_order)
+    , service_(service)
 {
 }
 
@@ -45,7 +45,7 @@ SendPacketFilter::~SendPacketFilter(void)
 
 void* SendPacketFilter::operator()(void* item)
 {
-	TCPMessage* packet = (TCPMessage*)item;
+    TCPMessage* packet = (TCPMessage*)item;
     if (packet != NULL)
     {
         // where should the message be sent?
@@ -62,8 +62,8 @@ void* SendPacketFilter::operator()(void* item)
                 break;
         }
     }
-	delete packet;
-	return NULL;
+    delete packet;
+    return NULL;
 }
 
 } // namespace cluster 
