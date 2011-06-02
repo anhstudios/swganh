@@ -57,23 +57,20 @@ ConnectionApp::~ConnectionApp() {
     //destructor
 }
 void ConnectionApp::startup() {
-    cluster_service_->Start(45566);
-    auto process = std::make_shared<anh::server_directory::Process>(1,
+    BaseApplication::startup();
+    /*auto process = std::make_shared<anh::server_directory::Process>(1,
             1, "ANH.Login","Login","1.0","127.0.0.1",44555,0,0);
     cluster_service_->Connect(process);
     auto test_packet = std::make_shared<packets::LoginClientIdEvent>();
     test_packet->username = "Test";
     test_packet->password = "test";
     test_packet->client_version = "1.0";
-    cluster_service_->sendMessage("ANH.Login", test_packet);
-    BaseApplication::startup();
+    cluster_service_->sendMessage("ANH.Login", test_packet);*/
 }
 void ConnectionApp::process() {
-    cluster_service_->Update();
     BaseApplication::process();
 }
 void ConnectionApp::shutdown() {
-    cluster_service_->Shutdown();
     BaseApplication::shutdown();
 }
 

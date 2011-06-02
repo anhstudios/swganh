@@ -57,7 +57,7 @@ typedef std::pair<std::shared_ptr<anh::server_directory::Process>, std::shared_p
 class Service : public std::enable_shared_from_this<Service>
 {
 public:
-    Service(boost::asio::io_service& io_service, std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory);
+    Service(boost::asio::io_service& io_service, std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory, uint16_t port);
     ~Service(void);
 
     /**
@@ -65,7 +65,7 @@ public:
      * 
      * @param port The port to listen for messages on.
      */
-    void Start(uint16_t port);
+    void Start();
     void Update(void);
     void Shutdown(void);
     /**
@@ -152,7 +152,7 @@ private:
     
     // Pipelines
     tbb::pipeline			incoming_pipeline_;
-	tbb::pipeline			outgoing_pipeline_;
+    tbb::pipeline			outgoing_pipeline_;
     // outgoing pipeline filters
     OutgoingStartFilter     outgoing_start_filter_;
     SendPacketFilter        send_packet_filter_;
@@ -167,6 +167,7 @@ private:
     std::shared_ptr<boost::asio::ip::tcp::acceptor>     acceptor_;
 
     std::shared_ptr<tcp_host>                                           tcp_host_;
+    uint16_t                                                            port_;
     std::shared_ptr<anh::server_directory::ServerDirectoryInterface>    directory_;
     ClusterMap                                                          tcp_client_map_;
     

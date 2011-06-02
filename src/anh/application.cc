@@ -109,7 +109,6 @@ void BaseApplication::init_services_()
         throw runtime_error("Required Services Missing: " + string(e.what()));
     }
     try {
-    setupCluster_();
     // these are optional so they might not be passed in, the app can handle these values not being available.
     db_manager_ = boost::any_cast<shared_ptr<DatabaseManagerInterface>>(platform_services_->getService("DatabaseManager"));
     server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
@@ -131,9 +130,12 @@ void BaseApplication::startup() {
         startup_event_ = make_shared<SimpleEvent>("Startup");
         process_event_ = make_shared<SimpleEvent>("Process");
         shutdown_event_ = make_shared<SimpleEvent>("Shutdown");
+        // add in options
         addDefaultOptions_();
         // load the options
         loadOptions_(argc_, argv_, config_files_);
+        // load up cluster networking
+        setupCluster_();
         // get a database manager
         if (db_manager_ == nullptr) {
             db_manager_ = createDatabaseManager(sql::mysql::get_driver_instance());
@@ -169,6 +171,8 @@ void BaseApplication::startup() {
         }
         // setup ModuleManager and load modules
         setupModules_();
+        // start the ClusterService
+        cluster_service_->Start();
 
     }
     catch(exception e) {
@@ -188,11 +192,13 @@ void BaseApplication::process() {
     }
     event_dispatcher_->tick(clock_->global_time());
     event_dispatcher_->trigger(process_event_);
+    cluster_service_->Update();
 }
 
 void BaseApplication::shutdown() {
     // clean up code here before the server shuts down
     event_dispatcher_->trigger(shutdown_event_);
+    cluster_service_->Shutdown();
 }
 
 shared_ptr<ServerDirectoryInterface> BaseApplication::createServerDirectory(shared_ptr<sql::Connection> conn) {
@@ -249,9 +255,6 @@ void BaseApplication::addDefaultOptions_() {
         ("modules", ::value<vector<string>>()->default_value(vector<string>(), ""), "modules to load on startup")
         ("module_api_version_major",  ::value<uint32_t>()->default_value(0), "Major Module API Version Allowed")
         ("module_api_version_minor",   ::value<uint32_t>()->default_value(1), "Minor Module API Version Allowed")
-        // 
-        /*("network.bind_address", ::value<string>()->default_value("localhost"), "Address to listen for incoming messages on")
-        ("network.bind_port", ::value<uint16_t>(), "Port to listen for incoming messages on")*/
     ;
     onAddDefaultOptions_();
 }
@@ -304,6 +307,7 @@ void BaseApplication::setupModules_()
 }
 bool BaseApplication::addDataSourcesFromOptions_()
 {
+    return false;
     // check to see if options have been loaded properly
     if (configuration_variables_map_.size() < 1)
         return false;
@@ -362,7 +366,9 @@ void BaseApplication::registerApp_()
 void BaseApplication::setupCluster_() 
 {
     // setup cluster_service
-    cluster_service_ = std::make_shared<network::cluster::Service>(cluster_io_service_, server_directory_);
+    // get tcp port of app...
+    uint16_t port = configuration_variables_map_["cluster.tcp_port"].as<uint16_t>();
+    cluster_service_ = std::make_shared<network::cluster::Service>(cluster_io_service_, server_directory_, port);
     // loop through processes in server_directory and open a tcp connection to each?
 }
 int BaseApplication::kbHit()

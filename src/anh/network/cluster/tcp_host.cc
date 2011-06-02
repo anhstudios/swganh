@@ -8,7 +8,6 @@ namespace network {
 namespace cluster {
 tcp_host::~tcp_host()
 {
-    socket_.close();
 }
 void tcp_host::Start() {
     socket_.async_read_some(boost::asio::buffer(data_, max_length),[&] 

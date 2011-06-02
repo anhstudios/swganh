@@ -44,7 +44,7 @@ tcp_client::tcp_client(boost::asio::io_service& service, const std::string& host
     boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);
     socket_.async_connect(endpoint,
             boost::bind(&tcp_client::handle_connect_, this,
-                boost::asio::placeholders::error, endpoint) /*++endpoint_iterator*/);	
+                boost::asio::placeholders::error, endpoint));	
 
 }
 
@@ -61,8 +61,6 @@ void tcp_client::handle_connect_(const boost::system::error_code& error, boost::
 }
 tcp_client::~tcp_client(void)
 {
-    resolver_.cancel();
-    socket_.close();
 }
 
 void tcp_client::Send(ByteBuffer& buffer)
@@ -71,7 +69,7 @@ void tcp_client::Send(ByteBuffer& buffer)
         [this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
     {
         bytes_sent_ += bytes_transferred;
-        DLOG(WARNING) << "Send of " << bytes_sent_ << " bytes successful..." << std::endl;
+        DLOG(WARNING) << "Send of " << bytes_transferred << " bytes successful..." << std::endl;
     });
 }
 

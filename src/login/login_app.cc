@@ -79,26 +79,24 @@ LoginApp::~LoginApp() {
 
 void LoginApp::startup()
 {
-    soe_service_.Start(44453);
-    cluster_service_->Start(44555);
-    auto process = std::make_shared<anh::server_directory::Process>(2,
-        1, "ANH.Connection","Connection","1.0","127.0.0.1",45566,0,0);
-    cluster_service_->Connect(process);
     BaseApplication::startup();
+    soe_service_.Start(44453);
+    /*auto process = std::make_shared<anh::server_directory::Process>(2,
+        1, "ANH.Connection","Connection","1.0","127.0.0.1",45566,0,0);
+    cluster_service_->Connect(process);*/
+    
 }
 
 void LoginApp::process()
 {
-    soe_service_.Update();
-    cluster_service_->Update();
     BaseApplication::process();
+    soe_service_.Update();
 }
 
 void LoginApp::shutdown()
 {
-    soe_service_.Shutdown();
-    cluster_service_->Shutdown();
     BaseApplication::shutdown();
+    soe_service_.Shutdown();
 }
 
 void LoginApp::onAddDefaultOptions_() 

@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/thread.hpp>
 
 #include <glog/logging.h>
 
@@ -42,15 +43,22 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectoryInterface> directory)
+Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectoryInterface> directory, uint16_t port)
     : directory_(directory)
     , io_service_(io_service)
     , resolver_(io_service)
     , send_packet_filter_(this)
     , receive_packet_filter_(this)
     , outgoing_start_filter_(this)
+    , port_(port)
 {
-    //proc_list_ = directory_->getProcessSnapshot(directory_->cluster());
+    // Connect to all process except self...
+    /*proc_list_ = directory_->getProcessSnapshot(directory_->cluster());
+    std::for_each(proc_list_.begin(), proc_list_.end(), [=](anh::server_directory::Process proc) {
+        if (proc.tcp_port() != port_){
+            Connect(std::make_shared<anh::server_directory::Process>(proc));
+        }
+    });*/
     outgoing_pipeline_.add_filter(outgoing_start_filter_);
     outgoing_pipeline_.add_filter(send_packet_filter_);
     incoming_pipeline_.add_filter(receive_packet_filter_);
@@ -61,20 +69,22 @@ Service::~Service(void)
     Shutdown();
 }
 
-void Service::Start(uint16_t port)
+void Service::Start()
 {
-    acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port ));
+    // check to see if we're already started?
+    acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port_ ));
     tcp_host_ = std::make_shared<tcp_host>(io_service_, std::bind(&Service::OnTCPHostReceive_, this, std::placeholders::_1));
 
     acceptor_->async_accept(tcp_host_->socket(), boost::bind(&Service::handle_accept_, this, 
        tcp_host_ , boost::asio::placeholders::error));
-    DLOG(WARNING) << "Now listening for TCP Messages on: " << port;
+    DLOG(WARNING) << "Now listening for TCP Messages on: " << port_;
+    boost::thread([=] () {
+        io_service_.run();
+    });
 }
 
 void Service::Update(void)
 {
-    io_service_.poll();
-
     incoming_pipeline_.run(8);
     outgoing_pipeline_.run(8);
  }
@@ -111,7 +121,9 @@ void Service::Connect(std::shared_ptr<anh::server_directory::Process> process)
         if (!isConnected(process))
         {
             auto client = std::make_shared<tcp_client>(io_service_, process->address(), process->tcp_port());
-            tcp_client_map_.insert(ClusterPair(process, client));
+            if (client != nullptr) {
+                tcp_client_map_.insert(ClusterPair(process, client));
+            }
         }
     }
     catch (exception e)
@@ -137,7 +149,7 @@ void Service::sendMessage(const std::string& host, uint16_t port, anh::ByteBuffe
     auto conn = getConnection(host, port);
     if (conn != nullptr)
     {
-        auto bufferz = std::make_shared<anh::ByteBuffer>(buffer);
+        auto bufferz = std::make_shared<anh::ByteBuffer>(std::move(buffer));
         auto tcp_message = new TCPMessage(conn, bufferz, dest);
         outgoing_messages_.push_back(tcp_message);
     }
