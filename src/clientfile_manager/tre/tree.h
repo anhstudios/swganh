@@ -1,3 +1,6 @@
+#ifndef TREE_H
+#define TREE_H
+
 #include <string>
 #include <vector>
 #include <boost/filesystem.hpp>
@@ -17,7 +20,7 @@ namespace ClientFileManager
 		class TreeArchive
 		{
 		public:
-			TreeArchive(boost::filesystem::path& path, std::vector<std::shared_ptr<TreeEntry>>& entries)
+			TreeArchive(boost::filesystem::path& path, std::vector<TreeEntry>& entries)
 				: filename_(path.file_string())
 			{
 				FILE* stream = fopen(path.file_string().c_str(), "rb");
@@ -25,7 +28,7 @@ namespace ClientFileManager
 				fclose(stream);
 			}
 
-			TreeArchive(std::string& filename, std::vector<std::shared_ptr<TreeEntry>>& entries)
+			TreeArchive(std::string& filename, std::vector<TreeEntry>& entries)
 				: filename_(filename)
 			{	
 				FILE* stream = fopen(filename.c_str(), "rb");
@@ -33,7 +36,7 @@ namespace ClientFileManager
 				fclose(stream);
 			}
 
-			anh::ByteBuffer* getFile(TreeEntry* entry);
+			anh::ByteBuffer getFile(TreeEntry& entry);
 
 		private:
 			std::uint32_t record_count;
@@ -46,8 +49,10 @@ namespace ClientFileManager
 			std::uint32_t names_currentSize;
 			std::uint32_t names_finalSize;
 
-			void _loadTree(FILE* inputstream, std::vector<std::shared_ptr<TreeEntry>>& entries);
+			void _loadTree(FILE* inputstream, std::vector<TreeEntry>& entries);
 			std::string filename_;
 		};
 	};
 };
+
+#endif

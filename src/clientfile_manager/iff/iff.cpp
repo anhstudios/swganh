@@ -9,9 +9,21 @@
 
 using namespace ClientFileManager::IFF;
 
-IFFFile::IFFFile(std::string filename, Interpreters::IFFInterpreter* interpreter) throw (NotFoundException)
+IFFFile::IFFFile(IFFFile&& other)
 {
-	interpreter_ = interpreter;
+	*this = std::move(other);
+}
+
+IFFFile& IFFFile::operator=(IFFFile&& other)
+{
+	interpreter_ = other.interpreter_;
+	headNodes = other.headNodes;
+	return *this;
+}
+
+IFFFile::IFFFile(std::string filename, std::shared_ptr<Interpreters::IFFInterpreter> interpreter)
+	: interpreter_(interpreter)
+{
 
 	FILE* pFile;
 	pFile = fopen(filename.c_str(), "rb");
@@ -35,16 +47,15 @@ IFFFile::IFFFile(std::string filename, Interpreters::IFFInterpreter* interpreter
 	}
 }
 
-IFFFile::IFFFile(FILE* inputstream, Interpreters::IFFInterpreter* interpreter)
+IFFFile::IFFFile(FILE* inputstream, std::shared_ptr<Interpreters::IFFInterpreter> interpreter)
+	: interpreter_(interpreter)
 {
-	interpreter_ = interpreter;
 	_loadIFF(inputstream);
 }
 
-IFFFile::IFFFile(anh::ByteBuffer& input, Interpreters::IFFInterpreter* interpreter)
+IFFFile::IFFFile(anh::ByteBuffer& input, std::shared_ptr<Interpreters::IFFInterpreter> interpreter)
+	: interpreter_(interpreter)
 {
-	interpreter_ = interpreter;
-
 	_loadIFF(input);
 }
 
@@ -69,7 +80,7 @@ unsigned int getNameSize(char namedata[], unsigned int size)
 	return i;
 }
 
-std::string* getIFFName(anh::ByteBuffer& input)
+std::string getIFFName(anh::ByteBuffer& input)
 {
 	std::uint64_t name_buf = input.read<std::uint64_t>();
 	unsigned int namesize = getNameSize((char*)&name_buf, 8);
@@ -89,7 +100,7 @@ std::string* getIFFName(anh::ByteBuffer& input)
 		namesize = 8;
 	}
 
-	return new std::string((char*)&name_buf, namesize);
+	return std::string((char*)&name_buf, namesize);
 }
 
 bool childIsNode(anh::ByteBuffer& input)
@@ -101,7 +112,7 @@ bool childIsNode(anh::ByteBuffer& input)
 
 void IFFFile::_loadIFF(anh::ByteBuffer& inputstream)
 {
-	std::stack<std::pair<IFF::Node*, unsigned int>> loader;
+	std::stack<std::pair<std::shared_ptr<IFF::Node>, unsigned int>> loader;
 	while(inputstream.read_position() < inputstream.size())
 	{
 		if(!loader.empty() && inputstream.read_position() == loader.top().second)
@@ -110,23 +121,23 @@ void IFFFile::_loadIFF(anh::ByteBuffer& inputstream)
 		}
 		else
 		{
-			std::string* name = getIFFName(inputstream);
+			std::string name = getIFFName(inputstream);
 			
-			if(name->size() == 0 || *name == "NULL") { continue; }
+			if(name.size() == 0 || name == "NULL") { continue; }
 			
 			//printf("%s\n",name->c_str());
 			std::uint32_t size = inputstream.read<std::uint32_t>(true);
 		
-			IFF::Node* node;
+			std::shared_ptr<IFF::Node> node;
 			if(size >= 4 && childIsNode(inputstream))
 			{
 				//We must be a folder.
-				node = new IFF::FolderNode(*name, size);
+				node = std::make_shared<IFF::FolderNode>(name, size);
 			}
 			else
 			{
 				//We must be a file.
-				IFF::FileNode* file = new IFF::FileNode(*name, size);
+				std::shared_ptr<IFF::FileNode> file = std::make_shared<IFF::FileNode>(name, size);
 				file->loadData(inputstream);
 				node = file;
 			
@@ -142,12 +153,12 @@ void IFFFile::_loadIFF(anh::ByteBuffer& inputstream)
 				headNodes.push_back(node);
 				if(node->type() == NODE_TYPE_FOLDER)
 				{
-					loader.push(std::make_pair<IFF::Node*,unsigned int>(node, inputstream.read_position()+size));
+					loader.push(std::make_pair<std::shared_ptr<IFF::Node>,unsigned int>(node, inputstream.read_position()+size));
 				}
 			}
 			else
 			{
-				FolderNode* parent = dynamic_cast<FolderNode*>(node);
+				FolderNode* parent = dynamic_cast<FolderNode*>(node.get());
 				if(parent != nullptr)
 				{
 					parent->add(node);

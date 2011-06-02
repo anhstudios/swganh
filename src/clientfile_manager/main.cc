@@ -2,10 +2,9 @@
 #include <string>
 #include "main.h"
 #include "iff/iff.h"
-
 #include "filemanager.h"
-
-#include "iff/interpreters/POBInterpreter.h"
+#include "iff/interpreters/POB/POBInterpreter.h"
+#include "iff/interpreters/WS/WSInterpreter.h"
 
 using namespace ClientFileManager;
 
@@ -14,19 +13,21 @@ int main(int argc, char* argv[])
 	std::string s;
 	printf("Input SWG Directory (contains swg2uu_live.cfg): ");
 	std::getline(std::cin, s);
-
 	FileManager f(s);
-	IFF::Interpreters::POBInterpreter* pob = new IFF::Interpreters::POBInterpreter();
-	
+
+	auto pob = std::make_shared<IFF::Interpreters::POBInterpreter>();
+	auto ws = std::make_shared<IFF::Interpreters::WSInterpreter>();
 	try
 	{
 		f.getFile("appearance/ply_nboo_assoc_hall_civ_s01.pob", pob);
+		f.getFile("snapshot/naboo.ws", ws);
 	}
-	catch(IFF::NotFoundException* e)
+	catch(IFF::NotFoundException*)
 	{
 		printf("That file does not exist!");
 	}
-	pob->debug();
+	//pob->debug();
+	ws->debug();
 }
 
 /*

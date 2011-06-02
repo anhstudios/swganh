@@ -1,5 +1,7 @@
-#include "IFFInterpreter.h"
+#ifndef INTERPRETERS_POB_H
+#define INTERPRETERS_POB_H
 
+#include "../IFFInterpreter.h"
 #include <vector>
 #include <cstdint>
 #include <glm/glm.hpp>
@@ -18,19 +20,19 @@ namespace ClientFileManager
 			class POBInterpreter : public IFFInterpreter
 			{
 			public:
-				POBInterpreter() : IFFInterpreter()
-				{
-				}
+				POBInterpreter();
 
-				virtual void interpret(IFF::FileNode* node);
+				virtual void interpret(std::shared_ptr<IFF::FileNode> node);
 
-				struct Portal
+				class Portal
 				{
-					std::vector<glm::vec3*> vertices;
+				public:
+					std::vector<glm::vec3> vertices;
 				};
 
-				struct Link
+				class Link
 				{
+				public:
 					std::uint32_t portal_id; //portal id
 					
 					char unkFlag2;
@@ -50,15 +52,17 @@ namespace ClientFileManager
 
 				};
 
-				struct triangle
+				class triangle
 				{
+				public:
 					std::uint32_t a;
 					std::uint32_t b;
 					std::uint32_t c;
 				};
 
-				struct Cell
+				class Cell
 				{
+				public:
 					//0005DATA
 					char unkFlag2;
 					std::string name;
@@ -68,22 +72,24 @@ namespace ClientFileManager
 					std::string collision;
 
 					//0000VERT
-					std::vector<glm::vec3*> vertices;
+					std::vector<glm::vec3> vertices;
 
 					//INDX
-					std::vector<triangle*> triangles;
+					std::vector<triangle> triangles;
 
 					//PRTL0004
-					std::vector<Link*> links;
+					std::vector<Link> links;
 				};
 
 				unsigned int cell_count() { return cells_.size(); }
 				unsigned int portal_count() { return portals_.size(); }
 
-				Portal* getPortal(unsigned int id) { return portals_[id]; }
-				Cell* getCell(unsigned int id) { return cells_[id]; }
+				const Portal& getPortal(unsigned int id) { return portals_[id]; }
+				const Cell& getCell(unsigned int id) { return cells_[id]; }
 
 				void debug();
+
+				virtual InterpreterType getType() { return POB_INTERPRETER; }
 
 			private:
 				void _handle0003DATA(anh::ByteBuffer& data);
@@ -93,9 +99,11 @@ namespace ClientFileManager
 				void _handleINDX(anh::ByteBuffer& data);
 				void _handlePRTL0004(anh::ByteBuffer& data);
 
-				std::vector<Portal*> portals_;
-				std::vector<Cell*> cells_;
+				std::vector<Portal> portals_;
+				std::vector<Cell> cells_;
 			};
 		};
 	};
 };
+
+#endif

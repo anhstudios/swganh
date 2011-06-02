@@ -1,3 +1,6 @@
+#ifndef IFF_H
+#define IFF_H
+
 #include <stdio.h>
 #include <vector>
 #include <map>
@@ -50,19 +53,26 @@ namespace ClientFileManager
 		class IFFFile
 		{
 		public:
-			IFFFile(std::string filename, Interpreters::IFFInterpreter* interpret = nullptr);
-			IFFFile(FILE* inputstream, Interpreters::IFFInterpreter* interpret = nullptr);
-			IFFFile(anh::ByteBuffer& input, Interpreters::IFFInterpreter* interpret = nullptr);
+			IFFFile(IFFFile&& other);
+			IFFFile& operator=(IFFFile&& other);
+			IFFFile(std::string filename, std::shared_ptr<Interpreters::IFFInterpreter> interpret);
+			IFFFile(FILE* inputstream, std::shared_ptr<Interpreters::IFFInterpreter> interpret);
+			IFFFile(anh::ByteBuffer& input, std::shared_ptr<Interpreters::IFFInterpreter> interpret);
 
-			Interpreters::IFFInterpreter* getInterpreter() { return interpreter_;}
-			ClientFileManager::IFF::Node* headnode(unsigned int i) {return headNodes[i];}
+			std::shared_ptr<Interpreters::IFFInterpreter> getInterpreter() { return interpreter_;}
+			std::shared_ptr<ClientFileManager::IFF::Node> headnode(unsigned int i) {return headNodes[i];}
 			unsigned int headnode_count() {return headNodes.size();}
+
+			
+
 		protected:
 		private:
 			void _loadIFF(FILE* stream);
 			void _loadIFF(anh::ByteBuffer& inputstream);
-			std::vector<ClientFileManager::IFF::Node*> headNodes;
-			Interpreters::IFFInterpreter* interpreter_;
+			std::vector<std::shared_ptr<ClientFileManager::IFF::Node>> headNodes;
+			std::shared_ptr<Interpreters::IFFInterpreter> interpreter_;
 		};
 	};
 };
+
+#endif

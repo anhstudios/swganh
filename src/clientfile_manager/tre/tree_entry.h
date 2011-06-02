@@ -1,4 +1,8 @@
+#ifndef TREE_ENTRY_H
+#define TREE_ENTRY_H
+
 #include <cstdint>
+#include <boost/flyweight.hpp>
 
 namespace ClientFileManager
 {
@@ -14,8 +18,10 @@ namespace ClientFileManager
 			std::uint32_t compressed_size;
 			std::uint32_t name_offset;
 
-			std::string nameString;
+			boost::flyweight<std::string> nameString;
 			TreeArchive* parentTree;
 		};
 	};
 };
+
+#endif

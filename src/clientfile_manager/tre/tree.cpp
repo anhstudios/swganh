@@ -8,29 +8,29 @@
 
 using namespace ClientFileManager::TRE;
 
-anh::ByteBuffer* TreeArchive::getFile(TreeEntry* entry)
+anh::ByteBuffer TreeArchive::getFile(TreeEntry& entry)
 {
-	unsigned char* compressed_data = new unsigned char[entry->compressed_size];
+	unsigned char* compressed_data = new unsigned char[entry.compressed_size];
 
 	FILE* filestream = fopen(filename_.c_str(), "rb");
-	fseek(filestream, entry->fileOffset, SEEK_SET);
-	fread(compressed_data, entry->compressed_size, 1, filestream);
+	fseek(filestream, entry.fileOffset, SEEK_SET);
+	fread(compressed_data, entry.compressed_size, 1, filestream);
 	fclose(filestream);
 
-	unsigned char* data = new unsigned char[entry->uncompressed_size];
+	unsigned char* data = new unsigned char[entry.uncompressed_size];
 
-	int z_result = uncompress(data, (unsigned long*)&entry->uncompressed_size, 
-								compressed_data, entry->compressed_size);
+	int z_result = uncompress(data, (unsigned long*)&entry.uncompressed_size, 
+								compressed_data, entry.compressed_size);
 	delete[] compressed_data;
 
-	anh::ByteBuffer* result = new anh::ByteBuffer();
-	result->write(data, entry->uncompressed_size);
+	anh::ByteBuffer result;
+	result.write(data, entry.uncompressed_size);
 	delete[] data;
 	
 	return result;
 }
 
-void TreeArchive::_loadTree(FILE* inputstream, std::vector<std::shared_ptr<TreeEntry>>& entries)
+void TreeArchive::_loadTree(FILE* inputstream, std::vector<TreeEntry>& entries)
 {
 	//This is how .tre files were meant to be loaded.
 	//No Unnecessary Objects.
@@ -86,16 +86,14 @@ void TreeArchive::_loadTree(FILE* inputstream, std::vector<std::shared_ptr<TreeE
 			fread(names_block, names_finalSize, 1, inputstream);
 		}
 
-
-		//DO WORK, SON!
 		unsigned int entry_count = lookupData_finalSize/24;
 		for(unsigned int i=0; i < entry_count; ++i)
 		{
-			std::shared_ptr<TreeEntry> latestEntry = std::make_shared<TreeEntry>();
-			memcpy(latestEntry.get(), lookupData_block + 24*i , 24);
-			latestEntry->parentTree = this;
-			latestEntry->nameString = std::string((char*)&names_block[latestEntry->name_offset]);
-			entries.push_back(latestEntry);
+			TreeEntry latestEntry;
+			memcpy(&latestEntry, lookupData_block + 24*i , 24);
+			latestEntry.parentTree = this;
+			latestEntry.nameString = std::string((char*)&names_block[latestEntry.name_offset]);
+			entries.push_back(std::move(latestEntry));
 		}
 		
 		delete[] lookupData_block;

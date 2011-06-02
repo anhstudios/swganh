@@ -13,7 +13,7 @@ namespace ClientFileManager
 		{
 		public:
 			FileNode(std::string& name, unsigned int size)
-				: Node(name, size), data_(size)
+				: Node(boost::flyweight<std::string>(name), size), data_(size)
 			{
 			}
 

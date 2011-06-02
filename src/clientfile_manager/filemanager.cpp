@@ -6,7 +6,6 @@
 #include "filemanager.h"
 #include "iff/iff.h"
 #include "tre/tree.h"
-#include "tre/tree_entry.h"
 
 using namespace ClientFileManager;
 
@@ -31,19 +30,20 @@ void FileManager::_loadSWGTREConfig()
 
 	for(int i=paths.size()-1; i >= 0; --i)
 	{
-		std::vector<std::shared_ptr<TRE::TreeEntry>> entries;
+		std::vector<TRE::TreeEntry> entries;
 		TRE::TreeArchive* tre = new TRE::TreeArchive(paths[i], entries);
 		for(unsigned int j = 0; j < entries.size(); ++j)
 		{
-			fileMap_.insert(std::make_pair<std::string, std::shared_ptr<TRE::TreeEntry>>(entries[j]->nameString, entries[j]));
+			fileMap_.insert(std::make_pair<std::string, TRE::TreeEntry>(entries[j].nameString, std::move(entries[j])));
 		}
 	}
 }
 
-IFF::IFFFile* FileManager::getFile(const std::string& filename, IFF::Interpreters::IFFInterpreter* interpreter)
+IFF::IFFFile FileManager::getFile(const std::string& filename, std::shared_ptr<IFF::Interpreters::IFFInterpreter> interpreter)
 {
-	LoadedMapIterator lIt = loadedFileMap_.find(filename);
+	boost::flyweight<std::string> weight(filename);
 
+	LoadedMapIterator lIt = loadedFileMap_.find(weight);
 	if(lIt != loadedFileMap_.end())
 	{
 		std::cout << "Already Loaded. Serving." << std::endl;
@@ -61,23 +61,23 @@ IFF::IFFFile* FileManager::getFile(const std::string& filename, IFF::Interpreter
 			std::cout << "Found in the Filesystem. Loading from file." << std::endl;
 
 			FILE* f = fopen(p.file_string().c_str(), "rb");
-			return new IFF::IFFFile(f, interpreter);
+			return IFF::IFFFile(f, interpreter);
 		}
 		else
 		{
 			//Then we check the map.
-			FileMapIterator fIt = fileMap_.find(filename); //That's right. F IT
+			FileMapIterator fIt = fileMap_.find(weight); //That's right. F IT
 
 			if(fIt != fileMap_.end())
 			{
 				std::cout << "Found in a tre. Loading from there." << std::endl;
 
-				std::shared_ptr<TRE::TreeEntry> entry = fIt->second;
-				return new IFF::IFFFile(*entry->parentTree->getFile(entry.get()), interpreter);
+				TRE::TreeEntry entry = std::move(fIt->second);
+				return IFF::IFFFile(entry.parentTree->getFile(entry), interpreter);
 			}
 			else
 			{
-				return nullptr; //Last resort
+				throw new IFF::NotFoundException("Couldn't find the file in the trees. No word yet about the bushes.");
 			}
 		}
 	}

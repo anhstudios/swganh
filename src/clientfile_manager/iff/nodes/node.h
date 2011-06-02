@@ -5,6 +5,7 @@
 #include <memory>
 #include <iostream>
 #include <cstdint>
+#include <boost/flyweight.hpp>
 
 #include "nodetypes.h"
 
@@ -15,22 +16,21 @@ namespace ClientFileManager
 		class Node
 		{
 		public:
-
-			std::string& name() {return name_;}
+			std::string name() {return name_;}
 			std::uint32_t size() {return size_;}
-			Node* parent() {return parent_;}
-			void parent(Node* p) {parent_ = p;}
+			std::weak_ptr<Node> parent() {return parent_;}
+			void parent(std::weak_ptr<Node> p) {parent_ = p;}
 			virtual ClientFileManager::NODE_TYPE type() {return NODE_TYPE_BASE;}
 
 		protected:
-			Node(std::string& name, std::uint32_t size)
+			Node(std::string name, std::uint32_t size)
 				: name_(name), size_(size) {}
 
-			Node(std::string& name, std::uint32_t size, Node* parent)
+			Node(std::string name, std::uint32_t size, std::weak_ptr<Node> parent)
 				: name_(name), size_(size), parent_(parent) {}
 
 
-			Node* parent_;
+			std::weak_ptr<Node> parent_;
 
 		private:
 			Node();
