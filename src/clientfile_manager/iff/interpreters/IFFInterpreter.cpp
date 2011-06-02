@@ -19,6 +19,5 @@ std::string ClientFileManager::IFF::Interpreters::IFFInterpreter::readStringFrom
 		s.push_back(buf);
 		buf = b.read<char>();
 	}
-	s.push_back(0);
 	return s;
 }

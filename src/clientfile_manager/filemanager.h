@@ -27,8 +27,8 @@ namespace ClientFileManager
 		struct TreeEntry;
 	};
 
-	typedef std::map<boost::flyweight<std::string>, IFF::IFFFile> LoadedMap;
-	typedef std::map<boost::flyweight<std::string>, IFF::IFFFile>::iterator LoadedMapIterator;
+	typedef std::map<boost::flyweight<std::string>, std::shared_ptr<IFF::Interpreters::IFFInterpreter>> LoadedMap;
+	typedef std::map<boost::flyweight<std::string>, std::shared_ptr<IFF::Interpreters::IFFInterpreter>>::iterator LoadedMapIterator;
 
 	typedef std::map<boost::flyweight<std::string>, TRE::TreeEntry> FileMap;
 	typedef std::map<boost::flyweight<std::string>, TRE::TreeEntry>::iterator FileMapIterator;
@@ -39,7 +39,9 @@ namespace ClientFileManager
 		FileManager(std::string basedir);
 		FileManager(boost::filesystem::path& basedir);
 
-		IFF::IFFFile getFile(const std::string& filename, std::shared_ptr<IFF::Interpreters::IFFInterpreter> interpreter);
+		bool hasFile(const std::string& filename);
+		std::shared_ptr<IFF::Interpreters::IFFInterpreter> getFile(const std::string& filename);
+		std::shared_ptr<IFF::Interpreters::IFFInterpreter> getFile(const std::string& filename, std::shared_ptr<IFF::Interpreters::IFFInterpreter> interpreter);
 	private:
 		void _loadSWGTREConfig();
 

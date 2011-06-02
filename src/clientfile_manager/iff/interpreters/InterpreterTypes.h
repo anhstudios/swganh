@@ -40,7 +40,8 @@ namespace ClientFileManager
 
 				POB_INTERPRETER,
 				TRN_INTERPRETER,
-				WS_INTERPRETER
+				WS_INTERPRETER,
+				OIFF_INTERPRETER,
 			};
 		};
 	};

@@ -12,6 +12,7 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 #include <regex>
 
 #include "filemanager.h"
+#include "iff/interpreters/IFFInterpreter.h"
 #include "iff/iff.h"
 #include "tre/tree.h"
 
@@ -47,7 +48,38 @@ void FileManager::_loadSWGTREConfig()
 	}
 }
 
-IFF::IFFFile FileManager::getFile(const std::string& filename, std::shared_ptr<IFF::Interpreters::IFFInterpreter> interpreter)
+bool FileManager::hasFile(const std::string& filename)
+{
+	boost::flyweight<std::string> weight(filename);
+	LoadedMapIterator lIt = loadedFileMap_.find(weight);
+	if(lIt != loadedFileMap_.end())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+std::shared_ptr<IFF::Interpreters::IFFInterpreter> FileManager::getFile(const std::string& filename)
+{
+	boost::flyweight<std::string> weight(filename);
+	LoadedMapIterator lIt = loadedFileMap_.find(weight);
+	if(lIt != loadedFileMap_.end())
+	{
+		std::cout << "Already Loaded. Serving." << std::endl;
+		//We found it!
+		return lIt->second;
+	}
+	else
+	{
+		return nullptr;
+	}
+
+}
+
+std::shared_ptr<IFF::Interpreters::IFFInterpreter> FileManager::getFile(const std::string& filename, std::shared_ptr<IFF::Interpreters::IFFInterpreter> interpreter)
 {
 	boost::flyweight<std::string> weight(filename);
 
@@ -69,7 +101,9 @@ IFF::IFFFile FileManager::getFile(const std::string& filename, std::shared_ptr<I
 			std::cout << "Found in the Filesystem. Loading from file." << std::endl;
 
 			FILE* f = fopen(p.file_string().c_str(), "rb");
-			return IFF::IFFFile(f, interpreter);
+			IFF::IFFFile iff(f, interpreter);
+
+			return interpreter;
 		}
 		else
 		{
@@ -81,11 +115,14 @@ IFF::IFFFile FileManager::getFile(const std::string& filename, std::shared_ptr<I
 				std::cout << "Found in a tre. Loading from there." << std::endl;
 
 				TRE::TreeEntry entry = std::move(fIt->second);
-				return IFF::IFFFile(entry.parentTree->getFile(entry), interpreter);
+				IFF::IFFFile iff(entry.parentTree->getFile(entry), interpreter);
+
+				return interpreter;
 			}
 			else
 			{
-				throw new IFF::NotFoundException("Couldn't find the file in the trees. No word yet about the bushes.");
+				return nullptr;
+				//throw new IFF::NotFoundException("Couldn't find the file in the trees. No word yet about the bushes.");
 			}
 		}
 	}

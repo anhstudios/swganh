@@ -61,10 +61,9 @@ namespace ClientFileManager
 				}
 
 				virtual InterpreterType getType() { return IFF_INTERPRETER; }
-
 				virtual void interpret(std::shared_ptr<IFF::FileNode> node) = 0;
 			protected:
-				std::string readStringFromByteBuffer(anh::ByteBuffer& b);
+				static std::string readStringFromByteBuffer(anh::ByteBuffer& b);
 				NodeNameIndex nameLookup_;
 			};
 		};
