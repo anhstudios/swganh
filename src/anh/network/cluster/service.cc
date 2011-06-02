@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/thread.hpp>
 
 #include <glog/logging.h>
 
@@ -66,7 +65,9 @@ Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectory
 
 Service::~Service(void)
 {	
-    Shutdown();
+    // interrupt/join thread
+    service_thread_.interrupt();
+    service_thread_.join();
 }
 
 void Service::Start()
@@ -78,7 +79,7 @@ void Service::Start()
     acceptor_->async_accept(tcp_host_->socket(), boost::bind(&Service::handle_accept_, this, 
        tcp_host_ , boost::asio::placeholders::error));
     DLOG(WARNING) << "Now listening for TCP Messages on: " << port_;
-    boost::thread([=] () {
+    service_thread_ = boost::thread([=] () {
         io_service_.run();
     });
 }
@@ -91,9 +92,9 @@ void Service::Update(void)
 
 void Service::Shutdown(void)
 {
-    io_service_.reset();
-    resolver_.cancel();
-    acceptor_->close();
+    tcp_client_map_.clear();
+    incoming_messages_.clear();
+    outgoing_messages_.clear();
     incoming_pipeline_.clear();
     outgoing_pipeline_.clear();
 }

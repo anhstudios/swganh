@@ -81,9 +81,9 @@ void LoginApp::startup()
 {
     BaseApplication::startup();
     soe_service_.Start(44453);
-    /*auto process = std::make_shared<anh::server_directory::Process>(2,
-        1, "ANH.Connection","Connection","1.0","127.0.0.1",45566,0,0);
-    cluster_service_->Connect(process);*/
+    auto process = std::make_shared<anh::server_directory::Process>(2,
+        1, "ANH.Connection","Connection","1.0","127.0.0.1",44993,0,0);
+    cluster_service_->Connect(process);
     
 }
 

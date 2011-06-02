@@ -199,6 +199,7 @@ void BaseApplication::shutdown() {
     // clean up code here before the server shuts down
     event_dispatcher_->trigger(shutdown_event_);
     cluster_service_->Shutdown();
+    //cluster_io_service_.stop();
 }
 
 shared_ptr<ServerDirectoryInterface> BaseApplication::createServerDirectory(shared_ptr<sql::Connection> conn) {

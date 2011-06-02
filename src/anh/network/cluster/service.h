@@ -40,6 +40,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/cluster/packet_event_filter.h>
 #include <anh/network/cluster/receive_packet_filter.h>
 
+#include <boost/thread.hpp>
+
 #include <map>
 #include <stdint.h>
 
@@ -165,6 +167,8 @@ private:
     anh::server_directory::ProcessList                  proc_list_;
     boost::asio::io_service& 		                    io_service_;
     std::shared_ptr<boost::asio::ip::tcp::acceptor>     acceptor_;
+    // boost thread
+    boost::thread                                       service_thread_;
 
     std::shared_ptr<tcp_host>                                           tcp_host_;
     uint16_t                                                            port_;

@@ -52,7 +52,8 @@ void tcp_client::handle_connect_(const boost::system::error_code& error, boost::
 {
     if(!error)
     {
-        DLOG(WARNING) << "Connection To Endpoint " << endpoint.address() << " Successful..." << std::endl;
+        DLOG(WARNING) << "Connection To Endpoint " << endpoint.address() <<":"<< endpoint.port()
+            << " Successful..." << std::endl;
     }
     else
     {

@@ -32,7 +32,7 @@ public:
     
 private:
     uint64_t	bytes_recv_;
-	uint64_t	bytes_sent_;
+    uint64_t	bytes_sent_;
 
     tcp::socket socket_;
     NetworkCallback callback_;

@@ -51,26 +51,26 @@ enum Destination {
 class TCPMessage
 {
 public:
-	TCPMessage(std::shared_ptr<tcp_client> client, std::shared_ptr<anh::ByteBuffer> message
+    TCPMessage(std::shared_ptr<tcp_client> client, std::shared_ptr<anh::ByteBuffer> message
         , Destination destination = SINGLE, const std::string& type = "none" )
-		: client_(client)
-		, message_(message)
+        : client_(client)
+        , message_(message)
         , destination_(destination)
         , type_(type)
-	{
-	}
+    {
+    }
 
-	~TCPMessage(void)
-	{
-	}
+    ~TCPMessage(void)
+    {
+    }
     Destination& destination() { return destination_; }
-	std::shared_ptr<tcp_client> client() { return client_; }
-	std::shared_ptr<anh::ByteBuffer> message() { return message_; }
+    std::shared_ptr<tcp_client> client() { return client_; }
+    std::shared_ptr<anh::ByteBuffer> message() { return message_; }
     std::string& type() { return type_; }
 private:
     Destination                         destination_;
-	std::shared_ptr<tcp_client>			client_;
-	std::shared_ptr<anh::ByteBuffer>	message_;
+    std::shared_ptr<tcp_client>			client_;
+    std::shared_ptr<anh::ByteBuffer>	message_;
     std::string                         type_;
 };
 
