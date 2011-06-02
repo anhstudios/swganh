@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <mod_anh_transform/transform_db_mapper.h>
 #include <anh/database/database_manager_interface.h>
 #include <anh/module_manager/module_main.h>
+#include <glog/logging.h>
 
 using namespace anh;
 using namespace api::components;
@@ -40,52 +41,56 @@ using namespace std;
 uint64_t guid = 0;
 
 bool API Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
+    // TODO: Create standard way to create common services
+    std::shared_ptr<anh::component::EntityBuilder> entity_builder;
+    std::shared_ptr<anh::component::EntityManager> entity_manager;
+    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_manager;
+    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager;
+    std::shared_ptr<anh::scripting::ScriptingManagerInterface> script_manager;
+    std::shared_ptr<anh::server_directory::ServerDirectoryInterface> server_directory;
+
     cout << GetModuleName() << " Loading..." <<endl;
-	// register component to object manager
-    gEntityManager = 
+    // register component to object manager
+    entity_manager = 
         boost::any_cast<shared_ptr<component::EntityManager>>(services->getService("EntityManager"));
-    if (gEntityManager == nullptr)
+    if (entity_manager == nullptr)
     {
-        throw runtime_error("No Entity Manager Registered");
+        LOG(FATAL) << "No Entity Manager Registered";
+        return false;
     }
     // get new GUID
     for (int i = 0 ; i < 399; i++)
     {
         shared_ptr<TransformComponentInterface> component( new TransformComponent() );
-		gEntityBuilder->BuildEntity(guid+i, "T21", "T21." + guid);
-        gEntityManager->AttachComponent(guid+i, component);
+        entity_builder->BuildEntity(guid+i, "T21", "T21." + guid);
+        entity_manager->AttachComponent(guid+i, component);
     }
     // subscribe to events
-    gEventDispatcher =
+    event_manager =
         boost::any_cast<shared_ptr<event_dispatcher::EventDispatcherInterface>>(services->getService("EventDispatcher"));
-    if (gEventDispatcher == nullptr)
+    if (event_manager == nullptr)
     {
-        throw runtime_error("No Event Dispatcher Registered");
+        LOG(FATAL) << "No Event Dispatcher Registered";
+        return false;
     }
     // init specific logs
 
     // init db hooks
-	gDatabaseManager = 
-		boost::any_cast<shared_ptr<database::DatabaseManagerInterface>>(services->getService("DatabaseManager"));
+    db_manager = 
+        boost::any_cast<shared_ptr<database::DatabaseManagerInterface>>(services->getService("DatabaseManager"));
 
-	// pass db manager
+    // pass db manager
     
     // trigger 'loaded event'
-    //auto processListener = [&] (shared_ptr<event_dispatcher::EventInterface> incoming_event)->bool {
-    //    
-    //    return true;
-    //};
-    //gEventDispatcher->subscribe("Process", processListener);
     
     auto loaded_event = make_shared<event_dispatcher::SimpleEvent>("TransformLoaded");
-    gEventDispatcher->trigger(loaded_event);
+    event_manager->trigger(loaded_event);
     return true;
 }
 
 bool API Unload(std::shared_ptr<anh::module_manager::PlatformServices> services) {
-	// unregister components
-    //gEntityManager->DetachComponent(1, ComponentType("TransformComponent"));
-
+    // unregister components
+    
     // unsubscribes
 
     // triggers 'unload event'
@@ -93,13 +98,13 @@ bool API Unload(std::shared_ptr<anh::module_manager::PlatformServices> services)
 }
 
 const std::string API GetModuleName(void) {
-	return "ANH.Transform";
+    return "ANH.Transform";
 }
 
 const anh::module_manager::ModuleApiVersion API GetModuleVersion(void) {
-	return anh::module_manager::ModuleApiVersion(0, 1, "0.1");
+    return anh::module_manager::ModuleApiVersion(0, 1, "0.1");
 }
 
 const std::string API GetModuleDescription(void) {
-	return "ANH's Transform Module";
+    return "ANH's Transform Module";
 }

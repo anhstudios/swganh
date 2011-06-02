@@ -41,8 +41,8 @@ class NullTransformComponent;
 
 class TransformComponentInterface : public BaseComponent {
     public:
-	TransformComponentInterface(const ComponentType& type)
-		: BaseComponent("Transform", type) { }
+    TransformComponentInterface(const ComponentType& type)
+        : BaseComponent("Transform", type) { }
 
     virtual const EntityId parent_id() = 0;
     virtual const glm::vec3& position() = 0;
@@ -66,8 +66,8 @@ class TransformComponentInterface : public BaseComponent {
 class NullTransformComponent : public TransformComponentInterface {
 public:
     NullTransformComponent()
-		: TransformComponentInterface("NullTransform") { }
-	
+        : TransformComponentInterface("NullTransform") { }
+    
     const EntityId parent_id() { return parent_id_; }
     virtual const glm::vec3& position() { return position_; }
     void position(const float x, const float y, const float z){}

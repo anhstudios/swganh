@@ -32,18 +32,18 @@ template<class ClassToMap>
 class AttributeMapperInterface
 {
 public:
-	/**
-	 * @brief Called when the component is being presisted to the outside source.
-	 *
-	  * @param The component to persist.
-	 */
+    /**
+     * @brief Called when the component is being presisted to the outside source.
+     *
+      * @param The component to persist.
+     */
     virtual void Persist(std::shared_ptr<ClassToMap> component) = 0;
 
-	/**
-	 * @brief Called initially to populate a components attributes.
-	 *
-	 * @param component The component to aggregate data to.
-	 */
+    /**
+     * @brief Called initially to populate a components attributes.
+     *
+     * @param component The component to aggregate data to.
+     */
     virtual void Populate(std::shared_ptr<ClassToMap> component) = 0;
 
     /**
@@ -51,7 +51,7 @@ public:
     *
     * @param entity_id, the id of the entity to grab data from.
     */
-	virtual std::shared_ptr<ClassToMap> query_result(uint64_t entity_id) = 0;
+    virtual std::shared_ptr<ClassToMap> query_result(uint64_t entity_id) = 0;
 protected:
 };
 

@@ -33,64 +33,64 @@ class NullMockComponent;
 
 class MockComponentInterface : public ComponentInterface {
 public:
-	static std::shared_ptr<NullMockComponent> NullComponent;
+    static std::shared_ptr<NullMockComponent> NullComponent;
 };
 
 class NullMockComponent : public MockComponentInterface {
 public:
-	NullMockComponent() 
-	: type_("NullMock")
-	, interface_("Mock")
-	, entity_id_(0) { }
+    NullMockComponent() 
+    : type_("NullMock")
+    , interface_("Mock")
+    , entity_id_(0) { }
 
-	virtual ~NullMockComponent() { }
+    virtual ~NullMockComponent() { }
 
-	void Init(boost::property_tree::ptree& pt) { }
-	void OnAttach() { }
-	void OnDetach() { }
-	void Update(const float deltaMilliseconds) { }
-	void HandleMessage(const Message message) { }
-	const EntityId& entity_id() const { return entity_id_; }
-	void set_entity_id(const EntityId& id) { }
+    void Init(boost::property_tree::ptree& pt) { }
+    void OnAttach() { }
+    void OnDetach() { }
+    void Update(const float deltaMilliseconds) { }
+    void HandleMessage(const Message message) { }
+    const EntityId& entity_id() const { return entity_id_; }
+    void set_entity_id(const EntityId& id) { }
     void set_dirty(bool dirty) { dirty_ = dirty; }
     bool dirty() { return dirty_; }
     std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> attribute_mapper() { return attribute_mapper_; }
     void set_attribute_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) {}
-	const ComponentType& component_type() { return type_; }
-	const InterfaceType& interface_type() { return interface_; }
+    const ComponentType& component_type() { return type_; }
+    const InterfaceType& interface_type() { return interface_; }
 
-	ComponentType type_;
-	InterfaceType interface_;
-	EntityId entity_id_;
+    ComponentType type_;
+    InterfaceType interface_;
+    EntityId entity_id_;
     std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> attribute_mapper_;
     bool dirty_;
 };
 
 class MockComponent : public MockComponentInterface {
 public:
-	MockComponent() 
-	: type_("Anh.Mock")
-	, interface_("Mock") { }
+    MockComponent() 
+    : type_("Anh.Mock")
+    , interface_("Mock") { }
 
-	virtual ~MockComponent() { }
+    virtual ~MockComponent() { }
 
-	MOCK_METHOD1(Init, void (boost::property_tree::ptree& pt));
-	MOCK_METHOD0(OnAttach, void ());
-	MOCK_METHOD0(OnDetach, void ());
-	MOCK_METHOD1(Update, void (const float deltaMilliseconds));
-	MOCK_METHOD1(HandleMessage, void (const Message message));
-	MOCK_CONST_METHOD0(entity_id, const EntityId& ());
-	MOCK_METHOD1(set_entity_id, void (const EntityId& id));
+    MOCK_METHOD1(Init, void (boost::property_tree::ptree& pt));
+    MOCK_METHOD0(OnAttach, void ());
+    MOCK_METHOD0(OnDetach, void ());
+    MOCK_METHOD1(Update, void (const float deltaMilliseconds));
+    MOCK_METHOD1(HandleMessage, void (const Message message));
+    MOCK_CONST_METHOD0(entity_id, const EntityId& ());
+    MOCK_METHOD1(set_entity_id, void (const EntityId& id));
     MOCK_METHOD1(set_dirty, void(bool dirty));
     MOCK_METHOD0(dirty, bool());
     MOCK_METHOD0(attribute_mapper, std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>>());
     MOCK_METHOD1(set_attribute_mapper, void(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper));
 
-	const ComponentType& component_type() { return type_; }
-	const InterfaceType& interface_type() { return interface_; }
+    const ComponentType& component_type() { return type_; }
+    const InterfaceType& interface_type() { return interface_; }
 
-	ComponentType type_;
-	InterfaceType interface_;
+    ComponentType type_;
+    InterfaceType interface_;
 };
 class MockAttributeMapper : public anh::component::AttributeMapperInterface<ComponentInterface> {
 public:

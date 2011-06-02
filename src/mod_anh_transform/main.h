@@ -22,6 +22,4 @@ const std::string API GetModuleDescription(void);
 }
 #endif
 
-MODULE_STANDARD_SERVICES
-
 #endif // __MAIN_H__

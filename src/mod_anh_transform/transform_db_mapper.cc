@@ -30,11 +30,15 @@ using namespace std;
 using namespace anh::api::components;
 
 namespace transform {
+TransformDBMapper::TransformDBMapper(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+    : db_manager_(db_manager)
+{
+}
 void TransformDBMapper::Persist(std::shared_ptr<TransformComponentInterface> component)
 {
     if (component != nullptr)
     {
-        auto conn = gDatabaseManager->getConnection("galaxy");
+        auto conn = db_manager_->getConnection("galaxy");
         sql::SQLString query_string
             ("update transform set x = ?, y = ?, z = ?, rW = ?, rX = ?, rY = ?, rZ = ?, parent_id = ?");
         auto prepared = 
@@ -49,11 +53,11 @@ void TransformDBMapper::Persist(std::shared_ptr<TransformComponentInterface> com
 }
 void TransformDBMapper::Populate(std::shared_ptr<anh::api::components::TransformComponentInterface> component)
 {
-    auto conn = gDatabaseManager->getConnection("galaxy");
+    auto conn = db_manager_->getConnection("galaxy");
     sql::SQLString query_string("select * from transform where entity_id = ?");
     auto prepared = 
             unique_ptr<sql::PreparedStatement>(conn->prepareStatement(query_string));
-	prepared->setInt64(0, component->entity_id());
+    prepared->setInt64(0, component->entity_id());
     // get result
     auto result = unique_ptr<sql::ResultSet>(prepared->executeQuery());
     // fill in result
@@ -62,18 +66,18 @@ void TransformDBMapper::Populate(std::shared_ptr<anh::api::components::Transform
 }
 std::shared_ptr<TransformComponentInterface> TransformDBMapper::query_result(uint64_t entity_id)
 {
-	auto conn = gDatabaseManager->getConnection("galaxy");
+    auto conn = db_manager_->getConnection("galaxy");
     sql::SQLString query_string("select * from transform where entity_id = ?");
     auto prepared = 
             unique_ptr<sql::PreparedStatement>(conn->prepareStatement(query_string));
-	prepared->setInt64(0, entity_id);
+    prepared->setInt64(0, entity_id);
 
-	auto result = unique_ptr<sql::ResultSet>(prepared->executeQuery());
-	auto transform = make_shared<TransformComponent>();
-	transform->position(result->getDouble("x"), result->getDouble("y"), result->getDouble("z"));
-	transform->rotation(result->getDouble("rX"), result->getDouble("rY"), result->getDouble("rZ"), result->getDouble("rW"));
-	
-	return transform;
+    auto result = unique_ptr<sql::ResultSet>(prepared->executeQuery());
+    auto transform = make_shared<TransformComponent>();
+    transform->position(result->getDouble("x"), result->getDouble("y"), result->getDouble("z"));
+    transform->rotation(result->getDouble("rX"), result->getDouble("rY"), result->getDouble("rZ"), result->getDouble("rW"));
+    
+    return transform;
 }
 
 } // transform

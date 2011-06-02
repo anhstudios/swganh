@@ -26,26 +26,26 @@ namespace anh {
 namespace component {
 
 EntityBuilder::EntityBuilder(std::shared_ptr<EntityManager> entity_manager)
-	: entity_manager_(entity_manager)
+    : entity_manager_(entity_manager)
 {
 
 }
 
 EntityBuilder::~EntityBuilder()
 {
-	entity_templates_.clear();
-	component_mappers_.clear();
-	component_creators_.clear();
-	entity_tag_sets_.clear();
+    entity_templates_.clear();
+    component_mappers_.clear();
+    component_creators_.clear();
+    entity_tag_sets_.clear();
 }
 
 void EntityBuilder::Init(std::string object_template_dir)
 {
-	boost::filesystem::path templates_path(object_template_dir);
-	if(!boost::filesystem::exists(templates_path))
-		throw std::runtime_error("Object Template Directory Not Found!");
+    boost::filesystem::path templates_path(object_template_dir);
+    if(!boost::filesystem::exists(templates_path))
+        throw std::runtime_error("Object Template Directory Not Found!");
 
-	LoadTemplates_(templates_path);
+    LoadTemplates_(templates_path);
 }
 
 void EntityBuilder::Deinit(void)
@@ -56,156 +56,156 @@ EntityBuildErrors EntityBuilder::BuildEntity(const EntityId& entity_id, const En
 {
     EntityBuildErrors status = BUILD_SUCCESSFUL;
     
-	EntityTemplates::iterator i = entity_templates_.find(type);
+    EntityTemplates::iterator i = entity_templates_.find(type);
 
-	if(i == entity_templates_.end())
+    if(i == entity_templates_.end())
         return BUILD_FAILED;
 
-	boost::property_tree::ptree pt = (*i).second;
-	std::shared_ptr<Entity> entity(nullptr);
+    boost::property_tree::ptree pt = (*i).second;
+    std::shared_ptr<Entity> entity(nullptr);
 
-	// Copy Tags
-	EntityTagSets::iterator ent_tag_iter = entity_tag_sets_.find(type);
-	if(ent_tag_iter != entity_tag_sets_.end())
-	{
-		entity.reset(new Entity(entity_id, name, ent_tag_iter->second));
-	}
-	else
-	{
-		entity.reset(new Entity(entity_id, name));
-	}
+    // Copy Tags
+    EntityTagSets::iterator ent_tag_iter = entity_tag_sets_.find(type);
+    if(ent_tag_iter != entity_tag_sets_.end())
+    {
+        entity.reset(new Entity(entity_id, name, ent_tag_iter->second));
+    }
+    else
+    {
+        entity.reset(new Entity(entity_id, name));
+    }
 
 
-	// Build Components
-	for(boost::property_tree::ptree::iterator xml_component = pt.get_child("entity").begin(); xml_component != pt.get_child("entity").end(); xml_component++) {
-		if(xml_component->first.compare("component") == 0)
-		{
+    // Build Components
+    for(boost::property_tree::ptree::iterator xml_component = pt.get_child("entity").begin(); xml_component != pt.get_child("entity").end(); xml_component++) {
+        if(xml_component->first.compare("component") == 0)
+        {
 
-			// Grab the component type.
-			ComponentType type(xml_component->second.get<std::string>("<xmlattr>.type").c_str());
+            // Grab the component type.
+            ComponentType type(xml_component->second.get<std::string>("<xmlattr>.type").c_str());
 
-			// Search for the components creator function by the type we extracted from xml.
+            // Search for the components creator function by the type we extracted from xml.
             ComponentCreators::iterator creators_iter = component_creators_.find(type);
-			if(creators_iter == component_creators_.end()) {
-				status = BUILD_INCOMPLETE;
-				continue;
-			}
+            if(creators_iter == component_creators_.end()) {
+                status = BUILD_INCOMPLETE;
+                continue;
+            }
 
-			std::shared_ptr<ComponentInterface> component = (*creators_iter).second(entity_id);
-			component->Init(xml_component->second);
+            std::shared_ptr<ComponentInterface> component = (*creators_iter).second(entity_id);
+            component->Init(xml_component->second);
             
-			// Search for a component mapper, if it exists, call it.
-			ComponentAttributeMappers::iterator mapper_iter = component_mappers_.find(type);
-			if(mapper_iter != component_mappers_.end())
+            // Search for a component mapper, if it exists, call it.
+            ComponentAttributeMappers::iterator mapper_iter = component_mappers_.find(type);
+            if(mapper_iter != component_mappers_.end())
             {
                 // set db mapper for component
                 component->set_attribute_mapper((*mapper_iter).second);
                 // call populate to get initial values for component
-				(*mapper_iter).second->Populate(component);
+                (*mapper_iter).second->Populate(component);
             }
-		}
+        }
     }
     // if we can't add the entity for some reason, this is a total failure.
-	if (!entity_manager_->AddEntity(entity))
+    if (!entity_manager_->AddEntity(entity))
     {
         status = BUILD_FAILED;
     }
 
-	return status;
+    return status;
 }
 
 bool EntityBuilder::RegisterAttributeMapper(const ComponentType& type, std::shared_ptr
     <anh::component::AttributeMapperInterface<ComponentInterface>> mapper)
 {
-	ComponentAttributeMappers::iterator i = component_mappers_.find(type);
-	if(i != component_mappers_.end()) {
-		return false;
-	}
+    ComponentAttributeMappers::iterator i = component_mappers_.find(type);
+    if(i != component_mappers_.end()) {
+        return false;
+    }
 
-	component_mappers_.insert(ComponentAttributeMapperPair(type, mapper));
-	return true;
+    component_mappers_.insert(ComponentAttributeMapperPair(type, mapper));
+    return true;
 }
 
 void EntityBuilder::UnregisterAttributeMapper(const ComponentType& type)
 {
-	ComponentAttributeMappers::iterator i = component_mappers_.find(type);
-	if(i != component_mappers_.end())
-		component_mappers_.erase(i);
+    ComponentAttributeMappers::iterator i = component_mappers_.find(type);
+    if(i != component_mappers_.end())
+        component_mappers_.erase(i);
 }
 
 bool EntityBuilder::RegisterCreator(const ComponentType& type, ComponentCreator creator)
 {
-	ComponentCreators::iterator i = component_creators_.find(type);
-	if(i != component_creators_.end()) {
-		return false;
-	}
+    ComponentCreators::iterator i = component_creators_.find(type);
+    if(i != component_creators_.end()) {
+        return false;
+    }
 
-	component_creators_.insert(ComponentCreatorPair(type, creator));
-	return true;
+    component_creators_.insert(ComponentCreatorPair(type, creator));
+    return true;
 }
 
 void EntityBuilder::UnregisterCreator(const ComponentType& type)
 {
-	ComponentCreators::iterator i = component_creators_.find(type);
-	if(i != component_creators_.end())
-		component_creators_.erase(i);
+    ComponentCreators::iterator i = component_creators_.find(type);
+    if(i != component_creators_.end())
+        component_creators_.erase(i);
 }
 
 bool EntityBuilder::TemplateExists(const EntityType& type)
 {
-	EntityTemplates::iterator i = entity_templates_.find(type);
-	if(i == entity_templates_.end())
-		return false;
-	else
-		return true;
+    EntityTemplates::iterator i = entity_templates_.find(type);
+    if(i == entity_templates_.end())
+        return false;
+    else
+        return true;
 }
 
 bool EntityBuilder::CreatorExists(const ComponentType& type)
 {
-	ComponentCreators::iterator i = component_creators_.find(type);
-	if(i == component_creators_.end())
-		return false;
-	else
-		return true;
+    ComponentCreators::iterator i = component_creators_.find(type);
+    if(i == component_creators_.end())
+        return false;
+    else
+        return true;
 }
 
 bool EntityBuilder::AttributeMapperExists(const ComponentType& type)
 {
-	ComponentAttributeMappers::iterator i = component_mappers_.find(type);
-	if(i == component_mappers_.end())
-		return false;
-	else
-		return true;
+    ComponentAttributeMappers::iterator i = component_mappers_.find(type);
+    if(i == component_mappers_.end())
+        return false;
+    else
+        return true;
 }
 
 void EntityBuilder::LoadTemplates_(const boost::filesystem::path p)
 {
-	boost::filesystem::directory_iterator end_iter;
-	for(boost::filesystem::directory_iterator iter(p); iter != end_iter; ++iter)
-	{
-		if(boost::filesystem::is_directory(iter->status()))
-			LoadTemplates_(iter->path());
-		else if(boost::filesystem::is_regular_file(iter->status()))
-		{
-			boost::property_tree::ptree pt;
+    boost::filesystem::directory_iterator end_iter;
+    for(boost::filesystem::directory_iterator iter(p); iter != end_iter; ++iter)
+    {
+        if(boost::filesystem::is_directory(iter->status()))
+            LoadTemplates_(iter->path());
+        else if(boost::filesystem::is_regular_file(iter->status()))
+        {
+            boost::property_tree::ptree pt;
             boost::property_tree::read_xml(iter->path().string(), pt);
 
-			EntityType entity_type(pt.get<std::string>("entity.<xmlattr>.type").c_str());
-			entity_templates_.insert(EntityTemplatePair(entity_type,pt));
+            EntityType entity_type(pt.get<std::string>("entity.<xmlattr>.type").c_str());
+            entity_templates_.insert(EntityTemplatePair(entity_type,pt));
 
-			std::string tags = pt.get<std::string>("entity.<xmlattr>.tags", "");
+            std::string tags = pt.get<std::string>("entity.<xmlattr>.tags", "");
 
-			std::list<std::string> tags_list;
-			boost::split(tags_list, tags, boost::is_any_of(";"));
+            std::list<std::string> tags_list;
+            boost::split(tags_list, tags, boost::is_any_of(";"));
 
-			TagSet tags_set;
-			std::for_each(tags_list.begin(), tags_list.end(), [=, &tags_set](std::string& value) {
-				tags_set.insert(value);
-			});
+            TagSet tags_set;
+            std::for_each(tags_list.begin(), tags_list.end(), [=, &tags_set](std::string& value) {
+                tags_set.insert(value);
+            });
 
-			entity_tag_sets_.insert(EntityTagSetPair(entity_type, tags_set));
-		}
-	}
+            entity_tag_sets_.insert(EntityTagSetPair(entity_type, tags_set));
+        }
+    }
 }
 
 } // component
