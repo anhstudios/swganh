@@ -38,51 +38,23 @@ using namespace anh::component;
 
 namespace transform {
 
-//From http://wiki.swganh.org/index.php/DataTransform_(00000071)
-class TransformMessage : public SimpleMessage
-{
-public:
-	TransformMessage(EntityId parent, glm::vec3 position, glm::quat rotation, float speed)
-        // 0 priority is the highest
-		: SimpleMessage(MessageType("Transform"), 0)
-		, parent_id_(parent)
-        , position_(position)
-        , rotation_(rotation)
-        , speed_(speed) { }
-
-    static std::shared_ptr<TransformMessage> createTransformMessage(EntityId id, glm::vec3 pos, glm::quat rot, float speed) {
-        return std::make_shared<TransformMessage>(id, pos, rot, speed); 
-    }
-
-	const EntityId parent_id()  { return parent_id_; }
-    const glm::vec3& position()  { return position_; }
-    const glm::quat& rotation()  { return rotation_; }
-    const float speed() { return speed_; }
-
-private:
-	EntityId parent_id_;
-	glm::vec3 position_;
-    glm::quat rotation_;
-    float speed_;
-};
 class API TransformComponent : public anh::api::components::TransformComponentInterface {
 public:
     friend class TransformDBMapper;
     TransformComponent();
     TransformComponent(const glm::vec3& position, const glm::quat& rotation, const float speed);
 
-	void Init(boost::property_tree::ptree& pt);
-	virtual void Update(const float deltaMilliseconds);
-    virtual void HandleMessage(const std::shared_ptr<TransformMessage> message);
-
+    void Init(boost::property_tree::ptree& pt);
+    virtual void Update(const float deltaMilliseconds);
+    
     void parent_id(const EntityId id) { parent_id_ = id; }
     const EntityId parent_id() { return parent_id_; }
     void position(const glm::vec3& position) { position_ = position; }
     void position(const float x, const float y, const float z) { position_.x = x; position_.y = y; position_.z = z;}
-	const glm::vec3& position() { return position_; }
+    const glm::vec3& position() { return position_; }
     void rotation(const glm::quat& rotation) { rotation_ = rotation; }
     void rotation(const float x, const float y, const float z, const float w) { rotation_.x = x; rotation_.y = y; rotation_.z = z; rotation_.w = w;}
-	const glm::quat& rotation() { return rotation_; }
+    const glm::quat& rotation() { return rotation_; }
     void speed(const float speed) { speed_ = speed; }
     const float speed() { return speed_; }
 

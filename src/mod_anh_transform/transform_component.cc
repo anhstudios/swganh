@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 using namespace std;
 // statics
 std::shared_ptr<anh::api::components::NullTransformComponent> anh::api::components::TransformComponentInterface::NullComponent = 
-	std::make_shared<anh::api::components::NullTransformComponent>();
+    std::make_shared<anh::api::components::NullTransformComponent>();
 namespace transform {
 
 
@@ -56,23 +56,15 @@ void TransformComponent::Update(const float timeout)
 void TransformComponent::Init(boost::property_tree::ptree& pt) {
     // initial default values
     parent_id_ = pt.get<EntityId>("parent_id", 0); 
-	position_.x = pt.get<float>("position.x", 0.0f);
-	position_.y = pt.get<float>("position.y", 0.0f);
-	position_.z = pt.get<float>("position.z", 0.0f);
-	rotation_.x = pt.get<float>("rotation.x", 0.0f);
-	rotation_.y = pt.get<float>("rotation.y", 0.0f);
-	rotation_.z = pt.get<float>("rotation.z", 0.0f);
-	rotation_.w = pt.get<float>("rotation.w", 1.0f);
+    position_.x = pt.get<float>("position.x", 0.0f);
+    position_.y = pt.get<float>("position.y", 0.0f);
+    position_.z = pt.get<float>("position.z", 0.0f);
+    rotation_.x = pt.get<float>("rotation.x", 0.0f);
+    rotation_.y = pt.get<float>("rotation.y", 0.0f);
+    rotation_.z = pt.get<float>("rotation.z", 0.0f);
+    rotation_.w = pt.get<float>("rotation.w", 1.0f);
 }
 
-void TransformComponent::HandleMessage(const shared_ptr<TransformMessage> message) {
-    //std::shared_ptr<TransformMessage> transform = std::dynamic_pointer_cast<TransformMessage>(message);
-    
-    parent_id(message->parent_id());
-    position(message->position());
-    rotation(message->rotation());
-    speed(message->speed());
-}
 void TransformComponent::rotate(const float& degrees) {
     // Rotate the item left by the specified degrees
     rotation_ = glm::rotate(rotation_, degrees, glm::vec3(0.0f, 1.0f, 0.0f));

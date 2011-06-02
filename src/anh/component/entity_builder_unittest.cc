@@ -28,28 +28,28 @@ using namespace anh::component;
 class EntityBuilderTests : public testing::Test
 {
 public:
-	std::shared_ptr<EntityManager> entity_manager;
-	std::shared_ptr<EntityBuilder> entity_builder;
+    std::shared_ptr<EntityManager> entity_manager;
+    std::shared_ptr<EntityBuilder> entity_builder;
 
 protected:
     virtual void SetUp();
     virtual void TearDown();
 
-	EntityId entity_id_;
+    EntityId entity_id_;
 };
 
 void EntityBuilderTests::SetUp() {
     entity_manager = std::make_shared<EntityManager>();
     entity_builder = std::make_shared<EntityBuilder>(entity_manager);
-	// Create "Virtual" Template Bank
-	boost::filesystem::create_directory("templates.temp");
+    // Create "Virtual" Template Bank
+    boost::filesystem::create_directory("templates.temp");
 
-	// Default Component
+    // Default Component
 
-	// T21 Template
+    // T21 Template
     std::ofstream of("templates.temp/t21.xml");
     of << "<entity type='mock_entity' tags='test'>"							<< std::endl;
-	of << "  <component type='anh.mock'\/>"									<< std::endl;
+    of << "@  <component type='anh.mock'/>"									<< std::endl;
     of << "</entity>"														<< std::endl;
 
     of.flush();
@@ -57,18 +57,18 @@ void EntityBuilderTests::SetUp() {
 }
 void EntityBuilderTests::TearDown() {
     entity_builder->Deinit();
-	boost::filesystem::remove_all("templates.temp");
+    boost::filesystem::remove_all("templates.temp");
 }
 
 /// When a new EntityBuilder is created, no entity templates should be registered.
 TEST_F(EntityBuilderTests, NoTemplatesByDefault) {
-	EXPECT_FALSE(entity_builder->TemplateExists("mock_template"));
+    EXPECT_FALSE(entity_builder->TemplateExists("mock_template"));
 }
 
 /// When a new EntityBuilder is initialized, all the templates in the passed in
 /// directory path should be loaded and stored within the EntityBuilder.
 TEST_F(EntityBuilderTests, Init) {
-	entity_builder->Init("templates.temp");
+    entity_builder->Init("templates.temp");
     EXPECT_TRUE(entity_builder->TemplateExists("mock_entity"));
 }
 

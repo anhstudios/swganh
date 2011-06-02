@@ -21,15 +21,19 @@
 #include <anh/component/attribute_mapper_interface.h>
 #include <mod_anh_transform/transform_component.h>
 
+namespace anh { namespace database { class DatabaseManagerInterface; } }
+
 namespace transform {
 
 class TransformDBMapper : public anh::component::AttributeMapperInterface<anh::api::components::TransformComponentInterface>
 {
 public:
-	TransformDBMapper();
-	virtual void Persist(std::shared_ptr<anh::api::components::TransformComponentInterface> ref_class);
+    TransformDBMapper(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    virtual void Persist(std::shared_ptr<anh::api::components::TransformComponentInterface> ref_class);
     virtual void Populate(std::shared_ptr<anh::api::components::TransformComponentInterface> component);
-	virtual std::shared_ptr<anh::api::components::TransformComponentInterface> query_result (uint64_t entity_id);
+    virtual std::shared_ptr<anh::api::components::TransformComponentInterface> query_result (uint64_t entity_id);
+private:
+    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 
 } // transform
