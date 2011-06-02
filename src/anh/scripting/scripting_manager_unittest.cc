@@ -20,7 +20,6 @@
 
 #include "scripting_manager.h"
 #include <boost/python.hpp>
-#include <anh/scripting/scripting_modules_unittest.h>
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -28,26 +27,9 @@
 #include <cstdint>
 
 using namespace anh::scripting;
-using namespace anh::component;
 using namespace boost::python;
 using namespace std;
 
-// this is used for embedding, so we can have our bindings in another file
-void baseDerive();
-void componentDerive();
-void testPolicies();
-BOOST_PYTHON_MODULE(embedded_hello)
-{
-    baseDerive();
-}
-BOOST_PYTHON_MODULE(embedded_component)
-{
-    anh::component::componentDerive();
-}
-BOOST_PYTHON_MODULE(test_policies)
-{
-    testPolicies();
-}
 namespace {
 class ScriptingManagerTest : public ::testing::Test 
 {
@@ -123,71 +105,4 @@ TEST_F(ScriptingManagerTest, reloadFile)
     e->reload("test.py");
     EXPECT_TRUE(e->isFileLoaded("test.py"));
 }
-
-//Ties lifetime of Y.x to C++ argument to that of result
-TEST_F(ScriptingManagerTest, getInternalReference)
-{
-    module.name = "test_policies";
-    module.initfunc = PyInit_test_policies;
-    modules.push_back(module);
-    // load modules
-    if (e->loadModules(modules))
-    {
-        Y testY(5);
-
-        object obj (e->embed("internal_ref.py", "Y"));
-        Y& py = extract<Y&>(obj);
-        EXPECT_FALSE(5 == py.x);
-    }
-};
-
-//makes a copy of the object to C++
-TEST_F(ScriptingManagerTest, copyNonConstRef)
-{
-    module.name = "test_policies";
-    module.initfunc = PyInit_test_policies;
-    modules.push_back(module);
-    // load modules
-    if (e->loadModules(modules))
-    {
-        object obj (e->embed("nonConstRef.py", "Z"));
-        nonConstRef& py = extract<nonConstRef&>(obj);
-        // in python we've set the object to be 5 from the constructor
-        EXPECT_TRUE(5 == py.x);
-        // this is changing the python object itself by reference
-        obj.attr("x") = 6;
-        EXPECT_TRUE(6 == py.x);
-    }
-};
-// pass an existing object to python, modify it and use it back in c++
-TEST_F(ScriptingManagerTest, referenceExistingObject)
-{
-    module.name = "test_policies";
-    module.initfunc = PyInit_test_policies;
-    modules.push_back(module);
-    // load modules
-    if (e->loadModules(modules))
-    {
-        // create new game object
-        GameObject* g = new GameObject(1,2,5.6f);
-        GameObject g1(21,31,3.1415f);
-        // pass existing object directly into the global dictionary
-        e->global()["CGameObject"] = object(g);
-        // pass by reference doesn't matter all values are 'copied' to python
-        e->global()["CGameObject1"] = object(&g1);
-        object obj (e->embed("GameObject.py", "GameObject"));
-        int x = extract<int>(e->global()["CGameObject"].attr("x"));
-        EXPECT_EQ(5 , x);
-        // the c++ object stays the same
-        EXPECT_EQ(1 , g->x);
-        EXPECT_EQ(21, g1.x);
-        // we can see here that g1.x has changed to 8, why is this?
-        // g1 is initially created in C++ on the stack and it's x value is 21.
-        // we run the script GameObject.py, which sets CGameObject1.x = 8
-        // we then extract that object from the global dictionary and confirm it's value in C++ is 8.
-        g1 = extract<GameObject>(e->global()["CGameObject1"]);
-        EXPECT_EQ(8, g1.x);
-        delete g;
-    }
-};
 } // anon namespace

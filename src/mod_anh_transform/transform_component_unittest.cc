@@ -31,7 +31,7 @@ using namespace transform;
 using namespace std;
 
 std::shared_ptr<anh::api::components::NullTransformComponent> anh::api::components::TransformComponentInterface::NullComponent = 
-	std::make_shared<anh::api::components::NullTransformComponent>();
+    std::make_shared<anh::api::components::NullTransformComponent>();
 
 #define TEST_OBJECT_ID 0xDEADBEEF
 
@@ -41,7 +41,6 @@ public:
     shared_ptr<EntityBuilder> entity_builder;
     shared_ptr<EntityManager> entity_manager;
     shared_ptr<TransformComponentInterface> transform_comp;
-    shared_ptr<TransformMessage> trans;
 protected:
     virtual void SetUp();
     virtual void TearDown();
@@ -52,10 +51,10 @@ void TestTransformComponent::SetUp() {
     // simple template
     of << "<object name=\"test_pos\">" <<endl;
     of << "<component type=\"TransformComponent\">" <<endl;
-	of << "<parent_id>0</parent_id><position><x>324.4</x><y>231.13</y><z>0.0</z></position>" <<endl;
+    of << "<parent_id>0</parent_id><position><x>324.4</x><y>231.13</y><z>0.0</z></position>" <<endl;
     of << "<rotation><x>0</x><y>0</y><z>0</z><w>0.5</w></rotation><speed>3</speed>" <<endl;
     of << "</component></object>" <<endl;
-	entity_builder = make_shared<EntityBuilder>(entity_manager);
+    entity_builder = make_shared<EntityBuilder>(entity_manager);
     // now we can init
     entity_builder->Init("test_components");
     entity_builder->RegisterCreator("TransformComponent", [=](const EntityId& id){ return shared_ptr<TransformComponentInterface>( new TransformComponent() ); });
@@ -75,22 +74,4 @@ TEST_F(TestTransformComponent, LoadRotation) {
     float w = transform_comp->rotation().w;
     EXPECT_EQ(0.5f, w);
 }
-//TEST_F(TestTransformComponent, SendTransformMessage){
-//    glm::vec3 pos(1100,200,35);
-//    glm::quat rot(0,0,0,1);
-//    trans = make_shared<TransformMessage>(0, pos, rot, 5.0f);
-//    transform_comp->HandleMessage(trans);
-//    float x = transform_comp->position().x;
-//    EXPECT_EQ(1100, x);
-//}
 // test convenience methods
-TEST_F(TestTransformComponent, rotate45)
-{
-    transform_comp->rotate(45);
-    float x = transform_comp->rotation().x;
-    float y = transform_comp->rotation().y;
-    float z = transform_comp->rotation().z;
-    float w = transform_comp->rotation().w;
-    cout << x <<endl << y << endl << z << endl << w <<endl;
-    EXPECT_TRUE(true);
-}

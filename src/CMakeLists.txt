@@ -38,7 +38,7 @@ if(MSVC)
 	
 	# any custom flags that need set for VS compilers only should be set here
 	if(MSVC AND NOT CMAKE_GENERATOR MATCHES "Visual Studio 7")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4251")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4251 /wd4190 /wd4373 /wd4275")
         message(STATUS "- MSVC: Disabled generic compiletime warnings")
     endif()
     

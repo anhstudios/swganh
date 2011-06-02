@@ -47,67 +47,67 @@ class ComponentInterface
 public:
     friend class EntityBuilder;
     friend class Entity;
-	/**
-	 * @brief Default constructor.
-	 */
-	ComponentInterface() { }
+    /**
+     * @brief Default constructor.
+     */
+    ComponentInterface() { }
 
-	/**
-	 * @brief Default destructor.
-	 */
-	virtual ~ComponentInterface() { }
+    /**
+     * @brief Default destructor.
+     */
+    virtual ~ComponentInterface() { }
 
-	/**
-	 * @brief Initializes the component.
-	 *
-	 * @param pt Template properties passed in by the EntityBuilder.
-	 */
-	virtual void Init(boost::property_tree::ptree& pt) = 0;
+    /**
+     * @brief Initializes the component.
+     *
+     * @param pt Template properties passed in by the EntityBuilder.
+     */
+    virtual void Init(boost::property_tree::ptree& pt) = 0;
 
-	/**
-	 * @brief Called when the component gets attached to an Entity.
-	 */
-	virtual void OnAttach(void) = 0;
+    /**
+     * @brief Called when the component gets attached to an Entity.
+     */
+    virtual void OnAttach(void) = 0;
 
-	/**
-	 * @brief Called when the component gets detached from an Entity.
-	 */
-	virtual void OnDetach(void) = 0;
+    /**
+     * @brief Called when the component gets detached from an Entity.
+     */
+    virtual void OnDetach(void) = 0;
 
-	/**
-	 * @brief Called when the Update function is invoked on an Entity.
-	 */
-	virtual void Update(const float deltaMilliseconds) = 0;
+    /**
+     * @brief Called when the Update function is invoked on an Entity.
+     */
+    virtual void Update(const float deltaMilliseconds) = 0;
 
-	/**
-	 * @breif Handles an incoming message from an out-side source.
-	 * @see IEvent
-	 *
-	 * @param Message The message being passed to this component.
-	 */
-	virtual void HandleMessage(const Message message) = 0;
+    /**
+     * @breif Handles an incoming message from an out-side source.
+     * @see IEvent
+     *
+     * @param Message The message being passed to this component.
+     */
+    virtual void HandleMessage(const Message message) = 0;
 
-	/**
-	 * @returns The type of component this is.
-	 */
-	virtual const ComponentType& component_type(void) = 0;
+    /**
+     * @returns The type of component this is.
+     */
+    virtual const ComponentType& component_type(void) = 0;
 
-	/**
-	 * @returns The interface type this component impliments.
-	 */
-	virtual const InterfaceType& interface_type(void) = 0;
+    /**
+     * @returns The interface type this component impliments.
+     */
+    virtual const InterfaceType& interface_type(void) = 0;
 
-	/**
-	 * @returns The Object Id of the entity that owns this component.
-	 */
-	virtual const EntityId& entity_id(void) const = 0;
+    /**
+     * @returns The Object Id of the entity that owns this component.
+     */
+    virtual const EntityId& entity_id(void) const = 0;
 
-	/**
-	 * @brief Sets the id of the entity that owns this component.
-	 * 
-	 * Use with Caution! Only "the wise ones" are allowed to use this function.
-	 */
-	virtual void set_entity_id(const EntityId& id) = 0;
+    /**
+     * @brief Sets the id of the entity that owns this component.
+     * 
+     * Use with Caution! Only "the wise ones" are allowed to use this function.
+     */
+    virtual void set_entity_id(const EntityId& id) = 0;
     /**
     * @brief sets the dirty flag of the component to signal the db update
     *
