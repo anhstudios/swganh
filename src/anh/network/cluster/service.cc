@@ -53,13 +53,6 @@ Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectory
     , outgoing_start_filter_(this)
     , port_(port)
 {
-    // Connect to all process except self...
-    /*proc_list_ = directory_->getProcessSnapshot(directory_->cluster());
-    std::for_each(proc_list_.begin(), proc_list_.end(), [=](anh::server_directory::Process proc) {
-        if (proc.tcp_port() != port_){
-            Connect(std::make_shared<anh::server_directory::Process>(proc));
-        }
-    });*/
     outgoing_pipeline_.add_filter(outgoing_start_filter_);
     outgoing_pipeline_.add_filter(send_packet_filter_);
     incoming_pipeline_.add_filter(receive_packet_filter_);

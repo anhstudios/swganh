@@ -199,7 +199,7 @@ void BaseApplication::shutdown() {
     // clean up code here before the server shuts down
     event_dispatcher_->trigger(shutdown_event_);
     cluster_service_->Shutdown();
-    //cluster_io_service_.stop();
+    cluster_io_service_.stop();
 }
 
 shared_ptr<ServerDirectoryInterface> BaseApplication::createServerDirectory(shared_ptr<sql::Connection> conn) {
@@ -370,7 +370,16 @@ void BaseApplication::setupCluster_()
     // get tcp port of app...
     uint16_t port = configuration_variables_map_["cluster.tcp_port"].as<uint16_t>();
     cluster_service_ = std::make_shared<network::cluster::Service>(cluster_io_service_, server_directory_, port);
-    // loop through processes in server_directory and open a tcp connection to each?
+    // loop through processes in server_directory and open a tcp connection to each
+    if (server_directory_ != nullptr)
+    {
+        auto proc_list = server_directory_->getProcessSnapshot(server_directory_->cluster());
+        std::for_each(proc_list.begin(), proc_list.end(), [=](anh::server_directory::Process proc) {
+            if (proc.tcp_port() != port){
+                cluster_service_->Connect(std::make_shared<anh::server_directory::Process>(proc));
+            }
+        });
+    }
 }
 int BaseApplication::kbHit()
 {

@@ -17,25 +17,32 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/server_directory/server_directory.h"
+#include <anh/server_directory/server_directory.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "anh/server_directory/datastore.h"
+#include <anh/event_dispatcher/event_dispatcher.h>
+#include <anh/server_directory/datastore.h>
+#include <anh/server_directory/server_directory_events.h>
 
 using namespace anh::server_directory;
+using namespace anh::event_dispatcher;
 using namespace std;
 
-ServerDirectory::ServerDirectory(shared_ptr<DatastoreInterface> datastore) 
+ServerDirectory::ServerDirectory(shared_ptr<DatastoreInterface> datastore,
+        shared_ptr<EventDispatcherInterface> event_dispatcher) 
     : datastore_(datastore)
+    , event_dispatcher_(event_dispatcher)
 {}
 
 ServerDirectory::ServerDirectory(
     shared_ptr<DatastoreInterface> datastore, 
+    std::shared_ptr<EventDispatcherInterface> event_dispatcher,
     const string& cluster_name, 
     const string& version , 
     bool create_cluster) 
     : datastore_(datastore)
+    , event_dispatcher_(event_dispatcher)
     , active_cluster_(nullptr)
     , active_process_(nullptr)
 {
@@ -63,6 +70,9 @@ shared_ptr<Process> ServerDirectory::process() const {
 
 bool ServerDirectory::registerProcess(const string& name, const string& process_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
     if (active_process_ = datastore_->createProcess(active_cluster_, name, process_type, version, address, tcp_port, udp_port, ping_port)) {
+        // trigger add process event
+        auto event_ = std::make_shared<AddProcessEvent>();
+        event_dispatcher_->trigger(event_);
         return true;
     }
 

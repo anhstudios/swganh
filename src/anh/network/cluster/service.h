@@ -164,7 +164,6 @@ private:
     std::list<TCPMessage*>  outgoing_messages_;
     // asio needs
     tcp::resolver                                       resolver_;
-    anh::server_directory::ProcessList                  proc_list_;
     boost::asio::io_service& 		                    io_service_;
     std::shared_ptr<boost::asio::ip::tcp::acceptor>     acceptor_;
     // boost thread

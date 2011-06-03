@@ -39,7 +39,6 @@ private:
 
     enum { max_length = 1024 };
     char data_[max_length];
-
 };
 
 
