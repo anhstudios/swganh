@@ -151,9 +151,10 @@ void Service::Disconnect(std::shared_ptr<anh::server_directory::Process> process
         if (isConnected(process))
         {
             // remove if the process was found
-            /*std::remove_if(tcp_client_map_.begin(), tcp_client_map_.end(), [=] (ClusterPair pair) {
+            auto find_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [=] (ClusterPair pair) {
                 return (process == pair.first);
-            });*/      
+            });
+            tcp_client_map_.erase(find_it);
         }
     }
     catch (exception e)
