@@ -21,6 +21,8 @@
 #define LIBANH_EVENT_DISPATCHER_BASIC_EVENT_H_
 
 #include <cstdint>
+#include <memory>
+#include <type_traits>
 
 #include "anh/hash_string.h"
 #include "anh/event_dispatcher/event_interface.h"
@@ -29,15 +31,21 @@ namespace anh {
 namespace event_dispatcher {
 
 template<typename T>
-class BasicEvent : public T, public EventInterface {
+class BasicEvent : public std::remove_reference<T>::type, public EventInterface {
 public:
     BasicEvent()
-        : type_(T::type())
+        : type_(std::remove_reference<T>::type::type())
         , timestamp_(0)
-        , priority_(T::priority()) {}
+        , priority_(std::remove_reference<T>::type::priority()) {}
     
     explicit BasicEvent(EventType type)
         : type_(std::move(type))
+        , timestamp_(0)
+        , priority_(0) {}
+    
+    BasicEvent(EventType type, T&& data)
+        : std::remove_reference<T>::type(std::forward<T>(data))
+        , type_(std::move(type))
         , timestamp_(0)
         , priority_(0) {}
     
@@ -78,6 +86,48 @@ private:
 struct NullEventData {};
 
 typedef BasicEvent<NullEventData> SimpleEvent;
+
+/**
+* Creates an event based on the given name and data.
+*
+* @param type The type of event to create.
+* @param data The data contents of the event to create.
+* @returns The newly created event.
+*/
+template<typename T> inline
+BasicEvent<T> make_event(EventType type, T&& data) {
+    BasicEvent<T> created_event(type, std::forward<T>(data));
+    return created_event;
+}
+
+/**
+* Creates a simple event with no data.
+*
+* @param type The type of event to create.
+* @returns The newly created event.
+*/
+SimpleEvent make_event(EventType type);
+
+/**
+* Creates an event based on the given name and data in a shared_ptr container.
+*
+* @param type The type of event to create.
+* @param data The data contents of the event to create.
+* @returns The newly created event.
+*/
+template<typename T> inline
+std::shared_ptr<BasicEvent<T>> make_shared_event(EventType type, T&& data) {
+    auto created_event = std::make_shared<BasicEvent<T>>(type, std::forward<T>(data));
+    return created_event;
+}
+
+/**
+* Creates a simple event with no data in a shared_ptr container.
+*
+* @param type The type of event to create.
+* @returns The newly created event.
+*/
+std::shared_ptr<SimpleEvent> make_shared_event(EventType type);
 
 }  // namespace event_dispatcher
 }  // namespace anh

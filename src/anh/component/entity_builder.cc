@@ -17,9 +17,10 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "entity_builder.h"
+
 #include <glog/logging.h>
 #include <boost/algorithm/string.hpp>
-#include <anh/component/entity_builder.h>
 #include <anh/component/entity_manager.h>
 
 namespace anh {
