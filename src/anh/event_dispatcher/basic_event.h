@@ -22,6 +22,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 
 #include "anh/hash_string.h"
 #include "anh/event_dispatcher/event_interface.h"
@@ -30,20 +31,20 @@ namespace anh {
 namespace event_dispatcher {
 
 template<typename T>
-class BasicEvent : public T, public EventInterface {
+class BasicEvent : public std::remove_reference<T>::type, public EventInterface {
 public:
     BasicEvent()
-        : type_(T::type())
+        : type_(std::remove_reference<T>::type::type())
         , timestamp_(0)
-        , priority_(T::priority()) {}
+        , priority_(std::remove_reference<T>::type::priority()) {}
     
     explicit BasicEvent(EventType type)
         : type_(std::move(type))
         , timestamp_(0)
         , priority_(0) {}
     
-    BasicEvent(EventType type, T data)
-        : T(std::move(data))
+    BasicEvent(EventType type, T&& data)
+        : std::remove_reference<T>::type(std::forward<T>(data))
         , type_(std::move(type))
         , timestamp_(0)
         , priority_(0) {}
@@ -84,14 +85,14 @@ struct NullEventData {};
 typedef BasicEvent<NullEventData> SimpleEvent;
 
 template<typename T>
-BasicEvent<T> make_event(EventType type, T data) {
-    BasicEvent<T> created_event(type, std::move(data));
+BasicEvent<T> make_event(EventType type, T&& data) {
+    BasicEvent<T> created_event(type, std::forward<T>(data));
     return created_event;
 }
 
 template<typename T>
-std::shared_ptr<BasicEvent<T>> make_shared_event(EventType type, T data) {
-    auto created_event = std::make_shared<BasicEvent<T>>(type, std::move(data));
+std::shared_ptr<BasicEvent<T>> make_shared_event(EventType type, T&& data) {
+    auto created_event = std::make_shared<BasicEvent<T>>(type, std::forward<T>(data));
     return created_event;
 }
 
