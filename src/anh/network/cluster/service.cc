@@ -48,8 +48,10 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectoryInterface> directory, uint16_t port)
+Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectoryInterface> directory,
+    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> dispatcher, uint16_t port)
     : directory_(directory)
+    , event_dispatcher_(dispatcher)
     , io_service_(io_service)
     , resolver_(io_service)
     , send_packet_filter_(this)
@@ -62,16 +64,20 @@ Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectory
     incoming_pipeline_.add_filter(receive_packet_filter_);
 
     // setup our listener to add process on event
-    auto add_service_listener = [=] (shared_ptr<EventInterface> incoming_event)->void {
+    auto register_service_listener = [=] (shared_ptr<EventInterface> incoming_event)->bool {
         auto add_service = static_pointer_cast<BasicEvent<ProcessData>>(incoming_event);
         Connect(std::make_shared<Process>(std::move(add_service->process)));
+        return true;
     };
 
     // setup listener to remove process on event
-    auto remove_service_listener = [=] (shared_ptr<EventInterface> incoming_event)->void {
+    auto remove_process_listener = [=] (shared_ptr<EventInterface> incoming_event)->bool {
         auto remove_service = static_pointer_cast<BasicEvent<ProcessData>>(incoming_event);
         Disconnect(std::make_shared<Process>(std::move(remove_service->process)));
+        return true;
     };
+    event_dispatcher_->subscribe("RegisterProcess", register_service_listener);
+    event_dispatcher_->subscribe("RemoveProcess", remove_process_listener);
 }
 
 Service::~Service(void)
@@ -83,7 +89,6 @@ Service::~Service(void)
 
 void Service::Start()
 {
-    // check to see if we're already started?
     acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port_ ));
     tcp_host_ = std::make_shared<tcp_host>(io_service_, std::bind(&Service::OnTCPHostReceive_, this, std::placeholders::_1));
 

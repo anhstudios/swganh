@@ -369,7 +369,7 @@ void BaseApplication::setupCluster_()
     // setup cluster_service
     // get tcp port of app...
     uint16_t port = configuration_variables_map_["cluster.tcp_port"].as<uint16_t>();
-    cluster_service_ = std::make_shared<network::cluster::Service>(cluster_io_service_, server_directory_, port);
+    cluster_service_ = std::make_shared<network::cluster::Service>(cluster_io_service_, server_directory_, event_dispatcher_, port);
     // loop through processes in server_directory and open a tcp connection to each
     if (server_directory_ != nullptr)
     {

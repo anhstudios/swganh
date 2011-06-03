@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/cluster/tcp_host.h>
 #include <anh/network/cluster/tcp_message.h>
 #include <anh/event_dispatcher/event_interface.h>
+#include <anh/event_dispatcher/event_dispatcher_interface.h>
 //Filters
 #include <anh/network/cluster/send_packet_filter.h>
 #include <anh/network/cluster/outgoing_start_filter.h>
@@ -60,7 +61,8 @@ typedef std::pair<std::shared_ptr<anh::server_directory::Process>, std::shared_p
 class Service : public std::enable_shared_from_this<Service>
 {
 public:
-    Service(boost::asio::io_service& io_service, std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory, uint16_t port);
+    Service(boost::asio::io_service& io_service, std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory,
+        std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> dispatcher, uint16_t port);
     ~Service(void);
 
     /**
@@ -157,6 +159,9 @@ private:
      * @param buffer The ByteBuffer message to send
      */
     void sendMessageByType_(const std::string& type, anh::ByteBuffer& buffer);
+
+    // basic services
+    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     
     // Pipelines
     tbb::pipeline			incoming_pipeline_;
