@@ -84,20 +84,46 @@ struct NullEventData {};
 
 typedef BasicEvent<NullEventData> SimpleEvent;
 
+/**
+* Creates an event based on the given name and data.
+*
+* @param type The type of event to create.
+* @param data The data contents of the event to create.
+* @returns The newly created event.
+*/
 template<typename T> inline
 BasicEvent<T> make_event(EventType type, T&& data) {
     BasicEvent<T> created_event(type, std::forward<T>(data));
     return created_event;
 }
 
+/**
+* Creates a simple event with no data.
+*
+* @param type The type of event to create.
+* @returns The newly created event.
+*/
 SimpleEvent make_event(EventType type);
 
+/**
+* Creates an event based on the given name and data in a shared_ptr container.
+*
+* @param type The type of event to create.
+* @param data The data contents of the event to create.
+* @returns The newly created event.
+*/
 template<typename T> inline
 std::shared_ptr<BasicEvent<T>> make_shared_event(EventType type, T&& data) {
     auto created_event = std::make_shared<BasicEvent<T>>(type, std::forward<T>(data));
     return created_event;
 }
 
+/**
+* Creates a simple event with no data in a shared_ptr container.
+*
+* @param type The type of event to create.
+* @returns The newly created event.
+*/
 std::shared_ptr<SimpleEvent> make_shared_event(EventType type);
 
 }  // namespace event_dispatcher
