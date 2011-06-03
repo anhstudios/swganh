@@ -39,15 +39,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/cluster/packet_event_filter.h>
 #include <anh/network/cluster/receive_packet_filter.h>
 
+#include <anh/server_directory/server_directory_interface.h>
+
 #include <boost/thread.hpp>
 
 #include <map>
 #include <stdint.h>
 
 #include <tbb/pipeline.h>
-
-// Forward Declare
-namespace anh { namespace server_directory { class Process; class ServerDirectoryInterface; } }
 
 namespace anh {
 namespace network {

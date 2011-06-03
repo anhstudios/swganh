@@ -30,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/network/cluster/tcp_message.h>
 #include <anh/event_dispatcher/event_dispatcher.h>
-#include <anh/server_directory/server_directory.h>
 #include <anh/server_directory/server_directory_events.h>
 
 #include <iostream>
@@ -152,9 +151,9 @@ void Service::Disconnect(std::shared_ptr<anh::server_directory::Process> process
         if (isConnected(process))
         {
             // remove if the process was found
-            std::remove_if(tcp_client_map_.begin(), tcp_client_map_.end(), [=] (ClusterPair pair) {
+            /*std::remove_if(tcp_client_map_.begin(), tcp_client_map_.end(), [=] (ClusterPair pair) {
                 return (process == pair.first);
-            });          
+            });*/      
         }
     }
     catch (exception e)
