@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/cluster/tcp_client.h>
 #include <anh/network/cluster/tcp_host.h>
 #include <anh/network/cluster/tcp_message.h>
-#include <anh/server_directory/server_directory_interface.h>
 #include <anh/event_dispatcher/event_interface.h>
 //Filters
 #include <anh/network/cluster/send_packet_filter.h>
@@ -46,6 +45,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stdint.h>
 
 #include <tbb/pipeline.h>
+
+// Forward Declare
+namespace anh { namespace server_directory { class Process; class ServerDirectoryInterface; } }
 
 namespace anh {
 namespace network {
@@ -76,6 +78,11 @@ public:
      * @param process the server directory process to connect to.
      */
     void Connect(std::shared_ptr<anh::server_directory::Process> process);
+    /**
+    * @brief Closes the TCP Connection
+    * @param process the service directory process to disconnect
+    */
+    void Disconnect(std::shared_ptr<anh::server_directory::Process> process);
     /**
      * @brief Sends a message to given the name of the service
      * 

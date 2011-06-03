@@ -19,23 +19,17 @@
 
 #ifndef ANH_SERVER_DIRECTORY_SERVER_DIRECTORY_EVENTS_H_
 #define ANH_SERVER_DIRECTORY_SERVER_DIRECTORY_EVENTS_H_
+
 #include <anh/event_dispatcher/basic_event.h>
 #include <anh/server_directory/process.h>
 namespace anh {
 namespace server_directory {
+
 struct ProcessData 
 {
-    ProcessData(Process& process_)
+    ProcessData(Process process_)
         : process(process_){}
     Process process;
-};
-class AddProcessEvent : public anh::event_dispatcher::BasicEvent<ProcessData>
-{
-public:
-    AddProcessEvent(Process& process) 
-        : anh::event_dispatcher::BasicEvent<ProcessData>("AddProcessEvent")
-        , ProcessData(process)
-        {}
 };
 
 } // sd

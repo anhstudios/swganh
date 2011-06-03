@@ -26,8 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #pragma warning (disable : 4355)
 
-#include <anh/network/cluster/tcp_message.h>
 #include <anh/network/cluster/service.h>
+
+#include <anh/network/cluster/tcp_message.h>
+#include <anh/event_dispatcher/event_dispatcher.h>
+#include <anh/server_directory/server_directory.h>
+#include <anh/server_directory/server_directory_events.h>
 
 #include <iostream>
 #include <anh/byte_buffer.h>
@@ -38,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <glog/logging.h>
 
 using namespace anh::server_directory;
+using namespace anh::event_dispatcher;
 using namespace std;
 
 namespace anh {
@@ -56,6 +61,18 @@ Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectory
     outgoing_pipeline_.add_filter(outgoing_start_filter_);
     outgoing_pipeline_.add_filter(send_packet_filter_);
     incoming_pipeline_.add_filter(receive_packet_filter_);
+
+    // setup our listener to add process on event
+    auto add_service_listener = [=] (shared_ptr<EventInterface> incoming_event)->void {
+        auto add_service = static_pointer_cast<BasicEvent<ProcessData>>(incoming_event);
+        Connect(std::make_shared<Process>(std::move(add_service->process)));
+    };
+
+    // setup listener to remove process on event
+    auto remove_service_listener = [=] (shared_ptr<EventInterface> incoming_event)->void {
+        auto remove_service = static_pointer_cast<BasicEvent<ProcessData>>(incoming_event);
+        Disconnect(std::make_shared<Process>(std::move(remove_service->process)));
+    };
 }
 
 Service::~Service(void)
@@ -125,6 +142,24 @@ void Service::Connect(std::shared_ptr<anh::server_directory::Process> process)
     catch (exception e)
     {
         LOG(WARNING) << "Exception in Service::Connect " << e.what() << std::endl;
+    }
+}
+void Service::Disconnect(std::shared_ptr<anh::server_directory::Process> process)
+{
+    try 
+    {
+        // make sure we are already connected
+        if (isConnected(process))
+        {
+            // remove if the process was found
+            std::remove_if(tcp_client_map_.begin(), tcp_client_map_.end(), [=] (ClusterPair pair) {
+                return (process == pair.first);
+            });          
+        }
+    }
+    catch (exception e)
+    {
+        LOG(WARNING) << "Exception in Service::Disconnect " << e.what() << std::endl;
     }
 }
 void Service::sendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out, Destination dest)

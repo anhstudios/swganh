@@ -70,8 +70,9 @@ shared_ptr<Process> ServerDirectory::process() const {
 
 bool ServerDirectory::registerProcess(const string& name, const string& process_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
     if (active_process_ = datastore_->createProcess(active_cluster_, name, process_type, version, address, tcp_port, udp_port, ping_port)) {
-        // trigger add process event
-        auto event_ = std::make_shared<AddProcessEvent>();
+        
+        // trigger the event to let any listeners we have added the process
+        auto event_ = make_shared_event("RegisterProcess", *active_process_);
         event_dispatcher_->trigger(event_);
         return true;
     }
@@ -82,8 +83,12 @@ bool ServerDirectory::registerProcess(const string& name, const string& process_
 bool ServerDirectory::removeProcess(shared_ptr<Process>& process) {
     if (datastore_->deleteProcessById(process->id())) {
         if (active_process_ && process->id() == active_process_->id()) {
+            // before we clear out the process
             active_process_ = nullptr;
         }
+        // trigger the event to let any listeners we have removed the process
+        auto remove_event = make_shared_event("RemoveProcess", *process);
+        event_dispatcher_->trigger(remove_event);
 
         process = nullptr;
 

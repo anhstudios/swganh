@@ -127,9 +127,9 @@ BaseApplication::~BaseApplication() {}
 void BaseApplication::startup() {
     try {
         // instantiate basic events
-        startup_event_ = make_shared<SimpleEvent>("Startup");
-        process_event_ = make_shared<SimpleEvent>("Process");
-        shutdown_event_ = make_shared<SimpleEvent>("Shutdown");
+        startup_event_ = make_shared_event("Startup");
+        process_event_ = make_shared_event("Process");
+        shutdown_event_ = make_shared_event("Shutdown");
         // add in options
         addDefaultOptions_();
         // load the options
@@ -204,7 +204,7 @@ void BaseApplication::shutdown() {
 
 shared_ptr<ServerDirectoryInterface> BaseApplication::createServerDirectory(shared_ptr<sql::Connection> conn) {
     auto datastore = make_shared<Datastore>(conn);
-    return make_shared<ServerDirectory>(datastore);
+    return make_shared<ServerDirectory>(datastore, event_dispatcher_);
 };
 shared_ptr<DatabaseManager> BaseApplication::createDatabaseManager(sql::Driver* driver)
 {
