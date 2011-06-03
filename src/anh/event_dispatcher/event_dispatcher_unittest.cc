@@ -28,12 +28,6 @@
 using namespace std;
 using namespace anh::event_dispatcher;
 
-struct TestEventData {
-    std::string test_string;
-    int test_int;
-};
-
-
 /// By default a new instance of the dispatcher should not have any listeners.
 TEST(EventDispatcherTest, HasNoListenersByDefault) {
     EventDispatcher dispatcher;
@@ -381,38 +375,4 @@ TEST(EventDispatcherTest, SubscribingWithInvalidEventTypeThrows) {
     ASSERT_THROW(
         dispatcher.subscribe("", my_listener), 
         anh::event_dispatcher::InvalidEventType);
-}
-
-TEST(EventDispatcherTest, CanMakeEvent) {
-    TestEventData test_data;
-    test_data.test_string = "test string";
-    test_data.test_int = 12345;
-
-    auto my_event = make_event("SomeEvent", std::move(test_data));
-    
-    EXPECT_EQ("test string", my_event.test_string);
-    EXPECT_EQ(12345, my_event.test_int);
-}
-
-TEST(EventDispatcherTest, CanMakeSharedEvent) {
-    TestEventData test_data;
-    test_data.test_string = "test string";
-    test_data.test_int = 12345;
-
-    auto my_event = make_shared_event("SomeEvent", std::move(test_data));
-
-    EXPECT_EQ("test string", my_event->test_string);
-    EXPECT_EQ(12345, my_event->test_int);
-}
-
-TEST(EventDispatcherTest, CanMakeSimpleEvent) {
-    auto my_event = make_event("SomeEvent");
-
-    EXPECT_EQ("SomeEvent", my_event.type().ident_string());
-}
-
-TEST(EventDispatcherTest, CanMakeSimpleSharedEvent) {
-    auto my_event = make_shared_event("SomeEvent");
-
-    EXPECT_EQ("SomeEvent", my_event->type().ident_string());
 }
