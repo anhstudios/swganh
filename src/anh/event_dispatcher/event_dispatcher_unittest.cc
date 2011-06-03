@@ -389,7 +389,7 @@ TEST(EventDispatcherTest, CanMakeEvent) {
     test_data.test_int = 12345;
 
     auto my_event = make_event("SomeEvent", std::move(test_data));
-
+    
     EXPECT_EQ("test string", my_event.test_string);
     EXPECT_EQ(12345, my_event.test_int);
 }
@@ -403,4 +403,16 @@ TEST(EventDispatcherTest, CanMakeSharedEvent) {
 
     EXPECT_EQ("test string", my_event->test_string);
     EXPECT_EQ(12345, my_event->test_int);
+}
+
+TEST(EventDispatcherTest, CanMakeSimpleEvent) {
+    auto my_event = make_event("SomeEvent");
+
+    EXPECT_EQ("SomeEvent", my_event.type().ident_string());
+}
+
+TEST(EventDispatcherTest, CanMakeSimpleSharedEvent) {
+    auto my_event = make_shared_event("SomeEvent");
+
+    EXPECT_EQ("SomeEvent", my_event->type().ident_string());
 }

@@ -84,18 +84,21 @@ struct NullEventData {};
 
 typedef BasicEvent<NullEventData> SimpleEvent;
 
-template<typename T>
+template<typename T> inline
 BasicEvent<T> make_event(EventType type, T&& data) {
     BasicEvent<T> created_event(type, std::forward<T>(data));
     return created_event;
 }
 
-template<typename T>
+SimpleEvent make_event(EventType type);
+
+template<typename T> inline
 std::shared_ptr<BasicEvent<T>> make_shared_event(EventType type, T&& data) {
     auto created_event = std::make_shared<BasicEvent<T>>(type, std::forward<T>(data));
     return created_event;
 }
 
+std::shared_ptr<SimpleEvent> make_shared_event(EventType type);
 
 }  // namespace event_dispatcher
 }  // namespace anh
