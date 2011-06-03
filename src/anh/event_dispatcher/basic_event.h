@@ -21,6 +21,7 @@
 #define LIBANH_EVENT_DISPATCHER_BASIC_EVENT_H_
 
 #include <cstdint>
+#include <memory>
 
 #include "anh/hash_string.h"
 #include "anh/event_dispatcher/event_interface.h"
@@ -38,6 +39,12 @@ public:
     
     explicit BasicEvent(EventType type)
         : type_(std::move(type))
+        , timestamp_(0)
+        , priority_(0) {}
+    
+    BasicEvent(EventType type, T data)
+        : T(std::move(data))
+        , type_(std::move(type))
         , timestamp_(0)
         , priority_(0) {}
     
@@ -75,6 +82,19 @@ private:
 struct NullEventData {};
 
 typedef BasicEvent<NullEventData> SimpleEvent;
+
+template<typename T>
+BasicEvent<T> make_event(EventType type, T data) {
+    BasicEvent<T> created_event(type, std::move(data));
+    return created_event;
+}
+
+template<typename T>
+std::shared_ptr<BasicEvent<T>> make_shared_event(EventType type, T data) {
+    auto created_event = std::make_shared<BasicEvent<T>>(type, std::move(data));
+    return created_event;
+}
+
 
 }  // namespace event_dispatcher
 }  // namespace anh
