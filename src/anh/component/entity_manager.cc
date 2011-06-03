@@ -17,8 +17,9 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "entity_manager.h"
+
 #include <algorithm>
-#include <anh/component/entity_manager.h>
 
 namespace anh {
 namespace component {
