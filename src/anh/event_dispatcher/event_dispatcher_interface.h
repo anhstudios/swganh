@@ -40,18 +40,9 @@ namespace anh {
 namespace event_dispatcher {
     
 typedef std::function<bool (std::shared_ptr<EventInterface>)> EventListenerCallback;
-
-typedef std::pair<uint64_t, EventListenerCallback> EventListener;
-typedef std::list<EventListener> EventListenerList;
-typedef std::map<EventType, EventListenerList> EventListenerMap;
-typedef std::set<EventType> EventTypeSet;
-
 typedef std::function<bool (uint64_t current_time_ms)> TriggerCondition;
 typedef std::function<void (std::shared_ptr<EventInterface>, bool)> PostTriggerCallback;
 
-typedef std::tuple<std::shared_ptr<EventInterface>, boost::optional<TriggerCondition>, boost::optional<PostTriggerCallback>> EventQueueItem;
-typedef tbb::concurrent_queue<EventQueueItem> EventQueue;
-typedef std::deque<EventQueue> EventQueueList;
 
 class EventDispatcherInterface {
 public:
