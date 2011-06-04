@@ -31,12 +31,12 @@ namespace anh {
 namespace event_dispatcher {
 
 template<typename T>
-class BasicEvent : public std::decay<T>::type, public EventInterface {
+class BasicEvent : public EventInterface {
 public:
     BasicEvent()
-        : type_(std::remove_reference<T>::type::type())
+        : type_(std::decay<T>::type::type())
         , timestamp_(0)
-        , priority_(std::remove_reference<T>::type::priority()) {}
+        , priority_(std::decay<T>::type::priority()) {}
     
     explicit BasicEvent(EventType type)
         : type_(std::move(type))
@@ -44,7 +44,7 @@ public:
         , priority_(0) {}
     
     BasicEvent(EventType type, T&& data)
-        : std::remove_reference<T>::type(std::forward<T>(data))
+        : data_(std::forward<T>(data))
         , type_(std::move(type))
         , timestamp_(0)
         , priority_(0) {}
@@ -57,6 +57,10 @@ public:
     ~BasicEvent() {}
 
     const EventType& type() { return type_; }
+
+    T& data() { return data_; }
+
+    const T& cdata() const { return data_; }
 
     uint32_t priority() const {
         return priority_;
@@ -75,6 +79,7 @@ public:
     }
 
 private:
+    T data_;
     EventType type_;
     uint64_t timestamp_;
     uint32_t priority_;
