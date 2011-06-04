@@ -33,7 +33,7 @@ class EventInterface {
 public:
     virtual ~EventInterface() {}
 
-    virtual const EventType& type() = 0;
+    virtual const EventType& type() const = 0;
     
     virtual uint32_t priority() const = 0;
     virtual void priority(uint32_t priority) = 0;

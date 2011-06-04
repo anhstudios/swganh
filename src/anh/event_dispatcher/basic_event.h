@@ -56,11 +56,17 @@ public:
 
     ~BasicEvent() {}
 
-    const EventType& type() { return type_; }
+    const EventType& type() const { 
+        return type_; 
+    }
 
-    T& data() { return data_; }
+    const T& data() const { 
+        return data_; 
+    }
 
-    const T& cdata() const { return data_; }
+    void data(T& data ) { 
+        data_ = data; 
+    }
 
     uint32_t priority() const {
         return priority_;
