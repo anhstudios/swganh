@@ -31,7 +31,7 @@ namespace anh {
 namespace event_dispatcher {
 
 template<typename T>
-class BasicEvent : public std::remove_reference<T>::type, public EventInterface {
+class BasicEvent : public std::decay<T>::type, public EventInterface {
 public:
     BasicEvent()
         : type_(std::remove_reference<T>::type::type())
