@@ -28,14 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef INTERPRETERS_IFF_H
 #define INTERPRETERS_IFF_H
 
-#include <map>
-#include <memory>
-#include <string>
-#include <functional>
-#include <boost/flyweight.hpp>
-#include "InterpreterTypes.h"
+#include <memory> //For shared ptr
+#include <string> //For String
+#include "InterpreterTypes.h" //For interpreter types
 
-
+//Forward Declarations
 namespace anh
 {
 	class ByteBuffer;
@@ -46,25 +43,30 @@ namespace ClientFileManager
 	namespace IFF
 	{
 		class FileNode;
+		//End Forward Declarations
+
 		namespace Interpreters
 		{
-			typedef std::function<void(anh::ByteBuffer&)> NodeFunctor;
-			typedef std::map<std::string, NodeFunctor> NodeNameIndex;
-			typedef std::map<std::string, NodeFunctor>::const_iterator NodeNameIndexIterator;
-
 			class IFFInterpreter
 			{
-			public:
-
-				IFFInterpreter()
-				{
-				}
-
+			public:		
+				/**
+					@brief returns the InterpreterType associated with this Interpreter
+				*/
 				virtual InterpreterType getType() { return IFF_INTERPRETER; }
+
+				/**
+					@brief interprets a IFF::FileNode associated with this interpreter.
+					This should only be called by the IFFFile code.
+				*/
 				virtual void interpret(std::shared_ptr<IFF::FileNode> node) = 0;
+
 			protected:
+
+				/**
+					@brief A convienience method that really needs moved into the ByteBuffer class
+				*/
 				static std::string readStringFromByteBuffer(anh::ByteBuffer& b);
-				NodeNameIndex nameLookup_;
 			};
 		};
 	};

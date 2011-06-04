@@ -18,16 +18,18 @@ using namespace ClientFileManager::IFF::Interpreters;
 WSInterpreter::WSInterpreter()
 	: IFFInterpreter()
 {
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("OTNL"), bind(&WSInterpreter::_handleOTNL, this, _1)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0000DATA"), bind(&WSInterpreter::_handle0000DATA, this, _1)));
 }
 
 void WSInterpreter::interpret(std::shared_ptr<ClientFileManager::IFF::FileNode> node)
 {
-	NodeNameIndexIterator it = nameLookup_.find(node->name());
-	if( it != nameLookup_.cend())
+	const std::string& nameRef = node->name();
+	if(nameRef == "0000DATA")
 	{
-		it->second(node->data());
+		_handle0000DATA(node->data());
+	}
+	else if(nameRef == "OTNL")
+	{
+		_handleOTNL(node->data());
 	}
 }
 

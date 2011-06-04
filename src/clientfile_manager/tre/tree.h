@@ -28,11 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef TREE_H
 #define TREE_H
 
-#include <string>
-#include <vector>
-#include <boost/filesystem.hpp>
-#include <memory>
+#include <string> //For String
+#include <map> //For Map
+#include <boost/filesystem.hpp> //For Boost FileSystem Path
 
+//Begin Forward Declarations
 namespace anh
 {
 	class ByteBuffer;
@@ -43,41 +43,66 @@ namespace ClientFileManager
 	namespace TRE
 	{
 		struct TreeEntry;
+		//End Forward Declarations
 
+		/**
+			@brief Acts as a frontend for a .tre file providing convienience methods like getFile()
+		*/
 		class TreeArchive
 		{
 		public:
-			TreeArchive(boost::filesystem::path& path, std::vector<TreeEntry>& entries)
-				: filename_(path.file_string())
+			/**
+				@brief Constructs a TreeArchive File.
+
+				@param filename a a boost filesystem path of the filesystem path of the .tre file to open.
+				@param entries a reference a map into which this archive will insert it's index.
+			*/
+			TreeArchive(boost::filesystem::path& path, std::map<std::string, TRE::TreeEntry>& entries)
 			{
-				FILE* stream = fopen(path.file_string().c_str(), "rb");
-				_loadTree(stream, entries);
-				fclose(stream);
+				intrl_stream = fopen(path.file_string().c_str(), "rb");
+				_loadTree(intrl_stream, entries);
 			}
 
-			TreeArchive(std::string& filename, std::vector<TreeEntry>& entries)
-				: filename_(filename)
+			/**
+				@brief Constructs a TreeArchive File.
+
+				@param filename a string of the filesystem path of the .tre file to open.
+				@param entries a reference a map into which this archive will insert it's index.
+			*/
+			TreeArchive(std::string& filename, std::map<std::string, TRE::TreeEntry>& entries)
 			{	
-				FILE* stream = fopen(filename.c_str(), "rb");
-				_loadTree(stream, entries);
-				fclose(stream);
+				intrl_stream = fopen(filename.c_str(), "rb");
+				_loadTree(intrl_stream, entries);
 			}
 
-			anh::ByteBuffer getFile(TreeEntry& entry);
+			/**
+				@brief Default destructor for the TreeArchive.
+
+				Closes the internal stream associated with this Tree
+			*/
+			~TreeArchive()
+			{
+				fclose(intrl_stream);
+			}
+
+			/**
+				@ brief Reads a file from this .tre file.
+
+				@param entry the look up entry to use to read the file.
+
+				@return An anh::ByteBuffer of the data of the swg file requested.
+			*/
+			anh::ByteBuffer getFile(const TRE::TreeEntry& entry);
 
 		private:
-			std::uint32_t record_count;
-			std::uint32_t lookupData_offset;
-			std::uint32_t lookupData_compression;
-			std::uint32_t lookupData_currentSize;
-			std::uint32_t lookupData_finalSize; //CALCULATED NOT READ
-			std::uint32_t names_offset; //CALCUATED NOT READ
-			std::uint32_t names_compression;
-			std::uint32_t names_currentSize;
-			std::uint32_t names_finalSize;
+			TreeArchive();
+			TreeArchive(const TreeArchive& t);
 
-			void _loadTree(FILE* inputstream, std::vector<TreeEntry>& entries);
-			std::string filename_;
+			//Internal Constructor (called by all actual constructors)
+			void _loadTree(FILE* inputstream, std::map<std::string, TRE::TreeEntry>& entries);
+
+			//An open stream object to the .tre file.
+			FILE* intrl_stream;
 		};
 	};
 };

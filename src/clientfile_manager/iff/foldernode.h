@@ -38,17 +38,37 @@ namespace ClientFileManager
 		class FolderNode : public Node
 		{
 		public:
-			FolderNode(std::string& name, unsigned int size) : Node(boost::flyweight<std::string>(name), size) 
+			FolderNode(std::string& name, unsigned int size) : Node(name, size) 
 			{
 
 			}
 
+			/**
+				@return the node type of this node.
+			*/
 			virtual ClientFileManager::NODE_TYPE type() {return ClientFileManager::NODE_TYPE_FOLDER;}
 
+			/**
+				@return the number of children this node has.
+			*/
 			unsigned int children_count() { return children.size();}
+			
+			/**
+				@param id which node to return
+				@return the IFFNode specified by the id.
+			*/
 			std::shared_ptr<IFF::Node> get(unsigned int id) {children[id];}
 
+			/**
+				@brief adds a node to the list
+				@param child the node to add
+			*/
 			void add(std::shared_ptr<IFF::Node> child) {children.push_back(child);}
+
+			/**
+				@brief removes a node from the list.
+				@param id the node to remove
+			*/
 			void remove(unsigned int id) {children.erase(children.begin()+id);}
 
 		private:

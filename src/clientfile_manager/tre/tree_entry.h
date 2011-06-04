@@ -28,14 +28,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef TREE_ENTRY_H
 #define TREE_ENTRY_H
 
-#include <cstdint>
-#include <boost/flyweight.hpp>
+#include <cstdint> //For the std::uint32_t's
+
 
 namespace ClientFileManager
 {
 	namespace TRE
 	{
+		//Forward Declarations
 		class TreeArchive;
+
+		//End Forward Declarations
+
+		/**
+			@brief An object used to index .tre files.
+			Should not appear outside the TreeArchive and FileManager classes.
+		*/
 		struct TreeEntry
 		{
 			std::uint32_t checksum;
@@ -45,7 +53,6 @@ namespace ClientFileManager
 			std::uint32_t compressed_size;
 			std::uint32_t name_offset;
 
-			boost::flyweight<std::string> nameString;
 			TreeArchive* parentTree;
 		};
 	};

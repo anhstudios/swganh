@@ -29,10 +29,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define INTERPRETERS_WS_H
 
 #include "../IFFInterpreter.h"
-#include <cstdint>
-#include <vector>
-#include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include <cstdint> //for the std::uint32_t and std::uint64_t, ect
+#include <vector> //for storing names
+#include <map> //For storing chunks
+#include <glm/glm.hpp> //For vec3
+#include <glm/gtx/quaternion.hpp> //for the quaternions
 
 namespace ClientFileManager
 {
@@ -40,14 +41,32 @@ namespace ClientFileManager
 	{
 		namespace Interpreters
 		{
+			/**
+				@brief An IFFInterpreter for ws files.
+			*/
 			class WSInterpreter : public IFFInterpreter
 			{
 			public:
-				
+
+				/**
+					@brief Constructor for a ws interpreter
+				*/
 				WSInterpreter();
 
+				/**
+					@brief returns the InterpreterType associated with this Interpreter
+				*/
+				virtual InterpreterType getType() { return WS_INTERPRETER; }
+
+				/**
+					@brief interprets a IFF::FileNode associated with this interpreter.
+					This should only be called by the IFFFile code.
+				*/
 				virtual void interpret(std::shared_ptr<IFF::FileNode> node);
 
+				/**
+					@brief A single chunk object in the world 
+				*/
 				struct CHUNK
 				{
 					std::uint64_t id;
@@ -60,13 +79,20 @@ namespace ClientFileManager
 					std::uint32_t pob_crc;
 				};
 
+				//The map and the vector really _should_ be given getters, but I'm not
+				//sure how they'll be used by the calling code yet, so I'm not sure how
+				//to setup the getters.
 				std::map<std::uint64_t, CHUNK> chunks;
 				std::vector<std::string> names;
 				
+				/**
+					@brief a simple output function for debugging values.
+				*/
 				void debug();
-				virtual InterpreterType getType() { return WS_INTERPRETER; }
 
 			private:
+
+				//Internal Node Handling functions
 				void _handleOTNL(anh::ByteBuffer& buffer);
 				void _handle0000DATA(anh::ByteBuffer& buffer);
 			};

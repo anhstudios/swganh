@@ -16,16 +16,18 @@ using namespace std::tr1::placeholders;
 using namespace std;
 using namespace boost;
 
+POBInterpreter::NodeNameIndex POBInterpreter::nameLookup_;
+
 POBInterpreter::POBInterpreter()
 	: IFFInterpreter()
 {
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("INDX"), bind(&POBInterpreter::_handleINDX, this, _1)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0003DATA"), bind(&POBInterpreter::_handle0003DATA, this, _1)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0005DATA"), bind(&POBInterpreter::_handle0005DATA, this, _1)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTL"), bind(&POBInterpreter::_handlePRTL, this, _1)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTSPRTL"), bind(&POBInterpreter::_handlePRTL, this, _1)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTL0004"), bind(&POBInterpreter::_handlePRTL0004, this, _1)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0000VERT"), bind(&POBInterpreter::_handle0000VERT, this, _1)));
+	nameLookup_.insert(make_pair<string, NodeFunctor>(string("INDX"), bind(&POBInterpreter::_handleINDX, _1, _2)));
+	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0003DATA"), bind(&POBInterpreter::_handle0003DATA, _1, _2)));
+	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0005DATA"), bind(&POBInterpreter::_handle0005DATA, _1, _2)));
+	nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTL"), bind(&POBInterpreter::_handlePRTL, _1, _2)));
+	nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTSPRTL"), bind(&POBInterpreter::_handlePRTL, _1, _2)));
+	nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTL0004"), bind(&POBInterpreter::_handlePRTL0004, _1, _2)));
+	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0000VERT"), bind(&POBInterpreter::_handle0000VERT, _1, _2)));
 }
 
 void POBInterpreter::interpret(std::shared_ptr<ClientFileManager::IFF::FileNode> node)
@@ -33,19 +35,19 @@ void POBInterpreter::interpret(std::shared_ptr<ClientFileManager::IFF::FileNode>
 	NodeNameIndexIterator it = nameLookup_.find(node->name());
 	if( it != nameLookup_.cend())
 	{
-		it->second(node->data());
+		it->second(this, node->data());
 	}
 }
 
-void POBInterpreter::_handle0003DATA(anh::ByteBuffer& data)
+void POBInterpreter::_handle0003DATA(POBInterpreter* pob, anh::ByteBuffer& data)
 {
 	int test = data.read<std::uint32_t>();
 
-	portals_.reserve(test);
-	cells_.reserve(data.read<std::uint32_t>());
+	pob->portals_.reserve(test);
+	pob->cells_.reserve(data.read<std::uint32_t>());
 }
 
-void POBInterpreter::_handlePRTL(anh::ByteBuffer& data)
+void POBInterpreter::_handlePRTL(POBInterpreter* pob, anh::ByteBuffer& data)
 {
 	Portal newP;
 
@@ -60,10 +62,10 @@ void POBInterpreter::_handlePRTL(anh::ByteBuffer& data)
 		newP.vertices.push_back(std::move(vector));
 	}
 
-	portals_.push_back(newP);
+	pob->portals_.push_back(newP);
 }
 
-void POBInterpreter::_handle0005DATA(anh::ByteBuffer& data)
+void POBInterpreter::_handle0005DATA(POBInterpreter* pob, anh::ByteBuffer& data)
 {
 	Cell cell;
 	cell.links.reserve(data.read<std::uint32_t>());
@@ -72,12 +74,12 @@ void POBInterpreter::_handle0005DATA(anh::ByteBuffer& data)
 	cell.mesh = readStringFromByteBuffer(data);
 	cell.unkFlag3 = data.read<char>();
 	cell.collision = readStringFromByteBuffer(data);
-	cells_.push_back(std::move(cell));
+	pob->cells_.push_back(std::move(cell));
 }
 
-void POBInterpreter::_handle0000VERT(anh::ByteBuffer& data)
+void POBInterpreter::_handle0000VERT(POBInterpreter* pob, anh::ByteBuffer& data)
 {
-	Cell& cell = cells_[cells_.size()-1];
+	Cell& cell = pob->cells_[pob->cells_.size()-1];
 	
 	std::uint32_t count = data.size()/12;
 	cell.vertices.reserve(count);
@@ -92,9 +94,9 @@ void POBInterpreter::_handle0000VERT(anh::ByteBuffer& data)
 	}
 }
 
-void POBInterpreter::_handleINDX(anh::ByteBuffer& data)
+void POBInterpreter::_handleINDX(POBInterpreter* pob, anh::ByteBuffer& data)
 {
-	Cell& cell = cells_[cells_.size()-1];
+	Cell& cell = pob->cells_[pob->cells_.size()-1];
 
 	std::uint32_t count = data.size()/12;
 	cell.triangles.reserve(count);
@@ -109,9 +111,9 @@ void POBInterpreter::_handleINDX(anh::ByteBuffer& data)
 	}
 }
 
-void POBInterpreter::_handlePRTL0004(anh::ByteBuffer& data)
+void POBInterpreter::_handlePRTL0004(POBInterpreter* pob, anh::ByteBuffer& data)
 {
-	Cell& cell = cells_[cells_.size()-1];
+	Cell& cell = pob->cells_[pob->cells_.size()-1];
 
 	Link link;
 

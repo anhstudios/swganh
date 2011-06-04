@@ -52,6 +52,7 @@ namespace ClientFileManager
 		typedef std::map<std::string, IFFCreatorCallback> NodeIndex;
 		typedef std::map<std::string, IFFCreatorCallback>::iterator NodeIndexIterator;
 
+		//BEGIN EXCEPTIONS
 		class NotFoundException : public std::exception
 		{
 		public:
@@ -64,6 +65,7 @@ namespace ClientFileManager
 		private:
 			std::string message_;
 		};
+
 		class BadIFFException : public std::exception
 		{
 		public:
@@ -76,22 +78,36 @@ namespace ClientFileManager
 		private:
 			std::string message_;
 		};
+		//END EXCEPTIONS
 
 		class IFFFile
 		{
 		public:
+
+			//Constructors
 			IFFFile(IFFFile&& other);
-			IFFFile& operator=(IFFFile&& other);
 			IFFFile(std::string filename, std::shared_ptr<Interpreters::IFFInterpreter> interpret);
 			IFFFile(FILE* inputstream, std::shared_ptr<Interpreters::IFFInterpreter> interpret);
 			IFFFile(anh::ByteBuffer& input, std::shared_ptr<Interpreters::IFFInterpreter> interpret);
 
+			/**
+				@return the interpreter associated with this IFFFile
+			*/
 			std::shared_ptr<Interpreters::IFFInterpreter> getInterpreter() { return interpreter_;}
+			
+			/**
+				@param i the index of the headnode to remove
+				@return a head node
+			*/
 			std::shared_ptr<ClientFileManager::IFF::Node> headnode(unsigned int i) {return headNodes[i];}
+
+			/**
+				@return the count of headnodes
+			*/
 			unsigned int headnode_count() {return headNodes.size();}
 
-			
-
+			//Move constructor
+			IFFFile& operator=(IFFFile&& other);
 		protected:
 		private:
 			void _loadIFF(FILE* stream);

@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../IFFInterpreter.h"
 #include <vector>
+#include <map>
+#include <functional>
 #include <cstdint>
 #include <glm/glm.hpp>
 
@@ -47,16 +49,38 @@ namespace ClientFileManager
 			class POBInterpreter : public IFFInterpreter
 			{
 			public:
+				typedef std::function<void(POBInterpreter*, anh::ByteBuffer& buffer)> NodeFunctor;
+				typedef std::map<std::string, NodeFunctor> NodeNameIndex;
+				typedef std::map<std::string, NodeFunctor>::iterator NodeNameIndexIterator;
+
+				/**
+					@brief Constructor for a pob interpreter
+				*/
 				POBInterpreter();
 
+				/**
+					@brief returns the InterpreterType associated with this Interpreter
+				*/
+				virtual InterpreterType getType() { return POB_INTERPRETER; }
+
+				/**
+					@brief interprets a IFF::FileNode associated with this interpreter.
+					This should only be called by the IFFFile code.
+				*/
 				virtual void interpret(std::shared_ptr<IFF::FileNode> node);
 
+				/**
+					@brief A portal object used inside the POB files.
+				*/
 				class Portal
 				{
 				public:
 					std::vector<glm::vec3> vertices;
 				};
 
+				/**
+					@brief A Link between a Cell and a Portal Object
+				*/
 				class Link
 				{
 				public:
@@ -79,6 +103,9 @@ namespace ClientFileManager
 
 				};
 
+				/**
+					@A simple triangle class that references different vertices.
+				*/
 				class triangle
 				{
 				public:
@@ -87,6 +114,9 @@ namespace ClientFileManager
 					std::uint32_t c;
 				};
 
+				/**
+					@brief A cell class that has a certain shape, id, mesh, and collision
+				*/
 				class Cell
 				{
 				public:
@@ -108,26 +138,50 @@ namespace ClientFileManager
 					std::vector<Link> links;
 				};
 
+				/**
+					@return the number of cells in this pob file
+				*/
 				unsigned int cell_count() { return cells_.size(); }
+				
+				/**
+					@return the number of portals in this pob file.
+				*/
 				unsigned int portal_count() { return portals_.size(); }
 
+				/**
+					@brief Fetches a portal object
+					@param id the id of the portal to fetch
+					@return the fetched portal
+				*/
 				const Portal& getPortal(unsigned int id) { return portals_[id]; }
+				
+				/**
+					@brief Fetches a cell object
+					@param id the id of the cell to fetch
+					@return the fetched cell
+				*/
 				const Cell& getCell(unsigned int id) { return cells_[id]; }
 
+				/**
+					@brief a simple output function for debugging values.
+				*/
 				void debug();
 
-				virtual InterpreterType getType() { return POB_INTERPRETER; }
-
 			private:
-				void _handle0003DATA(anh::ByteBuffer& data);
-				void _handlePRTL(anh::ByteBuffer& data);
-				void _handle0005DATA(anh::ByteBuffer& data);
-				void _handle0000VERT(anh::ByteBuffer& data);
-				void _handleINDX(anh::ByteBuffer& data);
-				void _handlePRTL0004(anh::ByteBuffer& data);
 
+				//Internal Node Handling functions
+				static void _handle0003DATA(POBInterpreter*, anh::ByteBuffer& data);
+				static void _handlePRTL(POBInterpreter*, anh::ByteBuffer& data);
+				static void _handle0005DATA(POBInterpreter*, anh::ByteBuffer& data);
+				static void _handle0000VERT(POBInterpreter*, anh::ByteBuffer& data);
+				static void _handleINDX(POBInterpreter*, anh::ByteBuffer& data);
+				static void _handlePRTL0004(POBInterpreter*, anh::ByteBuffer& data);
+
+				//Internal Containers for portals and cells
 				std::vector<Portal> portals_;
 				std::vector<Cell> cells_;
+
+				static NodeNameIndex nameLookup_;
 			};
 		};
 	};

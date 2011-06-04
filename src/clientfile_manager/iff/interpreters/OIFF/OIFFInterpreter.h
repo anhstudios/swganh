@@ -31,12 +31,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../IFFInterpreter.h"
 
 #include <map>
-#include <vector>
+#include <set>
+#include <functional>
 #include <cstdint>
 #include <memory>
+#include <boost/any.hpp>
 
 namespace ClientFileManager
 {
+	//Forward Declarations
 	class FileManager;
 
 	namespace IFF
@@ -44,99 +47,108 @@ namespace ClientFileManager
 		namespace Interpreters
 		{
 			class OIFFInterpreter;
+			//End Forward Declarations
 
+			//Begin Typedefs
 			typedef std::function<void(OIFFInterpreter*, std::string&, anh::ByteBuffer&)> AttributeFunctor;
 			typedef std::map<std::string, AttributeFunctor> AttributeHandlerIndex;
 			typedef std::map<std::string, AttributeFunctor>::const_iterator AttributeHandlerIndexIterator;
+			//End Typedefs
 
+			/**
+				@brief An IFFInterpreter for object iff files.
+			*/
 			class OIFFInterpreter : public IFFInterpreter
 			{
 			public:
-
+				/**
+					@brief Constructor for an object iff interpreter
+				*/
 				OIFFInterpreter();
+				
+				/**
+					@brief returns the InterpreterType associated with this Interpreter
+				*/
 				virtual InterpreterType getType() { return OIFF_INTERPRETER; }
+				
+				/**
+					@brief interprets a IFF::FileNode associated with this interpreter.
+					This should only be called by the IFFFile code.
+				*/
 				virtual void interpret(std::shared_ptr<IFF::FileNode> node);
 
-				std::string getStringAttribute(std::string& key)
+				/**
+					@brief An internal ClientString structure. This could later be moved outside this class.
+					It is merely here now for completeness.
+				*/
+				static class ClientString
 				{
-					std::map<std::string, std::string>::const_iterator it = stringAttributes.find(key);
-					if(it != stringAttributes.cend())
-					{
-						return it->second;
-					}
-					else
-					{
-						return "";
-					}
+				public:
+					std::string file;
+					std::string entry;
+				};
 
-				}
+				/**
+					@brief returns an attribute loaded from the object iff associated with this interpreter.
 
-				std::uint32_t getIntAttribute(std::string& key)
-				{
-					std::map<std::string, std::uint32_t>::const_iterator it = intAttributes.find(key);
-					if(it != intAttributes.cend())
-					{
-						return it->second;
-					}
-					else
-					{
-						return 0;
-					}
+					@param key the key to lookup
 
-				}
+					@return a boost::any casted shared_ptr<T> that was requested
+				*/
+				template <class T> std::shared_ptr<T> getAttribute(std::string& key);
+				
+				/**
+					@brief returns an attribute loaded from the object iff associated with this interpreter.
 
-				float getFloatAttribute(std::string& key)
-				{
-					std::map<std::string, float>::const_iterator it = floatAttributes.find(key);
-					if(it != floatAttributes.cend())
-					{
-						return it->second;
-					}
-					else
-					{
-						return 0.0;
-					}
+					@param key the key to lookup
+					@param giveWithoutSharedPtr a paramter which tells the compiler not to use the other template.
 
-				}
+					@return a boost::any casted U that was requested
+				*/
+				template <class U> U getAttribute(std::string& key, bool giveWithoutSharedPtr);
 
-				bool getBoolAttribute(std::string key)
-				{
-					std::map<std::string, bool>::const_iterator it = boolAttributes.find(key);
-					if(it != boolAttributes.cend())
-					{
-						return it->second;
-					}
-					else
-					{
-						return false;
-					}
+				/**
+					@brief A function which causes this OIFFInterpreter to load parent files it needs and then copy
+					their values downstream
 
-				}
-
+					@param f the filemanager instance for retriving the necessary files.
+				*/
 				void loadAggregateData(FileManager& f);
 
-			private:
+				/**
+					@brief a simple output function for debugging values.
+				*/
+				void debug();
 
+			private:
+				//Internal Index used to link the handlers with the attributes
 				static AttributeHandlerIndex attributeHandler_;
 
+				//Internal Datatype handling functions used to parse the object files
+				static void _handleClientString(OIFFInterpreter* dst, std::string& name, anh::ByteBuffer& buf);
 				static void _handleString(OIFFInterpreter* dst, std::string& name, anh::ByteBuffer& buf);
 				static void _handleInt(OIFFInterpreter* dst, std::string& name, anh::ByteBuffer& buf);
 				static void _handleFloat(OIFFInterpreter* dst, std::string& name, anh::ByteBuffer& buf);
 				static void _handleBool(OIFFInterpreter* dst, std::string& name, anh::ByteBuffer& buf);
 
+				//Internal Node Handling functions
 				void _handleXXXX(anh::ByteBuffer& buf);
 				void _handleDERVXXXX(anh::ByteBuffer& buf);
 				void _handlePCNT(anh::ByteBuffer& buf);
 
-				std::map<std::string, std::uint32_t> intAttributes;
-				std::map<std::string, std::string> stringAttributes;
-				std::map<std::string, float> floatAttributes;
-				std::map<std::string, bool> boolAttributes;
+				//Attributes this object iff might have
+				std::map<std::string, boost::any> attributes_;
+				
+				//Parent files this object iff might have
+				std::set<std::string> parentFiles;
 
-				std::vector<std::string> parentFiles;
+				//Stored for determing if we've already loaded our aggregate information.
+				bool _hasAggregate;
 			};
 		};
 	};
 };
+
+#include "OIFFInterpreter-intl.h"
 
 #endif

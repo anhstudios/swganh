@@ -15,15 +15,14 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 #include <anh/byte_buffer.h>
 
 using namespace ClientFileManager::TRE;
+using namespace boost::filesystem2;
 
-anh::ByteBuffer TreeArchive::getFile(TreeEntry& entry)
+anh::ByteBuffer TreeArchive::getFile(const TreeEntry& entry)
 {
 	unsigned char* compressed_data = new unsigned char[entry.compressed_size];
 
-	FILE* filestream = fopen(filename_.c_str(), "rb");
-	fseek(filestream, entry.fileOffset, SEEK_SET);
-	fread(compressed_data, entry.compressed_size, 1, filestream);
-	fclose(filestream);
+	fseek(intrl_stream, entry.fileOffset, SEEK_SET);
+	fread(compressed_data, entry.compressed_size, 1, intrl_stream);
 
 	unsigned char* data = new unsigned char[entry.uncompressed_size];
 
@@ -38,11 +37,22 @@ anh::ByteBuffer TreeArchive::getFile(TreeEntry& entry)
 	return result;
 }
 
-void TreeArchive::_loadTree(FILE* inputstream, std::vector<TreeEntry>& entries)
+void TreeArchive::_loadTree(FILE* inputstream, std::map<std::string, TreeEntry>& entries)
 {
 	//This is how .tre files were meant to be loaded.
 	//No Unnecessary Objects.
 	//No Bullshit.
+
+	std::uint32_t record_count;
+	std::uint32_t lookupData_offset;
+	std::uint32_t lookupData_compression;
+	std::uint32_t lookupData_currentSize;
+	std::uint32_t lookupData_finalSize; //CALCULATED NOT READ
+	std::uint32_t names_offset; //CALCUATED NOT READ
+	std::uint32_t names_compression;
+	std::uint32_t names_currentSize;
+	std::uint32_t names_finalSize;
+
 
 	char name[8];
 	fread(name, 8, 1, inputstream);
@@ -100,8 +110,9 @@ void TreeArchive::_loadTree(FILE* inputstream, std::vector<TreeEntry>& entries)
 			TreeEntry latestEntry;
 			memcpy(&latestEntry, lookupData_block + 24*i , 24);
 			latestEntry.parentTree = this;
-			latestEntry.nameString = std::string((char*)&names_block[latestEntry.name_offset]);
-			entries.push_back(std::move(latestEntry));
+			entries.insert(std::make_pair<std::string, TreeEntry>(
+							std::string((char*)&names_block[latestEntry.name_offset]), 
+							std::move(latestEntry)));
 		}
 		
 		delete[] lookupData_block;

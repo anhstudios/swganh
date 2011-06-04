@@ -14,23 +14,21 @@ int main(int argc, char* argv[])
 	std::string s;
 	printf("Input SWG Directory (contains swg2uu_live.cfg): ");
 	std::getline(std::cin, s);
+
+	//First we must initialize the FileManager.
 	FileManager f(s);
 
-	auto pob = std::make_shared<IFF::Interpreters::POBInterpreter>();
-	auto ws = std::make_shared<IFF::Interpreters::WSInterpreter>();
-	auto oiff = std::make_shared<IFF::Interpreters::OIFFInterpreter>();
-	try
-	{
-		f.getFile("appearance/ply_nboo_assoc_hall_civ_s01.pob", pob);
-		f.getFile("snapshot/naboo.ws", ws);
-		f.getFile("object/building/naboo/shared_cantina_naboo.iff", oiff);
-	}
-	catch(IFF::NotFoundException*)
-	{
-		printf("That file does not exist!");
-	}
-	//pob->debug();
-	//ws->debug();
+
+
+	printf("Loading Player Race Templates...\n");
+	auto playerRaces = f.loadDirectory<IFF::Interpreters::OIFFInterpreter>("object/creature/player/", [] (std::shared_ptr<IFF::Interpreters::OIFFInterpreter> obj, FileManager& f) {
+		obj->loadAggregateData(f);
+	});
+
+	printf("Loading Building Templates...\n");
+	auto buildings = f.loadAll<IFF::Interpreters::OIFFInterpreter>("object/building/", [] (std::shared_ptr<IFF::Interpreters::OIFFInterpreter> obj, FileManager& f) {
+		obj->loadAggregateData(f);
+	});
 }
 
 /*

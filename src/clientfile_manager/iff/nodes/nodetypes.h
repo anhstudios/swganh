@@ -3,10 +3,12 @@
 
 namespace ClientFileManager
 {
+	/**
+		The possible node types. Used for casting Nodes from/to the base class.
+	*/
 	enum NODE_TYPE
 			{
-				//You should never see these. They are here for completeness.
-				NODE_TYPE_UNKNOWN,
+				//You should never see this nodetype. It is here for completeness
 				NODE_TYPE_BASE,
 		
 				//These are the default types. 

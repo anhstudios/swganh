@@ -34,6 +34,9 @@ namespace ClientFileManager
 	{
 		namespace Interpreters
 		{
+
+			//Defines Interpreter types for telling apart different
+			//Interpreters that have been cast to the IFF_Interpreter base class.
 			enum InterpreterType
 			{
 				IFF_INTERPRETER, //BASE CLASS

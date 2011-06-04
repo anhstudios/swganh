@@ -36,25 +36,43 @@ namespace ClientFileManager
 {
 	namespace IFF
 	{
+		/**
+
+		*/
 		class FileNode : public Node
 		{
 		public:
+
+			/**
+				@brief Constructor for a FileNode
+			*/
 			FileNode(std::string& name, unsigned int size)
-				: Node(boost::flyweight<std::string>(name), size), data_(size)
+				: Node(name, size), data_(size)
 			{
 			}
 
+			/**
+				@return the node type of this node.
+			*/
 			virtual NODE_TYPE type() {return ClientFileManager::NODE_TYPE_FILE;}
 
+			/**
+				@brief copies the data from the input bytebuffer into this node's internal byte buffer.
+			*/
 			virtual void loadData(anh::ByteBuffer& input)
 			{
 				data_.write(input.data()+input.read_position(), size());
 				input.read_position(input.read_position()+size());
 			}
 
+			/**
+				
+			*/
 			anh::ByteBuffer& data() { return data_; }
 
 		private:
+			FileNode();
+
 			anh::ByteBuffer data_;
 		};
 	};
