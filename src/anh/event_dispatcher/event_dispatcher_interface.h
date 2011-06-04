@@ -80,62 +80,6 @@ public:
     virtual bool tick(uint64_t timeout_ms = INFINITE_TIMEOUT) = 0;
 };
 
-class NullEventDispatcher : public EventDispatcherInterface {
-public:
-    ~NullEventDispatcher() {}
-    
-    uint64_t subscribe(
-        const EventType& event_type, 
-        EventListenerCallback listener) 
-    {
-        return 0;
-    }
-
-    void unsubscribe(const EventType& event_type, uint64_t listener_id) {}
-    void unsubscribe(const EventType& event_type) {}
-
-    bool trigger(std::shared_ptr<EventInterface> incoming_event) {
-        return false;
-    }
-
-    bool trigger(
-        std::shared_ptr<EventInterface> incoming_event, 
-        PostTriggerCallback callback) 
-    { 
-        return false;
-    }
-    
-    void triggerWhen(
-        std::shared_ptr<EventInterface> incoming_event, 
-        TriggerCondition condition) 
-    {}
-
-    void triggerWhen(
-        std::shared_ptr<EventInterface> incoming_event, 
-        TriggerCondition condition, 
-        PostTriggerCallback callback)
-    {}
-
-    bool triggerAsync(std::shared_ptr<EventInterface> incoming_event) {
-        return false;
-    }
-
-    bool triggerAsync(
-        std::shared_ptr<EventInterface> incoming_event, 
-        PostTriggerCallback callback) 
-    {
-        return false;
-    }
-
-    bool abort(const EventType& event_type, bool all_of_type = false) {
-        return false;
-    }
-
-    bool tick(uint64_t timeout_ms = INFINITE_TIMEOUT) {
-        return false;
-    }
-};
-
 }  // namespace event_dispatcher
 }  // namespace anh
 
