@@ -30,27 +30,9 @@
 
 namespace anh {
 namespace event_dispatcher {
-
-namespace detail {
-    /**
-    * Compile time constraint that ensures that T has serialize and deserialize member functions.
-    */
-    template<typename T>
-    class is_serializable {
-    public:
-        static void Constraints() {
-            void (T::*test1)(anh::ByteBuffer&) const = &T::serialize;
-            void (T::*test2)(anh::ByteBuffer) = &T::deserialize;
-            test1;
-            test2;
-        }
-        
-        is_serializable() { void (*p)() = Constraints; }
-    };
-}
-
+    
 template<typename T>
-class BasicEvent : public std::decay<T>::type, public EventInterface, detail::is_serializable<T> {
+class BasicEvent : public std::decay<T>::type, public EventInterface {
 public:
     BasicEvent()
         : type_(std::decay<T>::type::type())
@@ -74,10 +56,15 @@ public:
         , priority_(priority) {}
 
     ~BasicEvent() {
+        // Ensure constraints on T
         static_assert(
             std::has_virtual_destructor<T>::value,
             "Template argument must have a virtual destructor"
         );
+        
+        // Ensure that T is serializable
+        void (T::*test1)(anh::ByteBuffer&) const = &T::serialize;
+        void (T::*test2)(anh::ByteBuffer) = &T::deserialize;
     }
 
     const EventType& type() const { 
