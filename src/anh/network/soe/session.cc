@@ -47,6 +47,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <glog/logging.h>
 
+using anh::event_dispatcher::make_shared_event;
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -203,14 +205,14 @@ void Session::handleChildDataA_(ChildDataA& packet)
 		LOG(WARNING) << "Priority: " << packet.messages.front().read<uint16_t>();
 		LOG(WARNING) << "SWGOpcode: " << std::hex << packet.messages.front().read<uint32_t>();
 
-		std::shared_ptr<packets::LoginClientTokenEvent> lct = std::make_shared<packets::LoginClientTokenEvent>();
+        auto lct = make_shared_event("LoginClientToken", packets::LoginClientToken());
 
 		packets::Cluster cluster;
 		cluster.server_id = 3;
 		cluster.server_name = "Anh Dev Den";
 		cluster.distance = 4;
 
-		std::shared_ptr<packets::LoginEnumClusterEvent> lec = std::make_shared<packets::LoginEnumClusterEvent>(8);
+        auto lec = make_shared_event("LoginEnumCluster", packets::LoginEnumCluster());
 		lec->servers.push_back(cluster);
 
 
@@ -221,16 +223,16 @@ void Session::handleChildDataA_(ChildDataA& packet)
 		dead1ock.status = 1;
 		dead1ock.race_gender_crc = 0x060E51D5;
 
-		std::shared_ptr<packets::EnumerateCharacterIdEvent> eci = std::make_shared<packets::EnumerateCharacterIdEvent>();
+        auto eci = make_shared_event("EnumerateCharacterId", packets::EnumerateCharacterId());
 		eci->characters.push_back(dead1ock);
 
-		std::shared_ptr<packets::LoginClusterStatusEvent> lcs = std::make_shared<packets::LoginClusterStatusEvent>();
+        auto lcs = make_shared_event("LoginClusterStatusEvent", packets::LoginClusterStatus());
 		lcs->servers.push_back(packets::ClusterServer(3, std::string("127.0.0.1"), 44462, 44463, 0, 3000, 8, 7, 2, 0));
 		
-		SendMessage(lct);
-		SendMessage(lec);
-		SendMessage(eci);
-		SendMessage(lcs);
+		this->SendMessageA(lct);
+		this->SendMessageA(lec);
+		this->SendMessageA(eci);
+		this->SendMessageA(lcs);
 
 	}
 	// =================================================

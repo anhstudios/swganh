@@ -16,6 +16,7 @@ struct Character
     uint32_t server_id;
     int32_t status;
 };
+
 struct EnumerateCharacterId : public BasePacket
 {
     EnumerateCharacterId(std::shared_ptr<network::Session> session_  = nullptr,
@@ -23,16 +24,12 @@ struct EnumerateCharacterId : public BasePacket
         : BasePacket(session_, CLIENT)
         , characters(characters_)
     {}
-    std::list<Character> characters;
-};
+    
+    virtual ~EnumerateCharacterId() {}
 
-class EnumerateCharacterIdEvent : public anh::event_dispatcher::BasicEvent<EnumerateCharacterId>{
-public:    
-    EnumerateCharacterIdEvent(
-        std::list<Character> characters_ =  std::list<Character>(), std::shared_ptr<network::Session> session_  = nullptr) 
-        : anh::event_dispatcher::BasicEvent<EnumerateCharacterId>("EnumerateCharacterId"){}
-    virtual ~EnumerateCharacterIdEvent() {}
-    void serialize(anh::ByteBuffer& buffer) {
+    std::list<Character> characters;
+
+    void serialize(anh::ByteBuffer& buffer) const {
 		buffer.write<uint16_t>(2);
 		buffer.write<uint32_t>(0x65EA4574);
         buffer.write<uint32_t>(characters.size());
@@ -43,9 +40,12 @@ public:
             buffer.write<uint32_t>(character.server_id);
             buffer.write<uint32_t>(character.status);
         });
-
     }
+
+    void deserialize(anh::ByteBuffer buffer) {}
 };
+
+typedef anh::event_dispatcher::BasicEvent<EnumerateCharacterId> EnumerateCharacterIdEvent;
 
 } // packets
 

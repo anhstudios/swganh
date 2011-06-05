@@ -8,12 +8,14 @@
 // Originates on Server
 // http://wiki.swganh.org/index.php/LoginEnumCluster
 namespace packets {
+
 struct Cluster {
     uint32_t server_id;
     std::string server_name;
     // D = 3600 * GMTOffset
     int32_t distance;
 };
+
 struct LoginEnumCluster : public BasePacket
 {
     LoginEnumCluster(uint32_t max_account_chars_ = 0,
@@ -22,17 +24,13 @@ struct LoginEnumCluster : public BasePacket
         , servers(servers_)
         , max_account_chars(max_account_chars_)
     {}
+
+    virtual ~LoginEnumCluster() {}
+
     std::list<Cluster> servers;
     uint32_t max_account_chars;
-};
-
-class LoginEnumClusterEvent : public anh::event_dispatcher::BasicEvent<LoginEnumCluster>{
-public:    
-    LoginEnumClusterEvent(uint32_t max_account_chars_ = 0,
-        std::list<Cluster> servers_ = std::list<Cluster>(), std::shared_ptr<network::Session> session_  = nullptr) 
-        : anh::event_dispatcher::BasicEvent<LoginEnumCluster>("LoginEnumCluster"){}
-    virtual ~LoginEnumClusterEvent() {}
-    void serialize(anh::ByteBuffer& buffer) {
+    
+    void serialize(anh::ByteBuffer& buffer) const {
 		buffer.write<uint16_t>(3);
 		buffer.write<uint32_t>(0xC11C63B9);
         buffer.write<uint32_t>(servers.size());
@@ -43,7 +41,13 @@ public:
         });
         buffer.write<uint32_t>(max_account_chars);
     }
+
+    void deserialize(anh::ByteBuffer buffer) {
+        // @TODO write this member function body
+    }
 };
+
+typedef anh::event_dispatcher::BasicEvent<LoginEnumCluster> LoginEnumClusterEvent;
 
 } // packets
 
