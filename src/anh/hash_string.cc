@@ -22,14 +22,19 @@
 
 using namespace anh;
 
+HashString::HashString(const std::string &std_string)
+    : ident_(reinterpret_cast<void*>(memcrc(std_string)))
+    , ident_string_(std_string)
+{}
+
 HashString::HashString(const char* ident_string)
     : ident_(reinterpret_cast<void*>(memcrc(std::string(ident_string))))
     , ident_string_(ident_string)
 {}
 
-HashString::HashString(const std::string &std_string)
-    : ident_(reinterpret_cast<void*>(memcrc(std_string)))
-    , ident_string_(std_string)
+HashString::HashString(uint32_t ident)
+    : ident_(reinterpret_cast<void*>(ident))
+    , ident_string_("")
 {}
 
 HashString::~HashString() {}
