@@ -26,14 +26,33 @@
 
 #include <tbb/spin_rw_mutex.h>
 
+#include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
 #include "anh/event_dispatcher/event_interface.h"
 
 namespace anh {
 namespace event_dispatcher {
 
+namespace detail {
+    /**
+    * Compile time constraint that ensures that T has serialize and deserialize member functions.
+    */
+    template<typename T>
+    class is_serializable {
+    public:
+        static void Constraints() {
+            void (T::*test1)(anh::ByteBuffer&) const = &T::serialize;
+            void (T::*test2)(anh::ByteBuffer) = &T::deserialize;
+            test1;
+            test2;
+        }
+        
+        is_serializable() { void (*p)() = Constraints; }
+    };
+}
+
 template<typename T>
-class BasicEvent : public EventInterface {
+class BasicEvent : public EventInterface, detail::is_serializable<T> {
 public:
     BasicEvent()
         : type_(std::decay<T>::type::type())
@@ -100,7 +119,10 @@ private:
     uint32_t priority_;
 };
 
-struct NullEventData {};
+struct NullEventData {
+    void serialize(anh::ByteBuffer&) const {}
+    void deserialize(anh::ByteBuffer) {}
+};
 
 typedef BasicEvent<NullEventData> SimpleEvent;
 

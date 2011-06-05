@@ -26,6 +26,15 @@ using namespace std;
 using namespace anh::event_dispatcher;
 
 struct TestEventData {
+    void serialize(anh::ByteBuffer& buffer) const {
+        buffer << test_string;
+        buffer << test_int;
+    }
+    void deserialize(anh::ByteBuffer buffer) {
+        test_string = buffer.read<string>();
+        test_int = buffer.read<int>();
+    }
+
     string test_string;
     int test_int;
 };
