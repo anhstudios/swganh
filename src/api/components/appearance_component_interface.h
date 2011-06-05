@@ -55,7 +55,7 @@ public:
 class NullAppearanceComponent : AppearanceComponentInterface {
 public:
     NullAppearanceComponent()
-		: AppearanceComponentInterface(0) { }
+		: AppearanceComponentInterface("") { }
     const int race() { return race_; }
     const bool gender() { return gender_; }
     const std::string& model() { return model_; }
