@@ -24,8 +24,6 @@
 #include <memory>
 #include <type_traits>
 
-#include <tbb/spin_rw_mutex.h>
-
 #include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
 #include "anh/event_dispatcher/event_interface.h"
@@ -52,7 +50,7 @@ namespace detail {
 }
 
 template<typename T>
-class BasicEvent : public EventInterface, detail::is_serializable<T> {
+class BasicEvent : public std::decay<T>::type, public EventInterface, detail::is_serializable<T> {
 public:
     BasicEvent()
         : type_(std::decay<T>::type::type())
@@ -65,7 +63,7 @@ public:
         , priority_(0) {}
     
     BasicEvent(EventType type, T&& data)
-        : data_(std::forward<T>(data))
+        : std::decay<T>::type(std::forward<T>(data))
         , type_(std::move(type))
         , timestamp_(0)
         , priority_(0) {}
@@ -75,51 +73,42 @@ public:
         , timestamp_(0)
         , priority_(priority) {}
 
-    ~BasicEvent() {}
+    ~BasicEvent() {
+        static_assert(
+            std::has_virtual_destructor<T>::value,
+            "Template argument must have a virtual destructor"
+        );
+    }
 
     const EventType& type() const { 
-        return type_; 
-    }
-
-    T data() { 
-        tbb::spin_rw_mutex::scoped_lock lock(spin_mutex_, false);
-        return data_; 
-    }
-
-    void data(T& data ) { 
-        tbb::spin_rw_mutex::scoped_lock lock(spin_mutex_, true);
-        data_ = data; 
+        return type_;
     }
 
     uint32_t priority() {
-        tbb::spin_rw_mutex::scoped_lock lock(spin_mutex_, false);
         return priority_;
     }
 
     void priority(uint32_t priority) {
-        tbb::spin_rw_mutex::scoped_lock lock(spin_mutex_, true);
         priority_ = priority;
     }
     
     uint64_t timestamp() {
-        tbb::spin_rw_mutex::scoped_lock lock(spin_mutex_, false);
         return timestamp_;
     }
     
     void timestamp(uint64_t timestamp)  {
-        tbb::spin_rw_mutex::scoped_lock lock(spin_mutex_, true);
         timestamp_ = timestamp;
     }
 
 private:
-    tbb::spin_rw_mutex spin_mutex_;
-    T data_;
     EventType type_;
     uint64_t timestamp_;
     uint32_t priority_;
 };
 
-struct NullEventData {
+class NullEventData {
+public:
+    virtual ~NullEventData() {}
     void serialize(anh::ByteBuffer&) const {}
     void deserialize(anh::ByteBuffer) {}
 };

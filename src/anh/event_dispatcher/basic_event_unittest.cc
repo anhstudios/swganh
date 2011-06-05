@@ -26,6 +26,7 @@ using namespace std;
 using namespace anh::event_dispatcher;
 
 struct TestEventData {
+    virtual ~TestEventData() {}
     void serialize(anh::ByteBuffer& buffer) const {
         buffer << test_string;
         buffer << test_int;
@@ -46,8 +47,8 @@ TEST(BasicEventTest, CanMakeEvent) {
 
     auto my_event = make_event("SomeEvent", std::move(test_data));
     
-    EXPECT_EQ("test string", my_event.data().test_string);
-    EXPECT_EQ(12345, my_event.data().test_int);
+    EXPECT_EQ("test string", my_event.test_string);
+    EXPECT_EQ(12345, my_event.test_int);
 }
 
 TEST(BasicEventTest, CanMakeSharedEvent) {
@@ -57,8 +58,8 @@ TEST(BasicEventTest, CanMakeSharedEvent) {
 
     auto my_event = make_shared_event("SomeEvent", std::move(test_data));
 
-    EXPECT_EQ("test string", my_event->data().test_string);
-    EXPECT_EQ(12345, my_event->data().test_int);
+    EXPECT_EQ("test string", my_event->test_string);
+    EXPECT_EQ(12345, my_event->test_int);
 }
 
 TEST(BasicEventTest, CanMakeSimpleEvent) {
