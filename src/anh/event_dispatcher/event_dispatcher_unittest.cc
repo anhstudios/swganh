@@ -28,12 +28,6 @@
 using namespace std;
 using namespace anh::event_dispatcher;
 
-struct TestEventData {
-    std::string test_string;
-    int test_int;
-};
-
-
 /// By default a new instance of the dispatcher should not have any listeners.
 TEST(EventDispatcherTest, HasNoListenersByDefault) {
     EventDispatcher dispatcher;
@@ -141,7 +135,7 @@ TEST(EventDispatcherTest, TriggeringEventNotifiesListeners) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.trigger(my_event));
 
@@ -159,7 +153,7 @@ TEST(EventDispatcherTest, TriggeringAsyncQueuesEvent) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.triggerAsync(my_event));
 
@@ -176,7 +170,7 @@ TEST(EventDispatcherTest, TickingDispatchesQueuedEvents) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.triggerAsync(my_event));
     EXPECT_TRUE(dispatcher.hasEvents());
@@ -194,7 +188,7 @@ TEST(EventDispatcherTest, AbortingEventCancelsFirstOccurance) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.triggerAsync(my_event));
     EXPECT_TRUE(dispatcher.hasEvents());
@@ -219,7 +213,7 @@ TEST(EventDispatcherTest, CanAbortAllEventOccurrances) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     // load up multiples and ensure all are removed    
     EXPECT_TRUE(dispatcher.triggerAsync(my_event));
@@ -275,7 +269,7 @@ TEST(EventDispatcherTest, CallbackIsTriggeredAfterEventProcessing) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     bool callback_triggered = false;
     dispatcher.trigger(my_event, [&callback_triggered] (
@@ -297,7 +291,7 @@ TEST(EventDispatcherTest, CallbackIsTriggeredAfterQueuedEventProcessing) {
     };    
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     // load up multiples and ensure all are removed    
     bool callback_triggered = false;
@@ -323,7 +317,7 @@ TEST(EventDispatcherTest, EventWaitsForCondition) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     bool callback_triggered = false;
     bool proceed = false;
@@ -360,8 +354,8 @@ TEST(EventDispatcherTest, TriggeringEventSetsTimestamp) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event1 = make_shared<SimpleEvent>("some_event_type");
-    auto my_event2 = make_shared<SimpleEvent>("some_event_type");
+    auto my_event1 = make_shared_event("some_event_type");
+    auto my_event2 = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.trigger(my_event1));
     EXPECT_TRUE(dispatcher.triggerAsync(my_event2));
@@ -381,38 +375,4 @@ TEST(EventDispatcherTest, SubscribingWithInvalidEventTypeThrows) {
     ASSERT_THROW(
         dispatcher.subscribe("", my_listener), 
         anh::event_dispatcher::InvalidEventType);
-}
-
-TEST(EventDispatcherTest, CanMakeEvent) {
-    TestEventData test_data;
-    test_data.test_string = "test string";
-    test_data.test_int = 12345;
-
-    auto my_event = make_event("SomeEvent", std::move(test_data));
-    
-    EXPECT_EQ("test string", my_event.test_string);
-    EXPECT_EQ(12345, my_event.test_int);
-}
-
-TEST(EventDispatcherTest, CanMakeSharedEvent) {
-    TestEventData test_data;
-    test_data.test_string = "test string";
-    test_data.test_int = 12345;
-
-    auto my_event = make_shared_event("SomeEvent", std::move(test_data));
-
-    EXPECT_EQ("test string", my_event->test_string);
-    EXPECT_EQ(12345, my_event->test_int);
-}
-
-TEST(EventDispatcherTest, CanMakeSimpleEvent) {
-    auto my_event = make_event("SomeEvent");
-
-    EXPECT_EQ("SomeEvent", my_event.type().ident_string());
-}
-
-TEST(EventDispatcherTest, CanMakeSimpleSharedEvent) {
-    auto my_event = make_shared_event("SomeEvent");
-
-    EXPECT_EQ("SomeEvent", my_event->type().ident_string());
 }

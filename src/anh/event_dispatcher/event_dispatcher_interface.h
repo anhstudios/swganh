@@ -40,18 +40,9 @@ namespace anh {
 namespace event_dispatcher {
     
 typedef std::function<bool (std::shared_ptr<EventInterface>)> EventListenerCallback;
-
-typedef std::pair<uint64_t, EventListenerCallback> EventListener;
-typedef std::list<EventListener> EventListenerList;
-typedef std::map<EventType, EventListenerList> EventListenerMap;
-typedef std::set<EventType> EventTypeSet;
-
 typedef std::function<bool (uint64_t current_time_ms)> TriggerCondition;
 typedef std::function<void (std::shared_ptr<EventInterface>, bool)> PostTriggerCallback;
 
-typedef std::tuple<std::shared_ptr<EventInterface>, boost::optional<TriggerCondition>, boost::optional<PostTriggerCallback>> EventQueueItem;
-typedef tbb::concurrent_queue<EventQueueItem> EventQueue;
-typedef std::deque<EventQueue> EventQueueList;
 
 class EventDispatcherInterface {
 public:
@@ -78,62 +69,6 @@ public:
     virtual bool abort(const EventType& event_type, bool all_of_type = false) = 0;
 
     virtual bool tick(uint64_t timeout_ms = INFINITE_TIMEOUT) = 0;
-};
-
-class NullEventDispatcher : public EventDispatcherInterface {
-public:
-    ~NullEventDispatcher() {}
-    
-    uint64_t subscribe(
-        const EventType& event_type, 
-        EventListenerCallback listener) 
-    {
-        return 0;
-    }
-
-    void unsubscribe(const EventType& event_type, uint64_t listener_id) {}
-    void unsubscribe(const EventType& event_type) {}
-
-    bool trigger(std::shared_ptr<EventInterface> incoming_event) {
-        return false;
-    }
-
-    bool trigger(
-        std::shared_ptr<EventInterface> incoming_event, 
-        PostTriggerCallback callback) 
-    { 
-        return false;
-    }
-    
-    void triggerWhen(
-        std::shared_ptr<EventInterface> incoming_event, 
-        TriggerCondition condition) 
-    {}
-
-    void triggerWhen(
-        std::shared_ptr<EventInterface> incoming_event, 
-        TriggerCondition condition, 
-        PostTriggerCallback callback)
-    {}
-
-    bool triggerAsync(std::shared_ptr<EventInterface> incoming_event) {
-        return false;
-    }
-
-    bool triggerAsync(
-        std::shared_ptr<EventInterface> incoming_event, 
-        PostTriggerCallback callback) 
-    {
-        return false;
-    }
-
-    bool abort(const EventType& event_type, bool all_of_type = false) {
-        return false;
-    }
-
-    bool tick(uint64_t timeout_ms = INFINITE_TIMEOUT) {
-        return false;
-    }
 };
 
 }  // namespace event_dispatcher

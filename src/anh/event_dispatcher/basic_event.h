@@ -24,19 +24,20 @@
 #include <memory>
 #include <type_traits>
 
+#include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
 #include "anh/event_dispatcher/event_interface.h"
 
 namespace anh {
 namespace event_dispatcher {
-
+    
 template<typename T>
-class BasicEvent : public std::remove_reference<T>::type, public EventInterface {
+class BasicEvent : public std::decay<T>::type, public EventInterface {
 public:
     BasicEvent()
-        : type_(std::remove_reference<T>::type::type())
+        : type_(std::decay<T>::type::type())
         , timestamp_(0)
-        , priority_(std::remove_reference<T>::type::priority()) {}
+        , priority_(std::decay<T>::type::priority()) {}
     
     explicit BasicEvent(EventType type)
         : type_(std::move(type))
@@ -44,7 +45,7 @@ public:
         , priority_(0) {}
     
     BasicEvent(EventType type, T&& data)
-        : std::remove_reference<T>::type(std::forward<T>(data))
+        : std::decay<T>::type(std::forward<T>(data))
         , type_(std::move(type))
         , timestamp_(0)
         , priority_(0) {}
@@ -54,11 +55,23 @@ public:
         , timestamp_(0)
         , priority_(priority) {}
 
-    ~BasicEvent() {}
+    ~BasicEvent() {
+        // Ensure constraints on T
+        static_assert(
+            std::has_virtual_destructor<T>::value,
+            "Template argument must have a virtual destructor"
+        );
+        
+        // Ensure that T is serializable
+        void (T::*test1)(anh::ByteBuffer&) const = &T::serialize;
+        void (T::*test2)(anh::ByteBuffer) = &T::deserialize;
+    }
 
-    const EventType& type() { return type_; }
+    const EventType& type() const { 
+        return type_;
+    }
 
-    uint32_t priority() const {
+    uint32_t priority() {
         return priority_;
     }
 
@@ -66,7 +79,7 @@ public:
         priority_ = priority;
     }
     
-    uint64_t timestamp() const {
+    uint64_t timestamp() {
         return timestamp_;
     }
     
@@ -83,7 +96,12 @@ private:
     uint32_t priority_;
 };
 
-struct NullEventData {};
+class NullEventData {
+public:
+    virtual ~NullEventData() {}
+    void serialize(anh::ByteBuffer&) const {}
+    void deserialize(anh::ByteBuffer) {}
+};
 
 typedef BasicEvent<NullEventData> SimpleEvent;
 

@@ -34,12 +34,12 @@ class EventInterface {
 public:
     virtual ~EventInterface() {}
 
-    virtual const EventType& type() = 0;
+    virtual const EventType& type() const = 0;
     
-    virtual uint32_t priority() const = 0;
+    virtual uint32_t priority() = 0;
     virtual void priority(uint32_t priority) = 0;
 
-    virtual uint64_t timestamp() const = 0;
+    virtual uint64_t timestamp() = 0;
     virtual void timestamp(uint64_t timestamp) = 0;
 
 	virtual void serialize(ByteBuffer& buffer) = 0;

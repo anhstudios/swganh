@@ -60,7 +60,7 @@ public:
 class NullSpatialComponent : SpatialComponentInterface {
 public:
     NullSpatialComponent()
-		: SpatialComponentInterface(0) { }
+		: SpatialComponentInterface("") { }
     std::vector<std::string> regions() { return regions_; }
     const uint16_t spatial_location_id() { return spatial_location_id_; }
     const uint32_t last_updated_ms() { return last_updated_ms_; }
