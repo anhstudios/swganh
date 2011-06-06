@@ -103,7 +103,6 @@ add_subdirectory(anh)
 
 ## project modules
 add_subdirectory(test_module)
-add_subdirectory(clientfile_manager)
 add_subdirectory(mod_anh_transform)
 add_subdirectory(api)
 add_subdirectory(packets)

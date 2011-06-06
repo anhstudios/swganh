@@ -115,6 +115,10 @@ void ByteBuffer::read_position(size_t position) {
     read_position_ = position;
 }
 
+void ByteBuffer::read_position_delta(size_t delta) {
+	read_position_ += delta;
+}
+
 size_t ByteBuffer::write_position() const {
     return write_position_;
 }
