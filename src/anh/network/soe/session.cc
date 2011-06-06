@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/service.h>
 #include <anh/network/soe/protocol_opcodes.h>
 #include <anh/network/soe/outgoing_packet.h>
+#include <anh/network/network_events.h>
 #include <anh/utilities.h>
 #include <anh/event_dispatcher/event_interface.h>
 
@@ -197,48 +198,15 @@ void Session::handleChildDataA_(ChildDataA& packet)
 
 	AcknowledgeSequence_(packet.sequence);
 
-	// =================================================
-	//	Temp Begin
-	// =================================================
-	if(packet.sequence == 0)
-	{
-		LOG(WARNING) << "Priority: " << packet.messages.front().read<uint16_t>();
-		LOG(WARNING) << "SWGOpcode: " << std::hex << packet.messages.front().read<uint32_t>();
+    std::for_each(packet.messages.begin(), packet.messages.end(), [this] (anh::ByteBuffer& message) {
+        uint16_t priority = message.read<uint16_t>();
+        uint32_t message_type = message.read<uint32_t>();
 
-        auto lct = make_shared_event("LoginClientToken", packets::LoginClientToken());
-
-		packets::Cluster cluster;
-		cluster.server_id = 3;
-		cluster.server_name = "Anh Dev Den";
-		cluster.distance = 4;
-
-        auto lec = make_shared_event("LoginEnumCluster", packets::LoginEnumCluster());
-		lec->servers.push_back(cluster);
-
-
-		packets::Character dead1ock;
-		dead1ock.character_id = 0xDEADDEAD;
-		dead1ock.name = L"Dead1ock";
-		dead1ock.server_id = 3;
-		dead1ock.status = 1;
-		dead1ock.race_gender_crc = 0x060E51D5;
-
-        auto eci = make_shared_event("EnumerateCharacterId", packets::EnumerateCharacterId());
-		eci->characters.push_back(dead1ock);
-
-        auto lcs = make_shared_event("LoginClusterStatusEvent", packets::LoginClusterStatus());
-		lcs->servers.push_back(packets::ClusterServer(3, std::string("127.0.0.1"), 44462, 44463, 0, 3000, 8, 7, 2, 0));
-		
-		this->SendMessageA(lct);
-		this->SendMessageA(lec);
-		this->SendMessageA(eci);
-		this->SendMessageA(lcs);
-
-	}
-	// =================================================
-	//	Temp End
-	// =================================================
-
+        this->service_->event_dispatcher()->triggerAsync(make_shared_event(
+            message_type,
+            anh::network::RemoteMessage(this->connection_id(), message)
+        ));
+    });
 }
 
 void Session::handleDataFragA_(DataFragA& packet)
@@ -260,6 +228,19 @@ void Session::handleDataFragA_(DataFragA& packet)
 			// Send to translator.
 			incoming_fragmented_total_len_ = 0;
 			incoming_fragmented_curr_len_ = 0;
+
+            ByteBuffer full_packet;
+            std::for_each(
+                incoming_fragmented_messages_.cbegin(), 
+                incoming_fragmented_messages_.cend(), 
+                [&full_packet] (const ByteBuffer& buffer) {                
+                    full_packet.append(buffer);
+                }
+            );
+
+            handleChildDataA_(ChildDataA(std::move(full_packet)));
+
+            incoming_fragmented_messages_.clear();
 		}
 	}
 	// Starting a new frag

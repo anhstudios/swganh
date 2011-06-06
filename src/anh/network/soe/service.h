@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_NETWORK_SOE_SERVICE_H_
 
 #include <anh/byte_buffer.h>
+#include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/network/soe/session.h>
 #include <anh/network/soe/session_manager.h>
 #include <anh/network/soe/socket.h>
@@ -111,6 +112,9 @@ public:
 	// such volitle tools to the global space.
 	friend class Session;
 
+    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
+    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+
 private:
 	/**
 	 * @brief Called when the socket receives a message.
@@ -121,7 +125,7 @@ private:
 	boost::asio::io_service		io_service_;
 
 	SessionManager				session_manager_;
-
+    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
 	uint32_t					crc_seed_;
 
 	// Pipelines

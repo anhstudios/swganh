@@ -80,6 +80,8 @@ LoginApp::LoginApp(int argc, char* argv[], list<string> config_files
     event_dispatcher_->subscribe("Startup", startupListener);
     event_dispatcher_->subscribe("Process", processListener);
     event_dispatcher_->subscribe("Shutdown", shutdownListener);
+
+    soe_service_.event_dispatcher(event_dispatcher());
 }
 LoginApp::~LoginApp() {
     //destructor

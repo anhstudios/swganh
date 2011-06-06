@@ -37,8 +37,9 @@ namespace anh {
 namespace network {
 namespace soe {
 
-Service::Service(void)
-	: crc_seed_(0xDEADBABE)
+Service::Service()
+	: event_dispatcher_(nullptr)
+    , crc_seed_(0xDEADBABE)
 	, session_request_filter_(this)
 	, recv_packet_filter_(this)
 	, compression_filter_(this)
@@ -109,6 +110,14 @@ void Service::OnSocketRecv_(boost::asio::ip::udp::endpoint& remote_endpoint, std
 	{
 		incoming_messages_.push_back(new IncomingPacket(session, message));
 	}
+}
+
+std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> Service::event_dispatcher() {
+    return event_dispatcher_;
+}
+
+void Service::event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher) {
+    event_dispatcher_ = event_dispatcher;
 }
 
 } // namespace soe
