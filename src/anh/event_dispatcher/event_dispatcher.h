@@ -29,6 +29,14 @@
 namespace anh {
 namespace event_dispatcher {
     
+typedef std::pair<uint64_t, EventListenerCallback> EventListener;
+typedef std::list<EventListener> EventListenerList;
+typedef std::map<EventType, EventListenerList> EventListenerMap;
+typedef std::set<EventType> EventTypeSet;
+typedef std::tuple<std::shared_ptr<EventInterface>, boost::optional<TriggerCondition>, boost::optional<PostTriggerCallback>> EventQueueItem;
+typedef tbb::concurrent_queue<EventQueueItem> EventQueue;
+typedef std::deque<EventQueue> EventQueueList;
+    
 class EventDispatcher : public EventDispatcherInterface {
 public:
     enum constants {    
@@ -67,7 +75,7 @@ public:
 private:
     bool validateEventType_(const EventType& event_type) const;
     uint32_t calculatePlacementQueue_(uint32_t priority = 0) const;
-
+    
     EventTypeSet registered_event_types_;
     EventListenerMap event_listeners_;
     EventQueueList event_queues_;

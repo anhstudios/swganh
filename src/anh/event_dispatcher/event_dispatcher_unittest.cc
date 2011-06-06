@@ -18,6 +18,7 @@
 */
 
 #include <algorithm>
+#include <string>
 
 #include <gtest/gtest.h>
 
@@ -134,7 +135,7 @@ TEST(EventDispatcherTest, TriggeringEventNotifiesListeners) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.trigger(my_event));
 
@@ -152,7 +153,7 @@ TEST(EventDispatcherTest, TriggeringAsyncQueuesEvent) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.triggerAsync(my_event));
 
@@ -169,7 +170,7 @@ TEST(EventDispatcherTest, TickingDispatchesQueuedEvents) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.triggerAsync(my_event));
     EXPECT_TRUE(dispatcher.hasEvents());
@@ -187,7 +188,7 @@ TEST(EventDispatcherTest, AbortingEventCancelsFirstOccurance) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.triggerAsync(my_event));
     EXPECT_TRUE(dispatcher.hasEvents());
@@ -212,7 +213,7 @@ TEST(EventDispatcherTest, CanAbortAllEventOccurrances) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     // load up multiples and ensure all are removed    
     EXPECT_TRUE(dispatcher.triggerAsync(my_event));
@@ -268,7 +269,7 @@ TEST(EventDispatcherTest, CallbackIsTriggeredAfterEventProcessing) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     bool callback_triggered = false;
     dispatcher.trigger(my_event, [&callback_triggered] (
@@ -290,7 +291,7 @@ TEST(EventDispatcherTest, CallbackIsTriggeredAfterQueuedEventProcessing) {
     };    
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     // load up multiples and ensure all are removed    
     bool callback_triggered = false;
@@ -316,7 +317,7 @@ TEST(EventDispatcherTest, EventWaitsForCondition) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event = make_shared<SimpleEvent>("some_event_type");
+    auto my_event = make_shared_event("some_event_type");
 
     bool callback_triggered = false;
     bool proceed = false;
@@ -353,8 +354,8 @@ TEST(EventDispatcherTest, TriggeringEventSetsTimestamp) {
     
     dispatcher.subscribe("some_event_type", my_listener);
 
-    auto my_event1 = make_shared<SimpleEvent>("some_event_type");
-    auto my_event2 = make_shared<SimpleEvent>("some_event_type");
+    auto my_event1 = make_shared_event("some_event_type");
+    auto my_event2 = make_shared_event("some_event_type");
 
     EXPECT_TRUE(dispatcher.trigger(my_event1));
     EXPECT_TRUE(dispatcher.triggerAsync(my_event2));

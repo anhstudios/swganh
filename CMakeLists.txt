@@ -5,7 +5,7 @@ project(bootstrap CXX)
 # current version
 set(swganh_VERSION_MAJOR 1)
 set(swganh_VERSION_MINOR 0)
-set(swganh_VERSION_PATCH 2)
+set(swganh_VERSION_PATCH 3)
 set(swganh_VERSION 
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 	
@@ -31,6 +31,8 @@ set(vendor_libraries "")
 set(vendor_args "")
 
 if(MSVC10 AND NOT DEFINED VENDOR_PREFIX AND NOT USE_SYSTEM_LIBRARIES)
+    set(VENDOR_MD5 09dfb24228fe51be1bbe32400e7ffe7e)
+    
 	include(FetchPreBuiltDependencies)
 	
     # Configure and build the SWGANH project

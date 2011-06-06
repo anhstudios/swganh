@@ -21,23 +21,32 @@
 #define LIBANH_EVENT_DISPATCHER_BASIC_EVENT_H_
 
 #include <cstdint>
+#include <memory>
+#include <type_traits>
 
+#include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
 #include "anh/event_dispatcher/event_interface.h"
 
 namespace anh {
 namespace event_dispatcher {
-
+    
 template<typename T>
-class BasicEvent : public T, public EventInterface {
+class BasicEvent : public std::decay<T>::type, public EventInterface {
 public:
     BasicEvent()
-        : type_(T::type())
+        : type_(std::decay<T>::type::type())
         , timestamp_(0)
-        , priority_(T::priority()) {}
+        , priority_(std::decay<T>::type::priority()) {}
     
     explicit BasicEvent(EventType type)
         : type_(std::move(type))
+        , timestamp_(0)
+        , priority_(0) {}
+    
+    BasicEvent(EventType type, T&& data)
+        : std::decay<T>::type(std::forward<T>(data))
+        , type_(std::move(type))
         , timestamp_(0)
         , priority_(0) {}
     
@@ -46,11 +55,23 @@ public:
         , timestamp_(0)
         , priority_(priority) {}
 
-    ~BasicEvent() {}
+    ~BasicEvent() {
+        // Ensure constraints on T
+        static_assert(
+            std::has_virtual_destructor<T>::value,
+            "Template argument must have a virtual destructor"
+        );
+        
+        // Ensure that T is serializable
+        void (T::*test1)(anh::ByteBuffer&) const = &T::serialize;
+        void (T::*test2)(anh::ByteBuffer) = &T::deserialize;
+    }
 
-    const EventType& type() { return type_; }
+    const EventType& type() const { 
+        return type_;
+    }
 
-    uint32_t priority() const {
+    uint32_t priority() {
         return priority_;
     }
 
@@ -58,7 +79,7 @@ public:
         priority_ = priority;
     }
     
-    uint64_t timestamp() const {
+    uint64_t timestamp() {
         return timestamp_;
     }
     
@@ -72,9 +93,56 @@ private:
     uint32_t priority_;
 };
 
-struct NullEventData {};
+class NullEventData {
+public:
+    virtual ~NullEventData() {}
+    void serialize(anh::ByteBuffer&) const {}
+    void deserialize(anh::ByteBuffer) {}
+};
 
 typedef BasicEvent<NullEventData> SimpleEvent;
+
+/**
+* Creates an event based on the given name and data.
+*
+* @param type The type of event to create.
+* @param data The data contents of the event to create.
+* @returns The newly created event.
+*/
+template<typename T> inline
+BasicEvent<T> make_event(EventType type, T&& data) {
+    BasicEvent<T> created_event(type, std::forward<T>(data));
+    return created_event;
+}
+
+/**
+* Creates a simple event with no data.
+*
+* @param type The type of event to create.
+* @returns The newly created event.
+*/
+SimpleEvent make_event(EventType type);
+
+/**
+* Creates an event based on the given name and data in a shared_ptr container.
+*
+* @param type The type of event to create.
+* @param data The data contents of the event to create.
+* @returns The newly created event.
+*/
+template<typename T> inline
+std::shared_ptr<BasicEvent<T>> make_shared_event(EventType type, T&& data) {
+    auto created_event = std::make_shared<BasicEvent<T>>(type, std::forward<T>(data));
+    return created_event;
+}
+
+/**
+* Creates a simple event with no data in a shared_ptr container.
+*
+* @param type The type of event to create.
+* @returns The newly created event.
+*/
+std::shared_ptr<SimpleEvent> make_shared_event(EventType type);
 
 }  // namespace event_dispatcher
 }  // namespace anh

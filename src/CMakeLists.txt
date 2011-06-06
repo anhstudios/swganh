@@ -38,14 +38,14 @@ if(MSVC)
 	
 	# any custom flags that need set for VS compilers only should be set here
 	if(MSVC AND NOT CMAKE_GENERATOR MATCHES "Visual Studio 7")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4251")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244 /wd4251 /wd4190 /wd4373 /wd4275")
         message(STATUS "- MSVC: Disabled generic compiletime warnings")
     endif()
     
     ADD_DEFINITIONS (/D _WIN32_WINNT=${_WIN32_WINNT})
     MESSAGE(STATUS "- MSVC: Set minimum Windows API version")
     
-    ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D WIN32_LEAN_AND_MEAN)
+    ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D WIN32_LEAN_AND_MEAN /D NOGDI)
     MESSAGE(STATUS "- MSVC: Disabled NON-SECURE warnings")
         
     ADD_DEFINITIONS (/D __TBB_NO_IMPLICIT_LINKAGE=1)

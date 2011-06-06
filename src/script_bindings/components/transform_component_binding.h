@@ -50,7 +50,6 @@ void define_class_transform_component() {
     void (TransformComponent::*set_rot4)(const float, const float, const float, const float) = &TransformComponent::rotation;
     const float         (TransformComponent::*get_speed)(void)                  = &TransformComponent::speed;
     void                (TransformComponent::*set_speed)(const float)           = &TransformComponent::speed;
-    //void                (TransformComponent::*handle_message)(const shared_ptr<TransformMessage>) = &TransformComponent::HandleMessage;
     
     // TODO: add way to get internal TransformComponent based on id
     class_<TransformComponent, boost::noncopyable>("TransformComponent",
@@ -94,20 +93,7 @@ void define_class_transform_component() {
         .def("HandleMessage", &TransformComponent::HandleMessage)
         ;
 }
-void define_class_transform_message()
-{
-    class_<shared_ptr<TransformMessage> >("TransformMessagePtr", no_init)
-        .def("init", &TransformMessage::createTransformMessage);
 
-    class_<TransformMessage >("TransformMessage", no_init)
-        .def("init", &TransformMessage::createTransformMessage)
-        .staticmethod("init")
-        .def("parent_id", &TransformMessage::parent_id)
-        .def("position", &TransformMessage::position, return_value_policy<copy_const_reference>())
-        .def("rotation", &TransformMessage::rotation, return_value_policy<copy_const_reference>())
-        .def("speed", &TransformMessage::speed)
-        ;
-}
 } // components
 } // anh_python
 #endif // SCRIPT_BINDINGS_TRANSFORM_COMPONENT_BINDING__H_
