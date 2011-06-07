@@ -37,6 +37,8 @@ namespace anh {
 namespace network {
 namespace soe {
 
+#pragma warning(push)
+#pragma warning(disable:4355)
 Service::Service()
 	: event_dispatcher_(nullptr)
     , crc_seed_(0xDEADBABE)
@@ -66,6 +68,7 @@ Service::Service()
 	outgoing_pipeline_.add_filter(crc_out_filter_);
 	outgoing_pipeline_.add_filter(send_packet_filter_);
 }
+#pragma warning(pop)
 
 Service::~Service(void)
 {	
