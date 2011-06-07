@@ -88,10 +88,23 @@ public:
         timestamp_ = timestamp;
     }
 
+    /**
+    * If the data policy class T implements serialization semantics this method
+    * will serialize it's contents into the buffer, otherwise the buffer is left unmodified.
+    *
+    * @param buffer The source buffer to fill data with.
+    */
     void serialize(anh::ByteBuffer& buffer) const {
         serialize<T>(buffer);
     }
-
+    
+    /**
+    * If the data policy class T implements serialization semantics this method
+    * will fill the data policy class with data from the buffer, otherwise the 
+    * buffer is left unmodified.
+    *
+    * @param buffer The source buffer to fill data with.
+    */
     void deserialize(anh::ByteBuffer buffer) {       
         deserialize<std::decay<T>::type>(std::move(buffer));
     }
