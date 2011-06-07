@@ -45,10 +45,10 @@ void file_manager::loadSWGTREConfig_()
 	{
 		std::string buffer;
 		std::tr1::regex pattern("searchTree_.*= *\"(.+)\"");
+		std::tr1::smatch result;
 		while(config.good())
 		{
 			std::getline(config, buffer);	
-			std::tr1::smatch result;
 			std::tr1::regex_search(buffer, result, pattern);
 			if(result.size() > 0)
 			{

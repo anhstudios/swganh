@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../interpreter_interface.h"
 
 #include <map>
+#include <unordered_map>
 #include <set>
 #include <functional>
 #include <cstdint>
@@ -142,7 +143,7 @@ namespace anh
 					void _handleDERVXXXX(anh::ByteBuffer& buf);
 
 					//Attributes this object iff might have
-					std::map<std::string, boost::any> attributes_;
+					std::unordered_map<std::string, boost::any> attributes_;
 				
 					//Parent files this object iff might have
 					std::set<std::string> parentFiles;

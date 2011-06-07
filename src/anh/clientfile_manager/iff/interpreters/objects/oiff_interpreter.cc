@@ -219,7 +219,7 @@ void oiff_interpreter::debug()
 		++parentIt;
 	}
 
-	std::map<std::string, boost::any>::const_iterator it = attributes_.cbegin();
+	std::unordered_map<std::string, boost::any>::const_iterator it = attributes_.cbegin();
 
 	while(it != attributes_.cend())
 	{
@@ -254,7 +254,7 @@ void oiff_interpreter::load_aggregate_data(anh::clientfile_manager::file_manager
 {
 	if(!has_aggregate_)
 	{
-		std::map<std::string, boost::any> aggregateAttributeMap;
+		std::unordered_map<std::string, boost::any> aggregateAttributeMap;
 
 		std::set<std::string>::iterator it = parentFiles.begin();
 		std::set<std::string>::iterator end = parentFiles.end();
@@ -264,8 +264,8 @@ void oiff_interpreter::load_aggregate_data(anh::clientfile_manager::file_manager
 			subI->load_aggregate_data(f);
 
 			//Now we continue to build up our map.
-			std::map<std::string, boost::any>::iterator sub_it = subI->attributes_.begin();
-			std::map<std::string, boost::any>::iterator sub_end = subI->attributes_.end();
+			std::unordered_map<std::string, boost::any>::iterator sub_it = subI->attributes_.begin();
+			std::unordered_map<std::string, boost::any>::iterator sub_end = subI->attributes_.end();
 
 			while(sub_it != sub_end)
 			{
@@ -276,8 +276,8 @@ void oiff_interpreter::load_aggregate_data(anh::clientfile_manager::file_manager
 			++it;
 		}
 
-		std::map<std::string, boost::any>::iterator old_it = attributes_.begin();
-		std::map<std::string, boost::any>::iterator old_end = attributes_.end();
+		std::unordered_map<std::string, boost::any>::iterator old_it = attributes_.begin();
+		std::unordered_map<std::string, boost::any>::iterator old_end = attributes_.end();
 		while(old_it != old_end)
 		{
 			aggregateAttributeMap.insert(std::move(*old_it));
@@ -291,8 +291,8 @@ void oiff_interpreter::load_aggregate_data(anh::clientfile_manager::file_manager
 
 void oiff_interpreter::load_referenced_files(anh::clientfile_manager::file_manager& f)
 {
-	std::map<std::string, boost::any>::iterator itr;
-	std::map<std::string, boost::any>::iterator end_itr;
+	std::unordered_map<std::string, boost::any>::iterator itr;
+	std::unordered_map<std::string, boost::any>::iterator end_itr;
 
 	//animationMapFilename
 	//appearanceFilename
