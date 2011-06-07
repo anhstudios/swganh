@@ -30,6 +30,17 @@
 
 namespace anh {
 namespace event_dispatcher {
+
+namespace detail {
+    template<typename T>
+    struct IsSerializable {
+        template<typename U, void(U::*)(anh::ByteBuffer&) const> struct HasSerialize {};
+        template<typename U, void(U::*)(anh::ByteBuffer)> struct HasDeserialize {};
+        template<typename U> static char Test(HasSerialize<U, &U::serialize>*, HasDeserialize<U, &U::deserialize>*);
+        template<typename U> static int Test(...);
+        static const bool value = sizeof(Test<T>(nullptr, nullptr)) == sizeof(char);
+    };
+}
     
 template<typename T>
 class BasicEvent : public std::decay<T>::type, public EventInterface {
@@ -55,17 +66,7 @@ public:
         , timestamp_(0)
         , priority_(priority) {}
 
-    ~BasicEvent() {
-        // Ensure constraints on T
-        static_assert(
-            std::has_virtual_destructor<T>::value,
-            "Template argument must have a virtual destructor"
-        );
-        
-        // Ensure that T is serializable
-        void (T::*test1)(anh::ByteBuffer&) const = &T::serialize;
-        void (T::*test2)(anh::ByteBuffer) = &T::deserialize;
-    }
+    ~BasicEvent() {}
 
     const EventType& type() const { 
         return type_;
@@ -87,18 +88,42 @@ public:
         timestamp_ = timestamp;
     }
 
+    void serialize(anh::ByteBuffer& buffer) const {
+        serialize<T>(buffer);
+    }
+
+    void deserialize(anh::ByteBuffer buffer) {       
+        deserialize<std::decay<T>::type>(std::move(buffer));
+    }
+
 private:
+
+    template<typename T1>
+    typename std::enable_if<!detail::IsSerializable<T1>::value, void>::type
+    serialize(anh::ByteBuffer& buffer) const {}
+    
+    template<typename T1>
+    typename std::enable_if<detail::IsSerializable<T1>::value, void>::type
+    serialize(anh::ByteBuffer& buffer) const {
+        T1::serialize(buffer);
+    }
+    
+    template<typename T1>
+    typename std::enable_if<!detail::IsSerializable<T1>::value, void>::type
+    deserialize(anh::ByteBuffer& buffer) {}
+    
+    template<typename T1>
+    typename std::enable_if<detail::IsSerializable<T1>::value, void>::type
+    deserialize(anh::ByteBuffer buffer) {
+        T1::deserialize(std::move(buffer));
+    }
+
     EventType type_;
     uint64_t timestamp_;
     uint32_t priority_;
 };
 
-class NullEventData {
-public:
-    virtual ~NullEventData() {}
-    void serialize(anh::ByteBuffer&) const {}
-    void deserialize(anh::ByteBuffer) {}
-};
+struct NullEventData {};
 
 typedef BasicEvent<NullEventData> SimpleEvent;
 
