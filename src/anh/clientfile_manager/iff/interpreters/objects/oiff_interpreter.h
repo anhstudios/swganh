@@ -143,7 +143,7 @@ namespace anh
 					void _handleDERVXXXX(anh::ByteBuffer& buf);
 
 					//Attributes this object iff might have
-					std::unordered_map<std::string, boost::any> attributes_;
+					std::map<std::string, boost::any> attributes_;
 				
 					//Parent files this object iff might have
 					std::set<std::string> parentFiles;
