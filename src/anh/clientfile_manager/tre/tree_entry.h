@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define TREE_ENTRY_H
 
 #include <cstdint> //For the std::uint32_t's
+#include <memory>
 
 namespace anh
 {
@@ -53,7 +54,7 @@ namespace anh
 				std::uint32_t fileOffset() {return fileOffset_;}
 				std::uint32_t compressionType() {return compressionType_;}
 				std::uint32_t compressed_size() {return compressed_size_;}
-				tree_archive* parentTree() {return parentTree_;}
+				std::shared_ptr<tree_archive> parentTree() {return parentTree_;}
 			private:
 
 				std::uint32_t checksum_;
@@ -61,9 +62,8 @@ namespace anh
 				std::uint32_t fileOffset_;
 				std::uint32_t compressionType_;
 				std::uint32_t compressed_size_;
-				std::uint32_t name_offset_;
 
-				tree_archive* parentTree_;
+				std::shared_ptr<tree_archive> parentTree_;
 
 				friend tree_archive; //We only want tree_archives making tree_entries.
 				tree_entry() {}

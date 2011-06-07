@@ -17,25 +17,15 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 using namespace anh::clientfile_manager::tree;
 using namespace boost::filesystem2;
 
-anh::ByteBuffer tree_archive::getFile(const tree_entry& entry) const
+struct raw_tree_entry
 {
-	unsigned char* compressed_data = new unsigned char[entry.compressed_size_];
-
-	fseek(intrl_stream, entry.fileOffset_, SEEK_SET);
-	fread(compressed_data, entry.compressed_size_, 1, intrl_stream);
-
-	unsigned char* data = new unsigned char[entry.uncompressed_size_];
-
-	int z_result = uncompress(data, (unsigned long*)&entry.uncompressed_size_, 
-								compressed_data, entry.compressed_size_);
-	delete[] compressed_data;
-
-	anh::ByteBuffer result;
-	result.write(data, entry.uncompressed_size_);
-	delete[] data;
-	
-	return result;
-}
+	std::uint32_t checksum_;
+	std::uint32_t uncompressed_size_;
+	std::uint32_t fileOffset_;
+	std::uint32_t compressionType_;
+	std::uint32_t compressed_size_;
+	std::uint32_t name_offset_;
+};
 
 void tree_archive::loadTree_(FILE* inputstream, std::map<std::string, const tree_entry>& entries)
 {
@@ -105,17 +95,49 @@ void tree_archive::loadTree_(FILE* inputstream, std::map<std::string, const tree
 		}
 
 		unsigned int entry_count = lookupData_finalSize/24;
+		
+		raw_tree_entry entryBuffer;
 		for(unsigned int i=0; i < entry_count; ++i)
 		{
+			//First we load the data raw!
+			memcpy(&entryBuffer, lookupData_block + 24*i , 24);
+			
+			//Then we copy it into the actual entry
 			tree_entry latestEntry;
-			memcpy(&latestEntry, lookupData_block + 24*i , 24);
-			latestEntry.parentTree_ = this;
+			latestEntry.checksum_ = entryBuffer.checksum_;
+			latestEntry.uncompressed_size_ = entryBuffer.uncompressed_size_;
+			latestEntry.fileOffset_ = entryBuffer.fileOffset_;
+			latestEntry.compressionType_ = entryBuffer.compressionType_;
+			latestEntry.compressed_size_ = entryBuffer.compressed_size_;
+			
+			//Then we setup our shared_from_this
+			latestEntry.parentTree_ = shared_from_this();
 			entries.insert(std::make_pair<std::string, tree_entry>(
-							std::string((char*)&names_block[latestEntry.name_offset_]), 
+							std::string((char*)&names_block[entryBuffer.name_offset_]), 
 							std::move(latestEntry)));
 		}
 		
 		delete[] lookupData_block;
 		delete[] names_block;
 	}
+}
+
+anh::ByteBuffer tree_archive::getFile(const tree_entry& entry) const
+{
+	unsigned char* compressed_data = new unsigned char[entry.compressed_size_];
+
+	fseek(intrl_stream, entry.fileOffset_, SEEK_SET);
+	fread(compressed_data, entry.compressed_size_, 1, intrl_stream);
+
+	unsigned char* data = new unsigned char[entry.uncompressed_size_];
+
+	int z_result = uncompress(data, (unsigned long*)&entry.uncompressed_size_, 
+								compressed_data, entry.compressed_size_);
+	delete[] compressed_data;
+
+	anh::ByteBuffer result;
+	result.write(data, entry.uncompressed_size_);
+	delete[] data;
+	
+	return result;
 }

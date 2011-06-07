@@ -47,7 +47,7 @@ namespace anh
 			/**
 				@brief Acts as a frontend for a .tre file providing convienience methods like getFile()
 			*/
-			class tree_archive
+			class tree_archive : public std::enable_shared_from_this<tree_archive>
 			{
 			public:
 				/**
@@ -56,13 +56,9 @@ namespace anh
 					@param filename a a boost filesystem path of the filesystem path of the .tre file to open.
 					@param entries a reference a map into which this archive will insert it's index.
 				*/
-				tree_archive(boost::filesystem::path& path, std::map<std::string, const tree::tree_entry>& entries)
+				tree_archive(boost::filesystem::path& path)
 				{
 					intrl_stream = fopen(path.file_string().c_str(), "rb");
-					if(intrl_stream != nullptr)
-					{
-						loadTree_(intrl_stream, entries);
-					}
 				}
 
 				/**
@@ -71,12 +67,21 @@ namespace anh
 					@param filename a string of the filesystem path of the .tre file to open.
 					@param entries a reference a map into which this archive will insert it's index.
 				*/
-				tree_archive(std::string& filename, std::map<std::string, const tree::tree_entry>& entries)
+				tree_archive(std::string& filename)
 				{	
 					intrl_stream = fopen(filename.c_str(), "rb");
+				}
+
+				bool start(std::map<std::string, const tree::tree_entry>& entries)
+				{
 					if(intrl_stream != nullptr)
 					{
 						loadTree_(intrl_stream, entries);
+						return true;
+					}
+					else
+					{
+						return false;
 					}
 				}
 

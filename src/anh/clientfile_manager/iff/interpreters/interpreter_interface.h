@@ -58,13 +58,6 @@ namespace anh
 						This should only be called by the IFFFile code.
 					*/
 					virtual void interpret(std::shared_ptr<iff::file_node> node) = 0;
-
-				protected:
-
-					/**
-						@brief A convienience method that really needs moved into the ByteBuffer class
-					*/
-					static std::string readStringFromByteBuffer(anh::ByteBuffer& b);
 				};
 			};
 		};

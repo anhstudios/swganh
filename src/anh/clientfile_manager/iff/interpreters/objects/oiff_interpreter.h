@@ -97,17 +97,12 @@ namespace anh
 
 						@return a boost::any casted shared_ptr<T> that was requested
 					*/
-					template <class T> std::shared_ptr<T> getAttribute(std::string& key);
+					template <class T> std::shared_ptr<T> attribute(std::string& key);
 				
-					/**
-						@brief returns an attribute loaded from the object iff associated with this interpreter.
+					std::uint32_t attribute_uint32(std::string& key);
+					float attribute_float(std::string& key);
+					bool attribute_bool(std::string& key);
 
-						@param key the key to lookup
-						@param giveWithoutSharedPtr a paramter which tells the compiler not to use the other template.
-
-						@return a boost::any casted U that was requested
-					*/
-					template <class U> U getAttribute(std::string& key, bool giveWithoutSharedPtr);
 
 					/**
 						@brief A function which causes this OIFFInterpreter to load parent files it needs and then copy
@@ -115,7 +110,15 @@ namespace anh
 
 						@param f the filemanager instance for retriving the necessary files.
 					*/
-					void loadAggregateData(file_manager& f);
+					void load_aggregate_data(file_manager& f);
+
+					/**
+						@brief Causes this OIFFInterpreter to load any referenced files it has. It will use the filemanager
+						to accomplish this.
+
+						@param f the filemanager instance for retrieving the necessary files.
+					*/
+					void load_referenced_files(file_manager& f);
 
 					/**
 						@brief a simple output function for debugging values.
@@ -127,6 +130,7 @@ namespace anh
 					static AttributeHandlerIndex attributeHandler_;
 
 					//Internal Datatype handling functions used to parse the object files
+					static void _handleUnhandled(oiff_interpreter* dst, std::string& name, anh::ByteBuffer& buf);
 					static void _handleClientString(oiff_interpreter* dst, std::string& name, anh::ByteBuffer& buf);
 					static void _handleString(oiff_interpreter* dst, std::string& name, anh::ByteBuffer& buf);
 					static void _handleInt(oiff_interpreter* dst, std::string& name, anh::ByteBuffer& buf);
@@ -136,7 +140,6 @@ namespace anh
 					//Internal Node Handling functions
 					void _handleXXXX(anh::ByteBuffer& buf);
 					void _handleDERVXXXX(anh::ByteBuffer& buf);
-					void _handlePCNT(anh::ByteBuffer& buf);
 
 					//Attributes this object iff might have
 					std::map<std::string, boost::any> attributes_;
@@ -145,7 +148,7 @@ namespace anh
 					std::set<std::string> parentFiles;
 
 					//Stored for determing if we've already loaded our aggregate information.
-					bool _hasAggregate;
+					bool has_aggregate_;
 				};
 			};
 		};

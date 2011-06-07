@@ -18,57 +18,16 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 
 using namespace anh::clientfile_manager;
 
-std::string file_manager::getSWGPath_(const std::string& base_string, const std::string& current_file)
+file_manager::file_manager(std::string basedir)
+	: basedir_(boost::filesystem::path(basedir))
 {
-	if(base_string.size() > 0 && base_string[base_string.size()-1] == '/')
-	{
-		if(current_file.size() > base_string.size())
-		{
-			return current_file.substr(base_string.size(), current_file.size());
-		}
-	}
-	else
-	{
-		if(current_file.size() > base_string.size()+1)
-		{
-			return current_file.substr(base_string.size()+1, current_file.size());
-		}
-	}
-	return "";
+	loadSWGTREConfig_();
 }
 
-bool file_manager::beginsWith_(const std::string& partial_path, const std::string& test_string)
+file_manager::file_manager(boost::filesystem::path& basedir)
+	: basedir_(basedir)
 {
-	if(partial_path.size() > test_string.size()) 
-		return false;
-
-	for(size_t i = 0; i < partial_path.size(); ++i)
-	{
-		if(partial_path[i] != test_string[i])
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-bool file_manager::beginsWithNoDir_(const std::string& partial_path, const std::string& test_string)
-{
-	if(partial_path.size() > test_string.size()) 
-		return false;
-
-	for(size_t i = 0; i < test_string.size(); ++i)
-	{
-		if(i < partial_path.size() && partial_path[i] != test_string[i])
-		{
-			return false;
-		} 
-		else if(i >= partial_path.size() && test_string[i] == '/')
-		{
-			return false;
-		}
-	}
-	return true;
+	loadSWGTREConfig_();
 }
 
 void file_manager::loadSWGTREConfig_()
@@ -111,19 +70,64 @@ void file_manager::loadSWGTREConfig_()
 
 		for(int i=paths.size()-1; i >= 0; --i)
 		{
-			tree::tree_archive* tre = new tree::tree_archive(paths[i], fileMap_);
+			std::shared_ptr<tree::tree_archive> tree = std::make_shared<tree::tree_archive>(paths[i]);
+			tree->start(fileMap_);
 		}
 	}
 }
 
-file_manager::file_manager(std::string basedir)
-	: basedir_(boost::filesystem::path(basedir))
+std::string file_manager::getSWGPath_(const std::string& base_string, const std::string& current_file)
 {
-	loadSWGTREConfig_();
+	if(base_string.size() > 0 && base_string[base_string.size()-1] == '/')
+	{
+		if(current_file.size() > base_string.size())
+		{
+			return current_file.substr(base_string.size(), current_file.size());
+		}
+	}
+	else
+	{
+		if(current_file.size() > base_string.size()+1)
+		{
+			return current_file.substr(base_string.size()+1, current_file.size());
+		}
+	}
+	return "";
 }
 
-file_manager::file_manager(boost::filesystem::path& basedir)
-	: basedir_(basedir)
+bool file_manager::beginsWith_(const std::string& partial_path, const std::string& test_string)
 {
-	loadSWGTREConfig_();
+	if(partial_path.size() > test_string.size()) 
+		return false;
+
+	for(size_t i = 0; i < partial_path.size(); ++i)
+	{
+		if(partial_path[i] != test_string[i])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool file_manager::beginsWithNoDir_(const std::string& partial_path, const std::string& test_string)
+{
+	size_t partial_path_size = partial_path.size();
+	size_t test_string_size = test_string.size();
+
+	if(partial_path_size > test_string_size) 
+		return false;
+
+	for(size_t i = 0; i < test_string_size; ++i)
+	{
+		if(i < partial_path_size && partial_path[i] != test_string[i])
+		{
+			return false;
+		} 
+		else if(i >= partial_path_size && test_string[i] == '/')
+		{
+			return false;
+		}
+	}
+	return true;
 }

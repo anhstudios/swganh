@@ -21,13 +21,16 @@ pob_interpreter::NodeNameIndex pob_interpreter::nameLookup_;
 pob_interpreter::pob_interpreter()
 	: interpreter_interface()
 {
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("INDX"), bind(&pob_interpreter::_handleINDX, _1, _2)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0003DATA"), bind(&pob_interpreter::_handle0003DATA, _1, _2)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0005DATA"), bind(&pob_interpreter::_handle0005DATA, _1, _2)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTL"), bind(&pob_interpreter::_handlePRTL, _1, _2)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTSPRTL"), bind(&pob_interpreter::_handlePRTL, _1, _2)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTL0004"), bind(&pob_interpreter::_handlePRTL0004, _1, _2)));
-	nameLookup_.insert(make_pair<string, NodeFunctor>(string("0000VERT"), bind(&pob_interpreter::_handle0000VERT, _1, _2)));
+	if(nameLookup_.empty())
+	{
+		nameLookup_.insert(make_pair<string, NodeFunctor>(string("INDX"), bind(&pob_interpreter::_handleINDX, _1, _2)));
+		nameLookup_.insert(make_pair<string, NodeFunctor>(string("0003DATA"), bind(&pob_interpreter::_handle0003DATA, _1, _2)));
+		nameLookup_.insert(make_pair<string, NodeFunctor>(string("0005DATA"), bind(&pob_interpreter::_handle0005DATA, _1, _2)));
+		nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTL"), bind(&pob_interpreter::_handlePRTL, _1, _2)));
+		nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTSPRTL"), bind(&pob_interpreter::_handlePRTL, _1, _2)));
+		nameLookup_.insert(make_pair<string, NodeFunctor>(string("PRTL0004"), bind(&pob_interpreter::_handlePRTL0004, _1, _2)));
+		nameLookup_.insert(make_pair<string, NodeFunctor>(string("0000VERT"), bind(&pob_interpreter::_handle0000VERT, _1, _2)));
+	}
 }
 
 void pob_interpreter::interpret(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
@@ -70,15 +73,18 @@ void pob_interpreter::_handle0005DATA(pob_interpreter* pob, anh::ByteBuffer& dat
 	Cell cell;
 	cell.links.reserve(data.read<std::uint32_t>());
 	cell.unkFlag2 = data.read<char>();
-	cell.name = readStringFromByteBuffer(data);
-	cell.mesh = readStringFromByteBuffer(data);
+	cell.name = data.read<std::string>(false,true);
+	cell.mesh = data.read<std::string>(false,true);
 	cell.unkFlag3 = data.read<char>();
-	cell.collision = readStringFromByteBuffer(data);
+	cell.collision = data.read<std::string>(false,true);
 	pob->cells_.push_back(std::move(cell));
 }
 
 void pob_interpreter::_handle0000VERT(pob_interpreter* pob, anh::ByteBuffer& data)
 {
+	if(!(pob->cells_.size() > 0))
+		return;
+
 	Cell& cell = pob->cells_[pob->cells_.size()-1];
 	
 	std::uint32_t count = data.size()/12;
@@ -96,6 +102,9 @@ void pob_interpreter::_handle0000VERT(pob_interpreter* pob, anh::ByteBuffer& dat
 
 void pob_interpreter::_handleINDX(pob_interpreter* pob, anh::ByteBuffer& data)
 {
+	if(!(pob->cells_.size() > 0))
+		return;
+
 	Cell& cell = pob->cells_[pob->cells_.size()-1];
 
 	std::uint32_t count = data.size()/12;
@@ -113,6 +122,9 @@ void pob_interpreter::_handleINDX(pob_interpreter* pob, anh::ByteBuffer& data)
 
 void pob_interpreter::_handlePRTL0004(pob_interpreter* pob, anh::ByteBuffer& data)
 {
+	if(!(pob->cells_.size() > 0))
+		return;
+
 	Cell& cell = pob->cells_[pob->cells_.size()-1];
 
 	Link link;

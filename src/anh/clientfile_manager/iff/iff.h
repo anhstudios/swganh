@@ -78,6 +78,11 @@ namespace anh
 			private:
 				void loadIFF_(FILE* stream);
 				void loadIFF_(anh::ByteBuffer& inputstream);
+				bool isNodeNameCharacter_(char c);
+				unsigned int getNameSize_(char namedata[], unsigned int size);
+				bool childIsNode_(anh::ByteBuffer& input);
+				std::string getIFFName_(anh::ByteBuffer& input);
+
 				std::vector<std::shared_ptr<clientfile_manager::iff::node>> headNodes;
 				std::shared_ptr<interpreters::interpreter_interface> interpreter_;
 			};

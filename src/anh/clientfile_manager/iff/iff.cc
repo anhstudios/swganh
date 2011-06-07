@@ -17,18 +17,6 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 
 using namespace anh::clientfile_manager::iff;
 
-iff_file::iff_file(iff_file&& other)
-{
-	*this = std::move(other);
-}
-
-iff_file& iff_file::operator=(iff_file&& other)
-{
-	interpreter_ = other.interpreter_;
-	headNodes = other.headNodes;
-	return *this;
-}
-
 iff_file::iff_file(std::string filename, std::shared_ptr<interpreters::interpreter_interface> interpreter)
 	: interpreter_(interpreter)
 {
@@ -56,55 +44,31 @@ iff_file::iff_file(anh::ByteBuffer& input, std::shared_ptr<interpreters::interpr
 	loadIFF_(input);
 }
 
-bool isNodeNameCharacter(char c)
+iff_file::iff_file(iff_file&& other)
 {
-	if(c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == ' ')
-		return true;
-	else
-		return false;
+	*this = std::move(other);
 }
 
-unsigned int getNameSize(char namedata[], unsigned int size)
+iff_file& iff_file::operator=(iff_file&& other)
 {
-	unsigned int i = 0;
-	for(; i < size; ++i)
-	{
-		if(!isNodeNameCharacter(namedata[i]))
-		{
-			break;
-		}
-	}
-	return i;
+	interpreter_ = other.interpreter_;
+	headNodes = other.headNodes;
+	return *this;
 }
 
-std::string getIFFName(anh::ByteBuffer& input)
+void iff_file::loadIFF_(FILE* stream)
 {
-	std::uint64_t name_buf = input.read<std::uint64_t>();
-	unsigned int namesize = getNameSize((char*)&name_buf, 8);
-
-	if(namesize < 4) 
+	unsigned char buffer[1024];
+	anh::ByteBuffer theBuf;
+	size_t bytesRead = fread(buffer, 1, 1024, stream);
+	while(bytesRead == 1024)
 	{
-		namesize = 0;
-		input.read_position(input.read_position()-8);
+		theBuf.write(buffer, bytesRead);
+		bytesRead = fread(buffer, 1, 1024, stream);
 	}
-	else if(namesize < 8)
-	{
-		namesize = 4;
-		input.read_position(input.read_position()-4);
-	}
-	else 
-	{
-		namesize = 8;
-	}
+	theBuf.write(buffer, bytesRead);
 
-	return std::string((char*)&name_buf, namesize);
-}
-
-bool childIsNode(anh::ByteBuffer& input)
-{
-	std::uint32_t name_buf = input.read<std::uint32_t>();
-	input.read_position(input.read_position()-4);
-	return !(getNameSize((char*)&name_buf, 4) < 4);
+	loadIFF_(theBuf);
 }
 
 void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
@@ -118,14 +82,14 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 		}
 		else
 		{
-			std::string name = getIFFName(inputstream);
+			std::string name = getIFFName_(inputstream);
 			
 			if(name.size() == 0 || name == "NULL") { continue; }
 			
 			//printf("%s\n",name->c_str());
 			std::uint32_t size = inputstream.read<std::uint32_t>(true);
 		
-			if(size >= 4 && childIsNode(inputstream))
+			if(size >= 4 && childIsNode_(inputstream))
 			{
 				//We must be a folder.
 				if(loader.empty())
@@ -169,17 +133,53 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 	}
 }
 
-void iff_file::loadIFF_(FILE* stream)
+std::string iff_file::getIFFName_(anh::ByteBuffer& input)
 {
-	unsigned char buffer[1024];
-	anh::ByteBuffer theBuf;
-	size_t bytesRead = fread(buffer, 1, 1024, stream);
-	while(bytesRead == 1024)
-	{
-		theBuf.write(buffer, bytesRead);
-		bytesRead = fread(buffer, 1, 1024, stream);
-	}
-	theBuf.write(buffer, bytesRead);
+	std::uint64_t name_buf = input.read<std::uint64_t>();
+	unsigned int namesize = getNameSize_((char*)&name_buf, 8);
 
-	loadIFF_(theBuf);
+	if(namesize < 4) 
+	{
+		namesize = 0;
+		input.read_position(input.read_position()-8);
+	}
+	else if(namesize < 8)
+	{
+		namesize = 4;
+		input.read_position(input.read_position()-4);
+	}
+	else 
+	{
+		namesize = 8;
+	}
+
+	return std::string((char*)&name_buf, namesize);
+}
+
+bool iff_file::isNodeNameCharacter_(char c)
+{
+	if(c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == ' ')
+		return true;
+	else
+		return false;
+}
+
+unsigned int iff_file::getNameSize_(char namedata[], unsigned int size)
+{
+	unsigned int i = 0;
+	for(; i < size; ++i)
+	{
+		if(!isNodeNameCharacter_(namedata[i]))
+		{
+			break;
+		}
+	}
+	return i;
+}
+
+bool iff_file::childIsNode_(anh::ByteBuffer& input)
+{
+	std::uint32_t name_buf = input.read<std::uint32_t>();
+	input.read_position(input.read_position()-4);
+	return !(getNameSize_((char*)&name_buf, 4) < 4);
 }

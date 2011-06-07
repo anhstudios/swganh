@@ -39,7 +39,7 @@ void ws_interpreter::_handleOTNL(anh::ByteBuffer& buffer)
 	uint32_t count = buffer.read<uint32_t>();
 	for(uint32_t i = 0; i < count; ++i)
 	{
-		names.push_back(std::move(readStringFromByteBuffer(buffer)));
+		names.push_back(std::move(buffer.read<std::string>(false,true)));
 	}
 }
 

@@ -49,12 +49,12 @@ namespace anh
 					@brief Constructor for a FileNode
 				*/
 				file_node(std::string& name, unsigned int size)
-					: node(name, size), data_(size)
+					: node(name, size), data_()
 				{
 				}
 
 				file_node(std::string& name, unsigned int size, std::shared_ptr<node> parent)
-					: node(name, size, parent), data_(size)
+					: node(name, size, parent), data_()
 				{
 				}
 
