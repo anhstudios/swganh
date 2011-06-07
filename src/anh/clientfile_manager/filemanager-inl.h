@@ -58,7 +58,7 @@ namespace anh
 			return nullptr;
 		}
 
-		template <class T> std::vector<std::shared_ptr<T>> file_manager::load_directory(const std::string& directory, std::function<void(std::shared_ptr<T>, file_manager&)> postBuildProcess)
+		template <class T> std::vector<std::shared_ptr<T>> file_manager::load_directory(const std::string& directory, const std::string& ext, std::function<void(std::shared_ptr<T>, file_manager&)> postBuildProcess)
 		{
 			std::vector<std::shared_ptr<T>> result;
 			std::set<std::string> previously_loaded;
@@ -73,6 +73,10 @@ namespace anh
 					if(boost::filesystem::is_regular_file(itr->status()))
 					{
 						std::string swg_name = getSWGPath_(basedir_.string(), itr->string());
+
+						if(!endsWith_(ext, swg_name))
+							continue;
+
 						auto lfmi = loadedFileMap_.find(swg_name);
 						if(lfmi == loadedFileMap_.end())
 						{
@@ -100,7 +104,7 @@ namespace anh
 			FileMapIterator end = fileMap_.end();
 			while(it != end)
 			{
-				if(beginsWithNoDir_(directory, it->first))
+				if(beginsWithNoDir_(directory, it->first) && endsWith_(ext, it->first))
 				{
 					found_chunk = true;
 
@@ -138,7 +142,7 @@ namespace anh
 			return result;
 		}
 
-		template <class T> std::vector<std::shared_ptr<T>> file_manager::load_all(const std::string& directory, std::function<void(std::shared_ptr<T>, file_manager&)> postBuildProcess)
+		template <class T> std::vector<std::shared_ptr<T>> file_manager::load_all(const std::string& directory, const std::string& ext, std::function<void(std::shared_ptr<T>, file_manager&)> postBuildProcess)
 		{
 			std::vector<std::shared_ptr<T>> result;
 			std::set<std::string> previously_loaded;
@@ -153,6 +157,10 @@ namespace anh
 					if(boost::filesystem::is_regular_file(itr->status()))
 					{
 						std::string swg_name = getSWGPath_(basedir_.string(), itr->string());
+
+						if(!endsWith_(ext, swg_name))
+							continue;
+
 						auto lfmi = loadedFileMap_.find(swg_name);
 						if(lfmi == loadedFileMap_.end())
 						{
@@ -180,7 +188,7 @@ namespace anh
 			FileMapIterator end = fileMap_.end();
 			while(it != end)
 			{
-				if(beginsWith_(directory, it->first))
+				if(beginsWith_(directory, it->first) && endsWith_(ext, it->first))
 				{
 					found_chunk = true;
 					auto lfmi = loadedFileMap_.find(it->first);

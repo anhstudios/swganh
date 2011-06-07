@@ -58,15 +58,18 @@ namespace anh
 				*/
 				node(std::string name, std::uint32_t size, std::weak_ptr<node> parent)
 					: name_(name), size_(size), parent_(parent) {}
-			
 
 				std::weak_ptr<node> parent_;
+
 			private:
-				node(); //Default Constructor		
+				node(){} //Default Constructor	
+				
 				node(const node& n); //Copy Constructor
 
 				std::string name_;
 				std::uint32_t size_;
+
+				
 			};
 		};
 	};

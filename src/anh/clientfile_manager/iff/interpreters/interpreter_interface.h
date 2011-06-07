@@ -47,7 +47,8 @@ namespace anh
 			{
 				class interpreter_interface
 				{
-				public:		
+				public:
+
 					/**
 						@brief returns the InterpreterType associated with this Interpreter
 					*/

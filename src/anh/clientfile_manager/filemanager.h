@@ -81,7 +81,7 @@ namespace anh
 			
 				@return a vector of shared pointers to the IFFImplementation requested.
 			*/
-			template <class T> std::vector<std::shared_ptr<T>> load_directory(const std::string& directory, std::function<void(std::shared_ptr<T>, file_manager&)> postBuildProcess=nullptr);
+			template <class T> std::vector<std::shared_ptr<T>> load_directory(const std::string& directory, const std::string& ext="", std::function<void(std::shared_ptr<T>, file_manager&)> postBuildProcess=nullptr);
 		
 			/**
 
@@ -92,7 +92,7 @@ namespace anh
 			
 				@return a vector of shared pointers to the IFFImplementation requested.
 			*/
-			template <class T> std::vector<std::shared_ptr<T>> load_all(const std::string& directory, std::function<void(std::shared_ptr<T>, file_manager&)> postBuildProcess=nullptr);
+			template <class T> std::vector<std::shared_ptr<T>> load_all(const std::string& directory, const std::string& ext="", std::function<void(std::shared_ptr<T>, file_manager&)> postBuildProcess=nullptr);
 
 		private:
 			file_manager(); //Default Constructor
@@ -103,6 +103,8 @@ namespace anh
 			//Utility Functions
 			bool beginsWith_(const std::string& partial_path, const std::string& test_string);
 			bool beginsWithNoDir_(const std::string& partial_path, const std::string& test_string);
+			bool endsWith_(const std::string& end, const std::string& test_string);
+
 			std::string getSWGPath_(const std::string& base_string, const std::string& current_file);
 			//End Utility Functions
 

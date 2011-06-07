@@ -131,3 +131,21 @@ bool file_manager::beginsWithNoDir_(const std::string& partial_path, const std::
 	}
 	return true;
 }
+
+bool file_manager::endsWith_(const std::string& end, const std::string& test_string)
+{
+	size_t end_size = end.size();
+	size_t test_string_size = test_string.size();
+
+	if(end_size > test_string_size)
+		return false;
+
+	for(size_t i=1; i <= end_size; ++i)
+	{
+		if(end[end_size-i] != test_string[test_string_size-i])
+		{
+			return false;
+		}
+	}
+	return true;
+}

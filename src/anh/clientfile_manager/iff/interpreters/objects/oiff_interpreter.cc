@@ -33,7 +33,7 @@ oiff_interpreter::oiff_interpreter()
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("arrangementDescriptorFilename"), bind(&oiff_interpreter::_handleString, _1, _2, _3)));
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("clearFloraRadius"), bind(&oiff_interpreter::_handleFloat, _1, _2, _3)));
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("clientDataFile"), bind(&oiff_interpreter::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("cockpitFileName"), bind(&oiff_interpreter::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("cockpitFilename"), bind(&oiff_interpreter::_handleString, _1, _2, _3)));
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionActionBlockFlags"), bind(&oiff_interpreter::_handleInt, _1, _2, _3)));
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionActionFlags"), bind(&oiff_interpreter::_handleInt, _1, _2, _3)));
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionActionPassFlags"), bind(&oiff_interpreter::_handleInt, _1, _2, _3)));
@@ -82,7 +82,23 @@ oiff_interpreter::oiff_interpreter()
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("weaponEffectIndex"), bind(&oiff_interpreter::_handleInt, _1, _2, _3)));
 
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("attackType"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("certificationRequired"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("defaultValue"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("maxValueExclusive"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("minValueInclusive"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("palettePathName"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("defaultPaletteIndex"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("cameraHeight"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("variableName"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("sourceVariable"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("dependentVariable"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("gender"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("acceleration"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("speed"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("turnRate"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("postureAlignToTerrain"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionOffsetX"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionOffsetZ"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("certificationsRequired"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("customizationVariableMapping"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("paletteColorCustomizationVariables"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));
 		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("rangedIntCustomizationVariables"), bind(&oiff_interpreter::_handleUnhandled, _1, _2, _3)));

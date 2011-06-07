@@ -51,11 +51,13 @@ namespace anh
 				file_node(std::string& name, unsigned int size)
 					: node(name, size), data_()
 				{
+					data_.reserve(size);
 				}
 
 				file_node(std::string& name, unsigned int size, std::shared_ptr<node> parent)
 					: node(name, size, parent), data_()
 				{
+					data_.reserve(size);
 				}
 
 				/**

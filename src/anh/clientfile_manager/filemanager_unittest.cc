@@ -121,7 +121,7 @@ TEST(fileManagerTests, loadingWithDirectoryCanHaveAPostLoadLambda)
 
 		int my_counter = 0;
 
-		auto file = f.load_directory<NullInterpreter>("appearance/mesh/", [&] (std::shared_ptr<NullInterpreter> null, file_manager& f) {
+		auto file = f.load_directory<NullInterpreter>("appearance/mesh/", "", [&] (std::shared_ptr<NullInterpreter> null, file_manager& f) {
 			my_counter++;
 		});
 
@@ -138,7 +138,7 @@ TEST(fileManagerTests, loadingWithAllCanHaveAPostLoadLambda)
 
 		int my_counter = 0;
 
-		auto file = f.load_all<NullInterpreter>("extracted/", [&] (std::shared_ptr<NullInterpreter> null, file_manager& f) {
+		auto file = f.load_all<NullInterpreter>("extracted/", "", [&] (std::shared_ptr<NullInterpreter> null, file_manager& f) {
 			my_counter++;
 		});
 
