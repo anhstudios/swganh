@@ -26,7 +26,6 @@ using namespace std;
 using namespace anh::event_dispatcher;
 
 struct TestEventData {
-    virtual ~TestEventData() {}
     void serialize(anh::ByteBuffer& buffer) const {
         buffer << test_string;
         buffer << test_int;
@@ -36,6 +35,11 @@ struct TestEventData {
         test_int = buffer.read<int>();
     }
 
+    string test_string;
+    int test_int;
+};
+
+struct TestNonSerializableData {
     string test_string;
     int test_int;
 };
@@ -78,4 +82,56 @@ TEST(BasicEventTest, CanMakeEventFromHash) {
     auto my_event = make_event(0xDEADBABE);
 
     EXPECT_EQ(0xDEADBABE, my_event.type().ident());
+}
+
+TEST(BasicEventTest, CanSerializeObjectsThatAreSerializable) {    
+    TestEventData test_data;
+    test_data.test_string = "test string";
+    test_data.test_int = 12345;
+
+    auto my_event = make_shared_event("SomeEvent", std::move(test_data));
+
+    anh::ByteBuffer buffer;
+    my_event->serialize(buffer);
+
+    EXPECT_NE(0, buffer.size());
+}
+
+TEST(BasicEventTest, SerializingObjectsThatAreNotSerializableDoesNothing) {
+    TestNonSerializableData test_data;
+    test_data.test_string = "test string";
+    test_data.test_int = 12345;
+
+    auto my_event = make_shared_event("SomeEvent", std::move(test_data));
+
+    anh::ByteBuffer buffer;
+    my_event->serialize(buffer);
+
+    EXPECT_EQ(0, buffer.size());
+}
+
+TEST(BasicEventTest, CanDeserializeObjectsThatAreSerializable) {    
+    TestEventData test_data;
+    auto my_event = make_shared_event("SomeEvent", std::move(test_data));
+
+    anh::ByteBuffer buffer;
+    buffer.write<std::string>("test string");
+    buffer.write<int>(12345);
+
+    my_event->deserialize(std::move(buffer));
+
+    EXPECT_EQ("test string", my_event->test_string);
+}
+
+TEST(BasicEventTest, DeserializingObjectsThatAreNotSerializableDoesNothing) {
+    TestNonSerializableData test_data;
+    auto my_event = make_shared_event("SomeEvent", std::move(test_data));
+
+    anh::ByteBuffer buffer;
+    buffer.write<std::string>("test string");
+    buffer.write<int>(12345);
+
+    my_event->deserialize(buffer);
+
+    EXPECT_NE("test string", my_event->test_string);
 }
