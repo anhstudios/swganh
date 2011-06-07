@@ -65,7 +65,7 @@ public:
 	/**
 	 * 
 	 */
-	void SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
+	void sendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
 
 	/**
 	 * Clears each message pump.

@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/outgoing_packet.h>
 #include <anh/utilities.h>
 #include <anh/event_dispatcher/event_interface.h>
+#include <anh/event_dispatcher/basic_event.h>
 
 #include <packets/Login/LoginClientId.h>
 #include <packets/Login/LoginClientToken.h>
@@ -85,7 +86,7 @@ void Session::Update(void)
 	}
 }
 
-void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message)
+void Session::sendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message)
 { 
 	ByteBuffer message_buffer;
 	//message_buffer.write<uint16_t>(message->priority());
@@ -196,15 +197,15 @@ void Session::handleChildDataA_(ChildDataA& packet)
 		LOG(WARNING) << "Priority: " << packet.messages.front().read<uint16_t>();
 		LOG(WARNING) << "SWGOpcode: " << std::hex << packet.messages.front().read<uint32_t>();
 
-		std::shared_ptr<packets::LoginClientTokenEvent> lct = std::make_shared<packets::LoginClientTokenEvent>();
+		packets::LoginClientToken lct;
 
 		packets::Cluster cluster;
 		cluster.server_id = 3;
 		cluster.server_name = "Anh Dev Den";
 		cluster.distance = 4;
 
-		std::shared_ptr<packets::LoginEnumClusterEvent> lec = std::make_shared<packets::LoginEnumClusterEvent>(8);
-		lec->servers.push_back(cluster);
+        packets::LoginEnumCluster lec;
+		lec.servers.push_back(cluster);
 
 
 		packets::Character dead1ock;
@@ -214,16 +215,16 @@ void Session::handleChildDataA_(ChildDataA& packet)
 		dead1ock.status = 1;
 		dead1ock.race_gender_crc = 0x060E51D5;
 
-		std::shared_ptr<packets::EnumerateCharacterIdEvent> eci = std::make_shared<packets::EnumerateCharacterIdEvent>();
-		eci->characters.push_back(dead1ock);
+        packets::EnumerateCharacterId eci;
+		eci.characters.push_back(dead1ock);
 
-		std::shared_ptr<packets::LoginClusterStatusEvent> lcs = std::make_shared<packets::LoginClusterStatusEvent>();
-		lcs->servers.push_back(packets::ClusterServer(3, std::string("127.0.0.1"), 44462, 44463, 0, 3000, 8, 7, 2, 0));
+        packets::LoginClusterStatus lcs;
+		lcs.servers.push_back(packets::ClusterServer(3, std::string("127.0.0.1"), 44462, 44463, 0, 3000, 8, 7, 2, 0));
 		
-		SendMessage(lct);
-		SendMessage(lec);
-		SendMessage(eci);
-		SendMessage(lcs);
+		sendMessage(anh::event_dispatcher::make_shared_event("LoginClientToken", std::move(lct)));
+		sendMessage(anh::event_dispatcher::make_shared_event("LoginEnumCluster", std::move(lec)));
+		sendMessage(anh::event_dispatcher::make_shared_event("EnumerateCharacterId",std::move(eci)));
+		sendMessage(anh::event_dispatcher::make_shared_event("LoginClusterStatus", std::move(lcs)));
 
 	}
 	// =================================================

@@ -1,7 +1,7 @@
 #ifndef ANH_PACKETS_LOGINCLUSTERSTATUS_H
 #define ANH_PACKETS_LOGINCLUSTERSTATUS_H
 
-#include <packets/BasePacket.h>
+#include <anh/byte_buffer.h>
 #include <algorithm>
 #include <list>
 
@@ -10,9 +10,9 @@
 namespace packets {
 struct ClusterServer
 {
-    ClusterServer(uint32_t server_id_, std::string& address_, uint16_t conn_port_,
-        uint16_t ping_port_, uint32_t server_pop_, uint32_t max_pop_, uint32_t max_chars_, uint32_t distance_,
-        uint32_t status_, uint8_t not_recommended_flag_)
+    ClusterServer(uint32_t server_id_ = 0, std::string& address_ = std::string(""), uint16_t conn_port_ = 0,
+        uint16_t ping_port_ = 0, uint32_t server_pop_ = 0, uint32_t max_pop_ = 0, uint32_t max_chars_ = 0, uint32_t distance_ = 0,
+        uint32_t status_ = 0, uint8_t not_recommended_flag_ = 0)
         : server_id(server_id_)
         , address(address_)
         , conn_port(conn_port_)
@@ -36,24 +36,24 @@ struct ClusterServer
     uint32_t status;
     uint8_t not_recommended_flag;
 };
-struct LoginClusterStatus : public BasePacket
+struct LoginClusterStatus
 {
-    LoginClusterStatus(std::shared_ptr<anh::network::soe::Session> session_  = nullptr,
+    LoginClusterStatus(uint32_t server_count_ = 0, 
         std::list<ClusterServer> servers_ = std::list<ClusterServer>())
-        : BasePacket(session_, CLIENT)
+        : server_count(server_count_)
         , servers(servers_) {}
-    std::list<ClusterServer> servers;
-};
 
-class LoginClusterStatusEvent : public anh::event_dispatcher::BasicEvent<LoginClusterStatus>{
-public:    
-    LoginClusterStatusEvent(
-        std::list<ClusterServer> servers_ = std::list<ClusterServer>(), std::shared_ptr<anh::network::soe::Session> session_  = nullptr) 
-        : anh::event_dispatcher::BasicEvent<LoginClusterStatus>("LoginClusterStatus"){}
-    virtual ~LoginClusterStatusEvent() {}
-    void serialize(anh::ByteBuffer& buffer) {
-		buffer.write<uint16_t>(2);
-		buffer.write<uint32_t>(0x3436AEB6);
+    explicit LoginClusterStatus(anh::ByteBuffer buffer)
+    {
+        deserialize(buffer);
+    }
+    uint32_t server_count;
+    std::list<ClusterServer> servers;
+
+    virtual ~LoginClusterStatus() {}
+    void serialize(anh::ByteBuffer& buffer) const {
+        buffer.write<uint16_t>(operand_count());
+        buffer.write<uint32_t>(crc());
         buffer.write<uint32_t>(servers.size());
         std::for_each(servers.begin(), servers.end(), [&buffer] (ClusterServer server) {
             buffer.write<uint32_t>(server.server_id);
@@ -68,6 +68,26 @@ public:
             buffer.write<uint8_t>(server.not_recommended_flag);
         });
     }
+    void deserialize(anh::ByteBuffer buffer) 
+    {
+        server_count = buffer.read<uint32_t>();
+        for(uint32_t i = 0; i < server_count; i++)
+        {
+            ClusterServer server;
+            server.server_id = buffer.read<uint32_t>();
+            server.address = buffer.read<std::string>();
+            server.conn_port = buffer.read<uint16_t>();
+            server.ping_port = buffer.read<uint16_t>();
+            server.server_pop = buffer.read<uint32_t>();
+            server.max_pop  = buffer.read<uint32_t>();
+            server.distance = buffer.read<uint32_t>();
+            server.status = buffer.read<uint32_t>();
+            server.not_recommended_flag = buffer.read<uint8_t>();
+            servers.push_back(server);
+        }
+    }
+    static uint16_t operand_count() { return 2; }
+    static uint32_t crc() { return 0x3436AEB6; }
 };
 
 } // packets
