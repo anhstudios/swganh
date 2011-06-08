@@ -1,9 +1,12 @@
 #ifndef ANH_PACKETS_LOGINENUMCLUSTER_H
 #define ANH_PACKETS_LOGINENUMCLUSTER_H
 
-#include <packets/BasePacket.h>
+#include <cstdint>
 #include <algorithm>
 #include <list>
+#include <string>
+#include "anh/byte_buffer.h"
+#include "packets/base_swg_packet.h"
 
 // Originates on Server
 // http://wiki.swganh.org/index.php/LoginEnumCluster
@@ -16,23 +19,14 @@ struct Cluster {
     int32_t distance;
 };
 
-struct LoginEnumCluster : public BasePacket
-{
-    LoginEnumCluster(uint32_t max_account_chars_ = 0,
-        std::list<Cluster> servers_ = std::list<Cluster>(), std::shared_ptr<network::Session> session_  = nullptr)
-        : BasePacket(session_, CLIENT) 
-        , servers(servers_)
-        , max_account_chars(max_account_chars_)
-    {}
-
-    virtual ~LoginEnumCluster() {}
+struct LoginEnumCluster : public BaseSwgPacket<LoginEnumCluster> {
+    static const uint16_t opcount = 3;
+    static const uint32_t opcode = 0xC11C63B9;
 
     std::list<Cluster> servers;
     uint32_t max_account_chars;
     
     void serialize(anh::ByteBuffer& buffer) const {
-		buffer.write<uint16_t>(3);
-		buffer.write<uint32_t>(0xC11C63B9);
         buffer.write<uint32_t>(servers.size());
         std::for_each(servers.begin(), servers.end(), [&buffer] (Cluster cluster){
             buffer.write<int32_t>(cluster.server_id);
@@ -46,8 +40,6 @@ struct LoginEnumCluster : public BasePacket
         // @TODO write this member function body
     }
 };
-
-typedef anh::event_dispatcher::BasicEvent<LoginEnumCluster> LoginEnumClusterEvent;
 
 } // packets
 

@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include "anh/byte_buffer.h"
 #include "packets/base_swg_packet.h"
 
 // Originates on Client
@@ -29,6 +30,6 @@ struct LoginClientId : public BaseSwgPacket<LoginClientId> {
     }
 };
 
-} // packets
+}  // namespace packets
 
-#endif // ANH_PACKETS_LOGINCLIENTID_H
+#endif  // ANH_PACKETS_LOGINCLIENTID_H

@@ -3,37 +3,30 @@
 
 #include <cstdint>
 #include <string>
-
 #include "anh/byte_buffer.h"
-
-#include "packets/BasePacket.h"
+#include "packets/base_swg_packet.h"
 
 // Originates on Client
 namespace packets {
-struct LoginClientToken : public BasePacket
-{
-    explicit LoginClientToken(std::shared_ptr<network::Session> session_  = nullptr)
-        : BasePacket(session_, NONE){}
-    
-    virtual ~LoginClientToken() {}
+struct LoginClientToken : public BaseSwgPacket<LoginClientToken> {
+    static const uint16_t opcount = 5;
+    static const uint32_t opcode = 0xAAB296C6;
 
-	anh::ByteBuffer session_key;
+    anh::ByteBuffer session_key;
     int32_t account_id;
     int32_t station_id;
     std::string station_username;
     
-	void serialize(anh::ByteBuffer& buffer) const {
-		buffer.write<uint16_t>(4);
-		buffer.write<uint32_t>(0xAAB296C6);
+	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write<uint32_t>(session_key.size());
 		buffer.append(session_key);
 
-		buffer.write<uint32_t>(account_id);
-		buffer.write<uint32_t>(station_id);
-		buffer.write<std::string>(station_username);
+		buffer.write(account_id);
+		buffer.write(station_id);
+		buffer.write(station_username);
 	}
 
-    void deserialize(anh::ByteBuffer buffer) {
+    void onDeserialize(anh::ByteBuffer buffer) {
 		session_key = anh::ByteBuffer(buffer.data(), buffer.read<uint32_t>());
 		buffer.read_position(buffer.read_position() + session_key.size());
 
@@ -42,8 +35,6 @@ struct LoginClientToken : public BasePacket
         station_username = buffer.read<std::string>();
     }
 };
-
-typedef anh::event_dispatcher::BasicEvent<LoginClientToken> LoginClientTokenEvent;
 
 } // packets
 

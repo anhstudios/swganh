@@ -1,26 +1,25 @@
 #ifndef ANH_PACKETS_DELETE_CHARACTER_REPLY_MESSAGE_H
 #define ANH_PACKETS_DELETE_CHARACTER_REPLY_MESSAGE_H
 
-#include <packets/BasePacket.h>
+#include <cstdint>
+#include "anh/byte_buffer.h
+#include "packets/base_swg_packet.h"
 
 // Originates on Server
 // http://wiki.swganh.org/index.php/DeleteCharacterReplyMessage
 namespace packets {
-struct DeleteCharacterReplyMessage : public BasePacket
-{
-    DeleteCharacterReplyMessage(std::shared_ptr<network::Session> session_  = nullptr, int32_t failure_flag_ = 0)
-        : BasePacket(session_, CLIENT)
-        , failure_flag(failure_flag_){}
-    int32_t failure_flag;
-};
+struct DeleteCharacterReplyMessage : public BaseSwgPacket<DeleteCharacterReplyMessage> {
+    static const uint16_t opcount = 2;
+    static const uint32_t opcode = 0x8268989B;
 
-class DeleteCharacterReplyMessageEvent : public anh::event_dispatcher::BasicEvent<DeleteCharacterReplyMessage>{
-public:    
-    DeleteCharacterReplyMessageEvent(std::shared_ptr<network::Session> session_  = nullptr, int32_t failure_flag_ = 0) 
-        : anh::event_dispatcher::BasicEvent<DeleteCharacterReplyMessage>("DeleteCharacterReplyMessage"){}
-    virtual ~DeleteCharacterReplyMessageEvent() {}
-    void serialize(anh::ByteBuffer& buffer) {
+    int32_t failure_flag;
+    
+    void onSerialize(anh::ByteBuffer& buffer) const {
         buffer.write<int32_t>(failure_flag);
+    }
+
+    void onDeserialize(anh::ByteBuffer buffer) {
+        failure_flag = buffer.read<int32_t>();
     }
 };
 

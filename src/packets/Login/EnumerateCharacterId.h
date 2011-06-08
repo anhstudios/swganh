@@ -1,9 +1,12 @@
 #ifndef ANH_PACKETS_ENUMERATE_CHARACTER_ID_H
 #define ANH_PACKETS_ENUMERATE_CHARACTER_ID_H
 
-#include <packets/BasePacket.h>
-#include <list>
+#include <cstdint>
 #include <algorithm>
+#include <list>
+#include <string>
+#include "anh/byte_buffer.h"
+#include "packets/base_swg_packet.h"
 
 // Originates on Server
 // http://wiki.swganh.org/index.php/EnumerateCharacterId
@@ -17,21 +20,13 @@ struct Character
     int32_t status;
 };
 
-struct EnumerateCharacterId : public BasePacket
-{
-    EnumerateCharacterId(std::shared_ptr<network::Session> session_  = nullptr,
-        std::list<Character> characters_ =  std::list<Character>())
-        : BasePacket(session_, CLIENT)
-        , characters(characters_)
-    {}
-    
-    virtual ~EnumerateCharacterId() {}
+struct EnumerateCharacterId : public BaseSwgPacket<EnumerateCharacterId> {
+    static const uint16_t opcount = 2;
+    static const uint32_t opcode = 0x65EA4574;
 
     std::list<Character> characters;
 
-    void serialize(anh::ByteBuffer& buffer) const {
-		buffer.write<uint16_t>(2);
-		buffer.write<uint32_t>(0x65EA4574);
+    void onSerialize(anh::ByteBuffer& buffer) const {
         buffer.write<uint32_t>(characters.size());
         std::for_each(characters.begin(), characters.end(), [&buffer] (Character character){
             buffer.write<std::wstring>(character.name);
@@ -42,10 +37,8 @@ struct EnumerateCharacterId : public BasePacket
         });
     }
 
-    void deserialize(anh::ByteBuffer buffer) {}
+    void onDeserialize(anh::ByteBuffer buffer) {}
 };
-
-typedef anh::event_dispatcher::BasicEvent<EnumerateCharacterId> EnumerateCharacterIdEvent;
 
 } // packets
 
