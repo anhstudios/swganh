@@ -70,8 +70,14 @@ public:
      * 
      * @param port The port to listen for messages on.
      */
-    void Start();
+    void Start(void);
+    /**
+    *  Runs the pipeline each tick.
+    */
     void Update(void);
+    /**
+    * Prepares the Service for destruction
+    */
     void Shutdown(void);
     /**
      * @brief Opens a TCP connection to the given host
@@ -89,18 +95,21 @@ public:
      * 
      * @param name The service name to send a message to.
      * @param event_out the event that will be sent out.
+     * @param (optional) DestinationType the destination that the message will be sent to.
      */
     void sendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out
-        , Destination dest = SINGLE);
+        , DestinationType dest = SINGLE);
     /**
      * @brief Sends a message to given the name of the service
      * 
      * @param host The host address to send a message to.
      * @param port The port to the host.
      * @param buffer The ByteBuffer message to send
+     * @param DestinationType the destination that the message will be sent to
+     * defaults to SINGLE.
      */
     void sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer
-        , Destination dest = SINGLE);
+        , DestinationType dest = SINGLE);
     
     /**
      * @brief Checks to see if there is a connection to the given service
@@ -132,6 +141,9 @@ public:
     */
     std::shared_ptr<tcp_client> getConnection(const std::string& name);
 
+    /*
+    * Gets the TCP host object
+    */
     std::shared_ptr<tcp_host>  host() { return tcp_host_; }
 
     // Friend Filters. Filters are considered extensions of the
@@ -140,9 +152,12 @@ public:
     friend class SendPacketFilter;
     friend class OutgoingStartFilter;
     friend class ReceivePacketFilter;
+    friend class PacketEventFilter;
 
 private:
-
+    /*
+    * Callback that simply puts the TCPMessage on the incoming pipeline queue
+    */
     void OnTCPHostReceive_(std::shared_ptr<anh::ByteBuffer> buffer);
 
     void handle_accept_(std::shared_ptr<tcp_host> conn, const boost::system::error_code& error);

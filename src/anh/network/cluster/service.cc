@@ -167,7 +167,7 @@ void Service::Disconnect(std::shared_ptr<anh::server_directory::Process> process
         LOG(WARNING) << "Exception in Service::Disconnect " << e.what() << std::endl;
     }
 }
-void Service::sendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out, Destination dest)
+void Service::sendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out, DestinationType dest)
 {
     // make sure we have a connection
     auto conn = getConnection(name);
@@ -179,7 +179,7 @@ void Service::sendMessage(const std::string& name, std::shared_ptr<anh::event_di
         outgoing_messages_.push_back(tcp_message);
     }
 }
-void Service::sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer, Destination dest)
+void Service::sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer, DestinationType dest)
 {
     // check for a connection
     auto conn = getConnection(host, port);
