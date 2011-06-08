@@ -185,6 +185,7 @@ private:
     OutgoingStartFilter     outgoing_start_filter_;
     SendPacketFilter        send_packet_filter_;
     ReceivePacketFilter     receive_packet_filter_;
+    PacketEventFilter       packet_event_filter_;
     // message lists
     std::list<TCPMessage*>  incoming_messages_;
     std::list<TCPMessage*>  outgoing_messages_;

@@ -57,11 +57,13 @@ Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectory
     , send_packet_filter_(this)
     , receive_packet_filter_(this)
     , outgoing_start_filter_(this)
+    , packet_event_filter_(this)
     , port_(port)
 {
     outgoing_pipeline_.add_filter(outgoing_start_filter_);
     outgoing_pipeline_.add_filter(send_packet_filter_);
     incoming_pipeline_.add_filter(receive_packet_filter_);
+    incoming_pipeline_.add_filter(packet_event_filter_);
 
     // setup our listener to add process on event
     auto register_service_listener = [=] (shared_ptr<EventInterface> incoming_event)->bool {
