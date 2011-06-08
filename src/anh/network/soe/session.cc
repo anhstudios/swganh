@@ -65,6 +65,8 @@ Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* servi
 	, next_client_sequence_(0)
 	, server_sequence_(0)
 	, outgoing_data_message_(0)
+	, incoming_fragmented_total_len_(0)
+	, incoming_fragmented_curr_len_(0)
 {
 }
 
@@ -78,27 +80,73 @@ Session::~Session(void)
 void Session::Update(void)
 {
 	// If we have waiting messages that need to be sent.
-	if(outgoing_data_message_.messages.size() > 0)
-	{
-		std::shared_ptr<ByteBuffer> message = std::make_shared<ByteBuffer>();
-		outgoing_data_message_.serialize(*message);
-		SendSoePacket(message);
+	if(!outgoing_data_queue_[active_outgoing_queue_].empty()) {	
+        int previous_active_queue = active_outgoing_queue_;
+        active_outgoing_queue_.fetch_and_store((active_outgoing_queue_ + 1) % NUM_QUEUES);
 
-		sent_messages_.insert(SequencedMessageMap::value_type(server_sequence_, message));
+        auto process_queue = std::move(outgoing_data_queue_[previous_active_queue]);
 
-		outgoing_data_message_.sequence++;
-		server_sequence_++;
-		outgoing_data_message_.messages.clear();
+        ByteBuffer data_message;
+        if (process_queue.size() > 1) {
+			data_message.write<uint16_t>(anh::bigToHost<uint16_t>(0x19));
+			std::for_each(process_queue.begin(), process_queue.end(), [=, &data_message](anh::ByteBuffer& item){
+				data_message.write<uint8_t>(item.size());
+				data_message.append(item);
+			});
+        } else {
+            data_message.append(process_queue.front());
+        }
+
+
+
+        if (data_message.size() >= recv_buffer_size_) {
+            uint32_t bytes_sent = 0;
+            uint32_t message_size = data_message.size();
+
+            // Create a temporary buffer that prepends a size value to the data.
+            ByteBuffer tmp;
+            tmp.write<uint32_t>(message_size);
+            tmp.append(std::move(data_message));
+
+            while (bytes_sent < message_size) {
+                uint16_t server_sequence = ++server_sequence_;
+
+                uint32_t bytes_remaining = message_size - bytes_sent;
+
+                uint32_t chunk_size = (bytes_remaining > recv_buffer_size_) ? recv_buffer_size_ : bytes_remaining;
+
+                ByteBuffer fragmented_data_chunk(tmp.data(), tmp.read_position() + bytes_sent + chunk_size);
+                bytes_sent =+ chunk_size;
+                tmp.read_position(bytes_sent);
+
+                DataFragA outgoing_message(server_sequence, std::move(fragmented_data_chunk));
+                
+                auto message = std::make_shared<ByteBuffer>();
+                outgoing_message.serialize(*message);
+		        SendSoePacket(message);
+                
+                sent_messages_.insert(SequencedMessageMap::value_type(server_sequence, message));
+            }
+        } else {
+            uint16_t server_sequence = ++server_sequence_;
+
+            ChildDataA outgoing_message(server_sequence);
+            outgoing_message.messages = std::move(process_queue);
+
+            auto message = std::make_shared<ByteBuffer>();
+		    SendSoePacket(message);
+
+            sent_messages_.insert(SequencedMessageMap::value_type(server_sequence, message));
+        }
 	}
 }
 
 void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message)
 { 
 	ByteBuffer message_buffer;
-	//message_buffer.write<uint16_t>(message->priority());
-	//message_buffer.write<uint32_t>(anh::hostToBig<uint32_t>(message->type().ident()));
 	message->serialize(message_buffer);
-	outgoing_data_message_.messages.push_back(message_buffer);
+
+    outgoing_data_queue_[active_outgoing_queue_].push_back(std::move(message_buffer));
 }
 
 void Session::Close(void)

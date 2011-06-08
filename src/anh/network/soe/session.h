@@ -31,8 +31,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/socket.h>
 #include <anh/network/soe/protocol_packets.h>
 
+#include <array>
 #include <list>
 
+#include <tbb/atomic.h>
 #include <tbb/concurrent_queue.h>
 #include <boost/asio.hpp>
 
@@ -131,6 +133,13 @@ private:
 	NetStatsServer						server_net_stats_;
 
 	ChildDataA							outgoing_data_message_;
+    
+    enum constants {    
+        NUM_QUEUES = 2
+    };
+    
+    tbb::atomic<int>                    active_outgoing_queue_;
+    std::list<anh::ByteBuffer>          outgoing_data_queue_[NUM_QUEUES];
 
 	std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
 	uint16_t							incoming_fragmented_total_len_;
