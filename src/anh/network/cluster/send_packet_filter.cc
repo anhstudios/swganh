@@ -48,6 +48,7 @@ void* SendPacketFilter::operator()(void* item)
     TCPMessage* packet = (TCPMessage*)item;
     if (packet != NULL)
     {
+
         // where should the message be sent?
         switch (packet->destination())
         {

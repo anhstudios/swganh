@@ -11,6 +11,8 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team*/
 
 #include <anh/application.h>
 #include <anh/network/cluster/service.h>
+#include <packets/NetworkEventMessage.h>
+#include <unordered_map>
 
 namespace anh {
 namespace module_manager { class PlatformServices; }
@@ -43,6 +45,8 @@ private:
     ConnectionApp();
     ConnectionApp(const ConnectionApp&);
     ConnectionApp& operator=(const ConnectionApp&);
+
+    std::unordered_map<anh::HashString, packets::NetworkEventMessage>        event_map_;
 };
 } // end namespace zone
 #endif // CONNECTION_APP_H_

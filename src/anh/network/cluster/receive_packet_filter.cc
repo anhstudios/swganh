@@ -53,16 +53,16 @@ void* ReceivePacketFilter::operator()(void* item)
         return NULL;
     }
 
-    TCPMessage* packet = service_->incoming_messages_.front();
+    anh::ByteBuffer* packet = service_->incoming_messages_.front();
     service_->incoming_messages_.pop_front();
     
     // Do not process if we don't have any valid data
-    if(packet->message() == nullptr)
+    if(packet == nullptr)
     {
         delete packet;
         return NULL;
     }
-    DLOG(WARNING) << "Received Packet, processing data of size: " << packet->message()->size();
+    DLOG(WARNING) << "Received Packet, processing data of size: " << packet->size();
     return (void*)packet;
 }
 

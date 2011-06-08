@@ -10,7 +10,7 @@ namespace cluster {
 
 using boost::asio::ip::tcp;
 
-typedef std::function<void(std::shared_ptr<anh::ByteBuffer>)> NetworkCallback;
+typedef std::function<void(anh::ByteBuffer*)> NetworkCallback;
 
 class tcp_host : public std::enable_shared_from_this<tcp_host> {
 public:

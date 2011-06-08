@@ -27,7 +27,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/network/cluster/packet_event_filter.h>
 #include <anh/network/cluster/service.h>
-#include <packets/DataChannelMessage.h>
+#include <anh/event_dispatcher/basic_event.h>
+#include <packets/RemoteMessage.h>
+
+using namespace anh::event_dispatcher;
+using namespace packets;
 
 namespace anh {
 namespace network {
@@ -42,16 +46,19 @@ PacketEventFilter::~PacketEventFilter() {}
 
 void* PacketEventFilter::operator()(void* item)
 {
-    // convert to TCPMessage*
-    TCPMessage* message = static_cast<TCPMessage*>(item);
-    if (message != nullptr)
+    // grab ByteBuffer*
+    anh::ByteBuffer *buffer = static_cast<ByteBuffer*>(item);
+    if (buffer != nullptr)
     {
-        // convert bytebuffer to our DataChannel message
-        anh::ByteBuffer buffer = *message->message();
-        packets::DataChannelMessage data_message(buffer);
-        auto data_event = anh::event_dispatcher::make_shared_event("DataChannelMessage", data_message);
+        // Fill out RemoteMessage
+        RemoteMessage remote_message;
+        remote_message.data = *buffer;
+        remote_message.source_id = buffer->read<anh::HashString>();
+        
+        auto data_event = make_shared_event("RemoteMessage", remote_message);
         // trigger it here.
-        service_->event_dispatcher_->trigger(data_event);
+        // Note this gets handled by another dispatcher, who triggers it again after figuring out where it needs to go.
+        service_->event_dispatcher_->triggerAsync(data_event);
     }
     return NULL;
 }

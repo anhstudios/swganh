@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/cluster/tcp_message.h>
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/server_directory/server_directory_events.h>
-
+#include <packets/NetworkEventMessage.h>
 #include <iostream>
 #include <anh/byte_buffer.h>
 
@@ -78,6 +78,7 @@ Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectory
         Disconnect(std::make_shared<Process>(std::move(remove_service->process)));
         return true;
     };
+
     event_dispatcher_->subscribe("RegisterProcess", register_service_listener);
     event_dispatcher_->subscribe("RemoveProcess", remove_process_listener);
 }
@@ -175,9 +176,9 @@ void Service::sendMessage(const std::string& name, std::shared_ptr<anh::event_di
     auto conn = getConnection(name);
     if (conn != nullptr)
     {
-        auto buffer = std::make_shared<anh::ByteBuffer>();
-        event_out->serialize(*buffer);
-        auto tcp_message = new TCPMessage(conn, buffer, dest);
+        anh::ByteBuffer buffer;
+        event_out->serialize(buffer);
+        auto tcp_message = new TCPMessage(conn, make_shared<anh::ByteBuffer>(buffer), dest);
         outgoing_messages_.push_back(tcp_message);
     }
 }
@@ -249,10 +250,10 @@ void Service::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system
     }
 }
 
-void Service::OnTCPHostReceive_(std::shared_ptr<anh::ByteBuffer> buffer)
+void Service::OnTCPHostReceive_(anh::ByteBuffer* buffer)
 {
     // add to the pipeline list
-    incoming_messages_.push_back(new TCPMessage(nullptr, buffer));
+    incoming_messages_.push_back(buffer);
 }
 
 } // namespace soe

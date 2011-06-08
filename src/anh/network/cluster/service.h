@@ -41,6 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/cluster/receive_packet_filter.h>
 
 #include <anh/server_directory/server_directory_interface.h>
+#include <packets/base_anh_packet.h>
 
 #include <boost/thread.hpp>
 
@@ -158,7 +159,7 @@ private:
     /*
     * Callback that simply puts the TCPMessage on the incoming pipeline queue
     */
-    void OnTCPHostReceive_(std::shared_ptr<anh::ByteBuffer> buffer);
+    void OnTCPHostReceive_(anh::ByteBuffer* buffer);
 
     void handle_accept_(std::shared_ptr<tcp_host> conn, const boost::system::error_code& error);
     /**
@@ -187,8 +188,8 @@ private:
     ReceivePacketFilter     receive_packet_filter_;
     PacketEventFilter       packet_event_filter_;
     // message lists
-    std::list<TCPMessage*>  incoming_messages_;
-    std::list<TCPMessage*>  outgoing_messages_;
+    std::list<anh::ByteBuffer*>   incoming_messages_;
+    std::list<TCPMessage*>        outgoing_messages_;
     // asio needs
     tcp::resolver                                       resolver_;
     boost::asio::io_service& 		                    io_service_;

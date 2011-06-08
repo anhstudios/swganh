@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/module_manager/platform_services.h>
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
-
+#include <packets/NetworkEventMessage.h>
 #include <iostream>
 #include <glog/logging.h>
 #include <boost/thread/thread.hpp>
@@ -84,6 +84,13 @@ void LoginApp::startup()
     auto process = std::make_shared<anh::server_directory::Process>(2,
         1, "ANH.Connection","Connection","1.0","127.0.0.1",44993,0,0);
     cluster_service_->Connect(process);
+
+    packets::NetworkEventMessage nem;
+    nem.priority_id = 0;
+    nem.process_id = process->id();
+    nem.time_stamp_id = clock_->global_time();
+    auto nem_event = make_shared_event("NetworkEventMessage", std::move(nem));
+    cluster_service_->sendMessage("ANH.Connection", nem_event);
     
 }
 

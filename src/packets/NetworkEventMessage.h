@@ -25,45 +25,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef PACKETS_BASE_ANH_PACKET_H_
-#define PACKETS_BASE_ANH_PACKET_H_
+#ifndef PACKETS_NETWORK_EVENT_MESSAGE_H
+#define PACKETS_NETWORK_EVENT_MESSAGE_H
 
-#include <anh/byte_buffer.h>
-#include <anh/hash_string.h>
-
+#include <packets/base_anh_packet.h>
 namespace packets {
 
-template<typename T>
-struct BaseANHPacket {
-    // header
-    uint32_t process_id;
-    uint16_t priority_id;
-    uint64_t time_stamp_id;
+struct NetworkEventMessage : public BaseANHPacket<NetworkEventMessage> {
     
-    void serialize(anh::ByteBuffer& buffer) const {
-        buffer.write(T::hash_type());
-        buffer.write(priority_id);
-        buffer.write(process_id);
-        buffer.write(time_stamp_id);
-        
-        onSerialize(buffer);
+    static anh::HashString hash_type() { return "NetworkEventMessage"; }
+    
+    void onDeserialize(anh::ByteBuffer buffer) {
     }
-    void deserialize(anh::ByteBuffer buffer) {
-        anh::HashString hash_type = buffer.read<anh::HashString>();
-        priority_id = buffer.read<uint16_t>();
-        process_id = buffer.read<uint32_t>();
-        time_stamp_id = buffer.read<uint64_t>();
-        
-        if (hash_type != T::hash_type())
-        {
-            return;
-        }
+    
+    void onSerialize(anh::ByteBuffer& buffer) const {
 
-        onDeserialize(std::move(buffer));
     }
-    virtual void onSerialize(anh::ByteBuffer& buffer) const = 0;
-    virtual void onDeserialize(anh::ByteBuffer buffer) = 0;
 };
 
-}
-#endif // PACKETS_BASE_ANH_PACKET_H_
+} //packets
+#endif // PACKETS_NETWORK_EVENT_MESSAGE_H

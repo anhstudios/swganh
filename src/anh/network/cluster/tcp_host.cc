@@ -14,7 +14,7 @@ void tcp_host::Start() {
     (const boost::system::error_code& error,size_t bytes_transferred) {
         if (!error)
         {
-            auto buffer = std::make_shared<anh::ByteBuffer>((const unsigned char*)data_, bytes_transferred);
+            auto buffer = new anh::ByteBuffer((const unsigned char*)data_, bytes_transferred);
             DLOG(WARNING) << "message received: " << buffer->size();
             callback_(buffer);
             Start();
