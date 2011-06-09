@@ -1,14 +1,14 @@
 #include <gtest/gtest.h>
 
 #include "filemanager.h"
-#include "iff/mock_interpreter.h"
+#include "interpreters/mock_interpreter.h"
 #include "notfound_exception.h"
 
 using namespace anh::clientfile_manager;
 
 //I would use a mock class for this, but the filemanager interface makes it impossible to set
-//expectations on it. This causes a LOT of warning messages that will scare people.
-class NullInterpreter : public iff::interpreters::interpreter_interface
+//expectations on it. This causes a LOT of unrelated warning messages that will scare people.
+class NullInterpreter : public interpreters::interpreter_interface
 {
 public:
 	NullInterpreter()
@@ -16,7 +16,7 @@ public:
 	{
 	}
 
-	virtual iff::interpreters::InterpreterType getType() { return iff::interpreters::IFF_INTERPRETER; }
+	virtual interpreters::InterpreterType getType() { return interpreters::IFF_INTERPRETER; }
 
 	virtual void interpret(std::shared_ptr<iff::file_node> node) {
 		++call_count_;
@@ -52,17 +52,17 @@ TEST(fileManagerTests, loadingNonExistants)
 	file_manager f("test_data/");
 
 	ASSERT_NO_THROW({
-		EXPECT_EQ(nullptr, f.load<iff::interpreters::MockInterpreter>("lolololololololololwut.iff"));
+		EXPECT_EQ(nullptr, f.load<interpreters::MockInterpreter>("lolololololololololwut.iff"));
 	});
 
 	//For this we test with both load_directory
 	ASSERT_NO_THROW({
-		EXPECT_EQ(0, f.load_directory<iff::interpreters::MockInterpreter>("lolololololololololwut/").size());
+		EXPECT_EQ(0, f.load_directory<interpreters::MockInterpreter>("lolololololololololwut/").size());
 	});
 
 	//and load_all
 	ASSERT_NO_THROW({
-		EXPECT_EQ(0, f.load_all<iff::interpreters::MockInterpreter>("lolololololololololwut/").size());
+		EXPECT_EQ(0, f.load_all<interpreters::MockInterpreter>("lolololololololololwut/").size());
 	});
 }
 
@@ -117,7 +117,7 @@ TEST(fileManagerTests, loadingWithDirectoryCanHaveAPostLoadLambda)
 {
 	file_manager f("test_data/");
 
-	//ASSERT_NO_THROW({
+	ASSERT_NO_THROW({
 
 		int my_counter = 0;
 
@@ -127,7 +127,7 @@ TEST(fileManagerTests, loadingWithDirectoryCanHaveAPostLoadLambda)
 
 		EXPECT_EQ(3, my_counter);
 
-	//});
+	});
 }
 
 TEST(fileManagerTests, loadingWithAllCanHaveAPostLoadLambda) 
@@ -202,7 +202,7 @@ TEST(fileManagerTests, reloadingWithDirectoryDoesNotPhysicallyReload)
 {
 	file_manager f("test_data/");
 
-	//ASSERT_NO_THROW({
+	ASSERT_NO_THROW({
 
 		auto directory1 = f.load_directory<NullInterpreter>("appearance/mesh/");
 		auto reloaded_directory1 = f.load_directory<NullInterpreter>("appearance/mesh/");
@@ -214,7 +214,7 @@ TEST(fileManagerTests, reloadingWithDirectoryDoesNotPhysicallyReload)
 			EXPECT_EQ(directory1[i].get(), reloaded_directory1[i].get());
 		}
 
-	//});
+	});
 }
 
 TEST(fileManagerTests, reloadingWithAllDoesNotPhysicallyReload) 
@@ -232,6 +232,32 @@ TEST(fileManagerTests, reloadingWithAllDoesNotPhysicallyReload)
 		{
 			EXPECT_EQ(directory1[i], reloaded_directory1[i]);
 		}
+
+	});
+}
+
+TEST(fileManagerTests, canFilterLoadDirectoryByExtension) 
+{
+	file_manager f("test_data/");
+
+	ASSERT_NO_THROW({
+
+		auto directory1 = f.load_directory<NullInterpreter>("filter_test/", ".msh");
+
+		EXPECT_EQ(1, directory1.size());
+
+	});
+}
+
+TEST(fileManagerTests, canFilterLoadAllByExtension) 
+{
+	file_manager f("test_data/");
+
+	ASSERT_NO_THROW({
+
+		auto directory1 = f.load_all<NullInterpreter>("filter_test/", ".ws");
+
+		EXPECT_EQ(1, directory1.size());
 
 	});
 }

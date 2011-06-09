@@ -8,10 +8,10 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 
 #include "pob_interpreter.h"
 
-#include "../../iff.h"
-#include "../../filenode.h"
+#include "../../iff/iff.h"
+#include "../../iff/filenode.h"
 
-using namespace anh::clientfile_manager::iff::interpreters;
+using namespace anh::clientfile_manager::interpreters;
 using namespace std::tr1::placeholders;
 using namespace std;
 using namespace boost;

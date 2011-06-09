@@ -41,25 +41,25 @@ namespace anh
 		namespace iff
 		{
 			class file_node;
-			//End Forward Declarations
+		};
+		//End Forward Declarations
 
-			namespace interpreters
+		namespace interpreters
+		{
+			class interpreter_interface
 			{
-				class interpreter_interface
-				{
-				public:
+			public:
 
-					/**
-						@brief returns the InterpreterType associated with this Interpreter
-					*/
-					virtual InterpreterType getType() { return IFF_INTERPRETER; }
+				/**
+					@brief returns the InterpreterType associated with this Interpreter
+				*/
+				virtual InterpreterType getType() { return IFF_INTERPRETER; }
 
-					/**
-						@brief interprets a IFF::FileNode associated with this interpreter.
-						This should only be called by the IFFFile code.
-					*/
-					virtual void interpret(std::shared_ptr<iff::file_node> node) = 0;
-				};
+				/**
+					@brief interprets a IFF::FileNode associated with this interpreter.
+					This should only be called by the IFFFile code.
+				*/
+				virtual void interpret(std::shared_ptr<iff::file_node> node) = 0;
 			};
 		};
 	};

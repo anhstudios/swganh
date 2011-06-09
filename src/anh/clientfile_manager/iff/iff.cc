@@ -8,16 +8,16 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 
 #include "iff.h"
 #include "../notfound_exception.h"
-#include "nodes/node.h"
+#include "node.h"
 #include "filenode.h"
 #include "foldernode.h"
-#include "interpreters/interpreter_interface.h"
 
 #include <stack>
 
 using namespace anh::clientfile_manager::iff;
+using namespace anh::clientfile_manager::interpreters;
 
-iff_file::iff_file(std::string filename, std::shared_ptr<interpreters::interpreter_interface> interpreter)
+iff_file::iff_file(std::string filename, std::shared_ptr<interpreter_interface> interpreter)
 	: interpreter_(interpreter)
 {
 	FILE* pFile;
@@ -31,13 +31,13 @@ iff_file::iff_file(std::string filename, std::shared_ptr<interpreters::interpret
 	fclose(pFile);
 }
 
-iff_file::iff_file(FILE* inputstream, std::shared_ptr<interpreters::interpreter_interface> interpreter)
+iff_file::iff_file(FILE* inputstream, std::shared_ptr<interpreter_interface> interpreter)
 	: interpreter_(interpreter)
 {
 	loadIFF_(inputstream);
 }
 
-iff_file::iff_file(anh::ByteBuffer& input, std::shared_ptr<interpreters::interpreter_interface> interpreter)
+iff_file::iff_file(anh::ByteBuffer& input, std::shared_ptr<interpreter_interface> interpreter)
 	: interpreter_(interpreter)
 {
 	loadIFF_(input);

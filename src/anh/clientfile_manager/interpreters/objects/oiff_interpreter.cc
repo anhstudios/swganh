@@ -12,12 +12,12 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 #include "../slots/slot_descriptor_interpreter.h"
 #include "../portals/pob_interpreter.h"
 
-#include "../../iff.h"
-#include "../../filenode.h"
-#include "../../../filemanager.h"
+#include "../../iff/iff.h"
+#include "../../iff/filenode.h"
+#include "../../filemanager.h"
 
 
-using namespace anh::clientfile_manager::iff::interpreters;
+using namespace anh::clientfile_manager::interpreters;
 using namespace std;
 using namespace std::tr1::placeholders;
 

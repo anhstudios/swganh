@@ -23,7 +23,7 @@ namespace anh
 				/**
 					@return the name associated with this node.
 				*/
-				std::string name() {return name_;}
+				std::string& name() {return name_;}
 
 				/**
 					@return the size of this node's sub-nodes or data
@@ -33,7 +33,7 @@ namespace anh
 				/**
 					@return the parent of this node.
 				*/
-				std::weak_ptr<node> parent() {return parent_;}
+				std::shared_ptr<node> parent() {return parent_.lock();}
 			
 				/**
 					@brief sets the parent of this node.

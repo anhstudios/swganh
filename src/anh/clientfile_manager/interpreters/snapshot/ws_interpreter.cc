@@ -8,12 +8,12 @@ Copyright (c) 2006 - 2010 The SWG:ANH Team */
 
 #include "ws_interpreter.h"
 
-#include "../../iff.h"
-#include "../../filenode.h"
+#include "../../iff/iff.h"
+#include "../../iff/filenode.h"
 
 using namespace std;
 using namespace std::tr1::placeholders;
-using namespace anh::clientfile_manager::iff::interpreters;
+using namespace anh::clientfile_manager::interpreters;
 
 ws_interpreter::ws_interpreter()
 	: interpreter_interface()

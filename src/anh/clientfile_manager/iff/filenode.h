@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef IFF_FILENODE_H
 #define IFF_FILENODE_H
 
-#include "nodes/node.h"
+#include "node.h"
 #include <boost/shared_array.hpp>
 #include <anh/byte_buffer.h>
 

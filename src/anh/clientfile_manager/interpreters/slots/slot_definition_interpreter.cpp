@@ -1,9 +1,9 @@
 #include "slot_definition_interpreter.h"
 
-#include "../../filenode.h"
+#include "../../iff/filenode.h"
 
 using namespace std;
-using namespace anh::clientfile_manager::iff::interpreters;
+using namespace anh::clientfile_manager::interpreters;
 
 void slot_definition_interpreter::interpret(shared_ptr<anh::clientfile_manager::iff::file_node> node)
 {

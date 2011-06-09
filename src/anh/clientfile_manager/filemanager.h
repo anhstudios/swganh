@@ -17,10 +17,12 @@ namespace anh
 		namespace iff
 		{
 			class iff_file;
-			namespace interpreters
-			{
-				class interpreter_interface;
-			};
+			
+		};
+
+		namespace interpreters
+		{
+			class interpreter_interface;
 		};
 
 		namespace tree

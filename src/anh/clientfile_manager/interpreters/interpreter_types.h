@@ -32,26 +32,24 @@ namespace anh
 {
 	namespace clientfile_manager
 	{
-		namespace iff
+		namespace interpreters
 		{
-			namespace interpreters
+
+			//Defines Interpreter types for telling apart different
+			//Interpreters that have been cast to the IFF_Interpreter base class.
+			enum InterpreterType
 			{
+				IFF_INTERPRETER, //BASE CLASS
 
-				//Defines Interpreter types for telling apart different
-				//Interpreters that have been cast to the IFF_Interpreter base class.
-				enum InterpreterType
-				{
-					IFF_INTERPRETER, //BASE CLASS
-
-					POB_INTERPRETER,
-					TRN_INTERPRETER,
-					WS_INTERPRETER,
-					OIFF_INTERPRETER,
-					SLOT_ARRANGEMENT_INTERPRETER,
-					SLOT_DESCRIPTOR_INTERPRETER,
-					SLOT_DEFINITION_INTERPRETER,
-					DATATABLE_INTERPRETER
-				};
+				POB_INTERPRETER,
+				TRN_INTERPRETER,
+				WS_INTERPRETER,
+				OIFF_INTERPRETER,
+				SLOT_ARRANGEMENT_INTERPRETER,
+				SLOT_DESCRIPTOR_INTERPRETER,
+				SLOT_DEFINITION_INTERPRETER,
+				DATATABLE_INTERPRETER,
+				TERRAIN_INTERPRETER
 			};
 		};
 	};

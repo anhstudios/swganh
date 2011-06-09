@@ -6,9 +6,10 @@
 #include "../notfound_exception.h"
 #include <anh/byte_buffer.h>
 
-#include "mock_interpreter.h"
+#include "../interpreters/mock_interpreter.h"
 
 using namespace anh::clientfile_manager::iff;
+using namespace anh::clientfile_manager::interpreters;
 using ::testing::_;
 using ::testing::AnyNumber;
 
@@ -77,8 +78,8 @@ TEST(iffFileTests, StringInputWithInterpreter)
 	//Setup
 	boost::filesystem::path p("./test_data/extracted/directory1/good.iff");
 	ASSERT_TRUE(boost::filesystem::exists(p)) << "Test file Does not exist.";
-	interpreters::MockInterpreter* moc = new interpreters::MockInterpreter();
-	std::shared_ptr<interpreters::MockInterpreter> mock_interpreter = std::shared_ptr<interpreters::MockInterpreter>(moc);
+	MockInterpreter* moc = new MockInterpreter();
+	std::shared_ptr<MockInterpreter> mock_interpreter = std::shared_ptr<MockInterpreter>(moc);
 	EXPECT_CALL(*moc, interpret(_)).Times(28);
 
 	//The Test
@@ -127,8 +128,8 @@ TEST(iffFileTests, FilePointerInputWithInterpreter)
 
 	FILE* f = fopen(p.file_string().c_str(), "rb");
 
-	interpreters::MockInterpreter* moc = new interpreters::MockInterpreter();
-	std::shared_ptr<interpreters::MockInterpreter> mock_interpreter = std::shared_ptr<interpreters::MockInterpreter>(moc);
+	MockInterpreter* moc = new MockInterpreter();
+	std::shared_ptr<MockInterpreter> mock_interpreter = std::shared_ptr<MockInterpreter>(moc);
 	EXPECT_CALL(*moc, interpret(_)).Times(28);
 
 	//The Test
@@ -190,8 +191,8 @@ TEST(iffFileTests, ByteBufferInputWithInterpreter)
 	}
 	test.write(buffer, bytes_read);
 
-	interpreters::MockInterpreter* moc = new interpreters::MockInterpreter();
-	std::shared_ptr<interpreters::MockInterpreter> mock_interpreter = std::shared_ptr<interpreters::MockInterpreter>(moc);
+	MockInterpreter* moc = new MockInterpreter();
+	std::shared_ptr<MockInterpreter> mock_interpreter = std::shared_ptr<MockInterpreter>(moc);
 	EXPECT_CALL(*moc, interpret(_)).Times(28);
 
 	//The Test

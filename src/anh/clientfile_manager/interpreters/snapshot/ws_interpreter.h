@@ -39,68 +39,65 @@ namespace anh
 {
 	namespace clientfile_manager
 	{
-		namespace iff
+		namespace interpreters
 		{
-			namespace interpreters
+			/**
+				@brief An IFFInterpreter for ws files.
+			*/
+			class ws_interpreter : public interpreter_interface
 			{
+			public:
+
 				/**
-					@brief An IFFInterpreter for ws files.
+					@brief Constructor for a ws interpreter
 				*/
-				class ws_interpreter : public interpreter_interface
+				ws_interpreter();
+
+				/**
+					@brief returns the InterpreterType associated with this Interpreter
+				*/
+				virtual InterpreterType getType() { return WS_INTERPRETER; }
+
+				/**
+					@brief interprets a IFF::FileNode associated with this interpreter.
+					This should only be called by the IFFFile code.
+				*/
+				virtual void interpret(std::shared_ptr<iff::file_node> node);
+
+				/**
+					@brief A single chunk object in the world 
+				*/
+				struct CHUNK
 				{
-				public:
-
-					/**
-						@brief Constructor for a ws interpreter
-					*/
-					ws_interpreter();
-
-					/**
-						@brief returns the InterpreterType associated with this Interpreter
-					*/
-					virtual InterpreterType getType() { return WS_INTERPRETER; }
-
-					/**
-						@brief interprets a IFF::FileNode associated with this interpreter.
-						This should only be called by the IFFFile code.
-					*/
-					virtual void interpret(std::shared_ptr<iff::file_node> node);
-
-					/**
-						@brief A single chunk object in the world 
-					*/
-					struct CHUNK
-					{
-						std::uint64_t id;
-						std::uint64_t parent_id;
-						std::uint32_t name_id;
-						float scale;
-						glm::quat orientation;
-						glm::vec3 location;
-						float object_priority; //could also be type, but I don't buy it.
-						std::uint32_t pob_crc;
-					};
-
-					const std::map<std::uint64_t, CHUNK>& chunk_map() { return chunks; }
-
-					//This interface should be satisfactory
-					size_t name_count() { return names.size(); }
-					std::string name(size_t id) { return names[id];}
-
-					/**
-						@brief a simple output function for debugging values.
-					*/
-					void debug();
-
-				private:
-
-					std::map<std::uint64_t, CHUNK> chunks;
-					std::vector<std::string> names;
-
-					//Internal Node Handling functions
-					void _handleOTNL(anh::ByteBuffer& buffer);
-					void _handle0000DATA(anh::ByteBuffer& buffer);
+					std::uint64_t id;
+					std::uint64_t parent_id;
+					std::uint32_t name_id;
+					float scale;
+					glm::quat orientation;
+					glm::vec3 location;
+					float object_priority; //could also be type, but I don't buy it.
+					std::uint32_t pob_crc;
 				};
+
+				const std::map<std::uint64_t, CHUNK>& chunk_map() { return chunks; }
+
+				//This interface should be satisfactory
+				size_t name_count() { return names.size(); }
+				std::string name(size_t id) { return names[id];}
+
+				/**
+					@brief a simple output function for debugging values.
+				*/
+				void debug();
+
+			private:
+
+				std::map<std::uint64_t, CHUNK> chunks;
+				std::vector<std::string> names;
+
+				//Internal Node Handling functions
+				void _handleOTNL(anh::ByteBuffer& buffer);
+				void _handle0000DATA(anh::ByteBuffer& buffer);
 			};
 		};
 	};

@@ -1,10 +1,10 @@
 #include "datatable_interpreter.h"
-#include "../../filenode.h"
+#include "../../iff/filenode.h"
 
 #include <regex>
 
 using namespace std;
-using namespace anh::clientfile_manager::iff::interpreters;
+using namespace anh::clientfile_manager::interpreters;
 
 std::string readDelimeterEndedString(anh::ByteBuffer& buf, char delimeter1 = 0, char delimeter2 = 0)
 {

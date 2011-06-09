@@ -7,7 +7,7 @@ For more information, visit http://www.swganh.com
 Copyright (c) 2006 - 2010 The SWG:ANH Team */
 
 #include "filemanager.h"
-#include "iff/interpreters/interpreter_interface.h"
+#include "interpreters/interpreter_interface.h"
 #include "iff/iff.h"
 #include "tre/tree.h"
 #include "notfound_exception.h"

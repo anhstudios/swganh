@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef IFF_H
 #define IFF_H
 
-#include "interpreters/interpreter_interface.h"
+#include "../interpreters/interpreter_interface.h"
 
 #include <stdio.h>
 #include <vector>
