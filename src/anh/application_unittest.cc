@@ -95,6 +95,9 @@ TEST_F(ApplicationTest, startupEventTriggered) {
     EXPECT_CALL(*mock_dispatcher, trigger(_));
     app->startup();
 
+    EXPECT_CALL(*app, onAddDefaultOptions_())
+        .Times(1);
+
     EXPECT_CALL(*app, hasStarted())
         .WillRepeatedly(Return(true));
 }

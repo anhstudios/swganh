@@ -308,7 +308,6 @@ void BaseApplication::setupModules_()
 }
 bool BaseApplication::addDataSourcesFromOptions_()
 {
-    return false;
     // check to see if options have been loaded properly
     if (configuration_variables_map_.size() < 1)
         return false;
