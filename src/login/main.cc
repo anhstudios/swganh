@@ -59,33 +59,6 @@ int main(int argc, char* argv[])
                     app.shutdown();
                     return 0;
                 }
-                else
-                {
-                    // add in test for tcp connections
-                    std::string input;
-                    getline(cin, input);
-                    if (strcmp("tcp send", input.c_str()))
-                    {
-                        istringstream iss(input);
-                        std::vector<string> inputs;
-                        do {
-                            string sub;
-                            iss >> sub;
-                            inputs.push_back(sub);
-                        } while (iss);
-                        inputs.push_back("/r/n");
-                        uint16_t port = boost::lexical_cast<uint16_t>(inputs[2]);
-                        string message;
-                        std::for_each(inputs.begin()+3, inputs.end(), [&message] (string str){
-                            message += str;
-                            message += " ";
-                        });
-                        cout << "message: " << message;
-                        cout << port << inputs[2];
-                        app.cluster_service()->sendMessage("127.0.0.1", port, anh::ByteBuffer((const unsigned char*)message.c_str(), message.size()));
-                    }
-
-                }
             }
             boost::this_thread::sleep(boost::posix_time::milliseconds(1));
         }

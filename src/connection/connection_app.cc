@@ -55,12 +55,17 @@ ConnectionApp::ConnectionApp(int argc, char* argv[], list<string> config_files
     auto process_event_listener = [=] (shared_ptr<EventInterface> incoming_event)->bool {
         auto process_event = static_pointer_cast<BasicEvent<packets::RemoteMessage>>(incoming_event);
         // get the proper data struct
-        auto data_struct = event_map_[process_event->source_id];
-        // fill it out
-        data_struct.deserialize(process_event->data);
-        // trigger event
-        event_dispatcher_->trigger(make_shared_event(data_struct.hash_type(), std::move(data_struct)));
-        return true;
+        auto iter = event_map_.find(process_event->source_id);
+        if (iter != event_map_.end() )
+        {
+            packets::NetworkEventMessage& data_struct = (*iter).second;
+            // fill it out
+            data_struct.deserialize(process_event->data);
+            // trigger event
+            event_dispatcher_->trigger(make_shared_event(data_struct.hash_type(), std::move(data_struct)));
+            return true;
+        }
+        return false;
     };
     
     event_dispatcher_->subscribe("RemoteMessage", process_event_listener);
