@@ -32,13 +32,27 @@ namespace anh {
 namespace event_dispatcher {
 
 namespace detail {
-    template<typename T>
-    struct IsSerializable {
-        template<typename U, void(U::*)(anh::ByteBuffer&) const> struct HasSerialize {};
-        template<typename U, void(U::*)(anh::ByteBuffer)> struct HasDeserialize {};
-        template<typename U> static char Test(HasSerialize<U, &U::serialize>*, HasDeserialize<U, &U::deserialize>*);
-        template<typename U> static int Test(...);
-        static const bool value = sizeof(Test<T>(nullptr, nullptr)) == sizeof(char);
+    template<typename Type>
+    class IsSerializable {
+        struct No {};
+        struct Yes { No no[2]; };
+
+        struct BaseMixin {
+            void serialize(anh::ByteBuffer&) const {}
+            void deserialize(anh::ByteBuffer) {}
+        };
+
+        struct Base : public Type, public BaseMixin {};
+
+        template<typename T, T t> class Helper{};
+        
+        template<typename U>
+        static No deduce(U*, Helper<void (BaseMixin::*)(anh::ByteBuffer&) const, &U::serialize>* = 0, 
+            Helper<void (BaseMixin::*)(anh::ByteBuffer), &U::deserialize>* = 0);
+        static Yes deduce(...);
+
+    public:
+        static const bool value = sizeof(Yes) == sizeof(deduce(static_cast<Base*>(0)));
     };
 }
     
@@ -95,7 +109,7 @@ public:
     * @param buffer The source buffer to fill data with.
     */
     void serialize(anh::ByteBuffer& buffer) const {
-        serialize<T>(buffer);
+        serialize<std::decay<T>::type>(buffer);
     }
     
     /**
