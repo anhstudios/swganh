@@ -24,6 +24,8 @@
 #include <memory>
 #include <type_traits>
 
+#include <tbb/scalable_allocator.h>
+
 #include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
 #include "anh/event_dispatcher/event_interface.h"
@@ -184,7 +186,12 @@ SimpleEvent make_event(EventType type);
 */
 template<typename T> inline
 std::shared_ptr<BasicEvent<T>> make_shared_event(EventType type, T&& data) {
-    auto created_event = std::make_shared<BasicEvent<T>>(type, std::forward<T>(data));
+    auto created_event = std::allocate_shared<BasicEvent<T>>(
+        tbb::scalable_allocator<BasicEvent<T>>(), 
+        type, 
+        std::forward<T>(data)
+    );
+    
     return created_event;
 }
 

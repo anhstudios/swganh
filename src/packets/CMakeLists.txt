@@ -3,6 +3,8 @@ include(ANHLibrary)
 AddANHLibrary(packets
     DEPENDS 
     	libanh
+	ADDITIONAL_INCLUDE_DIRS
+	    ${TBB_INCLUDE_DIRS}
 	DEBUG_LIBRARIES 
 	    ${TBB_DEBUG_LIBRARIES}
 	OPTIMIZED_LIBRARIES 

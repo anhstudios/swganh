@@ -27,6 +27,10 @@ SimpleEvent anh::event_dispatcher::make_event(EventType type) {
 }
 
 std::shared_ptr<SimpleEvent> anh::event_dispatcher::make_shared_event(EventType type) {
-    auto created_event = std::make_shared<SimpleEvent>(type);
+    auto created_event = std::allocate_shared<SimpleEvent>(
+        tbb::scalable_allocator<SimpleEvent>(), 
+        type
+    );
+
     return created_event;
 }
