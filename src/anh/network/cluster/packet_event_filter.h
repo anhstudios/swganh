@@ -35,7 +35,7 @@ namespace network {
 namespace cluster {
 
 // FORWARD DECLARATIONS
-class Service;
+class ClusterService;
 
 /**
  * @brief Retrieves the TCPMessage and converts it to an event.
@@ -43,12 +43,12 @@ class Service;
 class PacketEventFilter : public tbb::filter
 {
 public:
-	PacketEventFilter(Service* service);
+	PacketEventFilter(ClusterService* service);
 	~PacketEventFilter(void);
 
 	void* operator()(void* item);
 private:
-	Service* service_;
+	ClusterService* service_;
 };
 
 } // namespace cluster

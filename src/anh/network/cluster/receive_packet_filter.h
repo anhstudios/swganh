@@ -35,7 +35,7 @@ namespace network {
 namespace cluster {
 
 // FORWARD DELCARATIONS
-class Service;
+class ClusterService;
 
 /**
  * @brief Pops a TCPMessage off a Services incoming_message queue.
@@ -51,7 +51,7 @@ public:
 	 *
 	 * @param service The service this filter is associated with.
 	 */
-	ReceivePacketFilter(Service* service);
+	ReceivePacketFilter(ClusterService* service);
 
 	/**
 	 * @brief Destructor
@@ -61,7 +61,7 @@ public:
 	void* operator()(void* item);
 
 private:
-	Service*	service_;
+	ClusterService*	service_;
 };
 
 } // namespace soe

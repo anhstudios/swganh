@@ -35,7 +35,7 @@ namespace network {
 namespace cluster {
 
 // FORWARD DECLARATIONS
-class Service;
+class ClusterService;
 
 /**
  * @brief Retrieves the next outgoing message off outgoing message queue.
@@ -43,12 +43,12 @@ class Service;
 class OutgoingStartFilter : public tbb::filter
 {
 public:
-	OutgoingStartFilter(Service* service);
+	OutgoingStartFilter(ClusterService* service);
 	~OutgoingStartFilter(void);
 
 	void* operator()(void* item);
 private:
-	Service* service_;
+	ClusterService* service_;
 };
 
 } // namespace cluster

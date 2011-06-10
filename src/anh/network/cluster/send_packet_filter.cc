@@ -26,14 +26,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include <anh/network/cluster/send_packet_filter.h>
-#include <anh/network/cluster/service.h>
+#include <anh/network/cluster/cluster_service.h>
 #include <anh/network/cluster/tcp_message.h>
 
 namespace anh {
 namespace network {
 namespace cluster {
 
-SendPacketFilter::SendPacketFilter(Service* service)
+SendPacketFilter::SendPacketFilter(ClusterService* service)
     : tbb::filter(serial_in_order)
     , service_(service)
 {

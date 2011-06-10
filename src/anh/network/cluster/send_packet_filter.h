@@ -35,7 +35,7 @@ namespace network {
 namespace cluster {
 
 // FORWARD DECLARATIONS
-class Service;
+class ClusterService;
 
 /**
  * @brief
@@ -43,12 +43,12 @@ class Service;
 class SendPacketFilter : public tbb::filter
 {
 public:
-	SendPacketFilter(Service* service);
+	SendPacketFilter(ClusterService* service);
 	~SendPacketFilter(void);
 
 	void* operator()(void* item);
 private:
-	Service* service_;
+	ClusterService* service_;
 };
 
 } // namespace cluster

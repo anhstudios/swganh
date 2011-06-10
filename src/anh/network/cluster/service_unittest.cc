@@ -18,7 +18,8 @@
 */
 
 #include <gtest/gtest.h>
-#include <anh/network/cluster/service.h>
+#include <gmock/gmock.h>
+#include <anh/network/cluster/cluster_service.h>
 #include <anh/server_directory/mock_server_directory.h>
 #include <anh/event_dispatcher/mock_event_dispatcher.h>
 
@@ -34,13 +35,13 @@ protected:
     std::shared_ptr<MockEventDispatcher> dispatcher;
     std::shared_ptr<MockServerDirectory> directory;
     boost::asio::io_service io_service;
-    std::shared_ptr<Service>    service;
+    std::shared_ptr<ClusterService>    service;
 
     virtual void SetUp()
     {
         dispatcher = std::make_shared<MockEventDispatcher>();
         directory = std::make_shared<MockServerDirectory>();
-        service = std::make_shared<Service>(io_service, directory, dispatcher, 44993);
+        service = std::make_shared<ClusterService>(io_service, directory, dispatcher, 44993);
     }
     virtual void TearDown()
     {
@@ -51,7 +52,6 @@ protected:
 TEST_F(ClusterServiceTest, sendMessage ) 
 {
 
-    service->Start();
     EXPECT_TRUE(true);
 }
 

@@ -51,7 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/server_directory/datastore.h>
 #include <anh/module_manager/module_manager.h>
 #include <anh/module_manager/platform_services.h>
-#include <anh/network/cluster/service.h>
+#include <anh/network/cluster/cluster_service.h>
 
 using namespace std;
 using namespace anh;
@@ -60,6 +60,7 @@ using namespace database;
 using namespace scripting;
 using namespace server_directory;
 using namespace module_manager;
+using namespace network::cluster;
 using namespace boost::program_options;
 
 BaseApplication::BaseApplication(int argc, char* argv[], list<string> config_files
@@ -103,6 +104,8 @@ void BaseApplication::init_services_()
         event_dispatcher_ = boost::any_cast<shared_ptr<EventDispatcherInterface>>(platform_services_->getService("EventDispatcher"));
         // clock
         clock_ = boost::any_cast<shared_ptr<Clock>>(platform_services_->getService("Clock"));
+
+        cluster_service_ = boost::any_cast<shared_ptr<ClusterServiceInterface>>(platform_services_->getService("ClusterService"));
     }
     catch(boost::bad_any_cast e)
     {
@@ -113,7 +116,6 @@ void BaseApplication::init_services_()
     db_manager_ = boost::any_cast<shared_ptr<DatabaseManagerInterface>>(platform_services_->getService("DatabaseManager"));
     server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
     scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
-    
     }
     catch(...)
     {
@@ -157,7 +159,7 @@ void BaseApplication::startup() {
                 }
             }
             // TODO: fix ServerDirectory database
-            //registerApp_();
+            registerApp_();
         }
         else {
             LOG(WARNING) << "NO Datasources Loaded from Config";
@@ -368,16 +370,23 @@ void BaseApplication::setupCluster_()
     // setup cluster_service
     // get tcp port of app...
     uint16_t port = configuration_variables_map_["cluster.tcp_port"].as<uint16_t>();
-    cluster_service_ = std::make_shared<network::cluster::Service>(cluster_io_service_, server_directory_, event_dispatcher_, port);
+    if (cluster_service_ == nullptr)
+        return;
     // loop through processes in server_directory and open a tcp connection to each
     if (server_directory_ != nullptr)
     {
-        auto proc_list = server_directory_->getProcessSnapshot(server_directory_->cluster());
-        std::for_each(proc_list.begin(), proc_list.end(), [=](anh::server_directory::Process proc) {
-            if (proc.tcp_port() != port){
-                cluster_service_->Connect(std::make_shared<anh::server_directory::Process>(proc));
-            }
-        });
+        try {
+            auto proc_list = server_directory_->getProcessSnapshot(server_directory_->cluster());
+            std::for_each(proc_list.begin(), proc_list.end(), [=](anh::server_directory::Process proc) {
+                if (proc.tcp_port() != port){
+                    cluster_service_->Connect(std::make_shared<anh::server_directory::Process>(proc));
+                }
+            });
+        }
+        catch(std::exception e)
+        {
+            LOG(WARNING) << "Error with Cluster Setup: " << e.what() <<endl;
+        }
     }
 }
 int BaseApplication::kbHit()

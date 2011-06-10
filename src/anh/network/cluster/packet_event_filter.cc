@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include <anh/network/cluster/packet_event_filter.h>
-#include <anh/network/cluster/service.h>
+#include <anh/network/cluster/cluster_service.h>
 #include <anh/event_dispatcher/basic_event.h>
 #include <packets/RemoteMessage.h>
 
@@ -37,7 +37,7 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-PacketEventFilter::PacketEventFilter(Service* service)
+PacketEventFilter::PacketEventFilter(ClusterService* service)
     : tbb::filter(serial_in_order)
     , service_(service)
 {

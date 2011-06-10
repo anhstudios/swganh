@@ -28,19 +28,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_CLUSTER_SERVICE_H_
 #define ANH_NETWORK_CLUSTER_SERVICE_H_
 
-#include <anh/byte_buffer.h>
-#include <anh/network/cluster/tcp_client.h>
-#include <anh/network/cluster/tcp_host.h>
-#include <anh/network/cluster/tcp_message.h>
-#include <anh/event_dispatcher/event_interface.h>
-#include <anh/event_dispatcher/event_dispatcher_interface.h>
+#include <anh/network/cluster/cluster_service_interface.h>
+
 //Filters
 #include <anh/network/cluster/send_packet_filter.h>
 #include <anh/network/cluster/outgoing_start_filter.h>
 #include <anh/network/cluster/packet_event_filter.h>
 #include <anh/network/cluster/receive_packet_filter.h>
 
-#include <anh/server_directory/server_directory_interface.h>
 #include <packets/base_anh_packet.h>
 
 #include <boost/thread.hpp>
@@ -59,12 +54,12 @@ typedef std::pair<std::shared_ptr<anh::server_directory::Process>, std::shared_p
 /**
  * @brief Represent a Cluster Service
  */
-class Service : public std::enable_shared_from_this<Service>
+class ClusterService : public ClusterServiceInterface
 {
 public:
-    Service(boost::asio::io_service& io_service, std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory,
+    ClusterService(boost::asio::io_service& io_service, std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory,
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> dispatcher, uint16_t port);
-    ~Service(void);
+    ~ClusterService(void);
 
     /**
      * @brief Starts the Cluster Service.

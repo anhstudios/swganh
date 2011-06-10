@@ -26,13 +26,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include <anh/network/cluster/outgoing_start_filter.h>
-#include <anh/network/cluster/service.h>
+#include <anh/network/cluster/cluster_service.h>
 
 namespace anh {
 namespace network {
 namespace cluster {
 
-OutgoingStartFilter::OutgoingStartFilter(Service* service)
+OutgoingStartFilter::OutgoingStartFilter(ClusterService* service)
 	: tbb::filter(serial_in_order)
 	, service_(service) 
 {

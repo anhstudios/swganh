@@ -10,7 +10,7 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team*/
 #define CONNECTION_APP_H_
 
 #include <anh/application.h>
-#include <anh/network/cluster/service.h>
+#include <anh/network/cluster/cluster_service.h>
 #include <packets/NetworkEventMessage.h>
 #include <unordered_map>
 

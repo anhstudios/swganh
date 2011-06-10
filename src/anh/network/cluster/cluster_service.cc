@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #pragma warning (disable : 4355)
 
-#include <anh/network/cluster/service.h>
+#include <anh/network/cluster/cluster_service.h>
 
 #include <anh/network/cluster/tcp_message.h>
 #include <anh/event_dispatcher/event_dispatcher.h>
@@ -48,7 +48,7 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectoryInterface> directory,
+ClusterService::ClusterService(boost::asio::io_service& io_service, shared_ptr<ServerDirectoryInterface> directory,
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> dispatcher, uint16_t port)
     : directory_(directory)
     , event_dispatcher_(dispatcher)
@@ -83,19 +83,19 @@ Service::Service(boost::asio::io_service& io_service, shared_ptr<ServerDirectory
     event_dispatcher_->subscribe("RemoveProcess", remove_process_listener);
 }
 
-Service::~Service(void)
+ClusterService::~ClusterService(void)
 {	
     // interrupt/join thread
     service_thread_.interrupt();
     service_thread_.join();
 }
 
-void Service::Start()
+void ClusterService::Start()
 {
     acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port_ ));
-    tcp_host_ = std::make_shared<tcp_host>(io_service_, std::bind(&Service::OnTCPHostReceive_, this, std::placeholders::_1));
+    tcp_host_ = std::make_shared<tcp_host>(io_service_, std::bind(&ClusterService::OnTCPHostReceive_, this, std::placeholders::_1));
 
-    acceptor_->async_accept(tcp_host_->socket(), boost::bind(&Service::handle_accept_, this, 
+    acceptor_->async_accept(tcp_host_->socket(), boost::bind(&ClusterService::handle_accept_, this, 
        tcp_host_ , boost::asio::placeholders::error));
     DLOG(WARNING) << "Now listening for TCP Messages on: " << port_;
     service_thread_ = boost::thread([=] () {
@@ -103,13 +103,13 @@ void Service::Start()
     });
 }
 
-void Service::Update(void)
+void ClusterService::Update(void)
 {
     incoming_pipeline_.run(8);
     outgoing_pipeline_.run(8);
  }
 
-void Service::Shutdown(void)
+void ClusterService::Shutdown(void)
 {
     tcp_client_map_.clear();
     incoming_messages_.clear();
@@ -118,14 +118,14 @@ void Service::Shutdown(void)
     outgoing_pipeline_.clear();
 }
 
-bool Service::isConnected(const std::string& name)
+bool ClusterService::isConnected(const std::string& name)
 {
     auto find_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [name] (ClusterPair pair) {
         return (pair.first->name() == name);
     });
     return find_it != tcp_client_map_.end();
 }
-bool Service::isConnected(std::shared_ptr<Process> process)
+bool ClusterService::isConnected(std::shared_ptr<Process> process)
 {
     auto find_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [process] (ClusterPair pair) {
         return process == pair.first;
@@ -133,7 +133,7 @@ bool Service::isConnected(std::shared_ptr<Process> process)
 
     return find_it != tcp_client_map_.end();
 }
-void Service::Connect(std::shared_ptr<anh::server_directory::Process> process)
+void ClusterService::Connect(std::shared_ptr<anh::server_directory::Process> process)
 {
     try 
     {
@@ -151,7 +151,7 @@ void Service::Connect(std::shared_ptr<anh::server_directory::Process> process)
         LOG(WARNING) << "Exception in Service::Connect " << e.what() << std::endl;
     }
 }
-void Service::Disconnect(std::shared_ptr<anh::server_directory::Process> process)
+void ClusterService::Disconnect(std::shared_ptr<anh::server_directory::Process> process)
 {
     try 
     {
@@ -170,7 +170,7 @@ void Service::Disconnect(std::shared_ptr<anh::server_directory::Process> process
         LOG(WARNING) << "Exception in Service::Disconnect " << e.what() << std::endl;
     }
 }
-void Service::sendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out, DestinationType dest)
+void ClusterService::sendMessage(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out, DestinationType dest)
 {
     // make sure we have a connection
     auto conn = getConnection(name);
@@ -182,7 +182,7 @@ void Service::sendMessage(const std::string& name, std::shared_ptr<anh::event_di
         outgoing_messages_.push_back(tcp_message);
     }
 }
-void Service::sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer, DestinationType dest)
+void ClusterService::sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer, DestinationType dest)
 {
     // check for a connection
     auto conn = getConnection(host, port);
@@ -193,7 +193,7 @@ void Service::sendMessage(const std::string& host, uint16_t port, anh::ByteBuffe
         outgoing_messages_.push_back(tcp_message);
     }
 }
-void Service::sendMessageByType_(const std::string& type, anh::ByteBuffer& buffer)
+void ClusterService::sendMessageByType_(const std::string& type, anh::ByteBuffer& buffer)
 {
     // get all connections by type
     std::for_each(tcp_client_map_.begin(), tcp_client_map_.end(), [=, &buffer] (ClusterPair pair) {
@@ -204,14 +204,14 @@ void Service::sendMessageByType_(const std::string& type, anh::ByteBuffer& buffe
         }
     });
 }
-void Service::sendMessageToAll_(anh::ByteBuffer& buffer) 
+void ClusterService::sendMessageToAll_(anh::ByteBuffer& buffer) 
 {
     std::for_each(tcp_client_map_.begin(), tcp_client_map_.end(), [=, &buffer] (ClusterPair pair) {
             // send message to each
             pair.second->Send(buffer);
     });
 }
-std::shared_ptr<tcp_client> Service::getConnection(const std::string& host, uint16_t port)
+std::shared_ptr<tcp_client> ClusterService::getConnection(const std::string& host, uint16_t port)
 {
     auto conn_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [host, port] (ClusterPair pair) {
         return (pair.first->address() == host && pair.first->tcp_port() == port);
@@ -222,7 +222,7 @@ std::shared_ptr<tcp_client> Service::getConnection(const std::string& host, uint
     }
     return nullptr;
 }
-std::shared_ptr<tcp_client> Service::getConnection(const std::string& name)
+std::shared_ptr<tcp_client> ClusterService::getConnection(const std::string& name)
 {
     auto conn_it = std::find_if(tcp_client_map_.begin(), tcp_client_map_.end(), [name] (ClusterPair pair) {
         return (pair.first->name() == name);
@@ -234,14 +234,14 @@ std::shared_ptr<tcp_client> Service::getConnection(const std::string& name)
     return nullptr;
 }
 
-void Service::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system::error_code& error)
+void ClusterService::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system::error_code& error)
 {
     if (!error)
     {
         host->Start();
-        host = std::make_shared<tcp_host>(io_service_, std::bind(&Service::OnTCPHostReceive_, this, std::placeholders::_1));
+        host = std::make_shared<tcp_host>(io_service_, std::bind(&ClusterService::OnTCPHostReceive_, this, std::placeholders::_1));
         acceptor_->async_accept(host->socket(),
-            std::bind(&Service::handle_accept_, this, host, 
+            std::bind(&ClusterService::handle_accept_, this, host, 
             std::placeholders::_1));
     }
     else
@@ -250,7 +250,7 @@ void Service::handle_accept_(std::shared_ptr<tcp_host> host, const boost::system
     }
 }
 
-void Service::OnTCPHostReceive_(anh::ByteBuffer* buffer)
+void ClusterService::OnTCPHostReceive_(anh::ByteBuffer* buffer)
 {
     // add to the pipeline list
     incoming_messages_.push_back(buffer);

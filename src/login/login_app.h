@@ -11,7 +11,7 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team*/
 
 #include <anh/application.h>
 #include <anh/network/soe/service.h>
-#include <anh/network/cluster/service.h>
+#include <anh/network/cluster/cluster_service.h>
 
 namespace anh {
 namespace module_manager { class PlatformServices; }

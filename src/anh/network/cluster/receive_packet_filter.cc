@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include <anh/network/cluster/receive_packet_filter.h>
-#include <anh/network/cluster/service.h>
+#include <anh/network/cluster/cluster_service.h>
 #include <anh/network/cluster/tcp_message.h>
 
 #include <glog/logging.h>
@@ -35,7 +35,7 @@ namespace anh {
 namespace network {
 namespace cluster {
 
-ReceivePacketFilter::ReceivePacketFilter(Service* service)
+ReceivePacketFilter::ReceivePacketFilter(ClusterService* service)
     : tbb::filter(serial_in_order)
     , service_(service)
 {

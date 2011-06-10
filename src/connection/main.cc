@@ -3,7 +3,7 @@
 #include <anh/scripting/scripting_manager.h>
 #include <anh/module_manager/platform_services.h>
 #include <anh/module_manager/module_manager.h>
-#include <anh/network/cluster/service.h>
+#include <anh/network/cluster/cluster_service.h>
 #include <anh/clock.h>
 
 #include <iostream>

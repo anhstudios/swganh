@@ -17,9 +17,11 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team*/
 #include <anh/server_directory/mock_server_directory.h>
 #include <anh/event_dispatcher/mock_event_dispatcher.h>
 #include <anh/scripting/scripting_manager.h>
+#include <anh/network/cluster/mock_service.h>
 #include <anh/module_manager/module_manager.h>
 #include <anh/module_manager/platform_services.h>
 #include <anh/module_manager/mock_platform_services.h>
+#include <anh/network/cluster/cluster_service.h>
 #include <anh/clock.h>
 
 using namespace std;
@@ -30,6 +32,8 @@ using namespace database;
 using namespace scripting;
 using namespace server_directory;
 using namespace module_manager;
+using namespace network::cluster;
+using testing::DefaultValue;
 
 namespace {
 
@@ -41,6 +45,7 @@ public:
     MOCK_CONST_METHOD0(hasStarted, bool());
     MOCK_METHOD0(onAddDefaultOptions_, void());
     MOCK_METHOD0(onRegisterApp_, void());
+    MOCK_METHOD0(setupCluster_, void());
 };
 
 class ApplicationTest : public testing::Test
@@ -51,6 +56,7 @@ public:
     shared_ptr<NiceMock<MockDatabaseManager>> manager;
     shared_ptr<NiceMock<MockServerDirectory>> directory;
     shared_ptr<NiceMock<MockEventDispatcher>> mock_dispatcher;  
+    shared_ptr<NiceMock<ClusterService>>clust_service;
     shared_ptr<ModuleManager> module_manager;
     shared_ptr<PlatformServices> services;
 
@@ -59,11 +65,13 @@ public:
         shared_ptr<EventDispatcherInterface> event_dispatcher = make_shared<NiceMock<MockEventDispatcher>>();
         shared_ptr<DatabaseManagerInterface> db_manager = make_shared<NiceMock<MockDatabaseManager>>();
         shared_ptr<ServerDirectoryInterface> server_directory = make_shared<NiceMock<MockServerDirectory>>();
+        shared_ptr<ClusterServiceInterface> cluster_service = make_shared<NiceMock<MockClusterService>>();
         // goofy way of doing this, but since we're using mocks it's necessary.
-        mock_dispatcher = dynamic_pointer_cast<NiceMock<MockEventDispatcher>>(event_dispatcher);
-        scripter = dynamic_pointer_cast<MockScriptingManager>(scripting_mgr);
-        manager = dynamic_pointer_cast<NiceMock<MockDatabaseManager>>(db_manager);
-        directory = dynamic_pointer_cast<NiceMock<MockServerDirectory>>(server_directory);
+        mock_dispatcher = static_pointer_cast<NiceMock<MockEventDispatcher>>(event_dispatcher);
+        scripter = static_pointer_cast<MockScriptingManager>(scripting_mgr);
+        manager = static_pointer_cast<NiceMock<MockDatabaseManager>>(db_manager);
+        directory = static_pointer_cast<NiceMock<MockServerDirectory>>(server_directory);
+        //clust_service = static_pointer_cast<NiceMock<MockClusterService>>(cluster_service);
         /// end goofy
         shared_ptr<Clock> clock = make_shared<Clock>();
         services = make_shared<PlatformServices>();
@@ -71,7 +79,9 @@ public:
         services->addService("EventDispatcher", event_dispatcher);
         services->addService("DatabaseManager", db_manager);
         services->addService("ServerDirectory", server_directory);
+        services->addService("ClusterService", cluster_service);
         services->addService("Clock", clock);
+        
         return make_shared<MockApplication>(config, services);
     }
 protected:
@@ -93,10 +103,8 @@ TEST_F(ApplicationTest, startupEventTriggered) {
     shared_ptr<MockApplication> app = buildBasicApplication();
 
     EXPECT_CALL(*mock_dispatcher, trigger(_));
+    
     app->startup();
-
-    EXPECT_CALL(*app, onAddDefaultOptions_())
-        .Times(1);
 
     EXPECT_CALL(*app, hasStarted())
         .WillRepeatedly(Return(true));
@@ -107,7 +115,7 @@ TEST_F(ApplicationTest, startupEventNotTriggered) {
 
     EXPECT_CALL(*app, hasStarted())
         .WillRepeatedly(Return(false));
-
+    
     EXPECT_CALL(*mock_dispatcher, trigger(_))
         .Times(0);
 
@@ -226,6 +234,12 @@ void ApplicationTest::SetUp()
     of.close();
 
     config.push_back("general.cfg");
+
+     // setup default values;
+    auto cluster = std::make_shared<Cluster>(0, 0, "", "", Cluster::ONLINE, "", "");
+    ProcessList proc_list;
+    DefaultValue<std::shared_ptr<Cluster>>::Set(cluster);
+    DefaultValue<ProcessList>::Set(proc_list);
 }
 void ApplicationTest::TearDown()
 {
