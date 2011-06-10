@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/service.h>
 #include <anh/network/soe/protocol_opcodes.h>
 #include <anh/network/soe/outgoing_packet.h>
+#include "anh/network/soe/packet_utilities.h"
 #include <anh/network/network_events.h>
 #include <anh/utilities.h>
 #include <anh/event_dispatcher/event_interface.h>
@@ -41,10 +42,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <packets/Login/LoginClusterStatus.h>
 
 #include <iostream>
-
-#ifdef ERROR
-#undef ERROR
-#endif
 
 #include <glog/logging.h>
 
@@ -87,17 +84,8 @@ void Session::Update(void)
         auto process_queue = std::move(outgoing_data_queue_[previous_active_queue]);
 
         ByteBuffer data_message;
-        if (process_queue.size() > 1) {
-			data_message.write<uint16_t>(anh::bigToHost<uint16_t>(0x19));
-			std::for_each(process_queue.begin(), process_queue.end(), [=, &data_message](anh::ByteBuffer& item){
-				data_message.write<uint8_t>(item.size());
-				data_message.append(item);
-			});
-        } else {
-            data_message.append(process_queue.front());
-        }
-
-
+        
+        packDataChannelMessages(process_queue, data_message);
 
         if (data_message.size() >= recv_buffer_size_) {
             uint32_t bytes_sent = 0;

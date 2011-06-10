@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/byte_buffer.h>
 #include <anh/utilities.h>
 #include <anh/network/soe/protocol_opcodes.h>
+#include "anh/network/soe/packet_utilities.h"
 
 namespace anh {
 namespace network {
@@ -368,21 +369,7 @@ struct ChildDataA
 		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(sequence));
 
 		// Serialize as a Multi-Data
-		if(messages.size() > 1)
-		{
-			buffer.write<uint16_t>(anh::bigToHost<uint16_t>(0x19));
-			std::for_each(messages.begin(), messages.end(), [=, &buffer](anh::ByteBuffer& item){
-				uint8_t sizezz = item.size();
-				buffer.write<uint8_t>(item.size());
-				buffer.write((const unsigned char*)item.data(), item.size());
-			});
-		}
-		else
-		{
-			buffer.write<uint16_t>(anh::bigToHost<uint16_t>(priority));
-			buffer.append(messages.front());
-
-		}
+		packDataChannelMessages(messages, buffer);
 
 		footer.serialize(buffer);
 	}

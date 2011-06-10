@@ -51,6 +51,7 @@ namespace soe {
 class Service;
 class SoeProtocolFilter;
 class SessionRequestFilter;
+class SessionTest;
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
@@ -87,10 +88,9 @@ public:
 
 	friend class SoeProtocolFilter;
 	friend class SessionRequestFilter;
-
+    friend class SessionTest;
 private:
-
-	typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
+    typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
 	typedef std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>::iterator		SequencedMessageMapIterator;
 
 	void HandleSoeMessage(anh::ByteBuffer& message);
@@ -109,7 +109,7 @@ private:
 	bool SequenceIsValid_(const uint16_t& sequence);
 	void AcknowledgeSequence_(const uint16_t& sequence);
 
-	boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
+    boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
 	Service*							service_; // owner
 
 	SequencedMessageMap												sent_messages_;
