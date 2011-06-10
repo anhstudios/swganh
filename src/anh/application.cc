@@ -69,9 +69,9 @@ BaseApplication::BaseApplication(int argc, char* argv[], list<string> config_fil
     , argv_(argv)
     , started_(false)
     , config_files_(config_files)
+    , platform_services_(platform_services)
 {
-    platform_services_ = platform_services;
-    init_services_();
+    getPreStartupPlatformServices_();
 }
 
 BaseApplication::BaseApplication(int argc, char* argv[]
@@ -81,9 +81,9 @@ BaseApplication::BaseApplication(int argc, char* argv[]
     , argv_(argv)
     , started_(false)
     , config_files_(0)
+    , platform_services_(platform_services)
 {
-    platform_services_ = platform_services;
-    init_services_();
+    getPreStartupPlatformServices_();
 }
 BaseApplication::BaseApplication(list<string> config_files
 , shared_ptr<PlatformServices> platform_services)
@@ -92,34 +92,10 @@ BaseApplication::BaseApplication(list<string> config_files
     , argv_(nullptr)
     , started_(false)
     , config_files_(config_files)
+    , platform_services_(platform_services)
 {
-    platform_services_ = platform_services;
-    init_services_();
+    getPreStartupPlatformServices_();
 }
-
-void BaseApplication::init_services_() 
-{
-    try {
-        event_dispatcher_ = boost::any_cast<shared_ptr<EventDispatcherInterface>>(platform_services_->getService("EventDispatcher"));
-        scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
-        // clock
-        clock_ = boost::any_cast<shared_ptr<Clock>>(platform_services_->getService("Clock"));
-    }
-    catch(boost::bad_any_cast e)
-    {
-        throw runtime_error("Required Services Missing: " + string(e.what()));
-    }
-    try {
-    // these are optional so they might not be passed in, the app can handle these values not being available.
-    db_manager_ = boost::any_cast<shared_ptr<DatabaseManagerInterface>>(platform_services_->getService("DatabaseManager"));
-    server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
-    }
-    catch(...)
-    {
-        // eat the exception, we don't care they failed.
-    }
-}
-
 
 BaseApplication::~BaseApplication() {}
 
@@ -132,6 +108,8 @@ void BaseApplication::startup() {
         addDefaultOptions_();
         // load the options
         loadOptions_(argc_, argv_, config_files_);
+        // get services from PlatformServices
+        init_services_();
         // get a database manager
         if (db_manager_ == nullptr) {
             db_manager_ = createDatabaseManager(sql::mysql::get_driver_instance());
@@ -165,6 +143,8 @@ void BaseApplication::startup() {
         else {
             throw runtime_error("No Event Dispatcher Registered");
         }
+        // set any services we might need to add so the Modules have them.
+        setPlatformServices_();
         // setup ModuleManager and load modules
         setupModules_();
 
@@ -355,6 +335,56 @@ void BaseApplication::registerApp_()
                 );
         }
     }
+}
+
+void BaseApplication::init_services_() 
+{
+    try {
+            getRequiredPlatformServices_();
+    }
+    catch(boost::bad_any_cast e)
+    {
+        throw runtime_error("Required Services Missing: " + string(e.what()));
+    }
+    // these are optional so they might not be passed in, the app can handle these values not being available.
+    getOptionalPlatformServices_();
+}
+void BaseApplication::getPreStartupPlatformServices_()
+{
+    event_dispatcher_ = boost::any_cast<shared_ptr<EventDispatcherInterface>>(platform_services_->getService("EventDispatcher"));
+}
+void BaseApplication::getRequiredPlatformServices_()
+{
+    clock_ = boost::any_cast<shared_ptr<Clock>>(platform_services_->getService("Clock"));
+}
+
+void BaseApplication::getOptionalPlatformServices_()
+{
+    try {
+        db_manager_ = boost::any_cast<shared_ptr<DatabaseManagerInterface>>(platform_services_->getService("DatabaseManager"));
+    }
+    catch(...) {}
+    try {
+        server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
+    }
+    catch(...) {}
+    try {
+        scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
+    }
+    catch(...) {}
+}
+void BaseApplication::setPlatformServices_()
+{
+    platform_services_->addService("ProgramOptions"
+        , std::make_shared<boost::program_options::variables_map>(configuration_variables_map()));
+    // these might be added already, but if they are not in here they will be added
+    if (db_manager_ != nullptr)
+        platform_services_->addService("DatabaseManager", db_manager_);
+    if (server_directory_ != nullptr)
+        platform_services_->addService("ServerDirectory", server_directory_);
+    if (scripting_manager_ != nullptr)
+        platform_services_->addService("ScriptingManager", scripting_manager_);
+    
 }
 int BaseApplication::kbHit()
 {
