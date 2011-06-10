@@ -54,7 +54,7 @@ typedef std::pair<std::shared_ptr<anh::server_directory::Process>, std::shared_p
 /**
  * @brief Represent a Cluster Service
  */
-class ClusterService : public ClusterServiceInterface
+class ClusterService : public ClusterServiceInterface, public std::enable_shared_from_this<ClusterService>
 {
 public:
     ClusterService(boost::asio::io_service& io_service, std::shared_ptr<anh::server_directory::ServerDirectoryInterface> directory,

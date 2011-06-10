@@ -18,7 +18,6 @@ public:
     : socket_(io_service) 
     , callback_(callback)
     {
-        socket_.set_option(tcp::no_delay(true));
     }
     tcp_host::~tcp_host();
     tcp::socket& socket() { return socket_; }

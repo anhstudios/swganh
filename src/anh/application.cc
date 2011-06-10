@@ -104,8 +104,6 @@ void BaseApplication::init_services_()
         event_dispatcher_ = boost::any_cast<shared_ptr<EventDispatcherInterface>>(platform_services_->getService("EventDispatcher"));
         // clock
         clock_ = boost::any_cast<shared_ptr<Clock>>(platform_services_->getService("Clock"));
-
-        cluster_service_ = boost::any_cast<shared_ptr<ClusterServiceInterface>>(platform_services_->getService("ClusterService"));
     }
     catch(boost::bad_any_cast e)
     {
@@ -116,6 +114,7 @@ void BaseApplication::init_services_()
     db_manager_ = boost::any_cast<shared_ptr<DatabaseManagerInterface>>(platform_services_->getService("DatabaseManager"));
     server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
     scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
+    cluster_service_ = boost::any_cast<shared_ptr<ClusterServiceInterface>>(platform_services_->getService("ClusterService"));
     }
     catch(...)
     {
@@ -145,19 +144,6 @@ void BaseApplication::startup() {
         }
         // loads the data sources from config into db_manager
         if (addDataSourcesFromOptions_()) {
-            // sets up the server_directory
-            if (server_directory_ == nullptr) {
-                shared_ptr<sql::Connection> conn = db_manager_->getConnection(
-                    configuration_variables_map_["cluster.datastore.name"].as<string>());
-                if (conn != nullptr)
-                {
-                    server_directory_ = createServerDirectory(conn);
-                    platform_services_->addService("ServerDirectory", server_directory_);
-                }
-                else {
-                    throw runtime_error("No valid database connection available");
-                }
-            }
             // TODO: fix ServerDirectory database
             registerApp_();
         }
@@ -349,6 +335,20 @@ bool BaseApplication::addDataSourcesFromOptions_()
 
 void BaseApplication::registerApp_()
 {
+    // sets up the server_directory
+    if (server_directory_ == nullptr) 
+    {
+        shared_ptr<sql::Connection> conn = db_manager_->getConnection(
+            configuration_variables_map_["cluster.datastore.name"].as<string>());
+        if (conn != nullptr)
+        {
+            server_directory_ = createServerDirectory(conn);
+            platform_services_->addService("ServerDirectory", server_directory_);
+        }
+        else {
+            throw runtime_error("No valid database connection available");
+        }
+    }
     if (server_directory_ != nullptr)
     {
         // make sure the value is in the map before registering
@@ -370,8 +370,11 @@ void BaseApplication::setupCluster_()
     // setup cluster_service
     // get tcp port of app...
     uint16_t port = configuration_variables_map_["cluster.tcp_port"].as<uint16_t>();
+    // create a new cluster service if one wasn't passed in
     if (cluster_service_ == nullptr)
-        return;
+    {
+        cluster_service_ = std::make_shared<ClusterService>(cluster_io_service_, server_directory_, event_dispatcher_, port);
+    }
     // loop through processes in server_directory and open a tcp connection to each
     if (server_directory_ != nullptr)
     {
