@@ -137,8 +137,8 @@ void ClusterService::Connect(std::shared_ptr<anh::server_directory::Process> pro
 {
     try 
     {
-        // make sure we aren't already connected
-        if (!isConnected(process))
+        // make sure we aren't already connected and this isn't us.
+        if (!isConnected(process) && (process->tcp_port() != port_ ))
         {
             auto client = std::make_shared<tcp_client>(io_service_, process->address(), process->tcp_port());
             if (client != nullptr) {
