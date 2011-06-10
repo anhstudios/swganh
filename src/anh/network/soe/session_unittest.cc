@@ -18,36 +18,18 @@
 */
 
 #include <gtest/gtest.h>
+#include <anh/network/soe/session.h>
 
-#include "anh/event_dispatcher/basic_event.h"
-#include "packets/Login/LoginClientId.h"
+using namespace anh;
+using namespace network::soe;
+namespace anh {
+namespace network {
+namespace soe {
 
-using anh::event_dispatcher::make_shared_event;
-using packets::LoginClientId;
-
-namespace {
-
-TEST(PacketTest, BaseSwgPacketsAreSerializable) {
-    LoginClientId login;
-    login.username = "testuser";
-    login.password = "testpass";
-    login.client_version = "012345";
-
-    auto login_event = make_shared_event(LoginClientId::opcode, login);
-
-    EXPECT_EQ("testuser", login_event->username);
-    EXPECT_EQ("testpass", login_event->password);
-    EXPECT_EQ("012345", login_event->client_version);
-         
-    anh::ByteBuffer buffer;
-    login_event->serialize(buffer);
-    
-    EXPECT_EQ(0x0004, buffer.read<uint16_t>());
-    EXPECT_EQ(0x41131F96, buffer.read<uint32_t>());
-    EXPECT_EQ("testuser", buffer.read<std::string>());
-    EXPECT_EQ("testpass", buffer.read<std::string>());
-    EXPECT_EQ("012345", buffer.read<std::string>());
-
+TEST(SessionTest, SessionTest1)
+{
+    EXPECT_TRUE(true);
 }
-
-}  // namespace
+}  // namespace soe
+}  // namespace network
+}  // namespace anh
