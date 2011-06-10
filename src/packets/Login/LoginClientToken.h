@@ -32,7 +32,8 @@ struct LoginClientToken : public BaseSwgPacket<LoginClientToken> {
 		buffer.read_position(buffer.read_position() + session_key.size());
 
         account_id = buffer.read<int32_t>();
-        account_username = buffer.read<std::string>();
+        station_id = buffer.read<int32_t>();
+        station_username = buffer.read<std::string>();
     }
 };
 

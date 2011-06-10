@@ -38,7 +38,7 @@ struct EnumerateCharacterId : public BaseSwgPacket<EnumerateCharacterId> {
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-        character_count = buffer.read<uint32_t>();
+        uint32_t character_count = buffer.read<uint32_t>();
         for (uint32_t i = 0; i < character_count; i++) {
             Character character;
             character.name = buffer.read<std::wstring>();

@@ -48,7 +48,7 @@ struct LoginClusterStatus : public BaseSwgPacket<LoginClusterStatus> {
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {        
-        server_count = buffer.read<uint32_t>();
+        uint32_t server_count = buffer.read<uint32_t>();
         for(uint32_t i = 0; i < server_count; i++)
         {
             ClusterServer server;
