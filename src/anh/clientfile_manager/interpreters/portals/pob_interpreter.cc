@@ -130,7 +130,9 @@ void pob_interpreter::_handlePRTL0004(pob_interpreter* pob, anh::ByteBuffer& dat
 	Link link;
 
 	//I think this is always 1.
-	assert(data.read<char>() == 1); 
+	//assert( == 1); 
+	data.read<char>();
+
 
 	link.portal_id = data.read<std::uint32_t>();
 	
@@ -143,20 +145,10 @@ void pob_interpreter::_handlePRTL0004(pob_interpreter* pob, anh::ByteBuffer& dat
 
 void pob_interpreter::debug()
 {
-	for(unsigned int i=0; i < cells_.size(); ++i)
-	{
-		Cell& c = cells_[i];
-
-		printf("==Cell %d==\n", i);
-		printf("Name = \"%s\"\n", c.name.c_str());
-		//printf("Mesh = \"%s\"\n", c->mesh.c_str());
-		//printf("Collision = \"%s\"\n", c->collision.c_str());
-		printf("Link Count = %d\n", c.links.size());
-
-		for(unsigned int j=0; j < c.links.size(); ++j)
+	std::for_each(portals_.begin(), portals_.end(), [] (Portal& p) {
+		if(p.vertices.size() != 4)
 		{
-			Link& link = c.links[j];
-			printf("\tLink %d to Cell %d through Portal %d\n", j, link.dst_cellid, link.portal_id);
+			printf("%d\n", p.vertices.size());
 		}
-	}
+	});
 }

@@ -99,7 +99,7 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 			std::uint32_t size = inputstream.read<std::uint32_t>(true);
 			
 			//Then we check to see if what it contains is a node or data based the first eight characters
-			if(size >= 4 && childIsNode_(inputstream))
+			if(size >= 4 && isFolderNode_(name))
 			{
 				//We must be a folder.
 				if(loader.empty())
@@ -209,9 +209,11 @@ unsigned int iff_file::getNameSize_(char namedata[], unsigned int size)
 	return i;
 }
 
-bool iff_file::childIsNode_(anh::ByteBuffer& input)
+bool iff_file::isFolderNode_(std::string& name)
 {
-	//Lets check if our child is a node or not
-	std::uint32_t name_buf = input.peek<std::uint32_t>();
-	return !(getNameSize_((char*)&name_buf, 4) < 4);
+	if(name.substr(0, 4) == "FORM" || name.substr(4, 8) == "FORM")
+	{
+		return true;
+	}
+	return false;
 }

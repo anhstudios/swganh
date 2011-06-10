@@ -80,7 +80,7 @@ namespace anh
 				void loadIFF_(anh::ByteBuffer& inputstream);
 				bool isNodeNameCharacter_(char c);
 				unsigned int getNameSize_(char namedata[], unsigned int size);
-				bool childIsNode_(anh::ByteBuffer& input);
+				bool isFolderNode_(std::string& name);
 				std::string getIFFName_(anh::ByteBuffer& input);
 
 				std::vector<std::shared_ptr<clientfile_manager::iff::node>> headNodes;
