@@ -24,6 +24,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
+
 #include "login_app.h"
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/scripting/scripting_manager.h>
@@ -31,6 +32,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
 #include <packets/NetworkEventMessage.h>
+
+#ifdef ERROR
+#undef ERROR
+#endif
+
 #include <iostream>
 #include <glog/logging.h>
 #include <boost/thread/thread.hpp>
@@ -72,6 +78,8 @@ LoginApp::LoginApp(int argc, char* argv[], list<string> config_files
     event_dispatcher_->subscribe("Startup", startupListener);
     event_dispatcher_->subscribe("Process", processListener);
     event_dispatcher_->subscribe("Shutdown", shutdownListener);
+
+    soe_service_.event_dispatcher(event_dispatcher());
 }
 LoginApp::~LoginApp() {
     //destructor
@@ -91,7 +99,6 @@ void LoginApp::startup()
     nem.time_stamp_id = clock_->global_time();
     auto nem_event = make_shared_event("NetworkEventMessage", std::move(nem));
     cluster_service_->sendMessage("ANH.Connection", nem_event);
-    
 }
 
 void LoginApp::process()

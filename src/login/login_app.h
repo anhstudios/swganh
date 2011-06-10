@@ -32,9 +32,9 @@ public:
     virtual bool hasStarted() const { return started_; }
     virtual void onAddDefaultOptions_();
     virtual void onRegisterApp_();
-    virtual void startup();
-    virtual void process();
-    virtual void shutdown();
+	virtual void startup();
+	virtual void process();
+	virtual void shutdown();
 
     ~LoginApp();
 private:
@@ -43,8 +43,8 @@ private:
     LoginApp(const LoginApp&);
     LoginApp& operator=(const LoginApp&);
 
-    // SOE Frontend Service
-    anh::network::soe::Service	soe_service_;
+	// SOE Frontend Service
+	anh::network::soe::Service	soe_service_;
 };
 
 
