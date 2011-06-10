@@ -164,13 +164,13 @@ std::string iff_file::getIFFName_(anh::ByteBuffer& input)
 	{
 		//The name size is 0. Lets backtrack and hope for the best
 		namesize = 0;
-		input.read_position(input.read_position()-8);
+		input.read_position_delta(-8);
 	}
 	else if(namesize < 8)
 	{
 		//The name size is 4. Lets backtrack 4 bytes to keep other things happy.
 		namesize = 4;
-		input.read_position(input.read_position()-4);
+		input.read_position_delta(-4);
 	}
 	else 
 	{
@@ -196,12 +196,13 @@ unsigned int iff_file::getNameSize_(char namedata[], unsigned int size)
 {
 	//Lets get the name size based on this namedata array
 	unsigned int i = 0;
-	for(; i < size; ++i)
+	while(i < size)
 	{
 		if(!isNodeNameCharacter_(namedata[i]))
 		{
 			break;
 		}
+		++i;
 	}
 
 	//Return what we think the name size is
@@ -211,7 +212,6 @@ unsigned int iff_file::getNameSize_(char namedata[], unsigned int size)
 bool iff_file::childIsNode_(anh::ByteBuffer& input)
 {
 	//Lets check if our child is a node or not
-	std::uint32_t name_buf = input.read<std::uint32_t>();
-	input.read_position(input.read_position()-4);
+	std::uint32_t name_buf = input.peek<std::uint32_t>();
 	return !(getNameSize_((char*)&name_buf, 4) < 4);
 }

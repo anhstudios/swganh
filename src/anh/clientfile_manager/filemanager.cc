@@ -66,8 +66,11 @@ void file_manager::loadSWGTREConfig_()
 				}
 				else
 				{
-					//It must be relative, so apply the basedir_
-					paths.push_back(basedir_ / path1);
+					path1 = basedir_ / path1;
+					if(boost::filesystem::exists(path1))
+					{
+						paths.push_back(basedir_ / path1);
+					}
 				}
 			}
 		}
@@ -75,6 +78,9 @@ void file_manager::loadSWGTREConfig_()
 		//For every path we have, create the tree archive and then load it's data
 		for(int i=paths.size()-1; i >= 0; --i)
 		{
+			//Note that the tree archives are not held in a container. This is OK because the shared_ptr to the
+			//tree archive is held by the entries in the fileMap_. This allows the tree_archive to automatically be
+			//destroyed when the entries are removed from the fileMap and destroyed.
 			std::shared_ptr<tree::tree_archive> tree = std::make_shared<tree::tree_archive>(paths[i]);
 			tree->start(fileMap_);
 		}

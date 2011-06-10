@@ -6,20 +6,6 @@
 using namespace std;
 using namespace anh::clientfile_manager::interpreters;
 
-std::string readDelimeterEndedString(anh::ByteBuffer& buf, char delimeter1 = 0, char delimeter2 = 0)
-{
-	std::string result;
-
-	char buffer = buf.read<char>();
-	while(buffer != delimeter1 && buffer != delimeter2)
-	{
-		result.push_back(buffer);
-		buffer = buf.read<char>();
-	}
-
-	return result;
-}
-
 void datatable_interpreter::interpret(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
 {
 	if(node->name() == "0001COLS")

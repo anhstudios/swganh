@@ -124,20 +124,22 @@ void tree_archive::loadTree_(FILE* inputstream, std::map<std::string, const tree
 
 anh::ByteBuffer tree_archive::getFile(const tree_entry& entry) const
 {
-	unsigned char* compressed_data = new unsigned char[entry.compressed_size_];
-
-	fseek(intrl_stream, entry.fileOffset_, SEEK_SET);
-	fread(compressed_data, entry.compressed_size_, 1, intrl_stream);
-
-	unsigned char* data = new unsigned char[entry.uncompressed_size_];
-
-	int z_result = uncompress(data, (unsigned long*)&entry.uncompressed_size_, 
-								compressed_data, entry.compressed_size_);
-	delete[] compressed_data;
-
 	anh::ByteBuffer result;
-	result.write(data, entry.uncompressed_size_);
-	delete[] data;
-	
+	if(intrl_stream != nullptr)
+	{
+		unsigned char* compressed_data = new unsigned char[entry.compressed_size_];
+
+		fseek(intrl_stream, entry.fileOffset_, SEEK_SET);
+		fread(compressed_data, entry.compressed_size_, 1, intrl_stream);
+
+		unsigned char* data = new unsigned char[entry.uncompressed_size_];
+
+		int z_result = uncompress(data, (unsigned long*)&entry.uncompressed_size_, 
+									compressed_data, entry.compressed_size_);
+		delete[] compressed_data;
+
+		result.write(data, entry.uncompressed_size_);
+		delete[] data;
+	}
 	return result;
 }

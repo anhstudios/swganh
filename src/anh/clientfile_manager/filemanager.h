@@ -79,6 +79,7 @@ namespace anh
 				@brief Loads a single directory's swg files from Memory(already loaded), filesystem, or a .tre file whichever comes first.
 
 				@param directory the swg directory. This is _not necessarily_ a valid filesystem filename.
+				@param ext an optional argument for a file extension to limit the files loaded from the directory to.
 				@param postBuildProcess a functor which specifies something to be done to each IFFImeplementation after it is loaded.
 			
 				@return a vector of shared pointers to the IFFImplementation requested.
@@ -90,6 +91,7 @@ namespace anh
 				@brief Recursively Loads a directory structure of swg files from Memory(already loaded), filesystem, or a .tre file whichever comes first.
 
 				@param directory the swg directory. This is _not necessarily_ a valid filesystem filename.
+				@param ext an optional argument for a file extension to limit the files loaded from the directories to.
 				@param postBuildProcess a functor which specifies something to be done to each IFFImeplementation after it is loaded.
 			
 				@return a vector of shared pointers to the IFFImplementation requested.
