@@ -306,7 +306,7 @@ void oiff_interpreter::load_aggregate_data(anh::clientfile_manager::file_manager
 void oiff_interpreter::load_referenced_files(anh::clientfile_manager::file_manager& f)
 {
 	std::map<std::string, boost::any>::iterator itr;
-	std::map<std::string, boost::any>::iterator end_itr;
+	std::map<std::string, boost::any>::iterator end_itr = attributes_.end();
 
 	//animationMapFilename
 	//appearanceFilename
