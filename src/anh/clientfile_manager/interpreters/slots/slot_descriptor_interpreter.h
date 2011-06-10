@@ -23,6 +23,9 @@ namespace anh
 				*/
 				virtual void interpret(std::shared_ptr<iff::file_node> node);
 
+				size_t available_count() {return slots_available.size();}
+				std::string& slot(size_t id) {return slots_available[id];}
+
 			private:
 				void _handle0000DATA(anh::ByteBuffer& buf);
 

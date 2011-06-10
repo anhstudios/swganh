@@ -25,10 +25,12 @@ namespace anh
 
 				//const std::vector<std::string>& slots_occupied(size_t id) { return combinations_[id]; };
 
+				std::list<std::vector<std::string>>::const_iterator begin() {return combinations_.cbegin();}
+				std::list<std::vector<std::string>>::const_iterator end() {return combinations_.cend();}
+
 			private:
 				void _handle0000ARG(anh::ByteBuffer& buf);
 
-				//We might want this to be a vector, but I'm not sure.
 				std::list<std::vector<std::string>> combinations_;
 
 			};

@@ -31,7 +31,8 @@ namespace anh
 					std::uint32_t unkValue;
 				};
 
-				void debug();
+				size_t count() {return slots_.size();}
+				slot_entry& entry(size_t id) { return slots_[id];}
 
 			private:
 				void _handle0006DATA(anh::ByteBuffer& buf);

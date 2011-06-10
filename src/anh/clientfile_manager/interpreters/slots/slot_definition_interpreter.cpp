@@ -32,14 +32,3 @@ void slot_definition_interpreter::_handle0006DATA(anh::ByteBuffer& buf)
 		slots_.push_back(std::move(entry));
 	}
 }
-
-void slot_definition_interpreter::debug()
-{
-	for_each(slots_.begin(), slots_.end(), [] (slot_entry& e)
-	{
-		printf("Name: \"%s\"\n", e.name.c_str());
-		printf("%d\n", (int)e.unkFlag1);
-		printf("Hardpoint: \"%s\"\n", e.hardpoint_name.c_str());
-		printf("%d\n\n", e.unkValue);
-	});
-}
