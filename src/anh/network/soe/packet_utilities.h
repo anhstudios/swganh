@@ -37,18 +37,39 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 namespace anh {
 namespace network {
 namespace soe {
-inline void packDataChannelMessages(std::list<anh::ByteBuffer>& data_list, anh::ByteBuffer& packed_data)
+
+inline anh::ByteBuffer packDataChannelMessages(std::list<anh::ByteBuffer>& data_list) 
 {
-    if (data_list.size() > 1) 
-    {
-		packed_data.write<uint16_t>(anh::bigToHost<uint16_t>(0x19));
-		std::for_each(data_list.begin(), data_list.end(), [=, &packed_data](anh::ByteBuffer& item){
-			packed_data.write<uint8_t>(item.size());
-			packed_data.append(item);
-		});
-    } else {
-        packed_data.append(data_list.front());
+    anh::ByteBuffer output_buffer;
+    // If there is only one message then no need to pack, just move the message
+    // into the output buffer.
+    if (data_list.size() == 1) {        
+        output_buffer.append(data_list.front());
+        return output_buffer;
     }
+
+    // Otherwise we need to prepend a header to the whole thing (0x0019)
+    output_buffer.write<uint16_t>(anh::bigToHost<uint16_t>(0x19));
+    
+    // Then loop through each message and append it to the output buffer with a size prefix.
+    std::for_each(
+        data_list.begin(), 
+        data_list.end(), 
+        [=, &output_buffer](anh::ByteBuffer& item)
+    {
+        // For messages with a size greater than 254 bytes an 8 byte int is not large enough to
+        // hold the size value, in this case we need a little endian uint16_t size.
+        if (item.size() >= 255) {
+            output_buffer.write<uint8_t>(0xFF);
+            output_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(item.size()));
+        } else {
+            output_buffer.write<uint8_t>(item.size());
+        }
+
+        output_buffer.append(item);
+    });
+
+    return output_buffer;
 }
 
 }  // namespace soe
