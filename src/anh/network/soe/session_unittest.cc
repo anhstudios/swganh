@@ -17,19 +17,28 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
-#include <anh/network/soe/session.h>
+#include "anh/network/soe/session.h"
 
-using namespace anh;
-using namespace network::soe;
+#include <boost/asio.hpp>
+#include <gtest/gtest.h>
+
+
 namespace anh {
 namespace network {
 namespace soe {
 
-TEST(SessionTest, SessionTest1)
-{
-    EXPECT_TRUE(true);
+class SessionTests : public ::testing::Test {
+
+};
+
+TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
+    Session session(boost::asio::ip::udp::endpoint(), nullptr);
+    
+    EXPECT_EQ(0, session.server_sequence());
+
+    session.sendDataChannelMessage(ByteBuffer());
+
+    EXPECT_EQ(1, session.server_sequence());
 }
-}  // namespace soe
-}  // namespace network
-}  // namespace anh
+
+}}}  // namespace anh::network::soe

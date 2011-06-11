@@ -60,11 +60,12 @@ Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* servi
     , last_acknowledged_sequence_(0)
     , current_client_sequence_(0)
     , next_client_sequence_(0)
-    , server_sequence_(0)
+    , server_sequence_()
     , outgoing_data_message_(0)
     , incoming_fragmented_total_len_(0)
     , incoming_fragmented_curr_len_(0)
 {
+    server_sequence_ = 0;
 }
 
 Session::~Session(void)
@@ -72,6 +73,15 @@ Session::~Session(void)
     Close();
 
     LOG(WARNING) << "Session [" << connection_id_ << "] Closed.";
+}
+
+uint16_t Session::server_sequence() const {
+    return server_sequence_;
+}
+
+
+void Session::sendDataChannelMessage(anh::ByteBuffer data_channel_payload) {
+    uint16_t message_sequence = server_sequence_.fetch_and_increment();
 }
 
 void Session::Update(void)

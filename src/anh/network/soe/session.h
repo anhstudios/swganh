@@ -66,6 +66,22 @@ public:
     ~Session(void);
 
     /**
+    * @return The current send sequence for the server.
+    */
+    uint16_t server_sequence() const;
+
+    /**
+    * Sends a data channel message to the remote client.
+    *
+    * Increases the server sequence count by 1 for each individual packet sent to the 
+    * remote end. This call can result in multiple packets being generated depending on 
+    * the size of the payload and whether or not it needs to be fragmented.
+    *
+    * @param data_channel_payload The payload to send in the data channel message(s).
+    */
+    void sendDataChannelMessage(anh::ByteBuffer data_channel_payload);
+
+    /**
      * 
      */
     void SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
@@ -125,7 +141,7 @@ private:
     uint16_t							last_acknowledged_sequence_;
     uint16_t							next_client_sequence_;
     uint16_t							current_client_sequence_;
-    uint16_t							server_sequence_;
+    tbb::atomic<uint16_t>				server_sequence_;
 
     uint32_t							next_frag_size_;
 
