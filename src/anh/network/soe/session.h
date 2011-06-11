@@ -138,7 +138,9 @@ private:
         NUM_QUEUES = 2
     };
     
+    tbb::concurrent_queue<anh::ByteBuffer> outgoing_data_messages_;
     tbb::atomic<int>                    active_outgoing_queue_;
+
     std::list<anh::ByteBuffer>          outgoing_data_queue_[NUM_QUEUES];
 
 	std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
