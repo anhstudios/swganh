@@ -31,14 +31,21 @@ class SessionTests : public ::testing::Test {
 
 };
 
+/// This test verifies that new sessions have a send sequence of 0
+TEST_F(SessionTests, NewSessionHasZeroSendSequence) {
+    Session session(boost::asio::ip::udp::endpoint(), nullptr);
+    EXPECT_EQ(0, session.server_sequence());
+}
+
+/// This test verifies that data packets sent out on the data channel are sequenced.
 TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
     Session session(boost::asio::ip::udp::endpoint(), nullptr);
-    
-    EXPECT_EQ(0, session.server_sequence());
 
-    session.sendDataChannelMessage(ByteBuffer());
-
-    EXPECT_EQ(1, session.server_sequence());
+    // Send 3 data channel messages and ensure the sequence is increased appropriately.
+    for (int i = 1; i <= 3; ++i ) {
+        session.sendDataChannelMessage(ByteBuffer());
+        EXPECT_EQ(i, session.server_sequence());
+    }
 }
 
 }}}  // namespace anh::network::soe
