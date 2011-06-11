@@ -28,15 +28,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_SESSION_H_
 #define ANH_NETWORK_SOE_SESSION_H_
 
-#include <anh/network/soe/socket.h>
-#include <anh/network/soe/protocol_packets.h>
-
 #include <array>
 #include <list>
+#include <memory>
+#include <vector>
 
 #include <tbb/atomic.h>
 #include <tbb/concurrent_queue.h>
 #include <boost/asio.hpp>
+
+#include "anh/network/soe/protocol_packets.h"
+#include "anh/network/soe/socket.h"
 
 namespace anh {
 
@@ -51,13 +53,11 @@ namespace soe {
 class Service;
 class SoeProtocolFilter;
 class SessionRequestFilter;
-class SessionTest;
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
  */
-class Session : public std::enable_shared_from_this<Session>
-{
+class Session : public std::enable_shared_from_this<Session> {
 public:
     /**
      * Adds itself to the Session Manager.
@@ -80,6 +80,8 @@ public:
     * @param data_channel_payload The payload to send in the data channel message(s).
     */
     void sendDataChannelMessage(anh::ByteBuffer data_channel_payload);
+
+    std::vector<std::shared_ptr<anh::ByteBuffer>> getUnacknowledgedOutgoingMessages() const;
 
     /**
      * 
@@ -150,14 +152,7 @@ private:
 
     ChildDataA							outgoing_data_message_;
     
-    enum constants {    
-        NUM_QUEUES = 2
-    };
-    
     tbb::concurrent_queue<anh::ByteBuffer> outgoing_data_messages_;
-    tbb::atomic<int>                    active_outgoing_queue_;
-
-    std::list<anh::ByteBuffer>          outgoing_data_queue_[NUM_QUEUES];
 
     std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
     uint16_t							incoming_fragmented_total_len_;

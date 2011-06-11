@@ -17,11 +17,15 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/network/soe/session.h"
-
+#include <memory>
+#include <vector>
 #include <boost/asio.hpp>
 #include <gtest/gtest.h>
 
+#include "anh/byte_buffer.h"
+#include "anh/network/soe/session.h"
+
+using namespace std;
 
 namespace anh {
 namespace network {
@@ -46,6 +50,21 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
         session.sendDataChannelMessage(ByteBuffer());
         EXPECT_EQ(i, session.server_sequence());
     }
+}
+
+/// This test verifies that data channel messages are stored in case they need to be re-sent.
+TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
+    Session session(boost::asio::ip::udp::endpoint(), nullptr);
+
+    // Send 3 data channel messages.
+    for (int i = 1; i <= 3; ++i ) {
+        session.sendDataChannelMessage(ByteBuffer());
+    }
+
+    vector<shared_ptr<ByteBuffer>> sent_messages = session.getUnacknowledgedOutgoingMessages();
+
+    // Expect the vector of sent messages to contain 3 elements
+    EXPECT_EQ(3, sent_messages.size());
 }
 
 }}}  // namespace anh::network::soe

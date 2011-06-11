@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
+#include <algorithm>
+
 #include <anh/network/soe/session.h>
 #include <anh/network/soe/session_manager.h>
 #include <anh/network/soe/service.h>
@@ -82,6 +84,25 @@ uint16_t Session::server_sequence() const {
 
 void Session::sendDataChannelMessage(anh::ByteBuffer data_channel_payload) {
     uint16_t message_sequence = server_sequence_.fetch_and_increment();
+
+    auto data_channel_message = make_shared<ByteBuffer>(data_channel_payload);
+
+    sent_messages_.insert(make_pair(message_sequence, data_channel_message));
+}
+
+
+vector<shared_ptr<ByteBuffer>> Session::getUnacknowledgedOutgoingMessages() const {
+    vector<shared_ptr<ByteBuffer>> unacknowledged_messages;
+
+    for_each(
+        sent_messages_.begin(), 
+        sent_messages_.end(), 
+        [&unacknowledged_messages] (const SequencedMessageMap::value_type& i) 
+    {
+        unacknowledged_messages.push_back(i.second);
+    });
+
+    return unacknowledged_messages;
 }
 
 void Session::Update(void)
@@ -99,7 +120,7 @@ void Session::Update(void)
     // Pack the message list into a single data channel payload
     ByteBuffer data_channel_payload = packDataChannelMessages(process_list);
 
-    //sendDataChannelMessage(std::move(data_channel_payload));
+    sendDataChannelMessage(std::move(data_channel_payload));
 }
 
 void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message)
