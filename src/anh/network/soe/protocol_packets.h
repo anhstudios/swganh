@@ -369,7 +369,7 @@ struct ChildDataA
 		buffer.write<uint16_t>(anh::bigToHost<uint16_t>(sequence));
 
 		// Serialize as a Multi-Data
-		packDataChannelMessages(messages, buffer);
+		buffer.append(packDataChannelMessages(messages));
 
 		footer.serialize(buffer);
 	}
