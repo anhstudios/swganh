@@ -53,8 +53,7 @@ TEST_F(PacketUtilitiesTests, PackingSingleMessageDoesNotModifyIt) {
     
     list<ByteBuffer> buffer_list(1, small_buffer); // Create a list of only 1 buffer
     
-    ByteBuffer out_buffer;
-    packDataChannelMessages(buffer_list, out_buffer);
+    ByteBuffer out_buffer = packDataChannelMessages(buffer_list);
 
     // Expect that the output buffer has the same value in it as the input.
     EXPECT_EQ(500, out_buffer.read<int>());
@@ -68,8 +67,7 @@ TEST_F(PacketUtilitiesTests, PackingMultipleMessagesAddsMultiMessageHeader) {
     
     list<ByteBuffer> buffer_list(2, small_buffer); // Create a list with more than 1 buffer
 
-    ByteBuffer out_buffer;
-    packDataChannelMessages(buffer_list, out_buffer);
+    ByteBuffer out_buffer = packDataChannelMessages(buffer_list);
 
     EXPECT_EQ(anh::bigToHost<uint16_t>(0x19), out_buffer.read<uint16_t>());
 }
@@ -83,8 +81,7 @@ TEST_F(PacketUtilitiesTests, SmallSwgMessagesHave8ByteSizePrefix) {
 
     tie(buffer_list, expected_buffer) = generateSmallMultiMessageData();
 
-    ByteBuffer out_buffer;
-    packDataChannelMessages(buffer_list, out_buffer);
+    ByteBuffer out_buffer = packDataChannelMessages(buffer_list);
     
     EXPECT_EQ(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>());
 
@@ -102,8 +99,7 @@ TEST_F(PacketUtilitiesTests, LargeSwgMessagesHave16ByteSizePrefix) {
 
     tie(buffer_list, expected_buffer) = generateSmallMultiMessageData();
 
-    ByteBuffer out_buffer;
-    packDataChannelMessages(buffer_list, out_buffer);
+    ByteBuffer out_buffer = packDataChannelMessages(buffer_list);
     
     EXPECT_EQ(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>());
 
