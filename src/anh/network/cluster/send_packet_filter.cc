@@ -32,7 +32,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 namespace anh {
 namespace network {
 namespace cluster {
-
 SendPacketFilter::SendPacketFilter(ClusterService* service)
     : tbb::filter(serial_in_order)
     , service_(service)
@@ -48,7 +47,6 @@ void* SendPacketFilter::operator()(void* item)
     TCPMessage* packet = (TCPMessage*)item;
     if (packet != NULL)
     {
-
         // where should the message be sent?
         switch (packet->destination())
         {
@@ -66,7 +64,6 @@ void* SendPacketFilter::operator()(void* item)
     delete packet;
     return NULL;
 }
-
-} // namespace cluster 
+} // namespace cluster
 } // namespace network
 } // namespace anh

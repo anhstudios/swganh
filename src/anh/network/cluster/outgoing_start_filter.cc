@@ -31,10 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 namespace anh {
 namespace network {
 namespace cluster {
-
 OutgoingStartFilter::OutgoingStartFilter(ClusterService* service)
 	: tbb::filter(serial_in_order)
-	, service_(service) 
+	, service_(service)
 {
 }
 
@@ -60,7 +59,6 @@ void* OutgoingStartFilter::operator()(void* item)
 
 	return packet;
 }
-
 } // namespace cluster
 } // namespace network
 } // namespace anh

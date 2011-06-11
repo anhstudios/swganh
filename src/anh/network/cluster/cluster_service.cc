@@ -47,7 +47,6 @@ using namespace std;
 namespace anh {
 namespace network {
 namespace cluster {
-
 ClusterService::ClusterService(boost::asio::io_service& io_service, shared_ptr<ServerDirectoryInterface> directory,
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> dispatcher, uint16_t port)
     : directory_(directory)
@@ -84,7 +83,7 @@ ClusterService::ClusterService(boost::asio::io_service& io_service, shared_ptr<S
 }
 
 ClusterService::~ClusterService(void)
-{	
+{
     // interrupt/join thread
     service_thread_.interrupt();
     service_thread_.join();
@@ -95,7 +94,7 @@ void ClusterService::Start()
     acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port_ ));
     tcp_host_ = std::make_shared<tcp_host>(io_service_, std::bind(&ClusterService::OnTCPHostReceive_, this, std::placeholders::_1));
 
-    acceptor_->async_accept(tcp_host_->socket(), boost::bind(&ClusterService::handle_accept_, this, 
+    acceptor_->async_accept(tcp_host_->socket(), boost::bind(&ClusterService::handle_accept_, this,
        tcp_host_ , boost::asio::placeholders::error));
     DLOG(WARNING) << "Now listening for TCP Messages on: " << port_;
     service_thread_ = boost::thread([=] () {
@@ -135,7 +134,7 @@ bool ClusterService::isConnected(std::shared_ptr<Process> process)
 }
 void ClusterService::Connect(std::shared_ptr<anh::server_directory::Process> process)
 {
-    try 
+    try
     {
         // make sure we aren't already connected and this isn't us.
         if (!isConnected(process) && (process->tcp_port() != port_ ))
@@ -153,7 +152,7 @@ void ClusterService::Connect(std::shared_ptr<anh::server_directory::Process> pro
 }
 void ClusterService::Disconnect(std::shared_ptr<anh::server_directory::Process> process)
 {
-    try 
+    try
     {
         // make sure we are already connected
         if (isConnected(process))
@@ -181,6 +180,10 @@ void ClusterService::sendMessage(const std::string& name, std::shared_ptr<anh::e
         auto tcp_message = new TCPMessage(conn, make_shared<anh::ByteBuffer>(buffer), dest);
         outgoing_messages_.push_back(tcp_message);
     }
+    else
+    {
+        DLOG(FATAL) << "No Connection Established, could not send message to: " << name << endl;
+    }
 }
 void ClusterService::sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer, DestinationType dest)
 {
@@ -204,7 +207,7 @@ void ClusterService::sendMessageByType_(const std::string& type, anh::ByteBuffer
         }
     });
 }
-void ClusterService::sendMessageToAll_(anh::ByteBuffer& buffer) 
+void ClusterService::sendMessageToAll_(anh::ByteBuffer& buffer)
 {
     std::for_each(tcp_client_map_.begin(), tcp_client_map_.end(), [=, &buffer] (ClusterPair pair) {
             // send message to each
@@ -241,7 +244,7 @@ void ClusterService::handle_accept_(std::shared_ptr<tcp_host> host, const boost:
         host->Start();
         host = std::make_shared<tcp_host>(io_service_, std::bind(&ClusterService::OnTCPHostReceive_, this, std::placeholders::_1));
         acceptor_->async_accept(host->socket(),
-            std::bind(&ClusterService::handle_accept_, this, host, 
+            std::bind(&ClusterService::handle_accept_, this, host,
             std::placeholders::_1));
     }
     else
@@ -255,7 +258,6 @@ void ClusterService::OnTCPHostReceive_(anh::ByteBuffer* buffer)
     // add to the pipeline list
     incoming_messages_.push_back(buffer);
 }
-
 } // namespace soe
 } // namespace network
 } // namespace anh

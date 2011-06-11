@@ -401,6 +401,10 @@ void BaseApplication::getOptionalPlatformServices_()
     }
     catch(...) {}
     try {
+        cluster_service_ = boost::any_cast<shared_ptr<ClusterServiceInterface>>(platform_services_->getService("ClusterService"));
+    }
+    catch(...) {}
+    try {
         scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
     }
     catch(...) {}

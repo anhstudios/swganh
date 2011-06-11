@@ -34,7 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 namespace anh {
 namespace network {
 namespace cluster {
-
 tcp_client::tcp_client(boost::asio::io_service& service, const std::string& host, uint16_t port)
     : socket_(service)
     , resolver_(service)
@@ -44,8 +43,7 @@ tcp_client::tcp_client(boost::asio::io_service& service, const std::string& host
     boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(host), port);
     socket_.async_connect(endpoint,
             boost::bind(&tcp_client::handle_connect_, this,
-                boost::asio::placeholders::error, endpoint));	
-
+                boost::asio::placeholders::error, endpoint));
 }
 
 void tcp_client::handle_connect_(const boost::system::error_code& error, boost::asio::ip::tcp::endpoint endpoint)
@@ -66,15 +64,13 @@ tcp_client::~tcp_client(void)
 
 void tcp_client::Send(ByteBuffer& buffer)
 {
-    socket_.async_write_some(boost::asio::buffer(buffer.data(), buffer.size()), 		 
+    socket_.async_write_some(boost::asio::buffer(buffer.data(), buffer.size()),
         [this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
     {
         bytes_sent_ += bytes_transferred;
         DLOG(WARNING) << "Send of " << bytes_transferred << " bytes successful..." << std::endl;
     });
 }
-
-
 } // namespace soe
 } // namespace network
 } // namespace anh

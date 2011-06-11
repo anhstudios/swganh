@@ -36,7 +36,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 namespace anh {
 namespace network {
 namespace cluster {
-
 using boost::asio::ip::tcp;
 
 class tcp_client
@@ -69,13 +68,12 @@ private:
 
     uint64_t	bytes_recv_;
     uint64_t	bytes_sent_;
-    
+
     tcp::socket		                    socket_;
     tcp::endpoint		                current_remote_endpoint_;
     tcp::resolver                       resolver_;
     boost::array<char, 456>				recv_buffer_;
 };
-
 } // namespace cluster
 } // namespace network
 } // namespace anh

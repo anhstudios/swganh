@@ -48,7 +48,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 namespace anh {
 namespace network {
 namespace cluster {
-
 typedef std::map<std::shared_ptr<anh::server_directory::Process>, std::shared_ptr<tcp_client>>            ClusterMap;
 typedef std::pair<std::shared_ptr<anh::server_directory::Process>, std::shared_ptr<tcp_client>>           ClusterPair;
 /**
@@ -63,7 +62,7 @@ public:
 
     /**
      * @brief Starts the Cluster Service.
-     * 
+     *
      * @param port The port to listen for messages on.
      */
     void Start(void);
@@ -77,7 +76,7 @@ public:
     void Shutdown(void);
     /**
      * @brief Opens a TCP connection to the given host
-     * 
+     *
      * @param process the server directory process to connect to.
      */
     void Connect(std::shared_ptr<anh::server_directory::Process> process);
@@ -88,7 +87,7 @@ public:
     void Disconnect(std::shared_ptr<anh::server_directory::Process> process);
     /**
      * @brief Sends a message to given the name of the service
-     * 
+     *
      * @param name The service name to send a message to.
      * @param event_out the event that will be sent out.
      * @param (optional) DestinationType the destination that the message will be sent to.
@@ -97,7 +96,7 @@ public:
         , DestinationType dest = SINGLE);
     /**
      * @brief Sends a message to given the name of the service
-     * 
+     *
      * @param host The host address to send a message to.
      * @param port The port to the host.
      * @param buffer The ByteBuffer message to send
@@ -106,24 +105,24 @@ public:
      */
     void sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer
         , DestinationType dest = SINGLE);
-    
+
     /**
      * @brief Checks to see if there is a connection to the given service
-     * 
+     *
      * @param name the service name to check
      * @returns true if the service was found.
      */
     bool isConnected(const std::string& name);
     /**
      * @brief Checks to see if there is a connection to the given service
-     * 
+     *
      * @param process the service process to check
      * @returns true if the service was found.
      */
     bool isConnected(std::shared_ptr<anh::server_directory::Process> process);
     /**
      * @brief Checks to see if there is a connection to the given address and port
-     * 
+     *
      * @param host the address to send to
      * @param port the host port
      * @returns connection if found, else nullptr
@@ -159,13 +158,13 @@ private:
     void handle_accept_(std::shared_ptr<tcp_host> conn, const boost::system::error_code& error);
     /**
      * @brief Sends a message to all services
-     * 
+     *
      * @param buffer The ByteBuffer message to send
      */
     void sendMessageToAll_(anh::ByteBuffer& buffer);
     /**
      * @brief Sends a message to all types of the service
-     * 
+     *
      * @param type the type of service to send to
      * @param buffer The ByteBuffer message to send
      */
@@ -173,7 +172,7 @@ private:
 
     // basic services
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-    
+
     // Pipelines
     tbb::pipeline			incoming_pipeline_;
     tbb::pipeline			outgoing_pipeline_;
@@ -196,9 +195,7 @@ private:
     uint16_t                                                            port_;
     std::shared_ptr<anh::server_directory::ServerDirectoryInterface>    directory_;
     ClusterMap                                                          tcp_client_map_;
-    
 };
-
 } // namespace cluster
 } // namespace anh
 } // namespace network
