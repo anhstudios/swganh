@@ -147,6 +147,18 @@ protected:
     */
     void setupCluster_();
 
+    // helper function to get required services from PlatformServices
+    void getRequiredPlatformServices_();
+
+    // helper function to get optional services from PlatformServices
+    void getOptionalPlatformServices_();
+
+    // helper function to add to PlatformServices
+    void setPlatformServices_();
+
+    // helper function to load pre Startup app services
+    void getPreStartupPlatformServices_();
+
     // base events to be triggered
     std::shared_ptr<event_dispatcher::EventInterface> startup_event_;
     std::shared_ptr<event_dispatcher::EventInterface> process_event_;
