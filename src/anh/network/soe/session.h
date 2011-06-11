@@ -59,80 +59,80 @@ class SessionTest;
 class Session : public std::enable_shared_from_this<Session>
 {
 public:
-	/**
-	 * Adds itself to the Session Manager.
-	 */
-	Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* service);
-	~Session(void);
+    /**
+     * Adds itself to the Session Manager.
+     */
+    Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* service);
+    ~Session(void);
 
-	/**
-	 * 
-	 */
-	void SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
+    /**
+     * 
+     */
+    void SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
 
-	/**
-	 * Clears each message pump.
-	 */
-	void Update(void);
+    /**
+     * Clears each message pump.
+     */
+    void Update(void);
 
-	/**
-	 * Closes the Session.
-	 */
-	void Close(void);
+    /**
+     * Closes the Session.
+     */
+    void Close(void);
 
-	bool connected() { return connected_; }
+    bool connected() { return connected_; }
 
-	uint32_t connection_id() { return connection_id_; }
+    uint32_t connection_id() { return connection_id_; }
 
-	boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
+    boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
 
-	friend class SoeProtocolFilter;
-	friend class SessionRequestFilter;
+    friend class SoeProtocolFilter;
+    friend class SessionRequestFilter;
     friend class SessionTest;
 private:
     typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
-	typedef std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>::iterator		SequencedMessageMapIterator;
+    typedef std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>::iterator		SequencedMessageMapIterator;
 
-	void HandleSoeMessage(anh::ByteBuffer& message);
-	void handleSessionRequest_(SessionRequest& packet);
-	void handleMultiPacket_(MultiPacket& packet);
-	void handleDisconnect_(Disconnect& packet);
-	void handlePing_(Ping& packet);
-	void handleNetStatsClient_(NetStatsClient& packet);
-	void handleChildDataA_(ChildDataA& packet);
-	void handleDataFragA_(DataFragA& packet);
-	void handleAckA_(AckA& packet);
-	void handleOutOfOrderA_(OutOfOrderA& packet);
+    void HandleSoeMessage(anh::ByteBuffer& message);
+    void handleSessionRequest_(SessionRequest& packet);
+    void handleMultiPacket_(MultiPacket& packet);
+    void handleDisconnect_(Disconnect& packet);
+    void handlePing_(Ping& packet);
+    void handleNetStatsClient_(NetStatsClient& packet);
+    void handleChildDataA_(ChildDataA& packet);
+    void handleDataFragA_(DataFragA& packet);
+    void handleAckA_(AckA& packet);
+    void handleOutOfOrderA_(OutOfOrderA& packet);
 
-	void SendSoePacket(std::shared_ptr<anh::ByteBuffer> message);
+    void SendSoePacket(std::shared_ptr<anh::ByteBuffer> message);
 
-	bool SequenceIsValid_(const uint16_t& sequence);
-	void AcknowledgeSequence_(const uint16_t& sequence);
+    bool SequenceIsValid_(const uint16_t& sequence);
+    void AcknowledgeSequence_(const uint16_t& sequence);
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
-	Service*							service_; // owner
+    Service*							service_; // owner
 
-	SequencedMessageMap												sent_messages_;
+    SequencedMessageMap												sent_messages_;
 
-	bool								connected_;
+    bool								connected_;
 
-	// SOE Session Variables
-	uint32_t							connection_id_;
-	uint32_t							recv_buffer_size_;
-	uint32_t							crc_length_;
+    // SOE Session Variables
+    uint32_t							connection_id_;
+    uint32_t							recv_buffer_size_;
+    uint32_t							crc_length_;
 
-	// Sequences
-	uint16_t							last_acknowledged_sequence_;
-	uint16_t							next_client_sequence_;
-	uint16_t							current_client_sequence_;
-	uint16_t							server_sequence_;
+    // Sequences
+    uint16_t							last_acknowledged_sequence_;
+    uint16_t							next_client_sequence_;
+    uint16_t							current_client_sequence_;
+    uint16_t							server_sequence_;
 
-	uint32_t							next_frag_size_;
+    uint32_t							next_frag_size_;
 
-	// Net Stats
-	NetStatsServer						server_net_stats_;
+    // Net Stats
+    NetStatsServer						server_net_stats_;
 
-	ChildDataA							outgoing_data_message_;
+    ChildDataA							outgoing_data_message_;
     
     enum constants {    
         NUM_QUEUES = 2
@@ -143,9 +143,9 @@ private:
 
     std::list<anh::ByteBuffer>          outgoing_data_queue_[NUM_QUEUES];
 
-	std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
-	uint16_t							incoming_fragmented_total_len_;
-	uint16_t							incoming_fragmented_curr_len_;
+    std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
+    uint16_t							incoming_fragmented_total_len_;
+    uint16_t							incoming_fragmented_curr_len_;
 };
 
 } // namespace soe
