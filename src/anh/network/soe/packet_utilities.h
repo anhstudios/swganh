@@ -57,9 +57,10 @@ inline anh::ByteBuffer packDataChannelMessages(std::list<anh::ByteBuffer>& data_
         data_list.end(), 
         [=, &output_buffer](anh::ByteBuffer& item)
     {
-        // For messages with a size greater than 255 an 8 byte int is not large enough to
+        // For messages with a size greater than 254 bytes an 8 byte int is not large enough to
         // hold the size value, in this case we need a little endian uint16_t size.
-        if (item.size() > 255) {
+        if (item.size() >= 255) {
+            output_buffer.write<uint8_t>(0xFF);
             output_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(item.size()));
         } else {
             output_buffer.write<uint8_t>(item.size());

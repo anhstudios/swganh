@@ -93,17 +93,18 @@ TEST_F(PacketUtilitiesTests, SmallSwgMessagesHave8ByteSizePrefix) {
 
 /// This test ensures that when packing multiple swg messages that any of the messages exceeding
 /// a 255 length have a uint16_t size prefixed to them.
-TEST_F(PacketUtilitiesTests, LargeSwgMessagesHave16ByteSizePrefix) {
+TEST_F(PacketUtilitiesTests, LargeSwgMessagesHaveBytePlus16ByteSizePrefix) {
     list<ByteBuffer> buffer_list;
     ByteBuffer expected_buffer;
 
-    tie(buffer_list, expected_buffer) = generateSmallMultiMessageData();
+    tie(buffer_list, expected_buffer) = generateLargeMultiMessageData();
 
     ByteBuffer out_buffer = packDataChannelMessages(buffer_list);
     
     EXPECT_EQ(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>());
 
     for (int i = 0; i < 3; ++i) {
+        EXPECT_EQ(expected_buffer.read<uint8_t>(), out_buffer.read<uint8_t>()); // size
         EXPECT_EQ(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>()); // size
         EXPECT_EQ(expected_buffer.read<string>(), out_buffer.read<string>()); // data
     }
@@ -155,11 +156,14 @@ tuple<list<ByteBuffer>, ByteBuffer> PacketUtilitiesTests::generateLargeMultiMess
     ByteBuffer expected_buffer;
     
     expected_buffer.write<uint16_t>(anh::bigToHost<uint16_t>(0x19)); // header
-    expected_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(304)); // size
+    expected_buffer.write<uint8_t>(0xFF); // large message byte
+    expected_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(302)); // str length 300 + 2 byte size
     expected_buffer.write<string>(long_string); // value
-    expected_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(304)); // size
+    expected_buffer.write<uint8_t>(0xFF); // large message byte
+    expected_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(302)); // str length 300 + 2 byte size
     expected_buffer.write<string>(long_string); // value
-    expected_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(304)); // size
+    expected_buffer.write<uint8_t>(0xFF); // large message byte
+    expected_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(302)); // str length 300 + 2 byte size
     expected_buffer.write<string>(long_string); // value
 
     // Return a tuple of the list of simulated swg messages and the expected buffer.
