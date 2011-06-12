@@ -24,7 +24,6 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-
 #include "anh/application.h"
 
 #include <cassert>
@@ -42,8 +41,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <mysql_driver.h>
 #include <cppconn/connection.h>
 #include <cppconn/driver.h>
-#include <glog/logging.h>
 
+#include <glog/logging.h>
 #include <anh/clock.h>
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/database/database_manager.h>
@@ -52,6 +51,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/server_directory/datastore.h>
 #include <anh/module_manager/module_manager.h>
 #include <anh/module_manager/platform_services.h>
+#include <anh/network/cluster/cluster_service.h>
 
 using namespace std;
 using namespace anh;
@@ -60,6 +60,7 @@ using namespace database;
 using namespace scripting;
 using namespace server_directory;
 using namespace module_manager;
+using namespace network::cluster;
 using namespace boost::program_options;
 
 BaseApplication::BaseApplication(int argc, char* argv[], list<string> config_files
@@ -102,14 +103,17 @@ BaseApplication::~BaseApplication() {}
 void BaseApplication::startup() {
     try {
         // instantiate basic events
-        startup_event_ = make_shared<SimpleEvent>("Startup");
-        process_event_ = make_shared<SimpleEvent>("Process");
-        shutdown_event_ = make_shared<SimpleEvent>("Shutdown");
+        startup_event_ = make_shared_event("Startup");
+        process_event_ = make_shared_event("Process");
+        shutdown_event_ = make_shared_event("Shutdown");
+        // add in options
         addDefaultOptions_();
         // load the options
         loadOptions_(argc_, argv_, config_files_);
-        // get services from PlatformServices
+        // init services
         init_services_();
+        // load up cluster networking
+        setupCluster_();
         // get a database manager
         if (db_manager_ == nullptr) {
             db_manager_ = createDatabaseManager(sql::mysql::get_driver_instance());
@@ -117,21 +121,8 @@ void BaseApplication::startup() {
         }
         // loads the data sources from config into db_manager
         if (addDataSourcesFromOptions_()) {
-            // sets up the server_directory
-            if (server_directory_ == nullptr) {
-                shared_ptr<sql::Connection> conn = db_manager_->getConnection(
-                    configuration_variables_map_["cluster.datastore.name"].as<string>());
-                if (conn != nullptr)
-                {
-                    server_directory_ = createServerDirectory(conn);
-                    platform_services_->addService("ServerDirectory", server_directory_);
-                }
-                else {
-                    throw runtime_error("No valid database connection available");
-                }
-            }
             // TODO: fix ServerDirectory database
-            //registerApp_();
+            registerApp_();
         }
         else {
             LOG(WARNING) << "NO Datasources Loaded from Config";
@@ -147,6 +138,8 @@ void BaseApplication::startup() {
         setPlatformServices_();
         // setup ModuleManager and load modules
         setupModules_();
+        // start the ClusterService
+        cluster_service_->Start();
 
     }
     catch(exception e) {
@@ -156,6 +149,7 @@ void BaseApplication::startup() {
     catch(...) {
         cerr << "Error in startup";
     }
+    started_ = true;
 }
 
 void BaseApplication::process() {
@@ -165,16 +159,19 @@ void BaseApplication::process() {
     }
     event_dispatcher_->tick(clock_->global_time());
     event_dispatcher_->trigger(process_event_);
+    cluster_service_->Update();
 }
 
 void BaseApplication::shutdown() {
     // clean up code here before the server shuts down
     event_dispatcher_->trigger(shutdown_event_);
+    cluster_service_->Shutdown();
+    cluster_io_service_.stop();
 }
 
 shared_ptr<ServerDirectoryInterface> BaseApplication::createServerDirectory(shared_ptr<sql::Connection> conn) {
     auto datastore = make_shared<Datastore>(conn);
-    return make_shared<ServerDirectory>(datastore);
+    return make_shared<ServerDirectory>(datastore, event_dispatcher_);
 };
 shared_ptr<DatabaseManager> BaseApplication::createDatabaseManager(sql::Driver* driver)
 {
@@ -226,9 +223,6 @@ void BaseApplication::addDefaultOptions_() {
         ("modules", ::value<vector<string>>()->default_value(vector<string>(), ""), "modules to load on startup")
         ("module_api_version_major",  ::value<uint32_t>()->default_value(0), "Major Module API Version Allowed")
         ("module_api_version_minor",   ::value<uint32_t>()->default_value(1), "Minor Module API Version Allowed")
-        // 
-        /*("network.bind_address", ::value<string>()->default_value("localhost"), "Address to listen for incoming messages on")
-        ("network.bind_port", ::value<uint16_t>(), "Port to listen for incoming messages on")*/
     ;
     onAddDefaultOptions_();
 }
@@ -244,13 +238,13 @@ void BaseApplication::loadOptions_(uint32_t argc, char* argv[], list<string> con
     for_each(config_files.begin(), config_files.end(), [&] (const string& filename) {
         ifstream config_file(filename);
         if(!config_file.is_open())
-            throw runtime_error("Could not open configuration file.");
+            throw runtime_error("Could not open configuration file: " + filename);
         else
         {
             try {
                 store(parse_config_file(config_file, configuration_options_description_, true), configuration_variables_map_);
             } catch(...) { 
-                throw runtime_error("Could not parse config file. " + filename);
+                throw runtime_error("Could not parse config file: " + filename);
             }
         }
     })(config_files.front());
@@ -276,8 +270,6 @@ void BaseApplication::setupModules_()
     module_manager_ = make_shared<ModuleManager>(platform_services_, modules_version_);
     vector<string> modules = configuration_variables_map_["modules"].as<vector<string>>();
     module_manager_->LoadModules(modules);
-    
-
 }
 bool BaseApplication::addDataSourcesFromOptions_()
 {
@@ -320,6 +312,19 @@ bool BaseApplication::addDataSourcesFromOptions_()
 
 void BaseApplication::registerApp_()
 {
+    // sets up the server_directory
+    if (server_directory_ == nullptr) 
+    {
+        shared_ptr<sql::Connection> conn = db_manager_->getConnection(
+            configuration_variables_map_["cluster.datastore.name"].as<string>());
+        if (conn != nullptr)
+        {
+            server_directory_ = createServerDirectory(conn);
+        }
+        else {
+            throw runtime_error("No valid database connection available");
+        }
+    }
     if (server_directory_ != nullptr)
     {
         // make sure the value is in the map before registering
@@ -333,6 +338,33 @@ void BaseApplication::registerApp_()
                 configuration_variables_map_["cluster.udp_port"].as<uint16_t>(),
                 configuration_variables_map_["cluster.ping_port"].as<uint16_t>()
                 );
+        }
+    }
+}
+void BaseApplication::setupCluster_() 
+{
+    // setup cluster_service
+    // get tcp port of app...
+    uint16_t port = configuration_variables_map_["cluster.tcp_port"].as<uint16_t>();
+    // create a new cluster service if one wasn't passed in
+    if (cluster_service_ == nullptr)
+    {
+        cluster_service_ = std::make_shared<ClusterService>(cluster_io_service_, server_directory_, event_dispatcher_, port);
+    }
+    // loop through processes in server_directory and open a tcp connection to each
+    if (server_directory_ != nullptr)
+    {
+        try {
+            auto proc_list = server_directory_->getProcessSnapshot(server_directory_->cluster());
+            std::for_each(proc_list.begin(), proc_list.end(), [=](anh::server_directory::Process proc) {
+                if (proc.tcp_port() != port){
+                    cluster_service_->Connect(std::make_shared<anh::server_directory::Process>(proc));
+                }
+            });
+        }
+        catch(std::exception e)
+        {
+            LOG(WARNING) << "Error with Cluster Setup: " << e.what() <<endl;
         }
     }
 }
@@ -366,6 +398,10 @@ void BaseApplication::getOptionalPlatformServices_()
     catch(...) {}
     try {
         server_directory_ = boost::any_cast<shared_ptr<ServerDirectoryInterface>>(platform_services_->getService("ServerDirectory"));
+    }
+    catch(...) {}
+    try {
+        cluster_service_ = boost::any_cast<shared_ptr<ClusterServiceInterface>>(platform_services_->getService("ClusterService"));
     }
     catch(...) {}
     try {

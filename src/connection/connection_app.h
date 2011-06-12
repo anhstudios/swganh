@@ -10,6 +10,9 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team*/
 #define CONNECTION_APP_H_
 
 #include <anh/application.h>
+#include <anh/network/cluster/cluster_service.h>
+#include <packets/NetworkEventMessage.h>
+#include <unordered_map>
 
 namespace anh {
 namespace module_manager { class PlatformServices; }
@@ -29,6 +32,9 @@ public:
         , std::shared_ptr<anh::module_manager::PlatformServices> platform_services);
 
     // overrides
+    virtual void startup();
+    virtual void process();
+    virtual void shutdown();
     virtual bool hasStarted() const { return started_; }
     virtual void onAddDefaultOptions_();
     virtual void onRegisterApp_();
@@ -39,6 +45,8 @@ private:
     ConnectionApp();
     ConnectionApp(const ConnectionApp&);
     ConnectionApp& operator=(const ConnectionApp&);
+
+    std::unordered_map<anh::HashString, packets::NetworkEventMessage>        event_map_;
 };
 } // end namespace zone
 #endif // CONNECTION_APP_H_

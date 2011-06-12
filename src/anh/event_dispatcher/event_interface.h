@@ -24,6 +24,7 @@
 
 #include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
+#include "anh/byte_buffer.h"
 
 namespace anh {
 namespace event_dispatcher {

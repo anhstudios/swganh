@@ -17,8 +17,8 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PACKETS_BASE_SWG_MESSAGE_H_
-#define PACKETS_BASE_SWG_MESSAGE_H_
+#ifndef PACKETS_BASE_SWG_PACKET_H_
+#define PACKETS_BASE_SWG_PACKET_H_
 
 namespace packets {
   
@@ -49,4 +49,4 @@ struct BaseSwgPacket {
         
 }  // namespace packets
 
-#endif  // PACKETS_BASE_SWG_MESSAGE_H_
+#endif  // PACKETS_BASE_SWG_PACKET_H_

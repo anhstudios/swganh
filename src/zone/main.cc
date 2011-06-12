@@ -7,6 +7,10 @@
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
 #include <iostream>
 #include <glog/logging.h>
 #include <boost/thread/thread.hpp>
@@ -49,7 +53,7 @@ int main(int argc, char* argv[])
     ///
     app.startup();
     boost::this_thread::sleep(boost::posix_time::milliseconds(5));
-    if (app.hasStarted()) {
+    if (/*app.hasStarted()*/true) {
         while(true){
             app.process();
             if (app.kbHit())

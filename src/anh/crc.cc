@@ -76,7 +76,8 @@ const uint32_t CRC_TABLE[256] = {
     0xA2F33668, 0xBCB4666D, 0xB8757BDA, 0xB5365D03, 0xB1F740B4,
 };
 
-uint32_t anh::memcrc(const char* source_string, uint32_t length) {
+uint32_t anh::memcrc(const char* source_string, uint32_t length) 
+{
     uint32_t crc = 0xffffffff;  // starting seed
     for (uint32_t i = 0; i < length; ++i) {
         crc = CRC_TABLE[source_string[i] ^ (crc >> 24)] ^ (crc << 8);
@@ -85,6 +86,33 @@ uint32_t anh::memcrc(const char* source_string, uint32_t length) {
     return ~crc;
 }
 
-uint32_t anh::memcrc(const std::string& source_string) {
+uint32_t anh::memcrc(const std::string& source_string) 
+{
     return memcrc(source_string.c_str(), source_string.length());
+}
+
+uint32_t anh::memcrc(const char* src_buffer, uint32_t length, uint32_t seed)
+{
+	uint32_t newCRC = 0, index = 0;
+
+    newCRC = CRC_TABLE[(~seed) & 0xFF];
+    newCRC ^= 0x00FFFFFF;
+    index = (seed >> 8) ^ newCRC;
+    newCRC = (newCRC >> 8) & 0x00FFFFFF;
+    newCRC ^= CRC_TABLE[index & 0xFF];
+    index = (seed >> 16) ^ newCRC;
+    newCRC = (newCRC >> 8) & 0x00FFFFFF;
+    newCRC ^= CRC_TABLE[index & 0xFF];
+    index = (seed >> 24) ^ newCRC;
+    newCRC = (newCRC >> 8) &0x00FFFFFF;
+    newCRC ^= CRC_TABLE[index & 0xFF];
+
+    for(uint32_t i = 0; i < length; i++ )
+    {
+        index = (src_buffer[i]) ^ newCRC;
+        newCRC = (newCRC >> 8) & 0x00FFFFFF;
+        newCRC ^= CRC_TABLE[index & 0xFF];
+    }
+
+    return ~newCRC;
 }

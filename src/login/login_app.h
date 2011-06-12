@@ -10,6 +10,8 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team*/
 #define LOGIN_APP_H_
 
 #include <anh/application.h>
+#include <anh/network/soe/service.h>
+#include <anh/network/cluster/cluster_service.h>
 
 namespace anh {
 namespace module_manager { class PlatformServices; }
@@ -30,6 +32,9 @@ public:
     virtual bool hasStarted() const { return started_; }
     virtual void onAddDefaultOptions_();
     virtual void onRegisterApp_();
+	virtual void startup();
+	virtual void process();
+	virtual void shutdown();
 
     ~LoginApp();
 private:
@@ -37,6 +42,9 @@ private:
     LoginApp();
     LoginApp(const LoginApp&);
     LoginApp& operator=(const LoginApp&);
+
+	// SOE Frontend Service
+	anh::network::soe::Service	soe_service_;
 };
 
 
