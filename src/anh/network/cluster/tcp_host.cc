@@ -12,7 +12,7 @@ tcp_host::~tcp_host()
 void tcp_host::Start() {
     socket_.set_option(tcp::no_delay(true));
 
-    socket_.async_read_some(boost::asio::buffer(data_, max_length),[&] 
+    socket_.async_read_some(boost::asio::buffer(data_, max_length),[&]
     (const boost::system::error_code& error,size_t bytes_transferred) {
         if (!error)
         {
@@ -27,7 +27,6 @@ void tcp_host::Start() {
         }
     });
 }
-
 } // cluster
 } // network
 } // anh

@@ -34,12 +34,15 @@ namespace packets {
 struct NetworkEventMessage : public BaseANHPacket<NetworkEventMessage> {
     
     static anh::HashString hash_type() { return "NetworkEventMessage"; }
+
+    std::string string_message;
     
     void onDeserialize(anh::ByteBuffer buffer) {
+        string_message = buffer.read<std::string>();
     }
     
     void onSerialize(anh::ByteBuffer& buffer) const {
-
+        buffer.write(string_message);
     }
 };
 

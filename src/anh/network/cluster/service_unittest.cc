@@ -19,40 +19,93 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <anh/network/cluster/cluster_service.h>
-#include <anh/server_directory/mock_server_directory.h>
-#include <anh/event_dispatcher/mock_event_dispatcher.h>
+#include <boost/thread.hpp>
+#include "anh/network/mock_boost_asio_io_service.h"
+#include "anh/network/cluster/cluster_service.h"
+#include "anh/network/cluster/mock_tcp_client.h"
+#include "anh/network/cluster/mock_tcp_host.h"
+#include "anh/server_directory/mock_server_directory.h"
+#include "anh/event_dispatcher/mock_event_dispatcher.h"
+#include "anh/event_dispatcher/basic_event.h"
+#include "packets/NetworkEventMessage.h"
 
 using namespace anh;
 using namespace server_directory;
 using namespace event_dispatcher;
 using namespace network::cluster;
+using namespace testing;
+using namespace packets;
 
 namespace {
-class ClusterServiceTest : public testing::Test
+class ClusterServiceTests: public testing::Test
 {
 protected:
-    std::shared_ptr<MockEventDispatcher> dispatcher;
-    std::shared_ptr<MockServerDirectory> directory;
-    boost::asio::io_service io_service;
-    std::shared_ptr<ClusterService>    service;
+    std::shared_ptr<NiceMock<MockEventDispatcher>>  mock_dispatcher;
+    std::shared_ptr<MockServerDirectory>            mock_directory;
+    std::shared_ptr<MockTCPClient>                  mock_client;
+    std::shared_ptr<MockTCPHost>                    mock_host;
+    boost::asio::MockAsioIOService                  io_service, host_io_service;
+    std::shared_ptr<ClusterService>                 service, host_service;
+    std::shared_ptr<Process>                        test_process;
+    NetworkEventMessage nem;
 
     virtual void SetUp()
     {
-        dispatcher = std::make_shared<MockEventDispatcher>();
-        directory = std::make_shared<MockServerDirectory>();
-        service = std::make_shared<ClusterService>(io_service, directory, dispatcher, 44993);
+        mock_dispatcher = std::make_shared<NiceMock<MockEventDispatcher>>();
+        mock_directory = std::make_shared<MockServerDirectory>();
+        service = std::make_shared<ClusterService>(io_service, mock_directory, mock_dispatcher, 44993);
+        host_service = std::make_shared<ClusterService>(host_io_service, mock_directory, mock_dispatcher, 44994);
+        test_process = std::make_shared<Process>(0, 1, "ANH.Test", "Test", "0.1","127.0.0.1", 44994, 0, 0);
     }
-    virtual void TearDown()
+    void setupNetworkEventMessage()
     {
-
+        nem.string_message = "Hello World!";
     }
 };
-
-TEST_F(ClusterServiceTest, sendMessage ) 
+// verifies that if we open a connection, it shows up in our map
+TEST_F(ClusterServiceTests, openConnection) 
 {
-
-    EXPECT_TRUE(true);
+    service->Connect(test_process);
+    EXPECT_TRUE(service->isConnected(test_process));
 }
+// verifies that Disconnecting closes the TCP Connection
+TEST_F(ClusterServiceTests, closeConnection)
+{
+    service->Connect(test_process);
+    EXPECT_TRUE(service->isConnected(test_process));
+    service->Disconnect(test_process);
+    EXPECT_FALSE(service->isConnected(test_process));
+}
+// Verifies isConnected by name only
+TEST_F(ClusterServiceTests, isConnectedName)
+{
+    service->Connect(test_process);
+    EXPECT_TRUE(service->isConnected("ANH.Test"));
+}
+// verifies we can get a TCP client connection after connecting
+TEST_F(ClusterServiceTests, getConnectionByName)
+{
+    service->Connect(test_process);
+    // test we can grab by name
+    auto conn = service->getConnection("ANH.Test");
+    // test we can grab by IP/Port
+    auto conn2 = service->getConnection("127.0.0.1", 44994);
+    EXPECT_NE(nullptr, conn);
+    EXPECT_NE(nullptr, conn2);
+}
+// verifies that in debug we can't send to a message with no connection
+TEST_F(ClusterServiceTests, cantSendMessageWithNoConnections)
+{
+    EXPECT_DEBUG_DEATH(
+        service->sendMessage("ANH.Test", make_shared_event(NetworkEventMessage::hash_type(), nem))
+        , "No Connection Established, could not send message to:");
+}
+TEST_F(ClusterServiceTests, StartPassesInHost)
+{
+    boost::asio::MockAsioIOService mock_service;
+    auto cluster_service = std::make_shared<ClusterService>(mock_service, mock_directory, mock_dispatcher, 44993);
+    cluster_service->Start(mock_host);
+}
+
 
 }

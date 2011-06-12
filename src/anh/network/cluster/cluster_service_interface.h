@@ -39,16 +39,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 namespace anh {
 namespace network {
 namespace cluster {
-
 class ClusterServiceInterface {
 public:
 
     /**
      * @brief Starts the Cluster Service.
-     * 
+     *
      * @param port The port to listen for messages on.
      */
-    virtual void Start(void) = 0;
+    virtual void Start(std::shared_ptr<tcp_host> host = nullptr) = 0;
+
     /**
     *  Runs the pipeline each tick.
     */
@@ -59,10 +59,17 @@ public:
     virtual void Shutdown(void) = 0;
     /**
      * @brief Opens a TCP connection to the given host
-     * 
+     *
      * @param process the server directory process to connect to.
      */
     virtual void Connect(std::shared_ptr<anh::server_directory::Process> process) = 0;
+    /**
+     * @brief Opens a TCP connection to the tcp client connection
+     *
+     * @param tcp client to add to the map and connect.
+     * @param process to add to the map
+     */
+    virtual void Connect(std::shared_ptr<tcp_client> client, std::shared_ptr<anh::server_directory::Process> process) = 0;
     /**
     * @brief Closes the TCP Connection
     * @param process the service directory process to disconnect
@@ -70,7 +77,7 @@ public:
     virtual void Disconnect(std::shared_ptr<anh::server_directory::Process> process) = 0;
     /**
      * @brief Sends a message to given the name of the service
-     * 
+     *
      * @param name The service name to send a message to.
      * @param event_out the event that will be sent out.
      * @param (optional) DestinationType the destination that the message will be sent to.
@@ -79,7 +86,7 @@ public:
         , DestinationType dest = SINGLE) = 0;
     /**
      * @brief Sends a message to given the name of the service
-     * 
+     *
      * @param host The host address to send a message to.
      * @param port The port to the host.
      * @param buffer The ByteBuffer message to send
@@ -88,24 +95,24 @@ public:
      */
     virtual void sendMessage(const std::string& host, uint16_t port, anh::ByteBuffer& buffer
         , DestinationType dest = SINGLE) = 0;
-    
+
     /**
      * @brief Checks to see if there is a connection to the given service
-     * 
+     *
      * @param name the service name to check
      * @returns true if the service was found.
      */
     virtual bool isConnected(const std::string& name) = 0;
     /**
      * @brief Checks to see if there is a connection to the given service
-     * 
+     *
      * @param process the service process to check
      * @returns true if the service was found.
      */
     virtual bool isConnected(std::shared_ptr<anh::server_directory::Process> process) = 0;
     /**
      * @brief Checks to see if there is a connection to the given address and port
-     * 
+     *
      * @param host the address to send to
      * @param port the host port
      * @returns connection if found, else nullptr
@@ -124,7 +131,6 @@ public:
     */
     virtual std::shared_ptr<tcp_host>  host() = 0;
 };
-
 } // cluster
 } // network
 } // anh
