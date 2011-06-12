@@ -36,7 +36,6 @@ using namespace packets;
 namespace anh {
 namespace network {
 namespace cluster {
-
 PacketEventFilter::PacketEventFilter(ClusterService* service)
     : tbb::filter(serial_in_order)
     , service_(service)
@@ -54,7 +53,7 @@ void* PacketEventFilter::operator()(void* item)
         RemoteMessage remote_message;
         remote_message.data = *buffer;
         remote_message.source_id = buffer->read<anh::HashString>();
-        
+
         auto data_event = make_shared_event("RemoteMessage", remote_message);
         // trigger it here.
         // Note this gets handled by another dispatcher, who triggers it again after figuring out where it needs to go.
@@ -62,7 +61,6 @@ void* PacketEventFilter::operator()(void* item)
     }
     return NULL;
 }
-
 } // cluster
 } // network
 } // anh

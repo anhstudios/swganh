@@ -7,7 +7,6 @@
 namespace anh {
 namespace network {
 namespace cluster {
-
 using boost::asio::ip::tcp;
 
 typedef std::function<void(anh::ByteBuffer*)> NetworkCallback;
@@ -15,7 +14,7 @@ typedef std::function<void(anh::ByteBuffer*)> NetworkCallback;
 class tcp_host : public std::enable_shared_from_this<tcp_host> {
 public:
     tcp_host(boost::asio::io_service& io_service, NetworkCallback callback)
-    : socket_(io_service) 
+    : socket_(io_service)
     , callback_(callback)
     {
     }
@@ -29,7 +28,7 @@ public:
     /**
     *  @brief
     */
-    
+
 private:
     uint64_t	bytes_recv_;
     uint64_t	bytes_sent_;
@@ -40,8 +39,6 @@ private:
     enum { max_length = 1024 };
     char data_[max_length];
 };
-
-
 } // cluster
 } // network
 } // anh

@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 namespace anh {
 namespace network {
 namespace cluster {
-
 // FORWARD DECLARATIONS
 class ClusterService;
 
@@ -50,7 +49,6 @@ public:
 private:
 	ClusterService* service_;
 };
-
 } // namespace cluster
 } // namespace network
 } // namespace anh

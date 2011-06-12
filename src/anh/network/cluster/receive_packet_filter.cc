@@ -34,7 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 namespace anh {
 namespace network {
 namespace cluster {
-
 ReceivePacketFilter::ReceivePacketFilter(ClusterService* service)
     : tbb::filter(serial_in_order)
     , service_(service)
@@ -55,7 +54,7 @@ void* ReceivePacketFilter::operator()(void* item)
 
     anh::ByteBuffer* packet = service_->incoming_messages_.front();
     service_->incoming_messages_.pop_front();
-    
+
     // Do not process if we don't have any valid data
     if(packet == nullptr)
     {
@@ -65,7 +64,6 @@ void* ReceivePacketFilter::operator()(void* item)
     DLOG(WARNING) << "Received Packet, processing data of size: " << packet->size();
     return (void*)packet;
 }
-
 } // namespace soe
 } // namespace network
 } // namespace anh

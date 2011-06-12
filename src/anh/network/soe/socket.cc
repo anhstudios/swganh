@@ -39,16 +39,15 @@ Socket::Socket(boost::asio::io_service& service, uint16_t port, NetworkCallback 
 	, bytes_recv_(0)
 	, bytes_sent_(0)
 {
-	StartSocketRecv_();
+	StartRead();
 }
 
-Socket::~Socket(void)
+Socket::~Socket()
 {
 
 }
 
-void Socket::Send(boost::asio::ip::udp::endpoint& endpoint, ByteBuffer& buffer)
-{
+void Socket::Send(const boost::asio::ip::udp::endpoint& endpoint, ByteBuffer buffer) {
 	socket_.async_send_to(boost::asio::buffer(buffer.data(), buffer.size()), 
 		endpoint, 
 		[this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
@@ -57,8 +56,7 @@ void Socket::Send(boost::asio::ip::udp::endpoint& endpoint, ByteBuffer& buffer)
 	});
 }
 
-void Socket::StartSocketRecv_()
-{
+void Socket::StartRead() {
 	socket_.async_receive_from(boost::asio::buffer(recv_buffer_), current_remote_endpoint_,
 		[&] (const boost::system::error_code& error, std::size_t bytes_transferred) {
 			if(bytes_transferred > 2 || !error || error == boost::asio::error::message_size)
@@ -67,7 +65,7 @@ void Socket::StartSocketRecv_()
 				callback_(current_remote_endpoint_, std::make_shared<ByteBuffer>((const unsigned char*)recv_buffer_.data(), bytes_transferred));
 			}
 
-			StartSocketRecv_();
+			StartRead();
 	});
 }
 

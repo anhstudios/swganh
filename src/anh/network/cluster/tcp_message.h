@@ -36,7 +36,6 @@ namespace anh { class ByteBuffer; }
 namespace anh {
 namespace network {
 namespace cluster {
-
 // FORWARD DECLARATIONS
 class tcp_client;
 
@@ -73,7 +72,6 @@ private:
     std::shared_ptr<anh::ByteBuffer>	message_;
     std::string                         type_;
 };
-
 } // namespace cluster
 } // namespace network
 } // namespacce anh

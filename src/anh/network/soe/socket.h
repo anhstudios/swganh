@@ -28,16 +28,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_SOCKET_H_
 #define ANH_NETWORK_SOE_SOCKET_H_
 
-#include <anh/byte_buffer.h>
-
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
+
+#include "anh/byte_buffer.h"
+#include "anh/network/socket_interface.h"
 
 namespace anh {
 namespace network {
 namespace soe {
-
-typedef std::function<void(boost::asio::ip::udp::endpoint&, std::shared_ptr<anh::ByteBuffer>)> NetworkCallback;
 
 /**
  * @brief A basic UDP Callback Socket.
@@ -47,7 +46,7 @@ typedef std::function<void(boost::asio::ip::udp::endpoint&, std::shared_ptr<anh:
  * a ByteBuffer containing the raw packet material ( which is then to be handled by the appropriate manager ).
  *
  */
-class Socket
+class Socket : public anh::network::SocketInterface<boost::asio::ip::udp>
 {
 public:
 	/**
@@ -67,20 +66,20 @@ public:
 	/**
 	 * @brief Sends a message on the wire to the target endpoint.
 	 */
-	void Send(boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer& buffer);
+	void Send(const boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer buffer);
 
 	/**
 	 * @returns The amount of bytes received on the socket.
 	 */
-	const uint64_t& bytes_recv() { return bytes_recv_; }
+	uint64_t bytes_recv() const { return bytes_recv_; }
 
 	/**
 	 * @returns The amount of bytes sent on the socket.
 	 */
-	const uint64_t& bytes_sent() { return bytes_sent_; }
+	uint64_t bytes_sent() const { return bytes_sent_; }
 
 private:
-	void StartSocketRecv_(void);
+	void StartRead();
 
 	uint64_t	bytes_recv_;
 	uint64_t	bytes_sent_;

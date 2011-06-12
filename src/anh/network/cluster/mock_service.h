@@ -27,9 +27,11 @@ class MockClusterService : public ClusterServiceInterface
 {
 public:
     MOCK_METHOD0(Start, void());
+    MOCK_METHOD1(Start, void(std::shared_ptr<tcp_host>));
     MOCK_METHOD0(Update, void());
     MOCK_METHOD0(Shutdown, void());
     MOCK_METHOD1(Connect, void(std::shared_ptr<anh::server_directory::Process>));
+    MOCK_METHOD2(Connect, void(std::shared_ptr<tcp_client>, std::shared_ptr<anh::server_directory::Process>));
     MOCK_METHOD1(Disconnect, void (std::shared_ptr<anh::server_directory::Process> process));
     MOCK_METHOD3(sendMessage, void(const std::string& name, std::shared_ptr<anh::event_dispatcher::EventInterface> event_out, DestinationType dest));
     MOCK_METHOD4(sendMessage, void(const std::string& host, uint16_t port, anh::ByteBuffer& buffer, DestinationType dest));
