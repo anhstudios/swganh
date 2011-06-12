@@ -63,9 +63,10 @@ public:
     /**
      * @brief Starts the Cluster Service.
      *
-     * @param port The port to listen for messages on.
+     * @param host the tcp_host to startup
+     * this is an optional parameter and will be initialized if nullptr
      */
-    void Start(void);
+    void Start(std::shared_ptr<tcp_host> host = nullptr);
     /**
     *  Runs the pipeline each tick.
     */
@@ -80,6 +81,13 @@ public:
      * @param process the server directory process to connect to.
      */
     void Connect(std::shared_ptr<anh::server_directory::Process> process);
+    /**
+     * @brief Opens a TCP connection to the tcp client connection
+     *
+     * @param tcp client to add to the map and connect.
+     * @param process to add to the map
+     */
+    void Connect(std::shared_ptr<tcp_client> client, std::shared_ptr<anh::server_directory::Process> process);
     /**
     * @brief Closes the TCP Connection
     * @param process the service directory process to disconnect

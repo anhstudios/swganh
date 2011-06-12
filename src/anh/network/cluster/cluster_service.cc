@@ -89,10 +89,14 @@ ClusterService::~ClusterService(void)
     service_thread_.join();
 }
 
-void ClusterService::Start()
+void ClusterService::Start(std::shared_ptr<tcp_host> host)
 {
     acceptor_ = std::make_shared<boost::asio::ip::tcp::acceptor>(io_service_, tcp::endpoint(tcp::v4(), port_ ));
-    tcp_host_ = std::make_shared<tcp_host>(io_service_, std::bind(&ClusterService::OnTCPHostReceive_, this, std::placeholders::_1));
+    // if after assigning the host we have a nullptr, lets instantiate it
+    if ((tcp_host_ = host) == nullptr)
+    {
+        tcp_host_ = std::make_shared<tcp_host>(io_service_, std::bind(&ClusterService::OnTCPHostReceive_, this, std::placeholders::_1));
+    }
 
     acceptor_->async_accept(tcp_host_->socket(), boost::bind(&ClusterService::handle_accept_, this,
        tcp_host_ , boost::asio::placeholders::error));
@@ -104,8 +108,8 @@ void ClusterService::Start()
 
 void ClusterService::Update(void)
 {
-    incoming_pipeline_.run(8);
-    outgoing_pipeline_.run(8);
+    incoming_pipeline_.run(100);
+    outgoing_pipeline_.run(100);
  }
 
 void ClusterService::Shutdown(void)
@@ -140,6 +144,23 @@ void ClusterService::Connect(std::shared_ptr<anh::server_directory::Process> pro
         if (!isConnected(process) && (process->tcp_port() != port_ ))
         {
             auto client = std::make_shared<tcp_client>(io_service_, process->address(), process->tcp_port());
+            if (client != nullptr) {
+                tcp_client_map_.insert(ClusterPair(process, client));
+            }
+        }
+    }
+    catch (exception e)
+    {
+        LOG(WARNING) << "Exception in Service::Connect " << e.what() << std::endl;
+    }
+}
+void ClusterService::Connect(std::shared_ptr<tcp_client> client, std::shared_ptr<anh::server_directory::Process> process)
+{
+    try
+    {
+        // make sure we don't already have this client in our map
+        if (!isConnected(process) && (process->tcp_port() != port_ ))
+        {
             if (client != nullptr) {
                 tcp_client_map_.insert(ClusterPair(process, client));
             }

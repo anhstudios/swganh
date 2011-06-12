@@ -72,7 +72,7 @@ private:
     tcp::socket		                    socket_;
     tcp::endpoint		                current_remote_endpoint_;
     tcp::resolver                       resolver_;
-    boost::array<char, 456>				recv_buffer_;
+    boost::array<char, 1024>			recv_buffer_;
 };
 } // namespace cluster
 } // namespace network

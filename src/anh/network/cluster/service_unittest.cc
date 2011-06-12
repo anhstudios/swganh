@@ -20,7 +20,10 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/thread.hpp>
+#include "anh/network/mock_boost_asio_io_service.h"
 #include "anh/network/cluster/cluster_service.h"
+#include "anh/network/cluster/mock_tcp_client.h"
+#include "anh/network/cluster/mock_tcp_host.h"
 #include "anh/server_directory/mock_server_directory.h"
 #include "anh/event_dispatcher/mock_event_dispatcher.h"
 #include "anh/event_dispatcher/basic_event.h"
@@ -37,24 +40,22 @@ namespace {
 class ClusterServiceTests: public testing::Test
 {
 protected:
-    std::shared_ptr<NiceMock<MockEventDispatcher>>  dispatcher;
-    std::shared_ptr<MockServerDirectory>            directory;
-    boost::asio::io_service io_service, host_io_service;
+    std::shared_ptr<NiceMock<MockEventDispatcher>>  mock_dispatcher;
+    std::shared_ptr<MockServerDirectory>            mock_directory;
+    std::shared_ptr<MockTCPClient>                  mock_client;
+    std::shared_ptr<MockTCPHost>                    mock_host;
+    boost::asio::MockAsioIOService                  io_service, host_io_service;
     std::shared_ptr<ClusterService>                 service, host_service;
     std::shared_ptr<Process>                        test_process;
     NetworkEventMessage nem;
 
     virtual void SetUp()
     {
-        dispatcher = std::make_shared<NiceMock<MockEventDispatcher>>();
-        directory = std::make_shared<MockServerDirectory>();
-        service = std::make_shared<ClusterService>(io_service, directory, dispatcher, 44993);
-        host_service = std::make_shared<ClusterService>(host_io_service, directory, dispatcher, 44994);
+        mock_dispatcher = std::make_shared<NiceMock<MockEventDispatcher>>();
+        mock_directory = std::make_shared<MockServerDirectory>();
+        service = std::make_shared<ClusterService>(io_service, mock_directory, mock_dispatcher, 44993);
+        host_service = std::make_shared<ClusterService>(host_io_service, mock_directory, mock_dispatcher, 44994);
         test_process = std::make_shared<Process>(0, 1, "ANH.Test", "Test", "0.1","127.0.0.1", 44994, 0, 0);
-    }
-    virtual void TearDown()
-    {
-
     }
     void setupNetworkEventMessage()
     {
@@ -98,6 +99,12 @@ TEST_F(ClusterServiceTests, cantSendMessageWithNoConnections)
     EXPECT_DEBUG_DEATH(
         service->sendMessage("ANH.Test", make_shared_event(NetworkEventMessage::hash_type(), nem))
         , "No Connection Established, could not send message to:");
+}
+TEST_F(ClusterServiceTests, StartPassesInHost)
+{
+    boost::asio::MockAsioIOService mock_service;
+    auto cluster_service = std::make_shared<ClusterService>(mock_service, mock_directory, mock_dispatcher, 44993);
+    cluster_service->Start(mock_host);
 }
 
 

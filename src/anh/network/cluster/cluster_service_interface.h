@@ -47,7 +47,8 @@ public:
      *
      * @param port The port to listen for messages on.
      */
-    virtual void Start(void) = 0;
+    virtual void Start(std::shared_ptr<tcp_host> host = nullptr) = 0;
+
     /**
     *  Runs the pipeline each tick.
     */
@@ -62,6 +63,13 @@ public:
      * @param process the server directory process to connect to.
      */
     virtual void Connect(std::shared_ptr<anh::server_directory::Process> process) = 0;
+    /**
+     * @brief Opens a TCP connection to the tcp client connection
+     *
+     * @param tcp client to add to the map and connect.
+     * @param process to add to the map
+     */
+    virtual void Connect(std::shared_ptr<tcp_client> client, std::shared_ptr<anh::server_directory::Process> process) = 0;
     /**
     * @brief Closes the TCP Connection
     * @param process the service directory process to disconnect
