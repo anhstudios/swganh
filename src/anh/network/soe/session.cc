@@ -150,15 +150,15 @@ void Session::HandleSoeMessage(anh::ByteBuffer& message)
 {
     switch(message.peek<uint16_t>(true))
     {
-    case SESSION_REQUEST:					{ handleSessionRequest_(SessionRequest(message)); break; }
-    case MULTI_PACKET:						{ handleMultiPacket_(MultiPacket(message)); break; }
-    case DISCONNECT:						{ handleDisconnect_(Disconnect(message)); break; }
-    case PING:								{ handlePing_(Ping(message)); break; }
-    case NET_STATS_CLIENT:					{ handleNetStatsClient_(NetStatsClient(message)); break; }
     case CHILD_DATA_A:						{ handleChildDataA_(ChildDataA(message)); break; }
+    case MULTI_PACKET:						{ handleMultiPacket_(MultiPacket(message)); break; }
     case DATA_FRAG_A:						{ handleDataFragA_(DataFragA(message)); break; }
     case ACK_A:								{ handleAckA_(AckA(message)); break; }
+    case PING:								{ handlePing_(Ping(message)); break; }
+    case NET_STATS_CLIENT:					{ handleNetStatsClient_(NetStatsClient(message)); break; }
     case OUT_OF_ORDER_A:					{ handleOutOfOrderA_(OutOfOrderA(message)); break; }
+    case DISCONNECT:						{ handleDisconnect_(Disconnect(message)); break; }
+    case SESSION_REQUEST:					{ handleSessionRequest_(SessionRequest(message)); break; }
     case FATAL_ERROR:						{ Close(); break; }
     default:
         LOG(INFO) << "Unhandled SOE Opcode" << message.peek<uint16_t>(true);
@@ -187,7 +187,7 @@ void Session::handleSessionRequest_(SessionRequest& packet)
 
 void Session::handleMultiPacket_(MultiPacket& packet)
 {
-    DLOG(WARNING) << "Handling DISCONNECT";
+    DLOG(WARNING) << "Handling MULTIPACKET";
     std::for_each(packet.packets.begin(), packet.packets.end(), [=](anh::ByteBuffer& buffer) {
         HandleSoeMessage(buffer);
     });
