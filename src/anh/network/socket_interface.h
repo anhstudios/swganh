@@ -41,22 +41,22 @@ public:
 
     virtual ~SocketInterface() {}
     
-	/** Sends a message on the wire to the target endpoint.
-	 */
+    /** Sends a message on the wire to the target endpoint.
+     */
     virtual void Send(const endpoint& remote_endpoint, anh::ByteBuffer message) = 0;
         
     /** Starts the socket's async reading tasks.
      */
     virtual void StartRead() = 0;
 
-	/**
-	 * @return The amount of bytes received on the socket.
-	 */
-	virtual uint64_t bytes_recv() const = 0;
+    /**
+     * @return The amount of bytes received on the socket.
+     */
+    virtual uint64_t bytes_recv() const = 0;
     
-	/**
-	 * @return The amount of bytes sent on the socket.
-	 */
+    /**
+     * @return The amount of bytes sent on the socket.
+     */
     virtual uint64_t bytes_sent() const = 0;
 };
     
