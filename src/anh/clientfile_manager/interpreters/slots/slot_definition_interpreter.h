@@ -25,8 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef SLOT_DEFINITION_INTERPRETER
-#define SLOT_DEFINITION_INTERPRETER
+#ifndef SLOT_DEFINITION_INTERPRETER_H
+#define SLOT_DEFINITION_INTERPRETER_H
 
 #include "../interpreter_interface.h"
 
