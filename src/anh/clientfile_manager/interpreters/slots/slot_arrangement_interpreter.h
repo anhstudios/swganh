@@ -51,7 +51,13 @@ namespace anh
 					@brief interprets a IFF::FileNode associated with this interpreter.
 					This should only be called by the IFFFile code.
 				*/
-				virtual void interpret(std::shared_ptr<iff::file_node> node);
+				virtual void interpret_data(std::shared_ptr<iff::file_node> node);
+
+				/**
+					@brief interprets a IFF::FolderNode associated with this interpreter.
+					This should only be called by the IFFFile code.
+				*/
+				virtual void interpret_folder(std::shared_ptr<iff::folder_node> node);
 
 				//const std::vector<std::string>& slots_occupied(size_t id) { return combinations_[id]; };
 

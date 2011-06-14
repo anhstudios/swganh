@@ -9,11 +9,16 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team */
 #include "slot_definition_interpreter.h"
 
 #include "../../iff/filenode.h"
+#include "../../iff/foldernode.h"
 
 using namespace std;
 using namespace anh::clientfile_manager::interpreters;
 
-void slot_definition_interpreter::interpret(shared_ptr<anh::clientfile_manager::iff::file_node> node)
+void slot_definition_interpreter::interpret_folder(std::shared_ptr<anh::clientfile_manager::iff::folder_node> node)
+{
+}
+
+void slot_definition_interpreter::interpret_data(shared_ptr<anh::clientfile_manager::iff::file_node> node)
 {
 	if(node->name() == "0006DATA")
 	{

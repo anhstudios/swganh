@@ -10,6 +10,7 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team */
 
 #include "../../iff/iff.h"
 #include "../../iff/filenode.h"
+#include "../../iff/foldernode.h"
 
 using namespace anh::clientfile_manager::interpreters;
 using namespace std::tr1::placeholders;
@@ -33,7 +34,11 @@ pob_interpreter::pob_interpreter()
 	}
 }
 
-void pob_interpreter::interpret(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
+void pob_interpreter::interpret_folder(std::shared_ptr<anh::clientfile_manager::iff::folder_node> node)
+{
+}
+
+void pob_interpreter::interpret_data(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
 {
 	NodeNameIndexIterator it = nameLookup_.find(node->name());
 	if( it != nameLookup_.cend())

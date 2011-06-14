@@ -18,7 +18,10 @@ public:
 
 	virtual interpreters::InterpreterType getType() { return interpreters::IFF_INTERPRETER; }
 
-	virtual void interpret(std::shared_ptr<iff::file_node> node) {
+	virtual void interpret_folder(std::shared_ptr<iff::folder_node> node) {
+	};
+
+	virtual void interpret_data(std::shared_ptr<iff::file_node> node) {
 		++call_count_;
 	};
 

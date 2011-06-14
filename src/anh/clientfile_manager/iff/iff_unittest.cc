@@ -80,7 +80,7 @@ TEST(iffFileTests, StringInputWithInterpreter)
 	ASSERT_TRUE(boost::filesystem::exists(p)) << "Test file Does not exist.";
 	MockInterpreter* moc = new MockInterpreter();
 	std::shared_ptr<MockInterpreter> mock_interpreter = std::shared_ptr<MockInterpreter>(moc);
-	EXPECT_CALL(*moc, interpret(_)).Times(28);
+	EXPECT_CALL(*moc, interpret_data(_)).Times(28);
 
 	//The Test
 	ASSERT_NO_THROW({
@@ -130,7 +130,7 @@ TEST(iffFileTests, FilePointerInputWithInterpreter)
 
 	MockInterpreter* moc = new MockInterpreter();
 	std::shared_ptr<MockInterpreter> mock_interpreter = std::shared_ptr<MockInterpreter>(moc);
-	EXPECT_CALL(*moc, interpret(_)).Times(28);
+	EXPECT_CALL(*moc, interpret_data(_)).Times(28);
 
 	//The Test
 	ASSERT_NO_THROW({
@@ -193,7 +193,7 @@ TEST(iffFileTests, ByteBufferInputWithInterpreter)
 
 	MockInterpreter* moc = new MockInterpreter();
 	std::shared_ptr<MockInterpreter> mock_interpreter = std::shared_ptr<MockInterpreter>(moc);
-	EXPECT_CALL(*moc, interpret(_)).Times(28);
+	EXPECT_CALL(*moc, interpret_data(_)).Times(28);
 
 	//The Test
 	ASSERT_NO_THROW({

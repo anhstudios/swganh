@@ -8,13 +8,18 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team */
 
 #include "datatable_interpreter.h"
 #include "../../iff/filenode.h"
+#include "../../iff/foldernode.h"
 
 #include <regex>
 
 using namespace std;
 using namespace anh::clientfile_manager::interpreters;
 
-void datatable_interpreter::interpret(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
+void datatable_interpreter::interpret_folder(std::shared_ptr<anh::clientfile_manager::iff::folder_node> node)
+{
+}
+
+void datatable_interpreter::interpret_data(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
 {
 	if(node->name() == "0001COLS")
 	{

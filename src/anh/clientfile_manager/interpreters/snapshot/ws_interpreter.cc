@@ -20,7 +20,11 @@ ws_interpreter::ws_interpreter()
 {
 }
 
-void ws_interpreter::interpret(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
+void ws_interpreter::interpret_folder(std::shared_ptr<anh::clientfile_manager::iff::folder_node> node)
+{
+}
+
+void ws_interpreter::interpret_data(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
 {
 	const std::string& nameRef = node->name();
 	if(nameRef == "0000DATA")

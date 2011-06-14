@@ -14,6 +14,7 @@ Copyright (c) 2006 - 2011 The SWG:ANH Team */
 
 #include "../../iff/iff.h"
 #include "../../iff/filenode.h"
+#include "../../iff/foldernode.h"
 #include "../../filemanager.h"
 
 
@@ -125,7 +126,11 @@ oiff_interpreter::oiff_interpreter()
 	}
 }
 
-void oiff_interpreter::interpret(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
+void oiff_interpreter::interpret_folder(std::shared_ptr<anh::clientfile_manager::iff::folder_node> node)
+{
+}
+
+void oiff_interpreter::interpret_data(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
 {
 	const std::string& nameRef = node->name();
 	if(nameRef == "XXXX")

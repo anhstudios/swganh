@@ -108,6 +108,11 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 					std::shared_ptr<iff::folder_node> folder = std::make_shared<iff::folder_node>(name, size);
 					headNodes.push_back(folder);
 					loader.push(std::make_pair<std::shared_ptr<iff::folder_node>,unsigned int>(folder, inputstream.read_position()+size));
+
+					if(interpreter_ != nullptr)
+					{
+						interpreter_->interpret_folder(folder);
+					}
 				}
 				else
 				{
@@ -115,6 +120,11 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 					std::shared_ptr<iff::folder_node> folder = std::make_shared<iff::folder_node>(name, size, loader.top().first);
 					loader.top().first->add(folder);
 					loader.push(std::make_pair<std::shared_ptr<iff::folder_node>,unsigned int>(folder, inputstream.read_position()+size));
+
+					if(interpreter_ != nullptr)
+					{
+						interpreter_->interpret_folder(folder);
+					}
 				}	
 			}
 			else
@@ -130,7 +140,7 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 					//If we hae an interpreter we will have it interpret our data
 					if(interpreter_ != nullptr)
 					{
-						interpreter_->interpret(file);
+						interpreter_->interpret_data(file);
 					}
 				}
 				else
@@ -143,7 +153,7 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 					//If we have an interpreter we wil have it interpret our data
 					if(interpreter_ != nullptr)
 					{
-						interpreter_->interpret(file);
+						interpreter_->interpret_data(file);
 					}
 				}
 			}

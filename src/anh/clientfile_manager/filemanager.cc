@@ -69,7 +69,7 @@ void file_manager::loadSWGTREConfig_()
 					path1 = basedir_ / path1;
 					if(boost::filesystem::exists(path1))
 					{
-						paths.push_back(basedir_ / path1);
+						paths.push_back(path1);
 					}
 				}
 			}

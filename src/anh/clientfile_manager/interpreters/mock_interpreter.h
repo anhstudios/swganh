@@ -12,7 +12,8 @@ namespace anh
 			{
 			public:
 				MOCK_METHOD0(getType, InterpreterType());
-				MOCK_METHOD1(interpret, void(std::shared_ptr<iff::file_node> node));
+				MOCK_METHOD1(interpret_data, void(std::shared_ptr<iff::file_node> node));
+				MOCK_METHOD1(interpret_folder, void(std::shared_ptr<iff::folder_node> node));
 			};
 		};
 	};
