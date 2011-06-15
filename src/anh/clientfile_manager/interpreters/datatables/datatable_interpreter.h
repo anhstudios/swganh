@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef DATATABLE_INTERPRETER_H
 #define DATATABLE_INTERPRETER_H
 
-#include "../interpreter_interface.h"
+#include <anh/clientfile_manager/interpreters/interpreter_interface.h>
 
 #include <map>
 #include <string>

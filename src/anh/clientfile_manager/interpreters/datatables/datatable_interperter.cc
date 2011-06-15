@@ -6,9 +6,9 @@ For more information, visit http://www.swganh.com
 
 Copyright (c) 2006 - 2011 The SWG:ANH Team */
 
-#include "datatable_interpreter.h"
-#include "../../iff/filenode.h"
-#include "../../iff/foldernode.h"
+#include <anh/clientfile_manager/interpreters/datatables/datatable_interpreter.h>
+#include <anh/clientfile_manager/iff/filenode.h>
+#include <anh/clientfile_manager/iff/foldernode.h>
 
 #include <regex>
 

@@ -6,11 +6,11 @@ For more information, visit http://www.swganh.com
 
 Copyright (c) 2006 - 2011 The SWG:ANH Team */
 
-#include "filemanager.h"
-#include "interpreters/interpreter_interface.h"
-#include "iff/iff.h"
-#include "tre/tree.h"
-#include "notfound_exception.h"
+#include <anh/clientfile_manager/filemanager.h>
+#include <anh/clientfile_manager/interpreters/interpreter_interface.h>
+#include <anh/clientfile_manager/iff/iff.h>
+#include <anh/clientfile_manager/tre/tree.h>
+#include <anh/clientfile_manager/notfound_exception.h>
 
 #include <iostream>
 #include <fstream>

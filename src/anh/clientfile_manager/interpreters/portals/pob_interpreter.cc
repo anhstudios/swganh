@@ -6,11 +6,10 @@ For more information, visit http://www.swganh.com
 
 Copyright (c) 2006 - 2011 The SWG:ANH Team */
 
-#include "pob_interpreter.h"
-
-#include "../../iff/iff.h"
-#include "../../iff/filenode.h"
-#include "../../iff/foldernode.h"
+#include <anh/clientfile_manager/interpreters/portals/pob_interpreter.h>
+#include <anh/clientfile_manager/iff/iff.h>
+#include <anh/clientfile_manager/iff/filenode.h>
+#include <anh/clientfile_manager/iff/foldernode.h>
 
 using namespace anh::clientfile_manager::interpreters;
 using namespace std::tr1::placeholders;

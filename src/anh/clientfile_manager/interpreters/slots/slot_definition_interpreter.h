@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef SLOT_DEFINITION_INTERPRETER_H
 #define SLOT_DEFINITION_INTERPRETER_H
 
-#include "../interpreter_interface.h"
+#include <anh/clientfile_manager/interpreters/interpreter_interface.h>
 
 #include <cstdint>
 #include <vector>

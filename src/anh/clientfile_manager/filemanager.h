@@ -28,8 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef CLIENT_FILE_MANAGER_H
 #define CLIENT_FILE_MANAGER_H
 
-#include "tre/tree_entry.h" //Included to satisfy the templates
-
+#include <anh/clientfile_manager/tre/tree_entry.h> //Included to satisfy the templates
 #include <boost/any.hpp> //Included for boost::any
 #include <boost/filesystem.hpp> //Included for boost::filesystem::path
 #include <string> //Included for String

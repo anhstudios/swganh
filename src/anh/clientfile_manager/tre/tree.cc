@@ -6,9 +6,8 @@ For more information, visit http://www.swganh.com
 
 Copyright (c) 2006 - 2011 The SWG:ANH Team */
 
-#include "tree.h"
-#include "tree_entry.h"
-
+#include <anh/clientfile_manager/tre/tree.h>
+#include <anh/clientfile_manager/tre/tree_entry.h>
 #include <cstdint>
 #include <stdio.h>
 #include <zlib.h>

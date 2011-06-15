@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "filemanager.h"
-#include "interpreters/mock_interpreter.h"
-#include "notfound_exception.h"
+#include <anh/clientfile_manager/filemanager.h>
+#include <anh/clientfile_manager/interpreters/mock_interpreter.h>
+#include <anh/clientfile_manager/notfound_exception.h>
 
 using namespace anh::clientfile_manager;
 
@@ -17,9 +17,7 @@ public:
 	}
 
 	virtual interpreters::InterpreterType getType() { return interpreters::IFF_INTERPRETER; }
-
-	virtual void interpret_folder(std::shared_ptr<iff::folder_node> node) {
-	};
+	virtual void interpret_folder(std::shared_ptr<iff::folder_node> node) {};
 
 	virtual void interpret_data(std::shared_ptr<iff::file_node> node) {
 		++call_count_;

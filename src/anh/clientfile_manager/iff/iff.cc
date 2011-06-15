@@ -6,11 +6,11 @@ For more information, visit http://www.swganh.com
 
 Copyright (c) 2006 - 2011 The SWG:ANH Team */
 
-#include "iff.h"
-#include "../notfound_exception.h"
-#include "node.h"
-#include "filenode.h"
-#include "foldernode.h"
+#include <anh/clientfile_manager/iff/iff.h>
+#include <anh/clientfile_manager/notfound_exception.h>
+#include <anh/clientfile_manager/iff/node.h>
+#include <anh/clientfile_manager/iff/filenode.h>
+#include <anh/clientfile_manager/iff/foldernode.h>
 
 #include <stack>
 

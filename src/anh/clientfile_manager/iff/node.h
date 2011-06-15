@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <memory> //for shared_ptr/weak_ptr
 #include <cstdint> //for std::uint32_t
 
-#include "nodetypes.h"
+#include <anh/clientfile_manager/iff/nodetypes.h>
 
 namespace anh
 {

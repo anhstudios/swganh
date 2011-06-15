@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "tree.h"
-#include "tree_entry.h"
+#include <anh/clientfile_manager/tre/tree.h>
+#include <anh/clientfile_manager/tre/tree_entry.h>
 #include <anh/byte_buffer.h>
 
 using namespace anh::clientfile_manager::tree;

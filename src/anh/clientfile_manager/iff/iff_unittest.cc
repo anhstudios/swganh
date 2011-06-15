@@ -1,12 +1,12 @@
 #include <gtest/gtest.h>
 #include <boost/filesystem.hpp>
-#include "iff.h"
-#include "filenode.h"
-#include "foldernode.h"
-#include "../notfound_exception.h"
+#include <anh/clientfile_manager/iff/iff.h>
+#include <anh/clientfile_manager/iff/filenode.h>
+#include <anh/clientfile_manager/iff/foldernode.h>
+#include <anh/clientfile_manager/notfound_exception.h>
 #include <anh/byte_buffer.h>
 
-#include "../interpreters/mock_interpreter.h"
+#include <anh/clientfile_manager/interpreters/mock_interpreter.h>
 
 using namespace anh::clientfile_manager::iff;
 using namespace anh::clientfile_manager::interpreters;

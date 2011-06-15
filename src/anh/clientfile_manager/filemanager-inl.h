@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef FILE_MANAGER_INL_H
 #define FILE_MANAGER_INL_H
 
-#include "tre/tree.h"
-#include "iff/iff.h"
+#include <anh/clientfile_manager/tre/tree.h>
+#include <anh/clientfile_manager/iff/iff.h>
 #include <set>
 
 namespace anh

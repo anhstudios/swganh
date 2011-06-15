@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef IFF_FOLDERNODE_H
 #define IFF_FOLDERNODE_H
 
-#include "node.h"
+#include <anh/clientfile_manager/iff/node.h>
 #include <vector>
 
 namespace anh

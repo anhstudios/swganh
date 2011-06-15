@@ -6,16 +6,14 @@ For more information, visit http://www.swganh.com
 
 Copyright (c) 2006 - 2011 The SWG:ANH Team */
 
-#include "oiff_interpreter.h"
-
-#include "../slots/slot_arrangement_interpreter.h"
-#include "../slots/slot_descriptor_interpreter.h"
-#include "../portals/pob_interpreter.h"
-
-#include "../../iff/iff.h"
-#include "../../iff/filenode.h"
-#include "../../iff/foldernode.h"
-#include "../../filemanager.h"
+#include <anh/clientfile_manager/interpreters/objects/oiff_interpreter.h>
+#include <anh/clientfile_manager/interpreters/slots/slot_arrangement_interpreter.h>
+#include <anh/clientfile_manager/interpreters/slots/slot_descriptor_interpreter.h>
+#include <anh/clientfile_manager/interpreters/portals/pob_interpreter.h>
+#include <anh/clientfile_manager/iff/iff.h>
+#include <anh/clientfile_manager/iff/filenode.h>
+#include <anh/clientfile_manager/iff/foldernode.h>
+#include <anh/clientfile_manager/filemanager.h>
 
 
 using namespace anh::clientfile_manager::interpreters;
