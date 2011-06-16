@@ -25,6 +25,7 @@
 #include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
 
+using namespace boost::asio::ip;
 using namespace std;
 
 namespace anh {
@@ -34,11 +35,13 @@ namespace soe {
 class SessionTests : public ::testing::Test {
 protected:
     ByteBuffer buildSimpleMessage() const;
+
+    udp::endpoint buildTestEndpoint() const;
 };
 
 /// This test verifies that new sessions have a send sequence of 0
 TEST_F(SessionTests, NewSessionHasZeroSendSequence) {
-    Session session(boost::asio::ip::udp::endpoint(), nullptr);
+    Session session(buildTestEndpoint(), nullptr);
     EXPECT_EQ(0, session.server_sequence());
 }
 
@@ -55,7 +58,7 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
 
 /// This test verifies that data channel messages are stored in case they need to be re-sent.
 TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
-    Session session(boost::asio::ip::udp::endpoint(), nullptr);
+    Session session(buildTestEndpoint(), nullptr);
 
     // Send 3 data channel messages.
     for (int i = 1; i <= 3; ++i ) {
@@ -68,6 +71,11 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
     EXPECT_EQ(3, sent_messages.size());
 }
 
+/// This test verifies that data channel messages are sent out via the soe service
+TEST_F(SessionTests, DataChannelMessagesAreSentViaSoeService) {
+    Session session(buildTestEndpoint(), nullptr);
+}
+
 
 // SessionTest member implementations
 
@@ -78,6 +86,11 @@ ByteBuffer SessionTests::buildSimpleMessage() const {
     buffer.write<uint32_t>(0xDEADBABE);
 
     return buffer;
+}
+
+udp::endpoint SessionTests::buildTestEndpoint() const {
+    udp::endpoint endpoint(address_v4::from_string("127.0.0.1"), 1000);
+    return endpoint;
 }
 
 }}}  // namespace anh::network::soe
