@@ -32,7 +32,8 @@ namespace network {
 namespace soe {
 
 class SessionTests : public ::testing::Test {
-
+protected:
+    ByteBuffer buildSimpleMessage() const;
 };
 
 /// This test verifies that new sessions have a send sequence of 0
@@ -47,7 +48,7 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
 
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
     for (int i = 1; i <= 3; ++i ) {
-        session.sendDataChannelMessage(ByteBuffer());
+        session.sendDataChannelMessage(buildSimpleMessage());
         EXPECT_EQ(i, session.server_sequence());
     }
 }
@@ -58,13 +59,25 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
 
     // Send 3 data channel messages.
     for (int i = 1; i <= 3; ++i ) {
-        session.sendDataChannelMessage(ByteBuffer());
+        session.sendDataChannelMessage(buildSimpleMessage());
     }
 
     vector<shared_ptr<ByteBuffer>> sent_messages = session.getUnacknowledgedOutgoingMessages();
 
     // Expect the vector of sent messages to contain 3 elements
     EXPECT_EQ(3, sent_messages.size());
+}
+
+
+// SessionTest member implementations
+
+ByteBuffer SessionTests::buildSimpleMessage() const {
+    ByteBuffer buffer;
+
+    buffer.write<uint16_t>(1);
+    buffer.write<uint32_t>(0xDEADBABE);
+
+    return buffer;
 }
 
 }}}  // namespace anh::network::soe
