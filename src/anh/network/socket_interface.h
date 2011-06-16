@@ -21,6 +21,7 @@
 #ifndef ANH_NETWORK_SOCKET_INTERFACE_H_
 #define ANH_NETWORK_SOCKET_INTERFACE_H_
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include "anh/byte_buffer.h"
