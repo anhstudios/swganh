@@ -1,0 +1,111 @@
+/*
+---------------------------------------------------------------------------------------
+This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Emulator)
+
+For more information, visit http://www.swganh.com
+
+Copyright (c) 2006 - 2011 The SWG:ANH Team */
+
+#include <anh/clientfile_manager/interpreters/datatables/datatable_interpreter.h>
+#include <anh/clientfile_manager/iff/filenode.h>
+#include <anh/clientfile_manager/iff/foldernode.h>
+
+#include <regex>
+
+using namespace std;
+using namespace anh::clientfile_manager::interpreters;
+
+void datatable_interpreter::interpret_folder(std::shared_ptr<anh::clientfile_manager::iff::folder_node> node)
+{
+}
+
+void datatable_interpreter::interpret_data(std::shared_ptr<anh::clientfile_manager::iff::file_node> node)
+{
+	if(node->name() == "0001COLS")
+	{
+		_handle0001COLS(node->data());
+	}
+	else if(node->name() == "TYPE")
+	{
+		_handleTYPE(node->data());
+	}
+	else if(node->name() == "ROWS")
+	{
+		_handleROWS(node->data());
+	}
+}
+
+void datatable_interpreter::_handle0001COLS(anh::ByteBuffer& buf)
+{
+	std::uint32_t count = buf.read<std::uint32_t>();
+	for(unsigned int i=0; i < count; ++i)
+	{
+		column_names_.push_back(buf.read<std::string>(false, true));
+	}
+}
+
+void datatable_interpreter::_handleTYPE(anh::ByteBuffer& buf)
+{
+	std::string buffer;
+	for(unsigned int i=0; i < column_names_.size(); ++i)
+	{
+		buffer = buf.read<std::string>(false, true);
+		if(buffer.size() > 0)
+		{
+			switch(buffer[0])
+			{
+			case 'i':
+			case 'I':
+				column_types_.push_back('i');
+				break;
+			case 's':
+			case 'S':
+				column_types_.push_back('s');
+				break;
+			case 'f':
+			case 'F':
+				column_types_.push_back('f');
+				break;
+			case 'b':
+			case 'B':
+				column_types_.push_back('b');
+				break;
+			case 'e':
+			case 'E':
+				column_types_.push_back('i');
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}
+
+void datatable_interpreter::_handleROWS(anh::ByteBuffer& buf)
+{
+	std::uint32_t count = buf.read<std::uint32_t>();
+	for(std::uint32_t i=0; i < count; ++i)
+	{
+		DATA_ROW row;
+		for(std::uint32_t j=0; j < column_types_.size(); ++j)
+		{
+			if(column_types_[j] == 'i')
+			{
+				row.columns.push_back(buf.read<std::uint32_t>());
+			}
+			else if(column_types_[j] == 'f')
+			{
+				row.columns.push_back(buf.read<float>());
+			}
+			else if(column_types_[j] == 's')
+			{
+				row.columns.push_back(buf.read<std::string>(false, true));
+			}
+			else if(column_types_[j] == 'b')
+			{
+				row.columns.push_back((buf.read<char>()) ? true : false);
+			}
+		}
+		rows_.push_back(std::move(row));
+	}
+}
