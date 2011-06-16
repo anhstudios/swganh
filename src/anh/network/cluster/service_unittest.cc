@@ -62,50 +62,50 @@ protected:
         nem.string_message = "Hello World!";
     }
 };
-// verifies that if we open a connection, it shows up in our map
-TEST_F(ClusterServiceTests, openConnection) 
-{
-    service->Connect(test_process);
-    EXPECT_TRUE(service->isConnected(test_process));
-}
-// verifies that Disconnecting closes the TCP Connection
-TEST_F(ClusterServiceTests, closeConnection)
-{
-    service->Connect(test_process);
-    EXPECT_TRUE(service->isConnected(test_process));
-    service->Disconnect(test_process);
-    EXPECT_FALSE(service->isConnected(test_process));
-}
-// Verifies isConnected by name only
-TEST_F(ClusterServiceTests, isConnectedName)
-{
-    service->Connect(test_process);
-    EXPECT_TRUE(service->isConnected("ANH.Test"));
-}
-// verifies we can get a TCP client connection after connecting
-TEST_F(ClusterServiceTests, getConnectionByName)
-{
-    service->Connect(test_process);
-    // test we can grab by name
-    auto conn = service->getConnection("ANH.Test");
-    // test we can grab by IP/Port
-    auto conn2 = service->getConnection("127.0.0.1", 44994);
-    EXPECT_NE(nullptr, conn);
-    EXPECT_NE(nullptr, conn2);
-}
-// verifies that in debug we can't send to a message with no connection
-TEST_F(ClusterServiceTests, cantSendMessageWithNoConnections)
-{
-    EXPECT_DEBUG_DEATH(
-        service->sendMessage("ANH.Test", make_shared_event(NetworkEventMessage::hash_type(), nem))
-        , "No Connection Established, could not send message to:");
-}
-TEST_F(ClusterServiceTests, StartPassesInHost)
-{
-    boost::asio::MockAsioIOService mock_service;
-    auto cluster_service = std::make_shared<ClusterService>(mock_service, mock_directory, mock_dispatcher, 44993);
-    cluster_service->Start(mock_host);
-}
+//// verifies that if we open a connection, it shows up in our map
+//TEST_F(ClusterServiceTests, openConnection) 
+//{
+//    service->Connect(test_process);
+//    EXPECT_TRUE(service->isConnected(test_process));
+//}
+//// verifies that Disconnecting closes the TCP Connection
+//TEST_F(ClusterServiceTests, closeConnection)
+//{
+//    service->Connect(test_process);
+//    EXPECT_TRUE(service->isConnected(test_process));
+//    service->Disconnect(test_process);
+//    EXPECT_FALSE(service->isConnected(test_process));
+//}
+//// Verifies isConnected by name only
+//TEST_F(ClusterServiceTests, isConnectedName)
+//{
+//    service->Connect(test_process);
+//    EXPECT_TRUE(service->isConnected("ANH.Test"));
+//}
+//// verifies we can get a TCP client connection after connecting
+//TEST_F(ClusterServiceTests, getConnectionByName)
+//{
+//    service->Connect(test_process);
+//    // test we can grab by name
+//    auto conn = service->getConnection("ANH.Test");
+//    // test we can grab by IP/Port
+//    auto conn2 = service->getConnection("127.0.0.1", 44994);
+//    EXPECT_NE(nullptr, conn);
+//    EXPECT_NE(nullptr, conn2);
+//}
+//// verifies that in debug we can't send to a message with no connection
+//TEST_F(ClusterServiceTests, cantSendMessageWithNoConnections)
+//{
+//    EXPECT_DEBUG_DEATH(
+//        service->sendMessage("ANH.Test", make_shared_event(NetworkEventMessage::hash_type(), nem))
+//        , "No Connection Established, could not send message to:");
+//}
+//TEST_F(ClusterServiceTests, StartPassesInHost)
+//{
+//    boost::asio::MockAsioIOService mock_service;
+//    auto cluster_service = std::make_shared<ClusterService>(mock_service, mock_directory, mock_dispatcher, 44993);
+//    cluster_service->Start(mock_host);
+//}
 
 
 }
