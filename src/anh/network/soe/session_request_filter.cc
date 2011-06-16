@@ -67,7 +67,8 @@ void* SessionRequestFilter::operator()(void* item)
 
 	if(sessionless_message->message()->peek<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14)
 	{
-		auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), service_);
+        // @todo replace passing nullptr here with the SocketInterface instance in the service
+        auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), nullptr);
 		SessionRequest request(*sessionless_message->message());
 		session->handleSessionRequest_(request);
 	}

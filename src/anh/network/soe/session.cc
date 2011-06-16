@@ -53,11 +53,12 @@ using namespace anh::network;
 using namespace anh::network::soe;
 using namespace std;
 
-Session::Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* service)
+Session::Session(boost::asio::ip::udp::endpoint remote_endpoint, anh::network::SocketInterface<boost::asio::ip::udp>* socket)
     : std::enable_shared_from_this<Session>()
     , remote_endpoint_(remote_endpoint)
     , connected_(false)
-    , service_(service)
+    , service_(nullptr)
+    , socket_(socket)
     , server_net_stats_(0, 0, 0, 0, 0, 0)
     , last_acknowledged_sequence_(0)
     , current_client_sequence_(0)
@@ -82,11 +83,24 @@ uint16_t Session::server_sequence() const {
 }
 
 
-void Session::sendDataChannelMessage(anh::ByteBuffer data_channel_payload) {
+ByteBuffer Session::buildDataChannelHeader(uint16_t sequence) const {
+    ByteBuffer data_channel_header;
+
+    data_channel_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x09));
+    data_channel_header.write<uint16_t>(anh::hostToBig<uint16_t>(sequence));
+
+    return data_channel_header;
+}
+
+
+void Session::sendDataChannelMessage(ByteBuffer data_channel_payload) {
     uint16_t message_sequence = server_sequence_.fetch_and_increment();
 
-    auto data_channel_message = make_shared<ByteBuffer>(data_channel_payload);
+    
 
+    socket_->Send(remote_endpoint_, data_channel_payload);
+
+    auto data_channel_message = make_shared<ByteBuffer>(data_channel_payload);
     sent_messages_.insert(make_pair(message_sequence, data_channel_message));
 }
 

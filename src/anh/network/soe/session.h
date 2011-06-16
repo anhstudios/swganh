@@ -37,8 +37,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <tbb/concurrent_queue.h>
 #include <boost/asio.hpp>
 
+#include "anh/network/socket_interface.h"
+
 #include "anh/network/soe/protocol_packets.h"
-#include "anh/network/soe/socket.h"
 
 namespace anh {
 
@@ -62,13 +63,21 @@ public:
     /**
      * Adds itself to the Session Manager.
      */
-    Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* service);
+    //Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* service);
+    Session(boost::asio::ip::udp::endpoint remote_endpoint, anh::network::SocketInterface<boost::asio::ip::udp>* socket);
     ~Session(void);
 
     /**
     * @return The current send sequence for the server.
     */
     uint16_t server_sequence() const;
+
+    /**
+    * Builds a data channel message header with the provided sequence.
+    *
+    * @param sequence The sequence of the data channel message header being created.
+    */
+    anh::ByteBuffer buildDataChannelHeader(uint16_t sequence) const;
 
     /**
     * Sends a data channel message to the remote client.
@@ -129,6 +138,7 @@ private:
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
     Service*							service_; // owner
+    SocketInterface<boost::asio::ip::udp>* socket_;
 
     SequencedMessageMap												sent_messages_;
 
