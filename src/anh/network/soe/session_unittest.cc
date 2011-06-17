@@ -44,7 +44,7 @@ protected:
     ByteBuffer buildSimpleMessage() const;
 
     // builds a simple data channel packet from buildSimpleMessage with the given sequence
-    ByteBuffer buildSimpleDataChannelPacket(int sequence) const;
+    ByteBuffer buildSimpleDataChannelPacket(uint16_t sequence) const;
 
     udp::endpoint buildTestEndpoint() const;
 };
@@ -111,18 +111,17 @@ TEST_F(SessionTests, CanBuildDataChannelHeader) {
     EXPECT_EQ(reference_header, built_header);
 }
 
+TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
+    MockSocket<udp> socket;
 
-//TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
-//    MockSocket<udp> socket;
-//
-//    EXPECT_CALL(socket, Send(_, buildSimpleDataChannelPacket(1)))
-//        .Times(1);
-//    
-//    Session session(buildTestEndpoint(), &socket);
-//
-//    // Send a data channel message.
-//    session.sendDataChannelMessage(buildSimpleMessage());
-//}
+    EXPECT_CALL(socket, Send(_, buildSimpleDataChannelPacket(1)))
+        .Times(1);
+    
+    Session session(buildTestEndpoint(), &socket);
+
+    // Send a data channel message.
+    session.sendDataChannelMessage(buildSimpleMessage());
+}
 
 
 TEST_F(SessionTests, LargeDataChannelMessagesAreWrappedInFragmentedHeaderWhenSent) {}
@@ -139,11 +138,11 @@ ByteBuffer SessionTests::buildSimpleMessage() const {
     return buffer;
 }
 
-ByteBuffer SessionTests::buildSimpleDataChannelPacket(int sequence) const {
+ByteBuffer SessionTests::buildSimpleDataChannelPacket(uint16_t sequence) const {
     ByteBuffer buffer;
 
-    buffer.write<uint16_t>(anh::hostToLittle(0x09));
-    buffer.write<uint16_t>(anh::hostToLittle(sequence));
+    buffer.write<uint16_t>(anh::hostToBig<uint16_t>(0x09));
+    buffer.write<uint16_t>(anh::hostToBig<uint16_t>(sequence));
     buffer.append(buildSimpleMessage());
 
     return buffer;

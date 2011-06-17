@@ -94,14 +94,15 @@ ByteBuffer Session::buildDataChannelHeader(uint16_t sequence) const {
 
 
 void Session::sendDataChannelMessage(ByteBuffer data_channel_payload) {
-    uint16_t message_sequence = server_sequence_.fetch_and_increment();
+    // Get the next sequence number
+    uint16_t message_sequence = ++server_sequence_;
 
-    
+    ByteBuffer data_channel_message = buildDataChannelHeader(message_sequence);
+    data_channel_message.append(data_channel_payload);
 
-    socket_->Send(remote_endpoint_, data_channel_payload);
+    socket_->Send(remote_endpoint_, data_channel_message);
 
-    auto data_channel_message = make_shared<ByteBuffer>(data_channel_payload);
-    sent_messages_.insert(make_pair(message_sequence, data_channel_message));
+    sent_messages_.insert(make_pair(message_sequence, make_shared<ByteBuffer>(data_channel_message)));
 }
 
 
