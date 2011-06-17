@@ -66,7 +66,7 @@ public:
 	/**
 	 * @brief Sends a message on the wire to the target endpoint.
 	 */
-	void Send(const boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer buffer);
+	void Send(const anh::network::SocketInterface<boost::asio::ip::udp>::endpoint& endpoint, anh::ByteBuffer buffer);
 
 	/**
 	 * @returns The amount of bytes received on the socket.

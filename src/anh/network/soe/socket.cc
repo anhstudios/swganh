@@ -47,7 +47,7 @@ Socket::~Socket()
 
 }
 
-void Socket::Send(const boost::asio::ip::udp::endpoint& endpoint, ByteBuffer buffer) {
+void Socket::Send(const anh::network::SocketInterface<boost::asio::ip::udp>::endpoint& endpoint, ByteBuffer buffer) {
 	socket_.async_send_to(boost::asio::buffer(buffer.data(), buffer.size()), 
 		endpoint, 
 		[this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
