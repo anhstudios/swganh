@@ -25,8 +25,14 @@
 #include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
 
+#include "anh/network/mock_socket.h"
+
+using namespace anh::network;
 using namespace boost::asio::ip;
 using namespace std;
+
+using testing::_;
+using testing::NiceMock;
 
 namespace anh {
 namespace network {
@@ -34,20 +40,27 @@ namespace soe {
 
 class SessionTests : public ::testing::Test {
 protected:
+    // builds a simple swg message
     ByteBuffer buildSimpleMessage() const;
+
+    // builds a simple data channel packet from buildSimpleMessage with the given sequence
+    ByteBuffer buildSimpleDataChannelPacket(int sequence) const;
 
     udp::endpoint buildTestEndpoint() const;
 };
 
 /// This test verifies that new sessions have a send sequence of 0
 TEST_F(SessionTests, NewSessionHasZeroSendSequence) {
-    Session session(buildTestEndpoint(), nullptr);
+    NiceMock<MockSocket<udp>> socket;
+    Session session(buildTestEndpoint(), &socket);
+
     EXPECT_EQ(0, session.server_sequence());
 }
 
 /// This test verifies that data packets sent out on the data channel are sequenced.
 TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
-    Session session(boost::asio::ip::udp::endpoint(), nullptr);
+    NiceMock<MockSocket<udp>> socket;
+    Session session(buildTestEndpoint(), &socket);
 
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
     for (int i = 1; i <= 3; ++i ) {
@@ -56,9 +69,23 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
     }
 }
 
+/// This test verifies that data channel messages are sent out via the soe service
+TEST_F(SessionTests, DataChannelMessagesAreSentViaSoeService) {
+    MockSocket<udp> socket;
+
+    EXPECT_CALL(socket, Send(_, _))
+        .Times(1);
+    
+    Session session(buildTestEndpoint(), &socket);
+
+    // Send a data channel message.
+    session.sendDataChannelMessage(buildSimpleMessage());
+}
+
 /// This test verifies that data channel messages are stored in case they need to be re-sent.
 TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
-    Session session(buildTestEndpoint(), nullptr);
+    NiceMock<MockSocket<udp>> socket;
+    Session session(buildTestEndpoint(), &socket);
 
     // Send 3 data channel messages.
     for (int i = 1; i <= 3; ++i ) {
@@ -71,10 +98,34 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
     EXPECT_EQ(3, sent_messages.size());
 }
 
-/// This test verifies that data channel messages are sent out via the soe service
-TEST_F(SessionTests, DataChannelMessagesAreSentViaSoeService) {
-    Session session(buildTestEndpoint(), nullptr);
+TEST_F(SessionTests, CanBuildDataChannelHeader) {    
+    NiceMock<MockSocket<udp>> socket;
+    Session session(buildTestEndpoint(), &socket);
+
+    ByteBuffer reference_header;
+    reference_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x09));
+    reference_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x01));
+
+    ByteBuffer built_header = session.buildDataChannelHeader(1);
+
+    EXPECT_EQ(reference_header, built_header);
 }
+
+
+//TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
+//    MockSocket<udp> socket;
+//
+//    EXPECT_CALL(socket, Send(_, buildSimpleDataChannelPacket(1)))
+//        .Times(1);
+//    
+//    Session session(buildTestEndpoint(), &socket);
+//
+//    // Send a data channel message.
+//    session.sendDataChannelMessage(buildSimpleMessage());
+//}
+
+
+TEST_F(SessionTests, LargeDataChannelMessagesAreWrappedInFragmentedHeaderWhenSent) {}
 
 
 // SessionTest member implementations
@@ -84,6 +135,16 @@ ByteBuffer SessionTests::buildSimpleMessage() const {
 
     buffer.write<uint16_t>(1);
     buffer.write<uint32_t>(0xDEADBABE);
+
+    return buffer;
+}
+
+ByteBuffer SessionTests::buildSimpleDataChannelPacket(int sequence) const {
+    ByteBuffer buffer;
+
+    buffer.write<uint16_t>(anh::hostToLittle(0x09));
+    buffer.write<uint16_t>(anh::hostToLittle(sequence));
+    buffer.append(buildSimpleMessage());
 
     return buffer;
 }
