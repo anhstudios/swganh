@@ -73,7 +73,20 @@ public:
     uint16_t server_sequence() const;
 
     /**
-    * Sends a data channel message to the remote client.
+     * Set the receive buffer size.
+     */
+    void receive_buffer_size(uint32_t receive_buffer_size);
+
+    /**
+     * Get a list of all outgoing data channel messages that have not yet been acknowledged
+     * by the remote end.
+     *
+     * @return List of unacknowledged data channel messages.
+     */
+    std::vector<std::shared_ptr<anh::ByteBuffer>> GetUnacknowledgedMessages() const;    
+
+    /**
+    * Sends a data channel message directly to the remote client.
     *
     * Increases the server sequence count by 1 for each individual packet sent to the 
     * remote end. This call can result in multiple packets being generated depending on 
@@ -81,9 +94,7 @@ public:
     *
     * @param data_channel_payload The payload to send in the data channel message(s).
     */
-    void sendDataChannelMessage(anh::ByteBuffer data_channel_payload);
-
-    std::vector<std::shared_ptr<anh::ByteBuffer>> getUnacknowledgedOutgoingMessages() const;
+    void SendMessage(anh::ByteBuffer data_channel_payload);
 
     /**
      * 
@@ -93,7 +104,7 @@ public:
     /**
      * Clears each message pump.
      */
-    void Update(void);
+    void Update();
 
     /**
      * Closes the Session.
@@ -112,6 +123,9 @@ public:
 private:
     typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
     typedef std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>::iterator		SequencedMessageMapIterator;
+    
+    std::shared_ptr<anh::ByteBuffer> AllocateBuffer_() const;
+    std::shared_ptr<anh::ByteBuffer> AllocateBuffer_(anh::ByteBuffer buffer) const;
 
     void HandleSoeMessage(anh::ByteBuffer& message);
     void handleSessionRequest_(SessionRequest& packet);
@@ -133,13 +147,13 @@ private:
     Service*							service_; // owner
     SocketInterface<boost::asio::ip::udp>* socket_;
 
-    SequencedMessageMap												sent_messages_;
+    SequencedMessageMap					sent_messages_;
 
     bool								connected_;
 
     // SOE Session Variables
     uint32_t							connection_id_;
-    uint32_t							recv_buffer_size_;
+    uint32_t							receive_buffer_size_;
     uint32_t							crc_length_;
 
     // Sequences
@@ -155,7 +169,7 @@ private:
 
     ChildDataA							outgoing_data_message_;
     
-    tbb::concurrent_queue<anh::ByteBuffer> outgoing_data_messages_;
+    tbb::concurrent_queue<std::shared_ptr<anh::ByteBuffer>> outgoing_data_messages_;
 
     std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
     uint16_t							incoming_fragmented_total_len_;

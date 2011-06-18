@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <algorithm>
 
+#include <boost/pool/pool_alloc.hpp>
+
 #include <anh/network/soe/session.h>
 #include <anh/network/soe/session_manager.h>
 #include <anh/network/soe/service.h>
@@ -82,21 +84,11 @@ uint16_t Session::server_sequence() const {
     return server_sequence_;
 }
 
-
-void Session::sendDataChannelMessage(ByteBuffer data_channel_payload) {
-    // Get the next sequence number
-    uint16_t message_sequence = ++server_sequence_;
-
-    ByteBuffer data_channel_message = BuildDataChannelHeader(message_sequence);
-    data_channel_message.append(data_channel_payload);
-
-    socket_->Send(remote_endpoint_, data_channel_message);
-
-    sent_messages_.insert(make_pair(message_sequence, make_shared<ByteBuffer>(data_channel_message)));
+void Session::receive_buffer_size(uint32_t receive_buffer_size) {
+    receive_buffer_size_ = receive_buffer_size;
 }
 
-
-vector<shared_ptr<ByteBuffer>> Session::getUnacknowledgedOutgoingMessages() const {
+vector<shared_ptr<ByteBuffer>> Session::GetUnacknowledgedMessages() const {
     vector<shared_ptr<ByteBuffer>> unacknowledged_messages;
 
     for_each(
@@ -110,28 +102,39 @@ vector<shared_ptr<ByteBuffer>> Session::getUnacknowledgedOutgoingMessages() cons
     return unacknowledged_messages;
 }
 
-void Session::Update(void)
-{
+void Session::Update() {
     // Exit as quickly as possible if there is no work currently.
     if (outgoing_data_messages_.empty()) {
         return;
     }
 
     // Build up a list of data messages to process
-    list<ByteBuffer> process_list(
+    list<shared_ptr<ByteBuffer>> process_list(
         outgoing_data_messages_.unsafe_begin(), 
         outgoing_data_messages_.unsafe_end());
 
-    // Pack the message list into a single data channel payload
-    ByteBuffer data_channel_payload = PackDataChannelMessages(process_list);
-
-    sendDataChannelMessage(std::move(data_channel_payload));
+    // Pack the message list into a single data channel payload and send it.
+    SendMessage(PackDataChannelMessages(process_list));
 }
 
-void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message)
-{ 
-    ByteBuffer message_buffer;
-    message->serialize(message_buffer);
+void Session::SendMessage(ByteBuffer data_channel_payload) {
+    // Get the next sequence number
+    uint16_t message_sequence = ++server_sequence_;
+
+    // Allocate a new packet
+    auto data_channel_message = AllocateBuffer_(BuildDataChannelHeader(message_sequence));
+    data_channel_message->append(data_channel_payload);
+    
+    // Send it over the wire
+    socket_->Send(remote_endpoint_, *data_channel_message);
+    
+    // Store it for resending later if necessary
+    sent_messages_.insert(make_pair(message_sequence, data_channel_message));
+}
+
+void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message) { 
+    auto message_buffer = AllocateBuffer_();
+    message->serialize(*message_buffer);
 
     outgoing_data_messages_.push(message_buffer);
 }
@@ -170,11 +173,25 @@ void Session::HandleSoeMessage(anh::ByteBuffer& message)
     }
 }
 
+shared_ptr<ByteBuffer> Session::AllocateBuffer_() const {    
+    auto allocated_buffer = allocate_shared<ByteBuffer, boost::pool_allocator<ByteBuffer>>(
+        boost::pool_allocator<ByteBuffer>());
+
+    return allocated_buffer;
+}
+
+shared_ptr<ByteBuffer> Session::AllocateBuffer_(ByteBuffer buffer) const {    
+    auto allocated_buffer = allocate_shared<ByteBuffer, boost::pool_allocator<ByteBuffer>>(
+        boost::pool_allocator<ByteBuffer>(), std::move(buffer));
+
+    return allocated_buffer;
+}
+
 void Session::handleSessionRequest_(SessionRequest& packet)
 {
     connection_id_ = packet.connection_id;
     crc_length_ = packet.crc_length;
-    recv_buffer_size_ = packet.client_udp_buffer_size;
+    receive_buffer_size_ = packet.client_udp_buffer_size;
 
     SessionResponse session_response(connection_id_, service_->crc_seed_);
     anh::ByteBuffer session_response_buffer;
@@ -233,13 +250,13 @@ void Session::handleChildDataA_(ChildDataA& packet)
 
     AcknowledgeSequence_(packet.sequence);
 
-    std::for_each(packet.messages.begin(), packet.messages.end(), [this] (anh::ByteBuffer& message) {
-        uint16_t priority = message.read<uint16_t>();
-        uint32_t message_type = message.read<uint32_t>();
+    std::for_each(packet.messages.begin(), packet.messages.end(), [this] (shared_ptr<ByteBuffer> message) {
+        uint16_t priority = message->read<uint16_t>();
+        uint32_t message_type = message->read<uint32_t>();
 
         this->service_->event_dispatcher()->triggerAsync(make_shared_event(
             message_type,
-            anh::network::RemoteMessage(this->connection_id(), message)
+            anh::network::RemoteMessage(this->connection_id(), *message)
         ));
     });
 }

@@ -64,7 +64,7 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
 
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
     for (int i = 1; i <= 3; ++i ) {
-        session.sendDataChannelMessage(buildSimpleMessage());
+        session.SendMessage(buildSimpleMessage());
         EXPECT_EQ(i, session.server_sequence());
     }
 }
@@ -79,7 +79,7 @@ TEST_F(SessionTests, DataChannelMessagesAreSentViaSoeService) {
     Session session(buildTestEndpoint(), &socket);
 
     // Send a data channel message.
-    session.sendDataChannelMessage(buildSimpleMessage());
+    session.SendMessage(buildSimpleMessage());
 }
 
 /// This test verifies that data channel messages are stored in case they need to be re-sent.
@@ -89,10 +89,10 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
 
     // Send 3 data channel messages.
     for (int i = 1; i <= 3; ++i ) {
-        session.sendDataChannelMessage(buildSimpleMessage());
+        session.SendMessage(buildSimpleMessage());
     }
 
-    vector<shared_ptr<ByteBuffer>> sent_messages = session.getUnacknowledgedOutgoingMessages();
+    vector<shared_ptr<ByteBuffer>> sent_messages = session.GetUnacknowledgedMessages();
 
     // Expect the vector of sent messages to contain 3 elements
     EXPECT_EQ(3, sent_messages.size());
@@ -108,7 +108,7 @@ TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
     Session session(buildTestEndpoint(), &socket);
 
     // Send a data channel message.
-    session.sendDataChannelMessage(buildSimpleMessage());
+    session.SendMessage(buildSimpleMessage());
 }
 
 

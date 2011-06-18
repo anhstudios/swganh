@@ -28,8 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_PROTOCOL_PACKETS_H_
 #define ANH_NETWORK_SOE_PROTOCOL_PACKETS_H_
 
-#include <list>
 #include <algorithm>
+#include <list>
+#include <memory>
 
 #include <anh/byte_buffer.h>
 #include <anh/utilities.h>
@@ -389,7 +390,7 @@ struct ChildDataA
 				// Varify that we have enough bytes left to copy.
 				if((buffer.size() - 3) - buffer.read_position() >= next_chunk_size)
 				{
-					messages.push_back(anh::ByteBuffer((const unsigned char*)buffer.data() + buffer.read_position(), next_chunk_size));
+					messages.push_back(std::make_shared<anh::ByteBuffer>((const unsigned char*)buffer.data() + buffer.read_position(), next_chunk_size));
 				}
 				else
 				{
@@ -399,7 +400,7 @@ struct ChildDataA
 		}
 		else
 		{
-			messages.push_back(ByteBuffer((const unsigned char*)buffer.data() + 4, buffer.size() - 7));
+			messages.push_back(std::make_shared<anh::ByteBuffer>((const unsigned char*)buffer.data() + 4, buffer.size() - 7));
 		}
 
 		footer.deserialize(buffer);
@@ -408,7 +409,7 @@ struct ChildDataA
 	uint16_t							soe_opcode;
 	uint16_t							sequence;
 	uint16_t							priority;
-	std::list<anh::ByteBuffer>			messages;
+	std::list<std::shared_ptr<anh::ByteBuffer>>			messages;
 	Footer								footer;
 };
 

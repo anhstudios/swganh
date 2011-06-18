@@ -22,6 +22,7 @@
 
 #include <cstdint>
 #include <list>
+#include <memory>
 #include "anh/byte_buffer.h"
 
 namespace anh {
@@ -42,7 +43,7 @@ anh::ByteBuffer BuildDataChannelHeader(uint16_t sequence);
  * @param data_list A list of game messages to pack.
  * @return A single data channel message containing 1 or more game messages.
  */
-anh::ByteBuffer PackDataChannelMessages(std::list<anh::ByteBuffer>& data_list);
+anh::ByteBuffer PackDataChannelMessages(std::list<std::shared_ptr<anh::ByteBuffer>>& data_list);
 
 }}}  // namespace anh::network::soe
 

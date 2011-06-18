@@ -37,11 +37,11 @@ protected:
 
     // Returns a tuple containing a list of swg message buffers that are all under
     // 255 bytes long and the expected multi data channel message when packed.
-    tuple<list<ByteBuffer>, ByteBuffer> generateSmallMultiMessageData();
+    tuple<list<shared_ptr<ByteBuffer>>, ByteBuffer> generateSmallMultiMessageData();
 
     // Returns a tuple containing a list of swg message buffers that are all over
     // 255 bytes long and the expected multi data channel message when packed.
-    tuple<list<ByteBuffer>, ByteBuffer> generateLargeMultiMessageData();
+    tuple<list<shared_ptr<ByteBuffer>>, ByteBuffer> generateLargeMultiMessageData();
 
     const static string long_string;
 };
@@ -59,10 +59,10 @@ TEST_F(PacketUtilitiesTests, CanBuildDataChannelHeader) {
 
 /// This test ensures that when packing only a single swg message no modifications are made
 TEST_F(PacketUtilitiesTests, PackingSingleMessageDoesNotModifyIt) {
-    ByteBuffer small_buffer;
-    small_buffer.write<uint32_t>(500);
+    auto small_buffer = make_shared<ByteBuffer>();
+    small_buffer->write<uint32_t>(500);
     
-    list<ByteBuffer> buffer_list(1, small_buffer); // Create a list of only 1 buffer
+    list<shared_ptr<ByteBuffer>> buffer_list(1, small_buffer); // Create a list of only 1 buffer
     
     ByteBuffer out_buffer = PackDataChannelMessages(buffer_list);
 
@@ -73,10 +73,10 @@ TEST_F(PacketUtilitiesTests, PackingSingleMessageDoesNotModifyIt) {
 /// This test ensures that when packing multiple swg messages together that they produce a
 /// single buffer with a 0x0019 header.
 TEST_F(PacketUtilitiesTests, PackingMultipleMessagesAddsMultiMessageHeader) {
-    ByteBuffer small_buffer;
-    small_buffer.write<uint32_t>(500);
+    auto small_buffer = make_shared<ByteBuffer>();
+    small_buffer->write<uint32_t>(500);
     
-    list<ByteBuffer> buffer_list(2, small_buffer); // Create a list with more than 1 buffer
+    list<shared_ptr<ByteBuffer>> buffer_list(2, small_buffer); // Create a list with more than 1 buffer
 
     ByteBuffer out_buffer = PackDataChannelMessages(buffer_list);
 
@@ -87,7 +87,7 @@ TEST_F(PacketUtilitiesTests, PackingMultipleMessagesAddsMultiMessageHeader) {
 /// This test ensures that when packing multiple swg messages that any of the messages with
 /// a length smaller than 255 has an uint8_t size prefixed to them.
 TEST_F(PacketUtilitiesTests, SmallSwgMessagesHave8ByteSizePrefix) {
-    list<ByteBuffer> buffer_list;
+    list<shared_ptr<ByteBuffer>> buffer_list;
     ByteBuffer expected_buffer;
 
     tie(buffer_list, expected_buffer) = generateSmallMultiMessageData();
@@ -105,7 +105,7 @@ TEST_F(PacketUtilitiesTests, SmallSwgMessagesHave8ByteSizePrefix) {
 /// This test ensures that when packing multiple swg messages that any of the messages exceeding
 /// a 255 length have a uint16_t size prefixed to them.
 TEST_F(PacketUtilitiesTests, LargeSwgMessagesHaveBytePlus16ByteSizePrefix) {
-    list<ByteBuffer> buffer_list;
+    list<shared_ptr<ByteBuffer>> buffer_list;
     ByteBuffer expected_buffer;
 
     tie(buffer_list, expected_buffer) = generateLargeMultiMessageData();
@@ -132,13 +132,13 @@ const string PacketUtilitiesTests::long_string = // This string is 300 bytes lon
         "2d8h3941y88gpcu633t7a0o9j0p3658fpnxwlmcxgv9buxy8x2"
         "2d8h3941y88gpcu633t7a0o9j0p3658fpnxwlmcxgv9buxy8x2";
 
-tuple<list<ByteBuffer>, ByteBuffer> PacketUtilitiesTests::generateSmallMultiMessageData() {
+tuple<list<shared_ptr<ByteBuffer>>, ByteBuffer> PacketUtilitiesTests::generateSmallMultiMessageData() {
     // Create a small buffer with a single data value that is less than 255 bytes long
-    ByteBuffer small_buffer;
-    small_buffer.write<uint32_t>(500); // This int is only 4 bytes long
+    auto small_buffer = make_shared<ByteBuffer>();
+    small_buffer->write<uint32_t>(500); // This int is only 4 bytes long
     
     // Create a list of 3 of the previous buffers to simulate 3 swg messages being packed.
-    list<ByteBuffer> buffer_list(3, small_buffer);
+    list<shared_ptr<ByteBuffer>> buffer_list(3, small_buffer);
 
     // Create a buffer that holds the expected output from packing the above data.
     ByteBuffer expected_buffer;
@@ -155,13 +155,13 @@ tuple<list<ByteBuffer>, ByteBuffer> PacketUtilitiesTests::generateSmallMultiMess
     return make_tuple(buffer_list, expected_buffer);
 }
 
-tuple<list<ByteBuffer>, ByteBuffer> PacketUtilitiesTests::generateLargeMultiMessageData() {
+tuple<list<shared_ptr<ByteBuffer>>, ByteBuffer> PacketUtilitiesTests::generateLargeMultiMessageData() {
     // Create a large buffer with a length of 304 bytes (300 byte string + 4 byte string length)
-    ByteBuffer large_buffer;
-    large_buffer.write<string>(long_string); // This int is only 4 bytes long
+    auto large_buffer = make_shared<ByteBuffer>();
+    large_buffer->write<string>(long_string); // This int is only 4 bytes long
     
     // Create a list of 3 of the previous buffers to simulate 3 swg messages being packed.
-    list<ByteBuffer> buffer_list(3, large_buffer);
+    list<shared_ptr<ByteBuffer>> buffer_list(3, large_buffer);
 
     // Create a buffer that holds the expected output from packing the above data.
     ByteBuffer expected_buffer;
