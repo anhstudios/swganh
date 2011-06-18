@@ -83,21 +83,11 @@ uint16_t Session::server_sequence() const {
 }
 
 
-ByteBuffer Session::buildDataChannelHeader(uint16_t sequence) const {
-    ByteBuffer data_channel_header;
-
-    data_channel_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x09));
-    data_channel_header.write<uint16_t>(anh::hostToBig<uint16_t>(sequence));
-
-    return data_channel_header;
-}
-
-
 void Session::sendDataChannelMessage(ByteBuffer data_channel_payload) {
     // Get the next sequence number
     uint16_t message_sequence = ++server_sequence_;
 
-    ByteBuffer data_channel_message = buildDataChannelHeader(message_sequence);
+    ByteBuffer data_channel_message = BuildDataChannelHeader(message_sequence);
     data_channel_message.append(data_channel_payload);
 
     socket_->Send(remote_endpoint_, data_channel_message);

@@ -98,20 +98,6 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
     EXPECT_EQ(3, sent_messages.size());
 }
 
-/// This test verifies that a proper data channel header can be constructed from a sequence id.
-TEST_F(SessionTests, CanBuildDataChannelHeader) {    
-    NiceMock<MockSocket<udp>> socket;
-    Session session(buildTestEndpoint(), &socket);
-
-    ByteBuffer reference_header;
-    reference_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x09));
-    reference_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x01));
-
-    ByteBuffer built_header = session.buildDataChannelHeader(1);
-
-    EXPECT_EQ(reference_header, built_header);
-}
-
 /// This test verifies that data channel messages are wrapped in the proper header.
 TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
     MockSocket<udp> socket;

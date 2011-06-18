@@ -46,6 +46,17 @@ protected:
     const static string long_string;
 };
 
+/// This test verifies that a proper data channel header can be constructed from a sequence id.
+TEST_F(PacketUtilitiesTests, CanBuildDataChannelHeader) {
+    ByteBuffer reference_header;
+    reference_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x09));
+    reference_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x01));
+
+    ByteBuffer built_header = BuildDataChannelHeader(1);
+
+    EXPECT_EQ(reference_header, built_header);
+}
+
 /// This test ensures that when packing only a single swg message no modifications are made
 TEST_F(PacketUtilitiesTests, PackingSingleMessageDoesNotModifyIt) {
     ByteBuffer small_buffer;

@@ -73,13 +73,6 @@ public:
     uint16_t server_sequence() const;
 
     /**
-    * Builds a data channel message header with the provided sequence.
-    *
-    * @param sequence The sequence of the data channel message header being created.
-    */
-    anh::ByteBuffer buildDataChannelHeader(uint16_t sequence) const;
-
-    /**
     * Sends a data channel message to the remote client.
     *
     * Increases the server sequence count by 1 for each individual packet sent to the 

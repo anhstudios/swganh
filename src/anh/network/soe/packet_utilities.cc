@@ -18,7 +18,7 @@
 */
  
 #include "anh/network/soe/packet_utilities.h"
-#include <cstdint>
+
 #include <algorithm>
 #include "anh/utilities.h"
 
@@ -29,8 +29,16 @@ namespace anh {
 namespace network {
 namespace soe {
 
-ByteBuffer PackDataChannelMessages(list<ByteBuffer>& data_list) 
-{
+ByteBuffer BuildDataChannelHeader(uint16_t sequence) {
+    ByteBuffer data_channel_header;
+
+    data_channel_header.write<uint16_t>(hostToBig<uint16_t>(0x09));
+    data_channel_header.write<uint16_t>(hostToBig<uint16_t>(sequence));
+
+    return data_channel_header;
+}
+
+ByteBuffer PackDataChannelMessages(list<ByteBuffer>& data_list) {
     ByteBuffer output_buffer;
 
     // If there is only one message then no need to pack, just move the message
@@ -64,4 +72,4 @@ ByteBuffer PackDataChannelMessages(list<ByteBuffer>& data_list)
     return output_buffer;
 }
 
-}}}
+}}}  // namespace anh::network::soe

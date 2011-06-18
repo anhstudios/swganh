@@ -20,6 +20,7 @@
 #ifndef ANH_NETWORK_SOE_PACKET_UTILITIES_H_
 #define ANH_NETWORK_SOE_PACKET_UTILITIES_H_
 
+#include <cstdint>
 #include <list>
 #include "anh/byte_buffer.h"
 
@@ -27,6 +28,20 @@ namespace anh {
 namespace network {
 namespace soe {
 
+/**
+ * Builds a data channel message header with the provided sequence.
+ *
+ * @param sequence The sequence of the data channel message header being created.
+ * @return A byte buffer containing the fully constructed data channel message header.
+ */
+anh::ByteBuffer BuildDataChannelHeader(uint16_t sequence);
+
+/**
+ * Packs a list of game messages into a single message body.
+ *
+ * @param data_list A list of game messages to pack.
+ * @return A single data channel message containing 1 or more game messages.
+ */
 anh::ByteBuffer PackDataChannelMessages(std::list<anh::ByteBuffer>& data_list);
 
 }}}  // namespace anh::network::soe
