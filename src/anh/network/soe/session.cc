@@ -133,7 +133,7 @@ void Session::Update(void)
         outgoing_data_messages_.unsafe_end());
 
     // Pack the message list into a single data channel payload
-    ByteBuffer data_channel_payload = packDataChannelMessages(process_list);
+    ByteBuffer data_channel_payload = PackDataChannelMessages(process_list);
 
     sendDataChannelMessage(std::move(data_channel_payload));
 }

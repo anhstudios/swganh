@@ -53,7 +53,7 @@ TEST_F(PacketUtilitiesTests, PackingSingleMessageDoesNotModifyIt) {
     
     list<ByteBuffer> buffer_list(1, small_buffer); // Create a list of only 1 buffer
     
-    ByteBuffer out_buffer = packDataChannelMessages(buffer_list);
+    ByteBuffer out_buffer = PackDataChannelMessages(buffer_list);
 
     // Expect that the output buffer has the same value in it as the input.
     EXPECT_EQ(500, out_buffer.read<int>());
@@ -67,7 +67,7 @@ TEST_F(PacketUtilitiesTests, PackingMultipleMessagesAddsMultiMessageHeader) {
     
     list<ByteBuffer> buffer_list(2, small_buffer); // Create a list with more than 1 buffer
 
-    ByteBuffer out_buffer = packDataChannelMessages(buffer_list);
+    ByteBuffer out_buffer = PackDataChannelMessages(buffer_list);
 
     EXPECT_EQ(anh::bigToHost<uint16_t>(0x19), out_buffer.read<uint16_t>());
 }
@@ -81,7 +81,7 @@ TEST_F(PacketUtilitiesTests, SmallSwgMessagesHave8ByteSizePrefix) {
 
     tie(buffer_list, expected_buffer) = generateSmallMultiMessageData();
 
-    ByteBuffer out_buffer = packDataChannelMessages(buffer_list);
+    ByteBuffer out_buffer = PackDataChannelMessages(buffer_list);
     
     EXPECT_EQ(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>());
 
@@ -99,7 +99,7 @@ TEST_F(PacketUtilitiesTests, LargeSwgMessagesHaveBytePlus16ByteSizePrefix) {
 
     tie(buffer_list, expected_buffer) = generateLargeMultiMessageData();
 
-    ByteBuffer out_buffer = packDataChannelMessages(buffer_list);
+    ByteBuffer out_buffer = PackDataChannelMessages(buffer_list);
     
     EXPECT_EQ(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>());
 
@@ -132,7 +132,7 @@ tuple<list<ByteBuffer>, ByteBuffer> PacketUtilitiesTests::generateSmallMultiMess
     // Create a buffer that holds the expected output from packing the above data.
     ByteBuffer expected_buffer;
     
-    expected_buffer.write<uint16_t>(anh::bigToHost<uint16_t>(0x19)); // header
+    expected_buffer.write<uint16_t>(hostToBig<uint16_t>(0x19)); // header
     expected_buffer.write<uint8_t>(4); // size
     expected_buffer.write<int32_t>(500); // value
     expected_buffer.write<uint8_t>(4); // size
@@ -155,15 +155,15 @@ tuple<list<ByteBuffer>, ByteBuffer> PacketUtilitiesTests::generateLargeMultiMess
     // Create a buffer that holds the expected output from packing the above data.
     ByteBuffer expected_buffer;
     
-    expected_buffer.write<uint16_t>(anh::bigToHost<uint16_t>(0x19)); // header
+    expected_buffer.write<uint16_t>(hostToBig<uint16_t>(0x19)); // header
     expected_buffer.write<uint8_t>(0xFF); // large message byte
-    expected_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(302)); // str length 300 + 2 byte size
+    expected_buffer.write<uint16_t>(hostToBig<uint16_t>(302)); // str length 300 + 2 byte size
     expected_buffer.write<string>(long_string); // value
     expected_buffer.write<uint8_t>(0xFF); // large message byte
-    expected_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(302)); // str length 300 + 2 byte size
+    expected_buffer.write<uint16_t>(hostToBig<uint16_t>(302)); // str length 300 + 2 byte size
     expected_buffer.write<string>(long_string); // value
     expected_buffer.write<uint8_t>(0xFF); // large message byte
-    expected_buffer.write<uint16_t>(anh::hostToLittle<uint16_t>(302)); // str length 300 + 2 byte size
+    expected_buffer.write<uint16_t>(hostToBig<uint16_t>(302)); // str length 300 + 2 byte size
     expected_buffer.write<string>(long_string); // value
 
     // Return a tuple of the list of simulated swg messages and the expected buffer.
