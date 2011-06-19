@@ -38,6 +38,15 @@ ByteBuffer BuildDataChannelHeader(uint16_t sequence) {
     return data_channel_header;
 }
 
+ByteBuffer BuildFragmentedDataChannelHeader(uint16_t sequence) {
+    ByteBuffer data_channel_header;
+
+    data_channel_header.write<uint16_t>(hostToBig<uint16_t>(0x0D));
+    data_channel_header.write<uint16_t>(hostToBig<uint16_t>(sequence));
+
+    return data_channel_header;
+}
+
 ByteBuffer PackDataChannelMessages(list<shared_ptr<ByteBuffer>>& data_list) {
     ByteBuffer output_buffer;
 
@@ -70,6 +79,40 @@ ByteBuffer PackDataChannelMessages(list<shared_ptr<ByteBuffer>>& data_list) {
     });
 
     return output_buffer;
+}
+
+list<ByteBuffer> SplitDataChannelMessage(ByteBuffer message, uint32_t max_size) {
+    list<ByteBuffer> fragmented_messages;
+
+    uint32_t original_size = message.size();  
+
+    if (original_size < max_size) {
+        fragmented_messages.push_back(move(message));
+        return fragmented_messages;
+    }
+
+    uint32_t fragmented_size = 0;
+    uint32_t chunk_size = max_size - 4;
+    uint32_t remaining_size = 0;
+
+    ByteBuffer first_fragment;
+    first_fragment.write<uint32_t>(hostToBig<uint32_t>(original_size));
+    first_fragment.write(message.data() + fragmented_size, max_size - 4);
+    fragmented_messages.push_back(move(first_fragment));
+    fragmented_size += max_size - 4;
+
+    while (fragmented_size < original_size) {
+        remaining_size = original_size - fragmented_size;
+        chunk_size = (remaining_size > max_size) ? max_size : remaining_size;
+        
+        ByteBuffer fragment(message.data() + fragmented_size, chunk_size);
+
+        fragmented_messages.push_back(std::move(fragment));
+
+        fragmented_size += chunk_size;
+    }
+
+    return fragmented_messages;
 }
 
 }}}  // namespace anh::network::soe

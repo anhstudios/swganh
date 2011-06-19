@@ -121,6 +121,39 @@ TEST_F(PacketUtilitiesTests, LargeSwgMessagesHaveBytePlus16ByteSizePrefix) {
     }
 }
 
+TEST_F(PacketUtilitiesTests, CanSplitDataChannelMessages) {
+    ByteBuffer large_message;
+    large_message.write(PacketUtilitiesTests::long_string);
+
+    // Split the message along a 200 byte divide
+    list<ByteBuffer> split_message = SplitDataChannelMessage(large_message, 200);
+
+    // The original message size is 302 so this should result in 2 fragments.
+    EXPECT_EQ(2, split_message.size());
+}
+
+
+TEST_F(PacketUtilitiesTests, AttemptingToSplitSmallMessageLeavesItIntact) {
+    ByteBuffer small_message;
+    small_message.write<uint32_t>(500);
+
+    // Split the message along a 200 byte divide
+    list<ByteBuffer> split_message = SplitDataChannelMessage(small_message, 200);
+
+    // The original message size is 302 so this should result in 2 fragments.
+    EXPECT_EQ(1, split_message.size());
+}
+
+TEST_F(PacketUtilitiesTests, SplittingDataChannelMessagePrefixesTotalSizeToFirstMessage) {    
+    ByteBuffer large_message;
+    large_message.write(PacketUtilitiesTests::long_string);
+
+    // Split the message along a 200 byte divide
+    list<ByteBuffer> split_message = SplitDataChannelMessage(large_message, 200);
+
+    // The original message size is 302 so this should result in 2 fragments.
+    EXPECT_EQ(302, split_message.front().read<uint32_t>(true));
+}
 
 // Implementation of the PacketUtilitiesTests's helper members
 
