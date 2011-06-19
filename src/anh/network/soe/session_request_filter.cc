@@ -62,7 +62,7 @@ void SessionRequestFilter::operator()(tbb::flow_control& fc) const
         return;
 	}
 
-	IncomingSessionlessPacket* sessionless_message = service_->sessionless_messages_.front();
+	auto sessionless_message = service_->sessionless_messages_.front();
 	service_->sessionless_messages_.pop_front();
 
 	if(sessionless_message->message()->peek<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14)
@@ -72,8 +72,6 @@ void SessionRequestFilter::operator()(tbb::flow_control& fc) const
 		SessionRequest request(*sessionless_message->message());
 		session->handleSessionRequest_(request);
 	}
-
-	delete sessionless_message;
 }
 
 } // namespace soe

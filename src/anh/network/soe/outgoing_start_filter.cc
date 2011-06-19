@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/service.h>
 #include <anh/network/soe/outgoing_packet.h>
 
+using namespace std;
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -42,20 +44,19 @@ OutgoingStartFilter::~OutgoingStartFilter(void)
 {
 }
 
-OutgoingPacket* OutgoingStartFilter::operator()(tbb::flow_control& fc) const
+shared_ptr<OutgoingPacket> OutgoingStartFilter::operator()(tbb::flow_control& fc) const
 {
 	// Cut the pipeline loop if we run out of messages.
 	if(service_->outgoing_messages_.empty())
-		return NULL;
+		return nullptr;
 
-	OutgoingPacket* packet = service_->outgoing_messages_.front();
+	auto packet = service_->outgoing_messages_.front();
 	service_->outgoing_messages_.pop_front();
 
 	// If we are no longer connected, skip.
 	if(packet->session()->connected() == false)
 	{
-		delete packet;
-		return NULL;
+		return nullptr;
 	}
 
 	return packet;

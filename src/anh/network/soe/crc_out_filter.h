@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_CRC_OUT_FILTER_H_
 #define ANH_NETWORK_SOE_CRC_OUT_FILTER_H_
 
+#include <memory>
 #include <tbb/pipeline.h>
 
 namespace anh {
@@ -44,7 +45,7 @@ public:
 	CrcOutFilter(Service* service);
 	~CrcOutFilter(void);
 
-	OutgoingPacket* operator()(OutgoingPacket* item) const;
+	std::shared_ptr<OutgoingPacket> operator()(std::shared_ptr<OutgoingPacket> packet) const;
 
 private:
 	Service*	service_;

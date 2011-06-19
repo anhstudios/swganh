@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_NETWORK_SOE_ENCRYPTION_FILTER_H_
 
 #include <cstdint>
+#include <memory>
 #include <tbb/pipeline.h>
 
 namespace anh {
@@ -45,7 +46,7 @@ public:
 	EncryptionFilter(Service* service);
 	~EncryptionFilter(void);
 
-	OutgoingPacket* operator()(OutgoingPacket* item) const;
+	std::shared_ptr<OutgoingPacket> operator()(std::shared_ptr<OutgoingPacket> item) const;
 
 private:
 	void Encrypt_(char* buffer, uint32_t len, uint32_t seed) const;

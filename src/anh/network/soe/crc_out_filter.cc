@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/outgoing_packet.h>
 #include <anh/crc.h>
 
+using namespace std;
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -43,11 +45,9 @@ CrcOutFilter::~CrcOutFilter(void)
 {
 }
 
-OutgoingPacket* CrcOutFilter::operator()(OutgoingPacket* item) const
+shared_ptr<OutgoingPacket> CrcOutFilter::operator()(shared_ptr<OutgoingPacket> packet) const
 {
 	// TODO: ENDIANNESS?
-	OutgoingPacket* packet = (OutgoingPacket*)item;
-
 	uint32_t packet_crc = anh::memcrc((const char*)packet->message()->data(), packet->message()->size()-2, service_->crc_seed_);
 	uint8_t crc_low = (uint8_t)packet_crc;
 	uint8_t crc_high = (uint8_t)(packet_crc >> 8);

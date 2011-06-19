@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/byte_buffer.h>
 
+#include <memory>
 #include <tbb/pipeline.h>
 #include <zlib.h>
 
@@ -46,7 +47,7 @@ public:
 	CompressionFilter(Service* service);
 	~CompressionFilter(void);
 
-	OutgoingPacket* operator()(OutgoingPacket* item) const;
+	std::shared_ptr<OutgoingPacket> operator()(std::shared_ptr<OutgoingPacket> packet) const;
 private:
 	void Compress_(anh::ByteBuffer& buffer) const;
 

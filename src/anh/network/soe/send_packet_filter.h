@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_SEND_PACKET_FILTER_H_
 #define ANH_NETWORK_SOE_SEND_PACKET_FILTER_H_
 
+#include <memory>
 #include <tbb/pipeline.h>
 
 namespace anh {
@@ -47,7 +48,7 @@ public:
 	SendPacketFilter(Service* service);
 	~SendPacketFilter(void);
 
-	void operator()(OutgoingPacket* item) const;
+	void operator()(std::shared_ptr<OutgoingPacket> packet) const;
 private:
 	Service* service_;
 };

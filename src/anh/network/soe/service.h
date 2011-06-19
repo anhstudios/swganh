@@ -138,9 +138,9 @@ private:
     tbb::filter_t<void, void>   outgoing_filter_;
     tbb::filter_t<void, void>   sessionless_filter_;
 
-	std::list<IncomingSessionlessPacket*>		sessionless_messages_;
-	std::list<std::shared_ptr<IncomingPacket>>	incoming_messages_;
-	std::list<OutgoingPacket*>					outgoing_messages_;
+	std::list<std::shared_ptr<IncomingSessionlessPacket>> sessionless_messages_;
+	std::list<std::shared_ptr<IncomingPacket>> incoming_messages_;
+	std::list<std::shared_ptr<OutgoingPacket>> outgoing_messages_;
 
 	// Outgoing Packet Pipeline Filters
 	//

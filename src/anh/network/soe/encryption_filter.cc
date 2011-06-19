@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/outgoing_packet.h>
 #include <anh/network/soe/service.h>
 
+using namespace std;
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -42,9 +44,8 @@ EncryptionFilter::~EncryptionFilter(void)
 {
 }
 
-OutgoingPacket* EncryptionFilter::operator()(OutgoingPacket* item) const
+shared_ptr<OutgoingPacket> EncryptionFilter::operator()(shared_ptr<OutgoingPacket> packet) const
 {
-	OutgoingPacket* packet = (OutgoingPacket*) item;
 	Encrypt_((char*)packet->message()->data()+2, packet->message()->size()-4, service_->crc_seed_);
 	return packet;
 }

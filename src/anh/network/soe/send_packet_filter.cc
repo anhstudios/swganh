@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/service.h>
 #include <anh/network/soe/outgoing_packet.h>
 
+using namespace std;
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -42,11 +44,9 @@ SendPacketFilter::~SendPacketFilter(void)
 {
 }
 
-void SendPacketFilter::operator()(OutgoingPacket* item) const
+void SendPacketFilter::operator()(shared_ptr<OutgoingPacket> packet) const
 {
-	OutgoingPacket* packet = (OutgoingPacket*)item;
 	service_->socket_->Send(packet->session()->remote_endpoint(), *packet->message());
-	delete packet;
 }
 
 } // namespace soe 

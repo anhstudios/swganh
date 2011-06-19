@@ -71,15 +71,15 @@ Service::Service()
     
     
     outgoing_filter_ = 
-        tbb::make_filter<void, OutgoingPacket*>(tbb::filter::serial_in_order, outgoing_start_filter_)
+        tbb::make_filter<void, shared_ptr<OutgoingPacket>>(tbb::filter::serial_in_order, outgoing_start_filter_)
         &
-        tbb::make_filter<OutgoingPacket*, OutgoingPacket*>(tbb::filter::parallel, compression_filter_)
+        tbb::make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(tbb::filter::parallel, compression_filter_)
         &
-        tbb::make_filter<OutgoingPacket*, OutgoingPacket*>(tbb::filter::parallel, encryption_filter_)
+        tbb::make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(tbb::filter::parallel, encryption_filter_)
         &
-        tbb::make_filter<OutgoingPacket*, OutgoingPacket*>(tbb::filter::parallel, crc_out_filter_)
+        tbb::make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(tbb::filter::parallel, crc_out_filter_)
         &
-        tbb::make_filter<OutgoingPacket*, void>(tbb::filter::serial_in_order, send_packet_filter_);
+        tbb::make_filter<shared_ptr<OutgoingPacket>, void>(tbb::filter::serial_in_order, send_packet_filter_);
 }
 #pragma warning(pop)
 
@@ -120,7 +120,7 @@ void Service::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std:
 	// If the Session doesnt exist, check for a Session Requesst.
 	if(session == nullptr)
 	{
-		sessionless_messages_.push_back(new IncomingSessionlessPacket(remote_endpoint, message));
+		sessionless_messages_.push_back(make_shared<IncomingSessionlessPacket>(remote_endpoint, message));
 	}
 	else
 	{

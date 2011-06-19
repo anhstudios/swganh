@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/compression_filter.h>
 #include <anh/network/soe/outgoing_packet.h>
 
+using namespace std;
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -42,10 +44,8 @@ CompressionFilter::~CompressionFilter(void)
 {
 }
 
-OutgoingPacket* CompressionFilter::operator()(OutgoingPacket* item) const
+shared_ptr<OutgoingPacket> CompressionFilter::operator()(shared_ptr<OutgoingPacket> packet) const
 {
-	OutgoingPacket* packet = (OutgoingPacket*)item;
-
 	// See if compression is flagged for this message.
 	if(packet->message()->peekAt<uint8_t>(packet->message()->size() - 3) == 0x01)
 		Compress_(*packet->message());

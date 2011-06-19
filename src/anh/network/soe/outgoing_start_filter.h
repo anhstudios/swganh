@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_OUTGOING_START_FILTER_H_
 #define ANH_NETWORK_SOE_OUTGOING_START_FILTER_H_
 
+#include <memory>
 #include <tbb/pipeline.h>
 
 namespace anh {
@@ -46,7 +47,7 @@ public:
 	OutgoingStartFilter(Service* service);
 	~OutgoingStartFilter(void);
 
-	OutgoingPacket* operator()(tbb::flow_control& fc) const;
+	std::shared_ptr<OutgoingPacket> operator()(tbb::flow_control& fc) const;
 private:
 	Service* service_;
 };
