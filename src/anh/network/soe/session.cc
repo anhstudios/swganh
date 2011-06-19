@@ -131,32 +131,10 @@ void Session::SendMessage(ByteBuffer data_channel_payload) {
             max_data_channel_size);
 
         for_each(fragmented_message.begin(), fragmented_message.end(), [this] (ByteBuffer& fragment) {
-            // Get the next sequence number
-            uint16_t message_sequence = ++server_sequence_;
-
-            // Allocate a new packet
-            auto data_channel_message = AllocateBuffer_(BuildFragmentedDataChannelHeader(message_sequence));
-            data_channel_message->append(fragment);
-            
-            // Send it over the wire
-            socket_->Send(remote_endpoint_, *data_channel_message);
-            
-            // Store it for resending later if necessary
-            sent_messages_.insert(make_pair(message_sequence, data_channel_message));
+            SendSequencedMessage_(&BuildFragmentedDataChannelHeader, fragment);
         });
     } else {        
-        // Get the next sequence number
-        uint16_t message_sequence = ++server_sequence_;
-
-        // Allocate a new packet
-        auto data_channel_message = AllocateBuffer_(BuildDataChannelHeader(message_sequence));
-        data_channel_message->append(data_channel_payload);
-        
-        // Send it over the wire
-        socket_->Send(remote_endpoint_, *data_channel_message);
-        
-        // Store it for resending later if necessary
-        sent_messages_.insert(make_pair(message_sequence, data_channel_message));
+        SendSequencedMessage_(&BuildDataChannelHeader, data_channel_payload);
     }
 }
 
@@ -213,6 +191,21 @@ shared_ptr<ByteBuffer> Session::AllocateBuffer_(ByteBuffer buffer) const {
         boost::pool_allocator<ByteBuffer>(), std::move(buffer));
 
     return allocated_buffer;
+}
+
+void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message) {        
+    // Get the next sequence number
+    uint16_t message_sequence = ++server_sequence_;
+
+    // Allocate a new packet
+    auto data_channel_message = AllocateBuffer_(header_builder(message_sequence));
+    data_channel_message->append(message);
+    
+    // Send it over the wire
+    socket_->Send(remote_endpoint_, *data_channel_message);
+    
+    // Store it for resending later if necessary
+    sent_messages_.insert(make_pair(message_sequence, data_channel_message));
 }
 
 void Session::handleSessionRequest_(SessionRequest& packet)

@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_NETWORK_SOE_SESSION_H_
 
 #include <array>
+#include <functional>
 #include <list>
 #include <memory>
 #include <vector>
@@ -131,6 +132,10 @@ private:
     
     std::shared_ptr<anh::ByteBuffer> AllocateBuffer_() const;
     std::shared_ptr<anh::ByteBuffer> AllocateBuffer_(anh::ByteBuffer buffer) const;
+
+    typedef std::function<anh::ByteBuffer(uint16_t)> HeaderBuilder;
+
+    void SendSequencedMessage_(HeaderBuilder header_builder, anh::ByteBuffer message);
 
     void HandleSoeMessage(anh::ByteBuffer& message);
     void handleSessionRequest_(SessionRequest& packet);
