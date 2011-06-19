@@ -50,7 +50,7 @@ public:
 	DecompressionFilter(Service* service);
 	~DecompressionFilter(void);
 
-	IncomingPacket* operator()(IncomingPacket* item) const;
+	std::shared_ptr<IncomingPacket> operator()(std::shared_ptr<IncomingPacket> item) const;
 
 private:
 	void Decompress_(std::shared_ptr<anh::ByteBuffer> buffer) const;

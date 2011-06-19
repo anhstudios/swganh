@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_RECV_PACKET_FILTER_H_
 #define ANH_NETWORK_SOE_RECV_PACKET_FILTER_H_
 
+#include <memory>
 #include <tbb/pipeline.h>
 
 namespace anh {
@@ -58,7 +59,7 @@ public:
 	 */
 	~RecvPacketFilter(void);
 
-	IncomingPacket* operator()(tbb::flow_control& fc) const;
+	std::shared_ptr<IncomingPacket> operator()(tbb::flow_control& fc) const;
 
 private:
 	Service*	service_;

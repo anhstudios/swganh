@@ -48,7 +48,7 @@ public:
 	SoeProtocolFilter(Service* service);
 	~SoeProtocolFilter(void);
 
-	void operator()(IncomingPacket* item) const;
+	void operator()(std::shared_ptr<IncomingPacket> item) const;
 
 private:
 	Service* service_;

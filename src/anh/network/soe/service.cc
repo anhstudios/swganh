@@ -33,6 +33,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/socket.h>
 #include <anh/network/soe/protocol_packets.h>
 
+using namespace std;
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -57,15 +59,15 @@ Service::Service()
     sessionless_filter_ = tbb::make_filter<void, void>(tbb::filter::serial_in_order, session_request_filter_);
     
     incoming_filter_ = 
-        tbb::make_filter<void, IncomingPacket*>(tbb::filter::serial_in_order, recv_packet_filter_)
+        tbb::make_filter<void, shared_ptr<IncomingPacket>>(tbb::filter::serial_in_order, recv_packet_filter_)
         &
-        tbb::make_filter<IncomingPacket*, IncomingPacket*>(tbb::filter::parallel, crc_in_filter_)
+        tbb::make_filter<shared_ptr<IncomingPacket>, shared_ptr<IncomingPacket>>(tbb::filter::parallel, crc_in_filter_)
         &
-        tbb::make_filter<IncomingPacket*, IncomingPacket*>(tbb::filter::parallel, decryption_filter_)
+        tbb::make_filter<shared_ptr<IncomingPacket>, shared_ptr<IncomingPacket>>(tbb::filter::parallel, decryption_filter_)
         &
-        tbb::make_filter<IncomingPacket*, IncomingPacket*>(tbb::filter::parallel, decompression_filter_)
+        tbb::make_filter<shared_ptr<IncomingPacket>, shared_ptr<IncomingPacket>>(tbb::filter::parallel, decompression_filter_)
         &
-        tbb::make_filter<IncomingPacket*, void>(tbb::filter::serial_in_order, soe_protocol_filter_);
+        tbb::make_filter<shared_ptr<IncomingPacket>, void>(tbb::filter::serial_in_order, soe_protocol_filter_);
     
     
     outgoing_filter_ = 
@@ -122,7 +124,7 @@ void Service::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std:
 	}
 	else
 	{
-		incoming_messages_.push_back(new IncomingPacket(session, message));
+		incoming_messages_.push_back(make_shared<IncomingPacket>(session, message));
 	}
 }
 

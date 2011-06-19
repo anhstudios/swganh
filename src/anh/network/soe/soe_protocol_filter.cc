@@ -41,11 +41,8 @@ SoeProtocolFilter::~SoeProtocolFilter(void)
 {
 }
 
-void SoeProtocolFilter::operator()(IncomingPacket* item) const
-{
-	IncomingPacket* packet = (IncomingPacket*)item;
+void SoeProtocolFilter::operator()(std::shared_ptr<IncomingPacket> packet) const {
 	packet->session()->HandleSoeMessage(*packet->message());
-	delete packet;	
 }
 
 } // namespace soe

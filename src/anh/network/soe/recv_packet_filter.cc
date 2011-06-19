@@ -34,6 +34,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <glog/logging.h>
 
+using namespace std;
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -47,22 +49,21 @@ RecvPacketFilter::~RecvPacketFilter(void)
 {
 }
 
-IncomingPacket* RecvPacketFilter::operator() (tbb::flow_control& fc) const {
+shared_ptr<IncomingPacket> RecvPacketFilter::operator() (tbb::flow_control& fc) const {
 	// No more packets to process.
 	if(service_->incoming_messages_.empty())
 	{
         fc.stop();
-		return NULL;
+		return nullptr;
 	}
 
-	IncomingPacket* packet = service_->incoming_messages_.front();
+	auto packet = service_->incoming_messages_.front();
 	service_->incoming_messages_.pop_front();
 
 	// Do not process if our session is not connected.
 	if(packet->session()->connected() == false)
 	{
-		delete packet;
-		return NULL;
+		return nullptr;
 	}
 
 	return packet;

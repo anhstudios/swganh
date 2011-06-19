@@ -51,9 +51,7 @@ DecryptionFilter::~DecryptionFilter(void)
 {
 }
 
-IncomingPacket* DecryptionFilter::operator()(IncomingPacket* item) const
-{
-	IncomingPacket* packet = (IncomingPacket*)item;
+std::shared_ptr<IncomingPacket> DecryptionFilter::operator()(std::shared_ptr<IncomingPacket> packet) const {
 	Decrypt_((char*)packet->message()->data()+2, packet->message()->size()-4, service_->crc_seed_);
 	return packet;
 }

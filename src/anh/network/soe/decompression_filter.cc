@@ -50,9 +50,7 @@ DecompressionFilter::~DecompressionFilter(void)
 {
 }
 
-IncomingPacket* DecompressionFilter::operator()(IncomingPacket* item) const
-{
-	IncomingPacket* packet = (IncomingPacket*)item;
+std::shared_ptr<IncomingPacket> DecompressionFilter::operator()(std::shared_ptr<IncomingPacket> packet) const {
 	if((uint8_t)*(packet->message()->data() + (packet->message()->size() - 3)) == 1) // Check the 3rd to last byte of the packet for a compression flag.
 	{
 		Decompress_(packet->message());

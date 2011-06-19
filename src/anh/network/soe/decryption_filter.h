@@ -44,7 +44,7 @@ public:
 	DecryptionFilter(Service* service);
 	~DecryptionFilter(void);
 
-	IncomingPacket* operator()(IncomingPacket* item) const;
+	std::shared_ptr<IncomingPacket> operator()(std::shared_ptr<IncomingPacket> item) const;
 private:
 	int Decrypt_(char* buffer, uint32_t len, uint32_t seed) const;
 
