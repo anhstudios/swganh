@@ -19,7 +19,10 @@
  
 #include "anh/network/soe/packet_utilities.h"
 
+#include <cassert>
 #include <algorithm>
+#include <stdexcept>
+
 #include "anh/utilities.h"
 
 using namespace anh;
@@ -82,34 +85,30 @@ ByteBuffer PackDataChannelMessages(list<shared_ptr<ByteBuffer>>& data_list) {
 }
 
 list<ByteBuffer> SplitDataChannelMessage(ByteBuffer message, uint32_t max_size) {
-    list<ByteBuffer> fragmented_messages;
-
-    uint32_t original_size = message.size();  
-
-    if (original_size < max_size) {
-        fragmented_messages.push_back(move(message));
-        return fragmented_messages;
+    uint32_t message_size = message.size();  
+    
+    if (message_size < max_size) {
+        throw invalid_argument("Message must be bigger than max size");
     }
 
-    uint32_t fragmented_size = 0;
-    uint32_t chunk_size = max_size - 4;
-    uint32_t remaining_size = 0;
+    list<ByteBuffer> fragmented_messages;
 
-    ByteBuffer first_fragment;
-    first_fragment.write<uint32_t>(hostToBig<uint32_t>(original_size));
-    first_fragment.write(message.data() + fragmented_size, max_size - 4);
-    fragmented_messages.push_back(move(first_fragment));
-    fragmented_size += max_size - 4;
+    uint32_t remaining_bytes = message_size;
+    uint32_t chunk_size = 0;
 
-    while (fragmented_size < original_size) {
-        remaining_size = original_size - fragmented_size;
-        chunk_size = (remaining_size > max_size) ? max_size : remaining_size;
+    while (remaining_bytes != 0) {        
+        ByteBuffer fragment;
+        chunk_size = (remaining_bytes > max_size) ? max_size : remaining_bytes;
+
+        if (remaining_bytes == message_size) {
+            chunk_size -= sizeof(uint32_t);
+            fragment.write<uint32_t>(hostToBig<uint32_t>(message_size));
+        }
         
-        ByteBuffer fragment(message.data() + fragmented_size, chunk_size);
+        fragment.write(message.data() + (message_size - remaining_bytes), chunk_size);
 
-        fragmented_messages.push_back(std::move(fragment));
-
-        fragmented_size += chunk_size;
+        fragmented_messages.push_back(move(fragment));
+        remaining_bytes -= chunk_size;
     }
 
     return fragmented_messages;

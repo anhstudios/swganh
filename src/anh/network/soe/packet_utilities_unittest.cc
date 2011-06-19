@@ -18,6 +18,7 @@
 */
 
 #include <list>
+#include <stdexcept>
 #include <tuple>
 #include <gtest/gtest.h>
 #include "anh/network/soe/packet_utilities.h"
@@ -45,6 +46,8 @@ protected:
 
     const static string long_string;
 };
+
+typedef PacketUtilitiesTests PacketUtilitiesDeathTests;
 
 /// This test verifies that a proper data channel header can be constructed from a sequence id.
 TEST_F(PacketUtilitiesTests, CanBuildDataChannelHeader) {
@@ -133,15 +136,14 @@ TEST_F(PacketUtilitiesTests, CanSplitDataChannelMessages) {
 }
 
 
-TEST_F(PacketUtilitiesTests, AttemptingToSplitSmallMessageLeavesItIntact) {
+TEST_F(PacketUtilitiesTests, AttemptingToSplitSmallMessageThrows) {
     ByteBuffer small_message;
     small_message.write<uint32_t>(500);
 
     // Split the message along a 200 byte divide
-    list<ByteBuffer> split_message = SplitDataChannelMessage(small_message, 200);
-
-    // The original message size is 302 so this should result in 2 fragments.
-    EXPECT_EQ(1, split_message.size());
+    ASSERT_THROW(
+        { list<ByteBuffer> split_message = SplitDataChannelMessage(small_message, 200); },
+        invalid_argument);
 }
 
 TEST_F(PacketUtilitiesTests, SplittingDataChannelMessagePrefixesTotalSizeToFirstMessage) {    
