@@ -45,6 +45,10 @@ protected:
 
     // builds a simple data channel packet from buildSimpleMessage with the given sequence
     ByteBuffer buildSimpleDataChannelPacket(uint16_t sequence) const;
+    
+    ByteBuffer buildSimpleFragmentedMessage() const;
+
+    ByteBuffer buildSimpleFragmentedPacket(uint16_t sequence) const;
 
     udp::endpoint buildTestEndpoint() const;
 };
@@ -112,7 +116,22 @@ TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
 }
 
 
-TEST_F(SessionTests, LargeDataChannelMessagesAreWrappedInFragmentedHeaderWhenSent) {}
+TEST_F(SessionTests, LargeDataChannelMessagesAreWrappedInFragmentedHeaderWhenSent) {
+    NiceMock<MockSocket<udp>> socket;
+    
+    EXPECT_CALL(socket, Send(_, _));
+
+    EXPECT_CALL(socket, Send(_, buildSimpleFragmentedPacket(1)))
+        .Times(1)
+        .RetiresOnSaturation();
+
+    Session session(buildTestEndpoint(), &socket);
+    session.receive_buffer_size(27);
+    session.crc_length(2);
+
+    // Send a data channel message.
+    session.SendMessage(buildSimpleFragmentedMessage());
+}
 
 
 // SessionTest member implementations
@@ -132,6 +151,30 @@ ByteBuffer SessionTests::buildSimpleDataChannelPacket(uint16_t sequence) const {
     buffer.write<uint16_t>(anh::hostToBig<uint16_t>(0x09));
     buffer.write<uint16_t>(anh::hostToBig<uint16_t>(sequence));
     buffer.append(buildSimpleMessage());
+
+    return buffer;
+}
+
+ByteBuffer SessionTests::buildSimpleFragmentedMessage() const {
+    ByteBuffer buffer;    
+    
+    for (int i = 0; i < 6; ++i) {
+        buffer.write<uint32_t>(5);
+    }
+
+    return buffer;
+}
+
+ByteBuffer SessionTests::buildSimpleFragmentedPacket(uint16_t sequence) const {
+    ByteBuffer buffer;
+
+    buffer.write<uint16_t>(hostToBig<uint16_t>(0x0D));
+    buffer.write<uint16_t>(hostToBig<uint16_t>(sequence));
+    buffer.write<uint32_t>(hostToBig<uint32_t>(24)); // size of the total fragmented message
+
+    for (int i = 0; i < 4; ++i) {
+        buffer.write<uint32_t>(5);
+    }
 
     return buffer;
 }

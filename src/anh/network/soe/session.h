@@ -78,6 +78,11 @@ public:
     void receive_buffer_size(uint32_t receive_buffer_size);
 
     /**
+     * Set the crc length for footers
+     */
+    void crc_length(uint32_t crc_length);
+
+    /**
      * Get a list of all outgoing data channel messages that have not yet been acknowledged
      * by the remote end.
      *

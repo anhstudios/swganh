@@ -88,6 +88,10 @@ void Session::receive_buffer_size(uint32_t receive_buffer_size) {
     receive_buffer_size_ = receive_buffer_size;
 }
 
+void Session::crc_length(uint32_t crc_length) {
+    crc_length_ = crc_length;
+}
+
 vector<shared_ptr<ByteBuffer>> Session::GetUnacknowledgedMessages() const {
     vector<shared_ptr<ByteBuffer>> unacknowledged_messages;
 
