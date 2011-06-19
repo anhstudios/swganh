@@ -38,17 +38,17 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
+class IncomingPacket;
 
 /**
  * @brief Sends the message to the session for SOE header processing.
  */
-class SoeProtocolFilter : public tbb::filter
-{
+class SoeProtocolFilter {
 public:
 	SoeProtocolFilter(Service* service);
 	~SoeProtocolFilter(void);
 
-	void* operator()(void* item);
+	void operator()(IncomingPacket* item) const;
 
 private:
 	Service* service_;

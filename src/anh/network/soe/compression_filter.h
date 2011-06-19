@@ -39,20 +39,18 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
+class OutgoingPacket;
 
-class CompressionFilter : public tbb::filter
-{
+class CompressionFilter {
 public:
 	CompressionFilter(Service* service);
 	~CompressionFilter(void);
 
-	void* operator()(void* item);
+	OutgoingPacket* operator()(OutgoingPacket* item) const;
 private:
-	void Compress_(anh::ByteBuffer& buffer);
+	void Compress_(anh::ByteBuffer& buffer) const;
 
-	z_stream		zstream_;
 	Service*		service_;
-	char*			compression_buffer_;
 };
 
 } // namespace soe

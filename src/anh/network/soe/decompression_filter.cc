@@ -42,9 +42,7 @@ namespace network {
 namespace soe {
 
 DecompressionFilter::DecompressionFilter(Service* service)
-	: tbb::filter(parallel)
-	, service_(service)
-	, decompression_buffer_(new char[496])
+	: service_(service)
 {
 }
 
@@ -52,7 +50,7 @@ DecompressionFilter::~DecompressionFilter(void)
 {
 }
 
-void* DecompressionFilter::operator()(void* item)
+IncomingPacket* DecompressionFilter::operator()(IncomingPacket* item) const
 {
 	IncomingPacket* packet = (IncomingPacket*)item;
 	if((uint8_t)*(packet->message()->data() + (packet->message()->size() - 3)) == 1) // Check the 3rd to last byte of the packet for a compression flag.
@@ -63,8 +61,11 @@ void* DecompressionFilter::operator()(void* item)
 	return packet;
 }
 
-void DecompressionFilter::Decompress_(std::shared_ptr<anh::ByteBuffer> buffer)
+void DecompressionFilter::Decompress_(std::shared_ptr<anh::ByteBuffer> buffer) const
 {
+	z_stream zstream_;
+	std::array<unsigned char, 496> decompression_buffer_;
+
 	zstream_.zalloc = Z_NULL;
 	zstream_.zfree = Z_NULL;
 	zstream_.opaque = Z_NULL;
@@ -74,15 +75,15 @@ void DecompressionFilter::Decompress_(std::shared_ptr<anh::ByteBuffer> buffer)
 
 	zstream_.next_in = (Bytef*)buffer->data() + 2; // Start of the packet + 2 to pass opcode.
 	zstream_.avail_in = buffer->size() - 5; // Do not process the SOE Opcode or the Footer.
-	zstream_.next_out = (Bytef*)decompression_buffer_ + 2; // Write passed the opcode.
+	zstream_.next_out = (Bytef*)&decompression_buffer_[0] + 2; // Write passed the opcode.
 	zstream_.avail_out = 496 - 5; // Don't write over the opcode.
 
-	memcpy(decompression_buffer_, buffer->data(), 2); // copy opcode.
+	memcpy(&decompression_buffer_[0], buffer->data(), 2); // copy opcode.
 	inflate(&zstream_, Z_FINISH); // Decompress Data
 	inflateEnd(&zstream_);
 
-	memcpy(decompression_buffer_+(zstream_.total_out - 3), buffer->data()+(buffer->size()-3), 3); // Copy Footer.
-	buffer->swap(anh::ByteBuffer((const unsigned char*)decompression_buffer_, zstream_.total_out + 5));
+	memcpy(&decompression_buffer_[0]+(zstream_.total_out - 3), buffer->data()+(buffer->size()-3), 3); // Copy Footer.
+	buffer->swap(anh::ByteBuffer(&decompression_buffer_[0], zstream_.total_out + 5));
 }
 
 } // namespace soe

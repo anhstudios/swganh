@@ -34,8 +34,7 @@ namespace network {
 namespace soe {
 
 EncryptionFilter::EncryptionFilter(Service* service)
-	: tbb::filter(parallel)
-	, service_(service)
+	: service_(service)
 {
 }
 
@@ -43,14 +42,14 @@ EncryptionFilter::~EncryptionFilter(void)
 {
 }
 
-void* EncryptionFilter::operator()(void* item)
+OutgoingPacket* EncryptionFilter::operator()(OutgoingPacket* item) const
 {
 	OutgoingPacket* packet = (OutgoingPacket*) item;
 	Encrypt_((char*)packet->message()->data()+2, packet->message()->size()-4, service_->crc_seed_);
 	return packet;
 }
 
-void EncryptionFilter::Encrypt_(char* data, uint32_t len, uint32_t seed)
+void EncryptionFilter::Encrypt_(char* data, uint32_t len, uint32_t seed) const
 {
     uint32_t blockCount = (len / 4);
     uint32_t byteCount = (len % 4);

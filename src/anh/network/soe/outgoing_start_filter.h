@@ -36,17 +36,17 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
-
+class OutgoingPacket;
 /**
  * @brief Retrieves the next outgoing message off outgoing message queue.
  */
-class OutgoingStartFilter : public tbb::filter
+class OutgoingStartFilter
 {
 public:
 	OutgoingStartFilter(Service* service);
 	~OutgoingStartFilter(void);
 
-	void* operator()(void* item);
+	OutgoingPacket* operator()(tbb::flow_control& fc) const;
 private:
 	Service* service_;
 };

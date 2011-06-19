@@ -45,8 +45,7 @@ namespace network {
 namespace soe {
 
 SessionRequestFilter::SessionRequestFilter(Service* service)
-	: tbb::filter(serial_in_order)
-	, service_(service)
+	: service_(service)
 {
 }
 
@@ -54,12 +53,13 @@ SessionRequestFilter::~SessionRequestFilter(void)
 {
 }
 
-void* SessionRequestFilter::operator()(void* item)
+void SessionRequestFilter::operator()(tbb::flow_control& fc) const
 {
 	// No more packets to process.
 	if(service_->sessionless_messages_.empty())
 	{
-		return NULL;
+        fc.stop();
+        return;
 	}
 
 	IncomingSessionlessPacket* sessionless_message = service_->sessionless_messages_.front();
@@ -74,7 +74,6 @@ void* SessionRequestFilter::operator()(void* item)
 	}
 
 	delete sessionless_message;
-	return 0;
 }
 
 } // namespace soe

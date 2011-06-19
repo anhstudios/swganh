@@ -54,19 +54,30 @@ Service::Service()
 	, crc_out_filter_(this)
 	, send_packet_filter_(this)
 {
-	sessionless_incoming_pipeline_.add_filter(session_request_filter_);
-
-	incoming_pipeline_.add_filter(recv_packet_filter_);
-	incoming_pipeline_.add_filter(crc_in_filter_);
-	incoming_pipeline_.add_filter(decryption_filter_);
-	incoming_pipeline_.add_filter(decompression_filter_);
-	incoming_pipeline_.add_filter(soe_protocol_filter_);
-
-	outgoing_pipeline_.add_filter(outgoing_start_filter_);
-	outgoing_pipeline_.add_filter(compression_filter_);
-	outgoing_pipeline_.add_filter(encryption_filter_);
-	outgoing_pipeline_.add_filter(crc_out_filter_);
-	outgoing_pipeline_.add_filter(send_packet_filter_);
+    sessionless_filter_ = tbb::make_filter<void, void>(tbb::filter::serial_in_order, session_request_filter_);
+    
+    incoming_filter_ = 
+        tbb::make_filter<void, IncomingPacket*>(tbb::filter::serial_in_order, recv_packet_filter_)
+        &
+        tbb::make_filter<IncomingPacket*, IncomingPacket*>(tbb::filter::parallel, crc_in_filter_)
+        &
+        tbb::make_filter<IncomingPacket*, IncomingPacket*>(tbb::filter::parallel, decryption_filter_)
+        &
+        tbb::make_filter<IncomingPacket*, IncomingPacket*>(tbb::filter::parallel, decompression_filter_)
+        &
+        tbb::make_filter<IncomingPacket*, void>(tbb::filter::serial_in_order, soe_protocol_filter_);
+    
+    
+    outgoing_filter_ = 
+        tbb::make_filter<void, OutgoingPacket*>(tbb::filter::serial_in_order, outgoing_start_filter_)
+        &
+        tbb::make_filter<OutgoingPacket*, OutgoingPacket*>(tbb::filter::parallel, compression_filter_)
+        &
+        tbb::make_filter<OutgoingPacket*, OutgoingPacket*>(tbb::filter::parallel, encryption_filter_)
+        &
+        tbb::make_filter<OutgoingPacket*, OutgoingPacket*>(tbb::filter::parallel, crc_out_filter_)
+        &
+        tbb::make_filter<OutgoingPacket*, void>(tbb::filter::serial_in_order, send_packet_filter_);
 }
 #pragma warning(pop)
 
@@ -83,9 +94,9 @@ void Service::Update(void)
 {
 	io_service_.poll();
 
-	sessionless_incoming_pipeline_.run(1000);
-	incoming_pipeline_.run(1000);
-	outgoing_pipeline_.run(1000);
+    tbb::parallel_pipeline(1000, sessionless_filter_);
+    tbb::parallel_pipeline(1000, incoming_filter_);
+    tbb::parallel_pipeline(1000, outgoing_filter_);
 
 	session_manager_.Update();
 }

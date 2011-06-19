@@ -42,13 +42,13 @@ class SessionManager;
 /**
  * @brief Checks for a SOE Protocol Session Request and dispatches a response.
  */
-class SessionRequestFilter : public tbb::filter
+class SessionRequestFilter
 {
 public:
 	SessionRequestFilter(Service* service);
 	~SessionRequestFilter(void);
 
-	void* operator()(void* item);
+	void operator()(tbb::flow_control& fc) const;
 
 private:
 	Service*						service_;

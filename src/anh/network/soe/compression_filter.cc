@@ -24,7 +24,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-
+#include <array>
 #include <anh/network/soe/compression_filter.h>
 #include <anh/network/soe/outgoing_packet.h>
 
@@ -33,9 +33,7 @@ namespace network {
 namespace soe {
 
 CompressionFilter::CompressionFilter(Service* service)
-	: tbb::filter(parallel)
-	, service_(service) 
-	, compression_buffer_(new char[496])
+	: service_(service) 
 { 
 }
 
@@ -44,7 +42,7 @@ CompressionFilter::~CompressionFilter(void)
 {
 }
 
-void* CompressionFilter::operator()(void* item)
+OutgoingPacket* CompressionFilter::operator()(OutgoingPacket* item) const
 {
 	OutgoingPacket* packet = (OutgoingPacket*)item;
 
@@ -55,8 +53,11 @@ void* CompressionFilter::operator()(void* item)
 	return packet;
 }
 
-void CompressionFilter::Compress_(anh::ByteBuffer& buffer)
+void CompressionFilter::Compress_(anh::ByteBuffer& buffer) const
 {
+	z_stream zstream_;
+	std::array<unsigned char, 496> compression_buffer_;
+
 	zstream_.zalloc = Z_NULL;
 	zstream_.zfree = Z_NULL;
 	zstream_.opaque = Z_NULL;
@@ -66,15 +67,15 @@ void CompressionFilter::Compress_(anh::ByteBuffer& buffer)
 
 	zstream_.next_in = (Bytef*)buffer.data() + 2;
 	zstream_.avail_in = buffer.size() - 5;
-	zstream_.next_out = (Bytef*)compression_buffer_+2;
+	zstream_.next_out = (Bytef*)&compression_buffer_[0]+2;
 	zstream_.avail_out = 496 - 5;
 
-	memcpy(compression_buffer_, buffer.data(), 2); // copy opcode.
+	memcpy(&compression_buffer_[0], buffer.data(), 2); // copy opcode.
 	deflate(&zstream_, Z_FINISH);
 	deflateEnd(&zstream_);
 
-	memcpy(compression_buffer_+(zstream_.total_out - 3), buffer.data()-(buffer.size() - 3), 3); // copy footer
-	buffer.swap(anh::ByteBuffer((const unsigned char*)compression_buffer_, zstream_.total_out));
+	memcpy(&compression_buffer_[0]+(zstream_.total_out - 3), buffer.data()-(buffer.size() - 3), 3); // copy footer
+	buffer.swap(anh::ByteBuffer(&compression_buffer_[0], zstream_.total_out));
 }
 
 

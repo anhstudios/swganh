@@ -37,17 +37,18 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
+class OutgoingPacket;
 
-class EncryptionFilter : public tbb::filter
+class EncryptionFilter
 {
 public:
 	EncryptionFilter(Service* service);
 	~EncryptionFilter(void);
 
-	void* operator()(void* item);
+	OutgoingPacket* operator()(OutgoingPacket* item) const;
 
 private:
-	void Encrypt_(char* buffer, uint32_t len, uint32_t seed);
+	void Encrypt_(char* buffer, uint32_t len, uint32_t seed) const;
 
 	Service*	service_;
 };

@@ -34,8 +34,7 @@ namespace network {
 namespace soe {
 
 SendPacketFilter::SendPacketFilter(Service* service)
-	: tbb::filter(serial_in_order)
-	, service_(service)
+	: service_(service)
 {
 }
 
@@ -43,12 +42,11 @@ SendPacketFilter::~SendPacketFilter(void)
 {
 }
 
-void* SendPacketFilter::operator()(void* item)
+void SendPacketFilter::operator()(OutgoingPacket* item) const
 {
 	OutgoingPacket* packet = (OutgoingPacket*)item;
 	service_->socket_->Send(packet->session()->remote_endpoint(), *packet->message());
 	delete packet;
-	return NULL;
 }
 
 } // namespace soe 

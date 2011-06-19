@@ -43,8 +43,7 @@ namespace network {
 namespace soe {
 
 DecryptionFilter::DecryptionFilter(Service* service)
-	: tbb::filter(parallel)
-	, service_(service)
+	: service_(service)
 {
 }
 
@@ -52,14 +51,14 @@ DecryptionFilter::~DecryptionFilter(void)
 {
 }
 
-void* DecryptionFilter::operator()(void* item)
+IncomingPacket* DecryptionFilter::operator()(IncomingPacket* item) const
 {
 	IncomingPacket* packet = (IncomingPacket*)item;
 	Decrypt_((char*)packet->message()->data()+2, packet->message()->size()-4, service_->crc_seed_);
 	return packet;
 }
 
-int DecryptionFilter::Decrypt_(char* buffer, uint32_t len, uint32_t seed)
+int DecryptionFilter::Decrypt_(char* buffer, uint32_t len, uint32_t seed) const
 {
 	int retVal = 0;
 

@@ -36,17 +36,18 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
+class OutgoingPacket;
 
 /**
  * @brief
  */
-class SendPacketFilter : public tbb::filter
+class SendPacketFilter
 {
 public:
 	SendPacketFilter(Service* service);
 	~SendPacketFilter(void);
 
-	void* operator()(void* item);
+	void operator()(OutgoingPacket* item) const;
 private:
 	Service* service_;
 };

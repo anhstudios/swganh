@@ -36,14 +36,15 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
+class OutgoingPacket;
 
-class CrcOutFilter : public tbb::filter
+class CrcOutFilter
 {
 public:
 	CrcOutFilter(Service* service);
 	~CrcOutFilter(void);
 
-	void* operator()(void* item);
+	OutgoingPacket* operator()(OutgoingPacket* item) const;
 
 private:
 	Service*	service_;

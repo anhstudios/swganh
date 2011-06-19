@@ -40,24 +40,22 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
+class IncomingPacket;
 
 /**
  * @brief Decompresses packet data that is flagged as compressed.
  */
-class DecompressionFilter : public tbb::filter
-{
+class DecompressionFilter {
 public:
 	DecompressionFilter(Service* service);
 	~DecompressionFilter(void);
 
-	void* operator()(void* item);
+	IncomingPacket* operator()(IncomingPacket* item) const;
 
 private:
-	void Decompress_(std::shared_ptr<anh::ByteBuffer> buffer);
+	void Decompress_(std::shared_ptr<anh::ByteBuffer> buffer) const;
 
-	z_stream					zstream_;
 	Service*					service_;
-	char* 						decompression_buffer_;
 };
 
 } // namespace soe

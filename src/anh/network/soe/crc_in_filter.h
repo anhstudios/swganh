@@ -37,14 +37,14 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class Service;
+class IncomingPacket;
 
-class CrcInFilter : public tbb::filter
-{
+class CrcInFilter {
 public:
 	CrcInFilter(Service* service);
 	~CrcInFilter(void);
 
-	void* operator()(void* item);
+	IncomingPacket* operator()(IncomingPacket* item) const;
 
 private:
 	Service*	service_;

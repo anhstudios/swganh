@@ -53,6 +53,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <boost/asio.hpp>
 
 #include <tbb/pipeline.h>
+#include <tbb/task_group.h>
 
 namespace anh {
 namespace network {
@@ -131,7 +132,11 @@ private:
 	// Pipelines
 	tbb::pipeline				sessionless_incoming_pipeline_;
 	tbb::pipeline				incoming_pipeline_;
-	tbb::pipeline				outgoing_pipeline_;;
+	tbb::pipeline				outgoing_pipeline_;
+
+    tbb::filter_t<void, void>   incoming_filter_;
+    tbb::filter_t<void, void>   outgoing_filter_;
+    tbb::filter_t<void, void>   sessionless_filter_;
 
 	std::list<IncomingSessionlessPacket*>		sessionless_messages_;
 	std::list<IncomingPacket*>					incoming_messages_;

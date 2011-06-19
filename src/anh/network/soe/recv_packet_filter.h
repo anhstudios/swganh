@@ -36,6 +36,7 @@ namespace soe {
 
 // FORWARD DELCARATIONS
 class Service;
+class IncomingPacket;
 
 /**
  * @brief Pops an IncomingPacket off a Services incoming_message queue.
@@ -43,8 +44,7 @@ class Service;
  * This serial_in_order filter ensures the pipeline doesnt pop messages faster then its processing
  * them from the Service incoming_message queue.
  */
-class RecvPacketFilter : public tbb::filter
-{
+class RecvPacketFilter {
 public:
 	/**
 	 * @brief Constructor
@@ -58,7 +58,7 @@ public:
 	 */
 	~RecvPacketFilter(void);
 
-	void* operator()(void* item);
+	IncomingPacket* operator()(tbb::flow_control& fc) const;
 
 private:
 	Service*	service_;

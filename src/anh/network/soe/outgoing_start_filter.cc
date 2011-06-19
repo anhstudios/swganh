@@ -34,8 +34,7 @@ namespace network {
 namespace soe {
 
 OutgoingStartFilter::OutgoingStartFilter(Service* service)
-	: tbb::filter(serial_in_order)
-	, service_(service) 
+	: service_(service) 
 {
 }
 
@@ -43,7 +42,7 @@ OutgoingStartFilter::~OutgoingStartFilter(void)
 {
 }
 
-void* OutgoingStartFilter::operator()(void* item)
+OutgoingPacket* OutgoingStartFilter::operator()(tbb::flow_control& fc) const
 {
 	// Cut the pipeline loop if we run out of messages.
 	if(service_->outgoing_messages_.empty())

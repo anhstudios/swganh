@@ -35,8 +35,7 @@ namespace network {
 namespace soe {
 
 CrcOutFilter::CrcOutFilter(Service* service)
-	: tbb::filter(parallel)
-	, service_(service)
+	: service_(service)
 {
 }
 
@@ -44,7 +43,7 @@ CrcOutFilter::~CrcOutFilter(void)
 {
 }
 
-void* CrcOutFilter::operator()(void* item)
+OutgoingPacket* CrcOutFilter::operator()(OutgoingPacket* item) const
 {
 	// TODO: ENDIANNESS?
 	OutgoingPacket* packet = (OutgoingPacket*)item;

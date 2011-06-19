@@ -39,8 +39,7 @@ namespace network {
 namespace soe {
 
 RecvPacketFilter::RecvPacketFilter(Service* service)
-	: tbb::filter(serial_in_order)
-	, service_(service)
+	: service_(service)
 {
 }
 
@@ -48,11 +47,11 @@ RecvPacketFilter::~RecvPacketFilter(void)
 {
 }
 
-void* RecvPacketFilter::operator()(void* item)
-{
+IncomingPacket* RecvPacketFilter::operator() (tbb::flow_control& fc) const {
 	// No more packets to process.
 	if(service_->incoming_messages_.empty())
 	{
+        fc.stop();
 		return NULL;
 	}
 
@@ -66,7 +65,7 @@ void* RecvPacketFilter::operator()(void* item)
 		return NULL;
 	}
 
-	return (void*)packet;
+	return packet;
 }
 
 } // namespace soe

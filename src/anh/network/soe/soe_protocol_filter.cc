@@ -33,8 +33,7 @@ namespace network {
 namespace soe {
 
 SoeProtocolFilter::SoeProtocolFilter(Service* service)
-	: tbb::filter(true)
-	, service_(service)
+	: service_(service)
 {
 }
 
@@ -42,12 +41,11 @@ SoeProtocolFilter::~SoeProtocolFilter(void)
 {
 }
 
-void* SoeProtocolFilter::operator()(void* item)
+void SoeProtocolFilter::operator()(IncomingPacket* item) const
 {
 	IncomingPacket* packet = (IncomingPacket*)item;
 	packet->session()->HandleSoeMessage(*packet->message());
-	delete packet;
-	return NULL;
+	delete packet;	
 }
 
 } // namespace soe
