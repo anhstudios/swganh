@@ -25,13 +25,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#include <anh/network/soe/service.h>
-#include <anh/byte_buffer.h>
-#include <anh/network/soe/incoming_packet.h>
-#include <anh/network/soe/incoming_sessionless_packet.h>
-#include <anh/network/soe/session.h>
-#include <anh/network/soe/socket.h>
-#include <anh/network/soe/protocol_packets.h>
+#include "anh/network/soe/service.h"
+
+#include "anh/byte_buffer.h"
+#include "anh/event_dispatcher/event_dispatcher_interface.h"
+
+#include "anh/network/soe/incoming_packet.h"
+#include "anh/network/soe/incoming_sessionless_packet.h"
+#include "anh/network/soe/outgoing_packet.h"
+#include "anh/network/soe/session.h"
+#include "anh/network/soe/socket.h"
 #include "anh/network/soe/receive_packet_filter.h"
 #include "anh/network/soe/crc_in_filter.h"
 #include "anh/network/soe/decryption_filter.h"
@@ -44,7 +47,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "anh/network/soe/encryption_filter.h"
 #include "anh/network/soe/send_packet_filter.h"
 
-using namespace anh::network::soe;
+using namespace anh;
+using namespace network::soe;
 using namespace std;
 using namespace tbb;
 
@@ -95,6 +99,10 @@ void Service::Update(void)
 void Service::Shutdown(void) {
 	socket_.reset();
 }
+    
+void Service::SendMessage(shared_ptr<Session> session, shared_ptr<ByteBuffer> message) {    
+    outgoing_messages_.push_back(make_shared<OutgoingPacket>(session, message));
+}
 
 void Service::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message) {
 	// Query the SessionManager for the Session.
@@ -114,4 +122,12 @@ std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> Service::event_
 
 void Service::event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher) {
     event_dispatcher_ = event_dispatcher;
+}
+
+SessionManager& Service::session_manager() {
+    return session_manager_;
+}
+
+std::shared_ptr<Socket> Service::socket() {
+    return socket_;
 }

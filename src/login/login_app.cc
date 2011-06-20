@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/module_manager/module_manager.h>
 #include <anh/clock.h>
 #include <packets/NetworkEventMessage.h>
+#include "anh/network/soe/service.h"
 
 #ifdef ERROR
 #undef ERROR

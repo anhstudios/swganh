@@ -25,7 +25,7 @@
 #include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
 
-#include "anh/network/mock_socket.h"
+#include "anh/network/soe/mock_service.h"
 
 using namespace anh::network;
 using namespace boost::asio::ip;
@@ -55,48 +55,48 @@ protected:
 
 /// This test verifies that new sessions have a send sequence of 0
 TEST_F(SessionTests, NewSessionHasZeroSendSequence) {
-    NiceMock<MockSocket<udp>> socket;
-    Session session(buildTestEndpoint(), &socket);
+    NiceMock<MockService> service;
+    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), &service);
 
-    EXPECT_EQ(0, session.server_sequence());
+    EXPECT_EQ(0, session->server_sequence());
 }
 
 /// This test verifies that data packets sent out on the data channel are sequenced.
 TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
-    NiceMock<MockSocket<udp>> socket;
-    Session session(buildTestEndpoint(), &socket);
+    NiceMock<MockService> service;    
+    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), &service);
 
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
     for (int i = 1; i <= 3; ++i ) {
-        session.SendMessage(buildSimpleMessage());
-        EXPECT_EQ(i, session.server_sequence());
+        session->SendMessage(buildSimpleMessage());
+        EXPECT_EQ(i, session->server_sequence());
     }
 }
 
 /// This test verifies that data channel messages are sent out via the soe service
 TEST_F(SessionTests, DataChannelMessagesAreSentViaSoeService) {
-    MockSocket<udp> socket;
+    NiceMock<MockService> service;
 
-    EXPECT_CALL(socket, Send(_, _))
+    EXPECT_CALL(service, SendMessage(_, _))
         .Times(1);
     
-    Session session(buildTestEndpoint(), &socket);
+    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), &service);
 
     // Send a data channel message.
-    session.SendMessage(buildSimpleMessage());
+    session->SendMessage(buildSimpleMessage());
 }
 
 /// This test verifies that data channel messages are stored in case they need to be re-sent.
 TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
-    NiceMock<MockSocket<udp>> socket;
-    Session session(buildTestEndpoint(), &socket);
+    NiceMock<MockService> service;
+    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), &service);
 
     // Send 3 data channel messages.
     for (int i = 1; i <= 3; ++i ) {
-        session.SendMessage(buildSimpleMessage());
+        session->SendMessage(buildSimpleMessage());
     }
 
-    vector<shared_ptr<ByteBuffer>> sent_messages = session.GetUnacknowledgedMessages();
+    vector<shared_ptr<ByteBuffer>> sent_messages = session->GetUnacknowledgedMessages();
 
     // Expect the vector of sent messages to contain 3 elements
     EXPECT_EQ(3, sent_messages.size());
@@ -104,33 +104,30 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
 
 /// This test verifies that data channel messages are wrapped in the proper header.
 TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
-    MockSocket<udp> socket;
+    NiceMock<MockService> service;
 
-    EXPECT_CALL(socket, Send(_, buildSimpleDataChannelPacket(1)))
+    EXPECT_CALL(service, SendMessage(_, _))
         .Times(1);
     
-    Session session(buildTestEndpoint(), &socket);
+    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), &service);
 
     // Send a data channel message.
-    session.SendMessage(buildSimpleMessage());
+    session->SendMessage(buildSimpleMessage());
 }
 
 
 TEST_F(SessionTests, LargeDataChannelMessagesAreWrappedInFragmentedHeaderWhenSent) {
-    NiceMock<MockSocket<udp>> socket;
+    NiceMock<MockService> service;
     
-    EXPECT_CALL(socket, Send(_, _));
-
-    EXPECT_CALL(socket, Send(_, buildSimpleFragmentedPacket(1)))
-        .Times(1)
-        .RetiresOnSaturation();
-
-    Session session(buildTestEndpoint(), &socket);
-    session.receive_buffer_size(27);
-    session.crc_length(2);
+    EXPECT_CALL(service, SendMessage(_, _))
+        .Times(2);
+    
+    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), &service);
+    session->receive_buffer_size(27);
+    session->crc_length(2);
 
     // Send a data channel message.
-    session.SendMessage(buildSimpleFragmentedMessage());
+    session->SendMessage(buildSimpleFragmentedMessage());
 }
 
 

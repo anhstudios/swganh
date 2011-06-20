@@ -28,21 +28,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_SERVICE_H_
 #define ANH_NETWORK_SOE_SERVICE_H_
 
-#include <anh/byte_buffer.h>
-#include <anh/event_dispatcher/event_dispatcher.h>
-#include <anh/network/soe/session.h>
-#include <anh/network/soe/session_manager.h>
-#include <anh/network/soe/socket.h>
-
-#include <map>
+#include <cstdint>
 #include <list>
+#include <map>
+#include <memory>
 
 #include <boost/asio.hpp>
-
 #include <tbb/pipeline.h>
-#include <tbb/task_group.h>
+
+#include "anh/network/soe/session_manager.h"
+
+#ifdef SendMessage
+#undef SendMessage
+#endif
 
 namespace anh {
+
+class ByteBuffer;
+
+namespace event_dispatcher {
+class EventDispatcherInterface;
+}
+
 namespace network {
 namespace soe {
 
@@ -50,14 +57,34 @@ namespace soe {
 class IncomingPacket;
 class IncomingSessionlessPacket;
 class OutgoingPacket;
+class Session;
+class Socket;
+
+class ServiceInterface {
+public:
+    virtual ~ServiceInterface() {}
+    
+    virtual void Start(uint16_t port) = 0;
+
+    virtual void Update(void) = 0;
+    
+    virtual void Shutdown(void) = 0;
+
+    virtual void SendMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> outgoing_packet) = 0;
+        
+    virtual std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher() = 0;
+
+    virtual SessionManager& session_manager() = 0;
+
+    virtual std::shared_ptr<Socket> socket() = 0;
+};
 
 /**
  * @brief An SOE Protocol Service.
  *
  * 
  */
-class Service : public std::enable_shared_from_this<Service>
-{
+class Service : public std::enable_shared_from_this<Service>, public ServiceInterface {
 public:
     Service(void);
     ~Service(void);
@@ -79,14 +106,15 @@ public:
      * @brief
      */
     void Shutdown(void);
-
-    // We friend the Session class to gain access to the Socket
-    // and packet processing queues/pipelines without exposing
-    // such volitle tools to the global space.
-    friend class Session;
-
+    
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
     void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+
+    void SendMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> outgoing_packet);
+    
+    SessionManager& session_manager();
+
+    std::shared_ptr<Socket> socket();
 
 private:
     /**

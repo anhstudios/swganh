@@ -42,6 +42,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "anh/network/soe/protocol_packets.h"
 
+#ifdef SendMessage
+#undef SendMessage
+#endif
+
 namespace anh {
 
 // FORWARD DECLARATIONS
@@ -55,6 +59,7 @@ namespace soe {
 class Service;
 class SoeProtocolFilter;
 class SessionRequestFilter;
+class ServiceInterface;
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
@@ -64,8 +69,7 @@ public:
     /**
      * Adds itself to the Session Manager.
      */
-    //Session(boost::asio::ip::udp::endpoint& remote_endpoint, Service* service);
-    Session(boost::asio::ip::udp::endpoint remote_endpoint, anh::network::SocketInterface<boost::asio::ip::udp>* socket);
+    Session(boost::asio::ip::udp::endpoint remote_endpoint, ServiceInterface* service);
     ~Session(void);
 
     /**
@@ -158,14 +162,13 @@ private:
     void handleAckA_(AckA& packet);
     void handleOutOfOrderA_(OutOfOrderA& packet);
 
-    void SendSoePacket(std::shared_ptr<anh::ByteBuffer> message);
+    void SendSoePacket_(std::shared_ptr<anh::ByteBuffer> message);
 
     bool SequenceIsValid_(const uint16_t& sequence);
     void AcknowledgeSequence_(const uint16_t& sequence);
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
-    Service*							service_; // owner
-    SocketInterface<boost::asio::ip::udp>* socket_;
+    ServiceInterface*					service_; // owner
 
     SequencedMessageMap					sent_messages_;
 

@@ -25,11 +25,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
+#include "anh/network/soe/session.h"
+
 #include <algorithm>
 
 #include <boost/pool/pool_alloc.hpp>
 
-#include <anh/network/soe/session.h>
+#include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/event_dispatcher/basic_event.h"
+
+#include "anh/network/soe/socket.h"
+#include "anh/network/soe/service.h"
+
 #include <anh/network/soe/session_manager.h>
 #include <anh/network/soe/service.h>
 #include <anh/network/soe/protocol_opcodes.h>
@@ -37,7 +44,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include "anh/network/soe/packet_utilities.h"
 #include <anh/network/network_events.h>
 #include <anh/utilities.h>
-#include <anh/event_dispatcher/event_interface.h>
 
 #include <packets/Login/LoginClientId.h>
 #include <packets/Login/LoginClientToken.h>
@@ -55,12 +61,11 @@ using namespace anh::network;
 using namespace anh::network::soe;
 using namespace std;
 
-Session::Session(boost::asio::ip::udp::endpoint remote_endpoint, anh::network::SocketInterface<boost::asio::ip::udp>* socket)
+Session::Session(boost::asio::ip::udp::endpoint remote_endpoint, ServiceInterface* service)
     : std::enable_shared_from_this<Session>()
     , remote_endpoint_(remote_endpoint)
     , connected_(false)
-    , service_(nullptr)
-    , socket_(socket)
+    , service_(service)
     , crc_seed_(0xDEADBABE)
     , server_net_stats_(0, 0, 0, 0, 0, 0)
     , last_acknowledged_sequence_(0)
@@ -159,13 +164,13 @@ void Session::Close(void)
     if(connected_)
     {
         connected_ = false;
-        service_->session_manager_.RemoveSession(shared_from_this());
+        service_->session_manager().RemoveSession(shared_from_this());
 
         Disconnect disconnect(connection_id_);
         std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
 
         disconnect.serialize(*buffer);
-        SendSoePacket(buffer);
+        SendSoePacket_(buffer);
     }
 }
 
@@ -211,7 +216,7 @@ void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer mes
     data_channel_message->append(message);
     
     // Send it over the wire
-    socket_->Send(remote_endpoint_, *data_channel_message);
+    SendSoePacket_(data_channel_message);
     
     // Store it for resending later if necessary
     sent_messages_.insert(make_pair(message_sequence, data_channel_message));
@@ -223,15 +228,15 @@ void Session::handleSessionRequest_(SessionRequest& packet)
     crc_length_ = packet.crc_length;
     receive_buffer_size_ = packet.client_udp_buffer_size;
 
-    SessionResponse session_response(connection_id_, service_->crc_seed_);
+    SessionResponse session_response(connection_id_, crc_seed_);
     anh::ByteBuffer session_response_buffer;
     session_response.serialize(session_response_buffer);
 
     // Directly put this on the wire, it requires no outgoing processing.
-    service_->socket_->Send(remote_endpoint_, session_response_buffer);
+    service_->socket()->Send(remote_endpoint_, session_response_buffer);
 
     // Add our Session to the SessionManager and flag ourselves as connected.
-    service_->session_manager_.AddSession(shared_from_this());
+    service_->session_manager().AddSession(shared_from_this());
     connected_ = true;
 
     LOG(WARNING) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
@@ -259,7 +264,7 @@ void Session::handlePing_(Ping& packet)
     std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
     pong.serialize(*buffer);
 
-    SendSoePacket(buffer);
+    SendSoePacket_(buffer);
 }
 
 void Session::handleNetStatsClient_(NetStatsClient& packet)
@@ -269,7 +274,7 @@ void Session::handleNetStatsClient_(NetStatsClient& packet)
 
     std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
     server_net_stats_.serialize(*buffer);
-    SendSoePacket(buffer);
+    SendSoePacket_(buffer);
 }
 
 void Session::handleChildDataA_(ChildDataA& packet)
@@ -361,14 +366,14 @@ void Session::handleOutOfOrderA_(OutOfOrderA& packet)
     SequencedMessageMapIterator end = sent_messages_.end();
 
     std::for_each(begin, end, [=](SequencedMessageMap::value_type& item) {
-        SendSoePacket(item.second);
+        SendSoePacket_(item.second);
     });
 
 }
 
-void Session::SendSoePacket(std::shared_ptr<anh::ByteBuffer> message)
+void Session::SendSoePacket_(std::shared_ptr<anh::ByteBuffer> message)
 {
-    service_->outgoing_messages_.push_back(make_shared<OutgoingPacket>(shared_from_this(), message));
+    service_->SendMessage(shared_from_this(), message);
 }
 
 bool Session::SequenceIsValid_(const uint16_t& sequence)
@@ -383,7 +388,7 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
         OutOfOrderA	out_of_order(sequence);
         std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
         out_of_order.serialize(*buffer);
-        SendSoePacket(buffer);
+        SendSoePacket_(buffer);
 
         return false;
     }
@@ -394,7 +399,7 @@ void Session::AcknowledgeSequence_(const uint16_t& sequence)
     AckA ack(sequence);
     std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
     ack.serialize(*buffer);
-    SendSoePacket(buffer);
+    SendSoePacket_(buffer);
 
     next_client_sequence_ = sequence + 1;
     current_client_sequence_ = sequence;
