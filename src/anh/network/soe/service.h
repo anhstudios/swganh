@@ -41,7 +41,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/decompression_filter.h>
 #include <anh/network/soe/decryption_filter.h>
 #include <anh/network/soe/encryption_filter.h>
-#include <anh/network/soe/recv_packet_filter.h>
 #include <anh/network/soe/outgoing_start_filter.h>
 #include <anh/network/soe/send_packet_filter.h>
 #include <anh/network/soe/session_request_filter.h>
@@ -103,7 +102,6 @@ public:
 	friend class DecryptionFilter;
 	friend class EncryptionFilter;
 	friend class OutgoingStartFilter;
-	friend class RecvPacketFilter;
 	friend class SendPacketFilter;
 	friend class SessionRequestFilter;
 	friend class SoeProtocolFilter;
@@ -128,12 +126,7 @@ private:
 	SessionManager				session_manager_;
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
 	uint32_t					crc_seed_;
-
-	// Pipelines
-	tbb::pipeline				sessionless_incoming_pipeline_;
-	tbb::pipeline				incoming_pipeline_;
-	tbb::pipeline				outgoing_pipeline_;
-
+    
     tbb::filter_t<void, void>   incoming_filter_;
     tbb::filter_t<void, void>   outgoing_filter_;
     tbb::filter_t<void, void>   sessionless_filter_;
@@ -141,26 +134,6 @@ private:
 	std::list<std::shared_ptr<IncomingSessionlessPacket>> sessionless_messages_;
 	std::list<std::shared_ptr<IncomingPacket>> incoming_messages_;
 	std::list<std::shared_ptr<OutgoingPacket>> outgoing_messages_;
-
-	// Outgoing Packet Pipeline Filters
-	//
-	OutgoingStartFilter			outgoing_start_filter_;
-	CompressionFilter			compression_filter_;
-	EncryptionFilter			encryption_filter_;
-	CrcOutFilter				crc_out_filter_;
-	SendPacketFilter			send_packet_filter_;
-	
-	// Sessionless Packet Pipeline Filters
-	//
-	SessionRequestFilter		session_request_filter_;
-
-	// Incoming Packet Pipeline Filters
-	//
-	RecvPacketFilter			recv_packet_filter_;
-	CrcInFilter					crc_in_filter_;
-	DecryptionFilter			decryption_filter_;
-	DecompressionFilter			decompression_filter_;
-	SoeProtocolFilter			soe_protocol_filter_;
 };
 
 } // namespace soe
