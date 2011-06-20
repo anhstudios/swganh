@@ -147,8 +147,8 @@ ByteBuffer SessionTests::buildSimpleMessage() const {
 ByteBuffer SessionTests::buildSimpleDataChannelPacket(uint16_t sequence) const {
     ByteBuffer buffer;
 
-    buffer.write<uint16_t>(anh::hostToBig<uint16_t>(0x09));
-    buffer.write<uint16_t>(anh::hostToBig<uint16_t>(sequence));
+    buffer.write<uint16_t>(hostToBig<uint16_t>(0x09));
+    buffer.write<uint16_t>(hostToBig<uint16_t>(sequence));
     buffer.append(buildSimpleMessage());
 
     return buffer;

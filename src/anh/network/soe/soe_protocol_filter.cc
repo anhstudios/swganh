@@ -27,5 +27,5 @@ using namespace anh::network::soe;
 using namespace std;
 
 void SoeProtocolFilter::operator()(shared_ptr<IncomingPacket> packet) const {
-	packet->session()->HandleSoeMessage(*packet->message());
+	packet->session()->HandleMessage(*packet->message());
 }

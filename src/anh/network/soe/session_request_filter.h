@@ -31,18 +31,20 @@ namespace soe {
 
 // FORWARD DECLARATIONS
 class IncomingSessionlessPacket;
+class ServiceInterface;
 
 /**
  * @brief Checks for a SOE Protocol Session Request and dispatches a response.
  */
 class SessionRequestFilter {
 public:
-	SessionRequestFilter(std::list<std::shared_ptr<IncomingSessionlessPacket>>& message_queue);
+	SessionRequestFilter(ServiceInterface* service, std::list<std::shared_ptr<IncomingSessionlessPacket>>& message_queue);
 
 	void operator()(tbb::flow_control& fc) const;
 
 private:
 	std::list<std::shared_ptr<IncomingSessionlessPacket>>& message_queue_;
+    ServiceInterface* service_;
 };
 
 }}} // namespace anh::network::soe

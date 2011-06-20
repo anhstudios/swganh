@@ -1,28 +1,21 @@
-/*7262626262676
----------------------------------------------------------------------------------------
-This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Emulator)
+/*
+ This file is part of SWGANH. For more information, visit http://swganh.com
+ 
+ Copyright (c) 2006 - 2011 The SWG:ANH Team
 
-For more information, visit http://www.swganh.com
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
 
-Copyright (c) 2006 - 2010 The SWG:ANH Team
----------------------------------------------------------------------------------------
-Use of this source code is governed by the GPL v3 license that can be found
-in the COPYING file or at http://www.gnu.org/licenses/gpl-3.0.html
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
----------------------------------------------------------------------------------------
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "anh/network/soe/session.h"
@@ -31,29 +24,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <boost/pool/pool_alloc.hpp>
 
+#include <glog/logging.h>
+
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/event_dispatcher/basic_event.h"
 
+#include "anh/network/network_events.h"
 #include "anh/network/soe/socket.h"
 #include "anh/network/soe/service.h"
 
-#include <anh/network/soe/session_manager.h>
-#include <anh/network/soe/service.h>
-#include <anh/network/soe/protocol_opcodes.h>
-#include <anh/network/soe/outgoing_packet.h>
+#include "anh/network/soe/protocol_opcodes.h"
 #include "anh/network/soe/packet_utilities.h"
-#include <anh/network/network_events.h>
-#include <anh/utilities.h>
-
-#include <packets/Login/LoginClientId.h>
-#include <packets/Login/LoginClientToken.h>
-#include <packets/Login/LoginEnumCluster.h>
-#include <packets/Login/EnumerateCharacterId.h>
-#include <packets/Login/LoginClusterStatus.h>
-
-#include <iostream>
-
-#include <glog/logging.h>
 
 using namespace anh;
 using namespace anh::event_dispatcher;
@@ -174,7 +155,7 @@ void Session::Close(void)
     }
 }
 
-void Session::HandleSoeMessage(anh::ByteBuffer& message)
+void Session::HandleMessage(anh::ByteBuffer& message)
 {
     switch(message.peek<uint16_t>(true))
     {
@@ -246,7 +227,7 @@ void Session::handleMultiPacket_(MultiPacket& packet)
 {
     DLOG(WARNING) << "Handling MULTIPACKET";
     std::for_each(packet.packets.begin(), packet.packets.end(), [=](anh::ByteBuffer& buffer) {
-        HandleSoeMessage(buffer);
+        HandleMessage(buffer);
     });
 }
 

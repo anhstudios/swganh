@@ -29,15 +29,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "anh/byte_buffer.h"
 
-#include "anh/network/soe/session.h"
 #include "anh/network/soe/incoming_sessionless_packet.h"
-
+#include "anh/network/soe/session.h"
+#include "anh/network/soe/service.h"
 
 using namespace anh::network::soe;
 using namespace std;
 
-SessionRequestFilter::SessionRequestFilter(list<shared_ptr<IncomingSessionlessPacket>>& message_queue)
-    : message_queue_(message_queue) {}
+SessionRequestFilter::SessionRequestFilter(ServiceInterface* service, list<shared_ptr<IncomingSessionlessPacket>>& message_queue)
+    : service_(service)
+    , message_queue_(message_queue) {}
 
 void SessionRequestFilter::operator()(tbb::flow_control& fc) const {
     // No more packets to process.
@@ -52,8 +53,7 @@ void SessionRequestFilter::operator()(tbb::flow_control& fc) const {
 
     if(sessionless_message->message()->peek<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14) {
         // @todo replace passing nullptr here with the SocketInterface instance in the service
-        auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), nullptr);
-        SessionRequest request(*sessionless_message->message());
-        session->handleSessionRequest_(request);
+        auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), service_);
+        session->HandleMessage(*sessionless_message->message());
     }
 }
