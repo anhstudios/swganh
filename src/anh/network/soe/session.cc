@@ -61,6 +61,7 @@ Session::Session(boost::asio::ip::udp::endpoint remote_endpoint, anh::network::S
     , connected_(false)
     , service_(nullptr)
     , socket_(socket)
+    , crc_seed_(0xDEADBABE)
     , server_net_stats_(0, 0, 0, 0, 0, 0)
     , last_acknowledged_sequence_(0)
     , current_client_sequence_(0)
@@ -90,6 +91,14 @@ void Session::receive_buffer_size(uint32_t receive_buffer_size) {
 
 void Session::crc_length(uint32_t crc_length) {
     crc_length_ = crc_length;
+}
+
+void Session::crc_seed(uint32_t crc_seed) {
+    crc_seed_ = crc_seed;
+}
+
+uint32_t Session::crc_seed() const {
+    return crc_seed_;
 }
 
 vector<shared_ptr<ByteBuffer>> Session::GetUnacknowledgedMessages() const {
@@ -359,7 +368,7 @@ void Session::handleOutOfOrderA_(OutOfOrderA& packet)
 
 void Session::SendSoePacket(std::shared_ptr<anh::ByteBuffer> message)
 {
-    service_->outgoing_messages_.push_back(new OutgoingPacket(shared_from_this(), message));
+    service_->outgoing_messages_.push_back(make_shared<OutgoingPacket>(shared_from_this(), message));
 }
 
 bool Session::SequenceIsValid_(const uint16_t& sequence)

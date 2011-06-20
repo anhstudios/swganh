@@ -25,55 +25,35 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#include <anh/network/soe/session_request_filter.h>
-#include <anh/byte_buffer.h>
-#include <anh/network/soe/protocol_packets.h>
-#include <anh/network/soe/session.h>
-#include <anh/network/soe/session_manager.h>
-#include <anh/network/soe/service.h>
-#include <anh/network/soe/incoming_sessionless_packet.h>
-#include <anh/utilities.h>
+#include "anh/network/soe/session_request_filter.h"
 
-#ifdef ERROR
-#undef ERROR
-#endif
+#include "anh/byte_buffer.h"
 
-#include <glog/logging.h>
+#include "anh/network/soe/session.h"
+#include "anh/network/soe/incoming_sessionless_packet.h"
 
-namespace anh {
-namespace network {
-namespace soe {
 
-SessionRequestFilter::SessionRequestFilter(Service* service)
-	: service_(service)
-{
-}
+using namespace anh::network::soe;
+using namespace std;
 
-SessionRequestFilter::~SessionRequestFilter(void)
-{
-}
+SessionRequestFilter::SessionRequestFilter(list<shared_ptr<IncomingSessionlessPacket>>& message_queue)
+    : message_queue_(message_queue) {}
 
-void SessionRequestFilter::operator()(tbb::flow_control& fc) const
-{
-	// No more packets to process.
-	if(service_->sessionless_messages_.empty())
-	{
+void SessionRequestFilter::operator()(tbb::flow_control& fc) const {
+    // No more packets to process.
+    if(message_queue_.empty())
+    {
         fc.stop();
         return;
-	}
+    }
 
-	auto sessionless_message = service_->sessionless_messages_.front();
-	service_->sessionless_messages_.pop_front();
+    auto sessionless_message = message_queue_.front();
+    message_queue_.pop_front();
 
-	if(sessionless_message->message()->peek<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14)
-	{
+    if(sessionless_message->message()->peek<uint16_t>(true) == SESSION_REQUEST && sessionless_message->message()->size() == 14) {
         // @todo replace passing nullptr here with the SocketInterface instance in the service
         auto session = std::make_shared<Session>(sessionless_message->remote_endpoint(), nullptr);
-		SessionRequest request(*sessionless_message->message());
-		session->handleSessionRequest_(request);
-	}
+        SessionRequest request(*sessionless_message->message());
+        session->handleSessionRequest_(request);
+    }
 }
-
-} // namespace soe
-} // namespace network
-} // namespace anh

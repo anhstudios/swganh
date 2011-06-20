@@ -29,8 +29,6 @@ using namespace tbb;
 ReceivePacketFilter::ReceivePacketFilter(list<shared_ptr<IncomingPacket>>& incoming_queue)
     : incoming_queue_(incoming_queue) {}
 
-ReceivePacketFilter::~ReceivePacketFilter(void) {}
-
 shared_ptr<IncomingPacket> ReceivePacketFilter::operator() (flow_control& fc) const {
     shared_ptr<IncomingPacket> packet;
 

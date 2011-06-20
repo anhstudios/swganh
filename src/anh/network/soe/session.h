@@ -82,6 +82,16 @@ public:
      * Set the crc length for footers
      */
     void crc_length(uint32_t crc_length);
+    
+    /**
+     * Sets the crc seed used to encrypt this session's messages.
+     */
+    void crc_seed(uint32_t crc_seed);
+
+    /**
+     * @return The crc seed used to encrypt this session's messages.
+     */
+    uint32_t crc_seed() const;
 
     /**
      * Get a list of all outgoing data channel messages that have not yet been acknowledged
@@ -165,6 +175,7 @@ private:
     uint32_t							connection_id_;
     uint32_t							receive_buffer_size_;
     uint32_t							crc_length_;
+    uint32_t                            crc_seed_;
 
     // Sequences
     uint16_t							last_acknowledged_sequence_;

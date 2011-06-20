@@ -34,18 +34,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/session_manager.h>
 #include <anh/network/soe/socket.h>
 
-// Filters
-#include <anh/network/soe/compression_filter.h>
-#include <anh/network/soe/crc_in_filter.h>
-#include <anh/network/soe/crc_out_filter.h>
-#include <anh/network/soe/decompression_filter.h>
-#include <anh/network/soe/decryption_filter.h>
-#include <anh/network/soe/encryption_filter.h>
-#include <anh/network/soe/outgoing_start_filter.h>
-#include <anh/network/soe/send_packet_filter.h>
-#include <anh/network/soe/session_request_filter.h>
-#include <anh/network/soe/soe_protocol_filter.h>
-
 #include <map>
 #include <list>
 
@@ -71,69 +59,55 @@ class OutgoingPacket;
 class Service : public std::enable_shared_from_this<Service>
 {
 public:
-	Service(void);
-	~Service(void);
+    Service(void);
+    ~Service(void);
 
-	/**
-	 * @brief Starts the SOE Frontend Service.
-	 * 
-	 * @parama port The port to listen for messages on.
-	 */
-	void Start(uint16_t port);
+    /**
+     * @brief Starts the SOE Frontend Service.
+     * 
+     * @parama port The port to listen for messages on.
+     */
+    void Start(uint16_t port);
 
-	/**
-	 * @brief Performs any work the pipelines have waiting and receives and sends
-	 * any waiting messages. (Blocking)
-	 */
-	void Update(void);
-	
-	/**
-	 * @brief
-	 */
-	void Shutdown(void);
+    /**
+     * @brief Performs any work the pipelines have waiting and receives and sends
+     * any waiting messages. (Blocking)
+     */
+    void Update(void);
+    
+    /**
+     * @brief
+     */
+    void Shutdown(void);
 
-	// Friended Filters. Filters are considered extensions of the
-	// Service class, as the operations performed in them are specific
-	// to this Service type (SOE).
-	friend class CompressionFilter;
-	friend class CrcInFilter;
-	friend class CrcOutFilter;
-	friend class DecompressionFilter;
-	friend class DecryptionFilter;
-	friend class EncryptionFilter;
-	friend class OutgoingStartFilter;
-	friend class SendPacketFilter;
-	friend class SessionRequestFilter;
-	friend class SoeProtocolFilter;
-
-	// We friend the Session class to gain access to the Socket
-	// and packet processing queues/pipelines without exposing
-	// such volitle tools to the global space.
-	friend class Session;
+    // We friend the Session class to gain access to the Socket
+    // and packet processing queues/pipelines without exposing
+    // such volitle tools to the global space.
+    friend class Session;
 
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
     void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
 
 private:
-	/**
-	 * @brief Called when the socket receives a message.
-	 */
-	void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
+    /**
+     * @brief Called when the socket receives a message.
+     */
+    void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
 
-	std::shared_ptr<Socket>		socket_;
-	boost::asio::io_service		io_service_;
+    std::shared_ptr<Socket>		socket_;
+    boost::asio::io_service		io_service_;
 
-	SessionManager				session_manager_;
+    SessionManager				session_manager_;
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-	uint32_t					crc_seed_;
+    uint32_t					crc_seed_;
     
     tbb::filter_t<void, void>   incoming_filter_;
     tbb::filter_t<void, void>   outgoing_filter_;
     tbb::filter_t<void, void>   sessionless_filter_;
 
-	std::list<std::shared_ptr<IncomingSessionlessPacket>> sessionless_messages_;
-	std::list<std::shared_ptr<IncomingPacket>> incoming_messages_;
-	std::list<std::shared_ptr<OutgoingPacket>> outgoing_messages_;
+    std::list<std::shared_ptr<IncomingSessionlessPacket>> sessionless_messages_;
+    std::list<std::shared_ptr<IncomingPacket>> incoming_messages_;
+    std::list<std::shared_ptr<OutgoingPacket>> outgoing_messages_;
 };
 
 } // namespace soe

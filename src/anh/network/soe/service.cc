@@ -33,6 +33,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <anh/network/soe/socket.h>
 #include <anh/network/soe/protocol_packets.h>
 #include "anh/network/soe/receive_packet_filter.h"
+#include "anh/network/soe/crc_in_filter.h"
+#include "anh/network/soe/decryption_filter.h"
+#include "anh/network/soe/decompression_filter.h"
+#include "anh/network/soe/soe_protocol_filter.h"
+#include "anh/network/soe/session_request_filter.h"
+#include "anh/network/soe/outgoing_start_filter.h"
+#include "anh/network/soe/compression_filter.h"
+#include "anh/network/soe/crc_out_filter.h"
+#include "anh/network/soe/encryption_filter.h"
+#include "anh/network/soe/send_packet_filter.h"
 
 using namespace anh::network::soe;
 using namespace std;
@@ -42,21 +52,21 @@ Service::Service()
 	: event_dispatcher_(nullptr)
     , crc_seed_(0xDEADBABE)
 {
-    sessionless_filter_ = make_filter<void, void>(filter::serial_in_order, SessionRequestFilter(this));
+    sessionless_filter_ = make_filter<void, void>(filter::serial_in_order, SessionRequestFilter(sessionless_messages_));
     
     incoming_filter_ = 
         make_filter<void, shared_ptr<IncomingPacket>>(filter::serial_in_order, ReceivePacketFilter(incoming_messages_)) &
-        make_filter<shared_ptr<IncomingPacket>, shared_ptr<IncomingPacket>>(filter::parallel, CrcInFilter(this)) &
-        make_filter<shared_ptr<IncomingPacket>, shared_ptr<IncomingPacket>>(filter::parallel, DecryptionFilter(this)) &
-        make_filter<shared_ptr<IncomingPacket>, shared_ptr<IncomingPacket>>(filter::parallel, DecompressionFilter(this)) &
-        make_filter<shared_ptr<IncomingPacket>, void>(filter::serial_in_order, SoeProtocolFilter(this));
+        make_filter<shared_ptr<IncomingPacket>, shared_ptr<IncomingPacket>>(filter::parallel, CrcInFilter()) &
+        make_filter<shared_ptr<IncomingPacket>, shared_ptr<IncomingPacket>>(filter::parallel, DecryptionFilter()) &
+        make_filter<shared_ptr<IncomingPacket>, shared_ptr<IncomingPacket>>(filter::parallel, DecompressionFilter()) &
+        make_filter<shared_ptr<IncomingPacket>, void>(filter::serial_in_order, SoeProtocolFilter());
         
     outgoing_filter_ = 
-        make_filter<void, shared_ptr<OutgoingPacket>>(filter::serial_in_order, OutgoingStartFilter(this)) &
-        make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(filter::parallel, CompressionFilter(this)) &
-        make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(filter::parallel, EncryptionFilter(this)) &
-        make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(filter::parallel, CrcOutFilter(this)) &
-        make_filter<shared_ptr<OutgoingPacket>, void>(filter::serial_in_order, SendPacketFilter(this));
+        make_filter<void, shared_ptr<OutgoingPacket>>(filter::serial_in_order, OutgoingStartFilter(outgoing_messages_)) &
+        make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(filter::parallel, CompressionFilter()) &
+        make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(filter::parallel, EncryptionFilter()) &
+        make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(filter::parallel, CrcOutFilter()) &
+        make_filter<shared_ptr<OutgoingPacket>, void>(filter::serial_in_order, SendPacketFilter(socket_));
 }
 
 Service::~Service(void)

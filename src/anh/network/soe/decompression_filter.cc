@@ -1,56 +1,36 @@
 /*
----------------------------------------------------------------------------------------
-This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Emulator)
+ This file is part of SWGANH. For more information, visit http://swganh.com
+ 
+ Copyright (c) 2006 - 2011 The SWG:ANH Team
 
-For more information, visit http://www.swganh.com
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
 
-Copyright (c) 2006 - 2010 The SWG:ANH Team
----------------------------------------------------------------------------------------
-Use of this source code is governed by the GPL v3 license that can be found
-in the COPYING file or at http://www.gnu.org/licenses/gpl-3.0.html
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
----------------------------------------------------------------------------------------
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <anh/network/soe/decompression_filter.h>
-#include <anh/network/soe/service.h>
-#include <anh/network/soe/incoming_packet.h>
+#include "anh/network/soe/decompression_filter.h"
 
+#include <array>
 #include <zlib.h>
 
-#ifdef ERROR
-#undef ERROR
-#endif
+#include "anh/byte_buffer.h"
+#include "anh/network/soe/incoming_packet.h"
 
-#include <glog/logging.h>
+using namespace anh;
+using namespace network::soe;
+using namespace std;
 
-namespace anh {
-namespace network {
-namespace soe {
-
-DecompressionFilter::DecompressionFilter(Service* service)
-	: service_(service)
-{
-}
-
-DecompressionFilter::~DecompressionFilter(void)
-{
-}
-
-std::shared_ptr<IncomingPacket> DecompressionFilter::operator()(std::shared_ptr<IncomingPacket> packet) const {
+shared_ptr<IncomingPacket> DecompressionFilter::operator()(shared_ptr<IncomingPacket> packet) const {
 	if((uint8_t)*(packet->message()->data() + (packet->message()->size() - 3)) == 1) // Check the 3rd to last byte of the packet for a compression flag.
 	{
 		Decompress_(packet->message());
@@ -59,10 +39,10 @@ std::shared_ptr<IncomingPacket> DecompressionFilter::operator()(std::shared_ptr<
 	return packet;
 }
 
-void DecompressionFilter::Decompress_(std::shared_ptr<anh::ByteBuffer> buffer) const
+void DecompressionFilter::Decompress_(shared_ptr<ByteBuffer> buffer) const
 {
 	z_stream zstream_;
-	std::array<unsigned char, 496> decompression_buffer_;
+	array<unsigned char, 496> decompression_buffer_;
 
 	zstream_.zalloc = Z_NULL;
 	zstream_.zfree = Z_NULL;
@@ -83,7 +63,3 @@ void DecompressionFilter::Decompress_(std::shared_ptr<anh::ByteBuffer> buffer) c
 	memcpy(&decompression_buffer_[0]+(zstream_.total_out - 3), buffer->data()+(buffer->size()-3), 3); // Copy Footer.
 	buffer->swap(anh::ByteBuffer(&decompression_buffer_[0], zstream_.total_out + 5));
 }
-
-} // namespace soe
-} // namespace network
-} // namespace anh
