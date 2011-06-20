@@ -145,10 +145,10 @@ void Session::SendMessage(ByteBuffer data_channel_payload) {
             max_data_channel_size);
 
         for_each(fragmented_message.begin(), fragmented_message.end(), [this] (ByteBuffer& fragment) {
-            SendSequencedMessage_(&BuildFragmentedDataChannelHeader, fragment);
+            SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment));
         });
     } else {        
-        SendSequencedMessage_(&BuildDataChannelHeader, data_channel_payload);
+        SendSequencedMessage_(&BuildDataChannelHeader, move(data_channel_payload));
     }
 }
 

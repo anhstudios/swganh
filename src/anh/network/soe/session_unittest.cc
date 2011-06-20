@@ -33,6 +33,7 @@ using namespace std;
 
 using testing::_;
 using testing::NiceMock;
+using testing::Pointee;
 
 namespace anh {
 namespace network {
@@ -106,7 +107,7 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
 TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
     NiceMock<MockService> service;
 
-    EXPECT_CALL(service, SendMessage(_, _))
+    EXPECT_CALL(service, SendMessage(_, Pointee(buildSimpleDataChannelPacket(1))))
         .Times(1);
     
     shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), &service);
@@ -119,8 +120,9 @@ TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
 TEST_F(SessionTests, LargeDataChannelMessagesAreWrappedInFragmentedHeaderWhenSent) {
     NiceMock<MockService> service;
     
-    EXPECT_CALL(service, SendMessage(_, _))
-        .Times(2);
+    EXPECT_CALL(service, SendMessage(_, _));
+    EXPECT_CALL(service, SendMessage(_, Pointee(buildSimpleFragmentedPacket(1))))
+        .Times(1);
     
     shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), &service);
     session->receive_buffer_size(27);
