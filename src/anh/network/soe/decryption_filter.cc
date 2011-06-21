@@ -32,6 +32,10 @@ using namespace anh::network::soe;
 using namespace std;
 
 shared_ptr<IncomingPacket> DecryptionFilter::operator()(shared_ptr<IncomingPacket> packet) const {
+    if (!packet) { return nullptr; }
+
+    if (!packet->session()) { return nullptr; }
+
 	Decrypt_((char*)packet->message()->data()+2, packet->message()->size()-4, packet->session()->crc_seed());
 	return packet;
 }

@@ -31,6 +31,8 @@ using namespace network::soe;
 using namespace std;
 
 shared_ptr<IncomingPacket> DecompressionFilter::operator()(shared_ptr<IncomingPacket> packet) const {
+    if (!packet) { return nullptr; }
+
 	if((uint8_t)*(packet->message()->data() + (packet->message()->size() - 3)) == 1) // Check the 3rd to last byte of the packet for a compression flag.
 	{
 		Decompress_(packet->message());

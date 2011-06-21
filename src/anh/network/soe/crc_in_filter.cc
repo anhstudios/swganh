@@ -33,6 +33,7 @@ using namespace std;
 CrcInFilter::CrcInFilter(void) {}
 
 shared_ptr<IncomingPacket> CrcInFilter::operator()(shared_ptr<IncomingPacket> packet) const {
+    if (!packet) { return nullptr; }
 	// TODO: ENDIANNESS?
 	
 	uint32_t packet_crc = anh::memcrc((const char*)packet->message()->data(), packet->message()->size()-2, packet->session()->crc_seed());

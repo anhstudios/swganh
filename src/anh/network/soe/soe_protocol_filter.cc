@@ -20,12 +20,18 @@
 
 #include "anh/network/soe/soe_protocol_filter.h"
 
+#include <iostream>
+
 #include "anh/network/soe/incoming_packet.h"
 #include "anh/network/soe/session.h"
+
+
 
 using namespace anh::network::soe;
 using namespace std;
 
 void SoeProtocolFilter::operator()(shared_ptr<IncomingPacket> packet) const {
+    if (!packet) { return; }
+    std::cout << *packet->message() << std::endl;
 	packet->session()->HandleMessage(*packet->message());
 }
