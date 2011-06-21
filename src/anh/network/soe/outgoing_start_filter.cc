@@ -30,18 +30,20 @@ OutgoingStartFilter::OutgoingStartFilter(list<shared_ptr<OutgoingPacket>>& messa
 	: message_queue_(message_queue) {}
 
 shared_ptr<OutgoingPacket> OutgoingStartFilter::operator()(flow_control& fc) const {
-	// Cut the pipeline loop if we run out of messages.
-	if(message_queue_.empty())
-		return nullptr;
+    shared_ptr<OutgoingPacket> packet;
 
-	auto packet = message_queue_.front();
-	message_queue_.pop_front();
+    do {
+        // No more packets to process.
+        if(message_queue_.empty()) {
+            fc.stop();
+            return nullptr;
+        }
 
-	// If we are no longer connected, skip.
-	if(packet->session()->connected() == false)
-	{
-		return nullptr;
-	}
+        packet = message_queue_.front();
+        message_queue_.pop_front();
+
+        // Loop until we have a packet with a valid connection.
+    } while(packet->session()->connected() == false);
 
 	return packet;
 }
