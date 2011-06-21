@@ -157,6 +157,9 @@ void BaseApplication::process() {
         assert(false && "Must call startup before process");
         return;
     }
+    
+    server_directory_->pulse();
+
     event_dispatcher_->tick(clock_->global_time());
     event_dispatcher_->trigger(process_event_);
     cluster_service_->Update();
