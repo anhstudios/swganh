@@ -113,7 +113,7 @@ std::shared_ptr<Process> Datastore::createProcess(std::shared_ptr<Cluster> clust
                              "address, "
                              "tcp_port, "
                              "udp_port, "
-                             "ping_Port, "
+                             "ping_port, "
                              "status, "
                              "last_pulse, "
                              "created_at, "
