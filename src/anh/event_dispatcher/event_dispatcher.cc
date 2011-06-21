@@ -233,7 +233,6 @@ bool EventDispatcher::triggerAsync(std::shared_ptr<EventInterface> incoming_even
     
     const EventType& event_type = incoming_event->type();
     if (!validateEventType_(event_type)) {
-        assert(false && "Event was triggered before its type was registered");
         return false;
     }
 
