@@ -133,7 +133,7 @@ std::shared_ptr<Process> Datastore::createProcess(std::shared_ptr<Cluster> clust
     statement->setUInt(6, static_cast<uint32_t>(tcp_port));
     statement->setUInt(7, static_cast<uint32_t>(udp_port));
     statement->setUInt(8, static_cast<uint32_t>(ping_port));
-    statement->setUInt(9, static_cast<int32_t>(-1));
+    statement->setInt(9, static_cast<int32_t>(-1));
     
     if (! (statement->executeUpdate() > 0)) {
         return nullptr;

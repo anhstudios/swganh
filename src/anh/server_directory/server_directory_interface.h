@@ -40,7 +40,7 @@ class ServerDirectoryInterface {
 public:
     virtual ~ServerDirectoryInterface() {}
 
-    virtual void joinCluster(const std::string& cluster_name, const std::string& version, bool create_cluster) = 0;
+    virtual void joinCluster(const std::string& cluster_name, const std::string& version = "", bool create_cluster = false) = 0;
 
     virtual bool registerProcess(
         const std::string& name, 

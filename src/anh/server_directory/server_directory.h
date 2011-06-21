@@ -59,12 +59,12 @@ public:
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
     ServerDirectory(std::shared_ptr<DatastoreInterface> datastore, 
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher
-        , const std::string& cluster_name, const std::string& version, bool create_cluster = false);
+        , const std::string& cluster_name, const std::string& version = "", bool create_cluster = false);
 
     std::shared_ptr<Cluster> cluster() const;
     std::shared_ptr<Process> process() const;
         
-    void joinCluster(const std::string& cluster_name, const std::string& version, bool create_cluster = false);
+    void joinCluster(const std::string& cluster_name, const std::string& version = "", bool create_cluster = false);
 
     bool registerProcess(const std::string& name, const std::string& process_type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping);
     bool removeProcess(std::shared_ptr<Process>& process);
