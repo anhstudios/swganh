@@ -199,10 +199,11 @@ void BaseApplication::addDefaultOptions_() {
 
         // cluster
         ("cluster.name", ::value<string>(), "Name of the cluster this application is participating in")
+        ("cluster.process_name", ::value<string>(), "The name of service the application provides on the cluster ex: Login Service 1")
         ("cluster.process_type", ::value<string>(), "The type of service the application provides on the cluster ex: combat_service, login_service")
         ("cluster.version", ::value<string>()->default_value("0.1"), "The version the application is on the cluster")
         ("cluster.address", ::value<string>()->default_value("127.0.0.1"), "The network address the application will use on the cluster")
-        ("cluster.tcp_port", ::value<uint16_t>(), "The tcp port the application will use on the cluster")
+        ("cluster.tcp_port", ::value<uint16_t>()->default_value(0), "The tcp port the application will use on the cluster")
         ("cluster.udp_port", ::value<uint16_t>()->default_value(0), "The udp port the application will use on the cluster")
         ("cluster.ping_port", ::value<uint16_t>()->default_value(0), "The ping port the application will use on the cluster")            
             
@@ -332,8 +333,10 @@ void BaseApplication::registerApp_()
     {
         // make sure the value is in the map before registering
         if (configuration_variables_map_.count("cluster.name") > 0) {
+            server_directory_->joinCluster(configuration_variables_map_["cluster.name"].as<string>());
+
             server_directory_->registerProcess(
-                configuration_variables_map_["cluster.name"].as<string>(),
+                configuration_variables_map_["cluster.process_name"].as<string>(),
                 configuration_variables_map_["cluster.process_type"].as<string>(),
                 configuration_variables_map_["cluster.version"].as<string>(),
                 configuration_variables_map_["cluster.address"].as<string>(),

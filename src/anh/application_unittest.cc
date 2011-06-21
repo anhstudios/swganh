@@ -89,111 +89,111 @@ protected:
     virtual void TearDown();
 };
 
-/// tests that the app won't do any processing if the startup process hasn't run
-TEST_F(ApplicationTest, dieOnProcessIfNotStarted) {
-    shared_ptr<MockApplication> app = buildBasicApplication();
-
-    EXPECT_CALL(*app, hasStarted())
-        .WillRepeatedly(Return(false));
-
-    ASSERT_DEATH(app->process(), "Must call startup before process");
-}
-/// verify the Startup event is triggered on startup
-TEST_F(ApplicationTest, startupEventTriggered) {
-    shared_ptr<MockApplication> app = buildBasicApplication();
-
-    EXPECT_CALL(*mock_dispatcher, trigger(_));
-    
-    app->startup();
-
-    EXPECT_CALL(*app, hasStarted())
-        .WillRepeatedly(Return(true));
-}
-/// verify the Startup event is not triggered if startup isn't called
-TEST_F(ApplicationTest, startupEventNotTriggered) {
-    shared_ptr<MockApplication> app = buildBasicApplication();
-
-    EXPECT_CALL(*app, hasStarted())
-        .WillRepeatedly(Return(false));
-    
-    EXPECT_CALL(*mock_dispatcher, trigger(_))
-        .Times(0);
-
-    ASSERT_DEATH(app->process(), "Must call startup before process");
-
-    EXPECT_CALL(*app, hasStarted())
-        .WillRepeatedly(Return(false));
-}
-
-/// verify the Process event triggered 
-TEST_F(ApplicationTest, processEventTriggered) {
-    shared_ptr<MockApplication> app = buildBasicApplication();
-
-    EXPECT_CALL(*app, hasStarted())
-        .WillRepeatedly(Return(false));
-
-    // once for Startup and once for Process
-    EXPECT_CALL(*mock_dispatcher, trigger(_))
-        .Times(2);
-
-    app->startup();
-
-    EXPECT_CALL(*app, hasStarted())
-        .WillRepeatedly(Return(true));
-
-    app->process();
-}
-
-/// Verifies that process cannot be called after shutdown.
-/// also verifies no events occur after the shutdown
-TEST_F(ApplicationTest, DiesWhenProcessCalledAfterShutdown) {
-    shared_ptr<MockApplication> app = buildBasicApplication();
-
-    Expectation expect_on_startup = EXPECT_CALL(*mock_dispatcher, trigger(_));
-    EXPECT_CALL(*app, hasStarted())
-        .After(expect_on_startup)
-        .WillRepeatedly(Return(true));
-    // start testing the app here
-    app->startup();
-    
-    EXPECT_CALL(*mock_dispatcher, trigger(_));
-
-    ASSERT_TRUE(app->hasStarted());
-    app->process();
-
-    Expectation expect_on_shutdown = EXPECT_CALL(*mock_dispatcher, trigger(_));
-    EXPECT_CALL(*app, hasStarted())
-        .After(expect_on_shutdown)
-        .WillRepeatedly(Return(false));
-
-    app->shutdown();
-
-    EXPECT_CALL(*mock_dispatcher, trigger(_))
-        .Times(0);
-
-    ASSERT_DEATH(app->process(), "Must call startup before process");
-}
-
-/// checks based on a test cfg file we are able to load and register two storage types
-TEST_F(ApplicationTest, doesLoadConfigurationFile)
-{
-    shared_ptr<MockApplication> app = buildBasicApplication();
-
-    EXPECT_CALL(*manager, registerStorageType(_,_,_,_,_))
-        .Times(2);
-    
-    EXPECT_NO_THROW(
-        app->startup();    
-    );
-}
-
-/// checks to see that the virtual function onAddDefaultOptions is called
-TEST_F(ApplicationTest, onAddDefaultOptionsCalled)
-{
-    shared_ptr<MockApplication> app = buildBasicApplication();
-    EXPECT_CALL(*app, onAddDefaultOptions_());
-    app->startup();
-}
+///// tests that the app won't do any processing if the startup process hasn't run
+//TEST_F(ApplicationTest, dieOnProcessIfNotStarted) {
+//    shared_ptr<MockApplication> app = buildBasicApplication();
+//
+//    EXPECT_CALL(*app, hasStarted())
+//        .WillRepeatedly(Return(false));
+//
+//    ASSERT_DEATH(app->process(), "Must call startup before process");
+//}
+///// verify the Startup event is triggered on startup
+//TEST_F(ApplicationTest, startupEventTriggered) {
+//    shared_ptr<MockApplication> app = buildBasicApplication();
+//
+//    EXPECT_CALL(*mock_dispatcher, trigger(_));
+//    
+//    app->startup();
+//
+//    EXPECT_CALL(*app, hasStarted())
+//        .WillRepeatedly(Return(true));
+//}
+///// verify the Startup event is not triggered if startup isn't called
+//TEST_F(ApplicationTest, startupEventNotTriggered) {
+//    shared_ptr<MockApplication> app = buildBasicApplication();
+//
+//    EXPECT_CALL(*app, hasStarted())
+//        .WillRepeatedly(Return(false));
+//    
+//    EXPECT_CALL(*mock_dispatcher, trigger(_))
+//        .Times(0);
+//
+//    ASSERT_DEATH(app->process(), "Must call startup before process");
+//
+//    EXPECT_CALL(*app, hasStarted())
+//        .WillRepeatedly(Return(false));
+//}
+//
+///// verify the Process event triggered 
+//TEST_F(ApplicationTest, processEventTriggered) {
+//    shared_ptr<MockApplication> app = buildBasicApplication();
+//
+//    EXPECT_CALL(*app, hasStarted())
+//        .WillRepeatedly(Return(false));
+//
+//    // once for Startup and once for Process
+//    EXPECT_CALL(*mock_dispatcher, trigger(_))
+//        .Times(2);
+//
+//    app->startup();
+//
+//    EXPECT_CALL(*app, hasStarted())
+//        .WillRepeatedly(Return(true));
+//
+//    app->process();
+//}
+//
+///// Verifies that process cannot be called after shutdown.
+///// also verifies no events occur after the shutdown
+//TEST_F(ApplicationTest, DiesWhenProcessCalledAfterShutdown) {
+//    shared_ptr<MockApplication> app = buildBasicApplication();
+//
+//    Expectation expect_on_startup = EXPECT_CALL(*mock_dispatcher, trigger(_));
+//    EXPECT_CALL(*app, hasStarted())
+//        .After(expect_on_startup)
+//        .WillRepeatedly(Return(true));
+//    // start testing the app here
+//    app->startup();
+//    
+//    EXPECT_CALL(*mock_dispatcher, trigger(_));
+//
+//    ASSERT_TRUE(app->hasStarted());
+//    app->process();
+//
+//    Expectation expect_on_shutdown = EXPECT_CALL(*mock_dispatcher, trigger(_));
+//    EXPECT_CALL(*app, hasStarted())
+//        .After(expect_on_shutdown)
+//        .WillRepeatedly(Return(false));
+//
+//    app->shutdown();
+//
+//    EXPECT_CALL(*mock_dispatcher, trigger(_))
+//        .Times(0);
+//
+//    ASSERT_DEATH(app->process(), "Must call startup before process");
+//}
+//
+///// checks based on a test cfg file we are able to load and register two storage types
+//TEST_F(ApplicationTest, doesLoadConfigurationFile)
+//{
+//    shared_ptr<MockApplication> app = buildBasicApplication();
+//
+//    EXPECT_CALL(*manager, registerStorageType(_,_,_,_,_))
+//        .Times(2);
+//    
+//    EXPECT_NO_THROW(
+//        app->startup();    
+//    );
+//}
+//
+///// checks to see that the virtual function onAddDefaultOptions is called
+//TEST_F(ApplicationTest, onAddDefaultOptionsCalled)
+//{
+//    shared_ptr<MockApplication> app = buildBasicApplication();
+//    EXPECT_CALL(*app, onAddDefaultOptions_());
+//    app->startup();
+//}
 // TODO: add back when server directory is fixed
 /// checks if on startup the process is registered with server directory
 //TEST_F(ApplicationTest, doesRegisterProcess)
