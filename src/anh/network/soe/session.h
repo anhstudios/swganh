@@ -136,9 +136,6 @@ private:
     typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
     typedef std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>::iterator		SequencedMessageMapIterator;
     
-    std::shared_ptr<anh::ByteBuffer> AllocateBuffer_() const;
-    std::shared_ptr<anh::ByteBuffer> AllocateBuffer_(anh::ByteBuffer buffer) const;
-
     typedef std::function<anh::ByteBuffer(uint16_t)> HeaderBuilder;
 
     void SendSequencedMessage_(HeaderBuilder header_builder, anh::ByteBuffer message);
@@ -191,8 +188,6 @@ private:
     uint16_t							incoming_fragmented_curr_len_;
 };
 
-} // namespace soe
-} // namespace network
-} // namespace anh
+}}} // namespace anh::network::soe
 
-#endif
+#endif  // ANH_NETWORK_SOE_SESSION_H_

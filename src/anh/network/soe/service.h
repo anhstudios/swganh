@@ -70,6 +70,8 @@ public:
     virtual SessionManager& session_manager() = 0;
 
     virtual std::shared_ptr<Socket> socket() = 0;
+
+    virtual std::shared_ptr<ByteBuffer> AllocateBuffer() = 0;
 };
 
 /**
@@ -108,7 +110,9 @@ public:
     SessionManager& session_manager();
 
     std::shared_ptr<Socket> socket();
-
+    
+    std::shared_ptr<ByteBuffer> AllocateBuffer();
+    
 private:
     /**
      * @brief Called when the socket receives a message.

@@ -22,8 +22,6 @@
 
 #include <algorithm>
 
-#include <boost/pool/pool_alloc.hpp>
-
 #include <glog/logging.h>
 
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
@@ -134,7 +132,7 @@ void Session::SendMessage(ByteBuffer data_channel_payload) {
 }
 
 void Session::SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message) { 
-    auto message_buffer = AllocateBuffer_();
+    auto message_buffer = service_->AllocateBuffer();
     message->serialize(*message_buffer);
 
     outgoing_data_messages_.push(message_buffer);
@@ -148,7 +146,7 @@ void Session::Close(void)
         service_->session_manager().RemoveSession(shared_from_this());
 
         Disconnect disconnect(connection_id_);
-        std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+        auto buffer = service_->AllocateBuffer();
 
         disconnect.serialize(*buffer);
         SendSoePacket_(buffer);
@@ -174,26 +172,13 @@ void Session::HandleMessage(anh::ByteBuffer& message)
     }
 }
 
-shared_ptr<ByteBuffer> Session::AllocateBuffer_() const {    
-    auto allocated_buffer = allocate_shared<ByteBuffer, boost::pool_allocator<ByteBuffer>>(
-        boost::pool_allocator<ByteBuffer>());
-
-    return allocated_buffer;
-}
-
-shared_ptr<ByteBuffer> Session::AllocateBuffer_(ByteBuffer buffer) const {    
-    auto allocated_buffer = allocate_shared<ByteBuffer, boost::pool_allocator<ByteBuffer>>(
-        boost::pool_allocator<ByteBuffer>(), std::move(buffer));
-
-    return allocated_buffer;
-}
-
 void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message) {        
     // Get the next sequence number
     uint16_t message_sequence = ++server_sequence_;
 
     // Allocate a new packet
-    auto data_channel_message = AllocateBuffer_(header_builder(message_sequence));
+    auto data_channel_message = service_->AllocateBuffer();
+    data_channel_message->append(header_builder(message_sequence));
     data_channel_message->append(message);
     
     // Send it over the wire
@@ -242,7 +227,7 @@ void Session::handlePing_(Ping& packet)
     DLOG(WARNING) << "Handling PING";
     Ping pong;
     
-    std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+    auto buffer = service_->AllocateBuffer();
     pong.serialize(*buffer);
 
     SendSoePacket_(buffer);
@@ -253,7 +238,7 @@ void Session::handleNetStatsClient_(NetStatsClient& packet)
     DLOG(WARNING) << "Handling NET_STATS_CLIENT";
     server_net_stats_.client_tick_count = packet.client_tick_count;
 
-    std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+    auto buffer = service_->AllocateBuffer();
     server_net_stats_.serialize(*buffer);
     SendSoePacket_(buffer);
 }
@@ -367,7 +352,7 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
     {
         // Tell the client we have received an Out of Order sequence.
         OutOfOrderA	out_of_order(sequence);
-        std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+        auto buffer = service_->AllocateBuffer();
         out_of_order.serialize(*buffer);
         SendSoePacket_(buffer);
 
@@ -378,7 +363,7 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
 void Session::AcknowledgeSequence_(const uint16_t& sequence)
 {
     AckA ack(sequence);
-    std::shared_ptr<anh::ByteBuffer> buffer = std::make_shared<anh::ByteBuffer>();
+    auto buffer = service_->AllocateBuffer();
     ack.serialize(*buffer);
     SendSoePacket_(buffer);
 

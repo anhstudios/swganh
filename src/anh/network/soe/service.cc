@@ -20,6 +20,8 @@
 
 #include "anh/network/soe/service.h"
 
+#include <boost/pool/pool_alloc.hpp>
+
 #include "anh/byte_buffer.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 
@@ -123,4 +125,11 @@ SessionManager& Service::session_manager() {
 
 std::shared_ptr<Socket> Service::socket() {
     return socket_;
+}
+
+shared_ptr<ByteBuffer> Service::AllocateBuffer() {    
+    auto allocated_buffer = allocate_shared<ByteBuffer, boost::pool_allocator<ByteBuffer>>(
+        boost::pool_allocator<ByteBuffer>());
+
+    return allocated_buffer;
 }
