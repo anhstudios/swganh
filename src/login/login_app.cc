@@ -89,9 +89,7 @@ LoginApp::~LoginApp() {
 void LoginApp::startup()
 {
     BaseApplication::startup();
-    soe_service_.Start(44453);
-
-    server_directory()->registerProcess("Login", "login", "1.0", "address", 0, 44492, 0);
+    soe_service_.Start(server_directory()->process()->udp_port());    
 }
 
 void LoginApp::process()
@@ -106,15 +104,8 @@ void LoginApp::shutdown()
     soe_service_.Shutdown();
 }
 
-void LoginApp::onAddDefaultOptions_() 
-{
-    configuration_options_description_.add_options()
-        ("soe_service.port", value<uint16_t>()->default_value(44453), "Port to run the SOE Frontend Service on.")
-        ;
-}
+void LoginApp::onAddDefaultOptions_() {}
 
-void LoginApp::onRegisterApp_() 
-{
-}
+void LoginApp::onRegisterApp_() {}
 
 } //namespace login
