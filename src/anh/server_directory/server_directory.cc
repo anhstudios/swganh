@@ -46,18 +46,7 @@ ServerDirectory::ServerDirectory(
     , active_cluster_(nullptr)
     , active_process_(nullptr)
 {
-    active_cluster_ = datastore->findClusterByName(cluster_name);
-    
-    if (!active_cluster_) {
-        // if no cluster was found and no request to create it was made, fail now
-        if (! create_cluster) {
-            throw InvalidClusterError(std::string("Attempted to join an invalid cluster: ").append(cluster_name));
-        }
-
-        if (!(active_cluster_ = datastore->createCluster(cluster_name, version))) {
-            throw InvalidClusterError(std::string("Attempt to create cluster failed: ").append(cluster_name));
-        }
-    }
+    joinCluster(cluster_name, version, create_cluster);
 }
 
 shared_ptr<Cluster> ServerDirectory::cluster() const {
@@ -66,6 +55,22 @@ shared_ptr<Cluster> ServerDirectory::cluster() const {
 
 shared_ptr<Process> ServerDirectory::process() const {
     return active_process_;
+}
+
+
+void ServerDirectory::joinCluster(const std::string& cluster_name, const std::string& version, bool create_cluster) {    
+    active_cluster_ = datastore_->findClusterByName(cluster_name);
+    
+    if (!active_cluster_) {
+        // if no cluster was found and no request to create it was made, fail now
+        if (! create_cluster) {
+            throw InvalidClusterError(std::string("Attempted to join an invalid cluster: ").append(cluster_name));
+        }
+
+        if (!(active_cluster_ = datastore_->createCluster(cluster_name, version))) {
+            throw InvalidClusterError(std::string("Attempt to create cluster failed: ").append(cluster_name));
+        }
+    }
 }
 
 bool ServerDirectory::registerProcess(const string& name, const string& process_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {

@@ -107,6 +107,26 @@ TEST_F(ServerDirectoryTest, JoiningInvalidClusterThrowsException) {
     }
 }
 
+/// Can join after creating server directory instance.
+TEST_F(ServerDirectoryTest, CanJoinClusterAfterCreation) {
+    auto datastore = make_shared<MockDatastore>();
+    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
+        .WillOnce(Return(test_cluster_));
+        
+    try {
+        ServerDirectory server_directory(datastore, dispatcher_);
+
+        server_directory.joinCluster("test_cluster", "20050408-18:00");
+    
+        auto cluster = server_directory.cluster();
+
+        EXPECT_EQ("test_cluster", cluster->name());
+    } catch(...) {
+        FAIL() << "No exceptions should be thrown during a successful join";
+    }
+}
+
+
 /// Passing an optional parameter to the constructor while create a cluster
 /// and set it as the active cluster.
 TEST_F(ServerDirectoryTest, CanCreateClusterWhenJoining) {

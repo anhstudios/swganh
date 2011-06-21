@@ -31,6 +31,7 @@ namespace server_directory {
 class MockServerDirectory : public ServerDirectoryInterface
 {
 public:
+    MOCK_METHOD3(joinCluster, void (const std::string& cluster_name, const std::string& version, bool create_cluster));
     MOCK_METHOD7(registerProcess, bool(
         const std::string& name, 
         const std::string& process_type, 
