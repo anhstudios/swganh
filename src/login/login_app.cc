@@ -90,16 +90,8 @@ void LoginApp::startup()
 {
     BaseApplication::startup();
     soe_service_.Start(44453);
-    auto process = std::make_shared<anh::server_directory::Process>(2,
-        1, "ANH.Connection","Connection","1.0","127.0.0.1",44993,0,0);
-    cluster_service_->Connect(process);
 
-    packets::NetworkEventMessage nem;
-    nem.priority_id = 0;
-    nem.process_id = process->id();
-    nem.time_stamp_id = clock_->global_time();
-    auto nem_event = make_shared_event("NetworkEventMessage", std::move(nem));
-    cluster_service_->sendMessage("ANH.Connection", nem_event);
+    server_directory()->registerProcess("Login", "login", "1.0", "address", 0, 44492, 0);
 }
 
 void LoginApp::process()
