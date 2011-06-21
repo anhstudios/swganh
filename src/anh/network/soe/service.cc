@@ -50,7 +50,19 @@ using namespace tbb;
 Service::Service()
     : event_dispatcher_(nullptr)
     , crc_seed_(0xDEADBABE)
+{}
+
+Service::~Service(void)
+{	
+}
+
+void Service::Start(uint16_t port)
 {
+    socket_ = make_shared<Socket>(
+        io_service_, 
+        port, 
+        bind(&Service::OnSocketRecv_, this, placeholders::_1, placeholders::_2));
+    
     sessionless_filter_ = make_filter<void, void>(filter::serial_in_order, SessionRequestFilter(this, sessionless_messages_));
     
     incoming_filter_ = 
@@ -66,18 +78,6 @@ Service::Service()
         make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(filter::parallel, EncryptionFilter()) &
         make_filter<shared_ptr<OutgoingPacket>, shared_ptr<OutgoingPacket>>(filter::parallel, CrcOutFilter()) &
         make_filter<shared_ptr<OutgoingPacket>, void>(filter::serial_in_order, SendPacketFilter(socket_));
-}
-
-Service::~Service(void)
-{	
-}
-
-void Service::Start(uint16_t port)
-{
-    socket_ = make_shared<Socket>(
-        io_service_, 
-        port, 
-        bind(&Service::OnSocketRecv_, this, placeholders::_1, placeholders::_2));
 }
 
 void Service::Update(void)
