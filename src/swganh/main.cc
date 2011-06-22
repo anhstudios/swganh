@@ -39,8 +39,8 @@ int main(int argc, char* argv[]) {
     // add services
     shared_ptr<EventDispatcherInterface> dispatcher = make_shared<EventDispatcher>();
     shared_ptr<Clock> clock = make_shared<Clock>();
-    services->addService("EventDispatcher", make_shared<EventDispatcher>());
-    services->addService("Clock", make_shared<Clock>());
+    services->addService("EventDispatcher", dispatcher);
+    services->addService("Clock", clock);
     
     SwganhApp app(argc, argv, config, services);
     

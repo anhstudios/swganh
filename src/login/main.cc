@@ -1,13 +1,36 @@
 #include "main.h"
 
 #include <iostream>
+
+#include <glog/logging.h>
 #include <tbb/compat/thread>
 
-using namespace std;
+#include "login/login_service.h"
 
-bool API Load(std::shared_ptr<anh::module_manager::PlatformServices> services) {
-    cout << GetModuleName() << " Loading..." <<endl;
+using namespace anh;
+using namespace event_dispatcher;
+using namespace login;
+using namespace module_manager;
+using namespace std;
+using boost::any_cast;
+
+bool API Load(shared_ptr<PlatformServices> services) {
+    cout << GetModuleName() << " Loading..." << endl;
+
+    // subscribe to events
+    auto event_dispatcher = any_cast<shared_ptr<EventDispatcherInterface>>(
+        services->getService("EventDispatcher"));
+    if (event_dispatcher == nullptr)
+    {
+        LOG(FATAL) << "No Event Dispatcher Registered";
+    }
     
+    auto login_service = make_shared<LoginService>(event_dispatcher);
+
+    std::thread t([login_service]() {
+        login_service->Run();
+    });
+
     return true;
 }
 
