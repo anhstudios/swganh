@@ -100,16 +100,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 ## project libraries
 add_subdirectory(anh)
+add_subdirectory(packets)
 
 ## project modules
 add_subdirectory(test_module)
-add_subdirectory(mod_anh_transform)
-add_subdirectory(api)
-add_subdirectory(packets)
+add_subdirectory(login)
 
 ## project executables
-add_subdirectory(zone)
-add_subdirectory(login)
-add_subdirectory(connection)
 add_subdirectory(shared_services)
-add_subdirectory(script_bindings)
