@@ -107,4 +107,4 @@ add_subdirectory(test_module)
 add_subdirectory(login)
 
 ## project executables
-add_subdirectory(shared_services)
+add_subdirectory(swganh)
