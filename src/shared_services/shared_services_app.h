@@ -17,8 +17,7 @@ namespace component { class EntityBuilder; class EntityManager; }
 }
 
 namespace shared_services {
-class SharedServicesApp : public anh::BaseApplication
-{
+class SharedServicesApp : public anh::BaseApplication {
 public:
     /*! \brief Start up the SharedServices Application which controls everything on a planet.
     *
