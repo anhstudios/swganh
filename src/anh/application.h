@@ -85,10 +85,12 @@ public:
     *   \return shared_ptr to the ServerDirectory
     */
     virtual std::shared_ptr<server_directory::ServerDirectoryInterface> createServerDirectory(std::shared_ptr<sql::Connection> conn);
+
     /**
     *   creates a database manager from default configuration
     */
     virtual std::shared_ptr<database::DatabaseManager> createDatabaseManager(sql::Driver* driver);
+
     /**
     *   \brief Sets up basic logging options for logging
     */
@@ -101,7 +103,6 @@ public:
     std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher() { return event_dispatcher_; }
     std::shared_ptr<scripting::ScriptingManagerInterface> scripting_manager() { return scripting_manager_; }
     std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory() { return server_directory_; }
-    std::shared_ptr<network::cluster::ClusterServiceInterface>                  cluster_service() { return cluster_service_; }
 protected:
 
     /// helper function to init needed services
@@ -111,23 +112,26 @@ protected:
     *   adds data source from default configuration loaded in
     *   @addDefaultOptions_ /requires DatabaseManagerInterface
     */
-
     bool addDataSourcesFromOptions_();
+
     /**
     *   Adds default configuration options to be used in @loadOptions_
     *   
     */
     void addDefaultOptions_();
+
     /**
     *   Allows children to add more configuration options after defaults
     *
     */
     virtual void onAddDefaultOptions_() = 0;
+
     /**
     *   Uses loaded cluster information to register the application with the server directory
     *
     */
     void registerApp_();
+
     /// allows children to add more data sources, after defaults have been added
     virtual void onRegisterApp_() = 0;
     
@@ -140,12 +144,9 @@ protected:
      * \param config_files The files to load the options from.
      */
     void loadOptions_(uint32_t argc, char* argv[], std::list<std::string> config_files);
+
     // helper to setup modules and modules_manager
     void setupModules_();
-    /**
-    * @brief sets up the TCP services to the available processes.
-    */
-    void setupCluster_();
 
     // helper function to get required services from PlatformServices
     void getRequiredPlatformServices_();
@@ -169,11 +170,9 @@ protected:
     std::shared_ptr<event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<scripting::ScriptingManagerInterface>       scripting_manager_;
     std::shared_ptr<server_directory::ServerDirectoryInterface> server_directory_;
-    std::shared_ptr<network::cluster::ClusterServiceInterface>           cluster_service_;
     std::shared_ptr<module_manager::ModuleManager>              module_manager_;
     std::shared_ptr<module_manager::PlatformServices>           platform_services_;
 
-    boost::asio::io_service                     cluster_io_service_;
     boost::program_options::options_description configuration_options_description_;
     boost::program_options::variables_map configuration_variables_map_;
     int argc_;

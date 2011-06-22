@@ -112,8 +112,7 @@ void BaseApplication::startup() {
         loadOptions_(argc_, argv_, config_files_);
         // init services
         init_services_();
-        // load up cluster networking
-        setupCluster_();
+
         // get a database manager
         if (db_manager_ == nullptr) {
             db_manager_ = createDatabaseManager(sql::mysql::get_driver_instance());
@@ -138,9 +137,6 @@ void BaseApplication::startup() {
         setPlatformServices_();
         // setup ModuleManager and load modules
         setupModules_();
-        // start the ClusterService
-        cluster_service_->Start();
-
     }
     catch(exception e) {
         cerr << e.what() << endl;
@@ -162,24 +158,23 @@ void BaseApplication::process() {
 
     event_dispatcher_->tick(clock_->global_time());
     event_dispatcher_->trigger(process_event_);
-    cluster_service_->Update();
 }
 
 void BaseApplication::shutdown() {
     // clean up code here before the server shuts down
     event_dispatcher_->trigger(shutdown_event_);
-    cluster_service_->Shutdown();
-    cluster_io_service_.stop();
 }
 
 shared_ptr<ServerDirectoryInterface> BaseApplication::createServerDirectory(shared_ptr<sql::Connection> conn) {
     auto datastore = make_shared<Datastore>(conn);
     return make_shared<ServerDirectory>(datastore, event_dispatcher_);
-};
+}
+
 shared_ptr<DatabaseManager> BaseApplication::createDatabaseManager(sql::Driver* driver)
 {
     return make_shared<DatabaseManager>(driver);
 }
+
 void BaseApplication::setupLogging() {
     // Initialize the google logging.
     google::InitGoogleLogging(argv_[0]);
@@ -347,33 +342,6 @@ void BaseApplication::registerApp_()
         }
     }
 }
-void BaseApplication::setupCluster_() 
-{
-    // setup cluster_service
-    // get tcp port of app...
-    uint16_t port = configuration_variables_map_["cluster.tcp_port"].as<uint16_t>();
-    // create a new cluster service if one wasn't passed in
-    if (cluster_service_ == nullptr)
-    {
-        cluster_service_ = std::make_shared<ClusterService>(cluster_io_service_, server_directory_, event_dispatcher_, port);
-    }
-    // loop through processes in server_directory and open a tcp connection to each
-    if (server_directory_ != nullptr)
-    {
-        try {
-            auto proc_list = server_directory_->getProcessSnapshot(server_directory_->cluster());
-            std::for_each(proc_list.begin(), proc_list.end(), [=](anh::server_directory::Process proc) {
-                if (proc.tcp_port() != port){
-                    cluster_service_->Connect(std::make_shared<anh::server_directory::Process>(proc));
-                }
-            });
-        }
-        catch(std::exception e)
-        {
-            LOG(WARNING) << "Error with Cluster Setup: " << e.what() <<endl;
-        }
-    }
-}
 
 void BaseApplication::init_services_() 
 {
@@ -387,10 +355,12 @@ void BaseApplication::init_services_()
     // these are optional so they might not be passed in, the app can handle these values not being available.
     getOptionalPlatformServices_();
 }
+
 void BaseApplication::getPreStartupPlatformServices_()
 {
     event_dispatcher_ = boost::any_cast<shared_ptr<EventDispatcherInterface>>(platform_services_->getService("EventDispatcher"));
 }
+
 void BaseApplication::getRequiredPlatformServices_()
 {
     clock_ = boost::any_cast<shared_ptr<Clock>>(platform_services_->getService("Clock"));
@@ -407,14 +377,11 @@ void BaseApplication::getOptionalPlatformServices_()
     }
     catch(...) {}
     try {
-        cluster_service_ = boost::any_cast<shared_ptr<ClusterServiceInterface>>(platform_services_->getService("ClusterService"));
-    }
-    catch(...) {}
-    try {
         scripting_manager_ = boost::any_cast<shared_ptr<ScriptingManagerInterface>>(platform_services_->getService("ScriptingManager"));
     }
     catch(...) {}
 }
+
 void BaseApplication::setPlatformServices_()
 {
     platform_services_->addService("ProgramOptions"
@@ -428,6 +395,7 @@ void BaseApplication::setPlatformServices_()
         platform_services_->addService("ScriptingManager", scripting_manager_);
     
 }
+
 int BaseApplication::kbHit()
 {
 #if defined(_MSC_VER)

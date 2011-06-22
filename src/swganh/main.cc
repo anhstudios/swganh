@@ -33,10 +33,12 @@ int main(int argc, char* argv[]) {
     // config files
     list<string> config;
     config.push_back("config/general.cfg");
-
+    
     auto services = make_shared<PlatformServices>();
     
     // add services
+    shared_ptr<EventDispatcherInterface> dispatcher = make_shared<EventDispatcher>();
+    shared_ptr<Clock> clock = make_shared<Clock>();
     services->addService("EventDispatcher", make_shared<EventDispatcher>());
     services->addService("Clock", make_shared<Clock>());
     
