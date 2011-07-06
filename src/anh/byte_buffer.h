@@ -86,6 +86,13 @@ public:
     * buf.write(value1).write(value2); \endcode
     */
     template<typename T> ByteBuffer& write(T data);
+    /*! Writes the vector values to the ByteBuffer
+    * 
+    * \param vec Vector to write to the buffer.
+    *
+    * \return Reference to the Bytebuffer instance
+    */
+    template<typename T> ByteBuffer& write(std::vector<T> vec);
 
     /*! Writes data to the ByteBuffer without moving the write position.
     *
@@ -187,6 +194,12 @@ public:
 
     /*! \return Returns the raw ByteBuffer data */
     std::vector<unsigned char>& raw();
+    
+    /// Comparison operator: equal
+    friend bool operator==(const ByteBuffer& lhs, const ByteBuffer& rhs);
+
+    /// Comparison operator: not equal
+    friend bool operator!=(const ByteBuffer& lhs, const ByteBuffer& rhs);
 
 private:
     template<typename T> void swapEndian(T& data) const;
@@ -199,6 +212,16 @@ private:
     size_t read_position_;
     size_t write_position_;
 };
+
+inline bool operator==(const ByteBuffer& lhs, const ByteBuffer& rhs) {
+    return (lhs.data_ == rhs.data_ 
+        && lhs.read_position_ == rhs.read_position_ 
+        && lhs.write_position_ == rhs.write_position_);
+}
+
+inline bool operator!=(const ByteBuffer& lhs, const ByteBuffer& rhs) {
+    return !(lhs == rhs);
+}
 
 }  // namespace anh
 
@@ -234,6 +257,7 @@ anh::ByteBuffer& operator<<(anh::ByteBuffer& buffer, const T& value);
 * \return Reference to the output stream.
 */
 std::ostream& operator<<(std::ostream& message, const anh::ByteBuffer& buffer);
+
 
 // Move inline implementations to a separate file to
 // clean up the declaration header.

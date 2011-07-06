@@ -273,4 +273,27 @@ TEST(ByteBufferTests, CanSwapEndian)
     EXPECT_EQ(uint64_t(2), buffer.peek<uint64_t>(true));
 }
 
+TEST(ByteBufferTests, CanCompareByteBuffers) {    
+    ByteBuffer buffer1;
+    buffer1.write<int>(0);
+    buffer1.write<int>(1);
+    buffer1.write<int>(2);
+
+    ByteBuffer buffer2;
+    buffer2.write<int>(3);
+    buffer2.write<int>(4);
+    buffer2.write<int>(5);
+
+    EXPECT_EQ(buffer1, buffer1);
+    EXPECT_NE(buffer1, buffer2);
+}
+TEST(ByteBufferTests, CanWriteVectors)
+{
+    ByteBuffer buffer;
+    std::vector<uint32_t> int_vects;
+    int_vects.push_back(12345);
+    int_vects.push_back(67890);
+    buffer.write(int_vects);
+    EXPECT_EQ(2 * sizeof(int), buffer.size());
+}
 }
