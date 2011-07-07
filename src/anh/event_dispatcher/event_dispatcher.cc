@@ -93,7 +93,7 @@ bool EventDispatcher::hasRegisteredEventType(const EventType& event_type) const 
 }
 
 bool EventDispatcher::hasEvents() const {
-    return !event_queues_.front().empty();
+    return !event_queues_[active_queue_].empty();
 }
 
 bool EventDispatcher::registerEventType(EventType event_type) {
@@ -329,11 +329,9 @@ bool EventDispatcher::abort(const EventType& event_type, bool all_of_type) {
 
 bool EventDispatcher::tick(uint64_t timeout_ms) {
     // Create a new empty queue and swap it with the current active queue.
-    EventQueue process_queue = event_queues_[active_queue_];
-    event_queues_[active_queue_].clear();
-    
+    int to_process = active_queue_;    
     active_queue_ = (active_queue_ + 1) % NUM_QUEUES;
-
+        
     ptime current_time = microsec_clock::local_time();
     time_duration max_time = milliseconds(timeout_ms);
     time_period tick_period(current_time, current_time + max_time);
@@ -341,8 +339,8 @@ bool EventDispatcher::tick(uint64_t timeout_ms) {
     EventQueueItem tick_event;
     uint32_t new_placement_queue = 0;
 
-    while(!process_queue.empty()) {
-        if (!process_queue.try_pop(tick_event)) {
+    while(!event_queues_[to_process].empty()) {
+        if (!event_queues_[to_process].try_pop(tick_event)) {
             continue;
         }
 
@@ -376,10 +374,10 @@ bool EventDispatcher::tick(uint64_t timeout_ms) {
         }
     }
 
-    bool queue_flushed = process_queue.empty();
+    bool queue_flushed = event_queues_[to_process].empty();
     if (!queue_flushed) {
-        while (!process_queue.empty()) {
-            if (process_queue.try_pop(tick_event)) {
+        while (!event_queues_[to_process].empty()) {
+            if (event_queues_[to_process].try_pop(tick_event)) {
                 new_placement_queue = calculatePlacementQueue_(get<0>(tick_event)->priority());
                 event_queues_[new_placement_queue].push(tick_event);
             }
@@ -390,7 +388,7 @@ bool EventDispatcher::tick(uint64_t timeout_ms) {
 }
 
 bool EventDispatcher::validateEventType_(const EventType& event_type) const {
-    if (! event_type.ident_string().length()) {
+    if (! event_type.ident()) {
         return false;
     }
     

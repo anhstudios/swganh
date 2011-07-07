@@ -27,13 +27,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_MODULE_MANAGER_MODULE_MAIN_H
 #define ANH_MODULE_MANAGER_MODULE_MAIN_H
 
-#include <anh/component/entity_builder.h>
-#include <anh/component/entity_manager.h>
-#include <anh/event_dispatcher/event_dispatcher_interface.h>
-#include <anh/database/database_manager_interface.h>
-#include <anh/scripting/scripting_manager_interface.h>
-#include <anh/server_directory/server_directory_interface.h>
-
 #ifdef _WIN32
     #include <windows.h>
     #ifdef DLL_EXPORTS

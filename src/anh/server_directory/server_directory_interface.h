@@ -23,7 +23,7 @@
 #include <cstdint>
 
 #include <list>
-#include <anh/memory.h>
+#include <memory>
 #include <string>
 
 #include "anh/server_directory/cluster.h"
@@ -39,6 +39,8 @@ typedef std::list<Process> ProcessList;
 class ServerDirectoryInterface {
 public:
     virtual ~ServerDirectoryInterface() {}
+
+    virtual void joinCluster(const std::string& cluster_name, const std::string& version = "", bool create_cluster = false) = 0;
 
     virtual bool registerProcess(
         const std::string& name, 
@@ -56,6 +58,10 @@ public:
         int32_t new_status) = 0;
     
     virtual bool makePrimaryProcess(std::shared_ptr<Process> process) = 0;
+
+    virtual std::shared_ptr<Cluster> cluster() const = 0;
+
+    virtual std::shared_ptr<Process> process() const = 0;
 
     virtual void pulse() = 0;
     

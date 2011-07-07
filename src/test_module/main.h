@@ -1,8 +1,5 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
-#if _WIN32
-#include <windows.h>
-#endif 
 
 #include <string>
 
@@ -16,8 +13,11 @@ extern "C"
 #endif
 
 bool API Load(std::shared_ptr<anh::module_manager::PlatformServices>);
-bool API Unload(std::shared_ptr<anh::module_manager::PlatformServices>);
+void API Unload(std::shared_ptr<anh::module_manager::PlatformServices>);
+void API Start(std::shared_ptr<anh::module_manager::PlatformServices>);
+void API Stop(std::shared_ptr<anh::module_manager::PlatformServices>);
 const std::string API GetModuleName(void);
+const std::string API GetModuleType(void);
 const anh::module_manager::ModuleApiVersion API GetModuleVersion(void);
 const std::string API GetModuleDescription(void);
 

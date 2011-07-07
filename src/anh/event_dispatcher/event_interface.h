@@ -24,6 +24,7 @@
 
 #include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
+#include "anh/byte_buffer.h"
 
 namespace anh {
 namespace event_dispatcher {
@@ -42,8 +43,8 @@ public:
     virtual uint64_t timestamp() = 0;
     virtual void timestamp(uint64_t timestamp) = 0;
 
-    virtual void serialize(anh::ByteBuffer& buffer) const = 0 {}
-    virtual void deserialize(anh::ByteBuffer) = 0 {}
+    virtual void serialize(anh::ByteBuffer& buffer) const {}
+    virtual void deserialize(anh::ByteBuffer) {}
 };
 
 }  // event_dispatcher

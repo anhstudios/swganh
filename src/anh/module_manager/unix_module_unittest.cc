@@ -35,50 +35,50 @@ using namespace anh::module_manager;
 TEST(UnixModuleTests, Load_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	UnixModule module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	EXPECT_TRUE(module.Load("./test_module.so", services, module_version));
+    UnixModule module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    EXPECT_TRUE(module.Load("./mod_test_module.so", services, module_version));
 }
 
 TEST(UnixModuleTests, Unload_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	UnixModule module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.so", services, module_version);
-	module.Unload(services);
+    UnixModule module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    module.Load("./mod_test_module.so", services, module_version);
+    module.Unload(services);
 }
 
 TEST(UnixModuleTests, GetName_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	UnixModule module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.so", services, module_version);
+    UnixModule module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    module.Load("./mod_test_module.so", services, module_version);
 
-	EXPECT_EQ(std::string("DLLTest"), module.name());
+    EXPECT_EQ(std::string("DLLTest"), module.name());
 }
 
 TEST(UnixModuleTests, GetVersion_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	UnixModule module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.so", services, module_version);
+    UnixModule module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    module.Load("./mod_test_module.so", services, module_version);
 
-	EXPECT_EQ(module_version->major, module.version().major);
-	EXPECT_EQ(module_version->minor, module.version().minor);
+    EXPECT_EQ(module_version->major, module.version().major);
+    EXPECT_EQ(module_version->minor, module.version().minor);
 }
 
 TEST(UnixModuleTests, GetDescription_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	UnixModule module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.so", services, module_version);
+    UnixModule module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    module.Load("./mod_test_module.so", services, module_version);
 
-	std::string module_description = "A test module.";
-	EXPECT_EQ(module_description, module.description());
+    std::string module_description = "A test module.";
+    EXPECT_EQ(module_description, module.description());
 }
 
 #endif
