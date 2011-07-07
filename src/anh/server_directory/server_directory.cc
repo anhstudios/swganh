@@ -17,40 +17,36 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/server_directory/server_directory.h"
+#include <anh/server_directory/server_directory.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "anh/server_directory/datastore.h"
+#include <anh/event_dispatcher/event_dispatcher.h>
+#include <anh/server_directory/datastore.h>
+#include <anh/server_directory/server_directory_events.h>
 
 using namespace anh::server_directory;
+using namespace anh::event_dispatcher;
 using namespace std;
 
-ServerDirectory::ServerDirectory(shared_ptr<DatastoreInterface> datastore) 
+ServerDirectory::ServerDirectory(shared_ptr<DatastoreInterface> datastore,
+        shared_ptr<EventDispatcherInterface> event_dispatcher) 
     : datastore_(datastore)
+    , event_dispatcher_(event_dispatcher)
 {}
 
 ServerDirectory::ServerDirectory(
     shared_ptr<DatastoreInterface> datastore, 
+    std::shared_ptr<EventDispatcherInterface> event_dispatcher,
     const string& cluster_name, 
     const string& version , 
     bool create_cluster) 
     : datastore_(datastore)
+    , event_dispatcher_(event_dispatcher)
     , active_cluster_(nullptr)
     , active_process_(nullptr)
 {
-    active_cluster_ = datastore->findClusterByName(cluster_name);
-    
-    if (!active_cluster_) {
-        // if no cluster was found and no request to create it was made, fail now
-        if (! create_cluster) {
-            throw InvalidClusterError(std::string("Attempted to join an invalid cluster: ").append(cluster_name));
-        }
-
-        if (!(active_cluster_ = datastore->createCluster(cluster_name, version))) {
-            throw InvalidClusterError(std::string("Attempt to create cluster failed: ").append(cluster_name));
-        }
-    }
+    joinCluster(cluster_name, version, create_cluster);
 }
 
 shared_ptr<Cluster> ServerDirectory::cluster() const {
@@ -61,8 +57,28 @@ shared_ptr<Process> ServerDirectory::process() const {
     return active_process_;
 }
 
+
+void ServerDirectory::joinCluster(const std::string& cluster_name, const std::string& version, bool create_cluster) {    
+    active_cluster_ = datastore_->findClusterByName(cluster_name);
+    
+    if (!active_cluster_) {
+        // if no cluster was found and no request to create it was made, fail now
+        if (! create_cluster) {
+            throw InvalidClusterError(std::string("Attempted to join an invalid cluster: ").append(cluster_name));
+        }
+
+        if (!(active_cluster_ = datastore_->createCluster(cluster_name, version))) {
+            throw InvalidClusterError(std::string("Attempt to create cluster failed: ").append(cluster_name));
+        }
+    }
+}
+
 bool ServerDirectory::registerProcess(const string& name, const string& process_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
     if (active_process_ = datastore_->createProcess(active_cluster_, name, process_type, version, address, tcp_port, udp_port, ping_port)) {
+        
+        // trigger the event to let any listeners we have added the process
+        auto event_ = make_shared_event("RegisterProcess", *active_process_);
+        event_dispatcher_->trigger(event_);
         return true;
     }
 
@@ -72,8 +88,12 @@ bool ServerDirectory::registerProcess(const string& name, const string& process_
 bool ServerDirectory::removeProcess(shared_ptr<Process>& process) {
     if (datastore_->deleteProcessById(process->id())) {
         if (active_process_ && process->id() == active_process_->id()) {
+            // before we clear out the process
             active_process_ = nullptr;
         }
+        // trigger the event to let any listeners we have removed the process
+        auto remove_event = make_shared_event("RemoveProcess", *process);
+        event_dispatcher_->trigger(remove_event);
 
         process = nullptr;
 

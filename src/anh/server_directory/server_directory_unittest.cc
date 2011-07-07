@@ -26,8 +26,10 @@
 #include "anh/server_directory/datastore.h"
 #include "anh/server_directory/process.h"
 #include "anh/server_directory/server_directory.h"
+#include <anh/event_dispatcher/event_dispatcher.h>
 
 using namespace anh::server_directory;
+using namespace anh::event_dispatcher;
 using namespace std;
 using namespace boost::posix_time;
 using namespace testing;
@@ -40,6 +42,7 @@ protected:
     virtual void SetUp() {
         test_cluster_ = make_shared<Cluster>(getTestCluster());
         test_process_ = make_shared<Process>(getTestProcess());
+        dispatcher_ = make_shared<EventDispatcher>();
     }
 
     Cluster getTestCluster() {
@@ -54,6 +57,7 @@ protected:
 
     std::shared_ptr<Cluster> test_cluster_;
     std::shared_ptr<Process> test_process_;
+    std::shared_ptr<EventDispatcher> dispatcher_;
 };
 
 class MockDatastore : public DatastoreInterface {
@@ -78,7 +82,7 @@ TEST_F(ServerDirectoryTest, CreatingServerDirectoryJoinsToCluster) {
         .WillOnce(Return(test_cluster_));
         
     try {
-        ServerDirectory server_directory(datastore, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
     
         auto cluster = server_directory.cluster();
 
@@ -96,12 +100,32 @@ TEST_F(ServerDirectoryTest, JoiningInvalidClusterThrowsException) {
         .WillOnce(Return(nullptr));
 
     try {
-        ServerDirectory server_directory(datastore, "bad_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "bad_cluster", "20050408-18:00");
         FAIL() << "An exception should be thrown when given an invalid cluster name";
     } catch(const InvalidClusterError& /*e*/) {
         SUCCEED();
     }
 }
+
+/// Can join after creating server directory instance.
+TEST_F(ServerDirectoryTest, CanJoinClusterAfterCreation) {
+    auto datastore = make_shared<MockDatastore>();
+    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
+        .WillOnce(Return(test_cluster_));
+        
+    try {
+        ServerDirectory server_directory(datastore, dispatcher_);
+
+        server_directory.joinCluster("test_cluster", "20050408-18:00");
+    
+        auto cluster = server_directory.cluster();
+
+        EXPECT_EQ("test_cluster", cluster->name());
+    } catch(...) {
+        FAIL() << "No exceptions should be thrown during a successful join";
+    }
+}
+
 
 /// Passing an optional parameter to the constructor while create a cluster
 /// and set it as the active cluster.
@@ -113,7 +137,7 @@ TEST_F(ServerDirectoryTest, CanCreateClusterWhenJoining) {
         .WillOnce(Return(test_cluster_));
     
     try {
-        ServerDirectory server_directory(datastore, "test_cluster", "20050408-18:00", true);
+        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00", true);
         
         auto cluster = server_directory.cluster();
 
@@ -133,7 +157,7 @@ TEST_F(ServerDirectoryTest, RegisteringProcessMakesItActive) {
         .WillOnce(Return(test_process_));
 
     try {
-        ServerDirectory server_directory(datastore, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
 
         EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
 
@@ -155,7 +179,7 @@ TEST_F(ServerDirectoryTest, CanMakeActiveProcessThePrimaryClusterProcess) {
         .WillOnce(Return(test_process_));
 
     try {
-        ServerDirectory server_directory(datastore, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
 
         EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
         
@@ -194,7 +218,7 @@ TEST_F(ServerDirectoryTest, PulsingUpdatesActiveProcessTimestamp) {
         .WillOnce(Return(test_cluster_));
 
     try {
-        ServerDirectory server_directory(datastore, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
 
         EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
         
@@ -227,7 +251,7 @@ TEST_F(ServerDirectoryTest, RemovingProcessNullifiesIt) {
         .WillOnce(Return(true));
 
     try {
-        ServerDirectory server_directory(datastore, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
 
         EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
 
@@ -259,7 +283,7 @@ TEST_F(ServerDirectoryTest, RemovingActiveProcessNullifiesIt) {
         .WillOnce(Return(true));
 
     try {
-        ServerDirectory server_directory(datastore, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
 
         EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
 

@@ -187,6 +187,12 @@ public:
 
     /*! \return Returns the raw ByteBuffer data */
     std::vector<unsigned char>& raw();
+    
+    /// Comparison operator: equal
+    friend bool operator==(const ByteBuffer& lhs, const ByteBuffer& rhs);
+
+    /// Comparison operator: not equal
+    friend bool operator!=(const ByteBuffer& lhs, const ByteBuffer& rhs);
 
 private:
     template<typename T> void swapEndian(T& data) const;
@@ -199,6 +205,16 @@ private:
     size_t read_position_;
     size_t write_position_;
 };
+
+inline bool operator==(const ByteBuffer& lhs, const ByteBuffer& rhs) {
+    return (lhs.data_ == rhs.data_ 
+        && lhs.read_position_ == rhs.read_position_ 
+        && lhs.write_position_ == rhs.write_position_);
+}
+
+inline bool operator!=(const ByteBuffer& lhs, const ByteBuffer& rhs) {
+    return !(lhs == rhs);
+}
 
 }  // namespace anh
 
@@ -234,6 +250,7 @@ anh::ByteBuffer& operator<<(anh::ByteBuffer& buffer, const T& value);
 * \return Reference to the output stream.
 */
 std::ostream& operator<<(std::ostream& message, const anh::ByteBuffer& buffer);
+
 
 // Move inline implementations to a separate file to
 // clean up the declaration header.

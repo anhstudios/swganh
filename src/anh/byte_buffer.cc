@@ -50,13 +50,13 @@ ByteBuffer::~ByteBuffer() {}
 
 ByteBuffer::ByteBuffer(const ByteBuffer& other)
 : data_(other.data_.begin(), other.data_.end())
-, read_position_(0)
-, write_position_(other.size()) {}
+, read_position_(other.read_position_)
+, write_position_(other.write_position_) {}
 
 ByteBuffer::ByteBuffer(ByteBuffer&& other)
 : data_(std::move(other.data_))
-, read_position_(0)
-, write_position_(other.size()) {}
+, read_position_(other.read_position_)
+, write_position_(other.write_position_) {}
 
 ByteBuffer& ByteBuffer::operator=(ByteBuffer other) {
     other.swap(*this);
@@ -127,9 +127,9 @@ const unsigned char* ByteBuffer::data() const {
     return &data_[0];
 }
 
-//std::vector<unsigned char*>& ByteBuffer::raw() {
-//    return data_;
-//}
+std::vector<unsigned char>& ByteBuffer::raw() {
+    return data_;
+}
 
 template<>
 void ByteBuffer::swapEndian(uint16_t& data) const {

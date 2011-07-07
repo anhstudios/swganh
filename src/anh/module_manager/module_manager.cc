@@ -116,6 +116,38 @@ bool ModuleManager::isLoaded(HashString module_name)
     }
     return false;
 }
+
+
+void ModuleManager::StartModule(anh::HashString module_name) {
+    // check if this module is even loaded
+    ModuleIterator i = loaded_modules_.find(module_name);
+    if (i != loaded_modules_.end())
+    {
+        (*i).second->Start(services_);
+    }
+}
+
+void ModuleManager::StartModules() {
+    for_each(loaded_modules_.begin(), loaded_modules_.end(), [&] (ModulePair module) {
+        module.second->Start(services_);
+    });
+}
+
+void ModuleManager::StopModule(anh::HashString module_name) {
+    // check if this module is even loaded
+    ModuleIterator i = loaded_modules_.find(module_name);
+    if (i != loaded_modules_.end())
+    {
+        (*i).second->Stop(services_);
+    }
+}
+
+void ModuleManager::StopModules() {
+    for_each(loaded_modules_.begin(), loaded_modules_.end(), [&] (ModulePair module) {
+        module.second->Stop(services_);
+    });
+}
+
 void ModuleManager::UnloadModule(HashString module_name)
 {
     // check if this module is even loaded

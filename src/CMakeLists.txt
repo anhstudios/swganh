@@ -56,7 +56,7 @@ endif()
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
-if(NOT USE_SYSTEM_LIBRARIES)
+if(DEFINED VENDOR_PREFIX)
     set(BOOST_ROOT ${VENDOR_PREFIX}/boost)
     set(GLM_ROOT ${VENDOR_PREFIX}/glm)
     set(GLOG_ROOT ${VENDOR_PREFIX}/glog)
@@ -103,13 +103,9 @@ add_subdirectory(anh)
 
 ## project modules
 add_subdirectory(test_module)
-add_subdirectory(mod_anh_transform)
-add_subdirectory(api)
-add_subdirectory(packets)
-
-## project executables
-add_subdirectory(zone)
 add_subdirectory(login)
 add_subdirectory(connection)
-add_subdirectory(shared_services)
-add_subdirectory(script_bindings)
+add_subdirectory(character)
+
+## project executables
+add_subdirectory(swganh)

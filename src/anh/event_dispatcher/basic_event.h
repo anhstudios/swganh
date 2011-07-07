@@ -111,7 +111,7 @@ public:
     * @param buffer The source buffer to fill data with.
     */
     void serialize(anh::ByteBuffer& buffer) const {
-        serialize<std::decay<T>::type>(buffer);
+        serialize<typename std::decay<T>::type>(buffer);
     }
     
     /**
@@ -122,7 +122,7 @@ public:
     * @param buffer The source buffer to fill data with.
     */
     void deserialize(anh::ByteBuffer buffer) {       
-        deserialize<std::decay<T>::type>(std::move(buffer));
+        deserialize<typename std::decay<T>::type>(std::move(buffer));
     }
 
 private:
@@ -139,7 +139,7 @@ private:
     
     template<typename T1>
     typename std::enable_if<!detail::IsSerializable<T1>::value, void>::type
-    deserialize(anh::ByteBuffer& buffer) {}
+    deserialize(anh::ByteBuffer buffer) {}
     
     template<typename T1>
     typename std::enable_if<detail::IsSerializable<T1>::value, void>::type

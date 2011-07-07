@@ -44,7 +44,11 @@ public:
 	bool Load(const std::string& filename, std::shared_ptr<PlatformServices> services,  std::shared_ptr<ModuleApiVersion> api_version);
 	void Unload(std::shared_ptr<PlatformServices> services);
 
+	void Start(std::shared_ptr<PlatformServices> services);
+	void Stop(std::shared_ptr<PlatformServices> services);
+
 	const std::string name(void) { return get_name_func_(); }
+	const std::string type(void) { return get_type_func_(); }
 	const ModuleApiVersion version(void) { return get_version_func_(); }
 	const std::string description(void) { return get_description_func_(); }
 
@@ -52,7 +56,10 @@ private:
 	HMODULE					handle_;
 	LoadFunc				load_func_;
 	UnloadFunc				unload_func_;
+	StartFunc				start_func_;
+	StopFunc				stop_func_;
 	GetNameFunc				get_name_func_;
+	GetTypeFunc				get_type_func_;
 	GetVersionFunc			get_version_func_;
 	GetDescriptionFunc		get_description_func_;
 };
