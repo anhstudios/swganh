@@ -25,7 +25,7 @@
 #include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
 
-#include "anh/network/soe/mock_service.h"
+#include "anh/network/soe/mock_server.h"
 
 using namespace anh::network;
 using namespace boost::asio::ip;
@@ -54,12 +54,12 @@ protected:
 
     udp::endpoint buildTestEndpoint() const;
 
-    shared_ptr<NiceMock<MockService>> buildMockService() const;
+    shared_ptr<NiceMock<MockServer>> buildMockServer() const;
 };
 
 /// This test verifies that new sessions have a send sequence of 0
 TEST_F(SessionTests, NewSessionHasZeroSendSequence) {
-    auto service = buildMockService();
+    auto service = buildMockServer();
     shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
 
     EXPECT_EQ(0, session->server_sequence());
@@ -67,7 +67,7 @@ TEST_F(SessionTests, NewSessionHasZeroSendSequence) {
 
 /// This test verifies that data packets sent out on the data channel are sequenced.
 TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
-    auto service = buildMockService();
+    auto service = buildMockServer();
     shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
 
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
@@ -79,7 +79,7 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
 
 /// This test verifies that data channel messages are sent out via the soe service
 TEST_F(SessionTests, DataChannelMessagesAreSentViaSoeService) {
-    auto service = buildMockService();
+    auto service = buildMockServer();
 
     EXPECT_CALL(*service, SendMessage(_, _))
         .Times(1);
@@ -92,7 +92,7 @@ TEST_F(SessionTests, DataChannelMessagesAreSentViaSoeService) {
 
 /// This test verifies that data channel messages are stored in case they need to be re-sent.
 TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
-    auto service = buildMockService();
+    auto service = buildMockServer();
     shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
 
     // Send 3 data channel messages.
@@ -108,9 +108,9 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
 
 /// This test verifies that data channel messages are wrapped in the proper header.
 TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
-    auto service = buildMockService();
+    auto service = buildMockServer();
 
-    EXPECT_CALL(*service, SendMessage(_, Pointee(buildSimpleDataChannelPacket(1))))
+    EXPECT_CALL(*service, SendMessage(_, Pointee(buildSimpleDataChannelPacket(0))))
         .Times(1);
     
     shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
@@ -121,10 +121,10 @@ TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
 
 
 TEST_F(SessionTests, LargeDataChannelMessagesAreWrappedInFragmentedHeaderWhenSent) {
-    auto service = buildMockService();
+    auto service = buildMockServer();
     
     EXPECT_CALL(*service, SendMessage(_, _));
-    EXPECT_CALL(*service, SendMessage(_, Pointee(buildSimpleFragmentedPacket(1))))
+    EXPECT_CALL(*service, SendMessage(_, Pointee(buildSimpleFragmentedPacket(0))))
         .Times(1);
     
     shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
@@ -187,12 +187,12 @@ udp::endpoint SessionTests::buildTestEndpoint() const {
 }
 
 
-shared_ptr<NiceMock<MockService>> SessionTests::buildMockService() const {
-    auto service = make_shared<NiceMock<MockService>>();
-    ON_CALL(*service, AllocateBuffer())
+shared_ptr<NiceMock<MockServer>> SessionTests::buildMockServer() const {
+    auto server = make_shared<NiceMock<MockServer>>();
+    ON_CALL(*server, AllocateBuffer())
         .WillByDefault(Return(make_shared<ByteBuffer>()));
 
-    return service;
+    return server;
 }
 
 }}}  // namespace anh::network::soe

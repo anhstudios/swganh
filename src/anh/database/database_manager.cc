@@ -22,6 +22,7 @@
 #include "anh/database/database_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <queue>
 
 #include <cppconn/driver.h>
@@ -30,8 +31,6 @@
 
 #include <tbb/concurrent_hash_map.h>
 #include <tbb/concurrent_queue.h>
-
-#include "anh/memory.h"
 
 using namespace anh::database;
 using namespace std;

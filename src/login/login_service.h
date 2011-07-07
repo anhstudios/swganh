@@ -21,27 +21,68 @@
 #ifndef LOGIN_LOGIN_SERVICE_H_
 #define LOGIN_LOGIN_SERVICE_H_
 
+#include <map>
 #include <memory>
 
+#include <boost/program_options/options_description.hpp>
+#include <tbb/atomic.h>
+
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
-#include "anh/network/soe/service.h"
+#include "anh/network/soe/server.h"
+
+#include "swganh/character/character_service_interface.h"
+
+namespace anh {
+namespace network {
+namespace soe {
+class Server;
+}}}  // namespace anh::network::soe
 
 namespace login {
     
+class AuthenticationManager;
+
+namespace providers {
+class AccountProviderInterface;
+}
+
+class LoginClient;
+
 class LoginService {
 public:
-    explicit LoginService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>);
+    explicit LoginService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
     ~LoginService();
 
-    void Run();
+    void DescribeConfigOptions(boost::program_options::options_description& description);
+
+    void Start();
+    void Stop();
 
     bool IsRunning() const;
+
+    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
+    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    
+    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service();
+    void character_service(std::shared_ptr<swganh::character::CharacterServiceInterface> character_service);
+
 private:
     LoginService();
 
-	anh::network::soe::Service soe_service_;
+    bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    
+    std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-    bool running_;
+    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service_;
+    std::shared_ptr<AuthenticationManager> authentication_manager_;
+    std::shared_ptr<providers::AccountProviderInterface> account_provider_;
+
+    typedef std::map<uint32_t, std::shared_ptr<LoginClient>> ClientMap;
+    ClientMap clients_;
+
+    tbb::atomic<bool> running_;
+
+    uint16_t listen_port_;
 };
 
 }  // namespace login

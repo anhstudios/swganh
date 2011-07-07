@@ -66,6 +66,13 @@ public:
     *  \calls @LoadModule
     */
     void LoadModules(const std::string& file_name);
+
+    void StartModule(anh::HashString module_name);
+    void StartModules();
+
+    void StopModule(anh::HashString module_name);
+    void StopModules();
+
     /* \brief Unloads module based on HashString name
     *  \param[in] HashString module name to unload
     */

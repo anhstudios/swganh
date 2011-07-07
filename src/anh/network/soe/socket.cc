@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <anh/network/soe/socket.h>
 
+#include <glog/logging.h>
+
 #include <boost/bind.hpp>
 
 namespace anh {
@@ -34,12 +36,12 @@ namespace network {
 namespace soe {
 
 Socket::Socket(boost::asio::io_service& service, uint16_t port, NetworkCallback callback)
-	: socket_(service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port))
-	, callback_(callback)
-	, bytes_recv_(0)
-	, bytes_sent_(0)
+    : socket_(service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port))
+    , callback_(callback)
+    , bytes_recv_(0)
+    , bytes_sent_(0)
 {
-	StartRead();
+    StartRead();
 }
 
 Socket::~Socket()
@@ -47,26 +49,30 @@ Socket::~Socket()
 
 }
 
-void Socket::Send(const anh::network::SocketInterface<boost::asio::ip::udp>::endpoint& endpoint, ByteBuffer buffer) {
-	socket_.async_send_to(boost::asio::buffer(buffer.data(), buffer.size()), 
-		endpoint, 
-		[this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
-	{
-		bytes_sent_ += bytes_transferred;
-	});
+void Socket::Send(const boost::asio::ip::udp::endpoint& endpoint, ByteBuffer buffer) {
+    socket_.async_send_to(boost::asio::buffer(buffer.data(), buffer.size()), 
+        endpoint, 
+        [this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
+    {
+        if (bytes_transferred == 0) {
+            DLOG(WARNING) << "Sent 0 bytes";
+        }
+
+        bytes_sent_ += bytes_transferred;
+    });
 }
 
 void Socket::StartRead() {
-	socket_.async_receive_from(boost::asio::buffer(recv_buffer_), current_remote_endpoint_,
-		[&] (const boost::system::error_code& error, std::size_t bytes_transferred) {
-			if(bytes_transferred > 2 || !error || error == boost::asio::error::message_size)
-			{
-				bytes_recv_ += bytes_transferred;
-				callback_(current_remote_endpoint_, std::make_shared<ByteBuffer>((const unsigned char*)recv_buffer_.data(), bytes_transferred));
-			}
+    socket_.async_receive_from(boost::asio::buffer(&recv_buffer_[0], recv_buffer_.size()), current_remote_endpoint_,
+        [&] (const boost::system::error_code& error, std::size_t bytes_transferred) {
+            if(bytes_transferred > 2 || !error || error == boost::asio::error::message_size)
+            {
+                bytes_recv_ += bytes_transferred;
+                callback_(current_remote_endpoint_, std::make_shared<ByteBuffer>((const unsigned char*)recv_buffer_.data(), bytes_transferred));
+            }
 
-			StartRead();
-	});
+            StartRead();
+    });
 }
 
 } // namespace soe

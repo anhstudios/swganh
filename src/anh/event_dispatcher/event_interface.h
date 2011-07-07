@@ -43,8 +43,8 @@ public:
     virtual uint64_t timestamp() = 0;
     virtual void timestamp(uint64_t timestamp) = 0;
 
-    virtual void serialize(anh::ByteBuffer& buffer) const = 0 {}
-    virtual void deserialize(anh::ByteBuffer) = 0 {}
+    virtual void serialize(anh::ByteBuffer& buffer) const {}
+    virtual void deserialize(anh::ByteBuffer) {}
 };
 
 }  // event_dispatcher

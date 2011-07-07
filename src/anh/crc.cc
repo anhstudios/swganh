@@ -137,7 +137,7 @@ uint32_t anh::memcrc(const std::string& source_string)
     return memcrc(source_string.c_str(), source_string.length());
 }
 
-uint32_t anh::memcrc(const char* src_buffer, uint32_t length, uint32_t seed)
+uint32_t anh::memcrc(const unsigned char* src_buffer, uint32_t length, uint32_t seed)
 {
 	uint32_t newCRC = 0, index = 0;
 

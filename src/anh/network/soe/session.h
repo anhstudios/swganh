@@ -29,10 +29,10 @@
 
 #include <tbb/atomic.h>
 #include <tbb/concurrent_queue.h>
+
 #include <boost/asio.hpp>
 
-#include "anh/network/socket_interface.h"
-
+#include "anh/network/soe/packet.h"
 #include "anh/network/soe/protocol_packets.h"
 
 #ifdef SendMessage
@@ -49,10 +49,9 @@ namespace network {
 namespace soe {
 
 // FORWARD DECLARATION
-class Service;
-class SoeProtocolFilter;
-class SessionRequestFilter;
-class ServiceInterface;
+class ServerInterface;
+
+typedef std::function<void (uint32_t, std::shared_ptr<ByteBuffer>)> DatachannelHandler;
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
@@ -62,7 +61,7 @@ public:
     /**
      * Adds itself to the Session Manager.
      */
-    Session(boost::asio::ip::udp::endpoint remote_endpoint, ServiceInterface* service);
+    Session(boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface* server);
     ~Session(void);
 
     /**
@@ -70,10 +69,14 @@ public:
     */
     uint16_t server_sequence() const;
 
+    uint32_t receive_buffer_size() const;
+
     /**
      * Set the receive buffer size.
      */
     void receive_buffer_size(uint32_t receive_buffer_size);
+
+    uint32_t crc_length() const;
 
     /**
      * Set the crc length for footers
@@ -89,6 +92,8 @@ public:
      * @return The crc seed used to encrypt this session's messages.
      */
     uint32_t crc_seed() const;
+
+    void datachannel_handler(DatachannelHandler handler);
 
     /**
      * Get a list of all outgoing data channel messages that have not yet been acknowledged
@@ -108,12 +113,15 @@ public:
     * @param data_channel_payload The payload to send in the data channel message(s).
     */
     void SendMessage(anh::ByteBuffer data_channel_payload);
-
-    /**
-     * 
-     */
-    void SendMessage(std::shared_ptr<anh::event_dispatcher::EventInterface> message);
     
+    template<typename T>
+    void SendMessage(const T& message) {
+        auto message_buffer = server_->AllocateBuffer();
+        message.serialize(*message_buffer);
+        
+        outgoing_data_messages_.push(message_buffer);
+    }
+
     void HandleMessage(anh::ByteBuffer& message);
 
     /**
@@ -133,8 +141,8 @@ public:
     boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
 
 private:
-    typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
-    typedef std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>::iterator		SequencedMessageMapIterator;
+    typedef std::list<std::pair<uint16_t, std::shared_ptr<anh::ByteBuffer>>> SequencedMessageMap;
+    //typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
     
     typedef std::function<anh::ByteBuffer(uint16_t)> HeaderBuilder;
 
@@ -156,11 +164,14 @@ private:
     void AcknowledgeSequence_(const uint16_t& sequence);
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
-    ServiceInterface*					service_; // owner
+    ServerInterface*					server_; // owner
+
 
     SequencedMessageMap					sent_messages_;
 
     bool								connected_;
+
+    std::shared_ptr<DatachannelHandler> datachannel_handler_;
 
     // SOE Session Variables
     uint32_t							connection_id_;

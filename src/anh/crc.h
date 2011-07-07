@@ -60,7 +60,7 @@ uint32_t memcrc(const std::string& source_string);
  * @param seed Crc Seed.
  * @returns A 32-bit checksum of the string.
  */
-uint32_t memcrc(const char* src_buffer, uint32_t length, uint32_t seed);
+uint32_t memcrc(const unsigned char* src_buffer, uint32_t length, uint32_t seed);
 
 }  // namespace anh
 

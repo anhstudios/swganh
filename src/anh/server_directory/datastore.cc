@@ -19,6 +19,7 @@
 
 #include "anh/server_directory/datastore.h"
 
+#include <memory>
 #include <sstream>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -27,7 +28,6 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
 
-#include "anh/memory.h"
 #include "anh/server_directory/cluster.h"
 #include "anh/server_directory/process.h"
 

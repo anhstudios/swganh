@@ -28,15 +28,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_SOCKET_H_
 #define ANH_NETWORK_SOE_SOCKET_H_
 
+#include <cstdint>
+#include <array>
+#include <functional>
+#include <memory>
+
 #include <boost/asio.hpp>
-#include <boost/array.hpp>
 
 #include "anh/byte_buffer.h"
-#include "anh/network/socket_interface.h"
 
 namespace anh {
 namespace network {
 namespace soe {
+    
+// Define a common callback structure to be used by concrete SocketInterface implementations.
+typedef std::function<void(boost::asio::ip::udp::endpoint, std::shared_ptr<anh::ByteBuffer>)> NetworkCallback;
 
 /**
  * @brief A basic UDP Callback Socket.
@@ -46,48 +52,47 @@ namespace soe {
  * a ByteBuffer containing the raw packet material ( which is then to be handled by the appropriate manager ).
  *
  */
-class Socket : public anh::network::SocketInterface<boost::asio::ip::udp>
-{
+class Socket {
 public:
-	/**
-	 * @brief Default Constructor.
-	 *
-	 * @param service The boost::asio::io_service that owns this socket.
-	 * @param port The port to listen on for packet.
-	 * @param callback Function called after the message is received.
-	 */
-	Socket(boost::asio::io_service& service, uint16_t port, NetworkCallback callback);
+    /**
+     * @brief Default Constructor.
+     *
+     * @param service The boost::asio::io_service that owns this socket.
+     * @param port The port to listen on for packet.
+     * @param callback Function called after the message is received.
+     */
+    Socket(boost::asio::io_service& service, uint16_t port, NetworkCallback callback);
 
-	/**
-	 * @brief Default Deconstructor.
-	 */
-	~Socket(void);
+    /**
+     * @brief Default Deconstructor.
+     */
+    ~Socket(void);
 
-	/**
-	 * @brief Sends a message on the wire to the target endpoint.
-	 */
-	void Send(const anh::network::SocketInterface<boost::asio::ip::udp>::endpoint& endpoint, anh::ByteBuffer buffer);
+    /**
+     * @brief Sends a message on the wire to the target endpoint.
+     */
+    void Send(const boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer buffer);
 
-	/**
-	 * @returns The amount of bytes received on the socket.
-	 */
-	uint64_t bytes_recv() const { return bytes_recv_; }
+    /**
+     * @returns The amount of bytes received on the socket.
+     */
+    uint64_t bytes_recv() const { return bytes_recv_; }
 
-	/**
-	 * @returns The amount of bytes sent on the socket.
-	 */
-	uint64_t bytes_sent() const { return bytes_sent_; }
+    /**
+     * @returns The amount of bytes sent on the socket.
+     */
+    uint64_t bytes_sent() const { return bytes_sent_; }
 
 private:
-	void StartRead();
+    void StartRead();
 
-	uint64_t	bytes_recv_;
-	uint64_t	bytes_sent_;
-	NetworkCallback callback_;
+    uint64_t	bytes_recv_;
+    uint64_t	bytes_sent_;
+    NetworkCallback callback_;
 
-	boost::asio::ip::udp::socket		socket_;
-	boost::asio::ip::udp::endpoint		current_remote_endpoint_;
-	boost::array<char, 456>				recv_buffer_;
+    boost::asio::ip::udp::socket		socket_;
+    boost::asio::ip::udp::endpoint		current_remote_endpoint_;
+    std::array<char, 456>				recv_buffer_;
 };
 
 } // namespace soe

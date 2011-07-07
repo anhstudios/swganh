@@ -56,7 +56,7 @@ endif()
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
-if(NOT USE_SYSTEM_LIBRARIES)
+if(DEFINED VENDOR_PREFIX)
     set(BOOST_ROOT ${VENDOR_PREFIX}/boost)
     set(GLM_ROOT ${VENDOR_PREFIX}/glm)
     set(GLOG_ROOT ${VENDOR_PREFIX}/glog)
@@ -100,11 +100,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 ## project libraries
 add_subdirectory(anh)
-add_subdirectory(packets)
 
 ## project modules
 add_subdirectory(test_module)
 add_subdirectory(login)
+add_subdirectory(connection)
+add_subdirectory(character)
 
 ## project executables
 add_subdirectory(swganh)

@@ -42,29 +42,41 @@ Win32Module::~Win32Module(void)
 
 bool Win32Module::Load(const std::string& filename, std::shared_ptr<PlatformServices> services, std::shared_ptr<ModuleApiVersion> api_version)
 {
-	handle_ = LoadLibrary(filename.c_str());
-	if(!handle_)
-		return false;
+    handle_ = LoadLibrary(filename.c_str());
+    if(!handle_)
+        return false;
 
-	load_func_ = (LoadFunc)GetProcAddress(handle_, "Load");
-	unload_func_ = (UnloadFunc)GetProcAddress(handle_, "Unload");
-	get_name_func_ = (GetNameFunc)GetProcAddress(handle_, "GetModuleName");
-	get_version_func_ = (GetVersionFunc)GetProcAddress(handle_, "GetModuleVersion");
-	get_description_func_ = (GetDescriptionFunc)GetProcAddress(handle_, "GetModuleDescription");
+    load_func_ = (LoadFunc)GetProcAddress(handle_, "Load");
+    unload_func_ = (UnloadFunc)GetProcAddress(handle_, "Unload");
+    start_func_ = (StartFunc)GetProcAddress(handle_, "Start");
+    stop_func_ = (StopFunc)GetProcAddress(handle_, "Stop");
+    get_name_func_ = (GetNameFunc)GetProcAddress(handle_, "GetModuleName");
+    get_type_func_ = (GetNameFunc)GetProcAddress(handle_, "GetModuleType");
+    get_version_func_ = (GetVersionFunc)GetProcAddress(handle_, "GetModuleVersion");
+    get_description_func_ = (GetDescriptionFunc)GetProcAddress(handle_, "GetModuleDescription");
 
     if(*api_version.get() != get_version_func_())
         return false;
 
-	if(!load_func_(services))
-		return false;
-	else
-		return true;
+    if(!load_func_(services))
+        return false;
+    else
+        return true;
 }
 
 void Win32Module::Unload(std::shared_ptr<PlatformServices> services)
 {
-	unload_func_(services);
-	FreeLibrary(handle_);
+    unload_func_(services);
+    FreeLibrary(handle_);
+}
+
+
+void Win32Module::Start(std::shared_ptr<PlatformServices> services) {
+    start_func_(services);
+}
+
+void Win32Module::Stop(std::shared_ptr<PlatformServices> services) {
+    stop_func_(services);
 }
 
 } // namespace module_manager
