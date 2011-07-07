@@ -36,50 +36,50 @@ using namespace anh::module_manager;
 TEST(Win32ModuleTest, Load_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	Win32Module module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	EXPECT_TRUE(module.Load("./test_module.dll", services, module_version));
+    Win32Module module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    EXPECT_TRUE(module.Load("./mod_test_module.dll", services, module_version));
 }
 
 TEST(Win32ModuleTest, Unload_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	Win32Module module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.dll", services, module_version);
-	module.Unload(services);
+    Win32Module module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    module.Load("./mod_test_module.dll", services, module_version);
+    module.Unload(services);
 }
 
 TEST(Win32ModuleTest, GetName_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	Win32Module module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.dll", services, module_version);
+    Win32Module module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    module.Load("./mod_test_module.dll", services, module_version);
 
-	EXPECT_EQ(std::string("DLLTest"), module.name());
+    EXPECT_EQ(std::string("DLLTest"), module.name());
 }
 
 TEST(Win32ModuleTest, GetVersion_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	Win32Module module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.dll", services, module_version);
+    Win32Module module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    module.Load("./mod_test_module.dll", services, module_version);
 
-	EXPECT_EQ(module_version->major_ver, module.version().major_ver);
-	EXPECT_EQ(module_version->minor_ver, module.version().minor_ver);
+    EXPECT_EQ(module_version->major_ver, module.version().major_ver);
+    EXPECT_EQ(module_version->minor_ver, module.version().minor_ver);
 }
 
 TEST(Win32ModuleTest, GetDescription_Success)
 {
     auto module_version = std::make_shared<ModuleApiVersion>(0, 1, "0.1");
-	Win32Module module;
-	std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
-	module.Load("./test_module.dll", services, module_version);
+    Win32Module module;
+    std::shared_ptr<PlatformServices> services = std::make_shared<PlatformServices>();
+    module.Load("./mod_test_module.dll", services, module_version);
 
-	std::string module_description = "A test module.";
-	EXPECT_EQ(module_description, module.description());
+    std::string module_description = "A test module.";
+    EXPECT_EQ(module_description, module.description());
 }
 
 #endif

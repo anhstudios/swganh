@@ -22,13 +22,16 @@
 
 #include <cstdint>
 #include <map>
-#include <anh/memory.h>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
 #include "anh/server_directory/cluster.h"
 #include "anh/server_directory/process.h"
 #include "anh/server_directory/server_directory_interface.h"
+
+// Forward Declare
+namespace anh { namespace event_dispatcher { class EventDispatcherInterface; }  }
 
 namespace anh {
 namespace server_directory {
@@ -52,11 +55,16 @@ public:
 */
 class ServerDirectory : public ServerDirectoryInterface{
 public:
-    explicit ServerDirectory(std::shared_ptr<DatastoreInterface> datastore);
-    ServerDirectory(std::shared_ptr<DatastoreInterface> datastore, const std::string& cluster_name, const std::string& version, bool create_cluster = false);
+    explicit ServerDirectory(std::shared_ptr<DatastoreInterface> datastore, 
+        std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    ServerDirectory(std::shared_ptr<DatastoreInterface> datastore, 
+        std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher
+        , const std::string& cluster_name, const std::string& version = "", bool create_cluster = false);
 
     std::shared_ptr<Cluster> cluster() const;
     std::shared_ptr<Process> process() const;
+        
+    void joinCluster(const std::string& cluster_name, const std::string& version = "", bool create_cluster = false);
 
     bool registerProcess(const std::string& name, const std::string& process_type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping);
     bool removeProcess(std::shared_ptr<Process>& process);
@@ -73,6 +81,8 @@ private:
     std::shared_ptr<DatastoreInterface> datastore_;
     std::shared_ptr<Cluster> active_cluster_;
     std::shared_ptr<Process> active_process_;
+
+    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>    event_dispatcher_;
 };
 
 }  // namespace server_directory

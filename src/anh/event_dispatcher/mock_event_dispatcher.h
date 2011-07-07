@@ -33,7 +33,6 @@ public:
     MOCK_CONST_METHOD1(hasRegisteredEventType, bool(const EventType& event_type));
     MOCK_CONST_METHOD0(hasEvents, bool());
     MOCK_METHOD1(registerEventType, bool(EventType event_type));
-    MOCK_CONST_METHOD0(registered_event_types, EventTypeSet());
     MOCK_METHOD2(subscribe, uint64_t(const EventType& event_type, EventListenerCallback listener));
     MOCK_METHOD1(unsubscribe, void(const EventType& event_type));
     MOCK_METHOD2(unsubscribe, void(const EventType& event_type, uint64_t listener_id));

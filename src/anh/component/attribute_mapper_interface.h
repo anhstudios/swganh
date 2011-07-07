@@ -19,8 +19,8 @@
 #ifndef ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_
 #define ANH_COMPONENT_ATTRIBUTE_MAPPER_INTERFACE_H_
 
-#include <anh/memory.h>
 #include <cstdint>
+#include <memory>
 
 namespace anh { 
 namespace component {

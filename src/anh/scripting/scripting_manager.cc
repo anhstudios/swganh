@@ -17,10 +17,11 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "scripting_manager.h"
+#include <anh/event_dispatcher/event_dispatcher.h>
+
 #include <iostream>
 #include <fstream>
 #include <boost/python.hpp>
-#include <anh/event_dispatcher/event_dispatcher.h>
 #include <glog/logging.h>
 
 
@@ -44,7 +45,6 @@ ScriptingManager::~ScriptingManager()
 }
 void ScriptingManager::load(const string& filename)
 {
-    
     try{              
         string input_str(&getFileInput_(filename)[0]);
         if (input_str.length() > 0)

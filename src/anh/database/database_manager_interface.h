@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define ANH_DATABASE_DATABASE_MANAGER_INTERFACE_H_
 
 #include <cstdint>
-#include <anh/memory.h>
+#include <memory>
 #include <string>
 
 #include <boost/noncopyable.hpp>

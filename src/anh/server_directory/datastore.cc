@@ -19,6 +19,7 @@
 
 #include "anh/server_directory/datastore.h"
 
+#include <memory>
 #include <sstream>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -27,7 +28,6 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
 
-#include "anh/memory.h"
 #include "anh/server_directory/cluster.h"
 #include "anh/server_directory/process.h"
 
@@ -113,7 +113,7 @@ std::shared_ptr<Process> Datastore::createProcess(std::shared_ptr<Cluster> clust
                              "address, "
                              "tcp_port, "
                              "udp_port, "
-                             "ping_Port, "
+                             "ping_port, "
                              "status, "
                              "last_pulse, "
                              "created_at, "
@@ -133,7 +133,7 @@ std::shared_ptr<Process> Datastore::createProcess(std::shared_ptr<Cluster> clust
     statement->setUInt(6, static_cast<uint32_t>(tcp_port));
     statement->setUInt(7, static_cast<uint32_t>(udp_port));
     statement->setUInt(8, static_cast<uint32_t>(ping_port));
-    statement->setUInt(9, static_cast<int32_t>(-1));
+    statement->setInt(9, static_cast<int32_t>(-1));
     
     if (! (statement->executeUpdate() > 0)) {
         return nullptr;

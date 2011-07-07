@@ -29,7 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define SRC_UTILS_ACTIVEOBJECT_H_
 
 #include <functional>
-#include <anh/memory.h>
 
 #include <boost/thread.hpp>
 #include <tbb/concurrent_queue.h>

@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_MODULE_UNIX_MODULE_H_
 #define ANH_MODULE_UNIX_MODULE_H_
 
-#ifdef UNIX
+#ifndef WIN32
 
 #include <dlfcn.h>
 #include <anh/module_manager/module_interface.h>

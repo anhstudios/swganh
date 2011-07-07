@@ -1,4 +1,5 @@
 # ignore directories created for the build process
+bin/*
 build/*
 vendor/*
 
