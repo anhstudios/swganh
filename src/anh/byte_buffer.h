@@ -86,6 +86,13 @@ public:
     * buf.write(value1).write(value2); \endcode
     */
     template<typename T> ByteBuffer& write(T data);
+    /*! Writes the vector values to the ByteBuffer
+    * 
+    * \param vec Vector to write to the buffer.
+    *
+    * \return Reference to the Bytebuffer instance
+    */
+    template<typename T> ByteBuffer& write(std::vector<T> vec);
 
     /*! Writes data to the ByteBuffer without moving the write position.
     *

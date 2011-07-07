@@ -287,5 +287,13 @@ TEST(ByteBufferTests, CanCompareByteBuffers) {
     EXPECT_EQ(buffer1, buffer1);
     EXPECT_NE(buffer1, buffer2);
 }
-
+TEST(ByteBufferTests, CanWriteVectors)
+{
+    ByteBuffer buffer;
+    std::vector<uint32_t> int_vects;
+    int_vects.push_back(12345);
+    int_vects.push_back(67890);
+    buffer.write(int_vects);
+    EXPECT_EQ(2 * sizeof(int), buffer.size());
+}
 }
