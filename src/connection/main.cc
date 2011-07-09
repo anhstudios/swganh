@@ -45,15 +45,13 @@ bool API Load(shared_ptr<PlatformServices> services) {
     cout << GetModuleName() << " Loading..." << endl;
     
     // subscribe to events
-    auto event_dispatcher = any_cast<shared_ptr<EventDispatcherInterface>>(
-        services->getService("EventDispatcher"));
+    auto event_dispatcher = services->getService<shared_ptr<EventDispatcherInterface>>("EventDispatcher");
     
     if (!event_dispatcher) {
         LOG(FATAL) << "No Event Dispatcher Registered";
     }
         
-    auto module_config = any_cast<pair<options_description, variables_map>*>(
-        services->getService("ModuleConfig"));
+    auto module_config = services->getService<pair<options_description, variables_map>*>("ModuleConfig");
     
     if (!module_config) {
         LOG(FATAL) << "No ModuleConfig container registered!";

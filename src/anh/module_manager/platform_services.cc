@@ -61,19 +61,6 @@ bool PlatformServices::addService(Service service_name, boost::any service)
 	}
 }
 
-boost::any PlatformServices::getService(Service service_name)
-{
-	ServiceMapIterator i = services_.find(service_name);
-	if(i != services_.end())
-	{
-		return (*i).second;
-	}
-	else
-	{
-		return boost::any();
-	}
-}
-
 bool PlatformServices::hasService(Service service_name)
 {
 	ServiceMapIterator i = services_.find(service_name);
@@ -84,6 +71,19 @@ bool PlatformServices::hasService(Service service_name)
 	else
 	{
 		return false;
+	}
+}
+
+boost::any PlatformServices::getService_(Service service_name)
+{
+	ServiceMapIterator i = services_.find(service_name);
+	if(i != services_.end())
+	{
+		return (*i).second;
+	}
+	else
+	{
+		return boost::any();
 	}
 }
 

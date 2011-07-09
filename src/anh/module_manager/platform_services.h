@@ -62,11 +62,11 @@ public:
 	 * Removes a service from the Platform Services.
 	 */
 	void removeService(Service service_name);
-
-	/**
-	 * Finds and returns a service from the Platform Services.
-	 */
-	boost::any getService(Service service_name);
+    
+    template<typename T>
+    T getService(Service service_name) {        
+        return boost::any_cast<T>(getService_(service_name));
+    }
 
 	/**
 	 * 
@@ -76,6 +76,11 @@ public:
 private:
 	typedef std::map<Service, boost::any>			ServiceMap;
 	typedef std::map<Service, boost::any>::iterator ServiceMapIterator;
+    
+	/**
+	 * Finds and returns a service from the Platform Services.
+	 */
+	boost::any getService_(Service service_name);
 
 	ServiceMap services_;
 };

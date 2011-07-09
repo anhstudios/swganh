@@ -66,6 +66,6 @@ TEST(PlatformServicesTests, GetService)
 {
 	PlatformServices platform_services;
 	platform_services.addService("test_platform_service", boost::any(new TestPlatformService()));
-	EXPECT_TRUE(boost::any_cast<TestPlatformService*>(platform_services.getService("test_platform_service"))->actionPerformedReturnTrue());
-	EXPECT_FALSE(boost::any_cast<TestPlatformService*>(platform_services.getService("test_platform_service"))->actionPerformedReturnFalse());
+	EXPECT_TRUE(platform_services.getService<TestPlatformService*>("test_platform_service")->actionPerformedReturnTrue());
+	EXPECT_FALSE(platform_services.getService<TestPlatformService*>("test_platform_service")->actionPerformedReturnFalse());
 }
