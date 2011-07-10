@@ -22,6 +22,7 @@
 #define SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
 
 #include <cstdint>
+#include <tuple>
 #include <vector>
 
 #include "swganh/character/character_data.h"
@@ -34,7 +35,10 @@ public:
     virtual ~CharacterServiceInterface() {}
     
     virtual std::vector<character::CharacterData> GetCharactersForAccount(uint64_t account_id) = 0;
-
+    virtual bool DeleteCharacter(uint64_t character_id, uint32_t server_id) = 0;
+    virtual std::wstring GetRandomNameRequest(const std::string& base_model) = 0;
+    virtual bool UpdateCharacterStatus(uint64_t character_id, uint32_t status) = 0;
+    virtual std::tuple<uint64_t, std::string> CreateCharacter(const CharacterCreateInfo& character_info) = 0;
 };
 
 }}  // namespace swganh::character

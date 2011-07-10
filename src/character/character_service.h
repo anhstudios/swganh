@@ -44,7 +44,16 @@ public:
     // CharacterService API Methods
 
     std::vector<swganh::character::CharacterData> GetCharactersForAccount(uint64_t account_id);
+    bool DeleteCharacter(uint64_t character_id, uint32_t server_id);
+    std::wstring GetRandomNameRequest(const std::string& base_model);
+    bool UpdateCharacterStatus(uint64_t character_id, uint32_t status);
+    std::tuple<uint64_t, std::string> CreateCharacter(const swganh::character::CharacterCreateInfo& character_info);
 private:
+    // helpers
+    std::string parseAppearance_(const uint16_t appearance_data[appearance_size]);
+    std::string parseBio_(const std::string& bio);
+    std::string parseHair_(const std::string& hair_model, const uint16_t hair_customization_1, const uint16_t hair_customization_2);
+    std::string setCharacterCreateErrorCode_(uint32_t error_id);
     std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 

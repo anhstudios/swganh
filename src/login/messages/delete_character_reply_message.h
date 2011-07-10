@@ -24,7 +24,6 @@
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
-namespace swganh {
 namespace login {
 namespace messages {
     

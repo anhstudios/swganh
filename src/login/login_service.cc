@@ -32,6 +32,8 @@
 
 #include "swganh/base/swg_message_handler.h"
 
+#include "login/messages/delete_character_message.h"
+#include "login/messages/delete_character_reply_message.h"
 #include "login/messages/enumerate_character_id.h"
 #include "login/messages/login_client_id.h"
 #include "login/messages/login_client_token.h"
@@ -95,6 +97,7 @@ void LoginService::subscribe() {
     soe_server_->event_dispatcher(event_dispatcher_);
 
     event_dispatcher_->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
+    event_dispatcher_->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
 }
 
 shared_ptr<CharacterServiceInterface> LoginService::character_service() {
@@ -193,6 +196,24 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
     character_message.characters = characters;
     
     remote_event->session()->SendMessage(character_message);
+
+    return true;
+}
+
+bool LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
+    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
+    
+    DeleteCharacterMessage message;
+    message.deserialize(*remote_event->message());
+
+    DeleteCharacterReplyMessage reply_message;
+    reply_message.failure_flag = 1;
+
+    if (character_service_->DeleteCharacter(message.character_id, message.server_id))
+    {
+        reply_message.failure_flag = 0;
+    }
+    remote_event->session()->SendMessage(reply_message);
 
     return true;
 }
