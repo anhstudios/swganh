@@ -19,21 +19,33 @@
 */
 
 #include "character/character_service.h"
+#include <glog/logging.h>
+
+#include "anh/database/database_manager.h"
 
 using namespace swganh::character;
 using namespace character;
+using namespace anh;
+using namespace event_dispatcher;
+using namespace database;
 using namespace std;
 
-CharacterService::CharacterService() {}
+CharacterService::CharacterService(shared_ptr<EventDispatcherInterface> event_dispatcher
+,shared_ptr<DatabaseManagerInterface> db_manager) 
+    : BaseService(event_dispatcher)
+    , db_manager_(db_manager) {}
 
 CharacterService::~CharacterService() {}
 
-void CharacterService::Start() {}
-
-void CharacterService::Stop() {}
-
-bool CharacterService::IsRunning() const { return false; }
-
+void CharacterService::onStart() {
+}
+void CharacterService::onStop() {
+}
+void CharacterService::Update() {
+}
+void CharacterService::subscribe() {
+    DLOG(WARNING) << "Subscribe hit";
+}
 
 vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account_id) {
     vector<CharacterData> characters;

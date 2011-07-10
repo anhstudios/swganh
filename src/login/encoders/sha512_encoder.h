@@ -22,17 +22,23 @@
 #define LOGIN_ENCODERS_SHA512_ENCODER_H_
 
 #include "login/encoders/encoder_interface.h"
+#include <memory>
+
+namespace anh { namespace database { class DatabaseManagerInterface; 
+}}  // anh::database
 
 namespace login {
 namespace encoders {
 
 class Sha512Encoder : public EncoderInterface {
 public:
-    Sha512Encoder();
+    explicit Sha512Encoder(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
     ~Sha512Encoder();
 
     std::string EncodePassword(std::string raw, std::string salt);
     bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
+private:
+    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 
 }}  // namespace login::encoders

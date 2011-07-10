@@ -35,6 +35,10 @@ namespace event_dispatcher {
 class EventDispatcherInterface;
 }  // namespace event_dispatcher
 
+namespace database {
+class DatabaseManagerInterface; 
+}  // namespace database
+
 namespace module_manager {
 class ModuleManager;
 class PlatformServices;
@@ -86,6 +90,7 @@ private:
     void LoadModules_(std::vector<std::string> modules);
 
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
+    std::shared_ptr<anh::database::DatabaseManagerInterface>         db_manager_;
     std::shared_ptr<anh::module_manager::ModuleManager>              module_manager_;
     std::shared_ptr<anh::module_manager::PlatformServices>           platform_services_;
 

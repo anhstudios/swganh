@@ -33,6 +33,7 @@
 #include "login/login_service.h"
 
 using namespace anh;
+using namespace database;
 using namespace swganh::character;
 using namespace event_dispatcher;
 using namespace login;
@@ -55,6 +56,13 @@ bool API Load(shared_ptr<PlatformServices> services) {
         LOG(FATAL) << "No Event Dispatcher Registered";
     }
 
+    auto db_manager = any_cast<shared_ptr<DatabaseManagerInterface>>(
+        services->getService("DatabaseManager"));
+    
+    if (!db_manager) {
+        LOG(FATAL) << "No Database Manager Registered";
+    }
+
     auto module_config = any_cast<pair<options_description, variables_map>*>(
         services->getService("ModuleConfig"));
     
@@ -63,7 +71,7 @@ bool API Load(shared_ptr<PlatformServices> services) {
         return false;
     }
 
-    login_service = make_shared<LoginService>(event_dispatcher);
+    login_service = make_shared<LoginService>(event_dispatcher, db_manager);
 
     login_service->DescribeConfigOptions(module_config->first);
     

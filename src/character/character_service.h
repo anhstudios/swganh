@@ -23,21 +23,29 @@
 
 #include "swganh/character/character_service_interface.h"
 
+#include "swganh/base/base_service.h"
+
+namespace anh { namespace database { class DatabaseManagerInterface; } }
+
 namespace character {
     
-class CharacterService : public swganh::character::CharacterServiceInterface {
+class CharacterService : public swganh::base::BaseService, public swganh::character::CharacterServiceInterface {
 public:
-    CharacterService();
+    CharacterService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher,
+                     std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
     ~CharacterService();
 
-    void Start();
-    void Stop();
+    void onStart();
+    void onStop();
+    void Update();
 
-    bool IsRunning() const;
+    void subscribe();
 
     // CharacterService API Methods
 
     std::vector<swganh::character::CharacterData> GetCharactersForAccount(uint64_t account_id);
+private:
+    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 
 }  // namespace character

@@ -22,6 +22,8 @@
 
 #include <glog/logging.h>
 
+#include "anh/database/database_manager.h"
+
 #include "anh/event_dispatcher/basic_event.h"
 
 #include "anh/network/soe/packet.h"
@@ -42,62 +44,55 @@
 #include "login/providers/mysql_account_provider.h"
 
 using namespace anh;
-using namespace swganh::character;
+using namespace swganh;
+using namespace base;
+using namespace character;
+using namespace database;
 using namespace event_dispatcher;
 using namespace login;
 using namespace messages;
 using namespace std;
 
-LoginService::LoginService(shared_ptr<EventDispatcherInterface> event_dispatcher) 
-    : listen_port_(0) {
-        
+LoginService::LoginService(shared_ptr<EventDispatcherInterface> event_dispatcher,
+                           shared_ptr<DatabaseManagerInterface> db_manager) 
+    : BaseService(event_dispatcher)
+    , listen_port_(0) {
+    
     soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(event_dispatcher)));
-
+    
     this->event_dispatcher(event_dispatcher);
 
-    auto encoder = make_shared<encoders::Sha512Encoder>();
+    auto encoder = make_shared<encoders::Sha512Encoder>(db_manager);
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
-    account_provider_ = make_shared<providers::MysqlAccountProvider>();
-
-    running_ = false;
+    account_provider_ = make_shared<providers::MysqlAccountProvider>(db_manager);
 }
 
 LoginService::~LoginService() {}
 
 void LoginService::DescribeConfigOptions(boost::program_options::options_description& description) {
+    BaseService::DescribeConfigOptions(description);
+
     description.add_options()
         ("service.login.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
             "The port the login service will listen for incoming client connections on")
     ;
 }
 
-void LoginService::Start() {
-    running_ = true;
-
+void LoginService::onStart() {
     soe_server_->Start(listen_port_);
+}
 
-    while(IsRunning()) {
-        soe_server_->Update();
-        event_dispatcher_->tick();
-    }
+void LoginService::Update() {
+    soe_server_->Update();
+}
 
+void LoginService::onStop() {
     soe_server_->Shutdown();
 }
 
-void LoginService::Stop() {
-    running_ = false;
-}
-
-bool LoginService::IsRunning() const { return running_; }
-
-shared_ptr<EventDispatcherInterface> LoginService::event_dispatcher() {
-    return event_dispatcher_;
-}
-
-void LoginService::event_dispatcher(shared_ptr<EventDispatcherInterface> event_dispatcher) {
-    event_dispatcher_ = event_dispatcher;
-    soe_server_->event_dispatcher(event_dispatcher);
+void LoginService::subscribe() {
+    soe_server_->event_dispatcher(event_dispatcher_);
 
     event_dispatcher_->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
 }

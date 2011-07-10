@@ -22,14 +22,10 @@
 #define LOGIN_LOGIN_SERVICE_H_
 
 #include <map>
-#include <memory>
 
-#include <boost/program_options/options_description.hpp>
-#include <tbb/atomic.h>
-
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/network/soe/server.h"
 
+#include "swganh/base/base_service.h"
 #include "swganh/character/character_service_interface.h"
 
 namespace anh {
@@ -37,6 +33,11 @@ namespace network {
 namespace soe {
 class Server;
 }}}  // namespace anh::network::soe
+
+namespace anh {
+namespace database {
+class DatabaseManagerInterface; 
+}}  // namespace anh::database
 
 namespace login {
     
@@ -48,20 +49,19 @@ class AccountProviderInterface;
 
 class LoginClient;
 
-class LoginService {
+class LoginService : public swganh::base::BaseService {
 public:
-    explicit LoginService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    explicit LoginService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher,
+                          std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
     ~LoginService();
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
 
-    void Start();
-    void Stop();
+    void onStart();
+    void onStop();
+    void Update();
 
-    bool IsRunning() const;
-
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
-    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    void subscribe();
     
     std::shared_ptr<swganh::character::CharacterServiceInterface> character_service();
     void character_service(std::shared_ptr<swganh::character::CharacterServiceInterface> character_service);
@@ -72,15 +72,12 @@ private:
     bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<swganh::character::CharacterServiceInterface> character_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
 
     typedef std::map<uint32_t, std::shared_ptr<LoginClient>> ClientMap;
     ClientMap clients_;
-
-    tbb::atomic<bool> running_;
 
     uint16_t listen_port_;
 };

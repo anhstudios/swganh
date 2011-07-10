@@ -30,6 +30,8 @@
 using namespace anh;
 using namespace swganh::character;
 using namespace character;
+using namespace database;
+using namespace event_dispatcher;
 using namespace module_manager;
 using namespace std;
 using boost::any_cast;
@@ -39,7 +41,20 @@ static std::shared_ptr<CharacterService> character_service;
 bool API Load(shared_ptr<PlatformServices> services) {
     cout << GetModuleName() << " Loading..." << endl;
 
-    character_service = make_shared<CharacterService>();
+    auto event_dispatcher = any_cast<shared_ptr<EventDispatcherInterface>>(
+        services->getService("EventDispatcher"));
+    
+    if (!event_dispatcher) {
+        LOG(FATAL) << "No Event Dispatcher Registered";
+    }
+    auto db_manager = any_cast<shared_ptr<DatabaseManagerInterface>>(
+        services->getService("DatabaseManager"));
+    
+    if (!db_manager) {
+        LOG(FATAL) << "No Database Manager Registered";
+    }
+
+    character_service = make_shared<CharacterService>(event_dispatcher, db_manager);
 
     services->addService("CharacterService", static_pointer_cast<CharacterServiceInterface>(character_service));
 

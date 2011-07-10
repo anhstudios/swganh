@@ -30,10 +30,10 @@
 
 #include "swganh/base/swg_message_handler.h"
 
-#include "swganh/zone/scene/messages/cmd_scene_ready.h"
-#include "swganh/zone/scene/messages/cmd_start_scene.h"
-#include "swganh/zone/scene/messages/scene_create_object_by_crc.h"
-#include "swganh/zone/scene/messages/scene_end_baselines.h"
+#include "swganh/scene/messages/cmd_scene_ready.h"
+#include "swganh/scene/messages/cmd_start_scene.h"
+#include "swganh/scene/messages/scene_create_object_by_crc.h"
+#include "swganh/scene/messages/scene_end_baselines.h"
 
 #include "connection/messages/client_permissions_message.h"
 
@@ -41,17 +41,16 @@ using namespace anh;
 using namespace event_dispatcher;
 using namespace connection;
 using namespace messages;
-using namespace swganh::zone::scene::messages;
+using namespace swganh::scene::messages;
 using namespace std;
 
 ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> event_dispatcher) 
-    : listen_port_(0) {
+    : BaseService(event_dispatcher)
+    , listen_port_(0) {
         
     soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(event_dispatcher)));
 
     this->event_dispatcher(event_dispatcher);
-
-    running_ = false;
 }
 
 ConnectionService::~ConnectionService() {}
@@ -63,32 +62,20 @@ void ConnectionService::DescribeConfigOptions(boost::program_options::options_de
     ;
 }
 
-void ConnectionService::Start() {
-    running_ = true;
-
+void ConnectionService::onStart() {
     soe_server_->Start(listen_port_);
+}
 
-    while(IsRunning()) {
-        soe_server_->Update();
-        event_dispatcher_->tick();
-    }
+void ConnectionService::Update() {
+    soe_server_->Update();
+}
 
+void ConnectionService::onStop() {
     soe_server_->Shutdown();
 }
 
-void ConnectionService::Stop() {
-    running_ = false;
-}
-
-bool ConnectionService::IsRunning() const { return running_; }
-
-shared_ptr<EventDispatcherInterface> ConnectionService::event_dispatcher() {
-    return event_dispatcher_;
-}
-
-void ConnectionService::event_dispatcher(shared_ptr<EventDispatcherInterface> event_dispatcher) {
-    event_dispatcher_ = event_dispatcher;
-    soe_server_->event_dispatcher(event_dispatcher);
+void ConnectionService::subscribe() {
+    soe_server_->event_dispatcher(event_dispatcher_);
     
     event_dispatcher_->subscribe("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1));
     event_dispatcher_->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));

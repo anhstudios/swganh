@@ -28,6 +28,11 @@
 
 #include <glog/logging.h>
 
+#include <mysql_driver.h>
+#include <cppconn/connection.h>
+#include <cppconn/driver.h>
+
+#include <anh/database/database_manager.h>
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/module_manager/module_manager.h>
 #include <anh/module_manager/platform_services.h>
@@ -36,6 +41,7 @@
 
 using namespace anh;
 using namespace boost::program_options;
+using namespace database;
 using namespace event_dispatcher;
 using namespace module_manager;
 using namespace std;
@@ -79,6 +85,7 @@ options_description AppConfig::BuildConfigDescription() {
 SwganhApp::SwganhApp()
     : event_dispatcher_(make_shared<EventDispatcher>())
     , platform_services_(make_shared<PlatformServices>()) 
+    , db_manager_(make_shared<DatabaseManager>(sql::mysql::get_driver_instance()))
 {
     running_ = false;
 }
@@ -88,6 +95,13 @@ SwganhApp::~SwganhApp() {}
 void SwganhApp::Initialize(int argc, char* argv[]) {    
     LoadAppConfig_(argc, argv, app_config_);
     
+    db_manager_->registerStorageType("galaxy_db", app_config_.galaxy_db.schema, app_config_.galaxy_db.host,
+        app_config_.galaxy_db.username, app_config_.galaxy_db.password);
+    /*db_manager_->registerStorageType("galaxy_manager_db", app_config_.galaxy_manager_db.schema,
+        app_config_.galaxy_manager_db.host, app_config_.galaxy_manager_db.username,
+        app_config_.galaxy_manager_db.password);*/
+
+    platform_services_->addService("DatabaseManager", db_manager_);
     platform_services_->addService("EventDispatcher", event_dispatcher_);
     platform_services_->addService("ModuleConfig", &module_config_);
     platform_services_->addService("AppConfig", &app_config_);
