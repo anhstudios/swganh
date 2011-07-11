@@ -28,6 +28,8 @@
 
 #include <glog/logging.h>
 
+#include "swganh/character/character_service_interface.h"
+
 #include "connection/connection_service.h"
 
 using namespace anh;
@@ -72,6 +74,13 @@ bool API Load(shared_ptr<PlatformServices> services) {
 void API Unload(std::shared_ptr<anh::module_manager::PlatformServices> services) {}
 
 void API Start(std::shared_ptr<anh::module_manager::PlatformServices> services) {    
+    if (!services->hasService("CharacterService")) {
+        cout << "No Character Service Found" << endl;
+    } else {
+        auto character_service = any_cast<shared_ptr<swganh::character::CharacterServiceInterface>>(services->getService("CharacterService"));
+        connection_service->character_service(character_service);
+        cout << "Found Character Service" << endl;
+    }
     boost::thread t([] () { connection_service->Start(); });
 }
 

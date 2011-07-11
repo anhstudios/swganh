@@ -22,6 +22,8 @@
 #define SWGANH_CHARACTER_CHARACTER_DATA_H_
 
 #include <string>
+#include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace swganh {
 namespace character {
@@ -32,6 +34,14 @@ struct CharacterData {
     uint32_t race_crc;
     uint32_t galaxy_id;
     uint32_t status;
+};
+struct CharacterLoginData {
+    uint64_t character_id;
+    uint32_t race_crc;
+    glm::vec3 position;
+    glm::quat orientation;
+    std::string terrain_map;
+    std::string race_template;
 };
 #define appearance_size 0x255
 #define hair_customization_size 0x71

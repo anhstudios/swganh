@@ -24,6 +24,7 @@
 #include "anh/network/soe/server.h"
 
 #include "swganh/base/base_service.h"
+#include "swganh/character/character_service_interface.h"
 
 namespace connection {
     
@@ -40,12 +41,17 @@ public:
 
     void subscribe();
 
+    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service();
+    void character_service(std::shared_ptr<swganh::character::CharacterServiceInterface> character_service);
+
 private:
     bool HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleSelectCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    bool HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
+    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service_;
     
     uint16_t listen_port_;
 };

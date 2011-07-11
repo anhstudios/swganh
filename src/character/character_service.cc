@@ -30,6 +30,10 @@
 
 #include <glog/logging.h>
 
+#include <iomanip>
+
+#include "anh/crc.h"
+
 #ifdef WIN32
 #include <regex>
 #else
@@ -38,8 +42,16 @@
 
 #include "anh/database/database_manager.h"
 
+#ifdef WIN32
+#else
+using boost::wregex;
+using boost::wsmatch;
+using boost::regex_match;
+#endif
+
 using namespace swganh::character;
 using namespace character;
+using namespace connection::messages;
 using namespace anh;
 using namespace event_dispatcher;
 using namespace database;
@@ -79,19 +91,42 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
         while (result_set->next())
         {
             CharacterData character;
-            character.character_id = result_set->getUInt64("character_id");
-            string name = result_set->getString("name");
+            character.character_id = result_set->getUInt64("id");
+            string name = result_set->getString("firstname") + " " + result_set->getString("lastname");
             character.name = std::wstring(name.begin(), name.end());
-            character.race_crc = result_set->getInt("race_crc");
-            character.galaxy_id = result_set->getUInt("server_id");
-            character.status = result_set->getInt("status");
+            character.race_crc = anh::memcrc(result_set->getString("base_model_string"));
+            character.galaxy_id = result_set->getUInt("galaxy_id");
+            character.status = 1 /*result_set->getInt("status")*/;
             characters.push_back(character);
         } while (statement->getMoreResults());
     }
 
     return characters;
 }
+CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
+    CharacterLoginData character;
+    string sql = "SELECT sf_GetLoginCharacter(?);";
+    auto conn = db_manager_->getConnection("galaxy_db");
+    auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+    statement->setUInt64(1, character_id);
 
+    auto result_set = statement->executeQuery();
+    if (result_set->next())
+    {
+        character.character_id = result_set->getUInt64("id");
+        character.position.x = result_set->getDouble("x");
+        character.position.y = result_set->getDouble("y");
+        character.position.z = result_set->getDouble("z");
+        character.orientation.x = result_set->getDouble("oX");
+        character.orientation.y = result_set->getDouble("oY");
+        character.orientation.z = result_set->getDouble("oZ");
+        character.orientation.w = result_set->getDouble("oW");
+        character.race_crc = result_set->getUInt("race_crc");
+        character.race_template = result_set->getString("race_template");
+        character.terrain_map = result_set->getString("terrain_map");
+    }
+    return character;
+}
 bool CharacterService::DeleteCharacter(uint64_t character_id, uint32_t server_id){
     // this actually just archives the character and all their data so it can still be retrieved at a later time
     string sql = "SELECT sf_CharacterDelete(?,?);";
@@ -130,7 +165,26 @@ bool CharacterService::UpdateCharacterStatus(uint64_t character_id, uint32_t sta
 
     return rows_updated > 0;
 }
-std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const CharacterCreateInfo& character_info) {
+std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const ClientCreateCharacter& character_info) {
+
+
+    // A regular expression that searches for a first name and optional sirname.
+    // Only letters, and the ' and - characters are allowed. Only 3 instances
+    // of the ' and - characters may be in the entire name, which must be between
+    // 3 and 16 characters long.
+    const wregex p(L"(?!['-])(?!.*['-].*['-].*['-].*['-])([a-zA-Z][a-z'-]{3,16}?)(?: ([a-zA-Z][a-z'-]{3,16}?))?");
+    wsmatch m;
+
+    if (! regex_match(character_info.character_name, m, p)) {
+        LOG(WARNING) << "Invalid character name [" << std::string(character_info.character_name.begin(), character_info.character_name.end()) << "]";
+        return make_tuple(0,"name_declined_syntax");
+    }
+    std::wstring first_name = m[1].str();
+    std::wstring last_name = L"";
+    if (m[2].matched) {
+        last_name = m[2].str();
+    }
+
     auto conn = db_manager_->getConnection("galaxy_db");
     std::shared_ptr<sql::PreparedStatement> statement;
     std::stringstream sql_sf;
@@ -141,48 +195,52 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Charac
     {
         sql_sf << ",\'" << parseBio_(character_info.biography) << "\'";
     }
+    else
+    {
+        sql_sf << ", \'\'";
+    }
     // get appearance info
-    sql_sf << parseAppearance_(character_info.appearance);
+    sql_sf << parseAppearance_(character_info.character_customization);
     // get hair
-    sql_sf << parseHair_(character_info.hair_model, character_info.hair_customization[1], character_info.hair_customization[2]);
+    sql_sf << parseHair_(character_info.hair_object, character_info.hair_customization);
     
     // base model and finish statement
-    sql_sf << ",\'" << character_info.base_model << "\')";
+    sql_sf << ",\'" << character_info.player_race_iff << "\');";
     cout << sql_sf.str();
     statement = std::shared_ptr<sql::PreparedStatement>(
         conn->prepareStatement(sql_sf.str())
         );
-    statement->setUInt(1, character_info.account_id);
-    statement->setString(2, character_info.first_name);
-    statement->setString(3, character_info.last_name);
-    statement->setString(4, character_info.profession);
-    statement->setString(5, character_info.start_city);
-    statement->setDouble(6, character_info.scale);
+    statement->setUInt(1, 1 /*character_info.account_id*/);
+    statement->setString(2, string(first_name.begin(), first_name.end()));
+    statement->setString(3, string(last_name.begin(), last_name.end()));
+    statement->setString(4, character_info.starting_profession);
+    statement->setString(5, character_info.start_location);
+    statement->setDouble(6, character_info.height);
 
     auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
     if (result_set->next())
     {
         uint64_t char_id = result_set->getUInt64(1);
-        std::string error_code;
         if (char_id < 8589934593) // error value
         {
-             return make_tuple(char_id, error_code);
+            // if we get a special character_id back it means there was an error.
+            return make_tuple(char_id, setCharacterCreateErrorCode_(char_id));
         }
-        // if we get a special character_id back it means there was an error.
-        return make_tuple(char_id, setCharacterCreateErrorCode_(char_id));
+        return make_tuple(char_id, "");
     }
     return make_tuple(0,"");
 }
 
-std::string CharacterService::parseAppearance_(const uint16_t appearance_data[appearance_size])
+std::string CharacterService::parseAppearance_(std::string appearance_data)
 {
     stringstream ss;
-    for(uint32_t i = 0; i < 0x71; i++)
-    {
-        ss << "," << boost::lexical_cast<string>(appearance_data[i]);
-    }
-    ss << "," << boost::lexical_cast<string>(appearance_data[171]);
-    ss << "," << boost::lexical_cast<string>(appearance_data[172]);
+    ss << ", \'";
+    ss << setfill('0') << setw(2);
+    std::for_each(appearance_data.begin(), appearance_data.end(), [&ss] (uint16_t data) {
+        cout << std::hex << data;
+        ss << std::hex << data;
+    });
+    ss << "\'";
     return ss.str();
 }
 std::string CharacterService::parseBio_(const std::string& bio)
@@ -194,14 +252,16 @@ std::string CharacterService::parseBio_(const std::string& bio)
     return parsed_bio;
 }
 std::string CharacterService::parseHair_(const std::string& hair_model,
-    const uint16_t hair_customization_1, const uint16_t hair_customization_2)
+    const std::string& hair_customization)
 {
     stringstream ss;
-    if (hair_model.size() > 0)
+    /*if (hair_model.size() > 0)
     {
-        ss << ",\'" << hair_model << "\'," << hair_customization_1 << "," << hair_customization_2;
+        ss << setfill('0') << setw(2);
+        ss << ",\'" << hair_model << "\'," << std::hex << hair_customization[1]
+            << "," << std::hex << hair_customization[2];
     }
-    else
+    else*/
         ss << ",NULL, 0, 0";
 
     return ss.str();

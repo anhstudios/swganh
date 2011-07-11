@@ -183,7 +183,7 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
     cluster_server.not_recommended_flag = 0;
     cluster_server.max_chars = 2;
     cluster_server.max_pop = 0x00000cb2;
-    cluster_server.server_pop = 3000;
+    cluster_server.server_pop = 2000;
     
     cluster_status_message.servers.push_back(cluster_server);
         

@@ -23,12 +23,14 @@
 #include <iostream>
 #include <glog/logging.h>
 
+#include "anh/crc.h"
 #include "anh/event_dispatcher/basic_event.h"
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
 
 #include "swganh/base/swg_message_handler.h"
+#include "swganh/character/character_data.h"
 
 #include "swganh/scene/messages/cmd_scene_ready.h"
 #include "swganh/scene/messages/cmd_start_scene.h"
@@ -36,12 +38,18 @@
 #include "swganh/scene/messages/scene_end_baselines.h"
 
 #include "connection/messages/client_permissions_message.h"
+#include "connection/messages/select_character.h"
+#include "connection/messages/client_create_character.h"
+#include "connection/messages/client_create_character_success.h"
+#include "connection/messages/client_create_character_failed.h"
 
 using namespace anh;
 using namespace event_dispatcher;
 using namespace connection;
 using namespace messages;
-using namespace swganh::scene::messages;
+using namespace swganh;
+using namespace character;
+using namespace scene::messages;
 using namespace std;
 
 ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> event_dispatcher) 
@@ -80,6 +88,15 @@ void ConnectionService::subscribe() {
     event_dispatcher_->subscribe("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1));
     event_dispatcher_->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));
     event_dispatcher_->subscribe("SelectCharacter", bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1));
+    event_dispatcher_->subscribe("ClientCreateCharacter", bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1));
+}
+
+shared_ptr<CharacterServiceInterface> ConnectionService::character_service() {
+    return character_service_;
+}
+
+void ConnectionService::character_service(shared_ptr<CharacterServiceInterface> character_service) {
+    character_service_ = character_service;
 }
 
 bool ConnectionService::HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
@@ -101,7 +118,7 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = 1;
-    client_permissions.available_character_slots = 1;
+    client_permissions.available_character_slots = 2;
     client_permissions.unlimited_characters = 0;
 
     remote_event->session()->SendMessage(client_permissions);
@@ -113,30 +130,58 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
 bool ConnectionService::HandleSelectCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
     DLOG(WARNING) << "Handling SelectCharacter";
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
-        
+    SelectCharacter select_character;
+    select_character.serialize(*remote_event->message());
+    
+    swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(select_character.character_id);
     CmdStartScene start_scene;
     start_scene.ignore_layout = 0;
-    start_scene.character_id = 14328440853;
-    start_scene.terrain_map = "terrain/naboo.trn";
-    start_scene.position = glm::vec3(0.0f, 0.0f, 0.0f);
-    start_scene.race_template = "object/creature/player/shared_human_male.iff";
+    start_scene.character_id = character.character_id;
+    start_scene.terrain_map = character.terrain_map;
+    start_scene.position = character.position;
+    start_scene.race_template = character.race_template;
     start_scene.galaxy_time = 0;
         
     remote_event->session()->SendMessage(start_scene);
 
     SceneCreateObjectByCrc scene_object;
-    scene_object.object_id = 14328440853;
-    scene_object.orientation = glm::quat(0.0f, 0.0f, 0.0f, 1.0f);
-    scene_object.position = glm::vec3(0.0f, 0.0f, 0.0f);
-    scene_object.object_crc = 0xAF1DC1A1;
+    scene_object.object_id = character.character_id;
+    scene_object.orientation = character.orientation;
+    scene_object.position = character.position;
+    scene_object.object_crc = anh::memcrc(character.race_template);
     scene_object.byte_flag = 0;
     
     remote_event->session()->SendMessage(scene_object);
     
     SceneEndBaselines scene_object_end;
-    scene_object_end.object_id = 14328440853;
+    scene_object_end.object_id = character.character_id;
     
     remote_event->session()->SendMessage(scene_object_end);
 
+    return true;
+}
+bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
+    DLOG(WARNING) << "Handling ClientCreateCharacter";
+    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
+    ClientCreateCharacter create_character;
+    create_character.deserialize(*remote_event->message());
+
+    uint64_t character_id;
+    string error_code;
+    tie(character_id, error_code) = character_service()->CreateCharacter(create_character);
+    if (error_code.length() > 0)
+    {
+        ClientCreateCharacterFailed failed;
+        failed.stf_file = "ui";
+        failed.error_string = error_code;
+        remote_event->session()->SendMessage(failed);
+    }
+    else
+    {
+        ClientCreateCharacterSuccess success;
+        success.character_id = character_id;
+        remote_event->session()->SendMessage(success);
+    }
+    
     return true;
 }
