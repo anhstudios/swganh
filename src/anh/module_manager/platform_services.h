@@ -43,46 +43,46 @@ typedef HashString Service;
 class PlatformServices
 {
 public:
-	/**
-	 * Default constructor.
-	 */
-	PlatformServices(void);
+    /**
+     * Default constructor.
+     */
+    PlatformServices(void);
 
-	/**
-	 * Default deconstructor.
-	 */
-	~PlatformServices(void);
+    /**
+     * Default deconstructor.
+     */
+    ~PlatformServices(void);
 
-	/**
-	 * Adds a service to the Platform Services.
-	 */
-	bool addService(Service service_name, boost::any service);
+    /**
+     * Adds a service to the Platform Services.
+     */
+    bool addService(Service service_name, boost::any service);
 
-	/**
-	 * Removes a service from the Platform Services.
-	 */
-	void removeService(Service service_name);
+    /**
+     * Removes a service from the Platform Services.
+     */
+    void removeService(Service service_name);
     
     template<typename T>
     T getService(Service service_name) {        
         return boost::any_cast<T>(getService_(service_name));
     }
 
-	/**
-	 * 
-	 */
-	bool hasService(Service service_name);
+    /**
+     * 
+     */
+    bool hasService(Service service_name);
 
 private:
-	typedef std::map<Service, boost::any>			ServiceMap;
-	typedef std::map<Service, boost::any>::iterator ServiceMapIterator;
+    typedef std::map<Service, boost::any>			ServiceMap;
+    typedef std::map<Service, boost::any>::iterator ServiceMapIterator;
     
-	/**
-	 * Finds and returns a service from the Platform Services.
-	 */
-	boost::any getService_(Service service_name);
+    /**
+     * Finds and returns a service from the Platform Services.
+     */
+    boost::any getService_(Service service_name);
 
-	ServiceMap services_;
+    ServiceMap services_;
 };
 
 }
