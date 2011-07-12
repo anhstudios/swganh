@@ -105,7 +105,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 }
 CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
     CharacterLoginData character;
-    string sql = "SELECT sf_GetLoginCharacter(?);";
+    string sql = "CALL sp_GetLoginCharacter(?);";
     auto conn = db_manager_->getConnection("galaxy_db");
     auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
     statement->setUInt64(1, character_id);
@@ -121,21 +121,24 @@ CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
         character.orientation.y = result_set->getDouble("oY");
         character.orientation.z = result_set->getDouble("oZ");
         character.orientation.w = result_set->getDouble("oW");
-        character.race_crc = result_set->getUInt("race_crc");
-        character.race_template = result_set->getString("race_template");
-        character.terrain_map = result_set->getString("terrain_map");
+        character.race_template = result_set->getString("base_model_string");
+        character.shared_race_template = result_set->getString("shared_model_string");
+        character.terrain_map = result_set->getString("terrain_file");
     }
     return character;
 }
-bool CharacterService::DeleteCharacter(uint64_t character_id, uint32_t server_id){
+bool CharacterService::DeleteCharacter(uint64_t character_id){
     // this actually just archives the character and all their data so it can still be retrieved at a later time
-    string sql = "SELECT sf_CharacterDelete(?,?);";
+    string sql = "CALL sp_CharacterDelete(?);";
     auto conn = db_manager_->getConnection("galaxy_db");
     auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
     statement->setUInt64(1, character_id);
-    statement->setUInt(2, server_id);
-    int rows_updated = statement->executeUpdate();
-    
+    auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
+    int rows_updated = 0;
+    if (result_set->next())
+    {
+       rows_updated = result_set->getInt(1);
+    }
     return rows_updated > 0;
 }
 std::wstring CharacterService::GetRandomNameRequest(const std::string& base_model) {
@@ -206,7 +209,6 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
     
     // base model and finish statement
     sql_sf << ",\'" << character_info.player_race_iff << "\');";
-    cout << sql_sf.str();
     statement = std::shared_ptr<sql::PreparedStatement>(
         conn->prepareStatement(sql_sf.str())
         );
@@ -255,14 +257,17 @@ std::string CharacterService::parseHair_(const std::string& hair_model,
     const std::string& hair_customization)
 {
     stringstream ss;
-    /*if (hair_model.size() > 0)
+    if (hair_model.size() > 0)
     {
+        ss << ",\'" << hair_model << "\', \'" ;
         ss << setfill('0') << setw(2);
-        ss << ",\'" << hair_model << "\'," << std::hex << hair_customization[1]
-            << "," << std::hex << hair_customization[2];
+        std::for_each(hair_customization.begin(), hair_customization.end(), [&ss] (uint16_t data) {
+            ss << std::hex << data;
+        });
+        ss << "\'";
     }
-    else*/
-        ss << ",NULL, 0, 0";
+    else
+        ss << ",NULL, 0";
 
     return ss.str();
 }

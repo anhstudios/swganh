@@ -209,7 +209,7 @@ bool LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_disp
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
 
-    if (character_service_->DeleteCharacter(message.character_id, message.server_id))
+    if (character_service_->DeleteCharacter(message.character_id))
     {
         reply_message.failure_flag = 0;
     }

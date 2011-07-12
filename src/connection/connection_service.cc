@@ -42,6 +42,7 @@
 #include "connection/messages/client_create_character.h"
 #include "connection/messages/client_create_character_success.h"
 #include "connection/messages/client_create_character_failed.h"
+#include "connection/messages/heartbeat.h"
 
 using namespace anh;
 using namespace event_dispatcher;
@@ -118,7 +119,7 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = 1;
-    client_permissions.available_character_slots = 2;
+    client_permissions.available_character_slots = 8;
     client_permissions.unlimited_characters = 0;
 
     remote_event->session()->SendMessage(client_permissions);
@@ -131,18 +132,21 @@ bool ConnectionService::HandleSelectCharacter_(std::shared_ptr<anh::event_dispat
     DLOG(WARNING) << "Handling SelectCharacter";
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     SelectCharacter select_character;
-    select_character.serialize(*remote_event->message());
-    
-    swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(select_character.character_id);
+    select_character.deserialize(*remote_event->message());
+
+    return processSelectCharacter_(select_character.character_id, remote_event->session());    
+}
+bool ConnectionService::processSelectCharacter_(uint64_t character_id, std::shared_ptr<anh::network::soe::Session> session) {
+    swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(character_id);
     CmdStartScene start_scene;
     start_scene.ignore_layout = 0;
     start_scene.character_id = character.character_id;
     start_scene.terrain_map = character.terrain_map;
     start_scene.position = character.position;
-    start_scene.race_template = character.race_template;
+    start_scene.shared_race_template = character.shared_race_template;
     start_scene.galaxy_time = 0;
         
-    remote_event->session()->SendMessage(start_scene);
+    session->SendMessage(start_scene);
 
     SceneCreateObjectByCrc scene_object;
     scene_object.object_id = character.character_id;
@@ -151,12 +155,12 @@ bool ConnectionService::HandleSelectCharacter_(std::shared_ptr<anh::event_dispat
     scene_object.object_crc = anh::memcrc(character.race_template);
     scene_object.byte_flag = 0;
     
-    remote_event->session()->SendMessage(scene_object);
+    session->SendMessage(scene_object);
     
     SceneEndBaselines scene_object_end;
     scene_object_end.object_id = character.character_id;
     
-    remote_event->session()->SendMessage(scene_object_end);
+    session->SendMessage(scene_object_end);
 
     return true;
 }
@@ -169,6 +173,9 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
     uint64_t character_id;
     string error_code;
     tie(character_id, error_code) = character_service()->CreateCharacter(create_character);
+    // heartbeat to let the client know we're still here
+    Heartbeat heartbeat;
+    remote_event->session()->SendMessage(heartbeat);
     if (error_code.length() > 0)
     {
         ClientCreateCharacterFailed failed;
@@ -181,6 +188,8 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
         remote_event->session()->SendMessage(success);
+        // now that we've succeeded trigger a SelectCharacterEvent
+        processSelectCharacter_(character_id, remote_event->session());
     }
     
     return true;

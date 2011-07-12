@@ -39,7 +39,7 @@ struct CmdStartScene : public swganh::base::SwgMessage<CmdStartScene> {
     uint64_t character_id;
     std::string terrain_map;
     glm::vec3 position;
-    std::string race_template;
+    std::string shared_race_template;
     uint64_t galaxy_time;
     
     void onSerialize(anh::ByteBuffer& buffer) const {
@@ -49,7 +49,7 @@ struct CmdStartScene : public swganh::base::SwgMessage<CmdStartScene> {
     	buffer.write(position.x);
     	buffer.write(position.y);
     	buffer.write(position.z);
-    	buffer.write(race_template);
+    	buffer.write(shared_race_template);
     	buffer.write(galaxy_time);
     }
 
@@ -60,7 +60,7 @@ struct CmdStartScene : public swganh::base::SwgMessage<CmdStartScene> {
     	position.x = buffer.read<float>();
     	position.y = buffer.read<float>();
     	position.z = buffer.read<float>();
-    	race_template = buffer.read<std::string>();
+    	shared_race_template = buffer.read<std::string>();
     	galaxy_time = buffer.read<uint64_t>();    	
     }
 };

@@ -42,6 +42,7 @@ struct CharacterLoginData {
     glm::quat orientation;
     std::string terrain_map;
     std::string race_template;
+    std::string shared_race_template;
 };
 #define appearance_size 0x255
 #define hair_customization_size 0x71
