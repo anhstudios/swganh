@@ -8,6 +8,7 @@
 #ifndef ANH_BYTE_BUFFER_INL_H_
 #define ANH_BYTE_BUFFER_INL_H_
 
+#include <algorithm>
 #include <string>
 #include <stdexcept>
 
@@ -22,6 +23,15 @@ template<typename T>
 ByteBuffer& ByteBuffer::write(T data) {
   write(reinterpret_cast<unsigned char*>(&data), sizeof(T));
   return *this;
+}
+
+template<typename T>
+ByteBuffer& ByteBuffer::write(std::vector<T> vec) {
+    std::for_each(vec.begin(), vec.end(), [this] (T data)
+    {
+        this->write(data);
+    });
+    return *this;
 }
 
 template<typename T>
