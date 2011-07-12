@@ -38,6 +38,8 @@ struct CharacterData {
 struct CharacterLoginData {
     uint64_t character_id;
     uint32_t race_crc;
+    std::string gender;
+    std::string race;
     glm::vec3 position;
     glm::quat orientation;
     std::string terrain_map;

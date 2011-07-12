@@ -143,7 +143,7 @@ bool ConnectionService::processSelectCharacter_(uint64_t character_id, std::shar
     start_scene.character_id = character.character_id;
     start_scene.terrain_map = character.terrain_map;
     start_scene.position = character.position;
-    start_scene.shared_race_template = character.shared_race_template;
+    start_scene.shared_race_template = "object/creature/player/shared_" + character.race + "_" + character.gender + ".iff";
     start_scene.galaxy_time = 0;
         
     session->SendMessage(start_scene);
@@ -188,7 +188,7 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
         remote_event->session()->SendMessage(success);
-        // now that we've succeeded trigger a SelectCharacterEvent
+        // now that we've succeeded login with that character
         processSelectCharacter_(character_id, remote_event->session());
     }
     

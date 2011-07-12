@@ -122,7 +122,11 @@ CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
         character.orientation.z = result_set->getDouble("oZ");
         character.orientation.w = result_set->getDouble("oW");
         character.race_template = result_set->getString("base_model_string");
-        character.shared_race_template = result_set->getString("shared_model_string");
+        if (result_set->getInt("gender") == 0)
+            character.gender = "female";
+        else
+            character.gender = "male";
+        character.race = result_set->getString("race");
         character.terrain_map = result_set->getString("terrain_file");
     }
     return character;

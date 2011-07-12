@@ -174,7 +174,7 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
 
     LoginClusterStatus cluster_status_message;
     ClusterServer cluster_server;
-    cluster_server.address = "127.0.0.1";
+    cluster_server.address = "69.76.2.62";
     cluster_server.ping_port = 44452;
     cluster_server.conn_port = 44463;
     cluster_server.distance = 0xffff8f80;
