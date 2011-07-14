@@ -19,7 +19,7 @@ void ExampleApp::Start() {
         std::cout << my_obj->DoWork() << std::endl;
     }
 
-    std::shared_ptr<ObjInterface> python_obj = module_manager_.CreateObject<ObjInterface>("PythonObj");
+    std::shared_ptr<ObjInterface> python_obj = module_manager_.CreateObject<ObjInterface>("TestPythonObj");
 
     if (!python_obj) {
         std::cout << "Failed to create object :(\n" << std::endl;

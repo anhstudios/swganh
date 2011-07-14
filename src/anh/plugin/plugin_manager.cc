@@ -1,19 +1,21 @@
 
-#include "anh/module/module_manager.h"
+#include "anh/plugin/plugin_manager.h"
 
 #include <algorithm>
 #include <iostream>
 
 #include <boost/filesystem.hpp>
 
-#include "anh/module/platform/library_interface.h"
+#include "anh/app/kernel_interface.h"
+
+#include "anh/plugin/platform/library_interface.h"
 
 #ifdef WIN32
-#include "anh/module/platform/win32_library.h"
-typedef anh::module::platform::Win32Library DynamicLibrary;
+#include "anh/plugin/platform/win32_library.h"
+typedef anh::plugin::platform::Win32Library DynamicLibrary;
 #else
-#include "anh/module/platform/posix_library.h"
-typedef anh::module::platform::PosixLibrary DynamicLibrary;
+#include "anh/plugin/platform/posix_library.h"
+typedef anh::plugin::platform::PosixLibrary DynamicLibrary;
 #endif
 
 #if defined(__APPLE__)
@@ -24,17 +26,16 @@ typedef anh::module::platform::PosixLibrary DynamicLibrary;
   static std::string library_extension(".so");
 #endif
 
-using namespace anh::module;
+using namespace anh::app;
+using namespace anh::plugin;
 using namespace std;
 
-ModuleManager::ModuleManager() {
-    app_binding_.version.major = 1;
-    app_binding_.version.minor = 0;
-    app_binding_.InvokeApi = nullptr;
-    app_binding_.RegisterObject = std::bind(&ModuleManager::RegisterObject, this, placeholders::_1, placeholders::_2);
+PluginManager::PluginManager(shared_ptr<KernelInterface> kernel)
+    : kernel_(kernel) 
+{
 }
 
-ModuleManager::~ModuleManager() {    
+PluginManager::~PluginManager() {    
     auto end = exit_funcs_.end();
     std::for_each(exit_funcs_.begin(), exit_funcs_.end(), [] (ExitFunc exit_func) {
         try {
@@ -45,7 +46,7 @@ ModuleManager::~ModuleManager() {
     });
 }
 
-bool ModuleManager::LoadModule(const std::string& path) {
+bool PluginManager::LoadPlugin(const std::string& path) {
     if (library_map_.find(path) != library_map_.end()) {
         cout << "Step 1 failed\n" << endl;
         return false;
@@ -57,13 +58,13 @@ bool ModuleManager::LoadModule(const std::string& path) {
         return false;
     }
 
-    InitFunc init_func = library->GetSymbol<InitFunc>("InitializeModule");
+    InitFunc init_func = library->GetSymbol<InitFunc>("InitializePlugin");
     if (!init_func) {
         cout << "Step 4 failed\n" << endl;
         return false;
     }
 
-    if (!InitializeModule(init_func)) {
+    if (!InitializePlugin(init_func)) {
         cout << "Step 5 failed\n" << endl;
         return false;
     }
@@ -73,22 +74,26 @@ bool ModuleManager::LoadModule(const std::string& path) {
     return true;
 }
 
-bool ModuleManager::LoadAllModules(const std::string& directory) {
-    boost::filesystem::path module_dir_path(directory);
+bool PluginManager::LoadAllPlugins(const std::string& directory) {
+    boost::filesystem::path plugin_dir(directory);
 
     bool all_loaded = true;
 
     try {
-        if (!boost::filesystem::exists(module_dir_path) ||
-            !boost::filesystem::is_directory(module_dir_path)) {
+        if (!boost::filesystem::exists(plugin_dir) ||
+            !boost::filesystem::is_directory(plugin_dir)) {
             all_loaded = false;
         }
 
-        std::for_each(boost::filesystem::directory_iterator(module_dir_path),
+        std::for_each(boost::filesystem::directory_iterator(plugin_dir),
             boost::filesystem::directory_iterator(),
             [this, &all_loaded] (const boost::filesystem::directory_entry& entry) 
         {            
-            if (!this->LoadModule(entry.path().native_file_string())) {
+            if (entry.path().extension() != library_extension) {
+                return;
+            }
+
+            if (!this->LoadPlugin(entry.path().native_file_string())) {
                  all_loaded = false;
             }
         });
@@ -101,12 +106,12 @@ bool ModuleManager::LoadAllModules(const std::string& directory) {
     return all_loaded;
 }
 
-bool ModuleManager::InitializeModule(InitFunc init_func) {
+bool PluginManager::InitializePlugin(InitFunc init_func) {
     if (!init_func) {
         return false;
     }
 
-    ExitFunc exit_func = init_func(&app_binding_);
+    ExitFunc exit_func = init_func(kernel_.get());
 
     if (!exit_func) {
         return false;
@@ -117,7 +122,7 @@ bool ModuleManager::InitializeModule(InitFunc init_func) {
     return true;
 }
 
-bool ModuleManager::RegisterObject(const std::string& name, const ObjectRegistration* registration) {
+bool PluginManager::RegisterObject(const std::string& name, const ObjectRegistration* registration) {
     if (name.empty()) {
         return false;
     }
@@ -126,7 +131,7 @@ bool ModuleManager::RegisterObject(const std::string& name, const ObjectRegistra
         return false;
     }
 
-    Version version = app_binding_.version;
+    anh::app::Version version = kernel_->GetVersion();
     if (version.major != registration->version.major) {
         return false;
     }
@@ -140,15 +145,11 @@ bool ModuleManager::RegisterObject(const std::string& name, const ObjectRegistra
     return true;
 }
 
-const RegistrationMap& ModuleManager::registration_map() {
+const RegistrationMap& PluginManager::registration_map() {
     return registration_map_;
 }
 
-AppBinding& ModuleManager::app_binding() {
-    return app_binding_;
-}
-
-std::shared_ptr<platform::LibraryInterface> ModuleManager::LoadLibrary_(const std::string& path) {
+std::shared_ptr<platform::LibraryInterface> PluginManager::LoadLibrary_(const std::string& path) {
     auto library = DynamicLibrary::Load(path);
 
     if (!library) {

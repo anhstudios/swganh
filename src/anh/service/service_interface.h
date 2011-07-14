@@ -18,13 +18,37 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <gtest/gtest.h>
+#ifndef ANH_SERVICE_SERVICE_INTERFACE_H_
+#define ANH_SERVICE_SERVICE_INTERFACE_H_
 
-namespace {
-    
-/// This test shows how to create a hash string and check it's generated identifier.
-TEST(SwganhAppTest, FirstTest) {
-    EXPECT_TRUE(true);
-}
+#include <boost/program_options/options_description.hpp>
 
-}  // namespace 
+namespace anh {
+namespace service {
+
+class ServiceInterface {
+public:
+    virtual ~ServiceInterface() {}
+
+    /*
+    *  @brief Starts up the service, sets running_ to true
+    */
+    virtual void Start() = 0;
+    /*
+    *  @brief Stops the service, sets running_ to false
+    */
+    virtual void Stop() = 0;
+    /*
+    *  @brief returns true if running is set to true
+    */
+    virtual bool IsRunning() const = 0;
+    /*
+    *  @brief Sets up options from the configuration files
+    */
+    virtual void DescribeConfigOptions(boost::program_options::options_description& description) = 0;
+};
+
+}}  // namespace anh::service
+
+
+#endif  // ANH_SERVICE_SERVICE_INTERFACE_H_

@@ -102,7 +102,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(anh)
 
 ## project modules
-add_subdirectory(example_module)
 add_subdirectory(test_module)
 add_subdirectory(login)
 add_subdirectory(connection)
@@ -110,4 +109,3 @@ add_subdirectory(character)
 
 ## project executables
 add_subdirectory(swganh)
-add_subdirectory(example_app)

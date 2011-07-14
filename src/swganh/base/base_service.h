@@ -21,17 +21,20 @@
 #ifndef SWGANH_BASE_BASE_SERVICE_H_
 #define SWGANH_BASE_BASE_SERVICE_H_
 
-#include "service_interface.h"
-
 #include <memory>
 #include <tbb/atomic.h>
 
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/service/service_interface.h"
+
+namespace anh {
+namespace event_dispatcher {
+class EventDispatcherInterface;
+}}  // namespace anh::event_dispatcher
 
 namespace swganh {
 namespace base {
 
-class BaseService : public ServiceInterface {
+class BaseService : public anh::service::ServiceInterface {
 public:
     explicit BaseService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
     ~BaseService();

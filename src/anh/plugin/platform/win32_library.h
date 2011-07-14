@@ -1,6 +1,6 @@
 
-#ifndef ANH_MODULE_PLATFORM_WIN32_LIBRARY_H_
-#define ANH_MODULE_PLATFORM_WIN32_LIBRARY_H_
+#ifndef ANH_PLUGIN_PLATFORM_WIN32_LIBRARY_H_
+#define ANH_PLUGIN_PLATFORM_WIN32_LIBRARY_H_
 
 #include <memory>
 #include <string>
@@ -9,11 +9,11 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "anh/module/bindings.h"
-#include "anh/module/platform/library_interface.h"
+#include "anh/plugin/bindings.h"
+#include "anh/plugin/platform/library_interface.h"
 
 namespace anh {
-namespace module {
+namespace plugin {
 namespace platform {
 
 class Win32Library : public LibraryInterface, private boost::noncopyable {
@@ -34,6 +34,6 @@ private:
     ExitFunc exit_func_;
 };
 
-}}}  // namespace anh::module::platform
+}}}  // namespace anh::plugin::platform
 
-#endif  // ANH_MODULE_PLATFORM_WIN32_LIBRARY_H_
+#endif  // ANH_PLUGIN_PLATFORM_WIN32_LIBRARY_H_

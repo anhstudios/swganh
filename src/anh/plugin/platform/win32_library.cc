@@ -1,5 +1,5 @@
 
-#include "anh/module/platform/win32_library.h"
+#include "anh/plugin/platform/win32_library.h"
 
 #include <exception>
 #include <sstream>
@@ -8,7 +8,7 @@
 
 #include <boost/filesystem.hpp>
 
-using namespace anh::module;
+using namespace anh::plugin;
 using namespace boost::filesystem;
 using namespace platform;
 using namespace std;

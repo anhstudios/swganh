@@ -1,9 +1,9 @@
 
-#ifndef ANH_MODULE_PLATFORM_LIBRARY_INTERFACE_H_
-#define ANH_MODULE_PLATFORM_LIBRARY_INTERFACE_H_
+#ifndef ANH_PLUGIN_PLATFORM_LIBRARY_INTERFACE_H_
+#define ANH_PLUGIN_PLATFORM_LIBRARY_INTERFACE_H_
 
 namespace anh {
-namespace module {
+namespace plugin {
 namespace platform {
 
 class LibraryInterface {
@@ -18,6 +18,6 @@ public:
     virtual void * GetSymbol(const std::string& symbol) = 0;
 };
 
-}}}  // namespace anh::module::platform;
+}}}  // namespace anh::plugin::platform;
 
-#endif  // ANH_MODULE_PLATFORM_LIBRARY_INTERFACE_H_
+#endif  // ANH_PLUGIN_PLATFORM_LIBRARY_INTERFACE_H_

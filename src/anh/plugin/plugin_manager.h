@@ -1,16 +1,22 @@
 
-#ifndef ANH_MODULE_MODULE_MANAGER_H_
-#define ANH_MODULE_MODULE_MANAGER_H_
+#ifndef ANH_PLUGIN_PLUGIN_MANAGER_H_
+#define ANH_PLUGIN_PLUGIN_MANAGER_H_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "anh/module/bindings.h"
+#include "anh/plugin/bindings.h"
+
 
 namespace anh {
-namespace module {
+namespace app {
+class KernelInterface;
+}}  // namespace anh::app
+
+namespace anh {
+namespace plugin {
 
 namespace platform {
 class LibraryInterface;
@@ -18,15 +24,15 @@ class LibraryInterface;
 
 typedef std::map<std::string, ObjectRegistration> RegistrationMap;
 
-class ModuleManager {
+class PluginManager {
 public:
-    ModuleManager();
-    ~ModuleManager();
+    explicit PluginManager(std::shared_ptr<anh::app::KernelInterface> kernel);
+    ~PluginManager();
 
-    bool LoadModule(const std::string& path);
-    bool LoadAllModules(const std::string& directory);
+    bool LoadPlugin(const std::string& path);
+    bool LoadAllPlugins(const std::string& directory);
 
-    bool InitializeModule(InitFunc init_func);
+    bool InitializePlugin(InitFunc init_func);
 
     bool RegisterObject(const std::string& name, const ObjectRegistration* registration);
 
@@ -34,9 +40,10 @@ public:
     std::shared_ptr<T> CreateObject(const std::string& name);
 
     const RegistrationMap& registration_map();
-    AppBinding& app_binding();
 
 private:
+    PluginManager();
+
     std::shared_ptr<platform::LibraryInterface> LoadLibrary_(const std::string& path);
     void * CreateObject_(const std::string& name);
 
@@ -44,7 +51,7 @@ private:
     typedef std::map<std::string, std::shared_ptr<platform::LibraryInterface>> LibraryMap;
     typedef std::vector<ExitFunc> ExitFuncCollection;
 
-    AppBinding app_binding_;
+    std::shared_ptr<anh::app::KernelInterface> kernel_;
     LibraryMap library_map_;
     ExitFuncCollection exit_funcs_;
 
@@ -52,7 +59,7 @@ private:
 };
 
 template<typename T>
-std::shared_ptr<T> ModuleManager::CreateObject(const std::string& name) {    
+std::shared_ptr<T> PluginManager::CreateObject(const std::string& name) {    
     auto find_iter = registration_map_.find(name);
     std::shared_ptr<T> object = nullptr;
 
@@ -61,7 +68,7 @@ std::shared_ptr<T> ModuleManager::CreateObject(const std::string& name) {
 
         ObjectParams params;
         params.name = name;
-        params.app_binding = &app_binding_;
+        params.kernel = kernel_.get();
 
         object = std::shared_ptr<T>(static_cast<T*>(registration.CreateObject(&params)), registration.DestroyObject);
     }
@@ -69,6 +76,6 @@ std::shared_ptr<T> ModuleManager::CreateObject(const std::string& name) {
     return object;
 }
 
-}}  // namespace anh::module
+}}  // namespace anh::plugin
 
-#endif  // ANH_MODULE_MODULE_MANAGER_H_
+#endif  // ANH_PLUGIN_PLUGIN_MANAGER_H_

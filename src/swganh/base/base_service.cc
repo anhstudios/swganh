@@ -18,7 +18,9 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "base_service.h"
+#include "swganh/base/base_service.h"
+
+#include "anh/event_dispatcher/event_dispatcher_interface.h"
 
 using namespace anh;
 using namespace swganh::base;

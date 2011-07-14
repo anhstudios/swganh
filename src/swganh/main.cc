@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "swganh/swganh_app.h"
+#include "swganh/app/swganh_app.h"
 
 #include <exception>
 #include <iostream>
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     setvbuf( stdout, NULL, _IONBF, 0);
         
     try {
-        SwganhApp app;
+        app::SwganhApp app;
 
         app.Initialize(argc, argv);
 
