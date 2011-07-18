@@ -18,29 +18,31 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LOGIN_ENCODERS_SHA512_ENCODER_H_
-#define LOGIN_ENCODERS_SHA512_ENCODER_H_
+#ifndef CONNECTION_MESSAGES_SELECT_CHARACTER_MESSAGE_H_
+#define CONNECTION_MESSAGES_SELECT_CHARACTER_MESSAGE_H_
 
-#include "login/encoders/encoder_interface.h"
-#include <memory>
+#include <cstdint>
+#include "anh/byte_buffer.h"
+#include "swganh/base/swg_message.h"
 
-namespace anh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
+namespace connection {
+namespace messages {
+    
+struct SelectCharacter : public swganh::base::SwgMessage<SelectCharacter> {
+    static const uint16_t opcount = 2;
+    static const uint32_t opcode = 0xB5098D76;    
+    
+    uint64_t character_id;
 
-namespace login {
-namespace encoders {
+    void onSerialize(anh::ByteBuffer& buffer) const {
+        buffer.write(character_id);	
+    }
 
-class Sha512Encoder : public EncoderInterface {
-public:
-    explicit Sha512Encoder(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
-    ~Sha512Encoder();
-
-    std::string EncodePassword(std::string raw, std::string salt);
-    bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
-private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
+    void onDeserialize(anh::ByteBuffer buffer) {
+    	character_id = buffer.read<uint64_t>();
+    }
 };
 
-}}  // namespace login::encoders
+}}  // namespace connection::messages
 
-#endif  // LOGIN_ENCODERS_SHA512_ENCODER_H_
+#endif  // CONNECTION_MESSAGES_SELECT_CHARACTER_MESSAGE_H_

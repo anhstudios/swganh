@@ -57,11 +57,30 @@ public:
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
 
+<<<<<<< HEAD
+    /*
+    *  @brief used to subscribe to events on a serivce
+    */
+    virtual void subscribe();
+    /*
+    *  @brief used to perform any startup specific tasks for the service
+    */
+    virtual void onStart();
+    /*
+    *  @brief used to perform any shutdown specific tasks for the service
+    */
+    virtual void onStop();
+    /*
+    *  @brief used to perform any update specific tasks for the service
+    */
+    virtual void Update();
+=======
     void onStart();
     void onStop();
     void Update();
 
     void subscribe();
+>>>>>>> kronos/feature/login_service
     
     std::shared_ptr<swganh::character::CharacterServiceInterface> character_service();
     void character_service(std::shared_ptr<swganh::character::CharacterServiceInterface> character_service);

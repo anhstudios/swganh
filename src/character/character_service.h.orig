@@ -21,7 +21,10 @@
 #ifndef CHARACTER_CHARACTER_SERVICE_H_
 #define CHARACTER_CHARACTER_SERVICE_H_
 
-#include "swganh/character/character_service_interface.h"
+#include "anh/event_dispatcher/event_dispatcher_interface.h"
+
+#include "swganh/base/base_service.h"
+#include "swganh/character/base_character_service.h"
 
 #include "swganh/base/base_service.h"
 
@@ -29,6 +32,32 @@ namespace anh { namespace database { class DatabaseManagerInterface; } }
 
 namespace character {
     
+<<<<<<< HEAD
+class CharacterService : public swganh::character::BaseCharacterService {
+public:
+    CharacterService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    ~CharacterService();
+    
+    /*
+    *  @brief used to subscribe to events on a serivce
+    */
+    virtual void subscribe();
+
+    /*
+    *  @brief used to perform any startup specific tasks for the service
+    */
+    virtual void onStart();
+
+    /*
+    *  @brief used to perform any shutdown specific tasks for the service
+    */
+    virtual void onStop();
+
+    /*
+    *  @brief used to perform any update specific tasks for the service
+    */
+    virtual void Update();
+=======
 class CharacterService : public swganh::base::BaseService, public swganh::character::CharacterServiceInterface {
 public:
     CharacterService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher,
@@ -40,6 +69,7 @@ public:
     void Update();
 
     void subscribe();
+>>>>>>> kronos/feature/login_service
 
     // CharacterService API Methods
 

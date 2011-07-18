@@ -17,34 +17,40 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LOGIN_MESSAGES_DELETE_CHARACTER_MESSAGE_H_
-#define LOGIN_MESSAGES_DELETE_CHARACTER_MESSAGE_H_
+#ifndef SWGANH_SCENE_MESSAGES_UDPATE_CONTAINMENT_MESSAGE_H_
+#define SWGANH_SCENE_MESSAGES_UDPATE_CONTAINMENT_MESSAGE_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
-namespace login {
+// Originates on Server
+// http://wiki.swganh.org/index.php/UpdateContainmentMessage
+namespace swganh {
+namespace scene {
 namespace messages {
     
-struct DeleteCharacterMessage : public swganh::base::SwgMessage<DeleteCharacterMessage> {
-    static const uint16_t opcount = 3;
-    static const uint32_t opcode = 0xE87AD031;
-
-    int32_t server_id;
-    uint64_t character_id;
+struct UpdateContainmentMessage : public swganh::base::SwgMessage<UpdateContainmentMessage> {
+    static const uint16_t opcount = 4;
+    static const uint32_t opcode = 0x56CBDE9E;
     
-    void onDeserialize(anh::ByteBuffer buffer) {
-        server_id = buffer.read<int32_t>();
-        character_id = buffer.read<uint64_t>();
-    }
+    uint64_t object_id;
+    uint64_t container_id;
+    int32_t slot_index;
     
     void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write(server_id);
-        buffer.write(character_id);
+    	buffer.write(object_id);
+        buffer.write(container_id);
+        buffer.write(slot_index);
+    }
+
+    void onDeserialize(anh::ByteBuffer buffer) {
+    	object_id = buffer.read<uint64_t>();
+        container_id = buffer.read<uint64_t>();
+        slot_index = buffer.read<int32_t>();
     }
 };
 
-}}  // namespace login::messages
+}}} // swganh::scene::messages
 
-#endif  // LOGIN_MESSAGES_DELETE_CHARACTER_MESSAGE_H_
+#endif // SWGANH_SCENE_MESSAGES_UDPATE_CONTAINMENT_MESSAGE_H_

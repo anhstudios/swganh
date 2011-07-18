@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
  
-#ifndef SWGANH_ZONE_SCENE_MESSAGES_CMD_START_SCENE_H_
-#define SWGANH_ZONE_SCENE_MESSAGES_CMD_START_SCENE_H_
+#ifndef SWGANH_SCENE_MESSAGES_CMD_START_SCENE_H_
+#define SWGANH_SCENE_MESSAGES_CMD_START_SCENE_H_
 
 #include <cstdint>
 #include <string>
@@ -28,7 +28,6 @@
 #include "swganh/base/swg_message.h"
 
 namespace swganh {
-namespace zone {
 namespace scene {
 namespace messages {
     
@@ -40,7 +39,7 @@ struct CmdStartScene : public swganh::base::SwgMessage<CmdStartScene> {
     uint64_t character_id;
     std::string terrain_map;
     glm::vec3 position;
-    std::string race_template;
+    std::string shared_race_template;
     uint64_t galaxy_time;
     
     void onSerialize(anh::ByteBuffer& buffer) const {
@@ -50,7 +49,7 @@ struct CmdStartScene : public swganh::base::SwgMessage<CmdStartScene> {
     	buffer.write(position.x);
     	buffer.write(position.y);
     	buffer.write(position.z);
-    	buffer.write(race_template);
+    	buffer.write(shared_race_template);
     	buffer.write(galaxy_time);
     }
 
@@ -61,11 +60,11 @@ struct CmdStartScene : public swganh::base::SwgMessage<CmdStartScene> {
     	position.x = buffer.read<float>();
     	position.y = buffer.read<float>();
     	position.z = buffer.read<float>();
-    	race_template = buffer.read<std::string>();
+    	shared_race_template = buffer.read<std::string>();
     	galaxy_time = buffer.read<uint64_t>();    	
     }
 };
 
-}}}}  // namespace swganh::zone::scene::messages
+}}}  // namespace swganh::scene::messages
 
-#endif  // SWGANH_ZONE_SCENE_MESSAGES_CMD_START_SCENE_H_
+#endif  // SWGANH_SCENE_MESSAGES_CMD_START_SCENE_H_

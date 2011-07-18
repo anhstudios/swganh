@@ -20,6 +20,9 @@
 
 #include "character/character_service.h"
 
+<<<<<<< HEAD
+using namespace anh;
+=======
 #include <boost/lexical_cast.hpp>
 
 #include <cppconn/connection.h>
@@ -49,7 +52,9 @@ using boost::wsmatch;
 using boost::regex_match;
 #endif
 
+>>>>>>> kronos/feature/login_service
 using namespace swganh::character;
+using namespace event_dispatcher;
 using namespace character;
 using namespace connection::messages;
 using namespace anh;
@@ -57,6 +62,21 @@ using namespace event_dispatcher;
 using namespace database;
 using namespace std;
 
+<<<<<<< HEAD
+CharacterService::CharacterService(shared_ptr<EventDispatcherInterface> dispatcher) {
+    event_dispatcher(dispatcher);
+}
+
+CharacterService::~CharacterService() {}
+
+void CharacterService::subscribe() {}
+
+void CharacterService::onStart() {}
+
+void CharacterService::onStop() {}
+
+void CharacterService::Update() {}
+=======
 CharacterService::CharacterService(shared_ptr<EventDispatcherInterface> event_dispatcher
 ,shared_ptr<DatabaseManagerInterface> db_manager) 
     : BaseService(event_dispatcher)
@@ -72,6 +92,7 @@ void CharacterService::Update() {
 }
 void CharacterService::subscribe() {
 }
+>>>>>>> kronos/feature/login_service
 
 vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account_id) {
     vector<CharacterData> characters;

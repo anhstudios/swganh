@@ -18,15 +18,14 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
  
-#ifndef SWGANH_ZONE_SCENE_MESSAGES_CMD_SCENE_READY_H_
-#define SWGANH_ZONE_SCENE_MESSAGES_CMD_SCENE_READY_H_
+#ifndef SWGANH_SCENE_MESSAGES_CMD_SCENE_READY_H_
+#define SWGANH_SCENE_MESSAGES_CMD_SCENE_READY_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
 namespace swganh {
-namespace zone {
 namespace scene {
 namespace messages {
     
@@ -39,6 +38,6 @@ struct CmdSceneReady : public swganh::base::SwgMessage<CmdSceneReady> {
     void onDeserialize(anh::ByteBuffer buffer) {}
 };
 
-}}}}  // namespace swganh::zone::scene::messages
+}}}  // namespace swganh:::scene::messages
 
-#endif  // SWGANH_ZONE_SCENE_MESSAGES_CMD_SCENE_READY_H_
+#endif  // SWGANH_SCENE_MESSAGES_CMD_SCENE_READY_H_

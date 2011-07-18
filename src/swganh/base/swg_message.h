@@ -42,7 +42,7 @@ struct SwgMessage {
         uint32_t opcode = buffer.read<uint32_t>();
 
         if (opcode != T::opcode) {
-            // @todo throw here perhaps? for now just return;
+            assert(true && "opcodes don't match, expected:" + opcode );
             return;
         }
         

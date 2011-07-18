@@ -17,21 +17,33 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+ 
+#ifndef SWGANH_SCENE_MESSAGES_SCENE_END_BASELINES_H_
+#define SWGANH_SCENE_MESSAGES_SCENE_END_BASELINES_H_
 
-#ifndef LOGIN_LOGIN_SERVICE_INTERFACE_H_
-#define LOGIN_LOGIN_SERVICE_INTERFACE_H_
+#include <cstdint>
+#include "anh/byte_buffer.h"
+#include "swganh/base/swg_message.h"
 
-namespace login {
-	
-class LoginServiceInterface {
-public:
-	virtual ~LoginServiceInterface() {}
-		
-	virtual bool Authenticate(
-		std::string username, 
-		std::string password) = 0;
+namespace swganh {
+namespace scene {
+namespace messages {
+    
+struct SceneEndBaselines : public swganh::base::SwgMessage<SceneEndBaselines> {
+    static const uint16_t opcount = 2;
+    static const uint32_t opcode = 0x2C436037;
+    
+    uint64_t object_id;
+    
+    void onSerialize(anh::ByteBuffer& buffer) const {
+    	buffer.write(object_id);
+    }
+
+    void onDeserialize(anh::ByteBuffer buffer) {
+    	object_id = buffer.read<uint64_t>();
+    }
 };
-	
-}  // namespace login
 
-#endif  // LOGIN_LOGIN_SERVICE_INTERFACE_H_
+}}}  // namespace swganh::scene::messages
+
+#endif  // SWGANH_SCENE_MESSAGES_SCENE_END_BASELINES_H_

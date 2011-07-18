@@ -17,34 +17,32 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
- 
-#ifndef SWGANH_ZONE_SCENE_MESSAGES_SCENE_END_BASELINES_H_
-#define SWGANH_ZONE_SCENE_MESSAGES_SCENE_END_BASELINES_H_
+
+#ifndef CONNECTION_MESSAGES_CLIENT_CHARACTER_CREATE_SUCCESS_H_
+#define CONNECTION_MESSAGES_CLIENT_CHARACTER_CREATE_SUCCESS_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
-namespace swganh {
-namespace zone {
-namespace scene {
+namespace connection {
 namespace messages {
     
-struct SceneEndBaselines : public swganh::base::SwgMessage<SceneEndBaselines> {
+struct ClientCreateCharacterSuccess : public swganh::base::SwgMessage<ClientCreateCharacterSuccess> {
     static const uint16_t opcount = 2;
-    static const uint32_t opcode = 0x2C436037;
+    static const uint32_t opcode = 0x1DB575CC;    
     
-    uint64_t object_id;
-    
+    uint64_t character_id;
+
     void onSerialize(anh::ByteBuffer& buffer) const {
-    	buffer.write(object_id);
+        buffer.write(character_id);	
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-    	object_id = buffer.read<uint64_t>();
+    	character_id = buffer.read<uint64_t>();
     }
 };
 
-}}}}  // namespace swganh::zone::scene::messages
+}}  // namespace connection::messages
 
-#endif  // SWGANH_ZONE_SCENE_MESSAGES_SCENE_END_BASELINES_H_
+#endif  // CONNECTION_MESSAGES_CLIENT_CHARACTER_CREATE_SUCCESS_H_

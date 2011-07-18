@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
  
-#ifndef SWGANH_ZONE_SCENE_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
-#define SWGANH_ZONE_SCENE_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
+#ifndef SWGANH_SCENE_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
+#define SWGANH_SCENE_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
 
 #include <cstdint>
 
@@ -30,7 +30,6 @@
 #include "swganh/base/swg_message.h"
 
 namespace swganh {
-namespace zone {
 namespace scene {
 namespace messages {
     
@@ -71,6 +70,6 @@ struct SceneCreateObjectByCrc : public swganh::base::SwgMessage<SceneCreateObjec
     }
 };
 
-}}}}  // namespace swganh::zone::scene::messages
+}}}  // namespace swganh::scene::messages
 
-#endif  // SWGANH_ZONE_SCENE_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
+#endif  // SWGANH_SCENE_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_

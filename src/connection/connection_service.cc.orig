@@ -53,13 +53,22 @@ using namespace character;
 using namespace scene::messages;
 using namespace std;
 
+<<<<<<< HEAD
+ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> dispatcher) 
+    : listen_port_(44463) {
+=======
 ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> event_dispatcher) 
     : BaseService(event_dispatcher)
     , listen_port_(0) {
+>>>>>>> kronos/feature/login_service
         
-    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(event_dispatcher)));
+    event_dispatcher(dispatcher);
 
+<<<<<<< HEAD
+    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(dispatcher)));    
+=======
     this->event_dispatcher(event_dispatcher);
+>>>>>>> kronos/feature/login_service
 }
 
 ConnectionService::~ConnectionService() {}
@@ -71,18 +80,35 @@ void ConnectionService::DescribeConfigOptions(boost::program_options::options_de
     ;
 }
 
+<<<<<<< HEAD
+
+void ConnectionService::subscribe() {
+    
+    event_dispatcher_->subscribe("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1));
+    event_dispatcher_->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));
+    event_dispatcher_->subscribe("SelectCharacter", bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1));
+}
+
+void ConnectionService::onStart() {
+    soe_server_->Start(listen_port_);
+=======
 void ConnectionService::onStart() {
     soe_server_->Start(listen_port_);
 }
 
 void ConnectionService::Update() {
     soe_server_->Update();
+>>>>>>> kronos/feature/login_service
 }
 
 void ConnectionService::onStop() {
     soe_server_->Shutdown();
 }
 
+<<<<<<< HEAD
+void ConnectionService::Update() {
+    soe_server_->Update();
+=======
 void ConnectionService::subscribe() {
     soe_server_->event_dispatcher(event_dispatcher_);
     
@@ -98,6 +124,7 @@ shared_ptr<CharacterServiceInterface> ConnectionService::character_service() {
 
 void ConnectionService::character_service(shared_ptr<CharacterServiceInterface> character_service) {
     character_service_ = character_service;
+>>>>>>> kronos/feature/login_service
 }
 
 bool ConnectionService::HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {

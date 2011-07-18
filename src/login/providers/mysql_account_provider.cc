@@ -20,23 +20,51 @@
 
 #include "login/providers/mysql_account_provider.h"
 
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+
+#include <glog/logging.h>
+
+#include "anh/database/database_manager.h"
+
 
 using namespace login;
 using namespace providers;
 using namespace std;
 
-MysqlAccountProvider::MysqlAccountProvider() {}
+MysqlAccountProvider::MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+    : AccountProviderInterface()
+    , db_manager_(db_manager) {}
 
 MysqlAccountProvider::~MysqlAccountProvider() {}
 
 shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
     auto account = make_shared<Account>(true);
 
-    account->account_id(1234);
-    account->username("test");
-    account->password("f78036ebcb098b728278dcb05f957d5d5568b3e8bf9973a5de3df3716b3825b372603409d179f053955853ed07b9f53c326cc98582e323937d172903e4665e03");
-    account->salt("f78036ebcb098b728278dcb05f957d5d5568b3e8bf9973a5de3df3716b3825b372603409d179f053955853ed07b9f53c326cc98582e323937d172903e4665e03");
-    account->algorithm("sha512");
+    string sql = "select id, username, password, salt, enabled from galaxy_user where username = ?";
+    auto conn = db_manager_->getConnection("galaxy_db");
+    auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+    statement->setString(1, username);
+    auto result_set = statement->executeQuery();
+
+    if (result_set->next())
+    {
+        account->account_id(result_set->getInt("id"));
+        account->username(result_set->getString("username"));
+        account->password(result_set->getString("password"));
+        account->salt(result_set->getString("salt"));
+        if (result_set->getInt("enabled") == 1)
+            account->Enable();
+        else
+            account->Disable();
+
+        account->algorithm("sha512");
+    }
+    else
+        DLOG(WARNING) << "No account information found for user: " << username << endl;
 
     return account;
 }

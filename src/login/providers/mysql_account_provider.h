@@ -23,15 +23,20 @@
 
 #include "login/providers/account_provider_interface.h"
 
+namespace anh { namespace database { class DatabaseManagerInterface; 
+}}  // anh::database
+
 namespace login {
 namespace providers {
 
 class MysqlAccountProvider : public AccountProviderInterface {
 public:
-    MysqlAccountProvider();
+    explicit MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
     ~MysqlAccountProvider();
 
     std::shared_ptr<login::Account> FindByUsername(std::string username);
+private:
+    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 
 }}  // namespace login::providers
