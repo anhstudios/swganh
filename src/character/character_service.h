@@ -21,19 +21,37 @@
 #ifndef CHARACTER_CHARACTER_SERVICE_H_
 #define CHARACTER_CHARACTER_SERVICE_H_
 
-#include "swganh/character/character_service_interface.h"
+#include "anh/event_dispatcher/event_dispatcher_interface.h"
+
+#include "swganh/base/base_service.h"
+#include "swganh/character/base_character_service.h"
 
 namespace character {
     
-class CharacterService : public swganh::character::CharacterServiceInterface {
+class CharacterService : public swganh::character::BaseCharacterService {
 public:
-    CharacterService();
+    CharacterService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
     ~CharacterService();
+    
+    /*
+    *  @brief used to subscribe to events on a serivce
+    */
+    virtual void subscribe();
 
-    void Start();
-    void Stop();
+    /*
+    *  @brief used to perform any startup specific tasks for the service
+    */
+    virtual void onStart();
 
-    bool IsRunning() const;
+    /*
+    *  @brief used to perform any shutdown specific tasks for the service
+    */
+    virtual void onStop();
+
+    /*
+    *  @brief used to perform any update specific tasks for the service
+    */
+    virtual void Update();
 
     // CharacterService API Methods
 

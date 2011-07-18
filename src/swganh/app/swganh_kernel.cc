@@ -22,9 +22,9 @@ SwganhKernel::SwganhKernel() {
     version_.major = VERSION_MAJOR;
     version_.minor = VERSION_MINOR;
 
-    event_dispatcher_ = make_shared<EventDispatcher>();
-    plugin_manager_ = make_shared<PluginManager>(shared_from_this());
-    service_manager_ = make_shared<ServiceManager>();
+    event_dispatcher_ = nullptr;
+    plugin_manager_ = nullptr;
+    service_manager_ = nullptr;
 }
 
 const Version& SwganhKernel::GetVersion() {
@@ -32,13 +32,25 @@ const Version& SwganhKernel::GetVersion() {
 }
 
 shared_ptr<EventDispatcherInterface> SwganhKernel::GetEventDispatcher() {
+    if (!event_dispatcher_) {
+        event_dispatcher_ = make_shared<EventDispatcher>();
+    }
+
     return event_dispatcher_;
 }
 
 shared_ptr<PluginManager> SwganhKernel::GetPluginManager() {
+    if (!plugin_manager_) {
+        plugin_manager_ = make_shared<PluginManager>(shared_from_this());
+    }
+
     return plugin_manager_;
 }
 
 shared_ptr<ServiceManager> SwganhKernel::GetServiceManager() {
+    if (!service_manager_) {
+        service_manager_ = make_shared<ServiceManager>(GetPluginManager());
+    }
+
     return service_manager_;
 }

@@ -20,20 +20,25 @@
 
 #include "character/character_service.h"
 
+using namespace anh;
 using namespace swganh::character;
+using namespace event_dispatcher;
 using namespace character;
 using namespace std;
 
-CharacterService::CharacterService() {}
+CharacterService::CharacterService(shared_ptr<EventDispatcherInterface> dispatcher) {
+    event_dispatcher(dispatcher);
+}
 
 CharacterService::~CharacterService() {}
 
-void CharacterService::Start() {}
+void CharacterService::subscribe() {}
 
-void CharacterService::Stop() {}
+void CharacterService::onStart() {}
 
-bool CharacterService::IsRunning() const { return false; }
+void CharacterService::onStop() {}
 
+void CharacterService::Update() {}
 
 vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account_id) {
     vector<CharacterData> characters;

@@ -1,6 +1,6 @@
-include(ANHModule)
+include(ANHPlugin)
 
-AddANHModule(login
+AddANHPlugin(login
     DEPENDS 
         libanh
         libswganh

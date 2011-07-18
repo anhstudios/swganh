@@ -35,10 +35,9 @@ namespace swganh {
 namespace base {
 
 class BaseService : public anh::service::ServiceInterface {
-public:
-    explicit BaseService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
-    ~BaseService();
-    
+public:    
+    BaseService();
+
     virtual void Start();
     virtual void Stop();
 
@@ -48,7 +47,7 @@ public:
     /*
     *  @brief sets the event_dispatcher
     */
-    virtual void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
     /*
     *  @brief used to subscribe to events on a serivce
     */
@@ -75,8 +74,6 @@ protected:
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     
     tbb::atomic<bool> running_;
-private:
-    BaseService();
 };
 
 }}  // swganh::base

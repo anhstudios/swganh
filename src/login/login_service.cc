@@ -48,58 +48,41 @@ using namespace login;
 using namespace messages;
 using namespace std;
 
-LoginService::LoginService(shared_ptr<EventDispatcherInterface> event_dispatcher) 
-    : listen_port_(0) {
-        
-    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(event_dispatcher)));
+LoginService::LoginService(shared_ptr<EventDispatcherInterface> dispatcher) 
+    : listen_port_(44453) {
+    event_dispatcher(dispatcher);
 
-    this->event_dispatcher(event_dispatcher);
-
+    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(dispatcher)));
+    
     auto encoder = make_shared<encoders::Sha512Encoder>();
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
     account_provider_ = make_shared<providers::MysqlAccountProvider>();
-
-    running_ = false;
 }
 
 LoginService::~LoginService() {}
 
 void LoginService::DescribeConfigOptions(boost::program_options::options_description& description) {
     description.add_options()
-        ("service.login.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
+        ("service.login.udp_port", boost::program_options::value<uint16_t>(&listen_port_)->default_value(44453),
             "The port the login service will listen for incoming client connections on")
     ;
 }
 
-void LoginService::Start() {
-    running_ = true;
+void LoginService::subscribe() {
+    event_dispatcher_->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
+}
 
+void LoginService::onStart() {
     soe_server_->Start(listen_port_);
+}
 
-    while(IsRunning()) {
-        soe_server_->Update();
-        event_dispatcher_->tick();
-    }
-
+void LoginService::onStop() {
     soe_server_->Shutdown();
 }
 
-void LoginService::Stop() {
-    running_ = false;
-}
-
-bool LoginService::IsRunning() const { return running_; }
-
-shared_ptr<EventDispatcherInterface> LoginService::event_dispatcher() {
-    return event_dispatcher_;
-}
-
-void LoginService::event_dispatcher(shared_ptr<EventDispatcherInterface> event_dispatcher) {
-    event_dispatcher_ = event_dispatcher;
-    soe_server_->event_dispatcher(event_dispatcher);
-
-    event_dispatcher_->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
+void LoginService::Update() {
+    soe_server_->Update();
 }
 
 shared_ptr<CharacterServiceInterface> LoginService::character_service() {

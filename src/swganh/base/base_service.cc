@@ -27,13 +27,7 @@ using namespace swganh::base;
 using namespace event_dispatcher;
 using namespace std;
 
-BaseService::BaseService(shared_ptr<EventDispatcherInterface> event_dispatcher)
-{
-    this->event_dispatcher(event_dispatcher);
-    running_ = false;
-}
-
-BaseService::~BaseService() {}
+BaseService::BaseService() {}
 
 void BaseService::DescribeConfigOptions(boost::program_options::options_description& description) {
 
@@ -47,7 +41,6 @@ void BaseService::Start() {
     onStart();
 
     while(IsRunning()) {
-        event_dispatcher_->tick();
         Update();
     }
 }

@@ -3,6 +3,13 @@
 #define SWGANH_APP_SWGANH_APP_H_
 
 #include <memory>
+#include <string>
+#include <vector>
+
+#include <boost/noncopyable.hpp>
+#include <boost/program_options/options_description.hpp>
+#include <boost/program_options/variables_map.hpp>
+#include <tbb/atomic.h>
 
 #include "anh/app/app_interface.h"
 
@@ -16,7 +23,29 @@ namespace app {
 
 class SwganhKernel;
 
-class SwganhApp : public anh::app::AppInterface {
+struct DatabaseConfig {
+    std::string host;
+    std::string schema;
+    std::string username;
+    std::string password;
+};
+
+struct AppConfig {
+    bool single_server_mode;
+    std::vector<std::string> plugins;
+    std::string plugin_directory;
+    std::string galaxy_name;
+
+    DatabaseConfig galaxy_manager_db;
+    DatabaseConfig galaxy_db;
+
+    boost::program_options::options_description BuildConfigDescription();
+};
+
+
+typedef std::pair<boost::program_options::options_description, boost::program_options::variables_map> PluginConfig;
+
+class SwganhApp : public anh::app::AppInterface, private boost::noncopyable {
 public:    
     SwganhApp();
 
@@ -30,9 +59,16 @@ public:
 
     std::shared_ptr<anh::app::KernelInterface> GetAppKernel();
 
-public:
+private:
+    void LoadAppConfig_(int argc, char* argv[], AppConfig& app_config);
+    void LoadPlugins_(std::vector<std::string> plugins);
+    
     std::shared_ptr<SwganhKernel> kernel_;
-    bool running_;
+    tbb::atomic<bool> running_;
+    bool initialized_;
+    
+    AppConfig app_config_;
+    PluginConfig module_config_;
 };
 
 }}  // namespace swganh::app

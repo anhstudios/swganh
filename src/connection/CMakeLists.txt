@@ -1,6 +1,6 @@
-include(ANHModule)
+include(ANHPlugin)
 
-AddANHModule(connection
+AddANHPlugin(connection
     DEPENDS 
         libanh
         libswganh

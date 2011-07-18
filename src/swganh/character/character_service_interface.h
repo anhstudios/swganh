@@ -24,17 +24,18 @@
 #include <cstdint>
 #include <vector>
 
+#include "swganh/base/base_service.h"
+
 #include "swganh/character/character_data.h"
 
 namespace swganh {
 namespace character {
     
-class CharacterServiceInterface {
+class CharacterServiceInterface : public swganh::base::BaseService {
 public:
     virtual ~CharacterServiceInterface() {}
     
     virtual std::vector<character::CharacterData> GetCharactersForAccount(uint64_t account_id) = 0;
-
 };
 
 }}  // namespace swganh::character

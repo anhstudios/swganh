@@ -13,7 +13,7 @@ namespace plugin {
     
 struct ObjectParams {
     std::string name;
-    const anh::app::KernelInterface* kernel;
+    anh::app::KernelInterface* kernel;
 };
 
 typedef std::function<void * (ObjectParams*)> ObjectCreator;
@@ -26,7 +26,7 @@ struct ObjectRegistration {
 };
 
 typedef void (*ExitFunc)();
-typedef ExitFunc (*InitFunc)(const anh::app::KernelInterface *);
+typedef ExitFunc (*InitFunc)(anh::app::KernelInterface&);
 
 #ifdef WIN32
     #ifdef DLL_EXPORTS
@@ -42,7 +42,7 @@ extern
 #ifdef __cplusplus
     "C"
 #endif
-PLUGIN_API ExitFunc InitializePlugin(const anh::app::KernelInterface* binding);
+PLUGIN_API ExitFunc InitializePlugin(anh::app::KernelInterface& binding);
 
 }}  // namespace anh::plugin
 

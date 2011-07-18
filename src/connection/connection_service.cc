@@ -44,14 +44,12 @@ using namespace messages;
 using namespace swganh::zone::scene::messages;
 using namespace std;
 
-ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> event_dispatcher) 
-    : listen_port_(0) {
+ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> dispatcher) 
+    : listen_port_(44463) {
         
-    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(event_dispatcher)));
+    event_dispatcher(dispatcher);
 
-    this->event_dispatcher(event_dispatcher);
-
-    running_ = false;
+    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(dispatcher)));    
 }
 
 ConnectionService::~ConnectionService() {}
@@ -63,36 +61,24 @@ void ConnectionService::DescribeConfigOptions(boost::program_options::options_de
     ;
 }
 
-void ConnectionService::Start() {
-    running_ = true;
 
-    soe_server_->Start(listen_port_);
-
-    while(IsRunning()) {
-        soe_server_->Update();
-        event_dispatcher_->tick();
-    }
-
-    soe_server_->Shutdown();
-}
-
-void ConnectionService::Stop() {
-    running_ = false;
-}
-
-bool ConnectionService::IsRunning() const { return running_; }
-
-shared_ptr<EventDispatcherInterface> ConnectionService::event_dispatcher() {
-    return event_dispatcher_;
-}
-
-void ConnectionService::event_dispatcher(shared_ptr<EventDispatcherInterface> event_dispatcher) {
-    event_dispatcher_ = event_dispatcher;
-    soe_server_->event_dispatcher(event_dispatcher);
+void ConnectionService::subscribe() {
     
     event_dispatcher_->subscribe("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1));
     event_dispatcher_->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));
     event_dispatcher_->subscribe("SelectCharacter", bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1));
+}
+
+void ConnectionService::onStart() {
+    soe_server_->Start(listen_port_);
+}
+
+void ConnectionService::onStop() {
+    soe_server_->Shutdown();
+}
+
+void ConnectionService::Update() {
+    soe_server_->Update();
 }
 
 bool ConnectionService::HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {

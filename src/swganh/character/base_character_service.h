@@ -18,30 +18,25 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef CONNECTION_MAIN_H_
-#define CONNECTION_MAIN_H_
+#ifndef SWGANH_CHARACTER_BASE_CHARACTER_SERVICE_H_
+#define SWGANH_CHARACTER_BASE_CHARACTER_SERVICE_H_
 
-#include <string>
+#include <cstdint>
+#include <vector>
 
-#include "anh/module_manager/module_interface.h"
-#include "anh/module_manager/platform_services.h"
-#include "anh/module_manager/module_main.h"
+#include "swganh/base/base_service.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "swganh/character/character_data.h"
+
+namespace swganh {
+namespace character {
     
-bool API Load(std::shared_ptr<anh::module_manager::PlatformServices>);
-void API Unload(std::shared_ptr<anh::module_manager::PlatformServices>);
-void API Start(std::shared_ptr<anh::module_manager::PlatformServices>);
-void API Stop(std::shared_ptr<anh::module_manager::PlatformServices>);
-const std::string API GetModuleName(void);
-const std::string API GetModuleType(void);
-const anh::module_manager::ModuleApiVersion API GetModuleVersion(void);
-const std::string API GetModuleDescription(void);
+class BaseCharacterService : public swganh::base::BaseService {
+public:
+    virtual std::vector<character::CharacterData> GetCharactersForAccount(uint64_t account_id) = 0;
+};
 
-#ifdef __cplusplus
-}
-#endif
+}}  // namespace swganh::character
 
-#endif  // CONNECTION_MAIN_H_
+#endif  // SWGANH_CHARACTER_BASE_CHARACTER_SERVICE_H_
+

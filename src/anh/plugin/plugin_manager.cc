@@ -48,24 +48,24 @@ PluginManager::~PluginManager() {
 
 bool PluginManager::LoadPlugin(const std::string& path) {
     if (library_map_.find(path) != library_map_.end()) {
-        cout << "Step 1 failed\n" << endl;
+        cout << "Step 1 failed " << path << "\n" << endl;
         return false;
     }
 
     auto library = LoadLibrary_(path);
     if (!library) {
-        cout << "Step 3 failed\n" << endl;
+        cout << "Step 3 failed " << path << "\n" << endl;
         return false;
     }
 
     InitFunc init_func = library->GetSymbol<InitFunc>("InitializePlugin");
     if (!init_func) {
-        cout << "Step 4 failed\n" << endl;
+        cout << "Step 4 failed " << path << "\n" << endl;
         return false;
     }
 
     if (!InitializePlugin(init_func)) {
-        cout << "Step 5 failed\n" << endl;
+        cout << "Step 5 failed " << path << "\n" << endl;
         return false;
     }
 
@@ -111,7 +111,7 @@ bool PluginManager::InitializePlugin(InitFunc init_func) {
         return false;
     }
 
-    ExitFunc exit_func = init_func(kernel_.get());
+    ExitFunc exit_func = init_func(*kernel_);
 
     if (!exit_func) {
         return false;

@@ -18,66 +18,51 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "character/main.h"
-
 #include <iostream>
 
 #include <glog/logging.h>
 #include <boost/thread.hpp>
 
+
+#include "anh/app/kernel_interface.h"
+#include "anh/plugin/bindings.h"
+#include "anh/plugin/plugin_manager.h"
+#include "anh/service/service_manager.h"
+
 #include "character/character_service.h"
 
 using namespace anh;
+using namespace app;
+using namespace plugin;
+using namespace service;
 using namespace swganh::character;
+using namespace event_dispatcher;
 using namespace character;
-using namespace module_manager;
 using namespace std;
-using boost::any_cast;
 
-static std::shared_ptr<CharacterService> character_service;
-
-bool API Load(shared_ptr<PlatformServices> services) {
-    cout << GetModuleName() << " Loading..." << endl;
-
-    character_service = make_shared<CharacterService>();
-
-    services->addService("CharacterService", static_pointer_cast<CharacterServiceInterface>(character_service));
-
-    cout << GetModuleName() << " Loaded!" << endl;
-
-    return true;
+extern "C" PLUGIN_API void ExitModule() {
+    return;
 }
 
-void API Unload(std::shared_ptr<anh::module_manager::PlatformServices> services) {
-    services->removeService("CharacterService");
-}
+extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
 
-void API Start(std::shared_ptr<anh::module_manager::PlatformServices> services) {    
-    boost::thread t([] () { character_service->Start(); });
-}
+    ObjectRegistration registration;
+    registration.version.major = 1;
+    registration.version.minor = 0;
 
-void API Stop(std::shared_ptr<anh::module_manager::PlatformServices> services) {  
-    cout << GetModuleName() << " Stopping..." << endl;
+    // Register TestObj
+    registration.CreateObject = [] (ObjectParams* params) -> void * {
+        auto character_service = new CharacterService(params->kernel->GetEventDispatcher());
+        return character_service;
+    };
 
-    character_service->Stop();
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete object;
+        }
+    };
 
-    while (character_service->IsRunning()) { }
-    
-    cout << GetModuleName() << " Stopped!" << endl;
-}
+    kernel.GetPluginManager()->RegisterObject("CharacterService", &registration);
 
-const std::string API GetModuleName(void) {
-    return "ANH Character Service";
-}
-
-const std::string API GetModuleType(void) {
-    return "CharacterService";
-}
-
-const anh::module_manager::ModuleApiVersion API GetModuleVersion(void) {
-    return anh::module_manager::ModuleApiVersion(1, 0, "1.0");
-}
-
-const std::string API GetModuleDescription(void) {
-    return "Provides character management services to the cluster.";
+    return ExitModule;
 }

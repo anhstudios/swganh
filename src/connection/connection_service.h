@@ -26,22 +26,33 @@
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/network/soe/server.h"
 
+#include "swganh/base/base_service.h"
+
 namespace connection {
     
-class ConnectionService {
+class ConnectionService : public swganh::base::BaseService {
 public:
     explicit ConnectionService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
     ~ConnectionService();
     
     void DescribeConfigOptions(boost::program_options::options_description& description);
-
-    void Start();
-    void Stop();
-
-    bool IsRunning() const;
     
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
-    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    /*
+    *  @brief used to subscribe to events on a serivce
+    */
+    virtual void subscribe();
+    /*
+    *  @brief used to perform any startup specific tasks for the service
+    */
+    virtual void onStart();
+    /*
+    *  @brief used to perform any shutdown specific tasks for the service
+    */
+    virtual void onStop();
+    /*
+    *  @brief used to perform any update specific tasks for the service
+    */
+    virtual void Update();
 
 private:
     bool HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
@@ -50,8 +61,6 @@ private:
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-
     tbb::atomic<bool> running_;
 
     uint16_t listen_port_;

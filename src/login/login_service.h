@@ -30,6 +30,7 @@
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/network/soe/server.h"
 
+#include "swganh/base/base_service.h"
 #include "swganh/character/character_service_interface.h"
 
 namespace anh {
@@ -48,20 +49,29 @@ class AccountProviderInterface;
 
 class LoginClient;
 
-class LoginService {
+class LoginService : public swganh::base::BaseService {
 public:
     explicit LoginService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
     ~LoginService();
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
 
-    void Start();
-    void Stop();
-
-    bool IsRunning() const;
-
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
-    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    /*
+    *  @brief used to subscribe to events on a serivce
+    */
+    virtual void subscribe();
+    /*
+    *  @brief used to perform any startup specific tasks for the service
+    */
+    virtual void onStart();
+    /*
+    *  @brief used to perform any shutdown specific tasks for the service
+    */
+    virtual void onStop();
+    /*
+    *  @brief used to perform any update specific tasks for the service
+    */
+    virtual void Update();
     
     std::shared_ptr<swganh::character::CharacterServiceInterface> character_service();
     void character_service(std::shared_ptr<swganh::character::CharacterServiceInterface> character_service);
@@ -72,7 +82,6 @@ private:
     bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<swganh::character::CharacterServiceInterface> character_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
