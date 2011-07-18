@@ -52,7 +52,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
 
     // Register TestObj
     registration.CreateObject = [] (ObjectParams* params) -> void * {
-        auto character_service = new CharacterService(params->kernel->GetEventDispatcher());
+        auto character_service = new CharacterService(params->kernel->GetEventDispatcher(), params->kernel->GetDatabaseManager());
         return character_service;
     };
 

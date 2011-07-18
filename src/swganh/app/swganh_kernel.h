@@ -17,6 +17,8 @@ public:
 
     const anh::app::Version& GetVersion();
 
+    std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager();
+
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> GetEventDispatcher();
 
     std::shared_ptr<anh::plugin::PluginManager> GetPluginManager();
@@ -25,7 +27,8 @@ public:
 
 private:
     anh::app::Version version_;
-
+    
+    std::shared_ptr<anh::database::DatabaseManagerInterface> database_manager_;
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
     std::shared_ptr<anh::service::ServiceManager> service_manager_;

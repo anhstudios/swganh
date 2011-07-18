@@ -26,7 +26,7 @@
 #include "anh/network/soe/server.h"
 
 #include "swganh/base/base_service.h"
-#include "swganh/character/character_service_interface.h"
+#include "swganh/character/base_character_service.h"
 
 namespace anh {
 namespace network {
@@ -38,6 +38,11 @@ namespace anh {
 namespace database {
 class DatabaseManagerInterface; 
 }}  // namespace anh::database
+
+namespace anh {
+namespace event_dispatcher {
+class EventInterface;
+}}  // namespace anh::event_dispatcher
 
 namespace login {
     
@@ -63,8 +68,8 @@ public:
 
     void subscribe();
     
-    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service();
-    void character_service(std::shared_ptr<swganh::character::CharacterServiceInterface> character_service);
+    std::shared_ptr<swganh::character::BaseCharacterService> character_service();
+    void character_service(std::shared_ptr<swganh::character::BaseCharacterService> character_service);
 
 private:
     LoginService();
@@ -73,7 +78,7 @@ private:
     bool HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
-    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service_;
+    std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
 

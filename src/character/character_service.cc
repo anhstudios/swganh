@@ -23,6 +23,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <cppconn/connection.h>
+#include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
@@ -57,10 +58,10 @@ using namespace event_dispatcher;
 using namespace database;
 using namespace std;
 
-CharacterService::CharacterService(shared_ptr<EventDispatcherInterface> event_dispatcher
-,shared_ptr<DatabaseManagerInterface> db_manager) 
-    : BaseService(event_dispatcher)
-    , db_manager_(db_manager) {}
+CharacterService::CharacterService(shared_ptr<EventDispatcherInterface> dispatcher, shared_ptr<DatabaseManagerInterface> db_manager) 
+    : db_manager_(db_manager) {
+    event_dispatcher(dispatcher);
+}
 
 CharacterService::~CharacterService() {}
 
@@ -75,59 +76,70 @@ void CharacterService::subscribe() {
 
 vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account_id) {
     vector<CharacterData> characters;
-
-    auto conn = db_manager_->getConnection("galaxy_db");
-    auto statement = std::shared_ptr<sql::PreparedStatement>(
-        conn->prepareStatement("CALL sp_ReturnAccountCharacters(?);")
-        );
-    statement->setInt64(1, account_id);
-    auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
-
-    uint16_t chars_count = result_set->rowsCount();
     
-    if (chars_count > 0)
-    {
-        // this is needed to ensure we don't get commands out of sync errors
-        while (result_set->next())
+    try {
+        auto conn = db_manager_->getConnection("galaxy_db");
+        auto statement = std::shared_ptr<sql::PreparedStatement>(
+            conn->prepareStatement("CALL sp_ReturnAccountCharacters(?);")
+            );
+        statement->setInt64(1, account_id);
+        auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
+
+        uint16_t chars_count = result_set->rowsCount();
+        
+        if (chars_count > 0)
         {
-            CharacterData character;
-            character.character_id = result_set->getUInt64("id");
-            string name = result_set->getString("firstname") + " " + result_set->getString("lastname");
-            character.name = std::wstring(name.begin(), name.end());
-            character.race_crc = anh::memcrc(result_set->getString("base_model_string"));
-            character.galaxy_id = result_set->getUInt("galaxy_id");
-            character.status = 1 /*result_set->getInt("status")*/;
-            characters.push_back(character);
-        } while (statement->getMoreResults());
+            // this is needed to ensure we don't get commands out of sync errors
+            while (result_set->next())
+            {
+                CharacterData character;
+                character.character_id = result_set->getUInt64("id");
+                string name = result_set->getString("firstname") + " " + result_set->getString("lastname");
+                character.name = std::wstring(name.begin(), name.end());
+                character.race_crc = anh::memcrc(result_set->getString("base_model_string"));
+                character.galaxy_id = result_set->getUInt("galaxy_id");
+                character.status = 1 /*result_set->getInt("status")*/;
+                characters.push_back(character);
+            } while (statement->getMoreResults());
+        }
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return characters;
 }
 CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
     CharacterLoginData character;
-    string sql = "CALL sp_GetLoginCharacter(?);";
-    auto conn = db_manager_->getConnection("galaxy_db");
-    auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-    statement->setUInt64(1, character_id);
+    
+    try {
+        string sql = "CALL sp_GetLoginCharacter(?);";
+        auto conn = db_manager_->getConnection("galaxy_db");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt64(1, character_id);
 
-    auto result_set = statement->executeQuery();
-    if (result_set->next())
-    {
-        character.character_id = result_set->getUInt64("id");
-        character.position.x = result_set->getDouble("x");
-        character.position.y = result_set->getDouble("y");
-        character.position.z = result_set->getDouble("z");
-        character.orientation.x = result_set->getDouble("oX");
-        character.orientation.y = result_set->getDouble("oY");
-        character.orientation.z = result_set->getDouble("oZ");
-        character.orientation.w = result_set->getDouble("oW");
-        character.race_template = result_set->getString("base_model_string");
-        if (result_set->getInt("gender") == 0)
-            character.gender = "female";
-        else
-            character.gender = "male";
-        character.race = result_set->getString("race");
-        character.terrain_map = result_set->getString("terrain_file");
+        auto result_set = statement->executeQuery();
+        if (result_set->next())
+        {
+            character.character_id = result_set->getUInt64("id");
+            character.position.x = result_set->getDouble("x");
+            character.position.y = result_set->getDouble("y");
+            character.position.z = result_set->getDouble("z");
+            character.orientation.x = result_set->getDouble("oX");
+            character.orientation.y = result_set->getDouble("oY");
+            character.orientation.z = result_set->getDouble("oZ");
+            character.orientation.w = result_set->getDouble("oW");
+            character.race_template = result_set->getString("base_model_string");
+            if (result_set->getInt("gender") == 0)
+                character.gender = "female";
+            else
+                character.gender = "male";
+            character.race = result_set->getString("race");
+            character.terrain_map = result_set->getString("terrain_file");
+        }
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return character;
 }

@@ -20,6 +20,7 @@
 
 #include "login/providers/mysql_account_provider.h"
 
+#include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
@@ -42,29 +43,37 @@ MysqlAccountProvider::MysqlAccountProvider(std::shared_ptr<anh::database::Databa
 MysqlAccountProvider::~MysqlAccountProvider() {}
 
 shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
-    auto account = make_shared<Account>(true);
+    shared_ptr<Account> account = nullptr;
 
-    string sql = "select id, username, password, salt, enabled from galaxy_user where username = ?";
-    auto conn = db_manager_->getConnection("galaxy_db");
-    auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-    statement->setString(1, username);
-    auto result_set = statement->executeQuery();
+    try {
+        string sql = "select id, username, password, salt, enabled from account where username = ?";
+        auto conn = db_manager_->getConnection("galaxy_db");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setString(1, username);
+        auto result_set = statement->executeQuery();
+        
+        if (result_set->next()) {
+            account = make_shared<Account>(true);
 
-    if (result_set->next())
-    {
-        account->account_id(result_set->getInt("id"));
-        account->username(result_set->getString("username"));
-        account->password(result_set->getString("password"));
-        account->salt(result_set->getString("salt"));
-        if (result_set->getInt("enabled") == 1)
-            account->Enable();
-        else
-            account->Disable();
+            account->account_id(result_set->getInt("id"));
+            account->username(result_set->getString("username"));
+            account->password(result_set->getString("password"));
+            account->salt(result_set->getString("salt"));
+            if (result_set->getInt("enabled") == 1) {
+                account->Enable();
+            } else {
+                account->Disable();
+            }
 
-        account->algorithm("sha512");
+            account->algorithm("sha512");
+        } else {
+            DLOG(WARNING) << "No account information found for user: " << username << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-    else
-        DLOG(WARNING) << "No account information found for user: " << username << endl;
 
     return account;
 }

@@ -31,7 +31,7 @@
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_manager.h"
 
-#include "swganh/character/character_service_interface.h"
+#include "swganh/character/base_character_service.h"
 
 #include "login/login_service.h"
 
@@ -59,14 +59,14 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
 
     // Register TestObj
     registration.CreateObject = [] (ObjectParams* params) -> void * {
-        auto character_service = std::static_pointer_cast<CharacterServiceInterface>(params->kernel->GetServiceManager()->GetService("CharacterService"));
+        auto character_service = std::static_pointer_cast<BaseCharacterService>(params->kernel->GetServiceManager()->GetService("CharacterService"));
 
         if (! character_service) {
             // maybe throw exception here?
             return nullptr;
         }
 
-        auto login_service = new LoginService(params->kernel->GetEventDispatcher());
+        auto login_service = new LoginService(params->kernel->GetEventDispatcher(), params->kernel->GetDatabaseManager());
         login_service->character_service(character_service);
 
         return login_service;

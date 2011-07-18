@@ -9,6 +9,7 @@
 #include <boost/program_options.hpp>
 #include <glog/logging.h>
 
+#include "anh/database/database_manager_interface.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_manager.h"
@@ -67,6 +68,13 @@ SwganhApp::SwganhApp() {
 void SwganhApp::Initialize(int argc, char* argv[]) {
     LoadAppConfig_(argc, argv, app_config_);
     LoadPlugins_(app_config_.plugins);
+    
+    kernel_->GetDatabaseManager()->registerStorageType(
+        "galaxy_db",
+        app_config_.galaxy_manager_db.schema,
+        app_config_.galaxy_manager_db.host,
+        app_config_.galaxy_manager_db.username,
+        app_config_.galaxy_manager_db.password);
 
     initialized_ = true;
 }

@@ -7,6 +7,11 @@
 #include <string>
 
 namespace anh {
+namespace database {
+class DatabaseManagerInterface;
+}}  // namespace anh::database
+
+namespace anh {
 namespace event_dispatcher {
 class EventDispatcherInterface; 
 }}  // namespace anh::event_dispatcher
@@ -44,6 +49,8 @@ public:
     virtual std::shared_ptr<anh::plugin::PluginManager> GetPluginManager() = 0;
 
     virtual std::shared_ptr<anh::service::ServiceManager> GetServiceManager() = 0;
+
+    virtual std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager() = 0;
 
     // also add entity manager, blah blah.
 };

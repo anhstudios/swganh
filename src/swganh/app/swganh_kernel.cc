@@ -1,6 +1,11 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include <mysql_driver.h>
+#include <cppconn/connection.h>
+#include <cppconn/driver.h>
+
+#include "anh/database/database_manager.h"
 #include "anh/event_dispatcher/event_dispatcher.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_manager.h"
@@ -10,6 +15,8 @@
 using namespace swganh::app;
 
 using anh::app::Version;
+using anh::database::DatabaseManagerInterface;
+using anh::database::DatabaseManager;
 using anh::event_dispatcher::EventDispatcherInterface;
 using anh::event_dispatcher::EventDispatcher;
 using anh::plugin::PluginManager;
@@ -29,6 +36,14 @@ SwganhKernel::SwganhKernel() {
 
 const Version& SwganhKernel::GetVersion() {
     return version_;
+}
+
+shared_ptr<DatabaseManagerInterface> SwganhKernel::GetDatabaseManager() {
+    if (!database_manager_) {
+        database_manager_ = make_shared<DatabaseManager>(sql::mysql::get_driver_instance());
+    }
+
+    return database_manager_;
 }
 
 shared_ptr<EventDispatcherInterface> SwganhKernel::GetEventDispatcher() {

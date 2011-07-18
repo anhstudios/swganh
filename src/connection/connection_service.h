@@ -26,6 +26,11 @@
 #include "swganh/base/base_service.h"
 #include "swganh/character/character_service_interface.h"
 
+namespace anh {
+namespace event_dispatcher {
+class EventInterface;
+}}  // namespace anh::event_dispatcher
+
 namespace connection {
     
 class ConnectionService : public swganh::base::BaseService {

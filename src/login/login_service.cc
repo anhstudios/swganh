@@ -25,6 +25,7 @@
 #include "anh/database/database_manager.h"
 
 #include "anh/event_dispatcher/basic_event.h"
+#include "anh/event_dispatcher/event_dispatcher_interface.h"
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
@@ -55,15 +56,14 @@ using namespace login;
 using namespace messages;
 using namespace std;
 
-LoginService::LoginService(shared_ptr<EventDispatcherInterface> event_dispatcher,
+LoginService::LoginService(shared_ptr<EventDispatcherInterface> dispatcher,
                            shared_ptr<DatabaseManagerInterface> db_manager) 
-    : BaseService(event_dispatcher)
-    , listen_port_(0) {
+    : listen_port_(44453) {
     
-    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(event_dispatcher)));
-    
-    this->event_dispatcher(event_dispatcher);
+    event_dispatcher(dispatcher);
 
+    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(dispatcher)));
+    
     auto encoder = make_shared<encoders::Sha512Encoder>(db_manager);
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
@@ -100,11 +100,11 @@ void LoginService::subscribe() {
     event_dispatcher_->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
 }
 
-shared_ptr<CharacterServiceInterface> LoginService::character_service() {
+shared_ptr<BaseCharacterService> LoginService::character_service() {
     return character_service_;
 }
 
-void LoginService::character_service(shared_ptr<CharacterServiceInterface> character_service) {
+void LoginService::character_service(shared_ptr<BaseCharacterService> character_service) {
     character_service_ = character_service;
 }
 
@@ -174,7 +174,7 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
 
     LoginClusterStatus cluster_status_message;
     ClusterServer cluster_server;
-    cluster_server.address = "69.76.2.62";
+    cluster_server.address = "127.0.0.1";
     cluster_server.ping_port = 44452;
     cluster_server.conn_port = 44463;
     cluster_server.distance = 0xffff8f80;

@@ -41,7 +41,7 @@ Sha512Encoder::~Sha512Encoder() {}
 string Sha512Encoder::EncodePassword(string raw, string salt) {
     string result;
 
-    string sql = "SELECT SHA2('" + raw + "{" + salt + "}" "', 512)";
+    string sql = "SELECT SHA2('" + raw + "{" + salt + "}', 512)";
     auto conn = db_manager_->getConnection("galaxy_db");
     auto statement = shared_ptr<sql::Statement>(conn->createStatement());
     auto result_set = statement->executeQuery(sql);

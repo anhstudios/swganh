@@ -25,6 +25,7 @@
 
 #include "anh/crc.h"
 #include "anh/event_dispatcher/basic_event.h"
+#include "anh/event_dispatcher/event_dispatcher_interface.h"
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
@@ -42,7 +43,7 @@
 #include "connection/messages/client_create_character.h"
 #include "connection/messages/client_create_character_success.h"
 #include "connection/messages/client_create_character_failed.h"
-#include "connection/messages/heartbeat.h"
+#include "connection/messages/heart_beat.h"
 
 using namespace anh;
 using namespace event_dispatcher;
@@ -53,13 +54,12 @@ using namespace character;
 using namespace scene::messages;
 using namespace std;
 
-ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> event_dispatcher) 
-    : BaseService(event_dispatcher)
-    , listen_port_(0) {
-        
-    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(event_dispatcher)));
+ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> dispatcher) 
+    : listen_port_(44463) {
 
-    this->event_dispatcher(event_dispatcher);
+    event_dispatcher(dispatcher);
+        
+    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(dispatcher)));
 }
 
 ConnectionService::~ConnectionService() {}
@@ -127,7 +127,6 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     return true;
 }
 
-
 bool ConnectionService::HandleSelectCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
     DLOG(WARNING) << "Handling SelectCharacter";
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
@@ -136,6 +135,7 @@ bool ConnectionService::HandleSelectCharacter_(std::shared_ptr<anh::event_dispat
 
     return processSelectCharacter_(select_character.character_id, remote_event->session());    
 }
+
 bool ConnectionService::processSelectCharacter_(uint64_t character_id, std::shared_ptr<anh::network::soe::Session> session) {
     swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(character_id);
     CmdStartScene start_scene;
@@ -164,6 +164,7 @@ bool ConnectionService::processSelectCharacter_(uint64_t character_id, std::shar
 
     return true;
 }
+
 bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
     DLOG(WARNING) << "Handling ClientCreateCharacter";
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
@@ -174,7 +175,7 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
     string error_code;
     tie(character_id, error_code) = character_service()->CreateCharacter(create_character);
     // heartbeat to let the client know we're still here
-    Heartbeat heartbeat;
+    HeartBeat heartbeat;
     remote_event->session()->SendMessage(heartbeat);
     if (error_code.length() > 0)
     {

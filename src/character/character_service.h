@@ -21,7 +21,7 @@
 #ifndef CHARACTER_CHARACTER_SERVICE_H_
 #define CHARACTER_CHARACTER_SERVICE_H_
 
-#include "swganh/character/character_service_interface.h"
+#include "swganh/character/base_character_service.h"
 
 #include "swganh/base/base_service.h"
 
@@ -29,7 +29,7 @@ namespace anh { namespace database { class DatabaseManagerInterface; } }
 
 namespace character {
     
-class CharacterService : public swganh::base::BaseService, public swganh::character::CharacterServiceInterface {
+class CharacterService : public swganh::character::BaseCharacterService {
 public:
     CharacterService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher,
                      std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
