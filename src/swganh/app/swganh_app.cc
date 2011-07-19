@@ -66,15 +66,26 @@ SwganhApp::SwganhApp() {
 }
 
 void SwganhApp::Initialize(int argc, char* argv[]) {
+    // Load the configuration    
     LoadAppConfig_(argc, argv, app_config_);
-    LoadPlugins_(app_config_.plugins);
-    
+
+    // Initialize kernel resources    
     kernel_->GetDatabaseManager()->registerStorageType(
-        "galaxy_db",
+        "galaxy_manager",
         app_config_.galaxy_manager_db.schema,
         app_config_.galaxy_manager_db.host,
         app_config_.galaxy_manager_db.username,
         app_config_.galaxy_manager_db.password);
+
+    kernel_->GetDatabaseManager()->registerStorageType(
+        "galaxy",
+        app_config_.galaxy_db.schema,
+        app_config_.galaxy_db.host,
+        app_config_.galaxy_db.username,
+        app_config_.galaxy_db.password);
+
+    // Load the plugin configuration.
+    LoadPlugins_(app_config_.plugins);
 
     initialized_ = true;
 }
