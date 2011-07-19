@@ -87,6 +87,10 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
     // Load the plugin configuration.
     LoadPlugins_(app_config_.plugins);
 
+    kernel_->GetServiceManager()->Initialize(service_config_);
+
+    LoadServiceConfig_(service_config_);
+
     initialized_ = true;
 }
 
@@ -140,6 +144,22 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[], AppConfig& app_config) {
         std::cout << config_description << "\n\n";
         exit(0);
     }
+}
+
+void SwganhApp::LoadServiceConfig_(ServiceConfig& service_config) {    
+    ifstream config_file("config/swganh.cfg");
+
+    if (!config_file.is_open()) {
+        throw runtime_error("Unable to open the configuration file at: config/swganh.cfg");
+    }
+
+    try {
+        store(parse_config_file(config_file, service_config.first, true), service_config.second);
+    } catch(...) {
+        throw runtime_error("Unable to parse the configuration file at: config/swganh.cfg");
+    }
+
+    notify(service_config.second);
 }
 
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    

@@ -43,7 +43,7 @@ struct AppConfig {
 };
 
 
-typedef std::pair<boost::program_options::options_description, boost::program_options::variables_map> PluginConfig;
+typedef std::pair<boost::program_options::options_description, boost::program_options::variables_map> ServiceConfig;
 
 class SwganhApp : public anh::app::AppInterface, private boost::noncopyable {
 public:    
@@ -61,6 +61,7 @@ public:
 
 private:
     void LoadAppConfig_(int argc, char* argv[], AppConfig& app_config);
+    void LoadServiceConfig_(ServiceConfig& service_config);
     void LoadPlugins_(std::vector<std::string> plugins);
     
     std::shared_ptr<SwganhKernel> kernel_;
@@ -68,7 +69,7 @@ private:
     bool initialized_;
     
     AppConfig app_config_;
-    PluginConfig module_config_;
+    ServiceConfig service_config_;
 };
 
 }}  // namespace swganh::app

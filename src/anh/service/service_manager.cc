@@ -49,20 +49,26 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
     services_[name] = service;
 }
 
-void ServiceManager::Start() {
+void ServiceManager::Initialize(ServiceConfig& service_config) {
     auto registration_map = plugin_manager_->registration_map();
 
     std::regex rx("Service");
     
-    for_each(registration_map.begin(), registration_map.end(), [this, &rx] (RegistrationMap::value_type& entry) {
+    for_each(registration_map.begin(), registration_map.end(), [this, &rx, &service_config] (RegistrationMap::value_type& entry) {
         std::string name = entry.first;
 
         if (entry.first.length() > 7 && std::regex_search(name.begin(), name.end(), rx)) {
             auto service = GetService(entry.first);
-            services_.insert(make_pair(entry.first, service));
+
+            if (service) {
+                service->DescribeConfigOptions(service_config.first);
+                services_.insert(make_pair(entry.first, service));
+            }
         }
     });
+}
 
+void ServiceManager::Start() {
     for_each(services_.begin(), services_.end(), [] (ServiceMap::value_type& entry) {
        if (entry.second) {
            boost::thread t([&entry] () { entry.second->Start(); });
