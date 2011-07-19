@@ -58,7 +58,7 @@ using namespace std;
 
 LoginService::LoginService(shared_ptr<EventDispatcherInterface> dispatcher,
                            shared_ptr<DatabaseManagerInterface> db_manager) 
-    : listen_port_(44453) {
+    : listen_port_(0) {
     
     event_dispatcher(dispatcher);
 

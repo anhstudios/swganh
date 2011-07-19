@@ -55,7 +55,7 @@ using namespace scene::messages;
 using namespace std;
 
 ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> dispatcher) 
-    : listen_port_(44463) {
+    : listen_port_(0) {
 
     event_dispatcher(dispatcher);
         
