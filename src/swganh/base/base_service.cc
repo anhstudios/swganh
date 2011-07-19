@@ -39,10 +39,6 @@ void BaseService::Start() {
     running_ = true;
 
     onStart();
-
-    while(IsRunning()) {
-        Update();
-    }
 }
 
 void BaseService::Stop() {

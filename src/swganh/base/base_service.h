@@ -61,10 +61,6 @@ public:
     */
     virtual void onStop() = 0;
     /*
-    *  @brief used to perform any update specific tasks for the service
-    */
-    virtual void Update() = 0;
-    /*
     *  @brief gets the event_dispatcher
     */
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();

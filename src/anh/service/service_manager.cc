@@ -71,9 +71,17 @@ void ServiceManager::Initialize(ServiceConfig& service_config) {
 void ServiceManager::Start() {
     for_each(services_.begin(), services_.end(), [] (ServiceMap::value_type& entry) {
        if (entry.second) {
-           boost::thread t([&entry] () { entry.second->Start(); });
+           entry.second->Start();
        } 
     });    
+}
+
+void ServiceManager::Update() {    
+    for_each(services_.begin(), services_.end(), [] (ServiceMap::value_type& entry) {
+       if (entry.second) {
+           entry.second->Update();
+       } 
+    });   
 }
 
 void ServiceManager::Stop() {

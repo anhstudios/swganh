@@ -105,11 +105,14 @@ void SwganhApp::Start() {
 
     do {
         kernel_->GetEventDispatcher()->tick();
+        kernel_->GetServiceManager()->Update();
     } while(IsRunning());
 }
 
 void SwganhApp::Stop() {
     running_ = false;
+        
+    kernel_->GetServiceManager()->Stop();
 }
 
 bool SwganhApp::IsRunning() {

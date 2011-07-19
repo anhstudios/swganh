@@ -39,6 +39,10 @@ public:
     */
     virtual void Stop() = 0;
     /*
+    *  @brief used to perform any update specific tasks for the service
+    */
+    virtual void Update() = 0;
+    /*
     *  @brief returns true if running is set to true
     */
     virtual bool IsRunning() const = 0;
