@@ -33,21 +33,6 @@ private:
 
     std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
 };
-
-//class ServiceInterface;
-//    
-//class ServiceManager {
-//public:    
-//    void RegisterPluginServices(std::shared_ptr<anh::plugin::PluginManager> module_manager);
-//    void RegisterService(std::shared_ptr<ServiceInterface> service);
-//    
-//    void StartServices();
-//    void StopServices();
-//    
-//private:
-//    typedef std::vector<std::shared_ptr<ServiceInterface>> ServiceContainer;
-//    ServiceContainer services_;
-//};
     
 }}  // namespace anh::service
 
