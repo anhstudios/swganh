@@ -78,7 +78,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
     vector<CharacterData> characters;
     
     try {
-        auto conn = db_manager_->getConnection("galaxy_db");
+        auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
             conn->prepareStatement("CALL sp_ReturnAccountCharacters(?);")
             );
@@ -114,7 +114,7 @@ CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
     
     try {
         string sql = "CALL sp_GetLoginCharacter(?);";
-        auto conn = db_manager_->getConnection("galaxy_db");
+        auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, character_id);
 
@@ -146,7 +146,7 @@ CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
 bool CharacterService::DeleteCharacter(uint64_t character_id){
     // this actually just archives the character and all their data so it can still be retrieved at a later time
     string sql = "CALL sp_CharacterDelete(?);";
-    auto conn = db_manager_->getConnection("galaxy_db");
+    auto conn = db_manager_->getConnection("galaxy_manager");
     auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
     statement->setUInt64(1, character_id);
     auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
@@ -159,7 +159,7 @@ bool CharacterService::DeleteCharacter(uint64_t character_id){
 }
 std::wstring CharacterService::GetRandomNameRequest(const std::string& base_model) {
 
-    auto conn = db_manager_->getConnection("galaxy_db");
+    auto conn = db_manager_->getConnection("galaxy_manager");
     auto statement = std::shared_ptr<sql::PreparedStatement>(
         conn->prepareStatement("SELECT sf_CharacterNameCreate(?);")
         );
@@ -174,7 +174,7 @@ std::wstring CharacterService::GetRandomNameRequest(const std::string& base_mode
     return L"";
 }
 bool CharacterService::UpdateCharacterStatus(uint64_t character_id, uint32_t status) {
-    auto conn = db_manager_->getConnection("galaxy_db");
+    auto conn = db_manager_->getConnection("galaxy_manager");
     auto statement = std::shared_ptr<sql::PreparedStatement>(
         conn->prepareStatement("update character set status = ? where character_id = ?")
         );
@@ -204,7 +204,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         last_name = m[2].str();
     }
 
-    auto conn = db_manager_->getConnection("galaxy_db");
+    auto conn = db_manager_->getConnection("galaxy_manager");
     std::shared_ptr<sql::PreparedStatement> statement;
     std::stringstream sql_sf;
     // @TODO add in 2nd parameter as option to select galaxy_id

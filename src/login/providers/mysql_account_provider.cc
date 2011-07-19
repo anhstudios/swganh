@@ -47,7 +47,7 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
 
     try {
         string sql = "select id, username, password, salt, enabled from account where username = ?";
-        auto conn = db_manager_->getConnection("galaxy_db");
+        auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);
         auto result_set = statement->executeQuery();
