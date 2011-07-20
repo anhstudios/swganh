@@ -50,7 +50,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
     registration.version.major = 1;
     registration.version.minor = 0;
 
-    // Register TestObj
+    // Register CreateObject
     registration.CreateObject = [] (ObjectParams* params) -> void * {
         auto character_service = new CharacterService(params->kernel->GetEventDispatcher(), params->kernel->GetDatabaseManager());
         return character_service;

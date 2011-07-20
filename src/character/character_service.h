@@ -41,6 +41,8 @@ public:
 
     void subscribe();
 
+    void DescribeConfigOptions(boost::program_options::options_description& description);
+
     // CharacterService API Methods
 
     std::vector<swganh::character::CharacterData> GetCharactersForAccount(uint64_t account_id);
@@ -50,6 +52,8 @@ public:
     bool UpdateCharacterStatus(uint64_t character_id, uint32_t status);
     std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info);
 private:
+    std::string galaxy_schema_;
+    std::string swg_schema_;
     // helpers
     std::string parseAppearance_(std::string appearance_data);
     std::string parseBio_(const std::string& bio);
