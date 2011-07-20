@@ -138,13 +138,13 @@ CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
             character.orientation.y = result_set->getDouble("oY");
             character.orientation.z = result_set->getDouble("oZ");
             character.orientation.w = result_set->getDouble("oW");
-            character.race_template = result_set->getString("base_model_string");
+            character.race_template = result_set->getString("baseModel");
             if (result_set->getInt("gender") == 0)
                 character.gender = "female";
             else
                 character.gender = "male";
-            character.race = result_set->getString("race");
-            character.terrain_map = result_set->getString("terrain_file");
+            character.race = result_set->getString("species");
+            character.terrain_map = result_set->getString("terrainMap");
         }
     } catch(sql::SQLException &e) {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
