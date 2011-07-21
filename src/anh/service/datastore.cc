@@ -17,7 +17,7 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/server_directory/datastore.h"
+#include "anh/service/datastore.h"
 
 #include <memory>
 #include <sstream>
@@ -28,10 +28,10 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
 
-#include "anh/server_directory/cluster.h"
-#include "anh/server_directory/process.h"
+#include "anh/service/galaxy.h"
+#include "anh/service/service.h"
 
-using namespace anh::server_directory;
+using namespace anh::service;
 using namespace boost::posix_time;
 using namespace std;
 
@@ -41,7 +41,7 @@ Datastore::Datastore(shared_ptr<sql::Connection> connection)
 
 Datastore::~Datastore() {}
 
-std::shared_ptr<Cluster> Datastore::findClusterByName(const std::string& name) const {
+std::shared_ptr<Galaxy> Datastore::findGalaxyByName(const std::string& name) const {
     std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
         "SELECT * FROM cluster "
         "WHERE name = ? LIMIT 1"));
@@ -55,24 +55,24 @@ std::shared_ptr<Cluster> Datastore::findClusterByName(const std::string& name) c
         return nullptr;
     }
 
-    auto cluster = make_shared<Cluster>(
+    auto cluster = make_shared<Galaxy>(
         result->getUInt("id"),
         result->getUInt("primary_id"),
         result->getString("name"),
         result->getString("version"),
-        static_cast<Cluster::StatusType>(result->getInt("status")),
+        static_cast<Galaxy::StatusType>(result->getInt("status")),
         result->getString("created_at"),
         result->getString("updated_at"));
 
     return cluster;
 }
 
-std::shared_ptr<Cluster> Datastore::createCluster(
+std::shared_ptr<Galaxy> Datastore::createGalaxy(
     const std::string& name,
     const std::string& version) const 
 {
     std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "INSERT INTO cluster(name, version, created_at, updated_at) "
+        "INSERT INTO galaxy(name, version, created_at, updated_at) "
         "VALUES(?, ?, NOW(), NOW())"));
 
     statement->setString(1, name);
@@ -84,29 +84,29 @@ std::shared_ptr<Cluster> Datastore::createCluster(
     }
 
     statement.reset(connection_->prepareStatement(
-        "SELECT * FROM cluster WHERE id = LAST_INSERT_ID()"));
+        "SELECT * FROM galaxy WHERE id = LAST_INSERT_ID()"));
     std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
 
     if (!result->next()) {
         return nullptr;
     }
 
-    auto cluster = make_shared<Cluster>(
+    auto cluster = make_shared<Galaxy>(
         result->getUInt("id"),
         result->getUInt("primary_id"),
         result->getString("name"),    
         result->getString("version"),
-        static_cast<Cluster::StatusType>(result->getInt("status")),
+        static_cast<Galaxy::StatusType>(result->getInt("status")),
         result->getString("created_at"),
         result->getString("updated_at"));
 
     return cluster;
 }
 
-std::shared_ptr<Process> Datastore::createProcess(std::shared_ptr<Cluster> cluster, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const {
+std::shared_ptr<Service> Datastore::createService(std::shared_ptr<Galaxy> cluster, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const {
 
     std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "INSERT INTO process (cluster_id, "
+        "INSERT INTO service (galaxy_id, "
                              "name, "
                              "type, "
                              "version, "
@@ -140,17 +140,17 @@ std::shared_ptr<Process> Datastore::createProcess(std::shared_ptr<Cluster> clust
     }
     
     statement.reset(connection_->prepareStatement(
-        "SELECT id, cluster_id, name, type, version, INET_NTOA(address) as address_string, tcp_port, udp_port, ping_port, status, CONVERT(TIMESTAMP(last_pulse), CHAR) as last_pulse_timestamp "
-        "FROM process WHERE id = LAST_INSERT_ID()"));
+        "SELECT id, galaxy_id, name, type, version, INET_NTOA(address) as address_string, tcp_port, udp_port, ping_port, status, CONVERT(TIMESTAMP(last_pulse), CHAR) as last_pulse_timestamp "
+        "FROM service WHERE id = LAST_INSERT_ID()"));
     std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
     
     if (!result->next()) {
         return nullptr;
     }
     
-    auto proc = make_shared<Process>(
+    auto proc = make_shared<Service>(
         result->getUInt("id"),
-        result->getUInt("cluster_id"),
+        result->getUInt("galaxy_id"),
         result->getString("name"),
         result->getString("type"),
         result->getString("version"),
@@ -166,8 +166,8 @@ std::shared_ptr<Process> Datastore::createProcess(std::shared_ptr<Cluster> clust
     return proc;
 }
 
-std::string Datastore::getClusterTimestamp(std::shared_ptr<Cluster> cluster) const {
-    auto process = findProcessById(cluster->primary_id());
+std::string Datastore::getGalaxyTimestamp(std::shared_ptr<Galaxy> cluster) const {
+    auto process = findServiceById(cluster->primary_id());
 
     if (!process) {
         return "";
@@ -176,9 +176,9 @@ std::string Datastore::getClusterTimestamp(std::shared_ptr<Cluster> cluster) con
     return process->last_pulse();
 }
 
-void Datastore::saveProcess(std::shared_ptr<Process> process) const {
+void Datastore::saveService(std::shared_ptr<Service> process) const {
     std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "UPDATE process SET address = INET_ATON(?), tcp_port = ?, udp_port = ?, ping_port = ?, status = ?, last_pulse = ? WHERE id = ?"));
+        "UPDATE service SET address = INET_ATON(?), tcp_port = ?, udp_port = ?, ping_port = ?, status = ?, last_pulse = ? WHERE id = ?"));
     
     statement->setString(1, process->address());
     statement->setUInt(2, process->tcp_port());
@@ -190,9 +190,9 @@ void Datastore::saveProcess(std::shared_ptr<Process> process) const {
     statement->executeUpdate();
 }
 
-std::shared_ptr<Cluster> Datastore::findClusterById(uint32_t id) const {
+std::shared_ptr<Galaxy> Datastore::findGalaxyById(uint32_t id) const {
      std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "SELECT * FROM cluster "
+        "SELECT * FROM galaxy "
         "WHERE id = ? LIMIT 1"));
 
     statement->setUInt(1, id);
@@ -204,21 +204,21 @@ std::shared_ptr<Cluster> Datastore::findClusterById(uint32_t id) const {
         return nullptr;
     }
 
-    auto cluster = make_shared<Cluster>(
+    auto cluster = make_shared<Galaxy>(
         result->getUInt("id"),
         result->getUInt("primary_id"),
         result->getString("name"),
         result->getString("version"),
-        static_cast<Cluster::StatusType>(result->getInt("status")),
+        static_cast<Galaxy::StatusType>(result->getInt("status")),
         result->getString("created_at"),
         result->getString("updated_at"));
 
     return cluster;
 }
 
-std::shared_ptr<Process> Datastore::findProcessById(uint32_t id) const {
+std::shared_ptr<Service> Datastore::findServiceById(uint32_t id) const {
      std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "SELECT * FROM process "
+        "SELECT * FROM service "
         "WHERE id = ? LIMIT 1"));
 
     statement->setUInt(1, id);
@@ -230,9 +230,9 @@ std::shared_ptr<Process> Datastore::findProcessById(uint32_t id) const {
         return nullptr;
     }
         
-    auto proc = make_shared<Process>(
+    auto proc = make_shared<Service>(
         result->getUInt("id"),
-        result->getUInt("cluster_id"),
+        result->getUInt("galaxy_id"),
         result->getString("name"),
         result->getString("type"),
         result->getString("version"),
@@ -248,9 +248,9 @@ std::shared_ptr<Process> Datastore::findProcessById(uint32_t id) const {
     return proc;
 }
 
-bool Datastore::deleteProcessById(uint32_t id) const {
+bool Datastore::deleteServiceById(uint32_t id) const {
     std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "DELETE FROM process WHERE id = ? "
+        "DELETE FROM service WHERE id = ? "
     ));
 
     statement->setUInt(1, id);
@@ -258,24 +258,24 @@ bool Datastore::deleteProcessById(uint32_t id) const {
     return statement->executeUpdate() > 0;
 }
 
-list<Cluster> Datastore::getClusterList() const {
+list<Galaxy> Datastore::getGalaxyList() const {
     std::unique_ptr<sql::Statement> statement(connection_->createStatement());
     std::unique_ptr<sql::ResultSet> result(statement->executeQuery(
-        "SELECT * FROM cluster ORDER BY cluster.name"));
+        "SELECT * FROM galaxy ORDER BY galaxy.name"));
 
     // Loop through the results and create a map entry for each.
-    std::list<Cluster> cluster_list;
+    std::list<Galaxy> cluster_list;
     uint32_t id = 0;
 
     while (result->next()) {
         id = result->getUInt("id");
 
-        cluster_list.push_back(Cluster(
+        cluster_list.push_back(Galaxy(
             id,
             result->getUInt("primary_id"),
             result->getString("name"),
             result->getString("version"),
-            static_cast<Cluster::StatusType>(result->getInt("status")),
+            static_cast<Galaxy::StatusType>(result->getInt("status")),
             result->getString("created_at"),
             result->getString("updated_at")));
     }
@@ -283,25 +283,25 @@ list<Cluster> Datastore::getClusterList() const {
     return cluster_list;
 }
 
-list<Process> Datastore::getProcessList(uint32_t cluster_id) const {
+list<Service> Datastore::getServiceList(uint32_t cluster_id) const {
     std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "SELECT id, cluster_id, type, version, address, tcp_port, udp_port, status, TIMESTAMP(last_pulse) as last_pulse_timestamp "
-        "FROM process WHERE cluster_id = ? ORDER BY process.type"));
+        "SELECT id, galaxy_id, type, version, address, tcp_port, udp_port, status, TIMESTAMP(last_pulse) as last_pulse_timestamp "
+        "FROM service WHERE galaxy_id = ? ORDER BY service.type"));
 
     statement->setUInt(1, cluster_id);
     
     std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
 
     // Loop through the results and create a map entry for each.
-    std::list<Process> process_list;
+    std::list<Service> process_list;
     uint32_t id = 0;
 
     while (result->next()) {
         id = result->getUInt("id");
 
-        Process proc(
+        Service proc(
             id,
-            result->getUInt("cluster_id"),
+            result->getUInt("galaxy_id"),
             result->getString("name"),
             result->getString("type"),
             result->getString("version"),
