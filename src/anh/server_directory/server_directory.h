@@ -26,8 +26,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "anh/server_directory/cluster.h"
-#include "anh/server_directory/process.h"
+#include "anh/server_directory/galaxy.h"
+#include "anh/server_directory/service.h"
 #include "anh/server_directory/server_directory_interface.h"
 
 // Forward Declare
@@ -38,20 +38,20 @@ namespace server_directory {
 
 class DatastoreInterface;
 
-class InvalidClusterError : public std::runtime_error {
+class InvalidGalaxyError : public std::runtime_error {
 public:
-    InvalidClusterError(const std::string& message = "") 
+    InvalidGalaxyError(const std::string& message = "") 
         : std::runtime_error(message) {}
 };
 
-class InvalidProcessError : public std::runtime_error {
+class InvalidServiceError : public std::runtime_error {
 public:
-    InvalidProcessError(const std::string& message = "") 
+    InvalidServiceError(const std::string& message = "") 
         : std::runtime_error(message) {}
 };
 
-/*! \brief ServerDirectory is a utility class intended to assist processes in
-* registering themselves and participating in a clustered environment.
+/*! \brief ServerDirectory is a utility class intended to assist servicees in
+* registering themselves and participating in a galaxyed environment.
 */
 class ServerDirectory : public ServerDirectoryInterface{
 public:
@@ -59,28 +59,28 @@ public:
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
     ServerDirectory(std::shared_ptr<DatastoreInterface> datastore, 
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher
-        , const std::string& cluster_name, const std::string& version = "", bool create_cluster = false);
+        , const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false);
 
-    std::shared_ptr<Cluster> cluster() const;
-    std::shared_ptr<Process> process() const;
+    std::shared_ptr<Galaxy> galaxy() const;
+    std::shared_ptr<Service> service() const;
         
-    void joinCluster(const std::string& cluster_name, const std::string& version = "", bool create_cluster = false);
+    void joinGalaxy(const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false);
 
-    bool registerProcess(const std::string& name, const std::string& process_type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping);
-    bool removeProcess(std::shared_ptr<Process>& process);
-    void updateProcessStatus(std::shared_ptr<Process>& process, int32_t new_status);
+    bool registerService(const std::string& name, const std::string& service_type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping);
+    bool removeService(std::shared_ptr<Service>& service);
+    void updateServiceStatus(std::shared_ptr<Service>& service, int32_t new_status);
     
-    bool makePrimaryProcess(std::shared_ptr<Process> process);
+    bool makePrimaryService(std::shared_ptr<Service> service);
 
     void pulse();
 
-    ClusterList getClusterSnapshot() const;
-    ProcessList getProcessSnapshot(std::shared_ptr<Cluster> cluster) const;
+    GalaxyList getGalaxySnapshot() const;
+    ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy) const;
 
 private:
     std::shared_ptr<DatastoreInterface> datastore_;
-    std::shared_ptr<Cluster> active_cluster_;
-    std::shared_ptr<Process> active_process_;
+    std::shared_ptr<Galaxy> active_galaxy_;
+    std::shared_ptr<Service> active_service_;
 
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>    event_dispatcher_;
 };

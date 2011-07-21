@@ -22,7 +22,7 @@
 
 #include <gmock/gmock.h>
 
-#include "anh/server_directory/process.h"
+#include "anh/server_directory/service.h"
 #include "anh/server_directory/server_directory_interface.h"
 
 namespace anh {
@@ -31,26 +31,26 @@ namespace server_directory {
 class MockServerDirectory : public ServerDirectoryInterface
 {
 public:
-    MOCK_METHOD3(joinCluster, void (const std::string& cluster_name, const std::string& version, bool create_cluster));
-    MOCK_METHOD7(registerProcess, bool(
+    MOCK_METHOD3(joinGalaxy, void (const std::string& galaxy_name, const std::string& version, bool create_galaxy));
+    MOCK_METHOD7(registerService, bool(
         const std::string& name, 
-        const std::string& process_type, 
+        const std::string& service_type, 
         const std::string& version, 
         const std::string& address, 
         uint16_t tcp_port, 
         uint16_t udp_port, 
         uint16_t ping));
-    MOCK_METHOD1(removeProcess, bool(std::shared_ptr<Process>& process));
-    MOCK_METHOD2(updateProcessStatus, void(
-        std::shared_ptr<Process>& process,
+    MOCK_METHOD1(removeService, bool(std::shared_ptr<Service>& service));
+    MOCK_METHOD2(updateServiceStatus, void(
+        std::shared_ptr<Service>& service,
         int32_t new_status));
-    MOCK_METHOD1(makePrimaryProcess, bool(std::shared_ptr<Process> process));
+    MOCK_METHOD1(makePrimaryService, bool(std::shared_ptr<Service> service));
     MOCK_METHOD0(pulse, void());
-    MOCK_CONST_METHOD0(cluster, std::shared_ptr<Cluster>());
-    MOCK_CONST_METHOD0(process, std::shared_ptr<Process>());
-    MOCK_CONST_METHOD0(getClusterSnapshot, ClusterList());
-    MOCK_CONST_METHOD1(getProcessSnapshot, ProcessList(
-        std::shared_ptr<Cluster> cluster));
+    MOCK_CONST_METHOD0(galaxy, std::shared_ptr<Galaxy>());
+    MOCK_CONST_METHOD0(service, std::shared_ptr<Service>());
+    MOCK_CONST_METHOD0(getGalaxySnapshot, GalaxyList());
+    MOCK_CONST_METHOD1(getServiceSnapshot, ServiceList(
+        std::shared_ptr<Galaxy> galaxy));
 };
 
 } // end server_directory

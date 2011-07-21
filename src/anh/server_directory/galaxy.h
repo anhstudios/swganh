@@ -17,8 +17,8 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_SERVER_DIRECTORY_CLUSTER_H_
-#define ANH_SERVER_DIRECTORY_CLUSTER_H_
+#ifndef ANH_SERVER_DIRECTORY_GALAXY_H_
+#define ANH_SERVER_DIRECTORY_GALAXY_H_
 
 #include <cstdint>
 #include <string>
@@ -26,7 +26,7 @@
 namespace anh {
 namespace server_directory {
 
-class Cluster {
+class Galaxy {
 public:
     enum StatusType {
         OFFLINE = 0,
@@ -39,79 +39,79 @@ public:
     /*! This overloaded constructor is used when creating an instance from
     * the data store.
     *
-    * \param id The id of the cluster in the data store.
-    * \param primary_id The id of the primary process for this cluster.
-    * \param name The name of the cluster.
-    * \param status The current status of the cluster.
-    * \param created_at The timestamp indicating the time the cluster was first created.
-    * \param updated_at The last time this cluster was modified manually.
+    * \param id The id of the galaxy in the data store.
+    * \param primary_id The id of the primary process for this galaxy.
+    * \param name The name of the galaxy.
+    * \param status The current status of the galaxy.
+    * \param created_at The timestamp indicating the time the galaxy was first created.
+    * \param updated_at The last time this galaxy was modified manually.
     */
-    Cluster(uint32_t id, 
+    Galaxy(uint32_t id, 
             uint32_t primary_id, 
             const std::string& name, 
             const std::string& version,
-            Cluster::StatusType status, 
+            Galaxy::StatusType status, 
             const std::string& created_at, 
             const std::string& updated_at);
 
     /// Copy constructor.
-    Cluster(const Cluster& other);
+    Galaxy(const Galaxy& other);
 
     /// Move constructor.
-    Cluster(Cluster&& other);
+    Galaxy(Galaxy&& other);
     
-    /// Swap the contents of two Clusters.
-    void swap(Cluster& other);
+    /// Swap the contents of two Galaxys.
+    void swap(Galaxy& other);
 
     /// Universal assignment operator.
-    Cluster& operator=(Cluster other);
+    Galaxy& operator=(Galaxy other);
         
-    /*! Returns the id of the cluster in the data store.
+    /*! Returns the id of the galaxy in the data store.
     *
-    * \returns Returns the id of the cluster in the data store.
+    * \returns Returns the id of the galaxy in the data store.
     */
     uint32_t id() const;
         
-    /*! Returns the id of the primary process for this cluster.
+    /*! Returns the id of the primary process for this galaxy.
     *
-    * \returns Returns the id of the primary process for this cluster.
+    * \returns Returns the id of the primary process for this galaxy.
     */
     uint32_t primary_id() const;
         
-    /*! Returns the name of the cluster.
+    /*! Returns the name of the galaxy.
     *
-    * \returns Returns the name of the cluster.
+    * \returns Returns the name of the galaxy.
     */
     const std::string& name() const;    
         
-    /*! Returns the version of the cluster.
+    /*! Returns the version of the galaxy.
     *
-    * \returns Returns the version of the cluster.
+    * \returns Returns the version of the galaxy.
     */
     const std::string& version() const;   
     
-    /*! Returns the current status of the cluster.
+    /*! Returns the current status of the galaxy.
     *
-    * \returns Returns the current status of the cluster.
+    * \returns Returns the current status of the galaxy.
     */
-    Cluster::StatusType status() const;    
+    Galaxy::StatusType status() const;    
     
-    /*! Returns the timestamp indicating the time the cluster was first created.
+    /*! Returns the timestamp indicating the time the galaxy was first created.
     *
-    * \returns Returns the timestamp indicating the time the cluster was first created.
+    * \returns Returns the timestamp indicating the time the galaxy was first created.
     */
     const std::string& created_at() const;    
     
-    /*! Returns the last time this cluster was modified manually.
+    /*! Returns the last time this galaxy was modified manually.
     *
-    * \returns Returns the last time this cluster was modified manually.
+    * \returns Returns the last time this galaxy was modified manually.
     */
     const std::string& updated_at() const;
 
 private:
     friend class ServerDirectory;
 
-    Cluster();
+    Galaxy();
 
     void primary_id(uint32_t primary_id);
     
@@ -119,7 +119,7 @@ private:
     uint32_t primary_id_;
     std::string name_;
     std::string version_;
-    Cluster::StatusType status_;
+    Galaxy::StatusType status_;
     std::string created_at_;
     std::string updated_at_;
 };
@@ -127,4 +127,4 @@ private:
 }  // namespace server_directory
 }  // namespace anh
 
-#endif  // ANH_SERVER_DIRECTORY_CLUSTER_H_
+#endif  // ANH_SERVER_DIRECTORY_GALAXY_H_

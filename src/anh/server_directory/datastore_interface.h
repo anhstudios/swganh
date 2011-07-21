@@ -29,27 +29,27 @@
 namespace anh {
 namespace server_directory {
 
-class Cluster;
-class Process;
+class Galaxy;
+class Service;
 
 class DatastoreInterface {
 public:
     virtual ~DatastoreInterface() {}
 
-    virtual std::shared_ptr<Cluster> findClusterByName(const std::string& name) const = 0;
-    virtual std::shared_ptr<Cluster> createCluster(const std::string& name, const std::string& version) const = 0;
-    virtual std::shared_ptr<Process> createProcess(std::shared_ptr<Cluster> cluster, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const = 0;
+    virtual std::shared_ptr<Galaxy> findGalaxyByName(const std::string& name) const = 0;
+    virtual std::shared_ptr<Galaxy> createGalaxy(const std::string& name, const std::string& version) const = 0;
+    virtual std::shared_ptr<Service> createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const = 0;
 
-    virtual std::string getClusterTimestamp(std::shared_ptr<Cluster> cluster) const = 0;
+    virtual std::string getGalaxyTimestamp(std::shared_ptr<Galaxy> galaxy) const = 0;
 
-    virtual void saveProcess(std::shared_ptr<Process> process) const = 0;
+    virtual void saveService(std::shared_ptr<Service> service) const = 0;
 
-    virtual std::shared_ptr<Cluster> findClusterById(uint32_t id) const = 0;
+    virtual std::shared_ptr<Galaxy> findGalaxyById(uint32_t id) const = 0;
 
-    virtual bool deleteProcessById(uint32_t id) const = 0;
+    virtual bool deleteServiceById(uint32_t id) const = 0;
 
-    virtual std::list<Cluster> getClusterList() const = 0;
-    virtual std::list<Process> getProcessList(uint32_t cluster_id) const = 0;
+    virtual std::list<Galaxy> getGalaxyList() const = 0;
+    virtual std::list<Service> getServiceList(uint32_t galaxy_id) const = 0;
     virtual std::string prepareTimestampForStorage(const std::string& timestamp) const = 0;
 };
 

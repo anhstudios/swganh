@@ -26,58 +26,58 @@
 #include <memory>
 #include <string>
 
-#include "anh/server_directory/cluster.h"
-#include "anh/server_directory/process.h"
+#include "anh/server_directory/galaxy.h"
+#include "anh/server_directory/service.h"
 
 namespace anh {
 namespace server_directory {
 
-typedef std::list<Cluster> ClusterList;
-typedef std::list<Process> ProcessList;
+typedef std::list<Galaxy> GalaxyList;
+typedef std::list<Service> ServiceList;
 
 /// Simple interface
 class ServerDirectoryInterface {
 public:
     virtual ~ServerDirectoryInterface() {}
 
-    virtual void joinCluster(const std::string& cluster_name, const std::string& version = "", bool create_cluster = false) = 0;
+    virtual void joinGalaxy(const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false) = 0;
 
-    virtual bool registerProcess(
+    virtual bool registerService(
         const std::string& name, 
-        const std::string& process_type, 
+        const std::string& service_type, 
         const std::string& version, 
         const std::string& address, 
         uint16_t tcp_port, 
         uint16_t udp_port, 
         uint16_t ping) = 0;
     
-    virtual bool removeProcess(std::shared_ptr<Process>& process) = 0;
+    virtual bool removeService(std::shared_ptr<Service>& service) = 0;
     
-    virtual void updateProcessStatus(
-        std::shared_ptr<Process>& process, 
+    virtual void updateServiceStatus(
+        std::shared_ptr<Service>& service, 
         int32_t new_status) = 0;
     
-    virtual bool makePrimaryProcess(std::shared_ptr<Process> process) = 0;
+    virtual bool makePrimaryService(std::shared_ptr<Service> service) = 0;
 
-    virtual std::shared_ptr<Cluster> cluster() const = 0;
+    virtual std::shared_ptr<Galaxy> galaxy() const = 0;
 
-    virtual std::shared_ptr<Process> process() const = 0;
+    virtual std::shared_ptr<Service> service() const = 0;
 
     virtual void pulse() = 0;
     
-    virtual ClusterList getClusterSnapshot() const = 0;
+    virtual GalaxyList getGalaxySnapshot() const = 0;
 
-    virtual ProcessList getProcessSnapshot(
-        std::shared_ptr<Cluster> cluster) const = 0;
+    virtual ServiceList getServiceSnapshot(
+        std::shared_ptr<Galaxy> galaxy) const = 0;
 };
 
 class NullServerDirectory : public ServerDirectoryInterface {
 public:
     ~NullServerDirectory() {}
 
-    bool registerProcess(
+    bool registerService(
         const std::string& name, 
-        const std::string& process_type, 
+        const std::string& service_type, 
         const std::string& version, 
         const std::string& address, 
         uint16_t tcp_port, 
@@ -87,28 +87,28 @@ public:
         return false;
     }
     
-    bool removeProcess(std::shared_ptr<Process>& process) {
+    bool removeService(std::shared_ptr<Service>& service) {
         return false;
     }
     
-    void updateProcessStatus(
-        std::shared_ptr<Process>& process, 
+    void updateServiceStatus(
+        std::shared_ptr<Service>& service, 
         int32_t new_status) {}
     
-    bool makePrimaryProcess(std::shared_ptr<Process> process) {
+    bool makePrimaryService(std::shared_ptr<Service> service) {
         return false;
     }
 
     void pulse() {}
     
-    ClusterList getClusterSnapshot() const {
-        ClusterList cluster_list;
-        return cluster_list;
+    GalaxyList getGalaxySnapshot() const {
+        GalaxyList galaxy_list;
+        return galaxy_list;
     }
 
-    ProcessList getProcessSnapshot(std::shared_ptr<Cluster> cluster) const {
-        ProcessList process_list;
-        return process_list;
+    ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy) const {
+        ServiceList service_list;
+        return service_list;
     }
 };
 

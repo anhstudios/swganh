@@ -22,9 +22,9 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "anh/server_directory/cluster.h"
+#include "anh/server_directory/galaxy.h"
 #include "anh/server_directory/datastore.h"
-#include "anh/server_directory/process.h"
+#include "anh/server_directory/service.h"
 #include "anh/server_directory/server_directory.h"
 #include <anh/event_dispatcher/event_dispatcher.h>
 
@@ -40,195 +40,195 @@ using namespace testing;
 class ServerDirectoryTest : public testing::Test {
 protected:
     virtual void SetUp() {
-        test_cluster_ = make_shared<Cluster>(getTestCluster());
-        test_process_ = make_shared<Process>(getTestProcess());
+        test_galaxy_ = make_shared<Galaxy>(getTestGalaxy());
+        test_service_ = make_shared<Service>(getTestService());
         dispatcher_ = make_shared<EventDispatcher>();
     }
 
-    Cluster getTestCluster() {
-        Cluster cluster(1, 2, "test_cluster", "20050408-18:00", Cluster::OFFLINE, "1970-01-01 00:00:01", "1970-01-01 00:00:01");
-        return cluster;
+    Galaxy getTestGalaxy() {
+        Galaxy galaxy(1, 2, "test_galaxy", "20050408-18:00", Galaxy::OFFLINE, "1970-01-01 00:00:01", "1970-01-01 00:00:01");
+        return galaxy;
     }
     
-    Process getTestProcess() {
-        Process process(1, 1, "process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0);
-        return process;
+    Service getTestService() {
+        Service service(1, 1, "service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0);
+        return service;
     }
 
-    std::shared_ptr<Cluster> test_cluster_;
-    std::shared_ptr<Process> test_process_;
+    std::shared_ptr<Galaxy> test_galaxy_;
+    std::shared_ptr<Service> test_service_;
     std::shared_ptr<EventDispatcher> dispatcher_;
 };
 
 class MockDatastore : public DatastoreInterface {
 public:
-    MOCK_CONST_METHOD1(findClusterByName, shared_ptr<Cluster>(const std::string& name));
-    MOCK_CONST_METHOD2(createCluster, shared_ptr<Cluster>(const std::string& name, const std::string& version));
-    MOCK_CONST_METHOD8(createProcess, shared_ptr<Process>(std::shared_ptr<Cluster> cluster, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port));
-    MOCK_CONST_METHOD1(getClusterTimestamp, std::string(std::shared_ptr<Cluster> cluster));
-    MOCK_CONST_METHOD1(saveProcess, void(std::shared_ptr<Process> process));
-    MOCK_CONST_METHOD1(findClusterById, shared_ptr<Cluster>(uint32_t id));
-    MOCK_CONST_METHOD1(deleteProcessById, bool(uint32_t id));
-    MOCK_CONST_METHOD0(getClusterList, ClusterList());
-    MOCK_CONST_METHOD1(getProcessList, ProcessList(uint32_t cluster_id));
+    MOCK_CONST_METHOD1(findGalaxyByName, shared_ptr<Galaxy>(const std::string& name));
+    MOCK_CONST_METHOD2(createGalaxy, shared_ptr<Galaxy>(const std::string& name, const std::string& version));
+    MOCK_CONST_METHOD8(createService, shared_ptr<Service>(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port));
+    MOCK_CONST_METHOD1(getGalaxyTimestamp, std::string(std::shared_ptr<Galaxy> galaxy));
+    MOCK_CONST_METHOD1(saveService, void(std::shared_ptr<Service> service));
+    MOCK_CONST_METHOD1(findGalaxyById, shared_ptr<Galaxy>(uint32_t id));
+    MOCK_CONST_METHOD1(deleteServiceById, bool(uint32_t id));
+    MOCK_CONST_METHOD0(getGalaxyList, GalaxyList());
+    MOCK_CONST_METHOD1(getServiceList, ServiceList(uint32_t galaxy_id));
     MOCK_CONST_METHOD1(prepareTimestampForStorage, std::string(const std::string& timestamp));
 };
 
-/// Creating and using an instance of ServerDirectory requires a valid cluster
-/// so the process of constructing should join with a cluster.
-TEST_F(ServerDirectoryTest, CreatingServerDirectoryJoinsToCluster) {
+/// Creating and using an instance of ServerDirectory requires a valid galaxy
+/// so the service of constructing should join with a galaxy.
+TEST_F(ServerDirectoryTest, CreatingServerDirectoryJoinsToGalaxy) {
     auto datastore = make_shared<MockDatastore>();
-    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
-        .WillOnce(Return(test_cluster_));
+    EXPECT_CALL(*datastore, findGalaxyByName("test_galaxy"))
+        .WillOnce(Return(test_galaxy_));
         
     try {
-        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_galaxy", "20050408-18:00");
     
-        auto cluster = server_directory.cluster();
+        auto galaxy = server_directory.galaxy();
 
-        EXPECT_EQ("test_cluster", cluster->name());
+        EXPECT_EQ("test_galaxy", galaxy->name());
     } catch(...) {
         FAIL() << "No exceptions should be thrown during a successful join";
     }
 }
 
-/// When creating an instance of ServerDirectory with an invalid cluster name
-/// an InvalidCluster exception is thrown.
-TEST_F(ServerDirectoryTest, JoiningInvalidClusterThrowsException) {
+/// When creating an instance of ServerDirectory with an invalid galaxy name
+/// an InvalidGalaxy exception is thrown.
+TEST_F(ServerDirectoryTest, JoiningInvalidGalaxyThrowsException) {
     auto datastore = make_shared<MockDatastore>();
-    EXPECT_CALL(*datastore, findClusterByName("bad_cluster"))
+    EXPECT_CALL(*datastore, findGalaxyByName("bad_galaxy"))
         .WillOnce(Return(nullptr));
 
     try {
-        ServerDirectory server_directory(datastore, dispatcher_, "bad_cluster", "20050408-18:00");
-        FAIL() << "An exception should be thrown when given an invalid cluster name";
-    } catch(const InvalidClusterError& /*e*/) {
+        ServerDirectory server_directory(datastore, dispatcher_, "bad_galaxy", "20050408-18:00");
+        FAIL() << "An exception should be thrown when given an invalid galaxy name";
+    } catch(const InvalidGalaxyError& /*e*/) {
         SUCCEED();
     }
 }
 
 /// Can join after creating server directory instance.
-TEST_F(ServerDirectoryTest, CanJoinClusterAfterCreation) {
+TEST_F(ServerDirectoryTest, CanJoinGalaxyAfterCreation) {
     auto datastore = make_shared<MockDatastore>();
-    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
-        .WillOnce(Return(test_cluster_));
+    EXPECT_CALL(*datastore, findGalaxyByName("test_galaxy"))
+        .WillOnce(Return(test_galaxy_));
         
     try {
         ServerDirectory server_directory(datastore, dispatcher_);
 
-        server_directory.joinCluster("test_cluster", "20050408-18:00");
+        server_directory.joinGalaxy("test_galaxy", "20050408-18:00");
     
-        auto cluster = server_directory.cluster();
+        auto galaxy = server_directory.galaxy();
 
-        EXPECT_EQ("test_cluster", cluster->name());
+        EXPECT_EQ("test_galaxy", galaxy->name());
     } catch(...) {
         FAIL() << "No exceptions should be thrown during a successful join";
     }
 }
 
 
-/// Passing an optional parameter to the constructor while create a cluster
-/// and set it as the active cluster.
-TEST_F(ServerDirectoryTest, CanCreateClusterWhenJoining) {
+/// Passing an optional parameter to the constructor while create a galaxy
+/// and set it as the active galaxy.
+TEST_F(ServerDirectoryTest, CanCreateGalaxyWhenJoining) {
     auto datastore = make_shared<MockDatastore>();
-    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
+    EXPECT_CALL(*datastore, findGalaxyByName("test_galaxy"))
         .WillOnce(Return(nullptr));
-    EXPECT_CALL(*datastore, createCluster("test_cluster", "20050408-18:00"))
-        .WillOnce(Return(test_cluster_));
+    EXPECT_CALL(*datastore, createGalaxy("test_galaxy", "20050408-18:00"))
+        .WillOnce(Return(test_galaxy_));
     
     try {
-        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00", true);
+        ServerDirectory server_directory(datastore, dispatcher_, "test_galaxy", "20050408-18:00", true);
         
-        auto cluster = server_directory.cluster();
+        auto galaxy = server_directory.galaxy();
 
-        EXPECT_EQ("test_cluster", cluster->name());
+        EXPECT_EQ("test_galaxy", galaxy->name());
     } catch(...) {
         FAIL() << "No exceptions should be thrown during a successful create/join";
     }
 }
 
-/// Registering a process makes it the active process.
-TEST_F(ServerDirectoryTest, RegisteringProcessMakesItActive) {
+/// Registering a service makes it the active service.
+TEST_F(ServerDirectoryTest, RegisteringServiceMakesItActive) {
     auto datastore = make_shared<MockDatastore>();
-    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
-        .WillOnce(Return(test_cluster_));
+    EXPECT_CALL(*datastore, findGalaxyByName("test_galaxy"))
+        .WillOnce(Return(test_galaxy_));
 
-    EXPECT_CALL(*datastore, createProcess(_, "process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0))
-        .WillOnce(Return(test_process_));
+    EXPECT_CALL(*datastore, createService(_, "service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0))
+        .WillOnce(Return(test_service_));
 
     try {
-        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_galaxy", "20050408-18:00");
 
-        EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
+        EXPECT_TRUE(server_directory.registerService("service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0));
 
-        auto process = server_directory.process();
+        auto service = server_directory.service();
         
-        EXPECT_EQ("process_name", process->name());
-        EXPECT_EQ("test_process", process->type());
+        EXPECT_EQ("service_name", service->name());
+        EXPECT_EQ("test_service", service->type());
     } catch(...) {
         FAIL() << "No exceptions should be thrown during a successful create/join";
     }
 }
 
-TEST_F(ServerDirectoryTest, CanMakeActiveProcessThePrimaryClusterProcess) {
+TEST_F(ServerDirectoryTest, CanMakeActiveServiceThePrimaryGalaxyService) {
     auto datastore = make_shared<MockDatastore>();
-    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
-        .WillOnce(Return(test_cluster_));
+    EXPECT_CALL(*datastore, findGalaxyByName("test_galaxy"))
+        .WillOnce(Return(test_galaxy_));
 
-    EXPECT_CALL(*datastore, createProcess(_, "process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0))
-        .WillOnce(Return(test_process_));
+    EXPECT_CALL(*datastore, createService(_, "service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0))
+        .WillOnce(Return(test_service_));
 
     try {
-        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_galaxy", "20050408-18:00");
 
-        EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
+        EXPECT_TRUE(server_directory.registerService("service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0));
         
-        auto cluster = server_directory.cluster();
-        auto process = server_directory.process();
+        auto galaxy = server_directory.galaxy();
+        auto service = server_directory.service();
 
-        EXPECT_NE(cluster->primary_id(), process->id());
+        EXPECT_NE(galaxy->primary_id(), service->id());
 
-        EXPECT_TRUE(server_directory.makePrimaryProcess(process));
+        EXPECT_TRUE(server_directory.makePrimaryService(service));
         
-        cluster = server_directory.cluster();
-        process = server_directory.process();
+        galaxy = server_directory.galaxy();
+        service = server_directory.service();
 
-        EXPECT_EQ(cluster->primary_id(), process->id());
+        EXPECT_EQ(galaxy->primary_id(), service->id());
 
     } catch(...) {
         FAIL() << "No exceptions should be thrown during a successful create/join";
     }
 }
 
-TEST_F(ServerDirectoryTest, PulsingUpdatesActiveProcessTimestamp) {
+TEST_F(ServerDirectoryTest, PulsingUpdatesActiveServiceTimestamp) {
     auto datastore = make_shared<MockDatastore>();
-    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
-        .WillOnce(Return(test_cluster_));
+    EXPECT_CALL(*datastore, findGalaxyByName("test_galaxy"))
+        .WillOnce(Return(test_galaxy_));
 
-    EXPECT_CALL(*datastore, createProcess(_, "process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0))
-        .WillOnce(Return(test_process_));
+    EXPECT_CALL(*datastore, createService(_, "service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0))
+        .WillOnce(Return(test_service_));
 
-    EXPECT_CALL(*datastore, getClusterTimestamp(_))
+    EXPECT_CALL(*datastore, getGalaxyTimestamp(_))
         .WillOnce(Return(std::string("1970-01-01 00:01:01")));
 
-    EXPECT_CALL(*datastore, saveProcess(test_process_))
+    EXPECT_CALL(*datastore, saveService(test_service_))
         .Times(1);
     
-    EXPECT_CALL(*datastore, findClusterById(test_cluster_->id()))
-        .WillOnce(Return(test_cluster_));
+    EXPECT_CALL(*datastore, findGalaxyById(test_galaxy_->id()))
+        .WillOnce(Return(test_galaxy_));
 
     try {
-        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_galaxy", "20050408-18:00");
 
-        EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
+        EXPECT_TRUE(server_directory.registerService("service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0));
         
-        auto process = server_directory.process();
-        std::string registration_time = process->last_pulse();
+        auto service = server_directory.service();
+        std::string registration_time = service->last_pulse();
         
         server_directory.pulse();
                 
-        process = server_directory.process();
-        std::string pulse_time = process->last_pulse();
+        service = server_directory.service();
+        std::string pulse_time = service->last_pulse();
         
         EXPECT_NE(registration_time, pulse_time);
         EXPECT_LT(ptime(time_from_string(registration_time)),
@@ -238,63 +238,63 @@ TEST_F(ServerDirectoryTest, PulsingUpdatesActiveProcessTimestamp) {
     }
 }
 
-/// When deleting a process it should be nullified
-TEST_F(ServerDirectoryTest, RemovingProcessNullifiesIt) {
+/// When deleting a service it should be nullified
+TEST_F(ServerDirectoryTest, RemovingServiceNullifiesIt) {
     auto datastore = make_shared<MockDatastore>();
-    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
-        .WillOnce(Return(test_cluster_));
+    EXPECT_CALL(*datastore, findGalaxyByName("test_galaxy"))
+        .WillOnce(Return(test_galaxy_));
 
-    EXPECT_CALL(*datastore, createProcess(_, "process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0))
-        .WillOnce(Return(test_process_));
+    EXPECT_CALL(*datastore, createService(_, "service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0))
+        .WillOnce(Return(test_service_));
     
-    EXPECT_CALL(*datastore, deleteProcessById(1))
+    EXPECT_CALL(*datastore, deleteServiceById(1))
         .WillOnce(Return(true));
 
     try {
-        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_galaxy", "20050408-18:00");
 
-        EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
+        EXPECT_TRUE(server_directory.registerService("service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0));
 
-        auto process = server_directory.process();
+        auto service = server_directory.service();
         
-        EXPECT_EQ("process_name", process->name());
-        EXPECT_EQ("test_process", process->type());
+        EXPECT_EQ("service_name", service->name());
+        EXPECT_EQ("test_service", service->type());
 
-        server_directory.removeProcess(process);
+        server_directory.removeService(service);
 
-        EXPECT_EQ(nullptr, process);
+        EXPECT_EQ(nullptr, service);
 
     } catch(...) {
         FAIL() << "No exceptions should be thrown during a successful create/join";
     }
 }
 
-/// When deleting a process it should be nullified, if it's the active process
+/// When deleting a service it should be nullified, if it's the active service
 /// then the instance held by ServerDirectory needs to be updated as well.
-TEST_F(ServerDirectoryTest, RemovingActiveProcessNullifiesIt) {
+TEST_F(ServerDirectoryTest, RemovingActiveServiceNullifiesIt) {
     auto datastore = make_shared<MockDatastore>();
-    EXPECT_CALL(*datastore, findClusterByName("test_cluster"))
-        .WillOnce(Return(test_cluster_));
+    EXPECT_CALL(*datastore, findGalaxyByName("test_galaxy"))
+        .WillOnce(Return(test_galaxy_));
 
-    EXPECT_CALL(*datastore, createProcess(_, "process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0))
-        .WillOnce(Return(test_process_));
+    EXPECT_CALL(*datastore, createService(_, "service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0))
+        .WillOnce(Return(test_service_));
 
-    EXPECT_CALL(*datastore, deleteProcessById(1))
+    EXPECT_CALL(*datastore, deleteServiceById(1))
         .WillOnce(Return(true));
 
     try {
-        ServerDirectory server_directory(datastore, dispatcher_, "test_cluster", "20050408-18:00");
+        ServerDirectory server_directory(datastore, dispatcher_, "test_galaxy", "20050408-18:00");
 
-        EXPECT_TRUE(server_directory.registerProcess("process_name", "test_process", "1.0.0", "127.0.0.1", 0, 40000, 0));
+        EXPECT_TRUE(server_directory.registerService("service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0));
 
-        auto process = server_directory.process();
+        auto service = server_directory.service();
         
-        EXPECT_EQ("process_name", process->name());
-        EXPECT_EQ("test_process", process->type());
+        EXPECT_EQ("service_name", service->name());
+        EXPECT_EQ("test_service", service->type());
 
-        server_directory.removeProcess(process);
+        server_directory.removeService(service);
 
-        EXPECT_EQ(nullptr, server_directory.process());
+        EXPECT_EQ(nullptr, server_directory.service());
 
     } catch(...) {
         FAIL() << "No exceptions should be thrown during a successful create/join";

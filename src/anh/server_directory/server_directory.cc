@@ -23,7 +23,6 @@
 
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/server_directory/datastore.h>
-#include <anh/server_directory/server_directory_events.h>
 
 using namespace anh::server_directory;
 using namespace anh::event_dispatcher;
@@ -38,46 +37,46 @@ ServerDirectory::ServerDirectory(shared_ptr<DatastoreInterface> datastore,
 ServerDirectory::ServerDirectory(
     shared_ptr<DatastoreInterface> datastore, 
     std::shared_ptr<EventDispatcherInterface> event_dispatcher,
-    const string& cluster_name, 
+    const string& galaxy_name, 
     const string& version , 
-    bool create_cluster) 
+    bool create_galaxy) 
     : datastore_(datastore)
     , event_dispatcher_(event_dispatcher)
-    , active_cluster_(nullptr)
-    , active_process_(nullptr)
+    , active_galaxy_(nullptr)
+    , active_service_(nullptr)
 {
-    joinCluster(cluster_name, version, create_cluster);
+    joinGalaxy(galaxy_name, version, create_galaxy);
 }
 
-shared_ptr<Cluster> ServerDirectory::cluster() const {
-    return active_cluster_;
+shared_ptr<Galaxy> ServerDirectory::galaxy() const {
+    return active_galaxy_;
 }
 
-shared_ptr<Process> ServerDirectory::process() const {
-    return active_process_;
+shared_ptr<Service> ServerDirectory::service() const {
+    return active_service_;
 }
 
 
-void ServerDirectory::joinCluster(const std::string& cluster_name, const std::string& version, bool create_cluster) {    
-    active_cluster_ = datastore_->findClusterByName(cluster_name);
+void ServerDirectory::joinGalaxy(const std::string& galaxy_name, const std::string& version, bool create_galaxy) {    
+    active_galaxy_ = datastore_->findGalaxyByName(galaxy_name);
     
-    if (!active_cluster_) {
-        // if no cluster was found and no request to create it was made, fail now
-        if (! create_cluster) {
-            throw InvalidClusterError(std::string("Attempted to join an invalid cluster: ").append(cluster_name));
+    if (!active_galaxy_) {
+        // if no galaxy was found and no request to create it was made, fail now
+        if (! create_galaxy) {
+            throw InvalidGalaxyError(std::string("Attempted to join an invalid galaxy: ").append(galaxy_name));
         }
 
-        if (!(active_cluster_ = datastore_->createCluster(cluster_name, version))) {
-            throw InvalidClusterError(std::string("Attempt to create cluster failed: ").append(cluster_name));
+        if (!(active_galaxy_ = datastore_->createGalaxy(galaxy_name, version))) {
+            throw InvalidGalaxyError(std::string("Attempt to create galaxy failed: ").append(galaxy_name));
         }
     }
 }
 
-bool ServerDirectory::registerProcess(const string& name, const string& process_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
-    if (active_process_ = datastore_->createProcess(active_cluster_, name, process_type, version, address, tcp_port, udp_port, ping_port)) {
+bool ServerDirectory::registerService(const string& name, const string& service_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
+    if (active_service_ = datastore_->createService(active_galaxy_, name, service_type, version, address, tcp_port, udp_port, ping_port)) {
         
-        // trigger the event to let any listeners we have added the process
-        auto event_ = make_shared_event("RegisterProcess", *active_process_);
+        // trigger the event to let any listeners we have added the service
+        auto event_ = make_shared_event("RegisterService", *active_service_);
         event_dispatcher_->trigger(event_);
         return true;
     }
@@ -85,17 +84,17 @@ bool ServerDirectory::registerProcess(const string& name, const string& process_
     return false;
 }
 
-bool ServerDirectory::removeProcess(shared_ptr<Process>& process) {
-    if (datastore_->deleteProcessById(process->id())) {
-        if (active_process_ && process->id() == active_process_->id()) {
-            // before we clear out the process
-            active_process_ = nullptr;
+bool ServerDirectory::removeService(shared_ptr<Service>& service) {
+    if (datastore_->deleteServiceById(service->id())) {
+        if (active_service_ && service->id() == active_service_->id()) {
+            // before we clear out the service
+            active_service_ = nullptr;
         }
-        // trigger the event to let any listeners we have removed the process
-        auto remove_event = make_shared_event("RemoveProcess", *process);
+        // trigger the event to let any listeners we have removed the service
+        auto remove_event = make_shared_event("RemoveService", *service);
         event_dispatcher_->trigger(remove_event);
 
-        process = nullptr;
+        service = nullptr;
 
         return true;
     }
@@ -103,39 +102,39 @@ bool ServerDirectory::removeProcess(shared_ptr<Process>& process) {
     return false;
 }
 
-void ServerDirectory::updateProcessStatus(shared_ptr<Process>& process, int32_t new_status) {
-    process->status(new_status);
-    datastore_->saveProcess(process);
+void ServerDirectory::updateServiceStatus(shared_ptr<Service>& service, int32_t new_status) {
+    service->status(new_status);
+    datastore_->saveService(service);
 }
 
-bool ServerDirectory::makePrimaryProcess(shared_ptr<Process> process) {
-    active_cluster_->primary_id(process->id());
+bool ServerDirectory::makePrimaryService(shared_ptr<Service> service) {
+    active_galaxy_->primary_id(service->id());
     return true;
 }
 
 void ServerDirectory::pulse() {
-    if (active_process_) {
+    if (active_service_) {
         std::string last_pulse = "";
-        if (active_cluster_ && active_cluster_->primary_id() != 0) {
-            last_pulse = datastore_->getClusterTimestamp(active_cluster_);
+        if (active_galaxy_ && active_galaxy_->primary_id() != 0) {
+            last_pulse = datastore_->getGalaxyTimestamp(active_galaxy_);
         } else {
             last_pulse = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time());
         }
 
-        active_process_->last_pulse(last_pulse);
-        datastore_->saveProcess(active_process_);
+        active_service_->last_pulse(last_pulse);
+        datastore_->saveService(active_service_);
     }
 
-    if (active_cluster_) {
-        active_cluster_ = datastore_->findClusterById(active_cluster_->id());
+    if (active_galaxy_) {
+        active_galaxy_ = datastore_->findGalaxyById(active_galaxy_->id());
     }
 }
 
-ClusterList ServerDirectory::getClusterSnapshot() const {
-    return datastore_->getClusterList();
+GalaxyList ServerDirectory::getGalaxySnapshot() const {
+    return datastore_->getGalaxyList();
 }
 
-ProcessList ServerDirectory::getProcessSnapshot(shared_ptr<Cluster> cluster) const {
-    return datastore_->getProcessList(cluster->id());
+ServiceList ServerDirectory::getServiceSnapshot(shared_ptr<Galaxy> galaxy) const {
+    return datastore_->getServiceList(galaxy->id());
 }
 
