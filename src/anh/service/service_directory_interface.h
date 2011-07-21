@@ -17,8 +17,8 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_SERVICE_DIRECTORY_SERVICE_DIRECTORY_INTERFACE_H_
-#define ANH_SERVICE_DIRECTORY_SERVICE_DIRECTORY_INTERFACE_H_
+#ifndef ANH_SERVICE_SERVICE_DIRECTORY_INTERFACE_H_
+#define ANH_SERVICE_SERVICE_DIRECTORY_INTERFACE_H_
 
 #include <cstdint>
 
@@ -26,11 +26,11 @@
 #include <memory>
 #include <string>
 
-#include "anh/service_directory/galaxy.h"
-#include "anh/service_directory/service.h"
+#include "anh/service/galaxy.h"
+#include "anh/service/service.h"
 
 namespace anh {
-namespace service_directory {
+namespace service {
 
 typedef std::list<Galaxy> GalaxyList;
 typedef std::list<Service> ServiceList;
@@ -112,7 +112,7 @@ public:
     }
 };
 
-}  // namespace service_directory
+}  // namespace service
 }  // namespace anh
 
-#endif  // ANH_SERVICE_DIRECTORY_SERVICE_DIRECTORY_INTERFACE_H_
+#endif  // ANH_SERVICE_SERVICE_DIRECTORY_INTERFACE_H_

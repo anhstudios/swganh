@@ -17,8 +17,8 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_MOCK_SERVER_DIRECTORY_SERVER_DIRECTORY_H_
-#define ANH_MOCK_SERVER_DIRECTORY_SERVER_DIRECTORY_H_
+#ifndef ANH_SERVICE_MOCK_SERVICE_DIRECTORY_H_
+#define ANH_SERVICE_MOCK_SERVICE_DIRECTORY_H_
 
 #include <gmock/gmock.h>
 
@@ -26,7 +26,7 @@
 #include "anh/service_directory/service_directory_interface.h"
 
 namespace anh {
-namespace service_directory {
+namespace service {
 
 class MockServiceDirectory : public ServiceDirectoryInterface
 {
@@ -55,4 +55,4 @@ public:
 
 } // end service_directory
 } // end anh
-#endif // end ANH_MOCK_SERVER_DIRECTORY_SERVER_DIRECTORY_H_
+#endif // end ANH_SERVICE_MOCK_SERVICE_DIRECTORY_H_

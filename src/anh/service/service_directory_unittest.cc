@@ -22,13 +22,13 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "anh/service_directory/galaxy.h"
-#include "anh/service_directory/datastore.h"
-#include "anh/service_directory/service.h"
-#include "anh/service_directory/service_directory.h"
+#include "anh/service/galaxy.h"
+#include "anh/service/datastore.h"
+#include "anh/service/service.h"
+#include "anh/service/service_directory.h"
 #include <anh/event_dispatcher/event_dispatcher.h>
 
-using namespace anh::service_directory;
+using namespace anh::service;
 using namespace anh::event_dispatcher;
 using namespace std;
 using namespace boost::posix_time;
