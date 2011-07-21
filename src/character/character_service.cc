@@ -192,25 +192,7 @@ std::wstring CharacterService::GetRandomNameRequest(const std::string& base_mode
     }
     return L"";
 }
-bool CharacterService::UpdateCharacterStatus(uint64_t character_id, uint32_t status) {
-    int rows_updated = 0;
-    try {
-        auto conn = db_manager_->getConnection(swg_schema_);
-        auto statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("update character set status = ? where character_id = ?")
-            );
-        statement->setUInt(1, status);
-        statement->setUInt64(2, character_id);
-        rows_updated = statement->executeUpdate();
 
-     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-
-
-    return rows_updated > 0;
-}
 std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const ClientCreateCharacter& character_info) {
     try {
         // A regular expression that searches for a first name and optional sirname.

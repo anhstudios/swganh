@@ -49,7 +49,6 @@ public:
     swganh::character::CharacterLoginData GetLoginCharacter(uint64_t character_id);
     bool DeleteCharacter(uint64_t character_id);
     std::wstring GetRandomNameRequest(const std::string& base_model);
-    bool UpdateCharacterStatus(uint64_t character_id, uint32_t status);
     std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info);
 private:
     std::string galaxy_schema_;
