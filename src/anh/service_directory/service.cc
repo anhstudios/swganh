@@ -17,9 +17,9 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/server_directory/service.h"
+#include "anh/service_directory/service.h"
 
-using namespace anh::server_directory;
+using namespace anh::service_directory;
 
 Service::Service(uint32_t id,
                  uint32_t galaxy_id,

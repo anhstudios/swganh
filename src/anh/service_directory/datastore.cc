@@ -17,7 +17,7 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/server_directory/datastore.h"
+#include "anh/service_directory/datastore.h"
 
 #include <memory>
 #include <sstream>
@@ -28,10 +28,10 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
 
-#include "anh/server_directory/galaxy.h"
-#include "anh/server_directory/service.h"
+#include "anh/service_directory/galaxy.h"
+#include "anh/service_directory/service.h"
 
-using namespace anh::server_directory;
+using namespace anh::service_directory;
 using namespace boost::posix_time;
 using namespace std;
 

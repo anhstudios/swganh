@@ -17,8 +17,8 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_SERVER_DIRECTORY_SERVER_DIRECTORY_INTERFACE_H_
-#define ANH_SERVER_DIRECTORY_SERVER_DIRECTORY_INTERFACE_H_
+#ifndef ANH_SERVICE_DIRECTORY_SERVICE_DIRECTORY_INTERFACE_H_
+#define ANH_SERVICE_DIRECTORY_SERVICE_DIRECTORY_INTERFACE_H_
 
 #include <cstdint>
 
@@ -26,19 +26,19 @@
 #include <memory>
 #include <string>
 
-#include "anh/server_directory/galaxy.h"
-#include "anh/server_directory/service.h"
+#include "anh/service_directory/galaxy.h"
+#include "anh/service_directory/service.h"
 
 namespace anh {
-namespace server_directory {
+namespace service_directory {
 
 typedef std::list<Galaxy> GalaxyList;
 typedef std::list<Service> ServiceList;
 
 /// Simple interface
-class ServerDirectoryInterface {
+class ServiceDirectoryInterface {
 public:
-    virtual ~ServerDirectoryInterface() {}
+    virtual ~ServiceDirectoryInterface() {}
 
     virtual void joinGalaxy(const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false) = 0;
 
@@ -71,7 +71,7 @@ public:
         std::shared_ptr<Galaxy> galaxy) const = 0;
 };
 
-class NullServerDirectory : public ServerDirectoryInterface {
+class NullServerDirectory : public ServiceDirectoryInterface {
 public:
     ~NullServerDirectory() {}
 
@@ -112,7 +112,7 @@ public:
     }
 };
 
-}  // namespace server_directory
+}  // namespace service_directory
 }  // namespace anh
 
-#endif  // ANH_SERVER_DIRECTORY_SERVER_DIRECTORY_INTERFACE_H_
+#endif  // ANH_SERVICE_DIRECTORY_SERVICE_DIRECTORY_INTERFACE_H_

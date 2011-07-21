@@ -17,8 +17,8 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_SERVER_DIRECTORY_DATASTORE_H_
-#define ANH_SERVER_DIRECTORY_DATASTORE_H_
+#ifndef ANH_SERVICE_DIRECTORY_DATASTORE_H_
+#define ANH_SERVICE_DIRECTORY_DATASTORE_H_
 
 #include <cstdint>
 
@@ -28,14 +28,14 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "anh/server_directory/datastore_interface.h"
+#include "anh/service_directory/datastore_interface.h"
 
 namespace sql {
     class Connection; 
 }
 
 namespace anh {
-namespace server_directory {
+namespace service_directory {
 
 class Galaxy;
 class Service;
@@ -65,7 +65,7 @@ private:
     std::shared_ptr<sql::Connection> connection_;
 };
 
-}  // namespace server_directory
+}  // namespace service_directory
 }  // namespace anh
 
-#endif  // ANH_SERVER_DIRECTORY_DATASTORE_H_
+#endif  // ANH_SERVICE_DIRECTORY_DATASTORE_H_

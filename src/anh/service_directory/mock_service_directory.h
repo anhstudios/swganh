@@ -22,13 +22,13 @@
 
 #include <gmock/gmock.h>
 
-#include "anh/server_directory/service.h"
-#include "anh/server_directory/server_directory_interface.h"
+#include "anh/service_directory/service.h"
+#include "anh/service_directory/service_directory_interface.h"
 
 namespace anh {
-namespace server_directory {
+namespace service_directory {
 
-class MockServerDirectory : public ServerDirectoryInterface
+class MockServiceDirectory : public ServiceDirectoryInterface
 {
 public:
     MOCK_METHOD3(joinGalaxy, void (const std::string& galaxy_name, const std::string& version, bool create_galaxy));
@@ -53,6 +53,6 @@ public:
         std::shared_ptr<Galaxy> galaxy));
 };
 
-} // end server_directory
+} // end service_directory
 } // end anh
 #endif // end ANH_MOCK_SERVER_DIRECTORY_SERVER_DIRECTORY_H_

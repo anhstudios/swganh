@@ -17,9 +17,9 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/server_directory/galaxy.h"
+#include "anh/service_directory/galaxy.h"
 
-using namespace anh::server_directory;
+using namespace anh::service_directory;
 
 Galaxy::Galaxy(
     uint32_t id, 

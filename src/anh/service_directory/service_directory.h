@@ -17,8 +17,8 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_SERVER_DIRECTORY_SERVER_DIRECTORY_H_
-#define ANH_SERVER_DIRECTORY_SERVER_DIRECTORY_H_
+#ifndef ANH_SERVICE_DIRECTORY_SERVICE_DIRECTORY_H_
+#define ANH_SERVICE_DIRECTORY_SERVICE_DIRECTORY_H_
 
 #include <cstdint>
 #include <map>
@@ -26,15 +26,15 @@
 #include <stdexcept>
 #include <string>
 
-#include "anh/server_directory/galaxy.h"
-#include "anh/server_directory/service.h"
-#include "anh/server_directory/server_directory_interface.h"
+#include "anh/service_directory/galaxy.h"
+#include "anh/service_directory/service.h"
+#include "anh/service_directory/service_directory_interface.h"
 
 // Forward Declare
 namespace anh { namespace event_dispatcher { class EventDispatcherInterface; }  }
 
 namespace anh {
-namespace server_directory {
+namespace service_directory {
 
 class DatastoreInterface;
 
@@ -50,14 +50,14 @@ public:
         : std::runtime_error(message) {}
 };
 
-/*! \brief ServerDirectory is a utility class intended to assist servicees in
+/*! \brief ServiceDirectory is a utility class intended to assist servicees in
 * registering themselves and participating in a galaxyed environment.
 */
-class ServerDirectory : public ServerDirectoryInterface{
+class ServiceDirectory : public ServiceDirectoryInterface{
 public:
-    explicit ServerDirectory(std::shared_ptr<DatastoreInterface> datastore, 
+    explicit ServiceDirectory(std::shared_ptr<DatastoreInterface> datastore, 
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
-    ServerDirectory(std::shared_ptr<DatastoreInterface> datastore, 
+    ServiceDirectory(std::shared_ptr<DatastoreInterface> datastore, 
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher
         , const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false);
 
@@ -85,7 +85,7 @@ private:
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>    event_dispatcher_;
 };
 
-}  // namespace server_directory
+}  // namespace service_directory
 }  // namespace anh
 
-#endif  // ANH_SERVER_DIRECTORY_SERVER_DIRECTORY_H_
+#endif  // ANH_SERVICE_DIRECTORY_SERVICE_DIRECTORY_H_

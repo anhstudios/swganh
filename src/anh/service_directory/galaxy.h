@@ -17,14 +17,14 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_SERVER_DIRECTORY_GALAXY_H_
-#define ANH_SERVER_DIRECTORY_GALAXY_H_
+#ifndef ANH_SERVICE_DIRECTORY_GALAXY_H_
+#define ANH_SERVICE_DIRECTORY_GALAXY_H_
 
 #include <cstdint>
 #include <string>
 
 namespace anh {
-namespace server_directory {
+namespace service_directory {
 
 class Galaxy {
 public:
@@ -109,7 +109,7 @@ public:
     const std::string& updated_at() const;
 
 private:
-    friend class ServerDirectory;
+    friend class ServiceDirectory;
 
     Galaxy();
 
@@ -124,7 +124,7 @@ private:
     std::string updated_at_;
 };
 
-}  // namespace server_directory
+}  // namespace service_directory
 }  // namespace anh
 
-#endif  // ANH_SERVER_DIRECTORY_GALAXY_H_
+#endif  // ANH_SERVICE_DIRECTORY_GALAXY_H_

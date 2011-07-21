@@ -17,24 +17,24 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <anh/server_directory/server_directory.h>
+#include <anh/service_directory/service_directory.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <anh/event_dispatcher/event_dispatcher.h>
-#include <anh/server_directory/datastore.h>
+#include <anh/service_directory/datastore.h>
 
-using namespace anh::server_directory;
+using namespace anh::service_directory;
 using namespace anh::event_dispatcher;
 using namespace std;
 
-ServerDirectory::ServerDirectory(shared_ptr<DatastoreInterface> datastore,
+ServiceDirectory::ServiceDirectory(shared_ptr<DatastoreInterface> datastore,
         shared_ptr<EventDispatcherInterface> event_dispatcher) 
     : datastore_(datastore)
     , event_dispatcher_(event_dispatcher)
 {}
 
-ServerDirectory::ServerDirectory(
+ServiceDirectory::ServiceDirectory(
     shared_ptr<DatastoreInterface> datastore, 
     std::shared_ptr<EventDispatcherInterface> event_dispatcher,
     const string& galaxy_name, 
@@ -48,16 +48,16 @@ ServerDirectory::ServerDirectory(
     joinGalaxy(galaxy_name, version, create_galaxy);
 }
 
-shared_ptr<Galaxy> ServerDirectory::galaxy() const {
+shared_ptr<Galaxy> ServiceDirectory::galaxy() const {
     return active_galaxy_;
 }
 
-shared_ptr<Service> ServerDirectory::service() const {
+shared_ptr<Service> ServiceDirectory::service() const {
     return active_service_;
 }
 
 
-void ServerDirectory::joinGalaxy(const std::string& galaxy_name, const std::string& version, bool create_galaxy) {    
+void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::string& version, bool create_galaxy) {    
     active_galaxy_ = datastore_->findGalaxyByName(galaxy_name);
     
     if (!active_galaxy_) {
@@ -72,7 +72,7 @@ void ServerDirectory::joinGalaxy(const std::string& galaxy_name, const std::stri
     }
 }
 
-bool ServerDirectory::registerService(const string& name, const string& service_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
+bool ServiceDirectory::registerService(const string& name, const string& service_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
     if (active_service_ = datastore_->createService(active_galaxy_, name, service_type, version, address, tcp_port, udp_port, ping_port)) {
         
         // trigger the event to let any listeners we have added the service
@@ -84,7 +84,7 @@ bool ServerDirectory::registerService(const string& name, const string& service_
     return false;
 }
 
-bool ServerDirectory::removeService(shared_ptr<Service>& service) {
+bool ServiceDirectory::removeService(shared_ptr<Service>& service) {
     if (datastore_->deleteServiceById(service->id())) {
         if (active_service_ && service->id() == active_service_->id()) {
             // before we clear out the service
@@ -102,17 +102,17 @@ bool ServerDirectory::removeService(shared_ptr<Service>& service) {
     return false;
 }
 
-void ServerDirectory::updateServiceStatus(shared_ptr<Service>& service, int32_t new_status) {
+void ServiceDirectory::updateServiceStatus(shared_ptr<Service>& service, int32_t new_status) {
     service->status(new_status);
     datastore_->saveService(service);
 }
 
-bool ServerDirectory::makePrimaryService(shared_ptr<Service> service) {
+bool ServiceDirectory::makePrimaryService(shared_ptr<Service> service) {
     active_galaxy_->primary_id(service->id());
     return true;
 }
 
-void ServerDirectory::pulse() {
+void ServiceDirectory::pulse() {
     if (active_service_) {
         std::string last_pulse = "";
         if (active_galaxy_ && active_galaxy_->primary_id() != 0) {
@@ -130,11 +130,11 @@ void ServerDirectory::pulse() {
     }
 }
 
-GalaxyList ServerDirectory::getGalaxySnapshot() const {
+GalaxyList ServiceDirectory::getGalaxySnapshot() const {
     return datastore_->getGalaxyList();
 }
 
-ServiceList ServerDirectory::getServiceSnapshot(shared_ptr<Galaxy> galaxy) const {
+ServiceList ServiceDirectory::getServiceSnapshot(shared_ptr<Galaxy> galaxy) const {
     return datastore_->getServiceList(galaxy->id());
 }
 
