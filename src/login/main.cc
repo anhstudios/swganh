@@ -51,7 +51,7 @@ extern "C" PLUGIN_API void ExitModule() {
     return;
 }
 
-extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
+extern "C" PLUGIN_API ExitFunc InitializePlugin(shared_ptr<KernelInterface> kernel) {
 
     ObjectRegistration registration;
     registration.version.major = 1;
@@ -66,7 +66,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
             return nullptr;
         }
 
-        auto login_service = new LoginService(params->kernel->GetEventDispatcher(), params->kernel->GetDatabaseManager());
+        auto login_service = new LoginService(params->kernel);
         login_service->character_service(character_service);
 
         return login_service;
@@ -78,7 +78,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
         }
     };
 
-    kernel.GetPluginManager()->RegisterObject("LoginService", &registration);
+    kernel->GetPluginManager()->RegisterObject("LoginService", &registration);
 
     return ExitModule;
 }

@@ -111,7 +111,7 @@ bool PluginManager::InitializePlugin(InitFunc init_func) {
         return false;
     }
 
-    ExitFunc exit_func = init_func(*kernel_);
+    ExitFunc exit_func = init_func(kernel_);
 
     if (!exit_func) {
         return false;

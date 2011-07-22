@@ -22,6 +22,8 @@
 
 #include <glog/logging.h>
 
+#include "anh/app/kernel_interface.h"
+
 #include "anh/database/database_manager.h"
 
 #include "anh/event_dispatcher/basic_event.h"
@@ -47,6 +49,7 @@
 #include "login/providers/mysql_account_provider.h"
 
 using namespace anh;
+using namespace app;
 using namespace swganh;
 using namespace base;
 using namespace character;
@@ -56,18 +59,15 @@ using namespace login;
 using namespace messages;
 using namespace std;
 
-LoginService::LoginService(shared_ptr<EventDispatcherInterface> dispatcher,
-                           shared_ptr<DatabaseManagerInterface> db_manager) 
-    : listen_port_(0) {
+LoginService::LoginService(shared_ptr<KernelInterface> kernel) 
+    : swganh::base::BaseService(kernel)
+    , listen_port_(0) {
+    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
     
-    event_dispatcher(dispatcher);
-
-    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(dispatcher)));
-    
-    auto encoder = make_shared<encoders::Sha512Encoder>(db_manager);
+    auto encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
-    account_provider_ = make_shared<providers::MysqlAccountProvider>(db_manager);
+    account_provider_ = make_shared<providers::MysqlAccountProvider>(kernel->GetDatabaseManager());
 }
 
 LoginService::~LoginService() {}
@@ -94,10 +94,8 @@ void LoginService::onStop() {
 }
 
 void LoginService::subscribe() {
-    soe_server_->event_dispatcher(event_dispatcher_);
-
-    event_dispatcher_->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
-    event_dispatcher_->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
+    event_dispatcher()->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
+    event_dispatcher()->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
 }
 
 shared_ptr<BaseCharacterService> LoginService::character_service() {

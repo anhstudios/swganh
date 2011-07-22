@@ -41,6 +41,7 @@
 #include <boost/regex.hpp>
 #endif
 
+#include "anh/app/kernel_interface.h"
 #include "anh/database/database_manager.h"
 
 #ifdef WIN32
@@ -54,13 +55,13 @@ using namespace swganh::character;
 using namespace character;
 using namespace connection::messages;
 using namespace anh;
+using namespace app;
 using namespace event_dispatcher;
 using namespace database;
 using namespace std;
 
-CharacterService::CharacterService(shared_ptr<EventDispatcherInterface> dispatcher, shared_ptr<DatabaseManagerInterface> db_manager) 
-    : db_manager_(db_manager) {
-    event_dispatcher(dispatcher);
+CharacterService::CharacterService(shared_ptr<KernelInterface> kernel) 
+    : BaseCharacterService(kernel) {
 }
 
 CharacterService::~CharacterService() {}
@@ -87,7 +88,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
     vector<CharacterData> characters;
     
     try {
-        auto conn = db_manager_->getConnection(galaxy_schema_);
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
             conn->prepareStatement("CALL sp_ReturnAccountCharacters(?);")
             );
@@ -123,7 +124,7 @@ CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
     
     try {
         string sql = "CALL sp_GetLoginCharacter(?);";
-        auto conn = db_manager_->getConnection(galaxy_schema_);
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, character_id);
 
@@ -157,7 +158,7 @@ bool CharacterService::DeleteCharacter(uint64_t character_id){
     string sql = "CALL sp_CharacterDelete(?);";
     int rows_updated = 0;
     try {
-        auto conn = db_manager_->getConnection(swg_schema_);
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, character_id);
         auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
@@ -174,7 +175,7 @@ bool CharacterService::DeleteCharacter(uint64_t character_id){
 }
 std::wstring CharacterService::GetRandomNameRequest(const std::string& base_model) {
     try {
-        auto conn = db_manager_->getConnection(swg_schema_);
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
             conn->prepareStatement("SELECT sf_CharacterNameCreate(?);")
             );
@@ -195,7 +196,7 @@ std::wstring CharacterService::GetRandomNameRequest(const std::string& base_mode
 bool CharacterService::UpdateCharacterStatus(uint64_t character_id, uint32_t status) {
     int rows_updated = 0;
     try {
-        auto conn = db_manager_->getConnection(swg_schema_);
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
             conn->prepareStatement("update character set status = ? where character_id = ?")
             );
@@ -230,7 +231,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
             last_name = m[2].str();
         }
 
-        auto conn = db_manager_->getConnection(galaxy_schema_);
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         std::shared_ptr<sql::PreparedStatement> statement;
         std::stringstream sql_sf;
         // @TODO add in 2nd parameter as option to select galaxy_id

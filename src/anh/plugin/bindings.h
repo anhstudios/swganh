@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <string>
 
 #include "anh/app/kernel_interface.h"
@@ -13,7 +14,7 @@ namespace plugin {
     
 struct ObjectParams {
     std::string name;
-    anh::app::KernelInterface* kernel;
+    std::shared_ptr<anh::app::KernelInterface> kernel;
 };
 
 typedef std::function<void * (ObjectParams*)> ObjectCreator;
@@ -26,7 +27,7 @@ struct ObjectRegistration {
 };
 
 typedef void (*ExitFunc)();
-typedef ExitFunc (*InitFunc)(anh::app::KernelInterface&);
+typedef ExitFunc (*InitFunc)(std::shared_ptr<anh::app::KernelInterface>);
 
 #ifdef WIN32
     #ifdef DLL_EXPORTS
@@ -42,7 +43,7 @@ extern
 #ifdef __cplusplus
     "C"
 #endif
-PLUGIN_API ExitFunc InitializePlugin(anh::app::KernelInterface& binding);
+PLUGIN_API ExitFunc InitializePlugin(std::shared_ptr<anh::app::KernelInterface> binding);
 
 }}  // namespace anh::plugin
 

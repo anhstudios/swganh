@@ -68,7 +68,7 @@ std::shared_ptr<T> PluginManager::CreateObject(const std::string& name) {
 
         ObjectParams params;
         params.name = name;
-        params.kernel = kernel_.get();
+        params.kernel = kernel_;
 
         object = std::shared_ptr<T>(static_cast<T*>(registration.CreateObject(&params)), registration.DestroyObject);
     }

@@ -27,6 +27,11 @@
 #include "anh/service/service_interface.h"
 
 namespace anh {
+namespace app {
+class KernelInterface;
+}}  // namespace anh::app
+
+namespace anh {
 namespace event_dispatcher {
 class EventDispatcherInterface;
 }}  // namespace anh::event_dispatcher
@@ -36,18 +41,17 @@ namespace base {
 
 class BaseService : public anh::service::ServiceInterface {
 public:    
-    BaseService();
+    BaseService(std::shared_ptr<anh::app::KernelInterface> kernel);
 
-    virtual void Start();
-    virtual void Stop();
+    void Start();
+    void Stop();
 
-    virtual bool IsRunning() const;
+    bool IsRunning() const;
 
-    virtual void DescribeConfigOptions(boost::program_options::options_description& description);
-    /*
-    *  @brief sets the event_dispatcher
-    */
-    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    void DescribeConfigOptions(boost::program_options::options_description& description);
+
+    std::shared_ptr<anh::app::KernelInterface> kernel();
+
     /*
     *  @brief used to subscribe to events on a serivce
     */
@@ -60,15 +64,17 @@ public:
     *  @brief used to perform any shutdown specific tasks for the service
     */
     virtual void onStop() = 0;
+
     /*
     *  @brief gets the event_dispatcher
     */
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
     
 
-protected:
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-    
+private:
+    BaseService();
+    std::shared_ptr<anh::app::KernelInterface> kernel_;
+        
     tbb::atomic<bool> running_;
 };
 

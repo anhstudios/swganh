@@ -20,14 +20,17 @@
 
 #include "swganh/base/base_service.h"
 
+#include "anh/app/kernel_interface.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 
 using namespace anh;
+using namespace app;
 using namespace swganh::base;
 using namespace event_dispatcher;
 using namespace std;
 
-BaseService::BaseService() {}
+BaseService::BaseService(shared_ptr<KernelInterface> kernel)
+ : kernel_(kernel) {}
 
 void BaseService::DescribeConfigOptions(boost::program_options::options_description& description) {
 
@@ -48,10 +51,10 @@ void BaseService::Stop() {
 
 bool BaseService::IsRunning() const { return running_; }
 
-shared_ptr<EventDispatcherInterface> BaseService::event_dispatcher() {
-    return event_dispatcher_;
+shared_ptr<KernelInterface> BaseService::kernel() {
+    return kernel_;
 }
 
-void BaseService::event_dispatcher(shared_ptr<EventDispatcherInterface> event_dispatcher) {
-    event_dispatcher_ = event_dispatcher;
+shared_ptr<EventDispatcherInterface> BaseService::event_dispatcher() {
+    return kernel_->GetEventDispatcher();
 }
