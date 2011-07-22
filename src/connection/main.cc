@@ -31,6 +31,7 @@
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_manager.h"
 
+#include "swganh/character/base_character_service.h"
 
 #include "connection/connection_service.h"
 
@@ -39,6 +40,7 @@ using namespace app;
 using namespace event_dispatcher;
 using namespace connection;
 using namespace plugin;
+using namespace swganh::character;
 using namespace std;
 using boost::program_options::options_description;
 using boost::program_options::variables_map;
@@ -47,7 +49,7 @@ extern "C" PLUGIN_API void ExitModule() {
     return;
 }
 
-extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
+extern "C" PLUGIN_API ExitFunc InitializePlugin(shared_ptr<KernelInterface> kernel) {
 
     ObjectRegistration registration;
     registration.version.major = 1;
@@ -55,7 +57,9 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
 
     // Register TestObj
     registration.CreateObject = [] (ObjectParams* params) -> void * {
-        auto connection_service = new ConnectionService(params->kernel->GetEventDispatcher());
+        auto character_service = std::static_pointer_cast<BaseCharacterService>(params->kernel->GetServiceManager()->GetService("CharacterService"));
+        auto connection_service = new ConnectionService(params->kernel);
+        connection_service->character_service(character_service);
         return connection_service;
     };
 
@@ -65,7 +69,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
         }
     };
 
-    kernel.GetPluginManager()->RegisterObject("ConnectionService", &registration);
+    kernel->GetPluginManager()->RegisterObject("ConnectionService", &registration);
 
     return ExitModule;
 }

@@ -17,16 +17,16 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/server_directory/cluster.h"
+#include "anh/service/galaxy.h"
 
-using namespace anh::server_directory;
+using namespace anh::service;
 
-Cluster::Cluster(
+Galaxy::Galaxy(
     uint32_t id, 
     uint32_t primary_id, 
     const std::string& name, 
     const std::string& version,
-    Cluster::StatusType status, 
+    Galaxy::StatusType status, 
     const std::string& created_at, 
     const std::string& updated_at)
     : id_(id)
@@ -37,7 +37,7 @@ Cluster::Cluster(
     , updated_at_(updated_at)
 {}
 
-Cluster::Cluster(const Cluster& other) {
+Galaxy::Galaxy(const Galaxy& other) {
     id_ = other.id_;
     primary_id_ = other.primary_id_;
     name_ = other.name_;
@@ -47,7 +47,7 @@ Cluster::Cluster(const Cluster& other) {
     updated_at_ = other.updated_at_;
 }
 
-Cluster::Cluster(Cluster&& other) {
+Galaxy::Galaxy(Galaxy&& other) {
     id_ = other.id_;
     primary_id_ = other.primary_id_;
     name_ = std::move(other.name_);
@@ -57,7 +57,7 @@ Cluster::Cluster(Cluster&& other) {
     updated_at_ = std::move(other.updated_at_);
 }
 
-void Cluster::swap(Cluster& other) {
+void Galaxy::swap(Galaxy& other) {
     std::swap(other.id_, id_);
     std::swap(other.primary_id_, primary_id_);
     std::swap(other.name_, name_);
@@ -67,39 +67,39 @@ void Cluster::swap(Cluster& other) {
     std::swap(other.updated_at_, updated_at_);
 }
 
-Cluster& Cluster::operator=(Cluster other) {
+Galaxy& Galaxy::operator=(Galaxy other) {
     other.swap(*this);
     return *this;
 }
 
-uint32_t Cluster::id() const {
+uint32_t Galaxy::id() const {
     return id_;
 }
 
-uint32_t Cluster::primary_id() const {
+uint32_t Galaxy::primary_id() const {
     return primary_id_;
 }
 
-void Cluster::primary_id(uint32_t primary_id) {
+void Galaxy::primary_id(uint32_t primary_id) {
     primary_id_ = primary_id;
 }
 
-const std::string& Cluster::name() const {
+const std::string& Galaxy::name() const {
     return name_;
 }
 
-const std::string& Cluster::version() const {
+const std::string& Galaxy::version() const {
     return version_;
 }
 
-Cluster::StatusType Cluster::status() const {
+Galaxy::StatusType Galaxy::status() const {
     return status_;
 }
 
-const std::string& Cluster::created_at() const {
+const std::string& Galaxy::created_at() const {
     return created_at_;
 }
 
-const std::string& Cluster::updated_at() const {
+const std::string& Galaxy::updated_at() const {
     return updated_at_;
 }

@@ -17,32 +17,32 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef ANH_SERVER_DIRECTORY_PROCESS_H_
-#define ANH_SERVER_DIRECTORY_PROCESS_H_
+#ifndef ANH_SERVICE_SERVICE_H_
+#define ANH_SERVICE_SERVICE_H_
 
 #include <cstdint>
 #include <string>
 
 namespace anh {
-namespace server_directory {
+namespace service {
 
-class Process {    
+class Service {    
 public:
     /*! This overloaded constructor is used when creating an instance from
     * the data store.
     *
-    * \param id The id of the process in the data store.
-    * \param cluster_id The id of the cluster this process belongs to.
-    * \param type The type of the process.
-    * \param version The version of the process.
-    * \param address The address to communicate with the process.
-    * \param tcp_port The tcp port to connect to the process on, default to 0 if not used.
-    * \param udp_port The udp port to connect to the process on, default to 0 if not used.
-    * \param status The current status of the process.
-    * \param last_pulse The last time the process synced with the data store.
+    * \param id The id of the service in the data store.
+    * \param galaxy_id The id of the galaxy this service belongs to.
+    * \param type The type of the service.
+    * \param version The version of the service.
+    * \param address The address to communicate with the service.
+    * \param tcp_port The tcp port to connect to the service on, default to 0 if not used.
+    * \param udp_port The udp port to connect to the service on, default to 0 if not used.
+    * \param status The current status of the service.
+    * \param last_pulse The last time the service synced with the data store.
     */
-    Process(uint32_t id,
-            uint32_t cluster_id,
+    Service(uint32_t id,
+            uint32_t galaxy_id,
             const std::string& name,
             const std::string& type,
             const std::string& version,
@@ -52,76 +52,76 @@ public:
             uint16_t ping_port);    
 
     /// Destructor
-    ~Process();    
+    ~Service();    
 
     /// Copy constructor.
-    Process(const Process& other);
+    Service(const Service& other);
 
     /// Move constructor.
-    Process(Process&& other);
+    Service(Service&& other);
     
     /// Swap the contents of two HashStrings.
-    void swap(Process& other);
+    void swap(Service& other);
 
     /// Universal assignment operator.
-    Process& operator=(Process other);
+    Service& operator=(Service other);
 
     /// Equals Operator.
-    bool operator==(Process other)
+    bool operator==(Service other)
     {
         return this->id_ == other.id_;
     }
     /// Not Equals Operator.
-    bool operator!=(Process other)
+    bool operator!=(Service other)
     {
         return this->id_ != other.id_;
     }
         
-    /*! Returns the id of the process in the data store.
+    /*! Returns the id of the service in the data store.
     *
-    * \returns Returns the id of the process in the data store.
+    * \returns Returns the id of the service in the data store.
     */
     uint32_t id() const;
 
-    /*! Returns The id of the cluster this process belongs to.
+    /*! Returns The id of the galaxy this service belongs to.
     *
-    * \returns Returns The id of the cluster this process belongs to.
+    * \returns Returns The id of the galaxy this service belongs to.
     */
-    uint32_t cluster_id() const;
+    uint32_t galaxy_id() const;
 
-    /*! Returns The name of the process.
+    /*! Returns The name of the service.
     *
-    * \returns Returns The name of the process.
+    * \returns Returns The name of the service.
     */
     const std::string& name() const;    
 
-    /*! Returns The type of the process.
+    /*! Returns The type of the service.
     *
-    * \returns Returns The type of the process.
+    * \returns Returns The type of the service.
     */
     const std::string& type() const;    
     
-    /*! Returns the version of the process.
+    /*! Returns the version of the service.
     *
-    * \returns Returns the version of the process.
+    * \returns Returns the version of the service.
     */
     const std::string& version() const;    
     
-    /*! Returns the address to communicate with the process.
+    /*! Returns the address to communicate with the service.
     *
-    * \returns Returns the address to communicate with the process.
+    * \returns Returns the address to communicate with the service.
     */
     const std::string& address() const;    
     
-    /*! Returns the tcp port to connect to the process on, default to 0 if not used.
+    /*! Returns the tcp port to connect to the service on, default to 0 if not used.
     *
-    * \returns Returns the tcp port to connect to the process on, default to 0 if not used.
+    * \returns Returns the tcp port to connect to the service on, default to 0 if not used.
     */
     uint16_t tcp_port() const;    
     
-    /*! Returns the udp port to connect to the process on, default to 0 if not used.
+    /*! Returns the udp port to connect to the service on, default to 0 if not used.
     *
-    * \returns Returns the udp port to connect to the process on, default to 0 if not used.
+    * \returns Returns the udp port to connect to the service on, default to 0 if not used.
     */
     uint16_t udp_port() const;    
     
@@ -131,17 +131,17 @@ public:
     */
     uint16_t ping_port() const;    
     
-    /*! Returns the current status of the process.
+    /*! Returns the current status of the service.
     *
-    * \returns Returns -1 if the process is not operational otherwise it returns
+    * \returns Returns -1 if the service is not operational otherwise it returns
     *   the number of connected clients.
     */
     int32_t status() const;    
     void status(int32_t new_status);
     
-    /*! Returns the last time the process synced with the data store.
+    /*! Returns the last time the service synced with the data store.
     *
-    * \returns Returns the last time the process synced with the data store.
+    * \returns Returns the last time the service synced with the data store.
     */
     const std::string& last_pulse() const;
     void last_pulse(std::string last_pulse);
@@ -149,11 +149,11 @@ public:
 private:
     friend class ServerDirectory;
 
-    Process();
+    Service();
 
     
     uint32_t id_;
-    uint32_t cluster_id_;
+    uint32_t galaxy_id_;
     std::string name_;
     std::string type_;
     std::string version_;
@@ -165,7 +165,7 @@ private:
     std::string last_pulse_;
 };
 
-}  // namespace server_directory
+}  // namespace service
 }  // namespace anh
 
-#endif  // ANH_SERVER_DIRECTORY_PROCESS_H_
+#endif  // ANH_SERVICE_SERVICE_H_

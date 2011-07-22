@@ -25,14 +25,18 @@
 
 #include "swganh/base/base_service.h"
 
+namespace anh {
+namespace app {
+class KernelInterface;
+}}  // namespace anh::app
+
 namespace anh { namespace database { class DatabaseManagerInterface; } }
 
 namespace character {
     
 class CharacterService : public swganh::character::BaseCharacterService {
 public:
-    CharacterService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher,
-                     std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    explicit CharacterService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~CharacterService();
 
     void onStart();
@@ -51,14 +55,10 @@ public:
     std::wstring GetRandomNameRequest(const std::string& base_model);
     std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info);
 private:
-    std::string galaxy_schema_;
-    std::string swg_schema_;
     // helpers
-    std::string parseAppearance_(std::string appearance_data);
     std::string parseBio_(const std::string& bio);
     std::string parseHair_(const std::string& hair_model, const std::string& hair_customization);
     std::string setCharacterCreateErrorCode_(uint32_t error_id);
-    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 
 }  // namespace character

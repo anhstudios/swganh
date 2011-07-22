@@ -17,12 +17,12 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/server_directory/process.h"
+#include "anh/service/service.h"
 
-using namespace anh::server_directory;
+using namespace anh::service;
 
-Process::Process(uint32_t id,
-                 uint32_t cluster_id,
+Service::Service(uint32_t id,
+                 uint32_t galaxy_id,
                  const std::string& name,
                  const std::string& type,
                  const std::string& version,
@@ -31,7 +31,7 @@ Process::Process(uint32_t id,
                  uint16_t udp_port,
                  uint16_t ping_port)
     : id_(id)
-    , cluster_id_(cluster_id)
+    , galaxy_id_(galaxy_id)
     , name_(name)
     , type_(type)
     , version_(version)
@@ -43,11 +43,11 @@ Process::Process(uint32_t id,
     , last_pulse_("1970-01-01 00:00:01")
 {}
 
-Process::~Process() {}
+Service::~Service() {}
 
-Process::Process(const Process& other) {
+Service::Service(const Service& other) {
     id_ = other.id_;
-    cluster_id_ = other.cluster_id_;
+    galaxy_id_ = other.galaxy_id_;
     name_ = other.name_;
     type_ = other.type_;
     version_ = other.version_;
@@ -59,9 +59,9 @@ Process::Process(const Process& other) {
     last_pulse_ = other.last_pulse_;
 }
 
-Process::Process(Process&& other) {
+Service::Service(Service&& other) {
     id_ = other.id_;
-    cluster_id_ = other.cluster_id_;
+    galaxy_id_ = other.galaxy_id_;
     name_ = std::move(other.name_);
     type_ = std::move(other.type_);
     version_ = std::move(other.version_);
@@ -73,9 +73,9 @@ Process::Process(Process&& other) {
     last_pulse_ = std::move(other.last_pulse_);
 }
 
-void Process::swap(Process& other) {
+void Service::swap(Service& other) {
     std::swap(other.id_, id_);
-    std::swap(other.cluster_id_, cluster_id_);
+    std::swap(other.galaxy_id_, galaxy_id_);
     std::swap(other.name_, name_);
     std::swap(other.type_, type_);
     std::swap(other.version_, version_);
@@ -87,59 +87,59 @@ void Process::swap(Process& other) {
     std::swap(other.last_pulse_, last_pulse_);
 }
 
-Process& Process::operator=(Process other) {
+Service& Service::operator=(Service other) {
     other.swap(*this);
     return *this;
 }
 
-uint32_t Process::id() const {
+uint32_t Service::id() const {
     return id_;
 }
 
-uint32_t Process::cluster_id() const {
-    return cluster_id_;
+uint32_t Service::galaxy_id() const {
+    return galaxy_id_;
 }
 
-const std::string& Process::name() const {
+const std::string& Service::name() const {
     return name_;
 }
 
-const std::string& Process::type() const {
+const std::string& Service::type() const {
     return type_;
 }
 
-const std::string& Process::version() const {
+const std::string& Service::version() const {
     return version_;
 }
 
-const std::string& Process::address() const {
+const std::string& Service::address() const {
     return address_;
 }
 
-uint16_t Process::tcp_port() const {
+uint16_t Service::tcp_port() const {
     return tcp_port_;
 }
 
-uint16_t Process::udp_port() const {
+uint16_t Service::udp_port() const {
     return udp_port_;
 }
 
-uint16_t Process::ping_port() const {
+uint16_t Service::ping_port() const {
     return ping_port_;
 }
 
-int32_t Process::status() const {
+int32_t Service::status() const {
     return status_;
 }
 
-void Process::status(int32_t new_status) {
+void Service::status(int32_t new_status) {
     status_ = new_status;
 }
 
-const std::string& Process::last_pulse() const {
+const std::string& Service::last_pulse() const {
     return last_pulse_;
 }
 
-void Process::last_pulse(std::string last_pulse) {
+void Service::last_pulse(std::string last_pulse) {
     last_pulse_ = std::move(last_pulse);
 }
