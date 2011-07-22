@@ -21,26 +21,34 @@
 #include "swganh/base/base_service.h"
 
 #include "anh/app/kernel_interface.h"
+#include "anh/database/database_manager_interface.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
+
+#include "anh/service/datastore.h"
+
+#include "swganh/app/swganh_kernel.h"
 
 using namespace anh;
 using namespace app;
+using namespace swganh::app;
 using namespace swganh::base;
 using namespace event_dispatcher;
 using namespace std;
 
 BaseService::BaseService(shared_ptr<KernelInterface> kernel)
- : kernel_(kernel) {}
+ : kernel_(kernel) {
+    auto data_store = make_shared<service::Datastore>(kernel->GetDatabaseManager()->getConnection("galaxy_manager"));
+    service_directory_ = make_shared<service::ServiceDirectory>(data_store, kernel->GetEventDispatcher());
 
-void BaseService::DescribeConfigOptions(boost::program_options::options_description& description) {
-
+    auto swganh_kernel = static_pointer_cast<SwganhKernel>(kernel);
+    service_directory_->joinGalaxy(swganh_kernel->GetAppConfig().galaxy_name, kernel_->GetVersion().ToString());
 }
 
 void BaseService::Start() {
-    subscribe();
-
     running_ = true;
 
+    subscribe();
+    
     onStart();
 }
 

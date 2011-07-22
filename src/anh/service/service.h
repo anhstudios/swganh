@@ -147,7 +147,7 @@ public:
     void last_pulse(std::string last_pulse);
     
 private:
-    friend class ServerDirectory;
+    friend class ServiceDirectory;
 
     Service();
 

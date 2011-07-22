@@ -73,8 +73,6 @@ LoginService::LoginService(shared_ptr<KernelInterface> kernel)
 LoginService::~LoginService() {}
 
 void LoginService::DescribeConfigOptions(boost::program_options::options_description& description) {
-    BaseService::DescribeConfigOptions(description);
-
     description.add_options()
         ("service.login.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
             "The port the login service will listen for incoming client connections on")
