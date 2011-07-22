@@ -47,7 +47,7 @@ extern "C" PLUGIN_API void ExitModule() {
     return;
 }
 
-extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
+extern "C" PLUGIN_API ExitFunc InitializePlugin(shared_ptr<KernelInterface> kernel) {
 
     ObjectRegistration registration;
     registration.version.major = 1;
@@ -55,7 +55,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
 
     // Register TestObj
     registration.CreateObject = [] (ObjectParams* params) -> void * {
-        auto connection_service = new ConnectionService(params->kernel->GetEventDispatcher());
+        auto connection_service = new ConnectionService(params->kernel);
         return connection_service;
     };
 
@@ -65,7 +65,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface& kernel) {
         }
     };
 
-    kernel.GetPluginManager()->RegisterObject("ConnectionService", &registration);
+    kernel->GetPluginManager()->RegisterObject("ConnectionService", &registration);
 
     return ExitModule;
 }

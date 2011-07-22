@@ -29,6 +29,11 @@
 #include "swganh/character/base_character_service.h"
 
 namespace anh {
+namespace app {
+class KernelInterface;
+}}  // namespace anh::app
+
+namespace anh {
 namespace network {
 namespace soe {
 class Server;
@@ -56,8 +61,7 @@ class LoginClient;
 
 class LoginService : public swganh::base::BaseService {
 public:
-    explicit LoginService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher,
-                          std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    explicit LoginService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~LoginService();
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
