@@ -24,6 +24,7 @@
 #include <glog/logging.h>
 
 #include "anh/crc.h"
+#include "anh/app/kernel_interface.h"
 #include "anh/event_dispatcher/basic_event.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 
@@ -46,6 +47,7 @@
 #include "connection/messages/heart_beat.h"
 
 using namespace anh;
+using namespace app;
 using namespace event_dispatcher;
 using namespace connection;
 using namespace messages;
@@ -54,12 +56,11 @@ using namespace character;
 using namespace scene::messages;
 using namespace std;
 
-ConnectionService::ConnectionService(shared_ptr<EventDispatcherInterface> dispatcher) 
-    : listen_port_(0) {
-
-    event_dispatcher(dispatcher);
+ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel) 
+    : swganh::base::BaseService(kernel)
+    , listen_port_(0) {
         
-    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(dispatcher)));
+    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
 }
 
 ConnectionService::~ConnectionService() {}
@@ -84,12 +85,10 @@ void ConnectionService::onStop() {
 }
 
 void ConnectionService::subscribe() {
-    soe_server_->event_dispatcher(event_dispatcher_);
-    
-    event_dispatcher_->subscribe("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1));
-    event_dispatcher_->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));
-    event_dispatcher_->subscribe("SelectCharacter", bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1));
-    event_dispatcher_->subscribe("ClientCreateCharacter", bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1));
+    event_dispatcher()->subscribe("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1));
+    event_dispatcher()->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));
+    event_dispatcher()->subscribe("SelectCharacter", bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1));
+    event_dispatcher()->subscribe("ClientCreateCharacter", bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1));
 }
 
 shared_ptr<CharacterServiceInterface> ConnectionService::character_service() {

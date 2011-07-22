@@ -27,6 +27,11 @@
 #include "swganh/character/character_service_interface.h"
 
 namespace anh {
+namespace app {
+class KernelInterface;
+}}  // namespace anh::app
+
+namespace anh {
 namespace event_dispatcher {
 class EventInterface;
 }}  // namespace anh::event_dispatcher
@@ -35,7 +40,7 @@ namespace connection {
     
 class ConnectionService : public swganh::base::BaseService {
 public:
-    explicit ConnectionService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    explicit ConnectionService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~ConnectionService();
     
     void DescribeConfigOptions(boost::program_options::options_description& description);
