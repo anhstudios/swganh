@@ -38,10 +38,12 @@ class CharacterService : public swganh::character::BaseCharacterService {
 public:
     explicit CharacterService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~CharacterService();
+    
+    anh::service::Service GetServiceDescription();
 
     void onStart();
     void onStop();
-    void Update();
+    void onUpdate();
 
     void subscribe();
 

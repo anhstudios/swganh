@@ -28,6 +28,24 @@ namespace service {
 
 class Service {    
 public:
+    /*! This overloaded constructor is used when describing a service to register.
+    *
+    * \param type The type of the service.
+    * \param version The version of the service.
+    * \param address The address to communicate with the service.
+    * \param tcp_port The tcp port to connect to the service on, default to 0 if not used.
+    * \param udp_port The udp port to connect to the service on, default to 0 if not used.
+    * \param status The current status of the service.
+    * \param last_pulse The last time the service synced with the data store.
+    */
+    Service(const std::string& name,
+            const std::string& type,
+            const std::string& version,
+            const std::string& address,
+            uint16_t tcp_port,
+            uint16_t udp_port,
+            uint16_t ping_port); 
+
     /*! This overloaded constructor is used when creating an instance from
     * the data store.
     *

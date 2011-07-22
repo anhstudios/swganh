@@ -47,9 +47,21 @@ BaseService::BaseService(shared_ptr<KernelInterface> kernel)
 void BaseService::Start() {
     running_ = true;
 
+    auto service_description = GetServiceDescription();
+    if (!service_directory_->registerService(service_description.name(), service_description.type(), service_description.version(), service_description.address(), service_description.tcp_port(), service_description.udp_port(), service_description.ping_port())) {
+        running_ = false;
+        throw std::runtime_error("Unable to register service " + service_description.name());
+    }
+
     subscribe();
     
     onStart();
+}
+
+void BaseService::Update() {
+    service_directory_->pulse();
+
+    onUpdate();
 }
 
 void BaseService::Stop() {

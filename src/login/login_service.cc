@@ -72,6 +72,19 @@ LoginService::LoginService(shared_ptr<KernelInterface> kernel)
 
 LoginService::~LoginService() {}
 
+service::Service LoginService::GetServiceDescription() {
+    service::Service service_description(
+        "ANH Login Service",
+        "login",
+        "0.1",
+        "127.0.0.1", 
+        0, 
+        listen_port_, 
+        0);
+
+    return service_description;
+}
+
 void LoginService::DescribeConfigOptions(boost::program_options::options_description& description) {
     description.add_options()
         ("service.login.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
@@ -83,7 +96,7 @@ void LoginService::onStart() {
     soe_server_->Start(listen_port_);
 }
 
-void LoginService::Update() {
+void LoginService::onUpdate() {
     soe_server_->Update();
 }
 
