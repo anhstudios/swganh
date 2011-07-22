@@ -27,9 +27,13 @@
 #include "anh/app/kernel_interface.h"
 #include "anh/event_dispatcher/basic_event.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/plugin/plugin_manager.h"
+#include "anh/service/service_manager.h"
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
+
+#include "character/character_service.h"
 
 #include "swganh/base/swg_message_handler.h"
 #include "swganh/character/character_data.h"
@@ -44,6 +48,8 @@
 #include "connection/messages/client_create_character.h"
 #include "connection/messages/client_create_character_success.h"
 #include "connection/messages/client_create_character_failed.h"
+#include "connection/messages/client_random_name_request.h"
+#include "connection/messages/client_random_name_response.h"
 #include "connection/messages/heart_beat.h"
 
 using namespace anh;
@@ -51,9 +57,9 @@ using namespace app;
 using namespace event_dispatcher;
 using namespace connection;
 using namespace messages;
-using namespace swganh;
-using namespace character;
-using namespace scene::messages;
+using namespace swganh::base;
+using namespace swganh::character;
+using namespace swganh::scene::messages;
 using namespace std;
 
 ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel) 
@@ -89,13 +95,14 @@ void ConnectionService::subscribe() {
     event_dispatcher()->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));
     event_dispatcher()->subscribe("SelectCharacter", bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1));
     event_dispatcher()->subscribe("ClientCreateCharacter", bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1));
+    event_dispatcher()->subscribe("ClientRandomNameRequest", bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1));
 }
 
-shared_ptr<CharacterServiceInterface> ConnectionService::character_service() {
+shared_ptr<BaseCharacterService> ConnectionService::character_service() {
     return character_service_;
 }
 
-void ConnectionService::character_service(shared_ptr<CharacterServiceInterface> character_service) {
+void ConnectionService::character_service(shared_ptr<BaseCharacterService> character_service) {
     character_service_ = character_service;
 }
 
@@ -169,14 +176,14 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     ClientCreateCharacter create_character;
     create_character.deserialize(*remote_event->message());
-
+        
     uint64_t character_id;
     string error_code;
     tie(character_id, error_code) = character_service()->CreateCharacter(create_character);
     // heartbeat to let the client know we're still here
     HeartBeat heartbeat;
     remote_event->session()->SendMessage(heartbeat);
-    if (error_code.length() > 0)
+    if (error_code.size() > 0)
     {
         ClientCreateCharacterFailed failed;
         failed.stf_file = "ui";
@@ -192,5 +199,25 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
         processSelectCharacter_(character_id, remote_event->session());
     }
     
+    return true;
+}
+
+bool ConnectionService::HandleClientRandomNameRequest_(shared_ptr<EventInterface> incoming_event) {
+    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
+    ClientRandomNameRequest rnq;
+    rnq.deserialize(*remote_event->message());
+
+    ClientRandomNameResponse response;
+    response.player_race_iff = rnq.player_race_iff;
+    
+    response.random_name = character_service()->GetRandomNameRequest(rnq.player_race_iff);
+    if (response.random_name.length() > 0)
+    {
+        response.stf_file = "ui";
+        response.approval_string = "name_approved";
+    }
+
+    remote_event->session()->SendMessage(response);
+
     return true;
 }

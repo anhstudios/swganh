@@ -24,7 +24,7 @@
 #include "anh/network/soe/server.h"
 
 #include "swganh/base/base_service.h"
-#include "swganh/character/character_service_interface.h"
+#include "swganh/character/base_character_service.h"
 
 namespace anh {
 namespace app {
@@ -51,8 +51,8 @@ public:
 
     void subscribe();
 
-    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service();
-    void character_service(std::shared_ptr<swganh::character::CharacterServiceInterface> character_service);
+    std::shared_ptr<swganh::character::BaseCharacterService> character_service();
+    void character_service(std::shared_ptr<swganh::character::BaseCharacterService> character_service);
 
 private:
     bool HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
@@ -60,9 +60,10 @@ private:
     bool HandleSelectCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool processSelectCharacter_(uint64_t character_id, std::shared_ptr<anh::network::soe::Session> session);
     bool HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    bool HandleClientRandomNameRequest_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
-    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service_;
+    std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
     
     uint16_t listen_port_;
 };
