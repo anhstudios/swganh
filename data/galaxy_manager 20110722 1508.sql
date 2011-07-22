@@ -74,19 +74,22 @@ CREATE TABLE `appearance` (
   `scale` double NOT NULL,
   `gender` bit(1) DEFAULT b'1',
   `species` varchar(45) DEFAULT 'human',
+  `customization_data` tinyblob,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UNIQ_AAB3829081257D5D` (`entity_id`),
-  CONSTRAINT `appearance_ibfk_1` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `UNIQ_AAB3829081257D5D` (`entity_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `appearance`
 --
 
 /*!40000 ALTER TABLE `appearance` DISABLE KEYS */;
-INSERT INTO `appearance` (`id`,`entity_id`,`baseModel`,`scale`,`gender`,`species`) VALUES 
- (1,1001,'object/creature/player/human_male.iff',1.1,0x01,'human'),
- (2,1002,'object/creature/player/human_male.iff',1.021,0x01,'human');
+INSERT INTO `appearance` (`id`,`entity_id`,`baseModel`,`scale`,`gender`,`species`,`customization_data`) VALUES 
+ (1,1001,'object/creature/player/human_male.iff',1.1,0x01,'human',NULL),
+ (2,1002,'object/creature/player/human_male.iff',1.021,0x01,'human',NULL),
+ (6,1012,'object/creature/player/moncal_male.iff',0.9281601905822754,0x01,'moncal',0x011D178918FF011CE61BFF0105FF011AFF0119860DE609FF0112FF011334100C0FFF01141011FF010EEC03450B480CFF0106FF0108B815FF0116B3044607FF010A6D3B02010D26FF01FF03),
+ (7,1022,'object/creature/player/human_male.iff',1.0770915746688843,0x01,'human',0x012317FF0118841C8C1BFF0105021A8319FF010DFF0109FF0212DC13FF01203D102721FF010FFF01141B11820EE203FF010BFF010CFF01063508FF01158316FF0104D407500AFF01230A250424FF0101171DFF011F051EFF01FF03),
+ (8,1032,'object/creature/player/human_male.iff',1.0614397525787354,0x01,'human',0x012317FF0118821CFF011BE305FF011AFF0119DF0D6909FF0112FF0113BA20FF0110FF01217C0F5C140111FF010EFF0103F80BBB0C2306DF08FF0115FF0116260461075B0AFF01230525FF0124FF0101071DFF011F131E02FF03);
 /*!40000 ALTER TABLE `appearance` ENABLE KEYS */;
 
 
@@ -100,24 +103,27 @@ CREATE TABLE `characters` (
   `entity_id` int(11) DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL,
-  `deletedAt` datetime NOT NULL,
+  `deletedAt` datetime DEFAULT NULL,
   `firstName` varchar(100) NOT NULL,
   `lastName` varchar(100) NOT NULL,
   `jediState` int(11) NOT NULL,
   `birthDate` datetime NOT NULL,
+  `archived` bit(1) DEFAULT b'0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UNIQ_3A29410E81257D5D` (`entity_id`),
-  CONSTRAINT `characters_ibfk_1` FOREIGN KEY (`entity_id`) REFERENCES `entity` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `UNIQ_3A29410E81257D5D` (`entity_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `characters`
 --
 
 /*!40000 ALTER TABLE `characters` DISABLE KEYS */;
-INSERT INTO `characters` (`id`,`entity_id`,`createdAt`,`updatedAt`,`deletedAt`,`firstName`,`lastName`,`jediState`,`birthDate`) VALUES 
- (1,1001,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00','Kronos','SWGANH',2,'0000-00-00 00:00:00'),
- (2,1002,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00','Kronos2','Kronos',0,'0000-00-00 00:00:00');
+INSERT INTO `characters` (`id`,`entity_id`,`createdAt`,`updatedAt`,`deletedAt`,`firstName`,`lastName`,`jediState`,`birthDate`,`archived`) VALUES 
+ (1,1001,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00','Kronos','SWGANH',2,'0000-00-00 00:00:00',0x00),
+ (2,1002,'0000-00-00 00:00:00','0000-00-00 00:00:00','2011-07-21 23:40:48','Kronos2','Kronos',0,'0000-00-00 00:00:00',0x01),
+ (10,1012,'2011-07-22 14:02:58','2011-07-22 14:02:58',NULL,'Icilavis','Etsegisu',0,'2011-07-22 14:02:58',0x00),
+ (11,1022,'2011-07-22 14:12:33','2011-07-22 14:12:33',NULL,'Poekeu','Sifa',0,'2011-07-22 14:12:33',0x00),
+ (12,1032,'2011-07-22 14:18:29','2011-07-22 14:18:29',NULL,'Esyido','Oenad',0,'2011-07-22 14:18:29',0x00);
 /*!40000 ALTER TABLE `characters` ENABLE KEYS */;
 
 
@@ -149,19 +155,22 @@ DROP TABLE IF EXISTS `entity`;
 CREATE TABLE `entity` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `template_id` int(11) DEFAULT NULL,
+  `parent_id` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UNIQ_E2844685DA0FB8` (`template_id`),
-  CONSTRAINT `entity_ibfk_1` FOREIGN KEY (`template_id`) REFERENCES `entity_template` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1003 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `UNIQ_E2844685DA0FB8` (`template_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1033 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `entity`
 --
 
 /*!40000 ALTER TABLE `entity` DISABLE KEYS */;
-INSERT INTO `entity` (`id`,`template_id`) VALUES 
- (1001,NULL),
- (1002,NULL);
+INSERT INTO `entity` (`id`,`template_id`,`parent_id`) VALUES 
+ (1001,NULL,0),
+ (1002,NULL,0),
+ (1012,NULL,0),
+ (1022,NULL,0),
+ (1032,NULL,0);
 /*!40000 ALTER TABLE `entity` ENABLE KEYS */;
 
 
@@ -216019,7 +216028,7 @@ CREATE TABLE `player` (
 
 /*!40000 ALTER TABLE `player` DISABLE KEYS */;
 INSERT INTO `player` (`id`,`referenceId`,`maxCharacters`) VALUES 
- (1,1,2);
+ (1,1,8);
 /*!40000 ALTER TABLE `player` ENABLE KEYS */;
 
 
@@ -216045,7 +216054,8 @@ CREATE TABLE `players_characters` (
 /*!40000 ALTER TABLE `players_characters` DISABLE KEYS */;
 INSERT INTO `players_characters` (`player_id`,`character_id`) VALUES 
  (1,1),
- (1,2);
+ (1,2),
+ (1,12);
 /*!40000 ALTER TABLE `players_characters` ENABLE KEYS */;
 
 
@@ -216132,7 +216142,7 @@ CREATE TABLE `service` (
 DROP TABLE IF EXISTS `species`;
 CREATE TABLE `species` (
   `id` int(8) unsigned NOT NULL DEFAULT '0' COMMENT 'Character Starting Attributes Table ID',
-  `name` char(24) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT 'Race Name',
+  `species_name` char(24) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT 'Race Name',
   `health_min` int(6) unsigned NOT NULL DEFAULT '0' COMMENT 'Health Minimum',
   `health_max` int(6) unsigned NOT NULL DEFAULT '0' COMMENT 'Health Maximum',
   `strength_min` int(6) unsigned NOT NULL DEFAULT '0' COMMENT 'Strangth Minimum',
@@ -216151,7 +216161,8 @@ CREATE TABLE `species` (
   `focus_max` int(6) unsigned NOT NULL DEFAULT '0' COMMENT 'Focus Maximum',
   `willpower_min` int(6) unsigned NOT NULL DEFAULT '0' COMMENT 'Willpower Minimum',
   `willpower_max` int(6) unsigned NOT NULL DEFAULT '0' COMMENT 'Willpower Maximum',
-  `total` int(6) unsigned NOT NULL DEFAULT '0'
+  `total` int(6) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -216159,7 +216170,7 @@ CREATE TABLE `species` (
 --
 
 /*!40000 ALTER TABLE `species` DISABLE KEYS */;
-INSERT INTO `species` (`id`,`name`,`health_min`,`health_max`,`strength_min`,`strength_max`,`constitution_min`,`constitution_max`,`action_min`,`action_max`,`quickness_min`,`quickness_max`,`stamina_min`,`stamina_max`,`mind_min`,`mind_max`,`focus_min`,`focus_max`,`willpower_min`,`willpower_max`,`total`) VALUES 
+INSERT INTO `species` (`id`,`species_name`,`health_min`,`health_max`,`strength_min`,`strength_max`,`constitution_min`,`constitution_max`,`action_min`,`action_max`,`quickness_min`,`quickness_max`,`stamina_min`,`stamina_max`,`mind_min`,`mind_max`,`focus_min`,`focus_max`,`willpower_min`,`willpower_max`,`total`) VALUES 
  (0,'human',400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,5400),
  (1,'rodian',300,1000,300,500,300,400,300,1200,300,650,450,850,300,1000,300,500,350,550,5400),
  (2,'trandoshan',550,1250,600,800,700,800,300,1000,300,450,300,400,300,1000,300,500,300,600,5550),
@@ -216171,6 +216182,51 @@ INSERT INTO `species` (`id`,`name`,`health_min`,`health_max`,`strength_min`,`str
  (33,'ithorian',300,1400,300,600,300,500,600,1100,300,750,300,500,400,1300,400,600,300,500,5400),
  (49,'sullustan',300,1200,300,500,300,400,600,1400,300,750,300,500,400,1200,400,600,300,600,5400);
 /*!40000 ALTER TABLE `species` ENABLE KEYS */;
+
+
+--
+-- Definition of table `starting_location`
+--
+
+DROP TABLE IF EXISTS `starting_location`;
+CREATE TABLE `starting_location` (
+  `location_id` int(2) unsigned NOT NULL DEFAULT '0' COMMENT 'Location ID',
+  `location` char(16) CHARACTER SET utf8 NOT NULL COMMENT 'Starting Location',
+  `planet_id` int(2) NOT NULL COMMENT 'Starting Location - Planet',
+  `x` float(10,6) NOT NULL COMMENT 'Starting Location - X',
+  `y` float(10,6) NOT NULL COMMENT 'Starting Location - Y',
+  `z` float(10,6) NOT NULL COMMENT 'Starting Location - Z',
+  `description` char(64) CHARACTER SET utf8 NOT NULL COMMENT 'Starting Location - Description',
+  `radius` float(2,0) unsigned NOT NULL COMMENT 'Starting Location - View Radius?',
+  `heading` int(3) unsigned NOT NULL COMMENT 'Starting Location - Orientation',
+  PRIMARY KEY (`location_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `starting_location`
+--
+
+/*!40000 ALTER TABLE `starting_location` DISABLE KEYS */;
+INSERT INTO `starting_location` (`location_id`,`location`,`planet_id`,`x`,`y`,`z`,`description`,`radius`,`heading`) VALUES 
+ (1,'bestine',8,-1290.000000,0.000000,-3590.000000,'Bestine, Tatooine',3,180),
+ (2,'mos_espa',8,-2902.000000,0.000000,2130.000000,'Mos Espa, Tatooine',3,180),
+ (3,'mos_eisley',8,3528.000000,0.000000,-4804.000000,'Mos Eisley, Tatooine',3,180),
+ (4,'mos_entha',8,1291.000000,0.000000,3138.000000,'Mos Entha, Tatooine',3,180),
+ (5,'coronet',0,-137.000000,0.000000,-4723.000000,'Coronet, Corellia',3,180),
+ (6,'tyrena',0,-5045.000000,0.000000,-2294.000000,'Tyrena, Corellia',3,180),
+ (7,'kor_vella',0,-3138.000000,0.000000,2808.000000,'Kor Vella, Corellia',3,180),
+ (8,'doaba_guerfel',0,3336.000000,0.000000,5525.000000,'Doaba Guerfel, Corellia',3,180),
+ (9,'dearic',7,335.000000,0.000000,-2931.000000,'Dearic, Talus',3,180),
+ (10,'nashal',7,4371.000000,0.000000,5165.000000,'Nashal, Talus',3,180),
+ (11,'narmle',6,-5310.000000,0.000000,-2221.000000,'Narmle, Rori',3,180),
+ (12,'restuss',6,5362.000000,0.000000,5663.000000,'Restuss, Rori',3,180),
+ (13,'theed',5,-4856.000000,0.000000,4162.000000,'Theed, Naboo',3,180),
+ (14,'moenia',5,4800.000000,0.000000,-4700.000000,'Moenia, Naboo',3,180),
+ (15,'keren',5,1441.000000,0.000000,2771.000000,'Keren, Naboo',3,180),
+ (16,'kaadara',5,5209.000000,0.000000,6677.000000,'Kaadara, Naboo',3,180),
+ (17,'tutorial',41,0.000000,0.000000,0.000000,'Tutorial',3,180),
+ (18,'default_location',41,27.400000,-42.000000,-161.100006,'Skipped Tutorial',3,180);
+/*!40000 ALTER TABLE `starting_location` ENABLE KEYS */;
 
 
 --
@@ -216202,7 +216258,7 @@ CREATE TABLE `templates_components` (
 
 DROP TABLE IF EXISTS `transform`;
 CREATE TABLE `transform` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `entity_id` bigint(20) NOT NULL,
   `x` float DEFAULT NULL,
   `y` float DEFAULT NULL,
@@ -216213,7 +216269,7 @@ CREATE TABLE `transform` (
   `oW` float DEFAULT NULL,
   `planet_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `transform`
@@ -216221,9 +216277,34 @@ CREATE TABLE `transform` (
 
 /*!40000 ALTER TABLE `transform` DISABLE KEYS */;
 INSERT INTO `transform` (`id`,`entity_id`,`x`,`y`,`z`,`oX`,`oY`,`oZ`,`oW`,`planet_id`) VALUES 
- (1,1001,0,0,0,0,0,0,0,1);
+ (1,1001,0,0,0,0,0,0,0,1),
+ (5,1012,-1290,0,-3590,0,1,0,0,NULL),
+ (6,1022,-1290,0,-3590,0,1,0,0,8),
+ (7,1032,-1290,0,-3590,0,1,0,0,8);
 /*!40000 ALTER TABLE `transform` ENABLE KEYS */;
 
+
+--
+-- Definition of function `f_speciesShort`
+--
+
+DROP FUNCTION IF EXISTS `f_speciesShort`;
+
+DELIMITER $$
+
+/*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ $$
+CREATE DEFINER=`root`@`localhost` FUNCTION `f_speciesShort`(species CHAR(128)) RETURNS char(128) CHARSET utf8
+BEGIN
+   	DECLARE SpeciesShort CHAR(128);
+	
+    	SET species = REPLACE(species,'object/creature/player/shared_','object/creature/player/');
+   		
+		SELECT SUBSTRING_INDEX(TRIM(LEADING 'object/creature/player/' FROM species),'_',1) INTO SpeciesShort;
+		RETURN speciesShort;
+END $$
+/*!50003 SET SESSION SQL_MODE=@TEMP_SQL_MODE */  $$
+
+DELIMITER ;
 
 --
 -- Definition of function `sf_CharacterNameCreate`
@@ -216395,7 +216476,7 @@ BEGIN
   DECLARE raceId INT(8);
 
   
-  SELECT id FROM race WHERE name = start_species INTO raceId;
+  SELECT id FROM species WHERE species_name = start_species INTO raceId;
 
   
   SELECT firstname FROM namegen_firstname WHERE species = raceId AND gender = start_gender ORDER BY RAND() LIMIT 1 INTO gen_firstname;
@@ -216424,7 +216505,7 @@ BEGIN
   DECLARE raceId INT(8);
 
   
-  SELECT id FROM race WHERE name = start_species INTO raceId;
+  SELECT id FROM species WHERE species_name = start_species INTO raceId;
 
   
   SELECT lastname FROM namegen_lastname WHERE species = raceId AND gender = start_gender ORDER BY RAND() LIMIT 1 INTO gen_lastname;
@@ -216448,8 +216529,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterCreate`(
 	IN start_account_id INT,IN start_galaxy_id INT,IN start_firstname char(32),IN start_lastname char(32),
 	IN start_profession char(64),IN start_city char(32),IN start_scale FLOAT,IN start_biography text(2048),
-  IN start_appearance_customization TEXT(344),
-	IN start_hair_model CHAR(64), IN hair_customization TEXT(200), IN base_model_string CHAR(64))
+  IN start_appearance_customization TINYBLOB, IN start_hair_model CHAR(64), IN hair_customization TEXT(200), IN base_model_string CHAR(64))
 charCreate:BEGIN
 
   --
@@ -216457,9 +216537,9 @@ charCreate:BEGIN
   --
 
   DECLARE oX FLOAT;DECLARE oY FLOAT;DECLARE oZ FLOAT;DECLARE oW FLOAT;
-  DECLARE battlefatigue INT;
-	DECLARE race_id INT;
-	DECLARE character_id BIGINT(20);
+  DECLARE race_id INT;
+	DECLARE entity_id BIGINT(20);
+  DECLARE character_id BIGINT(20);
   DECLARE character_parent_id BIGINT(20);
   DECLARE planet_name char(32);
 	DECLARE profession_id INT;
@@ -216473,33 +216553,30 @@ charCreate:BEGIN
 	DECLARE gender INT(3);
   DECLARE base_skill_id INT;
   DECLARE nameCheck INT;
-	DECLARE currentTime BIGINT(20);
-  DECLARE charactersAllowed INT;
-  DECLARE charactersCurrent INT;
-
+	
   --
   -- Transactional Support
   --
 
-  DECLARE EXIT HANDLER FOR NOT FOUND
+DECLARE EXIT HANDLER FOR NOT FOUND
     BEGIN
-      SET character_id = 4;
+      SET entity_id = 4;
       ROLLBACK;
-      SELECT character_id;
+      SELECT entity_id;
     END;
 
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-      SET character_id = 4;
+      SET entity_id = 4;
       ROLLBACK;
-      SELECT character_id;
+      SELECT entity_id;
     END;
 
   DECLARE EXIT HANDLER FOR SQLWARNING
     BEGIN
-    SET character_id = 4;
+    SET entity_id = 4;
     ROLLBACK;
-    SELECT character_id;
+    SELECT entity_id;
   END;
   --
   -- Check the new character name for validity
@@ -216533,13 +216610,6 @@ charCreate:BEGIN
     SET gender = 1;
   END IF;
   
-  
-  --
-  
-  -- Set the shared_model
-  
-  --
-  
   --
   -- Set defaults (battle fatigue, world orientation)
   --
@@ -216556,20 +216626,12 @@ charCreate:BEGIN
 
   START TRANSACTION;
 
-  SELECT MAX(id) + 1000 FROM characters INTO character_id FOR UPDATE;
+  SELECT MAX(id) + 10 FROM entity INTO entity_id FOR UPDATE;
 
-  IF character_id IS NULL THEN
-    SET character_id = 8589934593;
+  IF entity_id IS NULL THEN
+    SET entity_id = 8589934593;
   END IF;
 
-  --
-  -- Set the initial IDs
-  --
-
---   SET inventory_id = character_id + 1;
---   SET bank_id = character_id + 4;
---   SET datapad_id = character_id + 3;
---   SET tutorialcontainer_id = 0;
 -- 
      SELECT planet_id, x, y, z FROM starting_location WHERE location LIKE start_city INTO start_planet, start_x, start_y, start_z;
 -- 
@@ -216577,25 +216639,15 @@ charCreate:BEGIN
 -- 
 --   SELECT health, strength, constitution, action, quickness, stamina, mind, focus, willpower FROM starting_attributes WHERE starting_attributes.species like shortSpecies AND starting_attributes.profession like start_profession INTO t_health, t_strength, t_constitution, t_action, t_quickness, t_stamina, t_mind, t_focus, t_willpower;
 -- 
-     SELECT id from race where race.name like shortSpecies into race_id;
+     SELECT id from species where species.species_name like shortSpecies into race_id;
 -- 
---   SELECT skill_id from skills where skill_name like start_profession INTO profession_id;
 -- 
---   -- Don't set any default skills or XP when creating player in the Tutorial.
--- 
---   IF start_city = 'tutorial' THEN
---     SET character_parent_id = 2203318222960;
---     SET tutorialcontainer_id = 2533274790395904;
---     SET privateowner_id = character_id;
---   END IF;
--- 
---   IF start_city = 'default_location' THEN
---     SET character_parent_id = 2203318222975;
---   END IF;
--- 
-   INSERT INTO characters VALUES (character_id, start_account_id, start_galaxy_id, start_firstname, start_lastname, race_id, character_parent_id, start_planet, 0, NULL, 0, CURDATE() + 0);
-   INSERT INTO transform VALUES (character_id, start_x, start_y, start_z, oX, oY, oZ, oW, 5.75,1.50,1.00,0.0125);
-   INSERT INTO appearance VALUES (character_id, start_appearance_customization, start_hair_model, hair_customization, base_model_string, start_scale, gender, shortSpecies);
+   INSERT INTO entity VALUES (entity_id, NULL, character_parent_id);
+   INSERT INTO characters(entity_id, createdAt,updatedAt,firstName,lastName,jediState,birthDate) VALUES (entity_id, NOW(), NOW(), start_firstname, start_lastname, 0, NOW());
+   SELECT id from characters where characters.entity_id = entity_id INTO character_id;
+   INSERT INTO players_characters values (start_account_id, character_id);
+   INSERT INTO transform(entity_id,x,y,z,oX,oY,oZ,oW,planet_id) VALUES (entity_id, start_x, start_y, start_z, oX, oY, oZ, oW, start_planet);
+   INSERT INTO appearance(entity_id,baseModel,scale,gender,species,customization_data) VALUES (entity_id, base_model_string, start_scale, gender, shortSpecies, start_appearance_customization);
 	--
 	-- Commit Transaction
 	--
@@ -216606,7 +216658,7 @@ charCreate:BEGIN
 	-- Return new character ID
 	--
 	
-  SELECT(character_id);
+  SELECT(entity_id);
 
 END $$
 /*!50003 SET SESSION SQL_MODE=@TEMP_SQL_MODE */  $$
@@ -216629,9 +216681,6 @@ BEGIN
 	-- Declare Vars
 	--
 
-	DECLARE attributes_id int(11);
-	DECLARE faction_id int(11);
-
 	DECLARE check_value INT(11);
 
 	DECLARE error_code INT(11);
@@ -216644,7 +216693,7 @@ BEGIN
 
 	UPDATE characters SET archived = 1 WHERE id = character_id;
 
-	UPDATE characters SET deletiondate = (DATE_ADD(NOW(), INTERVAL +90 DAY)) WHERE id = character_id;
+	UPDATE characters SET deletedAt = (NOW()) WHERE id = character_id;
 
 	--
 	-- Check to see if we maked the character for deletion and return proper exit code
@@ -216679,7 +216728,7 @@ BEGIN
 	INNER JOIN appearance B ON (A.entity_id = B.entity_id)
   INNER JOIN transform C on (A.entity_id = C.entity_id)
   INNER JOIN planet D on (C.planet_id = D.planet_id)
-  WHERE A.id = id;
+  WHERE A.id = id and A.archived = 0;
 
 END $$
 /*!50003 SET SESSION SQL_MODE=@TEMP_SQL_MODE */  $$
@@ -216702,7 +216751,7 @@ BEGIN
     INNER JOIN player B ON (account_id = B.referenceId)
     INNER JOIN players_characters C ON (B.id = C.player_id)
     INNER JOIN appearance D ON (A.entity_id = D.entity_id)
-    WHERE A.id = C.character_id;
+    WHERE A.id = C.character_id and A.archived = 0;
 END $$
 /*!50003 SET SESSION SQL_MODE=@TEMP_SQL_MODE */  $$
 
