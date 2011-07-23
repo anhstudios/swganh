@@ -91,35 +91,3 @@ void ServiceManager::Stop() {
        } 
     });
 }
-
-//
-//void ServiceManager::RegisterModuleServices(std::shared_ptr<ModuleManager> module_manager) {
-//    auto registration_map = module_manager->registration_map();
-//    
-//    for_each(registration_map.begin(), registration_map.end(), [module_manager] (RegistrationMap::value_type& entry) {
-//        if (entry->first.substr(-7, 7) == "Service") {
-//            auto service = module_manager->CreateObject<ServiceInterface>(entry->first);
-//            services_.push_back(service);
-//        }
-//    });
-//}
-//
-//void ServiceManager::RegisterService(std::shared_ptr<ServiceInterface> service) {
-//    services_.push_back(service);
-//}
-//
-//void ServiceManager::StartServices() {
-//    for_each(services_.begin(), services_.end(), [] (shared_ptr<ServiceInterface> service) {
-//       if (service) {
-//           service->Start();
-//       } 
-//    });
-//}
-//
-//void ServiceManager::StopServices() {    
-//    for_each(services_.begin(), services_.end(), [] (shared_ptr<ServiceInterface> service) {
-//       if (service) {
-//           service->Stop();
-//       } 
-//    });
-//}
