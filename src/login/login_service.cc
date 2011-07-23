@@ -111,8 +111,10 @@ void LoginService::onStop() {
 }
 
 void LoginService::subscribe() {
-    event_dispatcher()->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
-    event_dispatcher()->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
+    auto event_dispatcher = kernel()->GetEventDispatcher();
+
+    event_dispatcher->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
+    event_dispatcher->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
 }
 
 shared_ptr<BaseCharacterService> LoginService::character_service() {

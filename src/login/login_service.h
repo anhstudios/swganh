@@ -57,7 +57,7 @@ namespace providers {
 class AccountProviderInterface;
 }
 
-class LoginClient;
+struct LoginClient;
 
 struct GalaxyStatus {    
     uint32_t galaxy_id;
