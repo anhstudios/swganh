@@ -12,10 +12,12 @@
 #include "anh/database/database_manager_interface.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/plugin/plugin_manager.h"
+#include "anh/service/datastore.h"
 #include "anh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
+using namespace anh;
 using namespace anh::app;
 using namespace boost::program_options;
 using namespace std;
@@ -67,25 +69,30 @@ SwganhApp::SwganhApp() {
 
 void SwganhApp::Initialize(int argc, char* argv[]) {
     // Load the configuration    
-    LoadAppConfig_(argc, argv, app_config_);
+    LoadAppConfig_(argc, argv);
+
+    auto app_config = kernel_->GetAppConfig();
 
     // Initialize kernel resources    
     kernel_->GetDatabaseManager()->registerStorageType(
         "galaxy_manager",
-        app_config_.galaxy_manager_db.schema,
-        app_config_.galaxy_manager_db.host,
-        app_config_.galaxy_manager_db.username,
-        app_config_.galaxy_manager_db.password);
+        app_config.galaxy_manager_db.schema,
+        app_config.galaxy_manager_db.host,
+        app_config.galaxy_manager_db.username,
+        app_config.galaxy_manager_db.password);
 
     kernel_->GetDatabaseManager()->registerStorageType(
         "galaxy",
-        app_config_.galaxy_db.schema,
-        app_config_.galaxy_db.host,
-        app_config_.galaxy_db.username,
-        app_config_.galaxy_db.password);
-
+        app_config.galaxy_db.schema,
+        app_config.galaxy_db.host,
+        app_config.galaxy_db.username,
+        app_config.galaxy_db.password);
+    
+    auto data_store = make_shared<service::Datastore>(kernel_->GetDatabaseManager()->getConnection("galaxy_manager"));
+    service_directory_ = make_shared<service::ServiceDirectory>(data_store, kernel_->GetEventDispatcher(), app_config.galaxy_name, kernel_->GetVersion().ToString(), true);
+    
     // Load the plugin configuration.
-    LoadPlugins_(app_config_.plugins);
+    LoadPlugins_(app_config.plugins);
 
     kernel_->GetServiceManager()->Initialize(service_config_);
 
@@ -123,8 +130,8 @@ std::shared_ptr<KernelInterface> SwganhApp::GetAppKernel() {
     return kernel_;
 }
 
-void SwganhApp::LoadAppConfig_(int argc, char* argv[], AppConfig& app_config) {
-    auto config_description = app_config.BuildConfigDescription();
+void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
+    auto config_description = kernel_->GetAppConfig().BuildConfigDescription();
 
     variables_map vm;
     store(parse_command_line(argc, argv, config_description), vm);
@@ -142,7 +149,8 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[], AppConfig& app_config) {
     }
 
     notify(vm);
-    
+    config_file.close();
+
     if (vm.count("help")) {
         std::cout << config_description << "\n\n";
         exit(0);
@@ -158,11 +166,12 @@ void SwganhApp::LoadServiceConfig_(ServiceConfig& service_config) {
 
     try {
         store(parse_config_file(config_file, service_config.first, true), service_config.second);
-    } catch(...) {
-        throw runtime_error("Unable to parse the configuration file at: config/swganh.cfg");
+    } catch(const std::exception& e) {
+        throw runtime_error("Unable to parse the configuration file at: config/swganh.cfg: " + std::string(e.what()));
     }
 
     notify(service_config.second);
+    config_file.close();
 }
 
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
@@ -171,7 +180,7 @@ void SwganhApp::LoadPlugins_(vector<string> plugins) {
     auto plugin_manager = kernel_->GetPluginManager();
 
     if (plugins.empty()) {
-        plugin_manager->LoadAllPlugins(app_config_.plugin_directory);
+        plugin_manager->LoadAllPlugins(kernel_->GetAppConfig().plugin_directory);
     } else {
         for_each(plugins.begin(), plugins.end(), [plugin_manager] (const string& plugin) {
             plugin_manager->LoadPlugin(plugin);

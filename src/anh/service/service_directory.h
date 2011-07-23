@@ -55,7 +55,7 @@ public:
 */
 class ServiceDirectory : public ServiceDirectoryInterface{
 public:
-    explicit ServiceDirectory(std::shared_ptr<DatastoreInterface> datastore, 
+    ServiceDirectory(std::shared_ptr<DatastoreInterface> datastore, 
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
     ServiceDirectory(std::shared_ptr<DatastoreInterface> datastore, 
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher
