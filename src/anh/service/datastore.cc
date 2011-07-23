@@ -45,27 +45,34 @@ Datastore::Datastore(shared_ptr<sql::Connection> connection)
 Datastore::~Datastore() {}
 
 std::shared_ptr<Galaxy> Datastore::findGalaxyByName(const std::string& name) const {
-    std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "SELECT * FROM galaxy "
-        "WHERE name = ? LIMIT 1"));
+    shared_ptr<Galaxy> galaxy = nullptr;
 
-    statement->setString(1, name);
+    try {
+        std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
+            "SELECT * FROM galaxy "
+            "WHERE name = ? LIMIT 1"));
 
-    std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+        statement->setString(1, name);
 
-    // if no results are found return a nullptr
-    if (!result->next()) {
-        return nullptr;
+        std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+
+        // if no results are found return a nullptr
+        if (!result->next()) {
+            return nullptr;
+        }
+
+        galaxy = make_shared<Galaxy>(
+            result->getUInt("id"),
+            result->getUInt("primary_id"),
+            result->getString("name"),
+            result->getString("version"),
+            static_cast<Galaxy::StatusType>(result->getInt("status")),
+            result->getString("created_at"),
+            result->getString("updated_at"));
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-
-    auto galaxy = make_shared<Galaxy>(
-        result->getUInt("id"),
-        result->getUInt("primary_id"),
-        result->getString("name"),
-        result->getString("version"),
-        static_cast<Galaxy::StatusType>(result->getInt("status")),
-        result->getString("created_at"),
-        result->getString("updated_at"));
 
     return galaxy;
 }
@@ -74,99 +81,112 @@ std::shared_ptr<Galaxy> Datastore::createGalaxy(
     const std::string& name,
     const std::string& version) const 
 {
-    std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "INSERT INTO galaxy(name, version, created_at, updated_at) "
-        "VALUES(?, ?, NOW(), NOW())"));
+    shared_ptr<Galaxy> galaxy = nullptr;
 
-    statement->setString(1, name);
-    statement->setString(2, version);
+    try {
+        std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
+            "INSERT INTO galaxy(name, version, created_at, updated_at) "
+            "VALUES(?, ?, NOW(), NOW())"));
 
-    // if the statement fails to service return a nullptr
-    if (statement->executeUpdate() <= 0) {
-        return nullptr;
+        statement->setString(1, name);
+        statement->setString(2, version);
+
+        // if the statement fails to service return a nullptr
+        if (statement->executeUpdate() <= 0) {
+            return nullptr;
+        }
+
+        statement.reset(connection_->prepareStatement(
+            "SELECT * FROM galaxy WHERE id = LAST_INSERT_ID()"));
+        std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+
+        if (!result->next()) {
+            return nullptr;
+        }
+
+        galaxy = make_shared<Galaxy>(
+            result->getUInt("id"),
+            result->getUInt("primary_id"),
+            result->getString("name"),    
+            result->getString("version"),
+            static_cast<Galaxy::StatusType>(result->getInt("status")),
+            result->getString("created_at"),
+            result->getString("updated_at"));
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-
-    statement.reset(connection_->prepareStatement(
-        "SELECT * FROM galaxy WHERE id = LAST_INSERT_ID()"));
-    std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
-
-    if (!result->next()) {
-        return nullptr;
-    }
-
-    auto galaxy = make_shared<Galaxy>(
-        result->getUInt("id"),
-        result->getUInt("primary_id"),
-        result->getString("name"),    
-        result->getString("version"),
-        static_cast<Galaxy::StatusType>(result->getInt("status")),
-        result->getString("created_at"),
-        result->getString("updated_at"));
 
     return galaxy;
 }
 
 std::shared_ptr<Service> Datastore::createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const {
+    shared_ptr<Service> service = nullptr;
 
-    std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "INSERT INTO service (galaxy_id, "
-                             "name, "
-                             "type, "
-                             "version, "
-                             "address, "
-                             "tcp_port, "
-                             "udp_port, "
-                             "ping_port, "
-                             "status, "
-                             "last_pulse, "
-                             "created_at, "
-                             "updated_at) "
-        "VALUES(?, ?, ?, ?, INET_ATON(?), ?, ?, ?, ?, NOW(), NOW(), NOW())"));
+    try {
+        std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
+            "INSERT INTO service (galaxy_id, "
+                                 "name, "
+                                 "type, "
+                                 "version, "
+                                 "address, "
+                                 "tcp_port, "
+                                 "udp_port, "
+                                 "ping_port, "
+                                 "status, "
+                                 "last_pulse, "
+                                 "created_at, "
+                                 "updated_at) "
+            "VALUES(?, ?, ?, ?, INET_ATON(?), ?, ?, ?, ?, NOW(), NOW(), NOW())"));
 
-    uint32_t galaxy_id = 0;
-    if (galaxy) {
-        galaxy_id = galaxy->id();
+        uint32_t galaxy_id = 0;
+        if (galaxy) {
+            galaxy_id = galaxy->id();
+        }
+
+        statement->setInt(1, galaxy_id);
+        statement->setString(2, name);
+        statement->setString(3, type);
+        statement->setString(4, version);
+        statement->setString(5, address);
+        statement->setUInt(6, static_cast<uint32_t>(tcp_port));
+        statement->setUInt(7, static_cast<uint32_t>(udp_port));
+        statement->setUInt(8, static_cast<uint32_t>(ping_port));
+        statement->setInt(9, static_cast<int32_t>(-1));
+        
+        if (! (statement->executeUpdate() > 0)) {
+            return nullptr;
+        }
+        
+        statement.reset(connection_->prepareStatement(
+            "SELECT id, galaxy_id, name, type, version, INET_NTOA(address) as address_string, tcp_port, udp_port, ping_port, status, CONVERT(TIMESTAMP(last_pulse), CHAR) as last_pulse_timestamp "
+            "FROM service WHERE id = LAST_INSERT_ID()"));
+        std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+        
+        if (!result->next()) {
+            return nullptr;
+        }
+    
+        service = make_shared<Service>(
+            result->getUInt("id"),
+            result->getUInt("galaxy_id"),
+            result->getString("name"),
+            result->getString("type"),
+            result->getString("version"),
+            result->getString("address_string"),
+            result->getUInt("tcp_port"),
+            result->getUInt("udp_port"),
+            result->getUInt("ping_port")
+            );
+        
+        service->status(result->getInt("status"));
+        service->last_pulse(result->getString("last_pulse_timestamp"));
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
-    statement->setInt(1, galaxy_id);
-    statement->setString(2, name);
-    statement->setString(3, type);
-    statement->setString(4, version);
-    statement->setString(5, address);
-    statement->setUInt(6, static_cast<uint32_t>(tcp_port));
-    statement->setUInt(7, static_cast<uint32_t>(udp_port));
-    statement->setUInt(8, static_cast<uint32_t>(ping_port));
-    statement->setInt(9, static_cast<int32_t>(-1));
-    
-    if (! (statement->executeUpdate() > 0)) {
-        return nullptr;
-    }
-    
-    statement.reset(connection_->prepareStatement(
-        "SELECT id, galaxy_id, name, type, version, INET_NTOA(address) as address_string, tcp_port, udp_port, ping_port, status, CONVERT(TIMESTAMP(last_pulse), CHAR) as last_pulse_timestamp "
-        "FROM service WHERE id = LAST_INSERT_ID()"));
-    std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
-    
-    if (!result->next()) {
-        return nullptr;
-    }
-    
-    auto proc = make_shared<Service>(
-        result->getUInt("id"),
-        result->getUInt("galaxy_id"),
-        result->getString("name"),
-        result->getString("type"),
-        result->getString("version"),
-        result->getString("address_string"),
-        result->getUInt("tcp_port"),
-        result->getUInt("udp_port"),
-        result->getUInt("ping_port")
-        );
-    
-    proc->status(result->getInt("status"));
-    proc->last_pulse(result->getString("last_pulse_timestamp"));
-
-    return proc;
+    return service;
 }
 
 std::string Datastore::getGalaxyTimestamp(std::shared_ptr<Galaxy> galaxy) const {
@@ -180,107 +200,136 @@ std::string Datastore::getGalaxyTimestamp(std::shared_ptr<Galaxy> galaxy) const 
 }
 
 void Datastore::saveService(std::shared_ptr<Service> service) const {
-    std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "UPDATE service SET address = INET_ATON(?), tcp_port = ?, udp_port = ?, ping_port = ?, status = ?, last_pulse = ? WHERE id = ?"));
-    
-    statement->setString(1, service->address());
-    statement->setUInt(2, service->tcp_port());
-    statement->setUInt(3, service->udp_port());
-    statement->setUInt(4, service->ping_port());
-    statement->setInt(5, service->status());
-    statement->setString(6, prepareTimestampForStorage(service->last_pulse()));
-    statement->setUInt(7, service->id());
-    statement->executeUpdate();
+    try {
+        std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
+            "UPDATE service SET address = INET_ATON(?), tcp_port = ?, udp_port = ?, ping_port = ?, status = ?, last_pulse = ? WHERE id = ?"));
+        
+        statement->setString(1, service->address());
+        statement->setUInt(2, service->tcp_port());
+        statement->setUInt(3, service->udp_port());
+        statement->setUInt(4, service->ping_port());
+        statement->setInt(5, service->status());
+        statement->setString(6, prepareTimestampForStorage(service->last_pulse()));
+        statement->setUInt(7, service->id());
+        statement->executeUpdate();
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
 
 std::shared_ptr<Galaxy> Datastore::findGalaxyById(uint32_t id) const {
-     std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "SELECT * FROM galaxy "
-        "WHERE id = ? LIMIT 1"));
+    std::shared_ptr<Galaxy> galaxy = nullptr;
 
-    statement->setUInt(1, id);
+    try {
+        std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
+            "SELECT * FROM galaxy "
+            "WHERE id = ? LIMIT 1"));
 
-    std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+        statement->setUInt(1, id);
 
-    // if the statement fails to service return a nullptr
-    if (!result->next()) {
-        return nullptr;
-    }
+        std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
 
-    auto galaxy = make_shared<Galaxy>(
-        result->getUInt("id"),
-        result->getUInt("primary_id"),
-        result->getString("name"),
-        result->getString("version"),
-        static_cast<Galaxy::StatusType>(result->getInt("status")),
-        result->getString("created_at"),
-        result->getString("updated_at"));
+        // if the statement fails to service return a nullptr
+        if (!result->next()) {
+            return nullptr;
+        }
 
-    return galaxy;
-}
-
-std::shared_ptr<Service> Datastore::findServiceById(uint32_t id) const {
-     std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "SELECT * FROM service "
-        "WHERE id = ? LIMIT 1"));
-
-    statement->setUInt(1, id);
-
-    std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
-
-    // if the statement fails to service return a nullptr
-    if (!result->next()) {
-        return nullptr;
-    }
-        
-    auto proc = make_shared<Service>(
-        result->getUInt("id"),
-        result->getUInt("galaxy_id"),
-        result->getString("name"),
-        result->getString("type"),
-        result->getString("version"),
-        result->getString("address_string"),
-        result->getUInt("tcp_port"),
-        result->getUInt("udp_port"),
-        result->getUInt("ping_port")
-        );
-
-    proc->status(result->getInt("status"));
-    proc->last_pulse(result->getString("last_pulse_timestamp"));
-
-    return proc;
-}
-
-bool Datastore::deleteServiceById(uint32_t id) const {
-    std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "DELETE FROM service WHERE id = ? "
-    ));
-
-    statement->setUInt(1, id);
-
-    return statement->executeUpdate() > 0;
-}
-
-list<Galaxy> Datastore::getGalaxyList() const {
-    std::unique_ptr<sql::Statement> statement(connection_->createStatement());
-    std::unique_ptr<sql::ResultSet> result(statement->executeQuery(
-        "SELECT * FROM galaxy ORDER BY galaxy.name"));
-
-    // Loop through the results and create a map entry for each.
-    std::list<Galaxy> galaxy_list;
-    uint32_t id = 0;
-
-    while (result->next()) {
-        id = result->getUInt("id");
-
-        galaxy_list.push_back(Galaxy(
-            id,
+        galaxy = make_shared<Galaxy>(
+            result->getUInt("id"),
             result->getUInt("primary_id"),
             result->getString("name"),
             result->getString("version"),
             static_cast<Galaxy::StatusType>(result->getInt("status")),
             result->getString("created_at"),
-            result->getString("updated_at")));
+            result->getString("updated_at"));
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return galaxy;
+}
+
+std::shared_ptr<Service> Datastore::findServiceById(uint32_t id) const {
+    shared_ptr<Service> service = nullptr;
+
+    try {
+        std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
+            "SELECT * FROM service "
+            "WHERE id = ? LIMIT 1"));
+
+        statement->setUInt(1, id);
+
+        std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+
+        // if the statement fails to service return a nullptr
+        if (result->next()) {                
+            service = make_shared<Service>(
+                result->getUInt("id"),
+                result->getUInt("galaxy_id"),
+                result->getString("name"),
+                result->getString("type"),
+                result->getString("version"),
+                result->getString("address_string"),
+                result->getUInt("tcp_port"),
+                result->getUInt("udp_port"),
+                result->getUInt("ping_port")
+                );
+
+            service->status(result->getInt("status"));
+            service->last_pulse(result->getString("last_pulse_timestamp"));
+        }
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return service;
+}
+
+bool Datastore::deleteServiceById(uint32_t id) const {
+    bool deleted = false;
+
+    try {
+        std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
+            "DELETE FROM service WHERE id = ? "
+        ));
+
+        statement->setUInt(1, id);
+
+        deleted = statement->executeUpdate() > 0;
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return deleted;
+}
+
+list<Galaxy> Datastore::getGalaxyList() const {
+    std::list<Galaxy> galaxy_list;
+    
+    try {
+        std::unique_ptr<sql::Statement> statement(connection_->createStatement());
+        std::unique_ptr<sql::ResultSet> result(statement->executeQuery(
+            "SELECT * FROM galaxy ORDER BY galaxy.name"));
+
+        // Loop through the results and create a map entry for each.
+        while (result->next()) {
+            galaxy_list.push_back(Galaxy(
+                result->getUInt("id"),
+                result->getUInt("primary_id"),
+                result->getString("name"),
+                result->getString("version"),
+                static_cast<Galaxy::StatusType>(result->getInt("status")),
+                result->getString("created_at"),
+                result->getString("updated_at")));
+        }
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return galaxy_list;
@@ -300,7 +349,7 @@ list<Service> Datastore::getServiceList(uint32_t galaxy_id) const {
                    
         // Loop through the results and create a map entry for each.
         while (result->next()) {
-            Service proc(
+            Service service(
                 result->getUInt("id"),
                 result->getUInt("galaxy_id"),
                 result->getString("name"),
@@ -310,10 +359,10 @@ list<Service> Datastore::getServiceList(uint32_t galaxy_id) const {
                 result->getUInt("tcp_port"),
                 result->getUInt("udp_port"),
                 result->getUInt("ping_port"));
-            proc.status(result->getInt("status"));
-            proc.last_pulse(result->getString("last_pulse_timestamp"));
+            service.status(result->getInt("status"));
+            service.last_pulse(result->getString("last_pulse_timestamp"));
             
-            service_list.push_back(std::move(proc));
+            service_list.push_back(move(service));
         }
     } catch(sql::SQLException &e) {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
