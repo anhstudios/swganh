@@ -58,6 +58,7 @@ public:
     std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info);
 private:
     // helpers
+    std::string parseAppearance_(std::string appearance_data);
     std::string parseBio_(const std::string& bio);
     std::string parseHair_(const std::string& hair_model, const std::string& hair_customization);
     std::string setCharacterCreateErrorCode_(uint32_t error_id);

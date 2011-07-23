@@ -88,14 +88,7 @@ void CharacterService::onUpdate() {
 void CharacterService::subscribe() {
 }
 
-void CharacterService::DescribeConfigOptions(boost::program_options::options_description& description) {
-    description.add_options()
-        ("db.swg_manager.schema", boost::program_options::value<std::string>(&swg_schema_),
-            "The schema that is used to manage the swg simulation")
-        ("db.galaxy_manager.schema", boost::program_options::value<std::string>(&galaxy_schema_),
-            "The schema that is used to manage the galaxy")
-    ;
-}
+void CharacterService::DescribeConfigOptions(boost::program_options::options_description& description) {}
 
 vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account_id) {
     vector<CharacterData> characters;
