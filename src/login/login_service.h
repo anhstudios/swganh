@@ -108,6 +108,7 @@ private:
     typedef std::map<uint32_t, std::shared_ptr<LoginClient>> ClientMap;
     ClientMap clients_;
 
+    std::string listen_address_;
     uint16_t listen_port_;
 };
 

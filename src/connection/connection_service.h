@@ -67,6 +67,7 @@ private:
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
     
+    std::string listen_address_;
     uint16_t listen_port_;
 };
 
