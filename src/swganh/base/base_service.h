@@ -55,6 +55,7 @@ public:
     bool IsRunning() const;
 
     std::shared_ptr<anh::app::KernelInterface> kernel();
+    std::shared_ptr<anh::service::ServiceDirectory> service_directory();
 
     /*
     *  @brief used to subscribe to events on a serivce

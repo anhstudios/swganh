@@ -75,6 +75,10 @@ shared_ptr<KernelInterface> BaseService::kernel() {
     return kernel_;
 }
 
+shared_ptr<service::ServiceDirectory> BaseService::service_directory() {
+    return service_directory_;
+}
+
 shared_ptr<EventDispatcherInterface> BaseService::event_dispatcher() {
     return kernel_->GetEventDispatcher();
 }
