@@ -88,7 +88,7 @@ void ConnectionService::DescribeConfigOptions(boost::program_options::options_de
     description.add_options()
         ("service.connection.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
             "The port the connection service will listen for incoming client connections on")
-        ("service.connection.address", boost::program_options::value<uint16_t>(&listen_address_),
+        ("service.connection.address", boost::program_options::value<string>(&listen_address_),
             "The public address the connection service will listen for incoming client connections on")
     ;
 }

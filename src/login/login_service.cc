@@ -89,7 +89,7 @@ void LoginService::DescribeConfigOptions(boost::program_options::options_descrip
     description.add_options()
         ("service.login.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
             "The port the login service will listen for incoming client connections on")
-        ("service.login.address", boost::program_options::value<uint16_t>(&listen_address_),
+        ("service.login.address", boost::program_options::value<string>(&listen_address_),
             "The public address the login service will listen for incoming client connections on")
     ;
 }
