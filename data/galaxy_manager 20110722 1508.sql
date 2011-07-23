@@ -57,8 +57,7 @@ CREATE TABLE `account` (
 --
 
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` (`id`,`username`,`username_canonical`,`email`,`email_canonical`,`enabled`,`algorithm`,`salt`,`password`,`created_at`,`updated_at`,`last_login`,`locked`,`expired`,`expires_at`,`confirmation_token`,`password_requested_at`,`roles`,`credentials_expired`,`credentials_expire_at`) VALUES 
- (1,'Kronos','kronos','kronos@swganh.org','kronos@swganh.org',1,'sha512','1iv1y8vzz3dw48w0cwwwk4s8gsscs0g','e63bb34b0b1ece3e78e787c4858b620a73ac9936ccaca62ca7f4dabdbdd004808aae95cc34b395afa8f53470be616eb4d8e12101c1119bbb947695fd8489893a','2011-07-19 21:01:18','2011-07-19 21:01:18',NULL,0,0,NULL,'4n0jl2ajqzs4os4o4wkwock0cgg04coogk8g00o80sgcc04o4g',NULL,'a:0:{}',0,NULL);
+INSERT INTO `account` VALUES  (1,'Kronos','kronos','kronos@swganh.org','kronos@swganh.org',1,'sha512','1iv1y8vzz3dw48w0cwwwk4s8gsscs0g','e63bb34b0b1ece3e78e787c4858b620a73ac9936ccaca62ca7f4dabdbdd004808aae95cc34b395afa8f53470be616eb4d8e12101c1119bbb947695fd8489893a','2011-07-19 21:01:18','2011-07-19 21:01:18',NULL,0,0,NULL,'4n0jl2ajqzs4os4o4wkwock0cgg04coogk8g00o80sgcc04o4g',NULL,'a:0:{}',0,NULL);
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 
 
@@ -77,19 +76,23 @@ CREATE TABLE `appearance` (
   `customization_data` tinyblob,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_AAB3829081257D5D` (`entity_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `appearance`
 --
 
 /*!40000 ALTER TABLE `appearance` DISABLE KEYS */;
-INSERT INTO `appearance` (`id`,`entity_id`,`baseModel`,`scale`,`gender`,`species`,`customization_data`) VALUES 
- (1,1001,'object/creature/player/human_male.iff',1.1,0x01,'human',NULL),
+INSERT INTO `appearance` VALUES  (1,1001,'object/creature/player/human_male.iff',1.1,0x01,'human',NULL),
  (2,1002,'object/creature/player/human_male.iff',1.021,0x01,'human',NULL),
  (6,1012,'object/creature/player/moncal_male.iff',0.9281601905822754,0x01,'moncal',0x011D178918FF011CE61BFF0105FF011AFF0119860DE609FF0112FF011334100C0FFF01141011FF010EEC03450B480CFF0106FF0108B815FF0116B3044607FF010A6D3B02010D26FF01FF03),
  (7,1022,'object/creature/player/human_male.iff',1.0770915746688843,0x01,'human',0x012317FF0118841C8C1BFF0105021A8319FF010DFF0109FF0212DC13FF01203D102721FF010FFF01141B11820EE203FF010BFF010CFF01063508FF01158316FF0104D407500AFF01230A250424FF0101171DFF011F051EFF01FF03),
- (8,1032,'object/creature/player/human_male.iff',1.0614397525787354,0x01,'human',0x012317FF0118821CFF011BE305FF011AFF0119DF0D6909FF0112FF0113BA20FF0110FF01217C0F5C140111FF010EFF0103F80BBB0C2306DF08FF0115FF0116260461075B0AFF01230525FF0124FF0101071DFF011F131E02FF03);
+ (8,1032,'object/creature/player/human_male.iff',1.0614397525787354,0x01,'human',0x012317FF0118821CFF011BE305FF011AFF0119DF0D6909FF0112FF0113BA20FF0110FF01217C0F5C140111FF010EFF0103F80BBB0C2306DF08FF0115FF0116260461075B0AFF01230525FF0124FF0101071DFF011F131E02FF03),
+ (9,1042,'object/creature/player/human_male.iff',1.064400553703308,0x01,'human',0x012317FF0118721CE71BFF0105FF011ACC19FF010D7909FF01125913FF0120FF0110FF0121530F0F141B11FF010EE2038E0B330CFF0106FF01088B15FF01164104E407FF010A282308250324FF0101021DFF011F0B1E03FF03),
+ (10,1052,'object/creature/player/trandoshan_male.iff',1.1770472526550293,0x01,'trandoshan',0x01161CFF011BD005FF010DD709FF01121913FF0110FF010F26140D11D50EFF0138FF0103390BFF010CF706FF01082C043F07FF010A250104FF03),
+ (11,1062,'object/creature/player/bothan_male.iff',0.800078272819519,0x01,'bothan',0x011C17FF0118C41CFF011B1305FF011AFF0119BB0D2309FF01127E13FF0110BF0FFF01142E118F0E5303F00BFF010CFF01062308FF0115BA16FF01048407950AFF01010C22FF01FF03),
+ (12,1072,'object/creature/player/ithorian_male.iff',0.9865956902503967,0x01,'ithorian',0x012233FF0134BC1781397418FF013AFF011CF11BFF0105FF010D5B6E0609FF01302D6B0912FF01138E700220BA21FF01141C11660E1803700BFF010CFF01063208FF01157516FF01044707FF010AFF02321B1D0DFF03),
+ (13,1082,'object/creature/player/sullustan_male.iff',1.0516026020050049,0x01,'sullustan',0x01263EFF013F5617FF0139FF0118013AFF011C571BFF014EFF01506D05521AFF0119200D5E09FF0112FF01139B20FF01106921300FFF0128FF01274D142D118142FF0103FF0143FF010BFF0115FF0116EA0476073B0AFF013C26631124FF01650CFF03);
 /*!40000 ALTER TABLE `appearance` ENABLE KEYS */;
 
 
@@ -111,19 +114,23 @@ CREATE TABLE `characters` (
   `archived` bit(1) DEFAULT b'0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_3A29410E81257D5D` (`entity_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `characters`
 --
 
 /*!40000 ALTER TABLE `characters` DISABLE KEYS */;
-INSERT INTO `characters` (`id`,`entity_id`,`createdAt`,`updatedAt`,`deletedAt`,`firstName`,`lastName`,`jediState`,`birthDate`,`archived`) VALUES 
- (1,1001,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00','Kronos','SWGANH',2,'0000-00-00 00:00:00',0x00),
+INSERT INTO `characters` VALUES  (1,1001,'0000-00-00 00:00:00','0000-00-00 00:00:00','0000-00-00 00:00:00','Kronos','SWGANH',2,'0000-00-00 00:00:00',0x00),
  (2,1002,'0000-00-00 00:00:00','0000-00-00 00:00:00','2011-07-21 23:40:48','Kronos2','Kronos',0,'0000-00-00 00:00:00',0x01),
  (10,1012,'2011-07-22 14:02:58','2011-07-22 14:02:58',NULL,'Icilavis','Etsegisu',0,'2011-07-22 14:02:58',0x00),
  (11,1022,'2011-07-22 14:12:33','2011-07-22 14:12:33',NULL,'Poekeu','Sifa',0,'2011-07-22 14:12:33',0x00),
- (12,1032,'2011-07-22 14:18:29','2011-07-22 14:18:29',NULL,'Esyido','Oenad',0,'2011-07-22 14:18:29',0x00);
+ (12,1032,'2011-07-22 14:18:29','2011-07-22 14:18:29',NULL,'Esyido','Oenad',0,'2011-07-22 14:18:29',0x00),
+ (16,1042,'2011-07-23 11:20:48','2011-07-23 11:20:48',NULL,'Ababi','Pomik',0,'2011-07-23 11:20:48',0x00),
+ (17,1052,'2011-07-23 11:27:29','2011-07-23 11:27:29','2011-07-23 11:29:46','Ssisru','Inowiss',0,'2011-07-23 11:27:29',0x01),
+ (18,1062,'2011-07-23 11:30:20','2011-07-23 11:30:20',NULL,'Etsid','Hiwhaegr\'tvo',0,'2011-07-23 11:30:20',0x00),
+ (19,1072,'2011-07-23 11:34:05','2011-07-23 11:34:05',NULL,'Auliogri','Deilio',0,'2011-07-23 11:34:05',0x00),
+ (20,1082,'2011-07-23 11:53:22','2011-07-23 11:53:22',NULL,'Mowee','Itsatrap',0,'2011-07-23 11:53:22',0x00);
 /*!40000 ALTER TABLE `characters` ENABLE KEYS */;
 
 
@@ -158,19 +165,23 @@ CREATE TABLE `entity` (
   `parent_id` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_E2844685DA0FB8` (`template_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1033 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1083 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `entity`
 --
 
 /*!40000 ALTER TABLE `entity` DISABLE KEYS */;
-INSERT INTO `entity` (`id`,`template_id`,`parent_id`) VALUES 
- (1001,NULL,0),
+INSERT INTO `entity` VALUES  (1001,NULL,0),
  (1002,NULL,0),
  (1012,NULL,0),
  (1022,NULL,0),
- (1032,NULL,0);
+ (1032,NULL,0),
+ (1042,NULL,0),
+ (1052,NULL,0),
+ (1062,NULL,0),
+ (1072,NULL,0),
+ (1082,NULL,0);
 /*!40000 ALTER TABLE `entity` ENABLE KEYS */;
 
 
@@ -204,19 +215,20 @@ CREATE TABLE `galaxy` (
   `primary_id` int(11) DEFAULT NULL,
   `name` varchar(100) NOT NULL,
   `version` varchar(100) NOT NULL,
-  `status` int(11) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_F6BB137621DE0C6C` (`primary_id`),
   CONSTRAINT `galaxy_ibfk_1` FOREIGN KEY (`primary_id`) REFERENCES `service` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `galaxy`
 --
 
 /*!40000 ALTER TABLE `galaxy` DISABLE KEYS */;
+INSERT INTO `galaxy` VALUES  (1,NULL,'Wanderhome','',0,'2011-07-23 11:17:08','2011-07-23 11:17:08');
 /*!40000 ALTER TABLE `galaxy` ENABLE KEYS */;
 
 
@@ -235,8 +247,7 @@ CREATE TABLE `name_developer` (
 --
 
 /*!40000 ALTER TABLE `name_developer` DISABLE KEYS */;
-INSERT INTO `name_developer` (`id`,`name`) VALUES 
- (1,'snow'),
+INSERT INTO `name_developer` VALUES  (1,'snow'),
  (2,'htx'),
  (3,'wookiee'),
  (4,'jack'),
@@ -271,8 +282,7 @@ CREATE TABLE `name_profane` (
 --
 
 /*!40000 ALTER TABLE `name_profane` DISABLE KEYS */;
-INSERT INTO `name_profane` (`id`,`name`) VALUES 
- (1,'anal'),
+INSERT INTO `name_profane` VALUES  (1,'anal'),
  (4,'ass'),
  (5,'asshole'),
  (6,'assmunch'),
@@ -367,8 +377,7 @@ CREATE TABLE `name_reserved` (
 --
 
 /*!40000 ALTER TABLE `name_reserved` DISABLE KEYS */;
-INSERT INTO `name_reserved` (`id`,`name`) VALUES 
- (1,'Luke'),
+INSERT INTO `name_reserved` VALUES  (1,'Luke'),
  (2,'Darth'),
  (3,'Vader'),
  (4,'Leia'),
@@ -396,8 +405,7 @@ CREATE TABLE `namegen_firstname` (
 --
 
 /*!40000 ALTER TABLE `namegen_firstname` DISABLE KEYS */;
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
- ('A\'a',0,0),
+INSERT INTO `namegen_firstname` VALUES  ('A\'a',0,0),
  ('A\'ak',6,0),
  ('A\'alom',6,1),
  ('A\'Am',6,0),
@@ -3943,10 +3951,9 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Aeliecoupei',49,1),
  ('Aeliemia',33,0),
  ('Aelierievae',7,1),
- ('Aeliessa',49,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
- ('Aelif',49,0),
- ('Aelifai',3,1),
+ ('Aeliessa',49,1),
+ ('Aelif',49,0);
+INSERT INTO `namegen_firstname` VALUES  ('Aelifai',3,1),
  ('Aelig',0,0),
  ('Aelih',49,1),
  ('Aeliher',49,1),
@@ -7468,12 +7475,11 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Ailpomalae',49,0),
  ('Ailporea',33,1),
  ('Ailubaeg',33,1),
- ('Ailuc',7,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Ailuc',7,0),
  ('Ailybo',7,1),
  ('Ailyr',49,1),
- ('Ailyt',49,1),
- ('Ailytam',49,0),
+ ('Ailyt',49,1);
+INSERT INTO `namegen_firstname` VALUES  ('Ailytam',49,0),
  ('Aima',33,1),
  ('Aimab',7,1),
  ('Aimac',33,0),
@@ -10995,14 +11001,13 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Aodwelo',5,0),
  ('Aodyniati',7,0),
  ('Aof-eveleu',3,1),
- ('Aofaby',3,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Aofaby',3,1),
  ('Aofaf',49,0),
  ('Aofai',7,0),
  ('Aofairai',49,1),
  ('Aofaisloof',49,0),
- ('Aofak',7,1),
- ('Aofao',7,0),
+ ('Aofak',7,1);
+INSERT INTO `namegen_firstname` VALUES  ('Aofao',7,0),
  ('Aofap',33,0),
  ('Aofavafik',1,0),
  ('Aofaw',0,1),
@@ -14546,16 +14551,15 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Atholva',6,1),
  ('Athonifi',5,1),
  ('Athora',6,0),
- ('Athosh',0,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Athosh',0,1),
  ('Athosque',6,0),
  ('Athoug',0,0),
  ('Athowa',5,0),
  ('Athud-ef',6,0),
  ('Athy',49,0),
  ('Athysha',5,0),
- ('Ati\'om',6,1),
- ('Atiacos',0,1),
+ ('Ati\'om',6,1);
+INSERT INTO `namegen_firstname` VALUES  ('Atiacos',0,1),
  ('Atiafea',49,0),
  ('Atiakoirai',33,0),
  ('Atiapi',33,1),
@@ -18097,8 +18101,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Bemyymoc',4,1),
  ('Benadarla',5,0),
  ('Benan',4,0),
- ('Benantabus',4,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Benantabus',4,0),
  ('Benao',33,1),
  ('Benarr',4,0),
  ('Benaz',0,1),
@@ -18107,8 +18110,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Benihaca',6,1),
  ('Benik',49,1),
  ('Benikont',1,0),
- ('Benily',6,0),
- ('Benoam',5,0),
+ ('Benily',6,0);
+INSERT INTO `namegen_firstname` VALUES  ('Benoam',5,0),
  ('Benobaccali',4,1),
  ('Benock',3,0),
  ('Benoido',0,0),
@@ -21629,8 +21632,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Cenarcoh',6,0),
  ('Cenarrani',4,1),
  ('Cenasc',49,1),
- ('Cenee',1,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Cenee',1,0),
  ('Ceneew',33,0),
  ('Cenei',49,1),
  ('Ceneim',33,1),
@@ -21641,8 +21643,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Cenid',0,0),
  ('Cenie',33,1),
  ('Cenisrime',6,0),
- ('Ceniwi',0,0),
- ('Cenock',3,0),
+ ('Ceniwi',0,0);
+INSERT INTO `namegen_firstname` VALUES  ('Cenock',3,0),
  ('Cenoh',5,0),
  ('Cenoi',33,0),
  ('Cenoigirx',0,0),
@@ -25136,8 +25138,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Deche',5,1),
  ('Dechoe',0,1),
  ('Dechre',6,0),
- ('Decik',1,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Decik',1,1),
  ('Decisrees',5,1),
  ('Deciw',0,1),
  ('Declateo',3,1),
@@ -25150,8 +25151,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Decud',0,1),
  ('Dedac',3,1),
  ('Dedade',6,1),
- ('Dedae',33,1),
- ('Dedanom',0,0),
+ ('Dedae',33,1);
+INSERT INTO `namegen_firstname` VALUES  ('Dedanom',0,0),
  ('Dedeodwea',0,1),
  ('Dedi',3,1),
  ('Dedlaf',3,0),
@@ -28667,8 +28668,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Eanen',33,0),
  ('Eaneo',49,0),
  ('Eanerny',49,0),
- ('Eanesy',49,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Eanesy',49,0),
  ('Eania',33,1),
  ('Eaniag',7,1),
  ('Eaniapeaka',33,0),
@@ -28683,8 +28683,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Eanigae',49,1),
  ('Eanihe',49,1),
  ('Eanijyb',49,1),
- ('Eanin',0,1),
- ('Eaninew',49,1),
+ ('Eanin',0,1);
+INSERT INTO `namegen_firstname` VALUES  ('Eaninew',49,1),
  ('Eanio',33,1),
  ('Eanioglaega',49,0),
  ('Eanipysi',33,0),
@@ -32209,8 +32209,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Eekiv',49,1),
  ('Eekkar',49,1),
  ('Eekke',33,0),
- ('Eekko',1,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Eekko',1,0),
  ('Eekku',7,1),
  ('Eeklaess',49,1),
  ('Eekli',7,0),
@@ -32226,8 +32225,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Eekociap',7,0),
  ('Eekocidwie',49,0),
  ('Eekocie',33,0),
- ('Eekod',7,1),
- ('Eekodauf',0,1),
+ ('Eekod',7,1);
+INSERT INTO `namegen_firstname` VALUES  ('Eekodauf',0,1),
  ('Eekogeo',5,1),
  ('Eekogoperz',7,0),
  ('Eekok',33,1),
@@ -35765,8 +35764,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Eidlo',7,1),
  ('Eido',3,1),
  ('Eidoasxeis',33,1),
- ('Eidoggiort',49,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Eidoggiort',49,1),
  ('Eidokelie',33,1),
  ('Eidoonoenaecc',49,0),
  ('Eidor',49,1),
@@ -35783,8 +35781,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Eidwirni',49,1),
  ('Eidwiro',5,0),
  ('Eidwu',49,0),
- ('Eidy',33,1),
- ('Eidyr',49,1),
+ ('Eidy',33,1);
+INSERT INTO `namegen_firstname` VALUES  ('Eidyr',49,1),
  ('Eidyta',49,1),
  ('Eifa',49,0),
  ('Eifabri',33,1),
@@ -39300,8 +39298,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Eneprigoo',1,0),
  ('Enerac',7,0),
  ('Energi',4,1),
- ('Enerlie',3,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Enerlie',3,0),
  ('Enerou',7,1),
  ('Enerti',3,1),
  ('Enesad',5,0),
@@ -39321,8 +39318,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Enetho',6,0),
  ('Enetid',33,1),
  ('Eneto',49,0),
- ('Eneu',33,1),
- ('Eneuk',0,1),
+ ('Eneu',33,1);
+INSERT INTO `namegen_firstname` VALUES  ('Eneuk',0,1),
  ('Eneum',3,0),
  ('Eneumaewy',3,1),
  ('Eneurek',0,0),
@@ -42899,8 +42896,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Etiaw',33,1),
  ('Etiawie',49,0),
  ('Etibalvola',4,0),
- ('Etibav',3,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Etibav',3,0),
  ('Etibe',0,0),
  ('Etibi',4,0),
  ('Etibifa',1,0),
@@ -42922,8 +42918,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Etiele',3,1),
  ('Etiem',49,0),
  ('Etienostea',33,0),
- ('Etiepir',33,1),
- ('Etiest',7,0),
+ ('Etiepir',33,1);
+INSERT INTO `namegen_firstname` VALUES  ('Etiest',7,0),
  ('Etieviac',49,0),
  ('Etiew',49,1),
  ('Etife',3,1),
@@ -46484,8 +46480,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Fesro',0,0),
  ('Fesroiv',5,0),
  ('Fessag',7,1),
- ('Fessax',0,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Fessax',0,1),
  ('Fesseu',49,1),
  ('Fessori',5,1),
  ('Feste',1,0),
@@ -46509,8 +46504,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Fetik',1,1),
  ('Fetisla',6,1),
  ('Fetitepre',7,0),
- ('Fetith',6,1),
- ('Fetoe',0,0),
+ ('Fetith',6,1);
+INSERT INTO `namegen_firstname` VALUES  ('Fetoe',0,0),
  ('Fetoine',3,1),
  ('Fetokig',5,1),
  ('Fetoneheia',3,0),
@@ -50037,8 +50032,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Giariloot',49,1),
  ('Giarmim',7,1),
  ('Giarvinok',33,0),
- ('Giaryfeok',33,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Giaryfeok',33,0),
  ('Giasaiw',49,1),
  ('Giasar',7,1),
  ('Giaseav',49,0),
@@ -50063,8 +50057,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Giawe',7,1),
  ('Giawerei',7,0),
  ('Giawi',7,0),
- ('Giawieceap',33,1),
- ('Giawo',1,1),
+ ('Giawieceap',33,1);
+INSERT INTO `namegen_firstname` VALUES  ('Giawo',1,1),
  ('Giba-ik',3,0),
  ('Gibac',33,0),
  ('Gibaeh',49,0),
@@ -53630,8 +53624,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Hociaf',49,1),
  ('Hocie',0,0),
  ('Hocik',49,1),
- ('Hocio',5,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Hocio',5,0),
  ('Hocisa',0,0),
  ('Hocki',6,1),
  ('Hoco',6,1),
@@ -53659,8 +53652,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Hoeco',5,0),
  ('Hoefy',49,1),
  ('Hoehack',3,0),
- ('Hoeheb',0,0),
- ('Hoehuv',49,0),
+ ('Hoeheb',0,0);
+INSERT INTO `namegen_firstname` VALUES  ('Hoehuv',49,0),
  ('Hoekok',5,0),
  ('Hoelceo',0,1),
  ('Hoemeah',49,1),
@@ -57178,8 +57171,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Iciti',49,1),
  ('Icitou',1,0),
  ('Icits',2,0),
- ('Icitzi',2,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Icitzi',2,0),
  ('Icitzo',2,1),
  ('Iciv',3,0),
  ('Icivi',49,1),
@@ -57209,8 +57201,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Iclawarrac',4,1),
  ('Icleacosse',0,0),
  ('Iclek',5,1),
- ('Iclemi',0,1),
- ('Iclenysquolp',4,0),
+ ('Iclemi',0,1);
+INSERT INTO `namegen_firstname` VALUES  ('Iclenysquolp',4,0),
  ('Iclerr',6,0),
  ('Iclif',1,1),
  ('Iclik',1,0),
@@ -60719,8 +60711,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Igirr',0,0),
  ('Igisaro',1,1),
  ('Igiso',0,1),
- ('Igisovac',6,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Igisovac',6,0),
  ('Igita',1,1),
  ('Igitac',33,0),
  ('Igitei',49,1),
@@ -60752,8 +60743,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Iglofio',1,1),
  ('Iglog',33,1),
  ('Igloho',6,0),
- ('Igloraref',49,1),
- ('Iglos',6,1),
+ ('Igloraref',49,1);
+INSERT INTO `namegen_firstname` VALUES  ('Iglos',6,1),
  ('Igloteka',0,1),
  ('Igloth',1,1),
  ('Iglove',6,1),
@@ -64323,8 +64314,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Imooswe',0,0),
  ('Imoow',1,1),
  ('Imoowo',1,0),
- ('Imoowushie',49,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Imoowushie',49,1),
  ('Imooz',1,1),
  ('Imop',0,0),
  ('Imopirr',4,0),
@@ -64358,8 +64348,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Imoskogud',6,1),
  ('Imosrosli',2,1),
  ('Imoss',2,0),
- ('Imossi',2,1),
- ('Imosskdo',2,1),
+ ('Imossi',2,1);
+INSERT INTO `namegen_firstname` VALUES  ('Imosskdo',2,1),
  ('Imosskon',2,1),
  ('Imosskosk',2,0),
  ('Imossksky',2,1),
@@ -67918,8 +67908,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Iseth',6,1),
  ('Isethoi',0,1),
  ('Isetiam',49,1),
- ('Iseto',5,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Iseto',5,0),
  ('Isetodi',0,1),
  ('Isetus',7,0),
  ('Iseulfytack',3,0),
@@ -67954,8 +67943,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Ishew',6,0),
  ('Ishi',0,1),
  ('Ishiapu',49,0),
- ('Ishibop',2,0),
- ('Ishifeulac',0,1),
+ ('Ishibop',2,0);
+INSERT INTO `namegen_firstname` VALUES  ('Ishifeulac',0,1),
  ('Ishik',1,0),
  ('Ishilaze',5,1),
  ('Ishilda',0,1),
@@ -71470,8 +71459,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Iwauwor',33,1),
  ('Iwava',6,1),
  ('Iwaveco',1,0),
- ('Iwavei',49,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Iwavei',49,0),
  ('Iwavemni',6,0),
  ('Iwavic',0,1),
  ('Iwavouni',5,1),
@@ -71508,8 +71496,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Iweegomea',33,0),
  ('Iweeh',33,0),
  ('Iweeky',49,0),
- ('Iweenaedie',7,0),
- ('Iweeny',49,1),
+ ('Iweenaedie',7,0);
+INSERT INTO `namegen_firstname` VALUES  ('Iweeny',49,1),
  ('Iweepo',1,1),
  ('Iweer',1,0),
  ('Iweerd',33,1),
@@ -74968,8 +74956,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Kigiekk',49,0),
  ('Kigitchaip',7,1),
  ('Kigliwe',0,1),
- ('Kiglo',0,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Kiglo',0,1),
  ('Kigodan',5,1),
  ('Kigoem',49,1),
  ('Kigog',1,0),
@@ -75011,8 +74998,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Kikra',5,0),
  ('Kikrolch',0,0),
  ('Kikure',49,0),
- ('Kilad',33,0),
- ('Kilaetch',7,1),
+ ('Kilad',33,0);
+INSERT INTO `namegen_firstname` VALUES  ('Kilaetch',7,1),
  ('Kilarpewro',6,1),
  ('Kilas',6,1),
  ('Kilchackok',3,1),
@@ -78471,8 +78458,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Lijowo',4,0),
  ('Lijowoporin',4,0),
  ('Likabukk',4,0),
- ('Likae',7,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Likae',7,0),
  ('Likaera',7,0),
  ('Likaof',0,1),
  ('Likap',5,1),
@@ -78513,8 +78499,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Lileik',49,0),
  ('Lileiv',33,0),
  ('Lilena',3,0),
- ('Lilene',5,0),
- ('Liles',5,0),
+ ('Lilene',5,0);
+INSERT INTO `namegen_firstname` VALUES  ('Liles',5,0),
  ('Lilfi',3,1),
  ('Lilforese',0,0),
  ('Liliec',49,0),
@@ -81980,8 +81966,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Mewrrlydrychiir',4,0),
  ('Mewullith',5,1),
  ('Mewwagan',5,0),
- ('Mewys',49,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Mewys',49,1),
  ('Mexaemitea',33,0),
  ('Meyi',6,1),
  ('Mi\'Agorde',6,1),
@@ -82025,8 +82010,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Miagaen',33,1),
  ('Miagea',33,1),
  ('Miageunea',33,1),
- ('Miago',49,1),
- ('Miagyf',7,0),
+ ('Miago',49,1);
+INSERT INTO `namegen_firstname` VALUES  ('Miagyf',7,0),
  ('Miahee',7,1),
  ('Miaheu',5,0),
  ('Miahi',33,0),
@@ -85517,8 +85502,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Niafot',7,0),
  ('Niaga',33,1),
  ('Niagaf',33,1),
- ('Niagai',49,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Niagai',49,1),
  ('Niage',49,1),
  ('Niagef',7,0),
  ('Niagofie',49,1),
@@ -85563,8 +85547,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Niarame',7,1),
  ('Niaran',49,1),
  ('Niarearn',49,1),
- ('Niarease',49,1),
- ('Niarecae',49,1),
+ ('Niarease',49,1);
+INSERT INTO `namegen_firstname` VALUES  ('Niarecae',49,1),
  ('Niaree',7,1),
  ('Niarei',7,1),
  ('Niarfeif',7,0),
@@ -89096,8 +89080,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Ochyyy',4,0),
  ('Ociag',49,0),
  ('Ociageak',7,1),
- ('Ociagosee',49,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Ociagosee',49,1),
  ('Ociak',33,1),
  ('Ociakat',33,1),
  ('Ociapa',49,0),
@@ -89145,8 +89128,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Ocilk',0,0),
  ('Ocilo',2,0),
  ('Ocilocam',3,1),
- ('Ocim',1,1),
- ('Ocime',0,0),
+ ('Ocim',1,1);
+INSERT INTO `namegen_firstname` VALUES  ('Ocime',0,0),
  ('Ocimeha',6,0),
  ('Ocimest',5,0),
  ('Ocimi',3,1),
@@ -92665,8 +92648,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Ogeva',1,0),
  ('Ogevacha',5,1),
  ('Ogevee',1,1),
- ('Ogevo',3,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Ogevo',3,1),
  ('Ogew',7,0),
  ('Ogewan',6,0),
  ('Ogeyydrrlymo',4,0),
@@ -92715,8 +92697,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Ogiacae',49,1),
  ('Ogiah',33,0),
  ('Ogiahae',33,0),
- ('Ogiakeja',49,1),
- ('Ogiala',49,1),
+ ('Ogiakeja',49,1);
+INSERT INTO `namegen_firstname` VALUES  ('Ogiala',49,1),
  ('Ogiaracea',33,1),
  ('Ogiarhi',7,1),
  ('Ogiaried',49,0),
@@ -96297,8 +96279,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Onadef',6,0),
  ('Onadla',5,1),
  ('Onaec',7,1),
- ('Onaecrai',49,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Onaecrai',49,1),
  ('Onaedeoco',1,1),
  ('Onaegirros',49,0),
  ('Onaegli',0,1),
@@ -96349,8 +96330,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Onalao',49,0),
  ('Onale',7,0),
  ('Onalem',1,0),
- ('Onalen',7,1),
- ('Onaleok',1,0),
+ ('Onalen',7,1);
+INSERT INTO `namegen_firstname` VALUES  ('Onaleok',1,0),
  ('Onalie',33,1),
  ('Onallla',4,0),
  ('Onaloc',6,0),
@@ -99883,8 +99864,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Ormi',3,1),
  ('Ormieg',49,0),
  ('Ormifo-es',6,0),
- ('Ormik',1,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Ormik',1,1),
  ('Ormo',1,1),
  ('Ormobyvi',5,1),
  ('Ormoc',5,0),
@@ -99938,8 +99918,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Orof',6,1),
  ('Orofi',5,1),
  ('Orofik',1,0),
- ('Orofot',7,0),
- ('Oroge',5,1),
+ ('Orofot',7,0);
+INSERT INTO `namegen_firstname` VALUES  ('Oroge',5,1),
  ('Orohe',3,1),
  ('Orohea',5,1),
  ('Orohep',5,0),
@@ -103361,8 +103341,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Oteek',1,0),
  ('Oteekrek',1,0),
  ('Oteela',33,0),
- ('Oteem',1,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Oteem',1,1),
  ('Oteemo',1,0),
  ('Oteen',33,0),
  ('Oteene',49,1),
@@ -103418,8 +103397,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Oteno',1,1),
  ('Otenoo',5,0),
  ('Otenou',5,0),
- ('Oteofan',5,1),
- ('Oteofe',1,1),
+ ('Oteofan',5,1);
+INSERT INTO `namegen_firstname` VALUES  ('Oteofe',1,1),
  ('Oteofepe',5,1),
  ('Oteot',5,1),
  ('Oteovv',49,1),
@@ -106957,8 +106936,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Paisnou',49,0),
  ('Paisse',5,1),
  ('Paisxill',49,1),
- ('Paitchaukkaesie',49,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Paitchaukkaesie',49,1),
  ('Paitcheba',7,0),
  ('Paitea',49,1),
  ('Paiteic',7,0),
@@ -107015,8 +106993,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Paled',3,0),
  ('Palege',3,1),
  ('Palein',49,0),
- ('Paleleuc',33,1),
- ('Paleof',49,1),
+ ('Paleleuc',33,1);
+INSERT INTO `namegen_firstname` VALUES  ('Paleof',49,1),
  ('Palep',7,1),
  ('Paleriagoo',49,0),
  ('Palesi',49,1),
@@ -110512,8 +110490,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Raiteor',49,0),
  ('Raitesny',33,0),
  ('Raito',33,0),
- ('Raitok',49,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Raitok',49,0),
  ('Raiviaf',33,1),
  ('Raivubyfai',49,1),
  ('Raiwag',7,0),
@@ -110570,8 +110547,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Raliakaci',4,1),
  ('Raliawec',49,0),
  ('Ralidod',4,0),
- ('Ralim',49,1),
- ('Ralla',3,1),
+ ('Ralim',49,1);
+INSERT INTO `namegen_firstname` VALUES  ('Ralla',3,1),
  ('Rallid',5,1),
  ('Rallo',0,0),
  ('Ralmi',3,0),
@@ -114015,8 +113992,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Saicea',7,1),
  ('Saicho',1,0),
  ('Saiciota',0,1),
- ('Saicofia',49,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Saicofia',49,0),
  ('Saicowato',7,0),
  ('Saido',33,1),
  ('Saidylek',49,1),
@@ -114073,8 +114049,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Saipyfoun',33,0),
  ('Sairee',7,0),
  ('Sairo',49,1),
- ('Sairpe',5,0),
- ('Sairtasteix',49,1),
+ ('Sairpe',5,0);
+INSERT INTO `namegen_firstname` VALUES  ('Sairtasteix',49,1),
  ('Sairte',49,1),
  ('Sairvikaeng',7,1),
  ('Sairxi',7,0),
@@ -117520,8 +117496,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Slotzi',2,0),
  ('Slotzin',2,1),
  ('Slotziss',2,0),
- ('Slotzitros',2,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Slotzitros',2,1),
  ('Slotzits',2,0),
  ('Slougi',0,1),
  ('Slovac',1,1),
@@ -117582,8 +117557,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Smaeva',0,1),
  ('Smageopir',0,0),
  ('Smagiscuto',5,1),
- ('Smahekas',6,1),
- ('Smaidonai',33,1),
+ ('Smahekas',6,1);
+INSERT INTO `namegen_firstname` VALUES  ('Smaidonai',33,1),
  ('Smaigleas',49,0),
  ('Smaiti',7,1),
  ('Smake',0,1),
@@ -121021,8 +120996,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Svirxiwu',2,1),
  ('Svirxossk',2,1),
  ('Svirxosskop',2,1),
- ('Svirxurx',2,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Svirxurx',2,1),
  ('Sviryx',2,0),
  ('Svirzimossk',2,1),
  ('Svisca',6,1),
@@ -121083,8 +121057,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Svixossk',2,1),
  ('Svixosx',2,0),
  ('Svixurx',2,0),
- ('Svixussosc',2,0),
- ('Svizarz',2,0),
+ ('Svixussosc',2,0);
+INSERT INTO `namegen_firstname` VALUES  ('Svizarz',2,0),
  ('Svizi',2,0),
  ('Svizorzo',2,1),
  ('Svizu',2,1),
@@ -124511,8 +124485,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Tobuckiraoao',4,1),
  ('Tobuckiremi',4,1),
  ('Tobuckiryyhnan',4,0),
- ('Tobuckishoryr',4,0);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Tobuckishoryr',4,0),
  ('Tobuckissh',4,1),
  ('Tobuckitob',4,1),
  ('Tobuckitora',4,1),
@@ -124567,8 +124540,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Tocec',33,1),
  ('Tocee',1,1),
  ('Toceik',49,1),
- ('Toceipli',5,1),
- ('Tocetaweu',5,1),
+ ('Toceipli',5,1);
+INSERT INTO `namegen_firstname` VALUES  ('Tocetaweu',5,1),
  ('Tocha',1,1),
  ('Tochac',4,1),
  ('Tochiir',4,0),
@@ -128056,8 +128029,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Utabi',2,1),
  ('Utack',3,1),
  ('Utad',3,1),
- ('Utaefe',49,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Utaefe',49,1),
  ('Utaek',33,1),
  ('Utah',6,0),
  ('Utaili',33,1),
@@ -128125,8 +128097,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Utsizu',2,1),
  ('Utsossk',2,1),
  ('Utsowib',2,0),
- ('Utsoxi',2,0),
- ('Utsussi',2,0),
+ ('Utsoxi',2,0);
+INSERT INTO `namegen_firstname` VALUES  ('Utsussi',2,0),
  ('Utsy',2,0),
  ('Uttet\'ye',6,1),
  ('Uttyfir',6,0),
@@ -131654,8 +131626,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Wallozi',5,1),
  ('Waloa',5,1),
  ('Walockapa',3,0),
- ('Walon',5,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Walon',5,1),
  ('Walot',33,1),
  ('Walowi',33,1),
  ('Wamae',49,0),
@@ -131723,8 +131694,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Waopio',49,0),
  ('Waory',33,1),
  ('Waosci',5,1),
- ('Waoteo',0,0),
- ('Waotep',33,1),
+ ('Waoteo',0,0);
+INSERT INTO `namegen_firstname` VALUES  ('Waotep',33,1),
  ('Waotockack',3,1),
  ('Waovei',33,1),
  ('Waovif',33,0),
@@ -135235,8 +135206,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Xorisro',2,1),
  ('Xoro',2,1),
  ('Xorxino',2,0),
- ('Xorxiscosho',2,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Xorxiscosho',2,1),
  ('Xorxisso',2,0),
  ('Xorzin',2,0),
  ('Xorzy',2,1),
@@ -135306,8 +135276,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Xoxi',2,0),
  ('Xoxizz',2,0),
  ('Xoxo',2,1),
- ('Xoxusc',2,1),
- ('Xozar',2,1),
+ ('Xoxusc',2,1);
+INSERT INTO `namegen_firstname` VALUES  ('Xozar',2,1),
  ('Xozo',2,0),
  ('Xozosri',2,0),
  ('Xozuss',2,1),
@@ -138810,8 +138780,7 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Yyfrolow',4,1),
  ('Yygeyy',4,0),
  ('Yyghichew',4,0),
- ('Yygnattinebova',4,1);
-INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES 
+ ('Yygnattinebova',4,1),
  ('Yygracho',4,1),
  ('Yygramum',4,1),
  ('Yyhe',6,1),
@@ -138875,8 +138844,8 @@ INSERT INTO `namegen_firstname` (`firstname`,`species`,`gender`) VALUES
  ('Yyrrlybo',4,1),
  ('Yyrtera',4,1),
  ('Yyrym',4,0),
- ('Yysva',4,0),
- ('Yysvevgeco',4,1),
+ ('Yysva',4,0);
+INSERT INTO `namegen_firstname` VALUES  ('Yysvevgeco',4,1),
  ('Yysytharrekkata',4,0),
  ('Yytacca',4,0),
  ('Yyte',4,1),
@@ -139405,8 +139374,7 @@ CREATE TABLE `namegen_lastname` (
 --
 
 /*!40000 ALTER TABLE `namegen_lastname` DISABLE KEYS */;
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
- ('A\'a',6,0),
+INSERT INTO `namegen_lastname` VALUES  ('A\'a',6,0),
  ('A\'Ab',6,0),
  ('A\'abev',6,0),
  ('A\'Acc',6,1),
@@ -143005,11 +142973,10 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Agiapokesc',49,0),
  ('Agiar',33,1),
  ('Agiava',33,0),
- ('Agiavea',49,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Agiavea',49,1),
  ('Agiawei',33,1),
- ('Agiback',3,1),
- ('Agibo',3,1),
+ ('Agiback',3,1);
+INSERT INTO `namegen_lastname` VALUES  ('Agibo',3,1),
  ('Agic',0,1),
  ('Agicee',33,0),
  ('Agici',6,0),
@@ -146581,13 +146548,12 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Aona',33,0),
  ('Aonadiv',3,0),
  ('Aonai',49,1),
- ('Aonaib',49,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Aonaib',49,1),
  ('Aonaimo',33,1),
  ('Aonam',49,0),
  ('Aonat',7,0),
- ('Aonauv',33,0),
- ('Aonea',49,0),
+ ('Aonauv',33,0);
+INSERT INTO `namegen_lastname` VALUES  ('Aonea',49,0),
  ('Aoneen',49,1),
  ('Aonexo',49,1),
  ('Aoni',33,0),
@@ -150227,15 +150193,14 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Beakip',49,1),
  ('Beala',33,0),
  ('Bealai',33,1),
- ('Bealeg',7,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Bealeg',7,1),
  ('Beamior',33,1),
  ('Beanae',7,1),
  ('Beani',49,1),
  ('Beanoute',33,0),
  ('Beapymea',33,0),
- ('Beare',7,0),
- ('Bearit',49,1),
+ ('Beare',7,0);
+INSERT INTO `namegen_lastname` VALUES  ('Bearit',49,1),
  ('Bearnie',49,1),
  ('Bearoay',7,0),
  ('Beartev',33,0),
@@ -153811,8 +153776,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Daosli',0,1),
  ('Daoteagoo',49,1),
  ('Daotimant',0,0),
- ('Daowau',5,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Daowau',5,1),
  ('Daoweet',49,1),
  ('Daowyleebe',49,1),
  ('Dapei',7,0),
@@ -153820,8 +153784,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Dapena',0,0),
  ('Dapetaej',49,1),
  ('Dapi\'kre',5,1),
- ('Dapij',3,0),
- ('Dapipamoe',3,0),
+ ('Dapij',3,0);
+INSERT INTO `namegen_lastname` VALUES  ('Dapipamoe',3,0),
  ('Dapistet',0,0),
  ('Dapyld',6,1),
  ('Daquo',6,0),
@@ -157376,8 +157340,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Ecye',0,1),
  ('Ecyh',49,1),
  ('Ecyha',5,0),
- ('Ecyk',33,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Ecyk',33,1),
  ('Ecyn',5,0),
  ('Ecyp',49,1),
  ('Ecyrb\'o',6,1),
@@ -157387,8 +157350,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Ecyv',49,0),
  ('Ecyvepi',49,0),
  ('Eczigoib',5,0),
- ('Ed\'a',6,0),
- ('Ed\'arr',6,0),
+ ('Ed\'a',6,0);
+INSERT INTO `namegen_lastname` VALUES  ('Ed\'arr',6,0),
  ('Ed\'Evina',6,0),
  ('Ed\'Fey',5,0),
  ('Ed\'gepi',6,1),
@@ -160933,8 +160896,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Eipaelir',7,1),
  ('Eipaet',33,0),
  ('Eipago',7,1),
- ('Eipahei',49,0);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Eipahei',49,0),
  ('Eipai',33,1),
  ('Eipaifoilo',49,1),
  ('Eipaik',33,0),
@@ -160945,8 +160907,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Eipaly',33,1),
  ('Eipam',33,1),
  ('Eipaobie',49,1),
- ('Eipaofa',7,0),
- ('Eiparia',33,0),
+ ('Eipaofa',7,0);
+INSERT INTO `namegen_lastname` VALUES  ('Eiparia',33,0),
  ('Eipast',33,0),
  ('Eipaw',49,0),
  ('Eipe',33,0),
@@ -164545,8 +164507,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Esl\'Lya',5,0),
  ('Eslabiogeuw',5,0),
  ('Eslaeva',33,0),
- ('Eslaigoo',5,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Eslaigoo',5,1),
  ('Eslan',49,0),
  ('Eslav',0,0),
  ('Esle\'Tvo',5,0),
@@ -164559,8 +164520,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Eslie',49,0),
  ('Eslif',0,0),
  ('Esline',6,1),
- ('Eslirtily',6,1),
- ('Eslise',0,1),
+ ('Eslirtily',6,1);
+INSERT INTO `namegen_lastname` VALUES  ('Eslise',0,1),
  ('Eslo',33,1),
  ('Eslohie',7,1),
  ('Eslong',5,0),
@@ -168151,8 +168112,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Folota',5,0),
  ('Folpe',49,0),
  ('Foma',49,1),
- ('Fomadece',6,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Fomadece',6,1),
  ('Fomaiw',7,0),
  ('Fomapiwo',0,0),
  ('Fome',0,0),
@@ -168167,8 +168127,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Fomu',49,0),
  ('Fonae',49,0),
  ('Fonateen',7,1),
- ('Fonee',33,0),
- ('Foneile',49,0),
+ ('Fonee',33,0);
+INSERT INTO `namegen_lastname` VALUES  ('Foneile',49,0),
  ('Foneo',33,1),
  ('Foni',0,0),
  ('Foniceaj',49,0),
@@ -171748,8 +171708,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Howio',0,1),
  ('Howip',0,0),
  ('Howrak',3,1),
- ('Howri',0,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Howri',0,1),
  ('Hoxehi',5,0),
  ('Hoxi',0,1),
  ('Hu\'essa',6,0),
@@ -171767,8 +171726,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Hunak',3,1),
  ('Hunaka',6,1),
  ('Hunawhe',6,0),
- ('Hune',6,0),
- ('Hupi',49,1),
+ ('Hune',6,0);
+INSERT INTO `namegen_lastname` VALUES  ('Hupi',49,1),
  ('Hupik',3,1),
  ('Huris',6,0),
  ('Huro',6,0),
@@ -175292,8 +175251,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Iesiav',33,1),
  ('Iesie',49,1),
  ('Iesiebas',49,0),
- ('Iesied',7,0);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Iesied',7,0),
  ('Iesienia',49,1),
  ('Iesiere',49,0),
  ('Iesietowierp',33,1),
@@ -175311,8 +175269,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Iesloes',0,1),
  ('Iesmaca',49,1),
  ('Iesmasoi',33,1),
- ('Iesmea',33,1),
- ('Iesmeitor',49,0),
+ ('Iesmea',33,1);
+INSERT INTO `namegen_lastname` VALUES  ('Iesmeitor',49,0),
  ('Iesnea',33,0),
  ('Iesnoenaimien',33,1),
  ('Ieso',0,1),
@@ -178923,8 +178881,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Iquoviw',6,0),
  ('Iquu',6,1),
  ('Iqy',6,0),
- ('Ir\'ata',6,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Ir\'ata',6,1),
  ('Ir\'fey',5,0),
  ('Ir\'I',0,0),
  ('Ir\'Is',6,0),
@@ -178946,8 +178903,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Ira',5,0),
  ('Ira-Ov',6,0),
  ('Iraba',0,0),
- ('Irac',33,1),
- ('Iracht',5,0),
+ ('Irac',33,1);
+INSERT INTO `namegen_lastname` VALUES  ('Iracht',5,0),
  ('Irack',3,0),
  ('Irackem',3,0),
  ('Irad',3,0),
@@ -182554,8 +182511,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Kekaum',3,0),
  ('Keke',0,0),
  ('Kekeag',33,0),
- ('Kekee',3,0);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Kekee',3,0),
  ('Keki',0,0),
  ('Kekik',49,1),
  ('Kekoo',49,1),
@@ -182579,8 +182535,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Kemief',33,0),
  ('Kemihi',7,0),
  ('Kemim',7,0),
- ('Kemiptesx',33,1),
- ('Kemne',6,1),
+ ('Kemiptesx',33,1);
+INSERT INTO `namegen_lastname` VALUES  ('Kemne',6,1),
  ('Kemo',0,0),
  ('Kemoetip',33,1),
  ('Kemom',49,1),
@@ -186140,8 +186096,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Masheh',6,0),
  ('Masi',5,0),
  ('Masi\'va',6,1),
- ('Masiag',33,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Masiag',33,1),
  ('Masiop\'Kre',5,1),
  ('Masiostix',5,1),
  ('Maska',49,0),
@@ -186167,8 +186122,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Mateid',7,1),
  ('Mati',3,0),
  ('Matia',49,1),
- ('Matid',6,0),
- ('Matie',7,0),
+ ('Matid',6,0);
+INSERT INTO `namegen_lastname` VALUES  ('Matie',7,0),
  ('Matiefaib',49,0),
  ('Matifamo',3,0),
  ('Matim',7,1),
@@ -189752,8 +189707,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Oaba',0,0),
  ('Oabaca',3,1),
  ('Oabaeb',3,0),
- ('Oabaene',7,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Oabaene',7,1),
  ('Oabaf',0,1),
  ('Oabakau',49,0),
  ('Oabaki',3,1),
@@ -189781,8 +189735,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Oacaov',7,1),
  ('Oacas',49,0),
  ('Oacea',7,1),
- ('Oacee',33,0),
- ('Oaceewa',49,1),
+ ('Oacee',33,0);
+INSERT INTO `namegen_lastname` VALUES  ('Oaceewa',49,1),
  ('Oacegiwi',3,0),
  ('Oaceiameas',49,0),
  ('Oaceivei',7,0),
@@ -193386,8 +193340,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Oigleak',33,0),
  ('Oignoa\'fey',5,1),
  ('Oignoustea',5,0),
- ('Oigo',49,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Oigo',49,1),
  ('Oigooloe',7,1),
  ('Oigor',49,1),
  ('Oigork',7,0),
@@ -193416,8 +193369,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Oikaivo',33,0),
  ('Oikasrec',0,1),
  ('Oikeaf',7,0),
- ('Oikeeveg',33,0),
- ('Oikemewau',7,1),
+ ('Oikeeveg',33,0);
+INSERT INTO `namegen_lastname` VALUES  ('Oikemewau',7,1),
  ('Oikeot',7,0),
  ('Oikeveisai',7,1),
  ('Oikhae',49,1),
@@ -197015,8 +196968,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Osiw',33,0),
  ('Osiz',2,1),
  ('Osizeur',7,1),
- ('Osk\'Fey',5,0);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Osk\'Fey',5,0),
  ('Osk\'Mote',6,0),
  ('Osk\'tah',5,0),
  ('Osk-czo',6,0),
@@ -197048,8 +197000,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Oskosi',2,0),
  ('Oskosski',2,0),
  ('Oskosxi',2,1),
- ('Osktzirxoss',2,1),
- ('Osktzo',2,1),
+ ('Osktzirxoss',2,1);
+INSERT INTO `namegen_lastname` VALUES  ('Osktzo',2,1),
  ('Oskuw',2,1),
  ('Osl\'nel',5,0),
  ('Osl\'yka',5,1),
@@ -200609,8 +200561,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Pile',0,1),
  ('Pileemada',7,1),
  ('Pileen',1,1),
- ('Pilei',7,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Pilei',7,1),
  ('Pili\'lya',5,1),
  ('Pilisto',0,0),
  ('Pilithma',6,1),
@@ -200644,8 +200595,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Pine',5,1),
  ('Pinee',49,1),
  ('Pineelic',7,1),
- ('Pineig',49,0),
- ('Pinem',49,1),
+ ('Pineig',49,0);
+INSERT INTO `namegen_lastname` VALUES  ('Pinem',49,1),
  ('Pineofia',49,1),
  ('Pini\'O',6,0),
  ('Pini\'tvo',5,0),
@@ -204202,8 +204153,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Selare',5,1),
  ('Selcacko',3,1),
  ('Seleeb',7,1),
- ('Seli',0,0);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Seli',0,0),
  ('Selib',7,1),
  ('Selkeke',5,0),
  ('Sellab',6,0),
@@ -204239,8 +204189,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Seno\'nel',5,1),
  ('Senoh',49,1),
  ('Senoug',49,1),
- ('Senow',0,1),
- ('Senyv',33,1),
+ ('Senow',0,1);
+INSERT INTO `namegen_lastname` VALUES  ('Senyv',33,1),
  ('Seo\'Nel',5,1),
  ('Seo\'tvo',5,0),
  ('Seodia',49,0),
@@ -207733,8 +207683,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Teorea',49,1),
  ('Teoro',0,0),
  ('Teosan',49,1),
- ('Teosepe',49,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Teosepe',49,1),
  ('Teosiepai',7,1),
  ('Teosives',7,1),
  ('Teoste',0,1),
@@ -207773,8 +207722,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Terce',0,1),
  ('Tere',5,1),
  ('Terhatrih',0,0),
- ('Teri\'kre',5,1),
- ('Terie',7,0),
+ ('Teri\'kre',5,1);
+INSERT INTO `namegen_lastname` VALUES  ('Terie',7,0),
  ('Terio',33,1),
  ('Teriwia',0,0),
  ('Terkoocte',0,0),
@@ -211351,8 +211300,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Viosab',33,0),
  ('Viosea',49,1),
  ('Viosiag',33,1),
- ('Vioso',7,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Vioso',7,1),
  ('Viotem',49,1),
  ('Viovat',49,1),
  ('Viovee',49,0),
@@ -211394,8 +211342,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Visa',33,0),
  ('Visack',3,1),
  ('Visait',33,1),
- ('Vise',6,0),
- ('Viseapiothia',33,0),
+ ('Vise',6,0);
+INSERT INTO `namegen_lastname` VALUES  ('Viseapiothia',33,0),
  ('Viseu',0,1),
  ('Visheas',49,0),
  ('Vishi',0,1),
@@ -214980,8 +214928,7 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Ynaeh',49,1),
  ('Ynaery',33,1),
  ('Ynaev',49,1),
- ('Ynagi',49,1);
-INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES 
+ ('Ynagi',49,1),
  ('Ynailopei',49,0),
  ('Ynaleapa',49,1),
  ('Ynapie',33,1),
@@ -215023,8 +214970,8 @@ INSERT INTO `namegen_lastname` (`lastname`,`species`,`gender`) VALUES
  ('Ynigo',3,1),
  ('Ynimio',33,0),
  ('Yniole',49,1),
- ('Ynipab',7,0),
- ('Ynisia',7,1),
+ ('Ynipab',7,0);
+INSERT INTO `namegen_lastname` VALUES  ('Ynisia',7,1),
  ('Yniso',49,0),
  ('Yniteafi',3,1),
  ('Ynito',7,1),
@@ -215962,8 +215909,7 @@ CREATE TABLE `planet` (
 --
 
 /*!40000 ALTER TABLE `planet` DISABLE KEYS */;
-INSERT INTO `planet` (`planet_id`,`name`,`terrainMap`) VALUES 
- (0,'corellia','terrain/corellia.trn'),
+INSERT INTO `planet` VALUES  (0,'corellia','terrain/corellia.trn'),
  (1,'dantooine','terrain/dantooine.trn'),
  (2,'dathomir','terrain/dathomir.trn'),
  (3,'endor','terrain/endor.trn'),
@@ -216027,8 +215973,7 @@ CREATE TABLE `player` (
 --
 
 /*!40000 ALTER TABLE `player` DISABLE KEYS */;
-INSERT INTO `player` (`id`,`referenceId`,`maxCharacters`) VALUES 
- (1,1,8);
+INSERT INTO `player` VALUES  (1,1,8);
 /*!40000 ALTER TABLE `player` ENABLE KEYS */;
 
 
@@ -216052,10 +215997,14 @@ CREATE TABLE `players_characters` (
 --
 
 /*!40000 ALTER TABLE `players_characters` DISABLE KEYS */;
-INSERT INTO `players_characters` (`player_id`,`character_id`) VALUES 
- (1,1),
+INSERT INTO `players_characters` VALUES  (1,1),
  (1,2),
- (1,12);
+ (1,12),
+ (1,16),
+ (1,17),
+ (1,18),
+ (1,19),
+ (1,20);
 /*!40000 ALTER TABLE `players_characters` ENABLE KEYS */;
 
 
@@ -216125,13 +216074,22 @@ CREATE TABLE `service` (
   PRIMARY KEY (`id`),
   KEY `IDX_E19D9AD2B61FAB2` (`galaxy_id`),
   CONSTRAINT `service_ibfk_1` FOREIGN KEY (`galaxy_id`) REFERENCES `galaxy` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `service`
 --
 
 /*!40000 ALTER TABLE `service` DISABLE KEYS */;
+INSERT INTO `service` VALUES  (1,1,'ANH Character Service','character',2130706433,0,0,0,0,-1,'20110723113019.992','2011-07-23 11:17:28','2011-07-23 11:17:28'),
+ (2,1,'ANH Connection Service','connection',2130706433,0,44463,0,0,-1,'20110723113019.999','2011-07-23 11:17:28','2011-07-23 11:17:28'),
+ (3,1,'ANH Login Service','login',2130706433,0,44453,0,0,-1,'20110723113020.008','2011-07-23 11:17:28','2011-07-23 11:17:28'),
+ (4,1,'ANH Character Service','character',2130706433,0,0,0,0,-1,'20110723113520.763','2011-07-23 11:33:36','2011-07-23 11:33:36'),
+ (5,1,'ANH Connection Service','connection',2130706433,0,44463,0,0,-1,'20110723113520.768','2011-07-23 11:33:36','2011-07-23 11:33:36'),
+ (6,1,'ANH Login Service','login',2130706433,0,44453,0,0,-1,'20110723113520.759','2011-07-23 11:33:36','2011-07-23 11:33:36'),
+ (7,1,'ANH Character Service','character',2130706433,0,0,0,0,-1,'20110723120324.751','2011-07-23 11:52:22','2011-07-23 11:52:22'),
+ (8,1,'ANH Connection Service','connection',2130706433,0,44463,0,0,-1,'20110723120324.742','2011-07-23 11:52:22','2011-07-23 11:52:22'),
+ (9,1,'ANH Login Service','login',2130706433,0,44453,0,0,-1,'20110723120324.746','2011-07-23 11:52:22','2011-07-23 11:52:22');
 /*!40000 ALTER TABLE `service` ENABLE KEYS */;
 
 
@@ -216170,8 +216128,7 @@ CREATE TABLE `species` (
 --
 
 /*!40000 ALTER TABLE `species` DISABLE KEYS */;
-INSERT INTO `species` (`id`,`species_name`,`health_min`,`health_max`,`strength_min`,`strength_max`,`constitution_min`,`constitution_max`,`action_min`,`action_max`,`quickness_min`,`quickness_max`,`stamina_min`,`stamina_max`,`mind_min`,`mind_max`,`focus_min`,`focus_max`,`willpower_min`,`willpower_max`,`total`) VALUES 
- (0,'human',400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,5400),
+INSERT INTO `species` VALUES  (0,'human',400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,400,1100,5400),
  (1,'rodian',300,1000,300,500,300,400,300,1200,300,650,450,850,300,1000,300,500,350,550,5400),
  (2,'trandoshan',550,1250,600,800,700,800,300,1000,300,450,300,400,300,1000,300,500,300,600,5550),
  (3,'moncal',300,1000,300,500,300,400,300,1000,300,450,450,550,600,1300,600,800,450,650,5400),
@@ -216207,8 +216164,7 @@ CREATE TABLE `starting_location` (
 --
 
 /*!40000 ALTER TABLE `starting_location` DISABLE KEYS */;
-INSERT INTO `starting_location` (`location_id`,`location`,`planet_id`,`x`,`y`,`z`,`description`,`radius`,`heading`) VALUES 
- (1,'bestine',8,-1290.000000,0.000000,-3590.000000,'Bestine, Tatooine',3,180),
+INSERT INTO `starting_location` VALUES  (1,'bestine',8,-1290.000000,0.000000,-3590.000000,'Bestine, Tatooine',3,180),
  (2,'mos_espa',8,-2902.000000,0.000000,2130.000000,'Mos Espa, Tatooine',3,180),
  (3,'mos_eisley',8,3528.000000,0.000000,-4804.000000,'Mos Eisley, Tatooine',3,180),
  (4,'mos_entha',8,1291.000000,0.000000,3138.000000,'Mos Entha, Tatooine',3,180),
@@ -216269,18 +216225,22 @@ CREATE TABLE `transform` (
   `oW` float DEFAULT NULL,
   `planet_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `transform`
 --
 
 /*!40000 ALTER TABLE `transform` DISABLE KEYS */;
-INSERT INTO `transform` (`id`,`entity_id`,`x`,`y`,`z`,`oX`,`oY`,`oZ`,`oW`,`planet_id`) VALUES 
- (1,1001,0,0,0,0,0,0,0,1),
+INSERT INTO `transform` VALUES  (1,1001,0,0,0,0,0,0,0,1),
  (5,1012,-1290,0,-3590,0,1,0,0,NULL),
  (6,1022,-1290,0,-3590,0,1,0,0,8),
- (7,1032,-1290,0,-3590,0,1,0,0,8);
+ (7,1032,-1290,0,-3590,0,1,0,0,8),
+ (8,1042,-1290,0,-3590,0,1,0,0,8),
+ (9,1052,-1290,0,-3590,0,1,0,0,8),
+ (10,1062,-1290,0,-3590,0,1,0,0,8),
+ (11,1072,-1290,0,-3590,0,1,0,0,8),
+ (12,1082,-1290,0,-3590,0,1,0,0,8);
 /*!40000 ALTER TABLE `transform` ENABLE KEYS */;
 
 
@@ -216644,7 +216604,7 @@ DECLARE EXIT HANDLER FOR NOT FOUND
 -- 
    INSERT INTO entity VALUES (entity_id, NULL, character_parent_id);
    INSERT INTO characters(entity_id, createdAt,updatedAt,firstName,lastName,jediState,birthDate) VALUES (entity_id, NOW(), NOW(), start_firstname, start_lastname, 0, NOW());
-   SELECT id from characters where characters.entity_id = entity_id INTO character_id;
+   SELECT id from characters where id = LAST_INSERT_ID() INTO character_id;
    INSERT INTO players_characters values (start_account_id, character_id);
    INSERT INTO transform(entity_id,x,y,z,oX,oY,oZ,oW,planet_id) VALUES (entity_id, start_x, start_y, start_z, oX, oY, oZ, oW, start_planet);
    INSERT INTO appearance(entity_id,baseModel,scale,gender,species,customization_data) VALUES (entity_id, base_model_string, start_scale, gender, shortSpecies, start_appearance_customization);
@@ -216722,13 +216682,13 @@ DELIMITER $$
 /*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetLoginCharacter`(IN id BIGINT(20))
 BEGIN
-	SELECT A.id, B.baseModel, B.gender, B.species, C.x, C.y, C.z, 
+	SELECT A.entity_id, B.baseModel, B.gender, B.species, C.x, C.y, C.z, 
     C.oX, C.oY, C.oZ, C.oW, D.terrainMap
 	FROM characters A
 	INNER JOIN appearance B ON (A.entity_id = B.entity_id)
   INNER JOIN transform C on (A.entity_id = C.entity_id)
   INNER JOIN planet D on (C.planet_id = D.planet_id)
-  WHERE A.id = id and A.archived = 0;
+  WHERE A.entity_id = id and A.archived = 0;
 
 END $$
 /*!50003 SET SESSION SQL_MODE=@TEMP_SQL_MODE */  $$

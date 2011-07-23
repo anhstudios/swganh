@@ -137,7 +137,7 @@ CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
         auto result_set = statement->executeQuery();
         if (result_set->next())
         {
-            character.character_id = result_set->getUInt64("id");
+            character.character_id = result_set->getUInt64("entity_id");
             character.position.x = result_set->getDouble("x");
             character.position.y = result_set->getDouble("y");
             character.position.z = result_set->getDouble("z");
@@ -234,7 +234,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
             sql_sf << ", \'\'";
         }
         // get appearance info
-        sql_sf << parseAppearance_(character_info.character_customization);
+        sql_sf << ",?";
         // get hair
         sql_sf << parseHair_(character_info.hair_object, character_info.hair_customization);
     
@@ -249,15 +249,16 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         statement->setString(4, character_info.starting_profession);
         statement->setString(5, character_info.start_location);
         statement->setDouble(6, character_info.height);
+        statement->setString(7, character_info.character_customization);
 
         auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
             uint64_t char_id = result_set->getUInt64(1);
-            if (char_id > 0) // error value
+            if (char_id < 1002) 
             {
                 // if we get a special character_id back it means there was an error.
-                return make_tuple(char_id, setCharacterCreateErrorCode_(char_id));
+                return make_tuple(0, setCharacterCreateErrorCode_(char_id));
             }
             return make_tuple(char_id, "");
         }
@@ -268,18 +269,6 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
     return make_tuple(0,"");
 }
 
-std::string CharacterService::parseAppearance_(std::string appearance_data)
-{
-    stringstream ss;
-    ss << ", \'";
-    ss << setfill('0') << setw(2);
-    std::for_each(appearance_data.begin(), appearance_data.end(), [&ss] (uint16_t data) {
-        cout << std::hex << data;
-        ss << std::hex << data;
-    });
-    ss << "\'";
-    return ss.str();
-}
 std::string CharacterService::parseBio_(const std::string& bio)
 {
     //regex_replace
