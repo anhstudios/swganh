@@ -76,8 +76,8 @@ service::Service ConnectionService::GetServiceDescription() {
         "ANH Connection Service",
         "connection",
         "0.1",
-        "127.0.0.1", 
-        0, 
+        listen_address_, 
+        0,
         listen_port_, 
         0);
 
@@ -88,6 +88,8 @@ void ConnectionService::DescribeConfigOptions(boost::program_options::options_de
     description.add_options()
         ("service.connection.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
             "The port the connection service will listen for incoming client connections on")
+        ("service.connection.address", boost::program_options::value<uint16_t>(&listen_address_),
+            "The public address the connection service will listen for incoming client connections on")
     ;
 }
 
