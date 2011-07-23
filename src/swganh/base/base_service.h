@@ -67,15 +67,11 @@ public:
     virtual void onStart() = 0;
 
     virtual void onUpdate() = 0;
+
     /*
     *  @brief used to perform any shutdown specific tasks for the service
     */
     virtual void onStop() = 0;
-
-    /*
-    *  @brief gets the event_dispatcher
-    */
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
     
 
 private:

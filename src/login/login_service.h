@@ -57,7 +57,7 @@ namespace providers {
 class AccountProviderInterface;
 }
 
-class LoginClient;
+struct LoginClient;
 
 struct GalaxyStatus {    
     uint32_t galaxy_id;
@@ -97,6 +97,11 @@ private:
     bool HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
+    
+    void SendLoginClientToken_(std::shared_ptr<LoginClient> login_client);
+    void SendLoginEnumCluster_(std::shared_ptr<LoginClient> login_client);
+    void SendLoginClusterStatus_(std::shared_ptr<LoginClient> login_client);
+    void SendEnumerateCharacterId_(std::shared_ptr<LoginClient> login_client);
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;

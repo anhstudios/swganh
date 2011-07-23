@@ -102,6 +102,8 @@ void LoginService::onStart() {
 
 void LoginService::onUpdate() {
     soe_server_->Update();    
+
+    // Add timer to update galaxy status every X configurable seconds
 }
 
 void LoginService::onStop() {
@@ -109,8 +111,10 @@ void LoginService::onStop() {
 }
 
 void LoginService::subscribe() {
-    event_dispatcher()->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
-    event_dispatcher()->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
+    auto event_dispatcher = kernel()->GetEventDispatcher();
+
+    event_dispatcher->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
+    event_dispatcher->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
 }
 
 shared_ptr<BaseCharacterService> LoginService::character_service() {
@@ -163,29 +167,57 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
 
     auto login_client = make_shared<LoginClient>();
 
-    login_client->username(message.username);
-    login_client->password(message.password);
-    login_client->version(message.client_version);
+    login_client->username = message.username;
+    login_client->password = message.password;
+    login_client->version = message.client_version;
 
-    auto account = account_provider_->FindByUsername(login_client->username());
+    auto account = account_provider_->FindByUsername(login_client->username);
 
     if (! account) {
-        DLOG(WARNING) << "Login request for invalid user: " << login_client->username();
+        DLOG(WARNING) << "Login request for invalid user: " << login_client->username;
         return true;
     }
 
     if (! authentication_manager_->Authenticate(login_client, account)) {
-        DLOG(WARNING) << "Failed login attempt for user: " << login_client->username();
+        DLOG(WARNING) << "Failed login attempt for user: " << login_client->username;
         return true;
     }
 
-    login_client->account(account);
+    login_client->account = account;
+    login_client->session = remote_event->session();
 
+    SendLoginClientToken_(login_client);
+    SendLoginEnumCluster_(login_client);
+    SendLoginClusterStatus_(login_client);
+    SendEnumerateCharacterId_(login_client);
+
+    return true;
+}
+
+bool LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
+    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
+    
+    DeleteCharacterMessage message;
+    message.deserialize(*remote_event->message());
+
+    DeleteCharacterReplyMessage reply_message;
+    reply_message.failure_flag = 1;
+
+    if (character_service_->DeleteCharacter(message.character_id)) {
+        reply_message.failure_flag = 0;
+    }
+
+    remote_event->session()->SendMessage(reply_message);
+
+    return true;
+}
+
+    
+void LoginService::SendLoginClientToken_(std::shared_ptr<LoginClient> login_client) {    
     LoginClientToken token_message;
-    token_message.station_id = account->account_id();
+    token_message.station_id = login_client->account->account_id();
         
-    const uint8_t data[56] =
-    {
+    const uint8_t data[56] = {
         0x20, 0x00, 0x00, 0x00, 
         0x15, 0x00, 0x00, 0x00,
         0x0E, 0xD6, 0x93, 0xDE, 
@@ -204,10 +236,12 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
 
     ByteBuffer buffer(data, sizeof(data));
     token_message.session_key = buffer;
-    token_message.station_username = account->username();
+    token_message.station_username = login_client->username;
     
-    remote_event->session()->SendMessage(token_message);
+    login_client->session->SendMessage(token_message);
+}
 
+void LoginService::SendLoginEnumCluster_(std::shared_ptr<LoginClient> login_client) {
     LoginEnumCluster cluster_message;
     cluster_message.max_account_chars = 2;
 
@@ -220,8 +254,10 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
         cluster_message.servers.push_back(cluster);
     });
 
-    remote_event->session()->SendMessage(cluster_message);
+    login_client->session->SendMessage(cluster_message);
+}
 
+void LoginService::SendLoginClusterStatus_(std::shared_ptr<LoginClient> login_client) {
     LoginClusterStatus cluster_status_message;
     
     std::for_each(galaxy_status_.begin(), galaxy_status_.end(), [&cluster_status_message] (GalaxyStatus& status) {  
@@ -240,33 +276,15 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
         cluster_status_message.servers.push_back(cluster_server);
     });
         
-    remote_event->session()->SendMessage(cluster_status_message);
+    login_client->session->SendMessage(cluster_status_message);
+}
 
+void LoginService::SendEnumerateCharacterId_(std::shared_ptr<LoginClient> login_client) {
     EnumerateCharacterId character_message;
 
-    auto characters = character_service_->GetCharactersForAccount(account->account_id());
+    auto characters = character_service_->GetCharactersForAccount(login_client->account->account_id());
     
     character_message.characters = characters;
     
-    remote_event->session()->SendMessage(character_message);
-
-    return true;
-}
-
-bool LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
-    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
-    
-    DeleteCharacterMessage message;
-    message.deserialize(*remote_event->message());
-
-    DeleteCharacterReplyMessage reply_message;
-    reply_message.failure_flag = 1;
-
-    if (character_service_->DeleteCharacter(message.character_id))
-    {
-        reply_message.failure_flag = 0;
-    }
-    remote_event->session()->SendMessage(reply_message);
-
-    return true;
+    login_client->session->SendMessage(character_message);
 }
