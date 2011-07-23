@@ -24,6 +24,9 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include <glog/logging.h>
+
+#include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
@@ -283,36 +286,38 @@ list<Galaxy> Datastore::getGalaxyList() const {
     return galaxy_list;
 }
 
-list<Service> Datastore::getServiceList(uint32_t galaxy_id) const {
-    std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-        "SELECT id, galaxy_id, type, version, address, tcp_port, udp_port, status, TIMESTAMP(last_pulse) as last_pulse_timestamp "
-        "FROM service WHERE galaxy_id = ? ORDER BY service.type"));
-
-    statement->setUInt(1, galaxy_id);
-    
-    std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
-
-    // Loop through the results and create a map entry for each.
+list<Service> Datastore::getServiceList(uint32_t galaxy_id) const { 
     std::list<Service> service_list;
-    uint32_t id = 0;
 
-    while (result->next()) {
-        id = result->getUInt("id");
+    try {
+        std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
+            "SELECT id, galaxy_id, name, type, version, address, tcp_port, udp_port, ping_port, status, TIMESTAMP(last_pulse) as last_pulse_timestamp "
+            "FROM service WHERE galaxy_id = ? ORDER BY service.type"));
 
-        Service proc(
-            id,
-            result->getUInt("galaxy_id"),
-            result->getString("name"),
-            result->getString("type"),
-            result->getString("version"),
-            result->getString("address"),
-            result->getUInt("tcp_port"),
-            result->getUInt("udp_port"),
-            result->getUInt("ping_port"));
-        proc.status(result->getInt("status"));
-        proc.last_pulse(result->getString("last_pulse_timestamp"));
+        statement->setUInt(1, galaxy_id);
         
-        service_list.push_back(std::move(proc));
+        std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
+                   
+        // Loop through the results and create a map entry for each.
+        while (result->next()) {
+            Service proc(
+                result->getUInt("id"),
+                result->getUInt("galaxy_id"),
+                result->getString("name"),
+                result->getString("type"),
+                result->getString("version"),
+                result->getString("address"),
+                result->getUInt("tcp_port"),
+                result->getUInt("udp_port"),
+                result->getUInt("ping_port"));
+            proc.status(result->getInt("status"));
+            proc.last_pulse(result->getString("last_pulse_timestamp"));
+            
+            service_list.push_back(std::move(proc));
+        }
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return service_list;

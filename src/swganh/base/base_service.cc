@@ -66,6 +66,9 @@ void BaseService::Update() {
 
 void BaseService::Stop() {
     running_ = false;
+
+    service_directory_->removeService(service_directory_->service());
+    
     onStop();
 }
 

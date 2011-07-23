@@ -94,10 +94,12 @@ void LoginService::DescribeConfigOptions(boost::program_options::options_descrip
 
 void LoginService::onStart() {
     soe_server_->Start(listen_port_);
+
+    galaxy_status_ = GetGalaxyStatus_();
 }
 
 void LoginService::onUpdate() {
-    soe_server_->Update();
+    soe_server_->Update();    
 }
 
 void LoginService::onStop() {
@@ -115,6 +117,40 @@ shared_ptr<BaseCharacterService> LoginService::character_service() {
 
 void LoginService::character_service(shared_ptr<BaseCharacterService> character_service) {
     character_service_ = character_service;
+}
+
+std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
+    std::vector<GalaxyStatus> galaxy_status;
+    
+    auto service_directory = this->service_directory();
+
+    auto galaxy_list = service_directory->getGalaxySnapshot();
+
+    std::for_each(galaxy_list.begin(), galaxy_list.end(), [this, &galaxy_status, &service_directory] (anh::service::Galaxy& galaxy) {
+        auto service_list = service_directory->getServiceSnapshot(std::make_shared<anh::service::Galaxy>(galaxy));
+
+        auto it = std::find_if(service_list.begin(), service_list.end(), [] (anh::service::Service& service) {
+            return service.type().compare("connection") == 0;
+        });
+
+        if (it != service_list.end()) {
+            GalaxyStatus status;
+            status.address = it->address();
+            status.connection_port = it->udp_port();
+            status.distance = 0xffff8f80;
+            status.galaxy_id = galaxy.id();
+            status.max_characters = 2;
+            status.max_population = 0x00000cb2;
+            status.name = galaxy.name();
+            status.ping_port = it->ping_port();
+            status.server_population = 10;
+            status.status = it->status();
+
+            galaxy_status.push_back(std::move(status));
+        }
+    });
+
+    return galaxy_status;
 }
 
 bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_event) {
@@ -172,29 +208,35 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
 
     LoginEnumCluster cluster_message;
     cluster_message.max_account_chars = 2;
-    Cluster cluster;
-    cluster.distance = 0xffff8f80;
-    cluster.server_id = 2;
-    cluster.server_name = "naritus";
 
-    cluster_message.servers.push_back(cluster);
+    std::for_each(galaxy_status_.begin(), galaxy_status_.end(), [&cluster_message] (GalaxyStatus& status) {            
+        Cluster cluster;
+        cluster.distance = status.distance;
+        cluster.server_id = status.galaxy_id;
+        cluster.server_name = status.name;
+
+        cluster_message.servers.push_back(cluster);
+    });
 
     remote_event->session()->SendMessage(cluster_message);
 
     LoginClusterStatus cluster_status_message;
-    ClusterServer cluster_server;
-    cluster_server.address = "192.168.1.120";
-    cluster_server.ping_port = 44452;
-    cluster_server.conn_port = 44463;
-    cluster_server.distance = 0xffff8f80;
-    cluster_server.status = 2;
-    cluster_server.server_id = 2;
-    cluster_server.not_recommended_flag = 0;
-    cluster_server.max_chars = 2;
-    cluster_server.max_pop = 0x00000cb2;
-    cluster_server.server_pop = 2000;
     
-    cluster_status_message.servers.push_back(cluster_server);
+    std::for_each(galaxy_status_.begin(), galaxy_status_.end(), [&cluster_status_message] (GalaxyStatus& status) {  
+        ClusterServer cluster_server;
+        cluster_server.address = status.address;
+        cluster_server.ping_port = status.ping_port;
+        cluster_server.conn_port = status.connection_port;
+        cluster_server.distance = status.distance;
+        cluster_server.status = status.status;
+        cluster_server.server_id = status.galaxy_id;
+        cluster_server.not_recommended_flag = 0;
+        cluster_server.max_chars = status.max_characters;
+        cluster_server.max_pop = status.max_population;
+        cluster_server.server_pop = status.server_population;
+        
+        cluster_status_message.servers.push_back(cluster_server);
+    });
         
     remote_event->session()->SendMessage(cluster_status_message);
 
