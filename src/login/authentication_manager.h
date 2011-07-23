@@ -28,7 +28,7 @@
 namespace login {
 
 class Account;
-class LoginClient;
+struct LoginClient;
 
 class AuthenticationManager {
 public:

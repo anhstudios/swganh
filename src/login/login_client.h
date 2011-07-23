@@ -24,30 +24,23 @@
 #include <memory>
 #include <string>
 
+namespace anh {
+namespace network {
+namespace soe {
+class Session;
+}}}  // namespace anh::network::soe
+
 namespace login {
 
 class Account;
 
-class LoginClient {
-public:
-    std::string username() const;
-    void username(std::string username);
+struct LoginClient {
+    std::string username;
+    std::string password;
+    std::string version;
 
-    std::string password() const;
-    void password(std::string password);
-
-    std::string version() const;
-    void version(std::string version);
-
-    std::shared_ptr<Account> account() const;
-    void account(std::shared_ptr<Account> account);
-
-private:
-    std::string username_;
-    std::string password_;
-    std::string version_;
-
-    std::shared_ptr<Account> account_;
+    std::shared_ptr<Account> account;
+    std::shared_ptr<anh::network::soe::Session> session;
 };
 
 }  // namespace login
