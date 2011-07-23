@@ -59,16 +59,31 @@ class AccountProviderInterface;
 
 class LoginClient;
 
+struct GalaxyStatus {    
+    uint32_t galaxy_id;
+    std::string name;
+    std::string address;
+    uint16_t connection_port;
+    uint16_t ping_port;
+    uint32_t server_population;
+    uint32_t max_population;
+    uint32_t max_characters;
+    uint32_t distance;
+    uint32_t status;
+};
+
 class LoginService : public swganh::base::BaseService {
 public:
     explicit LoginService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~LoginService();
+    
+    anh::service::Service GetServiceDescription();
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
 
     void onStart();
     void onStop();
-    void Update();
+    void onUpdate();
 
     void subscribe();
     
@@ -80,11 +95,15 @@ private:
 
     bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+
+    std::vector<GalaxyStatus> GetGalaxyStatus_();
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
+
+    std::vector<GalaxyStatus> galaxy_status_;
 
     typedef std::map<uint32_t, std::shared_ptr<LoginClient>> ClientMap;
     ClientMap clients_;

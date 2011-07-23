@@ -12,6 +12,7 @@
 #include <tbb/atomic.h>
 
 #include "anh/app/app_interface.h"
+#include "anh/service/service_directory.h"
 
 namespace anh {
 namespace app {
@@ -22,26 +23,6 @@ namespace swganh {
 namespace app {
 
 class SwganhKernel;
-
-struct DatabaseConfig {
-    std::string host;
-    std::string schema;
-    std::string username;
-    std::string password;
-};
-
-struct AppConfig {
-    bool single_server_mode;
-    std::vector<std::string> plugins;
-    std::string plugin_directory;
-    std::string galaxy_name;
-
-    DatabaseConfig galaxy_manager_db;
-    DatabaseConfig galaxy_db;
-
-    boost::program_options::options_description BuildConfigDescription();
-};
-
 
 typedef std::pair<boost::program_options::options_description, boost::program_options::variables_map> ServiceConfig;
 
@@ -60,15 +41,15 @@ public:
     std::shared_ptr<anh::app::KernelInterface> GetAppKernel();
 
 private:
-    void LoadAppConfig_(int argc, char* argv[], AppConfig& app_config);
+    void LoadAppConfig_(int argc, char* argv[]);
     void LoadServiceConfig_(ServiceConfig& service_config);
     void LoadPlugins_(std::vector<std::string> plugins);
     
     std::shared_ptr<SwganhKernel> kernel_;
+    std::shared_ptr<anh::service::ServiceDirectory> service_directory_;
     tbb::atomic<bool> running_;
     bool initialized_;
     
-    AppConfig app_config_;
     ServiceConfig service_config_;
 };
 

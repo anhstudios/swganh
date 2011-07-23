@@ -38,6 +38,10 @@ const Version& SwganhKernel::GetVersion() {
     return version_;
 }
 
+AppConfig& SwganhKernel::GetAppConfig() {
+    return app_config_;
+}
+
 shared_ptr<DatabaseManagerInterface> SwganhKernel::GetDatabaseManager() {
     if (!database_manager_) {
         database_manager_ = make_shared<DatabaseManager>(sql::mysql::get_driver_instance());

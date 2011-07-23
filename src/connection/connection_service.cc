@@ -71,6 +71,19 @@ ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel)
 
 ConnectionService::~ConnectionService() {}
 
+service::Service ConnectionService::GetServiceDescription() {
+    service::Service service_description(
+        "ANH Connection Service",
+        "connection",
+        "0.1",
+        "127.0.0.1", 
+        0, 
+        listen_port_, 
+        0);
+
+    return service_description;
+}
+
 void ConnectionService::DescribeConfigOptions(boost::program_options::options_description& description) {
     description.add_options()
         ("service.connection.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
@@ -82,7 +95,7 @@ void ConnectionService::onStart() {
     soe_server_->Start(listen_port_);
 }
 
-void ConnectionService::Update() {
+void ConnectionService::onUpdate() {
     soe_server_->Update();
 }
 

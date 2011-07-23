@@ -42,12 +42,14 @@ class ConnectionService : public swganh::base::BaseService {
 public:
     explicit ConnectionService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~ConnectionService();
+
+    anh::service::Service GetServiceDescription();
     
     void DescribeConfigOptions(boost::program_options::options_description& description);
 
     void onStart();
     void onStop();
-    void Update();
+    void onUpdate();
 
     void subscribe();
 

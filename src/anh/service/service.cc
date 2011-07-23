@@ -21,6 +21,24 @@
 
 using namespace anh::service;
 
+Service::Service(const std::string& name,
+                 const std::string& type,
+                 const std::string& version,
+                 const std::string& address,
+                 uint16_t tcp_port,
+                 uint16_t udp_port,
+                 uint16_t ping_port)
+    : name_(name)
+    , type_(type)
+    , version_(version)
+    , address_(address)
+    , tcp_port_(tcp_port)
+    , udp_port_(udp_port)
+    , ping_port_(ping_port)
+    , status_(-1)
+    , last_pulse_("1970-01-01 00:00:01")
+{}
+
 Service::Service(uint32_t id,
                  uint32_t galaxy_id,
                  const std::string& name,
