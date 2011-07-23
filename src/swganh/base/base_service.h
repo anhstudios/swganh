@@ -22,8 +22,10 @@
 #define SWGANH_BASE_BASE_SERVICE_H_
 
 #include <memory>
+#include <string>
 #include <tbb/atomic.h>
 
+#include "anh/service/service_directory.h"
 #include "anh/service/service_interface.h"
 
 namespace anh {
@@ -45,12 +47,15 @@ public:
 
     void Start();
     void Stop();
+    /*
+    *  @brief used to perform any update specific tasks for the service
+    */
+    void Update();
 
     bool IsRunning() const;
 
-    void DescribeConfigOptions(boost::program_options::options_description& description);
-
     std::shared_ptr<anh::app::KernelInterface> kernel();
+    std::shared_ptr<anh::service::ServiceDirectory> service_directory();
 
     /*
     *  @brief used to subscribe to events on a serivce
@@ -60,6 +65,8 @@ public:
     *  @brief used to perform any startup specific tasks for the service
     */
     virtual void onStart() = 0;
+
+    virtual void onUpdate() = 0;
     /*
     *  @brief used to perform any shutdown specific tasks for the service
     */
@@ -74,8 +81,11 @@ public:
 private:
     BaseService();
     std::shared_ptr<anh::app::KernelInterface> kernel_;
+    std::shared_ptr<anh::service::ServiceDirectory> service_directory_;
         
     tbb::atomic<bool> running_;
+
+    std::string galaxy_name_;
 };
 
 }}  // swganh::base
