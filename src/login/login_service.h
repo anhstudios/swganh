@@ -23,6 +23,8 @@
 
 #include <map>
 
+#include <boost/asio.hpp>
+
 #include "anh/network/soe/server.h"
 
 #include "swganh/base/base_service.h"
@@ -95,9 +97,11 @@ private:
 
     bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    bool HandleGalaxyStatusUpdated_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
-    
+    void UpdateGalaxyStatus_();
+
     void SendLoginClientToken_(std::shared_ptr<LoginClient> login_client);
     void SendLoginEnumCluster_(std::shared_ptr<LoginClient> login_client);
     void SendLoginClusterStatus_(std::shared_ptr<LoginClient> login_client);
@@ -109,6 +113,9 @@ private:
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
 
     std::vector<GalaxyStatus> galaxy_status_;
+    
+    int galaxy_status_check_duration_secs_;
+    boost::asio::deadline_timer galaxy_status_timer_;
 
     typedef std::map<uint32_t, std::shared_ptr<LoginClient>> ClientMap;
     ClientMap clients_;

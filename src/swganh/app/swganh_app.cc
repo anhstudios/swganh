@@ -91,6 +91,8 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
     auto data_store = make_shared<service::Datastore>(kernel_->GetDatabaseManager()->getConnection("galaxy_manager"));
     service_directory_ = make_shared<service::ServiceDirectory>(data_store, kernel_->GetEventDispatcher(), app_config.galaxy_name, kernel_->GetVersion().ToString(), true);
     
+    CleanupServices_();
+
     // Load the plugin configuration.
     LoadPlugins_(app_config.plugins);
 
@@ -112,6 +114,7 @@ void SwganhApp::Start() {
 
     do {
         kernel_->GetEventDispatcher()->tick();
+        kernel_->GetIoService().poll();
         kernel_->GetServiceManager()->Update();
     } while(IsRunning());
 }
@@ -186,4 +189,18 @@ void SwganhApp::LoadPlugins_(vector<string> plugins) {
             plugin_manager->LoadPlugin(plugin);
         });
     }
+}
+
+void SwganhApp::CleanupServices_() {
+    auto services = service_directory_->getServiceSnapshot(service_directory_->galaxy());
+
+    if (services.empty()) {
+        return;
+    }
+
+    DLOG(WARNING) << "Services were not shutdown properly";
+
+    for_each(services.begin(), services.end(), [this] (anh::service::Service& service) {
+        service_directory_->removeService(make_shared<anh::service::Service>(service));
+    });
 }

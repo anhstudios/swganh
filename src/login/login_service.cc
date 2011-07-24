@@ -61,7 +61,8 @@ using namespace std;
 
 LoginService::LoginService(shared_ptr<KernelInterface> kernel) 
     : swganh::base::BaseService(kernel)
-    , listen_port_(0) {
+    , listen_port_(0) 
+    , galaxy_status_timer_(kernel->GetIoService()) {
     soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
     
     auto encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
@@ -91,13 +92,16 @@ void LoginService::DescribeConfigOptions(boost::program_options::options_descrip
             "The port the login service will listen for incoming client connections on")
         ("service.login.address", boost::program_options::value<string>(&listen_address_),
             "The public address the login service will listen for incoming client connections on")
+        ("service.login.status_check_duration_secs", boost::program_options::value<int>(&galaxy_status_check_duration_secs_),
+            "The amount of time between checks for updated galaxy status")
     ;
 }
 
 void LoginService::onStart() {
     soe_server_->Start(listen_port_);
-
     galaxy_status_ = GetGalaxyStatus_();
+    
+    UpdateGalaxyStatus_();
 }
 
 void LoginService::onUpdate() {
@@ -115,6 +119,8 @@ void LoginService::subscribe() {
 
     event_dispatcher->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
     event_dispatcher->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
+
+    event_dispatcher->subscribe("GalaxyStatusUpdated", bind(&LoginService::HandleGalaxyStatusUpdated_, this, placeholders::_1));
 }
 
 shared_ptr<BaseCharacterService> LoginService::character_service() {
@@ -123,6 +129,20 @@ shared_ptr<BaseCharacterService> LoginService::character_service() {
 
 void LoginService::character_service(shared_ptr<BaseCharacterService> character_service) {
     character_service_ = character_service;
+}
+
+
+void LoginService::UpdateGalaxyStatus_() {    
+    galaxy_status_timer_.expires_from_now(boost::posix_time::seconds(galaxy_status_check_duration_secs_));
+    galaxy_status_timer_.async_wait(strand().wrap([this] (const boost::system::error_code & error) {
+        galaxy_status_ = GetGalaxyStatus_();
+        
+        kernel()->GetEventDispatcher()->triggerAsync(make_shared_event("GalaxyStatusUpdated"));
+
+        if (IsRunning()) {
+            UpdateGalaxyStatus_();
+        }
+    }));
 }
 
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
@@ -159,6 +179,18 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
+bool LoginService::HandleGalaxyStatusUpdated_(shared_ptr<EventInterface> incoming_event) {
+    DLOG(WARNING) << "Sending out galaxy status update";
+
+    std::for_each(clients_.begin(), clients_.end(), [this] (ClientMap::value_type& client_entry) {
+        if (client_entry.second) {
+            SendLoginClusterStatus_(client_entry.second);
+        }
+    });
+
+    return true;
+}
+
 bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_event) {
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     
@@ -190,6 +222,8 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
     SendLoginEnumCluster_(login_client);
     SendLoginClusterStatus_(login_client);
     SendEnumerateCharacterId_(login_client);
+
+    clients_.insert(make_pair(login_client->account->account_id(), login_client));
 
     return true;
 }
