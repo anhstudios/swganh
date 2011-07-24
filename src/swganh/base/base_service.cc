@@ -82,3 +82,7 @@ shared_ptr<KernelInterface> BaseService::kernel() {
 shared_ptr<service::ServiceDirectory> BaseService::service_directory() {
     return service_directory_;
 }
+
+boost::asio::strand& BaseService::strand() {
+    return strand_;
+}
