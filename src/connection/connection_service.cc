@@ -50,6 +50,7 @@
 #include "connection/messages/client_create_character_failed.h"
 #include "connection/messages/client_random_name_request.h"
 #include "connection/messages/client_random_name_response.h"
+#include "connection/messages/client_id_msg.h"
 #include "connection/messages/heart_beat.h"
 
 using namespace anh;
@@ -139,6 +140,8 @@ bool ConnectionService::HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatch
 bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
     DLOG(WARNING) << "Handling ClientIdMsg";
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
+    ClientIdMsg id_msg;
+    id_msg.deserialize(*remote_event->message());
     
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = 1;
@@ -200,7 +203,7 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
     // heartbeat to let the client know we're still here
     HeartBeat heartbeat;
     remote_event->session()->SendMessage(heartbeat);
-    if (error_code.size() > 0)
+    if (error_code.length() > 0 && character_id == 0)
     {
         ClientCreateCharacterFailed failed;
         failed.stf_file = "ui";
@@ -212,8 +215,6 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
         remote_event->session()->SendMessage(success);
-        // now that we've succeeded login with that character
-        processSelectCharacter_(character_id, remote_event->session());
     }
     
     return true;
