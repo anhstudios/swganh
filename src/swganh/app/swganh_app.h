@@ -44,6 +44,8 @@ private:
     void LoadAppConfig_(int argc, char* argv[]);
     void LoadServiceConfig_(ServiceConfig& service_config);
     void LoadPlugins_(std::vector<std::string> plugins);
+
+    void CleanupServices_();
     
     std::shared_ptr<SwganhKernel> kernel_;
     std::shared_ptr<anh::service::ServiceDirectory> service_directory_;

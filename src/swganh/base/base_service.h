@@ -23,6 +23,8 @@
 
 #include <memory>
 #include <string>
+
+#include <boost/asio.hpp>
 #include <tbb/atomic.h>
 
 #include "anh/service/service_directory.h"
@@ -53,9 +55,12 @@ public:
     void Update();
 
     bool IsRunning() const;
-
+        
+protected:
     std::shared_ptr<anh::app::KernelInterface> kernel();
     std::shared_ptr<anh::service::ServiceDirectory> service_directory();
+
+    boost::asio::strand& strand();
 
     /*
     *  @brief used to subscribe to events on a serivce
@@ -72,7 +77,6 @@ public:
     *  @brief used to perform any shutdown specific tasks for the service
     */
     virtual void onStop() = 0;
-    
 
 private:
     BaseService();
@@ -82,6 +86,8 @@ private:
     tbb::atomic<bool> running_;
 
     std::string galaxy_name_;
+
+    boost::asio::strand strand_;
 };
 
 }}  // swganh::base
