@@ -53,7 +53,8 @@ public:
     void Update();
 
     bool IsRunning() const;
-
+        
+protected:
     std::shared_ptr<anh::app::KernelInterface> kernel();
     std::shared_ptr<anh::service::ServiceDirectory> service_directory();
 
@@ -72,7 +73,6 @@ public:
     *  @brief used to perform any shutdown specific tasks for the service
     */
     virtual void onStop() = 0;
-    
 
 private:
     BaseService();
