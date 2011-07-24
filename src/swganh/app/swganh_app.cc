@@ -112,6 +112,7 @@ void SwganhApp::Start() {
 
     do {
         kernel_->GetEventDispatcher()->tick();
+        kernel_->GetIoService().poll();
         kernel_->GetServiceManager()->Update();
     } while(IsRunning());
 }

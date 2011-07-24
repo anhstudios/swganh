@@ -36,7 +36,8 @@ using namespace event_dispatcher;
 using namespace std;
 
 BaseService::BaseService(shared_ptr<KernelInterface> kernel)
- : kernel_(kernel) {
+ : kernel_(kernel)
+ , strand_(kernel->GetIoService()) {
     auto data_store = make_shared<service::Datastore>(kernel->GetDatabaseManager()->getConnection("galaxy_manager"));
     service_directory_ = make_shared<service::ServiceDirectory>(data_store, kernel->GetEventDispatcher());
 

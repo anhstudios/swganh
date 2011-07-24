@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+#include <boost/asio/io_service.hpp>
+
 namespace anh {
 namespace database {
 class DatabaseManagerInterface;
@@ -51,6 +53,8 @@ public:
     virtual std::shared_ptr<anh::service::ServiceManager> GetServiceManager() = 0;
 
     virtual std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager() = 0;
+
+    virtual boost::asio::io_service& GetIoService() = 0;
 
     // also add entity manager, blah blah.
 };

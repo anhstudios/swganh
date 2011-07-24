@@ -73,3 +73,8 @@ shared_ptr<ServiceManager> SwganhKernel::GetServiceManager() {
 
     return service_manager_;
 }
+
+boost::asio::io_service& SwganhKernel::GetIoService() {
+    return io_service_;
+}
+

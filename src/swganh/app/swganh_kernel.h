@@ -49,6 +49,8 @@ public:
     std::shared_ptr<anh::plugin::PluginManager> GetPluginManager();
 
     std::shared_ptr<anh::service::ServiceManager> GetServiceManager();
+    
+    boost::asio::io_service& GetIoService();
 
 private:
     anh::app::Version version_;
@@ -58,6 +60,8 @@ private:
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
     std::shared_ptr<anh::service::ServiceManager> service_manager_;
+
+    boost::asio::io_service io_service_;
 };
 
 }}  // namespace anh::app
