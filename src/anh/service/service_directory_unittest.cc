@@ -24,7 +24,7 @@
 
 #include "anh/service/galaxy.h"
 #include "anh/service/datastore.h"
-#include "anh/service/service.h"
+#include "anh/service/service_description.h"
 #include "anh/service/service_directory.h"
 #include <anh/event_dispatcher/event_dispatcher.h>
 
@@ -41,7 +41,7 @@ class ServiceDirectoryTest : public testing::Test {
 protected:
     virtual void SetUp() {
         test_galaxy_ = make_shared<Galaxy>(getTestGalaxy());
-        test_service_ = make_shared<Service>(getTestService());
+        test_service_ = make_shared<ServiceDescription>(getTestService());
         dispatcher_ = make_shared<EventDispatcher>();
     }
 
@@ -50,13 +50,13 @@ protected:
         return galaxy;
     }
     
-    Service getTestService() {
-        Service service(1, 1, "service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0);
+    ServiceDescription getTestService() {
+        ServiceDescription service(1, 1, "service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0);
         return service;
     }
 
     std::shared_ptr<Galaxy> test_galaxy_;
-    std::shared_ptr<Service> test_service_;
+    std::shared_ptr<ServiceDescription> test_service_;
     std::shared_ptr<EventDispatcher> dispatcher_;
 };
 
@@ -64,9 +64,9 @@ class MockDatastore : public DatastoreInterface {
 public:
     MOCK_CONST_METHOD1(findGalaxyByName, shared_ptr<Galaxy>(const std::string& name));
     MOCK_CONST_METHOD2(createGalaxy, shared_ptr<Galaxy>(const std::string& name, const std::string& version));
-    MOCK_CONST_METHOD8(createService, shared_ptr<Service>(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port));
+    MOCK_CONST_METHOD8(createService, shared_ptr<ServiceDescription>(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port));
     MOCK_CONST_METHOD1(getGalaxyTimestamp, std::string(std::shared_ptr<Galaxy> galaxy));
-    MOCK_CONST_METHOD1(saveService, void(std::shared_ptr<Service> service));
+    MOCK_CONST_METHOD1(saveService, void(std::shared_ptr<ServiceDescription> service));
     MOCK_CONST_METHOD1(findGalaxyById, shared_ptr<Galaxy>(uint32_t id));
     MOCK_CONST_METHOD1(deleteServiceById, bool(uint32_t id));
     MOCK_CONST_METHOD0(getGalaxyList, GalaxyList());

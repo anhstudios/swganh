@@ -24,8 +24,17 @@
 #include <algorithm>
 #include <list>
 #include <string>
+#include <vector>
+
 #include "anh/byte_buffer.h"
+
 #include "swganh/base/swg_message.h"
+
+#include "login/galaxy_status.h"
+
+namespace login {
+struct LoginClient;
+}  // namespace login
 
 namespace login {
 namespace messages {
@@ -67,6 +76,8 @@ struct LoginEnumCluster : public swganh::base::SwgMessage<LoginEnumCluster> {
         max_account_chars = buffer.read<uint32_t>();
     }
 };
+
+LoginEnumCluster BuildLoginEnumCluster(std::shared_ptr<login::LoginClient> login_client, const std::vector<login::GalaxyStatus>& galaxy_status);
 
 }}  // namespace login::messages
 

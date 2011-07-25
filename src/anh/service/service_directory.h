@@ -27,7 +27,7 @@
 #include <string>
 
 #include "anh/service/galaxy.h"
-#include "anh/service/service.h"
+#include "anh/service/service_description.h"
 #include "anh/service/service_directory_interface.h"
 
 // Forward Declare
@@ -62,15 +62,15 @@ public:
         , const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false);
 
     std::shared_ptr<Galaxy> galaxy() const;
-    std::shared_ptr<Service> service() const;
+    std::shared_ptr<ServiceDescription> service() const;
         
     void joinGalaxy(const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false);
 
     bool registerService(const std::string& name, const std::string& service_type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping);
-    bool removeService(std::shared_ptr<Service>& service);
-    void updateServiceStatus(std::shared_ptr<Service>& service, int32_t new_status);
+    bool removeService(std::shared_ptr<ServiceDescription>& service);
+    void updateServiceStatus(std::shared_ptr<ServiceDescription>& service, int32_t new_status);
     
-    bool makePrimaryService(std::shared_ptr<Service> service);
+    bool makePrimaryService(std::shared_ptr<ServiceDescription> service);
 
     void pulse();
 
@@ -80,7 +80,7 @@ public:
 private:
     std::shared_ptr<DatastoreInterface> datastore_;
     std::shared_ptr<Galaxy> active_galaxy_;
-    std::shared_ptr<Service> active_service_;
+    std::shared_ptr<ServiceDescription> active_service_;
 
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>    event_dispatcher_;
 };

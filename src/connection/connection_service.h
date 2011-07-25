@@ -43,7 +43,7 @@ public:
     explicit ConnectionService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~ConnectionService();
 
-    anh::service::Service GetServiceDescription();
+    anh::service::ServiceDescription GetServiceDescription();
     
     void DescribeConfigOptions(boost::program_options::options_description& description);
 

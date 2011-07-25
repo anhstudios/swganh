@@ -66,8 +66,8 @@ CharacterService::CharacterService(shared_ptr<KernelInterface> kernel)
 
 CharacterService::~CharacterService() {}
 
-service::Service CharacterService::GetServiceDescription() {
-    service::Service service_description(
+service::ServiceDescription CharacterService::GetServiceDescription() {
+    service::ServiceDescription service_description(
         "ANH Character Service",
         "character",
         "0.1",

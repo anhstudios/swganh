@@ -33,10 +33,7 @@ namespace anh {
 namespace network {
 namespace soe {
 namespace filters {
-
-// FORWARD DECLARATIONS
-class Service;
-
+	
 class CrcOutFilter {
 public:
 	std::shared_ptr<Packet> operator()(std::shared_ptr<Packet> packet) const;

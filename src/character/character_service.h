@@ -39,7 +39,7 @@ public:
     explicit CharacterService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~CharacterService();
     
-    anh::service::Service GetServiceDescription();
+    anh::service::ServiceDescription GetServiceDescription();
 
     void onStart();
     void onStop();

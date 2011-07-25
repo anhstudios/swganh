@@ -38,7 +38,7 @@ namespace anh {
 namespace service {
 
 class Galaxy;
-class Service;
+class ServiceDescription;
 
 class Datastore : public DatastoreInterface , boost::noncopyable {
 public:
@@ -51,13 +51,13 @@ public:
     std::shared_ptr<Galaxy> findGalaxyById(uint32_t id) const;
     std::shared_ptr<Galaxy> findGalaxyByName(const std::string& name) const;
     
-    std::shared_ptr<Service> createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const;
-    std::shared_ptr<Service> findServiceById(uint32_t id) const;
+    std::shared_ptr<ServiceDescription> createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const;
+    std::shared_ptr<ServiceDescription> findServiceById(uint32_t id) const;
     bool deleteServiceById(uint32_t id) const;
-    void saveService(std::shared_ptr<Service> service) const;
+    void saveService(std::shared_ptr<ServiceDescription> service) const;
     
     std::list<Galaxy> getGalaxyList() const;
-    std::list<Service> getServiceList(uint32_t galaxy_id) const;
+    std::list<ServiceDescription> getServiceList(uint32_t galaxy_id) const;
     std::string prepareTimestampForStorage(const std::string& timestamp) const;
 private:
     Datastore();
