@@ -322,3 +322,7 @@ void LoginService::SendEnumerateCharacterId_(std::shared_ptr<LoginClient> login_
     
     login_client->session->SendMessage(character_message);
 }
+tuple<string, uint64_t> LoginService::GetSessionKey(uint64_t session_id)
+{
+    return make_tuple("", 1);
+}

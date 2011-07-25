@@ -91,6 +91,7 @@ public:
     
     std::shared_ptr<swganh::character::BaseCharacterService> character_service();
     void character_service(std::shared_ptr<swganh::character::BaseCharacterService> character_service);
+    std::tuple<std::string, uint64_t> GetSessionKey(uint64_t session_id);
 
 private:
     LoginService();

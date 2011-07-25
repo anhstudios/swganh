@@ -23,6 +23,8 @@
 #include <iostream>
 #include <glog/logging.h>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include "anh/crc.h"
 #include "anh/app/kernel_interface.h"
 #include "anh/event_dispatcher/basic_event.h"
@@ -57,6 +59,7 @@ using namespace anh;
 using namespace app;
 using namespace event_dispatcher;
 using namespace connection;
+using namespace login;
 using namespace messages;
 using namespace swganh::base;
 using namespace swganh::character;
@@ -123,6 +126,12 @@ shared_ptr<BaseCharacterService> ConnectionService::character_service() {
 void ConnectionService::character_service(shared_ptr<BaseCharacterService> character_service) {
     character_service_ = character_service;
 }
+shared_ptr<LoginService> ConnectionService::login_service() {
+    return login_service_;
+}
+void ConnectionService::login_service(shared_ptr<LoginService> login_service) {
+    login_service_ = login_service;
+}
 
 bool ConnectionService::HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
     DLOG(WARNING) << "Handling CmdSceneReady";
@@ -142,6 +151,21 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     ClientIdMsg id_msg;
     id_msg.deserialize(*remote_event->message());
+    // get session key from login service
+    uint64_t account_id;
+    std::string session_key;
+    tie(session_key, account_id) = login_service()->GetSessionKey(remote_event->session()->connection_id());
+    // authorized
+    if (id_msg.session_hash == session_key)
+    {
+        // create new game session 
+        std::string game_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
+            + boost::lexical_cast<std::string>(remote_event->session()->connection_id());
+        // update db
+
+        // insert into map
+        player_session_map_.insert(std::make_pair(1, remote_event->session()));
+    }    
     
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = 1;

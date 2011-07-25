@@ -32,6 +32,7 @@
 #include "anh/service/service_manager.h"
 
 #include "swganh/character/base_character_service.h"
+#include "login/login_service.h"
 
 #include "connection/connection_service.h"
 
@@ -58,8 +59,11 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(shared_ptr<KernelInterface> kern
     // Register TestObj
     registration.CreateObject = [] (ObjectParams* params) -> void * {
         auto character_service = std::static_pointer_cast<BaseCharacterService>(params->kernel->GetServiceManager()->GetService("CharacterService"));
+        auto login_service = std::static_pointer_cast<login::LoginService>(params->kernel->GetServiceManager()->GetService("LoginService"));
+
         auto connection_service = new ConnectionService(params->kernel);
         connection_service->character_service(character_service);
+        connection_service->login_service(login_service);
         return connection_service;
     };
 
