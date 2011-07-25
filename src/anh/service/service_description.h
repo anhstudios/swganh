@@ -26,7 +26,7 @@
 namespace anh {
 namespace service {
 
-class Service {    
+class ServiceDescription {    
 public:
     /*! This overloaded constructor is used when describing a service to register.
     *
@@ -38,7 +38,7 @@ public:
     * \param status The current status of the service.
     * \param last_pulse The last time the service synced with the data store.
     */
-    Service(const std::string& name,
+    ServiceDescription(const std::string& name,
             const std::string& type,
             const std::string& version,
             const std::string& address,
@@ -59,7 +59,7 @@ public:
     * \param status The current status of the service.
     * \param last_pulse The last time the service synced with the data store.
     */
-    Service(uint32_t id,
+    ServiceDescription(uint32_t id,
             uint32_t galaxy_id,
             const std::string& name,
             const std::string& type,
@@ -70,27 +70,27 @@ public:
             uint16_t ping_port);    
 
     /// Destructor
-    ~Service();    
+    ~ServiceDescription();    
 
     /// Copy constructor.
-    Service(const Service& other);
+    ServiceDescription(const ServiceDescription& other);
 
     /// Move constructor.
-    Service(Service&& other);
+    ServiceDescription(ServiceDescription&& other);
     
     /// Swap the contents of two HashStrings.
-    void swap(Service& other);
+    void swap(ServiceDescription& other);
 
     /// Universal assignment operator.
-    Service& operator=(Service other);
+    ServiceDescription& operator=(ServiceDescription other);
 
     /// Equals Operator.
-    bool operator==(Service other)
+    bool operator==(ServiceDescription other)
     {
         return this->id_ == other.id_;
     }
     /// Not Equals Operator.
-    bool operator!=(Service other)
+    bool operator!=(ServiceDescription other)
     {
         return this->id_ != other.id_;
     }
@@ -167,7 +167,7 @@ public:
 private:
     friend class ServiceDirectory;
 
-    Service();
+    ServiceDescription();
 
     
     uint32_t id_;

@@ -30,6 +30,8 @@
 #include "swganh/base/base_service.h"
 #include "swganh/character/base_character_service.h"
 
+#include "login/galaxy_status.h"
+
 namespace anh {
 namespace app {
 class KernelInterface;
@@ -61,52 +63,31 @@ class AccountProviderInterface;
 
 struct LoginClient;
 
-struct GalaxyStatus {    
-    uint32_t galaxy_id;
-    std::string name;
-    std::string address;
-    uint16_t connection_port;
-    uint16_t ping_port;
-    uint32_t server_population;
-    uint32_t max_population;
-    uint32_t max_characters;
-    uint32_t distance;
-    uint32_t status;
-};
-
 class LoginService : public swganh::base::BaseService {
 public:
     explicit LoginService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~LoginService();
     
-    anh::service::Service GetServiceDescription();
+    anh::service::ServiceDescription GetServiceDescription();
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
+
+private:
+    LoginService();
 
     void onStart();
     void onStop();
     void onUpdate();
 
     void subscribe();
-    
-    std::shared_ptr<swganh::character::BaseCharacterService> character_service();
-    void character_service(std::shared_ptr<swganh::character::BaseCharacterService> character_service);
+
     std::tuple<std::string, uint32_t> GetSessionKey(uint32_t session_id);
-
-private:
-    LoginService();
-
     bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleGalaxyStatusUpdated_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
-
-    void SendLoginClientToken_(std::shared_ptr<LoginClient> login_client);
-    void SendLoginEnumCluster_(std::shared_ptr<LoginClient> login_client);
-    void SendLoginClusterStatus_(std::shared_ptr<LoginClient> login_client);
-    void SendEnumerateCharacterId_(std::shared_ptr<LoginClient> login_client);
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;

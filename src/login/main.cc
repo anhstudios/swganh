@@ -59,17 +59,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(shared_ptr<KernelInterface> kern
 
     // Register TestObj
     registration.CreateObject = [] (ObjectParams* params) -> void * {
-        auto character_service = std::static_pointer_cast<BaseCharacterService>(params->kernel->GetServiceManager()->GetService("CharacterService"));
-
-        if (! character_service) {
-            // maybe throw exception here?
-            return nullptr;
-        }
-
-        auto login_service = new LoginService(params->kernel);
-        login_service->character_service(character_service);
-
-        return login_service;
+        return new LoginService(params->kernel);
     };
 
     registration.DestroyObject = [] (void * object) {
