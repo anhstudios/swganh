@@ -22,7 +22,7 @@
 #define ANH_SERVICE_SERVICE_INTERFACE_H_
 
 #include <boost/program_options/options_description.hpp>
-#include "anh/service/service.h"
+#include "anh/service/service_description.h"
 
 namespace anh {
 namespace service {

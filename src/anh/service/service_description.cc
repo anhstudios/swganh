@@ -17,7 +17,7 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "anh/service/service.h"
+#include "anh/service/service_description.h"
 
 using namespace anh::service;
 

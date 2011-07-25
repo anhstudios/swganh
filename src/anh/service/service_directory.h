@@ -27,7 +27,7 @@
 #include <string>
 
 #include "anh/service/galaxy.h"
-#include "anh/service/service.h"
+#include "anh/service/service_description.h"
 #include "anh/service/service_directory_interface.h"
 
 // Forward Declare

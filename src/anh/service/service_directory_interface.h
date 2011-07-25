@@ -27,7 +27,7 @@
 #include <string>
 
 #include "anh/service/galaxy.h"
-#include "anh/service/service.h"
+#include "anh/service/service_description.h"
 
 namespace anh {
 namespace service {

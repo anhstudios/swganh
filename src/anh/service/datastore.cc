@@ -32,7 +32,7 @@
 #include <cppconn/resultset.h>
 
 #include "anh/service/galaxy.h"
-#include "anh/service/service.h"
+#include "anh/service/service_description.h"
 
 using namespace anh::service;
 using namespace boost::posix_time;
