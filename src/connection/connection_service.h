@@ -28,7 +28,7 @@
 #include "connection/providers/session_provider_interface.h"
 #include "swganh/base/base_service.h"
 #include "swganh/character/base_character_service.h"
-#include "login/login_service.h"
+#include "swganh/login/login_service_interface.h"
 
 namespace anh {
 namespace app {
@@ -61,8 +61,8 @@ public:
 
     std::shared_ptr<swganh::character::BaseCharacterService> character_service();
     void character_service(std::shared_ptr<swganh::character::BaseCharacterService> character_service);
-    std::shared_ptr<login::LoginService> login_service();
-    void login_service(std::shared_ptr<login::LoginService> login_service);
+    std::shared_ptr<swganh::login::LoginServiceInterface> login_service();
+    void login_service(std::shared_ptr<swganh::login::LoginServiceInterface> login_service);
 
 private:
     bool HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
@@ -74,7 +74,7 @@ private:
 
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
-    std::shared_ptr<login::LoginService> login_service_;
+    std::shared_ptr<swganh::login::LoginServiceInterface> login_service_;
     std::shared_ptr<connection::providers::SessionProviderInterface> session_provider_;
 
     PlayerSessionMap player_session_map_;

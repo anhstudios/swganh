@@ -21,21 +21,14 @@
 #ifndef LOGIN_LOGIN_SERVICE_H_
 #define LOGIN_LOGIN_SERVICE_H_
 
-#include <map>
-
+#include "swganh/login/login_service_interface.h"
 #include <boost/asio.hpp>
 
 #include "anh/network/soe/server.h"
 
-#include "swganh/base/base_service.h"
 #include "swganh/character/base_character_service.h"
 
 #include "login/galaxy_status.h"
-
-namespace anh {
-namespace app {
-class KernelInterface;
-}}  // namespace anh::app
 
 namespace anh {
 namespace network {
@@ -63,7 +56,7 @@ class AccountProviderInterface;
 
 struct LoginClient;
 
-class LoginService : public swganh::base::BaseService {
+class LoginService : public swganh::login::LoginServiceInterface {
 public:
     explicit LoginService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~LoginService();
@@ -71,7 +64,7 @@ public:
     anh::service::ServiceDescription GetServiceDescription();
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
-
+    std::tuple<std::string, uint32_t> GetSessionKey(uint32_t session_id);
 private:
     LoginService();
 
@@ -81,7 +74,6 @@ private:
 
     void subscribe();
 
-    std::tuple<std::string, uint32_t> GetSessionKey(uint32_t session_id);
     bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleGalaxyStatusUpdated_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);

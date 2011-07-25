@@ -62,7 +62,7 @@ using namespace anh;
 using namespace app;
 using namespace event_dispatcher;
 using namespace connection;
-using namespace login;
+using namespace swganh::login;
 using namespace messages;
 using namespace swganh::base;
 using namespace swganh::character;
@@ -131,10 +131,10 @@ shared_ptr<BaseCharacterService> ConnectionService::character_service() {
 void ConnectionService::character_service(shared_ptr<BaseCharacterService> character_service) {
     character_service_ = character_service;
 }
-shared_ptr<LoginService> ConnectionService::login_service() {
+shared_ptr<LoginServiceInterface> ConnectionService::login_service() {
     return login_service_;
 }
-void ConnectionService::login_service(shared_ptr<LoginService> login_service) {
+void ConnectionService::login_service(shared_ptr<LoginServiceInterface> login_service) {
     login_service_ = login_service;
 }
 

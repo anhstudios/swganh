@@ -52,17 +52,17 @@
 
 using namespace anh;
 using namespace app;
-using namespace swganh;
-using namespace base;
-using namespace character;
-using namespace database;
-using namespace event_dispatcher;
 using namespace login;
 using namespace messages;
+using namespace swganh::login;
+using namespace swganh::base;
+using namespace swganh::character;
+using namespace database;
+using namespace event_dispatcher;
 using namespace std;
 
 LoginService::LoginService(shared_ptr<KernelInterface> kernel) 
-    : swganh::base::BaseService(kernel)
+    : LoginServiceInterface(kernel)
     , listen_port_(0) 
     , galaxy_status_timer_(kernel->GetIoService()) {
     soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
@@ -250,7 +250,6 @@ bool LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_disp
 
     return true;
 }
-
 tuple<string, uint32_t> LoginService::GetSessionKey(uint32_t session_id) {
     return make_tuple("", 1);
 }

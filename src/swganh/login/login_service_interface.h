@@ -18,16 +18,13 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_CHARACTER_BASE_CHARACTER_SERVICE_H_
-#define SWGANH_CHARACTER_BASE_CHARACTER_SERVICE_H_
+#ifndef SWGANH_LOGIN_SERVICE_INTERFACE_H_
+#define SWGANH_LOGIN_SERVICE_INTERFACE_H_
 
-#include <cstdint>
+#include <map>
 #include <tuple>
-#include <vector>
 
 #include "swganh/base/base_service.h"
-#include "swganh/character/character_data.h"
-#include "connection/messages/client_create_character.h"
 
 namespace anh {
 namespace app {
@@ -35,24 +32,19 @@ class KernelInterface;
 }}  // namespace anh::app
 
 namespace swganh {
-namespace character {
-    
-class BaseCharacterService : public swganh::base::BaseService {
-public:    
-    explicit BaseCharacterService(std::shared_ptr<anh::app::KernelInterface> kernel) 
+namespace login {
+
+class LoginServiceInterface : public swganh::base::BaseService {
+public:
+    explicit LoginServiceInterface(std::shared_ptr<anh::app::KernelInterface> kernel) 
         : swganh::base::BaseService(kernel) {}
+    virtual ~LoginServiceInterface(){}
+    
+    virtual anh::service::ServiceDescription GetServiceDescription() = 0;
 
-    virtual std::vector<CharacterData> GetCharactersForAccount(uint64_t account_id) = 0;
-    virtual CharacterLoginData GetLoginCharacter(uint64_t character_id) = 0;
-    virtual bool DeleteCharacter(uint64_t character_id) = 0;
-    virtual std::wstring GetRandomNameRequest(const std::string& base_model) = 0;
-    virtual std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info, uint32_t account_id) = 0;
-
-private:
-    BaseCharacterService();
+    virtual void DescribeConfigOptions(boost::program_options::options_description& description) = 0;
+    virtual std::tuple<std::string, uint32_t> GetSessionKey(uint32_t session_id) = 0;
 };
 
-}}  // namespace swganh::character
-
-#endif  // SWGANH_CHARACTER_BASE_CHARACTER_SERVICE_H_
-
+}}  // namespace swganh::login
+#endif  // SWGANH_LOGIN_SERVICE_INTERFACE_H_
