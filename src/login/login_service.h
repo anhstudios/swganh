@@ -25,12 +25,17 @@
 
 #include <boost/asio.hpp>
 
+#include <glog/logging.h>
+
+#include "anh/network/soe/packet_router.h"
 #include "anh/network/soe/server.h"
 
 #include "swganh/base/base_service.h"
 #include "swganh/character/base_character_service.h"
 
 #include "login/galaxy_status.h"
+#include "login/messages/login_client_id.h"
+#include "login/messages/delete_character_message.h"
 
 namespace anh {
 namespace app {
@@ -80,10 +85,9 @@ private:
     void onUpdate();
 
     void subscribe();
-
+    
     bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    bool HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    bool HandleGalaxyStatusUpdated_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    void HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const messages::DeleteCharacterMessage& message);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
@@ -92,14 +96,16 @@ private:
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
-
+    
     std::vector<GalaxyStatus> galaxy_status_;
     
     int galaxy_status_check_duration_secs_;
     boost::asio::deadline_timer galaxy_status_timer_;
 
-    typedef std::map<uint32_t, std::shared_ptr<LoginClient>> ClientMap;
+    typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<LoginClient>> ClientMap;
     ClientMap clients_;
+    
+    anh::network::soe::PacketRouter<ClientMap> packet_router_;
 
     std::string listen_address_;
     uint16_t listen_port_;
