@@ -35,6 +35,8 @@ public:
     ~MysqlAccountProvider();
 
     std::shared_ptr<login::Account> FindByUsername(std::string username);
+    uint32_t FindBySessionKey(const std::string& session_key);
+    bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
 private:
     std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };

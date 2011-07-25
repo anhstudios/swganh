@@ -21,7 +21,10 @@
 #include "connection/connection_service.h"
 
 #include <iostream>
+#include <tuple>
 #include <glog/logging.h>
+
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "anh/crc.h"
 #include "anh/app/kernel_interface.h"
@@ -43,6 +46,8 @@
 #include "swganh/scene/messages/scene_create_object_by_crc.h"
 #include "swganh/scene/messages/scene_end_baselines.h"
 
+#include "connection/providers/mysql_session_provider.h"
+
 #include "connection/messages/client_permissions_message.h"
 #include "connection/messages/select_character.h"
 #include "connection/messages/client_create_character.h"
@@ -57,6 +62,7 @@ using namespace anh;
 using namespace app;
 using namespace event_dispatcher;
 using namespace connection;
+using namespace swganh::login;
 using namespace messages;
 using namespace swganh::base;
 using namespace swganh::character;
@@ -68,6 +74,7 @@ ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel)
     , listen_port_(0) {
         
     soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
+    session_provider_ = make_shared<connection::providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
 }
 
 ConnectionService::~ConnectionService() {}
@@ -104,6 +111,7 @@ void ConnectionService::onUpdate() {
 
 void ConnectionService::onStop() {
     soe_server_->Shutdown();
+    player_session_map_.clear();
 }
 
 void ConnectionService::subscribe() {
@@ -122,6 +130,12 @@ shared_ptr<BaseCharacterService> ConnectionService::character_service() {
 
 void ConnectionService::character_service(shared_ptr<BaseCharacterService> character_service) {
     character_service_ = character_service;
+}
+shared_ptr<LoginServiceInterface> ConnectionService::login_service() {
+    return login_service_;
+}
+void ConnectionService::login_service(shared_ptr<LoginServiceInterface> login_service) {
+    login_service_ = login_service;
 }
 
 bool ConnectionService::HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
@@ -142,7 +156,25 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     ClientIdMsg id_msg;
     id_msg.deserialize(*remote_event->message());
-    
+    // get session key from login service
+    uint32_t account_id = login_service()->GetAccountBySessionKey(id_msg.session_hash);
+    // authorized
+    if (account_id > 0)
+    {
+        // gets player from account
+        uint64_t player_id = session_provider_->GetPlayerId(account_id);
+        // creates a new session and stores it for later use
+        if (session_provider_->CreateGameSession(player_id, remote_event->session()->connection_id())) {
+            // insert into map
+            player_session_map_.insert(std::make_pair(player_id, remote_event->session()));
+        } else  {
+            DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
+        }
+    } else {
+        DLOG(WARNING) << "Account_id not found from session key, unauthorized access.";
+        return false;
+    }
+
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = 1;
     client_permissions.available_character_slots = 8;
@@ -196,10 +228,21 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     ClientCreateCharacter create_character;
     create_character.deserialize(*remote_event->message());
-        
+    
+    // they should be in our Player session map
+    uint32_t account_id;
+    auto it_found = find_if(player_session_map_.begin(), player_session_map_.end(), [&remote_event] (PlayerSessionMap::value_type& player_session ) {
+        return player_session.second->connection_id() == remote_event->session()->connection_id();
+    });
+    if (it_found != player_session_map_.end())
+    {
+        account_id = session_provider_->GetAccountId((*it_found).first);
+    } else {
+        DLOG(WARNING) << "Can't continue in Character Creation process without a valid account_id";
+    }
     uint64_t character_id;
     string error_code;
-    tie(character_id, error_code) = character_service()->CreateCharacter(create_character);
+    tie(character_id, error_code) = character_service()->CreateCharacter(create_character, account_id);
     // heartbeat to let the client know we're still here
     HeartBeat heartbeat;
     remote_event->session()->SendMessage(heartbeat);

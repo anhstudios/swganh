@@ -23,8 +23,12 @@
 
 #include "anh/network/soe/server.h"
 
+#include <map>
+
+#include "connection/providers/session_provider_interface.h"
 #include "swganh/base/base_service.h"
 #include "swganh/character/base_character_service.h"
+#include "swganh/login/login_service_interface.h"
 
 namespace anh {
 namespace app {
@@ -37,6 +41,8 @@ class EventInterface;
 }}  // namespace anh::event_dispatcher
 
 namespace connection {
+
+typedef std::map<uint64_t, std::shared_ptr<anh::network::soe::Session>> PlayerSessionMap;
     
 class ConnectionService : public swganh::base::BaseService {
 public:
@@ -55,6 +61,8 @@ public:
 
     std::shared_ptr<swganh::character::BaseCharacterService> character_service();
     void character_service(std::shared_ptr<swganh::character::BaseCharacterService> character_service);
+    std::shared_ptr<swganh::login::LoginServiceInterface> login_service();
+    void login_service(std::shared_ptr<swganh::login::LoginServiceInterface> login_service);
 
 private:
     bool HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
@@ -63,9 +71,13 @@ private:
     bool processSelectCharacter_(uint64_t character_id, std::shared_ptr<anh::network::soe::Session> session);
     bool HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleClientRandomNameRequest_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    
+
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
+    std::shared_ptr<swganh::login::LoginServiceInterface> login_service_;
+    std::shared_ptr<connection::providers::SessionProviderInterface> session_provider_;
+
+    PlayerSessionMap player_session_map_;
     
     std::string listen_address_;
     uint16_t listen_port_;

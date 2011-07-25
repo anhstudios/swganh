@@ -20,6 +20,8 @@
 
 #include "login/providers/mysql_account_provider.h"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -76,4 +78,46 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
     }
 
     return account;
+}
+uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
+    uint32_t account_id = 0;
+
+     try {
+        string sql = "select account_id from account_session where session_key = ?";
+        auto conn = db_manager_->getConnection("galaxy_manager");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setString(1, session_key);
+        auto result_set = statement->executeQuery();
+        
+        if (result_set->next()) {
+            account_id = result_set->getInt("account_id");
+            
+        } else {
+            DLOG(WARNING) << "No account_id found for session_key: " << session_key << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+     return account_id;
+}
+bool MysqlAccountProvider::CreateAccountSession(uint32_t account_id, const std::string& session_key) {
+    bool success = false;
+    try {
+        string sql = "INSERT INTO account_session(account_id, session_key) VALUES(?,?);";
+        auto conn = db_manager_->getConnection("galaxy_manager");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt64(1, account_id);
+        statement->setString(2, session_key);
+        auto rows_updated = statement->executeUpdate();
+        if (rows_updated > 0)
+            success = true;
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return success;
 }
