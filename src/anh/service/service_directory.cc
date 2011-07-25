@@ -52,7 +52,7 @@ shared_ptr<Galaxy> ServiceDirectory::galaxy() const {
     return active_galaxy_;
 }
 
-shared_ptr<Service> ServiceDirectory::service() const {
+shared_ptr<ServiceDescription> ServiceDirectory::service() const {
     return active_service_;
 }
 
@@ -84,7 +84,7 @@ bool ServiceDirectory::registerService(const string& name, const string& service
     return false;
 }
 
-bool ServiceDirectory::removeService(shared_ptr<Service>& service) {
+bool ServiceDirectory::removeService(shared_ptr<ServiceDescription>& service) {
     if (datastore_->deleteServiceById(service->id())) {
         if (active_service_ && service->id() == active_service_->id()) {
             // before we clear out the service
@@ -102,12 +102,12 @@ bool ServiceDirectory::removeService(shared_ptr<Service>& service) {
     return false;
 }
 
-void ServiceDirectory::updateServiceStatus(shared_ptr<Service>& service, int32_t new_status) {
+void ServiceDirectory::updateServiceStatus(shared_ptr<ServiceDescription>& service, int32_t new_status) {
     service->status(new_status);
     datastore_->saveService(service);
 }
 
-bool ServiceDirectory::makePrimaryService(shared_ptr<Service> service) {
+bool ServiceDirectory::makePrimaryService(shared_ptr<ServiceDescription> service) {
     active_galaxy_->primary_id(service->id());
     return true;
 }

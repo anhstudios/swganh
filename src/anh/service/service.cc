@@ -21,7 +21,7 @@
 
 using namespace anh::service;
 
-Service::Service(const std::string& name,
+ServiceDescription::ServiceDescription(const std::string& name,
                  const std::string& type,
                  const std::string& version,
                  const std::string& address,
@@ -39,7 +39,7 @@ Service::Service(const std::string& name,
     , last_pulse_("1970-01-01 00:00:01")
 {}
 
-Service::Service(uint32_t id,
+ServiceDescription::ServiceDescription(uint32_t id,
                  uint32_t galaxy_id,
                  const std::string& name,
                  const std::string& type,
@@ -61,9 +61,9 @@ Service::Service(uint32_t id,
     , last_pulse_("1970-01-01 00:00:01")
 {}
 
-Service::~Service() {}
+ServiceDescription::~ServiceDescription() {}
 
-Service::Service(const Service& other) {
+ServiceDescription::ServiceDescription(const ServiceDescription& other) {
     id_ = other.id_;
     galaxy_id_ = other.galaxy_id_;
     name_ = other.name_;
@@ -77,7 +77,7 @@ Service::Service(const Service& other) {
     last_pulse_ = other.last_pulse_;
 }
 
-Service::Service(Service&& other) {
+ServiceDescription::ServiceDescription(ServiceDescription&& other) {
     id_ = other.id_;
     galaxy_id_ = other.galaxy_id_;
     name_ = std::move(other.name_);
@@ -91,7 +91,7 @@ Service::Service(Service&& other) {
     last_pulse_ = std::move(other.last_pulse_);
 }
 
-void Service::swap(Service& other) {
+void ServiceDescription::swap(ServiceDescription& other) {
     std::swap(other.id_, id_);
     std::swap(other.galaxy_id_, galaxy_id_);
     std::swap(other.name_, name_);
@@ -105,59 +105,59 @@ void Service::swap(Service& other) {
     std::swap(other.last_pulse_, last_pulse_);
 }
 
-Service& Service::operator=(Service other) {
+ServiceDescription& ServiceDescription::operator=(ServiceDescription other) {
     other.swap(*this);
     return *this;
 }
 
-uint32_t Service::id() const {
+uint32_t ServiceDescription::id() const {
     return id_;
 }
 
-uint32_t Service::galaxy_id() const {
+uint32_t ServiceDescription::galaxy_id() const {
     return galaxy_id_;
 }
 
-const std::string& Service::name() const {
+const std::string& ServiceDescription::name() const {
     return name_;
 }
 
-const std::string& Service::type() const {
+const std::string& ServiceDescription::type() const {
     return type_;
 }
 
-const std::string& Service::version() const {
+const std::string& ServiceDescription::version() const {
     return version_;
 }
 
-const std::string& Service::address() const {
+const std::string& ServiceDescription::address() const {
     return address_;
 }
 
-uint16_t Service::tcp_port() const {
+uint16_t ServiceDescription::tcp_port() const {
     return tcp_port_;
 }
 
-uint16_t Service::udp_port() const {
+uint16_t ServiceDescription::udp_port() const {
     return udp_port_;
 }
 
-uint16_t Service::ping_port() const {
+uint16_t ServiceDescription::ping_port() const {
     return ping_port_;
 }
 
-int32_t Service::status() const {
+int32_t ServiceDescription::status() const {
     return status_;
 }
 
-void Service::status(int32_t new_status) {
+void ServiceDescription::status(int32_t new_status) {
     status_ = new_status;
 }
 
-const std::string& Service::last_pulse() const {
+const std::string& ServiceDescription::last_pulse() const {
     return last_pulse_;
 }
 
-void Service::last_pulse(std::string last_pulse) {
+void ServiceDescription::last_pulse(std::string last_pulse) {
     last_pulse_ = std::move(last_pulse);
 }

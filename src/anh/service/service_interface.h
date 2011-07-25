@@ -31,7 +31,7 @@ class ServiceInterface {
 public:
     virtual ~ServiceInterface() {}
 
-    virtual Service GetServiceDescription() = 0;
+    virtual ServiceDescription GetServiceDescription() = 0;
 
     /*
     *  @brief Starts up the service, sets running_ to true

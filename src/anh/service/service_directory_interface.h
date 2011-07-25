@@ -33,7 +33,7 @@ namespace anh {
 namespace service {
 
 typedef std::list<Galaxy> GalaxyList;
-typedef std::list<Service> ServiceList;
+typedef std::list<ServiceDescription> ServiceList;
 
 /// Simple interface
 class ServiceDirectoryInterface {
@@ -51,17 +51,17 @@ public:
         uint16_t udp_port, 
         uint16_t ping) = 0;
     
-    virtual bool removeService(std::shared_ptr<Service>& service) = 0;
+    virtual bool removeService(std::shared_ptr<ServiceDescription>& service) = 0;
     
     virtual void updateServiceStatus(
-        std::shared_ptr<Service>& service, 
+        std::shared_ptr<ServiceDescription>& service, 
         int32_t new_status) = 0;
     
-    virtual bool makePrimaryService(std::shared_ptr<Service> service) = 0;
+    virtual bool makePrimaryService(std::shared_ptr<ServiceDescription> service) = 0;
 
     virtual std::shared_ptr<Galaxy> galaxy() const = 0;
 
-    virtual std::shared_ptr<Service> service() const = 0;
+    virtual std::shared_ptr<ServiceDescription> service() const = 0;
 
     virtual void pulse() = 0;
     
@@ -87,15 +87,15 @@ public:
         return false;
     }
     
-    bool removeService(std::shared_ptr<Service>& service) {
+    bool removeService(std::shared_ptr<ServiceDescription>& service) {
         return false;
     }
     
     void updateServiceStatus(
-        std::shared_ptr<Service>& service, 
+        std::shared_ptr<ServiceDescription>& service, 
         int32_t new_status) {}
     
-    bool makePrimaryService(std::shared_ptr<Service> service) {
+    bool makePrimaryService(std::shared_ptr<ServiceDescription> service) {
         return false;
     }
 

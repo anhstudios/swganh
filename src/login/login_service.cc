@@ -75,8 +75,8 @@ LoginService::LoginService(shared_ptr<KernelInterface> kernel)
 
 LoginService::~LoginService() {}
 
-service::Service LoginService::GetServiceDescription() {
-    service::Service service_description(
+service::ServiceDescription LoginService::GetServiceDescription() {
+    service::ServiceDescription service_description(
         "ANH Login Service",
         "login",
         "0.1",
@@ -149,7 +149,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     std::for_each(galaxy_list.begin(), galaxy_list.end(), [this, &galaxy_status, &service_directory] (anh::service::Galaxy& galaxy) {
         auto service_list = service_directory->getServiceSnapshot(std::make_shared<anh::service::Galaxy>(galaxy));
 
-        auto it = std::find_if(service_list.begin(), service_list.end(), [] (anh::service::Service& service) {
+        auto it = std::find_if(service_list.begin(), service_list.end(), [] (anh::service::ServiceDescription& service) {
             return service.type().compare("connection") == 0;
         });
 
