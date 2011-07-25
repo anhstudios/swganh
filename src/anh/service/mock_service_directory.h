@@ -40,14 +40,14 @@ public:
         uint16_t tcp_port, 
         uint16_t udp_port, 
         uint16_t ping));
-    MOCK_METHOD1(removeService, bool(std::shared_ptr<Service>& service));
+    MOCK_METHOD1(removeService, bool(std::shared_ptr<ServiceDescription>& service));
     MOCK_METHOD2(updateServiceStatus, void(
-        std::shared_ptr<Service>& service,
+        std::shared_ptr<ServiceDescription>& service,
         int32_t new_status));
-    MOCK_METHOD1(makePrimaryService, bool(std::shared_ptr<Service> service));
+    MOCK_METHOD1(makePrimaryService, bool(std::shared_ptr<ServiceDescription> service));
     MOCK_METHOD0(pulse, void());
     MOCK_CONST_METHOD0(galaxy, std::shared_ptr<Galaxy>());
-    MOCK_CONST_METHOD0(service, std::shared_ptr<Service>());
+    MOCK_CONST_METHOD0(service, std::shared_ptr<ServiceDescription>());
     MOCK_CONST_METHOD0(getGalaxySnapshot, GalaxyList());
     MOCK_CONST_METHOD1(getServiceSnapshot, ServiceList(
         std::shared_ptr<Galaxy> galaxy));

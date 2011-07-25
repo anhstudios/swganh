@@ -72,8 +72,8 @@ ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel)
 
 ConnectionService::~ConnectionService() {}
 
-service::Service ConnectionService::GetServiceDescription() {
-    service::Service service_description(
+service::ServiceDescription ConnectionService::GetServiceDescription() {
+    service::ServiceDescription service_description(
         "ANH Connection Service",
         "connection",
         "0.1",

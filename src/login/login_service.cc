@@ -33,6 +33,8 @@
 #include "anh/network/soe/session.h"
 #include "anh/network/soe/server.h"
 
+#include "anh/service/service_manager.h"
+
 #include "swganh/base/swg_message_handler.h"
 
 #include "login/messages/delete_character_message.h"
@@ -73,8 +75,8 @@ LoginService::LoginService(shared_ptr<KernelInterface> kernel)
 
 LoginService::~LoginService() {}
 
-service::Service LoginService::GetServiceDescription() {
-    service::Service service_description(
+service::ServiceDescription LoginService::GetServiceDescription() {
+    service::ServiceDescription service_description(
         "ANH Login Service",
         "login",
         "0.1",
@@ -98,6 +100,8 @@ void LoginService::DescribeConfigOptions(boost::program_options::options_descrip
 }
 
 void LoginService::onStart() {
+    character_service_ = static_pointer_cast<BaseCharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
+
     soe_server_->Start(listen_port_);
     galaxy_status_ = GetGalaxyStatus_();
     
@@ -119,18 +123,8 @@ void LoginService::subscribe() {
 
     event_dispatcher->subscribe("LoginClientId", bind(&LoginService::HandleLoginClientId_, this, placeholders::_1));
     event_dispatcher->subscribe("DeleteCharacterMessage", bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1));
-
     event_dispatcher->subscribe("GalaxyStatusUpdated", bind(&LoginService::HandleGalaxyStatusUpdated_, this, placeholders::_1));
 }
-
-shared_ptr<BaseCharacterService> LoginService::character_service() {
-    return character_service_;
-}
-
-void LoginService::character_service(shared_ptr<BaseCharacterService> character_service) {
-    character_service_ = character_service;
-}
-
 
 void LoginService::UpdateGalaxyStatus_() {    
     galaxy_status_timer_.expires_from_now(boost::posix_time::seconds(galaxy_status_check_duration_secs_));
@@ -155,7 +149,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     std::for_each(galaxy_list.begin(), galaxy_list.end(), [this, &galaxy_status, &service_directory] (anh::service::Galaxy& galaxy) {
         auto service_list = service_directory->getServiceSnapshot(std::make_shared<anh::service::Galaxy>(galaxy));
 
-        auto it = std::find_if(service_list.begin(), service_list.end(), [] (anh::service::Service& service) {
+        auto it = std::find_if(service_list.begin(), service_list.end(), [] (anh::service::ServiceDescription& service) {
             return service.type().compare("connection") == 0;
         });
 
@@ -184,7 +178,8 @@ bool LoginService::HandleGalaxyStatusUpdated_(shared_ptr<EventInterface> incomin
 
     std::for_each(clients_.begin(), clients_.end(), [this] (ClientMap::value_type& client_entry) {
         if (client_entry.second) {
-            SendLoginClusterStatus_(client_entry.second);
+            client_entry.second->session->SendMessage(
+                BuildLoginClusterStatus(galaxy_status_));
         }
     });
 
@@ -218,10 +213,20 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
     login_client->account = account;
     login_client->session = remote_event->session();
 
-    SendLoginClientToken_(login_client);
-    SendLoginEnumCluster_(login_client);
-    SendLoginClusterStatus_(login_client);
-    SendEnumerateCharacterId_(login_client);
+    login_client->session->SendMessage(
+        messages::BuildLoginClientToken(login_client));
+    
+    login_client->session->SendMessage(
+        messages::BuildLoginEnumCluster(login_client, galaxy_status_));
+    
+    login_client->session->SendMessage(
+        messages::BuildLoginClusterStatus(galaxy_status_));
+    
+
+    auto characters = character_service_->GetCharactersForAccount(login_client->account->account_id());
+
+    login_client->session->SendMessage(
+        messages::BuildEnumerateCharacterId(characters));
 
     clients_.insert(make_pair(login_client->account->account_id(), login_client));
 
@@ -244,81 +249,4 @@ bool LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_disp
     remote_event->session()->SendMessage(reply_message);
 
     return true;
-}
-
-    
-void LoginService::SendLoginClientToken_(std::shared_ptr<LoginClient> login_client) {    
-    LoginClientToken token_message;
-    token_message.station_id = login_client->account->account_id();
-        
-    const uint8_t data[56] = {
-        0x20, 0x00, 0x00, 0x00, 
-        0x15, 0x00, 0x00, 0x00,
-        0x0E, 0xD6, 0x93, 0xDE, 
-        0xD2, 0xEF, 0xBF, 0x8E,
-        0xA1, 0xAC, 0xD2, 0xEE, 
-        0x4C, 0x55, 0xBE, 0x30,
-        0x5F, 0xBE, 0x23, 0x0D, 
-        0xB4, 0xAB, 0x58, 0xF9,
-        0x62, 0x69, 0x79, 0x67, 
-        0xE8, 0x10, 0x6E, 0xD3,
-        0x86, 0x9B, 0x3A, 0x4A, 
-        0x1A, 0x72, 0xA1, 0xFA,
-        0x8F, 0x96, 0xFF, 0x9F, 
-        0xA5, 0x62, 0x5A, 0x29,
-    };
-
-    ByteBuffer buffer(data, sizeof(data));
-    token_message.session_key = buffer;
-    token_message.station_username = login_client->username;
-    
-    login_client->session->SendMessage(token_message);
-}
-
-void LoginService::SendLoginEnumCluster_(std::shared_ptr<LoginClient> login_client) {
-    LoginEnumCluster cluster_message;
-    cluster_message.max_account_chars = 2;
-
-    std::for_each(galaxy_status_.begin(), galaxy_status_.end(), [&cluster_message] (GalaxyStatus& status) {            
-        Cluster cluster;
-        cluster.distance = status.distance;
-        cluster.server_id = status.galaxy_id;
-        cluster.server_name = status.name;
-
-        cluster_message.servers.push_back(cluster);
-    });
-
-    login_client->session->SendMessage(cluster_message);
-}
-
-void LoginService::SendLoginClusterStatus_(std::shared_ptr<LoginClient> login_client) {
-    LoginClusterStatus cluster_status_message;
-    
-    std::for_each(galaxy_status_.begin(), galaxy_status_.end(), [&cluster_status_message] (GalaxyStatus& status) {  
-        ClusterServer cluster_server;
-        cluster_server.address = status.address;
-        cluster_server.ping_port = status.ping_port;
-        cluster_server.conn_port = status.connection_port;
-        cluster_server.distance = status.distance;
-        cluster_server.status = status.status;
-        cluster_server.server_id = status.galaxy_id;
-        cluster_server.not_recommended_flag = 0;
-        cluster_server.max_chars = status.max_characters;
-        cluster_server.max_pop = status.max_population;
-        cluster_server.server_pop = status.server_population;
-        
-        cluster_status_message.servers.push_back(cluster_server);
-    });
-        
-    login_client->session->SendMessage(cluster_status_message);
-}
-
-void LoginService::SendEnumerateCharacterId_(std::shared_ptr<LoginClient> login_client) {
-    EnumerateCharacterId character_message;
-
-    auto characters = character_service_->GetCharactersForAccount(login_client->account->account_id());
-    
-    character_message.characters = characters;
-    
-    login_client->session->SendMessage(character_message);
 }
