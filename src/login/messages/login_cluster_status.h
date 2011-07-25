@@ -24,9 +24,16 @@
 #include <algorithm>
 #include <list>
 #include <string>
+#include <vector>
 
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
+
+#include "login/galaxy_status.h"
+
+namespace login {
+struct LoginClient;
+}  // namespace login
 
 namespace login {
 namespace messages {
@@ -84,6 +91,8 @@ struct LoginClusterStatus : public swganh::base::SwgMessage<LoginClusterStatus> 
         }
     }
 };
+
+LoginClusterStatus BuildLoginClusterStatus(const std::vector<login::GalaxyStatus>& galaxy_status);
 
 }}  // namespace login::messages
 
