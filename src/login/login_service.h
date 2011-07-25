@@ -64,7 +64,7 @@ public:
     anh::service::ServiceDescription GetServiceDescription();
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
-    std::tuple<std::string, uint32_t> GetSessionKey(uint32_t session_id);
+    uint32_t GetAccountBySessionKey(const std::string& session_key);
 private:
     LoginService();
 

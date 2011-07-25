@@ -157,11 +157,9 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     ClientIdMsg id_msg;
     id_msg.deserialize(*remote_event->message());
     // get session key from login service
-    uint32_t account_id;
-    string session_key;
-    tie(session_key, account_id) = login_service()->GetSessionKey(remote_event->session()->connection_id());
+    uint32_t account_id = login_service()->GetAccountBySessionKey(id_msg.session_hash);
     // authorized
-    if (id_msg.session_hash == session_key)
+    if (account_id > 0)
     {
         // gets player from account
         uint64_t player_id = session_provider_->GetPlayerId(account_id);
@@ -172,7 +170,10 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
         } else  {
             DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
         }
-    }    
+    } else {
+        DLOG(WARNING) << "Account_id not found from session key, unauthorized access.";
+        return false;
+    }
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = 1;

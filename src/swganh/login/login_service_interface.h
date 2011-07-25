@@ -43,7 +43,7 @@ public:
     virtual anh::service::ServiceDescription GetServiceDescription() = 0;
 
     virtual void DescribeConfigOptions(boost::program_options::options_description& description) = 0;
-    virtual std::tuple<std::string, uint32_t> GetSessionKey(uint32_t session_id) = 0;
+    virtual uint32_t GetAccountBySessionKey(const std::string& session_key) = 0;
 };
 
 }}  // namespace swganh::login

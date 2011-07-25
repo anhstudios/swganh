@@ -22,6 +22,8 @@
 
 #include <glog/logging.h>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include "anh/app/kernel_interface.h"
 
 #include "anh/database/database_manager.h"
@@ -212,9 +214,14 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
 
     login_client->account = account;
     login_client->session = remote_event->session();
+    
+    // create account session
+    string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
+        + boost::lexical_cast<string>(remote_event->session()->connection_id());
 
+    account_provider_->CreateAccountSession(account->account_id(), account_session);
     login_client->session->SendMessage(
-        messages::BuildLoginClientToken(login_client));
+        messages::BuildLoginClientToken(login_client, account_session));
     
     login_client->session->SendMessage(
         messages::BuildLoginEnumCluster(login_client, galaxy_status_));
@@ -222,7 +229,6 @@ bool LoginService::HandleLoginClientId_(shared_ptr<EventInterface> incoming_even
     login_client->session->SendMessage(
         messages::BuildLoginClusterStatus(galaxy_status_));
     
-
     auto characters = character_service_->GetCharactersForAccount(login_client->account->account_id());
 
     login_client->session->SendMessage(
@@ -250,6 +256,6 @@ bool LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<anh::event_disp
 
     return true;
 }
-tuple<string, uint32_t> LoginService::GetSessionKey(uint32_t session_id) {
-    return make_tuple("", 1);
+uint32_t LoginService::GetAccountBySessionKey(const string& session_key) {
+    return account_provider_->FindBySessionKey(session_key);
 }

@@ -57,7 +57,7 @@ struct LoginClientToken : public swganh::base::SwgMessage<LoginClientToken> {
     }
 };
 
-LoginClientToken BuildLoginClientToken(std::shared_ptr<login::LoginClient> login_client);
+LoginClientToken BuildLoginClientToken(std::shared_ptr<login::LoginClient> login_client, const std::string& session_key);
 
 }}  // namespace login::messages
 
