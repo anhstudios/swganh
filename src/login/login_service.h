@@ -97,35 +97,6 @@ private:
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
     
-    template<typename MessageType>
-    bool HandleRemoteMessage(
-        std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event,
-        //void (LoginService::*handler) (std::shared_ptr<LoginClient>, const MessageType&))
-        std::function<void (std::shared_ptr<LoginClient>, const MessageType&)> handler)
-    {
-        auto remote_event = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::Packet>>(incoming_event);
-    
-        auto it = clients_.find(remote_event->session()->remote_endpoint());
-        
-        if (it == clients_.end()) {
-            throw std::runtime_error("Received remote message for an invalid client");
-        } 
-
-        auto login_client = it->second;
-
-        try {
-            MessageType message;
-            message.deserialize(*remote_event->message());        
-            
-            handler(login_client, message);
-        } catch(const std::exception& e) {
-            DLOG(ERROR) << "Error handling remote message\nclient: " << login_client->username << "\nerror: \n" << e.what();
-            return false;
-        }
-
-        return true;
-    }
-
     std::vector<GalaxyStatus> galaxy_status_;
     
     int galaxy_status_check_duration_secs_;
