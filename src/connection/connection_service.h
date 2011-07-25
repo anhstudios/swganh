@@ -25,6 +25,7 @@
 
 #include <map>
 
+#include "connection/providers/session_provider_interface.h"
 #include "swganh/base/base_service.h"
 #include "swganh/character/base_character_service.h"
 #include "login/login_service.h"
@@ -40,6 +41,8 @@ class EventInterface;
 }}  // namespace anh::event_dispatcher
 
 namespace connection {
+
+typedef std::map<uint64_t, std::shared_ptr<anh::network::soe::Session>> PlayerSessionMap;
     
 class ConnectionService : public swganh::base::BaseService {
 public:
@@ -72,8 +75,9 @@ private:
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
     std::shared_ptr<login::LoginService> login_service_;
+    std::shared_ptr<connection::providers::SessionProviderInterface> session_provider_;
 
-    std::map<uint64_t, std::shared_ptr<anh::network::soe::Session>> player_session_map_;
+    PlayerSessionMap player_session_map_;
     
     std::string listen_address_;
     uint16_t listen_port_;

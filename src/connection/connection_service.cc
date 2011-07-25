@@ -21,6 +21,7 @@
 #include "connection/connection_service.h"
 
 #include <iostream>
+#include <tuple>
 #include <glog/logging.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -44,6 +45,8 @@
 #include "swganh/scene/messages/cmd_start_scene.h"
 #include "swganh/scene/messages/scene_create_object_by_crc.h"
 #include "swganh/scene/messages/scene_end_baselines.h"
+
+#include "connection/providers/mysql_session_provider.h"
 
 #include "connection/messages/client_permissions_message.h"
 #include "connection/messages/select_character.h"
@@ -71,6 +74,7 @@ ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel)
     , listen_port_(0) {
         
     soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
+    session_provider_ = make_shared<connection::providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
 }
 
 ConnectionService::~ConnectionService() {}
@@ -107,6 +111,7 @@ void ConnectionService::onUpdate() {
 
 void ConnectionService::onStop() {
     soe_server_->Shutdown();
+    player_session_map_.clear();
 }
 
 void ConnectionService::subscribe() {
@@ -152,21 +157,23 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     ClientIdMsg id_msg;
     id_msg.deserialize(*remote_event->message());
     // get session key from login service
-    uint64_t account_id;
-    std::string session_key;
+    uint32_t account_id;
+    string session_key;
     tie(session_key, account_id) = login_service()->GetSessionKey(remote_event->session()->connection_id());
     // authorized
     if (id_msg.session_hash == session_key)
     {
-        // create new game session 
-        std::string game_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
-            + boost::lexical_cast<std::string>(remote_event->session()->connection_id());
-        // update db
-
-        // insert into map
-        player_session_map_.insert(std::make_pair(1, remote_event->session()));
+        // gets player from account
+        uint64_t player_id = session_provider_->GetPlayerId(account_id);
+        // creates a new session and stores it for later use
+        if (session_provider_->CreateGameSession(player_id, remote_event->session()->connection_id())) {
+            // insert into map
+            player_session_map_.insert(std::make_pair(player_id, remote_event->session()));
+        } else  {
+            DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
+        }
     }    
-    
+
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = 1;
     client_permissions.available_character_slots = 8;
@@ -220,10 +227,21 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     ClientCreateCharacter create_character;
     create_character.deserialize(*remote_event->message());
-        
+    
+    // they should be in our Player session map
+    uint32_t account_id;
+    auto it_found = find_if(player_session_map_.begin(), player_session_map_.end(), [&remote_event] (PlayerSessionMap::value_type& player_session ) {
+        return player_session.second->connection_id() == remote_event->session()->connection_id();
+    });
+    if (it_found != player_session_map_.end())
+    {
+        account_id = session_provider_->GetAccountId((*it_found).first);
+    } else {
+        DLOG(WARNING) << "Can't continue in Character Creation process without a valid account_id";
+    }
     uint64_t character_id;
     string error_code;
-    tie(character_id, error_code) = character_service()->CreateCharacter(create_character);
+    tie(character_id, error_code) = character_service()->CreateCharacter(create_character, account_id);
     // heartbeat to let the client know we're still here
     HeartBeat heartbeat;
     remote_event->session()->SendMessage(heartbeat);
