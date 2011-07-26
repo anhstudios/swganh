@@ -109,7 +109,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
             while (result_set->next())
             {
                 CharacterData character;
-                character.character_id = result_set->getUInt64("id");
+                character.character_id = result_set->getUInt64("entity_id");
                 string name = result_set->getString("firstName") + " " + result_set->getString("lastName");
                 character.name = std::wstring(name.begin(), name.end());
                 character.race_crc = anh::memcrc(result_set->getString("baseModel"));
