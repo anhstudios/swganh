@@ -214,7 +214,7 @@ bool LoginService::HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::E
     
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
-        + boost::lexical_cast<string>(remote_event->session()->connection_id());
+        + boost::lexical_cast<string>(remote_event->session()->remote_endpoint().address());
 
     account_provider_->CreateAccountSession(account->account_id(), account_session);
     login_client->session->SendMessage(
