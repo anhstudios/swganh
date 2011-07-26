@@ -392,7 +392,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-/*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ $$
+/*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='' */ $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterDelete`(IN character_id BIGINT)
 BEGIN
 
@@ -410,15 +410,15 @@ BEGIN
 
 	SET error_code = 0;
 
-	UPDATE characters SET archived = 1 WHERE id = character_id;
+	UPDATE characters SET archived = 1 WHERE entity_id = character_id;
 
-	UPDATE characters SET deletedAt = (NOW()) WHERE id = character_id;
+	UPDATE characters SET deletedAt = (NOW()) WHERE entity_id = character_id;
 
 	--
 	-- Check to see if we maked the character for deletion and return proper exit code
 	--
 
-	SELECT COUNT(*) from characters WHERE id = character_id AND archived = 1 INTO check_value;
+	SELECT COUNT(*) from characters WHERE entity_id = character_id AND archived = 1 INTO check_value;
 
 	IF check_value > 0 THEN SET error_code = 1;
 	END IF;
