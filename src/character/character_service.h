@@ -21,23 +21,46 @@
 #ifndef CHARACTER_CHARACTER_SERVICE_H_
 #define CHARACTER_CHARACTER_SERVICE_H_
 
-#include "swganh/character/character_service_interface.h"
+#include "swganh/character/base_character_service.h"
+
+#include "swganh/base/base_service.h"
+
+namespace anh {
+namespace app {
+class KernelInterface;
+}}  // namespace anh::app
+
+namespace anh { namespace database { class DatabaseManagerInterface; } }
 
 namespace character {
     
-class CharacterService : public swganh::character::CharacterServiceInterface {
+class CharacterService : public swganh::character::BaseCharacterService {
 public:
-    CharacterService();
+    explicit CharacterService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~CharacterService();
+    
+    anh::service::ServiceDescription GetServiceDescription();
 
-    void Start();
-    void Stop();
+    void onStart();
+    void onStop();
+    void onUpdate();
 
-    bool IsRunning() const;
+    void subscribe();
+
+    void DescribeConfigOptions(boost::program_options::options_description& description);
 
     // CharacterService API Methods
 
     std::vector<swganh::character::CharacterData> GetCharactersForAccount(uint64_t account_id);
+    swganh::character::CharacterLoginData GetLoginCharacter(uint64_t character_id);
+    bool DeleteCharacter(uint64_t character_id);
+    std::wstring GetRandomNameRequest(const std::string& base_model);
+    std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info, uint32_t account_id);
+private:
+    // helpers
+    std::string parseBio_(const std::string& bio);
+    std::string parseHair_(const std::string& hair_model, const std::string& hair_customization);
+    std::string setCharacterCreateErrorCode_(uint32_t error_id);
 };
 
 }  // namespace character

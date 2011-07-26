@@ -21,22 +21,35 @@
 #ifndef LOGIN_LOGIN_SERVICE_H_
 #define LOGIN_LOGIN_SERVICE_H_
 
-#include <map>
-#include <memory>
+#include "swganh/login/login_service_interface.h"
+#include <boost/asio.hpp>
 
-#include <boost/program_options/options_description.hpp>
-#include <tbb/atomic.h>
+#include <glog/logging.h>
 
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/network/soe/packet_router.h"
 #include "anh/network/soe/server.h"
 
-#include "swganh/character/character_service_interface.h"
+#include "swganh/character/base_character_service.h"
+
+#include "login/galaxy_status.h"
+#include "login/messages/login_client_id.h"
+#include "login/messages/delete_character_message.h"
 
 namespace anh {
 namespace network {
 namespace soe {
 class Server;
 }}}  // namespace anh::network::soe
+
+namespace anh {
+namespace database {
+class DatabaseManagerInterface; 
+}}  // namespace anh::database
+
+namespace anh {
+namespace event_dispatcher {
+class EventInterface;
+}}  // namespace anh::event_dispatcher
 
 namespace login {
     
@@ -46,42 +59,48 @@ namespace providers {
 class AccountProviderInterface;
 }
 
-class LoginClient;
+struct LoginClient;
 
-class LoginService {
+class LoginService : public swganh::login::LoginServiceInterface {
 public:
-    explicit LoginService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    explicit LoginService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~LoginService();
+    
+    anh::service::ServiceDescription GetServiceDescription();
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
-
-    void Start();
-    void Stop();
-
-    bool IsRunning() const;
-
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
-    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
-    
-    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service();
-    void character_service(std::shared_ptr<swganh::character::CharacterServiceInterface> character_service);
-
+    uint32_t GetAccountBySessionKey(const std::string& session_key);
 private:
     LoginService();
 
+    void onStart();
+    void onStop();
+    void onUpdate();
+
+    void subscribe();
+    
     bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    void HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const messages::DeleteCharacterMessage& message);
+
+    std::vector<GalaxyStatus> GetGalaxyStatus_();
+    void UpdateGalaxyStatus_();
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-    std::shared_ptr<swganh::character::CharacterServiceInterface> character_service_;
+    std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
+    
+    std::vector<GalaxyStatus> galaxy_status_;
+    
+    int galaxy_status_check_duration_secs_;
+    boost::asio::deadline_timer galaxy_status_timer_;
 
-    typedef std::map<uint32_t, std::shared_ptr<LoginClient>> ClientMap;
+    typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<LoginClient>> ClientMap;
     ClientMap clients_;
+    
+    anh::network::soe::PacketRouter<ClientMap> packet_router_;
 
-    tbb::atomic<bool> running_;
-
+    std::string listen_address_;
     uint16_t listen_port_;
 };
 

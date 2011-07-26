@@ -29,7 +29,7 @@ namespace messages {
     
 struct DeleteCharacterMessage : public swganh::base::SwgMessage<DeleteCharacterMessage> {
     static const uint16_t opcount = 3;
-    static const uint32_t opcode = 0x8268989B;
+    static const uint32_t opcode = 0xE87AD031;
 
     int32_t server_id;
     uint64_t character_id;

@@ -21,39 +21,65 @@
 #ifndef CONNECTION_CONNECTION_SERVICE_H_
 #define CONNECTION_CONNECTION_SERVICE_H_
 
-#include <boost/program_options/options_description.hpp>
-
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/network/soe/server.h"
 
+#include <map>
+
+#include "connection/providers/session_provider_interface.h"
+#include "swganh/base/base_service.h"
+#include "swganh/character/base_character_service.h"
+#include "swganh/login/login_service_interface.h"
+
+namespace anh {
+namespace app {
+class KernelInterface;
+}}  // namespace anh::app
+
+namespace anh {
+namespace event_dispatcher {
+class EventInterface;
+}}  // namespace anh::event_dispatcher
+
 namespace connection {
+
+typedef std::map<uint64_t, std::shared_ptr<anh::network::soe::Session>> PlayerSessionMap;
     
-class ConnectionService {
+class ConnectionService : public swganh::base::BaseService {
 public:
-    explicit ConnectionService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    explicit ConnectionService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~ConnectionService();
+
+    anh::service::ServiceDescription GetServiceDescription();
     
     void DescribeConfigOptions(boost::program_options::options_description& description);
 
-    void Start();
-    void Stop();
+    void onStart();
+    void onStop();
+    void onUpdate();
 
-    bool IsRunning() const;
-    
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
-    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    void subscribe();
+
+    std::shared_ptr<swganh::character::BaseCharacterService> character_service();
+    void character_service(std::shared_ptr<swganh::character::BaseCharacterService> character_service);
+    std::shared_ptr<swganh::login::LoginServiceInterface> login_service();
+    void login_service(std::shared_ptr<swganh::login::LoginServiceInterface> login_service);
 
 private:
     bool HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleSelectCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    
+    bool processSelectCharacter_(uint64_t character_id, std::shared_ptr<anh::network::soe::Session> session);
+    bool HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    bool HandleClientRandomNameRequest_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+
     std::unique_ptr<anh::network::soe::Server> soe_server_;
+    std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
+    std::shared_ptr<swganh::login::LoginServiceInterface> login_service_;
+    std::shared_ptr<connection::providers::SessionProviderInterface> session_provider_;
+
+    PlayerSessionMap player_session_map_;
     
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-
-    tbb::atomic<bool> running_;
-
+    std::string listen_address_;
     uint16_t listen_port_;
 };
 

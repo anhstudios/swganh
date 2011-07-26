@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "swganh/swganh_app.h"
+#include "swganh/app/swganh_app.h"
 
 #include <exception>
 #include <iostream>
@@ -26,6 +26,7 @@
 
 #include <glog/logging.h>
 #include <boost/thread.hpp>
+#include <tbb/task_scheduler_init.h>
 
 using namespace boost;
 using namespace swganh;
@@ -45,7 +46,9 @@ int main(int argc, char* argv[]) {
     setvbuf( stdout, NULL, _IONBF, 0);
         
     try {
-        SwganhApp app;
+        tbb::task_scheduler_init init;
+
+        app::SwganhApp app;
 
         app.Initialize(argc, argv);
 
@@ -58,13 +61,15 @@ int main(int argc, char* argv[]) {
             cin >> cmd;
 
             if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
-                DLOG(INFO) << "Exit command received from command line. Shutting down.";
+                LOG(INFO) << "Exit command received from command line. Shutting down.";
                 
                 // Stop the application and join the thread until it's finished.
                 app.Stop();
                 application_thread.join();
 
                 break;
+            } else {
+                LOG(WARNING) << "Invalid command received: " << cmd;
             }
         }
 

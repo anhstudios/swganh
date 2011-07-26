@@ -23,6 +23,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "login/account.h"
 
@@ -34,6 +35,8 @@ public:
     virtual ~AccountProviderInterface() {}
 
     virtual std::shared_ptr<login::Account> FindByUsername(std::string username) = 0;
+    virtual uint32_t FindBySessionKey(const std::string& session_key) = 0;
+    virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key) = 0;
 };
 
 }}  // namespace login::providers

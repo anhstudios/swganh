@@ -27,6 +27,10 @@
 #include "swganh/base/swg_message.h"
 
 namespace login {
+struct LoginClient;
+}  // namespace login
+
+namespace login {
 namespace messages {
     
 struct LoginClientToken : public swganh::base::SwgMessage<LoginClientToken> {
@@ -52,6 +56,8 @@ struct LoginClientToken : public swganh::base::SwgMessage<LoginClientToken> {
         station_username = buffer.read<std::string>();
     }
 };
+
+LoginClientToken BuildLoginClientToken(std::shared_ptr<login::LoginClient> login_client, const std::string& session_key);
 
 }}  // namespace login::messages
 

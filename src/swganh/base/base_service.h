@@ -21,31 +21,47 @@
 #ifndef SWGANH_BASE_BASE_SERVICE_H_
 #define SWGANH_BASE_BASE_SERVICE_H_
 
-#include "service_interface.h"
-
 #include <memory>
+#include <string>
+
+#include <boost/asio.hpp>
 #include <tbb/atomic.h>
 
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/service/service_directory.h"
+#include "anh/service/service_interface.h"
+
+namespace anh {
+namespace app {
+class KernelInterface;
+}}  // namespace anh::app
+
+namespace anh {
+namespace event_dispatcher {
+class EventDispatcherInterface;
+}}  // namespace anh::event_dispatcher
 
 namespace swganh {
 namespace base {
 
-class BaseService : public ServiceInterface {
-public:
-    explicit BaseService(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
-    ~BaseService();
-    
-    virtual void Start();
-    virtual void Stop();
+class BaseService : public anh::service::ServiceInterface {
+public:    
+    BaseService(std::shared_ptr<anh::app::KernelInterface> kernel);
 
-    virtual bool IsRunning() const;
-
-    virtual void DescribeConfigOptions(boost::program_options::options_description& description);
+    void Start();
+    void Stop();
     /*
-    *  @brief sets the event_dispatcher
+    *  @brief used to perform any update specific tasks for the service
     */
-    virtual void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    void Update();
+
+    bool IsRunning() const;
+        
+protected:
+    std::shared_ptr<anh::app::KernelInterface> kernel();
+    std::shared_ptr<anh::service::ServiceDirectory> service_directory();
+
+    boost::asio::strand& strand();
+
     /*
     *  @brief used to subscribe to events on a serivce
     */
@@ -54,26 +70,24 @@ public:
     *  @brief used to perform any startup specific tasks for the service
     */
     virtual void onStart() = 0;
+
+    virtual void onUpdate() = 0;
+
     /*
     *  @brief used to perform any shutdown specific tasks for the service
     */
     virtual void onStop() = 0;
-    /*
-    *  @brief used to perform any update specific tasks for the service
-    */
-    virtual void Update() = 0;
-    /*
-    *  @brief gets the event_dispatcher
-    */
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
-    
 
-protected:
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-    
-    tbb::atomic<bool> running_;
 private:
     BaseService();
+    std::shared_ptr<anh::app::KernelInterface> kernel_;
+    std::shared_ptr<anh::service::ServiceDirectory> service_directory_;
+        
+    tbb::atomic<bool> running_;
+
+    std::string galaxy_name_;
+
+    boost::asio::strand strand_;
 };
 
 }}  // swganh::base

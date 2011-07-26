@@ -20,15 +20,39 @@
 
 #include "login/encoders/sha512_encoder.h"
 
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/sqlstring.h>
+
+#include <glog/logging.h>
+
+#include "anh/database/database_manager.h"
+
+using namespace anh::database;
 using namespace login;
 using namespace encoders;
 using namespace std;
 
-Sha512Encoder::Sha512Encoder() {}
+Sha512Encoder::Sha512Encoder(shared_ptr<DatabaseManagerInterface> db_manager)
+    : db_manager_(db_manager) {}
 Sha512Encoder::~Sha512Encoder() {}
 
 string Sha512Encoder::EncodePassword(string raw, string salt) {
-    return "f78036ebcb098b728278dcb05f957d5d5568b3e8bf9973a5de3df3716b3825b372603409d179f053955853ed07b9f53c326cc98582e323937d172903e4665e03";
+    string result;
+
+    string sql = "SELECT SHA2('" + raw + "{" + salt + "}', 512)";
+    auto conn = db_manager_->getConnection("galaxy_manager");
+    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+    auto result_set = statement->executeQuery(sql);
+    if (result_set->next())
+    {
+        result = result_set->getString(1);
+    }
+    else
+        DLOG(WARNING) << "Sha512Encoder::EncodePassword failed to encode password" << endl;
+
+    return result;
 }
 
 bool Sha512Encoder::IsPasswordValid(string encoded, string raw, string salt) {

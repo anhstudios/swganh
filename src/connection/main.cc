@@ -17,9 +17,7 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-#include "main.h"
-
+ 
 #include <iostream>
 
 #include <boost/program_options/options_description.hpp>
@@ -28,73 +26,54 @@
 
 #include <glog/logging.h>
 
+#include "anh/app/kernel_interface.h"
+#include "anh/plugin/bindings.h"
+#include "anh/plugin/plugin_manager.h"
+#include "anh/service/service_manager.h"
+
+#include "swganh/character/base_character_service.h"
+#include "swganh/login/login_service_interface.h"
+
 #include "connection/connection_service.h"
 
 using namespace anh;
+using namespace app;
 using namespace event_dispatcher;
 using namespace connection;
-using namespace module_manager;
+using namespace plugin;
+using namespace swganh::character;
 using namespace std;
-using boost::any_cast;
 using boost::program_options::options_description;
 using boost::program_options::variables_map;
 
-static std::shared_ptr<ConnectionService> connection_service;
-
-bool API Load(shared_ptr<PlatformServices> services) {
-    cout << GetModuleName() << " Loading..." << endl;
-    
-    // subscribe to events
-    auto event_dispatcher = services->getService<shared_ptr<EventDispatcherInterface>>("EventDispatcher");
-    
-    if (!event_dispatcher) {
-        LOG(FATAL) << "No Event Dispatcher Registered";
-    }
-        
-    auto module_config = services->getService<pair<options_description, variables_map>*>("ModuleConfig");
-    
-    if (!module_config) {
-        LOG(FATAL) << "No ModuleConfig container registered!";
-        return false;
-    }
-
-    connection_service = make_shared<ConnectionService>(event_dispatcher);
-
-    connection_service->DescribeConfigOptions(module_config->first);
-    
-    cout << GetModuleName() << " Loaded!" << endl;
-
-    return true;
+extern "C" PLUGIN_API void ExitModule() {
+    return;
 }
 
-void API Unload(std::shared_ptr<anh::module_manager::PlatformServices> services) {}
+extern "C" PLUGIN_API ExitFunc InitializePlugin(shared_ptr<KernelInterface> kernel) {
 
-void API Start(std::shared_ptr<anh::module_manager::PlatformServices> services) {    
-    boost::thread t([] () { connection_service->Start(); });
-}
+    ObjectRegistration registration;
+    registration.version.major = 1;
+    registration.version.minor = 0;
 
-void API Stop(std::shared_ptr<anh::module_manager::PlatformServices> services) {  
-    cout << GetModuleName() << " Stopping..." << endl;
+    // Register TestObj
+    registration.CreateObject = [] (ObjectParams* params) -> void * {
+        auto character_service = std::static_pointer_cast<BaseCharacterService>(params->kernel->GetServiceManager()->GetService("CharacterService"));
+        auto login_service = std::static_pointer_cast<swganh::login::LoginServiceInterface>(params->kernel->GetServiceManager()->GetService("LoginService"));
 
-    connection_service->Stop();
+        auto connection_service = new ConnectionService(params->kernel);
+        connection_service->character_service(character_service);
+        connection_service->login_service(login_service);
+        return connection_service;
+    };
 
-    while (connection_service->IsRunning()) { }
-    
-    cout << GetModuleName() << " Stopped!" << endl;
-}
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete object;
+        }
+    };
 
-const std::string API GetModuleName(void) {
-    return "ANH Connection Service";
-}
+    kernel->GetPluginManager()->RegisterObject("ConnectionService", &registration);
 
-const std::string API GetModuleType(void) {
-    return "ConnectionService";
-}
-
-const anh::module_manager::ModuleApiVersion API GetModuleVersion(void) {
-    return anh::module_manager::ModuleApiVersion(1, 0, "1.0");
-}
-
-const std::string API GetModuleDescription(void) {
-    return "Provides client connection services to the cluster.";
+    return ExitModule;
 }
