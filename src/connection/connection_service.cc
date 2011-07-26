@@ -230,7 +230,7 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
     create_character.deserialize(*remote_event->message());
     
     // they should be in our Player session map
-    uint32_t account_id;
+    uint32_t account_id = 0;
     auto it_found = find_if(player_session_map_.begin(), player_session_map_.end(), [&remote_event] (PlayerSessionMap::value_type& player_session ) {
         return player_session.second->connection_id() == remote_event->session()->connection_id();
     });
@@ -240,6 +240,9 @@ bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_
     } else {
         DLOG(WARNING) << "Can't continue in Character Creation process without a valid account_id";
     }
+    if (account_id == 0)
+        return false;
+
     uint64_t character_id;
     string error_code;
     tie(character_id, error_code) = character_service()->CreateCharacter(create_character, account_id);
