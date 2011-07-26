@@ -18,29 +18,33 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
-#define LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+#ifndef SWGANH_LOGIN_SERVICE_INTERFACE_H_
+#define SWGANH_LOGIN_SERVICE_INTERFACE_H_
 
-#include "login/providers/account_provider_interface.h"
+#include <map>
+#include <tuple>
 
-namespace anh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
+#include "swganh/base/base_service.h"
 
+namespace anh {
+namespace app {
+class KernelInterface;
+}}  // namespace anh::app
+
+namespace swganh {
 namespace login {
-namespace providers {
 
-class MysqlAccountProvider : public AccountProviderInterface {
+class LoginServiceInterface : public swganh::base::BaseService {
 public:
-    explicit MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
-    ~MysqlAccountProvider();
+    explicit LoginServiceInterface(std::shared_ptr<anh::app::KernelInterface> kernel) 
+        : swganh::base::BaseService(kernel) {}
+    virtual ~LoginServiceInterface(){}
+    
+    virtual anh::service::ServiceDescription GetServiceDescription() = 0;
 
-    std::shared_ptr<login::Account> FindByUsername(std::string username);
-    uint32_t FindBySessionKey(const std::string& session_key);
-    bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
-private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
+    virtual void DescribeConfigOptions(boost::program_options::options_description& description) = 0;
+    virtual uint32_t GetAccountBySessionKey(const std::string& session_key) = 0;
 };
 
-}}  // namespace login::providers
-
-#endif  // LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+}}  // namespace swganh::login
+#endif  // SWGANH_LOGIN_SERVICE_INTERFACE_H_

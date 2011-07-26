@@ -18,25 +18,26 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
-#define LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+#ifndef CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_
+#define CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_
 
-#include "login/providers/account_provider_interface.h"
+#include "connection/providers/session_provider_interface.h"
+#include <memory>
 
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
-namespace login {
+namespace connection {
 namespace providers {
 
-class MysqlAccountProvider : public AccountProviderInterface {
+class MysqlSessionProvider : public SessionProviderInterface {
 public:
-    explicit MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
-    ~MysqlAccountProvider();
+    explicit MysqlSessionProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    ~MysqlSessionProvider();
 
-    std::shared_ptr<login::Account> FindByUsername(std::string username);
-    uint32_t FindBySessionKey(const std::string& session_key);
-    bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
+    uint64_t GetPlayerId(uint32_t account_id) ;
+    uint32_t GetAccountId(uint64_t player_id);
+    bool CreateGameSession(uint64_t player_id, uint32_t session_id);
 private:
     std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };

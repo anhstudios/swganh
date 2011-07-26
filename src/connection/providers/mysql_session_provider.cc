@@ -18,10 +18,9 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "login/providers/mysql_account_provider.h"
+#include "connection/providers/mysql_session_provider.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -34,90 +33,88 @@
 #include "anh/database/database_manager.h"
 
 
-using namespace login;
+using namespace connection;
 using namespace providers;
 using namespace std;
 
-MysqlAccountProvider::MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
-    : AccountProviderInterface()
+MysqlSessionProvider::MysqlSessionProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+    : SessionProviderInterface()
     , db_manager_(db_manager) {}
 
-MysqlAccountProvider::~MysqlAccountProvider() {}
+MysqlSessionProvider::~MysqlSessionProvider() {}
 
-shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
-    shared_ptr<Account> account = nullptr;
+uint64_t MysqlSessionProvider::GetPlayerId(uint32_t account_id) {
+    uint64_t player_id = 0;
 
     try {
-        string sql = "select id, username, password, salt, enabled from account where username = ?";
-        auto conn = db_manager_->getConnection("galaxy_manager");
+        string sql = "select id from player where referenceId = ?";
+        auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-        statement->setString(1, username);
+        statement->setUInt(1, account_id);
         auto result_set = statement->executeQuery();
         
         if (result_set->next()) {
-            account = make_shared<Account>(true);
-
-            account->account_id(result_set->getInt("id"));
-            account->username(result_set->getString("username"));
-            account->password(result_set->getString("password"));
-            account->salt(result_set->getString("salt"));
-            if (result_set->getInt("enabled") == 1) {
-                account->Enable();
-            } else {
-                account->Disable();
-            }
-
-            account->algorithm("sha512");
-        } else {
-            DLOG(WARNING) << "No account information found for user: " << username << endl;
-        }
-
-    } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-
-    return account;
-}
-uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
-    uint32_t account_id = 0;
-
-     try {
-        string sql = "select account_id from account_session where session_key = ?";
-        auto conn = db_manager_->getConnection("galaxy_manager");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-        statement->setString(1, session_key);
-        auto result_set = statement->executeQuery();
-        
-        if (result_set->next()) {
-            account_id = result_set->getInt("account_id");
+            player_id = result_set->getUInt64("id");
             
         } else {
-            DLOG(WARNING) << "No account_id found for session_key: " << session_key << endl;
+            DLOG(WARNING) << "No Player Id found for account_id: " << account_id << endl;
         }
 
     } catch(sql::SQLException &e) {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-     return account_id;
+
+    return player_id;
 }
-bool MysqlAccountProvider::CreateAccountSession(uint32_t account_id, const std::string& session_key) {
-    bool success = false;
+
+bool MysqlSessionProvider::CreateGameSession(uint64_t player_id, uint32_t session_id) {
+    bool updated = false;
+    // create new game session 
+    std::string game_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
+        + boost::lexical_cast<std::string>(session_id);
+
     try {
-        string sql = "INSERT INTO account_session(account_id, session_key) VALUES(?,?);";
-        auto conn = db_manager_->getConnection("galaxy_manager");
+        string sql = "INSERT INTO player_session(player_id,player_session) VALUES (?,?)";
+        auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-        statement->setUInt64(1, account_id);
-        statement->setString(2, session_key);
+        statement->setUInt64(1, player_id);
+        statement->setString(2, game_session);
         auto rows_updated = statement->executeUpdate();
-        if (rows_updated > 0)
-            success = true;
+        
+        if (rows_updated > 0) {
+           updated = true;
+            
+        } else {
+            DLOG(WARNING) << "Couldn't create session for player " << player_id << endl;
+        }
 
     } catch(sql::SQLException &e) {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
+    return updated;
+}
+uint32_t MysqlSessionProvider::GetAccountId(uint64_t player_id) {
+    uint32_t account_id = 0;
 
-    return success;
+    try {
+        string sql = "select referenceId from player where id = ?";
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt(1, player_id);
+        auto result_set = statement->executeQuery();
+        
+        if (result_set->next()) {
+            account_id = result_set->getUInt("referenceId");
+            
+        } else {
+            DLOG(WARNING) << "No account Id found for player id : " << player_id << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+    return account_id;
 }

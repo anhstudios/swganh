@@ -200,7 +200,7 @@ std::wstring CharacterService::GetRandomNameRequest(const std::string& base_mode
     return L"";
 }
 
-std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const ClientCreateCharacter& character_info) {
+std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const ClientCreateCharacter& character_info, uint32_t account_id) {
     try {
         // A regular expression that searches for a first name and optional sirname.
         // Only letters, and the ' and - characters are allowed. Only 3 instances
@@ -243,7 +243,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         statement = std::shared_ptr<sql::PreparedStatement>(
             conn->prepareStatement(sql_sf.str())
             );
-        statement->setUInt(1, 1 /*character_info.account_id*/);
+        statement->setUInt(1, account_id);
         statement->setString(2, string(first_name.begin(), first_name.end()));
         statement->setString(3, string(last_name.begin(), last_name.end()));
         statement->setString(4, character_info.starting_profession);

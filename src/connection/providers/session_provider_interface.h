@@ -18,29 +18,23 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
-#define LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+#ifndef CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_
+#define CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_
 
-#include "login/providers/account_provider_interface.h"
+#include <cstdint>
 
-namespace anh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
-
-namespace login {
+namespace connection {
 namespace providers {
 
-class MysqlAccountProvider : public AccountProviderInterface {
+class SessionProviderInterface {
 public:
-    explicit MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
-    ~MysqlAccountProvider();
+    virtual ~SessionProviderInterface() {}
 
-    std::shared_ptr<login::Account> FindByUsername(std::string username);
-    uint32_t FindBySessionKey(const std::string& session_key);
-    bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
-private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
+    virtual uint64_t GetPlayerId(uint32_t account_id) = 0;
+    virtual uint32_t GetAccountId(uint64_t player_id) = 0;
+    virtual bool CreateGameSession(uint64_t player_id, uint32_t session_id) = 0;
 };
 
-}}  // namespace login::providers
+}}  // namespace connection::providers
 
-#endif  // LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+#endif  // CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_

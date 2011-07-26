@@ -39,14 +39,14 @@ namespace character {
     
 class BaseCharacterService : public swganh::base::BaseService {
 public:    
-    BaseCharacterService(std::shared_ptr<anh::app::KernelInterface> kernel) 
+    explicit BaseCharacterService(std::shared_ptr<anh::app::KernelInterface> kernel) 
         : swganh::base::BaseService(kernel) {}
 
     virtual std::vector<CharacterData> GetCharactersForAccount(uint64_t account_id) = 0;
     virtual CharacterLoginData GetLoginCharacter(uint64_t character_id) = 0;
     virtual bool DeleteCharacter(uint64_t character_id) = 0;
     virtual std::wstring GetRandomNameRequest(const std::string& base_model) = 0;
-    virtual std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info) = 0;
+    virtual std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info, uint32_t account_id) = 0;
 
 private:
     BaseCharacterService();
