@@ -130,8 +130,13 @@ void LoginService::subscribe() {
 }
 
 void LoginService::UpdateGalaxyStatus_() {    
-    galaxy_status_timer_.expires_from_now(boost::posix_time::seconds(galaxy_status_check_duration_secs_));
-    galaxy_status_timer_.async_wait(strand().wrap([this] (const boost::system::error_code & error) {
+    active().SendRepeated(boost::posix_time::seconds(galaxy_status_check_duration_secs_), [this] (const boost::system::error_code & error) {
+        if (error == boost::asio::error::operation_aborted) {
+            return;
+        }
+
+        DLOG(INFO) << "Updating galaxy status";
+
         galaxy_status_ = GetGalaxyStatus_();
         
         const vector<GalaxyStatus>& status = galaxy_status_;
@@ -142,11 +147,7 @@ void LoginService::UpdateGalaxyStatus_() {
                     BuildLoginClusterStatus(status));
             }
         });
-
-        if (IsRunning()) {
-            UpdateGalaxyStatus_();
-        }
-    }));
+    });
 }
 
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {

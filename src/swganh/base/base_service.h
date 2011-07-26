@@ -30,6 +30,8 @@
 #include "anh/service/service_directory.h"
 #include "anh/service/service_interface.h"
 
+#include "anh/utils/active_object.h"
+
 namespace anh {
 namespace app {
 class KernelInterface;
@@ -60,7 +62,7 @@ protected:
     std::shared_ptr<anh::app::KernelInterface> kernel();
     std::shared_ptr<anh::service::ServiceDirectory> service_directory();
 
-    boost::asio::strand& strand();
+    anh::utils::ActiveObject& active();
 
     /*
     *  @brief used to subscribe to events on a serivce
@@ -87,7 +89,7 @@ private:
 
     std::string galaxy_name_;
 
-    boost::asio::strand strand_;
+    anh::utils::ActiveObject active_;
 };
 
 }}  // swganh::base
