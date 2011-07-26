@@ -83,17 +83,17 @@ uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
     uint32_t account_id = 0;
 
      try {
-        string sql = "select account_id from account_session where session_key = ?";
+        string sql = "select account from account_session where session_key = ?";
         auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, session_key);
         auto result_set = statement->executeQuery();
         
         if (result_set->next()) {
-            account_id = result_set->getInt("account_id");
+            account_id = result_set->getInt("account");
             
         } else {
-            DLOG(WARNING) << "No account_id found for session_key: " << session_key << endl;
+            DLOG(WARNING) << "No account found for session_key: " << session_key << endl;
         }
 
     } catch(sql::SQLException &e) {
@@ -105,7 +105,7 @@ uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
 bool MysqlAccountProvider::CreateAccountSession(uint32_t account_id, const std::string& session_key) {
     bool success = false;
     try {
-        string sql = "INSERT INTO account_session(account_id, session_key) VALUES(?,?);";
+        string sql = "INSERT INTO account_session(account, session_key) VALUES(?,?);";
         auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, account_id);
