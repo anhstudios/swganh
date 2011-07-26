@@ -14,13 +14,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 
---
--- Create schema galaxy_manager
---
-
-CREATE DATABASE IF NOT EXISTS galaxy_manager;
-USE galaxy_manager;
-
+use galaxy;
 --
 -- Definition of function `f_speciesShort`
 --

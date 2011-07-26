@@ -75,7 +75,7 @@ bool MysqlSessionProvider::CreateGameSession(uint64_t player_id, uint32_t sessio
         + boost::lexical_cast<std::string>(session_id);
 
     try {
-        string sql = "INSERT INTO player_session(player_id,player_session) VALUES (?,?)";
+        string sql = "INSERT INTO player_session(player,session_key) VALUES (?,?)";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, player_id);
