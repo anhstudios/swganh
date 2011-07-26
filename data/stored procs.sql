@@ -353,7 +353,7 @@ DECLARE EXIT HANDLER FOR NOT FOUND
   END IF;
 
 -- 
-     SELECT planet_id, x, y, z FROM starting_location WHERE location LIKE start_city INTO start_planet, start_x, start_y, start_z;
+     SELECT planet_id, x, y, z FROM starting_location WHERE location LIKE 'coronet' INTO start_planet, start_x, start_y, start_z;
 -- 
      SELECT f_speciesShort(base_model_string) INTO shortSpecies;
 -- 
