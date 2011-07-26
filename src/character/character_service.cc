@@ -152,7 +152,10 @@ CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
                 character.gender = "male";
             character.race = result_set->getString("species");
             character.terrain_map = result_set->getString("terrainMap");
+        } else {
+            throw sql::SQLException("No Login Character found for character_id =" + character_id);
         }
+        
     } catch(sql::SQLException &e) {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();

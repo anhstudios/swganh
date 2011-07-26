@@ -291,13 +291,13 @@ DECLARE EXIT HANDLER FOR NOT FOUND
       ROLLBACK;
       SELECT entity_id;
     END;
-
-  DECLARE EXIT HANDLER FOR SQLWARNING
-    BEGIN
-    SET entity_id = 4;
-    ROLLBACK;
-    SELECT entity_id;
-  END;
+-- 
+--   DECLARE EXIT HANDLER FOR SQLWARNING
+--     BEGIN
+--     SET entity_id = 4;
+--     ROLLBACK;
+--     SELECT entity_id;
+--   END;
   --
   -- Check the new character name for validity
   --
