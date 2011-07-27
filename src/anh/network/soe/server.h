@@ -27,6 +27,7 @@
 #include <memory>
 
 #include <boost/asio.hpp>
+#include <tbb/concurrent_queue.h>
 #include <tbb/pipeline.h>
 
 #include "anh/network/soe/server_interface.h"
@@ -113,8 +114,8 @@ private:
     tbb::filter_t<void, void>   incoming_filter_;
     tbb::filter_t<void, void>   outgoing_filter_;
 
-    std::list<std::shared_ptr<Packet>> incoming_messages_;
-    std::list<std::shared_ptr<Packet>> outgoing_messages_;
+    tbb::concurrent_queue<std::shared_ptr<Packet>> incoming_messages_;
+    tbb::concurrent_queue<std::shared_ptr<Packet>> outgoing_messages_;
 
     MessageHandler              message_handler_;
 };
