@@ -213,10 +213,10 @@ void Session::handleSessionRequest_(SessionRequest& packet)
     server_->socket()->Send(remote_endpoint_, session_response_buffer);
 
     // Add our Session to the SessionManager and flag ourselves as connected.
-    server_->session_manager().AddSession(shared_from_this());
-    connected_ = true;
-
-    LOG(WARNING) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
+    if (server_->session_manager().AddSession(shared_from_this())) {
+        connected_ = true;
+        LOG(WARNING) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
+    }
 }
 
 void Session::handleMultiPacket_(MultiPacket& packet)

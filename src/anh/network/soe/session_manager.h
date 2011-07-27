@@ -49,7 +49,7 @@ public:
 	 */
 	void Update(void);
 
-	void AddSession(std::shared_ptr<Session> session);
+	bool AddSession(std::shared_ptr<Session> session);
 	void RemoveSession(std::shared_ptr<Session> session);
 	bool SessionExists(void);
 	std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);

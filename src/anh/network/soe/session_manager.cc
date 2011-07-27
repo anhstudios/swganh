@@ -47,11 +47,15 @@ void SessionManager::Update(void)
 	});
 }
 
-void SessionManager::AddSession(std::shared_ptr<Session> session)
+bool SessionManager::AddSession(std::shared_ptr<Session> session)
 {
 	SessionMapIterator i = sessions_.find(session->remote_endpoint());
-	if(i == sessions_.end())
+	if(i == sessions_.end()) {
 		sessions_.insert(SessionMap::value_type(session->remote_endpoint(), session));
+        return true;
+    }
+
+    return false;
 }
 
 void SessionManager::RemoveSession(std::shared_ptr<Session> session)
