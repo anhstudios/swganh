@@ -113,16 +113,16 @@ void SwganhApp::Start() {
     kernel_->GetServiceManager()->Start();
 
     do {
-        kernel_->GetEventDispatcher()->tick();
         kernel_->GetIoService().poll();
+        kernel_->GetEventDispatcher()->tick();
         kernel_->GetServiceManager()->Update();
     } while(IsRunning());
+            
+    kernel_->GetServiceManager()->Stop();
 }
 
 void SwganhApp::Stop() {
     running_ = false;
-        
-    kernel_->GetServiceManager()->Stop();
 }
 
 bool SwganhApp::IsRunning() {
