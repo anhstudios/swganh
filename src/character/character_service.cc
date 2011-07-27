@@ -110,7 +110,16 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
             {
                 CharacterData character;
                 character.character_id = result_set->getUInt64("entity_id");
-                string name = result_set->getString("firstName") + " " + result_set->getString("lastName");
+
+                string firstname = result_set->getString("firstName");
+                string lastname = result_set->getString("lastName");
+
+                string name = firstname;
+
+                if (!lastname.empty()) {
+                    name += " " + lastname;
+                }
+
                 character.name = std::wstring(name.begin(), name.end());
                 character.race_crc = anh::memcrc(result_set->getString("baseModel"));
                 character.galaxy_id = 1 /* we'll get this from the service */;
