@@ -92,7 +92,7 @@ void Server::Shutdown(void) {
 }
     
 void Server::SendMessage(shared_ptr<Session> session, shared_ptr<ByteBuffer> message) {    
-    outgoing_messages_.push_back(make_shared<Packet>(session, message));
+    outgoing_messages_.push(make_shared<Packet>(session, message));
 }
     
 void Server::HandleMessage(shared_ptr<Session> session, shared_ptr<ByteBuffer> message) {    
@@ -107,8 +107,8 @@ void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::
     if(session == nullptr) {
         session = make_shared<Session>(remote_endpoint, this);
     }
-    
-    incoming_messages_.push_back(make_shared<Packet>(session, message));
+        
+    incoming_messages_.push(make_shared<Packet>(session, message));
 }
 
 std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> Server::event_dispatcher() {
