@@ -1,7 +1,7 @@
 -- MySQL Administrator dump 1.4
 --
 -- ------------------------------------------------------
--- Server version	5.5.14
+-- Server version	5.5.8
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -14,7 +14,13 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 
-use galaxy;
+--
+-- Create schema galaxy
+--
+
+CREATE DATABASE IF NOT EXISTS galaxy;
+USE galaxy;
+
 --
 -- Definition of function `f_speciesShort`
 --
@@ -238,7 +244,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-/*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ $$
+/*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='' */ $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterCreate`(
 	IN start_account_id INT,IN start_galaxy_id INT,IN start_firstname char(32),IN start_lastname char(32),
 	IN start_profession char(64),IN start_city char(32),IN start_scale FLOAT,IN start_biography text(2048),
@@ -252,6 +258,7 @@ charCreate:BEGIN
   DECLARE oX FLOAT;DECLARE oY FLOAT;DECLARE oZ FLOAT;DECLARE oW FLOAT;
   DECLARE race_id INT;
 	DECLARE entity_id BIGINT(20);
+  DECLARE player_id BIGINT(20);
   DECLARE character_id BIGINT(20);
   DECLARE character_parent_id BIGINT(20);
   DECLARE planet_name char(32);
@@ -284,13 +291,13 @@ DECLARE EXIT HANDLER FOR NOT FOUND
       ROLLBACK;
       SELECT entity_id;
     END;
-
-  DECLARE EXIT HANDLER FOR SQLWARNING
-    BEGIN
-    SET entity_id = 4;
-    ROLLBACK;
-    SELECT entity_id;
-  END;
+-- 
+--   DECLARE EXIT HANDLER FOR SQLWARNING
+--     BEGIN
+--     SET entity_id = 4;
+--     ROLLBACK;
+--     SELECT entity_id;
+--   END;
   --
   -- Check the new character name for validity
   --
@@ -346,7 +353,7 @@ DECLARE EXIT HANDLER FOR NOT FOUND
   END IF;
 
 -- 
-     SELECT planet_id, x, y, z FROM starting_location WHERE location LIKE start_city INTO start_planet, start_x, start_y, start_z;
+     SELECT planet_id, x, y, z FROM starting_location WHERE location LIKE 'coronet' INTO start_planet, start_x, start_y, start_z;
 -- 
      SELECT f_speciesShort(base_model_string) INTO shortSpecies;
 -- 
@@ -356,9 +363,10 @@ DECLARE EXIT HANDLER FOR NOT FOUND
 -- 
 -- 
    INSERT INTO entity VALUES (entity_id, NULL, character_parent_id);
-   INSERT INTO characters(entity_id, createdAt,updatedAt,firstName,lastName,jediState,birthDate) VALUES (entity_id, NOW(), NOW(), start_firstname, start_lastname, 0, NOW());
-   SELECT id from characters where id = LAST_INSERT_ID() INTO character_id;
-   INSERT INTO players_characters values (start_account_id, character_id);
+   INSERT INTO characters(entity_id, createdAt,updatedAt,firstName,lastName,jediState,birthDate,archived) VALUES (entity_id, NOW(), NOW(), start_firstname, start_lastname, 0, NOW(),0);
+   SELECT id from characters where characters.entity_id = entity_id INTO character_id;
+   SELECT id from player where referenceId = start_account_id INTO player_id;
+   INSERT INTO players_characters values (player_id, character_id);
    INSERT INTO transform(entity_id,x,y,z,oX,oY,oZ,oW,planet_id) VALUES (entity_id, start_x, start_y, start_z, oX, oY, oZ, oW, start_planet);
    INSERT INTO appearance(entity_id,baseModel,scale,gender,species,customization_data) VALUES (entity_id, base_model_string, start_scale, gender, shortSpecies, start_appearance_customization);
 	--
@@ -384,7 +392,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-/*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ $$
+/*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='' */ $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterDelete`(IN character_id BIGINT)
 BEGIN
 
@@ -402,15 +410,15 @@ BEGIN
 
 	SET error_code = 0;
 
-	UPDATE characters SET archived = 1 WHERE id = character_id;
+	UPDATE characters SET archived = 1 WHERE entity_id = character_id;
 
-	UPDATE characters SET deletedAt = (NOW()) WHERE id = character_id;
+	UPDATE characters SET deletedAt = (NOW()) WHERE entity_id = character_id;
 
 	--
 	-- Check to see if we maked the character for deletion and return proper exit code
 	--
 
-	SELECT COUNT(*) from characters WHERE id = character_id AND archived = 1 INTO check_value;
+	SELECT COUNT(*) from characters WHERE entity_id = character_id AND archived = 1 INTO check_value;
 
 	IF check_value > 0 THEN SET error_code = 1;
 	END IF;
@@ -467,10 +475,10 @@ DELIMITER ;
 
 DELIMITER $$
 
-/*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ $$
+/*!50003 SET @TEMP_SQL_MODE=@@SQL_MODE, SQL_MODE='' */ $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ReturnAccountCharacters`(IN account_id INT)
 BEGIN
-    SELECT A.id, A.firstName, A.lastName, A.jediState, D.baseModel   
+    SELECT A.entity_id, A.firstName, A.lastName, A.jediState, D.baseModel   
     FROM characters A
     INNER JOIN player B ON (account_id = B.referenceId)
     INNER JOIN players_characters C ON (B.id = C.player_id)
