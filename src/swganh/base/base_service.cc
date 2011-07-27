@@ -60,9 +60,11 @@ void BaseService::Start() {
 }
 
 void BaseService::Update() {
-    service_directory_->pulse();
+    if (IsRunning()) {
+        service_directory_->pulse();
 
-    onUpdate();
+        onUpdate();
+    }
 }
 
 void BaseService::Stop() {
