@@ -28,8 +28,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef ANH_NETWORK_SOE_SESSION_MANAGER_H_
 #define ANH_NETWORK_SOE_SESSION_MANAGER_H_
 
-#include <map>
+#include <cstdint>
 #include <boost/asio.hpp>
+#include <tbb/concurrent_hash_map.h>
 
 namespace anh {
 namespace network {
@@ -41,24 +42,25 @@ class Session;
 class SessionManager
 {
 public:
-	SessionManager(void);
-	~SessionManager(void);
+    SessionManager(void);
+    ~SessionManager(void);
 
-	/**
-	 * @brief Updates each session in the manager.
-	 */
-	void Update(void);
+    /**
+     * @brief Updates each session in the manager.
+     */
+    void Update(void);
 
-	bool AddSession(std::shared_ptr<Session> session);
-	void RemoveSession(std::shared_ptr<Session> session);
-	bool SessionExists(void);
-	std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
+    bool AddSession(std::shared_ptr<Session> session);
+    void RemoveSession(std::shared_ptr<Session> session);
+    bool SessionExists(void);
+    std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
 private:
 
-	typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<Session>>				SessionMap;
-	typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<Session>>::iterator	SessionMapIterator;
+    uint32_t BuildAddressHash_(const boost::asio::ip::udp::endpoint& endpoint) const;
 
-	SessionMap	sessions_;
+    typedef tbb::concurrent_hash_map<uint32_t, std::shared_ptr<Session>> SessionMap;
+
+    SessionMap sessions_;
 };
 
 } // namespace soe
