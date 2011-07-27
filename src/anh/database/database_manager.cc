@@ -48,9 +48,10 @@ public:
 
             do {
                 // close each connection and pop it from the list
-                auto connection = conn.second.front();
-                connection->close();
-                conn.second.pop();
+                std::shared_ptr<sql::Connection> connection;
+                if (conn.second.try_pop(connection)) {
+                    connection->close();
+                }
             } while (!conn.second.empty());
         });
     }
@@ -117,8 +118,8 @@ public:
             return connection;
         }
         
-        auto connection = a->second.front();
-        a->second.pop();
+        std::shared_ptr<sql::Connection> connection;
+        a->second.try_pop(connection);
 
         return connection;
     }
@@ -155,7 +156,7 @@ private:
     typedef tbb::concurrent_hash_map<StorageType, std::shared_ptr<ConnectionData>> ConnectionDataMap;
     ConnectionDataMap connection_data_;
     
-    typedef std::queue<std::shared_ptr<sql::Connection>> ConnectionPool;
+    typedef tbb::concurrent_queue<std::shared_ptr<sql::Connection>> ConnectionPool;
     typedef tbb::concurrent_hash_map<StorageType, ConnectionPool> ConnectionPoolMap;
     ConnectionPoolMap connections_;
 };
