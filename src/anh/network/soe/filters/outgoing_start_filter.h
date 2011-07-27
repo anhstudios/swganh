@@ -23,6 +23,8 @@
 
 #include <list>
 #include <memory>
+
+#include <tbb/concurrent_queue.h>
 #include <tbb/pipeline.h>
 
 namespace anh {
@@ -42,12 +44,12 @@ namespace filters {
 class OutgoingStartFilter
 {
 public:
-	OutgoingStartFilter(std::list<std::shared_ptr<Packet>>& message_queue);
+	OutgoingStartFilter(tbb::concurrent_queue<std::shared_ptr<Packet>>& message_queue);
 
 	std::shared_ptr<Packet> operator()(tbb::flow_control& fc) const;
 
 private:
-	std::list<std::shared_ptr<Packet>>& message_queue_;
+	tbb::concurrent_queue<std::shared_ptr<Packet>>& message_queue_;
 };
 
 }}}} // namespace anh::network::soe::filters

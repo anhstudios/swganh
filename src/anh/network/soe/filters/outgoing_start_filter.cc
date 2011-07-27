@@ -27,7 +27,7 @@ using namespace filters;
 using namespace std;
 using namespace tbb;
 
-OutgoingStartFilter::OutgoingStartFilter(list<shared_ptr<Packet>>& message_queue)
+OutgoingStartFilter::OutgoingStartFilter(concurrent_queue<shared_ptr<Packet>>& message_queue)
     : message_queue_(message_queue) {}
 
 shared_ptr<Packet> OutgoingStartFilter::operator()(flow_control& fc) const {
@@ -40,11 +40,8 @@ shared_ptr<Packet> OutgoingStartFilter::operator()(flow_control& fc) const {
             return nullptr;
         }
 
-        packet = message_queue_.front();
-        message_queue_.pop_front();
-
         // Loop until we have a packet with a valid connection.
-    } while(packet->session()->connected() == false);
+    } while(!message_queue_.try_pop(packet) || packet->session()->connected() == false);
 
     return packet;
 }

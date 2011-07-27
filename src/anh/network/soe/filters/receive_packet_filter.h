@@ -24,6 +24,7 @@
 #include <list>
 #include <memory>
 
+#include <tbb/concurrent_queue.h>
 #include <tbb/pipeline.h>
 
 namespace anh {
@@ -56,7 +57,7 @@ public:
      *
      * @param incoming_queue A handle to the incoming queue used for processing.
      */
-    explicit ReceivePacketFilter(std::list<std::shared_ptr<Packet>>& incoming_queue);
+    explicit ReceivePacketFilter(tbb::concurrent_queue<std::shared_ptr<Packet>>& incoming_queue);
 
     /**
      * Processes messages waiting in the incoming queue.
@@ -70,7 +71,7 @@ private:
     // Disable default construction.
     ReceivePacketFilter();
 
-    std::list<std::shared_ptr<Packet>>& incoming_queue_;
+    tbb::concurrent_queue<std::shared_ptr<Packet>>& incoming_queue_;
 };
 
 }}}} // namespace anh::network::soe::filters

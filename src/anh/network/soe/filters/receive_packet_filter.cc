@@ -27,18 +27,19 @@ using namespace filters;
 using namespace std;
 using namespace tbb;
 
-ReceivePacketFilter::ReceivePacketFilter(list<shared_ptr<Packet>>& incoming_queue)
+ReceivePacketFilter::ReceivePacketFilter(concurrent_queue<shared_ptr<Packet>>& incoming_queue)
     : incoming_queue_(incoming_queue) {}
 
-shared_ptr<Packet> ReceivePacketFilter::operator() (flow_control& fc) const {
-    // No more packets to process.
-    if(incoming_queue_.empty()) {
-        fc.stop();
-        return nullptr;
-    }
-    
-    shared_ptr<Packet> packet = incoming_queue_.front();
-    incoming_queue_.pop_front();
+shared_ptr<Packet> ReceivePacketFilter::operator() (flow_control& fc) const {    
+    shared_ptr<Packet> packet = nullptr;
 
+    do {
+        // No more packets to process.
+        if(incoming_queue_.empty()) {
+            fc.stop();
+            return nullptr;
+        }
+    } while(!incoming_queue_.try_pop(packet));
+    
     return packet;
 }
