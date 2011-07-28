@@ -108,6 +108,12 @@ public:
     */
     const std::string& updated_at() const;
 
+    /*! Returns the last time this galaxy was updated in milleseconds.
+    *
+    * \returns Returns the last time this galaxy was updated in milleseconds.
+    */
+    uint64_t GetGalaxyTimeInMilliseconds();
+
 private:
     friend class ServiceDirectory;
 

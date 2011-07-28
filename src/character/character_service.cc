@@ -208,6 +208,26 @@ std::wstring CharacterService::GetRandomNameRequest(const std::string& base_mode
     }
     return L"";
 }
+uint16_t CharacterService::GetMaxCharacters(uint64_t player_id) {
+    uint16_t max_chars = 2;
+    try {
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
+        auto statement = std::shared_ptr<sql::PreparedStatement>(
+            conn->prepareStatement("SELECT maxCharacters from player where id = ?")
+            );
+        statement->setUInt64(1, player_id);
+        auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
+        if (result_set->next())
+        {
+            max_chars = result_set->getUInt(1);
+        }
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+    return max_chars;
+}
+
 
 std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const ClientCreateCharacter& character_info, uint32_t account_id) {
     try {

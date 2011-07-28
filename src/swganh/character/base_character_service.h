@@ -47,6 +47,7 @@ public:
     virtual bool DeleteCharacter(uint64_t character_id) = 0;
     virtual std::wstring GetRandomNameRequest(const std::string& base_model) = 0;
     virtual std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info, uint32_t account_id) = 0;
+    virtual uint16_t GetMaxCharacters(uint64_t player_id) = 0;
 
 private:
     BaseCharacterService();

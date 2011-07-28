@@ -172,8 +172,9 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     }
 
     ClientPermissionsMessage client_permissions;
-    client_permissions.galaxy_available = 1;
-    client_permissions.available_character_slots = 8;
+    client_permissions.galaxy_available = service_directory()->galaxy()->status();
+    client_permissions.available_character_slots = character_service()->GetMaxCharacters(account_id);
+    // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 
     remote_event->session()->SendMessage(client_permissions);
@@ -193,12 +194,13 @@ bool ConnectionService::HandleSelectCharacter_(std::shared_ptr<anh::event_dispat
 bool ConnectionService::processSelectCharacter_(uint64_t character_id, std::shared_ptr<anh::network::soe::Session> session) {
     swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(character_id);
     CmdStartScene start_scene;
+    // @TODO: Replace with configurable value
     start_scene.ignore_layout = 0;
     start_scene.character_id = character.character_id;
     start_scene.terrain_map = character.terrain_map;
     start_scene.position = character.position;
     start_scene.shared_race_template = "object/creature/player/shared_" + character.race + "_" + character.gender + ".iff";
-    start_scene.galaxy_time = 0;
+    start_scene.galaxy_time = service_directory()->galaxy()->GetGalaxyTimeInMilliseconds();
         
     session->SendMessage(start_scene);
 
@@ -207,6 +209,7 @@ bool ConnectionService::processSelectCharacter_(uint64_t character_id, std::shar
     scene_object.orientation = character.orientation;
     scene_object.position = character.position;
     scene_object.object_crc = anh::memcrc(character.race_template);
+    // @TODO: Replace with configurable value
     scene_object.byte_flag = 0;
     
     session->SendMessage(scene_object);

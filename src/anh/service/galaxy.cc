@@ -18,6 +18,7 @@
 */
 
 #include "anh/service/galaxy.h"
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace anh::service;
 
@@ -102,4 +103,9 @@ const std::string& Galaxy::created_at() const {
 
 const std::string& Galaxy::updated_at() const {
     return updated_at_;
+}
+
+uint64_t Galaxy::GetGalaxyTimeInMilliseconds() {
+    return  boost::posix_time::time_duration(
+        boost::posix_time::duration_from_string(updated_at())).total_milliseconds();
 }
