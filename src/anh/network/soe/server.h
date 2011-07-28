@@ -94,6 +94,8 @@ public:
 
     std::shared_ptr<Socket> socket();
     
+    uint32_t max_receive_size();
+
     std::shared_ptr<ByteBuffer> AllocateBuffer();
     
 private:
@@ -117,7 +119,9 @@ private:
     tbb::concurrent_queue<std::shared_ptr<Packet>> incoming_messages_;
     tbb::concurrent_queue<std::shared_ptr<Packet>> outgoing_messages_;
 
-    MessageHandler              message_handler_;
+    MessageHandler message_handler_;
+
+    uint32_t max_receive_size_;
 };
 
 }}} // namespace anh::network::soe

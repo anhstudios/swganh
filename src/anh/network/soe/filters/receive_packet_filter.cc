@@ -19,6 +19,9 @@
 */
 
 #include "anh/network/soe/filters/receive_packet_filter.h"
+
+#include <glog/logging.h>
+
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
 
@@ -27,8 +30,9 @@ using namespace filters;
 using namespace std;
 using namespace tbb;
 
-ReceivePacketFilter::ReceivePacketFilter(concurrent_queue<shared_ptr<Packet>>& incoming_queue)
-    : incoming_queue_(incoming_queue) {}
+ReceivePacketFilter::ReceivePacketFilter(concurrent_queue<shared_ptr<Packet>>& incoming_queue, uint32_t max_receive_size)
+    : incoming_queue_(incoming_queue)
+    , max_receive_size_(max_receive_size) {}
 
 shared_ptr<Packet> ReceivePacketFilter::operator() (flow_control& fc) const {    
     shared_ptr<Packet> packet = nullptr;
@@ -39,7 +43,17 @@ shared_ptr<Packet> ReceivePacketFilter::operator() (flow_control& fc) const {
             fc.stop();
             return nullptr;
         }
+
     } while(!incoming_queue_.try_pop(packet));
     
+    if (packet->message()->size() > max_receive_size_) {
+        DLOG(WARNING) << "Invalid message received";
+        
+        // @TODO: Track the number of errors for a session and set a threshhold where
+        // their connection is dropped after a certain number of bad packets.
+
+        packet = nullptr;
+    }
+
     return packet;
 }

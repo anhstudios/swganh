@@ -21,7 +21,7 @@
 #ifndef ANH_NETWORK_SOE_RECEIVE_PACKET_FILTER_H_
 #define ANH_NETWORK_SOE_RECEIVE_PACKET_FILTER_H_
 
-#include <list>
+#include <cstdint>
 #include <memory>
 
 #include <tbb/concurrent_queue.h>
@@ -57,7 +57,7 @@ public:
      *
      * @param incoming_queue A handle to the incoming queue used for processing.
      */
-    explicit ReceivePacketFilter(tbb::concurrent_queue<std::shared_ptr<Packet>>& incoming_queue);
+    ReceivePacketFilter(tbb::concurrent_queue<std::shared_ptr<Packet>>& incoming_queue, uint32_t max_receive_size);
 
     /**
      * Processes messages waiting in the incoming queue.
@@ -72,6 +72,7 @@ private:
     ReceivePacketFilter();
 
     tbb::concurrent_queue<std::shared_ptr<Packet>>& incoming_queue_;
+    uint32_t max_receive_size_;
 };
 
 }}}} // namespace anh::network::soe::filters

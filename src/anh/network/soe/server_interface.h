@@ -45,6 +45,8 @@ public:
     virtual SessionManager& session_manager() = 0;
     
     virtual std::shared_ptr<Socket> socket() = 0;
+
+    virtual uint32_t max_receive_size() = 0;
 };
 
 }}} // namespace anh::network::soe

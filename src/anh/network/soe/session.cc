@@ -206,6 +206,8 @@ void Session::handleSessionRequest_(SessionRequest& packet)
     receive_buffer_size_ = packet.client_udp_buffer_size;
 
     SessionResponse session_response(connection_id_, crc_seed_);
+    session_response.server_udp_buffer_size = server_->max_receive_size();
+
     anh::ByteBuffer session_response_buffer;
     session_response.serialize(session_response_buffer);
 

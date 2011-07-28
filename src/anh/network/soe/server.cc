@@ -49,6 +49,7 @@ Server::Server(MessageHandler message_handler)
     : event_dispatcher_(nullptr)
     , crc_seed_(0xDEADBABE)
     , message_handler_(message_handler)
+    , max_receive_size_(496)
 {}
 
 Server::~Server(void)
@@ -63,7 +64,7 @@ void Server::Start(uint16_t port)
         bind(&Server::OnSocketRecv_, this, placeholders::_1, placeholders::_2));
     
     incoming_filter_ = 
-        make_filter<void, shared_ptr<Packet>>(filter::serial_in_order, ReceivePacketFilter(incoming_messages_)) &
+        make_filter<void, shared_ptr<Packet>>(filter::serial_in_order, ReceivePacketFilter(incoming_messages_, max_receive_size_)) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CrcInFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, DecryptionFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, DecompressionFilter()) &
@@ -125,6 +126,10 @@ SessionManager& Server::session_manager() {
 
 std::shared_ptr<Socket> Server::socket() {
     return socket_;
+}
+
+uint32_t Server::max_receive_size() {
+    return max_receive_size_;
 }
 
 shared_ptr<ByteBuffer> Server::AllocateBuffer() {    

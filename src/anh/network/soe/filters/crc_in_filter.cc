@@ -37,6 +37,7 @@ CrcInFilter::CrcInFilter(void) {}
 shared_ptr<Packet> CrcInFilter::operator()(shared_ptr<Packet> packet) const {
     if (!packet) { return nullptr; }
 
+
     auto session = packet->session();
 
     // Don't do any processing on messages from non-connected sessions.
@@ -50,9 +51,15 @@ shared_ptr<Packet> CrcInFilter::operator()(shared_ptr<Packet> packet) const {
     if (crc_length == 0) {
         return packet;
     }
-
-    auto message = packet->message();
     
+    auto message = packet->message();
+
+    // Verify the message size
+    if (! (message->size() > crc_length)) {
+        DLOG(WARNING) << "Invalid message received\n\n" << *message;
+        return nullptr;
+    }
+
     try {
         // Peel off the crc bits from the packet data.
         ByteBuffer packet_data(message->data(), message->size() - crc_length);
