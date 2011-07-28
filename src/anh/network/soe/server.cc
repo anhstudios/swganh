@@ -38,6 +38,7 @@
 #include "anh/network/soe/filters/crc_out_filter.h"
 #include "anh/network/soe/filters/encryption_filter.h"
 #include "anh/network/soe/filters/send_packet_filter.h"
+#include "anh/network/soe/filters/security_filter.h"
 
 using namespace anh;
 using namespace network::soe;
@@ -64,7 +65,8 @@ void Server::Start(uint16_t port)
         bind(&Server::OnSocketRecv_, this, placeholders::_1, placeholders::_2));
     
     incoming_filter_ = 
-        make_filter<void, shared_ptr<Packet>>(filter::serial_in_order, ReceivePacketFilter(incoming_messages_, max_receive_size_)) &
+        make_filter<void, shared_ptr<Packet>>(filter::serial_in_order, ReceivePacketFilter(incoming_messages_)) &
+        make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, SecurityFilter(max_receive_size_)) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CrcInFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, DecryptionFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, DecompressionFilter()) &

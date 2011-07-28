@@ -18,9 +18,10 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef ANH_NETWORK_SOE_RECEIVE_PACKET_FILTER_H_
-#define ANH_NETWORK_SOE_RECEIVE_PACKET_FILTER_H_
+#ifndef ANH_NETWORK_SECURITY_FILTER_H_
+#define ANH_NETWORK_SECURITY_FILTER_H_
 
+#include <cstdint>
 #include <memory>
 
 #include <tbb/concurrent_queue.h>
@@ -38,41 +39,30 @@ namespace soe {
 namespace filters {
 
 /**
- * Initial filter for use in a tbb parallel pipeline chain that processes incoming UDP
- * network packets.
- *
- * This serial_in_order filter is intended to be used as the first in a chain of filters for
- * processing incoming udp messages through a tbb parallel pipeline. It ensures the pipeline doesnt
- * pop messages faster then its processing them from the Service incoming_message queue.
- *
- * Each time a pipeline is invoked ReceivePacketFilter clears the contents of the queue it has been
- * given. The user is responsible for ensuring the queue is not being accessed otherwise during 
- * that time.
+ * Performs basic checks for malformed packets.
  */
-class ReceivePacketFilter {
+class SecurityFilter {
 public:
     /**
-     * Custom constructor that accepts a handle to a queue for incoming packets.
-     *
-     * @param incoming_queue A handle to the incoming queue used for processing.
+     * @param max_receive_size Maximum allowed size of incoming messages.
      */
-    ReceivePacketFilter(tbb::concurrent_queue<std::shared_ptr<Packet>>& incoming_queue);
+    SecurityFilter(uint32_t max_receive_size);
 
     /**
      * Processes messages waiting in the incoming queue.
      *
-     * @param fc A flow control instance used to turn on and off the pipeline.
+     * @param packet An IncomingPacket token to process.
      * @return An IncomingPacket token to process in the pipeline.
      */
-    std::shared_ptr<Packet> operator()(tbb::flow_control& fc) const;
+    std::shared_ptr<Packet> operator()(std::shared_ptr<Packet> packet) const;
 
 private:
     // Disable default construction.
-    ReceivePacketFilter();
+    SecurityFilter();
 
-    tbb::concurrent_queue<std::shared_ptr<Packet>>& incoming_queue_;
+    uint32_t max_receive_size_;
 };
 
 }}}} // namespace anh::network::soe::filters
 
-#endif  // ANH_NETWORK_SOE_RECEIVE_PACKET_FILTER_H_
+#endif  // ANH_NETWORK_SECURITY_FILTER_H_

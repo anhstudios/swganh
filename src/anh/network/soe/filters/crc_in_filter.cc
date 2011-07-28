@@ -54,12 +54,6 @@ shared_ptr<Packet> CrcInFilter::operator()(shared_ptr<Packet> packet) const {
     
     auto message = packet->message();
 
-    // Verify the message size
-    if (! (message->size() > crc_length)) {
-        DLOG(WARNING) << "Invalid message received\n\n" << *message;
-        return nullptr;
-    }
-
     try {
         // Peel off the crc bits from the packet data.
         ByteBuffer packet_data(message->data(), message->size() - crc_length);
