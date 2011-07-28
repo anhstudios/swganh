@@ -38,6 +38,7 @@
 #include "anh/network/soe/filters/crc_out_filter.h"
 #include "anh/network/soe/filters/encryption_filter.h"
 #include "anh/network/soe/filters/send_packet_filter.h"
+#include "anh/network/soe/filters/security_filter.h"
 
 using namespace anh;
 using namespace network::soe;
@@ -45,10 +46,13 @@ using namespace filters;
 using namespace std;
 using namespace tbb;
 
-Server::Server(MessageHandler message_handler)
-    : event_dispatcher_(nullptr)
+Server::Server(boost::asio::io_service& io_service, MessageHandler message_handler)
+    : io_service_(io_service) 
+    , event_dispatcher_(nullptr)
     , crc_seed_(0xDEADBABE)
+    , active_(io_service)
     , message_handler_(message_handler)
+    , max_receive_size_(496)
 {}
 
 Server::~Server(void)
@@ -64,6 +68,7 @@ void Server::Start(uint16_t port)
     
     incoming_filter_ = 
         make_filter<void, shared_ptr<Packet>>(filter::serial_in_order, ReceivePacketFilter(incoming_messages_)) &
+        make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, SecurityFilter(max_receive_size_)) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CrcInFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, DecryptionFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, DecompressionFilter()) &
@@ -75,16 +80,15 @@ void Server::Start(uint16_t port)
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, EncryptionFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CrcOutFilter()) &
         make_filter<shared_ptr<Packet>, void>(filter::serial_in_order, SendPacketFilter(socket_));
-}
 
-void Server::Update(void)
-{
-    io_service_.poll();
+    active_.SendRepeated(boost::posix_time::milliseconds(1), [this] (const boost::system::error_code& error) {
+        if (!error) {
+            parallel_pipeline(1000, incoming_filter_);
+            parallel_pipeline(1000, outgoing_filter_);
 
-    parallel_pipeline(1000, incoming_filter_);
-    parallel_pipeline(1000, outgoing_filter_);
-
-    session_manager_.Update();
+            session_manager_.Update();
+        }
+    });
 }
 
 void Server::Shutdown(void) {
@@ -125,6 +129,10 @@ SessionManager& Server::session_manager() {
 
 std::shared_ptr<Socket> Server::socket() {
     return socket_;
+}
+
+uint32_t Server::max_receive_size() {
+    return max_receive_size_;
 }
 
 shared_ptr<ByteBuffer> Server::AllocateBuffer() {    

@@ -49,6 +49,7 @@ public:
     MOCK_METHOD0(event_dispatcher, std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>());
     MOCK_METHOD0(session_manager, SessionManager&());
     MOCK_METHOD0(socket, std::shared_ptr<Socket>());
+    MOCK_METHOD0(max_receive_size, uint32_t());
     MOCK_METHOD0(AllocateBuffer, std::shared_ptr<anh::ByteBuffer>());
 };
     

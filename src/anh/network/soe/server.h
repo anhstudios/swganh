@@ -33,6 +33,8 @@
 #include "anh/network/soe/server_interface.h"
 #include "anh/network/soe/session_manager.h"
 
+#include "anh/utils/active_object.h"
+
 #ifdef SendMessage
 #undef SendMessage
 #endif
@@ -62,7 +64,7 @@ typedef std::function<void (std::shared_ptr<Session>, std::shared_ptr<anh::ByteB
  */
 class Server : public std::enable_shared_from_this<Server>, public ServerInterface {
 public:
-    explicit Server(MessageHandler message_handler);
+    Server(boost::asio::io_service& io_service, MessageHandler message_handler);
     ~Server(void);
 
     /**
@@ -71,12 +73,6 @@ public:
      * @parama port The port to listen for messages on.
      */
     void Start(uint16_t port);
-
-    /**
-     * @brief Performs any work the pipelines have waiting and receives and sends
-     * any waiting messages. (Blocking)
-     */
-    void Update(void);
     
     /**
      * @brief
@@ -94,6 +90,8 @@ public:
 
     std::shared_ptr<Socket> socket();
     
+    uint32_t max_receive_size();
+
     std::shared_ptr<ByteBuffer> AllocateBuffer();
     
 private:
@@ -105,7 +103,7 @@ private:
     void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
 
     std::shared_ptr<Socket>		socket_;
-    boost::asio::io_service		io_service_;
+    boost::asio::io_service&		io_service_;
 
     SessionManager				session_manager_;
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
@@ -117,7 +115,11 @@ private:
     tbb::concurrent_queue<std::shared_ptr<Packet>> incoming_messages_;
     tbb::concurrent_queue<std::shared_ptr<Packet>> outgoing_messages_;
 
-    MessageHandler              message_handler_;
+    anh::utils::ActiveObject active_;
+
+    MessageHandler message_handler_;
+
+    uint32_t max_receive_size_;
 };
 
 }}} // namespace anh::network::soe

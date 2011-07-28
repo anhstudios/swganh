@@ -43,7 +43,6 @@ public:
 
     void onStart();
     void onStop();
-    void onUpdate();
 
     void subscribe();
 

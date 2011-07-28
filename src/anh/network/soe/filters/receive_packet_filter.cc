@@ -19,6 +19,9 @@
 */
 
 #include "anh/network/soe/filters/receive_packet_filter.h"
+
+#include <glog/logging.h>
+
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
 
@@ -39,6 +42,7 @@ shared_ptr<Packet> ReceivePacketFilter::operator() (flow_control& fc) const {
             fc.stop();
             return nullptr;
         }
+
     } while(!incoming_queue_.try_pop(packet));
     
     return packet;
