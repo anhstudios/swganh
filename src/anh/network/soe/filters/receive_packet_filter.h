@@ -56,7 +56,7 @@ public:
      *
      * @param incoming_queue A handle to the incoming queue used for processing.
      */
-    ReceivePacketFilter(tbb::concurrent_queue<std::shared_ptr<Packet>>& incoming_queue);
+    explicit ReceivePacketFilter(tbb::concurrent_queue<std::shared_ptr<Packet>>& incoming_queue);
 
     /**
      * Processes messages waiting in the incoming queue.

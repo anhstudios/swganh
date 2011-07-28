@@ -59,6 +59,7 @@ void BaseService::Start() {
 
         auto service_directory = service_directory_;
 
+        // @TODO: Change this time to a value based on the timeout for services in the service directory's watchdog operations.
         active_.SendRepeated(boost::posix_time::seconds(3), [service_directory] (const boost::system::error_code& error) {
             if (!error) {
                 service_directory->pulse();
