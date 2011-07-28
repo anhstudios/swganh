@@ -111,8 +111,8 @@ void SwganhApp::Start() {
 
     running_ = true;
     
-    // Start up the services to ensure there is work for the io_service instance.
-    kernel_->GetServiceManager()->Start();
+    // Create a work object so that io_service doesn't prematurely exit.
+    boost::asio::io_service::work io_work(kernel_->GetIoService());
 
     // Start up a threadpool for running io_service based tasks/active objects
     for (uint32_t i = 0; i < boost::thread::hardware_concurrency(); ++i) {
@@ -120,13 +120,15 @@ void SwganhApp::Start() {
         io_threads_.push_back(t);
     }
 
+    kernel_->GetServiceManager()->Start();
+
     do {
         kernel_->GetEventDispatcher()->tick();
     } while(IsRunning());
                 
     kernel_->GetServiceManager()->Stop();
 
-    // stop io handling.
+    // stop io handling    
     kernel_->GetIoService().stop();
 
     // join the threadpool threads until each one has exited.
