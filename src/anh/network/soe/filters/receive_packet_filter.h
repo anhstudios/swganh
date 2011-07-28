@@ -21,7 +21,6 @@
 #ifndef ANH_NETWORK_SOE_RECEIVE_PACKET_FILTER_H_
 #define ANH_NETWORK_SOE_RECEIVE_PACKET_FILTER_H_
 
-#include <list>
 #include <memory>
 
 #include <tbb/concurrent_queue.h>

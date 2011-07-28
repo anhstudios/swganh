@@ -2,6 +2,7 @@
 #ifndef SWGANH_APP_SWGANH_APP_H_
 #define SWGANH_APP_SWGANH_APP_H_
 
+#include <list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -9,6 +10,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
+#include <boost/thread/thread.hpp>
 #include <tbb/atomic.h>
 
 #include "anh/app/app_interface.h"
@@ -47,6 +49,7 @@ private:
 
     void CleanupServices_();
     
+    std::list<std::shared_ptr<boost::thread>> io_threads_;
     std::shared_ptr<SwganhKernel> kernel_;
     std::shared_ptr<anh::service::ServiceDirectory> service_directory_;
     tbb::atomic<bool> running_;

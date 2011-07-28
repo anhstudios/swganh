@@ -41,10 +41,7 @@ public:
     *  @brief Stops the service, sets running_ to false
     */
     virtual void Stop() = 0;
-    /*
-    *  @brief used to perform any update specific tasks for the service
-    */
-    virtual void Update() = 0;
+
     /*
     *  @brief returns true if running is set to true
     */

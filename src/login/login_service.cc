@@ -66,7 +66,7 @@ LoginService::LoginService(shared_ptr<KernelInterface> kernel)
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_port_(0)
     , packet_router_(clients_) {
-    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
+    soe_server_.reset(new network::soe::Server(kernel->GetIoService(), swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
     
     auto encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
 
@@ -107,10 +107,6 @@ void LoginService::onStart() {
     galaxy_status_ = GetGalaxyStatus_();
     
     UpdateGalaxyStatus_();
-}
-
-void LoginService::onUpdate() {
-    soe_server_->Update();    
 }
 
 void LoginService::onStop() {

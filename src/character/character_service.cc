@@ -79,14 +79,11 @@ service::ServiceDescription CharacterService::GetServiceDescription() {
     return service_description;
 }
 
-void CharacterService::onStart() {
-}
-void CharacterService::onStop() {
-}
-void CharacterService::onUpdate() {
-}
-void CharacterService::subscribe() {
-}
+void CharacterService::onStart() {}
+
+void CharacterService::onStop() {}
+
+void CharacterService::subscribe() {}
 
 void CharacterService::DescribeConfigOptions(boost::program_options::options_description& description) {}
 

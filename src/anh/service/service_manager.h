@@ -33,7 +33,6 @@ public:
     // add start/stop services, all and individually
     void Start();
     void Stop();
-    void Update();
 
 private:
     typedef std::map<std::string, std::shared_ptr<ServiceInterface>> ServiceMap;

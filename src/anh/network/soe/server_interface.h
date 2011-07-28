@@ -29,8 +29,6 @@ public:
     virtual ~ServerInterface() {}
     
     virtual void Start(uint16_t port) = 0;
-
-    virtual void Update(void) = 0;
     
     virtual void Shutdown(void) = 0;
 
@@ -45,6 +43,8 @@ public:
     virtual SessionManager& session_manager() = 0;
     
     virtual std::shared_ptr<Socket> socket() = 0;
+
+    virtual uint32_t max_receive_size() = 0;
 };
 
 }}} // namespace anh::network::soe

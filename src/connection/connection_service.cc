@@ -73,7 +73,7 @@ ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel)
     : swganh::base::BaseService(kernel)
     , listen_port_(0) {
         
-    soe_server_.reset(new network::soe::Server(swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
+    soe_server_.reset(new network::soe::Server(kernel->GetIoService(), swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
     session_provider_ = make_shared<connection::providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
 }
 
@@ -103,10 +103,6 @@ void ConnectionService::DescribeConfigOptions(boost::program_options::options_de
 
 void ConnectionService::onStart() {
     soe_server_->Start(listen_port_);
-}
-
-void ConnectionService::onUpdate() {
-    soe_server_->Update();
 }
 
 void ConnectionService::onStop() {

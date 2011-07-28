@@ -51,10 +51,6 @@ public:
 
     void Start();
     void Stop();
-    /*
-    *  @brief used to perform any update specific tasks for the service
-    */
-    void Update();
 
     bool IsRunning() const;
         
@@ -72,8 +68,6 @@ protected:
     *  @brief used to perform any startup specific tasks for the service
     */
     virtual void onStart() = 0;
-
-    virtual void onUpdate() = 0;
 
     /*
     *  @brief used to perform any shutdown specific tasks for the service

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
 #include <glog/logging.h>
 
@@ -110,15 +111,30 @@ void SwganhApp::Start() {
 
     running_ = true;
     
+    // Create a work object so that io_service doesn't prematurely exit.
+    boost::asio::io_service::work io_work(kernel_->GetIoService());
+
+    // Start up a threadpool for running io_service based tasks/active objects
+    for (uint32_t i = 0; i < boost::thread::hardware_concurrency(); ++i) {
+        auto t = make_shared<boost::thread>(bind(&boost::asio::io_service::run, &kernel_->GetIoService()));
+        io_threads_.push_back(t);
+    }
+
     kernel_->GetServiceManager()->Start();
 
     do {
-        kernel_->GetIoService().poll();
         kernel_->GetEventDispatcher()->tick();
-        kernel_->GetServiceManager()->Update();
     } while(IsRunning());
-            
+                
     kernel_->GetServiceManager()->Stop();
+
+    // stop io handling    
+    kernel_->GetIoService().stop();
+
+    // join the threadpool threads until each one has exited.
+    for_each(io_threads_.begin(), io_threads_.end(), [] (shared_ptr<boost::thread> t) {
+        t->join();
+    });
 }
 
 void SwganhApp::Stop() {
