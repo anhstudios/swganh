@@ -46,33 +46,37 @@ BaseService::BaseService(shared_ptr<KernelInterface> kernel)
 }
 
 void BaseService::Start() {
-    running_ = true;
+    active_.Send([this] () {
+        running_ = true;
+        
+        subscribe();
 
-    auto service_description = GetServiceDescription();
-    if (!service_directory_->registerService(service_description.name(), service_description.type(), service_description.version(), service_description.address(), service_description.tcp_port(), service_description.udp_port(), service_description.ping_port())) {
-        running_ = false;
-        throw std::runtime_error("Unable to register service " + service_description.name());
-    }
+        auto service_description = GetServiceDescription();
+        if (!service_directory_->registerService(service_description.name(), service_description.type(), service_description.version(), service_description.address(), service_description.tcp_port(), service_description.udp_port(), service_description.ping_port())) {
+            running_ = false;
+            throw std::runtime_error("Unable to register service " + service_description.name());
+        }
 
-    subscribe();
-    
-    onStart();
-}
+        auto service_directory = service_directory_;
 
-void BaseService::Update() {
-    if (IsRunning()) {
-        service_directory_->pulse();
-
-        onUpdate();
-    }
+        active_.SendRepeated(boost::posix_time::seconds(3), [service_directory] (const boost::system::error_code& error) {
+            if (!error) {
+                service_directory->pulse();
+            }
+        });
+            
+        onStart();
+    });
 }
 
 void BaseService::Stop() {
-    running_ = false;
+    active_.Send([this] () {
+        running_ = false;
 
-    service_directory_->removeService(service_directory_->service());
-    
-    onStop();
+        service_directory_->removeService(service_directory_->service());
+        
+        onStop();
+    });
 }
 
 bool BaseService::IsRunning() const { return running_; }

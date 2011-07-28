@@ -76,14 +76,6 @@ void ServiceManager::Start() {
     });    
 }
 
-void ServiceManager::Update() {    
-    for_each(services_.begin(), services_.end(), [] (ServiceMap::value_type& entry) {
-       if (entry.second) {
-           entry.second->Update();
-       } 
-    });   
-}
-
 void ServiceManager::Stop() {
     for_each(services_.begin(), services_.end(), [] (ServiceMap::value_type& entry) {
        if (entry.second) {

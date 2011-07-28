@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 
         app.Initialize(argc, argv);
 
-        thread application_thread([&app] () {
+        boost::thread application_thread([&app] () {
             app.Start();
         });
 

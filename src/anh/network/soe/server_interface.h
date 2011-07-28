@@ -29,8 +29,6 @@ public:
     virtual ~ServerInterface() {}
     
     virtual void Start(uint16_t port) = 0;
-
-    virtual void Update(void) = 0;
     
     virtual void Shutdown(void) = 0;
 

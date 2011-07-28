@@ -46,9 +46,11 @@ using namespace filters;
 using namespace std;
 using namespace tbb;
 
-Server::Server(MessageHandler message_handler)
-    : event_dispatcher_(nullptr)
+Server::Server(boost::asio::io_service& io_service, MessageHandler message_handler)
+    : io_service_(io_service) 
+    , event_dispatcher_(nullptr)
     , crc_seed_(0xDEADBABE)
+    , active_(io_service)
     , message_handler_(message_handler)
     , max_receive_size_(496)
 {}
@@ -78,16 +80,15 @@ void Server::Start(uint16_t port)
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, EncryptionFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CrcOutFilter()) &
         make_filter<shared_ptr<Packet>, void>(filter::serial_in_order, SendPacketFilter(socket_));
-}
 
-void Server::Update(void)
-{
-    io_service_.poll();
+    active_.SendRepeated(boost::posix_time::milliseconds(1), [this] (const boost::system::error_code& error) {
+        if (!error) {
+            parallel_pipeline(1000, incoming_filter_);
+            parallel_pipeline(1000, outgoing_filter_);
 
-    parallel_pipeline(1000, incoming_filter_);
-    parallel_pipeline(1000, outgoing_filter_);
-
-    session_manager_.Update();
+            session_manager_.Update();
+        }
+    });
 }
 
 void Server::Shutdown(void) {
