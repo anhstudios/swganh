@@ -111,13 +111,14 @@ void SwganhApp::Start() {
 
     running_ = true;
     
+    // Start up the services to ensure there is work for the io_service instance.
+    kernel_->GetServiceManager()->Start();
+
     // Start up a threadpool for running io_service based tasks/active objects
     for (uint32_t i = 0; i < boost::thread::hardware_concurrency(); ++i) {
         auto t = make_shared<boost::thread>(bind(&boost::asio::io_service::run, &kernel_->GetIoService()));
         io_threads_.push_back(t);
     }
-
-    kernel_->GetServiceManager()->Start();
 
     do {
         kernel_->GetEventDispatcher()->tick();
