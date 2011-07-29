@@ -58,6 +58,8 @@
 #include "connection/messages/client_id_msg.h"
 #include "connection/messages/heart_beat.h"
 
+#include "connection/connection_client.h"
+
 using namespace anh;
 using namespace app;
 using namespace event_dispatcher;
@@ -71,6 +73,7 @@ using namespace std;
 
 ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel) 
     : swganh::base::BaseService(kernel)
+    , packet_router_(players_)
     , listen_port_(0) {
         
     soe_server_.reset(new network::soe::Server(kernel->GetIoService(), swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
@@ -107,17 +110,29 @@ void ConnectionService::onStart() {
 
 void ConnectionService::onStop() {
     soe_server_->Shutdown();
-    player_session_map_.clear();
+    players_.clear();
 }
 
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
+    
+    event_dispatcher->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));    
 
-    event_dispatcher->subscribe("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1));
-    event_dispatcher->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));
-    event_dispatcher->subscribe("SelectCharacter", bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1));
-    event_dispatcher->subscribe("ClientCreateCharacter", bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1));
-    event_dispatcher->subscribe("ClientRandomNameRequest", bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1));
+    event_dispatcher->subscribe("SelectCharacter", [this] (shared_ptr<EventInterface> incoming_event) {
+        return packet_router_.RoutePacket<SelectCharacter>(incoming_event, bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
+    });
+    
+    event_dispatcher->subscribe("ClientCreateCharacter", [this] (shared_ptr<EventInterface> incoming_event) {
+        return packet_router_.RoutePacket<ClientCreateCharacter>(incoming_event, bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
+    });
+
+    event_dispatcher->subscribe("CmdSceneReady", [this] (shared_ptr<EventInterface> incoming_event) {
+        return packet_router_.RoutePacket<CmdSceneReady>(incoming_event, bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
+    });
+
+    event_dispatcher->subscribe("ClientRandomNameRequest", [this] (shared_ptr<EventInterface> incoming_event) {
+        return packet_router_.RoutePacket<ClientRandomNameRequest>(incoming_event, bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));
+    });
 }
 
 shared_ptr<BaseCharacterService> ConnectionService::character_service() {
@@ -134,17 +149,10 @@ void ConnectionService::login_service(shared_ptr<LoginServiceInterface> login_se
     login_service_ = login_service;
 }
 
-bool ConnectionService::HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
+void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
     DLOG(WARNING) << "Handling CmdSceneReady";
-    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     
-    ByteBuffer buffer;
-    
-    CmdSceneReady ready_scene;
-    
-    remote_event->session()->SendMessage(ready_scene);
-
-    return true;
+    client->session->SendMessage(CmdSceneReady());
 }
 
 bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
@@ -152,24 +160,36 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     ClientIdMsg id_msg;
     id_msg.deserialize(*remote_event->message());
+
     // get session key from login service
     uint32_t account_id = login_service()->GetAccountBySessionKey(id_msg.session_hash);
+
     // authorized
-    if (account_id > 0)
-    {
-        // gets player from account
-        uint64_t player_id = session_provider_->GetPlayerId(account_id);
-        // creates a new session and stores it for later use
-        if (session_provider_->CreateGameSession(player_id, remote_event->session()->connection_id())) {
-            // insert into map
-            player_session_map_.insert(std::make_pair(player_id, remote_event->session()));
-        } else  {
-            DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
-        }
-    } else {
+    if (! account_id) {
         DLOG(WARNING) << "Account_id not found from session key, unauthorized access.";
         return false;
     }
+    
+    // gets player from account
+    uint64_t player_id = session_provider_->GetPlayerId(account_id);
+                
+    // authorized
+    if (! player_id) {
+        DLOG(WARNING) << "No player found for the requested account, unauthorized access.";
+        return false;
+    }
+    
+    // creates a new session and stores it for later use
+    if (!session_provider_->CreateGameSession(player_id, remote_event->session()->connection_id())) {    
+        DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
+    }
+
+    auto connection_client = make_shared<ConnectionClient>();
+    connection_client->account_id = account_id;
+    connection_client->player_id = player_id;
+    connection_client->session = remote_event->session();
+
+    players_.insert(make_pair(connection_client->session->remote_endpoint(), connection_client));
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = service_directory()->galaxy()->status();
@@ -177,22 +197,14 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 
-    remote_event->session()->SendMessage(client_permissions);
+    connection_client->session->SendMessage(client_permissions);
 
     return true;
 }
 
-bool ConnectionService::HandleSelectCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
-    DLOG(WARNING) << "Handling SelectCharacter";
-    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
-    SelectCharacter select_character;
-    select_character.deserialize(*remote_event->message());
+void ConnectionService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const SelectCharacter& message) {    
+    swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(message.character_id);
 
-    return processSelectCharacter_(select_character.character_id, remote_event->session());    
-}
-
-bool ConnectionService::processSelectCharacter_(uint64_t character_id, std::shared_ptr<anh::network::soe::Session> session) {
-    swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(character_id);
     CmdStartScene start_scene;
     // @TODO: Replace with configurable value
     start_scene.ignore_layout = 0;
@@ -202,7 +214,7 @@ bool ConnectionService::processSelectCharacter_(uint64_t character_id, std::shar
     start_scene.shared_race_template = "object/creature/player/shared_" + character.race + "_" + character.gender + ".iff";
     start_scene.galaxy_time = service_directory()->galaxy()->GetGalaxyTimeInMilliseconds();
         
-    session->SendMessage(start_scene);
+    client->session->SendMessage(start_scene);
 
     SceneCreateObjectByCrc scene_object;
     scene_object.object_id = character.character_id;
@@ -212,73 +224,46 @@ bool ConnectionService::processSelectCharacter_(uint64_t character_id, std::shar
     // @TODO: Replace with configurable value
     scene_object.byte_flag = 0;
     
-    session->SendMessage(scene_object);
+    client->session->SendMessage(scene_object);
     
     SceneEndBaselines scene_object_end;
     scene_object_end.object_id = character.character_id;
     
-    session->SendMessage(scene_object_end);
-
-    return true;
+    client->session->SendMessage(scene_object_end);
 }
 
-bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
+void ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientCreateCharacter& message) {
     DLOG(WARNING) << "Handling ClientCreateCharacter";
-    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
-    ClientCreateCharacter create_character;
-    create_character.deserialize(*remote_event->message());
-    
-    // they should be in our Player session map
-    uint32_t account_id = 0;
-    auto it_found = find_if(player_session_map_.begin(), player_session_map_.end(), [&remote_event] (PlayerSessionMap::value_type& player_session ) {
-        return player_session.second->remote_endpoint().address() == remote_event->session()->remote_endpoint().address();
-    });
-    if (it_found != player_session_map_.end())
-    {
-        account_id = session_provider_->GetAccountId((*it_found).first);
-    } else {
-        DLOG(WARNING) << "Can't continue in Character Creation process without a valid account_id";
-    }
 
     uint64_t character_id;
     string error_code;
-    tie(character_id, error_code) = character_service()->CreateCharacter(create_character, account_id);
-    // heartbeat to let the client know we're still here
+    tie(character_id, error_code) = character_service()->CreateCharacter(message, client->account_id);
+
+    // heartbeat to let the client know we're still here    
     HeartBeat heartbeat;
-    remote_event->session()->SendMessage(heartbeat);
-    if (error_code.length() > 0 && character_id == 0)
-    {
+    client->session->SendMessage(heartbeat);
+
+    if (error_code.length() > 0 && character_id == 0) {
         ClientCreateCharacterFailed failed;
         failed.stf_file = "ui";
         failed.error_string = error_code;
-        remote_event->session()->SendMessage(failed);
-    }
-    else
-    {
+        client->session->SendMessage(failed);
+    } else {
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
-        remote_event->session()->SendMessage(success);
+        client->session->SendMessage(success);
     }
-    
-    return true;
 }
 
-bool ConnectionService::HandleClientRandomNameRequest_(shared_ptr<EventInterface> incoming_event) {
-    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
-    ClientRandomNameRequest rnq;
-    rnq.deserialize(*remote_event->message());
-
+void ConnectionService::HandleClientRandomNameRequest_(std::shared_ptr<ConnectionClient> client, const ClientRandomNameRequest& message) {
     ClientRandomNameResponse response;
-    response.player_race_iff = rnq.player_race_iff;
+    response.player_race_iff = message.player_race_iff;
     
-    response.random_name = character_service()->GetRandomNameRequest(rnq.player_race_iff);
-    if (response.random_name.length() > 0)
-    {
+    response.random_name = character_service()->GetRandomNameRequest(message.player_race_iff);
+    if (response.random_name.length() > 0) {
         response.stf_file = "ui";
         response.approval_string = "name_approved";
     }
 
-    remote_event->session()->SendMessage(response);
-
-    return true;
+    client->session->SendMessage(response);
 }

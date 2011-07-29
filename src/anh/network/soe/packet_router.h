@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 
+#include <glog/logging.h>
 #include "anh/event_dispatcher/basic_event.h"
 
 namespace anh {
@@ -45,7 +46,7 @@ public:
             
             handler(client, message);
         } catch(const std::exception& e) {
-            DLOG(ERROR) << "Error handling remote message\nclient: " << remote_event->session()->remote_endpoint() << "\nerror: \n" << e.what();
+            DLOG(ERROR) << "Error handling remote message\nmessage: " << std::hex << MessageType::opcode << "\nclient: " << remote_event->session()->remote_endpoint() << "\nerror: \n" << e.what();
             return false;
         }
 
