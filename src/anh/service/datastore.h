@@ -29,6 +29,7 @@
 #include <boost/noncopyable.hpp>
 
 #include "anh/service/datastore_interface.h"
+#include "anh/service/galaxy.h"
 
 namespace sql {
     class Connection; 
@@ -37,7 +38,6 @@ namespace sql {
 namespace anh {
 namespace service {
 
-class Galaxy;
 class ServiceDescription;
 
 class Datastore : public DatastoreInterface , boost::noncopyable {
@@ -50,6 +50,7 @@ public:
     std::shared_ptr<Galaxy> createGalaxy(const std::string& name, const std::string& version) const;
     std::shared_ptr<Galaxy> findGalaxyById(uint32_t id) const;
     std::shared_ptr<Galaxy> findGalaxyByName(const std::string& name) const;
+    void saveGalaxyStatus(int32_t galaxy_id, int32_t status) const;
     
     std::shared_ptr<ServiceDescription> createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const;
     std::shared_ptr<ServiceDescription> findServiceById(uint32_t id) const;

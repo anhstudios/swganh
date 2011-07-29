@@ -97,6 +97,10 @@ Galaxy::StatusType Galaxy::status() const {
     return status_;
 }
 
+void Galaxy::status(Galaxy::StatusType status) {
+    status_ = status;
+}
+
 const std::string& Galaxy::created_at() const {
     return created_at_;
 }

@@ -71,6 +71,37 @@ void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::str
         }
     }
 }
+void ServiceDirectory::updateGalaxyStatus() {
+    auto services = getServiceSnapshot(active_galaxy_);
+
+    if (services.empty()) {
+        return;
+    }
+    int offline_count = 0;
+    int loading_count = 0;
+    int online_count = 0;
+    service::Galaxy::StatusType galaxy_status;
+    for_each(services.begin(), services.end(), [&] (anh::service::ServiceDescription& service) {
+        if (service.status() == service::Galaxy::OFFLINE) {
+            offline_count++;
+        } else if(service.status() == service::Galaxy::LOADING) {
+            loading_count++;
+        } else if(service.status() == service::Galaxy::ONLINE) {
+            online_count++;
+        }
+    });
+    if (online_count == services.size()) {
+        galaxy_status = service::Galaxy::ONLINE;
+    } else if (offline_count == services.size()) {
+        galaxy_status = service::Galaxy::OFFLINE;
+    } else {
+        galaxy_status = service::Galaxy::LOADING;
+    }
+    
+    active_galaxy_->status((Galaxy::StatusType)galaxy_status);
+    datastore_->saveGalaxyStatus(active_galaxy_->id(), active_galaxy_->status());
+    // @TODO Add event to trigger login service updating of Galaxy
+}
 
 bool ServiceDirectory::registerService(const string& name, const string& service_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
     if (active_service_ = datastore_->createService(active_galaxy_, name, service_type, version, address, tcp_port, udp_port, ping_port)) {

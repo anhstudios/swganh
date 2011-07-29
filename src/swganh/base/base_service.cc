@@ -25,6 +25,7 @@
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 
 #include "anh/service/datastore.h"
+#include "anh/service/galaxy.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -46,6 +47,9 @@ BaseService::BaseService(shared_ptr<KernelInterface> kernel)
 }
 
 void BaseService::Start() {
+    // update the status of the service
+    //service_directory_->updateServiceStatus(service_directory()->service(), anh::service::Galaxy::LOADING);
+    
     active_.Send([this] () {
         running_ = true;
         
@@ -65,7 +69,19 @@ void BaseService::Start() {
                 service_directory->pulse();
             }
         });
-            
+        // update the status of the service
+        service_directory_->updateServiceStatus(service_directory_->service(), anh::service::Galaxy::ONLINE);
+
+        active_.Send([service_directory] () {
+            service_directory->updateGalaxyStatus();
+        });
+        // @TODO: change this time to a value based on the timeout for galaxy
+        active_.SendRepeated(boost::posix_time::seconds(30), [service_directory] (const boost::system::error_code& error) {
+             if (!error) {
+                service_directory->updateGalaxyStatus();
+             }
+        });
+
         onStart();
     });
 }
@@ -74,8 +90,11 @@ void BaseService::Stop() {
     active_.Send([this] () {
         running_ = false;
 
+        // update the status of the service
+        service_directory_->updateServiceStatus(service_directory_->service(), anh::service::Galaxy::OFFLINE);
+
         service_directory_->removeService(service_directory_->service());
-        
+
         onStop();
     });
 }

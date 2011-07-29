@@ -67,6 +67,7 @@ public:
     MOCK_CONST_METHOD8(createService, shared_ptr<ServiceDescription>(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port));
     MOCK_CONST_METHOD1(getGalaxyTimestamp, std::string(std::shared_ptr<Galaxy> galaxy));
     MOCK_CONST_METHOD1(saveService, void(std::shared_ptr<ServiceDescription> service));
+    MOCK_CONST_METHOD2(saveGalaxyStatus ,void(int32_t galaxy_id, int32_t status));
     MOCK_CONST_METHOD1(findGalaxyById, shared_ptr<Galaxy>(uint32_t id));
     MOCK_CONST_METHOD1(deleteServiceById, bool(uint32_t id));
     MOCK_CONST_METHOD0(getGalaxyList, GalaxyList());
@@ -216,7 +217,7 @@ TEST_F(ServiceDirectoryTest, PulsingUpdatesActiveServiceTimestamp) {
     
     EXPECT_CALL(*datastore, findGalaxyById(test_galaxy_->id()))
         .WillOnce(Return(test_galaxy_));
-
+       
     try {
         ServiceDirectory service_directory(datastore, dispatcher_, "test_galaxy", "20050408-18:00");
 
