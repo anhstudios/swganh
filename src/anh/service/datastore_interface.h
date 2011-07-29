@@ -41,6 +41,7 @@ public:
     virtual std::shared_ptr<ServiceDescription> createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const = 0;
 
     virtual std::string getGalaxyTimestamp(std::shared_ptr<Galaxy> galaxy) const = 0;
+    virtual void saveGalaxyStatus(int32_t galaxy_id, int32_t status) const = 0;
 
     virtual void saveService(std::shared_ptr<ServiceDescription> service) const = 0;
 

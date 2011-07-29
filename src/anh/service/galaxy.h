@@ -94,7 +94,12 @@ public:
     *
     * \returns Returns the current status of the galaxy.
     */
-    Galaxy::StatusType status() const;    
+    Galaxy::StatusType status() const;  
+
+    /*! sets the current status of the galaxy.
+    *
+    */
+    void status(Galaxy::StatusType status);
     
     /*! Returns the timestamp indicating the time the galaxy was first created.
     *

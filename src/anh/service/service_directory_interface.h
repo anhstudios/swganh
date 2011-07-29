@@ -42,6 +42,8 @@ public:
 
     virtual void joinGalaxy(const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false) = 0;
 
+    virtual void updateGalaxyStatus() = 0;
+
     virtual bool registerService(
         const std::string& name, 
         const std::string& service_type, 
