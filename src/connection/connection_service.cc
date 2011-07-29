@@ -73,10 +73,11 @@ using namespace std;
 
 ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel) 
     : swganh::base::BaseService(kernel)
-    , packet_router_(players_)
+    , packet_router_(clients_)
     , listen_port_(0) {
         
     soe_server_.reset(new network::soe::Server(kernel->GetIoService(), swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
+    soe_server_->event_dispatcher(kernel->GetEventDispatcher());
     session_provider_ = make_shared<connection::providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
 }
 
@@ -110,7 +111,7 @@ void ConnectionService::onStart() {
 
 void ConnectionService::onStop() {
     soe_server_->Shutdown();
-    players_.clear();
+    clients_.clear();
 }
 
 void ConnectionService::subscribe() {
@@ -132,6 +133,25 @@ void ConnectionService::subscribe() {
 
     event_dispatcher->subscribe("ClientRandomNameRequest", [this] (shared_ptr<EventInterface> incoming_event) {
         return packet_router_.RoutePacket<ClientRandomNameRequest>(incoming_event, bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));
+    });
+    
+    event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
+        auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
+
+        RemoveClient_(session_removed->session);
+
+        return true;
+    });
+}
+
+void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
+    active().Send([=] () {
+        auto find_it = clients_.find(session->remote_endpoint());
+
+        if (find_it != clients_.end()) {
+            DLOG(WARNING) << "Removing disconnected client";
+            clients_.erase(find_it);
+        }
     });
 }
 
@@ -189,7 +209,7 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     connection_client->player_id = player_id;
     connection_client->session = remote_event->session();
 
-    players_.insert(make_pair(connection_client->session->remote_endpoint(), connection_client));
+    clients_.insert(make_pair(connection_client->session->remote_endpoint(), connection_client));
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = service_directory()->galaxy()->status();

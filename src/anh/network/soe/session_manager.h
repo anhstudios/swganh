@@ -51,7 +51,7 @@ public:
     void Update(void);
 
     bool AddSession(std::shared_ptr<Session> session);
-    void RemoveSession(std::shared_ptr<Session> session);
+    bool RemoveSession(std::shared_ptr<Session> session);
     bool SessionExists(void);
     std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
 private:

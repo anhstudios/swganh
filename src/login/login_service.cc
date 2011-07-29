@@ -67,6 +67,7 @@ LoginService::LoginService(shared_ptr<KernelInterface> kernel)
     , listen_port_(0)
     , packet_router_(clients_) {
     soe_server_.reset(new network::soe::Server(kernel->GetIoService(), swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
+    soe_server_->event_dispatcher(kernel->GetEventDispatcher());
     
     auto encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
 
@@ -123,14 +124,29 @@ void LoginService::subscribe() {
     event_dispatcher->subscribe("DeleteCharacterMessage", [this] (shared_ptr<EventInterface> incoming_event) {
         return packet_router_.RoutePacket<DeleteCharacterMessage>(incoming_event, bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
     });
+
+    event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
+        auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
+
+        RemoveClient_(session_removed->session);
+
+        return true;
+    });
+}
+
+void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
+    active().Send([=] () {
+        auto find_it = clients_.find(session->remote_endpoint());
+
+        if (find_it != clients_.end()) {
+            DLOG(WARNING) << "Removing disconnected client";
+            clients_.erase(find_it);
+        }
+    });
 }
 
 void LoginService::UpdateGalaxyStatus_() {    
     active().SendRepeated(boost::posix_time::seconds(galaxy_status_check_duration_secs_), [this] (const boost::system::error_code & error) {
-        if (error == boost::asio::error::operation_aborted) {
-            return;
-        }
-
         DLOG(INFO) << "Updating galaxy status";
 
         galaxy_status_ = GetGalaxyStatus_();
@@ -138,7 +154,7 @@ void LoginService::UpdateGalaxyStatus_() {
         const vector<GalaxyStatus>& status = galaxy_status_;
 
         std::for_each(clients_.begin(), clients_.end(), [&status] (std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<LoginClient>>::value_type& client_entry) {
-            if (client_entry.second) {
+            if (client_entry.second) {                
                 client_entry.second->session->SendMessage(
                     BuildLoginClusterStatus(status));
             }
@@ -171,7 +187,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
             status.name = galaxy.name();
             status.ping_port = it->ping_port();
             status.server_population = 10;
-            status.status = it->status();
+            status.status = service_directory->galaxy()->status();
 
             galaxy_status.push_back(std::move(status));
         }
@@ -240,6 +256,7 @@ void LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> lo
 
     login_client->session->SendMessage(reply_message);
 }
+
 uint32_t LoginService::GetAccountBySessionKey(const string& session_key) {
     return account_provider_->FindBySessionKey(session_key);
 }

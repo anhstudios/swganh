@@ -81,6 +81,8 @@ private:
     bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     void HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const messages::DeleteCharacterMessage& message);
 
+    void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
+
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
     

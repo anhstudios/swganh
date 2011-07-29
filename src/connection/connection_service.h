@@ -83,16 +83,18 @@ private:
     void HandleClientRandomNameRequest_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientRandomNameRequest& message);
     void HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientCreateCharacter& message);
     void HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::SelectCharacter& message);
+    
+    void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
 
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
     std::shared_ptr<swganh::login::LoginServiceInterface> login_service_;
     std::shared_ptr<connection::providers::SessionProviderInterface> session_provider_;
     
-    typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<ConnectionClient>> ConnectionClientMap;
-    ConnectionClientMap players_;
+    typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<ConnectionClient>> ClientMap;
+    ClientMap clients_;
 
-    anh::network::soe::PacketRouter<ConnectionClientMap> packet_router_;
+    anh::network::soe::PacketRouter<ClientMap> packet_router_;
     
     std::string listen_address_;
     uint16_t listen_port_;

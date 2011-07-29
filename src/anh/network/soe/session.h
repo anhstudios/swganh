@@ -53,6 +53,12 @@ class ServerInterface;
 
 typedef std::function<void (uint32_t, std::shared_ptr<ByteBuffer>)> DatachannelHandler;
 
+class Session;
+
+struct SessionData {
+    std::shared_ptr<Session> session;    
+};
+
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
  */
