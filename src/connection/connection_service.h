@@ -78,13 +78,14 @@ public:
     void login_service(std::shared_ptr<swganh::login::LoginServiceInterface> login_service);
 
 private:
-    bool HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    void HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientIdMsg& message);
     void HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const swganh::scene::messages::CmdSceneReady& message);
     void HandleClientRandomNameRequest_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientRandomNameRequest& message);
     void HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientCreateCharacter& message);
     void HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::SelectCharacter& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
+    void AddClient_(std::shared_ptr<anh::network::soe::Session> session);
 
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
