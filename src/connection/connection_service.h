@@ -78,8 +78,8 @@ public:
 private:
     bool HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    bool HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleClientRandomNameRequest_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    void HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientCreateCharacter& message);
     void HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::SelectCharacter& message);
 
     std::unique_ptr<anh::network::soe::Server> soe_server_;

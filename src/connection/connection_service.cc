@@ -119,10 +119,13 @@ void ConnectionService::subscribe() {
     event_dispatcher->subscribe("SelectCharacter", [this] (shared_ptr<EventInterface> incoming_event) {
         return packet_router_.RoutePacket<SelectCharacter>(incoming_event, bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
     });
+    
+    event_dispatcher->subscribe("ClientCreateCharacter", [this] (shared_ptr<EventInterface> incoming_event) {
+        return packet_router_.RoutePacket<ClientCreateCharacter>(incoming_event, bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
+    });
 
     event_dispatcher->subscribe("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1));
     event_dispatcher->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));    
-    event_dispatcher->subscribe("ClientCreateCharacter", bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1));
     event_dispatcher->subscribe("ClientRandomNameRequest", bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1));
 }
 
@@ -230,45 +233,27 @@ void ConnectionService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient>
     client->session->SendMessage(scene_object_end);
 }
 
-bool ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
+void ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientCreateCharacter& message) {
     DLOG(WARNING) << "Handling ClientCreateCharacter";
-    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
-    ClientCreateCharacter create_character;
-    create_character.deserialize(*remote_event->message());
-    
-    // they should be in our Player session map
-    uint32_t account_id = 0;
-    //auto it_found = find_if(players_.begin(), players_.end(), [&remote_event] (ConnectionClientMap::value_type& player_session ) {
-    //    return player_session.second->session->remote_endpoint().address() == remote_event->session()->remote_endpoint();
-    //});
-    //if (it_found != players_.end())
-    //{
-    //    account_id = session_provider_->GetAccountId((*it_found).first);
-    //} else {
-    //    DLOG(WARNING) << "Can't continue in Character Creation process without a valid account_id";
-    //}
 
     uint64_t character_id;
     string error_code;
-    tie(character_id, error_code) = character_service()->CreateCharacter(create_character, account_id);
-    // heartbeat to let the client know we're still here
+    tie(character_id, error_code) = character_service()->CreateCharacter(message, client->account_id);
+
+    // heartbeat to let the client know we're still here    
     HeartBeat heartbeat;
-    remote_event->session()->SendMessage(heartbeat);
-    if (error_code.length() > 0 && character_id == 0)
-    {
+    client->session->SendMessage(heartbeat);
+
+    if (error_code.length() > 0 && character_id == 0) {
         ClientCreateCharacterFailed failed;
         failed.stf_file = "ui";
         failed.error_string = error_code;
-        remote_event->session()->SendMessage(failed);
-    }
-    else
-    {
+        client->session->SendMessage(failed);
+    } else {
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
-        remote_event->session()->SendMessage(success);
+        client->session->SendMessage(success);
     }
-    
-    return true;
 }
 
 bool ConnectionService::HandleClientRandomNameRequest_(shared_ptr<EventInterface> incoming_event) {
