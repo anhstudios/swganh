@@ -46,7 +46,7 @@ public:
             
             handler(client, message);
         } catch(const std::exception& e) {
-            DLOG(ERROR) << "Error handling remote message\nclient: " << remote_event->session()->remote_endpoint() << "\nerror: \n" << e.what();
+            DLOG(ERROR) << "Error handling remote message\nmessage: " << std::hex << MessageType::opcode << "\nclient: " << remote_event->session()->remote_endpoint() << "\nerror: \n" << e.what();
             return false;
         }
 
