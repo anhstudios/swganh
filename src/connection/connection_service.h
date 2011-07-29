@@ -21,14 +21,25 @@
 #ifndef CONNECTION_CONNECTION_SERVICE_H_
 #define CONNECTION_CONNECTION_SERVICE_H_
 
-#include "anh/network/soe/server.h"
-
 #include <map>
+
+#include "anh/network/soe/packet_router.h"
+#include "anh/network/soe/server.h"
 
 #include "connection/providers/session_provider_interface.h"
 #include "swganh/base/base_service.h"
 #include "swganh/character/base_character_service.h"
 #include "swganh/login/login_service_interface.h"
+
+#include "connection/messages/client_permissions_message.h"
+#include "connection/messages/select_character.h"
+#include "connection/messages/client_create_character.h"
+#include "connection/messages/client_create_character_success.h"
+#include "connection/messages/client_create_character_failed.h"
+#include "connection/messages/client_random_name_request.h"
+#include "connection/messages/client_random_name_response.h"
+#include "connection/messages/client_id_msg.h"
+#include "connection/messages/heart_beat.h"
 
 namespace anh {
 namespace app {
@@ -42,7 +53,8 @@ class EventInterface;
 
 namespace connection {
 
-typedef std::map<uint64_t, std::shared_ptr<anh::network::soe::Session>> PlayerSessionMap;
+struct ConnectionClient;
+
     
 class ConnectionService : public swganh::base::BaseService {
 public:
@@ -66,17 +78,19 @@ public:
 private:
     bool HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    bool HandleSelectCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    bool processSelectCharacter_(uint64_t character_id, std::shared_ptr<anh::network::soe::Session> session);
     bool HandleClientCreateCharacter_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleClientRandomNameRequest_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    void HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::SelectCharacter& message);
 
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
     std::shared_ptr<swganh::login::LoginServiceInterface> login_service_;
     std::shared_ptr<connection::providers::SessionProviderInterface> session_provider_;
+    
+    typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<ConnectionClient>> ConnectionClientMap;
+    ConnectionClientMap players_;
 
-    PlayerSessionMap player_session_map_;
+    anh::network::soe::PacketRouter<ConnectionClientMap> packet_router_;
     
     std::string listen_address_;
     uint16_t listen_port_;
