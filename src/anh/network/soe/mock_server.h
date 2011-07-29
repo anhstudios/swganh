@@ -47,7 +47,11 @@ public:
     MOCK_METHOD2(SendMessage, void(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message));
     MOCK_METHOD2(HandleMessage, void(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message));
     MOCK_METHOD0(event_dispatcher, std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>());
-    MOCK_METHOD0(session_manager, SessionManager&());
+
+    MOCK_METHOD1(AddSession, bool(std::shared_ptr<Session> session));
+    MOCK_METHOD1(RemoveSession, bool(std::shared_ptr<Session> session));
+    MOCK_METHOD1(GetSession, std::shared_ptr<Session>(boost::asio::ip::udp::endpoint& endpoint));
+
     MOCK_METHOD0(socket, std::shared_ptr<Socket>());
     MOCK_METHOD0(max_receive_size, uint32_t());
     MOCK_METHOD0(AllocateBuffer, std::shared_ptr<anh::ByteBuffer>());

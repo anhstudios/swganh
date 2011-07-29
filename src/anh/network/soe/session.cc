@@ -154,7 +154,7 @@ void Session::Close(void)
     if(connected_)
     {
         connected_ = false;
-        server_->session_manager().RemoveSession(shared_from_this());
+        server_->RemoveSession(shared_from_this());
 
         Disconnect disconnect(connection_id_);
         auto buffer = server_->AllocateBuffer();
@@ -215,7 +215,7 @@ void Session::handleSessionRequest_(SessionRequest& packet)
     server_->socket()->Send(remote_endpoint_, session_response_buffer);
 
     // Add our Session to the SessionManager and flag ourselves as connected.
-    if (server_->session_manager().AddSession(shared_from_this())) {
+    if (server_->AddSession(shared_from_this())) {
         connected_ = true;
         LOG(WARNING) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
     }

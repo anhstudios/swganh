@@ -73,10 +73,11 @@ using namespace std;
 
 ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel) 
     : swganh::base::BaseService(kernel)
-    , packet_router_(players_)
+    , packet_router_(clients_)
     , listen_port_(0) {
         
     soe_server_.reset(new network::soe::Server(kernel->GetIoService(), swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
+    soe_server_->event_dispatcher(kernel->GetEventDispatcher());
     session_provider_ = make_shared<connection::providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
 }
 
@@ -110,12 +111,12 @@ void ConnectionService::onStart() {
 
 void ConnectionService::onStop() {
     soe_server_->Shutdown();
-    players_.clear();
+    clients_.clear();
 }
 
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
-    
+        
     event_dispatcher->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));    
 
     event_dispatcher->subscribe("SelectCharacter", [this] (shared_ptr<EventInterface> incoming_event) {
@@ -132,6 +133,48 @@ void ConnectionService::subscribe() {
 
     event_dispatcher->subscribe("ClientRandomNameRequest", [this] (shared_ptr<EventInterface> incoming_event) {
         return packet_router_.RoutePacket<ClientRandomNameRequest>(incoming_event, bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));
+    });
+
+    event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
+        auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
+        
+        // Message was triggered from our server so process it.
+        if (session_removed->session->server() == soe_server_.get()) {
+            RemoveClient_(session_removed->session);
+        }
+
+        return true;
+    });
+}
+
+std::shared_ptr<ConnectionClient> ConnectionService::AddClient_(std::shared_ptr<anh::network::soe::Session> session) {
+    std::shared_ptr<ConnectionClient> client = nullptr;
+
+    auto find_it = clients_.find(session->remote_endpoint());
+
+    if (find_it == clients_.end()) {
+        DLOG(WARNING) << "Adding connection client";
+        client = make_shared<ConnectionClient>();
+        client->session = session;
+
+        clients_.insert(make_pair(session->remote_endpoint(), client));
+    }
+
+    DLOG(WARNING) << "Connection service currently has ("<< clients_.size() << ") clients";
+    return client;
+}
+
+
+void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
+    active().Send([=] () {
+        auto find_it = clients_.find(session->remote_endpoint());
+
+        if (find_it != clients_.end()) {
+            DLOG(WARNING) << "Removing disconnected client";
+            clients_.erase(find_it);
+        }
+                
+        DLOG(WARNING) << "Connection service currently has ("<< clients_.size() << ") clients";
     });
 }
 
@@ -184,12 +227,9 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
         DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
 
-    auto connection_client = make_shared<ConnectionClient>();
+    auto connection_client = AddClient_(remote_event->session());
     connection_client->account_id = account_id;
     connection_client->player_id = player_id;
-    connection_client->session = remote_event->session();
-
-    players_.insert(make_pair(connection_client->session->remote_endpoint(), connection_client));
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = service_directory()->galaxy()->status();
