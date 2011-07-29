@@ -27,6 +27,7 @@
 #include <memory>
 
 #include <boost/asio.hpp>
+#include <boost/thread/thread.hpp>
 #include <tbb/concurrent_queue.h>
 #include <tbb/pipeline.h>
 
@@ -86,7 +87,11 @@ public:
     
     void HandleMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message);
     
-    SessionManager& session_manager();
+    bool AddSession(std::shared_ptr<Session> session);
+
+    bool RemoveSession(std::shared_ptr<Session> session);
+
+    std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
 
     std::shared_ptr<Socket> socket();
     

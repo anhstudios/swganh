@@ -40,7 +40,11 @@ public:
     
     virtual std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher() = 0;
     
-    virtual SessionManager& session_manager() = 0;
+    virtual bool AddSession(std::shared_ptr<Session> session) = 0;
+
+    virtual bool RemoveSession(std::shared_ptr<Session> session) = 0;
+
+    virtual std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint) = 0;
     
     virtual std::shared_ptr<Socket> socket() = 0;
 

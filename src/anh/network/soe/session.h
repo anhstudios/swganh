@@ -53,6 +53,12 @@ class ServerInterface;
 
 typedef std::function<void (uint32_t, std::shared_ptr<ByteBuffer>)> DatachannelHandler;
 
+class Session;
+
+struct SessionData {
+    std::shared_ptr<Session> session;    
+};
+
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
  */
@@ -139,6 +145,8 @@ public:
     uint32_t connection_id() { return connection_id_; }
 
     boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
+
+    ServerInterface* server() { return server_; }
 
 private:
     typedef std::list<std::pair<uint16_t, std::shared_ptr<anh::ByteBuffer>>> SequencedMessageMap;

@@ -24,6 +24,7 @@
 
 #include "anh/byte_buffer.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/event_dispatcher/basic_event.h"
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
@@ -123,8 +124,32 @@ void Server::event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispat
     event_dispatcher_ = event_dispatcher;
 }
 
-SessionManager& Server::session_manager() {
-    return session_manager_;
+bool Server::AddSession(std::shared_ptr<Session> session) {
+    if (session_manager_.AddSession(session)) {
+        SessionData event_data;
+        event_data.session = session;
+
+        event_dispatcher_->triggerAsync(anh::event_dispatcher::make_shared_event("NetworkSessionAdded", event_data));
+        return true;
+    }
+
+    return false;
+}
+
+bool Server::RemoveSession(std::shared_ptr<Session> session) {
+    if (session_manager_.RemoveSession(session)) {
+        SessionData event_data;
+        event_data.session = session;
+
+        event_dispatcher_->triggerAsync(anh::event_dispatcher::make_shared_event("NetworkSessionRemoved", event_data));
+        return true;
+    }
+
+    return false;
+}
+
+std::shared_ptr<Session> Server::GetSession(boost::asio::ip::udp::endpoint& endpoint) {
+    return session_manager_.GetSession(endpoint);
 }
 
 std::shared_ptr<Socket> Server::socket() {
