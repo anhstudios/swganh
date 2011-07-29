@@ -51,8 +51,10 @@ public:
     void SendDelayed(boost::posix_time::time_duration period, Handler message) {
         auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
         
-        timer_->expires_from_now(period);
-        timer_->async_wait(strand_.wrap(message));
+        timer->expires_from_now(period);
+        timer->async_wait(strand_.wrap([timer, message] (const boost::system::error_code& error) {
+            message(error);   
+        }));
     }
     
     /**
