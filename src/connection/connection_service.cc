@@ -116,6 +116,8 @@ void ConnectionService::onStop() {
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
     
+    event_dispatcher->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));    
+
     event_dispatcher->subscribe("SelectCharacter", [this] (shared_ptr<EventInterface> incoming_event) {
         return packet_router_.RoutePacket<SelectCharacter>(incoming_event, bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
     });
@@ -124,9 +126,13 @@ void ConnectionService::subscribe() {
         return packet_router_.RoutePacket<ClientCreateCharacter>(incoming_event, bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
     });
 
-    event_dispatcher->subscribe("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1));
-    event_dispatcher->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));    
-    event_dispatcher->subscribe("ClientRandomNameRequest", bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1));
+    event_dispatcher->subscribe("CmdSceneReady", [this] (shared_ptr<EventInterface> incoming_event) {
+        return packet_router_.RoutePacket<CmdSceneReady>(incoming_event, bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
+    });
+
+    event_dispatcher->subscribe("ClientRandomNameRequest", [this] (shared_ptr<EventInterface> incoming_event) {
+        return packet_router_.RoutePacket<ClientRandomNameRequest>(incoming_event, bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));
+    });
 }
 
 shared_ptr<BaseCharacterService> ConnectionService::character_service() {
@@ -143,17 +149,10 @@ void ConnectionService::login_service(shared_ptr<LoginServiceInterface> login_se
     login_service_ = login_service;
 }
 
-bool ConnectionService::HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
+void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
     DLOG(WARNING) << "Handling CmdSceneReady";
-    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
     
-    ByteBuffer buffer;
-    
-    CmdSceneReady ready_scene;
-    
-    remote_event->session()->SendMessage(ready_scene);
-
-    return true;
+    client->session->SendMessage(CmdSceneReady());
 }
 
 bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
@@ -256,22 +255,15 @@ void ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionC
     }
 }
 
-bool ConnectionService::HandleClientRandomNameRequest_(shared_ptr<EventInterface> incoming_event) {
-    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
-    ClientRandomNameRequest rnq;
-    rnq.deserialize(*remote_event->message());
-
+void ConnectionService::HandleClientRandomNameRequest_(std::shared_ptr<ConnectionClient> client, const ClientRandomNameRequest& message) {
     ClientRandomNameResponse response;
-    response.player_race_iff = rnq.player_race_iff;
+    response.player_race_iff = message.player_race_iff;
     
-    response.random_name = character_service()->GetRandomNameRequest(rnq.player_race_iff);
-    if (response.random_name.length() > 0)
-    {
+    response.random_name = character_service()->GetRandomNameRequest(message.player_race_iff);
+    if (response.random_name.length() > 0) {
         response.stf_file = "ui";
         response.approval_string = "name_approved";
     }
 
-    remote_event->session()->SendMessage(response);
-
-    return true;
+    client->session->SendMessage(response);
 }

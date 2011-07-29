@@ -31,6 +31,8 @@
 #include "swganh/character/base_character_service.h"
 #include "swganh/login/login_service_interface.h"
 
+#include "swganh/scene/messages/cmd_scene_ready.h"
+
 #include "connection/messages/client_permissions_message.h"
 #include "connection/messages/select_character.h"
 #include "connection/messages/client_create_character.h"
@@ -76,9 +78,9 @@ public:
     void login_service(std::shared_ptr<swganh::login::LoginServiceInterface> login_service);
 
 private:
-    bool HandleCmdSceneReady_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
     bool HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    bool HandleClientRandomNameRequest_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
+    void HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const swganh::scene::messages::CmdSceneReady& message);
+    void HandleClientRandomNameRequest_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientRandomNameRequest& message);
     void HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientCreateCharacter& message);
     void HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::SelectCharacter& message);
 
