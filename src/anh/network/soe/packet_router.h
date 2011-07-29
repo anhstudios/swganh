@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 
+#include <glog/logging.h>
 #include "anh/event_dispatcher/basic_event.h"
 
 namespace anh {
