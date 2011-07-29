@@ -41,6 +41,7 @@
 
 #include "login/messages/delete_character_reply_message.h"
 #include "login/messages/enumerate_character_id.h"
+#include "login/messages/error_message.h"
 #include "login/messages/login_client_token.h"
 #include "login/messages/login_cluster_status.h"
 #include "login/messages/login_enum_cluster.h"
@@ -98,6 +99,8 @@ void LoginService::DescribeConfigOptions(boost::program_options::options_descrip
             "The public address the login service will listen for incoming client connections on")
         ("service.login.status_check_duration_secs", boost::program_options::value<int>(&galaxy_status_check_duration_secs_),
             "The amount of time between checks for updated galaxy status")
+            ("service.login.login_error_timeout_secs", boost::program_options::value<int>(&login_error_timeout_secs_)->default_value(5),
+            "The number of seconds to wait before disconnecting a client after failed login attempt")
     ;
 }
 
@@ -222,29 +225,39 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
 bool LoginService::HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
     auto remote_event = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::Packet>>(incoming_event);
 
-    auto login_client = AddClient_(remote_event->session());
-
     LoginClientId message;
     message.deserialize(*remote_event->message());
-
+    
+    std::shared_ptr<LoginClient> login_client = make_shared<LoginClient>();
+    login_client->session = remote_event->session();
     login_client->username = message.username;
     login_client->password = message.password;
     login_client->version = message.client_version;
+    
+    auto account = account_provider_->FindByUsername(message.username);
 
-    auto account = account_provider_->FindByUsername(login_client->username);
-
-    if (! account) {
+    if (! account || ! authentication_manager_->Authenticate(login_client, account)) {
         DLOG(WARNING) << "Login request for invalid user: " << login_client->username;
+
+        ErrorMessage error;
+        error.type = "@cpt_login_fail";
+        error.message = "@msg_login_fail";
+        error.force_fatal = false;
+        
+        login_client->session->SendMessage(error);
+
+        active().SendDelayed(boost::posix_time::seconds(login_error_timeout_secs_), [login_client] (const boost::system::error_code& error) {
+            login_client->session->Close();
+            DLOG(WARNING) << "Closing connection";
+        });
+
         return true;
     }
-
-    if (! authentication_manager_->Authenticate(login_client, account)) {
-        DLOG(WARNING) << "Failed login attempt for user: " << login_client->username;
-        return true;
-    }
-
+    
     login_client->account = account;
+    
     clients_.insert(make_pair(login_client->session->remote_endpoint(), login_client));
+    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
     
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
