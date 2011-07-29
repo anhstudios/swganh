@@ -95,6 +95,7 @@ private:
     std::vector<GalaxyStatus> galaxy_status_;
     
     int galaxy_status_check_duration_secs_;
+    int login_error_timeout_secs_;
     boost::asio::deadline_timer galaxy_status_timer_;
 
     typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<LoginClient>> ClientMap;
