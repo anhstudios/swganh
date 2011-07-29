@@ -65,6 +65,8 @@ public:
     std::shared_ptr<ServiceDescription> service() const;
         
     void joinGalaxy(const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false);
+    
+    void updateGalaxyStatus();
 
     bool registerService(const std::string& name, const std::string& service_type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping);
     bool removeService(std::shared_ptr<ServiceDescription>& service);
@@ -73,7 +75,7 @@ public:
     bool makePrimaryService(std::shared_ptr<ServiceDescription> service);
 
     void pulse();
-
+    
     GalaxyList getGalaxySnapshot() const;
     ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy) const;
 

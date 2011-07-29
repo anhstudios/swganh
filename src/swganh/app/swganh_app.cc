@@ -101,6 +101,7 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 
     LoadServiceConfig_(service_config_);
 
+    
     initialized_ = true;
 }
 
@@ -119,9 +120,8 @@ void SwganhApp::Start() {
         auto t = make_shared<boost::thread>(bind(&boost::asio::io_service::run, &kernel_->GetIoService()));
         io_threads_.push_back(t);
     }
-
     kernel_->GetServiceManager()->Start();
-
+    
     do {
         kernel_->GetEventDispatcher()->tick();
     } while(IsRunning());

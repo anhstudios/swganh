@@ -46,6 +46,7 @@ public:
         int32_t new_status));
     MOCK_METHOD1(makePrimaryService, bool(std::shared_ptr<ServiceDescription> service));
     MOCK_METHOD0(pulse, void());
+    MOCK_METHOD0(updateGalaxyStatus, void());
     MOCK_CONST_METHOD0(galaxy, std::shared_ptr<Galaxy>());
     MOCK_CONST_METHOD0(service, std::shared_ptr<ServiceDescription>());
     MOCK_CONST_METHOD0(getGalaxySnapshot, GalaxyList());

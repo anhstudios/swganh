@@ -31,7 +31,6 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
 
-#include "anh/service/galaxy.h"
 #include "anh/service/service_description.h"
 
 using namespace anh::service;
@@ -118,6 +117,23 @@ std::shared_ptr<Galaxy> Datastore::createGalaxy(
     }
 
     return galaxy;
+}
+void Datastore::saveGalaxyStatus(int32_t galaxy_id, int32_t status) const
+{
+    try {
+        std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
+            "update galaxy set status = ? "
+            "where id = ?"));
+
+        statement->setInt(1, status);
+        statement->setInt(2, galaxy_id);
+
+        statement->executeUpdate();
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
 
 std::shared_ptr<ServiceDescription> Datastore::createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const {
