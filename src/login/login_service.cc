@@ -118,24 +118,13 @@ void LoginService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
    
     event_dispatcher->subscribe("LoginClientId", [this] (shared_ptr<EventInterface> incoming_event) {
-        return packet_router_.RoutePacket<LoginClientId>(incoming_event, bind(&LoginService::HandleLoginClientId_, this, placeholders::_1, placeholders::_2));
+        return HandleLoginClientId_(incoming_event);
     });
 
     event_dispatcher->subscribe("DeleteCharacterMessage", [this] (shared_ptr<EventInterface> incoming_event) {
         return packet_router_.RoutePacket<DeleteCharacterMessage>(incoming_event, bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
     });
     
-    event_dispatcher->subscribe("NetworkSessionAdded", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
-        auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
-
-        // Message was triggered from our server so process it.
-        if (session_removed->session->server() == soe_server_.get()) {
-            AddClient_(session_removed->session);
-        }
-
-        return true;
-    });
-
     event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
         auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
         
@@ -148,21 +137,22 @@ void LoginService::subscribe() {
     });
 }
 
-void LoginService::AddClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    active().Send([=] () {
-        auto find_it = clients_.find(session->remote_endpoint());
+std::shared_ptr<LoginClient> LoginService::AddClient_(std::shared_ptr<anh::network::soe::Session> session) {
+    std::shared_ptr<LoginClient> client = nullptr;
 
-        if (find_it == clients_.end()) {
-            DLOG(WARNING) << "Adding login client";
+    auto find_it = clients_.find(session->remote_endpoint());
 
-            auto login_client = make_shared<LoginClient>();
-            login_client->session = session;
+    if (find_it == clients_.end()) {
+        DLOG(WARNING) << "Adding login client";
 
-            clients_.insert(make_pair(session->remote_endpoint(), login_client));
-        }
+        client = make_shared<LoginClient>();
+        client->session = session;
 
-        DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
-    });
+        clients_.insert(make_pair(session->remote_endpoint(), client));
+    }
+
+    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
+    return client;
 }
 
 void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
@@ -229,12 +219,14 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_client, const LoginClientId& message) {
-    if (login_client->account) {
-        DLOG(WARNING) << "Login attempt from existing client";
-        return;
-    }
-    
+bool LoginService::HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
+    auto remote_event = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::Packet>>(incoming_event);
+
+    auto login_client = AddClient_(remote_event->session());
+
+    LoginClientId message;
+    message.deserialize(*remote_event->message());
+
     login_client->username = message.username;
     login_client->password = message.password;
     login_client->version = message.client_version;
@@ -243,22 +235,22 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
 
     if (! account) {
         DLOG(WARNING) << "Login request for invalid user: " << login_client->username;
-        return;
+        return true;
     }
 
     if (! authentication_manager_->Authenticate(login_client, account)) {
         DLOG(WARNING) << "Failed login attempt for user: " << login_client->username;
-        return;
+        return true;
     }
 
     login_client->account = account;
+    clients_.insert(make_pair(login_client->session->remote_endpoint(), login_client));
     
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
-        + boost::lexical_cast<string>(login_client->session->remote_endpoint().address());
+        + boost::lexical_cast<string>(remote_event->session()->remote_endpoint().address());
 
     account_provider_->CreateAccountSession(account->account_id(), account_session);
-
     login_client->session->SendMessage(
         messages::BuildLoginClientToken(login_client, account_session));
     
@@ -272,8 +264,9 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
 
     login_client->session->SendMessage(
         messages::BuildEnumerateCharacterId(characters));
-}
 
+    return true;
+}
 void LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const DeleteCharacterMessage& message) {
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
