@@ -100,7 +100,10 @@ void ServiceDirectory::updateGalaxyStatus() {
     
     active_galaxy_->status((Galaxy::StatusType)galaxy_status);
     datastore_->saveGalaxyStatus(active_galaxy_->id(), active_galaxy_->status());
-    // @TODO Add event to trigger login service updating of Galaxy
+    // only trigger this if the service is login
+    if (active_service_->type().compare("login") == 0) {
+        event_dispatcher_->triggerAsync(make_shared_event("UpdateGalaxyStatus"));
+    }
 }
 
 bool ServiceDirectory::registerService(const string& name, const string& service_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
