@@ -36,15 +36,6 @@ private:
     Handler handler_;
 };
 
-template<typename Handler>
-void AsyncRepeat(std::shared_ptr<boost::asio::deadline_timer> timer,
-    boost::posix_time::time_duration period,
-    Handler handler)
-{
-    timer->expires_from_now(period);
-    timer->async_wait(RepeatHandler<Handler>(timer, period, handler));
-}
-
 }}  // namespace anh::utils
 
 #endif  // ANH_UTILS_TIMING_H_

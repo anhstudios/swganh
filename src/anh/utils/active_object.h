@@ -33,6 +33,24 @@ public:
         , strand_(io_service) {}
     
     /**
+     * Triggers an asyncronous task on the active object's strand. Returns a future
+     * containing the return value. Can be used to confirm when the async task has completed.
+     *
+     * @param func The function handler to perform and retrieve results of asyncronously.
+     */
+    template<typename Handler>
+    boost::unique_future<typename std::result_of<Handler()>::type>
+    Async(Handler&& func) {
+        auto task = std::make_shared<boost::packaged_task<typename std::result_of<Handler()>::type>>(move(func));
+        
+        strand_.post([task] () {
+            (*task)();
+        });
+
+        return task->get_future();
+    }
+    
+    /**
      * Sends a message to be handled by the ActiveObject's asio strand. Delays
      * execution of the message by a specified period of time.
      *
@@ -40,13 +58,19 @@ public:
      * @param message The message to be handled by the active object.
      */
     template<typename Handler>
-    void SendDelayed(boost::posix_time::time_duration period, Handler message) {
+    boost::unique_future<typename std::result_of<Handler()>::type>
+    AsyncDelayed(boost::posix_time::time_duration period, Handler&& func) {
+        auto task  = std::make_shared<boost::packaged_task<typename std::result_of<Handler()>::type>>(move(func));
         auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
         
         timer->expires_from_now(period);
-        timer->async_wait(strand_.wrap([timer, message] (const boost::system::error_code& error) {
-            message(error);   
-        }));
+        timer->async_wait([=] (const boost::system::error_code& error) {
+            if (!error) {
+                (*task)();
+            }
+        });
+        
+        return task->get_future();
     }
     
     /**
@@ -57,31 +81,26 @@ public:
      * @param message The message to be handled by the active object.
      */
     template<typename Handler>
-    void SendRepeated(boost::posix_time::time_duration period, Handler message) {
-        auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
-        
-        AsyncRepeat(timer, period, strand_.wrap(message));
-    }
+    void AsyncRepeated(boost::posix_time::time_duration period, Handler&& func) {
+        auto shared_func = make_shared<Handler>(move(func));
 
+        Async([this, period, shared_func] () {
+            auto local_shared_func = shared_func;
 
-    /**
-     * Triggers an asyncronous task on the active object's strand. Returns a future
-     * containing the return value. Can be used to confirm when the async task has completed.
-     *
-     * @param func The function handler to perform and retrieve results of asyncronously.
-     */
-    template<typename T>
-    boost::unique_future<typename std::result_of<T()>::type>
-    Async(T func) {
-        auto task = std::make_shared<boost::packaged_task<typename std::result_of<T()>::type>>(func);
-        
-        strand_.post([task] () {
-            (*task)();
+            (*local_shared_func)();
+            
+            auto wrapped_func = [local_shared_func] (const boost::system::error_code& error) {
+                if (!error) {
+                    (*local_shared_func)();
+                }
+            };
+
+            auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);    
+            
+            timer->expires_from_now(period);
+            timer->async_wait(RepeatHandler<decltype(wrapped_func)>(timer, period, wrapped_func));              
         });
-
-        return task->get_future();
     }
-
 private:
     ActiveObject();
 

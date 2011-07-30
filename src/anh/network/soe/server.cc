@@ -82,13 +82,11 @@ void Server::Start(uint16_t port)
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CrcOutFilter()) &
         make_filter<shared_ptr<Packet>, void>(filter::serial_in_order, SendPacketFilter(socket_));
 
-    active_.SendRepeated(boost::posix_time::milliseconds(1), [this] (const boost::system::error_code& error) {
-        if (!error) {
-            parallel_pipeline(1000, incoming_filter_);
-            parallel_pipeline(1000, outgoing_filter_);
+    active_.AsyncRepeated(boost::posix_time::milliseconds(1), [this] () {
+        parallel_pipeline(1000, incoming_filter_);
+        parallel_pipeline(1000, outgoing_filter_);
 
-            session_manager_.Update();
-        }
+        session_manager_.Update();
     });
 }
 
