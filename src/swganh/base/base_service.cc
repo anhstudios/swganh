@@ -50,7 +50,7 @@ void BaseService::Start() {
     // update the status of the service
     //service_directory_->updateServiceStatus(service_directory()->service(), anh::service::Galaxy::LOADING);
     
-    active_.Send([this] () {
+    active_.Async([this] () {
         running_ = true;
         
         subscribe();
@@ -72,7 +72,7 @@ void BaseService::Start() {
         // update the status of the service
         service_directory_->updateServiceStatus(service_directory_->service(), anh::service::Galaxy::ONLINE);
 
-        active_.Send([service_directory] () {
+        active_.Async([service_directory] () {
             service_directory->updateGalaxyStatus();
         });
         // @TODO: change this time to a value based on the timeout for galaxy
@@ -87,7 +87,7 @@ void BaseService::Start() {
 }
 
 void BaseService::Stop() {
-    active_.Send([this] () {
+    active_.Async([this] () {
         running_ = false;
 
         // update the status of the service
