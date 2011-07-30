@@ -10,6 +10,8 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/strand.hpp>
 
+#include <boost/thread/future.hpp>
+
 #include "anh/utils/timing.h"
 
 namespace anh {
@@ -29,16 +31,6 @@ public:
     explicit ActiveObject(boost::asio::io_service& io_service)
         : io_service_(io_service)
         , strand_(io_service) {}
-
-    /**
-     * Sends a message to be handled by the ActiveObject's asio strand.
-     *
-     * @param message The message to be handled by the active object.
-     */
-    template<typename Handler>
-    void Send(Handler message) {
-        strand_.post(message);
-    }
     
     /**
      * Sends a message to be handled by the ActiveObject's asio strand. Delays
@@ -69,6 +61,25 @@ public:
         auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
         
         AsyncRepeat(timer, period, strand_.wrap(message));
+    }
+
+
+    /**
+     * Triggers an asyncronous task on the active object's strand. Returns a future
+     * containing the return value. Can be used to confirm when the async task has completed.
+     *
+     * @param func The function handler to perform and retrieve results of asyncronously.
+     */
+    template<typename T>
+    boost::unique_future<typename std::result_of<T()>::type>
+    Async(T func) {
+        auto task = std::make_shared<boost::packaged_task<typename std::result_of<T()>::type>>(func);
+        
+        strand_.post([task] () {
+            (*task)();
+        });
+
+        return task->get_future();
     }
 
 private:
