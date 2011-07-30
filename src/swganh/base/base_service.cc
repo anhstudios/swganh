@@ -62,24 +62,18 @@ void BaseService::Start() {
         }
 
         auto service_directory = service_directory_;
-
-        // @TODO: Change this time to a value based on the timeout for services in the service directory's watchdog operations.
-        active_.SendRepeated(boost::posix_time::seconds(3), [service_directory] (const boost::system::error_code& error) {
-            if (!error) {
-                service_directory->pulse();
-            }
-        });
+        
         // update the status of the service
         service_directory_->updateServiceStatus(service_directory_->service(), anh::service::Galaxy::ONLINE);
 
-        active_.Async([service_directory] () {
-            service_directory->updateGalaxyStatus();
+        // @TODO: Change this time to a value based on the timeout for services in the service directory's watchdog operations.
+        active_.AsyncRepeated(boost::posix_time::seconds(3), [service_directory] () {
+            service_directory->pulse();
         });
+        
         // @TODO: change this time to a value based on the timeout for galaxy
-        active_.SendRepeated(boost::posix_time::seconds(30), [service_directory] (const boost::system::error_code& error) {
-             if (!error) {
-                service_directory->updateGalaxyStatus();
-             }
+        active_.AsyncRepeated(boost::posix_time::seconds(30), [service_directory] () {
+            service_directory->updateGalaxyStatus();
         });
 
         onStart();

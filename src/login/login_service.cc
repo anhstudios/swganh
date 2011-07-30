@@ -108,7 +108,6 @@ void LoginService::onStart() {
     character_service_ = static_pointer_cast<BaseCharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
 
     soe_server_->Start(listen_port_);
-    galaxy_status_ = GetGalaxyStatus_();
     
     UpdateGalaxyStatus_();
 }
@@ -172,7 +171,7 @@ void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> ses
 }
 
 void LoginService::UpdateGalaxyStatus_() {    
-    active().SendRepeated(boost::posix_time::seconds(galaxy_status_check_duration_secs_), [this] (const boost::system::error_code & error) {
+    active().AsyncRepeated(boost::posix_time::seconds(galaxy_status_check_duration_secs_), [this] () {
         DLOG(INFO) << "Updating galaxy status";
 
         galaxy_status_ = GetGalaxyStatus_();
@@ -250,9 +249,10 @@ bool LoginService::HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::E
         
         login_client->session->SendMessage(error);
 
-        active().SendDelayed(boost::posix_time::seconds(login_error_timeout_secs_), [login_client] (const boost::system::error_code& error) {
+        active().AsyncDelayed(boost::posix_time::seconds(login_error_timeout_secs_), [login_client] () {
             login_client->session->Close();
             DLOG(WARNING) << "Closing connection";
+            return;
         });
 
         return true;
