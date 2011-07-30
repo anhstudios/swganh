@@ -118,7 +118,7 @@ void LoginService::onStop() {
 
 void LoginService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
-   
+
     event_dispatcher->subscribe("LoginClientId", [this] (shared_ptr<EventInterface> incoming_event) {
         return HandleLoginClientId_(incoming_event);
     });
@@ -126,9 +126,14 @@ void LoginService::subscribe() {
     event_dispatcher->subscribe("DeleteCharacterMessage", [this] (shared_ptr<EventInterface> incoming_event) {
         return packet_router_.RoutePacket<DeleteCharacterMessage>(incoming_event, bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
     });
+
+    event_dispatcher->subscribe("UpdateGalaxyStatus", [this] (shared_ptr<EventInterface> incoming_event) -> bool{
+        UpdateGalaxyStatus_();
+        return true;
+    });
     
     event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
-        auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
+        auto session_removed = static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
         
         // Message was triggered from our server so process it.
         if (session_removed->session->server() == soe_server_.get()) {
@@ -171,19 +176,17 @@ void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> ses
 }
 
 void LoginService::UpdateGalaxyStatus_() {    
-    active().AsyncRepeated(boost::posix_time::seconds(galaxy_status_check_duration_secs_), [this] () {
-        DLOG(INFO) << "Updating galaxy status";
+    DLOG(INFO) << "Updating galaxy status";
 
-        galaxy_status_ = GetGalaxyStatus_();
+    galaxy_status_ = GetGalaxyStatus_();
         
-        const vector<GalaxyStatus>& status = galaxy_status_;
+    const vector<GalaxyStatus>& status = galaxy_status_;
 
-        std::for_each(clients_.begin(), clients_.end(), [&status] (std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<LoginClient>>::value_type& client_entry) {
-            if (client_entry.second) {                
-                client_entry.second->session->SendMessage(
-                    BuildLoginClusterStatus(status));
-            }
-        });
+    std::for_each(clients_.begin(), clients_.end(), [&status] (std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<LoginClient>>::value_type& client_entry) {
+        if (client_entry.second) {                
+            client_entry.second->session->SendMessage(
+                BuildLoginClusterStatus(status));
+        }
     });
 }
 
