@@ -166,7 +166,7 @@ std::shared_ptr<ConnectionClient> ConnectionService::AddClient_(std::shared_ptr<
 
 
 void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    active().Send([=] () {
+    active().Async([=] () {
         auto find_it = clients_.find(session->remote_endpoint());
 
         if (find_it != clients_.end()) {

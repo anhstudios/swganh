@@ -159,7 +159,7 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(std::shared_ptr<anh::netwo
 }
 
 void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    active().Send([=] () {
+    active().Async([=] () {
         auto find_it = clients_.find(session->remote_endpoint());
 
         if (find_it != clients_.end()) {
