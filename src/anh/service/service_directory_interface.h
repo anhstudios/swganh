@@ -67,10 +67,10 @@ public:
 
     virtual void pulse() = 0;
     
-    virtual GalaxyList getGalaxySnapshot() const = 0;
+    virtual GalaxyList getGalaxySnapshot() = 0;
 
     virtual ServiceList getServiceSnapshot(
-        std::shared_ptr<Galaxy> galaxy) const = 0;
+        std::shared_ptr<Galaxy> galaxy) = 0;
 };
 
 class NullServerDirectory : public ServiceDirectoryInterface {
@@ -103,12 +103,12 @@ public:
 
     void pulse() {}
     
-    GalaxyList getGalaxySnapshot() const {
+    GalaxyList getGalaxySnapshot() {
         GalaxyList galaxy_list;
         return galaxy_list;
     }
 
-    ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy) const {
+    ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy) {
         ServiceList service_list;
         return service_list;
     }

@@ -58,6 +58,8 @@ shared_ptr<ServiceDescription> ServiceDirectory::service() const {
 
 
 void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::string& version, bool create_galaxy) {    
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+
     active_galaxy_ = datastore_->findGalaxyByName(galaxy_name);
     
     if (!active_galaxy_) {
@@ -72,6 +74,8 @@ void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::str
     }
 }
 void ServiceDirectory::updateGalaxyStatus() {
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+
     auto services = getServiceSnapshot(active_galaxy_);
 
     if (services.empty()) {
@@ -107,6 +111,8 @@ void ServiceDirectory::updateGalaxyStatus() {
 }
 
 bool ServiceDirectory::registerService(const string& name, const string& service_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+
     if (active_service_ = datastore_->createService(active_galaxy_, name, service_type, version, address, tcp_port, udp_port, ping_port)) {
         
         // trigger the event to let any listeners we have added the service
@@ -119,6 +125,8 @@ bool ServiceDirectory::registerService(const string& name, const string& service
 }
 
 bool ServiceDirectory::removeService(shared_ptr<ServiceDescription>& service) {
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+
     if (datastore_->deleteServiceById(service->id())) {
         if (active_service_ && service->id() == active_service_->id()) {
             // before we clear out the service
@@ -136,21 +144,26 @@ bool ServiceDirectory::removeService(shared_ptr<ServiceDescription>& service) {
     return false;
 }
 
-void ServiceDirectory::updateServiceStatus(shared_ptr<ServiceDescription>& service, int32_t new_status) {
+void ServiceDirectory::updateServiceStatus(shared_ptr<ServiceDescription>& service, int32_t new_status) {    
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+
     service->status(new_status);
     datastore_->saveService(service);
 }
 
 bool ServiceDirectory::makePrimaryService(shared_ptr<ServiceDescription> service) {
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
     active_galaxy_->primary_id(service->id());
     return true;
 }
 
 void ServiceDirectory::pulse() {
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+
     if (active_service_) {
         std::string last_pulse = "";
-        if (active_galaxy_ && active_galaxy_->primary_id() != 0) {
-            last_pulse = datastore_->getGalaxyTimestamp(active_galaxy_);
+        if (active_galaxy_ && active_galaxy_->primary_id() != active_service_->id()) {
+            last_pulse = getGalaxyTimestamp_();
         } else {
             last_pulse = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time());
         }
@@ -164,11 +177,24 @@ void ServiceDirectory::pulse() {
     }
 }
 
-GalaxyList ServiceDirectory::getGalaxySnapshot() const {
+GalaxyList ServiceDirectory::getGalaxySnapshot() {
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+
     return datastore_->getGalaxyList();
 }
 
-ServiceList ServiceDirectory::getServiceSnapshot(shared_ptr<Galaxy> galaxy) const {
+ServiceList ServiceDirectory::getServiceSnapshot(shared_ptr<Galaxy> galaxy) {    
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+
     return datastore_->getServiceList(galaxy->id());
 }
 
+std::string ServiceDirectory::getGalaxyTimestamp_() {    
+    auto service = datastore_->findServiceById(active_galaxy_->primary_id());
+
+    if (!service) {
+        return boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time());
+    }
+
+    return service->last_pulse();
+}

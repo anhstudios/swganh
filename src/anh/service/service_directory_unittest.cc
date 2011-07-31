@@ -62,6 +62,7 @@ protected:
 
 class MockDatastore : public DatastoreInterface {
 public:
+    MOCK_CONST_METHOD1(findServiceById, std::shared_ptr<ServiceDescription>(uint32_t id));
     MOCK_CONST_METHOD1(findGalaxyByName, shared_ptr<Galaxy>(const std::string& name));
     MOCK_CONST_METHOD2(createGalaxy, shared_ptr<Galaxy>(const std::string& name, const std::string& version));
     MOCK_CONST_METHOD8(createService, shared_ptr<ServiceDescription>(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port));
@@ -209,8 +210,10 @@ TEST_F(ServiceDirectoryTest, PulsingUpdatesActiveServiceTimestamp) {
     EXPECT_CALL(*datastore, createService(_, "service_name", "test_service", "1.0.0", "127.0.0.1", 0, 40000, 0))
         .WillOnce(Return(test_service_));
 
-    EXPECT_CALL(*datastore, getGalaxyTimestamp(_))
-        .WillOnce(Return(std::string("1970-01-01 00:01:01")));
+    auto galaxy_service = make_shared<ServiceDescription>(2, 1, "test_galaxy", "primary_service", "1.0.0", "127.0.0.1", 0, 40000, 0);
+    galaxy_service->last_pulse("1970-01-01 00:01:01");
+    EXPECT_CALL(*datastore, findServiceById(_))
+        .WillOnce(Return(galaxy_service));
 
     EXPECT_CALL(*datastore, saveService(test_service_))
         .Times(1);

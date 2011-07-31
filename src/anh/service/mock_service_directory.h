@@ -49,8 +49,8 @@ public:
     MOCK_METHOD0(updateGalaxyStatus, void());
     MOCK_CONST_METHOD0(galaxy, std::shared_ptr<Galaxy>());
     MOCK_CONST_METHOD0(service, std::shared_ptr<ServiceDescription>());
-    MOCK_CONST_METHOD0(getGalaxySnapshot, GalaxyList());
-    MOCK_CONST_METHOD1(getServiceSnapshot, ServiceList(
+    MOCK_METHOD0(getGalaxySnapshot, GalaxyList());
+    MOCK_METHOD1(getServiceSnapshot, ServiceList(
         std::shared_ptr<Galaxy> galaxy));
 };
 
