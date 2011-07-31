@@ -80,6 +80,8 @@ public:
     ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy) const;
 
 private:
+    std::string getGalaxyTimestamp_() const;
+
     std::shared_ptr<DatastoreInterface> datastore_;
     std::shared_ptr<Galaxy> active_galaxy_;
     std::shared_ptr<ServiceDescription> active_service_;

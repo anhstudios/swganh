@@ -149,8 +149,8 @@ bool ServiceDirectory::makePrimaryService(shared_ptr<ServiceDescription> service
 void ServiceDirectory::pulse() {
     if (active_service_) {
         std::string last_pulse = "";
-        if (active_galaxy_ && active_galaxy_->primary_id() != 0) {
-            last_pulse = datastore_->getGalaxyTimestamp(active_galaxy_);
+        if (active_galaxy_ && active_galaxy_->primary_id() != active_service_->id()) {
+            last_pulse = getGalaxyTimestamp_();
         } else {
             last_pulse = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time());
         }
@@ -172,3 +172,12 @@ ServiceList ServiceDirectory::getServiceSnapshot(shared_ptr<Galaxy> galaxy) cons
     return datastore_->getServiceList(galaxy->id());
 }
 
+std::string ServiceDirectory::getGalaxyTimestamp_() const {
+    auto service = datastore_->findServiceById(active_galaxy_->primary_id());
+
+    if (!service) {
+        return "";
+    }
+
+    return service->last_pulse();
+}

@@ -36,18 +36,15 @@ class DatastoreInterface {
 public:
     virtual ~DatastoreInterface() {}
 
-    virtual std::shared_ptr<Galaxy> findGalaxyByName(const std::string& name) const = 0;
     virtual std::shared_ptr<Galaxy> createGalaxy(const std::string& name, const std::string& version) const = 0;
-    virtual std::shared_ptr<ServiceDescription> createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const = 0;
-
-    virtual std::string getGalaxyTimestamp(std::shared_ptr<Galaxy> galaxy) const = 0;
-    virtual void saveGalaxyStatus(int32_t galaxy_id, int32_t status) const = 0;
-
-    virtual void saveService(std::shared_ptr<ServiceDescription> service) const = 0;
-
     virtual std::shared_ptr<Galaxy> findGalaxyById(uint32_t id) const = 0;
-
+    virtual std::shared_ptr<Galaxy> findGalaxyByName(const std::string& name) const = 0;
+    virtual void saveGalaxyStatus(int32_t galaxy_id, int32_t status) const = 0;
+    
+    virtual std::shared_ptr<ServiceDescription> createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const = 0;
+    virtual std::shared_ptr<ServiceDescription> findServiceById(uint32_t id) const = 0;
     virtual bool deleteServiceById(uint32_t id) const = 0;
+    virtual void saveService(std::shared_ptr<ServiceDescription> service) const = 0;
 
     virtual std::list<Galaxy> getGalaxyList() const = 0;
     virtual std::list<ServiceDescription> getServiceList(uint32_t galaxy_id) const = 0;
