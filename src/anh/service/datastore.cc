@@ -137,7 +137,7 @@ void Datastore::saveGalaxyStatus(int32_t galaxy_id, int32_t status) const
     }
 }
 
-std::shared_ptr<ServiceDescription> Datastore::createService(std::shared_ptr<Galaxy> galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const {
+std::shared_ptr<ServiceDescription> Datastore::createService(const Galaxy& galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const {
     shared_ptr<ServiceDescription> service = nullptr;
 
     try {
@@ -155,11 +155,8 @@ std::shared_ptr<ServiceDescription> Datastore::createService(std::shared_ptr<Gal
                                  "created_at, "
                                  "updated_at) "
             "VALUES(?, ?, ?, ?, INET_ATON(?), ?, ?, ?, ?, NOW(), NOW(), NOW())"));
-
-        uint32_t galaxy_id = 0;
-        if (galaxy) {
-            galaxy_id = galaxy->id();
-        }
+        
+        uint32_t galaxy_id = galaxy.id();
 
         statement->setInt(1, galaxy_id);
         statement->setString(2, name);
@@ -206,18 +203,18 @@ std::shared_ptr<ServiceDescription> Datastore::createService(std::shared_ptr<Gal
     return service;
 }
 
-void Datastore::saveService(std::shared_ptr<ServiceDescription> service) const {
+void Datastore::saveService(const ServiceDescription& service) const {
     try {
         std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
             "UPDATE service SET address = INET_ATON(?), tcp_port = ?, udp_port = ?, ping_port = ?, status = ?, last_pulse = ? WHERE id = ?"));
         
-        statement->setString(1, service->address());
-        statement->setUInt(2, service->tcp_port());
-        statement->setUInt(3, service->udp_port());
-        statement->setUInt(4, service->ping_port());
-        statement->setInt(5, service->status());
-        statement->setString(6, prepareTimestampForStorage(service->last_pulse()));
-        statement->setUInt(7, service->id());
+        statement->setString(1, service.address());
+        statement->setUInt(2, service.tcp_port());
+        statement->setUInt(3, service.udp_port());
+        statement->setUInt(4, service.ping_port());
+        statement->setInt(5, service.status());
+        statement->setString(6, prepareTimestampForStorage(service.last_pulse()));
+        statement->setUInt(7, service.id());
         statement->executeUpdate();
     } catch(sql::SQLException &e) {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";

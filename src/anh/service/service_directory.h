@@ -63,23 +63,23 @@ public:
         std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher
         , const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false);
 
-    std::shared_ptr<Galaxy> galaxy() const;
-    std::shared_ptr<ServiceDescription> service() const;
+    Galaxy galaxy() const;
+    ServiceDescription service() const;
         
     void joinGalaxy(const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false);
     
     void updateGalaxyStatus();
 
     bool registerService(const std::string& name, const std::string& service_type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping);
-    bool removeService(std::shared_ptr<ServiceDescription>& service);
-    void updateServiceStatus(std::shared_ptr<ServiceDescription>& service, int32_t new_status);
+    bool removeService(const ServiceDescription& service);
+    void updateServiceStatus(int32_t new_status);
     
-    bool makePrimaryService(std::shared_ptr<ServiceDescription> service);
+    bool makePrimaryService(const ServiceDescription& service);
 
     void pulse();
     
     GalaxyList getGalaxySnapshot();
-    ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy);
+    ServiceList getServiceSnapshot(const Galaxy& galaxy);
 
 private:
     std::string getGalaxyTimestamp_();

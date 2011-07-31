@@ -198,7 +198,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     auto galaxy_list = service_directory->getGalaxySnapshot();
 
     std::for_each(galaxy_list.begin(), galaxy_list.end(), [this, &galaxy_status, &service_directory] (anh::service::Galaxy& galaxy) {
-        auto service_list = service_directory->getServiceSnapshot(std::make_shared<anh::service::Galaxy>(galaxy));
+        auto service_list = service_directory->getServiceSnapshot(galaxy);
 
         auto it = std::find_if(service_list.begin(), service_list.end(), [] (anh::service::ServiceDescription& service) {
             return service.type().compare("connection") == 0;
@@ -219,7 +219,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
             status.ping_port = it->ping_port();
             // TODO: Keep track of people logged in to server and update to db
             status.server_population = 10;
-            status.status = service_directory->galaxy()->status();
+            status.status = service_directory->galaxy().status();
 
             galaxy_status.push_back(std::move(status));
         }
