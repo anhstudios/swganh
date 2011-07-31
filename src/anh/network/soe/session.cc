@@ -179,7 +179,7 @@ void Session::HandleMessage(anh::ByteBuffer& message)
         case SESSION_REQUEST:  { SessionRequest session_request(message); handleSessionRequest_(session_request); break; }
         case FATAL_ERROR:      { Close(); break; }
         default:
-            LOG(INFO) << "Unhandled SOE Opcode" << message.peek<uint16_t>(true);
+            LOG(WARNING) << "Unhandled SOE Opcode" << message.peek<uint16_t>(true);
     }
 }
 
@@ -217,13 +217,13 @@ void Session::handleSessionRequest_(SessionRequest& packet)
     // Add our Session to the SessionManager and flag ourselves as connected.
     if (server_->AddSession(shared_from_this())) {
         connected_ = true;
-        LOG(WARNING) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
+        LOG(INFO) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
     }
 }
 
 void Session::handleMultiPacket_(MultiPacket& packet)
 {
-    DLOG(WARNING) << "Handling MULTIPACKET";
+    VLOG(3) << "Handling MULTIPACKET";
     std::for_each(packet.packets.begin(), packet.packets.end(), [=](anh::ByteBuffer& buffer) {
         HandleMessage(buffer);
     });
@@ -231,13 +231,13 @@ void Session::handleMultiPacket_(MultiPacket& packet)
 
 void Session::handleDisconnect_(Disconnect& packet)
 {
-    DLOG(WARNING) << "Handling DISCONNECT";
+    VLOG(3) << "Handling DISCONNECT";
     Close();
 }
 
 void Session::handlePing_(Ping& packet)
 {
-    DLOG(WARNING) << "Handling PING";
+    VLOG(3) << "Handling PING";
     Ping pong;
     
     auto buffer = server_->AllocateBuffer();
@@ -248,7 +248,7 @@ void Session::handlePing_(Ping& packet)
 
 void Session::handleNetStatsClient_(NetStatsClient& packet)
 {
-    DLOG(WARNING) << "Handling NET_STATS_CLIENT";
+    VLOG(3) << "Handling NET_STATS_CLIENT";
     server_net_stats_.client_tick_count = packet.client_tick_count;
 
     auto buffer = server_->AllocateBuffer();
@@ -258,7 +258,7 @@ void Session::handleNetStatsClient_(NetStatsClient& packet)
 
 void Session::handleChildDataA_(ChildDataA& packet)
 {	
-    DLOG(WARNING) << "Handling CHILD_DATA_A";
+    VLOG(3) << "Handling CHILD_DATA_A";
     if(!SequenceIsValid_(packet.sequence)) {
         DLOG(WARNING) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
         return;
@@ -273,7 +273,7 @@ void Session::handleChildDataA_(ChildDataA& packet)
 
 void Session::handleDataFragA_(DataFragA& packet)
 {
-    DLOG(WARNING) << "Handling DATA_FRAG_A";
+    VLOG(3) << "Handling DATA_FRAG_A";
     if(!SequenceIsValid_(packet.sequence))
         return;
     
@@ -318,7 +318,7 @@ void Session::handleDataFragA_(DataFragA& packet)
 
 void Session::handleAckA_(AckA& packet)
 {
-    DLOG(WARNING) << "Handle ACK_A";
+    VLOG(3) << "Handle ACK_A";
 
     auto it = find_if(
         sent_messages_.begin(), 
@@ -335,7 +335,7 @@ void Session::handleAckA_(AckA& packet)
 
 void Session::handleOutOfOrderA_(OutOfOrderA& packet)
 {
-    DLOG(WARNING) << "Handle OUT_OF_ORDER_A";
+    VLOG(3) << "Handle OUT_OF_ORDER_A";
     
     std::for_each(sent_messages_.begin(), sent_messages_.end(), [=](SequencedMessageMap::value_type& item) {
         SendSoePacket_(item.second);
