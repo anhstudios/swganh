@@ -5,7 +5,6 @@
 #include <boost/asio/deadline_timer.hpp>
 
 namespace anh {
-namespace utils {
 
 template<typename Handler>
 class RepeatHandler {
@@ -36,6 +35,6 @@ private:
     Handler handler_;
 };
 
-}}  // namespace anh::utils
+}  // namespace anh
 
 #endif  // ANH_UTILS_TIMING_H_

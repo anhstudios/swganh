@@ -12,10 +12,9 @@
 
 #include <boost/thread/future.hpp>
 
-#include "anh/utils/timing.h"
+#include "anh/timing.h"
 
 namespace anh {
-namespace utils {
 
 /** 
  * There are many times when it makes sense to break an object off and run it
@@ -108,6 +107,6 @@ private:
     boost::asio::strand strand_;
 };
     
-}}  // namespace anh::utils
+}  // namespace anh
 
 #endif  // ANH_UTILS_ACTIVE_OBJECT_H_
