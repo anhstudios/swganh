@@ -217,6 +217,6 @@ void SwganhApp::CleanupServices_() {
     DLOG(WARNING) << "Services were not shutdown properly";
 
     for_each(services.begin(), services.end(), [this] (anh::service::ServiceDescription& service) {
-        service_directory_->removeService(make_shared<anh::service::ServiceDescription>(service));
+        service_directory_->removeService(service);
     });
 }

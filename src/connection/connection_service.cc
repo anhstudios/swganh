@@ -232,7 +232,7 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     connection_client->player_id = player_id;
 
     ClientPermissionsMessage client_permissions;
-    client_permissions.galaxy_available = service_directory()->galaxy()->status();
+    client_permissions.galaxy_available = service_directory()->galaxy().status();
     client_permissions.available_character_slots = character_service()->GetMaxCharacters(account_id);
     // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
@@ -252,7 +252,7 @@ void ConnectionService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient>
     start_scene.terrain_map = character.terrain_map;
     start_scene.position = character.position;
     start_scene.shared_race_template = "object/creature/player/shared_" + character.race + "_" + character.gender + ".iff";
-    start_scene.galaxy_time = service_directory()->galaxy()->GetGalaxyTimeInMilliseconds();
+    start_scene.galaxy_time = service_directory()->galaxy().GetGalaxyTimeInMilliseconds();
         
     client->session->SendMessage(start_scene);
 

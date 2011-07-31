@@ -119,7 +119,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 
                 character.name = std::wstring(name.begin(), name.end());
                 character.race_crc = anh::memcrc(result_set->getString("baseModel"));
-                character.galaxy_id = service_directory()->galaxy()->id();
+                character.galaxy_id = service_directory()->galaxy().id();
                 character.status = result_set->getInt("jediState");
                 characters.push_back(character);
             } while (statement->getMoreResults());
