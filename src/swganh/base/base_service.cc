@@ -64,7 +64,7 @@ void BaseService::Start() {
         auto service_directory = service_directory_;
         
         // update the status of the service
-        service_directory_->updateServiceStatus(service_directory_->service(), anh::service::Galaxy::ONLINE);
+        service_directory_->updateServiceStatus(anh::service::Galaxy::ONLINE);
 
         // @TODO: Change this time to a value based on the timeout for services in the service directory's watchdog operations.
         active_.AsyncRepeated(boost::posix_time::seconds(3), [service_directory] () {
@@ -85,7 +85,7 @@ void BaseService::Stop() {
         running_ = false;
 
         // update the status of the service
-        service_directory_->updateServiceStatus(service_directory_->service(), anh::service::Galaxy::OFFLINE);
+        service_directory_->updateServiceStatus(anh::service::Galaxy::OFFLINE);
 
         service_directory_->removeService(service_directory_->service());
 

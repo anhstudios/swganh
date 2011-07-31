@@ -53,24 +53,22 @@ public:
         uint16_t udp_port, 
         uint16_t ping) = 0;
     
-    virtual bool removeService(std::shared_ptr<ServiceDescription>& service) = 0;
+    virtual bool removeService(const ServiceDescription& service) = 0;
     
-    virtual void updateServiceStatus(
-        std::shared_ptr<ServiceDescription>& service, 
-        int32_t new_status) = 0;
+    virtual void updateServiceStatus(int32_t new_status) = 0;
     
-    virtual bool makePrimaryService(std::shared_ptr<ServiceDescription> service) = 0;
+    virtual bool makePrimaryService(const ServiceDescription& service) = 0;
 
-    virtual std::shared_ptr<Galaxy> galaxy() const = 0;
+    virtual Galaxy galaxy() const = 0;
 
-    virtual std::shared_ptr<ServiceDescription> service() const = 0;
+    virtual ServiceDescription service() const = 0;
 
     virtual void pulse() = 0;
     
     virtual GalaxyList getGalaxySnapshot() = 0;
 
     virtual ServiceList getServiceSnapshot(
-        std::shared_ptr<Galaxy> galaxy) = 0;
+        const Galaxy& galaxy) = 0;
 };
 
 class NullServerDirectory : public ServiceDirectoryInterface {
@@ -89,15 +87,13 @@ public:
         return false;
     }
     
-    bool removeService(std::shared_ptr<ServiceDescription>& service) {
+    bool removeService(const ServiceDescription& service) {
         return false;
     }
     
-    void updateServiceStatus(
-        std::shared_ptr<ServiceDescription>& service, 
-        int32_t new_status) {}
+    void updateServiceStatus(int32_t new_status) {}
     
-    bool makePrimaryService(std::shared_ptr<ServiceDescription> service) {
+    bool makePrimaryService(const ServiceDescription& service) {
         return false;
     }
 
@@ -108,7 +104,7 @@ public:
         return galaxy_list;
     }
 
-    ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy) {
+    ServiceList getServiceSnapshot(const Galaxy& galaxy) {
         ServiceList service_list;
         return service_list;
     }
