@@ -103,6 +103,6 @@ shared_ptr<service::ServiceDirectory> BaseService::service_directory() {
     return service_directory_;
 }
 
-anh::utils::ActiveObject& BaseService::active() {
+ActiveObject& BaseService::active() {
     return active_;
 }

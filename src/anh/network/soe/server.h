@@ -34,7 +34,7 @@
 #include "anh/network/soe/server_interface.h"
 #include "anh/network/soe/session_manager.h"
 
-#include "anh/utils/active_object.h"
+#include "anh/active_object.h"
 
 #ifdef SendMessage
 #undef SendMessage
@@ -120,7 +120,7 @@ private:
     tbb::concurrent_queue<std::shared_ptr<Packet>> incoming_messages_;
     tbb::concurrent_queue<std::shared_ptr<Packet>> outgoing_messages_;
 
-    anh::utils::ActiveObject active_;
+    anh::ActiveObject active_;
 
     MessageHandler message_handler_;
 
