@@ -1,89 +1,112 @@
-/*
----------------------------------------------------------------------------------------
-This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Emulator)
 
-For more information, visit http://www.swganh.com
+#ifndef ANH_UTILS_ACTIVE_OBJECT_H_
+#define ANH_UTILS_ACTIVE_OBJECT_H_
 
-Copyright (c) 2006 - 2010 The SWG:ANH Team
----------------------------------------------------------------------------------------
-Use of this source code is governed by the GPL v3 license that can be found
-in the COPYING file or at http://www.gnu.org/licenses/gpl-3.0.html
+#include <algorithm>
+#include <list>
+#include <memory>
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+#include <boost/asio/deadline_timer.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/strand.hpp>
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+#include <boost/thread/future.hpp>
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
----------------------------------------------------------------------------------------
-*/
+#include "anh/timing.h"
 
-#ifndef SRC_UTILS_ACTIVEOBJECT_H_
-#define SRC_UTILS_ACTIVEOBJECT_H_
+namespace anh {
 
-#include <functional>
-
-#include <boost/thread.hpp>
-#include <tbb/concurrent_queue.h>
-
-/// The utils namespace hosts a number of useful utility classes intended to
-/// be used and reused in domain specific classes.
-namespace utils {
-
-/**
+/** 
  * There are many times when it makes sense to break an object off and run it
  * concurrently while the rest of the application runs. The ActiveObject is a
  * reusable facility that encourages the encapsulation of data by using asynchronus
- * messages to process requests in a private thread. This implementation is based
- * on a design discussed by Herb Sutter.
- *
- * Note that using an ActiveObject can result in up to 100% of the otherwise unused cpu
- * being consumed. This is intentional as ActiveObjects should primarily be targeted at
- * uses where being highly response is a priority.
- *
- * @see http://www.drdobbs.com/go-parallel/article/showArticle.jhtml?articleID=225700095
+ * messages to process requests in a private thread. 
+ * 
+ * This implementation is based on boost::asio and uses an io_service coupled with a
+ * strand to facilitate the sequential requirements of an active objects message handling.
  */
 class ActiveObject {
 public:
-    /// Messages are implemented as std::function to allow maximum flexibility for
-    /// how a message can be created with support for functions, functors, class members,
-    /// and most importantly lambdas.
-    typedef std::function<void()> Message;
+    explicit ActiveObject(boost::asio::io_service& io_service)
+        : io_service_(io_service)
+        , strand_(io_service) {}
+    
+    /**
+     * Triggers an asyncronous task on the active object's strand. Returns a future
+     * containing the return value. Can be used to confirm when the async task has completed.
+     *
+     * @param func The function handler to perform and retrieve results of asyncronously.
+     */
+    template<typename Handler>
+    boost::unique_future<typename std::result_of<Handler()>::type>
+    Async(Handler&& func) {
+        auto task = std::make_shared<boost::packaged_task<typename std::result_of<Handler()>::type>>(move(func));
+        
+        strand_.post([task] () {
+            (*task)();
+        });
 
-public:
-    /// Default constructor kicks off the private thread that listens for incoming messages.
+        return task->get_future();
+    }
+    
+    /**
+     * Sends a message to be handled by the ActiveObject's asio strand. Delays
+     * execution of the message by a specified period of time.
+     *
+     * @param period The period of time to delay execution of the given message.
+     * @param message The message to be handled by the active object.
+     */
+    template<typename Handler>
+    boost::unique_future<typename std::result_of<Handler()>::type>
+    AsyncDelayed(boost::posix_time::time_duration period, Handler&& func) {
+        auto task  = std::make_shared<boost::packaged_task<typename std::result_of<Handler()>::type>>(move(func));
+        auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
+        
+        timer->expires_from_now(period);
+        timer->async_wait([=] (const boost::system::error_code& error) {
+            if (!error) {
+                (*task)();
+            }
+        });
+        
+        return task->get_future();
+    }
+    
+    /**
+     * Repeatedly sends a message to be handled by the ActiveObject's asio 
+     * strand. The specified period of time determines the interval between resends.
+     *
+     * @param period The period of time to delay execution of the given message.
+     * @param message The message to be handled by the active object.
+     */
+    template<typename Handler>
+    void AsyncRepeated(boost::posix_time::time_duration period, Handler&& func) {
+        auto shared_func = make_shared<Handler>(move(func));
+
+        Async([this, period, shared_func] () {
+            auto local_shared_func = shared_func;
+
+            (*local_shared_func)();
+            
+            auto wrapped_func = [local_shared_func] (const boost::system::error_code& error) {
+                if (!error) {
+                    (*local_shared_func)();
+                }
+            };
+
+            auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);    
+            
+            timer->expires_from_now(period);
+            timer->async_wait(RepeatHandler<decltype(wrapped_func)>(timer, period, wrapped_func));              
+        });
+    }
+private:
     ActiveObject();
 
-    /// Default destructor sends an end message and waits for the private thread to complete.
-    ~ActiveObject();
-
-    /**
-     * Sends a message to be handled by the ActiveObject's private thread.
-     *
-     * \param message The message to process on the private thread.
-     */
-    void Send(Message message);
-
-private:
-    /// Runs the ActiveObject's message loop until an end message is received.
-    void Run();
-
-    tbb::concurrent_queue<Message> message_queue_;
-
-    boost::thread thread_;
-    boost::condition_variable condition_;
-    boost::mutex mutex_;
-    
-    bool done_;
+    boost::asio::io_service& io_service_;
+    boost::asio::strand strand_;
 };
+    
+}  // namespace anh
 
-}
-
-#endif  // SRC_UTILS_ACTIVEOBJECT_H_
+#endif  // ANH_UTILS_ACTIVE_OBJECT_H_
