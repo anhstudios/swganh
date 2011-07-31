@@ -84,11 +84,12 @@ std::shared_ptr<Galaxy> Datastore::createGalaxy(
 
     try {
         std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-            "INSERT INTO galaxy(name, version, created_at, updated_at) "
-            "VALUES(?, ?, NOW(), NOW())"));
+            "INSERT INTO galaxy(name, version, created_at, status, updated_at) "
+            "VALUES(?, ?, ?, NOW(), NOW())"));
 
         statement->setString(1, name);
         statement->setString(2, version);
+        statement->setInt(3, 0);
 
         // if the statement fails to service return a nullptr
         if (statement->executeUpdate() <= 0) {
