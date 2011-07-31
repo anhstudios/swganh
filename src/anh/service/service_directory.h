@@ -26,6 +26,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <boost/thread/recursive_mutex.hpp>
+
 #include "anh/service/galaxy.h"
 #include "anh/service/service_description.h"
 #include "anh/service/service_directory_interface.h"
@@ -76,15 +78,17 @@ public:
 
     void pulse();
     
-    GalaxyList getGalaxySnapshot() const;
-    ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy) const;
+    GalaxyList getGalaxySnapshot();
+    ServiceList getServiceSnapshot(std::shared_ptr<Galaxy> galaxy);
 
 private:
-    std::string getGalaxyTimestamp_() const;
+    std::string getGalaxyTimestamp_();
 
     std::shared_ptr<DatastoreInterface> datastore_;
     std::shared_ptr<Galaxy> active_galaxy_;
     std::shared_ptr<ServiceDescription> active_service_;
+
+    boost::recursive_mutex mutex_;
 
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>    event_dispatcher_;
 };
