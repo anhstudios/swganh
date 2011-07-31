@@ -85,7 +85,7 @@ private:
     void HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::SelectCharacter& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
-    std::shared_ptr<ConnectionClient> AddClient_(std::shared_ptr<anh::network::soe::Session> session);
+    std::shared_ptr<ConnectionClient> AddClient_(uint64_t player_id, std::shared_ptr<anh::network::soe::Session> session);
 
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
@@ -93,6 +93,7 @@ private:
     std::shared_ptr<connection::providers::SessionProviderInterface> session_provider_;
     
     typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<ConnectionClient>> ClientMap;
+    typedef std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<ConnectionClient>> ClientPair;
     ClientMap clients_;
 
     anh::network::soe::PacketRouter<ClientMap> packet_router_;

@@ -147,13 +147,26 @@ void ConnectionService::subscribe() {
     });
 }
 
-std::shared_ptr<ConnectionClient> ConnectionService::AddClient_(std::shared_ptr<anh::network::soe::Session> session) {
+std::shared_ptr<ConnectionClient> ConnectionService::AddClient_(uint64_t player_id, std::shared_ptr<anh::network::soe::Session> session) {
     std::shared_ptr<ConnectionClient> client = nullptr;
 
-    auto find_it = clients_.find(session->remote_endpoint());
+    auto find_it = std::find_if(clients_.begin(), clients_.end(), [session, player_id] (ClientPair conn_client) {
+        return conn_client.first.address() == session->remote_endpoint().address() 
+            && conn_client.second->player_id == player_id;
+    });
 
     if (find_it == clients_.end()) {
         DLOG(WARNING) << "Adding connection client";
+        client = make_shared<ConnectionClient>();
+        client->session = session;
+
+        clients_.insert(make_pair(session->remote_endpoint(), client));
+    } else {
+        // client already exists, lets boot the existing one and let the requesting one continue
+        // @TODO: Make this configurable
+        (*find_it).second->session->Close();
+        clients_.erase(find_it);
+        // now create the new client and insert it
         client = make_shared<ConnectionClient>();
         client->session = session;
 
@@ -227,7 +240,7 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
         DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
 
-    auto connection_client = AddClient_(remote_event->session());
+    auto connection_client = AddClient_(player_id, remote_event->session());
     connection_client->account_id = account_id;
     connection_client->player_id = player_id;
 
