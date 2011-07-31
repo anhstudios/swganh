@@ -206,16 +206,6 @@ std::shared_ptr<ServiceDescription> Datastore::createService(std::shared_ptr<Gal
     return service;
 }
 
-std::string Datastore::getGalaxyTimestamp(std::shared_ptr<Galaxy> galaxy) const {
-    auto service = findServiceById(galaxy->primary_id());
-
-    if (!service) {
-        return "";
-    }
-
-    return service->last_pulse();
-}
-
 void Datastore::saveService(std::shared_ptr<ServiceDescription> service) const {
     try {
         std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(

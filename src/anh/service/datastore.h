@@ -44,9 +44,7 @@ class Datastore : public DatastoreInterface , boost::noncopyable {
 public:
     explicit Datastore(std::shared_ptr<sql::Connection> connection);
     ~Datastore();
-     
-    std::string getGalaxyTimestamp(std::shared_ptr<Galaxy> galaxy) const;
-    
+        
     std::shared_ptr<Galaxy> createGalaxy(const std::string& name, const std::string& version) const;
     std::shared_ptr<Galaxy> findGalaxyById(uint32_t id) const;
     std::shared_ptr<Galaxy> findGalaxyByName(const std::string& name) const;
