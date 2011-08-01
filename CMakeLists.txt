@@ -30,6 +30,8 @@ option(USE_SYSTEM_LIBRARIES
 set(vendor_libraries "")
 set(vendor_args "")
 
+enable_testing()
+
 if(MSVC10 AND NOT DEFINED VENDOR_PREFIX AND NOT USE_SYSTEM_LIBRARIES)
     set(VENDOR_MD5 1d36278c9494a7bcf5f1da73fb4c73f0)
     
