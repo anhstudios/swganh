@@ -291,7 +291,7 @@ void LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> lo
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
 
-    if (character_service_->DeleteCharacter(message.character_id)) {
+    if (character_service_->DeleteCharacter(message.character_id, login_client->account->account_id())) {
         reply_message.failure_flag = 0;
     }
 
