@@ -256,7 +256,7 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
 }
 
 void ConnectionService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const SelectCharacter& message) {    
-    swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(message.character_id);
+    swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(message.character_id, client->account_id);
 
     CmdStartScene start_scene;
     // @TODO: Replace with configurable value

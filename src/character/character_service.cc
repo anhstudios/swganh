@@ -131,14 +131,15 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 
     return characters;
 }
-CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
+CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id, uint64_t account_id) {
     CharacterLoginData character;
     
     try {
-        string sql = "CALL sp_GetLoginCharacter(?);";
+        string sql = "CALL sp_GetLoginCharacter(?,?);";
         auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, character_id);
+        statement->setUInt64(2, account_id);
 
         auto result_set = statement->executeQuery();
         if (result_set->next())
@@ -168,14 +169,15 @@ CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id) {
     }
     return character;
 }
-bool CharacterService::DeleteCharacter(uint64_t character_id){
+bool CharacterService::DeleteCharacter(uint64_t character_id, uint64_t account_id){
     // this actually just archives the character and all their data so it can still be retrieved at a later time
-    string sql = "CALL sp_CharacterDelete(?);";
+    string sql = "CALL sp_CharacterDelete(?,?);";
     int rows_updated = 0;
     try {
         auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, character_id);
+        statement->setUInt64(2, account_id);
         auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
