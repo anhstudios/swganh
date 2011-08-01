@@ -24,7 +24,7 @@ option(ENABLE_TEST_REPORT
     "Enables the generation of a test report when running tests" false)
 
 option(USE_SYSTEM_LIBRARIES
-    "Uses system libraries instead of downloading them" FALSE)
+    "Uses system libraries instead of downloading them" false)
     
 ## Vendor libraries
 set(vendor_libraries "")
