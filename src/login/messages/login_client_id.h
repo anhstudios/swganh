@@ -36,13 +36,13 @@ struct LoginClientId : public swganh::base::SwgMessage<LoginClientId> {
     std::string password;
     std::string client_version;
     
-    void LoginClientId::onSerialize(anh::ByteBuffer& buffer) const {
+    void onSerialize(anh::ByteBuffer& buffer) const {
         buffer.write(username);
         buffer.write(password);
         buffer.write(client_version);
     }
     
-    void LoginClientId::onDeserialize(anh::ByteBuffer buffer) {
+    void onDeserialize(anh::ByteBuffer buffer) {
         username = buffer.read<std::string>();
         password = buffer.read<std::string>();
         client_version = buffer.read<std::string>();
