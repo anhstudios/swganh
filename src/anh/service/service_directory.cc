@@ -42,41 +42,41 @@ ServiceDirectory::ServiceDirectory(
     bool create_galaxy) 
     : datastore_(datastore)
     , event_dispatcher_(event_dispatcher)
-    , active_galaxy_(nullptr)
-    , active_service_(nullptr)
 {
     joinGalaxy(galaxy_name, version, create_galaxy);
 }
 
 Galaxy ServiceDirectory::galaxy() const {
-    return *active_galaxy_;
+    return active_galaxy_;
 }
 
 ServiceDescription ServiceDirectory::service() const {
-    return *active_service_;
+    return active_service_;
 }
 
 
 void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::string& version, bool create_galaxy) {    
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
 
-    active_galaxy_ = datastore_->findGalaxyByName(galaxy_name);
+    auto galaxy = datastore_->findGalaxyByName(galaxy_name);
     
-    if (!active_galaxy_) {
+    if (!galaxy) {
         // if no galaxy was found and no request to create it was made, fail now
         if (! create_galaxy) {
             throw InvalidGalaxyError(std::string("Attempted to join an invalid galaxy: ").append(galaxy_name));
         }
 
-        if (!(active_galaxy_ = datastore_->createGalaxy(galaxy_name, version))) {
+        if (!(galaxy = datastore_->createGalaxy(galaxy_name, version))) {
             throw InvalidGalaxyError(std::string("Attempt to create galaxy failed: ").append(galaxy_name));
         }
     }
+
+    active_galaxy_ = *galaxy;
 }
 void ServiceDirectory::updateGalaxyStatus() {
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
 
-    auto services = getServiceSnapshot(*active_galaxy_);
+    auto services = getServiceSnapshot(active_galaxy_);
 
     if (services.empty()) {
         return;
@@ -102,10 +102,10 @@ void ServiceDirectory::updateGalaxyStatus() {
         galaxy_status = service::Galaxy::LOADING;
     }
     
-    active_galaxy_->status((Galaxy::StatusType)galaxy_status);
-    datastore_->saveGalaxyStatus(active_galaxy_->id(), active_galaxy_->status());
+    active_galaxy_.status((Galaxy::StatusType)galaxy_status);
+    datastore_->saveGalaxyStatus(active_galaxy_.id(), active_galaxy_.status());
     // only trigger this if the service is login
-    if (active_service_->type().compare("login") == 0) {
+    if (active_service_.type().compare("login") == 0) {
         event_dispatcher_->triggerAsync(make_shared_event("UpdateGalaxyStatus"));
     }
 }
@@ -113,10 +113,12 @@ void ServiceDirectory::updateGalaxyStatus() {
 bool ServiceDirectory::registerService(const string& name, const string& service_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
 
-    if (active_service_ = datastore_->createService(*active_galaxy_, name, service_type, version, address, tcp_port, udp_port, ping_port)) {
+    auto service = datastore_->createService(active_galaxy_, name, service_type, version, address, tcp_port, udp_port, ping_port); 
         
+    if (service) {
+        active_service_ = *service;
         // trigger the event to let any listeners we have added the service
-        auto event_ = make_shared_event("RegisterService", *active_service_);
+        auto event_ = make_shared_event("RegisterService", active_service_);
         event_dispatcher_->trigger(event_);
         return true;
     }
@@ -128,13 +130,8 @@ bool ServiceDirectory::removeService(const ServiceDescription& service) {
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
 
     if (datastore_->deleteServiceById(service.id())) {
-        if (active_service_ && service.id() == active_service_->id()) {
-            // before we clear out the service
-            active_service_ = nullptr;
-        }
-
         // trigger the event to let any listeners we have removed the service
-        auto remove_event = make_shared_event("RemoveService", service);
+        auto remove_event = make_shared_event("RemoveService", ServiceDescription(service));
         event_dispatcher_->trigger(remove_event);
 
         return true;
@@ -146,33 +143,34 @@ bool ServiceDirectory::removeService(const ServiceDescription& service) {
 void ServiceDirectory::updateServiceStatus(int32_t new_status) {    
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
 
-    active_service_->status(new_status);
-    datastore_->saveService(*active_service_);
+    active_service_.status(new_status);
+    datastore_->saveService(active_service_);
 }
 
 bool ServiceDirectory::makePrimaryService(const ServiceDescription& service) {
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
-    active_galaxy_->primary_id(service.id());
+    active_galaxy_.primary_id(service.id());
     return true;
 }
 
 void ServiceDirectory::pulse() {
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
 
-    if (active_service_) {
+    if (active_service_.id()) {
         std::string last_pulse = "";
-        if (active_galaxy_ && active_galaxy_->primary_id() != active_service_->id()) {
+        if (active_galaxy_.id() && active_galaxy_.primary_id() != active_service_.id()) {
             last_pulse = getGalaxyTimestamp_();
         } else {
             last_pulse = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time());
         }
 
-        active_service_->last_pulse(last_pulse);
-        datastore_->saveService(*active_service_);
+        active_service_.last_pulse(last_pulse);
+        datastore_->saveService(active_service_);
     }
 
-    if (active_galaxy_) {
-        active_galaxy_ = datastore_->findGalaxyById(active_galaxy_->id());
+    if (active_galaxy_.id()) {
+        auto galaxy = datastore_->findGalaxyById(active_galaxy_.id());
+        active_galaxy_ = *galaxy;
     }
 }
 
@@ -189,7 +187,7 @@ ServiceList ServiceDirectory::getServiceSnapshot(const Galaxy& galaxy) {
 }
 
 std::string ServiceDirectory::getGalaxyTimestamp_() {    
-    auto service = datastore_->findServiceById(active_galaxy_->primary_id());
+    auto service = datastore_->findServiceById(active_galaxy_.primary_id());
 
     if (!service) {
         return boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time());

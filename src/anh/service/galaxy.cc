@@ -22,6 +22,9 @@
 
 using namespace anh::service;
 
+Galaxy::Galaxy()
+    : id_(0) {}
+
 Galaxy::Galaxy(
     uint32_t id, 
     uint32_t primary_id, 

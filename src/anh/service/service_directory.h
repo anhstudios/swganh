@@ -85,8 +85,8 @@ private:
     std::string getGalaxyTimestamp_();
 
     std::shared_ptr<DatastoreInterface> datastore_;
-    std::shared_ptr<Galaxy> active_galaxy_;
-    std::shared_ptr<ServiceDescription> active_service_;
+    Galaxy active_galaxy_;
+    ServiceDescription active_service_;
 
     boost::recursive_mutex mutex_;
 
