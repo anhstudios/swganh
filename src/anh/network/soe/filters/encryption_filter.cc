@@ -33,7 +33,12 @@ shared_ptr<Packet> EncryptionFilter::operator()(shared_ptr<Packet> packet) const
     auto message = packet->message();
 
     try {
-        Encrypt_((char*)message->data()+2, message->size()-2, packet->session()->crc_seed());
+        uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;
+                
+        Encrypt_(
+            (char*)message->data() + offset,
+            message->size() - offset, 
+            packet->session()->crc_seed());
     } catch(...) {
         DLOG(WARNING) << "Error encrypting outgoing message \n\n" << *message;
     }

@@ -50,7 +50,11 @@ shared_ptr<Packet> DecryptionFilter::operator()(shared_ptr<Packet> packet) const
             return nullptr;
         }
 
-        Decrypt_((char*)message->data()+2, message->size()-2, packet->session()->crc_seed());
+        uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;
+
+        Decrypt_((char*)message->data() + offset, 
+                message->size() - offset, 
+                packet->session()->crc_seed());
     } catch(...) {
         DLOG(WARNING) << "Error while decrypting packet\n\n" << *message;
     }
