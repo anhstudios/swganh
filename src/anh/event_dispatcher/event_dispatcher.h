@@ -20,8 +20,11 @@
 #ifndef LIBANH_EVENT_DISPATCHER_EVENT_DISPATCHER_H_
 #define LIBANH_EVENT_DISPATCHER_EVENT_DISPATCHER_H_
 
-#include <tbb/atomic.h>
+#include <boost/thread/recursive_mutex.hpp>
 
+#include <tbb/atomic.h>
+#include <tbb/concurrent_hash_map.h>
+#include <tbb/concurrent_vector.h>
 #include "anh/event_dispatcher/basic_event.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/event_dispatcher/exceptions.h"
@@ -30,8 +33,8 @@ namespace anh {
 namespace event_dispatcher {
     
 typedef std::pair<uint64_t, EventListenerCallback> EventListener;
-typedef std::list<EventListener> EventListenerList;
-typedef std::map<EventType, EventListenerList> EventListenerMap;
+typedef tbb::concurrent_vector<EventListener> EventListenerList;
+typedef tbb::concurrent_hash_map<EventType, EventListenerList> EventListenerMap;
 typedef std::set<EventType> EventTypeSet;
 typedef std::tuple<std::shared_ptr<EventInterface>, boost::optional<TriggerCondition>, boost::optional<PostTriggerCallback>> EventQueueItem;
 typedef tbb::concurrent_queue<EventQueueItem> EventQueue;
@@ -50,10 +53,10 @@ public:
     uint64_t subscribe(const EventType& event_type, EventListenerCallback listener);
 
     bool hasListeners(const EventType& event_type) const;
-    bool hasRegisteredEventType(const EventType& event_type) const;
+    bool hasRegisteredEventType(const EventType& event_type);
     bool hasEvents() const;
 
-    bool registerEventType(EventType event_type);
+    void registerEventType(EventType event_type);
     EventTypeSet registered_event_types() const;
 
     void unsubscribe(const EventType& event_type, uint64_t listener_id);
@@ -75,6 +78,8 @@ public:
 private:
     bool validateEventType_(const EventType& event_type) const;
     uint32_t calculatePlacementQueue_(uint32_t priority = 0) const;
+    
+    boost::recursive_mutex event_set_mutex_;
     
     EventTypeSet registered_event_types_;
     EventListenerMap event_listeners_;

@@ -46,26 +46,21 @@ uint64_t EventDispatcher::subscribe(const EventType& event_type, EventListenerCa
             "Invalid event type specified");
     }
     
-    if (!hasRegisteredEventType(event_type)) {
-        registerEventType(event_type);
-    }
+    registerEventType(event_type);
 
-    auto map_it = event_listeners_.find(event_type);
-    if (map_it == event_listeners_.end()) {
-        auto insert_result = event_listeners_.insert(make_pair(event_type, EventListenerList()));
+    EventListenerMap::accessor a;
 
+    if (!event_listeners_.find(a, event_type)) {
         // Check if there was an insertion failure
-        if (insert_result.second == false) {
+        if (!event_listeners_.insert(a,event_type)) {
             throw std::runtime_error("Insertion failure");
         }
 
-        // Cache the iterator and verify we didn't somehow create an empty map.
-        if ((map_it = insert_result.first) == event_listeners_.end()) {
-            throw std::runtime_error("Insertion created an empty map");
-        }
+        a->second = EventListenerList();
     }
 
-    EventListenerList& listener_list = (*map_it).second;    
+    EventListenerList& listener_list = a->second;    
+
     uint64_t next_listener_id = next_event_listener_id_.fetch_and_increment();
     listener_list.push_back(make_pair(next_listener_id, listener));
 
@@ -73,19 +68,20 @@ uint64_t EventDispatcher::subscribe(const EventType& event_type, EventListenerCa
 }
 
 bool EventDispatcher::hasListeners(const EventType& event_type) const {
-    auto map_it = event_listeners_.find(event_type);
-    if (map_it == event_listeners_.end()) {
+    EventListenerMap::accessor a;
+    if (!event_listeners_.find(a, event_type)) {
         return false;
     }
 
-    const EventListenerList& listener_list = (*map_it).second;
+    const EventListenerList& listener_list = a->second;
 
     return !listener_list.empty();
 }
 
-bool EventDispatcher::hasRegisteredEventType(const EventType& event_type) const {
-    auto it = registered_event_types_.find(event_type);
-    if (it != registered_event_types_.end()) {
+bool EventDispatcher::hasRegisteredEventType(const EventType& event_type) {   
+    boost::lock_guard<boost::recursive_mutex> lk(event_set_mutex_);
+
+    if (registered_event_types_.find(event_type) != registered_event_types_.end()) {
         return true;
     }
 
@@ -96,14 +92,14 @@ bool EventDispatcher::hasEvents() const {
     return !event_queues_[active_queue_].empty();
 }
 
-bool EventDispatcher::registerEventType(EventType event_type) {
+void EventDispatcher::registerEventType(EventType event_type) {   
+    boost::lock_guard<boost::recursive_mutex> lk(event_set_mutex_);
+
     if (hasRegisteredEventType(event_type)) {
-        assert(false && "Attempt to register an existing event!");
-        return false;
+        return;
     }
     
     registered_event_types_.insert(std::move(event_type));
-    return true;
 }
 
 EventTypeSet EventDispatcher::registered_event_types() const {
@@ -112,27 +108,30 @@ EventTypeSet EventDispatcher::registered_event_types() const {
 
 
 void EventDispatcher::unsubscribe(const EventType& event_type, uint64_t listener_id) {
-    auto map_it = event_listeners_.find(event_type);
-    if (map_it == event_listeners_.end()) {
+    EventListenerMap::accessor a;
+    if (event_listeners_.find(a, event_type)) {
         return;
     }
 
-    EventListenerList& listener_list = (*map_it).second;
+    EventListenerList& listener_list = a->second;
 
-    auto remove_it = remove_if(listener_list.begin(), listener_list.end(), [&listener_id] (const EventListener& list_listener) {
-        return list_listener.first == listener_id;
+    EventListenerList tmp;
+    for_each(listener_list.begin(), listener_list.end(), [&tmp, &listener_id] (EventListener& list_listener) {
+        if (list_listener.first == listener_id) {
+            tmp.push_back(list_listener);
+        }
     });
-
-    listener_list.erase(remove_it, listener_list.end());
+    
+    listener_list.swap(tmp);
 }
 
 void EventDispatcher::unsubscribe(const EventType& event_type) {
-    auto map_it = event_listeners_.find(event_type);
-    if (map_it == event_listeners_.end()) {
+    EventListenerMap::accessor a;
+    if (event_listeners_.find(a, event_type)) {
         return;
     }
 
-    (*map_it).second.clear();
+    a->second.clear();
 }
 
 bool EventDispatcher::trigger(std::shared_ptr<EventInterface> incoming_event) {
@@ -142,8 +141,8 @@ bool EventDispatcher::trigger(std::shared_ptr<EventInterface> incoming_event) {
         return false;
     }
     
-    auto map_it = event_listeners_.find(event_type);
-    if (map_it == event_listeners_.end()) {        
+    EventListenerMap::accessor a;
+    if (!event_listeners_.find(a, event_type)) {
         // No Listeners attached of this event type, do nothing.
         return false;
     }
@@ -153,7 +152,7 @@ bool EventDispatcher::trigger(std::shared_ptr<EventInterface> incoming_event) {
         incoming_event->timestamp(duration.total_milliseconds());
     }
 
-    EventListenerList& listener_list = (*map_it).second;
+    EventListenerList& listener_list = a->second;
 
     bool processed = false;
 
@@ -185,9 +184,9 @@ void EventDispatcher::triggerWhen(std::shared_ptr<EventInterface> incoming_event
         assert(false && "Event was triggered before its type was registered");
         return;
     }
-
-    auto map_it = event_listeners_.find(event_type);
-    if (map_it == event_listeners_.end()) {
+    
+    EventListenerMap::accessor a;
+    if (!event_listeners_.find(a, event_type)) {
         return;
     }
 
@@ -210,10 +209,10 @@ void EventDispatcher::triggerWhen(std::shared_ptr<EventInterface> incoming_event
     if (!validateEventType_(event_type)) {
         assert(false && "Event was triggered before its type was registered");
         return;
-    }
-
-    auto map_it = event_listeners_.find(event_type);
-    if (map_it == event_listeners_.end()) {
+    }    
+    
+    EventListenerMap::accessor a;
+    if (!event_listeners_.find(a, event_type)) {
         return;
     }
 
@@ -236,9 +235,9 @@ bool EventDispatcher::triggerAsync(std::shared_ptr<EventInterface> incoming_even
         assert(false && "Event was triggered before its type was registered");
         return false;
     }
-
-    auto map_it = event_listeners_.find(event_type);
-    if (map_it == event_listeners_.end()) {
+    
+    EventListenerMap::accessor a;
+    if (!event_listeners_.find(a, event_type)) {
         return false;
     }
 
@@ -264,9 +263,9 @@ bool EventDispatcher::triggerAsync(std::shared_ptr<EventInterface> incoming_even
         assert(false && "Event was triggered before its type was registered");
         return false;
     }
-
-    auto map_it = event_listeners_.find(event_type);
-    if (map_it == event_listeners_.end()) {
+    
+    EventListenerMap::accessor a;
+    if (!event_listeners_.find(a, event_type)) {
         return false;
     }
 
@@ -292,9 +291,9 @@ bool EventDispatcher::abort(const EventType& event_type, bool all_of_type) {
         return false;
     }
 
-    // See if any events have registered for this type of event.
-    auto find_it = event_listeners_.find(event_type);
-    if (find_it == event_listeners_.end()) {
+    // See if any events have registered for this type of event.    
+    EventListenerMap::accessor a;
+    if (!event_listeners_.find(a, event_type)) {
         return false;
     }    
 
