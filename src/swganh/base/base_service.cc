@@ -60,20 +60,22 @@ void BaseService::Start() {
             running_ = false;
             throw std::runtime_error("Unable to register service " + service_description.name());
         }
-
-        auto service_directory = service_directory_;
-        
+                
         // update the status of the service
         service_directory_->updateServiceStatus(anh::service::Galaxy::ONLINE);
 
         // @TODO: Change this time to a value based on the timeout for services in the service directory's watchdog operations.
-        active_.AsyncRepeated(boost::posix_time::seconds(3), [service_directory] () {
-            service_directory->pulse();
+        active_.AsyncRepeated(boost::posix_time::seconds(3), [=] () {
+            if (IsRunning()) {
+                service_directory_->pulse();
+            }
         });
         
         // @TODO: change this time to a value based on the timeout for galaxy
-        active_.AsyncRepeated(boost::posix_time::seconds(30), [service_directory] () {
-            service_directory->updateGalaxyStatus();
+        active_.AsyncRepeated(boost::posix_time::seconds(30), [=] () {
+            if (IsRunning()) {
+                service_directory_->updateGalaxyStatus();
+            }
         });
 
         onStart();
