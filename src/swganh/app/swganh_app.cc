@@ -124,6 +124,8 @@ void SwganhApp::Start() {
     
     do {
         kernel_->GetEventDispatcher()->tick();
+
+        boost::this_thread::sleep(boost::posix_time::milliseconds(15));
     } while(IsRunning());
                 
     kernel_->GetServiceManager()->Stop();
