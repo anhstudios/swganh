@@ -23,7 +23,6 @@
 #include "anh/event_dispatcher/basic_event.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/network/soe/packet.h"
-#include "anh/network/soe/session.h"
 
 using namespace anh;
 using namespace anh::event_dispatcher;
@@ -35,12 +34,14 @@ using namespace swganh::base;
 SwgMessageHandler::SwgMessageHandler(shared_ptr<EventDispatcherInterface> event_dispatcher) 
     : event_dispatcher_(event_dispatcher) {}
 
-void SwgMessageHandler::operator() (shared_ptr<Session> session, shared_ptr<ByteBuffer> message) const {        
+void SwgMessageHandler::operator() (shared_ptr<Packet> packet) const {        
+    auto message = packet->message();
+
     uint16_t priority = message->peekAt<uint16_t>(message->read_position());
     uint32_t message_type = message->peekAt<uint32_t>(message->read_position() + sizeof(priority));
 
     event_dispatcher_->triggerAsync(anh::event_dispatcher::make_shared_event(
         message_type,
-        Packet(session, message)
+        *packet
     ));
 }

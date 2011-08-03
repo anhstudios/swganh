@@ -20,6 +20,7 @@ namespace anh {
 namespace network {
 namespace soe {
 
+class Packet;
 class Session;
 class SessionManager;
 class Socket;
@@ -36,7 +37,7 @@ public:
 
     virtual std::shared_ptr<anh::ByteBuffer> AllocateBuffer() = 0;
 
-    virtual void HandleMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message) = 0;
+    virtual void HandleMessage(std::shared_ptr<Packet> packet) = 0;
     
     virtual std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher() = 0;
     
