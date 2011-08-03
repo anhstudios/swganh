@@ -109,7 +109,7 @@ EventTypeSet EventDispatcher::registered_event_types() const {
 
 void EventDispatcher::unsubscribe(const EventType& event_type, uint64_t listener_id) {
     EventListenerMap::accessor a;
-    if (event_listeners_.find(a, event_type)) {
+    if (!event_listeners_.find(a, event_type)) {
         return;
     }
 
@@ -117,7 +117,7 @@ void EventDispatcher::unsubscribe(const EventType& event_type, uint64_t listener
 
     EventListenerList tmp;
     for_each(listener_list.begin(), listener_list.end(), [&tmp, &listener_id] (EventListener& list_listener) {
-        if (list_listener.first == listener_id) {
+        if (list_listener.first != listener_id) {
             tmp.push_back(list_listener);
         }
     });
@@ -127,7 +127,7 @@ void EventDispatcher::unsubscribe(const EventType& event_type, uint64_t listener
 
 void EventDispatcher::unsubscribe(const EventType& event_type) {
     EventListenerMap::accessor a;
-    if (event_listeners_.find(a, event_type)) {
+    if (!event_listeners_.find(a, event_type)) {
         return;
     }
 
