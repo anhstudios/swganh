@@ -58,7 +58,7 @@
 #include "connection/messages/client_id_msg.h"
 #include "connection/messages/heart_beat.h"
 
-#include "connection/connection_client.h"
+#include "swganh/connection/connection_client.h"
 
 using namespace anh;
 using namespace app;
@@ -68,16 +68,13 @@ using namespace swganh::login;
 using namespace messages;
 using namespace swganh::base;
 using namespace swganh::character;
+using namespace swganh::connection;
 using namespace swganh::scene::messages;
 using namespace std;
 
 ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel) 
-    : swganh::base::BaseService(kernel)
-    , packet_router_(clients_)
-    , listen_port_(0) {
-        
-    soe_server_.reset(new network::soe::Server(kernel->GetIoService(), swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
-    soe_server_->event_dispatcher(kernel->GetEventDispatcher());
+    : swganh::connection::BaseConnectionService(kernel)
+{        
     session_provider_ = make_shared<connection::providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
 }
 
@@ -88,58 +85,32 @@ service::ServiceDescription ConnectionService::GetServiceDescription() {
         "ANH Connection Service",
         "connection",
         "0.1",
-        listen_address_, 
+        listen_address(), 
         0,
-        listen_port_, 
+        listen_port(), 
         0);
 
     return service_description;
 }
 
-void ConnectionService::DescribeConfigOptions(boost::program_options::options_description& description) {
-    description.add_options()
-        ("service.connection.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
-            "The port the connection service will listen for incoming client connections on")
-        ("service.connection.address", boost::program_options::value<string>(&listen_address_),
-            "The public address the connection service will listen for incoming client connections on")
-    ;
-}
-
-void ConnectionService::onStart() {
-    soe_server_->Start(listen_port_);
-}
-
-void ConnectionService::onStop() {
-    soe_server_->Shutdown();
-    clients_.clear();
-}
+void ConnectionService::OnDescribeConfigOptions(
+    boost::program_options::options_description& description) 
+{}
 
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
-        
-    event_dispatcher->subscribe("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1));    
-
-    event_dispatcher->subscribe("SelectCharacter", [this] (shared_ptr<EventInterface> incoming_event) {
-        return packet_router_.RoutePacket<SelectCharacter>(incoming_event, bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
-    });
+     
+    RegisterMessageHandler<ClientIdMsg>("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
+    RegisterMessageHandler<SelectCharacter>("SelectCharacter", bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
+    RegisterMessageHandler<ClientCreateCharacter>("ClientCreateCharacter", bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
+    RegisterMessageHandler<CmdSceneReady>("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
+    RegisterMessageHandler<ClientRandomNameRequest>("ClientRandomNameRequest", bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));
     
-    event_dispatcher->subscribe("ClientCreateCharacter", [this] (shared_ptr<EventInterface> incoming_event) {
-        return packet_router_.RoutePacket<ClientCreateCharacter>(incoming_event, bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
-    });
-
-    event_dispatcher->subscribe("CmdSceneReady", [this] (shared_ptr<EventInterface> incoming_event) {
-        return packet_router_.RoutePacket<CmdSceneReady>(incoming_event, bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
-    });
-
-    event_dispatcher->subscribe("ClientRandomNameRequest", [this] (shared_ptr<EventInterface> incoming_event) {
-        return packet_router_.RoutePacket<ClientRandomNameRequest>(incoming_event, bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));
-    });
-
     event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
         auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
         
         // Message was triggered from our server so process it.
-        if (session_removed->session->server() == soe_server_.get()) {
+        if (session_removed->session->server() == server().get()) {
             RemoveClient_(session_removed->session);
         }
 
@@ -147,62 +118,52 @@ void ConnectionService::subscribe() {
     });
 }
 
-std::shared_ptr<ConnectionClient> ConnectionService::AddClient_(uint64_t player_id, std::shared_ptr<anh::network::soe::Session> session) {
-    std::shared_ptr<ConnectionClient> client = nullptr;
+void ConnectionService::AddClient_(
+    uint64_t player_id, 
+    std::shared_ptr<ConnectionClient> client) 
+{
+    ClientMap& client_map = clients();
 
-    auto find_it = std::find_if(clients_.begin(), clients_.end(), [session, player_id] (ClientPair conn_client) {
-        return conn_client.first.address() == session->remote_endpoint().address() 
+    auto find_it = std::find_if(
+        client_map.begin(), 
+        client_map.end(), 
+        [client, player_id] (ClientMap::value_type& conn_client) 
+    {
+        return conn_client.first.address() == client->session->remote_endpoint().address() 
             && conn_client.second->player_id == player_id;
     });
 
-    if (find_it == clients_.end()) {
-        DLOG(WARNING) << "Adding connection client";
-        client = make_shared<ConnectionClient>();
-        client->session = session;
-
-        clients_.insert(make_pair(session->remote_endpoint(), client));
-    } else {
+    if (find_it != client_map.end()) {
         // client already exists, lets boot the existing one and let the requesting one continue
         // @TODO: Make this configurable
         (*find_it).second->session->Close();
-        clients_.erase(find_it);
-        // now create the new client and insert it
-        client = make_shared<ConnectionClient>();
-        client->session = session;
 
-        clients_.insert(make_pair(session->remote_endpoint(), client));
+        client_map.erase(find_it->first);
     }
+    
+    DLOG(WARNING) << "Adding connection client";
 
-    DLOG(WARNING) << "Connection service currently has ("<< clients_.size() << ") clients";
-    return client;
+    ClientMap::accessor a;
+    client_map.insert(a, client->session->remote_endpoint());
+    a->second = client;
+
+    DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
 }
 
 
 void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
     active().Async([=] () {
-        auto find_it = clients_.find(session->remote_endpoint());
+        auto client = GetClientFromEndpoint(session->remote_endpoint());
+        
+        auto client_map = clients();
 
-        if (find_it != clients_.end()) {
+        if (client) {
             DLOG(WARNING) << "Removing disconnected client";
-            clients_.erase(find_it);
+            client_map.erase(session->remote_endpoint());
         }
                 
-        DLOG(WARNING) << "Connection service currently has ("<< clients_.size() << ") clients";
+        DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
     });
-}
-
-shared_ptr<BaseCharacterService> ConnectionService::character_service() {
-    return character_service_;
-}
-
-void ConnectionService::character_service(shared_ptr<BaseCharacterService> character_service) {
-    character_service_ = character_service;
-}
-shared_ptr<LoginServiceInterface> ConnectionService::login_service() {
-    return login_service_;
-}
-void ConnectionService::login_service(shared_ptr<LoginServiceInterface> login_service) {
-    login_service_ = login_service;
 }
 
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
@@ -211,19 +172,16 @@ void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> c
     client->session->SendMessage(CmdSceneReady());
 }
 
-bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
+void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const ClientIdMsg& message) {
     DLOG(WARNING) << "Handling ClientIdMsg";
-    auto remote_event = static_pointer_cast<BasicEvent<anh::network::soe::Packet>>(incoming_event);
-    ClientIdMsg id_msg;
-    id_msg.deserialize(*remote_event->message());
 
     // get session key from login service
-    uint32_t account_id = login_service()->GetAccountBySessionKey(id_msg.session_hash);
+    uint32_t account_id = login_service()->GetAccountBySessionKey(message.session_hash);
 
     // authorized
     if (! account_id) {
         DLOG(WARNING) << "Account_id not found from session key, unauthorized access.";
-        return false;
+        return;
     }
     
     // gets player from account
@@ -232,17 +190,18 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     // authorized
     if (! player_id) {
         DLOG(WARNING) << "No player found for the requested account, unauthorized access.";
-        return false;
+        return;
     }
     
     // creates a new session and stores it for later use
-    if (!session_provider_->CreateGameSession(player_id, remote_event->session()->connection_id())) {    
+    if (!session_provider_->CreateGameSession(player_id, client->session->connection_id())) {    
         DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
+    
+    client->account_id = account_id;
+    client->player_id = player_id;
 
-    auto connection_client = AddClient_(player_id, remote_event->session());
-    connection_client->account_id = account_id;
-    connection_client->player_id = player_id;
+    AddClient_(player_id, client);
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = service_directory()->galaxy().status();
@@ -250,9 +209,7 @@ bool ConnectionService::HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher
     // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 
-    connection_client->session->SendMessage(client_permissions);
-
-    return true;
+    client->session->SendMessage(client_permissions);
 }
 
 void ConnectionService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const SelectCharacter& message) {    

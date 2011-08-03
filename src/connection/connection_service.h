@@ -33,6 +33,8 @@
 
 #include "swganh/scene/messages/cmd_scene_ready.h"
 
+#include "swganh/connection/base_connection_service.h"
+
 #include "connection/messages/client_permissions_message.h"
 #include "connection/messages/select_character.h"
 #include "connection/messages/client_create_character.h"
@@ -53,53 +55,35 @@ namespace event_dispatcher {
 class EventInterface;
 }}  // namespace anh::event_dispatcher
 
+namespace swganh {
 namespace connection {
-
 struct ConnectionClient;
+}}  // namespace swganh::connection;
 
+namespace connection {
     
-class ConnectionService : public swganh::base::BaseService {
+class ConnectionService : public swganh::connection::BaseConnectionService {
 public:
     explicit ConnectionService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~ConnectionService();
 
     anh::service::ServiceDescription GetServiceDescription();
     
-    void DescribeConfigOptions(boost::program_options::options_description& description);
-
-    void onStart();
-    void onStop();
-
+    void OnDescribeConfigOptions(boost::program_options::options_description& description);
+    
     void subscribe();
 
-    std::shared_ptr<swganh::character::BaseCharacterService> character_service();
-    void character_service(std::shared_ptr<swganh::character::BaseCharacterService> character_service);
-    std::shared_ptr<swganh::login::LoginServiceInterface> login_service();
-    void login_service(std::shared_ptr<swganh::login::LoginServiceInterface> login_service);
-
 private:
-    bool HandleClientIdMsg_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    void HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const swganh::scene::messages::CmdSceneReady& message);
-    void HandleClientRandomNameRequest_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientRandomNameRequest& message);
-    void HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientCreateCharacter& message);
-    void HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::SelectCharacter& message);
+    void HandleClientIdMsg_(std::shared_ptr<swganh::connection::ConnectionClient> client, const connection::messages::ClientIdMsg& message);
+    void HandleCmdSceneReady_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::scene::messages::CmdSceneReady& message);
+    void HandleClientRandomNameRequest_(std::shared_ptr<swganh::connection::ConnectionClient> client, const connection::messages::ClientRandomNameRequest& message);
+    void HandleClientCreateCharacter_(std::shared_ptr<swganh::connection::ConnectionClient> client, const connection::messages::ClientCreateCharacter& message);
+    void HandleSelectCharacter_(std::shared_ptr<swganh::connection::ConnectionClient> client, const connection::messages::SelectCharacter& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
-    std::shared_ptr<ConnectionClient> AddClient_(uint64_t player_id, std::shared_ptr<anh::network::soe::Session> session);
+    void AddClient_(uint64_t player_id, std::shared_ptr<swganh::connection::ConnectionClient> client);
 
-    std::unique_ptr<anh::network::soe::Server> soe_server_;
-    std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
-    std::shared_ptr<swganh::login::LoginServiceInterface> login_service_;
     std::shared_ptr<connection::providers::SessionProviderInterface> session_provider_;
-    
-    typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<ConnectionClient>> ClientMap;
-    typedef std::pair<boost::asio::ip::udp::endpoint, std::shared_ptr<ConnectionClient>> ClientPair;
-    ClientMap clients_;
-
-    anh::network::soe::PacketRouter<ClientMap> packet_router_;
-    
-    std::string listen_address_;
-    uint16_t listen_port_;
 };
 
 }  // namespace connection
