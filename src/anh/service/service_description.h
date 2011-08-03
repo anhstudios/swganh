@@ -28,6 +28,8 @@ namespace service {
 
 class ServiceDescription {    
 public:
+    ServiceDescription();
+
     /*! This overloaded constructor is used when describing a service to register.
     *
     * \param type The type of the service.
@@ -166,9 +168,6 @@ public:
     
 private:
     friend class ServiceDirectory;
-
-    ServiceDescription();
-
     
     uint32_t id_;
     uint32_t galaxy_id_;

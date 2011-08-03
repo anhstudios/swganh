@@ -36,6 +36,8 @@ public:
     };
     
 public:
+    Galaxy();
+
     /*! This overloaded constructor is used when creating an instance from
     * the data store.
     *
@@ -121,9 +123,7 @@ public:
 
 private:
     friend class ServiceDirectory;
-
-    Galaxy();
-
+    
     void primary_id(uint32_t primary_id);
     
     uint32_t id_;

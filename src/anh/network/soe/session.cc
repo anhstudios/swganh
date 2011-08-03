@@ -179,7 +179,7 @@ void Session::HandleMessage(anh::ByteBuffer& message)
         case SESSION_REQUEST:  { SessionRequest session_request(message); handleSessionRequest_(session_request); break; }
         case FATAL_ERROR:      { Close(); break; }
         default:
-            LOG(WARNING) << "Unhandled SOE Opcode" << message.peek<uint16_t>(true);
+            LOG(WARNING) << "Unhandled SOE Opcode: " << std::hex << message.peek<uint16_t>(true);
     }
 }
 

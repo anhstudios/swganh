@@ -21,6 +21,9 @@
 
 using namespace anh::service;
 
+ServiceDescription::ServiceDescription()
+    : id_(0) {}
+
 ServiceDescription::ServiceDescription(const std::string& name,
                  const std::string& type,
                  const std::string& version,
@@ -28,7 +31,8 @@ ServiceDescription::ServiceDescription(const std::string& name,
                  uint16_t tcp_port,
                  uint16_t udp_port,
                  uint16_t ping_port)
-    : name_(name)
+    : id_(0)
+    , name_(name)
     , type_(type)
     , version_(version)
     , address_(address)
