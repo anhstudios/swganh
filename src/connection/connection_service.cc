@@ -50,16 +50,17 @@
 
 #include "connection/messages/client_permissions_message.h"
 #include "connection/messages/client_id_msg.h"
-#include "connection/messages/heart_beat.h"
+#include "swganh/connection/messages/heart_beat.h"
 
+#include "swganh/connection/messages/logout_message.h"
 #include "swganh/connection/connection_client.h"
 
 using namespace anh;
 using namespace app;
-using namespace event_dispatcher;
 using namespace connection;
+using namespace event_dispatcher;
 using namespace swganh::login;
-using namespace messages;
+using namespace swganh::connection::messages;
 using namespace swganh::base;
 using namespace swganh::character;
 using namespace swganh::connection;
@@ -94,7 +95,7 @@ void ConnectionService::OnDescribeConfigOptions(
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
      
-    RegisterMessageHandler<ClientIdMsg>(
+    RegisterMessageHandler<connection::messages::ClientIdMsg>(
         bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
 
     RegisterMessageHandler<CmdSceneReady>(
@@ -123,14 +124,12 @@ void ConnectionService::AddClient_(
         client_map.end(), 
         [client, player_id] (ClientMap::value_type& conn_client) 
     {
-        return conn_client.first.address() == client->session->remote_endpoint().address() 
-            && conn_client.second->player_id == player_id;
+        return conn_client.second->player_id == player_id;
     });
 
     if (find_it != client_map.end()) {
-        // client already exists, lets boot the existing one and let the requesting one continue
-        // @TODO: Make this configurable
-        (*find_it).second->session->Close();
+        LogoutMessage message;
+        (*find_it).second->session->SendMessage(message);
 
         client_map.erase(find_it->first);
     }
@@ -166,7 +165,7 @@ void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> c
     client->session->SendMessage(CmdSceneReady());
 }
 
-void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const ClientIdMsg& message) {
+void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientIdMsg& message) {
     DLOG(WARNING) << "Handling ClientIdMsg";
 
     // get session key from login service
@@ -197,7 +196,7 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
 
     AddClient_(player_id, client);
 
-    ClientPermissionsMessage client_permissions;
+    connection::messages::ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = service_directory()->galaxy().status();
     client_permissions.available_character_slots = character_service()->GetMaxCharacters(account_id);
     // @TODO: Replace with configurable value
