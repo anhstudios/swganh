@@ -28,6 +28,8 @@
 #include <glog/logging.h>
 #include <tbb/concurrent_hash_map.h>
 
+#include "anh/hash_string.h"
+
 namespace anh {
 class ByteBuffer;
 }  // namespace anh
