@@ -18,9 +18,9 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "login/account.h"
+#include "swganh/login/account.h"
 
-using namespace login;
+using namespace swganh::login;
 using namespace std;
 
 Account::Account(bool enabled) 

@@ -18,49 +18,32 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LOGIN_ACCOUNT_H_
-#define LOGIN_ACCOUNT_H_
+#ifndef SWGANH_LOGIN_LOGIN_CLIENT_H_
+#define SWGANH_LOGIN_LOGIN_CLIENT_H_
 
-#include <cstdint>
+#include <memory>
 #include <string>
 
+namespace anh {
+namespace network {
+namespace soe {
+class Session;
+}}}  // namespace anh::network::soe
+
+namespace swganh {
 namespace login {
 
-class Account {
-public:
-    explicit Account(bool enabled = false);
-    ~Account();
+class Account;
 
-    uint32_t account_id() const;
-    void account_id(uint32_t account_id);
+struct LoginClient {
+    std::string username;
+    std::string password;
+    std::string version;
 
-    std::string username() const;
-    void username(std::string username);
-
-    std::string salt() const;
-    void salt(std::string salt);
-
-    std::string password() const;
-    void password(std::string password);
-
-    std::string algorithm() const;
-    void algorithm(std::string algorithm);
-
-    bool IsEnabled() const;
-    void Enable();
-    void Disable();   
-
-protected:
-    std::string username_;
-    std::string password_;
-    std::string salt_;
-    std::string algorithm_;
-
-    uint32_t account_id_;
-
-    bool enabled_;
+    std::shared_ptr<Account> account;
+    std::shared_ptr<anh::network::soe::Session> session;
 };
 
-}  // namespace login
+}}  // namespace swganh::login
 
-#endif  // LOGIN_ACCOUNT_H_
+#endif  // SWGANH_LOGIN_LOGIN_CLIENT_H_

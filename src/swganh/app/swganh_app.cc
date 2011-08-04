@@ -118,6 +118,12 @@ void SwganhApp::Start() {
     // Start up a threadpool for running io_service based tasks/active objects
     for (uint32_t i = 0; i < boost::thread::hardware_concurrency(); ++i) {
         auto t = make_shared<boost::thread>(bind(&boost::asio::io_service::run, &kernel_->GetIoService()));
+        
+#ifdef _WIN32
+        HANDLE mtheHandle = t->native_handle();
+        SetPriorityClass(mtheHandle, REALTIME_PRIORITY_CLASS);
+#endif
+
         io_threads_.push_back(t);
     }
     kernel_->GetServiceManager()->Start();

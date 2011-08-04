@@ -32,10 +32,6 @@
 #include "login/galaxy_status.h"
 
 namespace login {
-struct LoginClient;
-}  // namespace login
-
-namespace login {
 namespace messages {
 
 struct ClusterServer {

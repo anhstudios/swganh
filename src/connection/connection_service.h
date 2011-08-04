@@ -29,7 +29,6 @@
 #include "connection/providers/session_provider_interface.h"
 #include "swganh/base/base_service.h"
 #include "swganh/character/base_character_service.h"
-#include "swganh/login/login_service_interface.h"
 
 #include "swganh/scene/messages/cmd_scene_ready.h"
 

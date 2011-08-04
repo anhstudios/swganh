@@ -26,8 +26,6 @@
 #include "anh/database/database_manager.h"
 #include "anh/utilities.h"
 #include "login/providers/mysql_account_provider.h"
-#include "login/account.h"
-#include "login/login_client.h"
 
 using namespace login::providers;
 

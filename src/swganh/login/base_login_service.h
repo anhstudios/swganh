@@ -18,13 +18,14 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_LOGIN_SERVICE_INTERFACE_H_
-#define SWGANH_LOGIN_SERVICE_INTERFACE_H_
+#ifndef SWGANH_LOGIN_BASE_LOGIN_SERVICE_H_
+#define SWGANH_LOGIN_BASE_LOGIN_SERVICE_H_
 
 #include <map>
 #include <tuple>
 
 #include "swganh/base/base_service.h"
+#include "swganh/base/swg_message_router.h"
 
 namespace anh {
 namespace app {
@@ -34,17 +35,22 @@ class KernelInterface;
 namespace swganh {
 namespace login {
 
-class LoginServiceInterface : public swganh::base::BaseService {
+struct LoginClient;
+
+class BaseLoginService 
+    : public swganh::base::BaseService 
+    , public swganh::base::SwgMessageRouter<LoginClient> {
 public:
-    explicit LoginServiceInterface(std::shared_ptr<anh::app::KernelInterface> kernel) 
-        : swganh::base::BaseService(kernel) {}
-    virtual ~LoginServiceInterface(){}
+    explicit BaseLoginService(std::shared_ptr<anh::app::KernelInterface> kernel);
     
     virtual anh::service::ServiceDescription GetServiceDescription() = 0;
 
     virtual void DescribeConfigOptions(boost::program_options::options_description& description) = 0;
     virtual uint32_t GetAccountBySessionKey(const std::string& session_key) = 0;
+    
+    virtual std::shared_ptr<LoginClient> GetClientFromEndpoint(
+        const boost::asio::ip::udp::endpoint& remote_endpoint) = 0;
 };
 
 }}  // namespace swganh::login
-#endif  // SWGANH_LOGIN_SERVICE_INTERFACE_H_
+#endif  // SWGANH_LOGIN_BASE_LOGIN_SERVICE_H_

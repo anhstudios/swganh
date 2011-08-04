@@ -1,7 +1,7 @@
 #include "login/messages/login_client_token.h"
 
-#include "login/login_client.h"
-#include "login/account.h"
+#include "swganh/login/login_client.h"
+#include "swganh/login/account.h"
 
 using namespace login;
 using namespace messages;
@@ -9,7 +9,7 @@ using namespace std;
 
 using anh::ByteBuffer;
 
-LoginClientToken login::messages::BuildLoginClientToken(shared_ptr<LoginClient> login_client, const std::string& session_key) {
+LoginClientToken login::messages::BuildLoginClientToken(shared_ptr<swganh::login::LoginClient> login_client, const std::string& session_key) {
     LoginClientToken message;
 
     ByteBuffer session_buffer;

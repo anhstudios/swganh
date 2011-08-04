@@ -36,6 +36,7 @@
 
 using namespace login;
 using namespace providers;
+using namespace swganh::login;
 using namespace std;
 
 MysqlAccountProvider::MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)

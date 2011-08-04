@@ -31,9 +31,6 @@
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_manager.h"
 
-#include "swganh/character/base_character_service.h"
-#include "swganh/login/login_service_interface.h"
-
 #include "connection/connection_service.h"
 
 using namespace anh;
