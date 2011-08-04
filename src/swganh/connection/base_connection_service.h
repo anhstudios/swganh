@@ -57,15 +57,29 @@ public:
     void onStart();
     void onStop();
 
+    /**
+     * Register a handler with the connection service to be invoked whenever a message of the
+     * specified type is received. Throws an exception if a handler already exists.
+     *
+     * By default if a message is received from a source with no exising client registration the
+     * handler will throw a runtime_error. However, if the client_required flag is set to false
+     * then a new client object is created and given the session that generated the message.
+     *
+     * @param handler The handler to register with the connection service.
+     * @param client_required Defaults to true and should be the common case for nearly ever 
+     *                        message handler.
+     *
+     * @throws std::runtime_exception
+     */
     template<typename MessageType>
     void RegisterMessageHandler(
-        anh::HashString message_type_id, 
         std::function<void (std::shared_ptr<ConnectionClient>, MessageType)> handler,
         bool client_required = true)
     {
         MessageHandlerMap::accessor a;
-        if (handlers_.find(a, message_type_id)) {
-            throw std::runtime_error("A handler has already been defined for the message type: " + message_type_id.ident_string());
+        if (handlers_.find(a, MessageType::opcode)) {
+            DLOG(WARNING) << "Handler has already been defined: " << std::hex << MessageType::opcode;
+            throw std::runtime_error("Requested registration of handler that has already been defined.");
         }
 
         auto wrapped_handler = [this, handler] (
@@ -78,7 +92,7 @@ public:
             handler(client, message);
         };
 
-        handlers_.insert(std::make_pair(message_type_id, std::make_pair(wrapped_handler, client_required)));
+        handlers_.insert(std::make_pair(MessageType::opcode, std::make_pair(wrapped_handler, client_required)));
     }
     
     void HandleMessage(std::shared_ptr<anh::network::soe::Packet> packet);

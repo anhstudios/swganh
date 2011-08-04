@@ -94,8 +94,11 @@ void ConnectionService::OnDescribeConfigOptions(
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
      
-    RegisterMessageHandler<ClientIdMsg>("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
-    RegisterMessageHandler<CmdSceneReady>("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
+    RegisterMessageHandler<ClientIdMsg>(
+        bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
+
+    RegisterMessageHandler<CmdSceneReady>(
+        bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
 
     event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
         auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);

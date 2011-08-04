@@ -104,15 +104,12 @@ void CharacterService::subscribe() {
     auto connection_service = std::static_pointer_cast<BaseConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
 
     connection_service->RegisterMessageHandler<SelectCharacter>(
-        "SelectCharacter",
         bind(&CharacterService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
 
     connection_service->RegisterMessageHandler<ClientCreateCharacter>(
-        "ClientCreateCharacter", 
         bind(&CharacterService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
     
     connection_service->RegisterMessageHandler<ClientRandomNameRequest>(
-        "ClientRandomNameRequest", 
         bind(&CharacterService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));    
 }
 
