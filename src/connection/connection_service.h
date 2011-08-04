@@ -36,12 +36,6 @@
 #include "swganh/connection/base_connection_service.h"
 
 #include "connection/messages/client_permissions_message.h"
-#include "connection/messages/select_character.h"
-#include "connection/messages/client_create_character.h"
-#include "connection/messages/client_create_character_success.h"
-#include "connection/messages/client_create_character_failed.h"
-#include "connection/messages/client_random_name_request.h"
-#include "connection/messages/client_random_name_response.h"
 #include "connection/messages/client_id_msg.h"
 #include "connection/messages/heart_beat.h"
 
@@ -76,9 +70,6 @@ public:
 private:
     void HandleClientIdMsg_(std::shared_ptr<swganh::connection::ConnectionClient> client, const connection::messages::ClientIdMsg& message);
     void HandleCmdSceneReady_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::scene::messages::CmdSceneReady& message);
-    void HandleClientRandomNameRequest_(std::shared_ptr<swganh::connection::ConnectionClient> client, const connection::messages::ClientRandomNameRequest& message);
-    void HandleClientCreateCharacter_(std::shared_ptr<swganh::connection::ConnectionClient> client, const connection::messages::ClientCreateCharacter& message);
-    void HandleSelectCharacter_(std::shared_ptr<swganh::connection::ConnectionClient> client, const connection::messages::SelectCharacter& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
     void AddClient_(uint64_t player_id, std::shared_ptr<swganh::connection::ConnectionClient> client);

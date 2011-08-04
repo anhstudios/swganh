@@ -44,6 +44,20 @@
 #include "anh/app/kernel_interface.h"
 #include "anh/database/database_manager.h"
 
+#include "anh/network/soe/session.h"
+#include "anh/network/soe/server_interface.h"
+
+#include "anh/service/service_manager.h"
+
+#include "swganh/scene/messages/cmd_start_scene.h"
+#include "swganh/scene/messages/scene_create_object_by_crc.h"
+#include "swganh/scene/messages/scene_end_baselines.h"
+
+#include "swganh/connection/base_connection_service.h"
+#include "swganh/connection/connection_client.h"
+#include "swganh/connection/messages/heart_beat.h"
+
+
 #ifdef WIN32
 #else
 using boost::wregex;
@@ -52,13 +66,16 @@ using boost::regex_match;
 #endif
 
 using namespace swganh::character;
+using namespace swganh::character::messages;
+using namespace swganh::connection::messages;
+using namespace swganh::scene::messages;
 using namespace character;
-using namespace connection::messages;
 using namespace anh;
 using namespace app;
 using namespace event_dispatcher;
 using namespace database;
 using namespace std;
+using namespace swganh::connection;
 
 CharacterService::CharacterService(shared_ptr<KernelInterface> kernel) 
     : BaseCharacterService(kernel) {
@@ -83,7 +100,21 @@ void CharacterService::onStart() {}
 
 void CharacterService::onStop() {}
 
-void CharacterService::subscribe() {}
+void CharacterService::subscribe() {
+    auto connection_service = std::static_pointer_cast<BaseConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
+
+    connection_service->RegisterMessageHandler<SelectCharacter>(
+        "SelectCharacter",
+        bind(&CharacterService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
+
+    connection_service->RegisterMessageHandler<ClientCreateCharacter>(
+        "ClientCreateCharacter", 
+        bind(&CharacterService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
+    
+    connection_service->RegisterMessageHandler<ClientRandomNameRequest>(
+        "ClientRandomNameRequest", 
+        bind(&CharacterService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));    
+}
 
 void CharacterService::DescribeConfigOptions(boost::program_options::options_description& description) {}
 
@@ -409,3 +440,72 @@ std::string CharacterService::setCharacterCreateErrorCode_(uint32_t error_code)
     }
     return error_string;
 }
+
+void CharacterService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const SelectCharacter& message) {    
+    swganh::character::CharacterLoginData character = GetLoginCharacter(message.character_id, client->account_id);
+
+    // @TODO: Trigger an event here with the character data.
+
+    CmdStartScene start_scene;
+    // @TODO: Replace with configurable value
+    start_scene.ignore_layout = 0;
+    start_scene.character_id = character.character_id;
+    start_scene.terrain_map = character.terrain_map;
+    start_scene.position = character.position;
+    start_scene.shared_race_template = "object/creature/player/shared_" + character.race + "_" + character.gender + ".iff";
+    start_scene.galaxy_time = service_directory()->galaxy().GetGalaxyTimeInMilliseconds();
+        
+    client->session->SendMessage(start_scene);
+
+    SceneCreateObjectByCrc scene_object;
+    scene_object.object_id = character.character_id;
+    scene_object.orientation = character.orientation;
+    scene_object.position = character.position;
+    scene_object.object_crc = anh::memcrc(character.race_template);
+    // @TODO: Replace with configurable value
+    scene_object.byte_flag = 0;
+    
+    client->session->SendMessage(scene_object);
+    
+    SceneEndBaselines scene_object_end;
+    scene_object_end.object_id = character.character_id;
+    
+    client->session->SendMessage(scene_object_end);
+}
+
+void CharacterService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const ClientCreateCharacter& message) {
+    DLOG(WARNING) << "Handling ClientCreateCharacter";
+
+    uint64_t character_id;
+    string error_code;
+    tie(character_id, error_code) = CreateCharacter(message, client->account_id);
+
+    // heartbeat to let the client know we're still here    
+    HeartBeat heartbeat;
+    client->session->SendMessage(heartbeat);
+
+    if (error_code.length() > 0 && character_id == 0) {
+        ClientCreateCharacterFailed failed;
+        failed.stf_file = "ui";
+        failed.error_string = error_code;
+        client->session->SendMessage(failed);
+    } else {
+        ClientCreateCharacterSuccess success;
+        success.character_id = character_id;
+        client->session->SendMessage(success);
+    }
+}
+
+void CharacterService::HandleClientRandomNameRequest_(std::shared_ptr<ConnectionClient> client, const ClientRandomNameRequest& message) {
+    ClientRandomNameResponse response;
+    response.player_race_iff = message.player_race_iff;
+    
+    response.random_name = GetRandomNameRequest(message.player_race_iff);
+    if (response.random_name.length() > 0) {
+        response.stf_file = "ui";
+        response.approval_string = "name_approved";
+    }
+
+    client->session->SendMessage(response);
+}
+

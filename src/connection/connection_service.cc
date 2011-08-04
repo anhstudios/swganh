@@ -49,12 +49,6 @@
 #include "connection/providers/mysql_session_provider.h"
 
 #include "connection/messages/client_permissions_message.h"
-#include "connection/messages/select_character.h"
-#include "connection/messages/client_create_character.h"
-#include "connection/messages/client_create_character_success.h"
-#include "connection/messages/client_create_character_failed.h"
-#include "connection/messages/client_random_name_request.h"
-#include "connection/messages/client_random_name_response.h"
 #include "connection/messages/client_id_msg.h"
 #include "connection/messages/heart_beat.h"
 
@@ -101,11 +95,8 @@ void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
      
     RegisterMessageHandler<ClientIdMsg>("ClientIdMsg", bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
-    RegisterMessageHandler<SelectCharacter>("SelectCharacter", bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
-    RegisterMessageHandler<ClientCreateCharacter>("ClientCreateCharacter", bind(&ConnectionService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
     RegisterMessageHandler<CmdSceneReady>("CmdSceneReady", bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
-    RegisterMessageHandler<ClientRandomNameRequest>("ClientRandomNameRequest", bind(&ConnectionService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));
-    
+
     event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
         auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
         
@@ -210,70 +201,4 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
     client_permissions.unlimited_characters = 0;
 
     client->session->SendMessage(client_permissions);
-}
-
-void ConnectionService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const SelectCharacter& message) {    
-    swganh::character::CharacterLoginData character = character_service()->GetLoginCharacter(message.character_id, client->account_id);
-
-    CmdStartScene start_scene;
-    // @TODO: Replace with configurable value
-    start_scene.ignore_layout = 0;
-    start_scene.character_id = character.character_id;
-    start_scene.terrain_map = character.terrain_map;
-    start_scene.position = character.position;
-    start_scene.shared_race_template = "object/creature/player/shared_" + character.race + "_" + character.gender + ".iff";
-    start_scene.galaxy_time = service_directory()->galaxy().GetGalaxyTimeInMilliseconds();
-        
-    client->session->SendMessage(start_scene);
-
-    SceneCreateObjectByCrc scene_object;
-    scene_object.object_id = character.character_id;
-    scene_object.orientation = character.orientation;
-    scene_object.position = character.position;
-    scene_object.object_crc = anh::memcrc(character.race_template);
-    // @TODO: Replace with configurable value
-    scene_object.byte_flag = 0;
-    
-    client->session->SendMessage(scene_object);
-    
-    SceneEndBaselines scene_object_end;
-    scene_object_end.object_id = character.character_id;
-    
-    client->session->SendMessage(scene_object_end);
-}
-
-void ConnectionService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientCreateCharacter& message) {
-    DLOG(WARNING) << "Handling ClientCreateCharacter";
-
-    uint64_t character_id;
-    string error_code;
-    tie(character_id, error_code) = character_service()->CreateCharacter(message, client->account_id);
-
-    // heartbeat to let the client know we're still here    
-    HeartBeat heartbeat;
-    client->session->SendMessage(heartbeat);
-
-    if (error_code.length() > 0 && character_id == 0) {
-        ClientCreateCharacterFailed failed;
-        failed.stf_file = "ui";
-        failed.error_string = error_code;
-        client->session->SendMessage(failed);
-    } else {
-        ClientCreateCharacterSuccess success;
-        success.character_id = character_id;
-        client->session->SendMessage(success);
-    }
-}
-
-void ConnectionService::HandleClientRandomNameRequest_(std::shared_ptr<ConnectionClient> client, const ClientRandomNameRequest& message) {
-    ClientRandomNameResponse response;
-    response.player_race_iff = message.player_race_iff;
-    
-    response.random_name = character_service()->GetRandomNameRequest(message.player_race_iff);
-    if (response.random_name.length() > 0) {
-        response.stf_file = "ui";
-        response.approval_string = "name_approved";
-    }
-
-    client->session->SendMessage(response);
 }

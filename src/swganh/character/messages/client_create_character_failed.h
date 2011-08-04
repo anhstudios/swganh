@@ -18,14 +18,15 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef CONNECTION_MESSAGES_CLIENT_CREATE_CHARACTER_FAILED_H_
-#define CONNECTION_MESSAGES_CLIENT_CREATE_CHARACTER_FAILED_H_
+#ifndef SWGANH_CHARACTER_MESSAGES_CLIENT_CREATE_CHARACTER_FAILED_H_
+#define SWGANH_CHARACTER_MESSAGES_CLIENT_CREATE_CHARACTER_FAILED_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
-namespace connection {
+namespace swganh {
+namespace character {
 namespace messages {
     
 struct ClientCreateCharacterFailed : public swganh::base::SwgMessage<ClientCreateCharacterFailed> {
@@ -51,6 +52,6 @@ struct ClientCreateCharacterFailed : public swganh::base::SwgMessage<ClientCreat
     }
 };
 
-}}  // namespace connection::messages
+}}}  // namespace swganh::character::messages
 
-#endif  // CONNECTION_MESSAGES_CLIENT_CREATE_CHARACTER_FAILED_H_
+#endif  // SWGANH_CHARACTER_MESSAGES_CLIENT_CREATE_CHARACTER_FAILED_H_
