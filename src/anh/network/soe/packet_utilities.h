@@ -23,6 +23,9 @@
 #include <cstdint>
 #include <list>
 #include <memory>
+
+#include <boost/asio/ip/udp.hpp>
+
 #include "anh/byte_buffer.h"
 
 namespace anh {
@@ -61,6 +64,28 @@ anh::ByteBuffer PackDataChannelMessages(std::list<std::shared_ptr<anh::ByteBuffe
  * @return A list containing the in-order message fragments.
  */
 std::list<anh::ByteBuffer> SplitDataChannelMessage(anh::ByteBuffer message, uint32_t max_size);
+
+/**
+ * Creates a uint32_t hash from an endpoint.
+ *
+ * @param endpoint The endpoint to hash.
+ * @return A hash of the provided endpoint.
+ */
+uint32_t CreateEndpointHash(const boost::asio::ip::udp::endpoint& endpoint);
+
+class EndpointHashCompare {
+public:
+    static size_t hash(const boost::asio::ip::udp::endpoint& endpoint) { 
+        return anh::network::soe::CreateEndpointHash(endpoint); 
+    }
+
+    static bool equal( 
+        const boost::asio::ip::udp::endpoint& endpoint,
+        const boost::asio::ip::udp::endpoint& other) 
+    {
+        return hash(endpoint) == hash(other);
+    }
+};
 
 }}}  // namespace anh::network::soe
 

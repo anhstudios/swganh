@@ -34,7 +34,7 @@ class EventDispatcherInterface;
 namespace anh {
 namespace network {
 namespace soe {
-class Session;
+class Packet;
 }}}  // namespace anh::network::soe
 
 
@@ -45,7 +45,7 @@ class SwgMessageHandler {
 public:
     explicit SwgMessageHandler(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
 
-    void operator() (std::shared_ptr<anh::network::soe::Session> session, std::shared_ptr<anh::ByteBuffer> message) const;
+    void operator() (std::shared_ptr<anh::network::soe::Packet> packet) const;
 
 private:
     SwgMessageHandler();

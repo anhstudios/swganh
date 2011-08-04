@@ -18,31 +18,32 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef CONNECTION_MESSAGES_SELECT_CHARACTER_MESSAGE_H_
-#define CONNECTION_MESSAGES_SELECT_CHARACTER_MESSAGE_H_
+#ifndef SWGANH_CHARACTER_MESSAGES_CLIENT_RANDOM_NAME_REQUEST_H_
+#define SWGANH_CHARACTER_MESSAGES_CLIENT_RANDOM_NAME_REQUEST_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
-namespace connection {
+namespace swganh {
+namespace character {
 namespace messages {
     
-struct SelectCharacter : public swganh::base::SwgMessage<SelectCharacter> {
+struct ClientRandomNameRequest : public swganh::base::SwgMessage<ClientRandomNameRequest> {
     static const uint16_t opcount = 2;
-    static const uint32_t opcode = 0xB5098D76;    
+    static const uint32_t opcode = 0xD6D1B6D1;    
     
-    uint64_t character_id;
+    std::string player_race_iff;
 
     void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write(character_id);	
+        buffer.write(player_race_iff);	
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-    	character_id = buffer.read<uint64_t>();
+    	player_race_iff = buffer.read<std::string>();
     }
 };
 
-}}  // namespace connection::messages
+}}}  // namespace swganh::character::messages
 
-#endif  // CONNECTION_MESSAGES_SELECT_CHARACTER_MESSAGE_H_
+#endif  // SWGANH_CHARACTER_MESSAGES_CLIENT_RANDOM_NAME_REQUEST_H_

@@ -98,8 +98,8 @@ void Server::SendMessage(shared_ptr<Session> session, shared_ptr<ByteBuffer> mes
     outgoing_messages_.push(make_shared<Packet>(session, message));
 }
     
-void Server::HandleMessage(shared_ptr<Session> session, shared_ptr<ByteBuffer> message) {    
-    message_handler_(session, message);
+void Server::HandleMessage(shared_ptr<Packet> packet) {    
+    message_handler_(packet);
 }
 
 void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message) {

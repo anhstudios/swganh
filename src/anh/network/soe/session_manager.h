@@ -55,9 +55,6 @@ public:
     bool SessionExists(void);
     std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
 private:
-
-    uint32_t BuildAddressHash_(const boost::asio::ip::udp::endpoint& endpoint) const;
-
     typedef tbb::concurrent_hash_map<uint32_t, std::shared_ptr<Session>> SessionMap;
 
     SessionMap sessions_;

@@ -23,10 +23,15 @@
 #include <algorithm>
 #include <stdexcept>
 
+#include <boost/lexical_cast.hpp>
+
+#include "anh/crc.h"
 #include "anh/utilities.h"
 
 using namespace anh;
 using namespace std;
+using anh::memcrc;
+using boost::lexical_cast;
 
 namespace anh {
 namespace network {
@@ -112,6 +117,11 @@ list<ByteBuffer> SplitDataChannelMessage(ByteBuffer message, uint32_t max_size) 
     }
 
     return fragmented_messages;
+}
+
+uint32_t CreateEndpointHash(const boost::asio::ip::udp::endpoint& endpoint) {
+    string crc_string = endpoint.address().to_string() + ":" + lexical_cast<string>(endpoint.port());
+    return memcrc(crc_string);
 }
 
 }}}  // namespace anh::network::soe
