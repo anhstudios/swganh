@@ -57,7 +57,7 @@ void BaseConnectionService::onStart() {
     soe_server_->Start(listen_port_);
     
     character_service_ = std::static_pointer_cast<BaseCharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
-    login_service_ = std::static_pointer_cast<swganh::login::LoginServiceInterface>(kernel()->GetServiceManager()->GetService("LoginService"));
+    login_service_ = std::static_pointer_cast<swganh::login::BaseLoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
 }
 
 void BaseConnectionService::onStop() {
@@ -85,7 +85,7 @@ shared_ptr<BaseCharacterService> BaseConnectionService::character_service() {
     return character_service_;
 }
 
-shared_ptr<LoginServiceInterface> BaseConnectionService::login_service() {
+shared_ptr<BaseLoginService> BaseConnectionService::login_service() {
     return login_service_;
 }
 

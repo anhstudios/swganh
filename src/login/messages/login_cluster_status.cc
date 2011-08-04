@@ -1,7 +1,5 @@
 #include "login/messages/login_cluster_status.h"
 
-#include "login/login_client.h"
-
 using namespace login;
 using namespace messages;
 using namespace std;

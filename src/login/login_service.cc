@@ -39,7 +39,6 @@
 
 #include "swganh/base/swg_message_handler.h"
 
-#include "login/messages/delete_character_reply_message.h"
 #include "login/messages/enumerate_character_id.h"
 #include "login/messages/error_message.h"
 #include "login/messages/login_client_token.h"
@@ -47,7 +46,7 @@
 #include "login/messages/login_enum_cluster.h"
 
 #include "login/authentication_manager.h"
-#include "login/login_client.h"
+#include "swganh/login/login_client.h"
 #include "login/encoders/sha512_encoder.h"
 #include "login/providers/mysql_account_provider.h"
 
@@ -65,13 +64,7 @@ using namespace std;
 using anh::network::soe::Session;
 
 LoginService::LoginService(shared_ptr<KernelInterface> kernel) 
-    : LoginServiceInterface(kernel)
-#pragma warning(push)
-#pragma warning(disable: 4355)
-    , SwgMessageRouter([=] (const boost::asio::ip::udp::endpoint& endpoint) {
-        return GetClientFromEndpoint(endpoint);  
-      })
-#pragma warning(pop)
+    : BaseLoginService(kernel)
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_port_(0) {
     
@@ -132,9 +125,6 @@ void LoginService::subscribe() {
     RegisterMessageHandler<LoginClientId>(
         bind(&LoginService::HandleLoginClientId_, this, placeholders::_1, placeholders::_2), false);
 
-    RegisterMessageHandler<DeleteCharacterMessage>(
-        bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
-    
     event_dispatcher->subscribe("UpdateGalaxyStatus", [this] (shared_ptr<EventInterface> incoming_event) -> bool{
         UpdateGalaxyStatus_();
         return true;
@@ -286,17 +276,6 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
 
     login_client->session->SendMessage(
         messages::BuildEnumerateCharacterId(characters));
-}
-
-void LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const DeleteCharacterMessage& message) {
-    DeleteCharacterReplyMessage reply_message;
-    reply_message.failure_flag = 1;
-
-    if (character_service_->DeleteCharacter(message.character_id, login_client->account->account_id())) {
-        reply_message.failure_flag = 0;
-    }
-
-    login_client->session->SendMessage(reply_message);
 }
 
 uint32_t LoginService::GetAccountBySessionKey(const string& session_key) {

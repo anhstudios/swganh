@@ -18,7 +18,7 @@
 #include "swganh/base/swg_message_router.h"
 
 #include "swganh/character/base_character_service.h"
-#include "swganh/login/login_service_interface.h"
+#include "swganh/login/base_login_service.h"
 
 namespace anh {
 namespace network {
@@ -65,7 +65,7 @@ protected:
     
     std::shared_ptr<swganh::character::BaseCharacterService> character_service();
 
-    std::shared_ptr<swganh::login::LoginServiceInterface> login_service();
+    std::shared_ptr<swganh::login::BaseLoginService> login_service();
 
 private:    
     ClientMap clients_;
@@ -73,7 +73,7 @@ private:
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     
     std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
-    std::shared_ptr<swganh::login::LoginServiceInterface> login_service_;
+    std::shared_ptr<swganh::login::BaseLoginService> login_service_;
 
     std::string listen_address_;
     uint16_t listen_port_;

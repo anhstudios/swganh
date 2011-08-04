@@ -20,10 +20,11 @@
 
 #include "login/authentication_manager.h"
 
-#include "login/account.h"
-#include "login/login_client.h"
+#include "swganh/login/account.h"
+#include "swganh/login/login_client.h"
 
 using namespace login;
+using namespace swganh::login;
 using namespace std;
 
 AuthenticationManager::AuthenticationManager(std::shared_ptr<encoders::EncoderInterface> encoder) 

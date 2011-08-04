@@ -1,12 +1,12 @@
 #include "login/messages/login_enum_cluster.h"
 
-#include "login/login_client.h"
+#include "swganh/login/login_client.h"
 
 using namespace login;
 using namespace messages;
 using namespace std;
 
-LoginEnumCluster login::messages::BuildLoginEnumCluster(shared_ptr<LoginClient> login_client, const vector<GalaxyStatus>& galaxy_status) {
+LoginEnumCluster login::messages::BuildLoginEnumCluster(shared_ptr<swganh::login::LoginClient> login_client, const vector<GalaxyStatus>& galaxy_status) {
     LoginEnumCluster message;
     message.max_account_chars = 2;
 
