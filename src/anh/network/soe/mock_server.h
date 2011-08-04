@@ -45,7 +45,7 @@ public:
     MOCK_METHOD0(Update, void());
     MOCK_METHOD0(Shutdown, void());
     MOCK_METHOD2(SendMessage, void(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message));
-    MOCK_METHOD2(HandleMessage, void(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message));
+    MOCK_METHOD1(HandleMessage, void(std::shared_ptr<Packet> packet));
     MOCK_METHOD0(event_dispatcher, std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>());
 
     MOCK_METHOD1(AddSession, bool(std::shared_ptr<Session> session));

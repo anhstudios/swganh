@@ -268,7 +268,9 @@ void Session::handleChildDataA_(ChildDataA& packet)
     AcknowledgeSequence_(packet.sequence);
 
     std::for_each(packet.messages.begin(), packet.messages.end(), [this] (shared_ptr<ByteBuffer> message) {
-        this->server_->HandleMessage(shared_from_this(), message);
+        auto packet = make_shared<Packet>(shared_from_this(), message);
+
+        this->server_->HandleMessage(packet);
     });
 }
 

@@ -56,7 +56,7 @@ class Packet;
 class Session;
 class Socket;
 
-typedef std::function<void (std::shared_ptr<Session>, std::shared_ptr<anh::ByteBuffer>)> MessageHandler;
+typedef std::function<void (std::shared_ptr<Packet>)> MessageHandler;
 
 /**
  * @brief An SOE Protocol Service.
@@ -85,7 +85,7 @@ public:
 
     void SendMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message);
     
-    void HandleMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message);
+    void HandleMessage(std::shared_ptr<Packet> packet);
     
     bool AddSession(std::shared_ptr<Session> session);
 
@@ -108,7 +108,7 @@ private:
     void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
 
     std::shared_ptr<Socket>		socket_;
-    boost::asio::io_service&		io_service_;
+    boost::asio::io_service&	io_service_;
 
     SessionManager				session_manager_;
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;

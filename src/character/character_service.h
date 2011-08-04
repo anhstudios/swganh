@@ -25,12 +25,24 @@
 
 #include "swganh/base/base_service.h"
 
+#include "swganh/character/messages/select_character.h"
+#include "swganh/character/messages/client_create_character.h"
+#include "swganh/character/messages/client_create_character_success.h"
+#include "swganh/character/messages/client_create_character_failed.h"
+#include "swganh/character/messages/client_random_name_request.h"
+#include "swganh/character/messages/client_random_name_response.h"
+
 namespace anh {
 namespace app {
 class KernelInterface;
 }}  // namespace anh::app
 
 namespace anh { namespace database { class DatabaseManagerInterface; } }
+
+namespace swganh {
+namespace connection {
+struct ConnectionClient;
+}}  // namespace swganh::connection
 
 namespace character {
     
@@ -54,9 +66,13 @@ public:
     swganh::character::CharacterLoginData GetLoginCharacter(uint64_t character_id, uint64_t account_id);
     bool DeleteCharacter(uint64_t character_id, uint64_t account_id);
     std::wstring GetRandomNameRequest(const std::string& base_model);
-    std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info, uint32_t account_id);
+    std::tuple<uint64_t, std::string> CreateCharacter(const swganh::character::messages::ClientCreateCharacter& character_info, uint32_t account_id);
     uint16_t GetMaxCharacters(uint64_t player_id);
 private:
+    void HandleSelectCharacter_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::character::messages::SelectCharacter& message);
+    void HandleClientRandomNameRequest_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::character::messages::ClientRandomNameRequest& message);
+    void HandleClientCreateCharacter_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::character::messages::ClientCreateCharacter& message);
+    
     // helpers
     std::string parseBio_(const std::string& bio);
     std::string parseHair_(const std::string& hair_model, const std::string& hair_customization);

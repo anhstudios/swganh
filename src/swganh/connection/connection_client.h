@@ -1,6 +1,6 @@
 
-#ifndef CONNECTION_CONNECTION_CLIENT_H_
-#define CONNECTION_CONNECTION_CLIENT_H_
+#ifndef SWGANH_CONNECTION_CONNECTION_CLIENT_H_
+#define SWGANH_CONNECTION_CONNECTION_CLIENT_H_
 
 #include <cstdint>
 #include <memory>
@@ -11,6 +11,7 @@ namespace soe {
 class Session;
 }}}  // namespace anh::network::soe
 
+namespace swganh {
 namespace connection {
 
 struct ConnectionClient {
@@ -19,6 +20,6 @@ struct ConnectionClient {
     std::shared_ptr<anh::network::soe::Session> session;
 };
 
-}  // namespace connection
+}}  // namespace swganh::connection
 
-#endif  // CONNECTION_CONNECTION_CLIENT_H_
+#endif  // SWGANH_CONNECTION_CONNECTION_CLIENT_H_
