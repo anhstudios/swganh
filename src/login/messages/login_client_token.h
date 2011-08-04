@@ -26,9 +26,10 @@
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
+namespace swganh {
 namespace login {
 struct LoginClient;
-}  // namespace login
+}}  // namespace swganh::login
 
 namespace login {
 namespace messages {
@@ -57,7 +58,7 @@ struct LoginClientToken : public swganh::base::SwgMessage<LoginClientToken> {
     }
 };
 
-LoginClientToken BuildLoginClientToken(std::shared_ptr<login::LoginClient> login_client, const std::string& session_key);
+LoginClientToken BuildLoginClientToken(std::shared_ptr<swganh::login::LoginClient> login_client, const std::string& session_key);
 
 }}  // namespace login::messages
 

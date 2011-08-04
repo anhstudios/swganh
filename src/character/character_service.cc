@@ -49,6 +49,10 @@
 
 #include "anh/service/service_manager.h"
 
+#include "swganh/login/base_login_service.h"
+#include "swganh/login/login_client.h"
+#include "swganh/login/account.h"
+
 #include "swganh/scene/messages/cmd_start_scene.h"
 #include "swganh/scene/messages/scene_create_object_by_crc.h"
 #include "swganh/scene/messages/scene_end_baselines.h"
@@ -56,6 +60,8 @@
 #include "swganh/connection/base_connection_service.h"
 #include "swganh/connection/connection_client.h"
 #include "swganh/connection/messages/heart_beat.h"
+
+#include "swganh/character/messages/delete_character_reply_message.h"
 
 
 #ifdef WIN32
@@ -68,6 +74,7 @@ using boost::regex_match;
 using namespace swganh::character;
 using namespace swganh::character::messages;
 using namespace swganh::connection::messages;
+using namespace swganh::login;
 using namespace swganh::scene::messages;
 using namespace character;
 using namespace anh;
@@ -111,6 +118,12 @@ void CharacterService::subscribe() {
     
     connection_service->RegisterMessageHandler<ClientRandomNameRequest>(
         bind(&CharacterService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));    
+      
+    auto login_service = std::static_pointer_cast<BaseLoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
+  
+    login_service->RegisterMessageHandler<DeleteCharacterMessage>(
+        bind(&CharacterService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
+    
 }
 
 void CharacterService::DescribeConfigOptions(boost::program_options::options_description& description) {}
@@ -506,3 +519,13 @@ void CharacterService::HandleClientRandomNameRequest_(std::shared_ptr<Connection
     client->session->SendMessage(response);
 }
 
+void CharacterService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const DeleteCharacterMessage& message) {
+    DeleteCharacterReplyMessage reply_message;
+    reply_message.failure_flag = 1;
+
+    if (DeleteCharacter(message.character_id, login_client->account->account_id())) {
+        reply_message.failure_flag = 0;
+    }
+
+    login_client->session->SendMessage(reply_message);
+}

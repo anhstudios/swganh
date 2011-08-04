@@ -21,19 +21,21 @@
 #ifndef LOGIN_LOGIN_SERVICE_H_
 #define LOGIN_LOGIN_SERVICE_H_
 
-#include "swganh/login/login_service_interface.h"
+#include "swganh/login/base_login_service.h"
+
 #include <boost/asio.hpp>
-
 #include <glog/logging.h>
+#include <tbb/concurrent_hash_map.h>
 
-#include "anh/network/soe/packet_router.h"
+#include "anh/network/soe/packet_utilities.h"
 #include "anh/network/soe/server.h"
 
 #include "swganh/character/base_character_service.h"
 
+#include "swganh/login/login_client.h"
+
 #include "login/galaxy_status.h"
 #include "login/messages/login_client_id.h"
-#include "login/messages/delete_character_message.h"
 
 namespace anh {
 namespace network {
@@ -59,10 +61,16 @@ namespace providers {
 class AccountProviderInterface;
 }
 
-struct LoginClient;
-
-class LoginService : public swganh::login::LoginServiceInterface {
+class LoginService 
+    : public swganh::login::BaseLoginService
+{
 public:
+    typedef tbb::concurrent_hash_map<
+        boost::asio::ip::udp::endpoint, 
+        std::shared_ptr<swganh::login::LoginClient>,
+        anh::network::soe::EndpointHashCompare
+    > ClientMap;
+
     explicit LoginService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~LoginService();
     
@@ -70,6 +78,9 @@ public:
 
     void DescribeConfigOptions(boost::program_options::options_description& description);
     uint32_t GetAccountBySessionKey(const std::string& session_key);
+        
+    std::shared_ptr<swganh::login::LoginClient> GetClientFromEndpoint(
+        const boost::asio::ip::udp::endpoint& remote_endpoint);
 private:
     LoginService();
 
@@ -78,11 +89,10 @@ private:
 
     void subscribe();
     
-    bool HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event);
-    void HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const messages::DeleteCharacterMessage& message);
+    void HandleLoginClientId_(std::shared_ptr<swganh::login::LoginClient> login_client, const messages::LoginClientId& message);
 
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
-    std::shared_ptr<LoginClient> AddClient_(std::shared_ptr<anh::network::soe::Session> session);
+    std::shared_ptr<swganh::login::LoginClient> AddClient_(std::shared_ptr<anh::network::soe::Session> session);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
@@ -98,10 +108,7 @@ private:
     int login_error_timeout_secs_;
     boost::asio::deadline_timer galaxy_status_timer_;
 
-    typedef std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<LoginClient>> ClientMap;
     ClientMap clients_;
-    
-    anh::network::soe::PacketRouter<ClientMap> packet_router_;
 
     std::string listen_address_;
     uint16_t listen_port_;

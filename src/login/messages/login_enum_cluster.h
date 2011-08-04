@@ -32,9 +32,10 @@
 
 #include "login/galaxy_status.h"
 
+namespace swganh {
 namespace login {
 struct LoginClient;
-}  // namespace login
+}}  // namespace swganh::login
 
 namespace login {
 namespace messages {
@@ -77,7 +78,7 @@ struct LoginEnumCluster : public swganh::base::SwgMessage<LoginEnumCluster> {
     }
 };
 
-LoginEnumCluster BuildLoginEnumCluster(std::shared_ptr<login::LoginClient> login_client, const std::vector<login::GalaxyStatus>& galaxy_status);
+LoginEnumCluster BuildLoginEnumCluster(std::shared_ptr<swganh::login::LoginClient> login_client, const std::vector<login::GalaxyStatus>& galaxy_status);
 
 }}  // namespace login::messages
 

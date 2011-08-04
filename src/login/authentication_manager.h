@@ -25,10 +25,13 @@
 
 #include "encoders/encoder_interface.h"
 
+namespace swganh {
 namespace login {
-
 class Account;
 struct LoginClient;
+}}  // namespace swganh::login
+
+namespace login {
 
 class AuthenticationManager {
 public:
@@ -36,7 +39,9 @@ public:
 
     std::shared_ptr<encoders::EncoderInterface> encoder();
 
-    bool Authenticate(std::shared_ptr<LoginClient> client, std::shared_ptr<Account> account);
+    bool Authenticate(
+        std::shared_ptr<swganh::login::LoginClient> client, 
+        std::shared_ptr<swganh::login::Account> account);
 
 private:
     std::shared_ptr<encoders::EncoderInterface> encoder_;

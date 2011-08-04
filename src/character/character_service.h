@@ -26,6 +26,7 @@
 #include "swganh/base/base_service.h"
 
 #include "swganh/character/messages/select_character.h"
+#include "swganh/character/messages/delete_character_message.h"
 #include "swganh/character/messages/client_create_character.h"
 #include "swganh/character/messages/client_create_character_success.h"
 #include "swganh/character/messages/client_create_character_failed.h"
@@ -43,6 +44,11 @@ namespace swganh {
 namespace connection {
 struct ConnectionClient;
 }}  // namespace swganh::connection
+
+namespace swganh {
+namespace login {
+struct LoginClient;
+}}  // namespace swganh::login
 
 namespace character {
     
@@ -72,7 +78,10 @@ private:
     void HandleSelectCharacter_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::character::messages::SelectCharacter& message);
     void HandleClientRandomNameRequest_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::character::messages::ClientRandomNameRequest& message);
     void HandleClientCreateCharacter_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::character::messages::ClientCreateCharacter& message);
-    
+    void HandleDeleteCharacterMessage_(
+        std::shared_ptr<swganh::login::LoginClient> login_client, 
+        const swganh::character::messages::DeleteCharacterMessage& message);
+
     // helpers
     std::string parseBio_(const std::string& bio);
     std::string parseHair_(const std::string& hair_model, const std::string& hair_customization);
