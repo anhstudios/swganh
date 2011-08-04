@@ -62,12 +62,22 @@ using namespace database;
 using namespace event_dispatcher;
 using namespace std;
 
+using anh::network::soe::Session;
+
 LoginService::LoginService(shared_ptr<KernelInterface> kernel) 
     : LoginServiceInterface(kernel)
+#pragma warning(push)
+#pragma warning(disable: 4355)
+    , SwgMessageRouter([=] (const boost::asio::ip::udp::endpoint& endpoint) {
+        return GetClientFromEndpoint(endpoint);  
+      })
+#pragma warning(pop)
     , galaxy_status_timer_(kernel->GetIoService())
-    , listen_port_(0)
-    , packet_router_(clients_) {
-    soe_server_.reset(new network::soe::Server(kernel->GetIoService(), swganh::base::SwgMessageHandler(kernel->GetEventDispatcher())));
+    , listen_port_(0) {
+    
+    soe_server_.reset(new anh::network::soe::Server(
+        kernel->GetIoService(),
+        bind(&LoginService::RouteMessage, this, placeholders::_1)));
     soe_server_->event_dispatcher(kernel->GetEventDispatcher());
     
     auto encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
@@ -118,15 +128,13 @@ void LoginService::onStop() {
 
 void LoginService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
+    
+    RegisterMessageHandler<LoginClientId>(
+        bind(&LoginService::HandleLoginClientId_, this, placeholders::_1, placeholders::_2), false);
 
-    event_dispatcher->subscribe("LoginClientId", [this] (shared_ptr<EventInterface> incoming_event) {
-        return HandleLoginClientId_(incoming_event);
-    });
-
-    event_dispatcher->subscribe("DeleteCharacterMessage", [this] (shared_ptr<EventInterface> incoming_event) {
-        return packet_router_.RoutePacket<DeleteCharacterMessage>(incoming_event, bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
-    });
-
+    RegisterMessageHandler<DeleteCharacterMessage>(
+        bind(&LoginService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
+    
     event_dispatcher->subscribe("UpdateGalaxyStatus", [this] (shared_ptr<EventInterface> incoming_event) -> bool{
         UpdateGalaxyStatus_();
         return true;
@@ -144,18 +152,18 @@ void LoginService::subscribe() {
     });
 }
 
-std::shared_ptr<LoginClient> LoginService::AddClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    std::shared_ptr<LoginClient> client = nullptr;
+std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> session) {
+    std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
 
-    auto find_it = clients_.find(session->remote_endpoint());
-
-    if (find_it == clients_.end()) {
+    if (!client) {
         DLOG(WARNING) << "Adding login client";
 
         client = make_shared<LoginClient>();
         client->session = session;
-
-        clients_.insert(make_pair(session->remote_endpoint(), client));
+        
+        ClientMap::accessor a;
+        clients_.insert(a, client->session->remote_endpoint());
+        a->second = client;
     }
 
     DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
@@ -164,11 +172,11 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(std::shared_ptr<anh::netwo
 
 void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
     active().Async([=] () {
-        auto find_it = clients_.find(session->remote_endpoint());
-
-        if (find_it != clients_.end()) {
+        std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
+        
+        if (client) {
             DLOG(WARNING) << "Removing disconnected client";
-            clients_.erase(find_it);
+            clients_.erase(session->remote_endpoint());
         }
 
         DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
@@ -182,7 +190,7 @@ void LoginService::UpdateGalaxyStatus_() {
         
     const vector<GalaxyStatus>& status = galaxy_status_;
 
-    std::for_each(clients_.begin(), clients_.end(), [&status] (std::map<boost::asio::ip::udp::endpoint, std::shared_ptr<LoginClient>>::value_type& client_entry) {
+    std::for_each(clients_.begin(), clients_.end(), [&status] (ClientMap::value_type& client_entry) {
         if (client_entry.second) {                
             client_entry.second->session->SendMessage(
                 BuildLoginClusterStatus(status));
@@ -228,14 +236,8 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-bool LoginService::HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::EventInterface> incoming_event) {
-    auto remote_event = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::Packet>>(incoming_event);
+void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_client, const LoginClientId& message) {
 
-    LoginClientId message;
-    message.deserialize(*remote_event->message());
-    
-    std::shared_ptr<LoginClient> login_client = make_shared<LoginClient>();
-    login_client->session = remote_event->session();
     login_client->username = message.username;
     login_client->password = message.password;
     login_client->version = message.client_version;
@@ -258,7 +260,7 @@ bool LoginService::HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::E
             return;
         });
 
-        return true;
+        return;
     }
     
     login_client->account = account;
@@ -268,7 +270,7 @@ bool LoginService::HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::E
     
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
-        + boost::lexical_cast<string>(remote_event->session()->remote_endpoint().address());
+        + boost::lexical_cast<string>(login_client->session->remote_endpoint().address());
 
     account_provider_->CreateAccountSession(account->account_id(), account_session);
     login_client->session->SendMessage(
@@ -284,9 +286,8 @@ bool LoginService::HandleLoginClientId_(std::shared_ptr<anh::event_dispatcher::E
 
     login_client->session->SendMessage(
         messages::BuildEnumerateCharacterId(characters));
-
-    return true;
 }
+
 void LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const DeleteCharacterMessage& message) {
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
@@ -300,4 +301,19 @@ void LoginService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> lo
 
 uint32_t LoginService::GetAccountBySessionKey(const string& session_key) {
     return account_provider_->FindBySessionKey(session_key);
+}
+
+
+shared_ptr<LoginClient> LoginService::GetClientFromEndpoint(
+        const boost::asio::ip::udp::endpoint& remote_endpoint)
+{
+    shared_ptr<LoginClient> client = nullptr;
+    
+    ClientMap::accessor a;
+
+    if (clients_.find(a, remote_endpoint)) {
+        client = a->second;
+    }
+
+    return client;
 }
