@@ -28,11 +28,17 @@ using boost::asio::ip::udp;
 
 BaseConnectionService::BaseConnectionService(std::shared_ptr<anh::app::KernelInterface> kernel)
     : BaseService(kernel)
+#pragma warning(push)
+#pragma warning(disable: 4355)
+    , SwgMessageRouter([=] (const boost::asio::ip::udp::endpoint& endpoint) {
+        return GetClientFromEndpoint(endpoint);  
+      })
+#pragma warning(pop)
     , soe_server_(nullptr)
 {
     soe_server_.reset(new soe::Server(
         kernel->GetIoService(),
-        bind(&BaseConnectionService::HandleMessage, this, placeholders::_1)));
+        bind(&BaseConnectionService::RouteMessage, this, placeholders::_1)));
     soe_server_->event_dispatcher(kernel->GetEventDispatcher());
 }
 
@@ -81,44 +87,6 @@ shared_ptr<BaseCharacterService> BaseConnectionService::character_service() {
 
 shared_ptr<LoginServiceInterface> BaseConnectionService::login_service() {
     return login_service_;
-}
-
-void BaseConnectionService::HandleMessage(shared_ptr<soe::Packet> packet) 
-{
-    auto message = packet->message();
-
-    uint32_t message_type = message->peekAt<uint32_t>(message->read_position() + sizeof(uint16_t));
-    
-    MessageHandlerMap::accessor a;
-
-    // No handler specified, trigger an event.
-    if (!handlers_.find(a, message_type)) {
-        DLOG(WARNING) << "Received message with no handler, triggering event: "
-                << std::hex << message_type << "\n\n" << *message; 
-
-        kernel()->GetEventDispatcher()->trigger(
-            anh::event_dispatcher::make_shared_event(
-                message_type,
-                *packet));
-
-        return;
-    }
-    
-    auto client = GetClientFromEndpoint(packet->session()->remote_endpoint());
-
-    if (!client) {
-        if (a->second.second) {
-            DLOG(WARNING) << "Received a message from an invalid source: "
-                    << std::hex << message_type << "\n\n" << *message; 
-
-            throw std::runtime_error("A valid client is required to invoke this message handler");
-        } else {
-            client = make_shared<ConnectionClient>();
-            client->session = packet->session();
-        }
-    }
-
-    a->second.first(client, packet);
 }
 
 shared_ptr<ConnectionClient> BaseConnectionService::GetClientFromEndpoint(
