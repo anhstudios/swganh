@@ -68,6 +68,8 @@
 #else
 using boost::wregex;
 using boost::wsmatch;
+using boost::regex;
+using boost::smatch;
 using boost::regex_match;
 #endif
 
