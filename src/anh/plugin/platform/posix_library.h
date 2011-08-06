@@ -2,6 +2,8 @@
 #ifndef ANH_MODULE_PLATFORM_POSIX_LIBRARY_H_
 #define ANH_MODULE_PLATFORM_POSIX_LIBRARY_H_
 
+#ifndef WIN32
+
 #include <memory>
 #include <string>
 
@@ -33,5 +35,7 @@ private:
 };
 
 }}}  // namespace anh::module::platform
+
+#endif  // WIN32
 
 #endif  // ANH_MODULE_PLATFORM_POSIX_LIBRARY_H_

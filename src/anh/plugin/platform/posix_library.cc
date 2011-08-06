@@ -1,3 +1,5 @@
+#ifndef WIN32
+
 #include "anh/plugin/platform/posix_library.h"
 
 #include <exception>
@@ -43,3 +45,5 @@ void * PosixLibrary::GetSymbol(const string& symbol) {
 
     return dlsym(handle_, symbol.c_str());
 }
+
+#endif  // WIN32
