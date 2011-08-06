@@ -30,14 +30,14 @@
 using namespace login::providers;
 
 namespace {
-    /*TEST(MySQLAccountProvider, ProperAccountInformationReturned) {
+    TEST(MySQLAccountProvider, DISABLED_ProperAccountInformationReturned) {
         auto db_manager = std::make_shared<anh::database::DatabaseManager>(sql::mysql::get_driver_instance());
         db_manager->registerStorageType("account", "symfony", "localhost", "root", "swganh");
         MysqlAccountProvider account_provider(db_manager);
-        std::shared_ptr<login::Account> account;
+        std::shared_ptr<swganh::login::Account> account;
         account = account_provider.FindByUsername("Kronos");
 
         EXPECT_EQ("Kronos", account->username());
         
-    }*/
+    }
 }

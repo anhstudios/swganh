@@ -28,17 +28,10 @@
 #include <glog/logging.h>
 #include <tbb/concurrent_hash_map.h>
 
+#include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
-
-namespace anh {
-class ByteBuffer;
-}  // namespace anh
-
-namespace anh {
-namespace network {
-namespace soe {
-class Packet;
-}}}  // namespace anh::network::soe
+#include "anh/network/soe/packet.h"
+#include "anh/network/soe/session.h"
 
 namespace swganh {
 namespace base {
@@ -86,7 +79,7 @@ public:
         std::function<void (std::shared_ptr<ClientType>, MessageType)> handler,
         bool client_required = true)
     {
-        MessageHandlerMap::accessor a;
+        typename MessageHandlerMap::accessor a;
         if (handlers_.find(a, MessageType::opcode)) {
             DLOG(WARNING) << "Handler has already been defined: " << std::hex << MessageType::opcode;
             throw HandlerAlreadyDefined("Requested registration of handler that has already been defined.");
@@ -118,7 +111,7 @@ public:
 
         uint32_t message_type = message->peekAt<uint32_t>(message->read_position() + sizeof(uint16_t));
         
-        MessageHandlerMap::accessor a;
+        typename MessageHandlerMap::accessor a;
 
         // No handler specified, trigger an event.
         if (!handlers_.find(a, message_type)) {
@@ -139,7 +132,7 @@ public:
 
                 throw ValidClientRequired("A valid client is required to invoke this message handler");
             } else {
-                client = make_shared<ClientType>();
+                client = std::make_shared<ClientType>();
                 client->session = packet->session();
             }
         }

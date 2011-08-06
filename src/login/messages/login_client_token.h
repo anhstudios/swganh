@@ -21,6 +21,7 @@
 #define LOGIN_MESSAGES_LOGIN_CLIENT_TOKEN_H_
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include "anh/byte_buffer.h"
