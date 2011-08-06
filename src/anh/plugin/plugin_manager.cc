@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iostream>
 
+#define BOOST_FILESYSTEM_VERSION 3
+
 #include <boost/filesystem.hpp>
 
 #include "anh/app/kernel_interface.h"
@@ -93,7 +95,9 @@ bool PluginManager::LoadAllPlugins(const std::string& directory) {
                 return;
             }
 
-            if (!this->LoadPlugin(entry.path().native())) {
+            auto native_path = entry.path().native();
+
+            if (!this->LoadPlugin(string(native_path.begin(), native_path.end()))) {
                  all_loaded = false;
             }
         });
