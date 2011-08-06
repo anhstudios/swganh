@@ -1,4 +1,6 @@
 
+#ifdef WIN32
+
 #include "anh/plugin/platform/win32_library.h"
 
 #include <exception>
@@ -47,3 +49,5 @@ void * Win32Library::GetSymbol(const string& symbol) {
 
     return ::GetProcAddress(handle_, symbol.c_str());
 }
+
+#endif  // WIN32
