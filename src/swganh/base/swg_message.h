@@ -20,6 +20,7 @@
 #ifndef SWGANH_BASE_SWG_MESSAGE_H_
 #define SWGANH_BASE_SWG_MESSAGE_H_
 
+#include <cassert>
 #include <cstdint>
 
 #include "anh/byte_buffer.h"

@@ -93,7 +93,7 @@ bool PluginManager::LoadAllPlugins(const std::string& directory) {
                 return;
             }
 
-            if (!this->LoadPlugin(entry.path().native_file_string())) {
+            if (!this->LoadPlugin(entry.path().native())) {
                  all_loaded = false;
             }
         });

@@ -34,6 +34,7 @@
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/protocol_packets.h"
+#include "anh/network/soe/server_interface.h"
 
 #ifdef SendMessage
 #undef SendMessage
@@ -47,9 +48,6 @@ namespace event_dispatcher { class EventInterface; }
 
 namespace network {
 namespace soe {
-
-// FORWARD DECLARATION
-class ServerInterface;
 
 typedef std::function<void (uint32_t, std::shared_ptr<ByteBuffer>)> DatachannelHandler;
 
