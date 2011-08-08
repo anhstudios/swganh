@@ -23,7 +23,6 @@
 
 #include <map>
 
-#include "anh/network/soe/packet_router.h"
 #include "anh/network/soe/server.h"
 
 #include "connection/providers/session_provider_interface.h"

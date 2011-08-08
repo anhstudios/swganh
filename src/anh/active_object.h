@@ -81,7 +81,7 @@ public:
      */
     template<typename Handler>
     void AsyncRepeated(boost::posix_time::time_duration period, Handler&& func) {
-        auto shared_func = make_shared<Handler>(move(func));
+        auto shared_func = std::make_shared<Handler>(move(func));
 
         Async([this, period, shared_func] () {
             auto local_shared_func = shared_func;

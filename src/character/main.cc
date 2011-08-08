@@ -58,7 +58,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(shared_ptr<KernelInterface> kern
 
     registration.DestroyObject = [] (void * object) {
         if (object) {
-            delete object;
+            delete static_cast<CharacterService*>(object);
         }
     };
 
