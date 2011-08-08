@@ -67,6 +67,11 @@ if(DEFINED VENDOR_PREFIX)
     set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX}/mysql-connector-cpp)
     set(NOISE_ROOT ${VENDOR_PREFIX}/noise)
     set(PYTHON_ROOT ${VENDOR_PREFIX}/python)
+    
+    if(WIN32)
+        set(ENV{TBB_ARCH_PLATFORM} "ia32\\vc10")
+    endif()
+    
     set(TBB_INSTALL_DIR ${VENDOR_PREFIX}/tbb)
     set(TOLUAPP_ROOT ${VENDOR_PREFIX}/tolua++)
     set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
