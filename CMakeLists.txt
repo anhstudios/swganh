@@ -10,7 +10,7 @@ set(swganh_VERSION
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 	
 # set the path for custom cmake scripts
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake/modules")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
 
 # include commonly used cmake modules
 include(ExternalProject)
