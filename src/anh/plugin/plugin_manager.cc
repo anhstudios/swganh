@@ -54,7 +54,7 @@ bool PluginManager::LoadPlugin(const std::string& path) {
         return false;
     }
 
-    auto library = LoadLibrary_(path);
+    auto library = LoadLibrary_(path + library_extension);
     if (!library) {
         cout << "Step 3 failed " << path << "\n" << endl;
         return false;
