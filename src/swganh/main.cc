@@ -28,9 +28,6 @@
 #include <boost/thread.hpp>
 #include <tbb/task_scheduler_init.h>
 
-#ifndef WIN32
-#include <dlfcn.h>
-#endif  // WIN32
 
 using namespace boost;
 using namespace swganh;
@@ -48,10 +45,6 @@ int main(int argc, char* argv[]) {
     FLAGS_log_dir = "./logs";
     FLAGS_stderrthreshold = 1;
     setvbuf( stdout, NULL, _IONBF, 0);
-
-    #ifndef WIN32
-    dlopen(NULL,RTLD_NOW|RTLD_GLOBAL);
-    #endif
 
     try {
         tbb::task_scheduler_init init;
