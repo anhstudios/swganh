@@ -10,8 +10,8 @@ namespace connection {
 namespace messages {
     
 struct HeartBeat : public swganh::base::SwgMessage<HeartBeat> {
-    static const uint16_t opcount = 1;
-    static const uint32_t opcode = 0xA16CF9AF;
+    static const uint16_t opcount() { return 1; }
+    static const uint32_t opcode() { return 0xA16CF9AF; }
     
     void onSerialize(anh::ByteBuffer& buffer) const {}
 

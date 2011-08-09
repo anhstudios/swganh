@@ -9,6 +9,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include <glog/logging.h>
+
 using namespace anh::plugin;
 using namespace boost::filesystem;
 using namespace platform;
@@ -19,9 +21,10 @@ using anh::plugin::platform::PosixLibrary;
 shared_ptr<PosixLibrary> PosixLibrary::Load(std::string library) {
     path library_path(library);
 
-    void* handle = dlopen(library_path.c_str(), RTLD_LAZY);
+    void* handle = dlopen(library_path.c_str(), RTLD_LAZY | RTLD_GLOBAL);
 
     if (handle == NULL) {
+        DLOG(WARNING) << "Error opening " << library << " library: " << dlerror();
         throw runtime_error("Unable to open posix library: " + library);
     }
 

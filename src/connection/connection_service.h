@@ -33,9 +33,9 @@
 
 #include "swganh/connection/base_connection_service.h"
 
-#include "connection/messages/client_permissions_message.h"
-#include "connection/messages/client_id_msg.h"
-#include "connection/messages/heart_beat.h"
+#include "swganh/connection/messages/client_permissions_message.h"
+#include "swganh/connection/messages/client_id_msg.h"
+#include "swganh/connection/messages/heart_beat.h"
 
 namespace anh {
 namespace app {
@@ -66,7 +66,7 @@ public:
     void subscribe();
 
 private:
-    void HandleClientIdMsg_(std::shared_ptr<swganh::connection::ConnectionClient> client, const connection::messages::ClientIdMsg& message);
+    void HandleClientIdMsg_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::connection::messages::ClientIdMsg& message);
     void HandleCmdSceneReady_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::scene::messages::CmdSceneReady& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);

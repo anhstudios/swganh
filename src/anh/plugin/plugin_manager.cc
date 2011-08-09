@@ -16,6 +16,7 @@
 #include "anh/plugin/platform/win32_library.h"
 typedef anh::plugin::platform::Win32Library DynamicLibrary;
 #else
+#include <dlfcn.h>
 #include "anh/plugin/platform/posix_library.h"
 typedef anh::plugin::platform::PosixLibrary DynamicLibrary;
 #endif
@@ -35,6 +36,9 @@ using namespace std;
 PluginManager::PluginManager(shared_ptr<KernelInterface> kernel)
     : kernel_(kernel) 
 {
+#ifndef WIN32
+    dlopen(NULL,RTLD_NOW|RTLD_GLOBAL);
+#endif
 }
 
 PluginManager::~PluginManager() {    
@@ -54,7 +58,7 @@ bool PluginManager::LoadPlugin(const std::string& path) {
         return false;
     }
 
-    auto library = LoadLibrary_(path);
+    auto library = LoadLibrary_(path + library_extension);
     if (!library) {
         cout << "Step 3 failed " << path << "\n" << endl;
         return false;

@@ -2,7 +2,6 @@
 #include "anh/service/service_manager.h"
 
 #include <algorithm>
-#include <regex>
 #include <string>
 #include <stdexcept>
 
@@ -10,6 +9,16 @@
 
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_interface.h"
+
+#ifndef WIN32
+#include <boost/regex.hpp>
+    using boost::regex;
+    using boost::regex_search;
+#else
+    #include <regex>
+    using std::regex;
+    using std::regex_search;
+#endif
 
 //using namespace anh::plugin;
 using namespace anh::service;
@@ -52,12 +61,12 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
 void ServiceManager::Initialize(ServiceConfig& service_config) {
     auto registration_map = plugin_manager_->registration_map();
 
-    std::regex rx("Service");
-    
+    regex rx("Service");
+
     for_each(registration_map.begin(), registration_map.end(), [this, &rx, &service_config] (RegistrationMap::value_type& entry) {
         std::string name = entry.first;
 
-        if (entry.first.length() > 7 && std::regex_search(name.begin(), name.end(), rx)) {
+        if (entry.first.length() > 7 && regex_search(name.begin(), name.end(), rx)) {
             auto service = GetService(entry.first);
 
             if (service) {

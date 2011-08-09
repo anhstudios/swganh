@@ -36,8 +36,8 @@ namespace login {
 namespace messages {
     
 struct LoginClientToken : public swganh::base::SwgMessage<LoginClientToken> {
-    static const uint16_t opcount = 4;
-    static const uint32_t opcode = 0xAAB296C6;
+    static uint16_t opcount() { return 4; }
+    static uint32_t opcode() { return 0xAAB296C6; }
 
     anh::ByteBuffer session_key;
     uint32_t station_id;

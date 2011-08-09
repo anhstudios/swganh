@@ -30,8 +30,8 @@ namespace character {
 namespace messages {
     
 struct ClientRandomNameResponse : public swganh::base::SwgMessage<ClientRandomNameResponse> {
-    static const uint16_t opcount = 4;
-    static const uint32_t opcode = 0xE85FB868;    
+    static uint16_t opcount() { return 4; }
+    static uint32_t opcode() { return 0xE85FB868; }
     
     std::string player_race_iff;
     std::wstring random_name;

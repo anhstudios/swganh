@@ -30,8 +30,8 @@ namespace scene {
 namespace messages {
     
 struct SceneEndBaselines : public swganh::base::SwgMessage<SceneEndBaselines> {
-    static const uint16_t opcount = 2;
-    static const uint32_t opcode = 0x2C436037;
+    static uint16_t opcount() { return 2; }
+    static uint32_t opcode() { return 0x2C436037; }
     
     uint64_t object_id;
     

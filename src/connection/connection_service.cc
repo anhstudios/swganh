@@ -48,9 +48,7 @@
 
 #include "connection/providers/mysql_session_provider.h"
 
-#include "connection/messages/client_permissions_message.h"
-#include "connection/messages/client_id_msg.h"
-#include "swganh/connection/messages/heart_beat.h"
+#include "swganh/connection/messages/client_permissions_message.h"
 
 #include "swganh/connection/messages/logout_message.h"
 #include "swganh/connection/connection_client.h"
@@ -95,7 +93,7 @@ void ConnectionService::OnDescribeConfigOptions(
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
      
-    RegisterMessageHandler<connection::messages::ClientIdMsg>(
+    RegisterMessageHandler<swganh::connection::messages::ClientIdMsg>(
         bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
 
     RegisterMessageHandler<CmdSceneReady>(
@@ -165,7 +163,7 @@ void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> c
     client->session->SendMessage(CmdSceneReady());
 }
 
-void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const connection::messages::ClientIdMsg& message) {
+void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const swganh::connection::messages::ClientIdMsg& message) {
     DLOG(WARNING) << "Handling ClientIdMsg";
 
     // get session key from login service
@@ -196,7 +194,7 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
 
     AddClient_(player_id, client);
 
-    connection::messages::ClientPermissionsMessage client_permissions;
+    swganh::connection::messages::ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = service_directory()->galaxy().status();
     client_permissions.available_character_slots = character_service()->GetMaxCharacters(account_id);
     // @TODO: Replace with configurable value

@@ -29,8 +29,8 @@ namespace login {
 namespace messages {
     
 struct ErrorMessage : public swganh::base::SwgMessage<ErrorMessage> {
-    static const uint16_t opcount = 3;
-    static const uint32_t opcode = 0xB5ABF91A;
+    static uint16_t opcount() { return 3; }
+    static uint32_t opcode() { return 0xB5ABF91A; }
     
     std::string type;
     std::string message;
