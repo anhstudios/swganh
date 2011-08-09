@@ -120,6 +120,10 @@ FUNCTION(AddANHLibrary name)
         ADD_DEPENDENCIES(${name} ${ANHLIB_DEPENDS})
     ENDIF()
 
+    IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+        SET_TARGET_PROPERTIES(${name} PROPERTIES COMPILE_FLAGS -fPIC)
+    ENDIF()
+
     IF(_tests_list_length GREATER 0)
         # Create an executable for the test and link it to gtest and anh
         INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIR})
