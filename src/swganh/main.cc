@@ -28,6 +28,7 @@
 #include <boost/thread.hpp>
 #include <tbb/task_scheduler_init.h>
 
+
 using namespace boost;
 using namespace swganh;
 using namespace std;
@@ -44,7 +45,7 @@ int main(int argc, char* argv[]) {
     FLAGS_log_dir = "./logs";
     FLAGS_stderrthreshold = 1;
     setvbuf( stdout, NULL, _IONBF, 0);
-        
+
     try {
         tbb::task_scheduler_init init;
 

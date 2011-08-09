@@ -49,8 +49,8 @@ struct Cluster {
 };
 
 struct LoginEnumCluster : public swganh::base::SwgMessage<LoginEnumCluster> {
-    static const uint16_t opcount = 3;
-    static const uint32_t opcode = 0xC11C63B9;
+    static const uint16_t opcount() { return 3; }
+    static const uint32_t opcode() { return 0xC11C63B9; }
 
     std::list<Cluster> servers;
     uint32_t max_account_chars;

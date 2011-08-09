@@ -187,10 +187,6 @@ FUNCTION(AddANHPlugin name)
 		# set the default output directory for the shared library for convenience
 		SET_TARGET_PROPERTIES(${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${RUNTIME_OUTPUT_BASE_DIRECTORY}/bin")
 		ADD_DEFINITIONS ( -DDLL_EXPORTS )
-    ELSE()
-        IF("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-            SET_TARGET_PROPERTIES(${name} PROPERTIES COMPILE_FLAGS -fPIC)
-        ENDIF()
     ENDIF()
         
 ENDFUNCTION()

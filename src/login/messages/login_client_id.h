@@ -29,8 +29,8 @@ namespace login {
 namespace messages {
     
 struct LoginClientId : public swganh::base::SwgMessage<LoginClientId> {
-    static const uint16_t opcount = 4;
-    static const uint32_t opcode = 0x41131F96;
+    static uint16_t opcount() { return 4; }
+    static uint32_t opcode() { return 0x41131F96; }
     
     std::string username;
     std::string password;

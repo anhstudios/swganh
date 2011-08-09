@@ -80,8 +80,8 @@ public:
         bool client_required = true)
     {
         typename MessageHandlerMap::accessor a;
-        if (handlers_.find(a, MessageType::opcode)) {
-            DLOG(WARNING) << "Handler has already been defined: " << std::hex << MessageType::opcode;
+        if (handlers_.find(a, MessageType::opcode())) {
+            DLOG(WARNING) << "Handler has already been defined: " << std::hex << MessageType::opcode();
             throw HandlerAlreadyDefined("Requested registration of handler that has already been defined.");
         }
 
@@ -95,7 +95,7 @@ public:
             handler(client, message);
         };
 
-        handlers_.insert(std::make_pair(MessageType::opcode, std::make_pair(wrapped_handler, client_required)));
+        handlers_.insert(std::make_pair(MessageType::opcode(), std::make_pair(wrapped_handler, client_required)));
     }
 
     /**

@@ -18,19 +18,20 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef CONNECTION_MESSAGES_CLIENT_PERMISSIONS_MESSAGE_H_
-#define CONNECTION_MESSAGES_CLIENT_PERMISSIONS_MESSAGE_H_
+#ifndef SWGANH_CONNECTION_MESSAGES_CLIENT_PERMISSIONS_MESSAGE_H_
+#define SWGANH_CONNECTION_MESSAGES_CLIENT_PERMISSIONS_MESSAGE_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
+namespace swganh {
 namespace connection {
 namespace messages {
     
 struct ClientPermissionsMessage : public swganh::base::SwgMessage<ClientPermissionsMessage> {
-    static const uint16_t opcount = 4;
-    static const uint32_t opcode = 0xE00730E5;
+    static uint16_t opcount() { return 4; }
+    static uint32_t opcode() { return 0xE00730E5; }
     
     uint8_t galaxy_available;
     uint8_t available_character_slots;
@@ -49,6 +50,6 @@ struct ClientPermissionsMessage : public swganh::base::SwgMessage<ClientPermissi
     }
 };
 
-}}  // namespace connection::messages
+}}}  // namespace swganh::connection::messages
 
-#endif  // CONNECTION_MESSAGES_CLIENT_PERMISSIONS_MESSAGE_H_
+#endif  // SWGANH_CONNECTION_MESSAGES_CLIENT_PERMISSIONS_MESSAGE_H_

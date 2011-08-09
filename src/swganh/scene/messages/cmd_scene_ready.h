@@ -30,8 +30,8 @@ namespace scene {
 namespace messages {
     
 struct CmdSceneReady : public swganh::base::SwgMessage<CmdSceneReady> {
-    static const uint16_t opcount = 1;
-    static const uint32_t opcode = 0x43FD1C22;
+    static uint16_t opcount() { return 1; }
+    static uint32_t opcode() { return 0x43FD1C22; }
     
     void onSerialize(anh::ByteBuffer& buffer) const {}
 
