@@ -20,7 +20,10 @@
 #ifndef LIBANH_COMPONENT_BASE_COMPONENT_H_
 #define LIBANH_COMPONENT_BASE_COMPONENT_H_
 
+#include <functional>
 #include <map>
+#include <memory>
+#include <boost/property_tree/ptree.hpp>
 #include <anh/event_dispatcher/event_dispatcher.h>
 #include <anh/component/component_interface.h>
 
@@ -52,7 +55,7 @@ public:
     virtual void set_attribute_mapper(std::shared_ptr<anh::component::AttributeMapperInterface<ComponentInterface>> mapper) { attribute_mapper_ = mapper; }
 
     /**
-     * @breif Called to handle a message passed to this component by the Object Manager.
+     * @brief Called to handle a message passed to this component by the Object Manager.
      * Messages are derived from the event dispatchers IEvent.
      * @see IEvent
      *

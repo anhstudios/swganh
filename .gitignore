@@ -6,3 +6,6 @@ vendor/*
 # ignore OS generated files
 .DS_Store
 .redcar
+.cproject
+.project
+.settings
