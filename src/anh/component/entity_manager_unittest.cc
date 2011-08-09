@@ -25,7 +25,7 @@
 using namespace anh::component;
 using namespace testing;
 
-class EntityManagerTests : public testing::Test {
+class EntityManagerTests : public Test {
 protected:
 	virtual void SetUp();
 	virtual void TearDown();
@@ -42,7 +42,7 @@ TEST_F(EntityManagerTests, AddRemoveEntity) {
 
 	// Remove Entity and varify.
 	entity_manager.RemoveEntity(entity_id_);
-	EXPECT_EQ(nullptr, entity_manager.GetEntity(entity_id_));
+	EXPECT_TRUE(nullptr == entity_manager.GetEntity(entity_id_));
 }
 
 TEST_F(EntityManagerTests, AutoEntityAndComponentCleanupOnDestructor) {
@@ -67,7 +67,7 @@ TEST_F(EntityManagerTests, CanRemoveAllEntities) {
 
 	// Remove Entities and varify.
 	entity_manager.RemoveAllEntities();
-	EXPECT_EQ(nullptr, entity_manager.GetEntity(entity_id_));
+	EXPECT_TRUE(nullptr == entity_manager.GetEntity(entity_id_));
 }
 
 TEST_F(EntityManagerTests, AddRemoveTag) {
