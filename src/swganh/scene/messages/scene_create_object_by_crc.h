@@ -34,8 +34,8 @@ namespace scene {
 namespace messages {
     
 struct SceneCreateObjectByCrc : public swganh::base::SwgMessage<SceneCreateObjectByCrc> {
-    static const uint16_t opcount = 5;
-    static const uint32_t opcode = 0xFE89DDEA;
+    static uint16_t opcount() { return 5; }
+    static uint32_t opcode() { return 0xFE89DDEA; }
     
     uint64_t object_id;
     glm::quat orientation;

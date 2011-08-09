@@ -30,8 +30,8 @@ namespace character {
 namespace messages {
     
 struct ClientCreateCharacter : public swganh::base::SwgMessage<ClientCreateCharacter> {
-    static const uint16_t opcount = 0xC;
-    static const uint32_t opcode = 0xB97F3074;    
+    static uint16_t opcount() { return 0x0C; }
+    static uint32_t opcode() { return 0xB97F3074; }
     
     std::string character_customization;
     std::wstring character_name;

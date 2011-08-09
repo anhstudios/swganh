@@ -29,8 +29,8 @@ namespace character {
 namespace messages {
     
 struct DeleteCharacterMessage : public swganh::base::SwgMessage<DeleteCharacterMessage> {
-    static const uint16_t opcount = 3;
-    static const uint32_t opcode = 0xE87AD031;
+    static uint16_t opcount() { return 3; }
+    static uint32_t opcode() { return 0xE87AD031; }
 
     int32_t server_id;
     uint64_t character_id;

@@ -48,8 +48,8 @@ struct ClusterServer {
 };
 
 struct LoginClusterStatus : public swganh::base::SwgMessage<LoginClusterStatus> {
-    static const uint16_t opcount = 2;
-    static const uint32_t opcode = 0x3436AEB6;
+    static uint16_t opcount() { return 2; }
+    static uint32_t opcode() { return 0x3436AEB6; }
 
     std::list<ClusterServer> servers;
 

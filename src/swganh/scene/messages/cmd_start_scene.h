@@ -32,8 +32,8 @@ namespace scene {
 namespace messages {
     
 struct CmdStartScene : public swganh::base::SwgMessage<CmdStartScene> {
-    static const uint16_t opcount = 8;
-    static const uint32_t opcode = 0x3AE6DFAE;
+    static uint16_t opcount() { return 8; }
+    static uint32_t opcode() { return 0x3AE6DFAE; }
     
     uint8_t ignore_layout;
     uint64_t character_id;

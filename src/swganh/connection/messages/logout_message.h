@@ -10,8 +10,8 @@ namespace connection {
 namespace messages {
     
 struct LogoutMessage : public swganh::base::SwgMessage<LogoutMessage> {
-    static const uint16_t opcount = 1;
-    static const uint32_t opcode = 0x42FD19DD;
+    static const uint16_t opcount() { return 1; }
+    static const uint32_t opcode() { return 0x42FD19DD; }
     
     void onSerialize(anh::ByteBuffer& buffer) const {}
 

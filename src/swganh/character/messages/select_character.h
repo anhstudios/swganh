@@ -30,13 +30,13 @@ namespace character {
 namespace messages {
     
 struct SelectCharacter : public swganh::base::SwgMessage<SelectCharacter> {
-    static const uint16_t opcount = 2;
-    static const uint32_t opcode = 0xB5098D76;    
+    static uint16_t opcount() { return 2; }
+    static uint32_t opcode() { return 0xB5098D76; }
     
     uint64_t character_id;
 
     void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write(character_id);	
+        buffer.write(character_id);
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {

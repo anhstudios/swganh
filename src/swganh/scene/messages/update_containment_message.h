@@ -31,8 +31,8 @@ namespace scene {
 namespace messages {
     
 struct UpdateContainmentMessage : public swganh::base::SwgMessage<UpdateContainmentMessage> {
-    static const uint16_t opcount = 4;
-    static const uint32_t opcode = 0x56CBDE9E;
+    static uint16_t opcount() { return 4; }
+    static uint32_t opcode() { return 0x56CBDE9E; }
     
     uint64_t object_id;
     uint64_t container_id;

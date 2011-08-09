@@ -18,19 +18,20 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
-#define CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
+#ifndef SWGANH_CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
+#define SWGANH_CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
+namespace swganh {
 namespace connection {
 namespace messages {
     
 struct ClientIdMsg : public swganh::base::SwgMessage<ClientIdMsg> {
-    static const uint16_t opcount = 3;
-    static const uint32_t opcode = 0xD5899226;    
+    static uint16_t opcount() { return 3; }
+    static uint32_t opcode() { return 0xD5899226; }
     
     std::string session_hash;
 
@@ -46,6 +47,6 @@ struct ClientIdMsg : public swganh::base::SwgMessage<ClientIdMsg> {
     }
 };
 
-}}  // namespace connection::messages
+}}}  // namespace swganh::connection::messages
 
-#endif  // CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
+#endif  // SWGANH_CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
