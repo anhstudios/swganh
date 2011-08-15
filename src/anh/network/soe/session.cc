@@ -129,12 +129,11 @@ void Session::Update() {
     }
 
     // Pack the message list into a single data channel payload and send it.
-    SendMessage(PackDataChannelMessages(process_list));
-}
-
-void Session::SendMessage(ByteBuffer data_channel_payload) {
-    // If the data channel message is too big
-    uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 5;
+    ByteBuffer data_channel_payload = PackDataChannelMessages(process_list);
+    
+    // Split up the message if it's too big
+    // @note: in determining the max size 3 is the size of the soe header + the compression flag.
+    uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 3;
 
     if (data_channel_payload.size() > max_data_channel_size) {
         list<ByteBuffer> fragmented_message = SplitDataChannelMessage(
@@ -147,6 +146,13 @@ void Session::SendMessage(ByteBuffer data_channel_payload) {
     } else {        
         SendSequencedMessage_(&BuildDataChannelHeader, move(data_channel_payload));
     }
+}
+
+void Session::SendMessage(ByteBuffer message) {
+    auto message_buffer = server_->AllocateBuffer();
+    message_buffer->swap(message);
+    
+    outgoing_data_messages_.push(message_buffer);
 }
 
 void Session::Close(void)
@@ -184,7 +190,7 @@ void Session::HandleMessage(anh::ByteBuffer& message)
     }
 }
 
-void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message) {        
+void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message) {
     // Get the next sequence number
     uint16_t message_sequence = server_sequence_++;
 
@@ -198,6 +204,9 @@ void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer mes
     
     // Store it for resending later if necessary
     sent_messages_.push_back(make_pair(message_sequence, data_channel_message));
+    
+    // If the data channel message is too big
+    uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 5;
 }
 
 void Session::handleSessionRequest_(SessionRequest& packet)

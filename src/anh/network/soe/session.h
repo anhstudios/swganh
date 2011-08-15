@@ -108,16 +108,25 @@ public:
     std::vector<std::shared_ptr<anh::ByteBuffer>> GetUnacknowledgedMessages() const;    
 
     /**
-    * Sends a data channel message directly to the remote client.
+    * Sends a data channel message to the remote client.
     *
     * Increases the server sequence count by 1 for each individual packet sent to the 
     * remote end. This call can result in multiple packets being generated depending on 
     * the size of the payload and whether or not it needs to be fragmented.
     *
-    * @param data_channel_payload The payload to send in the data channel message(s).
+    * @param message The payload to send in the data channel message(s).
     */
-    void SendMessage(anh::ByteBuffer data_channel_payload);
+    void SendMessage(anh::ByteBuffer message);
     
+    /**
+    * Sends a data channel message to the remote client.
+    *
+    * Increases the server sequence count by 1 for each individual packet sent to the 
+    * remote end. This call can result in multiple packets being generated depending on 
+    * the size of the payload and whether or not it needs to be fragmented.
+    *
+    * @param message The payload to send in the data channel message(s).
+    */
     template<typename T>
     void SendMessage(const T& message) {
         auto message_buffer = server_->AllocateBuffer();
@@ -152,7 +161,7 @@ private:
     
     typedef std::function<anh::ByteBuffer(uint16_t)> HeaderBuilder;
 
-    void SendSequencedMessage_(HeaderBuilder header_builder, anh::ByteBuffer message);
+    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message);    
 
     void handleSessionRequest_(SessionRequest& packet);
     void handleMultiPacket_(MultiPacket& packet);
