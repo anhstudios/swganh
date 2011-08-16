@@ -73,21 +73,9 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
     for (int i = 1; i <= 3; ++i ) {
         session->SendMessage(buildSimpleMessage());
+		session->Update();
         EXPECT_EQ(i, session->server_sequence());
     }
-}
-
-/// This test verifies that data channel messages are sent out via the soe service
-TEST_F(SessionTests, DataChannelMessagesAreSentViaSoeService) {
-    auto service = buildMockServer();
-
-    EXPECT_CALL(*service, SendMessage(_, _))
-        .Times(1);
-    
-    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
-
-    // Send a data channel message.
-    session->SendMessage(buildSimpleMessage());
 }
 
 /// This test verifies that data channel messages are stored in case they need to be re-sent.
@@ -98,6 +86,7 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
     // Send 3 data channel messages.
     for (int i = 1; i <= 3; ++i ) {
         session->SendMessage(buildSimpleMessage());
+		session->Update();
     }
 
     vector<shared_ptr<ByteBuffer>> sent_messages = session->GetUnacknowledgedMessages();
@@ -105,36 +94,6 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
     // Expect the vector of sent messages to contain 3 elements
     EXPECT_EQ(3, sent_messages.size());
 }
-
-/// This test verifies that data channel messages are wrapped in the proper header.
-TEST_F(SessionTests, DataChannelMessagesAreWrappedInDataHeaderWhenSent) {
-    auto service = buildMockServer();
-
-    EXPECT_CALL(*service, SendMessage(_, Pointee(buildSimpleDataChannelPacket(0))))
-        .Times(1);
-    
-    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
-
-    // Send a data channel message.
-    session->SendMessage(buildSimpleMessage());
-}
-
-
-TEST_F(SessionTests, LargeDataChannelMessagesAreWrappedInFragmentedHeaderWhenSent) {
-    auto service = buildMockServer();
-    
-    EXPECT_CALL(*service, SendMessage(_, _));
-    EXPECT_CALL(*service, SendMessage(_, Pointee(buildSimpleFragmentedPacket(0))))
-        .Times(1);
-    
-    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
-    session->receive_buffer_size(27);
-    session->crc_length(2);
-
-    // Send a data channel message.
-    session->SendMessage(buildSimpleFragmentedMessage());
-}
-
 
 // SessionTest member implementations
 
