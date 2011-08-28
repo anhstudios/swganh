@@ -14,22 +14,32 @@
 
 namespace swganh {
 namespace app {
-
-struct DatabaseConfig {
-    std::string host;
-    std::string schema;
-    std::string username;
-    std::string password;
-};
-
+    
 struct AppConfig {
     bool single_server_mode;
     std::vector<std::string> plugins;
     std::string plugin_directory;
     std::string galaxy_name;
 
-    DatabaseConfig galaxy_manager_db;
-    DatabaseConfig galaxy_db;
+    struct DatabaseConfig {
+        std::string host;
+        std::string schema;
+        std::string username;
+        std::string password;
+    } galaxy_manager_db, galaxy_db;
+    
+    struct LoginConfig {
+        std::string listen_address;
+        uint16_t listen_port;
+        int galaxy_status_check_duration_secs;
+        int login_error_timeout_secs;
+    } login_config;
+
+    struct ConnectionConfig {
+        std::string listen_address;
+        uint16_t listen_port;
+        uint16_t ping_port;
+    } connection_config;
 
     boost::program_options::options_description BuildConfigDescription();
 };

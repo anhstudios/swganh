@@ -2,6 +2,7 @@
 #ifndef ANH_PLUGIN_PLUGIN_MANAGER_H_
 #define ANH_PLUGIN_PLUGIN_MANAGER_H_
 
+#include <exception>
 #include <map>
 #include <memory>
 #include <string>
@@ -24,14 +25,18 @@ class LibraryInterface;
 
 typedef std::map<std::string, ObjectRegistration> RegistrationMap;
 
+typedef std::runtime_error MissingSymbolError;
+typedef std::runtime_error PluginLoadingError;
+
 class PluginManager {
 public:
     explicit PluginManager(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~PluginManager();
 
-    bool LoadPlugin(const std::string& path);
-    bool LoadAllPlugins(const std::string& directory);
-
+    void LoadPlugin(const std::string& path);
+    void LoadAllPlugins(const std::string& directory);
+    
+    void ConfigurePlugin(std::string plugin_name, ConfigFunc config_func);
     bool InitializePlugin(InitFunc init_func);
 
     bool RegisterObject(const std::string& name, const ObjectRegistration* registration);

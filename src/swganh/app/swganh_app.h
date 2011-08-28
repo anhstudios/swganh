@@ -8,8 +8,6 @@
 #include <vector>
 
 #include <boost/noncopyable.hpp>
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
 #include <boost/thread/thread.hpp>
 #include <tbb/atomic.h>
 
@@ -25,8 +23,6 @@ namespace swganh {
 namespace app {
 
 class SwganhKernel;
-
-typedef std::pair<boost::program_options::options_description, boost::program_options::variables_map> ServiceConfig;
 
 class SwganhApp : public anh::app::AppInterface, private boost::noncopyable {
 public:    
@@ -44,8 +40,8 @@ public:
 
 private:
     void LoadAppConfig_(int argc, char* argv[]);
-    void LoadServiceConfig_(ServiceConfig& service_config);
     void LoadPlugins_(std::vector<std::string> plugins);
+    void LoadCoreServices_();
 
     void CleanupServices_();
     
@@ -54,8 +50,6 @@ private:
     std::shared_ptr<anh::service::ServiceDirectory> service_directory_;
     tbb::atomic<bool> running_;
     bool initialized_;
-    
-    ServiceConfig service_config_;
 };
 
 }}  // namespace swganh::app

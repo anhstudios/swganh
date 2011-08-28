@@ -38,8 +38,6 @@ shared_ptr<ServiceInterface> ServiceManager::GetService(string name) {
     auto service = plugin_manager_->CreateObject<ServiceInterface>(name);
 
     if (!service) {
-        // throw exception here, service already exists
-        throw std::runtime_error("Unknown service requested: " + name);
         return nullptr;
     }
 
@@ -58,19 +56,18 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
     services_[name] = service;
 }
 
-void ServiceManager::Initialize(ServiceConfig& service_config) {
+void ServiceManager::Initialize() {
     auto registration_map = plugin_manager_->registration_map();
 
     regex rx("Service");
 
-    for_each(registration_map.begin(), registration_map.end(), [this, &rx, &service_config] (RegistrationMap::value_type& entry) {
+    for_each(registration_map.begin(), registration_map.end(), [this, &rx] (RegistrationMap::value_type& entry) {
         std::string name = entry.first;
 
         if (entry.first.length() > 7 && regex_search(name.begin(), name.end(), rx)) {
             auto service = GetService(entry.first);
 
             if (service) {
-                service->DescribeConfigOptions(service_config.first);
                 services_.insert(make_pair(entry.first, service));
             }
         }

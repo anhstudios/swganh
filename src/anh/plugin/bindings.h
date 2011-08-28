@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include <boost/program_options/options_description.hpp>
+
 #include "anh/app/kernel_interface.h"
 
 namespace anh {
@@ -28,6 +30,7 @@ struct ObjectRegistration {
 
 typedef void (*ExitFunc)();
 typedef ExitFunc (*InitFunc)(std::shared_ptr<anh::app::KernelInterface>);
+typedef void (*ConfigFunc)(boost::program_options::options_description&);
 
 #ifdef WIN32
     #ifdef DLL_EXPORTS
@@ -44,6 +47,12 @@ extern
     "C"
 #endif
 PLUGIN_API ExitFunc InitializePlugin(std::shared_ptr<anh::app::KernelInterface> binding);
+
+extern
+#ifdef __cplusplus
+    "C"
+#endif
+PLUGIN_API void ConfigurePlugin(boost::program_options::options_description& description);
 
 }}  // namespace anh::plugin
 
