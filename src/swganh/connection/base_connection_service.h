@@ -42,7 +42,10 @@ public:
         anh::network::soe::EndpointHashCompare
     > ClientMap;
 public:
-    explicit BaseConnectionService(std::shared_ptr<anh::app::KernelInterface> kernel);
+    BaseConnectionService(
+        std::string listen_address, 
+        uint16_t listen_port, 
+        std::shared_ptr<anh::app::KernelInterface> kernel);
     
     void DescribeConfigOptions(boost::program_options::options_description& description);
 

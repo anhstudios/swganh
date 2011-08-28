@@ -65,8 +65,11 @@ using namespace swganh::connection;
 using namespace swganh::scene::messages;
 using namespace std;
 
-ConnectionService::ConnectionService(shared_ptr<KernelInterface> kernel) 
-    : swganh::connection::BaseConnectionService(kernel)
+ConnectionService::ConnectionService(
+        string listen_address, 
+        uint16_t listen_port, 
+        shared_ptr<KernelInterface> kernel) 
+    : swganh::connection::BaseConnectionService(listen_address, listen_port, kernel)
 {        
     session_provider_ = make_shared<connection::providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
 }

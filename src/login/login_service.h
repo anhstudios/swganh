@@ -71,7 +71,10 @@ public:
         anh::network::soe::EndpointHashCompare
     > ClientMap;
 
-    explicit LoginService(std::shared_ptr<anh::app::KernelInterface> kernel);
+    LoginService(
+        std::string listen_address, 
+        uint16_t listen_port, 
+        std::shared_ptr<anh::app::KernelInterface> kernel);
     ~LoginService();
     
     anh::service::ServiceDescription GetServiceDescription();
@@ -81,6 +84,13 @@ public:
         
     std::shared_ptr<swganh::login::LoginClient> GetClientFromEndpoint(
         const boost::asio::ip::udp::endpoint& remote_endpoint);
+
+    int galaxy_status_check_duration_secs() const;
+    void galaxy_status_check_duration_secs(int new_duration);
+    
+    int login_error_timeout_secs() const;
+    void login_error_timeout_secs(int new_timeout);
+
 private:
     LoginService();
 

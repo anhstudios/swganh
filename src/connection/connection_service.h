@@ -56,7 +56,10 @@ namespace connection {
     
 class ConnectionService : public swganh::connection::BaseConnectionService {
 public:
-    explicit ConnectionService(std::shared_ptr<anh::app::KernelInterface> kernel);
+    explicit ConnectionService(
+        std::string listen_address, 
+        uint16_t listen_port, 
+        std::shared_ptr<anh::app::KernelInterface> kernel);
     ~ConnectionService();
 
     anh::service::ServiceDescription GetServiceDescription();

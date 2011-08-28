@@ -26,7 +26,10 @@ using namespace std;
 
 using boost::asio::ip::udp;
 
-BaseConnectionService::BaseConnectionService(std::shared_ptr<anh::app::KernelInterface> kernel)
+BaseConnectionService::BaseConnectionService(
+        string listen_address, 
+        uint16_t listen_port, 
+        std::shared_ptr<anh::app::KernelInterface> kernel)
     : BaseService(kernel)
 #pragma warning(push)
 #pragma warning(disable: 4355)
@@ -34,6 +37,8 @@ BaseConnectionService::BaseConnectionService(std::shared_ptr<anh::app::KernelInt
         return GetClientFromEndpoint(endpoint);  
       })
 #pragma warning(pop)
+    , listen_address_(listen_address)
+    , listen_port_(listen_port)
     , soe_server_(nullptr)
 {
     soe_server_.reset(new soe::Server(
@@ -43,13 +48,6 @@ BaseConnectionService::BaseConnectionService(std::shared_ptr<anh::app::KernelInt
 }
 
 void BaseConnectionService::DescribeConfigOptions(boost::program_options::options_description& description) {
-    description.add_options()
-        ("service.connection.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
-            "The port the connection service will listen for incoming client connections on")
-        ("service.connection.address", boost::program_options::value<string>(&listen_address_),
-            "The public address the connection service will listen for incoming client connections on")
-    ;
-
     OnDescribeConfigOptions(description);
 }
 

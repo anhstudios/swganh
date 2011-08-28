@@ -43,6 +43,11 @@ using namespace std;
 using boost::program_options::options_description;
 using boost::program_options::variables_map;
 
+static struct ConnectionConfig {
+    string listen_address;
+    uint16_t listen_port;
+} connection_config;
+
 extern "C" PLUGIN_API void ExitModule() {
     return;
 }
@@ -55,7 +60,8 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(shared_ptr<KernelInterface> kern
 
     // Register TestObj
     registration.CreateObject = [] (ObjectParams* params) -> void * {
-        auto connection_service = new ConnectionService(params->kernel);
+        auto connection_service = new ConnectionService(
+            connection_config.listen_address, connection_config.listen_port, params->kernel);
         return connection_service;
     };
 
@@ -68,4 +74,13 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(shared_ptr<KernelInterface> kern
     kernel->GetPluginManager()->RegisterObject("ConnectionService", &registration);
 
     return ExitModule;
+}
+
+extern "C" PLUGIN_API void ConfigurePlugin(options_description& description) {
+    description.add_options()
+        ("service.connection.udp_port", boost::program_options::value<uint16_t>(&connection_config.listen_port),
+            "The port the connection service will listen for incoming client connections on")
+        ("service.connection.address", boost::program_options::value<string>(&connection_config.listen_address),
+            "The public address the connection service will listen for incoming client connections on")
+    ;
 }

@@ -63,10 +63,11 @@ using namespace std;
 
 using anh::network::soe::Session;
 
-LoginService::LoginService(shared_ptr<KernelInterface> kernel) 
+LoginService::LoginService(string listen_address, uint16_t listen_port, shared_ptr<KernelInterface> kernel) 
     : BaseLoginService(kernel)
     , galaxy_status_timer_(kernel->GetIoService())
-    , listen_port_(0) {
+    , listen_address_(listen_address)
+    , listen_port_(listen_port) {
     
     soe_server_.reset(new anh::network::soe::Server(
         kernel->GetIoService(),
@@ -95,16 +96,6 @@ service::ServiceDescription LoginService::GetServiceDescription() {
 }
 
 void LoginService::DescribeConfigOptions(boost::program_options::options_description& description) {
-    description.add_options()
-        ("service.login.udp_port", boost::program_options::value<uint16_t>(&listen_port_),
-            "The port the login service will listen for incoming client connections on")
-        ("service.login.address", boost::program_options::value<string>(&listen_address_),
-            "The public address the login service will listen for incoming client connections on")
-        ("service.login.status_check_duration_secs", boost::program_options::value<int>(&galaxy_status_check_duration_secs_),
-            "The amount of time between checks for updated galaxy status")
-            ("service.login.login_error_timeout_secs", boost::program_options::value<int>(&login_error_timeout_secs_)->default_value(5),
-            "The number of seconds to wait before disconnecting a client after failed login attempt")
-    ;
 }
 
 void LoginService::onStart() {
@@ -140,6 +131,26 @@ void LoginService::subscribe() {
 
         return true;
     });
+}
+
+int LoginService::galaxy_status_check_duration_secs() const 
+{
+    return galaxy_status_check_duration_secs_;
+}
+
+void LoginService::galaxy_status_check_duration_secs(int new_duration)
+{
+    galaxy_status_check_duration_secs_ = new_duration;
+}
+
+int LoginService::login_error_timeout_secs() const
+{
+    return login_error_timeout_secs_;
+}
+
+void LoginService::login_error_timeout_secs(int new_timeout)
+{
+    login_error_timeout_secs_ = new_timeout;
 }
 
 std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> session) {
