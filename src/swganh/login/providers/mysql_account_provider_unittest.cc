@@ -25,9 +25,9 @@
 
 #include "anh/database/database_manager.h"
 #include "anh/utilities.h"
-#include "login/providers/mysql_account_provider.h"
+#include "swganh/login/providers/mysql_account_provider.h"
 
-using namespace login::providers;
+using namespace swganh::login::providers;
 
 namespace {
     TEST(MySQLAccountProvider, DISABLED_ProperAccountInformationReturned) {

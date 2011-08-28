@@ -1,10 +1,11 @@
 
-#ifndef LOGIN_GALAXY_STATUS_H_
-#define LOGIN_GALAXY_STATUS_H_
+#ifndef SWGANH_LOGIN_GALAXY_STATUS_H_
+#define SWGANH_LOGIN_GALAXY_STATUS_H_
 
 #include <cstdint>
 #include <string>
 
+namespace swganh {
 namespace login {
 
 struct GalaxyStatus {    
@@ -20,6 +21,6 @@ struct GalaxyStatus {
     uint32_t status;
 };
 
-}  // namespace login
+}}  // namespace swganh::login
 
-#endif  // LOGIN_GALAXY_STATUS_H_
+#endif  // SWGANH_LOGIN_GALAXY_STATUS_H_

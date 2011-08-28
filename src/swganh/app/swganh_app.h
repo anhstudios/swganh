@@ -41,6 +41,7 @@ public:
 private:
     void LoadAppConfig_(int argc, char* argv[]);
     void LoadPlugins_(std::vector<std::string> plugins);
+    void LoadCoreServices_();
 
     void CleanupServices_();
     

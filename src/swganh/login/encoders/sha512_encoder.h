@@ -18,22 +18,30 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LOGIN_ENCODERS_ENCODER_INTERFACE_H_
-#define LOGIN_ENCODERS_ENCODER_INTERFACE_H_
+#ifndef SWGANH_LOGIN_ENCODERS_SHA512_ENCODER_H_
+#define SWGANH_LOGIN_ENCODERS_SHA512_ENCODER_H_
 
-#include <string>
+#include "swganh/login/encoders/encoder_interface.h"
+#include <memory>
 
+namespace anh { namespace database { class DatabaseManagerInterface; 
+}}  // anh::database
+
+namespace swganh {
 namespace login {
 namespace encoders {
 
-class EncoderInterface {
+class Sha512Encoder : public EncoderInterface {
 public:
-    virtual ~EncoderInterface() {}
+    explicit Sha512Encoder(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    ~Sha512Encoder();
 
-    virtual std::string EncodePassword(std::string raw, std::string salt) = 0;
-    virtual bool IsPasswordValid(std::string encoded, std::string raw, std::string salt) = 0;
+    std::string EncodePassword(std::string raw, std::string salt);
+    bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
+private:
+    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 
-}}  // namespace login::encoders
+}}}  // namespace swganh::login::encoders
 
-#endif  // LOGIN_ENCODERS_ENCODER_INTERFACE_H_
+#endif  // SWGANH_LOGIN_ENCODERS_SHA512_ENCODER_H_

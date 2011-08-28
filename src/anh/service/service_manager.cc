@@ -38,8 +38,6 @@ shared_ptr<ServiceInterface> ServiceManager::GetService(string name) {
     auto service = plugin_manager_->CreateObject<ServiceInterface>(name);
 
     if (!service) {
-        // throw exception here, service already exists
-        throw std::runtime_error("Unknown service requested: " + name);
         return nullptr;
     }
 

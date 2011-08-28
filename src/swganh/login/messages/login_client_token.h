@@ -17,8 +17,8 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LOGIN_MESSAGES_LOGIN_CLIENT_TOKEN_H_
-#define LOGIN_MESSAGES_LOGIN_CLIENT_TOKEN_H_
+#ifndef SWGANH_LOGIN_MESSAGES_LOGIN_CLIENT_TOKEN_H_
+#define SWGANH_LOGIN_MESSAGES_LOGIN_CLIENT_TOKEN_H_
 
 #include <cstdint>
 #include <memory>
@@ -32,6 +32,7 @@ namespace login {
 struct LoginClient;
 }}  // namespace swganh::login
 
+namespace swganh {
 namespace login {
 namespace messages {
     
@@ -61,6 +62,6 @@ struct LoginClientToken : public swganh::base::SwgMessage<LoginClientToken> {
 
 LoginClientToken BuildLoginClientToken(std::shared_ptr<swganh::login::LoginClient> login_client, const std::string& session_key);
 
-}}  // namespace login::messages
+}}}  // namespace swganh::login::messages
 
-#endif  // LOGIN_MESSAGES_LOGIN_CLIENT_TOKEN_H_
+#endif  // SWGANH_LOGIN_MESSAGES_LOGIN_CLIENT_TOKEN_H_

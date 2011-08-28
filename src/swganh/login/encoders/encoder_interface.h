@@ -18,27 +18,23 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LOGIN_PROVIDERS_ACCOUNT_PROVIDER_INTERFACE_H_
-#define LOGIN_PROVIDERS_ACCOUNT_PROVIDER_INTERFACE_H_
+#ifndef SWGANH_LOGIN_ENCODERS_ENCODER_INTERFACE_H_
+#define SWGANH_LOGIN_ENCODERS_ENCODER_INTERFACE_H_
 
-#include <memory>
 #include <string>
-#include <tuple>
 
-#include "swganh/login/account.h"
-
+namespace swganh {
 namespace login {
-namespace providers {
+namespace encoders {
 
-class AccountProviderInterface {
+class EncoderInterface {
 public:
-    virtual ~AccountProviderInterface() {}
+    virtual ~EncoderInterface() {}
 
-    virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username) = 0;
-    virtual uint32_t FindBySessionKey(const std::string& session_key) = 0;
-    virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key) = 0;
+    virtual std::string EncodePassword(std::string raw, std::string salt) = 0;
+    virtual bool IsPasswordValid(std::string encoded, std::string raw, std::string salt) = 0;
 };
 
-}}  // namespace login::providers
+}}}  // namespace swganh::login::encoders
 
-#endif  // LOGIN_PROVIDERS_ACCOUNT_PROVIDER_INTERFACE_H_
+#endif  // SWGANH_LOGIN_ENCODERS_ENCODER_INTERFACE_H_

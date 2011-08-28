@@ -25,9 +25,9 @@
 
 #include "anh/database/database_manager.h"
 #include "anh/utilities.h"
-#include "login/encoders/sha512_encoder.h"
+#include "swganh/login/encoders/sha512_encoder.h"
 
-using namespace login::encoders;
+using namespace swganh::login::encoders;
 
 namespace {
     /*TEST(SHA512EncoderTest, MySQLGeneratesSHA512) {

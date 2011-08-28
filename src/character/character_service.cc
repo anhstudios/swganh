@@ -49,7 +49,7 @@
 
 #include "anh/service/service_manager.h"
 
-#include "swganh/login/base_login_service.h"
+#include "swganh/login/login_service.h"
 #include "swganh/login/login_client.h"
 #include "swganh/login/account.h"
 
@@ -121,7 +121,7 @@ void CharacterService::subscribe() {
     connection_service->RegisterMessageHandler<ClientRandomNameRequest>(
         bind(&CharacterService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));    
       
-    auto login_service = std::static_pointer_cast<BaseLoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
+    auto login_service = std::static_pointer_cast<LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
   
     login_service->RegisterMessageHandler<DeleteCharacterMessage>(
         bind(&CharacterService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));

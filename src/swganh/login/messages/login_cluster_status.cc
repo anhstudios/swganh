@@ -1,10 +1,10 @@
-#include "login/messages/login_cluster_status.h"
+#include "swganh/login/messages/login_cluster_status.h"
 
-using namespace login;
+using namespace swganh::login;
 using namespace messages;
 using namespace std;
 
-LoginClusterStatus login::messages::BuildLoginClusterStatus(const vector<GalaxyStatus>& galaxy_status) {
+LoginClusterStatus swganh::login::messages::BuildLoginClusterStatus(const vector<GalaxyStatus>& galaxy_status) {
     LoginClusterStatus message;
     
     std::for_each(galaxy_status.begin(), galaxy_status.end(), [&message] (const GalaxyStatus& status) {  

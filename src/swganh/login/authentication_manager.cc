@@ -18,12 +18,11 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "login/authentication_manager.h"
+#include "swganh/login/authentication_manager.h"
 
 #include "swganh/login/account.h"
 #include "swganh/login/login_client.h"
 
-using namespace login;
 using namespace swganh::login;
 using namespace std;
 

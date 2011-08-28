@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "login/login_service.h"
+#include "swganh/login/login_service.h"
 
 #include <glog/logging.h>
 
@@ -39,20 +39,20 @@
 
 #include "swganh/base/swg_message_handler.h"
 
-#include "login/messages/enumerate_character_id.h"
-#include "login/messages/error_message.h"
-#include "login/messages/login_client_token.h"
-#include "login/messages/login_cluster_status.h"
-#include "login/messages/login_enum_cluster.h"
+#include "swganh/login/messages/enumerate_character_id.h"
+#include "swganh/login/messages/error_message.h"
+#include "swganh/login/messages/login_client_token.h"
+#include "swganh/login/messages/login_cluster_status.h"
+#include "swganh/login/messages/login_enum_cluster.h"
 
-#include "login/authentication_manager.h"
+#include "swganh/login/authentication_manager.h"
 #include "swganh/login/login_client.h"
-#include "login/encoders/sha512_encoder.h"
-#include "login/providers/mysql_account_provider.h"
+#include "swganh/login/encoders/sha512_encoder.h"
+#include "swganh/login/providers/mysql_account_provider.h"
 
 using namespace anh;
 using namespace app;
-using namespace login;
+using namespace swganh::login;
 using namespace messages;
 using namespace swganh::login;
 using namespace swganh::base;
@@ -63,8 +63,14 @@ using namespace std;
 
 using anh::network::soe::Session;
 
-LoginService::LoginService(string listen_address, uint16_t listen_port, shared_ptr<KernelInterface> kernel) 
-    : BaseLoginService(kernel)
+LoginService::LoginService(string listen_address, uint16_t listen_port, shared_ptr<KernelInterface> kernel)     
+    : BaseService(kernel)
+#pragma warning(push)
+#pragma warning(disable: 4355)
+    , SwgMessageRouter([=] (const boost::asio::ip::udp::endpoint& endpoint) {
+        return GetClientFromEndpoint(endpoint);  
+      })
+#pragma warning(pop) 
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_address_(listen_address)
     , listen_port_(listen_port) {

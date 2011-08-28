@@ -17,8 +17,8 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LOGIN_MESSAGES_LOGIN_ENUM_CLUSTER_H_
-#define LOGIN_MESSAGES_LOGIN_ENUM_CLUSTER_H_
+#ifndef SWGANH_LOGIN_MESSAGES_LOGIN_ENUM_CLUSTER_H_
+#define SWGANH_LOGIN_MESSAGES_LOGIN_ENUM_CLUSTER_H_
 
 #include <cstdint>
 #include <algorithm>
@@ -31,13 +31,14 @@
 
 #include "swganh/base/swg_message.h"
 
-#include "login/galaxy_status.h"
+#include "swganh/login/galaxy_status.h"
 
 namespace swganh {
 namespace login {
 struct LoginClient;
 }}  // namespace swganh::login
 
+namespace swganh {
 namespace login {
 namespace messages {
 
@@ -81,6 +82,6 @@ struct LoginEnumCluster : public swganh::base::SwgMessage<LoginEnumCluster> {
 
 LoginEnumCluster BuildLoginEnumCluster(std::shared_ptr<swganh::login::LoginClient> login_client, const std::vector<login::GalaxyStatus>& galaxy_status);
 
-}}  // namespace login::messages
+}}}  // namespace swganh::login::messages
 
-#endif  // LOGIN_MESSAGES_LOGIN_ENUM_CLUSTER_H_
+#endif  // SWGANH_LOGIN_MESSAGES_LOGIN_ENUM_CLUSTER_H_

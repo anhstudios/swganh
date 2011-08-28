@@ -18,10 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LOGIN_LOGIN_SERVICE_H_
-#define LOGIN_LOGIN_SERVICE_H_
-
-#include "swganh/login/base_login_service.h"
+#ifndef SWGANH_LOGIN_LOGIN_SERVICE_H_
+#define SWGANH_LOGIN_LOGIN_SERVICE_H_
 
 #include <boost/asio.hpp>
 #include <glog/logging.h>
@@ -30,12 +28,15 @@
 #include "anh/network/soe/packet_utilities.h"
 #include "anh/network/soe/server.h"
 
+#include "swganh/base/base_service.h"
+#include "swganh/base/swg_message_router.h"
+
 #include "swganh/character/base_character_service.h"
 
 #include "swganh/login/login_client.h"
 
-#include "login/galaxy_status.h"
-#include "login/messages/login_client_id.h"
+#include "swganh/login/galaxy_status.h"
+#include "swganh/login/messages/login_client_id.h"
 
 namespace anh {
 namespace network {
@@ -53,6 +54,7 @@ namespace event_dispatcher {
 class EventInterface;
 }}  // namespace anh::event_dispatcher
 
+namespace swganh {
 namespace login {
     
 class AuthenticationManager;
@@ -62,7 +64,8 @@ class AccountProviderInterface;
 }
 
 class LoginService 
-    : public swganh::login::BaseLoginService
+    : public swganh::base::BaseService 
+    , public swganh::base::SwgMessageRouter<LoginClient>
 {
 public:
     typedef tbb::concurrent_hash_map<
@@ -123,5 +126,6 @@ private:
     uint16_t listen_port_;
 };
 
-}  // namespace login
-#endif  // LOGIN_LOGIN_SERVICE_H_
+}} // namespace swganh::login
+
+#endif  // SWGANH_LOGIN_LOGIN_SERVICE_H_

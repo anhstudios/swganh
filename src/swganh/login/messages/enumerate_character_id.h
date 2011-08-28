@@ -17,19 +17,21 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LOGIN_MESSAGES_ENUMERATE_CHARACTER_ID_H_
-#define LOGIN_MESSAGES_ENUMERATE_CHARACTER_ID_H_
+#ifndef SWGANH_LOGIN_MESSAGES_ENUMERATE_CHARACTER_ID_H_
+#define SWGANH_LOGIN_MESSAGES_ENUMERATE_CHARACTER_ID_H_
 
 #include <cstdint>
 #include <algorithm>
 #include <list>
 #include <string>
 
-#include "swganh/character/character_data.h"
-
 #include "anh/byte_buffer.h"
+
 #include "swganh/base/swg_message.h"
 
+#include "swganh/character/character_data.h"
+
+namespace swganh {
 namespace login {
 namespace messages {
 
@@ -66,6 +68,6 @@ struct EnumerateCharacterId : public swganh::base::SwgMessage<EnumerateCharacter
 
 EnumerateCharacterId BuildEnumerateCharacterId(std::vector<swganh::character::CharacterData> characters);
 
-}}  // namespace login::messages
+}}}  // namespace swganh::login::messages
 
-#endif  // LOGIN_MESSAGES_ENUMERATE_CHARACTER_ID_H_
+#endif  // SWGANH_LOGIN_MESSAGES_ENUMERATE_CHARACTER_ID_H_

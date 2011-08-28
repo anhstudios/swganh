@@ -17,14 +17,15 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LOGIN_MESSAGES_LOGIN_CLIENT_ID_H_
-#define LOGIN_MESSAGES_LOGIN_CLIENT_ID_H_
+#ifndef SWGANH_LOGIN_MESSAGES_LOGIN_CLIENT_ID_H_
+#define SWGANH_LOGIN_MESSAGES_LOGIN_CLIENT_ID_H_
 
 #include <cstdint>
 #include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/base/swg_message.h"
 
+namespace swganh {
 namespace login {
 namespace messages {
     
@@ -49,6 +50,6 @@ struct LoginClientId : public swganh::base::SwgMessage<LoginClientId> {
     }    
 };
 
-}}  // namespace login::messages
+}}}  // namespace swganh::login::messages
 
-#endif  // LOGIN_MESSAGES_LOGIN_CLIENT_ID_H_
+#endif  // SWGANH_LOGIN_MESSAGES_LOGIN_CLIENT_ID_H_

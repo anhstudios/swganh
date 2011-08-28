@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "login/encoders/sha512_encoder.h"
+#include "swganh/login/encoders/sha512_encoder.h"
 
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -30,7 +30,7 @@
 #include "anh/database/database_manager.h"
 
 using namespace anh::database;
-using namespace login;
+using namespace swganh::login;
 using namespace encoders;
 using namespace std;
 

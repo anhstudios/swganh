@@ -18,11 +18,14 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/login/login_service.h"
+
 using namespace anh;
 using namespace anh::app;
 using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
+using namespace swganh::login;
 
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
@@ -57,6 +60,19 @@ options_description AppConfig::BuildConfigDescription() {
             "Username for authentication with the galaxy datastore")
         ("db.galaxy.password", boost::program_options::value<std::string>(&galaxy_db.password),
             "Password for authentication with the galaxy datastore")
+            
+        ("service.login.udp_port", 
+            boost::program_options::value<uint16_t>(&login_config.listen_port),
+            "The port the login service will listen for incoming client connections on")
+        ("service.login.address", 
+            boost::program_options::value<string>(&login_config.listen_address),
+            "The public address the login service will listen for incoming client connections on")
+        ("service.login.status_check_duration_secs", 
+            boost::program_options::value<int>(&login_config.galaxy_status_check_duration_secs),
+            "The amount of time between checks for updated galaxy status")
+        ("service.login.login_error_timeout_secs", 
+            boost::program_options::value<int>(&login_config.login_error_timeout_secs)->default_value(5),
+            "The number of seconds to wait before disconnecting a client after failed login attempt")
     ;
 
     return desc;
@@ -97,6 +113,10 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
     // Load the plugin configuration.
     LoadPlugins_(app_config.plugins);
 
+    // Load core services
+    LoadCoreServices_();
+
+    // Initialize plugin services
     kernel_->GetServiceManager()->Initialize();
     
     initialized_ = true;
@@ -209,4 +229,19 @@ void SwganhApp::CleanupServices_() {
     for_each(services.begin(), services.end(), [this] (anh::service::ServiceDescription& service) {
         service_directory_->removeService(service);
     });
+}
+
+void SwganhApp::LoadCoreServices_() 
+{
+    auto app_config = kernel_->GetAppConfig();
+
+    auto login_service = make_shared<LoginService>(
+        app_config.login_config.listen_address, 
+        app_config.login_config.listen_port, 
+        kernel_);
+
+    login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
+    login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
+    
+    kernel_->GetServiceManager()->AddService("LoginService", login_service);
 }

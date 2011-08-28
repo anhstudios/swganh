@@ -1,15 +1,15 @@
-#include "login/messages/login_client_token.h"
+#include "swganh/login/messages/login_client_token.h"
 
 #include "swganh/login/login_client.h"
 #include "swganh/login/account.h"
 
-using namespace login;
+using namespace swganh::login;
 using namespace messages;
 using namespace std;
 
 using anh::ByteBuffer;
 
-LoginClientToken login::messages::BuildLoginClientToken(shared_ptr<swganh::login::LoginClient> login_client, const std::string& session_key) {
+LoginClientToken swganh::login::messages::BuildLoginClientToken(shared_ptr<swganh::login::LoginClient> login_client, const std::string& session_key) {
     LoginClientToken message;
 
     ByteBuffer session_buffer;

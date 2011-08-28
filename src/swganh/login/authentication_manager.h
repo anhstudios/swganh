@@ -18,29 +18,33 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef LOGIN_ENCODERS_SHA512_ENCODER_H_
-#define LOGIN_ENCODERS_SHA512_ENCODER_H_
+#ifndef SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
+#define SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
 
-#include "login/encoders/encoder_interface.h"
 #include <memory>
 
-namespace anh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
+#include "swganh/login/encoders/encoder_interface.h"
 
+namespace swganh {
 namespace login {
-namespace encoders {
 
-class Sha512Encoder : public EncoderInterface {
+class Account;
+struct LoginClient;
+
+class AuthenticationManager {
 public:
-    explicit Sha512Encoder(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
-    ~Sha512Encoder();
+    explicit AuthenticationManager(std::shared_ptr<encoders::EncoderInterface> encoder);
 
-    std::string EncodePassword(std::string raw, std::string salt);
-    bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
+    std::shared_ptr<encoders::EncoderInterface> encoder();
+
+    bool Authenticate(
+        std::shared_ptr<swganh::login::LoginClient> client, 
+        std::shared_ptr<swganh::login::Account> account);
+
 private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
+    std::shared_ptr<encoders::EncoderInterface> encoder_;
 };
 
-}}  // namespace login::encoders
+}}  // namespace swganh::login
 
-#endif  // LOGIN_ENCODERS_SHA512_ENCODER_H_
+#endif  // SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_

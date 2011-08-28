@@ -18,38 +18,28 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_LOGIN_BASE_LOGIN_SERVICE_H_
-#define SWGANH_LOGIN_BASE_LOGIN_SERVICE_H_
+#ifndef SWGANH_LOGIN_PROVIDERS_ACCOUNT_PROVIDER_INTERFACE_H_
+#define SWGANH_LOGIN_PROVIDERS_ACCOUNT_PROVIDER_INTERFACE_H_
 
-#include <map>
+#include <memory>
+#include <string>
 #include <tuple>
 
-#include "swganh/base/base_service.h"
-#include "swganh/base/swg_message_router.h"
-
-namespace anh {
-namespace app {
-class KernelInterface;
-}}  // namespace anh::app
+#include "swganh/login/account.h"
 
 namespace swganh {
 namespace login {
+namespace providers {
 
-struct LoginClient;
-
-class BaseLoginService 
-    : public swganh::base::BaseService 
-    , public swganh::base::SwgMessageRouter<LoginClient> {
+class AccountProviderInterface {
 public:
-    explicit BaseLoginService(std::shared_ptr<anh::app::KernelInterface> kernel);
-    
-    virtual anh::service::ServiceDescription GetServiceDescription() = 0;
+    virtual ~AccountProviderInterface() {}
 
-    virtual uint32_t GetAccountBySessionKey(const std::string& session_key) = 0;
-    
-    virtual std::shared_ptr<LoginClient> GetClientFromEndpoint(
-        const boost::asio::ip::udp::endpoint& remote_endpoint) = 0;
+    virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username) = 0;
+    virtual uint32_t FindBySessionKey(const std::string& session_key) = 0;
+    virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key) = 0;
 };
 
-}}  // namespace swganh::login
-#endif  // SWGANH_LOGIN_BASE_LOGIN_SERVICE_H_
+}}}  // namespace swganh::login::providers
+
+#endif  // SWGANH_LOGIN_PROVIDERS_ACCOUNT_PROVIDER_INTERFACE_H_
