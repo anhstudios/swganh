@@ -95,9 +95,6 @@ service::ServiceDescription LoginService::GetServiceDescription() {
     return service_description;
 }
 
-void LoginService::DescribeConfigOptions(boost::program_options::options_description& description) {
-}
-
 void LoginService::onStart() {
     character_service_ = static_pointer_cast<BaseCharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
 

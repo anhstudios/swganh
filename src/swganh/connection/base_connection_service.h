@@ -46,8 +46,6 @@ public:
         std::string listen_address, 
         uint16_t listen_port, 
         std::shared_ptr<anh::app::KernelInterface> kernel);
-    
-    void DescribeConfigOptions(boost::program_options::options_description& description);
 
     void onStart();
     void onStop();
@@ -56,8 +54,6 @@ public:
         const boost::asio::ip::udp::endpoint& remote_endpoint);
 
 protected:
-    virtual void OnDescribeConfigOptions(boost::program_options::options_description& description) = 0;
-    
     const std::string& listen_address();
 
     uint16_t listen_port();

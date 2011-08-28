@@ -79,7 +79,6 @@ public:
     
     anh::service::ServiceDescription GetServiceDescription();
 
-    void DescribeConfigOptions(boost::program_options::options_description& description);
     uint32_t GetAccountBySessionKey(const std::string& session_key);
         
     std::shared_ptr<swganh::login::LoginClient> GetClientFromEndpoint(

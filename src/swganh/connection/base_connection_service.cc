@@ -47,10 +47,6 @@ BaseConnectionService::BaseConnectionService(
     soe_server_->event_dispatcher(kernel->GetEventDispatcher());
 }
 
-void BaseConnectionService::DescribeConfigOptions(boost::program_options::options_description& description) {
-    OnDescribeConfigOptions(description);
-}
-
 void BaseConnectionService::onStart() {
     soe_server_->Start(listen_port_);
     

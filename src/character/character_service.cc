@@ -128,8 +128,6 @@ void CharacterService::subscribe() {
     
 }
 
-void CharacterService::DescribeConfigOptions(boost::program_options::options_description& description) {}
-
 vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account_id) {
     vector<CharacterData> characters;
     

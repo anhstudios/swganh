@@ -64,8 +64,6 @@ public:
 
     void subscribe();
 
-    void DescribeConfigOptions(boost::program_options::options_description& description);
-
     // CharacterService API Methods
 
     std::vector<swganh::character::CharacterData> GetCharactersForAccount(uint64_t account_id);

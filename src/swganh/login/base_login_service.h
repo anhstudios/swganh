@@ -45,7 +45,6 @@ public:
     
     virtual anh::service::ServiceDescription GetServiceDescription() = 0;
 
-    virtual void DescribeConfigOptions(boost::program_options::options_description& description) = 0;
     virtual uint32_t GetAccountBySessionKey(const std::string& session_key) = 0;
     
     virtual std::shared_ptr<LoginClient> GetClientFromEndpoint(

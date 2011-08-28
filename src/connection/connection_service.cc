@@ -89,10 +89,6 @@ service::ServiceDescription ConnectionService::GetServiceDescription() {
     return service_description;
 }
 
-void ConnectionService::OnDescribeConfigOptions(
-    boost::program_options::options_description& description) 
-{}
-
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
      

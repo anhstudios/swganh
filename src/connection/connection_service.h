@@ -64,8 +64,6 @@ public:
 
     anh::service::ServiceDescription GetServiceDescription();
     
-    void OnDescribeConfigOptions(boost::program_options::options_description& description);
-    
     void subscribe();
 
 private:
