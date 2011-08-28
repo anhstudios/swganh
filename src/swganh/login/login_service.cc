@@ -36,6 +36,7 @@
 #include "anh/network/soe/server.h"
 
 #include "anh/service/service_manager.h"
+#include "anh/plugin/plugin_manager.h"
 
 #include "swganh/base/swg_message_handler.h"
 
@@ -80,10 +81,18 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, shared_p
         bind(&LoginService::RouteMessage, this, placeholders::_1)));
     soe_server_->event_dispatcher(kernel->GetEventDispatcher());
     
-    auto encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
+    account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
+    if (!account_provider_) 
+    {
+        account_provider_ = make_shared<providers::MysqlAccountProvider>(kernel->GetDatabaseManager());
+    }
+
+    auto encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
+    if (!encoder) {
+        encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
+    }
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
-    account_provider_ = make_shared<providers::MysqlAccountProvider>(kernel->GetDatabaseManager());
 }
 
 LoginService::~LoginService() {}
