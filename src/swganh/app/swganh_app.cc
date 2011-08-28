@@ -79,6 +79,8 @@ options_description AppConfig::BuildConfigDescription() {
             boost::program_options::value<int>(&login_config.login_error_timeout_secs)->default_value(5),
             "The number of seconds to wait before disconnecting a client after failed login attempt")
             
+        ("service.connection.ping_port", boost::program_options::value<uint16_t>(&connection_config.ping_port),
+            "The port the connection service will listen for incoming client ping requests on")
         ("service.connection.udp_port", boost::program_options::value<uint16_t>(&connection_config.listen_port),
             "The port the connection service will listen for incoming client connections on")
         ("service.connection.address", boost::program_options::value<string>(&connection_config.listen_address),
@@ -259,6 +261,7 @@ void SwganhApp::LoadCoreServices_()
     auto connection_service = make_shared<ConnectionService>(
         app_config.connection_config.listen_address, 
         app_config.connection_config.listen_port, 
+        app_config.connection_config.ping_port, 
         kernel_);
 
     kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);

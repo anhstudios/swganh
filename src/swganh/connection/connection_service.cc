@@ -13,6 +13,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/connection/ping_server.h"
 #include "swganh/connection/connection_client.h"
 #include "swganh/connection/messages/logout_message.h"
 #include "swganh/connection/providers/mysql_session_provider.h"
@@ -35,6 +36,7 @@ using boost::asio::ip::udp;
 ConnectionService::ConnectionService(
         string listen_address, 
         uint16_t listen_port, 
+        uint16_t ping_port, 
         std::shared_ptr<anh::app::KernelInterface> kernel)
     : BaseService(kernel)
 #pragma warning(push)
@@ -43,6 +45,7 @@ ConnectionService::ConnectionService(
         return GetClientFromEndpoint(endpoint);  
       })
 #pragma warning(pop)
+    , ping_server_(nullptr)
     , listen_address_(listen_address)
     , listen_port_(listen_port)
     , soe_server_(nullptr)
@@ -63,7 +66,7 @@ ServiceDescription ConnectionService::GetServiceDescription() {
         listen_address(), 
         0,
         listen_port(), 
-        0);
+        ping_port_);
 
     return service_description;
 }
@@ -90,6 +93,7 @@ void ConnectionService::subscribe() {
 }
 
 void ConnectionService::onStart() {
+    ping_server_ = make_shared<PingServer>(kernel()->GetIoService(), ping_port_);
     soe_server_->Start(listen_port_);
     
     character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    

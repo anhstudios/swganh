@@ -38,6 +38,7 @@ struct AppConfig {
     struct ConnectionConfig {
         std::string listen_address;
         uint16_t listen_port;
+        uint16_t ping_port;
     } connection_config;
 
     boost::program_options::options_description BuildConfigDescription();

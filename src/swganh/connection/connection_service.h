@@ -36,6 +36,7 @@ class Server;
 namespace swganh {
 namespace connection {
     
+class PingServer;
 struct ConnectionClient;
     
 class ConnectionService 
@@ -52,6 +53,7 @@ public:
     ConnectionService(
         std::string listen_address, 
         uint16_t listen_port, 
+        uint16_t ping_port, 
         std::shared_ptr<anh::app::KernelInterface> kernel);
 
     anh::service::ServiceDescription GetServiceDescription();
@@ -86,6 +88,7 @@ private:
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
     void AddClient_(uint64_t player_id, std::shared_ptr<swganh::connection::ConnectionClient> client);
 
+    std::shared_ptr<PingServer> ping_server_;
     std::shared_ptr<providers::SessionProviderInterface> session_provider_;
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
@@ -95,6 +98,7 @@ private:
 
     std::string listen_address_;
     uint16_t listen_port_;
+    uint16_t ping_port_;
 };
     
 }}  // namespace swganh::connection
