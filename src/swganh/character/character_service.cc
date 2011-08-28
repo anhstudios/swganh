@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "character/character_service.h"
+#include "swganh/character/character_service.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -78,7 +78,6 @@ using namespace swganh::character::messages;
 using namespace swganh::connection::messages;
 using namespace swganh::login;
 using namespace swganh::scene::messages;
-using namespace character;
 using namespace anh;
 using namespace app;
 using namespace event_dispatcher;
@@ -87,7 +86,7 @@ using namespace std;
 using namespace swganh::connection;
 
 CharacterService::CharacterService(shared_ptr<KernelInterface> kernel) 
-    : BaseCharacterService(kernel) {
+    : BaseService(kernel) {
 }
 
 CharacterService::~CharacterService() {}

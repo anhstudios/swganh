@@ -102,7 +102,7 @@ service::ServiceDescription LoginService::GetServiceDescription() {
 }
 
 void LoginService::onStart() {
-    character_service_ = static_pointer_cast<BaseCharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
+    character_service_ = static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
 
     soe_server_->Start(listen_port_);
     

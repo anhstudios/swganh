@@ -31,7 +31,7 @@
 #include "swganh/base/base_service.h"
 #include "swganh/base/swg_message_router.h"
 
-#include "swganh/character/base_character_service.h"
+#include "swganh/character/character_service.h"
 
 #include "swganh/login/login_client.h"
 
@@ -110,7 +110,7 @@ private:
     void UpdateGalaxyStatus_();
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
-    std::shared_ptr<swganh::character::BaseCharacterService> character_service_;
+    std::shared_ptr<swganh::character::CharacterService> character_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
     

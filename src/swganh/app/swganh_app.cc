@@ -18,6 +18,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/character/character_service.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
 
@@ -28,6 +29,7 @@ using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
 using namespace swganh::login;
+using namespace swganh::character;
 using namespace swganh::connection;
 
 options_description AppConfig::BuildConfigDescription() {
@@ -216,9 +218,9 @@ void SwganhApp::LoadPlugins_(vector<string> plugins) {
 
     auto plugin_manager = kernel_->GetPluginManager();
 
-    if (plugins.empty()) {
-        plugin_manager->LoadAllPlugins(kernel_->GetAppConfig().plugin_directory);
-    } else {
+    if (!plugins.empty()) {
+        auto plugin_manager = kernel_->GetPluginManager();
+
         for_each(plugins.begin(), plugins.end(), [plugin_manager] (const string& plugin) {
             plugin_manager->LoadPlugin(plugin);
         });
@@ -260,4 +262,8 @@ void SwganhApp::LoadCoreServices_()
         kernel_);
 
     kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
+        
+    auto character_service = make_shared<CharacterService>(kernel_);
+
+    kernel_->GetServiceManager()->AddService("CharacterService", character_service);
 }

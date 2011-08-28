@@ -18,13 +18,16 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef CHARACTER_CHARACTER_SERVICE_H_
-#define CHARACTER_CHARACTER_SERVICE_H_
+#ifndef SWGANH_CHARACTER_CHARACTER_SERVICE_H_
+#define SWGANH_CHARACTER_CHARACTER_SERVICE_H_
 
-#include "swganh/character/base_character_service.h"
+#include <cstdint>
+#include <tuple>
+#include <vector>
 
 #include "swganh/base/base_service.h"
 
+#include "swganh/character/character_data.h"
 #include "swganh/character/messages/select_character.h"
 #include "swganh/character/messages/delete_character_message.h"
 #include "swganh/character/messages/client_create_character.h"
@@ -50,9 +53,10 @@ namespace login {
 struct LoginClient;
 }}  // namespace swganh::login
 
+namespace swganh {
 namespace character {
     
-class CharacterService : public swganh::character::BaseCharacterService {
+class CharacterService : public swganh::base::BaseService {
 public:
     explicit CharacterService(std::shared_ptr<anh::app::KernelInterface> kernel);
     ~CharacterService();
@@ -86,6 +90,6 @@ private:
     std::string setCharacterCreateErrorCode_(uint32_t error_id);
 };
 
-}  // namespace character
+}}  // namespace swganh::character
 
-#endif  // CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
+#endif  // SWGANH_CHARACTER_CHARACTER_SERVICE_H_

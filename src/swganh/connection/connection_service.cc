@@ -92,7 +92,7 @@ void ConnectionService::subscribe() {
 void ConnectionService::onStart() {
     soe_server_->Start(listen_port_);
     
-    character_service_ = std::static_pointer_cast<BaseCharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
+    character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
     login_service_ = std::static_pointer_cast<swganh::login::LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
 }
 
@@ -117,7 +117,7 @@ std::unique_ptr<anh::network::soe::Server>& ConnectionService::server() {
     return soe_server_;
 }
 
-shared_ptr<BaseCharacterService> ConnectionService::character_service() {
+shared_ptr<CharacterService> ConnectionService::character_service() {
     return character_service_;
 }
 
