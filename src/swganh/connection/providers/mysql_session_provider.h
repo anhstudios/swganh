@@ -18,15 +18,16 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_
-#define CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_
+#ifndef SWGANH_CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_
+#define SWGANH_CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_
 
-#include "connection/providers/session_provider_interface.h"
+#include "swganh/connection/providers/session_provider_interface.h"
 #include <memory>
 
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
+namespace swganh {
 namespace connection {
 namespace providers {
 
@@ -42,6 +43,6 @@ private:
     std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 
-}}  // namespace login::providers
+}}}  // namespace swganh::connection::providers
 
-#endif  // LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+#endif  // SWGANH_CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_

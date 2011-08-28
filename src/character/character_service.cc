@@ -57,7 +57,7 @@
 #include "swganh/scene/messages/scene_create_object_by_crc.h"
 #include "swganh/scene/messages/scene_end_baselines.h"
 
-#include "swganh/connection/base_connection_service.h"
+#include "swganh/connection/connection_service.h"
 #include "swganh/connection/connection_client.h"
 #include "swganh/connection/messages/heart_beat.h"
 
@@ -110,7 +110,7 @@ void CharacterService::onStart() {}
 void CharacterService::onStop() {}
 
 void CharacterService::subscribe() {
-    auto connection_service = std::static_pointer_cast<BaseConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
+    auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
 
     connection_service->RegisterMessageHandler<SelectCharacter>(
         bind(&CharacterService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));

@@ -35,6 +35,11 @@ struct AppConfig {
         int login_error_timeout_secs;
     } login_config;
 
+    struct ConnectionConfig {
+        std::string listen_address;
+        uint16_t listen_port;
+    } connection_config;
+
     boost::program_options::options_description BuildConfigDescription();
 };
     

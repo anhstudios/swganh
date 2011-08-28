@@ -18,11 +18,12 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_
-#define CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_
+#ifndef SWGANH_CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_
+#define SWGANH_CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_
 
 #include <cstdint>
 
+namespace swganh {
 namespace connection {
 namespace providers {
 
@@ -35,6 +36,6 @@ public:
     virtual bool CreateGameSession(uint64_t player_id, uint32_t session_id) = 0;
 };
 
-}}  // namespace connection::providers
+}}}  // namespace swganh::connection::providers
 
-#endif  // CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_
+#endif  // SWGANH_CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_

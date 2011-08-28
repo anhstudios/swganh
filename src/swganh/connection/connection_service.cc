@@ -1,83 +1,62 @@
-/*
- This file is part of SWGANH. For more information, visit http://swganh.com
- 
- Copyright (c) 2006 - 2011 The SWG:ANH Team
 
- This program is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License
- as published by the Free Software Foundation; either version 2
- of the License, or (at your option) any later version.
+#include "swganh/connection/connection_service.h"
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
-#include "connection/connection_service.h"
-
-#include <iostream>
-#include <tuple>
+#include <boost/lexical_cast.hpp>
 #include <glog/logging.h>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include "anh/crc.h"
-#include "anh/app/kernel_interface.h"
 #include "anh/event_dispatcher/basic_event.h"
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
-#include "anh/plugin/plugin_manager.h"
+#include "anh/network/soe/packet.h"
+#include "anh/network/soe/server.h"
 #include "anh/service/service_manager.h"
 
-#include "anh/network/soe/packet.h"
-#include "anh/network/soe/session.h"
+#include "swganh/app/swganh_kernel.h"
 
-#include "character/character_service.h"
-
-#include "swganh/base/swg_message_handler.h"
-#include "swganh/character/character_data.h"
-
-#include "swganh/scene/messages/cmd_scene_ready.h"
-#include "swganh/scene/messages/cmd_start_scene.h"
-#include "swganh/scene/messages/scene_create_object_by_crc.h"
-#include "swganh/scene/messages/scene_end_baselines.h"
-
-#include "connection/providers/mysql_session_provider.h"
-
-#include "swganh/connection/messages/client_permissions_message.h"
-
-#include "swganh/connection/messages/logout_message.h"
 #include "swganh/connection/connection_client.h"
+#include "swganh/connection/messages/logout_message.h"
+#include "swganh/connection/providers/mysql_session_provider.h"
 
-using namespace anh;
-using namespace app;
-using namespace connection;
-using namespace event_dispatcher;
-using namespace swganh::login;
-using namespace swganh::connection::messages;
+using namespace anh::event_dispatcher;
+using namespace anh::network;
+using namespace anh::service;
+
 using namespace swganh::base;
 using namespace swganh::character;
 using namespace swganh::connection;
+using namespace swganh::connection::messages;
+using namespace swganh::login;
 using namespace swganh::scene::messages;
+
 using namespace std;
+
+using boost::asio::ip::udp;
 
 ConnectionService::ConnectionService(
         string listen_address, 
         uint16_t listen_port, 
-        shared_ptr<KernelInterface> kernel) 
-    : swganh::connection::BaseConnectionService(listen_address, listen_port, kernel)
-{        
-    session_provider_ = make_shared<connection::providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
+        std::shared_ptr<anh::app::KernelInterface> kernel)
+    : BaseService(kernel)
+#pragma warning(push)
+#pragma warning(disable: 4355)
+    , SwgMessageRouter([=] (const boost::asio::ip::udp::endpoint& endpoint) {
+        return GetClientFromEndpoint(endpoint);  
+      })
+#pragma warning(pop)
+    , listen_address_(listen_address)
+    , listen_port_(listen_port)
+    , soe_server_(nullptr)
+{
+    soe_server_.reset(new soe::Server(
+        kernel->GetIoService(),
+        bind(&ConnectionService::RouteMessage, this, placeholders::_1)));
+    soe_server_->event_dispatcher(kernel->GetEventDispatcher());
+
+    session_provider_ = make_shared<providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
 }
 
-ConnectionService::~ConnectionService() {}
-
-service::ServiceDescription ConnectionService::GetServiceDescription() {
-    service::ServiceDescription service_description(
+ServiceDescription ConnectionService::GetServiceDescription() {
+    ServiceDescription service_description(
         "ANH Connection Service",
         "connection",
         "0.1",
@@ -110,6 +89,56 @@ void ConnectionService::subscribe() {
     });
 }
 
+void ConnectionService::onStart() {
+    soe_server_->Start(listen_port_);
+    
+    character_service_ = std::static_pointer_cast<BaseCharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
+    login_service_ = std::static_pointer_cast<swganh::login::LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
+}
+
+void ConnectionService::onStop() {
+    soe_server_->Shutdown();
+    clients_.clear();
+}
+
+const string& ConnectionService::listen_address() {
+    return listen_address_;
+}
+
+uint16_t ConnectionService::listen_port() {
+    return listen_port_;
+}
+
+ConnectionService::ClientMap& ConnectionService::clients() {
+    return clients_;
+}
+
+std::unique_ptr<anh::network::soe::Server>& ConnectionService::server() {
+    return soe_server_;
+}
+
+shared_ptr<BaseCharacterService> ConnectionService::character_service() {
+    return character_service_;
+}
+
+shared_ptr<LoginService> ConnectionService::login_service() {
+    return login_service_;
+}
+
+shared_ptr<ConnectionClient> ConnectionService::GetClientFromEndpoint(
+        const udp::endpoint& remote_endpoint)
+{
+    shared_ptr<ConnectionClient> client = nullptr;
+    
+    ClientMap::accessor a;
+
+    if (clients_.find(a, remote_endpoint)) {
+        client = a->second;
+    }
+
+    return client;
+}
+
 void ConnectionService::AddClient_(
     uint64_t player_id, 
     std::shared_ptr<ConnectionClient> client) 
@@ -139,7 +168,6 @@ void ConnectionService::AddClient_(
 
     DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
 }
-
 
 void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
     active().Async([=] () {
@@ -201,3 +229,4 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
 
     client->session->SendMessage(client_permissions);
 }
+

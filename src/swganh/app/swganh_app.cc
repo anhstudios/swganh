@@ -18,7 +18,9 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
+
 
 using namespace anh;
 using namespace anh::app;
@@ -26,6 +28,7 @@ using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
 using namespace swganh::login;
+using namespace swganh::connection;
 
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
@@ -73,6 +76,11 @@ options_description AppConfig::BuildConfigDescription() {
         ("service.login.login_error_timeout_secs", 
             boost::program_options::value<int>(&login_config.login_error_timeout_secs)->default_value(5),
             "The number of seconds to wait before disconnecting a client after failed login attempt")
+            
+        ("service.connection.udp_port", boost::program_options::value<uint16_t>(&connection_config.listen_port),
+            "The port the connection service will listen for incoming client connections on")
+        ("service.connection.address", boost::program_options::value<string>(&connection_config.listen_address),
+            "The public address the connection service will listen for incoming client connections on")
     ;
 
     return desc;
@@ -244,4 +252,12 @@ void SwganhApp::LoadCoreServices_()
     login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
     
     kernel_->GetServiceManager()->AddService("LoginService", login_service);
+
+    
+    auto connection_service = make_shared<ConnectionService>(
+        app_config.connection_config.listen_address, 
+        app_config.connection_config.listen_port, 
+        kernel_);
+
+    kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
 }

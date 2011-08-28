@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "connection/providers/mysql_session_provider.h"
+#include "swganh/connection/providers/mysql_session_provider.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <cppconn/exception.h>
@@ -33,7 +33,7 @@
 #include "anh/database/database_manager.h"
 
 
-using namespace connection;
+using namespace swganh::connection;
 using namespace providers;
 using namespace std;
 
