@@ -18,37 +18,33 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef ANH_SERVICE_SERVICE_INTERFACE_H_
-#define ANH_SERVICE_SERVICE_INTERFACE_H_
+#ifndef SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
+#define SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
 
-#include <boost/program_options/options_description.hpp>
-#include "anh/service/service_description.h"
+#include <memory>
 
-namespace anh {
-namespace service {
+#include "swganh/login/encoders/encoder_interface.h"
 
-class ServiceInterface {
+namespace swganh {
+namespace login {
+
+class Account;
+struct LoginClient;
+
+class AuthenticationManager {
 public:
-    virtual ~ServiceInterface() {}
+    explicit AuthenticationManager(std::shared_ptr<encoders::EncoderInterface> encoder);
 
-    virtual ServiceDescription GetServiceDescription() = 0;
+    std::shared_ptr<encoders::EncoderInterface> encoder();
 
-    /*
-    *  @brief Starts up the service, sets running_ to true
-    */
-    virtual void Start() = 0;
-    /*
-    *  @brief Stops the service, sets running_ to false
-    */
-    virtual void Stop() = 0;
+    bool Authenticate(
+        std::shared_ptr<swganh::login::LoginClient> client, 
+        std::shared_ptr<swganh::login::Account> account);
 
-    /*
-    *  @brief returns true if running is set to true
-    */
-    virtual bool IsRunning() const = 0;
+private:
+    std::shared_ptr<encoders::EncoderInterface> encoder_;
 };
 
-}}  // namespace anh::service
+}}  // namespace swganh::login
 
-
-#endif  // ANH_SERVICE_SERVICE_INTERFACE_H_
+#endif  // SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_

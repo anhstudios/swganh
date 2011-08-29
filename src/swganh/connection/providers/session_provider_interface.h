@@ -18,37 +18,24 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef ANH_SERVICE_SERVICE_INTERFACE_H_
-#define ANH_SERVICE_SERVICE_INTERFACE_H_
+#ifndef SWGANH_CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_
+#define SWGANH_CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_
 
-#include <boost/program_options/options_description.hpp>
-#include "anh/service/service_description.h"
+#include <cstdint>
 
-namespace anh {
-namespace service {
+namespace swganh {
+namespace connection {
+namespace providers {
 
-class ServiceInterface {
+class SessionProviderInterface {
 public:
-    virtual ~ServiceInterface() {}
+    virtual ~SessionProviderInterface() {}
 
-    virtual ServiceDescription GetServiceDescription() = 0;
-
-    /*
-    *  @brief Starts up the service, sets running_ to true
-    */
-    virtual void Start() = 0;
-    /*
-    *  @brief Stops the service, sets running_ to false
-    */
-    virtual void Stop() = 0;
-
-    /*
-    *  @brief returns true if running is set to true
-    */
-    virtual bool IsRunning() const = 0;
+    virtual uint64_t GetPlayerId(uint32_t account_id) = 0;
+    virtual uint32_t GetAccountId(uint64_t player_id) = 0;
+    virtual bool CreateGameSession(uint64_t player_id, uint32_t session_id) = 0;
 };
 
-}}  // namespace anh::service
+}}}  // namespace swganh::connection::providers
 
-
-#endif  // ANH_SERVICE_SERVICE_INTERFACE_H_
+#endif  // SWGANH_CONNECTION_PROVIDERS_SESSION_PROVIDER_INTERFACE_H_

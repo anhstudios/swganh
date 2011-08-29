@@ -18,37 +18,28 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef ANH_SERVICE_SERVICE_INTERFACE_H_
-#define ANH_SERVICE_SERVICE_INTERFACE_H_
+#ifndef SWGANH_LOGIN_PROVIDERS_ACCOUNT_PROVIDER_INTERFACE_H_
+#define SWGANH_LOGIN_PROVIDERS_ACCOUNT_PROVIDER_INTERFACE_H_
 
-#include <boost/program_options/options_description.hpp>
-#include "anh/service/service_description.h"
+#include <memory>
+#include <string>
+#include <tuple>
 
-namespace anh {
-namespace service {
+#include "swganh/login/account.h"
 
-class ServiceInterface {
+namespace swganh {
+namespace login {
+namespace providers {
+
+class AccountProviderInterface {
 public:
-    virtual ~ServiceInterface() {}
+    virtual ~AccountProviderInterface() {}
 
-    virtual ServiceDescription GetServiceDescription() = 0;
-
-    /*
-    *  @brief Starts up the service, sets running_ to true
-    */
-    virtual void Start() = 0;
-    /*
-    *  @brief Stops the service, sets running_ to false
-    */
-    virtual void Stop() = 0;
-
-    /*
-    *  @brief returns true if running is set to true
-    */
-    virtual bool IsRunning() const = 0;
+    virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username) = 0;
+    virtual uint32_t FindBySessionKey(const std::string& session_key) = 0;
+    virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key) = 0;
 };
 
-}}  // namespace anh::service
+}}}  // namespace swganh::login::providers
 
-
-#endif  // ANH_SERVICE_SERVICE_INTERFACE_H_
+#endif  // SWGANH_LOGIN_PROVIDERS_ACCOUNT_PROVIDER_INTERFACE_H_

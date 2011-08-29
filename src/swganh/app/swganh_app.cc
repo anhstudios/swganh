@@ -18,11 +18,19 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/character/character_service.h"
+#include "swganh/connection/connection_service.h"
+#include "swganh/login/login_service.h"
+
+
 using namespace anh;
 using namespace anh::app;
 using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
+using namespace swganh::login;
+using namespace swganh::character;
+using namespace swganh::connection;
 
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
@@ -57,6 +65,26 @@ options_description AppConfig::BuildConfigDescription() {
             "Username for authentication with the galaxy datastore")
         ("db.galaxy.password", boost::program_options::value<std::string>(&galaxy_db.password),
             "Password for authentication with the galaxy datastore")
+            
+        ("service.login.udp_port", 
+            boost::program_options::value<uint16_t>(&login_config.listen_port),
+            "The port the login service will listen for incoming client connections on")
+        ("service.login.address", 
+            boost::program_options::value<string>(&login_config.listen_address),
+            "The public address the login service will listen for incoming client connections on")
+        ("service.login.status_check_duration_secs", 
+            boost::program_options::value<int>(&login_config.galaxy_status_check_duration_secs),
+            "The amount of time between checks for updated galaxy status")
+        ("service.login.login_error_timeout_secs", 
+            boost::program_options::value<int>(&login_config.login_error_timeout_secs)->default_value(5),
+            "The number of seconds to wait before disconnecting a client after failed login attempt")
+            
+        ("service.connection.ping_port", boost::program_options::value<uint16_t>(&connection_config.ping_port),
+            "The port the connection service will listen for incoming client ping requests on")
+        ("service.connection.udp_port", boost::program_options::value<uint16_t>(&connection_config.listen_port),
+            "The port the connection service will listen for incoming client connections on")
+        ("service.connection.address", boost::program_options::value<string>(&connection_config.listen_address),
+            "The public address the connection service will listen for incoming client connections on")
     ;
 
     return desc;
@@ -97,10 +125,11 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
     // Load the plugin configuration.
     LoadPlugins_(app_config.plugins);
 
-    kernel_->GetServiceManager()->Initialize(service_config_);
+    // Load core services
+    LoadCoreServices_();
 
-    LoadServiceConfig_(service_config_);
-
+    // Initialize plugin services
+    kernel_->GetServiceManager()->Initialize();
     
     initialized_ = true;
 }
@@ -186,31 +215,14 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
     }
 }
 
-void SwganhApp::LoadServiceConfig_(ServiceConfig& service_config) {    
-    ifstream config_file("config/swganh.cfg");
-
-    if (!config_file.is_open()) {
-        throw runtime_error("Unable to open the configuration file at: config/swganh.cfg");
-    }
-
-    try {
-        store(parse_config_file(config_file, service_config.first, true), service_config.second);
-    } catch(const std::exception& e) {
-        throw runtime_error("Unable to parse the configuration file at: config/swganh.cfg: " + std::string(e.what()));
-    }
-
-    notify(service_config.second);
-    config_file.close();
-}
-
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
     DLOG(INFO) << "Loading plugins";
 
     auto plugin_manager = kernel_->GetPluginManager();
 
-    if (plugins.empty()) {
-        plugin_manager->LoadAllPlugins(kernel_->GetAppConfig().plugin_directory);
-    } else {
+    if (!plugins.empty()) {
+        auto plugin_manager = kernel_->GetPluginManager();
+
         for_each(plugins.begin(), plugins.end(), [plugin_manager] (const string& plugin) {
             plugin_manager->LoadPlugin(plugin);
         });
@@ -229,4 +241,32 @@ void SwganhApp::CleanupServices_() {
     for_each(services.begin(), services.end(), [this] (anh::service::ServiceDescription& service) {
         service_directory_->removeService(service);
     });
+}
+
+void SwganhApp::LoadCoreServices_() 
+{
+    auto app_config = kernel_->GetAppConfig();
+
+    auto login_service = make_shared<LoginService>(
+        app_config.login_config.listen_address, 
+        app_config.login_config.listen_port, 
+        kernel_);
+
+    login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
+    login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
+    
+    kernel_->GetServiceManager()->AddService("LoginService", login_service);
+
+    
+    auto connection_service = make_shared<ConnectionService>(
+        app_config.connection_config.listen_address, 
+        app_config.connection_config.listen_port, 
+        app_config.connection_config.ping_port, 
+        kernel_);
+
+    kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
+        
+    auto character_service = make_shared<CharacterService>(kernel_);
+
+    kernel_->GetServiceManager()->AddService("CharacterService", character_service);
 }

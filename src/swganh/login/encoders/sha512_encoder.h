@@ -18,37 +18,30 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef ANH_SERVICE_SERVICE_INTERFACE_H_
-#define ANH_SERVICE_SERVICE_INTERFACE_H_
+#ifndef SWGANH_LOGIN_ENCODERS_SHA512_ENCODER_H_
+#define SWGANH_LOGIN_ENCODERS_SHA512_ENCODER_H_
 
-#include <boost/program_options/options_description.hpp>
-#include "anh/service/service_description.h"
+#include "swganh/login/encoders/encoder_interface.h"
+#include <memory>
 
-namespace anh {
-namespace service {
+namespace anh { namespace database { class DatabaseManagerInterface; 
+}}  // anh::database
 
-class ServiceInterface {
+namespace swganh {
+namespace login {
+namespace encoders {
+
+class Sha512Encoder : public EncoderInterface {
 public:
-    virtual ~ServiceInterface() {}
+    explicit Sha512Encoder(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    ~Sha512Encoder();
 
-    virtual ServiceDescription GetServiceDescription() = 0;
-
-    /*
-    *  @brief Starts up the service, sets running_ to true
-    */
-    virtual void Start() = 0;
-    /*
-    *  @brief Stops the service, sets running_ to false
-    */
-    virtual void Stop() = 0;
-
-    /*
-    *  @brief returns true if running is set to true
-    */
-    virtual bool IsRunning() const = 0;
+    std::string EncodePassword(std::string raw, std::string salt);
+    bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
+private:
+    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 
-}}  // namespace anh::service
+}}}  // namespace swganh::login::encoders
 
-
-#endif  // ANH_SERVICE_SERVICE_INTERFACE_H_
+#endif  // SWGANH_LOGIN_ENCODERS_SHA512_ENCODER_H_

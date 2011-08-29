@@ -6,9 +6,6 @@
 #include <memory>
 #include <string>
 
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
-
 namespace anh {
 namespace plugin {
 class PluginManager;
@@ -19,13 +16,11 @@ namespace service {
 
 class ServiceInterface;
     
-typedef std::pair<boost::program_options::options_description, boost::program_options::variables_map> ServiceConfig;
-
 class ServiceManager {
 public:
     explicit ServiceManager(std::shared_ptr<anh::plugin::PluginManager> plugin_manager);
 
-    void Initialize(ServiceConfig& service_config);
+    void Initialize();
 
     std::shared_ptr<ServiceInterface> GetService(std::string name);
     void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
