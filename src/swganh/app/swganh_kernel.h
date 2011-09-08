@@ -16,7 +16,7 @@ namespace swganh {
 namespace app {
     
 struct AppConfig {
-    bool single_server_mode;
+	std::string server_mode;
     std::vector<std::string> plugins;
     std::string plugin_directory;
     std::string galaxy_name;
