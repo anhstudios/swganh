@@ -38,8 +38,9 @@ options_description AppConfig::BuildConfigDescription() {
     desc.add_options()
         ("help,h", "Display help message and config options")
 
-        ("single_server_mode", boost::program_options::value<bool>(&single_server_mode)->default_value(true),
-            "Disables cluster support and runs the server in a single executable")
+		("server_mode", boost::program_options::value<std::string>(&server_mode)->default_value("all"),
+			"Specifies the service configuration mode to run the server in.")
+
         ("plugin,p", boost::program_options::value<std::vector<std::string>>(&plugins),
             "Only used when single_server_mode is disabled, loads a module of the specified name")
         ("plugin_directory", value<string>(&plugin_directory)->default_value("plugins"),
@@ -247,26 +248,32 @@ void SwganhApp::LoadCoreServices_()
 {
     auto app_config = kernel_->GetAppConfig();
 
-    auto login_service = make_shared<LoginService>(
-        app_config.login_config.listen_address, 
-        app_config.login_config.listen_port, 
-        kernel_);
+	if(strcmp("login", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
+	{
+		auto login_service = make_shared<LoginService>(
+		app_config.login_config.listen_address, 
+		app_config.login_config.listen_port, 
+		kernel_);
 
-    login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
-    login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
+		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
+		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
     
-    kernel_->GetServiceManager()->AddService("LoginService", login_service);
+		kernel_->GetServiceManager()->AddService("LoginService", login_service);
+	} 
+	if(strcmp("connection", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
+	{
+		auto connection_service = make_shared<ConnectionService>(
+			app_config.connection_config.listen_address, 
+			app_config.connection_config.listen_port, 
+			app_config.connection_config.ping_port, 
+			kernel_);
 
-    
-    auto connection_service = make_shared<ConnectionService>(
-        app_config.connection_config.listen_address, 
-        app_config.connection_config.listen_port, 
-        app_config.connection_config.ping_port, 
-        kernel_);
+		kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
+	}
+	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
+	{
+		auto character_service = make_shared<CharacterService>(kernel_);
 
-    kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
-        
-    auto character_service = make_shared<CharacterService>(kernel_);
-
-    kernel_->GetServiceManager()->AddService("CharacterService", character_service);
+		kernel_->GetServiceManager()->AddService("CharacterService", character_service);
+	}
 }
