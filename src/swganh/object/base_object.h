@@ -2,9 +2,28 @@
 #ifndef SWGANH_OBJECT_BASE_OBJECT_H_
 #define SWGANH_OBJECT_BASE_OBJECT_H_
 
+#include <cstdint>
+#include <functional>
+#include <string>
+#include <vector>
+
+#include "swganh/scene/messages/baselines_message.h"
+#include "swganh/scene/messages/deltas_message.h"
+
 namespace swganh {
 namespace object {
     
+typedef std::vector<
+    std::pair<uint8_t, swganh::scene::messages::BaselinesMessage>
+> BaselineCacheContainer;
+
+BaselineCacheContainer baselines_cache_;
+
+typedef std::vector<
+    std::pair<uint8_t, swganh::scene::messages::DeltasMessage>
+> DeltasCacheContainer;
+
+
 class BaseObject
 {
 public:
@@ -23,82 +42,37 @@ public:
     
 public:
     
-    std::wstring GetCustomName() const
-    {
-        return custom_name_;
-    }
+    virtual ~BaseObject() {}
     
-    void SetCustomName(std::wstring custom_name)
-    {
-        custom_name_ = custom_name;
-        
-        // Only build a message if there are observers.
-        if (scene->HasObservers(object_id))
-        {
-            DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
-            message.data.write<uint16_t>(2); // update type
-            message.data.write(custom_name);
-        
-            scene->UpdateObservers(object_id, message);
-            delta_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));            
-        }
-    }
+    uint64_t GetObjectId() const;
+
+    std::wstring GetCustomName() const;
+    
+    void SetCustomName(std::wstring custom_name);
     
     /**
      * Returns the baselines created in the last reliable update. If
      * no baselines exist yet for the object a reliable update will be
      * triggered and the results of that returned.
      */
-    BaselineCacheContainer GetBaselines()
-    {
-        if (baselines_cache_.empty())
-        {
-            ReliableUpdate();
-        }
-        
-        return baselines_cache_;
-    }
+    BaselineCacheContainer GetBaselines();
         
     /**
      * @return The deltas created since the last reliable update.
      */
-    DeltasCacheContainer GetDeltas()
-    {
-        if (!deltas_cache_.empty())
-        {
-            return deltas_cache_;
-        }
-        
-        return DeltasCacheContainer();
-    }
+    DeltasCacheContainer GetDeltas();
     
-    BaselinesMessage CreateBaselinesMessage(uint16_t update_type)
-    {
-        BaselinesMessage message;
-        message.object_id = GetObjectId();
-        message.object_type = GetType();
-        message.update_type = update_type;
-    }
-    
-    DeltasMessage CreateDeltasMessage(uint16_t update_type)
-    {        
-        DeltasMessage message;
-        message.object_id = GetObjectId();
-        message.object_type = GetType();
-        message.update_type = update_type;
-    }
-    
-    void ReliableUpdate()
-    {
-        baselines_cache_.clear();
-        deltas_cache_.clear();
-        
-        OnReliableUpdate();
-    }
+    void ReliableUpdate();
     
 protected:
     virtual void OnReliableUpdate() = 0;
+
+    virtual uint32_t GetType() = 0;
+        
+    swganh::scene::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type);
     
+    swganh::scene::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type);
+
 private:
     uint64_t object_id_;             // create
     std::string template_string_;    // create
@@ -111,16 +85,8 @@ private:
     std::wstring custom_name_;       // update 3
     uint32_t volume_;                // update 3
     uint32_t scene_id_;              // update 6
-    
-    typedef std::vector<
-        std::pair<uint8_t, BaselinesMessage>
-    > BaselineCacheContainer;
-    
+        
     BaselineCacheContainer baselines_cache_;
-    
-    typedef std::vector<
-        std::pair<uint8_t, DeltasMessage>
-    > DeltaCacheContainer;
 
     DeltaCacheContainer deltas_cache_;
 };
