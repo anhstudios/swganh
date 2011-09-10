@@ -17,6 +17,14 @@ class DeltasMessage : public BaseBaselineMessage, public swganh::base::SwgMessag
 public:
     static const uint16_t opcount = 5;
     static const uint32_t opcode = 0x12862153;
+
+    void onSerialize(anh::ByteBuffer& buffer) const {
+        BaseBaselineMessage::onSerialize(buffer);
+    }
+
+    void onDeserialize(anh::ByteBuffer buffer) {
+        BaseBaselineMessage::onDeserialize(buffer);
+    }
 };
     
 }}}  // namespace swganh::scene::messages

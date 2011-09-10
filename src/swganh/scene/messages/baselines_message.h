@@ -16,6 +16,14 @@ namespace messages {
 struct BaselinesMessage : public BaseBaselineMessage, public swganh::base::SwgMessage<BaselinesMessage> {
     static const uint16_t opcount = 5;
     static const uint32_t opcode = 0x68A75F0C;
+
+    void onSerialize(anh::ByteBuffer& buffer) const {
+        BaseBaselineMessage::onSerialize(buffer);
+    }
+
+    void onDeserialize(anh::ByteBuffer buffer) {
+        BaseBaselineMessage::onDeserialize(buffer);
+    }
 };
     
 }}}  // namespace swganh::scene::messages
