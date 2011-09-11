@@ -9,8 +9,8 @@ namespace object {
     
 class Intangible : public BaseObject
 {
-    std::string stf_detail_file;
-    std::string stf_detail_name;
+    std::string stf_detail_file;		//update 3
+    std::string stf_detail_name;		//update 3
 };
     
 }}  // namespace

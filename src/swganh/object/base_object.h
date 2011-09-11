@@ -2,6 +2,9 @@
 #ifndef SWGANH_OBJECT_BASE_OBJECT_H_
 #define SWGANH_OBJECT_BASE_OBJECT_H_
 
+#include <cstdint>
+#include <string>
+
 namespace swganh {
 namespace object {
     
