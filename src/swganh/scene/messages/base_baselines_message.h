@@ -12,7 +12,7 @@ namespace messages {
     
 struct BaseBaselineMessage {    
     uint64_t object_id;
-    uint32_t object_type
+    uint32_t object_type;
     uint8_t view_type;    
     anh::ByteBuffer data;
 
@@ -22,7 +22,7 @@ struct BaseBaselineMessage {
         buffer.write(view_type);
 
         buffer.write(data.size());
-        buffer.write(data.data(), data.length());        
+        buffer.write(data.data(), data.size());        
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {        
