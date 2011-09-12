@@ -31,6 +31,8 @@ typedef std::vector<
     std::pair<uint8_t, swganh::scene::messages::DeltasMessage>
 > DeltasCacheContainer;
 
+DeltasCacheContainer delta_cache_;
+
 
 class BaseObject
 {
