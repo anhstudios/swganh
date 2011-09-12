@@ -3,6 +3,7 @@
 #define SWGANH_OBJECT_TANGIBLE_H_
 
 #include "swganh/object/base_object.h"
+#include <set>
 
 namespace swganh {
 namespace object {

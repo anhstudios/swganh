@@ -8,20 +8,36 @@ namespace swganh {
 namespace object {
 namespace intangible {
 
+enum WaypointStatus
+{
+    DEACTIVATED = 0,
+    ACTIVATED = 1
+};
+
 class Waypoint : public swganh::object::Intangible {
 
 public:
-	uint32_t GetUses() { return uses_; }
-	void SetUses(uint32_t uses) 
-	{
-		uses_ = uses;
+    Waypoint();
+    Waypoint(glm::vec3 coordinates, bool activated, const std::string& planet, const std::wstring& name, const std::string& color);
+	uint32_t GetUses() const { return uses_; }
+	void SetUses(uint32_t uses);
 
-		// Only build a message if there are observers.
-        if (scene->HasObservers(object_id_))
-        {
+    glm::vec3 GetCoordinates() const { return coordinates_; }
+    void SetCoordinates(const glm::vec3& coords);
+    void SetCoordinates(float x, float y, float z);
 
-		}
-	}
+    bool Active() const { return activated_flag_ == 1; }
+    void Activate();
+    void DeActivate();
+
+    const std::string& GetPlanet() { return planet_name_; }
+    void SetPlanet(const std::string& planet_name);
+
+    const std::wstring& GetName() { return name_; }
+    void SetName(const std::wstring& name);
+
+    const std::string& GetColor() { return color_; }
+    void SetColor(const std::string& color);
 
 private:
 	uint32_t uses_;					//update 3
