@@ -1,8 +1,11 @@
 
 #include "swganh/object/base_object.h"
 
+#include "swganh/scene/scene.h"
+
 using namespace std;
 using namespace swganh::object;
+using namespace swganh::scene;
 using namespace swganh::scene::messages;
 
 uint64_t BaseObject::GetObjectId() const
@@ -20,15 +23,20 @@ void BaseObject::SetCustomName(std::wstring custom_name)
     custom_name_ = custom_name;
     
     // Only build a message if there are observers.
-    //if (scene->HasObservers(object_id_))
+    if (GetScene()->HasObservers(object_id_))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         message.data.write<uint16_t>(2); // update type
         message.data.write(custom_name);
     
-        //scene->UpdateObservers(object_id_, message);
+        GetScene()->UpdateObservers(object_id_, message);
         deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));            
     }
+}
+
+shared_ptr<Scene> BaseObject::GetScene()
+{
+    return scene_;        
 }
 
 /**
@@ -36,7 +44,7 @@ void BaseObject::SetCustomName(std::wstring custom_name)
  * no baselines exist yet for the object a reliable update will be
  * triggered and the results of that returned.
  */
-BaselineCacheContainer BaseObject::GetBaselines()
+BaselinesCacheContainer BaseObject::GetBaselines()
 {
     if (baselines_cache_.empty())
     {
@@ -65,6 +73,8 @@ BaselinesMessage BaseObject::CreateBaselinesMessage(uint16_t view_type)
     message.object_id = GetObjectId();
     message.object_type = GetType();
     message.view_type = view_type;
+
+    return message;
 }
 
 DeltasMessage BaseObject::CreateDeltasMessage(uint16_t view_type)
@@ -73,6 +83,8 @@ DeltasMessage BaseObject::CreateDeltasMessage(uint16_t view_type)
     message.object_id = GetObjectId();
     message.object_type = GetType();
     message.view_type = view_type;
+
+    return message;
 }
 
 void BaseObject::ReliableUpdate()
