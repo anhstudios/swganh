@@ -2,7 +2,7 @@
 #define SWGANH_OBJECT_INTAGIBLE_WAYPOINT_H_
 
 #include "swganh/object/intangible.h"
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 
 namespace swganh {
 namespace object {
@@ -14,6 +14,9 @@ enum WaypointStatus
     ACTIVATED = 1
 };
 
+/**
+*  @brief Object that defines the data in a Waypoint
+*/
 class Waypoint : public swganh::object::Intangible {
 
 public:

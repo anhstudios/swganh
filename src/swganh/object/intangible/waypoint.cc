@@ -1,6 +1,7 @@
 
 #include "waypoint.h"
 #include "swganh/scene/messages/deltas_message.h"
+#include "swganh/scene/scene.h"
 
 using namespace swganh::object::intangible;
 using namespace swganh::scene::messages;
@@ -29,99 +30,99 @@ void Waypoint::SetUses(uint32_t uses)
 {
     uses_ = uses;
     
-    if (scene->HasObservers(GetObjectId()))
+    if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         message.data.write<uint16_t>(4);
         message.data.write(0);
-        scene->UpdateObservers(GetObjectId(), message);
+        GetScene()->UpdateObservers(GetObjectId(), message);
         delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
-void SetCoordinates(float x, float y, float z)
+void Waypoint::SetCoordinates(float x, float y, float z)
 {
     SetCoordinates(glm::vec3(x,y,z));
 }
-void SetCoordinates(const glm::vec3& coords)
+void Waypoint::SetCoordinates(const glm::vec3& coords)
 {
     coordinates_ = coords;
-    if (scene->HasObservers(GetObjectId()))
+    if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         message.data.write<uint16_t>(5);
         message.data.write(coords.x);
         message.data.write(coords.y);
         message.data.write(coords.z);
-        scene->UpdateObservers(GetObjectId(), message);
+        GetScene()->UpdateObservers(GetObjectId(), message);
         delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
 
-void Activate()
+void Waypoint::Activate()
 {
     activated_flag_ = ACTIVATED;
 
-    if (scene->HasObservers(GetObjectId()))
+    if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         message.data.write<uint16_t>(6);
         message.data.write<uint8_t>(activated_flag_);
-        scene->UpdateObservers(GetObjectId(), message);
+        GetScene()->UpdateObservers(GetObjectId(), message);
         delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
-void DeActivate()
+void Waypoint::DeActivate()
 {
     activated_flag_ = DEACTIVATED;
 
-    if (scene->HasObservers(GetObjectId()))
+    if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         message.data.write<uint16_t>(6);
         message.data.write<uint8_t>(activated_flag_);
-        scene->UpdateObservers(GetObjectId(), message);
+        GetScene()->UpdateObservers(GetObjectId(), message);
         delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
 
-void SetPlanet(const std::string& planet_name)
+void Waypoint::SetPlanet(const std::string& planet_name)
 {
     planet_name_ = planet_name;
 
-    if (scene->HasObservers(GetObjectId()))
+    if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         message.data.write<uint16_t>(8);
         message.data.write(planet_name_);
-        scene->UpdateObservers(GetObjectId(), message);
+        GetScene()->UpdateObservers(GetObjectId(), message);
         delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
 
-void SetName(const std::wstring& name)
+void Waypoint::SetName(const std::wstring& name)
 {
     name_ = name;
 
-    if (scene->HasObservers(GetObjectId()))
+    if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         message.data.write<uint16_t>(9);
         message.data.write(name_);
-        scene->UpdateObservers(GetObjectId(), message);
+        GetScene()->UpdateObservers(GetObjectId(), message);
         delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
 
-void SetColor(const std::string& color)
+void Waypoint::SetColor(const std::string& color)
 {
     color_ = color;
 
-    if (scene->HasObservers(GetObjectId()))
+    if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         message.data.write<uint16_t>(0x0B);
         message.data.write(color_);
-        scene->UpdateObservers(GetObjectId(), message);
+        GetScene()->UpdateObservers(GetObjectId(), message);
         delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
