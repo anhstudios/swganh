@@ -4,20 +4,28 @@
 
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
+#include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include "swganh/scene/messages/baselines_message.h"
 #include "swganh/scene/messages/deltas_message.h"
+
+
+namespace swganh {
+namespace scene {
+class Scene;  
+}}  // swganh::scene
 
 namespace swganh {
 namespace object {
     
 typedef std::vector<
     std::pair<uint8_t, swganh::scene::messages::BaselinesMessage>
-> BaselineCacheContainer;
-
-BaselineCacheContainer baselines_cache_;
+> BaselinesCacheContainer;
 
 typedef std::vector<
     std::pair<uint8_t, swganh::scene::messages::DeltasMessage>
@@ -52,12 +60,14 @@ public:
     
     void SetCustomName(std::wstring custom_name);
     
+    std::shared_ptr<swganh::scene::Scene> GetScene();
+    
     /**
      * Returns the baselines created in the last reliable update. If
      * no baselines exist yet for the object a reliable update will be
      * triggered and the results of that returned.
      */
-    BaselineCacheContainer GetBaselines();
+    BaselinesCacheContainer GetBaselines();
         
     /**
      * @return The deltas created since the last reliable update.
@@ -74,6 +84,10 @@ protected:
     swganh::scene::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type);
     
     swganh::scene::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type);
+    
+    BaselinesCacheContainer baselines_cache_;
+
+    DeltasCacheContainer deltas_cache_;
 
 private:
     uint64_t object_id_;             // create
@@ -86,11 +100,9 @@ private:
     std::string stf_name_string_;    // update 3
     std::wstring custom_name_;       // update 3
     uint32_t volume_;                // update 3
-    uint32_t scene_id_;              // update 6
+    
+    std::shared_ptr<swganh::scene::Scene> scene_;
         
-    BaselineCacheContainer baselines_cache_;
-
-    DeltaCacheContainer deltas_cache_;
 };
 
 }}  // namespace
