@@ -29,7 +29,7 @@ void Tangible::AddCustomization(const std::string& customization)
         message.data.write<uint16_t>(4);
         message.data.write(customization_);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
 
@@ -42,7 +42,7 @@ void Tangible::SetCustomization(const std::string& customization)
         message.data.write<uint16_t>(4);
         message.data.write(customization_);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
 
@@ -62,7 +62,7 @@ void Tangible::AddComponentCustomization(uint32_t customization)
         // update type add
         message.data.write<uint8_t>(1);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
 
@@ -79,6 +79,6 @@ void Tangible::SetComponentCustomization(std::vector<uint32_t> component_customi
         // update type clearall
         message.data.write<uint8_t>(2);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        delta_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
