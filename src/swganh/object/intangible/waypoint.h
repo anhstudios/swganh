@@ -20,9 +20,13 @@ enum WaypointStatus
 class Waypoint : public swganh::object::Intangible {
 
 public:
+    virtual uint32_t GetType() { return Waypoint::type; }
+    const static uint32_t type = 0x57415950;
+
     Waypoint();
     Waypoint(glm::vec3 coordinates, bool activated, const std::string& planet, const std::wstring& name, const std::string& color);
-	uint32_t GetUses() const { return uses_; }
+
+    uint32_t GetUses() const { return uses_; }
 	void SetUses(uint32_t uses);
 
     glm::vec3 GetCoordinates() const { return coordinates_; }
@@ -43,7 +47,7 @@ public:
     void SetColor(const std::string& color);
 
 private:
-	uint32_t uses_;					//update 3
+    uint32_t uses_;					//update 3
 	glm::vec3 coordinates_;			//update 3
 	uint8_t activated_flag_;		//update 3
 	uint64_t location_network_id_;	//update 3

@@ -21,8 +21,8 @@ class Ship : public Tangible
 {
 public:
     // SHIP
-    virtual uint32_t GetType() { return 0x6FB799E0; }
-    
+    virtual uint32_t GetType() { Ship::type; }
+    const static uint32_t type = 0x6FB799E0; 
     
 private:
     std::vector<ShipList<float>> ukn1;                              // update 1
