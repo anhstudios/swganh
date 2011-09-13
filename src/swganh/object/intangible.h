@@ -13,7 +13,7 @@ class Intangible : public BaseObject
 {
 public:
     // ITNO
-    virtual uint32_t GetType() { return 0x49544e4f; }
+    virtual uint32_t GetType() { return Intangible::type_; }
 
     std::string GetStfDetailFile() const;
     void SetStfDetailFile(std::string stf_detail_file);
@@ -22,7 +22,7 @@ public:
     void SetStfDetailString(std::string stf_detail_string);
 
 private:
-
+    const static uint32_t type_ = 0x49544e4f;
     std::string stf_detail_file_;
     std::string stf_detail_string_;
 };
