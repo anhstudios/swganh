@@ -12,6 +12,9 @@ namespace object {
 class Intangible : public BaseObject
 {
 public:
+    // ITNO
+    virtual uint32_t GetType() { return 0x49544e4f; }
+
     std::string GetStfDetailFile() const;
     void SetStfDetailFile(std::string stf_detail_file);
 

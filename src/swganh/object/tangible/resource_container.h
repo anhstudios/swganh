@@ -11,7 +11,8 @@ namespace intangible {
 class ResourceContainer : public swganh::object::Tangible {
 
 public:
-
+    // RCNO
+    virtual uint32_t GetType() { return 0x52434e4f; }
 private:
 	uint32_t current_units_;			//update 3
 	uint64_t global_resource_id_;		//update 3

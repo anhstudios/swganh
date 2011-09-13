@@ -11,6 +11,8 @@ namespace intangible {
 class Cell : public swganh::object::Intangible {
 
 public:
+    // SCLT
+    virtual uint32_t GetType() { return 0x53434c54; }
 
 private:
 	uint32_t cell_number;			//update 3
