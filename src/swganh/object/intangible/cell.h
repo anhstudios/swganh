@@ -12,11 +12,11 @@ class Cell : public swganh::object::Intangible {
 
 public:
     // SCLT
-    virtual uint32_t GetType() { Cell::type_; }
+    virtual uint32_t GetType() { Cell::type; }
+    const static uint32_t type = 0x53434c54;
 
 private:
-    const static uint32_t type_ = 0x53434c54;
-	uint32_t cell_number;			//update 3
+    uint32_t cell_number;			//update 3
 };
 
 }}} // swganh::object::intangible

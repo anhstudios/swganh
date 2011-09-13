@@ -14,7 +14,8 @@ public:
     Tangible();
 
     // TANO
-    virtual uint32_t GetType() { Tangible::type_; }
+    virtual uint32_t GetType() { Tangible::type; }
+    const static uint32_t type = 0x54414e4f;
 
     //void AddCustomization(uint8_t customization_bit);
     void AddCustomization(const std::string& customization);
@@ -45,8 +46,6 @@ public:
     void ClearDefenders();
 
 private:
-    const static uint32_t type_ = 0x54414e4f;
-
     std::string customization_;                          // update 3
     std::vector<uint32_t> component_customization_list_; // update 3
     uint32_t component_customization_list_counter_;      // update 3
