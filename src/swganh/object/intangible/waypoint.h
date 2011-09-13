@@ -47,6 +47,10 @@ public:
     void SetColor(const std::string& color);
 
 private:
+    virtual void OnReliableUpdate() {
+        Intangible::OnReliableUpdate();
+    }
+
     uint32_t uses_;					//update 3
 	glm::vec3 coordinates_;			//update 3
 	uint8_t activated_flag_;		//update 3
