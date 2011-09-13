@@ -14,7 +14,8 @@ public:
     Tangible();
 
     // TANO
-    virtual uint32_t GetType() { return 0x54414e4f; }
+    virtual uint32_t GetType() { Tangible::type; }
+    const static uint32_t type = 0x54414e4f;
 
     //void AddCustomization(uint8_t customization_bit);
     void AddCustomization(const std::string& customization);
