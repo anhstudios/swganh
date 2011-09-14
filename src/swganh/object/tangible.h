@@ -44,6 +44,9 @@ public:
     void AddDefender(uint64_t defender);
     void RemoveDefender(uint64_t defender);
     void ClearDefenders();
+    
+protected:
+    virtual void OnReliableUpdate() {}
 
 private:
     std::string customization_;                          // update 3
