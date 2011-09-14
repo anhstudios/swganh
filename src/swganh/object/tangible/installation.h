@@ -29,6 +29,8 @@ public:
     };
 
 public:
+    virtual uint32_t GetType() { return Installation::type; }
+    const static uint32_t type = 0x49544e4f;
 
     bool IsActive() const;
     void Activate();
@@ -75,11 +77,12 @@ public:
     uint8_t GetConditionPercentage() const;
     void SetConditionPercentage(uint8_t condition);
 
-private:
+protected:
     virtual void OnReliableUpdate() {
         Tangible::OnReliableUpdate();
     }
 
+private:
     bool is_active_;
     float power_reserve_;
     float power_cost_;
