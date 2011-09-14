@@ -16,6 +16,10 @@ namespace intangible {
 
 class Mission : public swganh::object::Intangible
 {
+public:
+    virtual uint32_t GetType() { return Mission::type; }
+    const static uint32_t type = 0x4d49534f;
+
     uint32_t GetDifficultyLevel() const;
     void SetDifficultyLevel(uint32_t difficulty_level);
 
