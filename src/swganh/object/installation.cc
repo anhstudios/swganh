@@ -1,8 +1,8 @@
 
-#include "swganh/object/tangible/installation.h"
+#include "swganh/object/installation.h"
 
 using namespace std;
-using namespace swganh::object::tangible;
+using namespace swganh::object;
 
 bool Installation::IsActive() const
 {

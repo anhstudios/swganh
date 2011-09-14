@@ -5,14 +5,13 @@
 #include <string>
 #include <vector>
 
-#include "swganh/object/intangible.h"
-#include "swganh/object/intangible/waypoint.h"
+#include "swganh/object/base_object.h"
+#include "swganh/object/waypoint.h"
 
 namespace swganh {
 namespace object {
-namespace intangible {
 
-class Player : public swganh::object::Intangible
+class Player : public BaseObject
 {
 public:
     struct XpData
@@ -163,9 +162,7 @@ public:
     void SetJediState(uint32_t jedi_state);
 
 private:
-    virtual void OnReliableUpdate() {
-        Intangible::OnReliableUpdate();
-    }
+    virtual void OnReliableUpdate() {}
 
     std::vector<uint32_t> status_flags_;
     std::vector<uint32_t> profile_flags_;
@@ -197,6 +194,6 @@ private:
     uint32_t jedi_state_;
 };
 
-}}}  // namespace swganh::object::intangible
+}}  // namespace swganh::object
 
 #endif  // SWGANH_OBJECT_INTANGIBLE_PLAYER_H_

@@ -1,18 +1,17 @@
 
-#ifndef SWGANH_OBJECT_TANGIBLE_INSTALLATION_H_
-#define SWGANH_OBJECT_TANGIBLE_INSTALLATION_H_
+#ifndef SWGANH_OBJECT_INSTALLATION_H_
+#define SWGANH_OBJECT_INSTALLATION_H_
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-#include "swganh/object/tangible.h"
+#include "swganh/object/base_object.h"
 
 namespace swganh {
 namespace object {
-namespace tangible {
 
-class Installation : public swganh::object::Tangible
+class Installation : public BaseObject
 {
 public:
     struct Resource
@@ -78,9 +77,7 @@ public:
     void SetConditionPercentage(uint8_t condition);
 
 protected:
-    virtual void OnReliableUpdate() {
-        Tangible::OnReliableUpdate();
-    }
+    virtual void OnReliableUpdate() {}
 
 private:
     bool is_active_;
@@ -97,6 +94,6 @@ private:
     uint8_t condition_percent_;
 };
 
-}}}  // namespace swganh::object::tangible
+}}  // namespace swganh::object
 
 #endif  // SWGANH_OBJECT_TANGIBLE_INSTALLATION_H_

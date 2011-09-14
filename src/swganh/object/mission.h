@@ -7,14 +7,13 @@
 
 #include <glm/glm.hpp>
 
-#include "swganh/object/intangible.h"
-#include "swganh/object/intangible/waypoint.h"
+#include "swganh/object/base_object.h"
+#include "swganh/object/waypoint.h"
 
 namespace swganh {
 namespace object {
-namespace intangible {
 
-class Mission : public swganh::object::Intangible
+class Mission : public BaseObject
 {
 public:
     virtual uint32_t GetType() { return Mission::type; }
@@ -73,7 +72,7 @@ public:
 
 private:
     virtual void OnReliableUpdate() {
-        Intangible::OnReliableUpdate();
+
     }
 
     uint32_t difficulty_level_;
@@ -94,6 +93,6 @@ private:
     Waypoint waypoint_;
 };
 
-}}}  // swganh::object::intangible
+}}  // swganh::object
 
-#endif  // SWGANH_OBJECT_INTANGIBLE_MISSION_H_
+#endif  // SWGANH_OBJECT_MISSION_H_
