@@ -39,7 +39,7 @@ public:
 
 public:    
     virtual uint32_t GetType() { return Player::type; }
-    const static uint32_t type = 0x49544e4f;
+    const static uint32_t type = 0x504c4159;
 
     std::vector<uint32_t> GetStatusFlags() const;
     void AddStatusFlag(uint32_t flag);
