@@ -3,7 +3,7 @@
 #include "swganh/scene/messages/deltas_message.h"
 #include "swganh/scene/scene.h"
 
-using namespace swganh::object::intangible;
+using namespace swganh::object;
 using namespace swganh::scene::messages;
 
 Waypoint::Waypoint()

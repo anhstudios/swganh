@@ -1,11 +1,11 @@
 
-#include "swganh/object/intangible/mission.h"
+#include "swganh/object/mission.h"
 
 #include "anh/crc.h"
 
 using namespace glm;
 using namespace std;
-using namespace swganh::object::intangible;
+using namespace swganh::object;
 
 uint32_t Mission::GetDifficultyLevel() const
 {
