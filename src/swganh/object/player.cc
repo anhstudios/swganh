@@ -1,8 +1,8 @@
 
-#include "swganh/object/intangible/player.h"
+#include "swganh/object/player.h"
 
 using namespace std;
-using namespace swganh::object::intangible;
+using namespace swganh::object;
 
 vector<uint32_t> Player::GetStatusFlags() const
 {
