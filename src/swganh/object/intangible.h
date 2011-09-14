@@ -2,6 +2,7 @@
 #ifndef SWGANH_OBJECT_INTANGIBLE_H_
 #define SWGANH_OBJECT_INTANGIBLE_H_
 
+#include <cstdint>
 #include <string>
 
 #include "swganh/object/base_object.h"
@@ -21,6 +22,9 @@ public:
 
     std::string GetStfDetailString() const;
     void SetStfDetailString(std::string stf_detail_string);
+
+protected:
+    virtual void OnReliableUpdate() {}
 
 private:
     std::string stf_detail_file_;
