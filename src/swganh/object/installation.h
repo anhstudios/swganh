@@ -7,11 +7,12 @@
 #include <vector>
 
 #include "swganh/object/base_object.h"
+#include "swganh/object/base_tangible.h"
 
 namespace swganh {
 namespace object {
 
-class Installation : public BaseObject
+class Installation : public BaseTangible, public BaseObject
 {
 public:
     struct Resource
