@@ -15,6 +15,10 @@ public:
     virtual uint32_t GetType() { Cell::type; }
     const static uint32_t type = 0x53434c54;
 
+protected:
+    virtual void OnReliableUpdate() {
+        Intangible::OnReliableUpdate();
+    }
 private:
     uint32_t cell_number;			//update 3
 };

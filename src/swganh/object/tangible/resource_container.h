@@ -14,6 +14,10 @@ public:
     // RCNO
     virtual uint32_t GetType() { return ResourceContainer::type; }
     const static uint32_t type = 0x52434e4f;
+protected:
+    virtual void OnReliableUpdate() {
+        Tangible::OnReliableUpdate();
+    }
 private:
     uint32_t current_units_;			//update 3
 	uint64_t global_resource_id_;		//update 3

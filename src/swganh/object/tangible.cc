@@ -3,9 +3,11 @@
 
 #include "swganh/scene/scene.h"
 #include "swganh/scene/messages/deltas_message.h"
+#include "swganh/scene/delta_helper.h"
 
 using namespace swganh::object;
-using namespace swganh::scene::messages;
+using namespace swganh::scene;
+using namespace messages;
 
 Tangible::Tangible()
     : customization_(0)
@@ -23,6 +25,9 @@ Tangible::Tangible()
 void Tangible::AddCustomization(const std::string& customization)
 {
     customization_.append(customization);
+    
+    anh::ByteBuffer buffer;
+    buffer.write(customization_);
     if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);

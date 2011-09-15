@@ -45,7 +45,10 @@ public:
     void RemoveDefender(uint64_t defender);
     void ClearDefenders();
 
-private:
+protected:
+    virtual void OnReliableUpdate() {}
+
+protected:
     std::string customization_;                          // update 3
     std::vector<uint32_t> component_customization_list_; // update 3
     uint32_t component_customization_list_counter_;      // update 3
