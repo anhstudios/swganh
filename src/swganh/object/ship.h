@@ -1,14 +1,12 @@
-
-#ifndef SWGANH_OBJECT_TANGIBLE_SHIP_H_
-#define SWGANH_OBJECT_TANGIBLE_SHIP_H_
+#ifndef SWGANH_OBJECT_SHIP_H_
+#define SWGANH_OBJECT_SHIP_H_
 
 #include <string>
 
-#include "swganh/object/tangible.h"
+#include "swganh/object/base_object.h"
 
 namespace swganh {
 namespace object {
-namespace tangible {
 
 template<class ValueType> 
 struct ShipList {
@@ -17,7 +15,7 @@ struct ShipList {
     ValueType value;
 };
     
-class Ship : public Tangible
+class Ship : public BaseObject
 {
 public:
     // SHIP
@@ -72,6 +70,6 @@ private:
     uint32_t unkow8;                                                // update 1
 };
     
-}}}  // namespace
+}}  // namespace
 
-#endif  // SWGANH_OBJECT_TANGIBLE_SHIP_H_
+#endif  // SWGANH_OBJECT_SHIP_H_

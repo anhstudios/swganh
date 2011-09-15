@@ -1,23 +1,18 @@
 
-#ifndef SWGANH_OBJECT_TANGIBLE_H_
-#define SWGANH_OBJECT_TANGIBLE_H_
+#ifndef SWGANH_OBJECT_BASE_TANGIBLE_H_
+#define SWGANH_OBJECT_BASE_TANGIBLE_H_
 
+#include <cstdint>
 #include <set>
-#include "swganh/object/base_object.h"
-#include "swganh/object/base_tangible.h"
+#include <string>
+#include <vector>
 
 namespace swganh {
 namespace object {
     
-class Tangible : public BaseTangible, public BaseObject
+class BaseTangible
 {
 public:
-    Tangible();
-
-    // TANO
-    virtual uint32_t GetType() { return Tangible::type; }
-    const static uint32_t type = 0x54414e4f;
-
     //void AddCustomization(uint8_t customization_bit);
     void AddCustomization(const std::string& customization);
     void SetCustomization(const std::string& customization);
@@ -45,9 +40,8 @@ public:
     void AddDefender(uint64_t defender);
     void RemoveDefender(uint64_t defender);
     void ClearDefenders();
-
+    
 private:
-    virtual void OnReliableUpdate() {}
     std::string customization_;                          // update 3
     std::vector<uint32_t> component_customization_list_; // update 3
     uint32_t component_customization_list_counter_;      // update 3
@@ -58,10 +52,6 @@ private:
     bool is_static_;                                     // update 3
     std::set<uint64_t> defender_list_;                   // update 6
     uint32_t defender_list_counter_;                     // update 6
-	// crafting session
-	// Both can be set to 0 ??
-	// uint64_t manufacturing_schematic_;
-	// uint64_t prototype_object_;
 };
     
 }}  // namespace

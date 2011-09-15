@@ -25,9 +25,6 @@ Tangible::Tangible()
 void Tangible::AddCustomization(const std::string& customization)
 {
     customization_.append(customization);
-    
-    anh::ByteBuffer buffer;
-    buffer.write(customization_);
     if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);

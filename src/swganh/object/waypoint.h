@@ -1,12 +1,12 @@
-#ifndef SWGANH_OBJECT_INTAGIBLE_WAYPOINT_H_
-#define SWGANH_OBJECT_INTAGIBLE_WAYPOINT_H_
+#ifndef SWGANH_OBJECT_WAYPOINT_H_
+#define SWGANH_OBJECT_WAYPOINT_H_
 
-#include "swganh/object/intangible.h"
 #include <glm/glm.hpp>
+
+#include "swganh/object/base_object.h"
 
 namespace swganh {
 namespace object {
-namespace intangible {
 
 enum WaypointStatus
 {
@@ -17,7 +17,7 @@ enum WaypointStatus
 /**
 *  @brief Object that defines the data in a Waypoint
 */
-class Waypoint : public swganh::object::Intangible {
+class Waypoint : public BaseObject {
 
 public:
     virtual uint32_t GetType() { return Waypoint::type; }
@@ -46,11 +46,9 @@ public:
     const std::string& GetColor() { return color_; }
     void SetColor(const std::string& color);
 
-protected:
-    virtual void OnReliableUpdate() {
-        Intangible::OnReliableUpdate();
-    }
 private:
+    virtual void OnReliableUpdate() {}
+
     uint32_t uses_;					//update 3
 	glm::vec3 coordinates_;			//update 3
 	uint8_t activated_flag_;		//update 3
@@ -61,7 +59,6 @@ private:
 	std::string color_;				//update 3
 };
 
-}}} // swganh::object::intangible
+}} // swganh::object
 
-
-#endif //SWGANH_OBJECT_INTAGIBLE_WAYPOINT_H_
+#endif //SWGANH_OBJECT_WAYPOINT_H_

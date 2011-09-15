@@ -1,14 +1,13 @@
-#ifndef SWGANH_OBJECT_TAGIBLE_RESOURCE_CONTAINER_H_
-#define SWGANH_OBJECT_TAGIBLE_RESOURCE_CONTAINER_H_
+#ifndef SWGANH_OBJECT_RESOURCE_CONTAINER_H_
+#define SWGANH_OBJECT_RESOURCE_CONTAINER_H_
 
 #include "swganh/object/tangible.h"
-#include <glm\glm.hpp>
+#include <glm/glm.hpp>
 
 namespace swganh {
 namespace object {
-namespace tangible {
 
-class ResourceContainer : public swganh::object::Tangible {
+class ResourceContainer : public BaseObject {
 
 public:
     // RCNO
@@ -26,7 +25,6 @@ private:
 	std::wstring variation_name_;		//update 6
 };
 
-}}} // swganh::object::tangible
+}} // swganh::object
 
-
-#endif //SWGANH_OBJECT_TAGIBLE_RESOURCE_CONTAINER_H_
+#endif //SWGANH_OBJECT_RESOURCE_CONTAINER_H_
