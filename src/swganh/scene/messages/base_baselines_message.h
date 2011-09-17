@@ -5,12 +5,14 @@
 #include <cstdint>
 
 #include "anh/byte_buffer.h"
+#include "swganh/base/swg_message.h"
 
 namespace swganh {
 namespace scene {
 namespace messages {
     
-struct BaseBaselineMessage {    
+template<typename T>
+struct BaseBaselineMessage : public swganh::base::SwgMessage<T> {    
     uint64_t object_id;
     uint32_t object_type;
     uint8_t view_type;    

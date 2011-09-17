@@ -6,26 +6,15 @@
 
 #include "anh/byte_buffer.h"
 
-#include "swganh/base/swg_message.h"
 #include "swganh/scene/messages/base_baselines_message.h"
 
 namespace swganh {
 namespace scene {
 namespace messages {
     
-struct BaselinesMessage : public BaseBaselineMessage, public swganh::base::SwgMessage<BaselinesMessage> {
+struct BaselinesMessage : public BaseBaselineMessage<BaselinesMessage> {
     static const uint16_t opcount = 5;
     static const uint32_t opcode = 0x68A75F0C;
-    uint16_t sub_opcount;
-
-    void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write(sub_opcount);
-        BaseBaselineMessage::onSerialize(buffer);
-    }
-
-    void onDeserialize(anh::ByteBuffer buffer) {
-        BaseBaselineMessage::onDeserialize(buffer);
-    }
 };
     
 }}}  // namespace swganh::scene::messages
