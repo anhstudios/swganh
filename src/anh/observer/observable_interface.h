@@ -19,6 +19,13 @@ namespace observer {
         virtual ~ObservableInterface() {}
 
         /**
+         * Returns whether or not this observable object has any observers.
+         *
+         * @return True if has observers, false if not.
+         */
+        virtual bool HasObservers() const = 0;
+
+        /**
          * Start receiving notifications when the observable object changes state.
          *
          * @param observer The object interested in receiving state change notifications.
@@ -35,7 +42,7 @@ namespace observer {
         /**
          * Notifies subscribers that the observable object has changed state.
          *
-         * @param observable The observable object that has changed state.s
+         * @param observable The observable object that has changed state.
          */
         virtual void NotifySubscribers(const T& observable) = 0;
     };
