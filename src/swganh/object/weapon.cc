@@ -1,5 +1,5 @@
 
-#include "tangible.h"
+#include "weapon.h"
 
 #include "swganh/scene/scene.h"
 #include "swganh/scene/messages/deltas_message.h"
@@ -8,7 +8,7 @@ using namespace swganh::object;
 using namespace swganh::scene;
 using namespace messages;
 
-Tangible::Tangible()
+Weapon::Weapon()
     : customization_(0)
     , component_customization_list_(std::vector<uint32_t>())
     , component_customization_list_counter_(0)
@@ -21,7 +21,7 @@ Tangible::Tangible()
     , defender_list_counter_(0)
 {}
 
-void Tangible::AddCustomization(const std::string& customization)
+void Weapon::AddCustomization(const std::string& customization)
 {
     customization_.append(customization);
     if (GetScene()->HasObservers(GetObjectId()))
@@ -34,7 +34,7 @@ void Tangible::AddCustomization(const std::string& customization)
     }
 }
 
-void Tangible::SetCustomization(const std::string& customization)
+void Weapon::SetCustomization(const std::string& customization)
 {
     customization_ = customization;
     if (GetScene()->HasObservers(GetObjectId()))
@@ -47,7 +47,7 @@ void Tangible::SetCustomization(const std::string& customization)
     }
 }
 
-void Tangible::AddComponentCustomization(uint32_t customization)
+void Weapon::AddComponentCustomization(uint32_t customization)
 {
     // add customization
     component_customization_list_.push_back(customization);
@@ -67,7 +67,7 @@ void Tangible::AddComponentCustomization(uint32_t customization)
     }
 }
 
-void Tangible::SetComponentCustomization(std::vector<uint32_t> component_customization)
+void Weapon::SetComponentCustomization(std::vector<uint32_t> component_customization)
 {
     component_customization_list_ = component_customization;
     if (GetScene()->HasObservers(GetObjectId()))
