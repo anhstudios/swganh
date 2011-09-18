@@ -33,6 +33,9 @@ void Waypoint::SetUses(uint32_t uses)
     if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
         message.data.write<uint16_t>(4);
         message.data.write(0);
         GetScene()->UpdateObservers(GetObjectId(), message);
@@ -49,6 +52,9 @@ void Waypoint::SetCoordinates(const glm::vec3& coords)
     if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
         message.data.write<uint16_t>(5);
         message.data.write(coords.x);
         message.data.write(coords.y);
@@ -65,6 +71,9 @@ void Waypoint::Activate()
     if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
         message.data.write<uint16_t>(6);
         message.data.write<uint8_t>(activated_flag_);
         GetScene()->UpdateObservers(GetObjectId(), message);
@@ -78,7 +87,10 @@ void Waypoint::DeActivate()
     if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
-        message.data.write<uint16_t>(6);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(7);
         message.data.write<uint8_t>(activated_flag_);
         GetScene()->UpdateObservers(GetObjectId(), message);
         deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
@@ -92,6 +104,9 @@ void Waypoint::SetPlanet(const std::string& planet_name)
     if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
         message.data.write<uint16_t>(8);
         message.data.write(planet_name_);
         GetScene()->UpdateObservers(GetObjectId(), message);
@@ -106,6 +121,9 @@ void Waypoint::SetName(const std::wstring& name)
     if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
         message.data.write<uint16_t>(9);
         message.data.write(name_);
         GetScene()->UpdateObservers(GetObjectId(), message);
@@ -120,6 +138,9 @@ void Waypoint::SetColor(const std::string& color)
     if (GetScene()->HasObservers(GetObjectId()))
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
         message.data.write<uint16_t>(0x0B);
         message.data.write(color_);
         GetScene()->UpdateObservers(GetObjectId(), message);

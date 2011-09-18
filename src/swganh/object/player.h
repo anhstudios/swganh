@@ -162,7 +162,7 @@ public:
     void SetJediState(uint32_t jedi_state);
 
 private:
-    virtual void OnReliableUpdate() {}
+    
 
     std::vector<uint32_t> status_flags_;
     std::vector<uint32_t> profile_flags_;

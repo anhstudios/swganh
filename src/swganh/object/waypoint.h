@@ -16,6 +16,7 @@ enum WaypointStatus
 
 /**
 *  @brief Object that defines the data in a Waypoint
+*  @inherits BaseObject
 */
 class Waypoint : public BaseObject {
 
@@ -103,7 +104,7 @@ public:
     void SetColor(const std::string& color);
 
 private:
-    virtual void OnReliableUpdate() {}
+    
 
     uint32_t uses_;					//update 3
 	glm::vec3 coordinates_;			//update 3

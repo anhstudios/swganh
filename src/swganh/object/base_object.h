@@ -96,8 +96,6 @@ protected:
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
     
-    virtual void OnReliableUpdate() = 0;
-
     virtual uint32_t GetType() = 0;
         
     swganh::scene::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0);

@@ -16,11 +16,13 @@ public:
 
     // WEAO
     virtual uint32_t GetType() { return Weapon::type; }
-    const static uint32_t type = 0x5745414F;    
-
+    const static uint32_t type = 0xE8000000;    
+protected:
+    // baselines
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline3();
 private:
-    virtual void OnReliableUpdate() {}
-    // weapon customization
+    
+    // weapon customization ??
 	uint32_t ukn1;
     uint32_t ukn2;
     uint32_t ukn3;

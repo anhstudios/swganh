@@ -71,10 +71,6 @@ public:
     void SetWaypoint(Waypoint waypoint);
 
 private:
-    virtual void OnReliableUpdate() {
-
-    }
-
     uint32_t difficulty_level_;
     glm::vec3 starting_position_;
     uint32_t starting_scene_;
