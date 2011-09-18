@@ -33,10 +33,10 @@ public:
     Guild();
     ~Guild();
 
-    void AddGuild(uint16_t, std::string);
-    void RemoveGuild(uint16_t);
+    void AddGuild(uint32_t, std::string);
+    void RemoveGuild(uint32_t);
 private:
-    std::map<uint16_t, std::string>     guild_list_;
+    std::map<uint32_t, std::string>     guild_list_;
     uint32_t    guild_list_counter_;
 };
 
