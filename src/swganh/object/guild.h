@@ -35,6 +35,10 @@ public:
 
     void AddGuild(uint32_t, std::string);
     void RemoveGuild(uint32_t);
+
+    virtual uint32_t GetType() { return type; }
+    const static uint32_t type = 0x444C4947;
+
 private:
     std::map<uint32_t, std::string>     guild_list_;
     uint32_t    guild_list_counter_;

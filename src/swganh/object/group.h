@@ -71,6 +71,9 @@ public:
      */
     void SetMasterLooter(uint64_t master_looter);
 
+    virtual uint32_t GetType() { return type; }
+    const static uint32_t type = 0x47525550;
+
 private:
 
     uint32_t member_list_counter_;                                  // update 6 variable 1
