@@ -24,7 +24,6 @@ public:
     
 protected:
     virtual void OnReliableUpdate() {
-        Tangible::OnReliableUpdate();
     }
 private:
 
