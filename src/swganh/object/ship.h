@@ -22,7 +22,12 @@ public:
     virtual uint32_t GetType() { Ship::type; }
     const static uint32_t type = 0x6FB799E0; 
     
+protected:
+    virtual void OnReliableUpdate() {
+        Tangible::OnReliableUpdate();
+    }
 private:
+
     std::vector<ShipList<float>> ukn1;                              // update 1
     std::vector<ShipList<float>> ukn2;                              // update 1
     std::vector<ShipList<float>> energy_drain_;                     // update 1

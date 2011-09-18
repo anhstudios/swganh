@@ -23,7 +23,7 @@ Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const std::string& plan
     , name_(name)
     , color_(color)
 {
-    activated ? activated_flag_ = 1 : activated_flag_ = 0;
+    activated ? activated_flag_ = ACTIVATED : activated_flag_ = DEACTIVATED;
 }
 
 void Waypoint::SetUses(uint32_t uses) 
