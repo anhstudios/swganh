@@ -67,12 +67,13 @@ DeltasCacheContainer BaseObject::GetDeltas()
     return DeltasCacheContainer();
 }
 
-BaselinesMessage BaseObject::CreateBaselinesMessage(uint16_t view_type)
+BaselinesMessage BaseObject::CreateBaselinesMessage(uint16_t view_type, uint16_t opcount )
 {
     BaselinesMessage message;
     message.object_id = GetObjectId();
     message.object_type = GetType();
     message.view_type = view_type;
+    message.sub_opcount = opcount;
 
     return message;
 }
@@ -93,4 +94,25 @@ void BaseObject::ReliableUpdate()
     deltas_cache_.clear();
     
     OnReliableUpdate();
+}
+
+boost::optional<swganh::scene::messages::BaselinesMessage> BaseObject::GetBaseline3()
+{
+    auto message = CreateBaselinesMessage(VIEW_3);
+    message.data.write(GetComplexity());
+    message.data.write(GetStfNameFile());
+    // spacer
+    message.data.write(0);
+    message.data.write(GetStfNameString());
+    message.data.write(GetCustomName());
+    message.data.write(GetVolume());
+
+    return boost::optional<BaselinesMessage>(std::move(message));
+}
+boost::optional<swganh::scene::messages::BaselinesMessage> BaseObject::GetBaseline6()
+{
+    auto message = CreateBaselinesMessage(VIEW_6);
+    message.data.write(GetScene()->GetId());
+
+    return boost::optional<BaselinesMessage>(std::move(message));
 }

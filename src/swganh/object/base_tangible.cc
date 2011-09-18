@@ -294,3 +294,61 @@ void BaseTangible::ClearDefenders()
     // update counter
     defender_list_counter_ = 0;
 }
+
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline3()
+{
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_3, 11);
+    
+    // base data
+    message.data.append(BaseObject::GetBaseline3().get().data);
+    message.data.write(GetCustomization());
+    message.data.write(component_customization_list_.size());
+    message.data.write(component_customization_list_counter_);
+    for_each(begin(component_customization_list_), end(component_customization_list_), [&message](uint32_t crc){
+        message.data.write(crc);
+    });
+    message.data.write(GetOptionsMask());
+    message.data.write(GetIncapTimer());
+    message.data.write(GetCondition());
+    message.data.write(GetMaxCondition());
+    uint8_t static_val = MOVEABLE;
+    if (IsStatic())
+        static_val = STATIC;
+    message.data.write<uint8_t>(static_val);
+    
+    return boost::optional<BaselinesMessage>(std::move(message));
+}
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline6()
+{
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_6, 2);
+    
+    // server id
+    message.data.append(BaseObject::GetBaseline6().get().data);
+    // defender list
+    message.data.write(defender_list_.size());
+    message.data.write(defender_list_counter_);
+    for_each(begin(defender_list_), end(defender_list_), [&message](uint64_t defender) {
+        message.data.write(defender);
+    });
+
+    return boost::optional<BaselinesMessage>(std::move(message));
+}
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline7()
+{
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_7, 2);
+    // always seen 0, used for crafting tool
+    message.data.write<uint64_t>(0);
+    message.data.write<uint64_t>(0);
+
+    return boost::optional<BaselinesMessage>(std::move(message));
+}
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline8()
+{
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_8);    
+    return boost::optional<BaselinesMessage>(std::move(message));
+}
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline9()
+{
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_9);    
+    return boost::optional<BaselinesMessage>(std::move(message));
+}
