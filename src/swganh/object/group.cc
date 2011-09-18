@@ -28,7 +28,6 @@ using namespace swganh::scene::messages;
 
 namespace swganh {
 namespace object {
-namespace universe {
 
 Group::Group()
     : member_list_counter_(0)
@@ -59,22 +58,21 @@ void Group::AddGroupMember(std::shared_ptr<Tangible> member)
         message.data.write<uint16_t>(next_index);
         message.data.write<uint64_t>(member->GetObjectId());
         message.data.write<std::string>(std::string(member->GetCustomName().begin(), member->GetCustomName().end()));
-
         GetScene()->UpdateObservers(GetObjectId(), message);
-        delta_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
+        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
     }
 }
 
 void Group::RemoveGroupMember(std::shared_ptr<Tangible> member)
 {
     uint16_t index_position = 0;
-    auto iter = std::find_if(member_list_.begin(), member_list_.end(), [=, &index_position](std::shared_ptr<Tangible> list_member) {
-        if(member->GetObjectId() == list_member->GetObjectId())
+    auto iter = std::find_if(member_list_.begin(), member_list_.end(), [=, &index_position](std::pair<uint16_t, std::shared_ptr<Tangible>> list_member)->bool {
+        if(member->GetObjectId() == list_member.second->GetObjectId())
         {
+            index_position = list_member.first;
             return true;
         }
 
-        index_position++;
         return false;
     });
 
@@ -90,6 +88,8 @@ void Group::RemoveGroupMember(std::shared_ptr<Tangible> member)
             message.data.write<uint32_t>(member_list_counter_++);
             message.data.write<uint8_t>(0);
             message.data.write<uint16_t>(index_position);
+            GetScene()->UpdateObservers(GetObjectId(), message);
+            deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
         }
 
         member_index_free_list_.push(index_position);
@@ -105,9 +105,8 @@ void Group::SetLootMode(LOOT_MODE loot_mode)
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         message.data.write<uint16_t>(7); // Update Type
         message.data.write<uint32_t>(loot_mode_);
-        
         GetScene()->UpdateObservers(GetObjectId(), message);
-        delta_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
+        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
     }
 }
 
@@ -120,9 +119,8 @@ void Group::SetGroupLevel(uint16_t group_level)
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         message.data.write<uint16_t>(4); // Update Type
         message.data.write<uint16_t>(group_level_);
-
         GetScene()->UpdateObservers(GetObjectId(), message);
-        delta_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
+        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
     }
 }
 
@@ -135,9 +133,8 @@ void Group::SetMasterLooter(uint64_t master_looter)
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         message.data.write<uint16_t>(6);
         message.data.write<uint64_t>(master_looter_);
-
         GetScene()->UpdateObservers(GetObjectId(), message);
-        delta_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
+        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
     }
 }
 
@@ -155,4 +152,4 @@ uint16_t Group::GetNextMemberIndex_()
 }
 
 
-}}} // namespace
+}} // namespace

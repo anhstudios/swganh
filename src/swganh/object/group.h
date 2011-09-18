@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_OBJECT_UNIVERSE_GROUP_H_
-#define SWGANH_OBJECT_UNIVERSE_GROUP_H_
+#ifndef SWGANH_OBJECT_GROUP_H_
+#define SWGANH_OBJECT_GROUP_H_
 
 #include "swganh/object/universe.h"
 
@@ -31,8 +31,6 @@ namespace object {
 
 // FORWARD DECLARATIONS
 class Tangible;
-
-namespace universe {
 
 class Group : public Universe
 {
@@ -90,6 +88,6 @@ private:
     uint16_t GetNextMemberIndex_();
 };
 
-}}} // namespace
+}} // namespace
 
 #endif // SWGANH_OBJECT_UNIVERSE_GROUP_H_
