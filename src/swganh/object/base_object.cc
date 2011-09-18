@@ -1,12 +1,14 @@
 
 #include "swganh/object/base_object.h"
 
-#include "swganh/scene/scene.h"
+#include "anh/observer/observer_interface.h"
 
+using namespace anh::observer;
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::scene;
 using namespace swganh::scene::messages;
+using boost::optional;
 
 uint64_t BaseObject::GetObjectId() const
 {
@@ -23,58 +25,24 @@ void BaseObject::SetCustomName(std::wstring custom_name)
     custom_name_ = custom_name;
     
     // Only build a message if there are observers.
-    if (GetScene()->HasObservers(object_id_))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         message.data.write<uint16_t>(2); // update type
         message.data.write(custom_name);
     
-        GetScene()->UpdateObservers(object_id_, message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));            
+        AddDeltasUpdate(message);    
     }
 }
 
-shared_ptr<Scene> BaseObject::GetScene()
-{
-    return scene_;        
-}
-
-/**
- * Returns the baselines created in the last reliable update. If
- * no baselines exist yet for the object a reliable update will be
- * triggered and the results of that returned.
- */
-BaselinesCacheContainer BaseObject::GetBaselines()
-{
-    if (baselines_cache_.empty())
-    {
-        ReliableUpdate();
-    }
-    
-    return baselines_cache_;
-}
-    
-/**
- * @return The deltas created since the last reliable update.
- */
-DeltasCacheContainer BaseObject::GetDeltas()
-{
-    if (!deltas_cache_.empty())
-    {
-        return deltas_cache_;
-    }
-    
-    return DeltasCacheContainer();
-}
-
-BaselinesMessage BaseObject::CreateBaselinesMessage(uint16_t view_type, uint16_t opcount )
+BaselinesMessage BaseObject::CreateBaselinesMessage(uint16_t view_type, uint16_t opcount)
 {
     BaselinesMessage message;
     message.object_id = GetObjectId();
     message.object_type = GetType();
     message.view_type = view_type;
-    message.sub_opcount = opcount;
-
+    //message.sub_opcount = opcount;
+    
     return message;
 }
 
@@ -86,6 +54,177 @@ DeltasMessage BaseObject::CreateDeltasMessage(uint16_t view_type)
     message.view_type = view_type;
 
     return message;
+}
+const std::shared_ptr<BaseObject>& BaseObject::GetParent() const
+{
+    return parent_;
+}
+
+bool BaseObject::HasObservers() const
+{
+    return !observers_.empty();
+}
+
+void BaseObject::Subscribe(const shared_ptr<ObserverInterface<BaseObject>>& observer)
+{
+    auto find_iter = std::find_if(
+        observers_.begin(),
+        observers_.end(),
+        [&observer] (const std::shared_ptr<ObserverInterface<BaseObject>>& stored_observer)
+    {
+        return observer == stored_observer;
+    });
+
+    if (find_iter != observers_.end())
+    {
+        return;
+    }
+
+    observers_.push_back(observer);
+}
+
+void BaseObject::Unsubscribe(const shared_ptr<ObserverInterface<BaseObject>>& observer)
+{
+    auto find_iter = std::find_if(
+        observers_.begin(),
+        observers_.end(),
+        [&observer] (const std::shared_ptr<ObserverInterface<BaseObject>>& stored_observer)
+    {
+        return observer == stored_observer;
+    });
+    
+    if (find_iter == observers_.end())
+    {
+        return;
+    }
+
+    observers_.erase(find_iter);
+}
+
+void BaseObject::NotifySubscribers(const BaseObject& observable)
+{
+    for_each(
+        observers_.begin(),
+        observers_.end(),
+        [&observable] (const std::shared_ptr<ObserverInterface<BaseObject>>& stored_observer)
+    {
+        return stored_observer->Notify(observable);
+    });
+}
+
+bool BaseObject::IsDirty() const
+{
+    return !deltas_.empty();
+}
+
+void BaseObject::MakeClean()
+{
+    baselines_.clear();
+    public_baselines_.clear();
+    deltas_.clear();
+    public_deltas_.clear();
+    
+    optional<BaselinesMessage> message;
+    
+    for_each(begin(baselines_builders_), end(baselines_builders_),
+        [this, &message] (BaselinesBuilder& builder)
+    {       
+        if (!(message = builder()))
+        {
+            return;
+        }
+
+        if (message->view_type == 3 || message->view_type == 6)
+        {
+            public_baselines_.push_back(*message);
+        }
+        
+        baselines_.push_back(*message);
+    });
+
+    NotifySubscribers(*this);
+}
+
+const BaselinesCacheContainer& BaseObject::GetBaselines(uint64_t viewer_id) const
+{
+    if (HasPrivilegedView_(viewer_id))
+    {
+        return baselines_;
+    }
+
+    return public_baselines_;
+}
+
+const DeltasCacheContainer& BaseObject::GetDeltas(uint64_t viewer_id) const
+{
+    if (HasPrivilegedView_(viewer_id))
+    {
+        return deltas_;
+    }
+
+    return public_deltas_;
+}
+
+void BaseObject::AddDeltasUpdate(DeltasMessage message)
+{
+    if (message.view_type == 3 || message.view_type == 6)
+    {
+        public_deltas_.push_back(message);
+    }
+
+    deltas_.push_back(move(message));
+
+    NotifySubscribers(*this);
+}
+
+void BaseObject::AddBaselinesBuilders_()
+{
+    baselines_builders_.push_back([this] () {
+        return GetBaseline1();
+    });
+    
+    baselines_builders_.push_back([this] () {
+        return GetBaseline2();
+    });
+    
+    baselines_builders_.push_back([this] () {
+        return GetBaseline3();
+    });
+    
+    baselines_builders_.push_back([this] () {
+        return GetBaseline4();
+    });
+    
+    baselines_builders_.push_back([this] () {
+        return GetBaseline5();
+    });
+    
+    baselines_builders_.push_back([this] () {
+        return GetBaseline6();
+    });
+
+    baselines_builders_.push_back([this] () {
+        return GetBaseline7();
+    });
+
+    baselines_builders_.push_back([this] () {
+        return GetBaseline8();
+    });
+
+    baselines_builders_.push_back([this] () {
+        return GetBaseline9();
+    });
+}
+        
+bool BaseObject::HasPrivilegedView_(uint64_t object_id) const
+{    
+    if (object_id == GetObjectId() || 
+        (GetParent() && object_id == GetParent()->GetObjectId())) 
+    {
+        return true;
+    }
+    
+    return false;
 }
 
 boost::optional<swganh::scene::messages::BaselinesMessage> BaseObject::GetBaseline3()
@@ -101,6 +240,7 @@ boost::optional<swganh::scene::messages::BaselinesMessage> BaseObject::GetBaseli
 
     return boost::optional<BaselinesMessage>(std::move(message));
 }
+
 boost::optional<swganh::scene::messages::BaselinesMessage> BaseObject::GetBaseline6()
 {
     auto message = CreateBaselinesMessage(VIEW_6);

@@ -13,6 +13,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "anh/observer/observable_interface.h"
+
 #include "swganh/scene/messages/baselines_message.h"
 #include "swganh/scene/messages/deltas_message.h"
 
@@ -24,13 +26,13 @@ class Scene;
 
 namespace swganh {
 namespace object {
-    
+                    
 typedef std::vector<
-    std::pair<uint8_t, swganh::scene::messages::BaselinesMessage>
+    swganh::scene::messages::BaselinesMessage
 > BaselinesCacheContainer;
 
 typedef std::vector<
-    std::pair<uint8_t, swganh::scene::messages::DeltasMessage>
+    swganh::scene::messages::DeltasMessage
 > DeltasCacheContainer;
 
 class BaseObject
@@ -50,17 +52,68 @@ public:
     };
     
 public:
-    
+    BaseObject();
+
     virtual ~BaseObject() {}
     
-    uint64_t GetObjectId() const;
+    /**
+     * Returns whether or not this observable object has any observers.
+     *
+     * @return True if has observers, false if not.
+     */
+    bool HasObservers() const;
 
-    std::wstring GetCustomName() const;
-    
-    void SetCustomName(std::wstring custom_name);
-    
-    std::shared_ptr<swganh::scene::Scene> GetScene();
+    /**
+     * Start receiving notifications when the observable object changes state.
+     *
+     * @param observer The object interested in receiving state change notifications.
+     */
+    void Subscribe(const std::shared_ptr<anh::observer::ObserverInterface<BaseObject>>& observer);
 
+    /**
+     * Stop receiving state notification changes for the observable object.
+     *
+     * @param observer The object that no longer wants state change notifications.
+     */
+    void Unsubscribe(const std::shared_ptr<anh::observer::ObserverInterface<BaseObject>>& observer);
+
+    /**
+     * Notifies subscribers that the observable object has changed state.
+     *
+     * @param observable The observable object that has changed state.s
+     */
+    void NotifySubscribers(const BaseObject& observable);
+
+    /**
+     * Returns whether or not the object has been modified since the last reliable
+     * update was sent out.
+     *
+     * @return Modified since last reliable update.
+     */
+    bool IsDirty() const;
+
+    /**
+     * Regenerates the baselines and updates observers.
+     */
+    void MakeClean();
+
+    /**
+     * Returns the most recently generated baselines.
+     *
+     * @param viewer_id The id of the object viewing this Object instance.
+     * @return The most recently generated baselines.
+     */
+    const BaselinesCacheContainer& GetBaselines(uint64_t viewer_id) const;
+
+    /**
+     * Returns the deltas messages generated since the last time the 
+     * object was made clean.
+     *
+     * @param viewer_id The id of the object viewing this Object instance.
+     * @return The most recently generated deltas.
+     */
+    const DeltasCacheContainer& GetDeltas(uint64_t viewer_id) const;
+    
     const std::string& GetTemplate() { return template_string_; }
     glm::vec3 GetPosition() { return position_; }
     glm::quat GetOrientation() { return orientation_; }
@@ -70,20 +123,29 @@ public:
     const std::string& GetStfNameString() { return stf_name_string_; }
     const std::wstring& GetCustomName() { return custom_name_; }
     uint32_t GetVolume() { return volume_; }
+
+    /**
+     * Stores a deltas message update for the object.
+     *
+     * @param message The deltas message to store.
+     */
+    void AddDeltasUpdate(swganh::scene::messages::DeltasMessage message);
     
     /**
-     * Returns the baselines created in the last reliable update. If
-     * no baselines exist yet for the object a reliable update will be
-     * triggered and the results of that returned.
+     * @return The id of this Object instance.
      */
-    BaselinesCacheContainer GetBaselines();
-        
+    uint64_t GetObjectId() const;
+
     /**
-     * @return The deltas created since the last reliable update.
+     * @return The parent containing this Object instance.
      */
-    DeltasCacheContainer GetDeltas();
+    const std::shared_ptr<BaseObject>& GetParent() const;
+
+    std::wstring GetCustomName() const;
     
-    void ReliableUpdate();
+    void SetCustomName(std::wstring custom_name);
+    
+    std::shared_ptr<swganh::scene::Scene> GetScene();    
     
 protected:
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
@@ -102,11 +164,37 @@ protected:
     
     swganh::scene::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type);
     
-    BaselinesCacheContainer baselines_cache_;
-
-    DeltasCacheContainer deltas_cache_;
-
 private:
+    void AddBaselinesBuilders_();
+    
+    /**
+     * Determines whether or not an object has a privileged view of
+     * this Object instance.
+     *
+     * @return True if object has privileged view, false if not.
+     */
+    bool HasPrivilegedView_(uint64_t object_id) const;
+
+    
+    typedef std::vector<
+        std::shared_ptr<anh::observer::ObserverInterface<BaseObject>>
+    > ObserverContainer;
+
+    ObserverContainer observers_;
+    BaselinesCacheContainer baselines_;
+    DeltasCacheContainer deltas_;
+    BaselinesCacheContainer public_baselines_;
+    DeltasCacheContainer public_deltas_;
+
+    typedef std::function<boost::optional<swganh::scene::messages::BaselinesMessage>()> BaselinesBuilder;
+    typedef std::vector<BaselinesBuilder> BaselinesBuilderContainer;
+
+    BaselinesBuilderContainer baselines_builders_;
+
+    std::shared_ptr<BaseObject> parent_;
+    
+    bool is_dirty_;
+
     uint64_t object_id_;             // create
     std::string template_string_;    // create
     glm::vec3 position_;             // create
@@ -116,10 +204,7 @@ private:
     std::string stf_name_file_;      // update 3
     std::string stf_name_string_;    // update 3
     std::wstring custom_name_;       // update 3
-    uint32_t volume_;                // update 3
-    
-    std::shared_ptr<swganh::scene::Scene> scene_;       // update 6
-        
+    uint32_t volume_;                // update 3  
 };
 
 }}  // namespace
