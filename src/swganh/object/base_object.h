@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/optional.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -58,6 +60,16 @@ public:
     void SetCustomName(std::wstring custom_name);
     
     std::shared_ptr<swganh::scene::Scene> GetScene();
+
+    const std::string& GetTemplate() { return template_string_; }
+    glm::vec3 GetPosition() { return position_; }
+    glm::quat GetOrientation() { return orientation_; }
+    uint64_t GetContainer() { return container_id_; }
+    float GetComplexity() { return complexity_; }
+    const std::string& GetStfNameFile() { return stf_name_file_; }
+    const std::string& GetStfNameString() { return stf_name_string_; }
+    const std::wstring& GetCustomName() { return custom_name_; }
+    uint32_t GetVolume() { return volume_; }
     
     /**
      * Returns the baselines created in the last reliable update. If
@@ -74,11 +86,21 @@ public:
     void ReliableUpdate();
     
 protected:
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline4() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline5() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline6();
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline7() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
+    
     virtual void OnReliableUpdate() = 0;
 
     virtual uint32_t GetType() = 0;
         
-    swganh::scene::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type);
+    swganh::scene::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0);
     
     swganh::scene::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type);
     

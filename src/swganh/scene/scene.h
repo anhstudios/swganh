@@ -18,6 +18,10 @@ public:
     {
             
     }
+
+    uint32_t GetId() { return id_; }
+private:
+    uint32_t id_;
 };
     
 }}  // swganh::scene
