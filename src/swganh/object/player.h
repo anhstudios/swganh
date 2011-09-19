@@ -70,6 +70,12 @@ public:
     void SetTotalPlayTime(uint32_t play_time);
     void IncrementTotalPlayTime(uint32_t increment);
 
+    uint8_t GetAdminTag() const;
+    void SetAdminTag(uint8_t tag);
+
+    uint32_t GetRegionId() const;
+    void SetRegionId(uint32_t region);
+
     std::vector<XpData> GetXp() const;
     void AddExperience(std::string type, uint32_t amount);
     void DeductXp(std::string type, uint32_t amount);
@@ -185,6 +191,7 @@ private:
     uint32_t born_date_;
     uint32_t total_playtime_;
     uint8_t admin_tag_;
+    uint32_t region_;
     std::vector<XpData> experience_;
     uint32_t experience_counter_;
     std::vector<Waypoint> waypoints_;
