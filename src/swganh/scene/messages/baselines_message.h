@@ -13,8 +13,8 @@ namespace scene {
 namespace messages {
     
 struct BaselinesMessage : public BaseBaselineMessage<BaselinesMessage> {
-    static const uint16_t opcount = 5;
-    static const uint32_t opcode = 0x68A75F0C;
+    static uint16_t opcount() { return 5; }
+    static uint32_t opcode() { return 0x68A75F0C; }
 };
     
 }}}  // namespace swganh::scene::messages

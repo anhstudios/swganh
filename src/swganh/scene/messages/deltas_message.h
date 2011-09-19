@@ -14,8 +14,8 @@ namespace messages {
     
 class DeltasMessage : public BaseBaselineMessage<DeltasMessage> {
 public:
-    static const uint16_t opcount = 5;
-    static const uint32_t opcode = 0x12862153;
+    static uint16_t opcount() { return 5; }
+    static uint32_t opcode() { return 0x12862153; }
 };
     
 }}}  // namespace swganh::scene::messages
