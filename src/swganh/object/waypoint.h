@@ -58,6 +58,11 @@ public:
     */
     bool Active() const { return activated_flag_ == 1; }
     /**
+    *   @brief checks if the waypoint is activated
+    *   @returns 0 if the waypoint is activated, 1 else
+    */
+    uint8_t GetActiveFlag() { return activated_flag_; }
+    /**
     *   @brief sets the current waypoint to Activated
     */
     void Activate();
@@ -95,6 +100,13 @@ public:
     *   @returns color of the waypoint
     */
     const std::string& GetColor() { return color_; }
+    /**
+    *   @brief gets the waypoint's current color as a Byte
+    *
+    *   Possible Options: 1 - blue,2 - green,3 - orange,4 - yellow,5 - purple/red,6 - white,7 - JTL
+    *   @returns Byte color of the waypoint
+    */
+    uint8_t GetColorByte();
     /**
     *   @brief sets the waypoint's color
     *

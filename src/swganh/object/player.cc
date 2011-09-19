@@ -1,103 +1,62 @@
 
 #include "swganh/object/player.h"
 
+#include "anh/crc.h"
+#include "swganh/scene/messages/deltas_message.h"
+#include "swganh/scene/scene.h"
+
 using namespace std;
 using namespace swganh::object;
-
-vector<uint32_t> Player::GetStatusFlags() const
-{
-    return status_flags_;
-}
+using namespace swganh::scene;
+using namespace messages;
 
 void Player::AddStatusFlag(uint32_t flag)
 {
-    auto find_iter = find_if(
-        status_flags_.begin(),
-        status_flags_.end(),
-        [flag] (uint32_t status_flag)
-    {
-        return flag == status_flag;
-    });
-
-    if (find_iter != status_flags_.end())
-    {
-        // Already in the list.
-        return;
-    }
-
-    status_flags_.push_back(flag);
+    status_flags_ = status_flags_ | flag;
+    SetDeltaBitmask_(status_flags_, 5, VIEW_3);
 }
 
 void Player::RemoveStatusFlag(uint32_t flag)
 {
-    auto find_iter = find_if(
-        status_flags_.begin(),
-        status_flags_.end(),
-        [flag] (uint32_t status_flag)
-    {
-        return flag == status_flag;
-    });
-
-    if (find_iter == status_flags_.end())
-    {
-        // Not in the list.
-        return;
-    }
-
-    status_flags_.erase(find_iter);
+    status_flags_ = status_flags_ & ~flag;
+    SetDeltaBitmask_(status_flags_, 5, VIEW_3);
 }
-
+void Player::ToggleStatusFlag(uint32_t flag)
+{
+    status_flags_ = status_flags_ ^ flag;
+    SetDeltaBitmask_(status_flags_, 5, VIEW_3);
+}
 void Player::ClearStatusFlags()
 {
-    status_flags_.clear();
+    status_flags_ = 0;
+    SetDeltaBitmask_(status_flags_, 5, VIEW_3);
 }
 
-vector<uint32_t> Player::GetProfileFlags() const
+uint32_t Player::GetProfileFlags() const
 {
     return profile_flags_;
 }
 
 void Player::AddProfileFlag(uint32_t flag)
 {
-    auto find_iter = find_if(
-        profile_flags_.begin(),
-        profile_flags_.end(),
-        [flag] (uint32_t profile_flag)
-    {
-        return flag == profile_flag;
-    });
-
-    if (find_iter != profile_flags_.end())
-    {
-        // Already in the list.
-        return;
-    }
-
-    profile_flags_.push_back(flag);
+    profile_flags_ = profile_flags_ | flag;
+    SetDeltaBitmask_(status_flags_, 6, VIEW_3);
 }
 
 void Player::RemoveProfileFlag(uint32_t flag)
 {    
-    auto find_iter = find_if(
-        profile_flags_.begin(),
-        profile_flags_.end(),
-        [flag] (uint32_t profile_flag)
-    {
-        return flag == profile_flag;
-    });
-
-    if (find_iter == profile_flags_.end())
-    {
-        // Not in the list.
-        return;
-    }
-
-    profile_flags_.erase(find_iter);
+    profile_flags_ = profile_flags_ & ~flag;
+    SetDeltaBitmask_(status_flags_, 6, VIEW_3);
 }
-
+void Player::ToggleProfileFlag(uint32_t flag)
+{
+    profile_flags_ = profile_flags_ ^ flag;
+    SetDeltaBitmask_(profile_flags_, 6, VIEW_3);
+}
 void Player::ClearProfileFlags()
 {
-    profile_flags_.clear();
+    profile_flags_ = 0;
+    SetDeltaBitmask_(profile_flags_, 6, VIEW_3);
 }
 
 std::string Player::GetProfessionTag() const
@@ -108,6 +67,17 @@ std::string Player::GetProfessionTag() const
 void Player::SetProfessionTag(string profession_tag)
 {
     profession_tag_ = profession_tag;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(7);
+        message.data.write(profession_tag_);
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(type, std::move(message)));
+    }
 }
 
 uint32_t Player::GetBornDate() const
@@ -118,6 +88,17 @@ uint32_t Player::GetBornDate() const
 void Player::SetBornDate(uint32_t born_date)
 {
     born_date_ = born_date;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(8);
+        message.data.write(born_date_);
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(type, std::move(message)));
+    }
 }
 
 uint32_t Player::GetTotalPlayTime() const
@@ -128,11 +109,33 @@ uint32_t Player::GetTotalPlayTime() const
 void Player::SetTotalPlayTime(uint32_t play_time)
 {
     total_playtime_ = play_time;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(9);
+        message.data.write(total_playtime_);
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(type, std::move(message)));
+    }
 }
 
 void Player::IncrementTotalPlayTime(uint32_t increment)
 {
     total_playtime_ += increment;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_3);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(9);
+        message.data.write(total_playtime_);
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(type, std::move(message)));
+    }
 }
 
 std::vector<Player::XpData> Player::GetXp() const
@@ -160,8 +163,26 @@ void Player::AddExperience(std::string type, uint32_t amount)
     }
     else
     {
-
         find_iter->value += amount;
+    }
+    experience_counter_++;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(0);
+        // sub type
+        message.data.write<uint16_t>(0);
+        message.data.write(experience_.size());
+        message.data.write(experience_counter_);
+        message.data.write(type);
+        message.data.write(amount);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
     }
 }
 
@@ -181,6 +202,25 @@ void Player::DeductXp(std::string type, uint32_t amount)
     }
         
     find_iter->value -= amount;
+    experience_counter_++;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(0);
+        // sub type
+        message.data.write<uint16_t>(2);
+        message.data.write(experience_.size());
+        message.data.write(experience_counter_);
+        message.data.write(type);
+        message.data.write(amount);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
 }
 
 void Player::ClearXpType(std::string type)
@@ -197,18 +237,78 @@ void Player::ClearXpType(std::string type)
     {
         return;
     }
-
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(0);
+        message.data.write<uint16_t>(1);
+        message.data.write(experience_.size());
+        message.data.write(experience_counter_);
+        message.data.write(type);
+        message.data.write((*find_iter).value);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
+    // now erase
     experience_.erase(find_iter);
+    experience_counter_--;
 }
 
 void Player::ResetXp(std::vector<Player::XpData> experience)
 {
     experience_ = experience;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(experience_.size());
+        // update type
+        message.data.write<uint16_t>(0);
+        // @TODO: Check if there is a reset
+        message.data.write<uint16_t>(2);
+        message.data.write(experience_.size());
+        message.data.write(experience_.size());
+        for_each(begin(experience_), end(experience_),[&message](XpData xp){
+            message.data.write(xp.type);
+            message.data.write(xp.value);
+        });
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
+    experience_counter_ = experience_.size();
 }
 
 void Player::ClearAllXp()
 {
     experience_.clear();
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(experience_.size());
+        // update type
+        message.data.write<uint16_t>(0);
+        // @TODO: Check if there is a reset all
+        message.data.write<uint16_t>(1);
+        message.data.write(experience_.size());
+        message.data.write(experience_.size());
+        for_each(begin(experience_), end(experience_),[&message](XpData xp){
+            message.data.write("");
+            message.data.write(0);
+        });
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
+    experience_counter_ = 0;
 }
 
 std::vector<Waypoint> Player::GetWaypoints() const
@@ -232,6 +332,37 @@ void Player::AddWaypoint(Waypoint waypoint)
     }
 
     waypoints_.push_back(move(waypoint));
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(1);
+        // sub type
+        message.data.write<uint16_t>(0);
+        message.data.write(waypoints_.size());
+        message.data.write(waypoint_counter_);
+        // waypoint
+        message.data.write<uint64_t>(waypoint.GetObjectId());
+        // cell id
+        message.data.write(0);
+        auto position = waypoint.GetPosition();
+        message.data.write(position.x);
+        message.data.write(position.y);
+        message.data.write(position.z);
+        message.data.write(waypoint.GetScene()->GetId());
+        message.data.write(anh::memcrc(waypoint.GetPlanet()));
+        message.data.write(waypoint.GetName());
+        message.data.write(waypoint.GetObjectId());
+        message.data.write<uint8_t>(waypoint.GetColorByte());
+        message.data.write<uint8_t>(waypoint.GetActiveFlag());
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
+    // update counter
+    waypoint_counter_++;
 }
 
 void Player::RemoveWaypoint(uint64_t waypoint_id)
@@ -249,7 +380,39 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
         return;
     }
 
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(1);
+        // sub type
+        message.data.write<uint16_t>(1);
+        message.data.write(waypoints_.size());
+        message.data.write(waypoint_counter_);
+        auto waypoint = *find_iter;
+        // waypoint
+        message.data.write<uint64_t>(waypoint.GetObjectId());
+        // cell id
+        message.data.write(0);
+        auto position = waypoint.GetPosition();
+        message.data.write(position.x);
+        message.data.write(position.y);
+        message.data.write(position.z);
+        message.data.write(waypoint.GetScene()->GetId());
+        message.data.write(anh::memcrc(waypoint.GetPlanet()));
+        message.data.write(waypoint.GetName());
+        message.data.write(waypoint.GetObjectId());
+        message.data.write<uint8_t>(waypoint.GetColorByte());
+        message.data.write<uint8_t>(waypoint.GetActiveFlag());
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
     waypoints_.erase(find_iter);
+    // update counter
+    waypoint_counter_--;
 }
 
 void Player::ModifyWaypoint(Waypoint waypoint)
@@ -268,16 +431,95 @@ void Player::ModifyWaypoint(Waypoint waypoint)
     }
 
     *find_iter = move(waypoint);
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(1);
+        // sub type
+        message.data.write<uint16_t>(2);
+        message.data.write(waypoints_.size());
+        message.data.write(waypoint_counter_);
+        // waypoint
+        message.data.write<uint64_t>(waypoint.GetObjectId());
+        // cell id
+        message.data.write(0);
+        auto position = waypoint.GetPosition();
+        message.data.write(position.x);
+        message.data.write(position.y);
+        message.data.write(position.z);
+        message.data.write(waypoint.GetScene()->GetId());
+        message.data.write(anh::memcrc(waypoint.GetPlanet()));
+        message.data.write(waypoint.GetName());
+        message.data.write(waypoint.GetObjectId());
+        message.data.write<uint8_t>(waypoint.GetColorByte());
+        message.data.write<uint8_t>(waypoint.GetActiveFlag());
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
+    waypoint_counter_++;
 }
 
 void Player::ResetWaypoints(std::vector<Waypoint> waypoints)
 {
     waypoints_ = move(waypoints);
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(waypoints_.size());
+        // update type
+        message.data.write<uint16_t>(1);
+        // sub type
+        message.data.write<uint16_t>(2);
+        message.data.write(waypoints_.size());
+        message.data.write(waypoints_.size());
+        for_each(begin(waypoints_), end(waypoints_), [&message](Waypoint waypoint){
+            // waypoint
+            message.data.write<uint64_t>(waypoint.GetObjectId());
+            // cell id
+            message.data.write(0);
+            auto position = waypoint.GetPosition();
+            message.data.write(position.x);
+            message.data.write(position.y);
+            message.data.write(position.z);
+            message.data.write(waypoint.GetScene()->GetId());
+            message.data.write(anh::memcrc(waypoint.GetPlanet()));
+            message.data.write(waypoint.GetName());
+            message.data.write(waypoint.GetObjectId());
+            message.data.write<uint8_t>(waypoint.GetColorByte());
+            message.data.write<uint8_t>(waypoint.GetActiveFlag());
+        });
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
+    waypoint_counter_ = 0;
 }
 
 void Player::ClearAllWaypoints()
 {
     waypoints_.clear();
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(1);
+        // sub type
+        // TODO: find out if 4 really does reset all
+        message.data.write<uint16_t>(4);
+        message.data.write(0);
+        message.data.write(0);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
 }
 
 uint32_t Player::GetCurrentForcePower() const
@@ -288,6 +530,16 @@ uint32_t Player::GetCurrentForcePower() const
 void Player::SetCurrentForcePower(uint32_t force_power)
 {
     current_force_power_ = force_power;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(2);
+        message.data.write(current_force_power_);
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }    
 }
 
 void Player::IncreaseForcePower(uint32_t force_power)
@@ -295,11 +547,31 @@ void Player::IncreaseForcePower(uint32_t force_power)
     uint32_t new_force_power = current_force_power_ + force_power;
 
     current_force_power_ = (new_force_power > GetMaxForcePower()) ? GetMaxForcePower() : new_force_power;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(2);
+        message.data.write(current_force_power_);
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
 }
 
 void Player::DecreaseForcePower(uint32_t force_power)
 {
     current_force_power_ -= force_power;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(2);
+        message.data.write(current_force_power_);
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
 }
 
 uint32_t Player::GetMaxForcePower() const
@@ -310,98 +582,62 @@ uint32_t Player::GetMaxForcePower() const
 void Player::SetMaxForcePower(uint32_t force_power)
 {
     max_force_power_ = force_power;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(3);
+        message.data.write(max_force_power_);
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
 }
 
-vector<uint8_t> Player::GetCurrentForceSensitiveQuests()
+uint32_t Player::GetCurrentForceSensitiveQuests()
 {
     return current_force_sensitive_quests_;
 }
 
-void Player::AddCurrentForceSensitiveQuest(uint8_t quest_mask)
+void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
-    auto find_iter = find_if(
-        current_force_sensitive_quests_.begin(),
-        current_force_sensitive_quests_.end(),
-        [quest_mask] (uint8_t stored_quest_mask)
-    {
-        return quest_mask == stored_quest_mask;
-    });
-
-    if (find_iter != current_force_sensitive_quests_.end())
-    {
-        return;
-    }
-
-    current_force_sensitive_quests_.push_back(quest_mask);
+    current_force_sensitive_quests_ = current_force_sensitive_quests_ | quest_mask;
+    SetDeltaBitmask_(current_force_sensitive_quests_, 4, VIEW_8);
 }
 
-void Player::RemoveCurrentForceSensitiveQuest(uint8_t quest_mask)
+void Player::RemoveCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
-    auto find_iter = find_if(
-        current_force_sensitive_quests_.begin(),
-        current_force_sensitive_quests_.end(),
-        [quest_mask] (uint8_t stored_quest_mask)
-    {
-        return quest_mask == stored_quest_mask;
-    });
-
-    if (find_iter == current_force_sensitive_quests_.end())
-    {
-        return;
-    }
-
-    current_force_sensitive_quests_.erase(find_iter);
+    current_force_sensitive_quests_ = current_force_sensitive_quests_ & ~quest_mask;
+    SetDeltaBitmask_(current_force_sensitive_quests_, 4, VIEW_8);
 }
 
 void Player::ClearCurrentForceSensitiveQuests()
 {
-    current_force_sensitive_quests_.clear();
+    current_force_sensitive_quests_ = 0;
+    SetDeltaBitmask_(current_force_sensitive_quests_, 4, VIEW_8);
 }
 
-vector<uint8_t> Player::GetCompletedForceSensitiveQuests()
+uint32_t Player::GetCompletedForceSensitiveQuests()
 {
     return completed_force_sensitive_quests_;
 }
 
-void Player::AddCompletedForceSensitiveQuest(uint8_t quest_mask)
+void Player::AddCompletedForceSensitiveQuest(uint32_t quest_mask)
 {    
-    auto find_iter = find_if(
-        completed_force_sensitive_quests_.begin(),
-        completed_force_sensitive_quests_.end(),
-        [quest_mask] (uint8_t stored_quest_mask)
-    {
-        return quest_mask == stored_quest_mask;
-    });
-
-    if (find_iter != completed_force_sensitive_quests_.end())
-    {
-        return;
-    }
-
-    completed_force_sensitive_quests_.push_back(quest_mask);
+    completed_force_sensitive_quests_ = completed_force_sensitive_quests_ | quest_mask;
+    SetDeltaBitmask_(completed_force_sensitive_quests_, 5, VIEW_8);
 }
 
-void Player::RemoveCompletedForceSensitiveQuest(uint8_t quest_mask)
+void Player::RemoveCompletedForceSensitiveQuest(uint32_t quest_mask)
 {
-    auto find_iter = find_if(
-        completed_force_sensitive_quests_.begin(),
-        completed_force_sensitive_quests_.end(),
-        [quest_mask] (uint8_t stored_quest_mask)
-    {
-        return quest_mask == stored_quest_mask;
-    });
-
-    if (find_iter == completed_force_sensitive_quests_.end())
-    {
-        return;
-    }
-
-    completed_force_sensitive_quests_.erase(find_iter);
+    completed_force_sensitive_quests_ = completed_force_sensitive_quests_ & ~quest_mask;
+    SetDeltaBitmask_(completed_force_sensitive_quests_, 5, VIEW_8);
 }
 
 void Player::ClearCompletedForceSensitiveQuests()
 {
-    completed_force_sensitive_quests_.clear();
+    completed_force_sensitive_quests_ = 0;
+    SetDeltaBitmask_(completed_force_sensitive_quests_, 5, VIEW_8);
 }
 
 vector<Player::QuestJournalData> Player::GetQuests() const
@@ -425,6 +661,28 @@ void Player::AddQuest(QuestJournalData quest)
     }
 
     quest_journal_.push_back(move(quest));
+
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_8);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(6);
+        // update counter
+        message.data.write<uint16_t>(1);
+        message.data.write<uint8_t>(0);
+        message.data.write(quest.quest_crc);
+        message.data.write(quest.owner_id);
+        message.data.write(quest.active_step_bitmask);
+        message.data.write(quest.completed_step_bitmask);
+        message.data.write(quest.completed_flag);
+        message.data.write(quest.counter);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_8, std::move(message)));
+    }
 }
 
 void Player::RemoveQuest(Player::QuestJournalData quest)
@@ -443,6 +701,8 @@ void Player::RemoveQuest(Player::QuestJournalData quest)
     }
 
     quest_journal_.erase(find_iter);
+
+    // TODO: Quest Delta Update
 }
 
 void Player::UpdateQuest(Player::QuestJournalData quest)
@@ -461,16 +721,22 @@ void Player::UpdateQuest(Player::QuestJournalData quest)
     }
 
     *find_iter = move(quest);
+
+    // TODO: Quest Delta Update
 }
 
 void Player::ResetQuests(vector<Player::QuestJournalData> quests)
 {
     quest_journal_ = move(quests);
+
+    // TODO: Quest Delta Update
 }
 
 void Player::ClearAllQuests()
 {
     quest_journal_.clear();
+
+    // TODO: Quest Delta Update
 }
 
 vector<string> Player::GetAbilityList() const
@@ -494,6 +760,23 @@ void Player::AddAbility(string ability)
     }
 
     abilities_.push_back(move(ability));
+
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(0);
+        // sub type
+        message.data.write<uint8_t>(1);
+        message.data.write(abilities_.size());
+        message.data.write(ability);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::RemoveAbility(string ability)
@@ -510,6 +793,22 @@ void Player::RemoveAbility(string ability)
     {
         return;
     }
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(0);
+        // sub type
+        message.data.write<uint8_t>(0);
+        // index
+        message.data.write(find_iter - abilities_.begin());
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 
     abilities_.erase(find_iter);
 }
@@ -517,11 +816,42 @@ void Player::RemoveAbility(string ability)
 void Player::ClearAllAbilities()
 {
     abilities_.clear();
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(0);
+        // sub type (clear)
+        message.data.write<uint8_t>(4);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::ResetAbilities(vector<string> abilities)
 {
     abilities_ = move(abilities);
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(abilities_.size());
+        // update type
+        message.data.write<uint16_t>(0);
+        // sub type (clear)
+        message.data.write<uint8_t>(3);
+        message.data.write<uint16_t>(abilities_.size());
+        for_each(begin(abilities_), end(abilities_),[&message](string ability){
+            message.data.write(ability);
+        });
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetExperimentationFlag() const
@@ -532,6 +862,19 @@ uint32_t Player::GetExperimentationFlag() const
 void Player::SetExperimentationFlag(uint32_t experimentation_flag)
 {
     experimentation_flag_ = experimentation_flag;
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(1);
+        message.data.write(experimentation_flag_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetCraftingStage() const
@@ -542,6 +885,19 @@ uint32_t Player::GetCraftingStage() const
 void Player::SetCraftingStage(uint32_t crafting_stage)
 {
     crafting_stage_ = crafting_stage;
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(2);
+        message.data.write(crafting_stage_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint64_t Player::GetNearestCraftingStation() const
@@ -552,6 +908,19 @@ uint64_t Player::GetNearestCraftingStation() const
 void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
 {
     nearest_crafting_station_ = crafting_station_id;
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(3);
+        message.data.write<uint64_t>(nearest_crafting_station_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 vector<Player::DraftSchematicData> Player::GetDraftSchematics() const
@@ -575,6 +944,22 @@ void Player::AddDraftSchematic(DraftSchematicData schematic)
     }
 
     draft_schematics_.push_back(move(schematic));
+
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(4);
+        // sub type (add)
+        message.data.write<uint8_t>(1);
+        message.data.write<uint16_t>(draft_schematics_.size());
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::RemoveDraftSchematic(uint32_t schematic_crc)
@@ -591,6 +976,21 @@ void Player::RemoveDraftSchematic(uint32_t schematic_crc)
     {
         return;
     }
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(4);
+        // sub type (remove)
+        message.data.write<uint8_t>(0);
+        message.data.write<uint16_t>(find_iter - draft_schematics_.begin());
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 
     draft_schematics_.erase(find_iter);
 }
@@ -598,11 +998,44 @@ void Player::RemoveDraftSchematic(uint32_t schematic_crc)
 void Player::ClearDraftSchematics()
 {
     draft_schematics_.clear();
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(4);
+        // sub type (clear)
+        message.data.write<uint8_t>(4);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::ResetDraftSchematics(std::vector<DraftSchematicData> draft_schematics)
 {
     draft_schematics_ = move(draft_schematics);
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(4);
+        // sub type (reset)
+        message.data.write<uint8_t>(3);
+        message.data.write<uint16_t>(draft_schematics_.size());
+        for_each(begin(draft_schematics_), end(draft_schematics_), [&message](DraftSchematicData schematic){
+            schematic.schematic_id;
+            schematic.schematic_crc;
+        });
+
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetExperimentationPoints() const
@@ -613,16 +1046,55 @@ uint32_t Player::GetExperimentationPoints() const
 void Player::AddExperimentationPoints(uint32_t points)
 {
     experimentation_points_ += points;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(5);
+        message.data.write(experimentation_points_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::RemoveExperimentationPoints(uint32_t points)
 {
     experimentation_points_ -= points;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(5);
+        message.data.write(experimentation_points_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::ResetExperimentationPoints(uint32_t points)
 {
     experimentation_points_ = points;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(5);
+        message.data.write(experimentation_points_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetAccomplishmentCounter() const
@@ -633,11 +1105,37 @@ uint32_t Player::GetAccomplishmentCounter() const
 void Player::ResetAccomplishmentCounter(uint32_t counter)
 {
     accomplishment_counter_ = counter;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(6);
+        message.data.write(accomplishment_counter_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::IncrementAccomplishmentCounter()
 {
     ++accomplishment_counter_;
+    // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(6);
+        message.data.write(accomplishment_counter_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 vector<string> Player::GetFriends()
@@ -661,6 +1159,23 @@ void Player::AddFriend(string friend_name)
     }
 
     friends_.push_back(move(friend_name));
+
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(7);
+        // sub type (add)
+        message.data.write<uint8_t>(1);
+        message.data.write<uint16_t>(friends_.size());
+        message.data.write(friend_name);
+
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::RemoveFriend(string friend_name)
@@ -677,6 +1192,21 @@ void Player::RemoveFriend(string friend_name)
     {
         return;
     }
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(7);
+        // sub type (remove)
+        message.data.write<uint8_t>(0);
+        message.data.write<uint16_t>(find_iter - friends_.begin());
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 
     friends_.erase(find_iter);
 }
@@ -684,6 +1214,20 @@ void Player::RemoveFriend(string friend_name)
 void Player::ClearFriends()
 {
     friends_.clear();
+     // do the delta update
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(7);
+        // sub type (reset)
+        message.data.write<uint8_t>(4);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 vector<string> Player::GetIgnoredPlayers()
@@ -705,8 +1249,22 @@ void Player::IgnorePlayer(string player_name)
     {
         return;
     }
-
     ignored_players_.push_back(player_name);
+
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(8);
+        // sub type (add)
+        message.data.write<uint8_t>(1);
+        message.data.write(player_name);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }  
 }
 
 void Player::StopIgnoringPlayer(string player_name)
@@ -723,13 +1281,39 @@ void Player::StopIgnoringPlayer(string player_name)
     {
         return;
     }
-
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(8);
+        // sub type (remove)
+        message.data.write<uint8_t>(0);
+        message.data.write<uint16_t>(find_iter - ignored_players_.begin());
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
     ignored_players_.erase(find_iter);
 }
 
 void Player::ClearIgnored()
 {
     ignored_players_.clear();
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(8);
+        // sub type (clear)
+        message.data.write<uint8_t>(4);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetLanguage() const
@@ -740,6 +1324,19 @@ uint32_t Player::GetLanguage() const
 void Player::SetLanguage(uint32_t language_id)
 {
     language_ = language_id;
+    
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(9);
+        message.data.write(language_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetCurrentStomach() const
@@ -752,16 +1349,53 @@ void Player::IncreaseCurrentStomach(uint32_t stomach)
     uint32_t new_stomach = current_stomach_ + stomach;
 
     current_stomach_ = (new_stomach > GetMaxStomach()) ? GetMaxStomach() : new_stomach;
+
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(10);
+        message.data.write(current_stomach_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::DecreaseCurrentStomach(uint32_t stomach)
 {
     current_stomach_ -= stomach;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(10);
+        message.data.write(current_stomach_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::ResetCurrentStomach(uint32_t stomach)
 {
     current_stomach_ = stomach;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(10);
+        message.data.write(current_stomach_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetMaxStomach() const
@@ -772,6 +1406,18 @@ uint32_t Player::GetMaxStomach() const
 void Player::ResetMaxStomach(uint32_t stomach)
 {
     max_stomach_ = stomach;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(11);
+        message.data.write(current_stomach_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetCurrentDrink() const
@@ -784,16 +1430,52 @@ void Player::IncreaseCurrentDrink(uint32_t drink)
     uint32_t new_drink = current_drink_ + drink;
 
     current_drink_ = (new_drink > GetMaxDrink()) ? GetMaxDrink() : new_drink;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(12);
+        message.data.write(current_drink_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::DecreaseCurrentDrink(uint32_t drink)
 {
     current_drink_ -= drink;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(12);
+        message.data.write(current_drink_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 void Player::ResetCurrentDrink(uint32_t drink)
 {
     current_drink_ = drink;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(12);
+        message.data.write(current_drink_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetMaxDrink() const
@@ -804,6 +1486,18 @@ uint32_t Player::GetMaxDrink() const
 void Player::ResetMaxDrink(uint32_t drink)
 {
     max_drink_ = drink;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(13);
+        message.data.write(max_drink_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
 }
 
 uint32_t Player::GetJediState() const
@@ -814,4 +1508,48 @@ uint32_t Player::GetJediState() const
 void Player::SetJediState(uint32_t jedi_state)
 {
     jedi_state_ = jedi_state;
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(VIEW_9);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(17);
+        message.data.write(jedi_state_);
+        
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(VIEW_9, std::move(message)));
+    }
+}
+
+boost::optional<BaselinesMessage> Player::GetBaseline3()
+{
+    return boost::optional<BaselinesMessage>();
+}
+boost::optional<BaselinesMessage> Player::GetBaseline6()
+{
+    return boost::optional<BaselinesMessage>();
+}
+boost::optional<BaselinesMessage> Player::GetBaseline8()
+{
+    return boost::optional<BaselinesMessage>();
+}
+boost::optional<BaselinesMessage> Player::GetBaseline9()
+{
+    return boost::optional<BaselinesMessage>();
+}
+
+void Player::SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, BaseObject::ViewType view_type)
+{
+    if (GetScene()->HasObservers(GetObjectId()))
+    {
+        DeltasMessage message = CreateDeltasMessage(view_type);
+        // update count
+        message.data.write<uint16_t>(1);
+        // update type
+        message.data.write<uint16_t>(update_type);
+        message.data.write(status_flags_);
+        GetScene()->UpdateObservers(GetObjectId(), message);
+        deltas_cache_.push_back(std::make_pair(view_type, std::move(message)));
+    }
 }

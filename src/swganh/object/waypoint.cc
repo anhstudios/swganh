@@ -131,6 +131,27 @@ void Waypoint::SetName(const std::wstring& name)
     }
 }
 
+uint8_t Waypoint::GetColorByte()
+{
+    if (color_.compare("blue") != 0)
+        return 1;
+    else if (color_.compare("green") != 0)
+        return 2;
+    else if (color_.compare("orange") != 0)
+        return 3;
+    else if (color_.compare("yellow") != 0)
+        return 4;
+    else if (color_.compare("purple") != 0)
+        return 5;
+    else if (color_.compare("white") != 0)
+        return 6;
+    else if (color_.compare("space") != 0)
+        return 7;
+    // default
+    else
+        return 1;
+}
+
 void Waypoint::SetColor(const std::string& color)
 {
     color_ = color;

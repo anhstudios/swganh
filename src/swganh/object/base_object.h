@@ -36,7 +36,7 @@ typedef std::vector<
 class BaseObject
 {
 public:
-    enum ViewType
+    enum ViewType : uint16_t
     {
         VIEW_1 = 1,
         VIEW_2,
@@ -118,7 +118,7 @@ private:
     std::wstring custom_name_;       // update 3
     uint32_t volume_;                // update 3
     
-    std::shared_ptr<swganh::scene::Scene> scene_;
+    std::shared_ptr<swganh::scene::Scene> scene_;       // update 6
         
 };
 
