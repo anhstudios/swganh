@@ -14,6 +14,15 @@ namespace object {
 class Player : public BaseObject
 {
 public:
+    enum StatusFlags{
+        LFG = 1,
+        HELPER = 2,
+        ROLEPLAYER = 4,
+        AFK = 80,
+        LD = 100,
+        FACTION_RANK = 200,
+        ANON = 80000000
+    };
     struct XpData
     {
         std::string type;
@@ -35,19 +44,20 @@ public:
         uint32_t schematic_id;
         uint32_t schematic_crc;
     };
-
-public:    
+   
     virtual uint32_t GetType() { return Player::type; }
     const static uint32_t type = 0x504c4159;
 
-    std::vector<uint32_t> GetStatusFlags() const;
+    uint32_t GetStatusFlags() const { return status_flags_; }
     void AddStatusFlag(uint32_t flag);
     void RemoveStatusFlag(uint32_t flag);
+    void ToggleStatusFlag(uint32_t flag);
     void ClearStatusFlags();
     
-    std::vector<uint32_t> GetProfileFlags() const;
+    uint32_t GetProfileFlags() const;
     void AddProfileFlag(uint32_t flag);
     void RemoveProfileFlag(uint32_t flag);
+    void ToggleProfileFlag(uint32_t flag);
     void ClearProfileFlags();
 
     std::string GetProfessionTag() const;
@@ -59,6 +69,12 @@ public:
     uint32_t GetTotalPlayTime() const;
     void SetTotalPlayTime(uint32_t play_time);
     void IncrementTotalPlayTime(uint32_t increment);
+
+    uint8_t GetAdminTag() const;
+    void SetAdminTag(uint8_t tag);
+
+    uint32_t GetRegionId() const;
+    void SetRegionId(uint32_t region);
 
     std::vector<XpData> GetXp() const;
     void AddExperience(std::string type, uint32_t amount);
@@ -82,14 +98,14 @@ public:
     uint32_t GetMaxForcePower() const;
     void SetMaxForcePower(uint32_t force_power);
 
-    std::vector<uint8_t> GetCurrentForceSensitiveQuests();
-    void AddCurrentForceSensitiveQuest(uint8_t quest_mask);
-    void RemoveCurrentForceSensitiveQuest(uint8_t quest_mask);
+    uint32_t GetCurrentForceSensitiveQuests();
+    void AddCurrentForceSensitiveQuest(uint32_t quest_mask);
+    void RemoveCurrentForceSensitiveQuest(uint32_t quest_mask);
     void ClearCurrentForceSensitiveQuests();
     
-    std::vector<uint8_t> GetCompletedForceSensitiveQuests();
-    void AddCompletedForceSensitiveQuest(uint8_t quest_mask);
-    void RemoveCompletedForceSensitiveQuest(uint8_t quest_mask);
+    uint32_t GetCompletedForceSensitiveQuests();
+    void AddCompletedForceSensitiveQuest(uint32_t quest_mask);
+    void RemoveCompletedForceSensitiveQuest(uint32_t quest_mask);
     void ClearCompletedForceSensitiveQuests();
 
     std::vector<QuestJournalData> GetQuests() const;
@@ -160,22 +176,30 @@ public:
     
     uint32_t GetJediState() const;
     void SetJediState(uint32_t jedi_state);
-
+protected:
+    // baselines
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline6();
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline8();
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline9();
 private:
-    virtual void OnReliableUpdate() {}
+    void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, BaseObject::ViewType view_type);
 
-    std::vector<uint32_t> status_flags_;
-    std::vector<uint32_t> profile_flags_;
+    uint32_t status_flags_;
+    uint32_t profile_flags_;
     std::string profession_tag_;
     uint32_t born_date_;
     uint32_t total_playtime_;
     uint8_t admin_tag_;
+    uint32_t region_;
     std::vector<XpData> experience_;
+    uint32_t experience_counter_;
     std::vector<Waypoint> waypoints_;
+    uint32_t waypoint_counter_;
     uint32_t current_force_power_;
     uint32_t max_force_power_;
-    std::vector<uint8_t> current_force_sensitive_quests_;
-    std::vector<uint8_t> completed_force_sensitive_quests_;
+    uint32_t current_force_sensitive_quests_;
+    uint32_t completed_force_sensitive_quests_;
     std::vector<QuestJournalData> quest_journal_;
     std::vector<std::string> abilities_;
     uint32_t experimentation_flag_;

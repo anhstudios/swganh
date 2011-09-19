@@ -17,7 +17,7 @@ public:
     const static uint32_t type = 0x5354414F;
 
 protected:
-    virtual void OnReliableUpdate() = 0;
+    
 };
 
 }}  // namespace

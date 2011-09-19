@@ -62,7 +62,6 @@ protected:
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline8();
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline9();
     
-    virtual void OnReliableUpdate();
     std::vector<uint64_t>::iterator FindDefender(uint64_t defender);
     std::string customization_;                          // update 3
     std::vector<uint32_t> component_customization_list_; // update 3

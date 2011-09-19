@@ -24,6 +24,8 @@ public:
     *   @param cell number
     */
     void SetCell(uint32_t cell_number);
+protected:
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline3();
 private:
     uint32_t cell_number_;			//update 3
 };

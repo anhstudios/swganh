@@ -36,7 +36,7 @@ typedef std::vector<
 class BaseObject
 {
 public:
-    enum ViewType
+    enum ViewType : uint16_t
     {
         VIEW_1 = 1,
         VIEW_2,
@@ -96,8 +96,6 @@ protected:
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
     
-    virtual void OnReliableUpdate() = 0;
-
     virtual uint32_t GetType() = 0;
         
     swganh::scene::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0);
@@ -120,7 +118,7 @@ private:
     std::wstring custom_name_;       // update 3
     uint32_t volume_;                // update 3
     
-    std::shared_ptr<swganh::scene::Scene> scene_;
+    std::shared_ptr<swganh::scene::Scene> scene_;       // update 6
         
 };
 

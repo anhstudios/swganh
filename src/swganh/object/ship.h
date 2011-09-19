@@ -23,8 +23,6 @@ public:
     const static uint32_t type = 0x6FB799E0; 
     
 protected:
-    virtual void OnReliableUpdate() {
-    }
 private:
 
     std::vector<ShipList<float>> ukn1;                              // update 1
