@@ -34,8 +34,8 @@ public:
     void SetResourceName(const std::wstring& name);
 
 protected:
-    virtual void OnReliableUpdate() {
-    }
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline6();
 private:
     uint32_t current_quantity_;			                    // update 3
 	uint64_t global_resource_id_;		                    // update 3

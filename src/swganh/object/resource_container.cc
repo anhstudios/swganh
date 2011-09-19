@@ -88,3 +88,26 @@ void ResourceContainer::SetResourceName(const wstring& name)
         deltas_cache_.push_back(make_pair(BaseObject::VIEW_6, move(message)));
     }
 }
+boost::optional<BaselinesMessage> ResourceContainer::GetBaseline3()
+{
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_3, 13);
+    
+    // base data
+    message.data.append(BaseTangible::GetBaseline3().get().data);
+    message.data.write(GetCurrentQuantity());
+    message.data.write(GetGlobalResource());
+
+    return boost::optional<BaselinesMessage>(std::move(message));
+}
+boost::optional<BaselinesMessage> ResourceContainer::GetBaseline6()
+{
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_6, 5);
+    
+    // base data
+    message.data.append(BaseTangible::GetBaseline6().get().data);
+    message.data.write(GetMaxQuantity());
+    message.data.write(GetResourceType());
+    message.data.write(GetResourceName());
+
+    return boost::optional<BaselinesMessage>(std::move(message));
+}

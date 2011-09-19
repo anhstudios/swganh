@@ -12,7 +12,7 @@
 namespace swganh {
 namespace object {
 
-class Installation : public BaseTangible, public BaseObject
+class Installation : public BaseTangible
 {
 public:
     struct Resource
@@ -78,7 +78,7 @@ public:
     void SetConditionPercentage(uint8_t condition);
 
 protected:
-    virtual void OnReliableUpdate() {}
+    
 
 private:
     bool is_active_;

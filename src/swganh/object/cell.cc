@@ -18,3 +18,13 @@ void Cell::SetCell(uint32_t cell_number) {
         deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
     }
 }
+boost::optional<BaselinesMessage> Cell::GetBaseline3()
+{
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_3, 5);
+    
+    // base data
+    message.data.append(BaseObject::GetBaseline3().get().data);
+    message.data.write(GetCell());
+
+    return boost::optional<BaselinesMessage>(std::move(message));
+}

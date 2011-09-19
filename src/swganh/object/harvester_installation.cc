@@ -3,6 +3,3 @@
 
 using namespace swganh::object;
 
-void HarvesterInstallation::OnReliableUpdate() {
-    Installation::OnReliableUpdate();
-}

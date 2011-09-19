@@ -216,7 +216,7 @@ void BaseTangible::AddDefender(uint64_t defender)
         message.data.write(defender_list_.size());
         message.data.write(defender_list_counter_);
         // end defender index
-        message.data.write(defender_list_.back());
+        message.data.write<uint16_t>(defender_list_.size());
         // defender we are adding
         message.data.write(defender);
         // update subtype (add)

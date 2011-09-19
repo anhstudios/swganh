@@ -14,7 +14,6 @@ public:
     const static uint32_t type = 0x48494e4f;
     
 private:
-    virtual void OnReliableUpdate();
 };
 
 }}  // namespace swganh::object

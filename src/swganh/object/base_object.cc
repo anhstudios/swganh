@@ -88,14 +88,6 @@ DeltasMessage BaseObject::CreateDeltasMessage(uint16_t view_type)
     return message;
 }
 
-void BaseObject::ReliableUpdate()
-{
-    baselines_cache_.clear();
-    deltas_cache_.clear();
-    
-    OnReliableUpdate();
-}
-
 boost::optional<swganh::scene::messages::BaselinesMessage> BaseObject::GetBaseline3()
 {
     auto message = CreateBaselinesMessage(VIEW_3);

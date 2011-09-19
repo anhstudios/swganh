@@ -9,6 +9,10 @@
 namespace swganh {
 namespace object {
 
+/**
+*   @brief Tangible Object
+*   @inherits BaseTangible
+*/
 class Tangible : public BaseTangible
 {
 public:
@@ -19,7 +23,7 @@ public:
     const static uint32_t type = 0x54414e4f;
 
 private:
-    virtual void OnReliableUpdate() {}
+    
 };
     
 }}  // namespace
