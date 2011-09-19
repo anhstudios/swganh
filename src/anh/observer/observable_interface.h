@@ -9,10 +9,8 @@
 namespace anh {
 namespace observer {
 
-    template<typename T>
     class ObserverInterface;
 
-    template<typename T>
     class ObservableInterface
     {
     public:
@@ -30,21 +28,21 @@ namespace observer {
          *
          * @param observer The object interested in receiving state change notifications.
          */
-        virtual void Subscribe(const std::shared_ptr<ObserverInterface<T>>& observer) = 0;
+        virtual void Subscribe(const std::shared_ptr<ObserverInterface>& observer) = 0;
 
         /**
          * Stop receiving state notification changes for the observable object.
          *
          * @param observer The object that no longer wants state change notifications.
          */
-        virtual void Unsubscribe(const std::shared_ptr<ObserverInterface<T>>& observer) = 0;
+        virtual void Unsubscribe(const std::shared_ptr<ObserverInterface>& observer) = 0;
 
         /**
-         * Notifies subscribers that the observable object has changed state.
+         * Notifies observers that the observable object has changed state.
          *
-         * @param observable The observable object that has changed state.
+         * @param message Message containing the updated state of the observable object.
          */
-        virtual void NotifySubscribers(const T& observable) = 0;
+        virtual void NotifyObservers(const anh::ByteBuffer& message) = 0;
     };
 
 }}  // namespace anh::observer

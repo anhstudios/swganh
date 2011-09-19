@@ -7,19 +7,17 @@
 namespace anh {
 namespace observer {
 
-    template<typename T>
     class ObserverInterface
     {
     public:
         virtual ~ObserverInterface() {}
 
         /**
-         * Observers receive a const reference handle to the observable object that
-         * has changed state.
+         * Notifies observer that the observable object has changed state.
          *
-         * @param observable Observable object that has changed state.
+         * @param message Message containing the updated state of the observable object.
          */
-        virtual void Notify(const T& observable) = 0;
+        virtual void Notify(const anh::ByteBuffer& message) = 0;
     };
 
 }}  // namespace anh::observer

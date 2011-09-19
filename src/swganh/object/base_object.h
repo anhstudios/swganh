@@ -68,21 +68,35 @@ public:
      *
      * @param observer The object interested in receiving state change notifications.
      */
-    void Subscribe(const std::shared_ptr<anh::observer::ObserverInterface<BaseObject>>& observer);
+    void Subscribe(const std::shared_ptr<anh::observer::ObserverInterface>& observer);
 
     /**
      * Stop receiving state notification changes for the observable object.
      *
      * @param observer The object that no longer wants state change notifications.
      */
-    void Unsubscribe(const std::shared_ptr<anh::observer::ObserverInterface<BaseObject>>& observer);
+    void Unsubscribe(const std::shared_ptr<anh::observer::ObserverInterface>& observer);
 
     /**
-     * Notifies subscribers that the observable object has changed state.
+     * Notifies observers that the observable object has changed state.
      *
-     * @param observable The observable object that has changed state.s
+     * @param message Message containing the updated state of the observable object.
      */
-    void NotifySubscribers(const BaseObject& observable);
+    void NotifyObservers(const anh::ByteBuffer& message);
+    
+    /**
+     * Notifies observers that the observable object has changed state.
+     *
+     * @param message Message containing the updated state of the observable object.
+     */
+    template<typename T>
+    void NotifyObservers(const T& message)
+    {
+        anh::ByteBuffer buffer;
+        message.serialize(buffer);
+
+        NotifyObservers(buffer);
+    }
 
     /**
      * Returns whether or not the object has been modified since the last reliable
@@ -147,7 +161,6 @@ public:
     
     std::shared_ptr<swganh::scene::Scene> GetScene();    
     
-protected:
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::scene::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline3();
@@ -177,7 +190,7 @@ private:
 
     
     typedef std::vector<
-        std::shared_ptr<anh::observer::ObserverInterface<BaseObject>>
+        std::shared_ptr<anh::observer::ObserverInterface>
     > ObserverContainer;
 
     ObserverContainer observers_;

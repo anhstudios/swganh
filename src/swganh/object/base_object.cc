@@ -65,12 +65,12 @@ bool BaseObject::HasObservers() const
     return !observers_.empty();
 }
 
-void BaseObject::Subscribe(const shared_ptr<ObserverInterface<BaseObject>>& observer)
+void BaseObject::Subscribe(const shared_ptr<ObserverInterface>& observer)
 {
     auto find_iter = std::find_if(
         observers_.begin(),
         observers_.end(),
-        [&observer] (const std::shared_ptr<ObserverInterface<BaseObject>>& stored_observer)
+        [&observer] (const std::shared_ptr<ObserverInterface>& stored_observer)
     {
         return observer == stored_observer;
     });
@@ -83,12 +83,12 @@ void BaseObject::Subscribe(const shared_ptr<ObserverInterface<BaseObject>>& obse
     observers_.push_back(observer);
 }
 
-void BaseObject::Unsubscribe(const shared_ptr<ObserverInterface<BaseObject>>& observer)
+void BaseObject::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
 {
     auto find_iter = std::find_if(
         observers_.begin(),
         observers_.end(),
-        [&observer] (const std::shared_ptr<ObserverInterface<BaseObject>>& stored_observer)
+        [&observer] (const std::shared_ptr<ObserverInterface>& stored_observer)
     {
         return observer == stored_observer;
     });
@@ -100,15 +100,15 @@ void BaseObject::Unsubscribe(const shared_ptr<ObserverInterface<BaseObject>>& ob
 
     observers_.erase(find_iter);
 }
-
-void BaseObject::NotifySubscribers(const BaseObject& observable)
+    
+void BaseObject::NotifyObservers(const anh::ByteBuffer& message)
 {
     for_each(
         observers_.begin(),
         observers_.end(),
-        [&observable] (const std::shared_ptr<ObserverInterface<BaseObject>>& stored_observer)
+        [&message] (const std::shared_ptr<ObserverInterface>& observer)
     {
-        return stored_observer->Notify(observable);
+        observer->Notify(message);
     });
 }
 
@@ -120,9 +120,7 @@ bool BaseObject::IsDirty() const
 void BaseObject::MakeClean()
 {
     baselines_.clear();
-    public_baselines_.clear();
     deltas_.clear();
-    public_deltas_.clear();
     
     optional<BaselinesMessage> message;
     
@@ -134,47 +132,25 @@ void BaseObject::MakeClean()
             return;
         }
 
-        if (message->view_type == 3 || message->view_type == 6)
-        {
-            public_baselines_.push_back(*message);
-        }
-        
+        NotifyObservers(*message);
         baselines_.push_back(*message);
     });
-
-    NotifySubscribers(*this);
 }
 
 const BaselinesCacheContainer& BaseObject::GetBaselines(uint64_t viewer_id) const
 {
-    if (HasPrivilegedView_(viewer_id))
-    {
-        return baselines_;
-    }
-
-    return public_baselines_;
+    return baselines_;
 }
 
 const DeltasCacheContainer& BaseObject::GetDeltas(uint64_t viewer_id) const
 {
-    if (HasPrivilegedView_(viewer_id))
-    {
-        return deltas_;
-    }
-
-    return public_deltas_;
+    return deltas_;
 }
 
 void BaseObject::AddDeltasUpdate(DeltasMessage message)
 {
-    if (message.view_type == 3 || message.view_type == 6)
-    {
-        public_deltas_.push_back(message);
-    }
-
+    NotifyObservers(message);
     deltas_.push_back(move(message));
-
-    NotifySubscribers(*this);
 }
 
 void BaseObject::AddBaselinesBuilders_()
