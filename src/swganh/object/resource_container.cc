@@ -3,9 +3,9 @@
 #include "swganh/scene/scene.h"
 #include "swganh/scene/messages/deltas_message.h"
 
+using namespace std;
 using namespace swganh::object;
 using namespace swganh::scene::messages;
-using namespace std;
 
 ResourceContainer::ResourceContainer() : BaseTangible()
     , current_quantity_(0)
@@ -30,7 +30,7 @@ ResourceContainer::ResourceContainer(const std::string& customization, std::vect
 void ResourceContainer::SetCurrentQuantity(uint32_t current_quantity)
 {
     current_quantity_ = current_quantity;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         // update count
@@ -38,15 +38,15 @@ void ResourceContainer::SetCurrentQuantity(uint32_t current_quantity)
         // update type
         message.data.write<uint16_t>(11);
         message.data.write(current_quantity_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 
 void ResourceContainer::SetMaxQuantity(uint32_t max_quantity)
 {
     max_quantity_ = max_quantity;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         // update count
@@ -54,14 +54,14 @@ void ResourceContainer::SetMaxQuantity(uint32_t max_quantity)
         // update type
         message.data.write<uint16_t>(2);
         message.data.write(max_quantity_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_6, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 void ResourceContainer::SetResourceType(const string& resource_type)
 {
     resource_type_ = resource_type;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         // update count
@@ -69,14 +69,14 @@ void ResourceContainer::SetResourceType(const string& resource_type)
         // update type
         message.data.write<uint16_t>(3);
         message.data.write(resource_type_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_6, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 void ResourceContainer::SetResourceName(const wstring& name)
 {
     variation_name_ = name;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         // update count
@@ -84,8 +84,8 @@ void ResourceContainer::SetResourceName(const wstring& name)
         // update type
         message.data.write<uint16_t>(4);
         message.data.write(max_quantity_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_6, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 boost::optional<BaselinesMessage> ResourceContainer::GetBaseline3()

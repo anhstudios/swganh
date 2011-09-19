@@ -220,7 +220,7 @@ boost::optional<swganh::scene::messages::BaselinesMessage> BaseObject::GetBaseli
 boost::optional<swganh::scene::messages::BaselinesMessage> BaseObject::GetBaseline6()
 {
     auto message = CreateBaselinesMessage(VIEW_6);
-    message.data.write(GetScene()->GetId());
+    //message.data.write(GetScene()->GetId());
 
     return boost::optional<BaselinesMessage>(std::move(message));
 }

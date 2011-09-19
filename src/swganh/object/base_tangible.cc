@@ -36,7 +36,7 @@ BaseTangible::BaseTangible(const std::string& customization, std::vector<uint32_
 void BaseTangible::AddCustomization(const string& customization)
 {
     customization_.append(customization);
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         // update count
@@ -44,15 +44,15 @@ void BaseTangible::AddCustomization(const string& customization)
         // update type
         message.data.write<uint16_t>(4);
         message.data.write(customization_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 
 void BaseTangible::SetCustomization(const string& customization)
 {
     customization_ = customization;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         // update count
@@ -60,8 +60,8 @@ void BaseTangible::SetCustomization(const string& customization)
         // update type
         message.data.write<uint16_t>(4);
         message.data.write(customization_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 
@@ -71,7 +71,7 @@ void BaseTangible::AddComponentCustomization(uint32_t customization)
     component_customization_list_.push_back(customization);
     // update counter
     component_customization_list_counter_++;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         // update count
@@ -83,15 +83,15 @@ void BaseTangible::AddComponentCustomization(uint32_t customization)
         message.data.write(component_customization_list_);
         // update type add
         message.data.write<uint8_t>(1);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 
 void BaseTangible::SetComponentCustomization(vector<uint32_t> component_customization)
 {
     component_customization_list_ = component_customization;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         // update count
@@ -103,15 +103,15 @@ void BaseTangible::SetComponentCustomization(vector<uint32_t> component_customiz
         message.data.write(component_customization_list_);
         // update type clearall
         message.data.write<uint8_t>(2);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 
 void BaseTangible::SetOptionsMask(uint32_t options_mask)
 {
     options_bitmask_ = options_mask;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         // update count
@@ -119,14 +119,14 @@ void BaseTangible::SetOptionsMask(uint32_t options_mask)
         // update type
         message.data.write<uint16_t>(6);
         message.data.write(options_bitmask_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 void BaseTangible::SetIncapTimer(uint32_t incap_timer)
 {
     incap_timer_ = incap_timer;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         // update count
@@ -134,14 +134,14 @@ void BaseTangible::SetIncapTimer(uint32_t incap_timer)
         // update type
         message.data.write<uint16_t>(7);
         message.data.write(incap_timer_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 void BaseTangible::SetConditionDamage(uint32_t damage)
 {
     condition_damage_ = damage;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         // update count
@@ -149,14 +149,14 @@ void BaseTangible::SetConditionDamage(uint32_t damage)
         // update type
         message.data.write<uint16_t>(8);
         message.data.write(condition_damage_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 void BaseTangible::SetMaxCondition(uint32_t max_condition)
 {
     max_condition_ = max_condition;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
         // update count
@@ -164,14 +164,14 @@ void BaseTangible::SetMaxCondition(uint32_t max_condition)
         // update type
         message.data.write<uint16_t>(9);
         message.data.write(max_condition_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 void BaseTangible::SetStatic(bool is_static)
 {
     is_static_ = is_static;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         uint8_t val = MOVEABLE;
         if (is_static_)
@@ -182,8 +182,8 @@ void BaseTangible::SetStatic(bool is_static)
         // update type
         message.data.write<uint16_t>(10);
         message.data.write(val);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 std::vector<uint64_t>::iterator BaseTangible::FindDefender(uint64_t defender)
@@ -206,7 +206,7 @@ void BaseTangible::AddDefender(uint64_t defender)
     // update counter
     defender_list_counter_++;
 
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         // update count
@@ -221,8 +221,8 @@ void BaseTangible::AddDefender(uint64_t defender)
         message.data.write(defender);
         // update subtype (add)
         message.data.write<uint8_t>(1);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_6, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
 }
 void BaseTangible::RemoveDefender(uint64_t defender)
@@ -234,7 +234,7 @@ void BaseTangible::RemoveDefender(uint64_t defender)
 
     defender_list_.erase(found);
 
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         // update count
@@ -246,8 +246,8 @@ void BaseTangible::RemoveDefender(uint64_t defender)
         message.data.write<uint16_t>(found - defender_list_.begin());
         // update subtype (remove)
         message.data.write<uint8_t>(0);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_6, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
     // update counter
     defender_list_counter_--;
@@ -256,7 +256,7 @@ void BaseTangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
     defender_list_.clear();
     defender_list_ = defenders;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         // update count (not sure if this is the new size or just 1)?
@@ -269,8 +269,8 @@ void BaseTangible::ResetDefenders(std::vector<uint64_t> defenders)
         for_each(begin(defender_list_), end(defender_list_), [&message](uint64_t defender) {
             message.data.write(defender);
         });
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_6, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
     // update counter
     defender_list_counter_ = 0;
@@ -279,7 +279,7 @@ void BaseTangible::ClearDefenders()
 {
     defender_list_.clear();
 
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_6);
         // update count
@@ -288,8 +288,8 @@ void BaseTangible::ClearDefenders()
         message.data.write<uint16_t>(1);
         // update sub type (reset all)
         message.data.write<uint8_t>(4);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(make_pair(BaseObject::VIEW_6, move(message)));
+
+        AddDeltasUpdate(move(message));
     }
     // update counter
     defender_list_counter_ = 0;
