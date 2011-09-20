@@ -21,7 +21,7 @@ class Ship : public swganh::object::Object
 {
 public:
     // SHIP
-    virtual uint32_t GetType() { Ship::type; }
+    uint32_t GetType();
     const static uint32_t type = 0x6FB799E0; 
     
 private:

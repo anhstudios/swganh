@@ -4,6 +4,11 @@
 using namespace std;
 using namespace swganh::object::installation;
 
+uint32_t Installation::GetType() 
+{ 
+    return Installation::type; 
+}
+
 bool Installation::IsActive() const
 {
     return is_active_;

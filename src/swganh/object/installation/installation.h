@@ -30,7 +30,7 @@ public:
     };
 
 public:
-    virtual uint32_t GetType() { return Installation::type; }
+    uint32_t GetType();
     const static uint32_t type = 0x49544e4f;
 
     bool IsActive() const;

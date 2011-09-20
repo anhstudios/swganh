@@ -11,7 +11,7 @@ namespace installation {
 class HarvesterInstallation : public Installation
 {
 public:
-    virtual uint32_t GetType() { return HarvesterInstallation::type; }
+    uint32_t GetType();
     const static uint32_t type = 0x48494e4f;
     
 private:

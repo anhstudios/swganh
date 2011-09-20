@@ -6,6 +6,11 @@
 using namespace std;
 using namespace swganh::object::manufacture_schematic;
 
+uint32_t ManufactureSchematic::GetType() 
+{ 
+    return ManufactureSchematic::type; 
+}
+
 uint32_t ManufactureSchematic::GetSchematicQuantity() const
 {
     return schematic_quantity_;
