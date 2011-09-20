@@ -171,6 +171,7 @@ public:
 
 private:
     uint32_t schematic_quantity_;
+    uint32_t property_counter_;
     std::vector<Property> properties_;
     std::wstring creator_;
     uint32_t complexity_;
@@ -181,8 +182,11 @@ private:
     bool is_active_;
     uint8_t slot_count_;
     std::vector<Slot> slots_;
+    uint32_t slot_counter_;
     std::vector<Experiment> experiments_;
+    uint32_t experiment_counter_;
     std::vector<Customization> customizations_;
+    uint32_t customization_counter_;
     float risk_factor_;
     bool is_ready_;
 };
