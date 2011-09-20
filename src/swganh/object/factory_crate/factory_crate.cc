@@ -3,7 +3,6 @@
 
 using namespace swganh::object::factory_crate;
 
-
 uint32_t FactoryCrate::GetType() 
 { 
     return FactoryCrate::type; 
