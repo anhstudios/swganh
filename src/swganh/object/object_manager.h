@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "swganh/object/base_object.h"
+#include "swganh/object/object.h"
 #include "swganh/object/exception.h"
 #include "swganh/object/object_factory_interface.h"
 
@@ -62,7 +62,7 @@ namespace object {
          * @returns the created object instance.
          * @throws InvalidObject when no object exists for the specified id.
          */
-        std::shared_ptr<BaseObject> CreateObjectFromStorage(uint64_t object_id);
+        std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id);
                 
         /**
          * Creates an instance of a stored object with the specified id.
@@ -72,7 +72,7 @@ namespace object {
          * @returns the created object instance.
          * @throws InvalidObject when no object exists for the specified id.
          */
-        std::shared_ptr<BaseObject> CreateObjectFromStorage(uint32_t object_type, uint64_t object_id);
+        std::shared_ptr<Object> CreateObjectFromStorage(uint32_t object_type, uint64_t object_id);
         
         /**
          * Creates an instance of a stored object with the specified id.
@@ -84,7 +84,7 @@ namespace object {
         template<typename T>
         std::shared_ptr<T> CreateObjectFromStorage(uint64_t object_id)
         {
-            std::shared_ptr<BaseObject> object = CreateObjectFromStorage(T::type, object_id);
+            std::shared_ptr<Object> object = CreateObjectFromStorage(T::type, object_id);
 
 #if _DEBUG
             return std::dynamic_pointer_cast<T>(object);
@@ -99,7 +99,7 @@ namespace object {
          * @returns the created object instance.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
-        std::shared_ptr<BaseObject> CreateObjectFromTemplate(const std::string& template_name);
+        std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name);
         
         /**
          * Creates an instance of an object from the specified template.
@@ -110,7 +110,7 @@ namespace object {
         template<typename T>
         std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name)
         {
-            std::shared_ptr<BaseObject> object = CreateObjectFromTemplate(template_name);
+            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name);
 
 #if _DEBUG
             return std::dynamic_pointer_cast<T>(object);
@@ -124,14 +124,14 @@ namespace object {
          *
          * @param object the object instance to delete from storage.
          */
-        void DeleteObjectFromStorage(const std::shared_ptr<BaseObject>& object);
+        void DeleteObjectFromStorage(const std::shared_ptr<Object>& object);
         
         /**
          * Persists the object's state to storage.
          *
          * @param object the object instance to persist.
          */
-        void PersistObject(const std::shared_ptr<BaseObject>& object);
+        void PersistObject(const std::shared_ptr<Object>& object);
 
     private:
         typedef std::map<

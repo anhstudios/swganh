@@ -2,8 +2,14 @@
 #ifndef SWGANH_OBJECT_OBJECT_FACTORY_INTERFACE_H_
 #define SWGANH_OBJECT_OBJECT_FACTORY_INTERFACE_H_
 
+#include <cstdint>
+#include <memory>
+#include <string>
+
 namespace swganh {
 namespace object {
+
+    class Object;
 
     class ObjectFactoryInterface
     {
@@ -27,14 +33,14 @@ namespace object {
          *
          * @param object the object instance to persist.
          */
-        virtual void PersistObject(const std::shared_ptr<BaseObject>& object) = 0;
+        virtual void PersistObject(const std::shared_ptr<Object>& object) = 0;
 
         /**
          * Deletes the requested object from storage.
          *
          * @param object the object instance to delete from storage.
          */
-        virtual void DeleteObjectFromStorage(const std::shared_ptr<BaseObject>& object) = 0;
+        virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object) = 0;
 
         /**
          * Creates an instance of a stored object with the specified id.
@@ -42,7 +48,7 @@ namespace object {
          * @returns the created object instance.
          * @throws InvalidObject when no object exists for the specified id.
          */
-        virtual std::shared_ptr<BaseObject> CreateObjectFromStorage(uint64_t object_id) = 0;
+        virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id) = 0;
                 
         /**
          * Creates an instance of an object from the specified template.
@@ -50,7 +56,7 @@ namespace object {
          * @returns the created object instance.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
-        virtual std::shared_ptr<BaseObject> CreateObjectFromTemplate(const std::string& template_name) = 0;
+        virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name) = 0;
     };
 
 }}  // namespace swganh::object

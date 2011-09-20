@@ -28,7 +28,7 @@ void ObjectManager::UnregisterObjectType(uint32_t object_type)
     factories_.erase(find_iter);
 }
 
-shared_ptr<BaseObject> ObjectManager::CreateObjectFromStorage(uint32_t object_type, uint64_t object_id)
+shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint32_t object_type, uint64_t object_id)
 {
     auto find_iter = factories_.find(object_type);
 
@@ -40,7 +40,7 @@ shared_ptr<BaseObject> ObjectManager::CreateObjectFromStorage(uint32_t object_ty
     return find_iter->second->CreateObjectFromStorage(object_id);
 }
 
-shared_ptr<BaseObject> ObjectManager::CreateObjectFromTemplate(const std::string& template_name)
+shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const std::string& template_name)
 {
     auto find_iter = find_if(begin(factories_), end(factories_),
         [&template_name] (const ObjectFactoryMap::value_type& factory_entry) 
@@ -56,7 +56,7 @@ shared_ptr<BaseObject> ObjectManager::CreateObjectFromTemplate(const std::string
     return find_iter->second->CreateObjectFromTemplate(template_name);
 }
 
-void ObjectManager::DeleteObjectFromStorage(const std::shared_ptr<BaseObject>& object)
+void ObjectManager::DeleteObjectFromStorage(const std::shared_ptr<Object>& object)
 {
     auto find_iter = factories_.find(object->GetType());
 
@@ -68,7 +68,7 @@ void ObjectManager::DeleteObjectFromStorage(const std::shared_ptr<BaseObject>& o
     return find_iter->second->DeleteObjectFromStorage(object);
 }
 
-void ObjectManager::PersistObject(const std::shared_ptr<BaseObject>& object)
+void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
 {
     auto find_iter = factories_.find(object->GetType());
 

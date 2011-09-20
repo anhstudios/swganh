@@ -3,7 +3,7 @@
 
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/network/remote_client.h"
-#include "swganh/object/base_object.h"
+#include "swganh/object/object.h"
 
 using namespace std;
 using namespace swganh::messages;
@@ -12,14 +12,14 @@ using namespace swganh::object;
 
 ObjectController::ObjectController(
     shared_ptr<ObjControllerHandlerMap> handlers,
-    shared_ptr<BaseObject> object,
+    shared_ptr<Object> object,
     shared_ptr<RemoteClient> client)
     : handlers_(handlers)
     , object_(object)
     , client_(client)
 {}
 
-const shared_ptr<BaseObject>& ObjectController::GetObject() const
+const shared_ptr<Object>& ObjectController::GetObject() const
 {
     return object_;
 }

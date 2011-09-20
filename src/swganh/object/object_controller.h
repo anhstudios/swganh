@@ -20,10 +20,10 @@ namespace network {
 namespace swganh {
 namespace object {
 
-    class BaseObject;
+    class Object;
 
     typedef std::function<
-        void (const std::shared_ptr<BaseObject>&, 
+        void (const std::shared_ptr<Object>&, 
         const swganh::messages::ObjControllerMessage&)
     > ObjControllerHandler;
 
@@ -40,13 +40,13 @@ namespace object {
     public:
         ObjectController(
             std::shared_ptr<ObjControllerHandlerMap> handlers,
-            std::shared_ptr<BaseObject> object,
+            std::shared_ptr<Object> object,
             std::shared_ptr<swganh::network::RemoteClient> client);
 
         /**
          * @return Handle to the object this controller manages.
          */
-        const std::shared_ptr<BaseObject>& GetObject() const;
+        const std::shared_ptr<Object>& GetObject() const;
 
         /**
          * @return Handle to the remote client controlling the object.
@@ -71,7 +71,7 @@ namespace object {
         ObjectController();
 
         std::shared_ptr<ObjControllerHandlerMap> handlers_;
-        std::shared_ptr<BaseObject> object_;
+        std::shared_ptr<Object> object_;
         std::shared_ptr<swganh::network::RemoteClient> client_;
     };
 
