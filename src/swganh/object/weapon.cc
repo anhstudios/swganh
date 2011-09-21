@@ -9,77 +9,31 @@ using namespace swganh::scene;
 using namespace messages;
 
 Weapon::Weapon()
-    : customization_(0)
-    , component_customization_list_(std::vector<uint32_t>())
-    , component_customization_list_counter_(0)
-    , options_bitmask_(0)
-    , incap_timer_(0)
-    , condition_damage_(0)
-    , max_condition_(0)
-    , is_static_(false)
-    , defender_list_(std::set<uint64_t>())
-    , defender_list_counter_(0)
+    : BaseTangible()
+    , ukn1(3)
+    , ukn2(0)
+    , ukn3(0)
+    , ukn4(5.0f)
+    , ukn5(0)
+    , ukn6(0)
+    , ukn7(0)
+    , ukn8(0)
 {}
 
-void Weapon::AddCustomization(const std::string& customization)
+boost::optional<BaselinesMessage> Weapon::GetBaseline3()
 {
-    customization_.append(customization);
-    if (GetScene()->HasObservers(GetObjectId()))
-    {
-        DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
-        message.data.write<uint16_t>(4);
-        message.data.write(customization_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
-    }
-}
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_3, 11);
+    
+    // base data
+    message.data.append(BaseTangible::GetBaseline3().get().data);
+    // ukns
+    message.data.write(ukn1);
+    message.data.write(ukn2);
+    message.data.write(ukn3);
+    message.data.write(ukn4);
+    message.data.write(ukn5);
+    message.data.write(ukn6);
+    message.data.write(ukn7);
 
-void Weapon::SetCustomization(const std::string& customization)
-{
-    customization_ = customization;
-    if (GetScene()->HasObservers(GetObjectId()))
-    {
-        DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
-        message.data.write<uint16_t>(4);
-        message.data.write(customization_);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
-    }
-}
-
-void Weapon::AddComponentCustomization(uint32_t customization)
-{
-    // add customization
-    component_customization_list_.push_back(customization);
-    // update counter
-    component_customization_list_counter_++;
-    if (GetScene()->HasObservers(GetObjectId()))
-    {
-        DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
-        message.data.write<uint16_t>(5);
-        message.data.write(component_customization_list_.size());
-        message.data.write(component_customization_list_counter_);
-        message.data.write(component_customization_list_);
-        // update type add
-        message.data.write<uint8_t>(1);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
-    }
-}
-
-void Weapon::SetComponentCustomization(std::vector<uint32_t> component_customization)
-{
-    component_customization_list_ = component_customization;
-    if (GetScene()->HasObservers(GetObjectId()))
-    {
-        DeltasMessage message = CreateDeltasMessage(BaseObject::VIEW_3);
-        message.data.write<uint16_t>(5);
-        message.data.write(component_customization_list_.size());
-        message.data.write(component_customization_list_counter_);
-        message.data.write(component_customization_list_);
-        // update type clearall
-        message.data.write<uint8_t>(2);
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
-    }
+    return boost::optional<BaselinesMessage>(std::move(message));
 }
