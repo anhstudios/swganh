@@ -3,11 +3,36 @@
 
 #include "anh/observer/observer_interface.h"
 
+#include "swganh/messages/base_baselines_message.h"
+
+#include "swganh/object/object_controller.h"
+
 using namespace anh::observer;
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;
 using boost::optional;
+
+bool Object::HasController() const
+{
+    return controller_;
+}
+
+const shared_ptr<ObjectController>& Object::GetController() const
+{
+    return controller_;
+}
+
+void Object::SetController(const shared_ptr<ObjectController>& controller)
+{
+    controller_ = controller;
+    Subscribe(controller_);
+}
+
+void Object::ClearController()
+{
+    controller_.reset();
+}
 
 uint64_t Object::GetObjectId() const
 {
@@ -34,18 +59,18 @@ void Object::SetCustomName(wstring custom_name)
     }
 }
 
-BaselinesMessage Object::CreateBaselinesMessage(uint16_t view_type, uint16_t opcount)
+BaselinesMessage Object::CreateBaselinesMessage(uint16_t view_type, uint16_t opcount) const
 {
     BaselinesMessage message;
     message.object_id = GetObjectId();
     message.object_type = GetType();
     message.view_type = view_type;
-    //message.sub_opcount = opcount;
+    message.object_opcount = opcount;
     
     return message;
 }
 
-DeltasMessage Object::CreateDeltasMessage(uint16_t view_type)
+DeltasMessage Object::CreateDeltasMessage(uint16_t view_type) const
 {        
     DeltasMessage message;
     message.object_id = GetObjectId();
@@ -54,6 +79,7 @@ DeltasMessage Object::CreateDeltasMessage(uint16_t view_type)
 
     return message;
 }
+
 const std::shared_ptr<Object>& Object::GetParent() const
 {
     return parent_;
@@ -98,17 +124,6 @@ void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
     }
 
     observers_.erase(find_iter);
-}
-    
-void Object::NotifyObservers(const anh::ByteBuffer& message)
-{
-    for_each(
-        observers_.begin(),
-        observers_.end(),
-        [&message] (const std::shared_ptr<ObserverInterface>& observer)
-    {
-        observer->Notify(message);
-    });
 }
 
 bool Object::IsDirty() const

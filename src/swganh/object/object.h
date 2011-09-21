@@ -15,6 +15,7 @@
 
 #include "anh/observer/observable_interface.h"
 
+#include "swganh/messages/base_baselines_message.h"
 #include "swganh/messages/baselines_message.h"
 #include "swganh/messages/deltas_message.h"
 
@@ -22,6 +23,8 @@
 namespace swganh {
 namespace object {
                     
+class ObjectController;
+
 typedef std::vector<
     swganh::messages::BaselinesMessage
 > BaselinesCacheContainer;
@@ -51,6 +54,11 @@ public:
 
     virtual ~Object() {}
     
+    bool HasController() const;
+    const std::shared_ptr<ObjectController>& GetController() const;
+    void SetController(const std::shared_ptr<ObjectController>& controller);
+    void ClearController();
+    
     /**
      * Returns whether or not this observable object has any observers.
      *
@@ -71,13 +79,33 @@ public:
      * @param observer The object that no longer wants state change notifications.
      */
     void Unsubscribe(const std::shared_ptr<anh::observer::ObserverInterface>& observer);
-
+    
     /**
      * Notifies observers that the observable object has changed state.
      *
      * @param message Message containing the updated state of the observable object.
      */
-    void NotifyObservers(const anh::ByteBuffer& message);
+    template<typename T>
+    void NotifyObservers(const swganh::messages::BaseBaselinesMessage<T>& message)
+    {
+        if (! (message.view_type == 3 || message.view_type == 6))
+        {
+            if (HasController())
+            {
+                controller_->Notify(message);
+            }
+
+            return;
+        }
+
+        std::for_each(
+            observers_.begin(),
+            observers_.end(),
+            [this, &message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+        {
+            observer->Notify(message);
+        });
+    }
     
     /**
      * Notifies observers that the observable object has changed state.
@@ -87,10 +115,13 @@ public:
     template<typename T>
     void NotifyObservers(const T& message)
     {
-        anh::ByteBuffer buffer;
-        message.serialize(buffer);
-
-        NotifyObservers(buffer);
+        for_each(
+            observers_.begin(),
+            observers_.end(),
+            [&message] (const std::shared_ptr<ObserverInterface>& observer)
+        {
+            observer->Notify(message);
+        });
     }
 
     /**
@@ -164,11 +195,11 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     
-    virtual uint32_t GetType() = 0;
+    virtual uint32_t GetType() const = 0;
         
-    swganh::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0);
+    swganh::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0) const;
     
-    swganh::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type);
+    swganh::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type) const;
     
 private:
     void AddBaselinesBuilders_();
@@ -198,7 +229,8 @@ private:
     BaselinesBuilderContainer baselines_builders_;
 
     std::shared_ptr<Object> parent_;
-    
+    std::shared_ptr<ObjectController> controller_;
+
     bool is_dirty_;
 
     uint64_t object_id_;             // create
