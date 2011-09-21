@@ -43,6 +43,8 @@ namespace object {
             std::shared_ptr<Object> object,
             std::shared_ptr<swganh::network::RemoteClient> client);
 
+        ~ObjectController();
+
         /**
          * @return Handle to the object this controller manages.
          */

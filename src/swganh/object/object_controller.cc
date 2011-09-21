@@ -21,6 +21,11 @@ ObjectController::ObjectController(
     object_->SetController(shared_from_this());
 }
 
+ObjectController::~ObjectController()
+{
+    object_->ClearController();
+}
+
 const shared_ptr<Object>& ObjectController::GetObject() const
 {
     return object_;
