@@ -24,7 +24,7 @@ public:
     void SetStfDetailString(std::string stf_detail_string);
 
 protected:
-    
+    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline6();
 
 private:
     std::string stf_detail_file_;

@@ -184,6 +184,7 @@ private:
     uint8_t slot_count_;
     std::vector<Slot> slots_;
     uint32_t slot_counter_;
+    uint32_t ingredients_counter_;
     std::vector<Experiment> experiments_;
     uint32_t experiment_counter_;
     std::vector<Customization> customizations_;

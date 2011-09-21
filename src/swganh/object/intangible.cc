@@ -53,3 +53,15 @@ void Intangible::SetStfDetailString(std::string stf_detail_string)
         deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));            
     }
 }
+boost::optional<BaselinesMessage> Intangible::GetBaseline6()
+{
+    auto message = CreateBaselinesMessage(BaseObject::VIEW_6, 1);
+
+    // ukn int
+    message.data.write(0);
+    message.data.write(stf_detail_file_);
+    // spacer
+    message.data.write(0);
+    message.data.write(stf_detail_string_);
+    return boost::optional<BaselinesMessage>(move(message));
+}

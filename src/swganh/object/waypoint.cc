@@ -3,6 +3,7 @@
 #include "swganh/scene/messages/deltas_message.h"
 #include "swganh/scene/scene.h"
 
+using namespace std;
 using namespace swganh::object;
 using namespace swganh::scene::messages;
 
@@ -16,7 +17,7 @@ Waypoint::Waypoint()
     , color_("")
 {
 }
-Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const std::string& planet, const std::wstring& name, const std::string& color)
+Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, const wstring& name, const string& color)
     : uses_(0)
     , coordinates_(coordinates)
     , planet_name_(planet)
@@ -39,7 +40,7 @@ void Waypoint::SetUses(uint32_t uses)
         message.data.write<uint16_t>(4);
         message.data.write(0);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
     }
 }
 void Waypoint::SetCoordinates(float x, float y, float z)
@@ -60,7 +61,7 @@ void Waypoint::SetCoordinates(const glm::vec3& coords)
         message.data.write(coords.y);
         message.data.write(coords.z);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
     }
 }
 
@@ -77,7 +78,7 @@ void Waypoint::Activate()
         message.data.write<uint16_t>(6);
         message.data.write<uint8_t>(activated_flag_);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
     }
 }
 void Waypoint::DeActivate()
@@ -93,11 +94,11 @@ void Waypoint::DeActivate()
         message.data.write<uint16_t>(7);
         message.data.write<uint8_t>(activated_flag_);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
     }
 }
 
-void Waypoint::SetPlanet(const std::string& planet_name)
+void Waypoint::SetPlanet(const string& planet_name)
 {
     planet_name_ = planet_name;
 
@@ -110,11 +111,11 @@ void Waypoint::SetPlanet(const std::string& planet_name)
         message.data.write<uint16_t>(8);
         message.data.write(planet_name_);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
     }
 }
 
-void Waypoint::SetName(const std::wstring& name)
+void Waypoint::SetName(const wstring& name)
 {
     name_ = name;
 
@@ -127,7 +128,7 @@ void Waypoint::SetName(const std::wstring& name)
         message.data.write<uint16_t>(9);
         message.data.write(name_);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
     }
 }
 
@@ -152,7 +153,7 @@ uint8_t Waypoint::GetColorByte()
         return 1;
 }
 
-void Waypoint::SetColor(const std::string& color)
+void Waypoint::SetColor(const string& color)
 {
     color_ = color;
 
@@ -165,6 +166,22 @@ void Waypoint::SetColor(const std::string& color)
         message.data.write<uint16_t>(0x0B);
         message.data.write(color_);
         GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_3, std::move(message)));
+        deltas_cache_.push_back(make_pair(BaseObject::VIEW_3, move(message)));
     }
+}
+boost::optional<BaselinesMessage> Waypoint::GetBaseline3()
+{
+    auto message = CreateBaselinesMessage(VIEW_3, 12);
+    auto coords = coordinates_;
+    message.data.write(coords.x);
+    message.data.write(coords.z);
+    message.data.write(coords.y);
+    message.data.write<uint8_t>(activated_flag_);
+    message.data.write<uint64_t>(location_network_id_);
+    message.data.write(planet_name_);
+    message.data.write(name_);
+    message.data.write<uint8_t>(not_used_);
+    message.data.write(color_);
+
+    return boost::optional<BaselinesMessage>(move(message));
 }
