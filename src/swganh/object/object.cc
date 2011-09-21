@@ -31,6 +31,7 @@ void Object::SetController(const shared_ptr<ObjectController>& controller)
 
 void Object::ClearController()
 {
+    Unsubscribe(controller_);
     controller_.reset();
 }
 
