@@ -428,6 +428,66 @@ std::vector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots() const
     return slots_;
 }
 
+void ManufactureSchematic::BuildSlotDelta_(
+    uint8_t update_type, uint8_t sub_type, 
+    std::vector<Slot>::iterator slot_iterator)
+{
+    // no observers, don't bother
+    if (!GetScene()->HasObservers(GetObjectId()))
+    {
+        return;
+    }
+    // don't handle reset all here
+    if (sub_type == 3)
+        return;
+    
+    DeltasMessage message = CreateDeltasMessage(VIEW_7);
+    // update count
+    message.data.write<uint16_t>(1);
+    message.data.write<uint16_t>(update_type);
+    message.data.write<uint8_t>(sub_type);
+    message.data.write(slots_.size());
+    message.data.write(slot_counter_);
+    // clear
+    if (sub_type == 4)
+    {
+        return;
+    }
+    // everything needs the index, but 3,4
+    message.data.write(slot_iterator - slots_.begin());
+    // remove just needs index so return here
+    if (sub_type == 0)
+    {
+        return;
+    }    
+
+    switch (update_type)
+    {
+        case 0:
+            message.data.write(slot_iterator->slot_stf_file);
+            message.data.write(0);
+            message.data.write(slot_iterator->slot_stf_name);
+            break;
+        case 1:
+            message.data.write(slot_iterator->type);
+            break;
+        case 2:
+            message.data.write(slot_iterator->ingredient);
+            break;
+        case 3:
+            message.data.write(slot_iterator->ingredient_quantity);
+            break;
+        case 5:
+            message.data.write(slot_iterator->clean);
+            break;
+        case 6:
+            message.data.write(slot_iterator->index);
+            break;
+    }
+    GetScene()->UpdateObservers(GetObjectId(), message);
+    deltas_cache_.push_back(std::make_pair(VIEW_7, std::move(message)));
+}
+
 void ManufactureSchematic::RemoveSlot(uint16_t index)
 {
     auto find_iter = find_if(
@@ -443,24 +503,11 @@ void ManufactureSchematic::RemoveSlot(uint16_t index)
         // Not in the list.
         return;
     }
-
-    if (GetScene()->HasObservers(GetObjectId()))
+    // loop through all the types
+    for (int update_type = 0; update_type < 7; ++update_type)
     {
-        DeltasMessage message = CreateDeltasMessage(VIEW_7);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        // update sub type
-        message.data.write<uint8_t>(0);
-        message.data.write(slots_.size());
-        message.data.write(slot_counter_);
-        message.data.write(find_iter - slots_.begin());
-        
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_7, std::move(message)));
+        BuildSlotDelta_(update_type, 0, find_iter);
     }
-
     slots_.erase(find_iter);
 }
 
@@ -489,26 +536,6 @@ uint16_t ManufactureSchematic::AddSlot(
         return 0;
     }
 
-    if (GetScene()->HasObservers(GetObjectId()))
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_7);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        // update sub type
-        message.data.write<uint8_t>(0);
-        message.data.write(slots_.size());
-        message.data.write(slot_counter_);
-        message.data.write(find_iter - slots_.begin());
-        message.data.write(slot_stf_file);
-        message.data.write(0);
-        message.data.write(slot_stf_name);
-        
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_7, std::move(message)));
-    }
-
     Slot slot;    
     slot.index = customizations_.back().index + 1;
     slot.slot_stf_file = move(slot_stf_file);
@@ -519,6 +546,12 @@ uint16_t ManufactureSchematic::AddSlot(
     slot.clean = clean;
 
     slots_.push_back(slot);
+
+    // loop through all the types
+    for (int update_type = 0; update_type < 7; ++update_type)
+    {
+        BuildSlotDelta_(update_type, 1, find_iter);
+    }
 
     return slot.index;
 }
@@ -545,25 +578,6 @@ void ManufactureSchematic::UpdateSlot(
         // Not in the list.
         return;
     }
-    if (GetScene()->HasObservers(GetObjectId()))
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_7);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        // update sub type
-        message.data.write<uint8_t>(2);
-        message.data.write(slots_.size());
-        message.data.write(slot_counter_);
-        message.data.write(find_iter - slots_.begin());
-        message.data.write(slot_stf_file);
-        message.data.write(0);
-        message.data.write(slot_stf_name);
-        
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_7, std::move(message)));
-    }
     
     find_iter->slot_stf_file = move(slot_stf_file);
     find_iter->slot_stf_name = move(slot_stf_name);
@@ -571,6 +585,12 @@ void ManufactureSchematic::UpdateSlot(
     find_iter->ingredient = ingredient;
     find_iter->ingredient_quantity = ingredient_quantity;
     find_iter->clean = clean;
+
+    // loop through all the types
+    for (int update_type = 0; update_type < 7; ++update_type)
+    {
+        BuildSlotDelta_(update_type, 2, find_iter);
+    }
 }
 
 void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> slots)
@@ -602,18 +622,10 @@ void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> sl
 void ManufactureSchematic::ClearAllSlots()
 {
     slots_.clear();
-    if (GetScene()->HasObservers(GetObjectId()))
+    // loop through all the types
+    for (int type = 0; type < 7; ++type)
     {
-        DeltasMessage message = CreateDeltasMessage(VIEW_7);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        // update sub type
-        message.data.write<uint8_t>(4);
-        
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_7, std::move(message)));
+        BuildSlotDelta_(type, 0, slots_.begin());
     }
 }
 
@@ -826,3 +838,4 @@ void ManufactureSchematic::ToggleReady()
 {
     is_ready_ = !is_ready_;
 }
+

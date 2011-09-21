@@ -170,6 +170,7 @@ public:
     void ToggleReady();
 
 private:
+    void BuildSlotDelta_(uint8_t update_type, uint8_t sub_type, std::vector<Slot>::iterator slot_iterator);
     uint32_t schematic_quantity_;
     uint32_t property_counter_;
     std::vector<Property> properties_;
