@@ -11,7 +11,7 @@ class FactoryCrate : public swganh::object::Object
 {
 public:
     // FCYT
-    uint32_t GetType();
+    uint32_t GetType() const;
     const static uint32_t type = 0x46435954;
 };
 

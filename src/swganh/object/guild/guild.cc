@@ -3,7 +3,7 @@
 
 using namespace swganh::object::guild;
 
-uint32_t Guild::GetType() 
+uint32_t Guild::GetType() const
 { 
     return Guild::type; 
 }

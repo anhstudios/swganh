@@ -55,7 +55,7 @@ public:
 
 public:
     // MSCO
-    uint32_t GetType();
+    uint32_t GetType() const;
     const static uint32_t type = 0x4D53434F;
 
     uint32_t GetSchematicQuantity() const;

@@ -4,7 +4,7 @@
 using namespace std;
 using namespace swganh::object::installation;
 
-uint32_t Installation::GetType() 
+uint32_t Installation::GetType() const
 { 
     return Installation::type; 
 }

@@ -12,7 +12,7 @@ class Group : public swganh::object::Object
 {
 public:
     // GRUP
-    uint32_t GetType();
+    uint32_t GetType() const;
     const static uint32_t type = 0x47525550;
 };
 

@@ -17,7 +17,7 @@ namespace mission {
 class Mission : public swganh::object::Object
 {
 public:
-    virtual uint32_t GetType() { return Mission::type; }
+    virtual uint32_t GetType() const { return Mission::type; }
     const static uint32_t type = 0x4d49534f;
 
     uint32_t GetDifficultyLevel() const;

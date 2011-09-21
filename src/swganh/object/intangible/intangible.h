@@ -15,7 +15,7 @@ class Intangible : public swganh::object::Object
 {
 public:
     // ITNO
-    virtual uint32_t GetType() { return Intangible::type; }
+    virtual uint32_t GetType() const { return Intangible::type; }
     const static uint32_t type = 0x49544e4f;
 
     std::string GetStfDetailFile() const;

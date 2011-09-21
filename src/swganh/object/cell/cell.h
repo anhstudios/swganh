@@ -13,7 +13,7 @@ class Cell : public swganh::object::Object {
 
 public:
     // SCLT
-    virtual uint32_t GetType() { return Cell::type; }
+    virtual uint32_t GetType() const { return Cell::type; }
     const static uint32_t type = 0x53434c54;
 
     /**

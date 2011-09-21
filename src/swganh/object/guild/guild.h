@@ -12,7 +12,7 @@ class Guild : public swganh::object::Object
 {
 public:
     // GILD
-    uint32_t GetType();
+    uint32_t GetType() const;
     const static uint32_t type = 0x47494C44;
 };
 

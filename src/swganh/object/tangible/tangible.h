@@ -20,7 +20,7 @@ public:
     Tangible();
 
     // TANO
-    virtual uint32_t GetType() { return Tangible::type; }
+    virtual uint32_t GetType() const { return Tangible::type; }
     const static uint32_t type = 0x54414e4f;
 
 private:

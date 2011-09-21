@@ -46,7 +46,7 @@ public:
         uint32_t schematic_crc;
     };
    
-    virtual uint32_t GetType() { return Player::type; }
+    virtual uint32_t GetType() const { return Player::type; }
     const static uint32_t type = 0x504c4159;
 
     uint32_t GetStatusFlags() const { return status_flags_; }

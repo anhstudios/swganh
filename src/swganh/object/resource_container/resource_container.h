@@ -18,7 +18,7 @@ public:
         uint32_t incap_timer, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders,
         uint32_t current_quantity, uint64_t global_resource_id, uint32_t max_quantity, std::string resource_type, std::wstring name);
 
-    virtual uint32_t GetType() { return ResourceContainer::type; }
+    virtual uint32_t GetType() const { return ResourceContainer::type; }
     const static uint32_t type = 0x52434e4f;
     uint32_t GetCurrentQuantity() { return current_quantity_; }
     void SetCurrentQuantity(uint32_t quantity);

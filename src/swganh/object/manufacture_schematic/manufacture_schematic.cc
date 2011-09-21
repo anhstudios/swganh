@@ -6,7 +6,7 @@
 using namespace std;
 using namespace swganh::object::manufacture_schematic;
 
-uint32_t ManufactureSchematic::GetType() 
+uint32_t ManufactureSchematic::GetType() const
 { 
     return ManufactureSchematic::type; 
 }

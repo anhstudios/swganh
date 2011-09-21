@@ -3,7 +3,7 @@
 
 using namespace swganh::object::installation;
 
-uint32_t HarvesterInstallation::GetType() 
+uint32_t HarvesterInstallation::GetType() const
 { 
     return HarvesterInstallation::type; 
 }

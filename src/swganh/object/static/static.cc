@@ -5,7 +5,7 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::static_obj;
 
-uint32_t Static::GetType() 
+uint32_t Static::GetType() const
 { 
     return Static::type; 
 }

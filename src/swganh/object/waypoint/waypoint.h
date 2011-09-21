@@ -22,7 +22,7 @@ enum WaypointStatus
 class Waypoint : public swganh::object::Object {
 
 public:
-    virtual uint32_t GetType() { return Waypoint::type; }
+    virtual uint32_t GetType() const { return Waypoint::type; }
     const static uint32_t type = 0x57415950;
 
     Waypoint();

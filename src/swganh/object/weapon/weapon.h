@@ -16,7 +16,7 @@ public:
     Weapon();
 
     // WEAO
-    virtual uint32_t GetType() { return Weapon::type; }
+    virtual uint32_t GetType() const { return Weapon::type; }
     const static uint32_t type = 0xE8000000;    
 protected:
     // baselines

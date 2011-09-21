@@ -3,7 +3,7 @@
 
 using namespace swganh::object::group;
 
-uint32_t Group::GetType() 
+uint32_t Group::GetType() const
 { 
     return Group::type; 
 }
