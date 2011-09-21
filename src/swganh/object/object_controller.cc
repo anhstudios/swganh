@@ -17,7 +17,9 @@ ObjectController::ObjectController(
     : handlers_(handlers)
     , object_(object)
     , client_(client)
-{}
+{
+    object_->SetController(shared_from_this());
+}
 
 const shared_ptr<Object>& ObjectController::GetObject() const
 {

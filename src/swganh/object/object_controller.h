@@ -32,7 +32,7 @@ namespace object {
         ObjControllerHandler
     > ObjControllerHandlerMap;
 
-    class ObjectController : public anh::observer::ObserverInterface, boost::noncopyable
+    class ObjectController : public anh::observer::ObserverInterface, std::enable_shared_from_this<ObjectController>, boost::noncopyable
     {
     public:
         typedef std::runtime_error InvalidControllerMessage;
@@ -59,6 +59,8 @@ namespace object {
          * @param message The message recieved from the remote client.
          */
         void HandleControllerMessage(const swganh::messages::ObjControllerMessage& message);
+
+        using anh::observer::ObserverInterface::Notify;
 
         /**
          * Notifies the controller when the object has been updated.
