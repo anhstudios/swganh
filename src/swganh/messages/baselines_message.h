@@ -11,7 +11,7 @@
 namespace swganh {
 namespace messages {
     
-struct BaselinesMessage : public BaseBaselineMessage<BaselinesMessage> {
+struct BaselinesMessage : public BaseBaselinesMessage<BaselinesMessage> {
     static uint16_t opcount() { return 5; }
     static uint32_t opcode() { return 0x68A75F0C; }
 };

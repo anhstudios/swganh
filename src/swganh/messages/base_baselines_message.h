@@ -11,12 +11,15 @@ namespace swganh {
 namespace messages {
     
 template<typename T>
-struct BaseBaselineMessage : public swganh::messages::BaseSwgMessage<T> {    
+struct BaseBaselinesMessage : public swganh::messages::BaseSwgMessage<T> {    
     uint64_t object_id;
     uint32_t object_type;
     uint16_t object_opcount;
     uint8_t view_type;    
     anh::ByteBuffer data;
+
+    // Metadata - not used in the actual struct of the message.
+    bool is_private;
 
     void onSerialize(anh::ByteBuffer& buffer) const {
         buffer.write(object_id);
