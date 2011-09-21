@@ -12,6 +12,15 @@ namespace observer {
     public:
         virtual ~ObserverInterface() {}
 
+        template<typename T>
+        void Notify(const T& message)
+        {
+            anh::ByteBuffer buffer;
+            message.serialize(buffer);
+            
+            Notify(buffer);
+        }
+
         /**
          * Notifies observer that the observable object has changed state.
          *
