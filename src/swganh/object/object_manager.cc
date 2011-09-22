@@ -28,6 +28,23 @@ void ObjectManager::UnregisterObjectType(uint32_t object_type)
     factories_.erase(find_iter);
 }
 
+shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id)
+{
+    shared_ptr<Object> object;
+
+    auto find_iter = find_if(
+        begin(factories_),
+        end(factories_),
+        [&object, object_id] (const ObjectFactoryMap::value_type& factory_entry) -> bool
+    {
+        object = factory_entry.second->CreateObjectFromStorage(object_id);
+
+        return object != nullptr;
+    });
+
+    return object;
+}
+
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint32_t object_type, uint64_t object_id)
 {
     auto find_iter = factories_.find(object_type);
