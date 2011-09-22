@@ -18,37 +18,21 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_OBJECT_WAYPOINT_H_
-#define SWGANH_OBJECT_WAYPOINT_H_
+#ifndef SWGANH_OBJECT_CREATURE_H_
+#define SWGANH_OBJECT_CREATURE_H_
 
-#include "universe.h"
-
-#include <map>
+#include "base_tangible.h"
 
 namespace swganh {
 namespace object {
 
-class Guild : public Universe {
+class Creature : public BaseTangible
+{
 public:
-    Guild();
-    Guild(std::map<uint32_t, std::string> guild_list);
-    ~Guild();
+    Creature();
+    ~Creature();
 
-    void AddGuild(uint32_t, std::string);
-    void RemoveGuild(uint32_t);
 
-    virtual uint32_t GetType() { return type; }
-    const static uint32_t type = 0x444C4947;
-
-protected:
-
-    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline3();
-
-private:
-    std::map<uint32_t, std::string>     guild_list_;
-    uint32_t    guild_list_counter_;
 };
 
-}} // namespaces
-
-#endif // SWGANH_OBJECT_WAYPOINT_H_
+#endif // SWGANH_OBJECT_CREATURE_H_
