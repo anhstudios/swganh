@@ -71,8 +71,11 @@ public:
      */
     void SetMasterLooter(uint64_t master_looter);
 
-    virtual uint32_t GetType() { return type; }
+	virtual uint32_t GetType() { return type; }
     const static uint32_t type = 0x47525550;
+
+protected:
+	virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline6();
 
 private:
 

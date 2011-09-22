@@ -24,7 +24,9 @@
 #include <swganh/scene/messages/deltas_message.h>
 #include <swganh/scene/scene.h>
 
-using namespace swganh::scene::messages;
+using namespace swganh::object;
+using namespace swganh::scene;
+using namespace messages;
 
 namespace swganh {
 namespace object {
@@ -136,6 +138,27 @@ void Group::SetMasterLooter(uint64_t master_looter)
         GetScene()->UpdateObservers(GetObjectId(), message);
         deltas_cache_.push_back(std::make_pair(BaseObject::VIEW_6, std::move(message)));
     }
+}
+
+boost::optional<BaselinesMessage> Group::GetBaseline6()
+{
+	auto message = CreateBaselinesMessage(BaseObject::VIEW_6, 8);
+	message.data.append(BaseObject::GetBaseline6().get().data);
+	message.data.write<uint32_t>(0);
+	message.data.write<uint32_t>(member_list_.size());
+	message.data.write<uint32_t>(member_list_counter_);
+	std::for_each(member_list_.begin(), member_list_.end(), [=, &message](std::pair<uint16_t, std::shared_ptr<Tangible>> list_member) {
+		message.data.write<uint64_t>(list_member.second->GetObjectId());
+		message.data.write<std::string>(std::string(list_member.second->GetCustomName().begin(), list_member.second->GetCustomName().end()));
+	});
+	message.data.write<uint32_t>(0);
+	message.data.write<uint32_t>(0);
+	message.data.write<std::string>("");
+	message.data.write<uint16_t>(group_level_);
+	message.data.write<uint32_t>(0);
+	message.data.write<uint64_t>(master_looter_);
+	message.data.write<uint32_t>(loot_mode_);
+	return boost::optional<BaselinesMessage>(std::move(message));
 }
 
 
