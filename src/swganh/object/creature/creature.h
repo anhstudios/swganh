@@ -21,12 +21,13 @@
 #ifndef SWGANH_OBJECT_CREATURE_H_
 #define SWGANH_OBJECT_CREATURE_H_
 
-#include "base_tangible.h"
-
 #include <list>
+
+#include "swganh/object/object.h"
 
 namespace swganh {
 namespace object {
+namespace creature {
 
 enum POSTURE
 {
@@ -92,11 +93,16 @@ enum STATE
     PILOTING_POB_SHIP
 };
 
-class Creature : public BaseTangible
+class Creature : public swganh::object::Object
 {
 public:
+    Creature();
     Creature(uint32_t bank_credits, uint32_t cash_credits, std::list<std::string> skill_list);
     ~Creature();
+
+    // CREO
+    uint32_t GetType() const;
+    const static uint32_t type = 0x4352454F;
 
     /**
      *
@@ -132,4 +138,6 @@ private:
 
 };
 
-#endif // SWGANH_OBJECT_CREATURE_H_
+}}}  // namespace swganh::object::creature
+
+#endif // SWGANH_OBJECT_CREATURE_CREATURE_H_
