@@ -63,16 +63,16 @@ protected:
     /*
     *  @brief used to subscribe to events on a serivce
     */
-    virtual void subscribe() = 0;
+    virtual void subscribe() {}
     /*
     *  @brief used to perform any startup specific tasks for the service
     */
-    virtual void onStart() = 0;
+    virtual void onStart() {}
 
     /*
     *  @brief used to perform any shutdown specific tasks for the service
     */
-    virtual void onStop() = 0;
+    virtual void onStop() {}
 
 private:
     BaseService();
