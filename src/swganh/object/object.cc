@@ -57,7 +57,7 @@ bool Object::IsContainerForObject(const shared_ptr<Object>& object)
 
 void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 {
-    auto find_iter = contained_objects_.find(object->GetObjectId();
+    auto find_iter = contained_objects_.find(object->GetObjectId());
 
     if (find_iter == contained_objects_.end())
     {
@@ -96,7 +96,7 @@ bool Object::IsAwareOfObject(const shared_ptr<Object>& object)
 
 void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 {
-    auto find_iter = aware_objects_.find(object->GetObjectId();
+    auto find_iter = aware_objects_.find(object->GetObjectId());
 
     if (find_iter == aware_objects_.end())
     {
@@ -156,11 +156,6 @@ DeltasMessage Object::CreateDeltasMessage(uint16_t view_type) const
     message.view_type = view_type;
 
     return message;
-}
-
-const std::shared_ptr<Object>& Object::GetParent() const
-{
-    return parent_;
 }
 
 bool Object::HasObservers() const
@@ -287,17 +282,6 @@ void Object::AddBaselinesBuilders_()
     baselines_builders_.push_back([this] () {
         return GetBaseline9();
     });
-}
-        
-bool Object::HasPrivilegedView_(uint64_t object_id) const
-{    
-    if (object_id == GetObjectId() || 
-        (GetContainer() && object_id == GetContainer()->GetObjectId())) 
-    {
-        return true;
-    }
-    
-    return false;
 }
 
 void Object::SetPosition(glm::vec3 position)

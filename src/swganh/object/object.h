@@ -219,15 +219,6 @@ public:
 private:
     void AddBaselinesBuilders_();
     
-    /**
-     * Determines whether or not an object has a privileged view of
-     * this Object instance.
-     *
-     * @return True if object has privileged view, false if not.
-     */
-    bool HasPrivilegedView_(uint64_t object_id) const;
-
-
     typedef std::map<
         uint64_t,
         std::shared_ptr<Object>
