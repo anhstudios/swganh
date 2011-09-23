@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -33,7 +34,7 @@ typedef std::vector<
     swganh::messages::DeltasMessage
 > DeltasCacheContainer;
 
-class Object
+class Object : public anh::observer::ObservableInterface
 {
 public:
     enum ViewType : uint16_t
@@ -58,7 +59,15 @@ public:
     const std::shared_ptr<ObjectController>& GetController() const;
     void SetController(const std::shared_ptr<ObjectController>& controller);
     void ClearController();
-    
+
+    void AddContainedObject(const std::shared_ptr<Object>& object, uint32_t containment_type);
+    bool IsContainerForObject(const std::shared_ptr<Object>& object);
+    void RemoveContainedObject(const std::shared_ptr<Object>& object);
+
+    void AddAwareObject(const std::shared_ptr<Object>& object);
+    bool IsAwareOfObject(const std::shared_ptr<Object>& object);
+    void RemoveAwareObject(const std::shared_ptr<Object>& object);
+        
     /**
      * Returns whether or not this observable object has any observers.
      *
@@ -124,6 +133,8 @@ public:
         });
     }
 
+    void NotifyObservers(const anh::ByteBuffer& message);
+
     /**
      * Returns whether or not the object has been modified since the last reliable
      * update was sent out.
@@ -158,9 +169,12 @@ public:
     glm::vec3 GetPosition() { return position_; }
     void SetPosition(glm::vec3 position);
     glm::quat GetOrientation() { return orientation_; }
+
     void SetOrientation(glm::quat orientation);
-    uint64_t GetContainer() { return container_id_; }
-    void SetContainer(uint64_t id);
+
+    const std::shared_ptr<Object>& GetContainer() const { return container_; }
+    void SetContainer(const std::shared_ptr<Object>& container);
+
     float GetComplexity() { return complexity_; }
     void SetComplexity(float complexity);
     const std::string& GetStfNameFile() { return stf_name_file_; }
@@ -183,12 +197,7 @@ public:
      * @return The id of this Object instance.
      */
     uint64_t GetObjectId() const;
-
-    /**
-     * @return The parent containing this Object instance.
-     */
-    const std::shared_ptr<Object>& GetParent() const;
-
+    
     std::wstring GetCustomName() const;
     
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
@@ -218,23 +227,29 @@ private:
      */
     bool HasPrivilegedView_(uint64_t object_id) const;
 
+
+    typedef std::map<
+        uint64_t,
+        std::shared_ptr<Object>
+    > ObjectMap;
     
     typedef std::vector<
         std::shared_ptr<anh::observer::ObserverInterface>
     > ObserverContainer;
 
-    ObserverContainer observers_;
-    BaselinesCacheContainer baselines_;
-    DeltasCacheContainer deltas_;
-    BaselinesCacheContainer public_baselines_;
-    DeltasCacheContainer public_deltas_;
-
     typedef std::function<boost::optional<swganh::messages::BaselinesMessage>()> BaselinesBuilder;
     typedef std::vector<BaselinesBuilder> BaselinesBuilderContainer;
 
+    ObjectMap aware_objects_;
+    ObjectMap contained_objects_;
+
+    ObserverContainer observers_;
+    BaselinesCacheContainer baselines_;
+    DeltasCacheContainer deltas_;
+
     BaselinesBuilderContainer baselines_builders_;
 
-    std::shared_ptr<Object> parent_;
+    std::shared_ptr<Object> container_;
     std::shared_ptr<ObjectController> controller_;
 
     bool is_dirty_;
@@ -243,7 +258,6 @@ private:
     std::string template_string_;    // create
     glm::vec3 position_;             // create
     glm::quat orientation_;          // create
-    uint64_t container_id_;          // containment
     float complexity_;               // update 3
     std::string stf_name_file_;      // update 3
     std::string stf_name_string_;    // update 3

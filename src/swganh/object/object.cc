@@ -34,6 +34,84 @@ void Object::ClearController()
     controller_.reset();
 }
 
+void Object::AddContainedObject(const shared_ptr<Object>& object, uint32_t containment_type)
+{
+    if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
+    {
+        // @TODO consider whether encountering this scenario is an error
+        return;
+    }
+
+    contained_objects_.insert(make_pair(object->GetObjectId(), object));
+
+    if (HasController())
+    {
+        object->Subscribe(GetController());
+    }
+}
+
+bool Object::IsContainerForObject(const shared_ptr<Object>& object)
+{
+    return contained_objects_.find(object->GetObjectId()) != contained_objects_.end();
+}
+
+void Object::RemoveContainedObject(const shared_ptr<Object>& object)
+{
+    auto find_iter = contained_objects_.find(object->GetObjectId();
+
+    if (find_iter == contained_objects_.end())
+    {
+        // @TODO consider whether encountering this scenario is an error
+        return;
+    }
+
+    contained_objects_.erase(find_iter);
+
+    if (HasController())
+    {
+        object->Unsubscribe(GetController());
+    }
+}
+
+void Object::AddAwareObject(const shared_ptr<Object>& object)
+{
+    if (aware_objects_.find(object->GetObjectId()) != aware_objects_.end())
+    {
+        // @TODO consider whether encountering this scenario is an error
+        return;
+    }
+
+    aware_objects_.insert(make_pair(object->GetObjectId(), object));
+
+    if (HasController())
+    {
+        object->Subscribe(GetController());
+    }
+}
+
+bool Object::IsAwareOfObject(const shared_ptr<Object>& object)
+{
+    return aware_objects_.find(object->GetObjectId()) != aware_objects_.end();
+}
+
+void Object::RemoveAwareObject(const shared_ptr<Object>& object)
+{
+    auto find_iter = aware_objects_.find(object->GetObjectId();
+
+    if (find_iter == aware_objects_.end())
+    {
+        // @TODO consider whether encountering this scenario is an error
+        return;
+    }
+
+    aware_objects_.erase(find_iter);
+
+    if (HasController())
+    {
+        object->Unsubscribe(GetController());
+    }
+}
+
 uint64_t Object::GetObjectId() const
 {
     return object_id_;
@@ -126,6 +204,11 @@ void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
     observers_.erase(find_iter);
 }
 
+void Object::NotifyObservers(const anh::ByteBuffer& message)
+{
+    NotifyObservers<anh::ByteBuffer>(message);
+}
+
 bool Object::IsDirty() const
 {
     return !deltas_.empty();
@@ -209,7 +292,7 @@ void Object::AddBaselinesBuilders_()
 bool Object::HasPrivilegedView_(uint64_t object_id) const
 {    
     if (object_id == GetObjectId() || 
-        (GetParent() && object_id == GetParent()->GetObjectId())) 
+        (GetContainer() && object_id == GetContainer()->GetObjectId())) 
     {
         return true;
     }
@@ -225,9 +308,9 @@ void Object::SetOrientation(glm::quat orientation)
 {
     orientation_ = orientation;
 }
-void Object::SetContainer(uint64_t container)
+void Object::SetContainer(const std::shared_ptr<Object>& container)
 {
-    container_id_ = container;
+    container_ = container;
 }
 void Object::SetComplexity(float complexity)
 {
