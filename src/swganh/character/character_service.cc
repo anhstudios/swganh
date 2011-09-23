@@ -53,9 +53,9 @@
 #include "swganh/login/login_client.h"
 #include "swganh/login/account.h"
 
-#include "swganh/scene/messages/cmd_start_scene.h"
-#include "swganh/scene/messages/scene_create_object_by_crc.h"
-#include "swganh/scene/messages/scene_end_baselines.h"
+#include "swganh/messages/cmd_start_scene.h"
+#include "swganh/messages/scene_create_object_by_crc.h"
+#include "swganh/messages/scene_end_baselines.h"
 
 #include "swganh/connection/connection_service.h"
 #include "swganh/connection/connection_client.h"
@@ -77,7 +77,7 @@ using namespace swganh::character;
 using namespace swganh::character::messages;
 using namespace swganh::connection::messages;
 using namespace swganh::login;
-using namespace swganh::scene::messages;
+using namespace swganh::messages;
 using namespace anh;
 using namespace app;
 using namespace event_dispatcher;

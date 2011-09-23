@@ -27,7 +27,7 @@ using namespace swganh::character;
 using namespace swganh::connection;
 using namespace swganh::connection::messages;
 using namespace swganh::login;
-using namespace swganh::scene::messages;
+using namespace swganh::messages;
 
 using namespace std;
 

@@ -19,7 +19,7 @@
 
 #include "swganh/character/character_service.h"
 #include "swganh/login/login_service.h"
-#include "swganh/scene/messages/cmd_scene_ready.h"
+#include "swganh/messages/cmd_scene_ready.h"
 
 #include "swganh/connection/providers/session_provider_interface.h"
 
@@ -83,7 +83,7 @@ private:
     ClientMap clients_;
     
     void HandleClientIdMsg_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::connection::messages::ClientIdMsg& message);
-    void HandleCmdSceneReady_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::scene::messages::CmdSceneReady& message);
+    void HandleCmdSceneReady_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::messages::CmdSceneReady& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
     void AddClient_(uint64_t player_id, std::shared_ptr<swganh::connection::ConnectionClient> client);
