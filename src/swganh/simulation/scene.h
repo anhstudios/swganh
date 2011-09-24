@@ -51,7 +51,7 @@ namespace simulation {
         Scene();
 
         class SceneImpl;
-        std::unique_ptr<SceneImpl> impl_;
+        std::shared_ptr<SceneImpl> impl_;
     };
 
 }}  // namespace swganh::simulation

@@ -99,5 +99,6 @@ const shared_ptr<Object>& GalaxyService::GetObjectById(uint64_t object_id)
 
 void GalaxyService::DestroyObjectById(uint64_t object_id)
 {
-
+    auto object = GetObjectById(object_id);
+    impl_->GetObjectManager()->DeleteObjectFromStorage(object);
 }
