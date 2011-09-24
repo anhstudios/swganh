@@ -116,7 +116,7 @@ public:
     */
     void SetColor(const std::string& color);
 protected:
-    virtual boost::optional<swganh::scene::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
 private:
     uint32_t uses_;					//update 3
 	glm::vec3 coordinates_;			//update 3

@@ -3,8 +3,8 @@
 
 #include "swganh/messages/deltas_message.h"
 
+using namespace std;
 using namespace swganh::messages;
-using namespace swganh::object;
 using namespace swganh::object::waypoint;
 
 Waypoint::Waypoint()

@@ -2,13 +2,12 @@
 #include "swganh/object/manufacture_schematic/manufacture_schematic.h"
 
 #include "swganh/scene/scene.h"
-#include "swganh/scene/messages/deltas_message.h"
+#include "swganh/messages/deltas_message.h"
 #include "anh/crc.h"
 
 using namespace std;
 using namespace swganh::object::manufacture_schematic;
-using namespace swganh::scene;
-using namespace messages;
+using namespace swganh::messages;
 
 uint32_t ManufactureSchematic::GetType() const
 { 
@@ -23,7 +22,7 @@ uint32_t ManufactureSchematic::GetSchematicQuantity() const
 void ManufactureSchematic::ResetSchematicQuantity(uint32_t quantity)
 {
     schematic_quantity_ = (quantity > 1000) ? 1000 : quantity;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3);
         // update count
@@ -32,8 +31,7 @@ void ManufactureSchematic::ResetSchematicQuantity(uint32_t quantity)
         message.data.write<uint16_t>(4);
         message.data.write(schematic_quantity_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_3, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -41,7 +39,7 @@ void ManufactureSchematic::IncreaseSchematicQuantity(uint32_t increase_by)
 {
     uint32_t tmp = schematic_quantity_ + increase_by;
     schematic_quantity_ = (tmp > 1000) ? 1000 : tmp;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3);
         // update count
@@ -50,8 +48,7 @@ void ManufactureSchematic::IncreaseSchematicQuantity(uint32_t increase_by)
         message.data.write<uint16_t>(4);
         message.data.write(schematic_quantity_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_3, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -80,7 +77,7 @@ void ManufactureSchematic::AddProperty(
     }
     property_counter_++;
     
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3);
         // update count
@@ -96,8 +93,7 @@ void ManufactureSchematic::AddProperty(
         message.data.write(property_stf_name);
         message.data.write(value);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_3, std::move(message)));
+        AddDeltasUpdate(message);
     }
     // now push it back
     Property new_property;
@@ -126,7 +122,7 @@ void ManufactureSchematic::RemoveProperty(
         // Not in the list.
         return;
     }
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3);
         // update count
@@ -142,8 +138,7 @@ void ManufactureSchematic::RemoveProperty(
         message.data.write(property_stf_name);
         message.data.write(value);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_3, std::move(message)));
+        AddDeltasUpdate(message);
     }
 
     properties_.erase(find_iter);
@@ -167,7 +162,7 @@ void ManufactureSchematic::UpdateProperty(
         // Not in the list.
         return;
     }
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3);
         // update count
@@ -183,8 +178,7 @@ void ManufactureSchematic::UpdateProperty(
         message.data.write(property_stf_name);
         message.data.write(value);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_3, std::move(message)));
+        AddDeltasUpdate(message);
     }
 
     find_iter->property_stf_file = move(property_stf_file);
@@ -201,7 +195,7 @@ void ManufactureSchematic::SetCreatorName(std::wstring creator)
 {
     creator_ = move(creator);
 
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3);
         // update count
@@ -210,8 +204,7 @@ void ManufactureSchematic::SetCreatorName(std::wstring creator)
         message.data.write<uint16_t>(6);
         message.data.write(creator_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_3, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -223,7 +216,7 @@ uint32_t ManufactureSchematic::GetComplexity() const
 void ManufactureSchematic::SetComplexity(uint32_t complexity)
 {
     complexity_ = complexity;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3);
         // update count
@@ -232,8 +225,7 @@ void ManufactureSchematic::SetComplexity(uint32_t complexity)
         message.data.write<uint16_t>(7);
         message.data.write(creator_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_3, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -246,7 +238,7 @@ void ManufactureSchematic::SetSchematicDataSize(float schematic_data_size)
 {
     schematic_data_size_ = schematic_data_size;
 
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3);
         // update count
@@ -255,8 +247,7 @@ void ManufactureSchematic::SetSchematicDataSize(float schematic_data_size)
         message.data.write<uint16_t>(8);
         message.data.write(schematic_data_size_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_3, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -268,7 +259,7 @@ std::vector<uint8_t> ManufactureSchematic::GetCustomizationString() const
 void ManufactureSchematic::SetCustomizationString(std::vector<uint8_t> customization_string)
 {
     customization_ = move(customization_string);
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6);
         // update count
@@ -277,8 +268,7 @@ void ManufactureSchematic::SetCustomizationString(std::vector<uint8_t> customiza
         message.data.write<uint16_t>(1);
         message.data.write(customization_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_6, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -290,7 +280,7 @@ std::string ManufactureSchematic::GetCustomizationModel() const
 void ManufactureSchematic::GetCustomizationModel(std::string customization_model)
 {
     customization_model_ = customization_model;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6);
         // update count
@@ -299,8 +289,7 @@ void ManufactureSchematic::GetCustomizationModel(std::string customization_model
         message.data.write<uint16_t>(2);
         message.data.write(customization_model_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_6, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -318,7 +307,7 @@ void ManufactureSchematic::SetPrototypeModel(std::string prototype_model)
 {
     prototype_model_ = move(prototype_model);
 
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6);
         // update count
@@ -327,8 +316,7 @@ void ManufactureSchematic::SetPrototypeModel(std::string prototype_model)
         message.data.write<uint16_t>(3);
         message.data.write(GetPrototypeCrc());
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_6, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -358,7 +346,7 @@ void ManufactureSchematic::ToggleActive()
     is_active_ = !is_active_;
     uint8_t flag = is_active_ ? 1 : 0;
 
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6);
         // update count
@@ -367,8 +355,7 @@ void ManufactureSchematic::ToggleActive()
         message.data.write<uint16_t>(4);
         message.data.write(flag);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_6, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -380,7 +367,7 @@ uint8_t ManufactureSchematic::GetSlotCount() const
 void ManufactureSchematic::IncreaseSlotCount()
 {
     ++slot_count_;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6);
         // update count
@@ -389,15 +376,14 @@ void ManufactureSchematic::IncreaseSlotCount()
         message.data.write<uint16_t>(5);
         message.data.write(slot_count_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_6, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
 void ManufactureSchematic::DecreaseSlotCount()
 {
     --slot_count_;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6);
         // update count
@@ -406,15 +392,14 @@ void ManufactureSchematic::DecreaseSlotCount()
         message.data.write<uint16_t>(5);
         message.data.write(slot_count_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_6, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
 void ManufactureSchematic::ResetSlotCount(uint8_t slot_count)
 {
     slot_count_ = slot_count;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6);
         // update count
@@ -423,8 +408,7 @@ void ManufactureSchematic::ResetSlotCount(uint8_t slot_count)
         message.data.write<uint16_t>(5);
         message.data.write(slot_count_);
         
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_6, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
@@ -438,7 +422,7 @@ void ManufactureSchematic::BuildSlotDelta_(
     std::vector<Slot>::iterator slot_iterator)
 {
     // no observers, don't bother
-    if (!GetScene()->HasObservers(GetObjectId()))
+    if (!HasObservers())
     {
         return;
     }
@@ -489,8 +473,7 @@ void ManufactureSchematic::BuildSlotDelta_(
             message.data.write(slot_iterator->index);
             break;
     }
-    GetScene()->UpdateObservers(GetObjectId(), message);
-    deltas_cache_.push_back(std::make_pair(VIEW_7, std::move(message)));
+    AddDeltasUpdate(message);
 }
 
 void ManufactureSchematic::RemoveSlot(uint16_t index)
@@ -602,7 +585,7 @@ void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> sl
 {
     slots_ = move(slots);
     slot_counter_ = 0;
-    if (GetScene()->HasObservers(GetObjectId()))
+    if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_7);
         // update count
@@ -618,9 +601,7 @@ void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> sl
             message.data.write(0);
             message.data.write(slot.slot_stf_name);
         });
-        
-        GetScene()->UpdateObservers(GetObjectId(), message);
-        deltas_cache_.push_back(std::make_pair(VIEW_7, std::move(message)));
+        AddDeltasUpdate(message);
     }
 }
 
