@@ -2,6 +2,7 @@
 #include "swganh/object/tangible/base_tangible.h"
 
 #include "swganh/messages/deltas_message.h"
+#include "swganh/object/tangible/tangible_message_builder.h"
 
 using namespace std;
 using namespace swganh::object;
@@ -11,7 +12,7 @@ using namespace swganh::messages;
 BaseTangible::BaseTangible()
     : customization_(0)
     , component_customization_list_(std::vector<uint32_t>())
-    , component_customization_list_counter_(0)
+    , component_customization_counter_(0)
     , options_bitmask_(0)
     , incap_timer_(0)
     , condition_damage_(0)
@@ -35,155 +36,66 @@ BaseTangible::BaseTangible(const std::string& customization, std::vector<uint32_
 void BaseTangible::AddCustomization(const string& customization)
 {
     customization_.append(customization);
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(4);
-        message.data.write(customization_);
-
-        AddDeltasUpdate(move(message));
-    }
+    TangibleMessageBuilder::BuildCustomizationDelta(this);
 }
 
 void BaseTangible::SetCustomization(const string& customization)
 {
     customization_ = customization;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(4);
-        message.data.write(customization_);
-
-        AddDeltasUpdate(move(message));
-    }
+    TangibleMessageBuilder::BuildCustomizationDelta(this);
 }
+void BaseTangible::RemoveComponentCustomization(uint32_t customization)
+{
+    auto found = find_if(
+        begin(component_customization_list_), end(component_customization_list_),
+        [&customization](uint32_t crc) 
+    {
+        return customization == crc;
+    });
+    // not found
+    if (found == end(component_customization_list_))
+        return;
 
+    component_customization_list_.erase(found);
+    TangibleMessageBuilder::BuildComponentCustomizationDelta(this, 0, customization);
+}
 void BaseTangible::AddComponentCustomization(uint32_t customization)
 {
     // add customization
     component_customization_list_.push_back(customization);
-    // update counter
-    component_customization_list_counter_++;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(5);
-        message.data.write(component_customization_list_.size());
-        message.data.write(component_customization_list_counter_);
-        message.data.write(component_customization_list_);
-        // update type add
-        message.data.write<uint8_t>(1);
-
-        AddDeltasUpdate(move(message));
-    }
+    TangibleMessageBuilder::BuildComponentCustomizationDelta(this, 1, customization);
 }
 
-void BaseTangible::SetComponentCustomization(vector<uint32_t> component_customization)
+void BaseTangible::ClearComponentCustomization()
 {
-    component_customization_list_ = component_customization;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(5);
-        message.data.write(component_customization_list_.size());
-        message.data.write(component_customization_list_counter_);
-        message.data.write(component_customization_list_);
-        // update type clearall
-        message.data.write<uint8_t>(2);
-
-        AddDeltasUpdate(move(message));
-    }
+    component_customization_list_.clear();
+    TangibleMessageBuilder::BuildComponentCustomizationDelta(this, 2, 0);
 }
 
 void BaseTangible::SetOptionsMask(uint32_t options_mask)
 {
     options_bitmask_ = options_mask;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(6);
-        message.data.write(options_bitmask_);
-
-        AddDeltasUpdate(move(message));
-    }
+    TangibleMessageBuilder::BuildOptionsMaskDelta(this);    
 }
 void BaseTangible::SetIncapTimer(uint32_t incap_timer)
 {
     incap_timer_ = incap_timer;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(7);
-        message.data.write(incap_timer_);
-
-        AddDeltasUpdate(move(message));
-    }
+    TangibleMessageBuilder::BuildIncapTimerDelta(this);
 }
 void BaseTangible::SetConditionDamage(uint32_t damage)
 {
     condition_damage_ = damage;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(8);
-        message.data.write(condition_damage_);
-
-        AddDeltasUpdate(move(message));
-    }
+    TangibleMessageBuilder::BuildConditionDamageDelta(this);
 }
 void BaseTangible::SetMaxCondition(uint32_t max_condition)
 {
     max_condition_ = max_condition;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(9);
-        message.data.write(max_condition_);
-
-        AddDeltasUpdate(move(message));
-    }
+    TangibleMessageBuilder::BuildMaxConditionDelta(this);
 }
 void BaseTangible::SetStatic(bool is_static)
 {
     is_static_ = is_static;
-    if (HasObservers())
-    {
-        uint8_t val = MOVEABLE;
-        if (is_static_)
-            val = STATIC;
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(10);
-        message.data.write(val);
-
-        AddDeltasUpdate(move(message));
-    }
+    TangibleMessageBuilder::BuildStaticDelta(this);
 }
 std::vector<uint64_t>::iterator BaseTangible::FindDefender(uint64_t defender)
 {
@@ -203,26 +115,8 @@ void BaseTangible::AddDefender(uint64_t defender)
     // make sure there's not the same defender already
     defender_list_.push_back(defender);
     // update counter
-    defender_list_counter_++;
-
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
-        message.data.write(defender_list_.size());
-        message.data.write(defender_list_counter_);
-        // end defender index
-        message.data.write<uint16_t>(defender_list_.size());
-        // defender we are adding
-        message.data.write(defender);
-        // update subtype (add)
-        message.data.write<uint8_t>(1);
-
-        AddDeltasUpdate(move(message));
-    }
+    IncrementDefendersCounter();
+    TangibleMessageBuilder::BuildDefendersDelta(this, 1, defender);
 }
 void BaseTangible::RemoveDefender(uint64_t defender)
 {
@@ -232,122 +126,19 @@ void BaseTangible::RemoveDefender(uint64_t defender)
         return;
 
     defender_list_.erase(found);
-
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
-        message.data.write<uint16_t>(defender_list_.size());
-        message.data.write<uint16_t>(defender_list_counter_);
-        message.data.write<uint16_t>(found - defender_list_.begin());
-        // update subtype (remove)
-        message.data.write<uint8_t>(0);
-
-        AddDeltasUpdate(move(message));
-    }
-    // update counter
-    defender_list_counter_--;
+    IncrementDefendersCounter();
+    TangibleMessageBuilder::BuildDefendersDelta(this, 0, defender);
 }
 void BaseTangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
-    defender_list_.clear();
     defender_list_ = defenders;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6);
-        // update count (not sure if this is the new size or just 1)?
-
-        message.data.write<uint16_t>(defender_list_.size());
-        // update type
-        message.data.write<uint16_t>(1);
-        message.data.write<uint16_t>(defender_list_.size());
-        message.data.write<uint8_t>(3);
-        for_each(begin(defender_list_), end(defender_list_), [&message](uint64_t defender) {
-            message.data.write(defender);
-        });
-
-        AddDeltasUpdate(move(message));
-    }
     // update counter
-    defender_list_counter_ = 0;
+    ClearDefendersCounter();
+    TangibleMessageBuilder::BuildNewDefendersDelta(this);
 }
 void BaseTangible::ClearDefenders()
 {
     defender_list_.clear();
-
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
-        // update sub type (reset all)
-        message.data.write<uint8_t>(4);
-
-        AddDeltasUpdate(move(message));
-    }
-    // update counter
-    defender_list_counter_ = 0;
-}
-
-boost::optional<BaselinesMessage> BaseTangible::GetBaseline3()
-{
-    auto message = CreateBaselinesMessage(Object::VIEW_3, 11);
-    
-    // base data
-    message.data.append(Object::GetBaseline3().get().data);
-    message.data.write(GetCustomization());
-    message.data.write(component_customization_list_.size());
-    message.data.write(component_customization_list_counter_);
-    for_each(begin(component_customization_list_), end(component_customization_list_), [&message](uint32_t crc){
-        message.data.write(crc);
-    });
-    message.data.write(GetOptionsMask());
-    message.data.write(GetIncapTimer());
-    message.data.write(GetCondition());
-    message.data.write(GetMaxCondition());
-    uint8_t static_val = MOVEABLE;
-    if (IsStatic())
-        static_val = STATIC;
-    message.data.write<uint8_t>(static_val);
-    
-    return boost::optional<BaselinesMessage>(std::move(message));
-}
-boost::optional<BaselinesMessage> BaseTangible::GetBaseline6()
-{
-    auto message = CreateBaselinesMessage(Object::VIEW_6, 2);
-    
-    // server id
-    message.data.append(Object::GetBaseline6().get().data);
-    // defender list
-    message.data.write(defender_list_.size());
-    message.data.write(defender_list_counter_);
-    for_each(begin(defender_list_), end(defender_list_), [&message](uint64_t defender) {
-        message.data.write(defender);
-    });
-
-    return boost::optional<BaselinesMessage>(std::move(message));
-}
-boost::optional<BaselinesMessage> BaseTangible::GetBaseline7()
-{
-    auto message = CreateBaselinesMessage(Object::VIEW_7, 2);
-    // always seen 0, used for crafting tool
-    message.data.write<uint64_t>(0);
-    message.data.write<uint64_t>(0);
-
-    return boost::optional<BaselinesMessage>(std::move(message));
-}
-boost::optional<BaselinesMessage> BaseTangible::GetBaseline8()
-{
-    auto message = CreateBaselinesMessage(Object::VIEW_8);    
-    return boost::optional<BaselinesMessage>(std::move(message));
-}
-boost::optional<BaselinesMessage> BaseTangible::GetBaseline9()
-{
-    auto message = CreateBaselinesMessage(Object::VIEW_9);    
-    return boost::optional<BaselinesMessage>(std::move(message));
+    ClearDefendersCounter();
+    TangibleMessageBuilder::BuildDefendersDelta(this, 4, 0);
 }

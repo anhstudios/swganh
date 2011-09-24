@@ -31,7 +31,10 @@ public:
     const std::vector<uint32_t> GetComponentCustomization() { return component_customization_list_; }
     void AddComponentCustomization(uint32_t customization);
     void RemoveComponentCustomization(uint32_t customization);
-    void SetComponentCustomization(std::vector<uint32_t> component_customization);
+    void ClearComponentCustomization();
+    const uint32_t GetComponentCustomizationCounter() { return component_customization_counter_; }
+    void IncrementComponentCustomizationCounter() { component_customization_counter_++; }
+    void ClearComponentCustomizationCounter() { component_customization_counter_ = 0; }
 
     // no idea what options these are...
     uint32_t GetOptionsMask() { return options_bitmask_; }
@@ -54,19 +57,15 @@ public:
     void AddDefender(uint64_t defender);
     void RemoveDefender(uint64_t defender);
     void ResetDefenders(std::vector<uint64_t> defenders);
-    void ClearDefenders();
-protected:
-    // baselines
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9();
-    
     std::vector<uint64_t>::iterator FindDefender(uint64_t defender);
+    void ClearDefenders();
+    uint32_t GetDefendersCounter() { return defender_list_counter_; }
+    void IncrementDefendersCounter() { defender_list_counter_++; }
+    void ClearDefendersCounter() { defender_list_counter_ = 0; }
+protected:
     std::string customization_;                          // update 3
     std::vector<uint32_t> component_customization_list_; // update 3
-    uint32_t component_customization_list_counter_;      // update 3
+    uint32_t component_customization_counter_;           // update 3
     uint32_t options_bitmask_;                           // update 3
     uint32_t incap_timer_;                               // update 3
     uint32_t condition_damage_;                          // update 3
