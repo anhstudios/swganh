@@ -17,6 +17,8 @@ enum StaticType {
     MOVEABLE = 0,
     STATIC
 };
+
+class TangibleMessageBuilder;
     
 class BaseTangible : public swganh::object::Object
 {
@@ -32,10 +34,7 @@ public:
     void AddComponentCustomization(uint32_t customization);
     void RemoveComponentCustomization(uint32_t customization);
     void ClearComponentCustomization();
-    const uint32_t GetComponentCustomizationCounter() { return component_customization_counter_; }
-    void IncrementComponentCustomizationCounter() { component_customization_counter_++; }
-    void ClearComponentCustomizationCounter() { component_customization_counter_ = 0; }
-
+    
     // no idea what options these are...
     uint32_t GetOptionsMask() { return options_bitmask_; }
     void ToggleOption(uint32_t option);
@@ -53,16 +52,25 @@ public:
     bool IsStatic() { return is_static_; }
     void SetStatic(bool is_static);
 
-    std::vector<uint64_t> GetDefenders() { return defender_list_; }
     void AddDefender(uint64_t defender);
     void RemoveDefender(uint64_t defender);
     void ResetDefenders(std::vector<uint64_t> defenders);
-    std::vector<uint64_t>::iterator FindDefender(uint64_t defender);
+    bool IsDefending(uint64_t defender);
+    std::vector<uint64_t> GetDefenders() { return defender_list_; }
     void ClearDefenders();
-    uint32_t GetDefendersCounter() { return defender_list_counter_; }
-    void IncrementDefendersCounter() { defender_list_counter_++; }
-    void ClearDefendersCounter() { defender_list_counter_ = 0; }
-protected:
+
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7();
+private:
+    friend TangibleMessageBuilder;
+
+    void IncrementComponentCustomizationCounter_() { component_customization_counter_++; }
+    void ClearComponentCustomizationCounter_() { component_customization_counter_ = 0; }
+    void IncrementDefendersCounter_() { defender_list_counter_++; }
+    void ClearDefendersCounter_() { defender_list_counter_ = 0; }
+    std::vector<uint64_t>::iterator FindDefender_(uint64_t defender);
+
     std::string customization_;                          // update 3
     std::vector<uint32_t> component_customization_list_; // update 3
     uint32_t component_customization_counter_;           // update 3

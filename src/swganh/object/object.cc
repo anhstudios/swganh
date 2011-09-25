@@ -2,10 +2,9 @@
 #include "swganh/object/object.h"
 
 #include "anh/observer/observer_interface.h"
-
 #include "swganh/messages/base_baselines_message.h"
-
 #include "swganh/object/object_controller.h"
+#include "swganh/object/object_message_builder.h"
 
 using namespace anh::observer;
 using namespace std;
@@ -218,24 +217,44 @@ bool Object::HasPrivilegedView_(uint64_t object_id) const
     return false;
 }
 
+void Object::SetPosition(glm::vec3 position)
+{
+    position_ = position;
+}
+void Object::SetOrientation(glm::quat orientation)
+{
+    orientation_ = orientation;
+}
+void Object::SetContainer(uint64_t container)
+{
+    container_id_ = container;
+}
+void Object::SetComplexity(float complexity)
+{
+    complexity_ = complexity;
+    ObjectMessageBuilder::BuildComplexityDelta(this);
+}
+void Object::SetStfNameFile(const string& stf_name_file)
+{
+    stf_name_file_ = stf_name_file;
+    ObjectMessageBuilder::BuildStfNameDelta(this);
+}
+void Object::SetStfNameString(const string& stf_name_string)
+{
+    stf_name_string_ = stf_name_string;
+    ObjectMessageBuilder::BuildStfNameDelta(this);
+}
+void Object::SetVolume(uint32_t volume)
+{
+    volume_ = volume;
+    ObjectMessageBuilder::BuildVolumeDelta(this);
+}
 optional<BaselinesMessage> Object::GetBaseline3()
 {
-    auto message = CreateBaselinesMessage(VIEW_3);
-    message.data.write(GetComplexity());
-    message.data.write(GetStfNameFile());
-    // spacer
-    message.data.write(0);
-    message.data.write(GetStfNameString());
-    message.data.write(GetCustomName());
-    message.data.write(GetVolume());
-
-    return boost::optional<BaselinesMessage>(move(message));
+    return move(ObjectMessageBuilder::BuildBaseline3(this));
 }
 
 optional<BaselinesMessage> Object::GetBaseline6()
 {
-    auto message = CreateBaselinesMessage(VIEW_6);
-    //message.data.write(GetScene()->GetId());
-
-    return boost::optional<BaselinesMessage>(move(message));
+    return move(ObjectMessageBuilder::BuildBaseline6(this));
 }

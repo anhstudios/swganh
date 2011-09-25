@@ -97,7 +97,7 @@ void BaseTangible::SetStatic(bool is_static)
     is_static_ = is_static;
     TangibleMessageBuilder::BuildStaticDelta(this);
 }
-std::vector<uint64_t>::iterator BaseTangible::FindDefender(uint64_t defender)
+std::vector<uint64_t>::iterator BaseTangible::FindDefender_(uint64_t defender)
 {
     auto found = find_if(begin(defender_list_), end(defender_list_), [defender](uint64_t defender_check){
         return defender == defender_check;
@@ -105,40 +105,57 @@ std::vector<uint64_t>::iterator BaseTangible::FindDefender(uint64_t defender)
 
     return found;
 }
+bool BaseTangible::IsDefending(uint64_t defender)
+{
+    return FindDefender_(defender) != end(defender_list_);
+}
 void BaseTangible::AddDefender(uint64_t defender)
 {
     
     // bail if found
-    if (FindDefender(defender) != end(defender_list_))
+    if (FindDefender_(defender) != end(defender_list_))
         return;
 
     // make sure there's not the same defender already
     defender_list_.push_back(defender);
     // update counter
-    IncrementDefendersCounter();
+    IncrementDefendersCounter_();
     TangibleMessageBuilder::BuildDefendersDelta(this, 1, defender);
 }
 void BaseTangible::RemoveDefender(uint64_t defender)
 {
     // bail if not found
-    auto found = FindDefender(defender);
+    auto found = FindDefender_(defender);
     if (found == end(defender_list_))
         return;
 
     defender_list_.erase(found);
-    IncrementDefendersCounter();
+    IncrementDefendersCounter_();
     TangibleMessageBuilder::BuildDefendersDelta(this, 0, defender);
 }
 void BaseTangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
     defender_list_ = defenders;
     // update counter
-    ClearDefendersCounter();
+    ClearDefendersCounter_();
     TangibleMessageBuilder::BuildNewDefendersDelta(this);
 }
 void BaseTangible::ClearDefenders()
 {
     defender_list_.clear();
-    ClearDefendersCounter();
+    ClearDefendersCounter_();
     TangibleMessageBuilder::BuildDefendersDelta(this, 4, 0);
+}
+
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline3()
+{
+    return move(TangibleMessageBuilder::BuildBaseline3(this));
+}
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline6()
+{
+    return move(TangibleMessageBuilder::BuildBaseline6(this));
+}
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline7()
+{
+    return move(TangibleMessageBuilder::BuildBaseline7(this));
 }

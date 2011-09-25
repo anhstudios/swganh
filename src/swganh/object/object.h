@@ -156,13 +156,21 @@ public:
     
     const std::string& GetTemplate() { return template_string_; }
     glm::vec3 GetPosition() { return position_; }
+    void SetPosition(glm::vec3 position);
     glm::quat GetOrientation() { return orientation_; }
+    void SetOrientation(glm::quat orientation);
     uint64_t GetContainer() { return container_id_; }
+    void SetContainer(uint64_t id);
     float GetComplexity() { return complexity_; }
+    void SetComplexity(float complexity);
     const std::string& GetStfNameFile() { return stf_name_file_; }
+    void SetStfNameFile(const std::string& stf_name_file);
     const std::string& GetStfNameString() { return stf_name_string_; }
+    void SetStfNameString(const std::string& stf_name_string);
     const std::wstring& GetCustomName() { return custom_name_; }
+    void SetCustomName(std::wstring custom_name); 
     uint32_t GetVolume() { return volume_; }
+    void SetVolume(uint32_t volume);
 
     /**
      * Stores a deltas message update for the object.
@@ -182,8 +190,6 @@ public:
     const std::shared_ptr<Object>& GetParent() const;
 
     std::wstring GetCustomName() const;
-    
-    void SetCustomName(std::wstring custom_name); 
     
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
