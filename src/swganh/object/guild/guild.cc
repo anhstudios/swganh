@@ -49,7 +49,7 @@ void Guild::RemoveGuild(uint32_t guild_id)
 
         guild_list_.erase(iter);
         
-        GuildMessageBuilder::BuildGuildListDelta(this, 1, guild_id_tag.str());
+        GuildMessageBuilder::BuildGuildListDelta(this, 0, guild_id_tag.str());
         IncrementGuildsListCounter();
     }
 }

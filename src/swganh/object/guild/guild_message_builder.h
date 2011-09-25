@@ -18,17 +18,17 @@ namespace object {
 
 namespace guild {
 
-    class Guild;
-    class GuildMessageBuilder
-    {
-    public:
+class Guild;
+class GuildMessageBuilder
+{
+public:
 
-        // deltas
-        static void BuildGuildListDelta(Guild*, uint8_t sub_type, std::string guild_id_tag);
+    // deltas
+    static void BuildGuildListDelta(Guild*, uint8_t sub_type, std::string guild_id_tag);
 
-        // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Guild*);
-    };
+    // baselines
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Guild*);
+};
 
 }}} // swganh::object::guild
 

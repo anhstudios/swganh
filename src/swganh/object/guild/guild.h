@@ -48,7 +48,6 @@ public:
 protected:
     boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
 
-private:
     std::map<uint32_t, std::string>     guild_list_;
     uint32_t    guild_list_counter_;
 };
