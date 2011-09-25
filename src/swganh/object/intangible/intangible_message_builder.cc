@@ -1,5 +1,5 @@
 
-#include "swganh/object/intangible/intangible_baselines_builder.h"
+#include "swganh/object/intangible/intangible_message_builder.h"
 
 #include <cstdint>
 
@@ -10,7 +10,7 @@ using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object::intangible;
 
-void IntangibleBaselinesBuilder::BuildStfDetailDelta(Intangible* object)
+void IntangibleMessageBuilder::BuildStfDetailDelta(Intangible* object)
 {
     // Only build a message if there are observers.
     if (object->HasObservers())

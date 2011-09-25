@@ -1,7 +1,7 @@
 
 #include "swganh/object/intangible/intangible.h"
 
-#include "swganh/object/intangible/intangible_baselines_builder.h"
+#include "swganh/object/intangible/intangible_message_builder.h"
 
 using namespace std;
 using namespace swganh::object;
@@ -17,7 +17,7 @@ void Intangible::SetStfDetailFile(string stf_detail_file)
 {
     stf_detail_file_ = stf_detail_file;
 
-    IntangibleBaselinesBuilder::BuildStfDetailDelta(this);
+    IntangibleMessageBuilder::BuildStfDetailDelta(this);
 }
 
 string Intangible::GetStfDetailString() const
@@ -29,5 +29,5 @@ void Intangible::SetStfDetailString(string stf_detail_string)
 {
     stf_detail_string_ = stf_detail_string;
     
-    IntangibleBaselinesBuilder::BuildStfDetailDelta(this);
+    IntangibleMessageBuilder::BuildStfDetailDelta(this);
 }
