@@ -35,7 +35,6 @@ void Guild::AddGuild(uint32_t guild_id, std::string guild_tag)
         guild_list_.insert(std::pair<uint32_t, std::string>(guild_id, guild_tag));
        
         GuildMessageBuilder::BuildGuildListDelta(this, 1, guild_id_tag.str());
-        IncrementGuildsListCounter();
     }
 }
 
@@ -50,7 +49,6 @@ void Guild::RemoveGuild(uint32_t guild_id)
         guild_list_.erase(iter);
         
         GuildMessageBuilder::BuildGuildListDelta(this, 0, guild_id_tag.str());
-        IncrementGuildsListCounter();
     }
 }
 

@@ -14,8 +14,8 @@ void GuildMessageBuilder::BuildGuildListDelta(Guild* guild, uint8_t subtype, std
     {
         DeltasMessage message = guild->CreateDeltasMessage(Object::VIEW_3);
         message.data.write<uint16_t>(4);
-        message.data.write<uint32_t>(guild->GetGuilds().size());
-        message.data.write<uint32_t>(guild->GetGuildsListCounter());
+        message.data.write<uint32_t>(guild->guild_list_.size());
+        message.data.write<uint32_t>(guild->guild_list_counter_++);
         message.data.write<uint8_t>(subtype);
 
         switch(subtype)
@@ -44,12 +44,12 @@ boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(Guild* gui
 {
     auto message = guild->CreateBaselinesMessage(Object::VIEW_3, 5);
     message.data.append(guild->Object::GetBaseline3().get().data);
-    message.data.write<uint32_t>(guild->GetGuilds().size());
-    message.data.write<uint32_t>(guild->GetGuildsListCounter());
-    std::for_each(guild->GetGuilds().begin(), guild->GetGuilds().end(), [=, &message](std::pair<uint32_t, std::string> guild) {
+    message.data.write<uint32_t>(guild->guild_list_.size());
+    message.data.write<uint32_t>(guild->guild_list_counter_++);
+    // Write each guild as ID:TAG (i.e. "1234:DARK")
+    std::for_each(guild->guild_list_.begin(), guild->guild_list_.end(), [=, &message](std::pair<uint32_t, std::string> guild) {
         std::stringstream guild_id_tag;
         guild_id_tag << guild.first << ":" << guild.second;
-        // Write each guild as ID:TAG (i.e. "1234:DARK")
         message.data.write<std::string>(guild_id_tag.str());
     });
 

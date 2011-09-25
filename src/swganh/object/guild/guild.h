@@ -29,6 +29,7 @@ namespace swganh {
 namespace object {
 namespace guild {
 
+class GuildMessageBuilder;
 class Guild : public swganh::object::Object {
 public:
     Guild();
@@ -38,15 +39,14 @@ public:
     void AddGuild(uint32_t, std::string);
     void RemoveGuild(uint32_t);
 
-    std::map<uint32_t, std::string> GetGuilds() { return guild_list_; }
-    uint32_t GetGuildsListCounter() { return guild_list_counter_; }
-    void IncrementGuildsListCounter() { guild_list_counter_++; }
-
     virtual uint32_t GetType() const { return type; }
     const static uint32_t type = 0x444C4947;
 
 protected:
     boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+
+private:
+    friend class GuildMessageBuilder;
 
     std::map<uint32_t, std::string>     guild_list_;
     uint32_t    guild_list_counter_;
