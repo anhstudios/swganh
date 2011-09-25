@@ -3,8 +3,8 @@
 
 #include "swganh/messages/deltas_message.h"
 
+using namespace std;
 using namespace swganh::messages;
-using namespace swganh::object;
 using namespace swganh::object::waypoint;
 
 Waypoint::Waypoint()
@@ -17,7 +17,7 @@ Waypoint::Waypoint()
     , color_("")
 {
 }
-Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const std::string& planet, const std::wstring& name, const std::string& color)
+Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, const wstring& name, const string& color)
     : uses_(0)
     , coordinates_(coordinates)
     , planet_name_(planet)
@@ -99,7 +99,7 @@ void Waypoint::DeActivate()
     }
 }
 
-void Waypoint::SetPlanet(const std::string& planet_name)
+void Waypoint::SetPlanet(const string& planet_name)
 {
     planet_name_ = planet_name;
     
@@ -116,7 +116,7 @@ void Waypoint::SetPlanet(const std::string& planet_name)
     }
 }
 
-void Waypoint::SetName(const std::wstring& name)
+void Waypoint::SetName(const wstring& name)
 {
     name_ = name;
     
@@ -154,7 +154,7 @@ uint8_t Waypoint::GetColorByte()
         return 1;
 }
 
-void Waypoint::SetColor(const std::string& color)
+void Waypoint::SetColor(const string& color)
 {
     color_ = color;
     
@@ -169,4 +169,20 @@ void Waypoint::SetColor(const std::string& color)
     
         AddDeltasUpdate(message);    
     }
+}
+boost::optional<BaselinesMessage> Waypoint::GetBaseline3()
+{
+    auto message = CreateBaselinesMessage(VIEW_3, 12);
+    auto coords = coordinates_;
+    message.data.write(coords.x);
+    message.data.write(coords.z);
+    message.data.write(coords.y);
+    message.data.write<uint8_t>(activated_flag_);
+    message.data.write<uint64_t>(location_network_id_);
+    message.data.write(planet_name_);
+    message.data.write(name_);
+    message.data.write<uint8_t>(not_used_);
+    message.data.write(color_);
+
+    return boost::optional<BaselinesMessage>(move(message));
 }

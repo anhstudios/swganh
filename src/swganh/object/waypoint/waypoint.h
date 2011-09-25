@@ -115,10 +115,9 @@ public:
     *   @param color of the waypoint
     */
     void SetColor(const std::string& color);
-
+protected:
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
 private:
-    
-
     uint32_t uses_;					//update 3
 	glm::vec3 coordinates_;			//update 3
 	uint8_t activated_flag_;		//update 3
