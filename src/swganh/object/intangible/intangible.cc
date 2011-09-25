@@ -31,3 +31,7 @@ void Intangible::SetStfDetailString(string stf_detail_string)
     
     IntangibleMessageBuilder::BuildStfDetailDelta(this);
 }
+boost::optional<BaselinesMessage> Intangible::GetBaseline6()
+{
+    return move(IntangibleMessageBuilder::BuildBaseline6(this));
+}

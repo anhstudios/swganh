@@ -251,10 +251,10 @@ void Object::SetVolume(uint32_t volume)
 }
 optional<BaselinesMessage> Object::GetBaseline3()
 {
-    return optional<BaselinesMessage>(move(ObjectMessageBuilder::BuildBaseline3(this)));
+    return move(ObjectMessageBuilder::BuildBaseline3(this));
 }
 
 optional<BaselinesMessage> Object::GetBaseline6()
 {
-    return optional<BaselinesMessage>(move(ObjectMessageBuilder::BuildBaseline6(this)));
+    return move(ObjectMessageBuilder::BuildBaseline6(this));
 }

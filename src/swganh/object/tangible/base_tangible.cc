@@ -149,13 +149,13 @@ void BaseTangible::ClearDefenders()
 
 boost::optional<BaselinesMessage> BaseTangible::GetBaseline3()
 {
-    return boost::optional<BaselinesMessage>(move(TangibleMessageBuilder::BuildBaseline3(this)));
+    return move(TangibleMessageBuilder::BuildBaseline3(this));
 }
 boost::optional<BaselinesMessage> BaseTangible::GetBaseline6()
 {
-    return boost::optional<BaselinesMessage>(move(TangibleMessageBuilder::BuildBaseline6(this)));
+    return move(TangibleMessageBuilder::BuildBaseline6(this));
 }
 boost::optional<BaselinesMessage> BaseTangible::GetBaseline7()
 {
-    return boost::optional<BaselinesMessage>(move(TangibleMessageBuilder::BuildBaseline7(this)));
+    return move(TangibleMessageBuilder::BuildBaseline7(this));
 }
