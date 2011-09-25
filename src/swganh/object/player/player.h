@@ -12,6 +12,8 @@ namespace swganh {
 namespace object {
 namespace player {
 
+class PlayerMessageBuilder;
+
 class Player : public swganh::object::Object
 {
 public:
@@ -185,6 +187,8 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9();
 
 private:
+    friend PlayerMessageBuilder;
+
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
     uint32_t status_flags_;

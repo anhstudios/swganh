@@ -3,6 +3,7 @@
 
 #include "anh/crc.h"
 
+#include "swganh/object/player/player_message_builder.h"
 #include "swganh/messages/deltas_message.h"
 
 using namespace std;
@@ -1603,53 +1604,7 @@ boost::optional<BaselinesMessage> Player::GetBaseline8()
 }
 boost::optional<BaselinesMessage> Player::GetBaseline9()
 {
-    auto message = CreateBaselinesMessage(Object::VIEW_9, 17);
-
-    // Ability
-    message.data.write(abilities_.size());
-    message.data.write(0);
-    for_each(begin(abilities_), end(abilities_), [&message](string ability){
-        message.data.write(ability);
-    });
-    // Crafting
-    message.data.write(GetExperimentationFlag());
-    message.data.write(GetCraftingStage());
-    message.data.write(GetNearestCraftingStation());
-    // Schematics
-    message.data.write(draft_schematics_.size());
-    message.data.write(0);
-    for_each(begin(draft_schematics_), end(draft_schematics_), [&message](DraftSchematicData schem) {
-        message.data.write(schem.schematic_id);
-        message.data.write(schem.schematic_crc);
-    });
-
-    message.data.write(GetExperimentationPoints());
-    message.data.write(GetAccomplishmentCounter());
-    // friend list
-    message.data.write(friends_.size());
-    message.data.write(0);
-    for_each(begin(friends_), end(friends_), [&message](string name){
-        message.data.write(name);
-    });
-    // ignore list
-    message.data.write(ignored_players_.size());
-    message.data.write(0);
-    for_each(begin(ignored_players_), end(ignored_players_), [&message] (string name) {
-        message.data.write(name);
-    });
-    message.data.write(GetLanguage());
-    message.data.write(GetCurrentStomach());
-    message.data.write(GetMaxStomach());
-    message.data.write(GetCurrentDrink());
-    message.data.write(GetMaxDrink());
-    // unused
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(GetJediState());
-
-    return boost::optional<BaselinesMessage>(move(message));
+    return move(PlayerMessageBuilder::BuildBaseline9(this));
 }
 
 void Player::SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, Object::ViewType view_type)
