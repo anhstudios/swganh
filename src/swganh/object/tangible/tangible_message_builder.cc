@@ -34,20 +34,20 @@ void TangibleMessageBuilder::BuildComponentCustomizationDelta(BaseTangible* tang
         message.data.write<uint16_t>(1);
         // update type
         message.data.write<uint16_t>(5);
-        message.data.write(tangible->GetComponentCustomization().size());
+        message.data.write(tangible->component_customization_list_.size());
         // list counter
-        message.data.write(tangible->GetComponentCustomizationCounter());
+        message.data.write(tangible->component_customization_counter_);
         // subtype
         message.data.write<uint8_t>(subType);
         if (subType == 0 || subType == 1)
         {
-            tangible->IncrementComponentCustomizationCounter();
+            tangible->IncrementComponentCustomizationCounter_();
             message.data.write(crc);
         }
         // reset all
         else if (subType == 2)
         {
-            tangible->ClearComponentCustomizationCounter();
+            tangible->ClearComponentCustomizationCounter_();
         }
         else
         {
@@ -142,11 +142,11 @@ void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible, uint8_t
         message.data.write<uint16_t>(1);
         message.data.write(defender_list.size());
         // list counter
-        message.data.write(tangible->GetDefendersCounter());
+        message.data.write(tangible->defender_list_counter_);
         // subtype
         message.data.write<uint8_t>(subType);
         // find defender
-        auto found = tangible->FindDefender(defender);
+        auto found = tangible->FindDefender_(defender);
         switch (subType)
         {
         // remove
@@ -204,8 +204,8 @@ boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(BaseTan
     // base data
     message.data.append(tangible->Object::GetBaseline3().get().data);
     message.data.write(tangible->GetCustomization());
-    message.data.write(tangible->GetComponentCustomization().size());
-    message.data.write(tangible->GetComponentCustomizationCounter());
+    message.data.write(tangible->component_customization_list_.size());
+    message.data.write(tangible->component_customization_counter_);
     for_each(begin(tangible->GetComponentCustomization()), end(tangible->GetComponentCustomization()), [&message](uint32_t crc){
         message.data.write(crc);
     });
@@ -227,8 +227,8 @@ boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(BaseTan
     // server id
     message.data.append(tangible->Object::GetBaseline6().get().data);
     // defender list
-    message.data.write(tangible->GetDefenders().size());
-    message.data.write(tangible->GetDefendersCounter());
+    message.data.write(tangible->defender_list_.size());
+    message.data.write(tangible->defender_list_counter_);
     for_each(begin(tangible->GetDefenders()), end(tangible->GetDefenders()), [&message](uint64_t defender) {
         message.data.write(defender);
     });
