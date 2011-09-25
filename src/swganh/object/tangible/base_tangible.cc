@@ -146,3 +146,16 @@ void BaseTangible::ClearDefenders()
     ClearDefendersCounter_();
     TangibleMessageBuilder::BuildDefendersDelta(this, 4, 0);
 }
+
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline3()
+{
+    return boost::optional<BaselinesMessage>(move(TangibleMessageBuilder::BuildBaseline3(this)));
+}
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline6()
+{
+    return boost::optional<BaselinesMessage>(move(TangibleMessageBuilder::BuildBaseline6(this)));
+}
+boost::optional<BaselinesMessage> BaseTangible::GetBaseline7()
+{
+    return boost::optional<BaselinesMessage>(move(TangibleMessageBuilder::BuildBaseline7(this)));
+}

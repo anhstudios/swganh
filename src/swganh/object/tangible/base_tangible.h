@@ -58,6 +58,10 @@ public:
     bool IsDefending(uint64_t defender);
     std::vector<uint64_t> GetDefenders() { return defender_list_; }
     void ClearDefenders();
+
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7();
 private:
     friend TangibleMessageBuilder;
 
