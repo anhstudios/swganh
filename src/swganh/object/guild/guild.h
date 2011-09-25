@@ -38,12 +38,12 @@ public:
     void AddGuild(uint32_t, std::string);
     void RemoveGuild(uint32_t);
 
+    std::map<uint32_t, std::string> GetGuilds() { return guild_list_; }
+    uint32_t GetGuildsListCounter() { return guild_list_counter_; }
+    void IncrementGuildsListCounter() { guild_list_counter_++; }
+
     virtual uint32_t GetType() const { return type; }
     const static uint32_t type = 0x444C4947;
-
-protected:
-
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
 
 private:
     std::map<uint32_t, std::string>     guild_list_;
