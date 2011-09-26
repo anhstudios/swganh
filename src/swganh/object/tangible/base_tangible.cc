@@ -111,16 +111,9 @@ bool BaseTangible::IsDefending(uint64_t defender)
 }
 void BaseTangible::AddDefender(uint64_t defender)
 {
-    
-    // bail if found
-    if (FindDefender_(defender) != end(defender_list_))
-        return;
-
-    // make sure there's not the same defender already
-    defender_list_.push_back(defender);
-    // update counter
-    IncrementDefendersCounter_();
-    TangibleMessageBuilder::BuildDefendersDelta(this, 1, defender);
+    uint16_t next_index = GetNextAvailableSlot(defender_list_, defender_index_free_list_);
+    defender_list_[next_index] = defender;
+    TangibleMessageBuilder::BuildDefendersDelta(this, 1, next_index, defender);
 }
 void BaseTangible::RemoveDefender(uint64_t defender)
 {
@@ -128,23 +121,22 @@ void BaseTangible::RemoveDefender(uint64_t defender)
     auto found = FindDefender_(defender);
     if (found == end(defender_list_))
         return;
-
+    uint16_t index_position = found - begin(defender_list_);
     defender_list_.erase(found);
-    IncrementDefendersCounter_();
-    TangibleMessageBuilder::BuildDefendersDelta(this, 0, defender);
+    TangibleMessageBuilder::BuildDefendersDelta(this, 0, index_position, defender);
+    defender_index_free_list_.push_back(index_position);
 }
 void BaseTangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
     defender_list_ = defenders;
-    // update counter
-    ClearDefendersCounter_();
     TangibleMessageBuilder::BuildNewDefendersDelta(this);
+    defender_index_free_list_.clear();
 }
 void BaseTangible::ClearDefenders()
 {
     defender_list_.clear();
-    ClearDefendersCounter_();
-    TangibleMessageBuilder::BuildDefendersDelta(this, 4, 0);
+    TangibleMessageBuilder::BuildDefendersDelta(this, 4, 0, 0);
+    defender_index_free_list_.clear();
 }
 
 boost::optional<BaselinesMessage> BaseTangible::GetBaseline3()

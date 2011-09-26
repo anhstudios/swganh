@@ -36,23 +36,19 @@ void TangibleMessageBuilder::BuildComponentCustomizationDelta(BaseTangible* tang
         message.data.write<uint16_t>(5);
         message.data.write(tangible->component_customization_list_.size());
         // list counter
-        message.data.write(tangible->component_customization_counter_);
+        message.data.write(tangible->component_customization_counter_++);
         // subtype
         message.data.write<uint8_t>(subType);
-        if (subType == 0 || subType == 1)
+        switch (subType)
         {
-            tangible->IncrementComponentCustomizationCounter_();
-            message.data.write(crc);
-        }
-        // reset all
-        else if (subType == 2)
-        {
-            tangible->ClearComponentCustomizationCounter_();
-        }
-        else
-        {
-            // dont add to deltas update
-            return;
+            case 0:
+            case 1:
+                message.data.write(crc);
+                break;
+            case 2:
+                break;
+            default:
+                return;
         }
         tangible->AddDeltasUpdate(move(message));
     }
@@ -130,7 +126,7 @@ void TangibleMessageBuilder::BuildStaticDelta(BaseTangible* tangible)
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible, uint8_t subType, uint64_t defender)
+void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible, uint8_t subType, uint16_t index, uint64_t defender)
 {
     if (tangible->HasObservers())
     {
@@ -142,27 +138,21 @@ void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible, uint8_t
         message.data.write<uint16_t>(1);
         message.data.write(defender_list.size());
         // list counter
-        message.data.write(tangible->defender_list_counter_);
+        message.data.write(tangible->defender_list_counter_++);
         // subtype
         message.data.write<uint8_t>(subType);
-        // find defender
-        auto found = tangible->FindDefender_(defender);
         switch (subType)
         {
         // remove
         case 0:
-            message.data.write(found - begin(defender_list));
+            message.data.write(index);
             break;
         // Add
         case 1:
-            // index
-            message.data.write(found - begin(defender_list));
-            message.data.write(defender);
-            break;
         // Change
         case 2:
             // index
-            message.data.write(found - begin(defender_list));
+            message.data.write(index);
             message.data.write(defender);
             break;
         
@@ -185,13 +175,15 @@ void TangibleMessageBuilder::BuildNewDefendersDelta(BaseTangible* tangible)
         message.data.write<uint16_t>(1);
         message.data.write(defender_list.size());
         // list counter
-        message.data.write(1);
+        message.data.write(tangible->defender_list_counter_++);
         // Reset All
         message.data.write<uint8_t>(3);
         // loop through all defenders
         for_each(begin(defender_list), end(defender_list), [&message] (uint64_t defender) {
             message.data.write(defender);
         });
+        // clear the free list
+        tangible->defender_index_free_list_.clear();
 
         tangible->AddDeltasUpdate(move(message));
     }

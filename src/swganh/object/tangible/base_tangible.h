@@ -6,6 +6,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <list>
 
 #include "swganh/object/object.h"
 
@@ -65,10 +66,6 @@ public:
 private:
     friend TangibleMessageBuilder;
 
-    void IncrementComponentCustomizationCounter_() { component_customization_counter_++; }
-    void ClearComponentCustomizationCounter_() { component_customization_counter_ = 0; }
-    void IncrementDefendersCounter_() { defender_list_counter_++; }
-    void ClearDefendersCounter_() { defender_list_counter_ = 0; }
     std::vector<uint64_t>::iterator FindDefender_(uint64_t defender);
 
     std::string customization_;                          // update 3
@@ -80,6 +77,7 @@ private:
     uint32_t max_condition_;                             // update 3
     bool is_static_;                                     // update 3
     std::vector<uint64_t> defender_list_;                // update 6
+    std::list<uint16_t> defender_index_free_list_;
     uint32_t defender_list_counter_;                     // update 6
 };
     
