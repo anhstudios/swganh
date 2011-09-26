@@ -75,8 +75,6 @@ void ManufactureSchematic::AddProperty(
         // Already in the list.
         return;
     }
-    property_counter_++;
-    
     if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3);
@@ -87,7 +85,7 @@ void ManufactureSchematic::AddProperty(
         // update sub type
         message.data.write<uint8_t>(0);
         message.data.write(properties_.size());
-        message.data.write(property_counter_);
+        message.data.write(property_counter_++);
         message.data.write(property_stf_file);
         message.data.write(0);
         message.data.write(property_stf_name);
@@ -584,7 +582,6 @@ void ManufactureSchematic::UpdateSlot(
 void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> slots)
 {
     slots_ = move(slots);
-    slot_counter_ = 0;
     if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_7);

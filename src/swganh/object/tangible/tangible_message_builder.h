@@ -27,7 +27,7 @@ namespace tangible {
         static void BuildConditionDamageDelta(BaseTangible* tangible);
         static void BuildMaxConditionDelta(BaseTangible* tangible);
         static void BuildStaticDelta(BaseTangible* tangible);
-        static void BuildDefendersDelta(BaseTangible* tangible, uint8_t subtype, uint64_t defender);
+        static void BuildDefendersDelta(BaseTangible* tangible, uint8_t subtype, uint16_t index_position, uint64_t defender);
         static void BuildNewDefendersDelta(BaseTangible* tangible);
         
         // baselines
