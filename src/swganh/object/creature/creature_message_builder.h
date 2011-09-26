@@ -18,40 +18,32 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_OBJECT_GUILD_GUILD_H_
-#define SWGANH_OBJECT_GUILD_GUILD_H_
-
-#include <map>
-
-#include "swganh/object/object.h"
+#ifndef SWGANH_OBJECT_CREATURE_CREATURE_MESSAGE_BUILDER_H_
+#define SWGANH_OBJECT_CREATURE_CREATURE_MESSAGE_BUILDER_H_
 
 namespace swganh {
 namespace object {
-namespace guild {
+namespace creature {
 
-class GuildMessageBuilder;
-class Guild : public swganh::object::Object {
+class Creature;
+class CreatureMessageBuilder
+{
 public:
-    Guild();
-    Guild(std::map<uint32_t, std::string> guild_list);
-    ~Guild();
+    
+    // deltas
+    static void BuildBankCreditsDelta(Creature* creature);
+    static void BuildCashCreditsDelta(Creature* creature);
+    static void BuildSkillListDelta(Creature* creature, uint8_t subtype, std::string skill);
+    static void BuildPostureDelta(Creature* creature);
+    static void BuildFactionRankDelta(Creature* creature);
+    static void BuildOwnerIdDelta(Creature* creature);
+    static void BuildScaleDelta(Creature* creature);
+    static void BuildBattleFatigueDelta(Creature* creature);
+    static void BuildStateBitmaskDelta(Creature* creature);
 
-    void AddGuild(uint32_t, std::string);
-    void RemoveGuild(uint32_t);
-
-    virtual uint32_t GetType() const { return type; }
-    const static uint32_t type = 0x444C4947;
-
-protected:
-    boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-
-private:
-    friend class GuildMessageBuilder;
-
-    std::map<uint32_t, std::string>     guild_list_;
-    uint32_t    guild_list_counter_;
+    // baselines
 };
 
-}}}  // namespaces swganh::object::guild
+}}} // swganh::object::creature
 
-#endif // SWGANH_OBJECT_GUILD_GUILD_H_
+#endif // SWGANH_OBJECT_CREATURE_CREATURE_MESSAGE_BUILDER_H_

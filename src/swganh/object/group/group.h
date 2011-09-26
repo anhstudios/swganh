@@ -21,8 +21,8 @@
 #ifndef SWGANH_OBJECT_GROUP_GROUP_H_
 #define SWGANH_OBJECT_GROUP_GROUP_H_
 
-#include <map>
-#include <stack>
+#include <list>
+#include <vector>
 
 #include "swganh/object/object.h"
 
@@ -37,10 +37,13 @@ namespace tangible {
 namespace swganh {
 namespace object {
 namespace group {
-    
+
+class GroupMessageBuilder;
 class Group : public swganh::object::Object
 {
 public:
+    typedef std::vector<std::shared_ptr<swganh::object::tangible::BaseTangible>> MemberList;
+
     enum LOOT_MODE
     {
         FREE_LOOT,
@@ -50,6 +53,7 @@ public:
     };
 
     Group();
+    Group(uint32_t max_member_size);
     ~Group();
 
     /**
@@ -70,12 +74,17 @@ public:
     /**
      * Sets the group difficulty level.
      */
-    void SetGroupLevel(uint16_t group_level);
+    void SetDifficulty(uint16_t group_level);
 
     /**
-     * Sets the Master Looter of the group (by id).
+     * Sets the Loot master of the group (by id).
      */
-    void SetMasterLooter(uint64_t master_looter);
+    void SetLootMaster(uint64_t loot_master);
+
+    uint16_t GetDifficulty() { return difficulty_; }
+    uint64_t GetLootMaster() { return loot_master_; }
+    LOOT_MODE GetLootMode() { return (LOOT_MODE)loot_mode_; }
+    uint16_t GetCapacity() { return member_list_.capacity(); }
 
 	uint32_t GetType() const { return type; }
     const static uint32_t type = 0x47525550;
@@ -84,20 +93,16 @@ protected:
 	virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:
+    friend class GroupMessageBuilder;
 
-    uint32_t member_list_counter_;                                  // update 6 variable 1
-    std::map<uint16_t, std::shared_ptr<swganh::object::tangible::BaseTangible>> member_list_;     // update 6 variable 1
-    uint16_t group_level_;                                          // update 6 variable 4
-    uint64_t master_looter_;                                        // update 6 variable 6
-    uint32_t loot_mode_;                                            // update 6 variable 7 
+    MemberList::iterator FindMemberIterById_(uint64_t member_id);
 
-    uint16_t last_member_index_;
-    std::stack<uint16_t> member_index_free_list_;
-
-    /**
-     * Returns the next available member index in the group.
-     */
-    uint16_t GetNextMemberIndex_();
+    uint32_t member_list_counter_;              // update 6 variable 1
+    MemberList member_list_;                    // update 6 variable 1
+    std::list<uint16_t> member_index_free_list_;
+    uint16_t difficulty_;                       // update 6 variable 4
+    uint64_t loot_master_;                      // update 6 variable 6
+    uint32_t loot_mode_;                        // update 6 variable 7 
 };
 
 }}} // namespace swganh::object::group
