@@ -6,6 +6,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <list>
 
 #include "swganh/object/object.h"
 
@@ -76,6 +77,7 @@ private:
     uint32_t max_condition_;                             // update 3
     bool is_static_;                                     // update 3
     std::vector<uint64_t> defender_list_;                // update 6
+    std::list<uint16_t> defender_index_free_list_;
     uint32_t defender_list_counter_;                     // update 6
 };
     

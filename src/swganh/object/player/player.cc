@@ -15,23 +15,23 @@ using namespace swganh::messages;
 void Player::AddStatusFlag(uint32_t flag)
 {
     status_flags_ = status_flags_ | flag;
-    SetDeltaBitmask_(status_flags_, 5, VIEW_3);
+    PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 
 void Player::RemoveStatusFlag(uint32_t flag)
 {
     status_flags_ = status_flags_ & ~flag;
-    SetDeltaBitmask_(status_flags_, 5, VIEW_3);
+    PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 void Player::ToggleStatusFlag(uint32_t flag)
 {
     status_flags_ = status_flags_ ^ flag;
-    SetDeltaBitmask_(status_flags_, 5, VIEW_3);
+    PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 void Player::ClearStatusFlags()
 {
     status_flags_ = 0;
-    SetDeltaBitmask_(status_flags_, 5, VIEW_3);
+    PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 
 uint32_t Player::GetProfileFlags() const
@@ -42,23 +42,23 @@ uint32_t Player::GetProfileFlags() const
 void Player::AddProfileFlag(uint32_t flag)
 {
     profile_flags_ = profile_flags_ | flag;
-    SetDeltaBitmask_(status_flags_, 6, VIEW_3);
+    PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 
 void Player::RemoveProfileFlag(uint32_t flag)
 {    
     profile_flags_ = profile_flags_ & ~flag;
-    SetDeltaBitmask_(status_flags_, 6, VIEW_3);
+    PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 void Player::ToggleProfileFlag(uint32_t flag)
 {
     profile_flags_ = profile_flags_ ^ flag;
-    SetDeltaBitmask_(profile_flags_, 6, VIEW_3);
+    PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 void Player::ClearProfileFlags()
 {
     profile_flags_ = 0;
-    SetDeltaBitmask_(profile_flags_, 6, VIEW_3);
+    PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 
 std::string Player::GetProfessionTag() const
@@ -69,17 +69,7 @@ std::string Player::GetProfessionTag() const
 void Player::SetProfessionTag(string profession_tag)
 {
     profession_tag_ = profession_tag;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(7);
-        message.data.write(profession_tag_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildProfessionTagDelta(this);
 }
 
 uint32_t Player::GetBornDate() const
@@ -90,17 +80,7 @@ uint32_t Player::GetBornDate() const
 void Player::SetBornDate(uint32_t born_date)
 {
     born_date_ = born_date;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(8);
-        message.data.write(born_date_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildBornDateDelta(this);
 }
 
 uint32_t Player::GetTotalPlayTime() const
@@ -111,33 +91,13 @@ uint32_t Player::GetTotalPlayTime() const
 void Player::SetTotalPlayTime(uint32_t play_time)
 {
     total_playtime_ = play_time;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(9);
-        message.data.write(total_playtime_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildPlayTimeDelta(this);
 }
 
 void Player::IncrementTotalPlayTime(uint32_t increment)
 {
     total_playtime_ += increment;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(9);
-        message.data.write(total_playtime_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildPlayTimeDelta(this);
 }
 
 uint32_t Player::GetRegionId() const
@@ -147,17 +107,7 @@ uint32_t Player::GetRegionId() const
 void Player::SetRegionId(uint32_t region)
 {
     region_ = region;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        message.data.write(region_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildRegionIdDelta(this);
 }
 
 uint8_t Player::GetAdminTag() const
@@ -168,17 +118,7 @@ uint8_t Player::GetAdminTag() const
 void Player::SetAdminTag(uint8_t tag)
 {
     admin_tag_ = tag;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
-        message.data.write<uint8_t>(admin_tag_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildAdminTagDelta(this);
 }
 
 std::vector<Player::XpData> Player::GetXp() const
@@ -208,24 +148,8 @@ void Player::AddExperience(std::string type, uint32_t amount)
     {
         find_iter->value += amount;
     }
-    experience_counter_++;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        // sub type
-        message.data.write<uint16_t>(0);
-        message.data.write(experience_.size());
-        message.data.write(experience_counter_);
-        message.data.write(type);
-        message.data.write(amount);        
-
-        AddDeltasUpdate(move(message));
-    }
+    // send total amount of xp for that type
+    PlayerMessageBuilder::BuildXpDelta(this, 0, type, find_iter->value);
 }
 
 void Player::DeductXp(std::string type, uint32_t amount)
@@ -244,24 +168,8 @@ void Player::DeductXp(std::string type, uint32_t amount)
     }
         
     find_iter->value -= amount;
-    experience_counter_++;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        // sub type
-        message.data.write<uint16_t>(2);
-        message.data.write(experience_.size());
-        message.data.write(experience_counter_);
-        message.data.write(type);
-        message.data.write(amount);
-
-        AddDeltasUpdate(move(message));
-    }
+    // send total amount of xp for that type
+    PlayerMessageBuilder::BuildXpDelta(this, 1, find_iter->type, find_iter->value);
 }
 
 void Player::ClearXpType(std::string type)
@@ -278,74 +186,22 @@ void Player::ClearXpType(std::string type)
     {
         return;
     }
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        message.data.write<uint16_t>(1);
-        message.data.write(experience_.size());
-        message.data.write(experience_counter_);
-        message.data.write(type);
-        message.data.write((*find_iter).value);
-
-        AddDeltasUpdate(move(message));
-    }
     // now erase
     experience_.erase(find_iter);
-    experience_counter_--;
+    PlayerMessageBuilder::BuildXpDelta(this, 2, type, 0);
 }
 
 void Player::ResetXp(std::vector<Player::XpData> experience)
 {
     experience_ = experience;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(experience_.size());
-        // update type
-        message.data.write<uint16_t>(0);
-        // @TODO: Check if there is a reset
-        message.data.write<uint16_t>(2);
-        message.data.write(experience_.size());
-        message.data.write(experience_.size());
-        for_each(begin(experience_), end(experience_),[&message](XpData xp){
-            message.data.write(xp.type);
-            message.data.write(xp.value);
-        });
-
-        AddDeltasUpdate(move(message));
-    }
-    experience_counter_ = experience_.size();
+    PlayerMessageBuilder::BuildResetXpDelta(this, experience);
 }
 
 void Player::ClearAllXp()
 {
     experience_.clear();
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(experience_.size());
-        // update type
-        message.data.write<uint16_t>(0);
-        // @TODO: Check if there is a reset all
-        message.data.write<uint16_t>(1);
-        message.data.write(experience_.size());
-        message.data.write(experience_.size());
-        for_each(begin(experience_), end(experience_),[&message](XpData xp){
-            message.data.write("");
-            message.data.write(0);
-        });
-
-        AddDeltasUpdate(move(message));
-    }
+    // TODO: Clear
+    PlayerMessageBuilder::BuildXpDelta(this, 3, 0, 0);
 }
 
 vector<shared_ptr<Waypoint>> Player::GetWaypoints() const
@@ -358,9 +214,9 @@ void Player::AddWaypoint(shared_ptr<Waypoint> waypoint)
     auto find_iter = find_if(
         waypoints_.begin(),
         waypoints_.end(),
-        [&waypoint] (const Waypoint& stored_waypoint)
+        [&waypoint] (shared_ptr<Waypoint> stored_waypoint)
     {
-        return waypoint->GetObjectId() == stored_waypoint.GetObjectId();
+        return waypoint->GetObjectId() == stored_waypoint->GetObjectId();
     });
 
     if (find_iter != waypoints_.end())
@@ -369,7 +225,7 @@ void Player::AddWaypoint(shared_ptr<Waypoint> waypoint)
     }
 
     waypoints_.push_back(move(waypoint));
-    
+    PlayerMessageBuilder::BuildWaypointDelta(this, 0, waypoint);
 }
 
 void Player::RemoveWaypoint(uint64_t waypoint_id)
@@ -377,16 +233,16 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
     auto find_iter = find_if(
         waypoints_.begin(),
         waypoints_.end(),
-        [waypoint_id] (const Waypoint& stored_waypoint)
+        [waypoint_id] (shared_ptr<Waypoint> stored_waypoint)
     {
-        return waypoint_id == stored_waypoint.GetObjectId();
+        return waypoint_id == stored_waypoint->GetObjectId();
     });
 
     if (find_iter == waypoints_.end())
     {
         return;
     }
-
+    PlayerMessageBuilder::BuildWaypointDelta(this, 1, *find_iter);
     waypoints_.erase(find_iter);
 }
 
@@ -395,9 +251,9 @@ void Player::ModifyWaypoint(shared_ptr<Waypoint> waypoint)
     auto find_iter = find_if(
         waypoints_.begin(),
         waypoints_.end(),
-        [&waypoint] (const Waypoint& stored_waypoint)
+        [&waypoint] (shared_ptr<Waypoint> stored_waypoint)
     {
-        return waypoint->GetObjectId() == stored_waypoint.GetObjectId();
+        return waypoint->GetObjectId() == stored_waypoint->GetObjectId();
     });
 
     if (find_iter == waypoints_.end())
@@ -406,63 +262,34 @@ void Player::ModifyWaypoint(shared_ptr<Waypoint> waypoint)
     }
 
     *find_iter = move(waypoint);
+    PlayerMessageBuilder::BuildWaypointDelta(this, 1, waypoint);
 }
 
 void Player::ResetWaypoints(vector<shared_ptr<Waypoint>> waypoints)
 {
     waypoints_ = move(waypoints);
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(waypoints_.size());
-        // update type
-        message.data.write<uint16_t>(1);
-        // sub type
-        message.data.write<uint16_t>(2);
-        message.data.write(waypoints_.size());
-        message.data.write(waypoints_.size());
-        for_each(begin(waypoints_), end(waypoints_), [&message](Waypoint waypoint){
-            // waypoint
-            message.data.write<uint64_t>(waypoint.GetObjectId());
-            // cell id
-            message.data.write(0);
-            auto position = waypoint.GetPosition();
-            message.data.write(position.x);
-            message.data.write(position.y);
-            message.data.write(position.z);
-            message.data.write(0);
-            message.data.write(anh::memcrc(waypoint.GetPlanet()));
-            message.data.write(waypoint.GetName());
-            message.data.write(waypoint.GetObjectId());
-            message.data.write<uint8_t>(waypoint.GetColorByte());
-            message.data.write<uint8_t>(waypoint.GetActiveFlag());
-        });
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildResetWaypointDelta(this, waypoints);
 }
 
 void Player::ClearAllWaypoints()
 {
     waypoints_.clear();
     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
-        // sub type
-        // TODO: find out if 4 really does reset all
-        message.data.write<uint16_t>(4);
-        message.data.write(0);
-        message.data.write(0);
-        
-        AddDeltasUpdate(move(message));
-    }
+    //if (HasObservers())
+    //{
+    //    DeltasMessage message = CreateDeltasMessage(VIEW_8);
+    //    // update count
+    //    message.data.write<uint16_t>(1);
+    //    // update type
+    //    message.data.write<uint16_t>(1);
+    //    // sub type
+    //    // TODO: find out if 4 really does reset all
+    //    message.data.write<uint16_t>(4);
+    //    message.data.write(0);
+    //    message.data.write(0);
+    //    
+    //    AddDeltasUpdate(move(message));
+    //}
 }
 
 uint32_t Player::GetCurrentForcePower() const
@@ -473,16 +300,7 @@ uint32_t Player::GetCurrentForcePower() const
 void Player::SetCurrentForcePower(uint32_t force_power)
 {
     current_force_power_ = force_power;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(2);
-        message.data.write(current_force_power_);
-
-        AddDeltasUpdate(move(message));
-    }    
+    PlayerMessageBuilder::BuildCurrentForcePowerDelta(this);
 }
 
 void Player::IncreaseForcePower(uint32_t force_power)
@@ -490,31 +308,14 @@ void Player::IncreaseForcePower(uint32_t force_power)
     uint32_t new_force_power = current_force_power_ + force_power;
 
     current_force_power_ = (new_force_power > GetMaxForcePower()) ? GetMaxForcePower() : new_force_power;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(2);
-        message.data.write(current_force_power_);
-
-        AddDeltasUpdate(move(message));
-    }
+    
+    PlayerMessageBuilder::BuildCurrentForcePowerDelta(this);
 }
 
 void Player::DecreaseForcePower(uint32_t force_power)
 {
     current_force_power_ -= force_power;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(2);
-        message.data.write(current_force_power_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildCurrentForcePowerDelta(this);
 }
 
 uint32_t Player::GetMaxForcePower() const
@@ -525,16 +326,7 @@ uint32_t Player::GetMaxForcePower() const
 void Player::SetMaxForcePower(uint32_t force_power)
 {
     max_force_power_ = force_power;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(3);
-        message.data.write(max_force_power_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildMaxForcePowerDelta(this);
 }
 
 uint32_t Player::GetCurrentForceSensitiveQuests()
@@ -545,19 +337,19 @@ uint32_t Player::GetCurrentForceSensitiveQuests()
 void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
     current_force_sensitive_quests_ = current_force_sensitive_quests_ | quest_mask;
-    SetDeltaBitmask_(current_force_sensitive_quests_, 4, VIEW_8);
+    PlayerMessageBuilder::BuildForceSensitiveQuestDelta(this);
 }
 
 void Player::RemoveCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
     current_force_sensitive_quests_ = current_force_sensitive_quests_ & ~quest_mask;
-    SetDeltaBitmask_(current_force_sensitive_quests_, 4, VIEW_8);
+    PlayerMessageBuilder::BuildForceSensitiveQuestDelta(this);
 }
 
 void Player::ClearCurrentForceSensitiveQuests()
 {
     current_force_sensitive_quests_ = 0;
-    SetDeltaBitmask_(current_force_sensitive_quests_, 4, VIEW_8);
+    PlayerMessageBuilder::BuildForceSensitiveQuestDelta(this);
 }
 
 uint32_t Player::GetCompletedForceSensitiveQuests()
@@ -568,19 +360,19 @@ uint32_t Player::GetCompletedForceSensitiveQuests()
 void Player::AddCompletedForceSensitiveQuest(uint32_t quest_mask)
 {    
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ | quest_mask;
-    SetDeltaBitmask_(completed_force_sensitive_quests_, 5, VIEW_8);
+    PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(this);
 }
 
 void Player::RemoveCompletedForceSensitiveQuest(uint32_t quest_mask)
 {
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ & ~quest_mask;
-    SetDeltaBitmask_(completed_force_sensitive_quests_, 5, VIEW_8);
+    PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(this);
 }
 
 void Player::ClearCompletedForceSensitiveQuests()
 {
     completed_force_sensitive_quests_ = 0;
-    SetDeltaBitmask_(completed_force_sensitive_quests_, 5, VIEW_8);
+    PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(this);
 }
 
 vector<Player::QuestJournalData> Player::GetQuests() const
@@ -604,27 +396,7 @@ void Player::AddQuest(QuestJournalData quest)
     }
 
     quest_journal_.push_back(move(quest));
-
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(6);
-        // update counter
-        message.data.write<uint16_t>(1);
-        message.data.write<uint8_t>(0);
-        message.data.write(quest.quest_crc);
-        message.data.write(quest.owner_id);
-        message.data.write(quest.active_step_bitmask);
-        message.data.write(quest.completed_step_bitmask);
-        message.data.write(quest.completed_flag);
-        message.data.write(quest.counter);        
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildQuestJournalDelta(this, 0, quest);
 }
 
 void Player::RemoveQuest(Player::QuestJournalData quest)
@@ -644,7 +416,7 @@ void Player::RemoveQuest(Player::QuestJournalData quest)
 
     quest_journal_.erase(find_iter);
 
-    // TODO: Quest Delta Update
+    PlayerMessageBuilder::BuildQuestJournalDelta(this, 1, quest);
 }
 
 void Player::UpdateQuest(Player::QuestJournalData quest)
@@ -664,7 +436,7 @@ void Player::UpdateQuest(Player::QuestJournalData quest)
 
     *find_iter = move(quest);
 
-    // TODO: Quest Delta Update
+    PlayerMessageBuilder::BuildQuestJournalDelta(this, 2, quest);
 }
 
 void Player::ResetQuests(vector<Player::QuestJournalData> quests)
@@ -703,96 +475,38 @@ void Player::AddAbility(string ability)
         return;
     }
 
-    abilities_.push_back(move(ability));
-
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        // sub type
-        message.data.write<uint8_t>(1);
-        message.data.write(abilities_.size());
-        message.data.write(ability);
-
-        AddDeltasUpdate(move(message));
-    }
+    uint16_t next_index = GetNextAvailableSlot(abilities_, abilities_free_list_);
+    abilities_[next_index] = move(ability);
+    PlayerMessageBuilder::BuildAbilityDelta(this, 1, next_index, ability);
 }
 
 void Player::RemoveAbility(string ability)
 {
-    auto find_iter = find_if(
-        abilities_.begin(),
-        abilities_.end(),
-        [&ability] (const string& stored_ability)
-    {
-        return ability.compare(stored_ability) == 0;
-    });
-
-    if (find_iter == abilities_.end())
+    auto iter = GetAbilityIter_(ability);
+    if (iter == abilities_.end())
     {
         return;
     }
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        // sub type
-        message.data.write<uint8_t>(0);
-        // index
-        message.data.write(find_iter - abilities_.begin());
+    uint16_t index_position = iter - begin(abilities_);
 
-        AddDeltasUpdate(move(message));
-    }
+    abilities_.erase(iter);
 
-    abilities_.erase(find_iter);
+    PlayerMessageBuilder::BuildAbilityDelta(this, 0, index_position, ability);
+    abilities_free_list_.push_back(index_position);
 }
 
 void Player::ClearAllAbilities()
 {
     abilities_.clear();
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
-        // sub type (clear)
-        message.data.write<uint8_t>(4);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildAbilityDelta(this, 4, 0, "");
+    abilities_free_list_.clear();
 }
 
 void Player::ResetAbilities(vector<string> abilities)
 {
     abilities_ = move(abilities);
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(abilities_.size());
-        // update type
-        message.data.write<uint16_t>(0);
-        // sub type (clear)
-        message.data.write<uint8_t>(3);
-        message.data.write<uint16_t>(abilities_.size());
-        for_each(begin(abilities_), end(abilities_),[&message](string ability){
-            message.data.write(ability);
-        });
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildResetAbilityDelta(this, abilities);
+    abilities_free_list_.clear();
 }
 
 uint32_t Player::GetExperimentationFlag() const
@@ -803,18 +517,7 @@ uint32_t Player::GetExperimentationFlag() const
 void Player::SetExperimentationFlag(uint32_t experimentation_flag)
 {
     experimentation_flag_ = experimentation_flag;
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
-        message.data.write(experimentation_flag_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildExperimentationFlagDelta(this);
 }
 
 uint32_t Player::GetCraftingStage() const
@@ -825,18 +528,7 @@ uint32_t Player::GetCraftingStage() const
 void Player::SetCraftingStage(uint32_t crafting_stage)
 {
     crafting_stage_ = crafting_stage;
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(2);
-        message.data.write(crafting_stage_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildCraftingStageDelta(this);
 }
 
 uint64_t Player::GetNearestCraftingStation() const
@@ -847,18 +539,7 @@ uint64_t Player::GetNearestCraftingStation() const
 void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
 {
     nearest_crafting_station_ = crafting_station_id;
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(3);
-        message.data.write<uint64_t>(nearest_crafting_station_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildNearestCraftingStationDelta(this);
 }
 
 vector<Player::DraftSchematicData> Player::GetDraftSchematics() const
@@ -883,88 +564,37 @@ void Player::AddDraftSchematic(DraftSchematicData schematic)
     {
         return;
     }
-
-    draft_schematics_.push_back(move(schematic));
-
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(4);
-        // sub type (add)
-        message.data.write<uint8_t>(1);
-        message.data.write<uint16_t>(draft_schematics_.size());
-
-        AddDeltasUpdate(move(message));
-    }
+    uint16_t next_index = GetNextAvailableSlot(draft_schematics_, draft_schematics_free_list_);
+    draft_schematics_[next_index] = move(schematic);
+    PlayerMessageBuilder::BuildDraftSchematicDelta(this, 1, next_index, schematic);
 }
 
 void Player::RemoveDraftSchematic(uint32_t schematic_crc)
 {
-    if (GetSchematicIter_(schematic_crc) == draft_schematics_.end())
+    auto iter = GetSchematicIter_(schematic_crc);
+    if ( iter == draft_schematics_.end())
     {
         return;
     }
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(4);
-        // sub type (remove)
-        message.data.write<uint8_t>(0);
-        message.data.write<uint16_t>(find_iter - draft_schematics_.begin());
+    uint16_t index_position = iter - begin(draft_schematics_);
+    PlayerMessageBuilder::BuildDraftSchematicDelta(this, 0, index_position, *iter);
 
-        AddDeltasUpdate(move(message));
-    }
-
-    draft_schematics_.erase(find_iter);
+    draft_schematics_.erase(iter);
+    draft_schematics_free_list_.push_back(index_position);
 }
 
 void Player::ClearDraftSchematics()
 {
     draft_schematics_.clear();
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(4);
-        // sub type (clear)
-        message.data.write<uint8_t>(4);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildDraftSchematicDelta(this, 4, 0, DraftSchematicData());
+    draft_schematics_free_list_.clear();
 }
 
 void Player::ResetDraftSchematics(std::vector<DraftSchematicData> draft_schematics)
 {
     draft_schematics_ = move(draft_schematics);
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(4);
-        // sub type (reset)
-        message.data.write<uint8_t>(3);
-        message.data.write<uint16_t>(draft_schematics_.size());
-        for_each(begin(draft_schematics_), end(draft_schematics_), [&message](DraftSchematicData schematic){
-            schematic.schematic_id;
-            schematic.schematic_crc;
-        });
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildResetDraftSchematicDelta(this, draft_schematics);
+    draft_schematics_free_list_.clear();
 }
 
 uint32_t Player::GetExperimentationPoints() const
@@ -975,52 +605,19 @@ uint32_t Player::GetExperimentationPoints() const
 void Player::AddExperimentationPoints(uint32_t points)
 {
     experimentation_points_ += points;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(5);
-        message.data.write(experimentation_points_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildExperimentationPointsDelta(this);
 }
 
 void Player::RemoveExperimentationPoints(uint32_t points)
 {
     experimentation_points_ -= points;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(5);
-        message.data.write(experimentation_points_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildExperimentationPointsDelta(this);
 }
 
 void Player::ResetExperimentationPoints(uint32_t points)
 {
     experimentation_points_ = points;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(5);
-        message.data.write(experimentation_points_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildExperimentationPointsDelta(this);
 }
 
 uint32_t Player::GetAccomplishmentCounter() const
@@ -1031,35 +628,13 @@ uint32_t Player::GetAccomplishmentCounter() const
 void Player::ResetAccomplishmentCounter(uint32_t counter)
 {
     accomplishment_counter_ = counter;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(6);
-        message.data.write(accomplishment_counter_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildAccomplishmentCounterDelta(this);
 }
 
 void Player::IncrementAccomplishmentCounter()
 {
     ++accomplishment_counter_;
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(6);
-        message.data.write(accomplishment_counter_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildAccomplishmentCounterDelta(this);
 }
 
 vector<string> Player::GetFriends()
@@ -1085,64 +660,28 @@ void Player::AddFriend(string friend_name)
     }
 
     friends_.push_back(move(friend_name));
-
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(7);
-        // sub type (add)
-        message.data.write<uint8_t>(1);
-        message.data.write<uint16_t>(friends_.size());
-        message.data.write(friend_name);
-
-        AddDeltasUpdate(move(message));
-    }
+    uint16_t next_index = GetNextAvailableSlot(friends_, friends_free_list_);
+    PlayerMessageBuilder::BuildFriendsDelta(this, 1, next_index, friend_name);
 }
 
 void Player::RemoveFriend(string friend_name)
 {
-    if (GetFriendsIter_(friend_name)== friends_.end())
+    auto iter = GetFriendsIter_(friend_name);
+    if (iter == friends_.end())
     {
         return;
     }
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(7);
-        // sub type (remove)
-        message.data.write<uint8_t>(0);
-        message.data.write<uint16_t>(find_iter - friends_.begin());
-
-        AddDeltasUpdate(move(message));
-    }
-
-    friends_.erase(find_iter);
+    friends_.erase(iter);
+    uint16_t index = iter - begin(friends_);
+    PlayerMessageBuilder::BuildFriendsDelta(this, 0, index, friend_name);
+    friends_free_list_.push_back(index);
 }
 
 void Player::ClearFriends()
 {
     friends_.clear();
-     // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(7);
-        // sub type (reset)
-        message.data.write<uint8_t>(4);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildFriendsDelta(this, 4, 0, "");
+    friends_free_list_.clear();
 }
 
 vector<string> Player::GetIgnoredPlayers()
@@ -1168,60 +707,28 @@ void Player::IgnorePlayer(string player_name)
         return;
     }
     ignored_players_.push_back(player_name);
-
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(8);
-        // sub type (add)
-        message.data.write<uint8_t>(1);
-        message.data.write(player_name);
-
-        AddDeltasUpdate(move(message));
-    }  
+    uint16_t next_index = GetNextAvailableSlot(ignored_players_, ignored_free_list_);
+    PlayerMessageBuilder::BuildIgnoredDelta(this, 1, next_index, player_name);
 }
 
 void Player::StopIgnoringPlayer(string player_name)
 {
-    if (GetIgnoredIter_(player_name) == ignored_players_.end())
+    auto iter = GetIgnoredIter_(player_name);
+    if (iter == ignored_players_.end())
     {
         return;
     }
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(8);
-        // sub type (remove)
-        message.data.write<uint8_t>(0);
-        message.data.write<uint16_t>(find_iter - ignored_players_.begin());
-
-        AddDeltasUpdate(move(message));
-    }
-
-    ignored_players_.erase(find_iter);
+    uint16_t index = iter - begin(ignored_players_);
+    PlayerMessageBuilder::BuildIgnoredDelta(this, 0, index, player_name);
+    
+    ignored_players_.erase(iter);
+    ignored_free_list_.push_back(index);
 }
 
 void Player::ClearIgnored()
 {
     ignored_players_.clear();
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(8);
-        // sub type (clear)
-        message.data.write<uint8_t>(4);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildIgnoredDelta(this, 4, 0, "");
 }
 
 uint32_t Player::GetLanguage() const
@@ -1232,18 +739,7 @@ uint32_t Player::GetLanguage() const
 void Player::SetLanguage(uint32_t language_id)
 {
     language_ = language_id;
-    
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(9);
-        message.data.write(language_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildLanguageDelta(this);
 }
 
 uint32_t Player::GetCurrentStomach() const
@@ -1256,50 +752,19 @@ void Player::IncreaseCurrentStomach(uint32_t stomach)
     uint32_t new_stomach = current_stomach_ + stomach;
 
     current_stomach_ = (new_stomach > GetMaxStomach()) ? GetMaxStomach() : new_stomach;
-
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(10);
-        message.data.write(current_stomach_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildCurrentStomachDelta(this);
 }
 
 void Player::DecreaseCurrentStomach(uint32_t stomach)
 {
     current_stomach_ -= stomach;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(10);
-        message.data.write(current_stomach_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildCurrentStomachDelta(this);
 }
 
 void Player::ResetCurrentStomach(uint32_t stomach)
 {
     current_stomach_ = stomach;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(10);
-        message.data.write(current_stomach_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildCurrentStomachDelta(this);
 }
 
 uint32_t Player::GetMaxStomach() const
@@ -1310,17 +775,7 @@ uint32_t Player::GetMaxStomach() const
 void Player::ResetMaxStomach(uint32_t stomach)
 {
     max_stomach_ = stomach;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(11);
-        message.data.write(current_stomach_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildMaxStomachDelta(this);
 }
 
 uint32_t Player::GetCurrentDrink() const
@@ -1333,49 +788,19 @@ void Player::IncreaseCurrentDrink(uint32_t drink)
     uint32_t new_drink = current_drink_ + drink;
 
     current_drink_ = (new_drink > GetMaxDrink()) ? GetMaxDrink() : new_drink;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(12);
-        message.data.write(current_drink_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildCurrentDrinkDelta(this);
 }
 
 void Player::DecreaseCurrentDrink(uint32_t drink)
 {
     current_drink_ -= drink;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(12);
-        message.data.write(current_drink_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildCurrentDrinkDelta(this);
 }
 
 void Player::ResetCurrentDrink(uint32_t drink)
 {
     current_drink_ = drink;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(12);
-        message.data.write(current_drink_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildCurrentDrinkDelta(this);
 }
 
 uint32_t Player::GetMaxDrink() const
@@ -1386,17 +811,7 @@ uint32_t Player::GetMaxDrink() const
 void Player::ResetMaxDrink(uint32_t drink)
 {
     max_drink_ = drink;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(13);
-        message.data.write(max_drink_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildMaxDrinkDelta(this);
 }
 
 uint32_t Player::GetJediState() const
@@ -1407,109 +822,22 @@ uint32_t Player::GetJediState() const
 void Player::SetJediState(uint32_t jedi_state)
 {
     jedi_state_ = jedi_state;
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(17);
-        message.data.write(jedi_state_);
-
-        AddDeltasUpdate(move(message));
-    }
+    PlayerMessageBuilder::BuildJediStateDelta(this);
 }
 
 boost::optional<BaselinesMessage> Player::GetBaseline3()
 {
-    auto message = CreateBaselinesMessage(Object::VIEW_3, 10);
-
-    message.data.append(Object::GetBaseline3().get().data);
-    // not used
-    message.data.write(0);
-    message.data.write(GetStatusFlags());
-    message.data.write(GetProfileFlags());
-    message.data.write(GetProfessionTag());
-    message.data.write(GetBornDate());
-    message.data.write(GetTotalPlayTime());
-
-    return boost::optional<BaselinesMessage>(move(message));
+    return move(PlayerMessageBuilder::BuildBaseline3(this));
 }
 boost::optional<BaselinesMessage> Player::GetBaseline6()
 {
-    auto message = CreateBaselinesMessage(Object::VIEW_6, 2);
-
-    message.data.write(GetRegionId());
-    message.data.write<uint8_t>(GetAdminTag());
-
-    return boost::optional<BaselinesMessage>(move(message));
+    return move(PlayerMessageBuilder::BuildBaseline6(this));
 }
 boost::optional<BaselinesMessage> Player::GetBaseline8()
 {
-    auto message = CreateBaselinesMessage(Object::VIEW_8, 7);
-    
-    // experience
-    message.data.write(experience_.size());
-    message.data.write(experience_counter_);
-    for_each(begin(experience_), end(experience_), [&message] (XpData xp){
-        message.data.write(xp.type);
-        message.data.write(xp.value);
-    });
-    // waypoints
-    message.data.write(waypoints_.size());
-    message.data.write(waypoint_counter_);
-    for_each(begin(waypoints_), end(waypoints_), [&message] (Waypoint waypoint){
-        message.data.write<uint8_t>(0);
-        message.data.write<uint64_t>(waypoint.GetObjectId());
-        // cell id
-        message.data.write(0);
-        auto position = waypoint.GetPosition();
-        message.data.write(position.x);
-        message.data.write(position.y);
-        message.data.write(position.z);
-        message.data.write(0);
-        message.data.write(anh::memcrc(waypoint.GetPlanet()));
-        message.data.write(waypoint.GetName());
-        message.data.write(waypoint.GetObjectId());
-        message.data.write<uint8_t>(waypoint.GetColorByte());
-        message.data.write<uint8_t>(waypoint.GetActiveFlag());
-    });
-    // The Force
-    message.data.write(GetCurrentForcePower());
-    message.data.write(GetMaxForcePower());
-    // TODO: Are these really lists or just bitmasks?
-    message.data.write(GetCurrentForceSensitiveQuests());
-    message.data.write(GetCompletedForceSensitiveQuests());
-    // Quests
-    message.data.write(quest_journal_.size());
-    message.data.write(0);
-    for_each(begin(quest_journal_), end(quest_journal_), [&message](QuestJournalData quest){
-        message.data.write<uint8_t>(0);
-        message.data.write(quest.quest_crc);
-        message.data.write(quest.owner_id);
-        message.data.write(quest.active_step_bitmask);
-        message.data.write(quest.completed_step_bitmask);
-        message.data.write(quest.completed_flag);
-        message.data.write(quest.counter);
-    });
-    return boost::optional<BaselinesMessage>(move(message));
+    return move(PlayerMessageBuilder::BuildBaseline8(this));
 }
 boost::optional<BaselinesMessage> Player::GetBaseline9()
 {
     return move(PlayerMessageBuilder::BuildBaseline9(this));
-}
-
-void Player::SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, Object::ViewType view_type)
-{
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(view_type);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(update_type);
-        message.data.write(status_flags_);
-
-        AddDeltasUpdate(move(message));
-    }
 }

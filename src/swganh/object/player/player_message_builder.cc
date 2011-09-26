@@ -123,7 +123,7 @@ void PlayerMessageBuilder::BuildXpDelta(Player* object, uint8_t sub_type, std::s
         message.data.write<uint16_t>(0);
         message.data.write(object->experience_.size());
         // list counter
-        message.data.write(object->experience_counter_++);
+        message.data.write(++object->experience_counter_);
         // subtype
         message.data.write<uint8_t>(sub_type);
         message.data.write(type);
@@ -134,9 +134,27 @@ void PlayerMessageBuilder::BuildXpDelta(Player* object, uint8_t sub_type, std::s
 }
 void PlayerMessageBuilder::BuildResetXpDelta(Player* object, std::vector<Player::XpData> experience)
 {
-    // TODO: Don't know if there is a reset for this list
+    // do the delta update
+    if (object->HasObservers())
+    {
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
+        // update count
+        message.data.write<uint16_t>(object->experience_.size());
+        // update type
+        message.data.write<uint16_t>(0);
+        // @TODO: Check if there is a reset
+        message.data.write<uint16_t>(2);
+        message.data.write(object->experience_.size());
+        message.data.write(object->experience_.size());
+        for_each(begin(object->experience_), end(object->experience_),[&message](Player::XpData xp){
+            message.data.write(xp.type);
+            message.data.write(xp.value);
+        });
+
+        object->AddDeltasUpdate(move(message));
+    }
 }
-void PlayerMessageBuilder::BuildWaypointDelta(Player* object, uint8_t sub_type, Waypoint waypoint)
+void PlayerMessageBuilder::BuildWaypointDelta(Player* object, uint8_t sub_type, shared_ptr<Waypoint> waypoint)
 {
     if (object->HasObservers())
     {
@@ -147,28 +165,28 @@ void PlayerMessageBuilder::BuildWaypointDelta(Player* object, uint8_t sub_type, 
         message.data.write<uint16_t>(1);
         message.data.write(object->waypoints_.size());
         // list counter
-        message.data.write(object->waypoint_counter_++);
+        message.data.write(++object->waypoint_counter_);
         // subtype
         message.data.write<uint8_t>(sub_type);
-        message.data.write(waypoint.GetObjectId());
+        message.data.write(waypoint->GetObjectId());
         // TODO: Add CELL ID?
         message.data.write(0);
-        auto position = waypoint.GetPosition();
+        auto position = waypoint->GetPosition();
         message.data.write(position.x);
         message.data.write(position.z);
         message.data.write(position.y);
         // TODO: network id
         message.data.write<uint64_t>(0);
-        message.data.write(anh::memcrc(waypoint.GetPlanet()));
-        message.data.write(waypoint.GetName());
-        message.data.write(waypoint.GetObjectId());
-        message.data.write<uint8_t>(waypoint.GetColorByte());
-        message.data.write<uint8_t>(waypoint.GetActiveFlag());
+        message.data.write(anh::memcrc(waypoint->GetPlanet()));
+        message.data.write(waypoint->GetName());
+        message.data.write(waypoint->GetObjectId());
+        message.data.write<uint8_t>(waypoint->GetColorByte());
+        message.data.write<uint8_t>(waypoint->GetActiveFlag());
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildResetWaypointDelta(Player* object, std::vector<Waypoint> waypoints)
+void PlayerMessageBuilder::BuildResetWaypointDelta(Player* object, std::vector<shared_ptr<Waypoint>> waypoints)
 {
     if (object->HasObservers())
     {
@@ -181,21 +199,21 @@ void PlayerMessageBuilder::BuildResetWaypointDelta(Player* object, std::vector<W
         message.data.write<uint16_t>(2);
         message.data.write(object->waypoints_.size());
         message.data.write(object->waypoints_.size());
-        std::for_each(begin(object->waypoints_), end(object->waypoints_), [&message](Waypoint waypoint){
+        std::for_each(begin(object->waypoints_), end(object->waypoints_), [&message](shared_ptr<Waypoint> waypoint){
             // waypoint
-            message.data.write<uint64_t>(waypoint.GetObjectId());
+            message.data.write<uint64_t>(waypoint->GetObjectId());
             // cell id
             message.data.write(0);
-            auto position = waypoint.GetPosition();
+            auto position = waypoint->GetPosition();
             message.data.write(position.x);
             message.data.write(position.y);
             message.data.write(position.z);
             message.data.write(0);
-            message.data.write(anh::memcrc(waypoint.GetPlanet()));
-            message.data.write(waypoint.GetName());
-            message.data.write(waypoint.GetObjectId());
-            message.data.write<uint8_t>(waypoint.GetColorByte());
-            message.data.write<uint8_t>(waypoint.GetActiveFlag());
+            message.data.write(anh::memcrc(waypoint->GetPlanet()));
+            message.data.write(waypoint->GetName());
+            message.data.write(waypoint->GetObjectId());
+            message.data.write<uint8_t>(waypoint->GetColorByte());
+            message.data.write<uint8_t>(waypoint->GetActiveFlag());
         });
 
         object->AddDeltasUpdate(move(message));
@@ -208,7 +226,7 @@ void PlayerMessageBuilder::BuildCurrentForcePowerDelta(Player* object)
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
         // update count
         message.data.write<uint16_t>(2);
-        message.data.write(object->GetCurrentForcePower);
+        message.data.write(object->GetCurrentForcePower());
 
         object->AddDeltasUpdate(move(message));
     }
@@ -220,7 +238,7 @@ void PlayerMessageBuilder::BuildMaxForcePowerDelta(Player* object)
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
         // update count
         message.data.write<uint16_t>(3);
-        message.data.write(object->GetMaxForcePower);
+        message.data.write(object->GetMaxForcePower());
 
         object->AddDeltasUpdate(move(message));
     }
@@ -294,7 +312,7 @@ void PlayerMessageBuilder::BuildResetQuestJournalDelta(Player* object, std::vect
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildAbilityDelta(Player* object, uint8_t sub_type, std::string ability)
+void PlayerMessageBuilder::BuildAbilityDelta(Player* object, uint8_t sub_type, uint16_t index, std::string ability)
 {
     if (object->HasObservers())
     {
@@ -305,18 +323,17 @@ void PlayerMessageBuilder::BuildAbilityDelta(Player* object, uint8_t sub_type, s
         message.data.write<uint16_t>(0);
         message.data.write(object->abilities_.size());
         // list counter
-        message.data.write(object->abilities_counter_++);
+        message.data.write(++object->abilities_counter_);
         // subtype
         message.data.write<uint8_t>(sub_type);
-        auto found = object->FindAbilityIter_(ability);
         switch (sub_type)
         {
         case 0:
-            message.data.write(found - begin(object->abilities_));
+            message.data.write(index);
             break;
         case 1:
         case 2:
-            message.data.write(found - begin(object->abilities_));
+            message.data.write(index);
             message.data.write(ability);
             break;
         case 4:
@@ -337,7 +354,7 @@ void PlayerMessageBuilder::BuildResetAbilityDelta(Player* object, std::vector<st
         message.data.write<uint16_t>(0);
         message.data.write(object->abilities_.size());
         // list counter
-        message.data.write(object->abilities_counter_++);
+        message.data.write(++object->abilities_counter_);
         // subtype
         message.data.write<uint8_t>(3);
         for_each(begin(abilities), end(abilities), [&message] (string ability) {
@@ -388,7 +405,7 @@ void PlayerMessageBuilder::BuildNearestCraftingStationDelta(Player* object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object, uint8_t sub_type, Player::DraftSchematicData schematic)
+void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object, uint8_t sub_type, uint16_t index, Player::DraftSchematicData schematic)
 {
     if (object->HasObservers())
     {
@@ -399,18 +416,17 @@ void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object, uint8_t sub_
         message.data.write<uint16_t>(4);
         message.data.write(object->draft_schematics_.size());
         // list counter
-        message.data.write(object->draft_schematics_counter_++);
+        message.data.write(++object->draft_schematics_counter_);
         // subtype
         message.data.write<uint8_t>(sub_type);
-        auto found = object->GetSchematicIter_(schematic.schematic_crc);
         switch (sub_type)
         {
         case 0:
-            message.data.write(found - begin(object->draft_schematics_));
+            message.data.write(index);
             break;
         case 1:
         case 2:
-            message.data.write(found - begin(object->draft_schematics_));
+            message.data.write(index);
             message.data.write(schematic.schematic_id);
             message.data.write(schematic.schematic_crc);
             break;
@@ -450,9 +466,9 @@ void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(Player* object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildFriendsDelta(Player* object, uint8_t sub_type, std::string friend_name){}
+void PlayerMessageBuilder::BuildFriendsDelta(Player* object, uint8_t sub_type, uint16_t index, std::string friend_name){}
 void PlayerMessageBuilder::BuildResetFriendsDelta(Player* object, std::vector<std::string> friends){}
-void PlayerMessageBuilder::BuildIgnoredDelta(Player* object, uint8_t sub_type, std::string ignored_name){}
+void PlayerMessageBuilder::BuildIgnoredDelta(Player* object, uint8_t sub_type, uint16_t index, std::string ignored_name){}
 void PlayerMessageBuilder::BuildResetIgnoredDelta(Player* object, std::vector<std::string> ignored_players){}
 void PlayerMessageBuilder::BuildLanguageDelta(Player* object)
 {
@@ -577,21 +593,21 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     // waypoints
     message.data.write(object->waypoints_.size());
     message.data.write(object->waypoint_counter_);
-    for_each(begin(object->waypoints_), end(object->waypoints_), [&message] (Waypoint waypoint){
+    for_each(begin(object->waypoints_), end(object->waypoints_), [&message] (shared_ptr<Waypoint> waypoint){
         message.data.write<uint8_t>(0);
-        message.data.write<uint64_t>(waypoint.GetObjectId());
+        message.data.write<uint64_t>(waypoint->GetObjectId());
         // cell id
         message.data.write(0);
-        auto position = waypoint.GetPosition();
+        auto position = waypoint->GetPosition();
         message.data.write(position.x);
         message.data.write(position.y);
         message.data.write(position.z);
         message.data.write(0);
-        message.data.write(anh::memcrc(waypoint.GetPlanet()));
-        message.data.write(waypoint.GetName());
-        message.data.write(waypoint.GetObjectId());
-        message.data.write<uint8_t>(waypoint.GetColorByte());
-        message.data.write<uint8_t>(waypoint.GetActiveFlag());
+        message.data.write(anh::memcrc(waypoint->GetPlanet()));
+        message.data.write(waypoint->GetName());
+        message.data.write(waypoint->GetObjectId());
+        message.data.write<uint8_t>(waypoint->GetColorByte());
+        message.data.write<uint8_t>(waypoint->GetActiveFlag());
     });
     // The Force
     message.data.write(object->GetCurrentForcePower());

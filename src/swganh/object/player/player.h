@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <list>
 
 #include "swganh/object/object.h"
 #include "swganh/object/waypoint/waypoint.h"
@@ -17,7 +18,8 @@ class PlayerMessageBuilder;
 class Player : public swganh::object::Object
 {
 public:
-    enum StatusFlags{
+    enum StatusFlags
+    {
         LFG = 1,
         HELPER = 2,
         ROLEPLAYER = 4,
@@ -208,19 +210,23 @@ private:
     uint32_t completed_force_sensitive_quests_;
     std::vector<QuestJournalData> quest_journal_;
     std::vector<std::string> abilities_;
+    std::list<uint16_t> abilities_free_list_;
     std::vector<std::string>::iterator GetAbilityIter_(std::string ability);
     uint32_t abilities_counter_;
     uint32_t experimentation_flag_;
     uint32_t crafting_stage_;
     uint64_t nearest_crafting_station_;
     std::vector<DraftSchematicData> draft_schematics_;
+    std::list<uint16_t> draft_schematics_free_list_;
     uint32_t draft_schematics_counter_;
     std::vector<DraftSchematicData>::iterator GetSchematicIter_(uint32_t schematic_crc);
     uint32_t experimentation_points_;
     uint32_t accomplishment_counter_;
     std::vector<std::string> friends_;
+    std::list<uint16_t> friends_free_list_;
     std::vector<std::string>::iterator GetFriendsIter_(std::string friend_name);
     std::vector<std::string> ignored_players_;
+    std::list<uint16_t> ignored_free_list_;
     std::vector<std::string>::iterator GetIgnoredIter_(std::string ignored_name);
     uint32_t language_;
     uint32_t current_stomach_;
