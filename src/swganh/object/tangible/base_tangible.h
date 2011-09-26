@@ -65,10 +65,6 @@ public:
 private:
     friend TangibleMessageBuilder;
 
-    void IncrementComponentCustomizationCounter_() { component_customization_counter_++; }
-    void ClearComponentCustomizationCounter_() { component_customization_counter_ = 0; }
-    void IncrementDefendersCounter_() { defender_list_counter_++; }
-    void ClearDefendersCounter_() { defender_list_counter_ = 0; }
     std::vector<uint64_t>::iterator FindDefender_(uint64_t defender);
 
     std::string customization_;                          // update 3

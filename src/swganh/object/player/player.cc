@@ -346,22 +346,21 @@ void Player::ClearAllXp()
 
         AddDeltasUpdate(move(message));
     }
-    experience_counter_ = 0;
 }
 
-std::vector<Waypoint> Player::GetWaypoints() const
+vector<shared_ptr<Waypoint>> Player::GetWaypoints() const
 {
     return waypoints_;
 }
 
-void Player::AddWaypoint(Waypoint waypoint)
+void Player::AddWaypoint(shared_ptr<Waypoint> waypoint)
 {
     auto find_iter = find_if(
         waypoints_.begin(),
         waypoints_.end(),
         [&waypoint] (const Waypoint& stored_waypoint)
     {
-        return waypoint.GetObjectId() == stored_waypoint.GetObjectId();
+        return waypoint->GetObjectId() == stored_waypoint.GetObjectId();
     });
 
     if (find_iter != waypoints_.end())
@@ -370,37 +369,7 @@ void Player::AddWaypoint(Waypoint waypoint)
     }
 
     waypoints_.push_back(move(waypoint));
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
-        // sub type
-        message.data.write<uint16_t>(0);
-        message.data.write(waypoints_.size());
-        message.data.write(waypoint_counter_);
-        // waypoint
-        message.data.write<uint64_t>(waypoint.GetObjectId());
-        // cell id
-        message.data.write(0);
-        auto position = waypoint.GetPosition();
-        message.data.write(position.x);
-        message.data.write(position.y);
-        message.data.write(position.z);
-        message.data.write(0);
-        message.data.write(anh::memcrc(waypoint.GetPlanet()));
-        message.data.write(waypoint.GetName());
-        message.data.write(waypoint.GetObjectId());
-        message.data.write<uint8_t>(waypoint.GetColorByte());
-        message.data.write<uint8_t>(waypoint.GetActiveFlag());
-
-        AddDeltasUpdate(move(message));
-    }
-    // update counter
-    waypoint_counter_++;
+    
 }
 
 void Player::RemoveWaypoint(uint64_t waypoint_id)
@@ -418,49 +387,17 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
         return;
     }
 
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
-        // sub type
-        message.data.write<uint16_t>(1);
-        message.data.write(waypoints_.size());
-        message.data.write(waypoint_counter_);
-        auto waypoint = *find_iter;
-        // waypoint
-        message.data.write<uint64_t>(waypoint.GetObjectId());
-        // cell id
-        message.data.write(0);
-        auto position = waypoint.GetPosition();
-        message.data.write(position.x);
-        message.data.write(position.y);
-        message.data.write(position.z);
-        message.data.write(0);
-        message.data.write(anh::memcrc(waypoint.GetPlanet()));
-        message.data.write(waypoint.GetName());
-        message.data.write(waypoint.GetObjectId());
-        message.data.write<uint8_t>(waypoint.GetColorByte());
-        message.data.write<uint8_t>(waypoint.GetActiveFlag());
-
-        AddDeltasUpdate(move(message));
-    }
     waypoints_.erase(find_iter);
-    // update counter
-    waypoint_counter_--;
 }
 
-void Player::ModifyWaypoint(Waypoint waypoint)
+void Player::ModifyWaypoint(shared_ptr<Waypoint> waypoint)
 {
     auto find_iter = find_if(
         waypoints_.begin(),
         waypoints_.end(),
         [&waypoint] (const Waypoint& stored_waypoint)
     {
-        return waypoint.GetObjectId() == stored_waypoint.GetObjectId();
+        return waypoint->GetObjectId() == stored_waypoint.GetObjectId();
     });
 
     if (find_iter == waypoints_.end())
@@ -469,39 +406,9 @@ void Player::ModifyWaypoint(Waypoint waypoint)
     }
 
     *find_iter = move(waypoint);
-    // do the delta update
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
-        // sub type
-        message.data.write<uint16_t>(2);
-        message.data.write(waypoints_.size());
-        message.data.write(waypoint_counter_);
-        // waypoint
-        message.data.write<uint64_t>(waypoint.GetObjectId());
-        // cell id
-        message.data.write(0);
-        auto position = waypoint.GetPosition();
-        message.data.write(position.x);
-        message.data.write(position.y);
-        message.data.write(position.z);
-        message.data.write(0);
-        message.data.write(anh::memcrc(waypoint.GetPlanet()));
-        message.data.write(waypoint.GetName());
-        message.data.write(waypoint.GetObjectId());
-        message.data.write<uint8_t>(waypoint.GetColorByte());
-        message.data.write<uint8_t>(waypoint.GetActiveFlag());
-
-        AddDeltasUpdate(move(message));
-    }
-    waypoint_counter_++;
 }
 
-void Player::ResetWaypoints(std::vector<Waypoint> waypoints)
+void Player::ResetWaypoints(vector<shared_ptr<Waypoint>> waypoints)
 {
     waypoints_ = move(waypoints);
     // do the delta update
@@ -535,7 +442,6 @@ void Player::ResetWaypoints(std::vector<Waypoint> waypoints)
 
         AddDeltasUpdate(move(message));
     }
-    waypoint_counter_ = 0;
 }
 
 void Player::ClearAllWaypoints()
@@ -779,8 +685,7 @@ vector<string> Player::GetAbilityList() const
 {
     return abilities_;
 }
-
-void Player::AddAbility(string ability)
+std::vector<std::string>::iterator Player::GetAbilityIter_(std::string ability)
 {
     auto find_iter = find_if(
         abilities_.begin(),
@@ -789,8 +694,11 @@ void Player::AddAbility(string ability)
     {
         return ability.compare(stored_ability) == 0;
     });
-
-    if (find_iter != abilities_.end())
+    return find_iter;
+}
+void Player::AddAbility(string ability)
+{
+    if (GetAbilityIter_(ability) != abilities_.end())
     {
         return;
     }
@@ -957,18 +865,21 @@ vector<Player::DraftSchematicData> Player::GetDraftSchematics() const
 {
     return draft_schematics_;
 }
-
-void Player::AddDraftSchematic(DraftSchematicData schematic)
+vector<Player::DraftSchematicData>::iterator Player::GetSchematicIter_(uint32_t schematic_crc)
 {
     auto find_iter = find_if(
         draft_schematics_.begin(),
         draft_schematics_.end(),
-        [&schematic] (const DraftSchematicData& stored_schematic)
+        [&schematic_crc] (const DraftSchematicData& stored_schematic)
     {
-        return stored_schematic.schematic_crc == schematic.schematic_crc;
+        return stored_schematic.schematic_crc == schematic_crc;
     });
+    return find_iter;
+}
 
-    if (find_iter != draft_schematics_.end())
+void Player::AddDraftSchematic(DraftSchematicData schematic)
+{
+    if (GetSchematicIter_(schematic.schematic_crc) != draft_schematics_.end())
     {
         return;
     }
@@ -993,15 +904,7 @@ void Player::AddDraftSchematic(DraftSchematicData schematic)
 
 void Player::RemoveDraftSchematic(uint32_t schematic_crc)
 {
-    auto find_iter = find_if(
-        draft_schematics_.begin(),
-        draft_schematics_.end(),
-        [&schematic_crc] (const DraftSchematicData& stored_schematic)
-    {
-        return stored_schematic.schematic_crc == schematic_crc;
-    });
-
-    if (find_iter == draft_schematics_.end())
+    if (GetSchematicIter_(schematic_crc) == draft_schematics_.end())
     {
         return;
     }
@@ -1163,8 +1066,7 @@ vector<string> Player::GetFriends()
 {
     return friends_;
 }
-
-void Player::AddFriend(string friend_name)
+vector<string>::iterator Player::GetFriendsIter_(string friend_name)
 {
     auto find_iter = find_if(
         friends_.begin(),
@@ -1173,8 +1075,11 @@ void Player::AddFriend(string friend_name)
     {
         return stored_friend.compare(friend_name) == 0;
     });
-
-    if (find_iter != friends_.end())
+    return find_iter;
+}
+void Player::AddFriend(string friend_name)
+{
+    if (GetFriendsIter_(friend_name) != friends_.end())
     {
         return;
     }
@@ -1200,15 +1105,7 @@ void Player::AddFriend(string friend_name)
 
 void Player::RemoveFriend(string friend_name)
 {
-    auto find_iter = find_if(
-        friends_.begin(),
-        friends_.end(),
-        [&friend_name] (const string& stored_friend)
-    {
-        return stored_friend.compare(friend_name) == 0;
-    });
-
-    if (find_iter == friends_.end())
+    if (GetFriendsIter_(friend_name)== friends_.end())
     {
         return;
     }
@@ -1252,18 +1149,21 @@ vector<string> Player::GetIgnoredPlayers()
 {
     return ignored_players_;
 }
-
-void Player::IgnorePlayer(string player_name)
+vector<string>::iterator Player::GetIgnoredIter_(string ignored_name)
 {
     auto find_iter = find_if(
         ignored_players_.begin(),
         ignored_players_.end(),
-        [&player_name] (const string& stored_ignored_player)
+        [&ignored_name] (const string& stored_ignored_player)
     {
-        return stored_ignored_player.compare(player_name) == 0;
+        return stored_ignored_player.compare(ignored_name) == 0;
     });
+    return find_iter;
+}
 
-    if (find_iter == ignored_players_.end())
+void Player::IgnorePlayer(string player_name)
+{
+    if (GetIgnoredIter_(player_name) == ignored_players_.end())
     {
         return;
     }
@@ -1286,15 +1186,7 @@ void Player::IgnorePlayer(string player_name)
 
 void Player::StopIgnoringPlayer(string player_name)
 {
-    auto find_iter = find_if(
-        ignored_players_.begin(),
-        ignored_players_.end(),
-        [&player_name] (const string& stored_ignored_player)
-    {
-        return stored_ignored_player.compare(player_name) == 0;
-    });
-
-    if (find_iter == ignored_players_.end())
+    if (GetIgnoredIter_(player_name) == ignored_players_.end())
     {
         return;
     }

@@ -86,11 +86,11 @@ public:
     void ResetXp(std::vector<XpData> experience);
     void ClearAllXp();
     
-    std::vector<swganh::object::waypoint::Waypoint> GetWaypoints() const;
-    void AddWaypoint(swganh::object::waypoint::Waypoint waypoint);
+    std::vector<std::shared_ptr<swganh::object::waypoint::Waypoint>> GetWaypoints() const;
+    void AddWaypoint(std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint);
     void RemoveWaypoint(uint64_t waypoint_id);
-    void ModifyWaypoint(swganh::object::waypoint::Waypoint waypoint);
-    void ResetWaypoints(std::vector<swganh::object::waypoint::Waypoint> waypoints);
+    void ModifyWaypoint(std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint);
+    void ResetWaypoints(std::vector<std::shared_ptr<swganh::object::waypoint::Waypoint>> waypoints);
     void ClearAllWaypoints();
 
     uint32_t GetCurrentForcePower() const;
@@ -200,7 +200,7 @@ private:
     uint32_t region_;
     std::vector<XpData> experience_;
     uint32_t experience_counter_;
-    std::vector<swganh::object::waypoint::Waypoint> waypoints_;
+    std::vector<std::shared_ptr<swganh::object::waypoint::Waypoint>> waypoints_;
     uint32_t waypoint_counter_;
     uint32_t current_force_power_;
     uint32_t max_force_power_;
@@ -208,14 +208,20 @@ private:
     uint32_t completed_force_sensitive_quests_;
     std::vector<QuestJournalData> quest_journal_;
     std::vector<std::string> abilities_;
+    std::vector<std::string>::iterator GetAbilityIter_(std::string ability);
+    uint32_t abilities_counter_;
     uint32_t experimentation_flag_;
     uint32_t crafting_stage_;
     uint64_t nearest_crafting_station_;
     std::vector<DraftSchematicData> draft_schematics_;
+    uint32_t draft_schematics_counter_;
+    std::vector<DraftSchematicData>::iterator GetSchematicIter_(uint32_t schematic_crc);
     uint32_t experimentation_points_;
     uint32_t accomplishment_counter_;
     std::vector<std::string> friends_;
+    std::vector<std::string>::iterator GetFriendsIter_(std::string friend_name);
     std::vector<std::string> ignored_players_;
+    std::vector<std::string>::iterator GetIgnoredIter_(std::string ignored_name);
     uint32_t language_;
     uint32_t current_stomach_;
     uint32_t max_stomach_;
