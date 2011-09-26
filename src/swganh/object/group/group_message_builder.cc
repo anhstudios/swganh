@@ -38,22 +38,23 @@ void GroupMessageBuilder::BuildMemberListDelta(Group* group, uint8_t subtype, ui
         DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6);
         message.data.write<uint16_t>(1);
         message.data.write<uint32_t>(group->member_list_.size());
-        message.data.write<uint32_t>(group->member_list_counter_);
+        message.data.write<uint32_t>(group->member_list_counter_++);
         message.data.write<uint8_t>(subtype);
 
+        auto iter = group->FindMemberIterById_(member->GetObjectId());
         switch(subtype)
         {
         case 0:
             {
-                message.data.write<uint16_t>(index);
+                message.data.write<uint16_t>(iter - begin(group->member_list_));
                 break;
             }
 
         case 1:
             {
-                message.data.write<uint16_t>(index);
-                message.data.write<uint64_t>(member->GetObjectId());
-                message.data.write<std::string>(std::string(member->GetCustomName().begin(), member->GetCustomName().end()));
+                message.data.write<uint16_t>(iter - begin(group->member_list_));
+                message.data.write<uint64_t>(iter->get()->GetObjectId());
+                message.data.write<std::string>(std::string(iter->get()->GetCustomName().begin(), member->GetCustomName().end()));
                 break;
             }
         default:
@@ -110,8 +111,8 @@ boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline6(Group* gro
 	message.data.write<uint32_t>(group->member_list_.size());
     message.data.write<uint32_t>(group->member_list_counter_++);
     std::for_each(group->member_list_.begin(), group->member_list_.end(), [=, &message](Group::MemberList::value_type list_member) {
-		message.data.write<uint64_t>(list_member.second->GetObjectId());
-		message.data.write<std::string>(std::string(list_member.second->GetCustomName().begin(), list_member.second->GetCustomName().end()));
+		message.data.write<uint64_t>(list_member.get()->GetObjectId());
+		message.data.write<std::string>(std::string(list_member.get()->GetCustomName().begin(), list_member.get()->GetCustomName().end()));
 	});
 	message.data.write<uint32_t>(0);
 	message.data.write<uint32_t>(0);

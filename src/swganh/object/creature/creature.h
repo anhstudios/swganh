@@ -155,16 +155,27 @@ public:
     void SetStateBitmask(uint64_t state_bitmask);
 
 private:
-    uint32_t    bank_credits_;              // update 1 variable 0
-    uint32_t    cash_credits_;              // update 1 variable 1
-    uint32_t    skill_list_counter_;        // update 1 variable 3
-    std::list<std::string> skill_list_;     // update 1 variable 3
-    uint32_t    posture_;                   // update 3 variable 11
-    uint8_t     faction_rank_;              // update 3 variable 12
-    uint64_t    owner_id_;                  // update 3 variable 13
-    float       scale_;                     // update 3 variable 14
-    uint32_t    battle_fatigue_;            // update 3 variable 15
-    uint64_t    state_bitmask_;             // update 3 variable 16
+    uint32_t    bank_credits_;                          // update 1 variable 0
+    uint32_t    cash_credits_;                          // update 1 variable 1
+    uint32_t    skill_list_counter_;                    // update 1 variable 3
+    std::list<std::string> skill_list_;                 // update 1 variable 3
+    uint32_t    posture_;                               // update 3 variable 11
+    uint8_t     faction_rank_;                          // update 3 variable 12
+    uint64_t    owner_id_;                              // update 3 variable 13
+    float       scale_;                                 // update 3 variable 14
+    uint32_t    battle_fatigue_;                        // update 3 variable 15
+    uint64_t    state_bitmask_;                         // update 3 variable 16
+    float       acceleration_multiplier_base;           // update 4 variable 0
+    float       acceleration_multiplier_modifier;       // update 4 variable 1
+    float       speed_multiplier_base;                  // update 4 variable 4
+    float       speed_multiplier_modifier;              // update 4 variable 5
+    uint64_t    listening_to_id;                        // update 4 variable 6
+    float       run_speed;                              // update 4 variable 7
+    float       slope_modifier_angle;                   // update 4 variable 8
+    float       slope_modifier_percent;                 // update 4 variable 9
+    float       turn_radius;                            // update 4 variable 10
+    float       walking_speed;                          // update 4 variable 11
+    float       water_modifier_percent;                 // update 4 variable 12
 
 };
 

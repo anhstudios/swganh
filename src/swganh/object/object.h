@@ -251,6 +251,20 @@ private:
     uint32_t volume_;                // update 3  
 };
 
+template<typename Container, typename FreeList>
+uint16_t GetNextAvailableSlot(Container& container, FreeList& free_list)
+{
+    if (free_list.empty())
+    {        
+        return container.size();
+    }
+    
+    free_list.sort();
+    auto ret = free_list.front();
+    free_list.pop_front();
+    return ret;
+}
+
 }}  // namespace
 
 #endif  // SWGANH_OBJECT_BASE_OBJECT_H_

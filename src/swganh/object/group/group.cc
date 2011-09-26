@@ -16,8 +16,16 @@ Group::Group()
     , difficulty_(0)
     , loot_master_(0)
     , loot_mode_(FREE_LOOT)
-    , last_member_index_(0)
 {
+}
+
+Group::Group(uint32_t max_member_size)
+    : member_list_counter_(0)
+    , difficulty_(0)
+    , loot_master_(0)
+    , loot_mode_(FREE_LOOT)
+{
+    member_list_.resize(max_member_size);
 }
 
 Group::~Group()
@@ -26,30 +34,20 @@ Group::~Group()
 
 void Group::AddGroupMember(std::shared_ptr<BaseTangible> member)
 {
-    uint16_t next_index = GetNextMemberIndex_();
-    member_list_.insert(std::make_pair(next_index, member));
-    last_member_index_ = next_index;
+    uint16_t next_index = swganh::object::GetNextAvailableSlot(member_list_, member_index_free_list_);
+    member_list_[next_index] = member;
     GroupMessageBuilder::BuildMemberListDelta(this, 1, next_index, member);
 }
 
 void Group::RemoveGroupMember(std::shared_ptr<BaseTangible> member)
 {
-    uint16_t index_position = 0;
-    auto iter = std::find_if(member_list_.begin(), member_list_.end(), [=, &index_position](std::pair<uint16_t, std::shared_ptr<BaseTangible>> list_member)->bool {
-        if(member->GetObjectId() == list_member.second->GetObjectId())
-        {
-            index_position = list_member.first;
-            return true;
-        }
-
-        return false;
-    });
-
+    auto iter = FindMemberIterById_(member->GetObjectId());
     if(iter != member_list_.end())
     {
+        uint16_t index_position = std::distance(member_list_.begin(), iter);
         member_list_.erase(iter);
         GroupMessageBuilder::BuildMemberListDelta(this, 0, index_position, member);
-        member_index_free_list_.push(index_position);
+        member_index_free_list_.push_back(index_position);
     }
 }
 
@@ -76,14 +74,17 @@ boost::optional<BaselinesMessage> Group::GetBaseline6()
     return GroupMessageBuilder::BuildBaseline6(this);
 }
 
-uint16_t Group::GetNextMemberIndex_()
+Group::MemberList::iterator Group::FindMemberIterById_(uint64_t id)
 {
-    uint16_t next_member_index = last_member_index_++;
+    auto iter = std::find_if(member_list_.begin(), member_list_.end(), [=](std::shared_ptr<swganh::object::tangible::BaseTangible> member)->bool {
+        if(member->GetObjectId() == id)
+            return true;
+        else
+            return false;
+    });
 
-    if(member_index_free_list_.size() > 0) {
-        next_member_index = member_index_free_list_.top();
-        member_index_free_list_.pop();
-    }
+    if(iter == member_list_.end())
+        throw std::out_of_range("Group member does not exist.");
 
-    return next_member_index;
+    return iter;
 }
