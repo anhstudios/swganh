@@ -71,11 +71,7 @@ public:
 
         loaded_objects_.erase(find_iter);
     }
-
-    void HandleSelectCharacter(
-        const shared_ptr<ConnectionClient>& client, 
-        const SelectCharacter& message);
-
+    
 private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManager> scene_manager_;
@@ -123,16 +119,4 @@ const shared_ptr<Object>& GalaxyService::GetObjectById(uint64_t object_id)
 void GalaxyService::RemoveObjectById(uint64_t object_id)
 {
     impl_->RemoveObjectById(object_id);
-}
-
-void GalaxyService::onStart()
-{
-    auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
-    
-    connection_service->RegisterMessageHandler<SelectCharacter>(
-        [=] (const shared_ptr<ConnectionClient>& client, 
-             const SelectCharacter& message)
-    {
-        impl_->HandleSelectCharacter(client, message);
-    });
 }

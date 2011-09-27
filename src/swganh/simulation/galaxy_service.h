@@ -48,8 +48,6 @@ namespace simulation {
         void RemoveObjectById(uint64_t object_id);
 
     private:
-        
-        void onStart();
 
         class GalaxyServiceImpl;
         std::unique_ptr<GalaxyServiceImpl> impl_;
