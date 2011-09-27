@@ -49,6 +49,8 @@ namespace simulation {
 
     private:
         
+        void onStart();
+
         class GalaxyServiceImpl;
         std::unique_ptr<GalaxyServiceImpl> impl_;
     };

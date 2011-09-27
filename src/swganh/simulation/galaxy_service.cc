@@ -1,15 +1,23 @@
 
 #include "swganh/simulation/galaxy_service.h"
 
+#include "anh/service/service_manager.h"
+
+#include "swganh/app/swganh_kernel.h"
+
+#include "swganh/connection/connection_service.h"
+
+#include "swganh/messages/select_character.h"
+
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_manager.h"
 
 #include "swganh/simulation/scene_manager.h"
 
-#include "swganh/app/swganh_kernel.h"
-
 using namespace std;
+using namespace swganh::connection;
+using namespace swganh::messages;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
@@ -64,6 +72,10 @@ public:
         loaded_objects_.erase(find_iter);
     }
 
+    void HandleSelectCharacter(
+        const shared_ptr<ConnectionClient>& client, 
+        const SelectCharacter& message);
+
 private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManager> scene_manager_;
@@ -111,4 +123,16 @@ const shared_ptr<Object>& GalaxyService::GetObjectById(uint64_t object_id)
 void GalaxyService::RemoveObjectById(uint64_t object_id)
 {
     impl_->RemoveObjectById(object_id);
+}
+
+void GalaxyService::onStart()
+{
+    auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
+    
+    connection_service->RegisterMessageHandler<SelectCharacter>(
+        [=] (const shared_ptr<ConnectionClient>& client, 
+             const SelectCharacter& message)
+    {
+        impl_->HandleSelectCharacter(client, message);
+    });
 }
