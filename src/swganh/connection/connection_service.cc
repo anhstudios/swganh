@@ -154,12 +154,12 @@ void ConnectionService::AddClient_(
         client_map.end(), 
         [client, player_id] (ClientMap::value_type& conn_client) 
     {
-        return conn_client.second->player_id == player_id;
+        return conn_client.second->GetPlayerId() == player_id;
     });
 
     if (find_it != client_map.end()) {
         LogoutMessage message;
-        (*find_it).second->session->SendMessage(message);
+        (*find_it).second->Send(message);
 
         client_map.erase(find_it->first);
     }
@@ -167,7 +167,7 @@ void ConnectionService::AddClient_(
     DLOG(WARNING) << "Adding connection client";
 
     ClientMap::accessor a;
-    client_map.insert(a, client->session->remote_endpoint());
+    client_map.insert(a, client->GetSession()->remote_endpoint());
     a->second = client;
 
     DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
@@ -191,7 +191,7 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
     DLOG(WARNING) << "Handling CmdSceneReady";
     
-    client->session->SendMessage(CmdSceneReady());
+    client->Send(CmdSceneReady());
 }
 
 void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const swganh::connection::messages::ClientIdMsg& message) {
@@ -216,12 +216,11 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
     }
     
     // creates a new session and stores it for later use
-    if (!session_provider_->CreateGameSession(player_id, client->session->connection_id())) {    
+    if (!session_provider_->CreateGameSession(player_id, client->GetSession()->connection_id())) {    
         DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
     
-    client->account_id = account_id;
-    client->player_id = player_id;
+    client->Connect(account_id, player_id);
 
     AddClient_(player_id, client);
 
@@ -231,6 +230,6 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
     // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 
-    client->session->SendMessage(client_permissions);
+    client->Send(client_permissions);
 }
 

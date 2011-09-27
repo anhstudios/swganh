@@ -52,6 +52,18 @@ public:
         return find_iter->second;
     }
 
+    void RemoveObjectById(uint64_t object_id)
+    {
+        auto find_iter = loaded_objects_.find(object_id);
+
+        if (find_iter == loaded_objects_.end())
+        {
+            throw swganh::object::InvalidObject("Requested an invalid object");
+        }
+
+        loaded_objects_.erase(find_iter);
+    }
+
 private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManager> scene_manager_;
@@ -81,24 +93,22 @@ ServiceDescription GalaxyService::GetServiceDescription()
     return service_description;
 }
 
-uint32_t GalaxyService::StartScene(const std::string& scene_label)
+void GalaxyService::StartScene(const std::string& scene_label)
 {
-    return 0;
+    impl_->GetSceneManager()->StartScene(scene_label);
 }
 
 void GalaxyService::StopScene(const std::string& scene_label)
-{}
-
-void GalaxyService::StopScene(uint32_t scene_id)
-{}
+{
+    impl_->GetSceneManager()->StopScene(scene_label);
+}
 
 const shared_ptr<Object>& GalaxyService::GetObjectById(uint64_t object_id)
 {
     return impl_->GetObjectById(object_id);
 }
 
-void GalaxyService::DestroyObjectById(uint64_t object_id)
+void GalaxyService::RemoveObjectById(uint64_t object_id)
 {
-    auto object = GetObjectById(object_id);
-    impl_->GetObjectManager()->DeleteObjectFromStorage(object);
+    impl_->RemoveObjectById(object_id);
 }

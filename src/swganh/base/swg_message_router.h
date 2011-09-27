@@ -132,8 +132,7 @@ public:
 
                 throw ValidClientRequired("A valid client is required to invoke this message handler");
             } else {
-                client = std::make_shared<ClientType>();
-                client->session = packet->session();
+                client = std::make_shared<ClientType>(packet->session());
             }
         }
 

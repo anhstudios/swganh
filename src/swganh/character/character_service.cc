@@ -451,7 +451,7 @@ std::string CharacterService::setCharacterCreateErrorCode_(uint32_t error_code)
 }
 
 void CharacterService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const SelectCharacter& message) {    
-    swganh::character::CharacterLoginData character = GetLoginCharacter(message.character_id, client->account_id);
+    swganh::character::CharacterLoginData character = GetLoginCharacter(message.character_id, client->GetAccountId());
 
     // @TODO: Trigger an event here with the character data.
 
@@ -464,7 +464,7 @@ void CharacterService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient> 
     start_scene.shared_race_template = "object/creature/player/shared_" + character.race + "_" + character.gender + ".iff";
     start_scene.galaxy_time = service_directory()->galaxy().GetGalaxyTimeInMilliseconds();
         
-    client->session->SendMessage(start_scene);
+    client->Send(start_scene);
 
     SceneCreateObjectByCrc scene_object;
     scene_object.object_id = character.character_id;
@@ -474,12 +474,12 @@ void CharacterService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient> 
     // @TODO: Replace with configurable value
     scene_object.byte_flag = 0;
     
-    client->session->SendMessage(scene_object);
+    client->Send(scene_object);
     
     SceneEndBaselines scene_object_end;
     scene_object_end.object_id = character.character_id;
     
-    client->session->SendMessage(scene_object_end);
+    client->Send(scene_object_end);
 }
 
 void CharacterService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const ClientCreateCharacter& message) {
@@ -487,21 +487,21 @@ void CharacterService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionCl
 
     uint64_t character_id;
     string error_code;
-    tie(character_id, error_code) = CreateCharacter(message, client->account_id);
+    tie(character_id, error_code) = CreateCharacter(message, client->GetAccountId());
 
     // heartbeat to let the client know we're still here    
     HeartBeat heartbeat;
-    client->session->SendMessage(heartbeat);
+    client->Send(heartbeat);
 
     if (error_code.length() > 0 && character_id == 0) {
         ClientCreateCharacterFailed failed;
         failed.stf_file = "ui";
         failed.error_string = error_code;
-        client->session->SendMessage(failed);
+        client->Send(failed);
     } else {
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
-        client->session->SendMessage(success);
+        client->Send(success);
     }
 }
 
@@ -515,7 +515,7 @@ void CharacterService::HandleClientRandomNameRequest_(std::shared_ptr<Connection
         response.approval_string = "name_approved";
     }
 
-    client->session->SendMessage(response);
+    client->Send(response);
 }
 
 void CharacterService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const DeleteCharacterMessage& message) {

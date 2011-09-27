@@ -37,7 +37,7 @@ namespace swganh {
 namespace connection {
     
 class PingServer;
-struct ConnectionClient;
+class ConnectionClient;
     
 class ConnectionService 
     : public swganh::base::BaseService

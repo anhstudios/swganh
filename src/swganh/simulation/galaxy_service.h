@@ -25,9 +25,8 @@ namespace simulation {
 
         anh::service::ServiceDescription GetServiceDescription();
 
-        uint32_t StartScene(const std::string& scene_label);
+        void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
-        void StopScene(uint32_t scene_id);
 
         const std::shared_ptr<swganh::object::Object>& GetObjectById(uint64_t object_id);
 
@@ -43,7 +42,10 @@ namespace simulation {
 #endif
         }
 
-        void DestroyObjectById(uint64_t object_id);
+        /**
+         * Removes the requested object from the simulation.
+         */
+        void RemoveObjectById(uint64_t object_id);
 
     private:
         

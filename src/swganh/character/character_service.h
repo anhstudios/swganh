@@ -45,7 +45,7 @@ namespace anh { namespace database { class DatabaseManagerInterface; } }
 
 namespace swganh {
 namespace connection {
-struct ConnectionClient;
+class ConnectionClient;
 }}  // namespace swganh::connection
 
 namespace swganh {
