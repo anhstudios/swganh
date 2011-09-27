@@ -59,7 +59,7 @@
 
 #include "swganh/connection/connection_service.h"
 #include "swganh/connection/connection_client.h"
-#include "swganh/connection/messages/heart_beat.h"
+#include "swganh/messages/heart_beat.h"
 
 #include "swganh/messages/delete_character_reply_message.h"
 
@@ -74,7 +74,6 @@ using boost::regex_match;
 #endif
 
 using namespace swganh::character;
-using namespace swganh::connection::messages;
 using namespace swganh::login;
 using namespace swganh::messages;
 using namespace anh;

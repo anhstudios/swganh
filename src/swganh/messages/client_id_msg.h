@@ -18,18 +18,17 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
-#define SWGANH_CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
+#ifndef SWGANH_MESSAGES_CLIENT_ID_MSG_H_
+#define SWGANH_MESSAGES_CLIENT_ID_MSG_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace connection {
 namespace messages {
     
-struct ClientIdMsg : public swganh::base::SwgMessage<ClientIdMsg> {
+struct ClientIdMsg : public swganh::messages::BaseSwgMessage<ClientIdMsg> {
     static uint16_t opcount() { return 3; }
     static uint32_t opcode() { return 0xD5899226; }
     
@@ -47,6 +46,6 @@ struct ClientIdMsg : public swganh::base::SwgMessage<ClientIdMsg> {
     }
 };
 
-}}}  // namespace swganh::connection::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
+#endif  // SWGANH_MESSAGES_CLIENT_ID_MSG_H_

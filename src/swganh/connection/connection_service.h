@@ -23,9 +23,9 @@
 
 #include "swganh/connection/providers/session_provider_interface.h"
 
-#include "swganh/connection/messages/client_permissions_message.h"
-#include "swganh/connection/messages/client_id_msg.h"
-#include "swganh/connection/messages/heart_beat.h"
+#include "swganh/messages/client_permissions_message.h"
+#include "swganh/messages/client_id_msg.h"
+#include "swganh/messages/heart_beat.h"
 
 namespace anh {
 namespace network {
@@ -82,8 +82,12 @@ protected:
 private:    
     ClientMap clients_;
     
-    void HandleClientIdMsg_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::connection::messages::ClientIdMsg& message);
-    void HandleCmdSceneReady_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::messages::CmdSceneReady& message);
+    void HandleClientIdMsg_(
+        std::shared_ptr<swganh::connection::ConnectionClient> client, 
+        const swganh::messages::ClientIdMsg& message);
+    void HandleCmdSceneReady_(
+        std::shared_ptr<swganh::connection::ConnectionClient> client, 
+        const swganh::messages::CmdSceneReady& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
     void AddClient_(uint64_t player_id, std::shared_ptr<swganh::connection::ConnectionClient> client);

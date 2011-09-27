@@ -15,8 +15,9 @@
 
 #include "swganh/connection/ping_server.h"
 #include "swganh/connection/connection_client.h"
-#include "swganh/connection/messages/logout_message.h"
 #include "swganh/connection/providers/mysql_session_provider.h"
+
+#include "swganh/messages/logout_message.h"
 
 using namespace anh::event_dispatcher;
 using namespace anh::network;
@@ -25,7 +26,6 @@ using namespace anh::service;
 using namespace swganh::base;
 using namespace swganh::character;
 using namespace swganh::connection;
-using namespace swganh::connection::messages;
 using namespace swganh::login;
 using namespace swganh::messages;
 
@@ -74,7 +74,7 @@ ServiceDescription ConnectionService::GetServiceDescription() {
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
      
-    RegisterMessageHandler<swganh::connection::messages::ClientIdMsg>(
+    RegisterMessageHandler<ClientIdMsg>(
         bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
 
     RegisterMessageHandler<CmdSceneReady>(
@@ -194,7 +194,7 @@ void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> c
     client->Send(CmdSceneReady());
 }
 
-void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const swganh::connection::messages::ClientIdMsg& message) {
+void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const ClientIdMsg& message) {
     DLOG(WARNING) << "Handling ClientIdMsg";
 
     // get session key from login service
@@ -224,7 +224,7 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
 
     AddClient_(player_id, client);
 
-    swganh::connection::messages::ClientPermissionsMessage client_permissions;
+    ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = service_directory()->galaxy().status();
     client_permissions.available_character_slots = character_service()->GetMaxCharacters(account_id);
     // @TODO: Replace with configurable value
