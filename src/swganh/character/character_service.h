@@ -28,7 +28,6 @@
 #include "swganh/base/base_service.h"
 
 #include "swganh/character/character_data.h"
-#include "swganh/messages/select_character.h"
 #include "swganh/messages/delete_character_message.h"
 #include "swganh/messages/client_create_character.h"
 #include "swganh/messages/client_create_character_success.h"
@@ -71,15 +70,12 @@ public:
     // CharacterService API Methods
 
     std::vector<swganh::character::CharacterData> GetCharactersForAccount(uint64_t account_id);
-    swganh::character::CharacterLoginData GetLoginCharacter(uint64_t character_id, uint64_t account_id);
     bool DeleteCharacter(uint64_t character_id, uint64_t account_id);
     std::wstring GetRandomNameRequest(const std::string& base_model);
     std::tuple<uint64_t, std::string> CreateCharacter(const swganh::messages::ClientCreateCharacter& character_info, uint32_t account_id);
     uint16_t GetMaxCharacters(uint64_t player_id);
+
 private:
-    void HandleSelectCharacter_(
-        std::shared_ptr<swganh::connection::ConnectionClient> client, 
-        const swganh::messages::SelectCharacter& message);
     void HandleClientRandomNameRequest_(
         std::shared_ptr<swganh::connection::ConnectionClient> client, 
         const swganh::messages::ClientRandomNameRequest& message);
