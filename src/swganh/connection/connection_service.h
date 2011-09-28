@@ -26,7 +26,6 @@
 #include "swganh/messages/client_permissions_message.h"
 #include "swganh/messages/client_id_msg.h"
 #include "swganh/messages/heart_beat.h"
-#include "swganh/messages/select_character.h"
 
 namespace anh {
 namespace network {
@@ -89,9 +88,6 @@ private:
     void HandleCmdSceneReady_(
         std::shared_ptr<swganh::connection::ConnectionClient> client, 
         const swganh::messages::CmdSceneReady& message);
-    void HandleSelectCharacter_(
-        std::shared_ptr<swganh::connection::ConnectionClient> client, 
-        const swganh::messages::SelectCharacter& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
     void AddClient_(uint64_t player_id, std::shared_ptr<swganh::connection::ConnectionClient> client);

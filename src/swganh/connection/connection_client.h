@@ -7,6 +7,11 @@
 #include "swganh/network/remote_client.h"
 
 namespace swganh {
+namespace object {
+    class ObjectController;
+}}  // namespace swganh::object
+
+namespace swganh {
 namespace connection {
 
 class ConnectionClient : public swganh::network::RemoteClient 
@@ -16,11 +21,16 @@ public:
     {
         CONNECTING = 0,
         CONNECTED,
+        PLAYING,
         DISCONNECTING
     };
     
     explicit ConnectionClient(
         std::shared_ptr<anh::network::soe::Session> session);
+
+    ~ConnectionClient();
+
+    State GetState() const;
 
     uint32_t GetAccountId() const;
 
@@ -29,15 +39,16 @@ public:
     void Connect(uint32_t account_id, uint64_t player_id);
 
     void Disconnect();
+    
+    const std::shared_ptr<swganh::object::ObjectController>& GetController() const;
 
-    State GetState() const;
+    void SetController(const std::shared_ptr<swganh::object::ObjectController>& controller);
 
 private:
-    ConnectionClient();
-
     State state_;
     uint32_t account_id_;
     uint64_t player_id_;
+    std::shared_ptr<swganh::object::ObjectController> controller_;
 };
 
 }}  // namespace swganh::connection

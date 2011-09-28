@@ -24,6 +24,8 @@
 #include <memory>
 #include <string>
 
+#include "swganh/network/remote_client.h"
+
 namespace anh {
 namespace network {
 namespace soe {
@@ -35,13 +37,33 @@ namespace login {
 
 class Account;
 
-struct LoginClient {
-    std::string username;
-    std::string password;
-    std::string version;
+class LoginClient : public swganh::network::RemoteClient {
+public:    
+    explicit LoginClient(
+        std::shared_ptr<anh::network::soe::Session> session);
+    
+    ~LoginClient();
 
-    std::shared_ptr<Account> account;
-    std::shared_ptr<anh::network::soe::Session> session;
+    std::string GetUsername() const;
+    void SetUsername(std::string username);
+
+    std::string GetPassword() const;
+    void SetPassword(std::string password);
+
+    std::string GetVersion() const;
+    void SetVersion(std::string version);
+
+    const std::shared_ptr<Account>& GetAccount() const;
+    void SetAccount(const std::shared_ptr<Account>& account);
+
+private:
+
+    LoginClient();
+
+    std::string username_;
+    std::string password_;
+    std::string version_;
+    std::shared_ptr<Account> account_;
 };
 
 }}  // namespace swganh::login

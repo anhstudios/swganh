@@ -405,9 +405,9 @@ void CharacterService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
 
-    if (DeleteCharacter(message.character_id, login_client->account->account_id())) {
+    if (DeleteCharacter(message.character_id, login_client->GetAccount()->account_id())) {
         reply_message.failure_flag = 0;
     }
 
-    login_client->session->SendMessage(reply_message);
+    login_client->Send(reply_message);
 }

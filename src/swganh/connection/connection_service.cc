@@ -17,6 +17,10 @@
 #include "swganh/connection/connection_client.h"
 #include "swganh/connection/providers/mysql_session_provider.h"
 
+#include "swganh/object/object.h"
+
+#include "swganh/simulation/galaxy_service.h"
+
 #include "swganh/messages/logout_message.h"
 
 using namespace anh::event_dispatcher;
@@ -28,6 +32,7 @@ using namespace swganh::character;
 using namespace swganh::connection;
 using namespace swganh::login;
 using namespace swganh::messages;
+using namespace swganh::simulation;
 
 using namespace std;
 
@@ -79,9 +84,6 @@ void ConnectionService::subscribe() {
 
     RegisterMessageHandler<CmdSceneReady>(
         bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
-    
-    RegisterMessageHandler<SelectCharacter>(
-        bind(&ConnectionService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
 
     event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
         auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
@@ -234,11 +236,4 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
     client_permissions.unlimited_characters = 0;
 
     client->Send(client_permissions);
-}
-
-void ConnectionService::HandleSelectCharacter_(
-    shared_ptr<ConnectionClient> client, 
-    const SelectCharacter& message)
-{
-
 }

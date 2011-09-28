@@ -49,7 +49,7 @@ class ConnectionClient;
 
 namespace swganh {
 namespace login {
-struct LoginClient;
+class LoginClient;
 }}  // namespace swganh::login
 
 namespace swganh {

@@ -171,11 +171,10 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> sessio
     if (!client) {
         DLOG(WARNING) << "Adding login client";
 
-        client = make_shared<LoginClient>();
-        client->session = session;
+        client = make_shared<LoginClient>(session);
         
         ClientMap::accessor a;
-        clients_.insert(a, client->session->remote_endpoint());
+        clients_.insert(a, client->GetSession()->remote_endpoint());
         a->second = client;
     }
 
@@ -205,7 +204,7 @@ void LoginService::UpdateGalaxyStatus_() {
 
     std::for_each(clients_.begin(), clients_.end(), [&status] (ClientMap::value_type& client_entry) {
         if (client_entry.second) {                
-            client_entry.second->session->SendMessage(
+            client_entry.second->Send(
                 BuildLoginClusterStatus(status));
         }
     });
@@ -251,24 +250,24 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
 
 void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_client, const LoginClientId& message) {
 
-    login_client->username = message.username;
-    login_client->password = message.password;
-    login_client->version = message.client_version;
+    login_client->SetUsername(message.username);
+    login_client->SetPassword(message.password);
+    login_client->SetVersion(message.client_version);
     
     auto account = account_provider_->FindByUsername(message.username);
 
     if (! account || ! authentication_manager_->Authenticate(login_client, account)) {
-        DLOG(WARNING) << "Login request for invalid user: " << login_client->username;
+        DLOG(WARNING) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
         error.type = "@cpt_login_fail";
         error.message = "@msg_login_fail";
         error.force_fatal = false;
         
-        login_client->session->SendMessage(error);
+        login_client->Send(error);
 
         active().AsyncDelayed(boost::posix_time::seconds(login_error_timeout_secs_), [login_client] () {
-            login_client->session->Close();
+            login_client->GetSession()->Close();
             DLOG(WARNING) << "Closing connection";
             return;
         });
@@ -276,28 +275,28 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
         return;
     }
     
-    login_client->account = account;
+    login_client->SetAccount(account);
     
-    clients_.insert(make_pair(login_client->session->remote_endpoint(), login_client));
+    clients_.insert(make_pair(login_client->GetSession()->remote_endpoint(), login_client));
     DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
     
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
-        + boost::lexical_cast<string>(login_client->session->remote_endpoint().address());
+        + boost::lexical_cast<string>(login_client->GetSession()->remote_endpoint().address());
 
     account_provider_->CreateAccountSession(account->account_id(), account_session);
-    login_client->session->SendMessage(
+    login_client->Send(
         messages::BuildLoginClientToken(login_client, account_session));
     
-    login_client->session->SendMessage(
+    login_client->Send(
         messages::BuildLoginEnumCluster(login_client, galaxy_status_));
     
-    login_client->session->SendMessage(
+    login_client->Send(
         messages::BuildLoginClusterStatus(galaxy_status_));
     
-    auto characters = character_service_->GetCharactersForAccount(login_client->account->account_id());
+    auto characters = character_service_->GetCharactersForAccount(login_client->GetAccount()->account_id());
 
-    login_client->session->SendMessage(
+    login_client->Send(
         messages::BuildEnumerateCharacterId(characters));
 }
 

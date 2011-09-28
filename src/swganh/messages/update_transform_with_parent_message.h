@@ -37,7 +37,7 @@ struct UpdateTransformWithParentMessage : public swganh::messages::BaseSwgMessag
     glm::vec3 position;
     uint32_t update_counter;
     uint8_t posture_id;
-    uint8_t direction;
+    uint8_t heading;
     
     void onSerialize(anh::ByteBuffer& buffer) const {
         buffer.write(cell_id);
@@ -47,7 +47,7 @@ struct UpdateTransformWithParentMessage : public swganh::messages::BaseSwgMessag
         buffer.write<int16_t>(position.z);
         buffer.write(update_counter);
         buffer.write(posture_id);
-        buffer.write(direction);
+        buffer.write(heading);
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
@@ -58,7 +58,7 @@ struct UpdateTransformWithParentMessage : public swganh::messages::BaseSwgMessag
         position.z = buffer.read<int16_t>();
         update_counter = buffer.read<uint32_t>();
         posture_id = buffer.read<uint8_t>();
-        direction = buffer.read<uint8_t>();
+        heading = buffer.read<uint8_t>();
     }
 };
 

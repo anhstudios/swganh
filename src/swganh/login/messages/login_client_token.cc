@@ -15,9 +15,9 @@ LoginClientToken swganh::login::messages::BuildLoginClientToken(shared_ptr<swgan
     ByteBuffer session_buffer;
     session_buffer.write(session_key);
 
-    message.station_id = login_client->account->account_id();
+    message.station_id = login_client->GetAccount()->account_id();
     message.session_key = session_buffer;
-    message.station_username = login_client->username;
+    message.station_username = login_client->GetUsername();
 
     return message;
 }

@@ -14,8 +14,10 @@ namespace network {
     {
     public:
         explicit RemoteClient(
-            const std::shared_ptr<anh::network::soe::Session>& session);
+            std::shared_ptr<anh::network::soe::Session> session);
         
+        virtual ~RemoteClient() {}
+
         template<typename T>
         void Send(const T& message)
         {

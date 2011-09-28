@@ -38,7 +38,7 @@ struct UpdateTransformMessage : public swganh::messages::BaseSwgMessage<UpdateTr
     glm::vec3 position;
     uint32_t update_counter;
     uint8_t posture_id;
-    uint8_t direction;
+    uint8_t heading;
     
     void onSerialize(anh::ByteBuffer& buffer) const {
         buffer.write(object_id);
@@ -47,7 +47,7 @@ struct UpdateTransformMessage : public swganh::messages::BaseSwgMessage<UpdateTr
         buffer.write<int16_t>(position.z);
         buffer.write(update_counter);
         buffer.write(posture_id);
-        buffer.write(direction);
+        buffer.write(heading);
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
@@ -57,7 +57,7 @@ struct UpdateTransformMessage : public swganh::messages::BaseSwgMessage<UpdateTr
         position.z = buffer.read<int16_t>();
         update_counter = buffer.read<uint32_t>();
         posture_id = buffer.read<uint8_t>();
-        direction = buffer.read<uint8_t>();
+        heading = buffer.read<uint8_t>();
     }
 };
 
