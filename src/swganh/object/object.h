@@ -166,6 +166,7 @@ public:
     const DeltasCacheContainer& GetDeltas(uint64_t viewer_id) const;
     
     const std::string& GetTemplate() { return template_string_; }
+    void SetTemplate(const std::string& template_string){ template_string_ =  template_string; }
     glm::vec3 GetPosition() { return position_; }
     void SetPosition(glm::vec3 position);
     glm::quat GetOrientation() { return orientation_; }
