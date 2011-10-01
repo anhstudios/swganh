@@ -183,6 +183,7 @@ public:
     const std::string& GetStfNameString() { return stf_name_string_; }
     void SetStfNameString(const std::string& stf_name_string);
     const std::wstring& GetCustomName() { return custom_name_; }
+    std::string GetCustomNameStandard() { return std::string(std::begin(custom_name_), std::end(custom_name_)); }
     void SetCustomName(std::wstring custom_name); 
     uint32_t GetVolume() { return volume_; }
     void SetVolume(uint32_t volume);
