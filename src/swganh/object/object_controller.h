@@ -32,14 +32,14 @@ namespace object {
         ObjControllerHandler
     > ObjControllerHandlerMap;
 
-    class ObjectController : public anh::observer::ObserverInterface, std::enable_shared_from_this<ObjectController>, boost::noncopyable
+    class ObjectController : public anh::observer::ObserverInterface, public std::enable_shared_from_this<ObjectController>, boost::noncopyable
     {
     public:
         typedef std::runtime_error InvalidControllerMessage;
 
     public:
         ObjectController(
-            std::shared_ptr<ObjControllerHandlerMap> handlers,
+            const ObjControllerHandlerMap& handlers,
             std::shared_ptr<Object> object,
             std::shared_ptr<swganh::network::RemoteClient> client);
 
@@ -74,7 +74,7 @@ namespace object {
     private:
         ObjectController();
 
-        std::shared_ptr<ObjControllerHandlerMap> handlers_;
+        const ObjControllerHandlerMap& handlers_;
         std::shared_ptr<Object> object_;
         std::shared_ptr<swganh::network::RemoteClient> client_;
     };

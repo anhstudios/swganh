@@ -17,40 +17,31 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SWGANH_SCENE_MESSAGES_UDPATE_CONTAINMENT_MESSAGE_H_
-#define SWGANH_SCENE_MESSAGES_UDPATE_CONTAINMENT_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_DELETE_CHARACTER_REPLY_MESSAGE_H_
+#define SWGANH_MESSAGES_DELETE_CHARACTER_REPLY_MESSAGE_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
-// Originates on Server
-// http://wiki.swganh.org/index.php/UpdateContainmentMessage
 namespace swganh {
-namespace scene {
 namespace messages {
     
-struct UpdateContainmentMessage : public swganh::base::SwgMessage<UpdateContainmentMessage> {
-    static uint16_t opcount() { return 4; }
-    static uint32_t opcode() { return 0x56CBDE9E; }
-    
-    uint64_t object_id;
-    uint64_t container_id;
-    int32_t slot_index;
+struct DeleteCharacterReplyMessage : public swganh::messages::BaseSwgMessage<DeleteCharacterReplyMessage> {
+    static uint16_t opcount() { return 2; }
+    static uint32_t opcode() { return 0x8268989B; }
+
+    int32_t failure_flag;
     
     void onSerialize(anh::ByteBuffer& buffer) const {
-    	buffer.write(object_id);
-        buffer.write(container_id);
-        buffer.write(slot_index);
+        buffer.write<int32_t>(failure_flag);
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-    	object_id = buffer.read<uint64_t>();
-        container_id = buffer.read<uint64_t>();
-        slot_index = buffer.read<int32_t>();
+        failure_flag = buffer.read<int32_t>();
     }
 };
 
-}}} // swganh::scene::messages
+}}  // namespace swganh::messages
 
-#endif // SWGANH_SCENE_MESSAGES_UDPATE_CONTAINMENT_MESSAGE_H_
+#endif  // SWGANH_MESSAGES_DELETE_CHARACTER_REPLY_MESSAGE_H_

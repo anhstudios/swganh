@@ -17,36 +17,35 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-#ifndef SWGANH_CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
-#define SWGANH_CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
+ 
+#ifndef SWGANH_MESSAGES_SCENE_DESTROY_OBJECT_H_
+#define SWGANH_MESSAGES_SCENE_DESTROY_OBJECT_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace connection {
 namespace messages {
     
-struct ClientIdMsg : public swganh::base::SwgMessage<ClientIdMsg> {
+struct SceneDestroyObject : public swganh::messages::BaseSwgMessage<SceneDestroyObject> 
+{
     static uint16_t opcount() { return 3; }
-    static uint32_t opcode() { return 0xD5899226; }
+    static uint32_t opcode() { return 0x43FD1C22; }
     
-    std::string session_hash;
-
+    uint64_t object_id;
 
     void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write(session_hash);
+        buffer.write(object_id);
+        buffer.write<uint8_t>(0);
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-        int temp = buffer.read<uint32_t>();
-        int size = buffer.read<uint32_t>();
-        session_hash = buffer.read<std::string>();
+        object_id = buffer.read<uint64_t>();
+        buffer.read<uint8_t>();
     }
 };
 
-}}}  // namespace swganh::connection::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_CONNECTION_MESSAGES_CLIENT_ID_MSG_H_
+#endif  // SWGANH_MESSAGES_SCENE_DESTROY_OBJECT_H_

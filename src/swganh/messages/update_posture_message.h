@@ -17,33 +17,35 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-#ifndef SWGANH_CHARACTER_MESSAGES_CLIENT_RANDOM_NAME_REQUEST_H_
-#define SWGANH_CHARACTER_MESSAGES_CLIENT_RANDOM_NAME_REQUEST_H_
+ 
+#ifndef SWGANH_MESSAGES_UPDATE_POSTURE_MESSAGE_H_
+#define SWGANH_MESSAGES_UPDATE_POSTURE_MESSAGE_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace character {
 namespace messages {
     
-struct ClientRandomNameRequest : public swganh::base::SwgMessage<ClientRandomNameRequest> {
-    static uint16_t opcount() { return 2; }
-    static uint32_t opcode() { return 0xD6D1B6D1; }
+struct UpdatePostureMessage : public swganh::messages::BaseSwgMessage<UpdatePostureMessage> {
+    static uint16_t opcount() { return 3; }
+    static uint32_t opcode() { return 0x0BDE6B41; }
     
-    std::string player_race_iff;
-
+    uint8_t posture_id;
+    uint64_t object_id;
+    
     void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write(player_race_iff);	
+        buffer.write(posture_id);
+        buffer.write(object_id);
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-    	player_race_iff = buffer.read<std::string>();
+        posture_id = buffer.read<uint8_t>();
+        object_id = buffer.read<uint64_t>();
     }
 };
 
-}}}  // namespace swganh::character::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_CHARACTER_MESSAGES_CLIENT_RANDOM_NAME_REQUEST_H_
+#endif  // SWGANH_MESSAGES_UPDATE_POSTURE_MESSAGE_H_

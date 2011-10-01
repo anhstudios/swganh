@@ -17,41 +17,35 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-#ifndef SWGANH_CHARACTER_MESSAGES_CLIENT_CREATE_CHARACTER_FAILED_H_
-#define SWGANH_CHARACTER_MESSAGES_CLIENT_CREATE_CHARACTER_FAILED_H_
+ 
+#ifndef SWGANH_MESSAGES_UPDATE_CELL_PERMISSION_MESSAGE_H_
+#define SWGANH_MESSAGES_UPDATE_CELL_PERMISSION_MESSAGE_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace character {
 namespace messages {
     
-struct ClientCreateCharacterFailed : public swganh::base::SwgMessage<ClientCreateCharacterFailed> {
+struct UpdateCellPermissionMessage : public swganh::messages::BaseSwgMessage<UpdateCellPermissionMessage> {
     static uint16_t opcount() { return 3; }
-    static uint32_t opcode() { return 0xDF333C6E; }
+    static uint32_t opcode() { return 0xF612499C; }
     
-    std::wstring unk1;
-    std::string stf_file;
-    std::string error_string;
-
+    uint8_t permission_flag;
+    uint64_t cell_id;
+    
     void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write(unk1);
-        buffer.write(stf_file);
-        buffer.write(0);
-        buffer.write(error_string);
+        buffer.write(permission_flag);
+        buffer.write(cell_id);
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-    	unk1 = buffer.read<std::wstring>();
-        stf_file = buffer.read<std::string>();
-        buffer.read<uint32_t>();
-        error_string = buffer.read<std::string>();
+        permission_flag = buffer.read<uint8_t>();
+        cell_id = buffer.read<uint64_t>();
     }
 };
 
-}}}  // namespace swganh::character::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_CHARACTER_MESSAGES_CLIENT_CREATE_CHARACTER_FAILED_H_
+#endif  // SWGANH_MESSAGES_UPDATE_CELL_PERMISSION_MESSAGE_H_

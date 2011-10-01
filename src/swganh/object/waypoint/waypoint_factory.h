@@ -3,14 +3,22 @@
 #define SWGANH_OBJECT_WAYPOINT_WAYPOINT_FACTORY_H_
 
 #include "swganh/object/object_factory_interface.h"
+#include <unordered_map>
+
+namespace anh {
+namespace database {
+class DatabaseManagerInterface;
+}} // anh::database
 
 namespace swganh {
 namespace object {
 namespace waypoint {
-
+    class Waypoint;
     class WaypointFactory : public swganh::object::ObjectFactoryInterface
     {
     public:
+        WaypointFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
+
         void LoadTemplates();
 
         bool HasTemplate(const std::string& template_name);
@@ -22,6 +30,11 @@ namespace waypoint {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+    private:
+        WaypointFactory(){}
+        std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
+        std::unordered_map<std::string, std::shared_ptr<Waypoint>>::iterator GetTemplateIter_(const std::string& template_name);
+        std::unordered_map<std::string, std::shared_ptr<Waypoint>> waypoint_templates_;
     };
 
 }}}  // namespace swganh::object::waypoint

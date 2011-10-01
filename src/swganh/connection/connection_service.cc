@@ -15,8 +15,13 @@
 
 #include "swganh/connection/ping_server.h"
 #include "swganh/connection/connection_client.h"
-#include "swganh/connection/messages/logout_message.h"
 #include "swganh/connection/providers/mysql_session_provider.h"
+
+#include "swganh/object/object.h"
+
+#include "swganh/simulation/galaxy_service.h"
+
+#include "swganh/messages/logout_message.h"
 
 using namespace anh::event_dispatcher;
 using namespace anh::network;
@@ -25,9 +30,9 @@ using namespace anh::service;
 using namespace swganh::base;
 using namespace swganh::character;
 using namespace swganh::connection;
-using namespace swganh::connection::messages;
 using namespace swganh::login;
-using namespace swganh::scene::messages;
+using namespace swganh::messages;
+using namespace swganh::simulation;
 
 using namespace std;
 
@@ -74,7 +79,7 @@ ServiceDescription ConnectionService::GetServiceDescription() {
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
      
-    RegisterMessageHandler<swganh::connection::messages::ClientIdMsg>(
+    RegisterMessageHandler<ClientIdMsg>(
         bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
 
     RegisterMessageHandler<CmdSceneReady>(
@@ -154,12 +159,12 @@ void ConnectionService::AddClient_(
         client_map.end(), 
         [client, player_id] (ClientMap::value_type& conn_client) 
     {
-        return conn_client.second->player_id == player_id;
+        return conn_client.second->GetPlayerId() == player_id;
     });
 
     if (find_it != client_map.end()) {
         LogoutMessage message;
-        (*find_it).second->session->SendMessage(message);
+        (*find_it).second->Send(message);
 
         client_map.erase(find_it->first);
     }
@@ -167,7 +172,7 @@ void ConnectionService::AddClient_(
     DLOG(WARNING) << "Adding connection client";
 
     ClientMap::accessor a;
-    client_map.insert(a, client->session->remote_endpoint());
+    client_map.insert(a, client->GetSession()->remote_endpoint());
     a->second = client;
 
     DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
@@ -191,10 +196,10 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
     DLOG(WARNING) << "Handling CmdSceneReady";
     
-    client->session->SendMessage(CmdSceneReady());
+    client->Send(CmdSceneReady());
 }
 
-void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const swganh::connection::messages::ClientIdMsg& message) {
+void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const ClientIdMsg& message) {
     DLOG(WARNING) << "Handling ClientIdMsg";
 
     // get session key from login service
@@ -216,21 +221,19 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
     }
     
     // creates a new session and stores it for later use
-    if (!session_provider_->CreateGameSession(player_id, client->session->connection_id())) {    
+    if (!session_provider_->CreateGameSession(player_id, client->GetSession()->connection_id())) {    
         DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
     
-    client->account_id = account_id;
-    client->player_id = player_id;
+    client->Connect(account_id, player_id);
 
     AddClient_(player_id, client);
 
-    swganh::connection::messages::ClientPermissionsMessage client_permissions;
+    ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = service_directory()->galaxy().status();
     client_permissions.available_character_slots = character_service()->GetMaxCharacters(account_id);
     // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 
-    client->session->SendMessage(client_permissions);
+    client->Send(client_permissions);
 }
-

@@ -18,20 +18,19 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
  
-#ifndef SWGANH_SCENE_MESSAGES_CMD_START_SCENE_H_
-#define SWGANH_SCENE_MESSAGES_CMD_START_SCENE_H_
+#ifndef SWGANH_MESSAGES_CMD_START_SCENE_H_
+#define SWGANH_MESSAGES_CMD_START_SCENE_H_
 
 #include <cstdint>
 #include <string>
 #include <glm/glm.hpp>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace scene {
 namespace messages {
     
-struct CmdStartScene : public swganh::base::SwgMessage<CmdStartScene> {
+struct CmdStartScene : public swganh::messages::BaseSwgMessage<CmdStartScene> {
     static uint16_t opcount() { return 8; }
     static uint32_t opcode() { return 0x3AE6DFAE; }
     
@@ -65,6 +64,6 @@ struct CmdStartScene : public swganh::base::SwgMessage<CmdStartScene> {
     }
 };
 
-}}}  // namespace swganh::scene::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_SCENE_MESSAGES_CMD_START_SCENE_H_
+#endif  // SWGANH_MESSAGES_CMD_START_SCENE_H_

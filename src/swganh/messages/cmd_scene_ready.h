@@ -17,33 +17,27 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-#ifndef SWGANH_CHARACTER_MESSAGES_CLIENT_CHARACTER_CREATE_SUCCESS_H_
-#define SWGANH_CHARACTER_MESSAGES_CLIENT_CHARACTER_CREATE_SUCCESS_H_
+ 
+#ifndef SWGANH_MESSAGES_CMD_SCENE_READY_H_
+#define SWGANH_MESSAGES_CMD_SCENE_READY_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace character {
 namespace messages {
     
-struct ClientCreateCharacterSuccess : public swganh::base::SwgMessage<ClientCreateCharacterSuccess> {
-    static uint16_t opcount() { return 2; }
-    static uint32_t opcode() { return 0x1DB575CC; }
+struct CmdSceneReady : public swganh::messages::BaseSwgMessage<CmdSceneReady> 
+{
+    static uint16_t opcount() { return 1; }
+    static uint32_t opcode() { return 0x43FD1C22; }
     
-    uint64_t character_id;
+    void onSerialize(anh::ByteBuffer& buffer) const {}
 
-    void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write(character_id);	
-    }
-
-    void onDeserialize(anh::ByteBuffer buffer) {
-    	character_id = buffer.read<uint64_t>();
-    }
+    void onDeserialize(anh::ByteBuffer buffer) {}
 };
 
-}}}  // namespace swganh::character::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_CHARACTER_MESSAGES_CLIENT_CHARACTER_CREATE_SUCCESS_H_
+#endif  // SWGANH_MESSAGES_CMD_SCENE_READY_H_

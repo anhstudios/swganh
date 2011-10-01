@@ -18,38 +18,31 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_CONNECTION_MESSAGES_CLIENT_PERMISSIONS_MESSAGE_H_
-#define SWGANH_CONNECTION_MESSAGES_CLIENT_PERMISSIONS_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_CLIENT_CHARACTER_CREATE_SUCCESS_H_
+#define SWGANH_MESSAGES_CLIENT_CHARACTER_CREATE_SUCCESS_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace connection {
 namespace messages {
     
-struct ClientPermissionsMessage : public swganh::base::SwgMessage<ClientPermissionsMessage> {
-    static uint16_t opcount() { return 4; }
-    static uint32_t opcode() { return 0xE00730E5; }
+struct ClientCreateCharacterSuccess : public swganh::messages::BaseSwgMessage<ClientCreateCharacterSuccess> {
+    static uint16_t opcount() { return 2; }
+    static uint32_t opcode() { return 0x1DB575CC; }
     
-    uint8_t galaxy_available;
-    uint8_t available_character_slots;
-    uint8_t unlimited_characters;
-    
+    uint64_t character_id;
+
     void onSerialize(anh::ByteBuffer& buffer) const {
-    	buffer.write(galaxy_available);
-    	buffer.write(available_character_slots);
-    	buffer.write(unlimited_characters);
+        buffer.write(character_id);	
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-    	galaxy_available = buffer.read<uint8_t>();
-    	available_character_slots = buffer.read<uint8_t>();
-    	unlimited_characters = buffer.read<uint8_t>();
+    	character_id = buffer.read<uint64_t>();
     }
 };
 
-}}}  // namespace swganh::connection::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_CONNECTION_MESSAGES_CLIENT_PERMISSIONS_MESSAGE_H_
+#endif  // SWGANH_MESSAGES_CLIENT_CHARACTER_CREATE_SUCCESS_H_
