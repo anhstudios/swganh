@@ -18,33 +18,34 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
-#define SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
+#ifndef SWGANH_MESSAGES_CLIENT_ID_MSG_H_
+#define SWGANH_MESSAGES_CLIENT_ID_MSG_H_
 
-#include <memory>
-
-#include "swganh/login/encoders/encoder_interface.h"
+#include <cstdint>
+#include "anh/byte_buffer.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace login {
+namespace messages {
+    
+struct ClientIdMsg : public swganh::messages::BaseSwgMessage<ClientIdMsg> {
+    static uint16_t opcount() { return 3; }
+    static uint32_t opcode() { return 0xD5899226; }
+    
+    std::string session_hash;
 
-class Account;
-class LoginClient;
 
-class AuthenticationManager {
-public:
-    explicit AuthenticationManager(std::shared_ptr<encoders::EncoderInterface> encoder);
+    void onSerialize(anh::ByteBuffer& buffer) const {
+        buffer.write(session_hash);
+    }
 
-    std::shared_ptr<encoders::EncoderInterface> encoder();
-
-    bool Authenticate(
-        std::shared_ptr<swganh::login::LoginClient> client, 
-        std::shared_ptr<swganh::login::Account> account);
-
-private:
-    std::shared_ptr<encoders::EncoderInterface> encoder_;
+    void onDeserialize(anh::ByteBuffer buffer) {
+        int temp = buffer.read<uint32_t>();
+        int size = buffer.read<uint32_t>();
+        session_hash = buffer.read<std::string>();
+    }
 };
 
-}}  // namespace swganh::login
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
+#endif  // SWGANH_MESSAGES_CLIENT_ID_MSG_H_

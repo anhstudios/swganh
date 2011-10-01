@@ -17,32 +17,34 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SWGANH_CHARACTER_MESSAGES_DELETE_CHARACTER_REPLY_MESSAGE_H_
-#define SWGANH_CHARACTER_MESSAGES_DELETE_CHARACTER_REPLY_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_DELETE_CHARACTER_MESSAGE_H_
+#define SWGANH_MESSAGES_DELETE_CHARACTER_MESSAGE_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace character {
 namespace messages {
     
-struct DeleteCharacterReplyMessage : public swganh::base::SwgMessage<DeleteCharacterReplyMessage> {
-    static uint16_t opcount() { return 2; }
-    static uint32_t opcode() { return 0x8268989B; }
+struct DeleteCharacterMessage : public swganh::messages::BaseSwgMessage<DeleteCharacterMessage> {
+    static uint16_t opcount() { return 3; }
+    static uint32_t opcode() { return 0xE87AD031; }
 
-    int32_t failure_flag;
+    int32_t server_id;
+    uint64_t character_id;
+    
+    void onDeserialize(anh::ByteBuffer buffer) {
+        server_id = buffer.read<int32_t>();
+        character_id = buffer.read<uint64_t>();
+    }
     
     void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write<int32_t>(failure_flag);
-    }
-
-    void onDeserialize(anh::ByteBuffer buffer) {
-        failure_flag = buffer.read<int32_t>();
+        buffer.write(server_id);
+        buffer.write(character_id);
     }
 };
 
-}}}  // namespace swganh::character::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_CHARACTER_MESSAGES_DELETE_CHARACTER_REPLY_MESSAGE_H_
+#endif  // SWGANH_MESSAGES_DELETE_CHARACTER_MESSAGE_H_

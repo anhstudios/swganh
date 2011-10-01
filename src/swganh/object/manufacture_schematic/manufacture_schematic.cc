@@ -1,7 +1,6 @@
 
 #include "swganh/object/manufacture_schematic/manufacture_schematic.h"
 
-#include "swganh/scene/scene.h"
 #include "swganh/messages/deltas_message.h"
 #include "anh/crc.h"
 

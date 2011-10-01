@@ -11,7 +11,7 @@ using namespace swganh::network;
 using namespace swganh::object;
 
 ObjectController::ObjectController(
-    shared_ptr<ObjControllerHandlerMap> handlers,
+    const ObjControllerHandlerMap& handlers,
     shared_ptr<Object> object,
     shared_ptr<RemoteClient> client)
     : handlers_(handlers)
@@ -38,9 +38,9 @@ const shared_ptr<RemoteClient>& ObjectController::GetRemoteClient() const
 
 void ObjectController::HandleControllerMessage(const ObjControllerMessage& message)
 {
-    auto find_iter = handlers_->find(message.header);
+    auto find_iter = handlers_.find(message.header);
     
-    if (find_iter == handlers_->end())
+    if (find_iter == handlers_.end())
     {
         throw InvalidControllerMessage("No handler registered to process the given message.");
     }

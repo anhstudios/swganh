@@ -88,6 +88,7 @@ public:
     *   @returns name of the waypoint in Unicode
     */
     const std::wstring& GetName() { return name_; }
+    std::string GetNameStandard() { return std::string(std::begin(name_), std::end(name_)); }
     /**
     *   @brief sets the waypoint's Unicode name
     *   @param name of the waypoint in Unicode

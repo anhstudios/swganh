@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
  
-#ifndef SWGANH_SCENE_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
-#define SWGANH_SCENE_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
+#ifndef SWGANH_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
+#define SWGANH_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
 
 #include <cstdint>
 
@@ -27,13 +27,12 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace scene {
 namespace messages {
     
-struct SceneCreateObjectByCrc : public swganh::base::SwgMessage<SceneCreateObjectByCrc> {
+struct SceneCreateObjectByCrc : public swganh::messages::BaseSwgMessage<SceneCreateObjectByCrc> {
     static uint16_t opcount() { return 5; }
     static uint32_t opcode() { return 0xFE89DDEA; }
     
@@ -70,6 +69,6 @@ struct SceneCreateObjectByCrc : public swganh::base::SwgMessage<SceneCreateObjec
     }
 };
 
-}}}  // namespace swganh::scene::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_SCENE_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_
+#endif  // SWGANH_MESSAGES_SCENE_CREATE_OBJECT_BY_CRC_H_

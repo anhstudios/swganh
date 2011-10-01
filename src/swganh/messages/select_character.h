@@ -18,43 +18,31 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_CHARACTER_MESSAGES_CLIENT_RANDOM_NAME_RESPONSE_H_
-#define SWGANH_CHARACTER_MESSAGES_CLIENT_RANDOM_NAME_RESPONSE_H_
+#ifndef SWGANH_MESSAGES_SELECT_CHARACTER_MESSAGE_H_
+#define SWGANH_MESSAGES_SELECT_CHARACTER_MESSAGE_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace character {
 namespace messages {
     
-struct ClientRandomNameResponse : public swganh::base::SwgMessage<ClientRandomNameResponse> {
-    static uint16_t opcount() { return 4; }
-    static uint32_t opcode() { return 0xE85FB868; }
+struct SelectCharacter : public swganh::messages::BaseSwgMessage<SelectCharacter> {
+    static uint16_t opcount() { return 2; }
+    static uint32_t opcode() { return 0xB5098D76; }
     
-    std::string player_race_iff;
-    std::wstring random_name;
-    std::string stf_file;
-    std::string approval_string;
+    uint64_t character_id;
 
     void onSerialize(anh::ByteBuffer& buffer) const {
-        buffer.write(player_race_iff);	
-        buffer.write(random_name);
-        buffer.write(stf_file);
-        buffer.write(0);
-        buffer.write(approval_string);
+        buffer.write(character_id);
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-    	player_race_iff = buffer.read<std::string>();
-        random_name = buffer.read<std::wstring>();
-        stf_file = buffer.read<std::string>();
-        int tmp = buffer.read<int>();
-        approval_string = buffer.read<std::string>();
+    	character_id = buffer.read<uint64_t>();
     }
 };
 
-}}}  // namespace swganh::character::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_CHARACTER_MESSAGES_CLIENT_RANDOM_NAME_RESPONSE_H_
+#endif  // SWGANH_MESSAGES_SELECT_CHARACTER_MESSAGE_H_
