@@ -29,12 +29,22 @@ namespace swganh {
 namespace object {
 namespace creature {
 
+/**
+ *
+ */
 class Creature : public swganh::object::Object
 {
 public:
     Creature();
     Creature(uint32_t bank_credits, uint32_t cash_credits, std::list<std::string> skill_list);
     ~Creature();
+
+    enum HAM
+    {
+        HEALTH,
+        ACTION,
+        MIND
+    };
 
     enum POSTURE
     {
@@ -154,6 +164,61 @@ public:
      */
     void SetStateBitmask(uint64_t state_bitmask);
 
+    /**
+     *
+     */
+    void SetAccelerationMultiplierBase(float acceleration_multiplier_base);
+
+    /**
+     *
+     */
+    void SetAccelerationMultiplierModifier(float acceleration_multiplier_modifier);
+
+    /**
+     *
+     */
+    void SetSpeedMultiplierBase(float speed_multiplier_base);
+
+    /**
+     *
+     */
+    void SetSpeedMultiplierModifier(float speed_multiplier_modifier);
+
+    /**
+     *
+     */
+    void SetListenToId(uint64_t listen_to_id);
+
+    /**
+     *
+     */
+    void SetRunSpeed(float run_speed);
+
+    /**
+     *
+     */
+    void SetSlopeModifierAngle(float slope_modifier_angle);
+
+    /**
+     *
+     */
+    void SetSlopeModifierPercent(float slope_modifier_percent);
+
+    /**
+     *
+     */
+    void SetTurnRadius(float turn_radius);
+
+    /**
+     *
+     */
+    void SetWalkingSpeed(float walking_speed);
+
+    /**
+     *
+     */
+    void SetWaterModifierPercent(float water_modifier_percent);
+
 private:
     uint32_t    bank_credits_;                          // update 1 variable 0
     uint32_t    cash_credits_;                          // update 1 variable 1
@@ -165,17 +230,17 @@ private:
     float       scale_;                                 // update 3 variable 14
     uint32_t    battle_fatigue_;                        // update 3 variable 15
     uint64_t    state_bitmask_;                         // update 3 variable 16
-    float       acceleration_multiplier_base;           // update 4 variable 0
-    float       acceleration_multiplier_modifier;       // update 4 variable 1
-    float       speed_multiplier_base;                  // update 4 variable 4
-    float       speed_multiplier_modifier;              // update 4 variable 5
-    uint64_t    listening_to_id;                        // update 4 variable 6
-    float       run_speed;                              // update 4 variable 7
-    float       slope_modifier_angle;                   // update 4 variable 8
-    float       slope_modifier_percent;                 // update 4 variable 9
-    float       turn_radius;                            // update 4 variable 10
-    float       walking_speed;                          // update 4 variable 11
-    float       water_modifier_percent;                 // update 4 variable 12
+    float       acceleration_multiplier_base_;          // update 4 variable 0
+    float       acceleration_multiplier_modifier_;      // update 4 variable 1
+    float       speed_multiplier_base_;                 // update 4 variable 4
+    float       speed_multiplier_modifier_;             // update 4 variable 5
+    uint64_t    listen_to_id_;                          // update 4 variable 6
+    float       run_speed_;                             // update 4 variable 7
+    float       slope_modifier_angle_;                  // update 4 variable 8
+    float       slope_modifier_percent_;                // update 4 variable 9
+    float       turn_radius_;                           // update 4 variable 10
+    float       walking_speed_;                         // update 4 variable 11
+    float       water_modifier_percent_;                // update 4 variable 12
 
 };
 
