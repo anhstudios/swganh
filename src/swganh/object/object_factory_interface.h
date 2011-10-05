@@ -57,6 +57,9 @@ namespace object {
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name) = 0;
+
+        virtual uint32_t GetType() const = 0;
+
     };
 
 }}  // namespace swganh::object
