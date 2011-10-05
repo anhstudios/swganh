@@ -18,33 +18,31 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
-#define SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
+#ifndef SWGANH_MESSAGES_CLIENT_RANDOM_NAME_REQUEST_H_
+#define SWGANH_MESSAGES_CLIENT_RANDOM_NAME_REQUEST_H_
 
-#include <memory>
-
-#include "swganh/login/encoders/encoder_interface.h"
+#include <cstdint>
+#include "anh/byte_buffer.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace login {
+namespace messages {
+    
+struct ClientRandomNameRequest : public swganh::messages::BaseSwgMessage<ClientRandomNameRequest> {
+    static uint16_t opcount() { return 2; }
+    static uint32_t opcode() { return 0xD6D1B6D1; }
+    
+    std::string player_race_iff;
 
-class Account;
-class LoginClient;
+    void onSerialize(anh::ByteBuffer& buffer) const {
+        buffer.write(player_race_iff);	
+    }
 
-class AuthenticationManager {
-public:
-    explicit AuthenticationManager(std::shared_ptr<encoders::EncoderInterface> encoder);
-
-    std::shared_ptr<encoders::EncoderInterface> encoder();
-
-    bool Authenticate(
-        std::shared_ptr<swganh::login::LoginClient> client, 
-        std::shared_ptr<swganh::login::Account> account);
-
-private:
-    std::shared_ptr<encoders::EncoderInterface> encoder_;
+    void onDeserialize(anh::ByteBuffer buffer) {
+    	player_race_iff = buffer.read<std::string>();
+    }
 };
 
-}}  // namespace swganh::login
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
+#endif  // SWGANH_MESSAGES_CLIENT_RANDOM_NAME_REQUEST_H_

@@ -34,7 +34,7 @@ std::shared_ptr<encoders::EncoderInterface> AuthenticationManager::encoder() {
 }
 
 bool AuthenticationManager::Authenticate(std::shared_ptr<LoginClient> client, std::shared_ptr<Account> account) {
-    auto current_account = client->account;
+    auto current_account = client->GetAccount();
 
     if (current_account) {
         // make sure the password hasn't changed
@@ -43,7 +43,7 @@ bool AuthenticationManager::Authenticate(std::shared_ptr<LoginClient> client, st
             return false;
         }
     } else {
-        string presented_password = client->password;
+        string presented_password = client->GetPassword();
         if (presented_password.empty()) {
             return false;
         }

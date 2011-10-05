@@ -18,26 +18,37 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
  
-#ifndef SWGANH_SCENE_MESSAGES_CMD_SCENE_READY_H_
-#define SWGANH_SCENE_MESSAGES_CMD_SCENE_READY_H_
+#ifndef SWGANH_MESSAGES_UPDATE_PVP_STATUS_MESSAGE_H_
+#define SWGANH_MESSAGES_UPDATE_PVP_STATUS_MESSAGE_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/base/swg_message.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace scene {
 namespace messages {
     
-struct CmdSceneReady : public swganh::base::SwgMessage<CmdSceneReady> {
-    static uint16_t opcount() { return 1; }
-    static uint32_t opcode() { return 0x43FD1C22; }
+struct UpdatePvpStatusMessage : public swganh::messages::BaseSwgMessage<UpdatePvpStatusMessage> {
+    static uint16_t opcount() { return 4; }
+    static uint32_t opcode() { return 0x08A1C126; }
     
-    void onSerialize(anh::ByteBuffer& buffer) const {}
+    uint32_t pvp_status;
+    uint32_t faction;
+    uint64_t object_id;
+    
+    void onSerialize(anh::ByteBuffer& buffer) const {
+        buffer.write(pvp_status);
+        buffer.write(faction);
+        buffer.write(object_id);
+    }
 
-    void onDeserialize(anh::ByteBuffer buffer) {}
+    void onDeserialize(anh::ByteBuffer buffer) {
+        pvp_status = buffer.read<uint32_t>();
+        faction = buffer.read<uint32_t>();
+        object_id = buffer.read<uint64_t>();
+    }
 };
 
-}}}  // namespace swganh:::scene::messages
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_SCENE_MESSAGES_CMD_SCENE_READY_H_
+#endif  // SWGANH_MESSAGES_UPDATE_PVP_STATUS_MESSAGE_H_

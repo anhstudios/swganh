@@ -17,34 +17,32 @@
  along with this program; if not, write to the Free Software
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+ 
+#ifndef SWGANH_MESSAGES_SCENE_END_BASELINES_H_
+#define SWGANH_MESSAGES_SCENE_END_BASELINES_H_
 
-#ifndef SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
-#define SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
-
-#include <memory>
-
-#include "swganh/login/encoders/encoder_interface.h"
+#include <cstdint>
+#include "anh/byte_buffer.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace login {
+namespace messages {
+    
+struct SceneEndBaselines : public swganh::messages::BaseSwgMessage<SceneEndBaselines> {
+    static uint16_t opcount() { return 2; }
+    static uint32_t opcode() { return 0x2C436037; }
+    
+    uint64_t object_id;
+    
+    void onSerialize(anh::ByteBuffer& buffer) const {
+    	buffer.write(object_id);
+    }
 
-class Account;
-class LoginClient;
-
-class AuthenticationManager {
-public:
-    explicit AuthenticationManager(std::shared_ptr<encoders::EncoderInterface> encoder);
-
-    std::shared_ptr<encoders::EncoderInterface> encoder();
-
-    bool Authenticate(
-        std::shared_ptr<swganh::login::LoginClient> client, 
-        std::shared_ptr<swganh::login::Account> account);
-
-private:
-    std::shared_ptr<encoders::EncoderInterface> encoder_;
+    void onDeserialize(anh::ByteBuffer buffer) {
+    	object_id = buffer.read<uint64_t>();
+    }
 };
 
-}}  // namespace swganh::login
+}}  // namespace swganh::messages
 
-#endif  // SWGANH_LOGIN_AUTHENTICATION_MANAGER_H_
+#endif  // SWGANH_MESSAGES_SCENE_END_BASELINES_H_
