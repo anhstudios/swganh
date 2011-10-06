@@ -195,6 +195,7 @@ public:
      */
     void AddDeltasUpdate(swganh::messages::DeltasMessage message);
     
+    void SetObjectId(uint64_t id) { object_id_ = id; }
     /**
      * @return The id of this Object instance.
      */
@@ -212,7 +213,7 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     
-    virtual uint32_t GetType() const = 0;
+    virtual uint32_t GetType() const { return 0; }
         
     swganh::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0) const;
     

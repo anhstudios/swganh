@@ -12,6 +12,18 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using boost::optional;
 
+Object::Object() 
+    : object_id_(0)
+    , template_string_("")
+    , position_(glm::vec3(0,0,0))
+    , orientation_(glm::quat(0,0,0,0))
+    , complexity_(0)
+    , stf_name_file_("")
+    , stf_name_string_("")
+    , custom_name_(L"")
+    , volume_(0)
+{}
+
 bool Object::HasController() const
 {
     return controller_;
