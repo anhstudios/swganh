@@ -22,7 +22,7 @@ using namespace swganh::object::tangible;
 uint32_t TangibleFactory::GetType() const { return Tangible::type; }
 
  TangibleFactory::TangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : db_manager_(db_manager)
+    : ObjectFactory(db_manager)
 {
 }
 void TangibleFactory::LoadTemplates()
@@ -112,38 +112,22 @@ void TangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto tangible = make_shared<Tangible>();
+    tangible->SetObjectId(object_id);
+    CreateBaseObjectFromStorage(tangible);
     try {
         auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->createStatement();
-        //auto statement = conn->prepareStatement("CALL sp_GetTangible(?);");
-        //statement->setUInt64(1, object_id);
-        stringstream ss;
-        ss << "CALL sp_GetTangible(" << object_id << ");";
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
-        //auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
+        auto statement = conn->prepareStatement("CALL sp_GetTangible(?);");
+        statement->setUInt64(1, object_id);
+        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
         while (result->next())
         {
-            tangible->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
-            tangible->SetOrientation(glm::quat(result->getDouble("x_orientation"),result->getDouble("y_orientation"), result->getDouble("z_orientation"), result->getDouble("w_orientation")));
-            tangible->SetComplexity(result->getDouble("complexity"));
-            tangible->SetStfNameFile(result->getString("stf_name_file"));
-            tangible->SetStfNameString(result->getString("stf_name_string"));
-            string custom_string = result->getString("custom_name");
-            tangible->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            tangible->SetVolume(result->getUInt("volume"));
-            tangible->SetTemplate(result->getString("discr"));
-            if (statement->getMoreResults())
-            {
-                result.reset(statement->getResultSet());
-                result->next();
-                tangible->SetCustomization(result->getString("customization"));
-                tangible->SetOptionsMask(result->getUInt("options_bitmask"));
-                tangible->SetIncapTimer(result->getUInt("incap_timer"));
-                tangible->SetConditionDamage(result->getUInt("condition_damage"));
-                tangible->SetMaxCondition(result->getUInt("max_condition"));
-                uint8_t is_static = result->getInt("is_moveable");
-                tangible->SetStatic(is_static == 0);
-            }
+            tangible->SetCustomization(result->getString("customization"));
+            tangible->SetOptionsMask(result->getUInt("options_bitmask"));
+            tangible->SetIncapTimer(result->getUInt("incap_timer"));
+            tangible->SetConditionDamage(result->getUInt("condition_damage"));
+            tangible->SetMaxCondition(result->getUInt("max_condition"));
+            uint8_t is_static = result->getInt("is_moveable");
+            tangible->SetStatic(is_static == 0);
         }
     }
     catch(sql::SQLException &e)
