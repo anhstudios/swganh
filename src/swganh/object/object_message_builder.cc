@@ -70,7 +70,7 @@ void ObjectMessageBuilder::BuildServerIDDelta(Object* object)
     }
 }
 
-optional<BaselinesMessage> BuildBaseline3(Object* object)
+optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline3(Object* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_3);
     message.data.write(object->GetComplexity());
@@ -83,7 +83,7 @@ optional<BaselinesMessage> BuildBaseline3(Object* object)
 
     return optional<BaselinesMessage>(move(message));
 }
-optional<BaselinesMessage> BuildBaseline6(Object* object)
+optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline6(Object* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_6);
     // server ID
