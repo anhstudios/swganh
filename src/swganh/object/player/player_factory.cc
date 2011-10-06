@@ -20,7 +20,7 @@ using namespace swganh::object::player;
 using namespace swganh::object::waypoint;
 
 PlayerFactory::PlayerFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : db_manager_(db_manager)
+    : ObjectFactory(db_manager)
 {
 }
 
@@ -133,6 +133,7 @@ void PlayerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto player = make_shared<Player>();
+    CreateBaseObjectFromStorage(player);
     try {
 
         auto conn = db_manager_->getConnection("galaxy");
@@ -141,43 +142,36 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
         auto result = statement->executeQuery();
         while (result->next())
         {
-            player->SetPosition(glm::vec3(result->getDouble(1),result->getDouble(2), result->getDouble(3)));
-            player->SetOrientation(glm::quat(result->getDouble(4),result->getDouble(5), result->getDouble(6), result->getDouble(7)));
-            player->SetComplexity(result->getDouble(8));
-            player->SetStfNameFile(result->getString(9));
-            player->SetStfNameString(result->getString(10));
-            string custom_string = result->getString(11);
-            player->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            player->SetVolume(result->getUInt(12));
             // Player specific start
-            player->AddStatusFlag(result->getUInt(13));
-            player->AddProfileFlag(result->getUInt(14));
-            player->SetProfessionTag(result->getString(15));
-            player->SetBornDate(result->getUInt(16));
-            player->SetTotalPlayTime(result->getUInt(17));
-            player->SetAdminTag(result->getUInt(18));
-            player->SetRegionId(result->getUInt(19));
+            player->AddStatusFlag(result->getUInt("status"));
+            player->AddProfileFlag(result->getUInt("profile"));
+            player->SetProfessionTag(result->getString("profession_tag"));
+            player->SetBornDate(result->getUInt("born_date"));
+            player->SetTotalPlayTime(result->getUInt("total_playtime"));
+            player->SetAdminTag(result->getUInt("csr_tag"));
+            //player->SetRegionId(result->getUInt("region_id"));
             LoadXP_(player);
             LoadWaypoints_(player);
-            player->SetCurrentForcePower(result->getUInt(20));
-            player->SetMaxForcePower(result->getUInt(21));
-            player->AddCurrentForceSensitiveQuest(result->getUInt(22));
-            player->AddCompletedForceSensitiveQuest(result->getUInt(23));
+            player->SetCurrentForcePower(result->getUInt("current_force"));
+            player->SetMaxForcePower(result->getUInt("max_force"));
+            //player->AddCurrentForceSensitiveQuest(result->getUInt(22));
+            //player->AddCompletedForceSensitiveQuest(result->getUInt(23));
             LoadQuestJournal_(player);
             LoadAbilities_(player);
-            player->SetExperimentationFlag(result->getUInt(24));
-            player->SetCraftingStage(result->getUInt(25));
-            player->SetNearestCraftingStation(result->getUInt64(26));
+            player->SetExperimentationFlag(result->getUInt("experimentation_enabled"));
+            player->SetCraftingStage(result->getUInt("crafting_stage"));
+            player->SetNearestCraftingStation(result->getUInt64("nearest_crafting_station"));
             LoadDraftSchematics_(player);
-            player->AddExperimentationPoints(result->getUInt(27));
-            player->ResetAccomplishmentCounter(result->getUInt(28));
+            player->AddExperimentationPoints(result->getUInt("experimentation_points"));
+            player->ResetAccomplishmentCounter(result->getUInt("accomplishment_counter"));
             LoadFriends_(player);
             LoadIgnoredList_(player);
-            player->ResetCurrentStomach(result->getUInt(29));
-            player->ResetMaxStomach(result->getUInt(30));
-            player->ResetCurrentDrink(result->getUInt(31));
-            player->ResetMaxDrink(result->getUInt(32));
-            player->SetJediState(result->getUInt(33));
+            player->SetLanguage(result->getUInt("current_language"));
+            player->ResetCurrentStomach(result->getUInt("current_stomach"));
+            player->ResetMaxStomach(result->getUInt("max_stomach"));
+            player->ResetCurrentDrink(result->getUInt("current_drink"));
+            player->ResetMaxDrink(result->getUInt("max_drink"));
+            player->SetJediState(result->getUInt("jedi_state"));
         }
     }
     catch(sql::SQLException &e)

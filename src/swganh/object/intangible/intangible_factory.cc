@@ -19,7 +19,7 @@ using namespace swganh::object;
 using namespace swganh::object::intangible;
 
 IntangibleFactory::IntangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : db_manager_(db_manager)
+    : ObjectFactory(db_manager)
 {
 }
 void IntangibleFactory::LoadTemplates()
@@ -104,6 +104,7 @@ void IntangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object
 shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto intangible = make_shared<Intangible>();
+    CreateBaseObjectFromStorage(intangible);
     try {
 
         auto conn = db_manager_->getConnection("galaxy");
@@ -112,17 +113,8 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
         auto result = statement->executeQuery();
         while (result->next())
         {
-            intangible->SetPosition(glm::vec3(result->getDouble(1),result->getDouble(2), result->getDouble(3)));
-            intangible->SetOrientation(glm::quat(result->getDouble(4),result->getDouble(5), result->getDouble(6), result->getDouble(7)));
-            intangible->SetComplexity(result->getDouble(8));
-            intangible->SetStfNameFile(result->getString(9));
-            intangible->SetStfNameString(result->getString(10));
-            string custom_string = result->getString(11);
-            intangible->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            intangible->SetVolume(result->getUInt(12));
-            intangible->SetStfDetailFile(result->getString(13));
-            intangible->SetStfDetailString(result->getString(14));
-            intangible->SetTemplate(result->getString(15));
+            intangible->SetStfDetailFile(result->getString("stf_detail_file"));
+            intangible->SetStfDetailString(result->getString("stf_detail_string"));
         }
     }
     catch(sql::SQLException &e)
