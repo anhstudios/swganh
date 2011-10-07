@@ -1,6 +1,8 @@
 
 #include "swganh/object/player/player_factory.h"
 
+#include <sstream>
+
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -133,45 +135,53 @@ void PlayerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto player = make_shared<Player>();
-    CreateBaseObjectFromStorage(player);
+    player->SetObjectId(object_id);
     try {
 
         auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetPlayer(?);");
-        statement->setUInt64(1, object_id);
-        auto result = statement->executeQuery();
-        while (result->next())
+        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        
+        stringstream ss;
+        ss << "CALL sp_GetPlayer(" << object_id << ");";
+
+        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
+        CreateBaseObjectFromStorage(player, result);
+        if (statement->getMoreResults())
         {
-            // Player specific start
-            player->AddStatusFlag(result->getUInt("status"));
-            player->AddProfileFlag(result->getUInt("profile"));
-            player->SetProfessionTag(result->getString("profession_tag"));
-            player->SetBornDate(result->getUInt("born_date"));
-            player->SetTotalPlayTime(result->getUInt("total_playtime"));
-            player->SetAdminTag(result->getUInt("csr_tag"));
-            //player->SetRegionId(result->getUInt("region_id"));
-            LoadXP_(player);
-            LoadWaypoints_(player);
-            player->SetCurrentForcePower(result->getUInt("current_force"));
-            player->SetMaxForcePower(result->getUInt("max_force"));
-            //player->AddCurrentForceSensitiveQuest(result->getUInt(22));
-            //player->AddCompletedForceSensitiveQuest(result->getUInt(23));
-            LoadQuestJournal_(player);
-            LoadAbilities_(player);
-            player->SetExperimentationFlag(result->getUInt("experimentation_enabled"));
-            player->SetCraftingStage(result->getUInt("crafting_stage"));
-            player->SetNearestCraftingStation(result->getUInt64("nearest_crafting_station"));
-            LoadDraftSchematics_(player);
-            player->AddExperimentationPoints(result->getUInt("experimentation_points"));
-            player->ResetAccomplishmentCounter(result->getUInt("accomplishment_counter"));
-            LoadFriends_(player);
-            LoadIgnoredList_(player);
-            player->SetLanguage(result->getUInt("current_language"));
-            player->ResetCurrentStomach(result->getUInt("current_stomach"));
-            player->ResetMaxStomach(result->getUInt("max_stomach"));
-            player->ResetCurrentDrink(result->getUInt("current_drink"));
-            player->ResetMaxDrink(result->getUInt("max_drink"));
-            player->SetJediState(result->getUInt("jedi_state"));
+            result.reset(statement->getResultSet());
+            while (result->next())
+            {
+                // Player specific start
+                player->AddStatusFlag(result->getUInt("status"));
+                player->AddProfileFlag(result->getUInt("profile"));
+                player->SetProfessionTag(result->getString("profession_tag"));
+                player->SetBornDate(result->getUInt("born_date"));
+                player->SetTotalPlayTime(result->getUInt("total_playtime"));
+                player->SetAdminTag(result->getUInt("csr_tag"));
+                //player->SetRegionId(result->getUInt("region_id"));
+                LoadXP_(player);
+                LoadWaypoints_(player);
+                player->SetCurrentForcePower(result->getUInt("current_force"));
+                player->SetMaxForcePower(result->getUInt("max_force"));
+                //player->AddCurrentForceSensitiveQuest(result->getUInt(22));
+                //player->AddCompletedForceSensitiveQuest(result->getUInt(23));
+                LoadQuestJournal_(player);
+                LoadAbilities_(player);
+                player->SetExperimentationFlag(result->getUInt("experimentation_enabled"));
+                player->SetCraftingStage(result->getUInt("crafting_stage"));
+                player->SetNearestCraftingStation(result->getUInt64("nearest_crafting_station"));
+                LoadDraftSchematics_(player);
+                player->AddExperimentationPoints(result->getUInt("experimentation_points"));
+                player->ResetAccomplishmentCounter(result->getUInt("accomplishment_counter"));
+                LoadFriends_(player);
+                LoadIgnoredList_(player);
+                player->SetLanguage(result->getUInt("current_language"));
+                player->ResetCurrentStomach(result->getUInt("current_stomach"));
+                player->ResetMaxStomach(result->getUInt("max_stomach"));
+                player->ResetCurrentDrink(result->getUInt("current_drink"));
+                player->ResetMaxDrink(result->getUInt("max_drink"));
+                player->SetJediState(result->getUInt("jedi_state"));
+            }
         }
     }
     catch(sql::SQLException &e)

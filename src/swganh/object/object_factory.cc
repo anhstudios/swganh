@@ -2,11 +2,7 @@
 
 
 #include <cppconn/exception.h>
-#include <cppconn/connection.h>
 #include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/sqlstring.h>
 #include <glog/logging.h>
 
 #include "anh/database/database_manager.h"
@@ -22,13 +18,10 @@ ObjectFactory::ObjectFactory(const shared_ptr<DatabaseManagerInterface>& db_mana
 {
 }
 
-void ObjectFactory::CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object)
+void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object, const shared_ptr<sql::ResultSet>& result)
 {
     try {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetObject(?);");
-        statement->setUInt64(1, object->GetObjectId());
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
+        
         while (result->next())
         {
             object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));

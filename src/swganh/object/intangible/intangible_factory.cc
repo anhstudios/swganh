@@ -1,6 +1,8 @@
 
 #include "swganh/object/intangible/intangible_factory.h"
 
+#include <sstream>
+
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -104,17 +106,24 @@ void IntangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object
 shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto intangible = make_shared<Intangible>();
-    CreateBaseObjectFromStorage(intangible);
+    intangible->SetObjectId(object_id);
     try {
-
         auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetIntangible(?);");
-        statement->setUInt64(1, object_id);
-        auto result = statement->executeQuery();
-        while (result->next())
+        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        
+        stringstream ss;
+        ss << "CALL sp_GetIntangible(" << object_id << ");";
+
+        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
+        CreateBaseObjectFromStorage(intangible, result);
+        if (statement->getMoreResults())
         {
-            intangible->SetStfDetailFile(result->getString("stf_detail_file"));
-            intangible->SetStfDetailString(result->getString("stf_detail_string"));
+            result.reset(statement->getResultSet());
+            while (result->next())
+            {
+                intangible->SetStfDetailFile(result->getString("stf_detail_file"));
+                intangible->SetStfDetailString(result->getString("stf_detail_string"));
+            }
         }
     }
     catch(sql::SQLException &e)

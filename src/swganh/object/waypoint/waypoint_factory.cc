@@ -128,7 +128,6 @@ shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto waypoint = make_shared<Waypoint>();
     waypoint->SetObjectId(object_id);
-    CreateBaseObjectFromStorage(waypoint);
     try{
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = conn->prepareStatement("CALL sp_GetWaypoint(?);");

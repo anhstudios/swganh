@@ -1,6 +1,8 @@
 
 #include "swganh/object/creature/creature_factory.h"
 
+#include <sstream>
+
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -41,23 +43,29 @@ void CreatureFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto creature = make_shared<Creature>();
-    CreateBaseObjectFromStorage(creature);
+    creature->SetObjectId(object_id);
     try {
         auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetCreature(?);");
-        statement->setUInt64(1, object_id);
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
-        while (result->next())
+        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        stringstream ss;
+        ss << "CALL sp_GetCreature(" << object_id << ");" ;
+        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
+        CreateBaseObjectFromStorage(creature, result);
+        if (statement->getMoreResults())
         {
-            creature->SetOwnerId(result->getUInt64("owner_id"));
-            creature->SetBankCredits(result->getUInt("bank_credits"));
-            creature->SetCashCredits(result->getUInt("cash_credits"));
-            creature->SetPosture((Creature::POSTURE)result->getUInt("posture"));
-            creature->SetFactionRank(result->getUInt("faction_rank"));
-            creature->SetScale(result->getDouble("scale"));
-            creature->SetBattleFatigue(result->getUInt("battle_fatigue"));
-            creature->SetStateBitmask(result->getUInt("state"));
-            // TODO: Add rest of creature table
+            result.reset(statement->getResultSet());
+            while (result->next())
+            {
+                creature->SetOwnerId(result->getUInt64("owner_id"));
+                creature->SetBankCredits(result->getUInt("bank_credits"));
+                creature->SetCashCredits(result->getUInt("cash_credits"));
+                creature->SetPosture((Creature::POSTURE)result->getUInt("posture"));
+                creature->SetFactionRank(result->getUInt("faction_rank"));
+                creature->SetScale(result->getDouble("scale"));
+                creature->SetBattleFatigue(result->getUInt("battle_fatigue"));
+                creature->SetStateBitmask(result->getUInt("state"));
+                // TODO: Add rest of creature table
+            }
         }
     }
     catch(sql::SQLException &e)

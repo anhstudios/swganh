@@ -26,6 +26,7 @@ DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetTangible`(IN `object_id` BIGINT)
     DETERMINISTIC
 BEGIN
+call sp_GetObject(object_id);
 select * from tangible where tangible.id = object_id;
 END//
 DELIMITER ;
