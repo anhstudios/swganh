@@ -24,8 +24,8 @@ class TangibleMessageBuilder;
 class BaseTangible : public swganh::object::Object
 {
 public:
-    BaseTangible::BaseTangible();
-    BaseTangible::BaseTangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
+    BaseTangible();
+    BaseTangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
         uint32_t incap_timer, uint32_t damage_amount, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders);
     void AddCustomization(const std::string& customization);
     void SetCustomization(const std::string& customization);

@@ -41,7 +41,7 @@ namespace object {
         template<typename T>
         void RegisterObjectType(const std::shared_ptr<T>& factory)
         {
-            RegisterObjectType(T::ObjectType::type, factory);
+            RegisterObjectType(T::type, factory);
         }
 
         /**

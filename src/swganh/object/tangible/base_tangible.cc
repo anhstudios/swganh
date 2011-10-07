@@ -10,7 +10,8 @@ using namespace swganh::object::tangible;
 using namespace swganh::messages;
 
 BaseTangible::BaseTangible()
-    : customization_(0)
+    : Object()
+    , customization_("")
     , component_customization_list_(std::vector<uint32_t>())
     , component_customization_counter_(0)
     , options_bitmask_(0)
@@ -23,7 +24,8 @@ BaseTangible::BaseTangible()
 {}
 BaseTangible::BaseTangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
         uint32_t incap_timer, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders)
-    : customization_(customization)
+    : Object()
+    , customization_(customization)
     , component_customization_list_(component_customization)
     , options_bitmask_(bitmask_options)
     , incap_timer_(incap_timer)
