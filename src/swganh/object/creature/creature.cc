@@ -7,6 +7,7 @@ using namespace swganh::messages;
 using namespace swganh::object::creature;
 
 Creature::Creature()
+: Object()
 {}
 
 Creature::Creature(uint32_t bank_credits, uint32_t cash_credits, std::list<std::string> skill_list)

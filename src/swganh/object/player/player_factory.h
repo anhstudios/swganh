@@ -2,7 +2,7 @@
 #ifndef SWGANH_OBJECT_PLAYER_PLAYER_FACTORY_H_
 #define SWGANH_OBJECT_PLAYER_PLAYER_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/object_factory.h"
 #include <unordered_map>
 
 namespace anh {
@@ -15,7 +15,7 @@ namespace object {
 namespace player {
     
     class Player;
-    class PlayerFactory : public swganh::object::ObjectFactoryInterface
+    class PlayerFactory : public swganh::object::ObjectFactory
     {
     public:
         PlayerFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
@@ -32,7 +32,6 @@ namespace player {
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
     private:
-        PlayerFactory(){}
         // Helpers
         void LoadXP_(std::shared_ptr<Player> player);
         void PersistXP_(const std::shared_ptr<Player>& player);
@@ -49,7 +48,6 @@ namespace player {
         void LoadIgnoredList_(std::shared_ptr<Player> player);
         void PersistIgnoredList_(const std::shared_ptr<Player>& player);
 
-        std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
         std::unordered_map<std::string, std::shared_ptr<Player>>::iterator GetTemplateIter_(const std::string& template_name);
         std::unordered_map<std::string, std::shared_ptr<Player>> player_templates_;
     };

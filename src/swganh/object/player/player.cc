@@ -825,6 +825,14 @@ void Player::SetJediState(uint32_t jedi_state)
     PlayerMessageBuilder::BuildJediStateDelta(this);
 }
 
+Player::Gender Player::GetGender() const
+{
+    return gender_;
+}
+void Player::SetGender(Player::Gender value)
+{
+    gender_ = value;
+}
 boost::optional<BaselinesMessage> Player::GetBaseline3()
 {
     return move(PlayerMessageBuilder::BuildBaseline3(this));
