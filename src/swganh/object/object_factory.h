@@ -26,6 +26,8 @@ namespace object {
         
         void CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::ResultSet>& result);
 
+        virtual uint32_t GetType() const { return 0; }
+        const static uint32_t type;
     protected:
         std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;   
     };

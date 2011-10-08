@@ -19,8 +19,8 @@
 
 #include <gtest/gtest.h>
 
-#include "swganh/object/tangible/tangible.h"
-#include "swganh/object/tangible/tangible_factory.h"
+#include "swganh/object/player/player.h"
+#include "swganh/object/player/player_factory.h"
 #include "swganh/object/object_manager.h"
 #include "anh/database/database_manager.h"
 
@@ -30,20 +30,20 @@
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
-using namespace swganh::object::tangible;
+using namespace swganh::object::player;
 
 namespace {
     
-TEST(ObjectLoad, CanLoadObject) {
+TEST(PlayerObjectLoad, CanLoadObject) {
     auto object_manager = make_shared<ObjectManager>();
     // create db manager
     
     auto db_manager = std::make_shared<anh::database::DatabaseManager>(sql::mysql::get_driver_instance());
     db_manager->registerStorageType("galaxy", "galaxy", "localhost", "root", "swganh");
-    auto tangible_factory = make_shared<TangibleFactory>(db_manager);
-    object_manager->RegisterObjectType(Tangible::type, tangible_factory);
-    auto tangible = object_manager->CreateObjectFromStorage<Tangible>(0);
-    ASSERT_EQ(0, tangible->GetObjectId());
+    auto player_factory = make_shared<PlayerFactory>(db_manager);
+    object_manager->RegisterObjectType(Player::type, player_factory);
+    auto player = object_manager->CreateObjectFromStorage<Player>(123456789);
+    ASSERT_EQ(123456789, player->GetObjectId());
 }
 
 }  // namespace
