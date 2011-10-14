@@ -116,6 +116,13 @@ public:
     *   @param color of the waypoint
     */
     void SetColor(const std::string& color);
+    /**
+    *   @brief sets the waypoint's color byte
+    *
+    *   Possible Options: 1 - blue,2 - green,3 - orange,4 - yellow,5 - purple/red,6 - white,7 - JTL
+    *   @param color_byte to set the waypoint
+    */
+    void SetColorByte(uint8_t color_byte);
 protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
 private:

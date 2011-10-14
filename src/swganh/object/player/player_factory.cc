@@ -1,6 +1,8 @@
 
 #include "swganh/object/player/player_factory.h"
 
+#include <sstream>
+
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -9,6 +11,7 @@
 #include <cppconn/sqlstring.h>
 #include <glog/logging.h>
 
+#include "anh/crc.h"
 #include "anh/database/database_manager.h"
 #include "swganh/object/player/player.h"
 #include "swganh/object/exception.h"
@@ -19,8 +22,10 @@ using namespace swganh::object;
 using namespace swganh::object::player;
 using namespace swganh::object::waypoint;
 
+uint32_t PlayerFactory::GetType() const { return Player::type; }
+
 PlayerFactory::PlayerFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : db_manager_(db_manager)
+    : ObjectFactory(db_manager)
 {
 }
 
@@ -133,51 +138,84 @@ void PlayerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto player = make_shared<Player>();
+    player->SetObjectId(object_id);
     try {
 
         auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetPlayer(?);");
-        statement->setUInt64(1, object_id);
-        auto result = statement->executeQuery();
-        while (result->next())
+        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        
+        stringstream ss;
+        ss << "CALL sp_GetPlayer(" << object_id << ");";
+
+        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
+        CreateBaseObjectFromStorage(player, result);
+        if (statement->getMoreResults())
         {
-            player->SetPosition(glm::vec3(result->getDouble(1),result->getDouble(2), result->getDouble(3)));
-            player->SetOrientation(glm::quat(result->getDouble(4),result->getDouble(5), result->getDouble(6), result->getDouble(7)));
-            player->SetComplexity(result->getDouble(8));
-            player->SetStfNameFile(result->getString(9));
-            player->SetStfNameString(result->getString(10));
-            string custom_string = result->getString(11);
-            player->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            player->SetVolume(result->getUInt(12));
-            // Player specific start
-            player->AddStatusFlag(result->getUInt(13));
-            player->AddProfileFlag(result->getUInt(14));
-            player->SetProfessionTag(result->getString(15));
-            player->SetBornDate(result->getUInt(16));
-            player->SetTotalPlayTime(result->getUInt(17));
-            player->SetAdminTag(result->getUInt(18));
-            player->SetRegionId(result->getUInt(19));
-            LoadXP_(player);
-            LoadWaypoints_(player);
-            player->SetCurrentForcePower(result->getUInt(20));
-            player->SetMaxForcePower(result->getUInt(21));
-            player->AddCurrentForceSensitiveQuest(result->getUInt(22));
-            player->AddCompletedForceSensitiveQuest(result->getUInt(23));
-            LoadQuestJournal_(player);
-            LoadAbilities_(player);
-            player->SetExperimentationFlag(result->getUInt(24));
-            player->SetCraftingStage(result->getUInt(25));
-            player->SetNearestCraftingStation(result->getUInt64(26));
-            LoadDraftSchematics_(player);
-            player->AddExperimentationPoints(result->getUInt(27));
-            player->ResetAccomplishmentCounter(result->getUInt(28));
-            LoadFriends_(player);
-            LoadIgnoredList_(player);
-            player->ResetCurrentStomach(result->getUInt(29));
-            player->ResetMaxStomach(result->getUInt(30));
-            player->ResetCurrentDrink(result->getUInt(31));
-            player->ResetMaxDrink(result->getUInt(32));
-            player->SetJediState(result->getUInt(33));
+            result.reset(statement->getResultSet());
+            while (result->next())
+            {
+                // Player specific start
+                player->AddStatusFlag(result->getUInt("status_flag_id"));
+                player->AddProfileFlag(result->getUInt("profile_flag_id"));
+                player->SetProfessionTag(result->getString("profession_tag"));
+                player->SetBornDate(result->getUInt("born_date"));
+                player->SetTotalPlayTime(result->getUInt("total_playtime"));
+                player->SetAdminTag(result->getUInt("csr_tag"));
+                player->SetCurrentForcePower(result->getUInt("current_force"));
+                player->SetMaxForcePower(result->getUInt("max_force"));
+                player->SetExperimentationFlag(result->getUInt("experimentation_enabled"));
+                player->SetCraftingStage(result->getUInt("crafting_stage"));
+                player->SetNearestCraftingStation(result->getUInt64("nearest_crafting_station"));
+                player->AddExperimentationPoints(result->getUInt("experimentation_points"));
+                player->ResetAccomplishmentCounter(result->getUInt("accomplishment_counter"));
+                player->SetLanguage(result->getUInt("current_language"));
+                player->ResetCurrentStomach(result->getUInt("current_stomach"));
+                player->ResetMaxStomach(result->getUInt("max_stomach"));
+                player->ResetCurrentDrink(result->getUInt("current_drink"));
+                player->ResetMaxDrink(result->getUInt("max_drink"));
+                player->SetJediState(result->getUInt("jedi_state"));
+
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadAbilities_(player, result);
+                }
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadDraftSchematics_(player, result);
+                }
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadFriends_(player, result);
+                }
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadForceSensitiveQuests_(player, result);
+                }
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadIgnoredList_(player, result);
+                }
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadQuestJournal_(player, result);
+                }
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadWaypoints_(player, result);
+                }
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadXP_(player, result);
+                }
+            }
         }
     }
     catch(sql::SQLException &e)
@@ -204,19 +242,15 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromTemplate(const string& templat
     return object;
 }
 // Helpers
-void PlayerFactory::LoadXP_(std::shared_ptr<Player> player)
+void PlayerFactory::LoadXP_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
 {
     try 
     {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetExperience(?);");
-        statement->setUInt64(1, player->GetObjectId());
-        auto result = statement->executeQuery();
         while (result->next())
         {
-            player->AddExperience(result->getString("type"), result->getUInt("value"));
+            player->AddExperience(result->getString("name"), result->getUInt("value"));
 
-        } while (statement->getMoreResults());
+        }
     }
         catch(sql::SQLException &e)
     {
@@ -224,7 +258,7 @@ void PlayerFactory::LoadXP_(std::shared_ptr<Player> player)
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
-void PlayerFactory::PersistXP_(const std::shared_ptr<Player>& player)
+void PlayerFactory::PersistXP_(const shared_ptr<Player>& player)
 {
     try 
     {
@@ -243,61 +277,171 @@ void PlayerFactory::PersistXP_(const std::shared_ptr<Player>& player)
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
-void PlayerFactory::LoadWaypoints_(std::shared_ptr<Player> player)
+void PlayerFactory::LoadWaypoints_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
 {
-    // Call Waypoint Factory??
-    /*try 
+    try 
     {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetWaypoints(?);");
-        statement->setUInt64(1, player->GetObjectId());
-        auto result = statement->executeQuery();
         while (result->next())
         {
-            
+            // Check to see if the waypoint is already available?
+            auto waypoint = make_shared<Waypoint>();
+            waypoint->SetObjectId(result->getUInt64("id"));
+            waypoint->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
+            waypoint->SetOrientation(glm::quat(result->getDouble("x_orientation"),result->getDouble("y_orientation"), result->getDouble("z_orientation"), result->getDouble("w_orientation")));
+            waypoint->SetComplexity(result->getDouble("complexity"));
+            waypoint->SetStfNameFile(result->getString("stf_name_file"));
+            waypoint->SetStfNameString(result->getString("stf_name_string"));
+            string custom_string = result->getString("custom_name");
+            waypoint->SetCustomName(wstring(begin(custom_string), end(custom_string)));
+            waypoint->SetVolume(result->getUInt("volume"));
+            waypoint->SetTemplate(result->getString("discr"));
+            bool active = result->getUInt("is_active") == 1;
+            if (active)
+                waypoint->Activate();
+            else
+                waypoint->DeActivate();
+            string name = result->getString("name");
+            waypoint->SetName(wstring(begin(name), end(name)));
+            waypoint->SetColorByte(result->getUInt("color"));
 
-        } while (statement->GetMoreResults());
+            player->AddWaypoint(move(waypoint));
+        }
     }
         catch(sql::SQLException &e)
     {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }*/
+    }
 }
-void PlayerFactory::PersistWaypoints_(const std::shared_ptr<Player>& player)
+void PlayerFactory::PersistWaypoints_(const shared_ptr<Player>& player)
 {
     // Call Waypoint Factory??
 }
-void PlayerFactory::LoadDraftSchematics_(std::shared_ptr<Player> player)
+void PlayerFactory::LoadDraftSchematics_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
+{
+    try 
+    {
+        while (result->next())
+        {
+            Player::DraftSchematicData data;
+            data.schematic_id = result->getUInt("id");
+            data.schematic_crc = result->getUInt("schematic");
+            // didn't move here because you can't get faster than copying 2 ints
+            player->AddDraftSchematic(data);
+
+        }
+    }
+        catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+void PlayerFactory::PersistDraftSchematics_(const shared_ptr<Player>& player)
 {
     // Call Draft Schematics Factory??
 }
-void PlayerFactory::PersistDraftSchematics_(const std::shared_ptr<Player>& player)
+void PlayerFactory::LoadQuestJournal_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
 {
-    // Call Draft Schematics Factory??
+    try 
+    {
+        while (result->next())
+        {
+            Player::QuestJournalData data;
+            data.owner_id = result->getUInt64("quest_owner_id");
+            data.quest_crc = anh::memcrc(result->getString("name"));
+            data.active_step_bitmask = result->getUInt("active_step_bitmask");
+            data.completed_step_bitmask = result->getUInt("completed_step_bitmask");
+            data.completed_flag = result->getUInt("completed") == 1;
+            player->AddQuest(move(data));
+        }
+    }
+        catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
-void PlayerFactory::LoadQuestJournal_(std::shared_ptr<Player> player)
+void PlayerFactory::PersistQuestJournal_(const shared_ptr<Player>& player)
 {
-    // ETC
+
 }
-void PlayerFactory::PersistQuestJournal_(const std::shared_ptr<Player>& player)
+void PlayerFactory::LoadForceSensitiveQuests_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
+{
+    try 
+    {
+        while (result->next())
+        {
+            if (result->getUInt("completed") == 1)
+            {
+                player->AddCompletedForceSensitiveQuest(result->getUInt("quest_mask"));
+            }
+            else
+            {
+                player->AddCurrentForceSensitiveQuest(result->getUInt("quest_mask"));
+            }
+        }
+    }
+        catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+void PlayerFactory::PersistForceSensitiveQuests_(const shared_ptr<Player>& player)
 {
 }
-void PlayerFactory::LoadAbilities_(std::shared_ptr<Player> player)
+void PlayerFactory::LoadAbilities_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
+{
+    try 
+    {
+        while (result->next())
+        {
+           player->AddAbility(result->getString("ability"));
+        }
+    }
+        catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+void PlayerFactory::PersistAbilities_(const shared_ptr<Player>& player)
 {
 }
-void PlayerFactory::PersistAbilities_(const std::shared_ptr<Player>& player)
+void PlayerFactory::LoadFriends_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
+{
+    try 
+    {
+        while (result->next())
+        {
+           player->AddFriend(result->getString("custom_name"));
+        }
+    }
+        catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+void PlayerFactory::PersistFriends_(const shared_ptr<Player>& player)
 {
 }
-void PlayerFactory::LoadFriends_(std::shared_ptr<Player> player)
+void PlayerFactory::LoadIgnoredList_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
 {
+    try 
+    {
+        while (result->next())
+        {
+           player->IgnorePlayer(result->getString("custom_name"));
+        }
+    }
+        catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
-void PlayerFactory::PersistFriends_(const std::shared_ptr<Player>& player)
-{
-}
-void PlayerFactory::LoadIgnoredList_(std::shared_ptr<Player> player)
-{
-}
-void PlayerFactory::PersistIgnoredList_(const std::shared_ptr<Player>& player)
+void PlayerFactory::PersistIgnoredList_(const shared_ptr<Player>& player)
 {
 }
