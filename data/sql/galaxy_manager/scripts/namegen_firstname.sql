@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 14:03:44
+# Date/time:                    2011-10-14 15:50:18
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,7 +12,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 # Dumping structure for table galaxy_manager.namegen_firstname
-DROP TABLE IF EXISTS `namegen_firstname`;
 CREATE TABLE IF NOT EXISTS `namegen_firstname` (
   `firstname` varchar(100) NOT NULL,
   `species` int(11) NOT NULL,
@@ -20,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `namegen_firstname` (
   PRIMARY KEY (`firstname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
-# Dumping data for table galaxy_manager.namegen_firstname: ~139,577 rows (approximately)
+# Dumping data for table galaxy_manager.namegen_firstname: ~139,812 rows (approximately)
 DELETE FROM `namegen_firstname`;
 /*!40000 ALTER TABLE `namegen_firstname` DISABLE KEYS */;
 INSERT INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES

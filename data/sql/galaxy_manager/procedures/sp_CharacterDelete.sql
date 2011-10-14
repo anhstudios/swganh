@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 14:48:39
+# Date/time:                    2011-10-14 15:50:19
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,21 +11,21 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for procedure galaxy_manager_entity.sp_CharacterDelete
+# Dumping structure for procedure galaxy_manager.sp_CharacterDelete
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterDelete`(IN character_id BIGINT, IN account_id BIGINT)
 BEGIN
-	--
-	-- Declare Vars
-	--
+	
+	
+	
 
 	DECLARE check_value INT(11);
     DECLARE deleted_code INT(11);
     DECLARE acc_id BIGINT;
 
-	--
-	-- Mark the character as archived & set the deletion date to be 90days out
-	--
+	
+	
+	
 
 	SET deleted_code = 0;
     SELECT C.referenceId from characters A
@@ -40,9 +40,9 @@ BEGIN
         UPDATE characters SET deletedAt = (NOW()) WHERE entity_id = character_id;
     
     END IF;
-	--
-	-- Check to see if we maked the character for deletion and return proper exit code
-	--
+	
+	
+	
 
 	SELECT COUNT(*) from characters WHERE entity_id = character_id AND archived = 1 INTO check_value;
 

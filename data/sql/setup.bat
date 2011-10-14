@@ -144,7 +144,7 @@ GOTO:MainMenu
 	:: Create the database schemas
 	
 	cd "%PROJECT_BASE%galaxy"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy --default-character-set=utf8 < "create.sql"
+		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
 	cd "%PROJECT_BASE%galaxy_manager"
 		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy_manager --default-character-set=utf8 < "create.sql"
 	cd "%PROJECT_BASE%swganh_astromech"
@@ -335,7 +335,7 @@ GOTO:MainMenu
 	:: Create the schema
 	
 	cd "%PROJECT_BASE%galaxy"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy --default-character-set=utf8 < "create.sql"
+		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
 		
 	:: (galaxy)
 	
@@ -364,7 +364,7 @@ GOTO:MainMenu
 :: Create the schema
 	
 	cd "%PROJECT_BASE%galaxy_manager"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy_manager --default-character-set=utf8 < "create.sql"
+		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
 		
 	:: (galaxy_manager)
 	

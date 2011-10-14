@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 14:48:39
+# Date/time:                    2011-10-14 15:50:19
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for procedure galaxy_manager_entity.sp_GetPlayerFromSession
+# Dumping structure for procedure galaxy_manager.sp_GetPlayerFromSession
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetPlayerFromSession`(IN player_id BIGINT(20))
 BEGIN

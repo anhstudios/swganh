@@ -11,21 +11,43 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for function galaxy_manager.sf_CharacterNameInUseCheck
+# Dumping structure for procedure galaxy_manager.sp_CreateAccount
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` FUNCTION `sf_CharacterNameInUseCheck`(start_firstname CHAR(32)) RETURNS int(11)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CreateAccount`(IN username char(32),IN password_ char(32), IN email varchar(50) )
 BEGIN
-	DECLARE check_name char(32);
-	DECLARE check_value INT(11);
-	DECLARE error_code INT(11);
+DECLARE salt_ VARCHAR(50);
+DECLARE saltedPASS VARCHAR(100);
+DECLARE account_id INT;
+SET salt_ = NOW()+username;
+select SHA1(password_ + '{' + salt_ + '}') into saltedPASS;
 
-    SET error_code = 666;
-	SELECT COUNT(*) from characters where LOWER(firstname) LIKE LOWER(start_firstname) INTO check_value;
+INSERT INTO `account`
+(`username`,
+`username_canonical`,
+`email`,
+`email_canonical`,
+`enabled`,
+`salt`,
+`password`,
+`last_login`,
+`locked`,
+`expired`,
+`roles`,
+`credentials_expired`)
+VALUES
+(
+username,username,email,email,1,salt_, saltedPASS, NOW(), 0, 0, '0', 0
+);
 
-	IF check_value > 0 THEN SET error_code = 3;
-	END IF;
+select LAST_INSERT_ID() into account_id;
 
-	RETURN error_code;
+INSERT INTO `player`
+(`referenceId`, `maxCharacters`)
+VALUES
+(
+account_id, 8
+);
+
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
