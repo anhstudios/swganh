@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 15:50:18
+# Date/time:                    2011-10-15 10:35:23
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -19,10 +19,9 @@ CREATE TABLE IF NOT EXISTS `namegen_firstname` (
   PRIMARY KEY (`firstname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
-# Dumping data for table galaxy_manager.namegen_firstname: ~139,812 rows (approximately)
-DELETE FROM `namegen_firstname`;
+# Dumping data for table galaxy_manager.namegen_firstname: ~139,263 rows (approximately)
 /*!40000 ALTER TABLE `namegen_firstname` DISABLE KEYS */;
-INSERT INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
+INSERT IGNORE INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
 	('A\'a', 0, 0),
 	('A\'ak', 6, 0),
 	('A\'alom', 6, 1),
@@ -44851,7 +44850,7 @@ INSERT INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
 	('Faemai', 49, 0),
 	('Faemea', 49, 1),
 	('Faemeeg', 49, 0);
-INSERT INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
+INSERT IGNORE INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
 	('Faemei', 49, 1),
 	('Faemeiplo', 7, 0),
 	('Faemiet', 49, 0),
@@ -89745,7 +89744,7 @@ INSERT INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
 	('Ockogi', 3, 0),
 	('Ockogo', 3, 0),
 	('Ockogou', 3, 0);
-INSERT INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
+INSERT IGNORE INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
 	('Ockogro', 3, 0),
 	('Ockoha', 3, 0),
 	('Ockohack', 3, 0),
@@ -134637,9 +134636,9 @@ INSERT INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
 	('Xigok', 3, 0),
 	('Xiha', 5, 0),
 	('Xihnorg', 0, 1),
-	('Xikia', 7, 1),
-	('Xikie', 5, 0);
-INSERT INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
+	('Xikia', 7, 1);
+INSERT IGNORE INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES
+	('Xikie', 5, 0),
 	('Xilau', 3, 1),
 	('Xilimo', 2, 1),
 	('Xilom', 2, 1),

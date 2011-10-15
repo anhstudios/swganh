@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 17:00:16
+# Date/time:                    2011-10-15 10:35:25
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -39,14 +39,7 @@ VALUES
 username,username,email,email,1,salt_, saltedPASS, NOW(), 0, 0, '0', 0
 );
 
-select LAST_INSERT_ID() into account_id;
-
-INSERT INTO `player`
-(`referenceId`, `maxCharacters`)
-VALUES
-(
-account_id, 8
-);
+select LAST_INSERT_ID();
 
 END//
 DELIMITER ;

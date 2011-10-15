@@ -273,7 +273,7 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
             if(account_provider_->AutoRegisterAccount(message.username, message.password))
             {
                 DLOG(WARNING) << "Auto-Registering Account: " << message.username;
-                //HandleLoginClientId_(login_client, message);
+                HandleLoginClientId_(login_client, message);
                 return;
             }
         }
