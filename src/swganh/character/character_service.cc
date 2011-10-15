@@ -137,13 +137,13 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
             while (result_set->next())
             {
                 CharacterData character;
-                character.character_id = result_set->getUInt64("object_id");
+                character.character_id = result_set->getUInt64("id");
 
                 string custom_name = result_set->getString("custom_name");
                 character.name = std::wstring(custom_name.begin(), custom_name.end());
-                character.race_crc = anh::memcrc(result_set->getString("template"));
+                character.race_crc = anh::memcrc(result_set->getString("shared_template_string"));
                 character.galaxy_id = service_directory()->galaxy().id();
-                character.status = result_set->getInt("jediState");
+                character.status = result_set->getInt("jedi_state");
                 characters.push_back(character);
             } while (statement->getMoreResults());
         }
@@ -178,7 +178,7 @@ bool CharacterService::DeleteCharacter(uint64_t character_id, uint64_t account_i
 }
 std::wstring CharacterService::GetRandomNameRequest(const std::string& base_model) {
     try {
-        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy_manager");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
             conn->prepareStatement("SELECT sf_CharacterNameCreate(?);")
             );

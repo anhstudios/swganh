@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 15:50:19
+# Date/time:                    2011-10-15 13:18:33
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,7 +11,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for procedure galaxy_manager.sp_CharacterDelete
+# Dumping structure for procedure galaxy.sp_CharacterDelete
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterDelete`(IN character_id BIGINT, IN account_id BIGINT)
 BEGIN

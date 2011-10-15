@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 14:04:29
+# Date/time:                    2011-10-15 13:18:33
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,9 +12,8 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 # Dumping structure for table galaxy.object
-DROP TABLE IF EXISTS `object`;
 CREATE TABLE IF NOT EXISTS `object` (
-  `id` bigint(20) NOT NULL,
+  `id` bigint(20) NOT NULL DEFAULT '8589934593',
   `scene_id` int(11) DEFAULT NULL,
   `parent_id` bigint(20) DEFAULT NULL,
   `shared_template_string` varchar(255) NOT NULL,
@@ -41,9 +40,14 @@ CREATE TABLE IF NOT EXISTS `object` (
   CONSTRAINT `FK_A8ADABEC727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `object` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.object: ~0 rows (approximately)
+# Dumping data for table galaxy.object: ~4 rows (approximately)
 DELETE FROM `object`;
 /*!40000 ALTER TABLE `object` DISABLE KEYS */;
+INSERT INTO `object` (`id`, `scene_id`, `parent_id`, `shared_template_string`, `x_position`, `y_position`, `z_position`, `x_orientation`, `y_orientation`, `z_orientation`, `w_orientation`, `complexity`, `stf_name_file`, `stf_name_string`, `custom_name`, `volume`, `created_at`, `updated_at`, `deleted_at`, `discr`) VALUES
+	(0, 1, NULL, '', 0, 0, 0, 0, 0, 0, 0, 0, 'universe', 'universe', 'universe', 0, '2011-10-15 12:46:23', '2011-10-15 12:46:24', '2011-10-15 12:46:24', 'universe'),
+	(8589934593, 1, NULL, '', 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, ''),
+	(8589934598, 1, 0, 'object/creature/player/human_male.iff', -137, 0, -4723, 0, 1, 0, 0, 0, 'object/creature/player/human_male.iff', 'object/creature/player/human_male.iff', '0', 0, '2011-10-15 12:59:08', '2011-10-15 12:59:08', NULL, 'player character'),
+	(8589934603, 1, 0, 'object/creature/player/human_male.iff', -137, 0, -4723, 0, 1, 0, 0, 0, 'object/creature/player/human_male.iff', 'object/creature/player/human_male.iff', 'Wottik Oboo', 0, '2011-10-15 13:04:31', '2011-10-15 13:04:31', NULL, 'player character');
 /*!40000 ALTER TABLE `object` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

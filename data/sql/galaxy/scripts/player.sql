@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 14:04:29
+# Date/time:                    2011-10-15 13:18:33
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,7 +12,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 # Dumping structure for table galaxy.player
-DROP TABLE IF EXISTS `player`;
 CREATE TABLE IF NOT EXISTS `player` (
   `id` bigint(20) NOT NULL,
   `profession_tag` varchar(255) NOT NULL,
@@ -36,9 +35,12 @@ CREATE TABLE IF NOT EXISTS `player` (
   CONSTRAINT `FK_98197A65BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.player: ~0 rows (approximately)
+# Dumping data for table galaxy.player: ~2 rows (approximately)
 DELETE FROM `player`;
 /*!40000 ALTER TABLE `player` DISABLE KEYS */;
+INSERT INTO `player` (`id`, `profession_tag`, `born_date`, `total_playtime`, `csr_tag`, `current_force`, `max_force`, `experimentation_enabled`, `crafting_stage`, `nearest_crafting_station`, `experimentation_points`, `accomplishment_counter`, `current_language`, `current_stomach`, `max_stomach`, `current_drink`, `max_drink`, `jedi_state`) VALUES
+	(8589934598, 'crafting_artisan', '2011-10-15', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+	(8589934603, 'outdoors_scout', '2011-10-15', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 /*!40000 ALTER TABLE `player` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 14:04:29
+# Date/time:                    2011-10-15 13:18:32
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,7 +12,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 # Dumping structure for table galaxy.hopper_item
-DROP TABLE IF EXISTS `hopper_item`;
 CREATE TABLE IF NOT EXISTS `hopper_item` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `installation_id` bigint(20) DEFAULT NULL,

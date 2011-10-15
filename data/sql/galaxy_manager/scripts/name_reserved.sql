@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 10:35:25
+# Date/time:                    2011-10-15 13:15:16
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -19,8 +19,9 @@ CREATE TABLE IF NOT EXISTS `name_reserved` (
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
 # Dumping data for table galaxy_manager.name_reserved: ~9 rows (approximately)
+DELETE FROM `name_reserved`;
 /*!40000 ALTER TABLE `name_reserved` DISABLE KEYS */;
-INSERT IGNORE INTO `name_reserved` (`id`, `name`) VALUES
+INSERT INTO `name_reserved` (`id`, `name`) VALUES
 	(1, 'Luke'),
 	(2, 'Darth'),
 	(3, 'Vader'),
