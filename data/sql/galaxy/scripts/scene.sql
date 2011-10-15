@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 13:18:33
+# Date/time:                    2011-10-15 14:37:15
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `scene` (
 DELETE FROM `scene`;
 /*!40000 ALTER TABLE `scene` DISABLE KEYS */;
 INSERT INTO `scene` (`id`, `name`, `label`, `description`, `terrain`) VALUES
-	(1, 'corellia', NULL, '', 'terrain/corellia.trn'),
+	(1, 'corellia', 'corellia', '', 'terrain/corellia.trn'),
 	(2, 'dantooine', NULL, '', 'terrain/dantooine.trn'),
 	(3, 'dathomir', NULL, '', 'terrain/dathomir.trn'),
 	(4, 'endor', NULL, '', 'terrain/endor.trn'),

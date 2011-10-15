@@ -2,6 +2,7 @@
 #include "swganh/simulation/galaxy_service.h"
 
 #include "anh/service/service_manager.h"
+#include "anh/database/database_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -15,6 +16,16 @@
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_manager.h"
+
+// factories
+#include "swganh/object/creature/creature_factory.h"
+#include "swganh/object/creature/creature.h"
+#include "swganh/object/tangible/tangible_factory.h"
+#include "swganh/object/tangible/tangible.h"
+#include "swganh/object/intangible/intangible_factory.h"
+#include "swganh/object/intangible/intangible.h"
+#include "swganh/object/player/player_factory.h"
+#include "swganh/object/player/player.h"
 
 #include "swganh/simulation/scene_manager.h"
 
@@ -53,6 +64,15 @@ public:
 
         return scene_manager_;
     }
+
+	void RegisterObjectFactories(std::shared_ptr<anh::app::KernelInterface> kernel)
+	{
+		auto db_manager = kernel->GetDatabaseManager();
+		GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager));
+		GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager));
+		GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager));
+		GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager));
+	}
 
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
     {
@@ -104,6 +124,7 @@ public:
         }
         
         auto controller = make_shared<ObjectController>(controller_handlers_, object, client);
+		object->SetController(controller);
 
         controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
 
@@ -152,6 +173,7 @@ public:
     {
         auto object = LoadObjectById(message.character_id);
         StartControllingObject(object, client);
+		//
     }
 
 private:
@@ -190,12 +212,19 @@ ServiceDescription GalaxyService::GetServiceDescription()
 
 void GalaxyService::StartScene(const std::string& scene_label)
 {
+	impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel()->GetDatabaseManager()->getConnection("galaxy"));
     impl_->GetSceneManager()->StartScene(scene_label);
+	// load factories
+	RegisterObjectFactories(kernel());
 }
 
 void GalaxyService::StopScene(const std::string& scene_label)
 {
     impl_->GetSceneManager()->StopScene(scene_label);
+}
+void GalaxyService::RegisterObjectFactories(shared_ptr<anh::app::KernelInterface> kernel)
+{
+	impl_->RegisterObjectFactories(kernel);
 }
 
 shared_ptr<Object> GalaxyService::LoadObjectById(uint64_t object_id)

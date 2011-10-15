@@ -18,7 +18,6 @@ ObjectController::ObjectController(
     , object_(object)
     , client_(client)
 {
-    object_->SetController(shared_from_this());
 }
 
 ObjectController::~ObjectController()
