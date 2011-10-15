@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 15:50:19
+# Date/time:                    2011-10-15 10:35:25
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -17,12 +17,11 @@ CREATE TABLE IF NOT EXISTS `planet` (
   `name` varchar(100) NOT NULL,
   `terrainMap` varchar(100) NOT NULL,
   PRIMARY KEY (`planet_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
 # Dumping data for table galaxy_manager.planet: ~44 rows (approximately)
-DELETE FROM `planet`;
 /*!40000 ALTER TABLE `planet` DISABLE KEYS */;
-INSERT INTO `planet` (`planet_id`, `name`, `terrainMap`) VALUES
+INSERT IGNORE INTO `planet` (`planet_id`, `name`, `terrainMap`) VALUES
 	(0, 'corellia', 'terrain/corellia.trn'),
 	(1, 'dantooine', 'terrain/dantooine.trn'),
 	(2, 'dathomir', 'terrain/dathomir.trn'),

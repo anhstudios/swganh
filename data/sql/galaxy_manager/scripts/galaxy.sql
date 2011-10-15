@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 15:50:17
+# Date/time:                    2011-10-15 10:35:23
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -23,11 +23,12 @@ CREATE TABLE IF NOT EXISTS `galaxy` (
   PRIMARY KEY (`id`),
   KEY `IDX_F6BB137621DE0C6C` (`primary_id`),
   CONSTRAINT `FK_F6BB137621DE0C6C` FOREIGN KEY (`primary_id`) REFERENCES `service` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy_manager.galaxy: ~0 rows (approximately)
-DELETE FROM `galaxy`;
+# Dumping data for table galaxy_manager.galaxy: ~1 rows (approximately)
 /*!40000 ALTER TABLE `galaxy` DISABLE KEYS */;
+INSERT IGNORE INTO `galaxy` (`id`, `primary_id`, `name`, `version`, `status`, `created_at`, `updated_at`) VALUES
+	(1, NULL, 'A New Hope', '', 2, '2011-10-14 17:14:13', '2011-10-14 17:14:13');
 /*!40000 ALTER TABLE `galaxy` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

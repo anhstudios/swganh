@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 10:35:25
+# Date/time:                    2011-10-15 10:39:27
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,36 +11,16 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for procedure galaxy_manager.sp_CreateAccount
+# Dumping structure for procedure galaxy.sp_CreatePlayerAccount
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CreateAccount`(IN username char(32),IN password_ char(32), IN email varchar(50) )
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CreatePlayerAccount`(IN `account_id` BIGINT)
 BEGIN
-DECLARE salt_ VARCHAR(50);
-DECLARE saltedPASS VARCHAR(100);
-DECLARE account_id INT;
-SET salt_ = NOW()+username;
-select SHA1(CONCAT(password_,'{',salt_,'}')) into saltedPASS;
-
-INSERT INTO `account`
-(`username`,
-`username_canonical`,
-`email`,
-`email_canonical`,
-`enabled`,
-`salt`,
-`password`,
-`last_login`,
-`locked`,
-`expired`,
-`roles`,
-`credentials_expired`)
+INSERT INTO `player_account`
+(`reference_id`, `max_characters`)
 VALUES
 (
-username,username,email,email,1,salt_, saltedPASS, NOW(), 0, 0, '0', 0
+account_id, 8
 );
-
-select LAST_INSERT_ID();
-
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
