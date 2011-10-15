@@ -33,6 +33,7 @@ struct AppConfig {
         uint16_t listen_port;
         int galaxy_status_check_duration_secs;
         int login_error_timeout_secs;
+        bool login_auto_registration;
     } login_config;
 
     struct ConnectionConfig {

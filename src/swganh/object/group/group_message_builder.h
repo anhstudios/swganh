@@ -45,7 +45,7 @@ class GroupMessageBuilder
 public:
 
     // deltas
-    static void BuildMemberListDelta(Group* group, uint8_t subtype, uint16_t index, std::shared_ptr<swganh::object::tangible::BaseTangible> member);
+    static void BuildMemberListDelta(Group* group, uint8_t subtype, std::shared_ptr<swganh::object::tangible::BaseTangible> member);
     static void BuildLootModeDelta(Group* group);
     static void BuildDifficultyDelta(Group* group);
     static void BuildLootMasterDelta(Group* group);

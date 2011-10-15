@@ -36,7 +36,7 @@ void Group::AddGroupMember(std::shared_ptr<BaseTangible> member)
 {
     uint16_t next_index = swganh::object::GetNextAvailableSlot(member_list_, member_index_free_list_);
     member_list_[next_index] = member;
-    GroupMessageBuilder::BuildMemberListDelta(this, 1, next_index, member);
+    GroupMessageBuilder::BuildMemberListDelta(this, 1, member);
 }
 
 void Group::RemoveGroupMember(std::shared_ptr<BaseTangible> member)
@@ -46,7 +46,7 @@ void Group::RemoveGroupMember(std::shared_ptr<BaseTangible> member)
     {
         uint16_t index_position = std::distance(member_list_.begin(), iter);
         member_list_.erase(iter);
-        GroupMessageBuilder::BuildMemberListDelta(this, 0, index_position, member);
+        GroupMessageBuilder::BuildMemberListDelta(this, 0, member);
         member_index_free_list_.push_back(index_position);
     }
 }

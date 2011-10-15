@@ -34,6 +34,7 @@ std::shared_ptr<encoders::EncoderInterface> AuthenticationManager::encoder() {
 }
 
 bool AuthenticationManager::Authenticate(std::shared_ptr<LoginClient> client, std::shared_ptr<Account> account) {
+
     auto current_account = client->GetAccount();
 
     if (current_account) {

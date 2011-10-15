@@ -12,6 +12,27 @@ using namespace swganh::object::player;
 using namespace swganh::object::waypoint;
 using namespace swganh::messages;
 
+Player::Player()
+{
+    // TEMP manually resize these vectors
+    abilities_.resize(25);
+    experience_.resize(25);
+    waypoints_.resize(25);
+    draft_schematics_.resize(25);
+    friends_.resize(25);
+    ignored_players_.resize(25);
+    for (int i = 0; i < 26; i++)
+    {
+        abilities_free_list_.push_back(i);
+        experience_free_list_.push_back(i);
+        waypoint_free_list_.push_back(i);
+        draft_schematics_free_list_.push_back(i);
+        friends_free_list_.push_back(i);
+        ignored_free_list_.push_back(i);
+    }
+
+}
+
 void Player::AddStatusFlag(uint32_t flag)
 {
     status_flags_ = status_flags_ | flag;
@@ -135,7 +156,7 @@ void Player::AddExperience(std::string type, uint32_t amount)
     {
         return type.compare(xp.type) == 0;
     });
-
+    int total_value = amount;
     if (find_iter == experience_.end())
     {
         Player::XpData xp;
@@ -147,9 +168,10 @@ void Player::AddExperience(std::string type, uint32_t amount)
     else
     {
         find_iter->value += amount;
+        total_value = find_iter->value;
     }
     // send total amount of xp for that type
-    PlayerMessageBuilder::BuildXpDelta(this, 0, type, find_iter->value);
+    PlayerMessageBuilder::BuildXpDelta(this, 0, type, total_value);
 }
 
 void Player::DeductXp(std::string type, uint32_t amount)
@@ -214,9 +236,12 @@ void Player::AddWaypoint(shared_ptr<Waypoint> waypoint)
     auto find_iter = find_if(
         waypoints_.begin(),
         waypoints_.end(),
-        [&waypoint] (shared_ptr<Waypoint> stored_waypoint)
+        [&waypoint] (shared_ptr<Waypoint> stored_waypoint) -> bool
     {
-        return waypoint->GetObjectId() == stored_waypoint->GetObjectId();
+        if (stored_waypoint)
+            return waypoint->GetObjectId() == stored_waypoint->GetObjectId();
+        else
+            return false;
     });
 
     if (find_iter != waypoints_.end())
@@ -825,6 +850,14 @@ void Player::SetJediState(uint32_t jedi_state)
     PlayerMessageBuilder::BuildJediStateDelta(this);
 }
 
+Player::Gender Player::GetGender() const
+{
+    return gender_;
+}
+void Player::SetGender(Player::Gender value)
+{
+    gender_ = value;
+}
 boost::optional<BaselinesMessage> Player::GetBaseline3()
 {
     return move(PlayerMessageBuilder::BuildBaseline3(this));

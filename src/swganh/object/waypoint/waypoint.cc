@@ -170,6 +170,34 @@ void Waypoint::SetColor(const string& color)
         AddDeltasUpdate(message);    
     }
 }
+
+void Waypoint::SetColorByte(uint8_t color_byte)
+{
+    switch (color_byte)
+    {
+    case 1:
+        SetColor("blue");
+        break;
+    case 2:
+        SetColor("green");
+        break;
+    case 3:
+        SetColor("orange");
+        break;
+    case 4:
+        SetColor("yellow");
+        break;
+    case 5:
+        SetColor("white");
+        break;
+    case 6:
+        SetColor("space");
+        break;
+    default:
+        SetColor("blue");
+        break;
+    }
+}
 boost::optional<BaselinesMessage> Waypoint::GetBaseline3()
 {
     auto message = CreateBaselinesMessage(VIEW_3, 12);

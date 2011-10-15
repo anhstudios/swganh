@@ -2,7 +2,7 @@
 #ifndef SWGANH_OBJECT_INTANGIBLE_INTANGIBLE_FACTORY_H_
 #define SWGANH_OBJECT_INTANGIBLE_INTANGIBLE_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/object_factory.h"
 #include <unordered_map>
 
 namespace anh {
@@ -15,7 +15,7 @@ namespace object {
 namespace intangible {
     class Intangible;
 
-    class IntangibleFactory : public swganh::object::ObjectFactoryInterface
+    class IntangibleFactory : public swganh::object::ObjectFactory
     {
     public:
         IntangibleFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
@@ -31,9 +31,7 @@ namespace intangible {
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
     private:
-        IntangibleFactory(){}
         std::unordered_map<std::string, std::shared_ptr<Intangible>>::iterator GetTemplateIter_(const std::string& template_name);
-        std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
         std::unordered_map<std::string, std::shared_ptr<Intangible>> intangible_templates_;
     };
 

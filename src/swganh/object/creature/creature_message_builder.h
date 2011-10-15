@@ -40,6 +40,17 @@ public:
     static void BuildScaleDelta(Creature* creature);
     static void BuildBattleFatigueDelta(Creature* creature);
     static void BuildStateBitmaskDelta(Creature* creature);
+    static void BuildAccelerationMultiplierBaseDelta(Creature* creature);
+    static void BuildAccelerationMultiplierModifierDelta(Creature* creature);
+    static void BuildSpeedMultiplierBaseDelta(Creature* creature);
+    static void BuildSpeedMultiplierModifierDelta(Creature* creature);
+    static void BuildListenToIdDelta(Creature* creature);
+    static void BuildRunSpeedDelta(Creature* creature);
+    static void BuildSlopeModifierAngleDelta(Creature* creature);
+    static void BuildSlopeModifierPercentDelta(Creature* creature);
+    static void BuildTurnRadiusDelta(Creature* creature);
+    static void BuildWalkingSpeedDelta(Creature* creature);
+    static void BuildWaterModifierPrecent(Creature* creature);
 
     // baselines
 };

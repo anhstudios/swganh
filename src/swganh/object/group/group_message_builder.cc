@@ -31,7 +31,7 @@ namespace swganh {
 namespace object {
 namespace group {
 
-void GroupMessageBuilder::BuildMemberListDelta(Group* group, uint8_t subtype, uint16_t index, std::shared_ptr<swganh::object::tangible::BaseTangible> member)
+void GroupMessageBuilder::BuildMemberListDelta(Group* group, uint8_t subtype, std::shared_ptr<swganh::object::tangible::BaseTangible> member)
 {
     if(group->HasObservers())
     {

@@ -74,7 +74,8 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, shared_p
 #pragma warning(pop) 
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_address_(listen_address)
-    , listen_port_(listen_port) {
+    , listen_port_(listen_port)
+     {
     
     soe_server_.reset(new anh::network::soe::Server(
         kernel->GetIoService(),
@@ -158,6 +159,16 @@ void LoginService::galaxy_status_check_duration_secs(int new_duration)
 int LoginService::login_error_timeout_secs() const
 {
     return login_error_timeout_secs_;
+}
+
+void LoginService::login_auto_registration(bool auto_registration)
+{
+    login_auto_registration_ = auto_registration;
+}
+
+bool LoginService::login_auto_registration() const
+{
+    return login_auto_registration_;
 }
 
 void LoginService::login_error_timeout_secs(int new_timeout)
@@ -257,6 +268,16 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
     auto account = account_provider_->FindByUsername(message.username);
 
     if (! account || ! authentication_manager_->Authenticate(login_client, account)) {
+        if(login_auto_registration_ == true)
+        {
+            if(account_provider_->AutoRegisterAccount(message.username, message.password))
+            {
+                DLOG(WARNING) << "Auto-Registering Account: " << message.username;
+                //HandleLoginClientId_(login_client, message);
+                return;
+            }
+        }
+
         DLOG(WARNING) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
