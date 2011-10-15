@@ -47,7 +47,7 @@ uint64_t MysqlSessionProvider::GetPlayerId(uint32_t account_id) {
     uint64_t player_id = 0;
 
     try {
-        string sql = "select id from player where referenceId = ?";
+        string sql = "select id from player_account where referenceId = ?";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt(1, account_id);
@@ -99,7 +99,7 @@ uint32_t MysqlSessionProvider::GetAccountId(uint64_t player_id) {
     uint32_t account_id = 0;
 
     try {
-        string sql = "select referenceId from player where id = ?";
+        string sql = "select referenceId from player_account where id = ?";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt(1, player_id);
