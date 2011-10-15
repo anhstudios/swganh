@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 16:49:03
+# Date/time:                    2011-10-14 17:00:16
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -19,7 +19,7 @@ DECLARE salt_ VARCHAR(50);
 DECLARE saltedPASS VARCHAR(100);
 DECLARE account_id INT;
 SET salt_ = NOW()+username;
-select SHA1(password_ + '{' + salt_ + '}') into saltedPASS;
+select SHA1(CONCAT(password_,'{',salt_,'}')) into saltedPASS;
 
 INSERT INTO `account`
 (`username`,
