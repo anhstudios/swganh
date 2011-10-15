@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 15:50:19
+# Date/time:                    2011-10-15 10:35:25
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -29,11 +29,14 @@ CREATE TABLE IF NOT EXISTS `service` (
   PRIMARY KEY (`id`),
   KEY `IDX_E19D9AD2B61FAB2` (`galaxy_id`),
   CONSTRAINT `FK_E19D9AD2B61FAB2` FOREIGN KEY (`galaxy_id`) REFERENCES `galaxy` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy_manager.service: ~0 rows (approximately)
-DELETE FROM `service`;
+# Dumping data for table galaxy_manager.service: ~3 rows (approximately)
 /*!40000 ALTER TABLE `service` DISABLE KEYS */;
+INSERT IGNORE INTO `service` (`id`, `galaxy_id`, `name`, `type`, `address`, `tcp_port`, `udp_port`, `ping_port`, `version`, `status`, `last_pulse`, `created_at`, `updated_at`) VALUES
+	(34, 1, 'ANH Character Service', 'character', 2130706433, 0, 0, 0, 0, 2, 20111015103524.767, '2011-10-15 10:33:35', '2011-10-15 10:33:35'),
+	(35, 1, 'ANH Connection Service', 'connection', 2130706433, 0, 44463, 52685, 0, 2, 20111015103524.766, '2011-10-15 10:33:35', '2011-10-15 10:33:35'),
+	(36, 1, 'ANH Login Service', 'login', 2130706433, 0, 44453, 0, 0, 2, 20111015103524.767, '2011-10-15 10:33:35', '2011-10-15 10:33:35');
 /*!40000 ALTER TABLE `service` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

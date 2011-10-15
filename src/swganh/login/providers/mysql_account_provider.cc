@@ -135,7 +135,8 @@ bool MysqlAccountProvider::AutoRegisterAccount(std::string username, std::string
         auto results = unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (results->next())
 		{
-			CreatePlayerAccount(results->getUInt64(1));
+			if (CreatePlayerAccount(results->getUInt64(1)))
+				success = true;
 		}
     } catch(sql::SQLException &e) {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
