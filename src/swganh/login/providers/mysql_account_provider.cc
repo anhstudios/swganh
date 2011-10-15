@@ -68,7 +68,7 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
                 account->Disable();
             }
 
-            account->algorithm("sha512");
+            account->algorithm("sha1");
         } else {
             DLOG(WARNING) << "No account information found for user: " << username << endl;
         }
@@ -115,6 +115,26 @@ bool MysqlAccountProvider::CreateAccountSession(uint32_t account_id, const std::
         if (rows_updated > 0)
             success = true;
 
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return success;
+}
+
+bool MysqlAccountProvider::AutoRegisterAccount(std::string username, std::string password) {
+    bool success = false;
+    try {
+        string sql = "call sp_CreateAccount(?,?,?);";
+        auto conn = db_manager_->getConnection("galaxy_manager");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setString(1, username);
+        statement->setString(2, password);
+        statement->setString(3, "");
+        auto rows_updated = statement->executeUpdate();
+        if (rows_updated > 0)
+            success = true;
     } catch(sql::SQLException &e) {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
