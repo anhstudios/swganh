@@ -201,7 +201,7 @@ uint16_t CharacterService::GetMaxCharacters(uint64_t player_id) {
     try {
         auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("SELECT maxCharacters from player where id = ?")
+            conn->prepareStatement("SELECT max_characters from player_account where id = ?")
             );
         statement->setUInt64(1, player_id);
         auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
