@@ -19,8 +19,6 @@ CREATE TABLE IF NOT EXISTS `account_session` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy_manager.account_session: ~0 rows (approximately)
-DELETE FROM `account_session`;
 /*!40000 ALTER TABLE `account_session` DISABLE KEYS */;
 /*!40000 ALTER TABLE `account_session` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
