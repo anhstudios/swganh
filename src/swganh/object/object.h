@@ -264,7 +264,7 @@ uint16_t GetNextAvailableSlot(Container& container, FreeList& free_list)
 {
     if (free_list.empty())
     {        
-        return container.size();
+        return container.size() - 1;
     }
     
     free_list.sort();

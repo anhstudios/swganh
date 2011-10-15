@@ -113,21 +113,26 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto tangible = make_shared<Tangible>();
     tangible->SetObjectId(object_id);
-    CreateBaseObjectFromStorage(tangible);
     try {
         auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetTangible(?);");
-        statement->setUInt64(1, object_id);
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
-        while (result->next())
+        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        stringstream ss;
+        ss << "CALL sp_GetTangible(" << object_id << ");";
+        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
+        CreateBaseObjectFromStorage(tangible, result);
+        if (statement->getMoreResults())
         {
-            tangible->SetCustomization(result->getString("customization"));
-            tangible->SetOptionsMask(result->getUInt("options_bitmask"));
-            tangible->SetIncapTimer(result->getUInt("incap_timer"));
-            tangible->SetConditionDamage(result->getUInt("condition_damage"));
-            tangible->SetMaxCondition(result->getUInt("max_condition"));
-            uint8_t is_static = result->getInt("is_moveable");
-            tangible->SetStatic(is_static == 0);
+            result.reset(statement->getResultSet());
+            while (result->next())
+            {
+                tangible->SetCustomization(result->getString("customization"));
+                tangible->SetOptionsMask(result->getUInt("options_bitmask"));
+                tangible->SetIncapTimer(result->getUInt("incap_timer"));
+                tangible->SetConditionDamage(result->getUInt("condition_damage"));
+                tangible->SetMaxCondition(result->getUInt("max_condition"));
+                uint8_t is_static = result->getInt("is_moveable");
+                tangible->SetStatic(is_static == 0);
+            }
         }
     }
     catch(sql::SQLException &e)

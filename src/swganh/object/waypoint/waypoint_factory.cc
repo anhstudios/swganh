@@ -19,7 +19,7 @@ using namespace swganh::object;
 using namespace swganh::object::waypoint;
 
 WaypointFactory::WaypointFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : db_manager_(db_manager)
+    : ObjectFactory(db_manager)
 {
 }
 
@@ -27,7 +27,7 @@ void WaypointFactory::LoadTemplates()
 {
     try {
         auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetPlayerTemplates();");
+        auto statement = conn->prepareStatement("CALL sp_GetWaypointTemplates();");
         auto result = statement->executeQuery();
 
         while (result->next())
@@ -127,6 +127,7 @@ void WaypointFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto waypoint = make_shared<Waypoint>();
+    waypoint->SetObjectId(object_id);
     try{
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = conn->prepareStatement("CALL sp_GetWaypoint(?);");
@@ -134,24 +135,15 @@ shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
         auto result = statement->executeQuery();
         while (result->next())
         {
-            waypoint->SetComplexity(result->getDouble(1));
-            waypoint->SetStfNameFile(result->getString(2));
-            waypoint->SetStfNameString(result->getString(3));
-            string custom_string = result->getString(4);
-            waypoint->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            waypoint->SetVolume(result->getUInt(5));
-            waypoint->SetCoordinates(result->getDouble(6),result->getDouble(7),result->getDouble(8));
-            bool active = result->getUInt(9) == 1;
+            bool active = result->getUInt("is_active") == 1;
             if (active)
                 waypoint->Activate();
             else
                 waypoint->DeActivate();
 
-            waypoint->SetPlanet(result->getString(10));
-            string name = result->getString(11);
+            string name = result->getString("name");
             waypoint->SetName(wstring(begin(name), end(name)));
-            waypoint->SetColor(result->getString(12));
-            waypoint->SetTemplate(result->getString(13));
+            waypoint->SetColor(result->getString("color"));
         }
     }
     catch(sql::SQLException &e)

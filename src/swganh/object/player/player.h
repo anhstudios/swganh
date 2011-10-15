@@ -18,6 +18,13 @@ class PlayerMessageBuilder;
 class Player : public swganh::object::Object
 {
 public:
+
+    Player();
+    enum Gender
+    {
+        FEMALE = 0,
+        MALE
+    };
     enum StatusFlags
     {
         LFG = 1,
@@ -182,6 +189,10 @@ public:
     uint32_t GetJediState() const;
     void SetJediState(uint32_t jedi_state);
 
+    // Gender Set during creation
+    Gender GetGender() const;
+    void SetGender(Gender value);
+
     // baselines
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
@@ -202,7 +213,9 @@ private:
     uint32_t region_;
     std::vector<XpData> experience_;
     uint32_t experience_counter_;
+    std::list<uint16_t> experience_free_list_;
     std::vector<std::shared_ptr<swganh::object::waypoint::Waypoint>> waypoints_;
+    std::list<uint16_t> waypoint_free_list_;
     uint32_t waypoint_counter_;
     uint32_t current_force_power_;
     uint32_t max_force_power_;
@@ -234,6 +247,7 @@ private:
     uint32_t current_drink_;
     uint32_t max_drink_;
     uint32_t jedi_state_;
+    Gender gender_;
 };
 
 }}}  // namespace swganh::object::player
