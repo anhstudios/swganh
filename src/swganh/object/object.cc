@@ -328,6 +328,10 @@ void Object::SetVolume(uint32_t volume)
     volume_ = volume;
     ObjectMessageBuilder::BuildVolumeDelta(this);
 }
+void Object::SetSceneId(uint32_t scene_id)
+{
+	scene_id_ = scene_id;
+}
 optional<BaselinesMessage> Object::GetBaseline3()
 {
     return move(ObjectMessageBuilder::BuildBaseline3(this));

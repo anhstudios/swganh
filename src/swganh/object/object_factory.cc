@@ -22,6 +22,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 {
     try {
         result->next();
+		object->SetSceneId(result->getUInt("scene_id"));
         object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
         object->SetOrientation(glm::quat(result->getDouble("x_orientation"),result->getDouble("y_orientation"), result->getDouble("z_orientation"), result->getDouble("w_orientation")));
         object->SetComplexity(result->getDouble("complexity"));

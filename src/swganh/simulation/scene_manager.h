@@ -23,6 +23,7 @@ namespace simulation {
         void LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::Connection>& connection);
         
         const std::shared_ptr<Scene>& GetScene(const std::string& scene_label) const;
+		const std::shared_ptr<Scene>& GetScene(uint32_t scene_id) const;
 
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
@@ -37,6 +38,11 @@ namespace simulation {
             std::string,
             std::shared_ptr<Scene>
         > SceneMap;
+
+		typedef std::pair<
+			std::string,
+			std::shared_ptr<Scene>
+		> ScenePair;
 
         SceneDescriptionMap scene_descriptions_;
         SceneMap scenes_;
