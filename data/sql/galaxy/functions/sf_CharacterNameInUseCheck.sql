@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 15:50:19
+# Date/time:                    2011-10-15 14:37:15
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,16 +11,16 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for function galaxy_manager.sf_CharacterNameInUseCheck
+# Dumping structure for function galaxy.sf_CharacterNameInUseCheck
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` FUNCTION `sf_CharacterNameInUseCheck`(start_firstname CHAR(32)) RETURNS int(11)
+CREATE DEFINER=`root`@`localhost` FUNCTION `sf_CharacterNameInUseCheck`(`start_firstname` CHAR(32)) RETURNS int(11)
 BEGIN
 	DECLARE check_name char(32);
 	DECLARE check_value INT(11);
 	DECLARE error_code INT(11);
 
-    SET error_code = 666;
-	SELECT COUNT(*) from characters where LOWER(firstname) LIKE LOWER(start_firstname) INTO check_value;
+   SET error_code = 666;
+	SELECT COUNT(*) from object where LOWER(custom_name) LIKE LOWER(start_firstname) INTO check_value;
 
 	IF check_value > 0 THEN SET error_code = 3;
 	END IF;

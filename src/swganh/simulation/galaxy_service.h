@@ -35,6 +35,8 @@ namespace simulation {
 
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
+
+		void RegisterObjectFactories(std::shared_ptr<anh::app::KernelInterface> kernel);
         
         std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id);
         

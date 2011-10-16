@@ -23,7 +23,7 @@ namespace object {
     class ObjectManager
     {
     public:
-        /**
+		/**
          * Registers an object type for management.
          *
          * @param object_type the type of object to manage.

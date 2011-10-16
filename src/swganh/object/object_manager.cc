@@ -4,6 +4,7 @@
 using namespace std;
 using namespace swganh::object;
 
+
 void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<ObjectFactoryInterface>& factory)
 {
     auto find_iter = factories_.find(object_type);
@@ -31,6 +32,9 @@ void ObjectManager::UnregisterObjectType(uint32_t object_type)
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id)
 {
     shared_ptr<Object> object;
+	
+	if (factories_.size() == 0)
+		return object;
 
     auto find_iter = find_if(
         begin(factories_),

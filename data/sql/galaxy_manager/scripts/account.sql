@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 10:35:23
+# Date/time:                    2011-10-15 13:15:15
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -33,11 +33,12 @@ CREATE TABLE IF NOT EXISTS `account` (
   `credentials_expire_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UNIQ_7D3656A492FC23A8` (`username_canonical`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy_manager.account: ~2 rows (approximately)
+# Dumping data for table galaxy_manager.account: ~6 rows (approximately)
+DELETE FROM `account`;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT IGNORE INTO `account` (`id`, `username`, `username_canonical`, `email`, `email_canonical`, `enabled`, `algorithm`, `salt`, `password`, `last_login`, `locked`, `expired`, `expires_at`, `confirmation_token`, `password_requested_at`, `roles`, `credentials_expired`, `credentials_expire_at`) VALUES
+INSERT INTO `account` (`id`, `username`, `username_canonical`, `email`, `email_canonical`, `enabled`, `algorithm`, `salt`, `password`, `last_login`, `locked`, `expired`, `expires_at`, `confirmation_token`, `password_requested_at`, `roles`, `credentials_expired`, `credentials_expire_at`) VALUES
 	(6, 'kronos3', 'kronos3', '', '', 1, '', '20111014165409', 'c42d960061f74617f54d5342e22d96c12ff5cdae', '2011-10-14 16:54:09', 0, 0, NULL, NULL, NULL, '0', 0, NULL),
 	(7, 'kronos', 'kronos', '', '', 1, '', '20111014165741', 'a4048cab95fd8f044b04476dc8a623bbed65fb96', '2011-10-14 16:57:41', 0, 0, NULL, NULL, NULL, '0', 0, NULL),
 	(8, 'kronos5', 'kronos5', '', '', 1, '', '20111015102756', 'b16806e81ac566088ab9111c92b3039f72d8cff4', '2011-10-15 10:27:56', 0, 0, NULL, NULL, NULL, '0', 0, NULL),

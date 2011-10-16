@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 14:37:16
+# Date/time:                    2011-10-15 13:15:16
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,10 +11,10 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for table galaxy.species
+# Dumping structure for table galaxy_manager.species
 CREATE TABLE IF NOT EXISTS `species` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
+  `species_name` varchar(100) NOT NULL,
   `health_min` int(11) NOT NULL,
   `health_max` int(11) NOT NULL,
   `strength_min` int(11) NOT NULL,
@@ -37,10 +37,10 @@ CREATE TABLE IF NOT EXISTS `species` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.species: ~10 rows (approximately)
+# Dumping data for table galaxy_manager.species: ~10 rows (approximately)
 DELETE FROM `species`;
 /*!40000 ALTER TABLE `species` DISABLE KEYS */;
-INSERT INTO `species` (`id`, `name`, `health_min`, `health_max`, `strength_min`, `strength_max`, `constitution_min`, `constitution_max`, `action_min`, `action_max`, `quickness_min`, `quickness_max`, `stamina_min`, `stamina_max`, `mind_min`, `mind_max`, `focus_min`, `focus_max`, `willpower_min`, `willpower_max`, `total`) VALUES
+INSERT INTO `species` (`id`, `species_name`, `health_min`, `health_max`, `strength_min`, `strength_max`, `constitution_min`, `constitution_max`, `action_min`, `action_max`, `quickness_min`, `quickness_max`, `stamina_min`, `stamina_max`, `mind_min`, `mind_max`, `focus_min`, `focus_max`, `willpower_min`, `willpower_max`, `total`) VALUES
 	(1, 'human', 400, 1100, 400, 1100, 400, 1100, 400, 1100, 400, 1100, 400, 1100, 400, 1100, 400, 1100, 400, 1100, 5400),
 	(2, 'rodian', 300, 1000, 300, 500, 300, 400, 300, 1200, 300, 650, 450, 850, 300, 1000, 300, 500, 350, 550, 5400),
 	(3, 'trandoshan', 550, 1250, 600, 800, 700, 800, 300, 1000, 300, 450, 300, 400, 300, 1000, 300, 500, 300, 600, 5550),
