@@ -22,7 +22,9 @@ Object::Object()
     , stf_name_string_("")
     , custom_name_(L"")
     , volume_(0)
-{}
+{
+	AddBaselinesBuilders_();
+}
 
 bool Object::HasController() const
 {
@@ -98,6 +100,7 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
     if (HasController())
     {
         object->Subscribe(GetController());
+		MakeClean();
     }
 }
 

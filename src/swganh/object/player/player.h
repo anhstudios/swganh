@@ -20,6 +20,7 @@ class Player : public swganh::object::Object
 public:
 
     Player();
+	
     enum Gender
     {
         FEMALE = 0,
