@@ -3,6 +3,9 @@ bin/*
 build/*
 vendor/*
 
+# ignore configuration files
+data/sql/setup.cg
+
 # ignore OS generated files
 .DS_Store
 .redcar

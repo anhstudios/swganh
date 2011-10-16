@@ -179,20 +179,19 @@ public:
         auto object = LoadObjectById(message.character_id);
 		StartControllingObject(object, client);
 		// CmdStartScene
-		swganh::messages::CmdStartScene start_scene;
-		start_scene.ignore_layout = 0;
-		start_scene.character_id = object->GetObjectId();
+        swganh::messages::CmdStartScene start_scene;
+        start_scene.ignore_layout = 0;
+        start_scene.character_id = object->GetObjectId();
 		
-		start_scene.terrain_map = scene_manager_->GetScene(object->GetSceneId())->GetTerrainMap();
-		start_scene.position = object->GetPosition();
-		// TODO: Regex this beotch
-		start_scene.shared_race_template = "object/creature/player/shared_human_male.iff";
-		start_scene.galaxy_time = 0;
-		client->GetSession()->SendMessage(start_scene);
+        start_scene.terrain_map = scene_manager_->GetScene(object->GetSceneId())->GetTerrainMap();
+        start_scene.position = object->GetPosition();
+        start_scene.shared_race_template = object->GetTemplate();
+        start_scene.galaxy_time = 0;
+        client->GetSession()->SendMessage(start_scene);
 		
 		swganh::messages::SceneCreateObjectByCrc scene_create_object;
 		scene_create_object.object_id = object->GetObjectId();
-		scene_create_object.object_crc = anh::memcrc(object->GetTemplate());
+        scene_create_object.object_crc = anh::memcrc(object->GetTemplate());
 		scene_create_object.position = object->GetPosition();
 		scene_create_object.orientation = object->GetOrientation();
 		client->GetSession()->SendMessage(scene_create_object);
