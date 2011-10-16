@@ -187,6 +187,9 @@ public:
     void SetCustomName(std::wstring custom_name); 
     uint32_t GetVolume() { return volume_; }
     void SetVolume(uint32_t volume);
+	
+	uint32_t GetSceneId() { return scene_id_; }
+	void SetSceneId(uint32_t scene_id);
 
     /**
      * Stores a deltas message update for the object.
@@ -249,6 +252,7 @@ private:
     bool is_dirty_;
 
     uint64_t object_id_;             // create
+	uint32_t scene_id_;				 // create
     std::string template_string_;    // create
     glm::vec3 position_;             // create
     glm::quat orientation_;          // create

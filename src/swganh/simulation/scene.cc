@@ -100,7 +100,10 @@ const std::string& Scene::GetDescription() const
 {
     return impl_->GetDescription().description;
 }
-
+const std::string& Scene::GetTerrainMap() const 
+{
+	return impl_->GetDescription().terrain;
+}
 void Scene::AddObject(const std::shared_ptr<swganh::object::Object>& object)
 {
     impl_->AddObject(object);
