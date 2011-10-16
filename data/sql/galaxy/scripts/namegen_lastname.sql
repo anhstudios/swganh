@@ -14,14 +14,12 @@
 # Dumping structure for table galaxy.namegen_lastname
 CREATE TABLE IF NOT EXISTS `namegen_lastname` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `last_name` varchar(100) NOT NULL,
+  `lastname` varchar(100) NOT NULL,
   `species` int(11) NOT NULL,
   `gender` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.namegen_lastname: ~0 rows (approximately)
-DELETE FROM `namegen_lastname`;
 /*!40000 ALTER TABLE `namegen_lastname` DISABLE KEYS */;
 /*!40000 ALTER TABLE `namegen_lastname` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
