@@ -185,16 +185,13 @@ public:
 		
         start_scene.terrain_map = scene_manager_->GetScene(object->GetSceneId())->GetTerrainMap();
         start_scene.position = object->GetPosition();
-
-        std::string shared_template = object->GetTemplate();
-        shared_template.insert(23, "shared_");
-        start_scene.shared_race_template = shared_template;
+        start_scene.shared_race_template = object->GetTemplate();
         start_scene.galaxy_time = 0;
         client->GetSession()->SendMessage(start_scene);
 		
 		swganh::messages::SceneCreateObjectByCrc scene_create_object;
 		scene_create_object.object_id = object->GetObjectId();
-		scene_create_object.object_crc = anh::memcrc(object->GetTemplate());
+        scene_create_object.object_crc = anh::memcrc(object->GetTemplate());
 		scene_create_object.position = object->GetPosition();
 		scene_create_object.orientation = object->GetOrientation();
 		client->GetSession()->SendMessage(scene_create_object);
