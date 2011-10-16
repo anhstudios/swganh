@@ -186,7 +186,7 @@ public:
         start_scene.terrain_map = scene_manager_->GetScene(object->GetSceneId())->GetTerrainMap();
         start_scene.position = object->GetPosition();
 
-        std::string shared_template = object->GetStfNameFile();
+        std::string shared_template = object->GetTemplate();
         shared_template.insert(23, "shared_");
         start_scene.shared_race_template = shared_template;
         start_scene.galaxy_time = 0;
