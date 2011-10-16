@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 14:37:16
+# Date/time:                    2011-10-15 23:25:18
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -33,9 +33,6 @@ charCreate:BEGIN
   DECLARE base_skill_id INT;
   DECLARE nameCheck INT;
 
-  
-
-
   SELECT sf_CharacterNameInUseCheck(start_firstname) INTO nameCheck;
     IF nameCheck <> 666 THEN
       SELECT(nameCheck);
@@ -57,7 +54,7 @@ charCreate:BEGIN
 
   START TRANSACTION;
 
-  SELECT MAX(id) + 5 FROM object INTO object_id FOR UPDATE;
+  SELECT MAX(id) + 10 FROM object INTO object_id FOR UPDATE;
 
   IF object_id IS NULL THEN
     SET object_id = 8589934593;
@@ -70,13 +67,26 @@ charCreate:BEGIN
 
    SELECT id from species where species.name like shortSpecies into race_id;
 
-   INSERT INTO `object` VALUES (object_id, start_scene, parent_id, base_model_string, start_x,start_y,start_z,oX,oY,oZ,oW, 0, base_model_string, base_model_string, start_custom_name,0, NOW(), NOW(), null, 'player character');
+   INSERT INTO `object` VALUES (object_id, start_scene, parent_id, base_model_string, start_x,start_y,start_z,oX,oY,oZ,oW, 0, base_model_string, base_model_string, start_custom_name,0, NOW(), NOW(), null, start_custom_name + ' base object');
    INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture, scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier, run_speed, slope_modifier_angle, slope_modifier_percent, walking_speed) 
 	VALUES (object_id, parent_id, 2000, 0, 0,start_scale, 1, 5, 1, 5, 10, 5, 5, 5 );
+	-- APPEARANCE
+	INSERT INTO `appearance` VALUES (object_id, scale, gender, shortSpecies, start_appearance_customization);
+	-- DATAPAD
+	--	INSERT INTO `object` VALUES (object_id + 2, start_scene, object_id, base_model_string, start_x,start_y,start_z,oX,oY,oZ,oW, 0, base_model_string, base_model_string, start_custom_name,0, NOW(), NOW(), null, start_custom_name + ' datapad');
+	-- INVENTORY
+	-- BANK
+	-- MISSION
+	-- HAIR
+   INSERT INTO `object` VALUES (object_id + 6, start_scene, parent_id, start_hair_model, start_x,start_y,start_z,oX,oY,oZ,oW, 0, start_hair_model, start_hair_model, 'hair' ,0, NOW(), NOW(), null, start_custom_name + ' hair object');
+  	INSERT INTO `appearance` VALUES (object_id + 6, scale, gender, shortSpecies, hair_customization);
+	-- EQUIPED
+	-- PLAYER
+	INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, base_model_string, start_x,start_y,start_z,oX,oY,oZ,oW, 0, base_model_string, base_model_string, start_custom_name,0, NOW(), NOW(), null, 'player character');
 	INSERT INTO `player` (id, profession_tag, born_date, csr_tag, current_language, jedi_state)
-	VALUES (object_id, start_profession, NOW(), 0, 0, 0);
+	VALUES (object_id + 1, start_profession, NOW(), 0, 0, 0);
 	SELECT id FROM player_account where start_account_id = reference_id INTO player_id;
-   INSERT INTO player_accounts_players values (player_id, object_id);
+   INSERT INTO player_accounts_players values (player_id, object_id + 1);
 	
    COMMIT;
 	
