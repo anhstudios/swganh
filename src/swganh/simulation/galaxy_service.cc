@@ -1,6 +1,7 @@
 
 #include "swganh/simulation/galaxy_service.h"
 
+#include "anh/crc.h"
 #include "anh/service/service_manager.h"
 #include "anh/database/database_manager.h"
 
@@ -30,6 +31,8 @@
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
+#include "swganh/messages/scene_create_object_by_crc.h"
+#include "swganh/messages/scene_end_baselines.h"
 
 using namespace std;
 using namespace swganh::connection;
@@ -174,7 +177,7 @@ public:
         const SelectCharacter& message)
     {
         auto object = LoadObjectById(message.character_id);
-        StartControllingObject(object, client);
+		StartControllingObject(object, client);
 		// CmdStartScene
 		swganh::messages::CmdStartScene start_scene;
 		start_scene.ignore_layout = 0;
@@ -187,6 +190,16 @@ public:
 		start_scene.galaxy_time = 0;
 		client->GetSession()->SendMessage(start_scene);
 		
+		swganh::messages::SceneCreateObjectByCrc scene_create_object;
+		scene_create_object.object_id = object->GetObjectId();
+		scene_create_object.object_crc = anh::memcrc(object->GetTemplate());
+		scene_create_object.position = object->GetPosition();
+		scene_create_object.orientation = object->GetOrientation();
+		client->GetSession()->SendMessage(scene_create_object);
+
+		swganh::messages::SceneEndBaselines scene_end_baselines;
+		scene_end_baselines.object_id = object->GetObjectId();
+		client->GetSession()->SendMessage(scene_end_baselines);
     }
 
 private:
