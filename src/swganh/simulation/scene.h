@@ -42,6 +42,7 @@ namespace simulation {
         const std::string& GetName() const;
         const std::string& GetLabel() const;
         const std::string& GetDescription() const;
+		const std::string& GetTerrainMap() const;
 
         void AddObject(const std::shared_ptr<swganh::object::Object>& object);
 

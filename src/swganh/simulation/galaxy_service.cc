@@ -28,6 +28,8 @@
 #include "swganh/object/player/player.h"
 
 #include "swganh/simulation/scene_manager.h"
+#include "swganh/messages/cmd_start_scene.h"
+#include "swganh/messages/cmd_scene_ready.h"
 
 using namespace std;
 using namespace swganh::connection;
@@ -173,7 +175,18 @@ public:
     {
         auto object = LoadObjectById(message.character_id);
         StartControllingObject(object, client);
-		//
+		// CmdStartScene
+		swganh::messages::CmdStartScene start_scene;
+		start_scene.ignore_layout = 0;
+		start_scene.character_id = object->GetObjectId();
+		
+		start_scene.terrain_map = scene_manager_->GetScene(object->GetSceneId())->GetTerrainMap();
+		start_scene.position = object->GetPosition();
+		// TODO: Regex this beotch
+		start_scene.shared_race_template = "object/creature/player/shared_human_male.iff";
+		start_scene.galaxy_time = 0;
+		client->GetSession()->SendMessage(start_scene);
+		
     }
 
 private:
