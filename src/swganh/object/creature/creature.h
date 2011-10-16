@@ -39,6 +39,16 @@ public:
     Creature(uint32_t bank_credits, uint32_t cash_credits, std::list<std::string> skill_list);
     ~Creature();
 
+	enum CreatureOffSet
+	{
+		PLAYER_OFFSET = 1,
+		DATAPAD_OFFSET,
+		INVENTORY_OFFSET,
+		BANK_OFFSET,
+		MISSION_OFFSET,
+		HAIR_OFFSET, 
+		EQUIPED_OFFSET
+	};
     enum HAM
     {
         HEALTH,

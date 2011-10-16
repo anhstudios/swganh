@@ -23,6 +23,8 @@ public:
 
     void AddObject(const shared_ptr<Object>& object)
     {
+		InsertObject(object);
+
         for_each(begin(object_map_), end(object_map_),
             [&object] (const ObjectMap::value_type& object_entry) 
         {
@@ -35,8 +37,7 @@ public:
     
     void RemoveObject(const shared_ptr<Object>& object)
     {
-        objects_.erase(object);
-        object_map_.erase(object->GetObjectId());
+		EraseObject(object);
 
         for_each(begin(object_map_), end(object_map_),
             [&object] (const ObjectMap::value_type& object_entry) 
@@ -48,6 +49,24 @@ public:
         });
     }
 
+	void InsertObject(const shared_ptr<Object>& object)
+	{
+		// make sure it's not already there
+		auto find_iter = objects_.find(object);
+		if (find_iter == end(objects_))
+			objects_.insert(find_iter, object);
+
+		auto find_map = object_map_.find(object->GetObjectId());
+		if (find_map == end(object_map_))
+			object_map_.insert(find_map, ObjectPair(object->GetObjectId(), object));
+	}
+
+	void EraseObject(const shared_ptr<Object>& object)
+	{        
+		objects_.erase(object);
+        object_map_.erase(object->GetObjectId());
+	}
+
 
 private:
 
@@ -55,6 +74,10 @@ private:
         uint64_t,
         shared_ptr<Object>
     > ObjectMap;
+	typedef std::pair<
+		uint64_t,
+		shared_ptr<Object>
+	> ObjectPair;
 
     typedef std::set<std::shared_ptr<Object>> ObjectSet;
 

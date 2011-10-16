@@ -1,6 +1,8 @@
 
 #include "swganh/simulation/galaxy_service.h"
 
+#include <boost/algorithm/string.hpp>
+
 #include "anh/crc.h"
 #include "anh/service/service_manager.h"
 #include "anh/database/database_manager.h"
@@ -185,8 +187,10 @@ public:
 		
 		start_scene.terrain_map = scene_manager_->GetScene(object->GetSceneId())->GetTerrainMap();
 		start_scene.position = object->GetPosition();
-		// TODO: Regex this beotch
-		start_scene.shared_race_template = "object/creature/player/shared_human_male.iff";
+		
+		string shared_race_template = object->GetTemplate();
+		boost::algorithm::replace_first(shared_race_template, "player/", "player/shared_");
+		start_scene.shared_race_template = shared_race_template;
 		start_scene.galaxy_time = 0;
 		client->GetSession()->SendMessage(start_scene);
 		
@@ -197,9 +201,13 @@ public:
 		scene_create_object.orientation = object->GetOrientation();
 		client->GetSession()->SendMessage(scene_create_object);
 
+		// Add object to scene and send baselines
+		GetSceneManager()->GetScene(object->GetSceneId())->AddObject(object);
+
 		swganh::messages::SceneEndBaselines scene_end_baselines;
 		scene_end_baselines.object_id = object->GetObjectId();
 		client->GetSession()->SendMessage(scene_end_baselines);
+		
     }
 
 private:

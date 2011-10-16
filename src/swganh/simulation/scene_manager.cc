@@ -68,7 +68,7 @@ const std::shared_ptr<Scene>& SceneManager::GetScene(uint32_t scene_id) const
 	if (iter != end(scenes_))
 		scene = iter->second;
 
-	return move(scene);
+	return scene;
 }
 
 void SceneManager::StartScene(const std::string& scene_label)

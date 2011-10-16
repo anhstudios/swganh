@@ -36,7 +36,7 @@ namespace player {
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
 
-        virtual uint32_t GetType() const;
+		virtual uint32_t GetType() const;
         const static uint32_t type;
     private:
         // Helpers
