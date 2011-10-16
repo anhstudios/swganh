@@ -21,6 +21,9 @@
 #ifndef SWGANH_OBJECT_CREATURE_CREATURE_MESSAGE_BUILDER_H_
 #define SWGANH_OBJECT_CREATURE_CREATURE_MESSAGE_BUILDER_H_
 
+#include <cstdint>
+#include <string>
+
 namespace swganh {
 namespace object {
 namespace creature {

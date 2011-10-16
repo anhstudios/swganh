@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 14:04:29
+# Date/time:                    2011-10-15 14:37:15
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,7 +12,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 # Dumping structure for table galaxy.schematic_property
-DROP TABLE IF EXISTS `schematic_property`;
 CREATE TABLE IF NOT EXISTS `schematic_property` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `manufacture_schematic_id` bigint(20) DEFAULT NULL,

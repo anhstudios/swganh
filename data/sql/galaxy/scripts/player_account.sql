@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 10:35:23
+# Date/time:                    2011-10-15 14:37:15
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -19,9 +19,10 @@ CREATE TABLE IF NOT EXISTS `player_account` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.player_account: ~0 rows (approximately)
+# Dumping data for table galaxy.player_account: ~2 rows (approximately)
+DELETE FROM `player_account`;
 /*!40000 ALTER TABLE `player_account` DISABLE KEYS */;
-INSERT IGNORE INTO `player_account` (`id`, `reference_id`, `max_characters`) VALUES
+INSERT INTO `player_account` (`id`, `reference_id`, `max_characters`) VALUES
 	(1, 10, 8),
 	(2, 11, 8);
 /*!40000 ALTER TABLE `player_account` ENABLE KEYS */;

@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 10:35:23
+# Date/time:                    2011-10-15 14:37:15
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -22,8 +22,12 @@ CREATE TABLE IF NOT EXISTS `player_accounts_players` (
   CONSTRAINT `FK_AFDAB34199E6F5DF` FOREIGN KEY (`player_id`) REFERENCES `player_account` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.player_accounts_players: ~0 rows (approximately)
+# Dumping data for table galaxy.player_accounts_players: ~2 rows (approximately)
+DELETE FROM `player_accounts_players`;
 /*!40000 ALTER TABLE `player_accounts_players` DISABLE KEYS */;
+INSERT INTO `player_accounts_players` (`player_id`, `player_character_id`) VALUES
+	(2, 8589934598),
+	(2, 8589934603);
 /*!40000 ALTER TABLE `player_accounts_players` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

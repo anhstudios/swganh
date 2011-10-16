@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-14 15:50:19
+# Date/time:                    2011-10-15 14:37:16
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,11 +11,16 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for procedure galaxy_manager.sp_GetPlayerFromSession
+# Dumping structure for procedure galaxy.sp_ReturnAccountCharacters
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetPlayerFromSession`(IN player_id BIGINT(20))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ReturnAccountCharacters`(IN `account_id` INT)
 BEGIN
-    SELECT session_key from player where id = player_id;
+	 SELECT A.id, B.custom_name, A.jedi_state, B.shared_template_string
+    FROM player A
+    INNER JOIN object B ON (A.id = B.id)
+    INNER JOIN player_accounts_players C ON (A.id = C.player_character_id)
+    INNER JOIN player_account D ON (C.player_id = D.id)
+    WHERE A.id = C.player_character_id;
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

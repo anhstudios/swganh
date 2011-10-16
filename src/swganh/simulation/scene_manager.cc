@@ -61,7 +61,7 @@ const std::shared_ptr<Scene>& SceneManager::GetScene(const std::string& scene_la
 
 void SceneManager::StartScene(const std::string& scene_label)
 {
-    auto description_iter = scene_descriptions_.find(scene_label);
+	auto description_iter = scene_descriptions_.find(scene_label);
 
     if (description_iter == scene_descriptions_.end())
     {

@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 10:35:24
+# Date/time:                    2011-10-15 13:15:16
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -19,9 +19,10 @@ CREATE TABLE IF NOT EXISTS `namegen_lastname` (
   PRIMARY KEY (`lastname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
-# Dumping data for table galaxy_manager.namegen_lastname: ~76,931 rows (approximately)
+# Dumping data for table galaxy_manager.namegen_lastname: ~77,017 rows (approximately)
+DELETE FROM `namegen_lastname`;
 /*!40000 ALTER TABLE `namegen_lastname` DISABLE KEYS */;
-INSERT IGNORE INTO `namegen_lastname` (`lastname`, `species`, `gender`) VALUES
+INSERT INTO `namegen_lastname` (`lastname`, `species`, `gender`) VALUES
 	('A\'a', 6, 0),
 	('A\'Ab', 6, 0),
 	('A\'abev', 6, 0),
@@ -45407,9 +45408,9 @@ INSERT IGNORE INTO `namegen_lastname` (`lastname`, `species`, `gender`) VALUES
 	('Liati', 33, 1),
 	('Liatia', 33, 0),
 	('Liatte', 49, 0),
-	('Liaty', 49, 0);
-INSERT IGNORE INTO `namegen_lastname` (`lastname`, `species`, `gender`) VALUES
-	('Liava', 5, 1),
+	('Liaty', 49, 0),
+	('Liava', 5, 1);
+INSERT INTO `namegen_lastname` (`lastname`, `species`, `gender`) VALUES
 	('Liavaif', 33, 1),
 	('Liaveesh', 49, 1),
 	('Liavicait', 33, 0),
