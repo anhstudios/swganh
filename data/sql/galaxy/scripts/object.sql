@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
+# Server version:               5.3.2-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 23:25:17
+# Date/time:                    2011-10-16 12:33:05
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,11 +12,12 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 # Dumping structure for table galaxy.object
+DROP TABLE IF EXISTS `object`;
 CREATE TABLE IF NOT EXISTS `object` (
   `id` bigint(20) NOT NULL DEFAULT '8589934593',
   `scene_id` int(11) DEFAULT NULL,
   `parent_id` bigint(20) DEFAULT NULL,
-  `shared_template_string` varchar(255) NOT NULL,
+  `iff_template_id` int(10) unsigned NOT NULL,
   `x_position` double NOT NULL,
   `y_position` double NOT NULL,
   `z_position` double NOT NULL,
@@ -42,11 +43,11 @@ CREATE TABLE IF NOT EXISTS `object` (
 
 # Dumping data for table galaxy.object: ~19 rows (approximately)
 /*!40000 ALTER TABLE `object` DISABLE KEYS */;
-INSERT INTO `object` (`id`, `scene_id`, `parent_id`, `shared_template_string`, `x_position`, `y_position`, `z_position`, `x_orientation`, `y_orientation`, `z_orientation`, `w_orientation`, `complexity`, `stf_name_file`, `stf_name_string`, `custom_name`, `volume`, `created_at`, `updated_at`, `deleted_at`, `discr`) VALUES
-	(0, 1, NULL, '', 0, 0, 0, 0, 0, 0, 0, 0, 'universe', 'universe', 'universe', 0, '2011-10-15 12:46:23', '2011-10-15 12:46:24', '2011-10-15 12:46:24', 'universe'),
-	(8589934593, 1, NULL, '', 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, ''),
-	(8589934598, 1, 0, 'object/creature/player/human_male.iff', -137, 0, -4723, 0, 1, 0, 0, 0, 'object/creature/player/human_male.iff', 'object/creature/player/human_male.iff', '0', 0, '2011-10-15 12:59:08', '2011-10-15 12:59:08', NULL, 'player character'),
-	(8589934603, 1, 0, 'object/creature/player/human_male.iff', -137, 0, -4723, 0, 1, 0, 0, 0, 'object/creature/player/human_male.iff', 'object/creature/player/human_male.iff', 'Wottik Oboo', 0, '2011-10-15 13:04:31', '2011-10-15 13:04:31', NULL, 'player character'),
+INSERT INTO `object` (`id`, `scene_id`, `parent_id`, `iff_template_id`, `x_position`, `y_position`, `z_position`, `x_orientation`, `y_orientation`, `z_orientation`, `w_orientation`, `complexity`, `stf_name_file`, `stf_name_string`, `custom_name`, `volume`, `created_at`, `updated_at`, `deleted_at`, `discr`) VALUES
+	(0, 1, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'universe', 'universe', 'universe', 0, '2011-10-15 12:46:23', '2011-10-15 12:46:24', '2011-10-15 12:46:24', 'universe'),
+	(8589934593, 1, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', '', '', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', NULL, ''),
+	(8589934598, 1, 0, 1221, -137, 0, -4723, 0, 1, 0, 0, 0, 'object/creature/player/human_male.iff', 'object/creature/player/human_male.iff', '0', 0, '2011-10-15 12:59:08', '2011-10-15 12:59:08', NULL, 'player character'),
+	(8589934603, 1, 0, 1207, -137, 0, -4723, 0, 1, 0, 0, 0, 'object/creature/player/human_male.iff', 'object/creature/player/human_male.iff', 'Wottik Oboo', 0, '2011-10-15 13:04:31', '2011-10-15 13:04:31', NULL, 'player character');
 	(8589934613, 1, 0, 'object/creature/player/zabrak_male.iff', -137, 0, -4723, 0, 1, 0, 0, 0, 'object/creature/player/zabrak_male.iff', 'object/creature/player/zabrak_male.iff', 'Kronos Ownz', 0, '2011-10-15 20:09:37', '2011-10-15 20:09:37', NULL, '0'),
 	(8589934623, 1, 0, 'object/creature/player/zabrak_male.iff', -137, 0, -4723, 0, 1, 0, 0, 0, 'object/creature/player/zabrak_male.iff', 'object/creature/player/zabrak_male.iff', 'Kronos Ownz', 0, '2011-10-15 20:11:05', '2011-10-15 20:11:05', NULL, '0'),
 	(8589934633, 1, 0, 'object/creature/player/zabrak_male.iff', -137, 0, -4723, 0, 1, 0, 0, 0, 'object/creature/player/zabrak_male.iff', 'object/creature/player/zabrak_male.iff', 'Kronos Ownz', 0, '2011-10-15 20:11:18', '2011-10-15 20:11:18', NULL, '0'),

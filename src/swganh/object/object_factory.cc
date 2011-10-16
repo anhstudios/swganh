@@ -31,7 +31,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         string custom_string = result->getString("custom_name");
         object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
         object->SetVolume(result->getUInt("volume"));
-        object->SetTemplate(result->getString("shared_template_string"));
+        object->SetTemplate(result->getString("iff_template"));
         
     }
     catch(sql::SQLException &e)

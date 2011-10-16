@@ -141,7 +141,11 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 
                 string custom_name = result_set->getString("custom_name");
                 character.name = std::wstring(custom_name.begin(), custom_name.end());
-                character.race_crc = anh::memcrc(result_set->getString("shared_template_string"));
+                
+                std::string non_shared_template = result_set->getString("iff_template");
+                non_shared_template.erase(23, 7);
+
+                character.race_crc = anh::memcrc(non_shared_template);
                 character.galaxy_id = service_directory()->galaxy().id();
                 character.status = result_set->getInt("jedi_state");
                 characters.push_back(character);
