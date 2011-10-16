@@ -33,11 +33,7 @@ CREATE TABLE IF NOT EXISTS `service` (
 
 # Dumping data for table galaxy_manager.service: ~3 rows (approximately)
 DELETE FROM `service`;
-/*!40000 ALTER TABLE `service` DISABLE KEYS */;
-INSERT INTO `service` (`id`, `galaxy_id`, `name`, `type`, `address`, `tcp_port`, `udp_port`, `ping_port`, `version`, `status`, `last_pulse`, `created_at`, `updated_at`) VALUES
-	(63, 1, 'ANH Character Service', 'character', 2130706433, 0, 0, 0, 0, 2, 20111015131516.677, '2011-10-15 13:12:30', '2011-10-15 13:12:30'),
-	(64, 1, 'ANH Login Service', 'login', 2130706433, 0, 44453, 0, 0, 2, 20111015131516.677, '2011-10-15 13:12:30', '2011-10-15 13:12:30'),
-	(65, 1, 'ANH Connection Service', 'connection', 2130706433, 0, 44463, 52685, 0, 2, 20111015131516.676, '2011-10-15 13:12:30', '2011-10-15 13:12:30');
+
 /*!40000 ALTER TABLE `service` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
