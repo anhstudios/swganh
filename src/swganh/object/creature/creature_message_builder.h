@@ -23,6 +23,8 @@
 
 #include <cstdint>
 #include <string>
+#include <boost/optional.hpp>
+#include <swganh/messages/baselines_message.h>
 
 namespace swganh {
 namespace object {
@@ -56,6 +58,7 @@ public:
     static void BuildWaterModifierPrecent(Creature* creature);
 
     // baselines
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Creature* creature);
 };
 
 }}} // swganh::object::creature

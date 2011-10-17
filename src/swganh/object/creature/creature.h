@@ -229,6 +229,8 @@ public:
      */
     void SetWaterModifierPercent(float water_modifier_percent);
 
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+
 private:
     uint32_t    bank_credits_;                          // update 1 variable 0
     uint32_t    cash_credits_;                          // update 1 variable 1

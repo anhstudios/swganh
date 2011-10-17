@@ -86,3 +86,8 @@ void Creature::SetStateBitmask(uint64_t state_bitmask)
     state_bitmask_ = state_bitmask;
     CreatureMessageBuilder::BuildStateBitmaskDelta(this);
 }
+
+boost::optional<BaselinesMessage> Creature::GetBaseline3()
+{
+    return move(CreatureMessageBuilder::BuildBaseline3(this));
+}

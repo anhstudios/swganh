@@ -25,9 +25,9 @@ struct BaseBaselinesMessage : public swganh::messages::BaseSwgMessage<T> {
         buffer.write(object_id);
         buffer.write(object_type);
         buffer.write(view_type);
-        buffer.write(object_opcount);
 
-        buffer.write(data.size());
+        buffer.write<uint32_t>(data.size() + 2);
+        buffer.write<uint16_t>(object_opcount);
         buffer.write(data.data(), data.size());        
     }
 
