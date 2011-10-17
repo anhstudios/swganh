@@ -59,6 +59,7 @@ public:
 
     // baselines
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Creature* creature);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Creature* creature);
 };
 
 }}} // swganh::object::creature

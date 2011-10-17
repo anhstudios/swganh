@@ -31,7 +31,7 @@ public:
     void SetCustomization(const std::string& customization);
     const std::string& GetCustomization() { return customization_; }
 
-    const std::vector<uint32_t> GetComponentCustomization() { return component_customization_list_; }
+    const std::vector<uint32_t>& GetComponentCustomization() { return component_customization_list_; }
     void AddComponentCustomization(uint32_t customization);
     void RemoveComponentCustomization(uint32_t customization);
     void ClearComponentCustomization();
@@ -57,7 +57,7 @@ public:
     void RemoveDefender(uint64_t defender);
     void ResetDefenders(std::vector<uint64_t> defenders);
     bool IsDefending(uint64_t defender);
-    std::vector<uint64_t> GetDefenders() { return defender_list_; }
+    std::vector<uint64_t>& GetDefenders() { return defender_list_; }
     void ClearDefenders();
 
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();

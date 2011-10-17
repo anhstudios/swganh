@@ -23,7 +23,7 @@
 
 #include <list>
 
-#include "swganh/object/object.h"
+#include "swganh/object/tangible/base_tangible.h"
 
 namespace swganh {
 namespace object {
@@ -32,7 +32,7 @@ namespace creature {
 /**
  *
  */
-class Creature : public swganh::object::Object
+class Creature : public swganh::object::tangible::BaseTangible
 {
 public:
     Creature();
@@ -230,6 +230,7 @@ public:
     void SetWaterModifierPercent(float water_modifier_percent);
 
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:
     uint32_t    bank_credits_;                          // update 1 variable 0

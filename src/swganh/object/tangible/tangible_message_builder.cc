@@ -198,7 +198,7 @@ boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(BaseTan
     message.data.write(tangible->GetCustomization());
     message.data.write(tangible->component_customization_list_.size());
     message.data.write(tangible->component_customization_counter_);
-    for_each(begin(tangible->GetComponentCustomization()), end(tangible->GetComponentCustomization()), [&message](uint32_t crc){
+    for_each(tangible->GetComponentCustomization().begin(), tangible->GetComponentCustomization().end(), [&message](uint32_t crc){
         message.data.write(crc);
     });
     message.data.write(tangible->GetOptionsMask());
@@ -208,7 +208,7 @@ boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(BaseTan
     uint8_t static_val = MOVEABLE;
     if (tangible->IsStatic())
         static_val = STATIC;
-    message.data.write<uint8_t>(static_val);
+    message.data.write<uint8_t>(0);
     
     return boost::optional<BaselinesMessage>(std::move(message));
 }

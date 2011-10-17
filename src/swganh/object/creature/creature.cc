@@ -7,7 +7,7 @@ using namespace swganh::messages;
 using namespace swganh::object::creature;
 
 Creature::Creature()
-: Object()
+: BaseTangible()
 {}
 
 Creature::Creature(uint32_t bank_credits, uint32_t cash_credits, std::list<std::string> skill_list)
@@ -90,4 +90,9 @@ void Creature::SetStateBitmask(uint64_t state_bitmask)
 boost::optional<BaselinesMessage> Creature::GetBaseline3()
 {
     return move(CreatureMessageBuilder::BuildBaseline3(this));
+}
+
+boost::optional<BaselinesMessage> Creature::GetBaseline6()
+{
+    return move(CreatureMessageBuilder::BuildBaseline6(this));
 }
