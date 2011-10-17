@@ -35,6 +35,7 @@
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
+#include "swganh/messages/obj_controller_message.h"
 
 using namespace std;
 using namespace swganh::connection;
@@ -130,7 +131,7 @@ public:
             throw swganh::object::InvalidObject("Object already has a controller");
         }
         
-        auto controller = make_shared<ObjectController>(controller_handlers_, object, client);
+        auto controller = make_shared<ObjectController>(object, client);
 		object->SetController(controller);
 
         controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
@@ -173,6 +174,20 @@ public:
 
         controller_handlers_.erase(find_iter);
     }
+
+    void HandleObjControllerMessage(
+        shared_ptr<ConnectionClient> client,
+        const ObjControllerMessage& message)
+    {
+        auto find_iter = controller_handlers_.find(message.header);
+        
+        if (find_iter == controller_handlers_.end())
+        {
+            throw std::runtime_error("No handler registered to process the given message.");
+        }
+        
+        find_iter->second(client->GetController()->GetObject(), move(message));
+    }
     
     void HandleSelectCharacter(
         shared_ptr<ConnectionClient> client, 
@@ -180,23 +195,33 @@ public:
     {
         auto object = LoadObjectById(message.character_id);
 		StartControllingObject(object, client);
+
+        auto scene = scene_manager_->GetScene(object->GetSceneId());
+
+        if (!scene) 
+        {
+            throw std::runtime_error("Invalid scene selected for object");
+        }
+
 		// CmdStartScene
-        swganh::messages::CmdStartScene start_scene;
+        CmdStartScene start_scene;
         start_scene.ignore_layout = 0;
         start_scene.character_id = object->GetObjectId();
 		
-        start_scene.terrain_map = scene_manager_->GetScene(object->GetSceneId())->GetTerrainMap();
+        start_scene.terrain_map = scene->GetTerrainMap();
         start_scene.position = object->GetPosition();
         start_scene.shared_race_template = object->GetTemplate();
         start_scene.galaxy_time = 0;
         client->GetSession()->SendMessage(start_scene);
 
 		// Add object to scene and send baselines
-		GetSceneManager()->GetScene(object->GetSceneId())->AddObject(object);
+		scene->AddObject(object);
 
-        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetPosture(swganh::object::creature::Creature::POSTURE::SKILL_ANIMATING);
-        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetAnimation("dance_30");
-        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetGuildId(1);
+        auto creature_object = std::static_pointer_cast<swganh::object::creature::Creature>(object);
+
+        creature_object->SetPosture(swganh::object::creature::Creature::SKILL_ANIMATING);
+        creature_object->SetAnimation("dance_30");
+        creature_object->SetGuildId(1);
     }
 
 private:
@@ -299,5 +324,12 @@ void GalaxyService::onStart()
         const SelectCharacter& message)
     {
         impl_->HandleSelectCharacter(client, message);
+    });
+
+    connection_service->RegisterMessageHandler<ObjControllerMessage>([=] (
+        shared_ptr<ConnectionClient> client, 
+        const ObjControllerMessage& message)
+    {
+        impl_->HandleObjControllerMessage(client, message);
     });
 }

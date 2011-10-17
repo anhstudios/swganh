@@ -39,7 +39,6 @@ namespace object {
 
     public:
         ObjectController(
-            const ObjControllerHandlerMap& handlers,
             std::shared_ptr<Object> object,
             std::shared_ptr<swganh::network::RemoteClient> client);
 
@@ -55,13 +54,6 @@ namespace object {
          */
         const std::shared_ptr<swganh::network::RemoteClient>& GetRemoteClient() const;
 
-        /**
-         * Handles an incoming controller message from the remote client.
-         *
-         * @param message The message recieved from the remote client.
-         */
-        void HandleControllerMessage(const swganh::messages::ObjControllerMessage& message);
-
         using anh::observer::ObserverInterface::Notify;
 
         /**
@@ -74,7 +66,6 @@ namespace object {
     private:
         ObjectController();
 
-        const ObjControllerHandlerMap& handlers_;
         std::shared_ptr<Object> object_;
         std::shared_ptr<swganh::network::RemoteClient> client_;
     };
