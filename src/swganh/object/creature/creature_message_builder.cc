@@ -30,12 +30,12 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
 {
     auto message = creature->CreateBaselinesMessage(Object::VIEW_3, 18);
     message.data.append(creature->BaseTangible::GetBaseline3().get().data);
-    message.data.write<uint8_t>(0); // Posture
-    message.data.write<uint8_t>(0); // Faction Rank
-    message.data.write<uint64_t>(0); // Owner Id
-    message.data.write<float>(1.0f); // Scale
-    message.data.write<uint32_t>(0); // Battle Fatigue
-    message.data.write<uint64_t>(0); // States Bitmask
+    message.data.write<uint8_t>(creature->GetPosture()); // Posture
+    message.data.write<uint8_t>(creature->GetFactionRank()); // Faction Rank
+    message.data.write<uint64_t>(creature->GetOwnerId()); // Owner Id
+    message.data.write<float>(creature->GetScale()); // Scale
+    message.data.write<uint32_t>(creature->GetBattleFatigue()); // Battle Fatigue
+    message.data.write<uint64_t>(creature->GetStateBitmask()); // States Bitmask
     message.data.write<uint32_t>(0); // Wound List Size
     message.data.write<uint32_t>(0); // Wound List Counter
     return boost::optional<swganh::messages::BaselinesMessage>(std::move(message));
@@ -45,18 +45,18 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
 {
     auto message = creature->CreateBaselinesMessage(Object::VIEW_6, 23);
     message.data.append(creature->BaseTangible::GetBaseline6().get().data);
-    message.data.write<uint16_t>(0); // Difficulty
-    message.data.write<std::string>(""); // Current Animation
-    message.data.write<std::string>(""); // Mood Animation
-    message.data.write<uint64_t>(0); // Weapon Id
-    message.data.write<uint64_t>(0); // Group Id
-    message.data.write<uint64_t>(0); // Invite Sender Id
-    message.data.write<uint64_t>(0); // Invite Sender Counter
-    message.data.write<uint32_t>(0); // Guild Id
-    message.data.write<uint64_t>(0); // Target Id
-    message.data.write<uint8_t>(0); // Mood Id
-    message.data.write<uint32_t>(0); // Performance Update Counter
-    message.data.write<uint32_t>(0); // Performance Id
+    message.data.write<uint16_t>(creature->GetCombatLevel()); // Combat Level
+    message.data.write<std::string>(creature->GetAnimation()); // Current Animation
+    message.data.write<std::string>(creature->GetMoodAnimation()); // Mood Animation
+    message.data.write<uint64_t>(creature->GetWeaponId()); // Weapon Id
+    message.data.write<uint64_t>(creature->GetGroupId()); // Group Id
+    message.data.write<uint64_t>(creature->GetInviteSenderId()); // Invite Sender Id
+    message.data.write<uint64_t>(creature->invite_counter_++); // Invite Sender Counter
+    message.data.write<uint32_t>(creature->GetGuildId()); // Guild Id
+    message.data.write<uint64_t>(creature->GetTargetId()); // Target Id
+    message.data.write<uint8_t>(creature->GetMoodId()); // Mood Id
+    message.data.write<uint32_t>(creature->performance_counter_++); // Performance Update Counter
+    message.data.write<uint32_t>(creature->GetPerformanceId()); // Performance Id
     message.data.write<uint32_t>(0); // Current HAM List Size
     message.data.write<uint32_t>(0); // Current HAM List Counter
     message.data.write<uint32_t>(0); // Max HAM List Size
@@ -64,6 +64,6 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
     message.data.write<uint32_t>(0); // Equipment List Size
     message.data.write<uint32_t>(0); // Equipment List Counter
     message.data.write<std::string>(creature->GetTemplate()); // Template
-    message.data.write<uint8_t>(0);
+    message.data.write<uint8_t>(creature->GetStationary());
     return boost::optional<swganh::messages::BaselinesMessage>(std::move(message));
 }
