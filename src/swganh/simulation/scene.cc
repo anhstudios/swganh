@@ -31,7 +31,7 @@ public:
             auto& stored_object = object_entry.second;
 
             stored_object->AddAwareObject(object);
-            object->AddAwareObject(object);
+            object->AddAwareObject(stored_object);
         });
     }
     

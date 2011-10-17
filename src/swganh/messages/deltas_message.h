@@ -6,12 +6,12 @@
 
 #include "anh/byte_buffer.h"
 
-#include "swganh/messages/base_baselines_message.h"
+#include "swganh/messages/base_deltas_message.h"
 
 namespace swganh {
 namespace messages {
     
-class DeltasMessage : public BaseBaselinesMessage<DeltasMessage> {
+class DeltasMessage : public BaseDeltasMessage<DeltasMessage> {
 public:
     static uint16_t opcount() { return 5; }
     static uint32_t opcode() { return 0x12862153; }

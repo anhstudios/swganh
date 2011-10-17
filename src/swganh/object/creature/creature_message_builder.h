@@ -23,6 +23,8 @@
 
 #include <cstdint>
 #include <string>
+#include <boost/optional.hpp>
+#include <swganh/messages/baselines_message.h>
 
 namespace swganh {
 namespace object {
@@ -53,9 +55,24 @@ public:
     static void BuildSlopeModifierPercentDelta(Creature* creature);
     static void BuildTurnRadiusDelta(Creature* creature);
     static void BuildWalkingSpeedDelta(Creature* creature);
-    static void BuildWaterModifierPrecent(Creature* creature);
+    static void BuildWaterModifierPrecentDelta(Creature* creature);
+    static void BuildCombatLevelDelta(Creature* creature);
+    static void BuildAnimationDelta(Creature* creature);
+    static void BuildMoodAnimationDelta(Creature* creature);
+    static void BuildWeaponIdDelta(Creature* creature);
+    static void BuildGroupIdDelta(Creature* creature);
+    static void BuildInviteSenderIdDelta(Creature* creature);
+    static void BuildGuildIdDelta(Creature* creature);
+    static void BuildTargetIdDelta(Creature* creature);
+    static void BuildMoodIdDelta(Creature* creature);
+    static void BuildPerformanceIdDelta(Creature* creature);
+    static void BuildStationaryDelta(Creature* creature);
 
     // baselines
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline1(Creature* creature);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Creature* creature);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline4(Creature* creature);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Creature* creature);
 };
 
 }}} // swganh::object::creature
