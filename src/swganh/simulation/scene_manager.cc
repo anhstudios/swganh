@@ -60,15 +60,16 @@ const std::shared_ptr<Scene>& SceneManager::GetScene(const std::string& scene_la
 }
 const std::shared_ptr<Scene>& SceneManager::GetScene(uint32_t scene_id) const
 {
-	shared_ptr<Scene> scene = nullptr;
-	auto iter = find_if(begin(scenes_), end(scenes_), [scene_id, scene] (ScenePair scene_pair) {
+	auto find_iter = find_if(begin(scenes_), end(scenes_), [scene_id] (ScenePair scene_pair) {
 		return scene_pair.second->GetSceneId() == scene_id;
 	});
 
-	if (iter != end(scenes_))
-		scene = iter->second;
+	if (find_iter == scenes_.end())
+    {
+        throw std::runtime_error("Invalid scene requested");
+    }
+	return find_iter->second;
 
-	return scene;
 }
 
 void SceneManager::StartScene(const std::string& scene_label)

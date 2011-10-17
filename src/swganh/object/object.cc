@@ -337,10 +337,10 @@ void Object::SetSceneId(uint32_t scene_id)
 }
 optional<BaselinesMessage> Object::GetBaseline3()
 {
-    return move(ObjectMessageBuilder::BuildBaseline3(this));
+	return move(ObjectMessageBuilder::BuildBaseline3(this));
 }
 
 optional<BaselinesMessage> Object::GetBaseline6()
 {
-    return move(ObjectMessageBuilder::BuildBaseline6(this));
+	return move(ObjectMessageBuilder::BuildBaseline6(this));
 }

@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 13:15:15
+# Date/time:                    2011-10-16 19:38:42
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `namegen_firstname` (
   PRIMARY KEY (`firstname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
-# Dumping data for table galaxy_manager.namegen_firstname: ~138,399 rows (approximately)
+# Dumping data for table galaxy_manager.namegen_firstname: ~139,498 rows (approximately)
 DELETE FROM `namegen_firstname`;
 /*!40000 ALTER TABLE `namegen_firstname` DISABLE KEYS */;
 INSERT INTO `namegen_firstname` (`firstname`, `species`, `gender`) VALUES

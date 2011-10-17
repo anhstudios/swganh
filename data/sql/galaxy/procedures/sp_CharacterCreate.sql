@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.3.2-MariaDB
+# Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-16 13:54:25
+# Date/time:                    2011-10-16 20:36:12
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -12,7 +12,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 # Dumping structure for procedure galaxy.sp_CharacterCreate
-DROP PROCEDURE IF EXISTS `sp_CharacterCreate`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterCreate`(IN `start_account_id` INT, IN `start_galaxy_id` INT, IN `start_firstname` char(32), IN `start_lastname` char(32), IN `start_custom_name` char(50), IN `start_profession` char(64), IN `start_city` char(32), IN `start_scale` FLOAT, IN `start_biography` text(2048), IN `start_appearance_customization` TINYBLOB, IN `start_hair_model` CHAR(64), IN `hair_customization` TEXT(200), IN `base_model_string` CHAR(64))
 charCreate:BEGIN
@@ -72,7 +71,7 @@ charCreate:BEGIN
    SET longSpecies = REPLACE(base_model_string, 'object/creature/player/', 'object/creature/player/shared_');
    SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longSpecies INTO iff_template_id;
 
-   INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, base_model_string, base_model_string, start_custom_name,0, NOW(), NOW(), null, 'player character');
+   INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 'player character');
    INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture, scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier, run_speed, slope_modifier_angle, slope_modifier_percent, walking_speed) 
 	VALUES (object_id, parent_id, 2000, 0, 0,start_scale, 1, 5, 1, 5, 10, 5, 5, 5 );
 	-- APPEARANCE
@@ -87,7 +86,7 @@ charCreate:BEGIN
   	INSERT INTO `appearance` VALUES (object_id + 6, scale, gender, shortSpecies, hair_customization);
 	-- EQUIPED
 	-- PLAYER
-	INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, base_model_string, start_x,start_y,start_z,oX,oY,oZ,oW, 0, base_model_string, base_model_string, start_custom_name,0, NOW(), NOW(), null, 'player character');
+	INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 'player character');
 	INSERT INTO `player` (id, profession_tag, born_date, csr_tag, current_language, jedi_state)
 	VALUES (object_id + 1, start_profession, NOW(), 0, 0, 0);
 	SELECT id FROM player_account where start_account_id = reference_id INTO player_id;
