@@ -58,7 +58,9 @@ public:
     static void BuildWaterModifierPrecent(Creature* creature);
 
     // baselines
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline1(Creature* creature);
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Creature* creature);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline4(Creature* creature);
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Creature* creature);
 };
 

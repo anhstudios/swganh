@@ -177,7 +177,9 @@ public:
     uint32_t GetPerformanceId(void) const { return performance_id_; }
     bool GetStationary(void) const { return stationary_; }
 
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline4();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:

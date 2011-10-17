@@ -17,17 +17,17 @@ Creature::Creature()
 , scale_(1.0f)
 , battle_fatigue_(0)
 , state_bitmask_(0)
-, acceleration_multiplier_base_(0)
-, acceleration_multiplier_modifier_(0)
-, speed_multiplier_base_(0)
-, speed_multiplier_modifier_(0)
+, acceleration_multiplier_base_(1.0f)
+, acceleration_multiplier_modifier_(1.0f)
+, speed_multiplier_base_(1.0f)
+, speed_multiplier_modifier_(1.0f)
 , listen_to_id_(0)
-, run_speed_(0)
-, slope_modifier_angle_(0)
+, run_speed_(5.0f)
+, slope_modifier_angle_(1.02f)
 , slope_modifier_percent_(0)
-, turn_radius_(0)
-, walking_speed_(0)
-, water_modifier_percent_(0)
+, turn_radius_(1.0f)
+, walking_speed_(1.0f)
+, water_modifier_percent_(0.0125f)
 , combat_level_(0)
 , animation_("")
 , mood_animation_("")
@@ -117,9 +117,19 @@ void Creature::SetStateBitmask(uint64_t state_bitmask)
     CreatureMessageBuilder::BuildStateBitmaskDelta(this);
 }
 
+boost::optional<BaselinesMessage> Creature::GetBaseline1()
+{
+    return move(CreatureMessageBuilder::BuildBaseline1(this));
+}
+
 boost::optional<BaselinesMessage> Creature::GetBaseline3()
 {
     return move(CreatureMessageBuilder::BuildBaseline3(this));
+}
+
+boost::optional<BaselinesMessage> Creature::GetBaseline4()
+{
+    return move(CreatureMessageBuilder::BuildBaseline4(this));
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline6()

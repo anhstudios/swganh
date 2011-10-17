@@ -26,6 +26,18 @@ void CreatureMessageBuilder::BuildTurnRadiusDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildWalkingSpeedDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildWaterModifierPrecent(Creature* creature){}
 
+boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline1(Creature* creature)
+{
+    auto message = creature->CreateBaselinesMessage(Object::VIEW_1, 4);
+    message.data.write<uint32_t>(creature->GetBankCredits());
+    message.data.write<uint32_t>(creature->GetCashCredits());
+    message.data.write<uint32_t>(0); // Negative HAM List Size
+    message.data.write<uint32_t>(0); // Negative HAM List Counter
+    message.data.write<uint32_t>(0); // Skill List Size
+    message.data.write<uint32_t>(0); // Skill List Counter
+    return boost::optional<swganh::messages::BaselinesMessage>(std::move(message));
+}
+
 boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline3(Creature* creature)
 {
     auto message = creature->CreateBaselinesMessage(Object::VIEW_3, 18);
@@ -38,6 +50,29 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
     message.data.write<uint64_t>(creature->GetStateBitmask()); // States Bitmask
     message.data.write<uint32_t>(0); // Wound List Size
     message.data.write<uint32_t>(0); // Wound List Counter
+    return boost::optional<swganh::messages::BaselinesMessage>(std::move(message));
+}
+
+boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline4(Creature* creature)
+{
+    auto message = creature->CreateBaselinesMessage(Object::VIEW_4, 20);
+    message.data.write<float>(creature->GetAccelerationMultiplierBase());
+    message.data.write<float>(creature->GetAccelerationMultiplierModifier());
+    message.data.write<uint32_t>(0); // Encumberance HAM List Size
+    message.data.write<uint32_t>(0); // Encumberance HAM List Counter
+    message.data.write<uint32_t>(0); // Skill Mod List Size
+    message.data.write<uint32_t>(0); // Skill Mod List Counter
+    message.data.write<float>(creature->GetSpeedMultiplierBase());
+    message.data.write<float>(creature->GetSpeedMultiplierModifier());
+    message.data.write<uint64_t>(creature->GetListenToId());
+    message.data.write<float>(creature->GetRunSpeed());
+    message.data.write<float>(creature->GetSlopeModifierAngle());
+    message.data.write<float>(creature->GetSlopeModifierPercent());
+    message.data.write<float>(creature->GetTurnRadius());
+    message.data.write<float>(creature->GetWalkingSpeed());
+    message.data.write<float>(creature->GetWaterModifierPercent());
+    message.data.write<uint32_t>(0); // Group Mission List Size
+    message.data.write<uint32_t>(0); // Group Mission List Counter
     return boost::optional<swganh::messages::BaselinesMessage>(std::move(message));
 }
 
