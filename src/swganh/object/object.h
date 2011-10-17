@@ -146,7 +146,7 @@ public:
     /**
      * Regenerates the baselines and updates observers.
      */
-    void MakeClean();
+    void MakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
 
     /**
      * Returns the most recently generated baselines.

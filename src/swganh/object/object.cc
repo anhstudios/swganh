@@ -8,6 +8,7 @@
 #include "swganh/messages/scene_end_baselines.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_message_builder.h"
+#include "swganh/network/remote_client.h"
 
 using namespace anh::observer;
 using namespace std;
@@ -102,7 +103,7 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
     
     if (object->HasController()) {
         Subscribe(object->GetController());
-        MakeClean();
+        MakeClean(object->GetController());
     }
 }
 
@@ -226,7 +227,7 @@ bool Object::IsDirty() const
     return !deltas_.empty();
 }
 
-void Object::MakeClean()
+void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
     baselines_.clear();
     deltas_.clear();
@@ -237,26 +238,26 @@ void Object::MakeClean()
     scene_object.object_crc = anh::memcrc(GetTemplate());
     scene_object.position = GetPosition();
 	scene_object.orientation = GetOrientation();
-	NotifyObservers(scene_object);
+    controller->GetRemoteClient()->Send(scene_object);
 
     // Baselines
     optional<BaselinesMessage> message;
     for_each(begin(baselines_builders_), end(baselines_builders_),
-        [this, &message] (BaselinesBuilder& builder)
+        [this, &message, &controller] (BaselinesBuilder& builder)
     {       
         if (!(message = builder()))
         {
             return;
         }
 
-        NotifyObservers(*message);
+        controller->GetRemoteClient()->Send(*message);
         baselines_.push_back(*message);
     });
 
     // SceneEndBaselines
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = GetObjectId();
-    NotifyObservers(scene_end_baselines);
+    controller->GetRemoteClient()->Send(scene_end_baselines);
 }
 
 const BaselinesCacheContainer& Object::GetBaselines(uint64_t viewer_id) const
