@@ -18,9 +18,6 @@ struct BaseBaselinesMessage : public swganh::messages::BaseSwgMessage<T> {
     uint8_t view_type;    
     anh::ByteBuffer data;
 
-    // Metadata - not used in the actual struct of the message.
-    bool is_private;
-
     void onSerialize(anh::ByteBuffer& buffer) const {
         buffer.write(object_id);
         buffer.write(object_type);

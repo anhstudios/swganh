@@ -27,7 +27,7 @@ namespace object {
 
         static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Object* object);
         static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Object* object);
-    };
+	};
 
 }}  // swganh::object
 

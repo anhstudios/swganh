@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 13:15:15
+# Date/time:                    2011-10-16 19:38:42
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -38,13 +38,6 @@ CREATE TABLE IF NOT EXISTS `account` (
 # Dumping data for table galaxy_manager.account: ~6 rows (approximately)
 DELETE FROM `account`;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` (`id`, `username`, `username_canonical`, `email`, `email_canonical`, `enabled`, `algorithm`, `salt`, `password`, `last_login`, `locked`, `expired`, `expires_at`, `confirmation_token`, `password_requested_at`, `roles`, `credentials_expired`, `credentials_expire_at`) VALUES
-	(6, 'kronos3', 'kronos3', '', '', 1, '', '20111014165409', 'c42d960061f74617f54d5342e22d96c12ff5cdae', '2011-10-14 16:54:09', 0, 0, NULL, NULL, NULL, '0', 0, NULL),
-	(7, 'kronos', 'kronos', '', '', 1, '', '20111014165741', 'a4048cab95fd8f044b04476dc8a623bbed65fb96', '2011-10-14 16:57:41', 0, 0, NULL, NULL, NULL, '0', 0, NULL),
-	(8, 'kronos5', 'kronos5', '', '', 1, '', '20111015102756', 'b16806e81ac566088ab9111c92b3039f72d8cff4', '2011-10-15 10:27:56', 0, 0, NULL, NULL, NULL, '0', 0, NULL),
-	(9, 'kronos1', 'kronos1', '', '', 1, '', '20111015102947', '0d818e0e39158f94dc428e193d3472648f6ae591', '2011-10-15 10:29:47', 0, 0, NULL, NULL, NULL, '0', 0, NULL),
-	(10, 'kronos2', 'kronos2', '', '', 1, '', '20111015103023', '54502d0315ac2c50c756d0cc6c9a4bfccd0c97a0', '2011-10-15 10:30:23', 0, 0, NULL, NULL, NULL, '0', 0, NULL),
-	(11, 'kronos4', 'kronos4', '', '', 1, '', '20111015103228', 'a0efceca1b155d707de3d85bcde58f018e913519', '2011-10-15 10:32:28', 0, 0, NULL, NULL, NULL, '0', 0, NULL);
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

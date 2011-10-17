@@ -32,10 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 --
--- Create database galaxy
+-- Create database galaxy_manager
 --
-
-DROP DATABASE IF EXISTS galaxy_manager;
 CREATE DATABASE IF NOT EXISTS galaxy_manager CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

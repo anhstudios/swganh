@@ -83,6 +83,7 @@ optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline3(Object* object)
 
     return optional<BaselinesMessage>(move(message));
 }
+
 optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline6(Object* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_6);

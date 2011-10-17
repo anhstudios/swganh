@@ -143,7 +143,10 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
                 character.name = std::wstring(custom_name.begin(), custom_name.end());
                 
                 std::string non_shared_template = result_set->getString("iff_template");
-                non_shared_template.erase(23, 7);
+				if (non_shared_template.size() > 30)
+				{
+					non_shared_template.erase(23, 7);
+				}
 
                 character.race_crc = anh::memcrc(non_shared_template);
                 character.galaxy_id = service_directory()->galaxy().id();

@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-15 23:25:18
+# Date/time:                    2011-10-16 19:39:53
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS `scene` (
 ) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=latin1;
 
 # Dumping data for table galaxy.scene: ~44 rows (approximately)
+DELETE FROM `scene`;
 /*!40000 ALTER TABLE `scene` DISABLE KEYS */;
 INSERT INTO `scene` (`id`, `name`, `label`, `description`, `terrain`) VALUES
 	(1, 'corellia', 'corellia', '', 'terrain/corellia.trn'),
