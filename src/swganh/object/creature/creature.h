@@ -144,6 +144,17 @@ public:
     void SetTurnRadius(float turn_radius);
     void SetWalkingSpeed(float walking_speed);
     void SetWaterModifierPercent(float water_modifier_percent);
+    void SetCombatLevel(uint16_t);
+    void SetAnimation(std::string animation);
+    void SetMoodAnimation(std::string mood_animation);
+    void SetWeaponId(uint64_t weapon_id);
+    void SetGroupId(uint64_t group_id);
+    void SetInviteSenderId(uint64_t invite_sender_id);
+    void SetGuildId(uint32_t guild_id);
+    void SetTargetId(uint64_t target_id); 
+    void SetMoodId(uint8_t mood_id);
+    void SetPerformanceId(uint32_t performance_id);
+    void SetStationary(bool stationary);
 
     uint32_t GetBankCredits(void) const { return bank_credits_; }
     uint32_t GetCashCredits(void) const { return cash_credits_; }

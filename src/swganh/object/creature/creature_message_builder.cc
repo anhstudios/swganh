@@ -5,9 +5,7 @@ using namespace swganh::object::creature;
 
 void CreatureMessageBuilder::BuildBankCreditsDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildCashCreditsDelta(Creature* creature){}
-
 void CreatureMessageBuilder::BuildSkillListDelta(Creature* creature, uint8_t subtype, std::string skill){}
-
 void CreatureMessageBuilder::BuildPostureDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildFactionRankDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildOwnerIdDelta(Creature* creature){}
@@ -24,7 +22,18 @@ void CreatureMessageBuilder::BuildSlopeModifierAngleDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildSlopeModifierPercentDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildTurnRadiusDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildWalkingSpeedDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildWaterModifierPrecent(Creature* creature){}
+void CreatureMessageBuilder::BuildWaterModifierPrecentDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildCombatLevelDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildAnimationDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildMoodAnimationDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildWeaponIdDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildGroupIdDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildInviteSenderIdDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildGuildIdDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildTargetIdDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildMoodIdDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildPerformanceIdDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildStationaryDelta(Creature* creature){}
 
 boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline1(Creature* creature)
 {
