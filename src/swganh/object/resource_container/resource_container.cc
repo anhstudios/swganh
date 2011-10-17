@@ -32,11 +32,7 @@ void ResourceContainer::SetCurrentQuantity(uint32_t current_quantity)
     current_quantity_ = current_quantity;
     if (HasObservers())
     {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(11);
+        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3, 11);
         message.data.write(current_quantity_);
 
         AddDeltasUpdate(move(message));
@@ -48,11 +44,7 @@ void ResourceContainer::SetMaxQuantity(uint32_t max_quantity)
     max_quantity_ = max_quantity;
     if (HasObservers())
     {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(2);
+        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6, 2);
         message.data.write(max_quantity_);
 
         AddDeltasUpdate(move(message));
@@ -63,11 +55,7 @@ void ResourceContainer::SetResourceType(const string& resource_type)
     resource_type_ = resource_type;
     if (HasObservers())
     {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(3);
+        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6, 3);
         message.data.write(resource_type_);
 
         AddDeltasUpdate(move(message));
@@ -78,11 +66,7 @@ void ResourceContainer::SetResourceName(const wstring& name)
     variation_name_ = name;
     if (HasObservers())
     {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(4);
+        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6, 4);
         message.data.write(max_quantity_);
 
         AddDeltasUpdate(move(message));

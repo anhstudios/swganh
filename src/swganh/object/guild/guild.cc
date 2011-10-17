@@ -10,8 +10,12 @@ using namespace swganh::messages;
 using namespace swganh::object::guild;
 
 Guild::Guild()
-    : guild_list_counter_(0)
+    : Object()
+    , guild_list_counter_(0)
 {
+    SetObjectId(0xDEADBEEF);
+    SetTemplate("object/guild/shared_guild_object.iff");
+    guild_list_.insert(std::pair<uint32_t, std::string>(1, "SWGANH"));
 }
 
 Guild::Guild(std::map<uint32_t, std::string> guild_list)
@@ -55,4 +59,9 @@ void Guild::RemoveGuild(uint32_t guild_id)
 boost::optional<BaselinesMessage> Guild::GetBaseline3()
 {
     return GuildMessageBuilder::BuildBaseline3(this);
+}
+
+boost::optional<BaselinesMessage> Guild::GetBaseline6()
+{
+    return GuildMessageBuilder::BuildBaseline6(this);
 }

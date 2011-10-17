@@ -18,11 +18,7 @@ void PlayerMessageBuilder::BuildStatusBitmaskDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(5);
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 5);
         message.data.write(object->GetStatusFlags());
 
         object->AddDeltasUpdate(move(message));
@@ -32,11 +28,7 @@ void PlayerMessageBuilder::BuildProfileBitmaskDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(6);
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 6);
         message.data.write(object->GetProfileFlags());
 
         object->AddDeltasUpdate(move(message));
@@ -46,11 +38,7 @@ void PlayerMessageBuilder::BuildProfessionTagDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(7);
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 7);
         message.data.write(object->GetProfessionTag());
 
         object->AddDeltasUpdate(move(message));
@@ -60,11 +48,7 @@ void PlayerMessageBuilder::BuildBornDateDelta(Player* object)
 {
      if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(8);
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 8);
         message.data.write(object->GetBornDate());
 
         object->AddDeltasUpdate(move(message));
@@ -74,11 +58,7 @@ void PlayerMessageBuilder::BuildPlayTimeDelta(Player* object)
 {
      if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(9);
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 9);
         message.data.write(object->GetTotalPlayTime());
 
         object->AddDeltasUpdate(move(message));
@@ -88,11 +68,7 @@ void PlayerMessageBuilder::BuildRegionIdDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_6, 0);
         message.data.write(object->GetRegionId());
 
         object->AddDeltasUpdate(move(message));
@@ -102,11 +78,7 @@ void PlayerMessageBuilder::BuildAdminTagDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_6);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_6, 1);
         message.data.write(object->GetAdminTag());
 
         object->AddDeltasUpdate(move(message));
@@ -116,11 +88,7 @@ void PlayerMessageBuilder::BuildXpDelta(Player* object, uint8_t sub_type, std::s
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_7);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_7, 0);
         message.data.write(object->experience_.size());
         // list counter
         message.data.write(++object->experience_counter_);
@@ -137,11 +105,7 @@ void PlayerMessageBuilder::BuildResetXpDelta(Player* object, std::vector<Player:
     // do the delta update
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
-        // update count
-        message.data.write<uint16_t>(object->experience_.size());
-        // update type
-        message.data.write<uint16_t>(0);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 0);
         // @TODO: Check if there is a reset
         message.data.write<uint16_t>(2);
         message.data.write(object->experience_.size());
@@ -158,11 +122,7 @@ void PlayerMessageBuilder::BuildWaypointDelta(Player* object, uint8_t sub_type, 
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_7);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_7, 1);
         message.data.write(object->waypoints_.size());
         // list counter
         message.data.write(++object->waypoint_counter_);
@@ -190,15 +150,10 @@ void PlayerMessageBuilder::BuildResetWaypointDelta(Player* object, std::vector<s
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_8);
-        // update count
-        message.data.write<uint16_t>(object->waypoints_.size());
-        // update type
-        message.data.write<uint16_t>(1);
-        // sub type
+        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_8, 1);
+        message.data.write(object->waypoints_.size());
+        message.data.write(object->waypoints_.size());
         message.data.write<uint16_t>(2);
-        message.data.write(object->waypoints_.size());
-        message.data.write(object->waypoints_.size());
         std::for_each(begin(object->waypoints_), end(object->waypoints_), [&message](shared_ptr<Waypoint> waypoint){
             // waypoint
             message.data.write<uint64_t>(waypoint->GetObjectId());
@@ -223,9 +178,7 @@ void PlayerMessageBuilder::BuildCurrentForcePowerDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
-        // update count
-        message.data.write<uint16_t>(2);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 2);
         message.data.write(object->GetCurrentForcePower());
 
         object->AddDeltasUpdate(move(message));
@@ -235,9 +188,7 @@ void PlayerMessageBuilder::BuildMaxForcePowerDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
-        // update count
-        message.data.write<uint16_t>(3);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 3);
         message.data.write(object->GetMaxForcePower());
 
         object->AddDeltasUpdate(move(message));
@@ -247,9 +198,7 @@ void PlayerMessageBuilder::BuildForceSensitiveQuestDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
-        // update count
-        message.data.write<uint16_t>(4);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 4);
         message.data.write(object->GetCurrentForceSensitiveQuests());
 
         object->AddDeltasUpdate(move(message));
@@ -259,9 +208,7 @@ void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(Player* object
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
-        // update count
-        message.data.write<uint16_t>(5);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 5);
         message.data.write(object->GetCompletedForceSensitiveQuests());
 
         object->AddDeltasUpdate(move(message));
@@ -271,11 +218,7 @@ void PlayerMessageBuilder::BuildQuestJournalDelta(Player* object, uint8_t sub_ty
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(6);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 6);
         // subtype
         message.data.write<uint8_t>(sub_type);
         message.data.write(quest.quest_crc);
@@ -292,11 +235,7 @@ void PlayerMessageBuilder::BuildResetQuestJournalDelta(Player* object, std::vect
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(6);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 6);
         // update counter
         message.data.write<uint16_t>(1);
         message.data.write<uint8_t>(3);
@@ -316,11 +255,7 @@ void PlayerMessageBuilder::BuildAbilityDelta(Player* object, uint8_t sub_type, u
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 0);
         message.data.write(object->abilities_.size());
         // list counter
         message.data.write(++object->abilities_counter_);
@@ -347,11 +282,7 @@ void PlayerMessageBuilder::BuildResetAbilityDelta(Player* object, std::vector<st
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(0);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 0);
         message.data.write(object->abilities_.size());
         // list counter
         message.data.write(++object->abilities_counter_);
@@ -367,11 +298,7 @@ void PlayerMessageBuilder::BuildExperimentationFlagDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 1);
         message.data.write(object->GetExperimentationFlag());            
 
         object->AddDeltasUpdate(move(message));
@@ -381,11 +308,7 @@ void PlayerMessageBuilder::BuildCraftingStageDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(2);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 2);
         message.data.write(object->GetCraftingStage());            
 
         object->AddDeltasUpdate(move(message));
@@ -395,11 +318,7 @@ void PlayerMessageBuilder::BuildNearestCraftingStationDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(3);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 3);
         message.data.write(object->GetNearestCraftingStation());            
 
         object->AddDeltasUpdate(move(message));
@@ -409,11 +328,7 @@ void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object, uint8_t sub_
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(4);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 4);
         message.data.write(object->draft_schematics_.size());
         // list counter
         message.data.write(++object->draft_schematics_counter_);
@@ -442,11 +357,7 @@ void PlayerMessageBuilder::BuildExperimentationPointsDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(5);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 5);
         message.data.write(object->GetExperimentationPoints());            
 
         object->AddDeltasUpdate(move(message));
@@ -456,11 +367,7 @@ void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(6);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 6);
         message.data.write(object->GetAccomplishmentCounter());            
 
         object->AddDeltasUpdate(move(message));
@@ -474,11 +381,7 @@ void PlayerMessageBuilder::BuildLanguageDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(9);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 9);
         message.data.write(object->GetLanguage());            
 
         object->AddDeltasUpdate(move(message));
@@ -488,11 +391,7 @@ void PlayerMessageBuilder::BuildCurrentStomachDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(10);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 10);
         message.data.write(object->GetCurrentStomach());            
 
         object->AddDeltasUpdate(move(message));
@@ -502,11 +401,7 @@ void PlayerMessageBuilder::BuildMaxStomachDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(11);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 11);
         message.data.write(object->GetMaxStomach());            
 
         object->AddDeltasUpdate(move(message));
@@ -516,11 +411,7 @@ void PlayerMessageBuilder::BuildCurrentDrinkDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(12);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 12);
         message.data.write(object->GetCurrentDrink());            
 
         object->AddDeltasUpdate(move(message));
@@ -530,11 +421,7 @@ void PlayerMessageBuilder::BuildMaxDrinkDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(13);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 13);
         message.data.write(object->GetMaxDrink());            
 
         object->AddDeltasUpdate(move(message));
@@ -544,11 +431,7 @@ void PlayerMessageBuilder::BuildJediStateDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(17);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 17);
         message.data.write(object->GetExperimentationPoints());            
 
         object->AddDeltasUpdate(move(message));

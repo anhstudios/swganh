@@ -220,7 +220,7 @@ public:
         
     swganh::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0) const;
     
-    swganh::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type) const;
+    swganh::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type, uint16_t update_type, uint16_t update_count = 1) const;
     
 private:
     void AddBaselinesBuilders_();

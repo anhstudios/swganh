@@ -35,8 +35,7 @@ void GroupMessageBuilder::BuildMemberListDelta(Group* group, uint8_t subtype, st
 {
     if(group->HasObservers())
     {
-        DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6);
-        message.data.write<uint16_t>(1);
+        DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 1);
         message.data.write<uint32_t>(group->member_list_.size());
         message.data.write<uint32_t>(group->member_list_counter_++);
         message.data.write<uint8_t>(subtype);
@@ -71,8 +70,7 @@ void GroupMessageBuilder::BuildLootModeDelta(Group* group)
 {
     if(group->HasObservers())
     {
-        DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6);
-        message.data.write<uint16_t>(7);
+        DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 7);
         message.data.write<uint32_t>(group->loot_mode_);
 
         group->AddDeltasUpdate(move(message));
@@ -83,8 +81,7 @@ void GroupMessageBuilder::BuildDifficultyDelta(Group* group)
 {
     if(group->HasObservers())
     {
-        DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6);
-        message.data.write<uint16_t>(4);
+        DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 4);
         message.data.write<uint16_t>(group->difficulty_);
 
         group->AddDeltasUpdate(move(message));
@@ -95,8 +92,7 @@ void GroupMessageBuilder::BuildLootMasterDelta(Group* group)
 {
     if(group->HasObservers())
     {
-        DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6);
-        message.data.write<uint16_t>(6);
+        DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 6);
         message.data.write<uint64_t>(group->loot_master_);
 
         group->AddDeltasUpdate(move(message));

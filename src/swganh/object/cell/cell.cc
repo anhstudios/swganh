@@ -12,8 +12,7 @@ void Cell::SetCell(uint32_t cell_number) {
     cell_number_ = cell_number;
     if (HasObservers())
     {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        message.data.write<uint16_t>(1);
+        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3, 1);
         message.data.write(cell_number_);
 
         AddDeltasUpdate(move(message));

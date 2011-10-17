@@ -14,8 +14,7 @@ void ObjectMessageBuilder::BuildComplexityDelta(Object* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3);
-        message.data.write<uint16_t>(0); // update type
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 0);
         message.data.write(object->GetComplexity());
 
         object->AddDeltasUpdate(message);                
@@ -25,8 +24,7 @@ void ObjectMessageBuilder::BuildStfNameDelta(Object* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3);
-        message.data.write<uint16_t>(1); // update type
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 1);
         message.data.write(object->GetStfNameFile());
         message.data.write<uint32_t>(0);
         message.data.write(object->GetStfNameString());
@@ -38,8 +36,7 @@ void ObjectMessageBuilder::BuildCustomNameDelta(Object* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3);
-        message.data.write<uint16_t>(2); // update type
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 2);
         message.data.write(object->GetCustomName());
 
         object->AddDeltasUpdate(message);                
@@ -49,8 +46,7 @@ void ObjectMessageBuilder::BuildVolumeDelta(Object* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3);
-        message.data.write<uint16_t>(3); // update type
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 3);
         message.data.write(object->GetVolume());
 
         object->AddDeltasUpdate(message);                
@@ -61,8 +57,7 @@ void ObjectMessageBuilder::BuildServerIDDelta(Object* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6);
-        message.data.write<uint16_t>(1); // update type
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6, 1);
         // TODO: Add server id
         message.data.write(0);
 
