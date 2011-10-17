@@ -21,6 +21,7 @@
 #include "swganh/character/character_service.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
+#include "swganh/simulation/galaxy_service.h"
 
 
 using namespace anh;
@@ -31,6 +32,7 @@ using namespace swganh::app;
 using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::connection;
+using namespace swganh::simulation;
 
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
@@ -79,6 +81,9 @@ options_description AppConfig::BuildConfigDescription() {
         ("service.login.login_error_timeout_secs", 
             boost::program_options::value<int>(&login_config.login_error_timeout_secs)->default_value(5),
             "The number of seconds to wait before disconnecting a client after failed login attempt")
+        ("service.login.auto_registration",
+            boost::program_options::value<bool>(&login_config.login_auto_registration)->default_value(false),
+            "Auto Registration flag")
             
         ("service.connection.ping_port", boost::program_options::value<uint16_t>(&connection_config.ping_port),
             "The port the connection service will listen for incoming client ping requests on")
@@ -257,6 +262,7 @@ void SwganhApp::LoadCoreServices_()
 
 		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
 		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
+        login_service->login_auto_registration(app_config.login_config.login_auto_registration);
     
 		kernel_->GetServiceManager()->AddService("LoginService", login_service);
 	} 
@@ -275,5 +281,11 @@ void SwganhApp::LoadCoreServices_()
 		auto character_service = make_shared<CharacterService>(kernel_);
 
 		kernel_->GetServiceManager()->AddService("CharacterService", character_service);
+	}
+	if(strcmp("galaxy", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
+	{
+		auto galaxy_service = make_shared<GalaxyService>(kernel_);
+		galaxy_service->StartScene("corellia");
+		kernel_->GetServiceManager()->AddService("GalaxyService", galaxy_service);
 	}
 }
