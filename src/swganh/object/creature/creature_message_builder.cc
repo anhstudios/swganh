@@ -36,33 +36,278 @@ void CreatureMessageBuilder::BuildPostureDelta(Creature* creature)
     }
 }
 
-void CreatureMessageBuilder::BuildFactionRankDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildOwnerIdDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildScaleDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildBattleFatigueDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildStateBitmaskDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildSpeedMultiplierModifierDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildListenToIdDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildRunSpeedDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildSlopeModifierAngleDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildSlopeModifierPercentDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildTurnRadiusDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildWalkingSpeedDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildWaterModifierPrecentDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildCombatLevelDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildAnimationDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildMoodAnimationDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildWeaponIdDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildGroupIdDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildInviteSenderIdDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildGuildIdDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildTargetIdDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildMoodIdDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildPerformanceIdDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildStationaryDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildFactionRankDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_3, 12);
+        message.data.write<uint8_t>(creature->GetFactionRank());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildOwnerIdDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_3, 13);
+        message.data.write<uint64_t>(creature->GetOwnerId());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildScaleDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_3, 14);
+        message.data.write<float>(creature->GetScale());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildBattleFatigueDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_3, 15);
+        message.data.write<uint32_t>(creature->GetBattleFatigue());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildStateBitmaskDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_3, 16);
+        message.data.write<uint64_t>(creature->GetStateBitmask());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 0);
+        message.data.write<float>(creature->GetAccelerationMultiplierBase());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 1);
+        message.data.write<float>(creature->GetAccelerationMultiplierModifier());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 4);
+        message.data.write<float>(creature->GetSpeedMultiplierBase());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildSpeedMultiplierModifierDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 5);
+        message.data.write<float>(creature->GetSpeedMultiplierModifier());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildListenToIdDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 6);
+        message.data.write<uint64_t>(creature->GetListenToId());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildRunSpeedDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 7);
+        message.data.write<float>(creature->GetRunSpeed());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildSlopeModifierAngleDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 8);
+        message.data.write<float>(creature->GetSlopeModifierAngle());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildSlopeModifierPercentDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 9);
+        message.data.write<float>(creature->GetSlopeModifierPercent());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildTurnRadiusDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 10);
+        message.data.write<float>(creature->GetTurnRadius());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildWalkingSpeedDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 11);
+        message.data.write<float>(creature->GetWalkingSpeed());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildWaterModifierPrecentDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_4, 12);
+        message.data.write<float>(creature->GetWaterModifierPercent());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildCombatLevelDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 2);
+        message.data.write<uint16_t>(creature->GetCombatLevel());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildAnimationDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 3);
+        message.data.write<std::string>(creature->GetAnimation());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildMoodAnimationDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 4);
+        message.data.write<std::string>(creature->GetMoodAnimation());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildWeaponIdDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 5);
+        message.data.write<uint64_t>(creature->GetWeaponId());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildGroupIdDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 6);
+        message.data.write<uint64_t>(creature->GetGroupId());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildInviteSenderIdDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 7);
+        message.data.write<uint64_t>(creature->invite_counter_++);
+        message.data.write<uint64_t>(creature->GetInviteSenderId());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildGuildIdDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 8);
+        message.data.write<uint32_t>(creature->GetGuildId());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildTargetIdDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 9);
+        message.data.write<uint64_t>(creature->GetTargetId());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildMoodIdDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 10);
+        message.data.write<uint8_t>(creature->GetMoodId());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildPerformanceIdDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 11);
+        message.data.write<uint32_t>(creature->performance_counter_++);
+        message.data.write<uint32_t>(creature->GetPerformanceId());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildStationaryDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_6, 17);
+        message.data.write<uint8_t>(creature->GetStationary());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
 
 boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline1(Creature* creature)
 {

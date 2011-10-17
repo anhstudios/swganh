@@ -205,7 +205,8 @@ public:
 		scene_end_baselines.object_id = object->GetObjectId();
 		client->GetSession()->SendMessage(scene_end_baselines);
 
-        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetPosture(swganh::object::creature::Creature::LYING_DOWN);
+        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetPosture(swganh::object::creature::Creature::POSTURE::SKILL_ANIMATING);
+        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetAnimation("dance_1");
     }
 
 private:

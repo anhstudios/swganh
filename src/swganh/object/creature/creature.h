@@ -57,7 +57,7 @@ public:
 
     enum POSTURE
     {
-        STANDING = 0,
+        STANDING = 1,
         SNEAKING,
         WALKING,
         RUNNING,
@@ -65,6 +65,7 @@ public:
         CROUCH_SNEAKING,
         CROUCH_WALKING,
         PRONE,
+        SKILL_ANIMATING,
         CRAWLING,
         CLIMBING_STATIONARY,
         CLIMBING,
@@ -72,7 +73,6 @@ public:
         FLING,
         LYING_DOWN,
         SITTING,
-        SKILL_ANIMATING,
         DRIVING_VEHICLE,
         RIDING_CREATURE,
         KNOCKED_DOWN,
@@ -83,7 +83,7 @@ public:
 
     enum STATE
     {
-        COVER = 0,
+        COVER = 1,
         COMBAT,
         PEACE,
         AIMING,
@@ -228,7 +228,7 @@ private:
     uint64_t    target_id_;                             // update 6 variable 9
     uint8_t     mood_id_;                               // update 6 variable 10
     uint32_t    performance_counter_;                   // update 6 variable 11
-    uint32_t    performance_id_;                        // update 6 variable 12
+    uint32_t    performance_id_;                        // update 6 variable 11
     bool        stationary_;                            // update 6 variable 17
 
 };
