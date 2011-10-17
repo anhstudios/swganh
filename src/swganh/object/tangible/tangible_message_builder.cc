@@ -15,11 +15,7 @@ void TangibleMessageBuilder::BuildCustomizationDelta(BaseTangible* tangible)
 {
     if (tangible->HasObservers())
     {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(4);
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 4);
         message.data.write(tangible->GetCustomization());
 
         tangible->AddDeltasUpdate(move(message));
@@ -29,11 +25,7 @@ void TangibleMessageBuilder::BuildComponentCustomizationDelta(BaseTangible* tang
 {
     if (tangible->HasObservers())
     {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(5);
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 5);
         message.data.write(tangible->component_customization_list_.size());
         // list counter
         message.data.write(tangible->component_customization_counter_++);
@@ -57,11 +49,7 @@ void TangibleMessageBuilder::BuildOptionsMaskDelta(BaseTangible* tangible)
 {
     if (tangible->HasObservers())
     {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(6);
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 6);
         message.data.write(tangible->GetOptionsMask());
 
         tangible->AddDeltasUpdate(move(message));
@@ -71,11 +59,7 @@ void TangibleMessageBuilder::BuildIncapTimerDelta(BaseTangible* tangible)
 {
     if (tangible->HasObservers())
     {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(7);
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 7);
         message.data.write(tangible->GetIncapTimer());
 
         tangible->AddDeltasUpdate(move(message));
@@ -85,11 +69,7 @@ void TangibleMessageBuilder::BuildConditionDamageDelta(BaseTangible* tangible)
 {
     if (tangible->HasObservers())
     {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(8);
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 8);
         message.data.write(tangible->GetCondition());
 
         tangible->AddDeltasUpdate(move(message));
@@ -99,11 +79,7 @@ void TangibleMessageBuilder::BuildMaxConditionDelta(BaseTangible* tangible)
 {
     if (tangible->HasObservers())
     {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(9);
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 9);
         message.data.write(tangible->GetMaxCondition());
 
         tangible->AddDeltasUpdate(move(message));
@@ -116,11 +92,7 @@ void TangibleMessageBuilder::BuildStaticDelta(BaseTangible* tangible)
         uint8_t val = MOVEABLE;
         if (tangible->IsStatic())
             val = STATIC;
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3);
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(10);
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 10);
         message.data.write(val);
 
         tangible->AddDeltasUpdate(move(message));
@@ -130,12 +102,8 @@ void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible, uint8_t
 {
     if (tangible->HasObservers())
     {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_6);
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_6, 1);
         auto defender_list = tangible->GetDefenders();
-        // update count
-        message.data.write<uint16_t>(1);
-        // update type
-        message.data.write<uint16_t>(1);
         message.data.write(defender_list.size());
         // list counter
         message.data.write(tangible->defender_list_counter_++);
@@ -167,12 +135,8 @@ void TangibleMessageBuilder::BuildNewDefendersDelta(BaseTangible* tangible)
 {
     if (tangible->HasObservers())
     {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_6);
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_6, 1);
         auto defender_list = tangible->GetDefenders();
-        // update count
-        message.data.write<uint16_t>(defender_list.size());
-        // update type
-        message.data.write<uint16_t>(1);
         message.data.write(defender_list.size());
         // list counter
         message.data.write(tangible->defender_list_counter_++);

@@ -144,8 +144,7 @@ void Object::SetCustomName(wstring custom_name)
     // Only build a message if there are observers.
     if (HasObservers())
     {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3);
-        message.data.write<uint16_t>(2); // update type
+        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3, 2);
         message.data.write(custom_name);
     
         AddDeltasUpdate(message);    
@@ -163,13 +162,14 @@ BaselinesMessage Object::CreateBaselinesMessage(uint16_t view_type, uint16_t opc
     return message;
 }
 
-DeltasMessage Object::CreateDeltasMessage(uint16_t view_type) const
+DeltasMessage Object::CreateDeltasMessage(uint16_t view_type, uint16_t update_type, uint16_t update_count) const
 {        
     DeltasMessage message;
     message.object_id = GetObjectId();
     message.object_type = GetType();
     message.view_type = view_type;
-
+    message.update_count = update_count;
+    message.update_type = update_type;
     return message;
 }
 

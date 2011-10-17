@@ -12,8 +12,7 @@ void GuildMessageBuilder::BuildGuildListDelta(Guild* guild, uint8_t subtype, std
 {
     if(guild->HasObservers())
     {
-        DeltasMessage message = guild->CreateDeltasMessage(Object::VIEW_3);
-        message.data.write<uint16_t>(4);
+        DeltasMessage message = guild->CreateDeltasMessage(Object::VIEW_3, 4);
         message.data.write<uint32_t>(guild->guild_list_.size());
         message.data.write<uint32_t>(guild->guild_list_counter_++);
         message.data.write<uint8_t>(subtype);

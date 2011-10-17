@@ -3,7 +3,6 @@
 #define SWGANH_MESSAGES_BASE_BASELINES_MESSAGE_H_
 
 #include <cstdint>
-#include <iostream>
 
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"

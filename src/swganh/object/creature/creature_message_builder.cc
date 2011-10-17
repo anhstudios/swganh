@@ -2,11 +2,40 @@
 #include "creature.h"
 
 using namespace swganh::object::creature;
+using namespace swganh::messages;
 
-void CreatureMessageBuilder::BuildBankCreditsDelta(Creature* creature){}
-void CreatureMessageBuilder::BuildCashCreditsDelta(Creature* creature){}
+void CreatureMessageBuilder::BuildBankCreditsDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_1, 0);
+        message.data.write<uint32_t>(creature->GetBankCredits());   // Bank Credits
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
+void CreatureMessageBuilder::BuildCashCreditsDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_1, 1);
+        message.data.write<uint32_t>(creature->GetCashCredits());   // Cash Credits
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
 void CreatureMessageBuilder::BuildSkillListDelta(Creature* creature, uint8_t subtype, std::string skill){}
-void CreatureMessageBuilder::BuildPostureDelta(Creature* creature){}
+
+void CreatureMessageBuilder::BuildPostureDelta(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        DeltasMessage message = creature->CreateDeltasMessage(Object::VIEW_3, 11);
+        message.data.write<uint8_t>(creature->GetPosture());
+        creature->AddDeltasUpdate(std::move(message));
+    }
+}
+
 void CreatureMessageBuilder::BuildFactionRankDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildOwnerIdDelta(Creature* creature){}
 void CreatureMessageBuilder::BuildScaleDelta(Creature* creature){}

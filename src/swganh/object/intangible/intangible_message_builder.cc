@@ -15,8 +15,7 @@ void IntangibleMessageBuilder::BuildStfDetailDelta(Intangible* object)
     // Only build a message if there are observers.
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6);
-        message.data.write<uint16_t>(1); // update type
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6, 1);
         message.data.write(object->GetStfDetailFile());
         message.data.write<uint32_t>(0);
         message.data.write(object->GetStfDetailString());
