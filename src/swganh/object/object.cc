@@ -1,8 +1,11 @@
 
 #include "swganh/object/object.h"
 
+#include "anh/crc.h"
 #include "anh/observer/observer_interface.h"
 #include "swganh/messages/base_baselines_message.h"
+#include "swganh/messages/scene_create_object_by_crc.h"
+#include "swganh/messages/scene_end_baselines.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_message_builder.h"
 
@@ -96,11 +99,10 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
     }
 
     aware_objects_.insert(make_pair(object->GetObjectId(), object));
-
-    if (HasController())
-    {
-        object->Subscribe(GetController());
-		MakeClean();
+    
+    if (object->HasController()) {
+        Subscribe(object->GetController());
+        MakeClean();
     }
 }
 
@@ -229,8 +231,16 @@ void Object::MakeClean()
     baselines_.clear();
     deltas_.clear();
     
+    // SceneCreateObjectByCrc
+    swganh::messages::SceneCreateObjectByCrc scene_object;
+    scene_object.object_id = GetObjectId();
+    scene_object.object_crc = anh::memcrc(GetTemplate());
+    scene_object.position = GetPosition();
+	scene_object.orientation = GetOrientation();
+	NotifyObservers(scene_object);
+
+    // Baselines
     optional<BaselinesMessage> message;
-    
     for_each(begin(baselines_builders_), end(baselines_builders_),
         [this, &message] (BaselinesBuilder& builder)
     {       
@@ -242,6 +252,11 @@ void Object::MakeClean()
         NotifyObservers(*message);
         baselines_.push_back(*message);
     });
+
+    // SceneEndBaselines
+    swganh::messages::SceneEndBaselines scene_end_baselines;
+    scene_end_baselines.object_id = GetObjectId();
+    NotifyObservers(scene_end_baselines);
 }
 
 const BaselinesCacheContainer& Object::GetBaselines(uint64_t viewer_id) const

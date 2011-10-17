@@ -42,8 +42,8 @@ public:
     virtual uint32_t GetType() const { return type; }
     const static uint32_t type = 0x444C4947;
 
-protected:
     boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:
     friend class GuildMessageBuilder;

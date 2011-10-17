@@ -30,11 +30,11 @@
 #include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player.h"
 
+#include "swganh/object/guild/guild.h"
+
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
-#include "swganh/messages/scene_create_object_by_crc.h"
-#include "swganh/messages/scene_end_baselines.h"
 
 using namespace std;
 using namespace swganh::connection;
@@ -190,23 +190,13 @@ public:
         start_scene.shared_race_template = object->GetTemplate();
         start_scene.galaxy_time = 0;
         client->GetSession()->SendMessage(start_scene);
-		
-		swganh::messages::SceneCreateObjectByCrc scene_create_object;
-		scene_create_object.object_id = object->GetObjectId();
-        scene_create_object.object_crc = anh::memcrc(object->GetTemplate());
-		scene_create_object.position = object->GetPosition();
-		scene_create_object.orientation = object->GetOrientation();
-		client->GetSession()->SendMessage(scene_create_object);
 
 		// Add object to scene and send baselines
 		GetSceneManager()->GetScene(object->GetSceneId())->AddObject(object);
 
-		swganh::messages::SceneEndBaselines scene_end_baselines;
-		scene_end_baselines.object_id = object->GetObjectId();
-		client->GetSession()->SendMessage(scene_end_baselines);
-
         std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetPosture(swganh::object::creature::Creature::POSTURE::SKILL_ANIMATING);
         std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetAnimation("dance_30");
+        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetGuildId(1);
     }
 
 private:
@@ -249,6 +239,9 @@ void GalaxyService::StartScene(const std::string& scene_label)
     impl_->GetSceneManager()->StartScene(scene_label);
 	// load factories
 	RegisterObjectFactories(kernel());
+
+    std::shared_ptr<swganh::object::guild::Guild> guild(new swganh::object::guild::Guild());
+    impl_->GetSceneManager()->GetScene(scene_label)->AddObject(guild);
 }
 
 void GalaxyService::StopScene(const std::string& scene_label)

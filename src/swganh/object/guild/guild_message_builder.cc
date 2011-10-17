@@ -52,5 +52,12 @@ boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(Guild* gui
         message.data.write<std::string>(guild_id_tag.str());
     });
 
-    return message;
+    return boost::optional<BaselinesMessage>(std::move(message));
+}
+
+boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline6(Guild* guild)
+{
+    auto message = guild->CreateBaselinesMessage(Object::VIEW_6, 5);
+    message.data.append(guild->Object::GetBaseline6().get().data);
+    return boost::optional<BaselinesMessage>(std::move(message));
 }

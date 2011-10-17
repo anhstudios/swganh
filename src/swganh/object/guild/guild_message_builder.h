@@ -27,7 +27,8 @@ public:
     static void BuildGuildListDelta(Guild*, uint8_t sub_type, std::string guild_id_tag);
 
     // baselines
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Guild*);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Guild* guild);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Guild* guild);
 };
 
 }}} // swganh::object::guild

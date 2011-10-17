@@ -316,8 +316,11 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
     message.data.write<uint32_t>(creature->GetCashCredits());
     message.data.write<uint32_t>(0); // Negative HAM List Size
     message.data.write<uint32_t>(0); // Negative HAM List Counter
-    message.data.write<uint32_t>(0); // Skill List Size
-    message.data.write<uint32_t>(0); // Skill List Counter
+    message.data.write<uint32_t>(creature->GetSkillList().size());
+    message.data.write<uint32_t>(creature->skill_list_counter_);
+    std::for_each(creature->GetSkillList().begin(), creature->GetSkillList().end(), [&message](std::string skill) {
+        message.data.write<std::string>(skill);
+    });
     return boost::optional<swganh::messages::BaselinesMessage>(std::move(message));
 }
 
@@ -369,7 +372,7 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
     message.data.write<uint64_t>(creature->GetWeaponId()); // Weapon Id
     message.data.write<uint64_t>(creature->GetGroupId()); // Group Id
     message.data.write<uint64_t>(creature->GetInviteSenderId()); // Invite Sender Id
-    message.data.write<uint64_t>(creature->invite_counter_++); // Invite Sender Counter
+    message.data.write<uint64_t>(creature->invite_counter_); // Invite Sender Counter
     message.data.write<uint32_t>(creature->GetGuildId()); // Guild Id
     message.data.write<uint64_t>(creature->GetTargetId()); // Target Id
     message.data.write<uint8_t>(creature->GetMoodId()); // Mood Id
