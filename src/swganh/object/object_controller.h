@@ -21,9 +21,10 @@ namespace swganh {
 namespace object {
 
     class Object;
+    class ObjectController;
 
     typedef std::function<
-        void (const std::shared_ptr<Object>&, 
+        void (const std::shared_ptr<ObjectController>&, 
         const swganh::messages::ObjControllerMessage&)
     > ObjControllerHandler;
 

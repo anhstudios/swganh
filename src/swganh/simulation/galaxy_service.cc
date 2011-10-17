@@ -186,7 +186,7 @@ public:
             throw std::runtime_error("No handler registered to process the given message.");
         }
         
-        find_iter->second(client->GetController()->GetObject(), move(message));
+        find_iter->second(client->GetController(), move(message));
     }
     
     void HandleSelectCharacter(
