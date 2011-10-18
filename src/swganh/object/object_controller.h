@@ -9,6 +9,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include <tbb/concurrent_unordered_map.h>
+
 #include "anh/observer/observer_interface.h"
 #include "swganh/messages/obj_controller_message.h"
 
@@ -28,7 +30,7 @@ namespace object {
         const swganh::messages::ObjControllerMessage&)
     > ObjControllerHandler;
 
-    typedef std::unordered_map<
+    typedef tbb::concurrent_unordered_map<
         uint32_t, 
         ObjControllerHandler
     > ObjControllerHandlerMap;
@@ -48,7 +50,7 @@ namespace object {
         /**
          * @return Handle to the object this controller manages.
          */
-        const std::shared_ptr<Object>& GetObject() const;
+        std::shared_ptr<Object> GetObject() const;
 
         /**
          * @return Handle to the remote client controlling the object.

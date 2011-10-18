@@ -28,8 +28,6 @@ namespace messages {
             buffer.write(header);
             buffer.write(object_id);
             buffer.write(tick_count);
-
-            buffer.write(data.size());
             buffer.write(data.data(), data.size());  
         }
 
@@ -39,9 +37,7 @@ namespace messages {
             header = buffer.read<uint32_t>();  
             object_id = buffer.read<uint64_t>();
             tick_count = buffer.read<uint32_t>();
-
-            uint32_t data_size = buffer.read<uint32_t>();
-            data = anh::ByteBuffer(buffer.data() + buffer.read_position(), data_size);
+            data = anh::ByteBuffer(buffer.data() + buffer.read_position(), buffer.size() - buffer.read_position());
         }
     };
 
