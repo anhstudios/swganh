@@ -25,8 +25,6 @@ void MovementManager::HandleDataTransform(
     const shared_ptr<swganh::object::ObjectController>& controller, 
     const swganh::messages::ObjControllerMessage& message)
 {
-    LOG(WARNING) << "MOVING OBJECT";
-
     DataTransform transform;
     transform.Deserialize(message.data);
     
@@ -39,14 +37,29 @@ void MovementManager::HandleDataTransform(
     transform_update.object_id = object->GetObjectId();
     transform_update.heading = object->GetHeading();
     transform_update.position = object->GetPosition();
-    transform_update.update_counter = transform.counter;
+    transform_update.update_counter = transform.counter+1;
     
     object->NotifyObservers(transform_update);
 }
 
 void MovementManager::HandleDataTransformWithParent(
-    const std::shared_ptr<swganh::object::ObjectController>&, 
-    const swganh::messages::ObjControllerMessage&)
+    const std::shared_ptr<swganh::object::ObjectController>& controller, 
+    const swganh::messages::ObjControllerMessage& message)
 {
-
+    DataTransformWithParent transform;
+    transform.Deserialize(message.data);
+    
+    auto object = controller->GetObject();
+    
+    object->SetPosition(transform.position);
+    object->SetOrientation(transform.orientation);
+        
+    UpdateTransformWithParentMessage transform_update;
+    transform_update.object_id = object->GetObjectId();
+    transform_update.cell_id = transform.cell_id;
+    transform_update.heading = object->GetHeading();
+    transform_update.position = object->GetPosition();
+    transform_update.update_counter = transform.counter+1;
+    
+    object->NotifyObservers(transform_update);
 }

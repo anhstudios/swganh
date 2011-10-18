@@ -46,7 +46,7 @@ struct UpdateTransformMessage : public swganh::messages::BaseSwgMessage<UpdateTr
         buffer.write<int16_t>(position.y * 4.0f + 0.5f);
         buffer.write<int16_t>(position.z * 4.0f + 0.5f);
         buffer.write(update_counter);
-        buffer.write(0);
+        buffer.write(static_cast<uint8_t>(0));
         buffer.write(heading);
     }
 
