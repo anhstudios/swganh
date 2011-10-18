@@ -11,6 +11,8 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+use galaxy_manager;
+
 # Dumping structure for function galaxy_manager.sf_CharacterNameProfaneCheck
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` FUNCTION `sf_CharacterNameProfaneCheck`(start_firstname CHAR(32)) RETURNS char(32) CHARSET utf8
