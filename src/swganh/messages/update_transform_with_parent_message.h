@@ -42,11 +42,11 @@ struct UpdateTransformWithParentMessage : public swganh::messages::BaseSwgMessag
     void onSerialize(anh::ByteBuffer& buffer) const {
         buffer.write(cell_id);
         buffer.write(object_id);
-        buffer.write<int16_t>(position.x);
-        buffer.write<int16_t>(position.y);
-        buffer.write<int16_t>(position.z);
+        buffer.write<int16_t>(position.x * 8.0f + 0.5f);
+        buffer.write<int16_t>(position.y * 8.0f + 0.5f);
+        buffer.write<int16_t>(position.z * 8.0f + 0.5f);
         buffer.write(update_counter);
-        buffer.write(posture_id);
+        buffer.write(0);
         buffer.write(heading);
     }
 

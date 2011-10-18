@@ -185,8 +185,16 @@ void Session::HandleMessage(anh::ByteBuffer& message)
         case SESSION_REQUEST:  { SessionRequest session_request(message); handleSessionRequest_(session_request); break; }
         case FATAL_ERROR:      { Close(); break; }
         default:
-            LOG(WARNING) << "Unhandled SOE Opcode: " << std::hex << message.peek<uint16_t>(true)
-                << "\n\n" << message;
+            if (message.peek<uint8_t>() != 0)
+            {
+                auto packet = make_shared<Packet>(shared_from_this(), make_shared<ByteBuffer>(message));
+                this->server_->HandleMessage(packet);
+            }
+            else 
+            {
+                LOG(WARNING) << "Unhandled SOE Opcode: " << std::hex << message.peek<uint16_t>(true)
+                    << "\n\n" << message;
+            }
     }
 }
 

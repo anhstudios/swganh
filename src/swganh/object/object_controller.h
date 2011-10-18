@@ -9,6 +9,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include <tbb/concurrent_unordered_map.h>
+
 #include "anh/observer/observer_interface.h"
 #include "swganh/messages/obj_controller_message.h"
 
@@ -21,13 +23,14 @@ namespace swganh {
 namespace object {
 
     class Object;
+    class ObjectController;
 
     typedef std::function<
-        void (const std::shared_ptr<Object>&, 
+        void (const std::shared_ptr<ObjectController>&, 
         const swganh::messages::ObjControllerMessage&)
     > ObjControllerHandler;
 
-    typedef std::unordered_map<
+    typedef tbb::concurrent_unordered_map<
         uint32_t, 
         ObjControllerHandler
     > ObjControllerHandlerMap;
@@ -39,7 +42,6 @@ namespace object {
 
     public:
         ObjectController(
-            const ObjControllerHandlerMap& handlers,
             std::shared_ptr<Object> object,
             std::shared_ptr<swganh::network::RemoteClient> client);
 
@@ -48,19 +50,12 @@ namespace object {
         /**
          * @return Handle to the object this controller manages.
          */
-        const std::shared_ptr<Object>& GetObject() const;
+        std::shared_ptr<Object> GetObject() const;
 
         /**
          * @return Handle to the remote client controlling the object.
          */
         const std::shared_ptr<swganh::network::RemoteClient>& GetRemoteClient() const;
-
-        /**
-         * Handles an incoming controller message from the remote client.
-         *
-         * @param message The message recieved from the remote client.
-         */
-        void HandleControllerMessage(const swganh::messages::ObjControllerMessage& message);
 
         using anh::observer::ObserverInterface::Notify;
 
@@ -74,7 +69,6 @@ namespace object {
     private:
         ObjectController();
 
-        const ObjControllerHandlerMap& handlers_;
         std::shared_ptr<Object> object_;
         std::shared_ptr<swganh::network::RemoteClient> client_;
     };

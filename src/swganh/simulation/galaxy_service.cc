@@ -35,6 +35,9 @@
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
+#include "swganh/messages/obj_controller_message.h"
+
+#include "swganh/simulation/movement_manager.h"
 
 using namespace std;
 using namespace swganh::connection;
@@ -70,6 +73,16 @@ public:
         }
 
         return scene_manager_;
+    }
+
+    const shared_ptr<MovementManager>& GetMovementManager()
+    {
+        if (!movement_manager_)
+        {
+            movement_manager_ = make_shared<MovementManager>();
+        }
+
+        return movement_manager_;
     }
 
 	void RegisterObjectFactories(std::shared_ptr<anh::app::KernelInterface> kernel)
@@ -130,8 +143,11 @@ public:
             throw swganh::object::InvalidObject("Object already has a controller");
         }
         
-        auto controller = make_shared<ObjectController>(controller_handlers_, object, client);
+        auto controller = make_shared<ObjectController>(object, client);
 		object->SetController(controller);
+
+        auto connection_client = std::static_pointer_cast<ConnectionClient>(client);
+        connection_client->SetController(controller);
 
         controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
 
@@ -171,7 +187,21 @@ public:
             throw std::runtime_error("ObjControllerHandler does not exist");
         }
 
-        controller_handlers_.erase(find_iter);
+        controller_handlers_.unsafe_erase(find_iter);
+    }
+
+    void HandleObjControllerMessage(
+        shared_ptr<ConnectionClient> client,
+        const ObjControllerMessage& message)
+    {
+        auto find_iter = controller_handlers_.find(message.header);
+        
+        if (find_iter == controller_handlers_.end())
+        {
+            throw std::runtime_error("No handler registered to process the given message.");
+        }
+        
+        find_iter->second(client->GetController(), message);
     }
     
     void HandleSelectCharacter(
@@ -180,28 +210,34 @@ public:
     {
         auto object = LoadObjectById(message.character_id);
 		StartControllingObject(object, client);
+
+        auto scene = scene_manager_->GetScene(object->GetSceneId());
+
+        if (!scene) 
+        {
+            throw std::runtime_error("Invalid scene selected for object");
+        }
+
 		// CmdStartScene
-        swganh::messages::CmdStartScene start_scene;
+        CmdStartScene start_scene;
         start_scene.ignore_layout = 0;
         start_scene.character_id = object->GetObjectId();
 		
-        start_scene.terrain_map = scene_manager_->GetScene(object->GetSceneId())->GetTerrainMap();
+        start_scene.terrain_map = scene->GetTerrainMap();
         start_scene.position = object->GetPosition();
         start_scene.shared_race_template = object->GetTemplate();
         start_scene.galaxy_time = 0;
         client->GetSession()->SendMessage(start_scene);
 
 		// Add object to scene and send baselines
-		GetSceneManager()->GetScene(object->GetSceneId())->AddObject(object);
-
-        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetPosture(swganh::object::creature::Creature::POSTURE::SKILL_ANIMATING);
-        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetAnimation("dance_30");
-        std::static_pointer_cast<swganh::object::creature::Creature>(object)->SetGuildId(1);
+		scene->AddObject(object);
     }
 
 private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManager> scene_manager_;
+    shared_ptr<MovementManager> movement_manager_;
+
 
     ObjControllerHandlerMap controller_handlers_;
 
@@ -280,7 +316,9 @@ void GalaxyService::StopControllingObject(const shared_ptr<Object>& object)
     impl_->StopControllingObject(object);
 }
 
-void GalaxyService::RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler)
+void GalaxyService::RegisterControllerHandler(
+    uint32_t handler_id, 
+    swganh::object::ObjControllerHandler&& handler)
 {
     impl_->RegisterControllerHandler(handler_id, move(handler));
 }
@@ -299,5 +337,20 @@ void GalaxyService::onStart()
         const SelectCharacter& message)
     {
         impl_->HandleSelectCharacter(client, message);
+    });
+
+    connection_service->RegisterMessageHandler<ObjControllerMessage>([=] (
+        shared_ptr<ConnectionClient> client, 
+        const ObjControllerMessage& message)
+    {
+        impl_->HandleObjControllerMessage(client, message);
+    });
+
+
+    RegisterControllerHandler(0x00000071, [this] (
+        const std::shared_ptr<ObjectController>& controller, 
+        const swganh::messages::ObjControllerMessage& message) 
+    {
+        impl_->GetMovementManager()->HandleDataTransform(controller, message);
     });
 }

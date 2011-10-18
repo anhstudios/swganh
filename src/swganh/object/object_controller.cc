@@ -11,11 +11,9 @@ using namespace swganh::network;
 using namespace swganh::object;
 
 ObjectController::ObjectController(
-    const ObjControllerHandlerMap& handlers,
     shared_ptr<Object> object,
     shared_ptr<RemoteClient> client)
-    : handlers_(handlers)
-    , object_(object)
+    : object_(object)
     , client_(client)
 {
 }
@@ -25,7 +23,7 @@ ObjectController::~ObjectController()
     object_->ClearController();
 }
 
-const shared_ptr<Object>& ObjectController::GetObject() const
+shared_ptr<Object> ObjectController::GetObject() const
 {
     return object_;
 }
@@ -33,18 +31,6 @@ const shared_ptr<Object>& ObjectController::GetObject() const
 const shared_ptr<RemoteClient>& ObjectController::GetRemoteClient() const
 {
     return client_;
-}
-
-void ObjectController::HandleControllerMessage(const ObjControllerMessage& message)
-{
-    auto find_iter = handlers_.find(message.header);
-    
-    if (find_iter == handlers_.end())
-    {
-        throw InvalidControllerMessage("No handler registered to process the given message.");
-    }
-    
-    find_iter->second(object_, move(message));
 }
 
 void ObjectController::Notify(const anh::ByteBuffer& message)
