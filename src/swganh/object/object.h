@@ -15,6 +15,7 @@
 #include <glm/gtx/quaternion.hpp>
 
 #include "anh/observer/observable_interface.h"
+#include "anh/observer/observer_interface.h"
 
 #include "swganh/messages/base_baselines_message.h"
 #include "swganh/messages/baselines_message.h"
@@ -127,7 +128,7 @@ public:
         for_each(
             observers_.begin(),
             observers_.end(),
-            [&message] (const std::shared_ptr<ObserverInterface>& observer)
+            [&message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
         {
             observer->Notify(message);
         });
@@ -172,6 +173,11 @@ public:
     glm::quat GetOrientation() { return orientation_; }
 
     void SetOrientation(glm::quat orientation);
+
+    /**
+     * @return Heading of the object in (angle/0.0625) where angle is in radians.
+     */
+    uint8_t GetHeading() const;
 
     const std::shared_ptr<Object>& GetContainer() const { return container_; }
     void SetContainer(const std::shared_ptr<Object>& container);

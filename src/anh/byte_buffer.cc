@@ -49,7 +49,7 @@ ByteBuffer::ByteBuffer(const unsigned char* data, size_t length)
 ByteBuffer::~ByteBuffer() {}
 
 ByteBuffer::ByteBuffer(const ByteBuffer& other)
-: data_(other.data_.begin(), other.data_.end())
+: data_(other.data_)
 , read_position_(other.read_position_)
 , write_position_(other.write_position_) {}
 
