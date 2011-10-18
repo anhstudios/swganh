@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-16 19:39:53
+# Date/time:                    2011-10-17 22:07:04
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -15,38 +15,27 @@ use galaxy;
 
 # Dumping structure for procedure galaxy.sp_CharacterDelete
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterDelete`(IN character_id BIGINT, IN account_id BIGINT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterDelete`(IN `character_id` BIGINT, IN `account_id` BIGINT)
 BEGIN
-	
-	
-	
-
-	DECLARE check_value INT(11);
+	 DECLARE check_value INT(11);
     DECLARE deleted_code INT(11);
     DECLARE acc_id BIGINT;
 
-	
-	
-	
-
-	SET deleted_code = 0;
-    SELECT C.referenceId from characters A
-    INNER JOIN players_characters B on (A.id = B.character_id)
-    INNER JOIN player C on (B.player_id = C.id) 
-    WHERE A.entity_id = character_id INTO acc_id;
+	 SET deleted_code = 0;
+	 SELECT D.reference_id
+	 FROM object A
+    INNER JOIN player_accounts_players C ON (A.id = C.player_character_id)
+    INNER JOIN player_account D ON (C.player_id = D.id)
+    WHERE A.id = character_id INTO acc_id;
     
     IF account_id = acc_id THEN
-
-        UPDATE characters SET archived = 1 WHERE entity_id = character_id;
-
-        UPDATE characters SET deletedAt = (NOW()) WHERE entity_id = character_id;
-    
+        UPDATE object SET deleted_at = NOW() 
+		  WHERE object.id = character_id;
     END IF;
 	
-	
-	
-
-	SELECT COUNT(*) from characters WHERE entity_id = character_id AND archived = 1 INTO check_value;
+	SELECT COUNT(*) FROM object A 
+	WHERE A.id = character_id AND A.deleted_at <= NOW()
+	INTO check_value;
 
 	IF check_value > 0 THEN SET deleted_code = 1;
 	END IF;

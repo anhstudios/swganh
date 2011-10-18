@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-16 20:23:10
+# Date/time:                    2011-10-17 22:07:04
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -23,8 +23,7 @@ BEGIN
     INNER JOIN player_accounts_players C ON (A.id = C.player_character_id)
     INNER JOIN player_account D ON (C.player_id = D.id)
     LEFT JOIN iff_templates E ON (E.id = B.iff_template_id)
-    WHERE A.id = C.player_character_id and D.reference_id = account_id;
-
+    WHERE A.id = C.player_character_id and D.reference_id = account_id AND b.deleted_at <=> DATE('0000-00-00') AND B.deleted_at <= NOW();
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
