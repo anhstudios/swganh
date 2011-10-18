@@ -23,7 +23,7 @@ BEGIN
     INNER JOIN player_accounts_players C ON (A.id = C.player_character_id)
     INNER JOIN player_account D ON (C.player_id = D.id)
     LEFT JOIN iff_templates E ON (E.id = B.iff_template_id)
-    WHERE A.id = C.player_character_id and D.reference_id = account_id AND b.deleted_at <=> DATE('0000-00-00') AND B.deleted_at <= NOW();
+    WHERE A.id = C.player_character_id and D.reference_id = account_id AND B.deleted_at IS NULL;
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
