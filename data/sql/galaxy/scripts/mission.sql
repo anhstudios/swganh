@@ -11,6 +11,8 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+use galaxy;
+
 # Dumping structure for table galaxy.mission
 CREATE TABLE IF NOT EXISTS `mission` (
   `id` bigint(20) NOT NULL,

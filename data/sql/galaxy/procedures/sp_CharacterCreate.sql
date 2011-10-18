@@ -11,6 +11,8 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+use galaxy;
+
 # Dumping structure for procedure galaxy.sp_CharacterCreate
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterCreate`(IN `start_account_id` INT, IN `start_galaxy_id` INT, IN `start_firstname` char(32), IN `start_lastname` char(32), IN `start_custom_name` char(50), IN `start_profession` char(64), IN `start_city` char(32), IN `start_scale` FLOAT, IN `start_biography` text(2048), IN `start_appearance_customization` TINYBLOB, IN `start_hair_model` CHAR(64), IN `hair_customization` TEXT(200), IN `base_model_string` CHAR(64))
