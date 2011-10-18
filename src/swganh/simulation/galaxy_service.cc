@@ -353,4 +353,11 @@ void GalaxyService::onStart()
     {
         impl_->GetMovementManager()->HandleDataTransform(controller, message);
     });
+    
+    RegisterControllerHandler(0x000000F1, [this] (
+        const std::shared_ptr<ObjectController>& controller, 
+        const swganh::messages::ObjControllerMessage& message) 
+    {
+        impl_->GetMovementManager()->HandleDataTransformWithParent(controller, message);
+    });
 }

@@ -325,15 +325,14 @@ void Object::SetOrientation(glm::quat orientation)
 }
 
 uint8_t Object::GetHeading() const
-{    
+{  
     glm::quat tmp = orientation_;
-
+    
     if (tmp.y < 0.0f && tmp.w > 0.0f) {
-        tmp.y *= -1;
         tmp.w *= -1;
     }
-
-    return static_cast<uint8_t>(glm::angle(tmp) / 0.625f);
+    
+    return static_cast<uint8_t>((glm::angle(tmp) / 6.283f) * 100);
 }
 
 void Object::SetContainer(const std::shared_ptr<Object>& container)
