@@ -11,6 +11,8 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+use galaxy;
+
 # Dumping structure for function galaxy.sf_CharacterNameDeveloperCheck
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` FUNCTION `sf_CharacterNameDeveloperCheck`(start_firstname CHAR(32)) RETURNS int(11)
