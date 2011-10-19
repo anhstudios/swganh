@@ -81,8 +81,6 @@ private:
         
     tbb::atomic<bool> running_;
 
-    std::string galaxy_name_;
-
     anh::ActiveObject active_;
 };
 

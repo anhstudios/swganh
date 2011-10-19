@@ -7,14 +7,21 @@
 #include <string>
 #include <vector>
 
+#include "anh/service/service_interface.h"
+
+namespace anh {
+namespace database {
+    class DatabaseManagerInterface;
+}}  // namespace anh::database
+
 namespace anh {
 namespace service {
 
-class ServiceInterface;
-    
+class ServiceDirectoryInterface;
+
 class ServiceManager {
 public:
-    ServiceManager();
+    const ServiceManager(const std::shared_ptr<ServiceDirectoryInterface>& service_directory);
     
     void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
 
@@ -67,9 +74,13 @@ public:
     void Start();
     void Stop();
 
+    const std::shared_ptr<ServiceDirectoryInterface>& GetServiceDirectory() const;
+
 private:
     typedef std::map<std::string, std::shared_ptr<ServiceInterface>> ServiceMap;
     ServiceMap services_;
+
+    std::shared_ptr<ServiceDirectoryInterface> service_directory_;
 };
     
 }}  // namespace anh::service

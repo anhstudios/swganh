@@ -47,7 +47,6 @@ private:
     
     std::list<std::shared_ptr<boost::thread>> io_threads_;
     std::shared_ptr<SwganhKernel> kernel_;
-    std::shared_ptr<anh::service::ServiceDirectory> service_directory_;
     tbb::atomic<bool> running_;
     bool initialized_;
 };

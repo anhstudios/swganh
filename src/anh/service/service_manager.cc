@@ -7,7 +7,7 @@
 
 #include <boost/thread.hpp>
 
-#include "anh/service/service_interface.h"
+#include "anh/service/service_directory_interface.h"
 
 #ifndef WIN32
 #include <boost/regex.hpp>
@@ -19,11 +19,11 @@
     using std::regex_search;
 #endif
 
-//using namespace anh::plugin;
 using namespace anh::service;
 using namespace std;
 
-ServiceManager::ServiceManager() 
+ServiceManager::ServiceManager(const shared_ptr<ServiceDirectoryInterface>& service_directory) 
+    : service_directory_(service_directory)
 {}
 
 shared_ptr<ServiceInterface> ServiceManager::GetService(string name) {
@@ -62,4 +62,9 @@ void ServiceManager::Stop() {
            entry.second->Stop();
        } 
     });
+}
+
+const shared_ptr<ServiceDirectoryInterface>& ServiceManager::GetServiceDirectory() const
+{
+    return service_directory_;
 }
