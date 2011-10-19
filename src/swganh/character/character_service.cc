@@ -46,6 +46,7 @@
 #include "anh/network/soe/session.h"
 #include "anh/network/soe/server_interface.h"
 
+#include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 
 #include "swganh/login/login_service.h"
@@ -149,7 +150,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 				}
 
                 character.race_crc = anh::memcrc(non_shared_template);
-                character.galaxy_id = service_directory()->galaxy().id();
+                character.galaxy_id = kernel()->GetServiceManager()->GetServiceDirectory()->galaxy().id();
                 character.status = result_set->getInt("jedi_state");
                 characters.push_back(character);
             } while (statement->getMoreResults());
@@ -254,7 +255,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         DLOG(WARNING) << "Creating character with location " << account_id;
 
         statement->setUInt(1, account_id);
-        statement->setUInt(2, service_directory()->galaxy().id());
+        statement->setUInt(2, kernel()->GetServiceManager()->GetServiceDirectory()->galaxy().id());
         statement->setString(3, string(first_name.begin(), first_name.end()));
         statement->setString(4, string(last_name.begin(), last_name.end()));
         statement->setString(5, string(custom_name.begin(), custom_name.end()));

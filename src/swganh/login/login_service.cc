@@ -35,6 +35,7 @@
 #include "anh/network/soe/session.h"
 #include "anh/network/soe/server.h"
 
+#include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 #include "anh/plugin/plugin_manager.h"
 
@@ -224,7 +225,7 @@ void LoginService::UpdateGalaxyStatus_() {
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     std::vector<GalaxyStatus> galaxy_status;
     
-    auto service_directory = this->service_directory();
+    auto service_directory = kernel()->GetServiceManager()->GetServiceDirectory();
 
     auto galaxy_list = service_directory->getGalaxySnapshot();
 

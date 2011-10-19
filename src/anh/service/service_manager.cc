@@ -8,6 +8,7 @@
 #include <boost/thread.hpp>
 
 #include "anh/service/service_directory_interface.h"
+#include "anh/service/service_description.h"
 
 #ifndef WIN32
 #include <boost/regex.hpp>
@@ -45,6 +46,15 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
         return;
     }
 
+    auto service_description = service->GetServiceDescription();
+    if (!service_directory_->registerService(service_description.name(), service_description.type(), service_description.version(), service_description.address(), service_description.tcp_port(), service_description.udp_port(), service_description.ping_port())) {
+        throw std::runtime_error("Unable to register service " + service_description.name());
+    }
+            
+    // update the status of the service
+    service_description.status(anh::service::Galaxy::ONLINE);
+    service_directory_->updateService(service_description);
+
     services_[name] = service;
 }
 
@@ -57,10 +67,10 @@ void ServiceManager::Start() {
 }
 
 void ServiceManager::Stop() {
-    for_each(services_.begin(), services_.end(), [] (ServiceMap::value_type& entry) {
-       if (entry.second) {
-           entry.second->Stop();
-       } 
+    for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
+        if (entry.second) {
+            entry.second->Stop();
+        } 
     });
 }
 

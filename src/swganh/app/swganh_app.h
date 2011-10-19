@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include <boost/asio/deadline_timer.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/thread/thread.hpp>
 #include <tbb/atomic.h>
@@ -44,6 +45,9 @@ private:
     void LoadCoreServices_();
 
     void CleanupServices_();
+
+    void GalaxyStatusTimerHandler_(const boost::system::error_code& e,
+        std::shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs);
     
     std::list<std::shared_ptr<boost::thread>> io_threads_;
     std::shared_ptr<SwganhKernel> kernel_;

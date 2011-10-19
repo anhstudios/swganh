@@ -26,6 +26,7 @@
 
 using namespace anh;
 using namespace anh::app;
+using namespace boost::asio;
 using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
@@ -157,8 +158,13 @@ void SwganhApp::Start() {
 
         io_threads_.push_back(t);
     }
+    
     kernel_->GetServiceManager()->Start();
     
+    auto timer = make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(30));
+
+    timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 30));
+
     do {
         kernel_->GetEventDispatcher()->tick();
 
@@ -285,4 +291,14 @@ void SwganhApp::LoadCoreServices_()
 		galaxy_service->StartScene("corellia");
 		kernel_->GetServiceManager()->AddService("GalaxyService", galaxy_service);
 	}
+}
+
+    
+void SwganhApp::GalaxyStatusTimerHandler_(const boost::system::error_code& e, shared_ptr<deadline_timer> timer, int delay_in_secs)
+{
+    LOG(WARNING) << "Updating Galaxy Status";
+    kernel_->GetServiceManager()->GetServiceDirectory()->updateGalaxyStatus();
+
+    timer->expires_at(timer->expires_at() + boost::posix_time::seconds(delay_in_secs));    
+    timer->async_wait(std::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, std::placeholders::_1, timer, delay_in_secs));
 }
