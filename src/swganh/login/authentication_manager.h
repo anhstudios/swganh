@@ -29,7 +29,7 @@ namespace swganh {
 namespace login {
 
 class Account;
-struct LoginClient;
+class LoginClient;
 
 class AuthenticationManager {
 public:
