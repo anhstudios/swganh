@@ -23,6 +23,7 @@
 #include <sstream>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <glog/logging.h>
 
@@ -379,9 +380,12 @@ list<ServiceDescription> Datastore::getServiceList(uint32_t galaxy_id) const {
 std::string Datastore::prepareTimestampForStorage(const std::string& timestamp) const {    
     std::stringstream ss;
     
-    boost::posix_time::time_facet* facet = new boost::posix_time::time_facet("%Y%m%d%H%M%S%F");    
-    ss.imbue(std::locale(ss.getloc(), facet));
+    ss.imbue(std::locale(ss.getloc(), new boost::posix_time::time_facet("%Y%m%d%H%M%S%F")));
     
+    static boost::mutex mutex;
+
+    boost::lock_guard<boost::mutex> lk(mutex);
+
     ss << boost::posix_time::time_from_string(timestamp);
     
     return ss.str();
