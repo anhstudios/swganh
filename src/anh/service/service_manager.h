@@ -8,21 +8,18 @@
 #include <vector>
 
 namespace anh {
-namespace plugin {
-class PluginManager;
-}}  // namespace anh::plugin
-
-namespace anh {
 namespace service {
 
 class ServiceInterface;
     
 class ServiceManager {
 public:
-    explicit ServiceManager(std::shared_ptr<anh::plugin::PluginManager> plugin_manager);
-
-    void Initialize();
+    ServiceManager();
     
+    void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
+
+    std::shared_ptr<ServiceInterface> GetService(std::string name);
+
     template<typename T>
     std::shared_ptr<T> GetService(std::string name)
     {
@@ -66,9 +63,6 @@ public:
         return services;
     }
 
-    std::shared_ptr<ServiceInterface> GetService(std::string name);
-    void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
-
     // add start/stop services, all and individually
     void Start();
     void Stop();
@@ -76,8 +70,6 @@ public:
 private:
     typedef std::map<std::string, std::shared_ptr<ServiceInterface>> ServiceMap;
     ServiceMap services_;
-
-    std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
 };
     
 }}  // namespace anh::service

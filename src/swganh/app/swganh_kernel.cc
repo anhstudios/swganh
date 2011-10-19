@@ -68,7 +68,7 @@ shared_ptr<PluginManager> SwganhKernel::GetPluginManager() {
 
 shared_ptr<ServiceManager> SwganhKernel::GetServiceManager() {
     if (!service_manager_) {
-        service_manager_ = make_shared<ServiceManager>(GetPluginManager());
+        service_manager_ = make_shared<ServiceManager>();
     }
 
     return service_manager_;

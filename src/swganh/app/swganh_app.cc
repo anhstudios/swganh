@@ -133,9 +133,6 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 
     // Load core services
     LoadCoreServices_();
-
-    // Initialize plugin services
-    kernel_->GetServiceManager()->Initialize();
     
     initialized_ = true;
 }
