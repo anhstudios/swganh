@@ -26,6 +26,7 @@
 
 using namespace anh;
 using namespace anh::app;
+using namespace boost::asio;
 using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
@@ -123,9 +124,6 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
         app_config.galaxy_db.username,
         app_config.galaxy_db.password);
     
-    auto data_store = make_shared<service::Datastore>(kernel_->GetDatabaseManager()->getConnection("galaxy_manager"));
-    service_directory_ = make_shared<service::ServiceDirectory>(data_store, kernel_->GetEventDispatcher(), app_config.galaxy_name, kernel_->GetVersion().ToString(), true);
-    
     CleanupServices_();
 
     // Load the plugin configuration.
@@ -133,9 +131,6 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 
     // Load core services
     LoadCoreServices_();
-
-    // Initialize plugin services
-    kernel_->GetServiceManager()->Initialize();
     
     initialized_ = true;
 }
@@ -163,8 +158,13 @@ void SwganhApp::Start() {
 
         io_threads_.push_back(t);
     }
+    
     kernel_->GetServiceManager()->Start();
     
+    auto timer = make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(30));
+
+    timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 30));
+
     do {
         kernel_->GetEventDispatcher()->tick();
 
@@ -236,7 +236,10 @@ void SwganhApp::LoadPlugins_(vector<string> plugins) {
 }
 
 void SwganhApp::CleanupServices_() {
-    auto services = service_directory_->getServiceSnapshot(service_directory_->galaxy());
+
+    auto service_directory = kernel_->GetServiceDirectory();
+
+    auto services = service_directory->getServiceSnapshot(service_directory->galaxy());
 
     if (services.empty()) {
         return;
@@ -244,8 +247,8 @@ void SwganhApp::CleanupServices_() {
 
     DLOG(WARNING) << "Services were not shutdown properly";
 
-    for_each(services.begin(), services.end(), [this] (anh::service::ServiceDescription& service) {
-        service_directory_->removeService(service);
+    for_each(services.begin(), services.end(), [this, &service_directory] (anh::service::ServiceDescription& service) {
+        service_directory->removeService(service);
     });
 }
 
@@ -288,4 +291,13 @@ void SwganhApp::LoadCoreServices_()
 		galaxy_service->StartScene("corellia");
 		kernel_->GetServiceManager()->AddService("GalaxyService", galaxy_service);
 	}
+}
+
+    
+void SwganhApp::GalaxyStatusTimerHandler_(const boost::system::error_code& e, shared_ptr<deadline_timer> timer, int delay_in_secs)
+{
+    kernel_->GetServiceDirectory()->updateGalaxyStatus();
+
+    timer->expires_at(timer->expires_at() + boost::posix_time::seconds(delay_in_secs));    
+    timer->async_wait(std::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, std::placeholders::_1, timer, delay_in_secs));
 }
