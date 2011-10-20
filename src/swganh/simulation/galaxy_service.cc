@@ -36,6 +36,7 @@
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
 #include "swganh/messages/obj_controller_message.h"
+#include "swganh/messages/update_containment_message.h"
 
 #include "swganh/simulation/movement_manager.h"
 
@@ -231,6 +232,49 @@ public:
 
 		// Add object to scene and send baselines
 		scene->AddObject(object);
+
+        std::shared_ptr<swganh::object::player::Player> player(new swganh::object::player::Player());
+        player->SetObjectId(0xDEADBAAF);
+        player->SetTemplate("object/player/shared_player.iff");
+        player->MakeClean(client->GetController());
+
+
+        swganh::messages::UpdateContainmentMessage ucm;
+        ucm.object_id = player->GetObjectId();
+        ucm.container_id = object->GetObjectId();
+        ucm.containment_type = 4;
+        client->GetSession()->SendMessage(ucm);
+
+        using namespace swganh::object::creature;
+        auto creature = std::static_pointer_cast<swganh::object::creature::Creature>(object);
+        
+        creature->SetStatMax(Creature::HEALTH, 1000);
+        creature->SetStatMax(Creature::STRENGTH, 1000);
+        creature->SetStatMax(Creature::STAMINA, 1000);
+        creature->SetStatMax(Creature::ACTION, 1000);
+        creature->SetStatMax(Creature::QUICKNESS, 1000);
+        creature->SetStatMax(Creature::CONSTITUTION, 1000);
+
+        creature->SetStatCurrent(Creature::HEALTH, 900);
+        creature->SetStatCurrent(Creature::STRENGTH, 900);
+        creature->SetStatCurrent(Creature::STAMINA, 900);
+        creature->SetStatCurrent(Creature::ACTION, 900);
+        creature->SetStatCurrent(Creature::QUICKNESS, 900);
+        creature->SetStatCurrent(Creature::CONSTITUTION, 900);
+
+        creature->SetStatWound(Creature::HEALTH, 10);
+        creature->SetStatWound(Creature::STRENGTH, 10);
+        creature->SetStatWound(Creature::STAMINA, 10);
+        creature->SetStatWound(Creature::ACTION, 10);
+        creature->SetStatWound(Creature::QUICKNESS, 10);
+        creature->SetStatWound(Creature::CONSTITUTION, 10);
+
+        creature->SetStatEncumberance(Creature::HEALTH, 20);
+        creature->SetStatEncumberance(Creature::STRENGTH, 20);
+        creature->SetStatEncumberance(Creature::STAMINA, 20);
+        creature->SetStatEncumberance(Creature::ACTION, 20);
+        creature->SetStatEncumberance(Creature::QUICKNESS, 20);
+        creature->SetStatEncumberance(Creature::CONSTITUTION, 20);
     }
 
 private:

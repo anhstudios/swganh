@@ -26,11 +26,12 @@
 #include <boost/optional.hpp>
 #include <swganh/messages/baselines_message.h>
 
+#include "creature.h"
+
 namespace swganh {
 namespace object {
 namespace creature {
 
-class Creature;
 class CreatureMessageBuilder
 {
 public:
@@ -38,15 +39,19 @@ public:
     // deltas
     static void BuildBankCreditsDelta(Creature* creature);
     static void BuildCashCreditsDelta(Creature* creature);
-    static void BuildSkillListDelta(Creature* creature, uint8_t subtype, std::string skill);
+    static void BuildStatBaseDelta(Creature* creature, uint8_t subtype, uint16_t index);
+    static void BuildSkillDelta(Creature* creature, uint8_t subtype, std::string skill);
     static void BuildPostureDelta(Creature* creature);
     static void BuildFactionRankDelta(Creature* creature);
     static void BuildOwnerIdDelta(Creature* creature);
     static void BuildScaleDelta(Creature* creature);
     static void BuildBattleFatigueDelta(Creature* creature);
     static void BuildStateBitmaskDelta(Creature* creature);
+    static void BuildStatWoundDelta(Creature* creature, uint8_t subtype, uint16_t index);
     static void BuildAccelerationMultiplierBaseDelta(Creature* creature);
     static void BuildAccelerationMultiplierModifierDelta(Creature* creature);
+    static void BuildStatEncumberanceDelta(Creature* creature, uint8_t subtype, uint16_t index);
+    static void BuildSkillModDelta(Creature* creature, uint8_t subtype, Creature::SkillMod mod);
     static void BuildSpeedMultiplierBaseDelta(Creature* creature);
     static void BuildSpeedMultiplierModifierDelta(Creature* creature);
     static void BuildListenToIdDelta(Creature* creature);
@@ -56,6 +61,7 @@ public:
     static void BuildTurnRadiusDelta(Creature* creature);
     static void BuildWalkingSpeedDelta(Creature* creature);
     static void BuildWaterModifierPrecentDelta(Creature* creature);
+    static void BuildMissionCriticalObjectDelta(Creature* creature, uint8_t subtype, Creature::MissionCriticalObject object);
     static void BuildCombatLevelDelta(Creature* creature);
     static void BuildAnimationDelta(Creature* creature);
     static void BuildMoodAnimationDelta(Creature* creature);
@@ -66,6 +72,10 @@ public:
     static void BuildTargetIdDelta(Creature* creature);
     static void BuildMoodIdDelta(Creature* creature);
     static void BuildPerformanceIdDelta(Creature* creature);
+    static void BuildStatCurrentDelta(Creature* creature, uint8_t subtype, uint16_t index);
+    static void BuildStatMaxDelta(Creature* creature, uint8_t subtype, uint16_t index);
+    static void BuildEquipmentDelta(Creature* creature, uint8_t subtype, Creature::EquipmentItem item);
+    static void BuildDisguiseDelta(Creature* creature);
     static void BuildStationaryDelta(Creature* creature);
 
     // baselines

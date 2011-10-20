@@ -18,7 +18,6 @@ class PlayerMessageBuilder;
 class Player : public swganh::object::Object
 {
 public:
-
     Player();
 	
     enum Gender
@@ -26,6 +25,7 @@ public:
         FEMALE = 0,
         MALE
     };
+
     enum StatusFlags
     {
         LFG = 1,
@@ -36,6 +36,13 @@ public:
         FACTION_RANK = 200,
         ANON = 80000000
     };
+
+    enum AdminTag
+    {
+        CSR = 1,
+        DEVELOPER = 2
+    };
+
     struct XpData
     {
         std::string type;

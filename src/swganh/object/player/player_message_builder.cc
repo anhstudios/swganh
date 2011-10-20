@@ -79,9 +79,8 @@ void PlayerMessageBuilder::BuildAdminTagDelta(Player* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_6, 1);
-        message.data.write(object->GetAdminTag());
-
-        object->AddDeltasUpdate(move(message));
+        message.data.write<uint8_t>(object->GetAdminTag());
+        object->AddDeltasUpdate(std::move(message));
     }
 }
 void PlayerMessageBuilder::BuildXpDelta(Player* object, uint8_t sub_type, std::string type, uint32_t amount)
@@ -441,124 +440,81 @@ void PlayerMessageBuilder::BuildJediStateDelta(Player* object)
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_3, 10);
-
     message.data.append(object->Object::GetBaseline3().get().data);
-    // not used
-    message.data.write(0);
-    message.data.write(object->GetStatusFlags());
-    message.data.write(object->GetProfileFlags());
-    message.data.write(object->GetProfessionTag());
-    message.data.write(object->GetBornDate());
-    message.data.write(object->GetTotalPlayTime());
-
+    message.data.write<uint32_t>(0);                                    // Not Used
+    message.data.write<uint32_t>(object->GetStatusFlags());             // Status Flag
+    message.data.write<uint32_t>(object->GetProfileFlags());            // Profile Flags
+    message.data.write<std::string>(object->GetProfessionTag());        // Profession Tag
+    message.data.write<uint32_t>(object->GetBornDate());                // Born Date
+    message.data.write<uint32_t>(object->GetTotalPlayTime());           // Total Play Time
     return boost::optional<BaselinesMessage>(move(message));
 }
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline6(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_6, 2);
-
-    message.data.write(object->GetRegionId());
-    message.data.write<uint8_t>(object->GetAdminTag());
-
+    message.data.write<uint32_t>(object->GetRegionId());    // Region Id
+    message.data.write<uint8_t>(object->GetAdminTag());     // Admin Tag
     return boost::optional<BaselinesMessage>(move(message));
 }
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(Player* object)
 {
+
     auto message = object->CreateBaselinesMessage(Object::VIEW_8, 7);
+    message.data.write<uint32_t>(1); // Experience List Size
+    message.data.write<uint32_t>(0); // Experience List Counter
+    message.data.write<uint8_t>(0);
+    message.data.write<std::string>("combat_general");
+    message.data.write<uint32_t>(100);
+    message.data.write<uint32_t>(0); // Waypoint List Size
+    message.data.write<uint32_t>(0); // Waypoint List Counter
+
+    message.data.write<uint32_t>(object->GetCurrentForcePower());
+    message.data.write<uint32_t>(object->GetMaxForcePower());
     
-    // experience
-    message.data.write(object->experience_.size());
-    message.data.write(object->experience_counter_);
-    for_each(begin(object->experience_), end(object->experience_), [&message] (Player::XpData xp){
-        message.data.write(xp.type);
-        message.data.write(xp.value);
-    });
-    // waypoints
-    message.data.write(object->waypoints_.size());
-    message.data.write(object->waypoint_counter_);
-    for_each(begin(object->waypoints_), end(object->waypoints_), [&message] (shared_ptr<Waypoint> waypoint){
-        message.data.write<uint8_t>(0);
-        message.data.write<uint64_t>(waypoint->GetObjectId());
-        // cell id
-        message.data.write(0);
-        auto position = waypoint->GetPosition();
-        message.data.write(position.x);
-        message.data.write(position.y);
-        message.data.write(position.z);
-        message.data.write(0);
-        message.data.write(anh::memcrc(waypoint->GetPlanet()));
-        message.data.write(waypoint->GetName());
-        message.data.write(waypoint->GetObjectId());
-        message.data.write<uint8_t>(waypoint->GetColorByte());
-        message.data.write<uint8_t>(waypoint->GetActiveFlag());
-    });
-    // The Force
-    message.data.write(object->GetCurrentForcePower());
-    message.data.write(object->GetMaxForcePower());
-    // TODO: Are these really lists or just bitmasks?
-    message.data.write(object->GetCurrentForceSensitiveQuests());
-    message.data.write(object->GetCompletedForceSensitiveQuests());
-    // Quests
-    message.data.write(object->quest_journal_.size());
-    message.data.write(0);
-    for_each(begin(object->quest_journal_), end(object->quest_journal_), [&message](Player::QuestJournalData quest){
-        message.data.write<uint8_t>(0);
-        message.data.write(quest.quest_crc);
-        message.data.write(quest.owner_id);
-        message.data.write(quest.active_step_bitmask);
-        message.data.write(quest.completed_step_bitmask);
-        message.data.write(quest.completed_flag);
-        message.data.write(quest.counter);
-    });
-    return boost::optional<BaselinesMessage>(move(message));
+    message.data.write<uint32_t>(0); // Force Sensetive Quest List Soze
+    message.data.write<uint32_t>(0); // Force Sensetive Quest List Counter
+
+    message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Size
+    message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Counter
+
+    message.data.write<uint32_t>(0); // Quest List Size
+    message.data.write<uint32_t>(0); // Quest List Counter
+
+    return boost::optional<BaselinesMessage>(std::move(message));
 }
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_9, 17);
 
-    // Ability
-    message.data.write(object->abilities_.size());
-    message.data.write(0);
-    for_each(begin(object->abilities_), end(object->abilities_), [&message](string ability){
-        message.data.write(ability);
-    });
-    // Crafting
-    message.data.write(object->GetExperimentationFlag());
-    message.data.write(object->GetCraftingStage());
-    message.data.write(object->GetNearestCraftingStation());
-    // Schematics
-    message.data.write(object->draft_schematics_.size());
-    message.data.write(0);
-    for_each(begin(object->draft_schematics_), end(object->draft_schematics_), [&message](Player::DraftSchematicData schem) {
-        message.data.write(schem.schematic_id);
-        message.data.write(schem.schematic_crc);
-    });
+    message.data.write<uint32_t>(0); // Ability List Size
+    message.data.write<uint32_t>(0); // Ability List Counter
+    message.data.write<uint32_t>(object->GetExperimentationFlag());
+    message.data.write<uint32_t>(object->GetCraftingStage());
+    message.data.write<uint64_t>(object->GetNearestCraftingStation());
 
-    message.data.write(object->GetExperimentationPoints());
-    message.data.write(object->GetAccomplishmentCounter());
-    // friend list
-    message.data.write(object->friends_.size());
-    message.data.write(0);
-    for_each(begin(object->friends_), end(object->friends_), [&message](string name){
-        message.data.write(name);
-    });
-    // ignore list
-    message.data.write(object->ignored_players_.size());
-    message.data.write(0);
-    for_each(begin(object->ignored_players_), end(object->ignored_players_), [&message] (string name) {
-        message.data.write(name);
-    });
-    message.data.write(object->GetLanguage());
-    message.data.write(object->GetCurrentStomach());
-    message.data.write(object->GetMaxStomach());
-    message.data.write(object->GetCurrentDrink());
-    message.data.write(object->GetMaxDrink());
-    // unused
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(object->GetJediState());
+    message.data.write<uint32_t>(0); // Draft Schematic List Size
+    message.data.write<uint32_t>(0); // Draft Schematic List Counter
 
-    return boost::optional<BaselinesMessage>(move(message));
+
+    message.data.write<uint32_t>(object->GetExperimentationPoints());
+    message.data.write<uint32_t>(object->GetAccomplishmentCounter());
+ 
+    message.data.write<uint32_t>(0); // Friends List Size
+    message.data.write<uint32_t>(0); // Firends List Counter
+
+    message.data.write<uint32_t>(0); // Ignore List Size
+    message.data.write<uint32_t>(0); // Ignore List Counter
+
+    message.data.write<uint32_t>(object->GetLanguage());
+    message.data.write<uint32_t>(object->GetCurrentStomach());
+    message.data.write<uint32_t>(object->GetMaxStomach());
+    message.data.write<uint32_t>(object->GetCurrentDrink());
+    message.data.write<uint32_t>(object->GetMaxDrink());
+    message.data.write<uint32_t>(0); // Unused
+    message.data.write<uint32_t>(0); // Unused
+    message.data.write<uint32_t>(0); // Unused
+    message.data.write<uint32_t>(0); // Unused
+    message.data.write<uint32_t>(object->GetJediState()); // Jedi State
+
+    return boost::optional<BaselinesMessage>(std::move(message));
 }
