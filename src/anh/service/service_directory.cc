@@ -140,6 +140,11 @@ bool ServiceDirectory::removeService(const ServiceDescription& service) {
     return false;
 }
 
+void ServiceDirectory::updateService(const ServiceDescription& service) {    
+    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+    datastore_->saveService(service);
+}
+
 void ServiceDirectory::updateServiceStatus(int32_t new_status) {    
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
 

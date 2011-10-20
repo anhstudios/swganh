@@ -8,10 +8,13 @@
 #include "anh/database/database_manager.h"
 #include "anh/event_dispatcher/event_dispatcher.h"
 #include "anh/plugin/plugin_manager.h"
+#include "anh/service/datastore.h"
+#include "anh/service/service_directory.h"
 #include "anh/service/service_manager.h"
 
 #include "version.h"
 
+using namespace anh::service;
 using namespace swganh::app;
 
 using anh::app::Version;
@@ -67,11 +70,25 @@ shared_ptr<PluginManager> SwganhKernel::GetPluginManager() {
 }
 
 shared_ptr<ServiceManager> SwganhKernel::GetServiceManager() {
-    if (!service_manager_) {
-        service_manager_ = make_shared<ServiceManager>(GetPluginManager());
+    if (!service_manager_) {        
+        service_manager_ = make_shared<ServiceManager>(GetServiceDirectory());
     }
 
     return service_manager_;
+}
+
+shared_ptr<ServiceDirectoryInterface> SwganhKernel::GetServiceDirectory() {
+    if (!service_directory_) {        
+        auto data_store = make_shared<Datastore>(GetDatabaseManager()->getConnection("galaxy_manager"));
+        service_directory_ = make_shared<ServiceDirectory>(
+            data_store, 
+            GetEventDispatcher(),
+            app_config_.galaxy_name, 
+            GetVersion().ToString(),
+            true);
+    }
+
+    return service_directory_;
 }
 
 boost::asio::io_service& SwganhKernel::GetIoService() {

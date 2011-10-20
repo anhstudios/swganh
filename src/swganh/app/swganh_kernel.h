@@ -61,6 +61,8 @@ public:
 
     std::shared_ptr<anh::service::ServiceManager> GetServiceManager();
     
+    std::shared_ptr<anh::service::ServiceDirectoryInterface> GetServiceDirectory();
+    
     boost::asio::io_service& GetIoService();
 
 private:
@@ -71,6 +73,7 @@ private:
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
     std::shared_ptr<anh::service::ServiceManager> service_manager_;
+    std::shared_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
 
     boost::asio::io_service io_service_;
 };

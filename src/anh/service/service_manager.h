@@ -7,22 +7,26 @@
 #include <string>
 #include <vector>
 
+#include "anh/service/service_interface.h"
+
 namespace anh {
-namespace plugin {
-class PluginManager;
-}}  // namespace anh::plugin
+namespace database {
+    class DatabaseManagerInterface;
+}}  // namespace anh::database
 
 namespace anh {
 namespace service {
 
-class ServiceInterface;
-    
+class ServiceDirectoryInterface;
+
 class ServiceManager {
 public:
-    explicit ServiceManager(std::shared_ptr<anh::plugin::PluginManager> plugin_manager);
-
-    void Initialize();
+    const ServiceManager(const std::shared_ptr<ServiceDirectoryInterface>& service_directory);
     
+    void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
+
+    std::shared_ptr<ServiceInterface> GetService(std::string name);
+
     template<typename T>
     std::shared_ptr<T> GetService(std::string name)
     {
@@ -66,9 +70,6 @@ public:
         return services;
     }
 
-    std::shared_ptr<ServiceInterface> GetService(std::string name);
-    void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
-
     // add start/stop services, all and individually
     void Start();
     void Stop();
@@ -77,7 +78,7 @@ private:
     typedef std::map<std::string, std::shared_ptr<ServiceInterface>> ServiceMap;
     ServiceMap services_;
 
-    std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
+    std::shared_ptr<ServiceDirectoryInterface> service_directory_;
 };
     
 }}  // namespace anh::service

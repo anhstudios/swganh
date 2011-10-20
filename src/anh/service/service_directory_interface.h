@@ -55,6 +55,7 @@ public:
     
     virtual bool removeService(const ServiceDescription& service) = 0;
     
+    virtual void updateService(const ServiceDescription& service) = 0;
     virtual void updateServiceStatus(int32_t new_status) = 0;
     
     virtual bool makePrimaryService(const ServiceDescription& service) = 0;

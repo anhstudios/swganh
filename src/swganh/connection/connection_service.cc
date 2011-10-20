@@ -9,6 +9,7 @@
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/server.h"
+#include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
@@ -230,7 +231,7 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
     AddClient_(player_id, client);
 
     ClientPermissionsMessage client_permissions;
-    client_permissions.galaxy_available = service_directory()->galaxy().status();
+    client_permissions.galaxy_available = kernel()->GetServiceDirectory()->galaxy().status();
     client_permissions.available_character_slots = character_service()->GetMaxCharacters(account_id);
     // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;

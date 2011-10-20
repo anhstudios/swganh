@@ -10,22 +10,23 @@
 
 namespace anh {
 namespace database {
-class DatabaseManagerInterface;
+    class DatabaseManagerInterface;
 }}  // namespace anh::database
 
 namespace anh {
 namespace event_dispatcher {
-class EventDispatcherInterface; 
+    class EventDispatcherInterface; 
 }}  // namespace anh::event_dispatcher
 
 namespace anh {
 namespace plugin {
-class PluginManager;
+    class PluginManager;
 }}  // namespace anh::plugin
 
 namespace anh {
 namespace service {
-class ServiceManager;
+    class ServiceDirectoryInterface;
+    class ServiceManager;
 }}  // namespace anh::service
 
 namespace anh {
@@ -51,6 +52,8 @@ public:
     virtual std::shared_ptr<anh::plugin::PluginManager> GetPluginManager() = 0;
 
     virtual std::shared_ptr<anh::service::ServiceManager> GetServiceManager() = 0;
+
+    virtual std::shared_ptr<anh::service::ServiceDirectoryInterface> GetServiceDirectory() = 0;
 
     virtual std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager() = 0;
 
