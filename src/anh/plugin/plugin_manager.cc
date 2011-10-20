@@ -37,7 +37,7 @@ using namespace anh::plugin;
 using namespace boost::program_options;
 using namespace std;
 
-PluginManager::PluginManager(shared_ptr<KernelInterface> kernel)
+PluginManager::PluginManager(KernelInterface* kernel)
     : kernel_(kernel) 
 {
 #ifndef WIN32

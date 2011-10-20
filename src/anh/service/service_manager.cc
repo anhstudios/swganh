@@ -27,6 +27,15 @@ ServiceManager::ServiceManager(const shared_ptr<ServiceDirectoryInterface>& serv
     : service_directory_(service_directory)
 {}
 
+ServiceManager::~ServiceManager()
+{
+    for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {            
+        service_directory_->removeService(*entry.second.first);
+    });
+
+    services_.clear();
+}
+
 shared_ptr<ServiceInterface> ServiceManager::GetService(string name) {
     auto it = services_.find(name);
 
@@ -34,7 +43,7 @@ shared_ptr<ServiceInterface> ServiceManager::GetService(string name) {
         return nullptr;
     }
 
-    return it->second;
+    return it->second.second;
 }
 
 void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> service) {
@@ -47,29 +56,34 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
     }
 
     auto service_description = service->GetServiceDescription();
-    if (!service_directory_->registerService(service_description.name(), service_description.type(), service_description.version(), service_description.address(), service_description.tcp_port(), service_description.udp_port(), service_description.ping_port())) {
+    if (!service_directory_->registerService(service_description)) 
+    {
         throw std::runtime_error("Unable to register service " + service_description.name());
     }
             
     // update the status of the service
-    service_description.status(anh::service::Galaxy::ONLINE);
+    service_description.status(anh::service::Galaxy::LOADING);
     service_directory_->updateService(service_description);
 
-    services_[name] = service;
+    services_[name] = make_pair(make_shared<ServiceDescription>(service_description), service);
 }
 
 void ServiceManager::Start() {
-    for_each(services_.begin(), services_.end(), [] (ServiceMap::value_type& entry) {
-       if (entry.second) {
-           entry.second->Start();
-       } 
+    for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
+        if (entry.second.second) {
+            entry.second.second->Start();
+            entry.second.first->status(anh::service::Galaxy::ONLINE);
+            service_directory_->updateService(*entry.second.first);
+        } 
     });    
 }
 
 void ServiceManager::Stop() {
     for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
-        if (entry.second) {
-            entry.second->Stop();
+        if (entry.second.second) {
+            entry.second.second->Stop();
+            entry.second.first->status(anh::service::Galaxy::OFFLINE);
+            service_directory_->updateService(*entry.second.first);
         } 
     });
 }

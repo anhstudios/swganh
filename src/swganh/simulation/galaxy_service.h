@@ -27,7 +27,7 @@ namespace simulation {
     class GalaxyService : public swganh::base::BaseService
     {
     public:
-        explicit GalaxyService(std::shared_ptr<anh::app::KernelInterface> kernel);
+        explicit GalaxyService(anh::app::KernelInterface* kernel);
     
         ~GalaxyService();
 
@@ -36,7 +36,7 @@ namespace simulation {
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
 
-		void RegisterObjectFactories(std::shared_ptr<anh::app::KernelInterface> kernel);
+		void RegisterObjectFactories(anh::app::KernelInterface* kernel);
         
         std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id);
         

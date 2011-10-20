@@ -21,8 +21,10 @@ class ServiceDirectoryInterface;
 
 class ServiceManager {
 public:
-    const ServiceManager(const std::shared_ptr<ServiceDirectoryInterface>& service_directory);
+    explicit ServiceManager(const std::shared_ptr<ServiceDirectoryInterface>& service_directory);
     
+    ~ServiceManager();
+
     void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
 
     std::shared_ptr<ServiceInterface> GetService(std::string name);
@@ -75,7 +77,10 @@ public:
     void Stop();
 
 private:
-    typedef std::map<std::string, std::shared_ptr<ServiceInterface>> ServiceMap;
+    typedef std::map<std::string, std::pair<
+        std::shared_ptr<ServiceDescription>, 
+        std::shared_ptr<ServiceInterface>>
+    > ServiceMap;
     ServiceMap services_;
 
     std::shared_ptr<ServiceDirectoryInterface> service_directory_;

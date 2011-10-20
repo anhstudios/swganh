@@ -50,7 +50,7 @@ public:
     std::shared_ptr<Galaxy> findGalaxyByName(const std::string& name) const;
     void saveGalaxyStatus(int32_t galaxy_id, int32_t status) const;
     
-    std::shared_ptr<ServiceDescription> createService(const Galaxy& galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const;
+    bool createService(const Galaxy& galaxy, ServiceDescription& description) const;
     std::shared_ptr<ServiceDescription> findServiceById(uint32_t id) const;
     bool deleteServiceById(uint32_t id) const;
     void saveService(const ServiceDescription& service) const;

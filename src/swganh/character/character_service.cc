@@ -80,7 +80,7 @@ using namespace swganh::connection;
 using namespace swganh::login;
 using namespace swganh::messages;
 
-CharacterService::CharacterService(shared_ptr<KernelInterface> kernel) 
+CharacterService::CharacterService(KernelInterface* kernel) 
     : BaseService(kernel) {
 }
 

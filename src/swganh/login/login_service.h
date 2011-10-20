@@ -77,7 +77,7 @@ public:
     LoginService(
         std::string listen_address, 
         uint16_t listen_port, 
-        std::shared_ptr<anh::app::KernelInterface> kernel);
+        anh::app::KernelInterface* kernel);
     ~LoginService();
     
     anh::service::ServiceDescription GetServiceDescription();
