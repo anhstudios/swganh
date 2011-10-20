@@ -85,7 +85,7 @@ public:
         return movement_manager_;
     }
 
-	void RegisterObjectFactories(std::shared_ptr<anh::app::KernelInterface> kernel)
+	void RegisterObjectFactories(anh::app::KernelInterface* kernel)
 	{
 		auto db_manager = kernel->GetDatabaseManager();
 		GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager));
@@ -247,7 +247,7 @@ private:
 
 }}  // namespace swganh::simulation
 
-GalaxyService::GalaxyService(shared_ptr<KernelInterface> kernel)
+GalaxyService::GalaxyService(KernelInterface* kernel)
     : BaseService(kernel) 
     , impl_(new GalaxyServiceImpl)
 {}
@@ -284,7 +284,7 @@ void GalaxyService::StopScene(const std::string& scene_label)
 {
     impl_->GetSceneManager()->StopScene(scene_label);
 }
-void GalaxyService::RegisterObjectFactories(shared_ptr<anh::app::KernelInterface> kernel)
+void GalaxyService::RegisterObjectFactories(anh::app::KernelInterface* kernel)
 {
 	impl_->RegisterObjectFactories(kernel);
 }

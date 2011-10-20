@@ -48,6 +48,7 @@ struct AppConfig {
 class SwganhKernel : public anh::app::KernelInterface, public std::enable_shared_from_this<SwganhKernel> {
 public:
     SwganhKernel();
+    ~SwganhKernel();
 
     const anh::app::Version& GetVersion();
 

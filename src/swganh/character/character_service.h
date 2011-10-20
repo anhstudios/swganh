@@ -57,7 +57,7 @@ namespace character {
     
 class CharacterService : public swganh::base::BaseService {
 public:
-    explicit CharacterService(std::shared_ptr<anh::app::KernelInterface> kernel);
+    explicit CharacterService(anh::app::KernelInterface* kernel);
     ~CharacterService();
     
     anh::service::ServiceDescription GetServiceDescription();

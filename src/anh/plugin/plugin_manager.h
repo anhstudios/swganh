@@ -30,7 +30,7 @@ typedef std::runtime_error PluginLoadingError;
 
 class PluginManager {
 public:
-    explicit PluginManager(std::shared_ptr<anh::app::KernelInterface> kernel);
+    explicit PluginManager(anh::app::KernelInterface* kernel);
     ~PluginManager();
 
     void LoadPlugin(const std::string& path);
@@ -56,7 +56,7 @@ private:
     typedef std::map<std::string, std::shared_ptr<platform::LibraryInterface>> LibraryMap;
     typedef std::vector<ExitFunc> ExitFuncCollection;
 
-    std::shared_ptr<anh::app::KernelInterface> kernel_;
+    anh::app::KernelInterface* kernel_;
     LibraryMap library_map_;
     ExitFuncCollection exit_funcs_;
 

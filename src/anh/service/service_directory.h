@@ -70,7 +70,7 @@ public:
     
     void updateGalaxyStatus();
 
-    bool registerService(const std::string& name, const std::string& service_type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping);
+    bool registerService(ServiceDescription& service);
     bool removeService(const ServiceDescription& service);
     void updateService(const ServiceDescription& service);
     void updateServiceStatus(int32_t new_status);

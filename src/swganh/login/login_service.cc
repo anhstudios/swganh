@@ -65,7 +65,7 @@ using namespace std;
 
 using anh::network::soe::Session;
 
-LoginService::LoginService(string listen_address, uint16_t listen_port, shared_ptr<KernelInterface> kernel)     
+LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)     
     : BaseService(kernel)
 #pragma warning(push)
 #pragma warning(disable: 4355)
@@ -195,16 +195,14 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> sessio
 }
 
 void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    active().Async([=] () {
-        std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
-        
-        if (client) {
-            DLOG(WARNING) << "Removing disconnected client";
-            clients_.erase(session->remote_endpoint());
-        }
+    std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
+    
+    if (client) {
+        DLOG(WARNING) << "Removing disconnected client";
+        clients_.erase(session->remote_endpoint());
+    }
 
-        DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
-    });
+    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
 }
 
 void LoginService::UpdateGalaxyStatus_() {    
@@ -287,11 +285,13 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
         error.force_fatal = false;
         
         login_client->Send(error);
-
-        active().AsyncDelayed(boost::posix_time::seconds(login_error_timeout_secs_), [login_client] () {
+        
+        auto timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
+        timer->async_wait([&login_client] (const boost::system::error_code& e)
+        {
             login_client->GetSession()->Close();
             DLOG(WARNING) << "Closing connection";
-            return;
+            return;            
         });
 
         return;

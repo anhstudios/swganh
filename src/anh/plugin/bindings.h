@@ -16,7 +16,7 @@ namespace plugin {
     
 struct ObjectParams {
     std::string name;
-    std::shared_ptr<anh::app::KernelInterface> kernel;
+    anh::app::KernelInterface* kernel;
 };
 
 typedef std::function<void * (ObjectParams*)> ObjectCreator;
@@ -29,7 +29,7 @@ struct ObjectRegistration {
 };
 
 typedef void (*ExitFunc)();
-typedef ExitFunc (*InitFunc)(std::shared_ptr<anh::app::KernelInterface>);
+typedef ExitFunc (*InitFunc)(anh::app::KernelInterface*);
 typedef void (*ConfigFunc)(boost::program_options::options_description&);
 
 #ifdef WIN32
@@ -46,7 +46,7 @@ extern
 #ifdef __cplusplus
     "C"
 #endif
-PLUGIN_API ExitFunc InitializePlugin(std::shared_ptr<anh::app::KernelInterface> binding);
+PLUGIN_API ExitFunc InitializePlugin(anh::app::KernelInterface* binding);
 
 extern
 #ifdef __cplusplus

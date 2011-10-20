@@ -37,6 +37,11 @@ SwganhKernel::SwganhKernel() {
     service_manager_ = nullptr;
 }
 
+SwganhKernel::~SwganhKernel()
+{
+    service_manager_.reset();
+}
+
 const Version& SwganhKernel::GetVersion() {
     return version_;
 }
@@ -63,7 +68,7 @@ shared_ptr<EventDispatcherInterface> SwganhKernel::GetEventDispatcher() {
 
 shared_ptr<PluginManager> SwganhKernel::GetPluginManager() {
     if (!plugin_manager_) {
-        plugin_manager_ = make_shared<PluginManager>(shared_from_this());
+        plugin_manager_ = make_shared<PluginManager>(this);
     }
 
     return plugin_manager_;

@@ -36,35 +36,28 @@ using namespace swganh::base;
 using namespace event_dispatcher;
 using namespace std;
 
-BaseService::BaseService(shared_ptr<KernelInterface> kernel)
+BaseService::BaseService(anh::app::KernelInterface* kernel)
     : kernel_(kernel)
     , active_(kernel->GetIoService()) 
 {}
 
 void BaseService::Start() {
-    // update the status of the service
-    //service_directory_->updateServiceStatus(service_directory()->service(), anh::service::Galaxy::LOADING);
-    
-    active_.Async([this] () {
         running_ = true;
         
         subscribe();
         
         onStart();
-    });
 }
 
 void BaseService::Stop() {
-    active_.Async([this] () {
         running_ = false;
         
         onStop();
-    });
 }
 
 bool BaseService::IsRunning() const { return running_; }
 
-shared_ptr<KernelInterface> BaseService::kernel() {
+KernelInterface* BaseService::kernel() {
     return kernel_;
 }
 

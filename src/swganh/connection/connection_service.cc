@@ -24,10 +24,10 @@
 
 #include "swganh/messages/logout_message.h"
 
+using namespace anh::app;
 using namespace anh::event_dispatcher;
 using namespace anh::network;
 using namespace anh::service;
-
 using namespace swganh::base;
 using namespace swganh::character;
 using namespace swganh::connection;
@@ -43,7 +43,7 @@ ConnectionService::ConnectionService(
         string listen_address, 
         uint16_t listen_port, 
         uint16_t ping_port, 
-        std::shared_ptr<anh::app::KernelInterface> kernel)
+        KernelInterface* kernel)
     : BaseService(kernel)
 #pragma warning(push)
 #pragma warning(disable: 4355)
@@ -128,11 +128,11 @@ std::unique_ptr<anh::network::soe::Server>& ConnectionService::server() {
 }
 
 shared_ptr<CharacterService> ConnectionService::character_service() {
-    return character_service_;
+    return character_service_.lock();
 }
 
 shared_ptr<LoginService> ConnectionService::login_service() {
-    return login_service_;
+    return login_service_.lock();
 }
 
 shared_ptr<ConnectionClient> ConnectionService::GetClientFromEndpoint(
@@ -180,18 +180,16 @@ void ConnectionService::AddClient_(
 }
 
 void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    active().Async([=] () {
-        auto client = GetClientFromEndpoint(session->remote_endpoint());
-        
-        auto client_map = clients();
+    auto client = GetClientFromEndpoint(session->remote_endpoint());
+    
+    auto client_map = clients();
 
-        if (client) {
-            DLOG(WARNING) << "Removing disconnected client";
-            client_map.erase(session->remote_endpoint());
-        }
-                
-        DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
-    });
+    if (client) {
+        DLOG(WARNING) << "Removing disconnected client";
+        client_map.erase(session->remote_endpoint());
+    }
+            
+    DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
 }
 
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
