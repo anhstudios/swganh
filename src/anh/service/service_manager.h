@@ -74,8 +74,6 @@ public:
     void Start();
     void Stop();
 
-    const std::shared_ptr<ServiceDirectoryInterface>& GetServiceDirectory() const;
-
 private:
     typedef std::map<std::string, std::shared_ptr<ServiceInterface>> ServiceMap;
     ServiceMap services_;

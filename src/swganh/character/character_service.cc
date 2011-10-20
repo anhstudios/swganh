@@ -150,7 +150,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 				}
 
                 character.race_crc = anh::memcrc(non_shared_template);
-                character.galaxy_id = kernel()->GetServiceManager()->GetServiceDirectory()->galaxy().id();
+                character.galaxy_id = kernel()->GetServiceDirectory()->galaxy().id();
                 character.status = result_set->getInt("jedi_state");
                 characters.push_back(character);
             } while (statement->getMoreResults());
@@ -255,7 +255,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         DLOG(WARNING) << "Creating character with location " << account_id;
 
         statement->setUInt(1, account_id);
-        statement->setUInt(2, kernel()->GetServiceManager()->GetServiceDirectory()->galaxy().id());
+        statement->setUInt(2, kernel()->GetServiceDirectory()->galaxy().id());
         statement->setString(3, string(first_name.begin(), first_name.end()));
         statement->setString(4, string(last_name.begin(), last_name.end()));
         statement->setString(5, string(custom_name.begin(), custom_name.end()));

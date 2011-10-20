@@ -237,7 +237,7 @@ void SwganhApp::LoadPlugins_(vector<string> plugins) {
 
 void SwganhApp::CleanupServices_() {
 
-    auto service_directory = kernel_->GetServiceManager()->GetServiceDirectory();
+    auto service_directory = kernel_->GetServiceDirectory();
 
     auto services = service_directory->getServiceSnapshot(service_directory->galaxy());
 
@@ -296,8 +296,7 @@ void SwganhApp::LoadCoreServices_()
     
 void SwganhApp::GalaxyStatusTimerHandler_(const boost::system::error_code& e, shared_ptr<deadline_timer> timer, int delay_in_secs)
 {
-    LOG(WARNING) << "Updating Galaxy Status";
-    kernel_->GetServiceManager()->GetServiceDirectory()->updateGalaxyStatus();
+    kernel_->GetServiceDirectory()->updateGalaxyStatus();
 
     timer->expires_at(timer->expires_at() + boost::posix_time::seconds(delay_in_secs));    
     timer->async_wait(std::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, std::placeholders::_1, timer, delay_in_secs));

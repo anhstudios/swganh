@@ -73,8 +73,3 @@ void ServiceManager::Stop() {
         } 
     });
 }
-
-const shared_ptr<ServiceDirectoryInterface>& ServiceManager::GetServiceDirectory() const
-{
-    return service_directory_;
-}

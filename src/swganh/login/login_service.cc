@@ -225,7 +225,7 @@ void LoginService::UpdateGalaxyStatus_() {
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     std::vector<GalaxyStatus> galaxy_status;
     
-    auto service_directory = kernel()->GetServiceManager()->GetServiceDirectory();
+    auto service_directory = kernel()->GetServiceDirectory();
 
     auto galaxy_list = service_directory->getGalaxySnapshot();
 
