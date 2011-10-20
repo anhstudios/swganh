@@ -103,6 +103,9 @@ SwganhApp::SwganhApp() {
     initialized_ = false;
 }
 
+SwganhApp::~SwganhApp() 
+{}
+
 void SwganhApp::Initialize(int argc, char* argv[]) {
     // Load the configuration    
     LoadAppConfig_(argc, argv);
@@ -161,21 +164,21 @@ void SwganhApp::Start() {
     
     kernel_->GetServiceManager()->Start();
     
-    auto timer = make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(30));
+    auto timer = make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
 
-    timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 30));
+    timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 10));
 
     do {
         kernel_->GetEventDispatcher()->tick();
 
         boost::this_thread::sleep(boost::posix_time::milliseconds(1));
     } while(IsRunning());
-                
+        
     kernel_->GetServiceManager()->Stop();
 
     // stop io handling    
     kernel_->GetIoService().stop();
-
+    
     // join the threadpool threads until each one has exited.
     for_each(io_threads_.begin(), io_threads_.end(), [] (shared_ptr<boost::thread> t) {
         t->join();
@@ -261,7 +264,7 @@ void SwganhApp::LoadCoreServices_()
 		auto login_service = make_shared<LoginService>(
 		app_config.login_config.listen_address, 
 		app_config.login_config.listen_port, 
-		kernel_);
+		kernel_.get());
 
 		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
 		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
@@ -275,19 +278,19 @@ void SwganhApp::LoadCoreServices_()
 			app_config.connection_config.listen_address, 
 			app_config.connection_config.listen_port, 
 			app_config.connection_config.ping_port, 
-			kernel_);
+			kernel_.get());
 
 		kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
 	}
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		auto character_service = make_shared<CharacterService>(kernel_);
+		auto character_service = make_shared<CharacterService>(kernel_.get());
 
 		kernel_->GetServiceManager()->AddService("CharacterService", character_service);
 	}
 	if(strcmp("galaxy", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		auto galaxy_service = make_shared<GalaxyService>(kernel_);
+		auto galaxy_service = make_shared<GalaxyService>(kernel_.get());
 		galaxy_service->StartScene("corellia");
 		kernel_->GetServiceManager()->AddService("GalaxyService", galaxy_service);
 	}

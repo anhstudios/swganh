@@ -104,19 +104,15 @@ void ServiceDirectory::updateGalaxyStatus() {
     
     active_galaxy_.status((Galaxy::StatusType)galaxy_status);
     datastore_->saveGalaxyStatus(active_galaxy_.id(), active_galaxy_.status());
-    // only trigger this if the service is login
-    if (active_service_.type().compare("login") == 0) {
-        event_dispatcher_->triggerAsync(make_shared_event("UpdateGalaxyStatus"));
-    }
+        
+    event_dispatcher_->triggerAsync(make_shared_event("UpdateGalaxyStatus"));
 }
 
-bool ServiceDirectory::registerService(const string& name, const string& service_type, const string& version, const string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) {
+bool ServiceDirectory::registerService(ServiceDescription& service) {
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
-
-    auto service = datastore_->createService(active_galaxy_, name, service_type, version, address, tcp_port, udp_port, ping_port); 
-        
-    if (service) {
-        active_service_ = *service;
+            
+    if (datastore_->createService(active_galaxy_, service)) {
+        active_service_ = service;
         // trigger the event to let any listeners we have added the service
         auto event_ = make_shared_event("RegisterService", active_service_);
         event_dispatcher_->trigger(event_);

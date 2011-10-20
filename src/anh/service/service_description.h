@@ -102,6 +102,7 @@ public:
     * \returns Returns the id of the service in the data store.
     */
     uint32_t id() const;
+    void id(uint32_t id);
 
     /*! Returns The id of the galaxy this service belongs to.
     *

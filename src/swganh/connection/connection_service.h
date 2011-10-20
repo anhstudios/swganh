@@ -54,7 +54,7 @@ public:
         std::string listen_address, 
         uint16_t listen_port, 
         uint16_t ping_port, 
-        std::shared_ptr<anh::app::KernelInterface> kernel);
+        anh::app::KernelInterface* kernel);
 
     anh::service::ServiceDescription GetServiceDescription();
 
@@ -97,8 +97,8 @@ private:
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     
-    std::shared_ptr<swganh::character::CharacterService> character_service_;
-    std::shared_ptr<swganh::login::LoginService> login_service_;
+    std::weak_ptr<swganh::character::CharacterService> character_service_;
+    std::weak_ptr<swganh::login::LoginService> login_service_;
 
     std::string listen_address_;
     uint16_t listen_port_;

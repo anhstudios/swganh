@@ -46,7 +46,7 @@ namespace base {
 
 class BaseService : public anh::service::ServiceInterface {
 public:    
-    BaseService(std::shared_ptr<anh::app::KernelInterface> kernel);
+    BaseService(anh::app::KernelInterface* kernel);
 
     void Start();
     void Stop();
@@ -54,7 +54,7 @@ public:
     bool IsRunning() const;
         
 protected:
-    std::shared_ptr<anh::app::KernelInterface> kernel();
+    anh::app::KernelInterface* kernel();
 
     anh::ActiveObject& active();
 
@@ -74,7 +74,7 @@ protected:
 
 private:
     BaseService();
-    std::shared_ptr<anh::app::KernelInterface> kernel_;
+    anh::app::KernelInterface* kernel_;
         
     tbb::atomic<bool> running_;
 

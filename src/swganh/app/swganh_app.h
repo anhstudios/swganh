@@ -28,6 +28,7 @@ class SwganhKernel;
 class SwganhApp : public anh::app::AppInterface, private boost::noncopyable {
 public:    
     SwganhApp();
+    ~SwganhApp();
 
     void Initialize(int argc, char* argv[]);
 
