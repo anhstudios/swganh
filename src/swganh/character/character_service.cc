@@ -186,7 +186,7 @@ bool CharacterService::DeleteCharacter(uint64_t character_id, uint64_t account_i
 }
 std::wstring CharacterService::GetRandomNameRequest(const std::string& base_model) {
     try {
-        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy_manager");
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
             conn->prepareStatement("SELECT sf_CharacterNameCreate(?);")
             );
