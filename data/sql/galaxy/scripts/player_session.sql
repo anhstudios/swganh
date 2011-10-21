@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
+# Server version:               5.3.2-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-16 19:39:53
+# Date/time:                    2011-10-21 14:46:05
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,19 +11,45 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-use galaxy;
-
 # Dumping structure for table galaxy.player_session
 CREATE TABLE IF NOT EXISTS `player_session` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `player` int(11) NOT NULL,
   `session_key` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.player_session: ~16 rows (approximately)
+# Dumping data for table galaxy.player_session: ~22 rows (approximately)
 DELETE FROM `player_session`;
 /*!40000 ALTER TABLE `player_session` DISABLE KEYS */;
+INSERT INTO `player_session` (`id`, `player`, `session_key`) VALUES
+	(80, 3, '2011-Oct-21 12:51:49.201719915998978'),
+	(81, 3, '2011-Oct-21 13:11:55.299290915998978'),
+	(82, 3, '2011-Oct-21 13:12:20.685808329085001'),
+	(83, 3, '2011-Oct-21 13:12:41.990808410916549'),
+	(84, 3, '2011-Oct-21 13:13:42.412808334053504'),
+	(85, 3, '2011-Oct-21 13:18:09.222808650786457'),
+	(86, 3, '2011-Oct-21 13:24:14.5488081467093917'),
+	(87, 3, '2011-Oct-21 13:25:28.4228081883859244'),
+	(88, 3, '2011-Oct-21 13:34:24.234225915998978'),
+	(89, 3, '2011-Oct-21 13:36:33.210122329085001'),
+	(90, 3, '2011-Oct-21 13:43:12.790813915998978'),
+	(91, 4, '2011-Oct-21 13:47:31.441080915998978'),
+	(92, 4, '2011-Oct-21 13:49:44.764746329085001'),
+	(93, 4, '2011-Oct-21 13:53:57.611021410916549'),
+	(94, 4, '2011-Oct-21 13:55:40.799021334053504'),
+	(95, 4, '2011-Oct-21 13:57:21.935021599803845'),
+	(96, 4, '2011-Oct-21 13:58:37.884021647257362'),
+	(97, 4, '2011-Oct-21 14:00:58.751021650786457'),
+	(98, 4, '2011-Oct-21 14:02:11.1930211467093917'),
+	(99, 4, '2011-Oct-21 14:05:03.568021355687615'),
+	(100, 4, '2011-Oct-21 14:11:02.1100211079647259'),
+	(101, 4, '2011-Oct-21 14:12:48.791021151157689'),
+	(102, 4, '2011-Oct-21 14:32:18.7250212142069473'),
+	(103, 4, '2011-Oct-21 14:37:35.7130211302670454'),
+	(104, 4, '2011-Oct-21 14:38:00.0540211786793218'),
+	(105, 4, '2011-Oct-21 14:39:04.711021683239055'),
+	(106, 4, '2011-Oct-21 14:40:42.1580211482361664');
 /*!40000 ALTER TABLE `player_session` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

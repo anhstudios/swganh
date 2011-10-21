@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
+# Server version:               5.3.2-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-21 00:47:35
+# Date/time:                    2011-10-21 14:46:06
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -71,7 +71,7 @@ charCreate:BEGIN
    SET longSpecies = REPLACE(base_model_string, 'object/creature/player/', 'object/creature/player/shared_');
    SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longSpecies INTO iff_template_id;
    
-   INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 2);
+   INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1129465167);
    INSERT INTO `tangible` VALUES (object_id, start_appearance_customization, 0, 0, 0, 0, 1);
    INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture, scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier, run_speed, slope_modifier_angle, slope_modifier_percent, walking_speed) 
 	VALUES (object_id, parent_id, 2000, 0, 0,start_scale, 1, 5, 1, 5, 10, 5, 5, 5 );
@@ -83,12 +83,12 @@ charCreate:BEGIN
 	-- BANK
 	-- MISSION
 	-- HAIR
-   INSERT INTO `object` VALUES (object_id + 6, start_scene, parent_id, start_hair_model, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', 'hair' ,0, NOW(), NOW(), null, start_custom_name + 3);
+   INSERT INTO `object` VALUES (object_id + 6, start_scene, parent_id, start_hair_model, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', 'hair' ,0, NOW(), NOW(), null, 1413566031);
    INSERT INTO `tangible` VALUES (object_id + 6, hair_customization, 0, 0, 0, 0, 0);
   	INSERT INTO `appearance` VALUES (object_id + 6, scale, gender, shortSpecies, hair_customization);
 	-- EQUIPED
 	-- PLAYER
-	INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1);
+	INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1347174745);
 	INSERT INTO `player` (id, profession_tag, born_date, csr_tag, current_language, jedi_state)
 	VALUES (object_id + 1, start_profession, NOW(), 0, 0, 0);
 	-- PLAYER ACCOUNT

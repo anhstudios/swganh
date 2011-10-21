@@ -23,7 +23,7 @@ namespace object {
     class ObjectManager
     {
     public:
-		/**
+        /**
          * Registers an object type for management.
          *
          * @param object_type the type of object to manage.
@@ -72,7 +72,7 @@ namespace object {
          * @returns the created object instance.
          * @throws InvalidObject when no object exists for the specified id.
          */
-        std::shared_ptr<Object> CreateObjectFromStorage(uint32_t object_type, uint64_t object_id);
+        std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id, uint32_t object_type);
         
         /**
          * Creates an instance of a stored object with the specified id.

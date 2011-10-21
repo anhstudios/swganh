@@ -86,14 +86,15 @@ public:
         return movement_manager_;
     }
 
-	void RegisterObjectFactories(anh::app::KernelInterface* kernel)
-	{
-		auto db_manager = kernel->GetDatabaseManager();
-		GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager));
-		GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager));
-		GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager));
-		GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager));
-	}
+    void RegisterObjectFactories(anh::app::KernelInterface* kernel)
+    {
+        auto db_manager = kernel->GetDatabaseManager();
+        GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager));
+        GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager));
+        GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager));
+        GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager));
+        GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager));
+    }
 
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
     {
@@ -103,14 +104,28 @@ public:
         {
             throw swganh::object::InvalidObject("Requested object already loaded");
         }
-
+        
         auto object = object_manager_->CreateObjectFromStorage(object_id);
 
         loaded_objects_.insert(make_pair(object_id, object));
 
         return object;
     }
+    shared_ptr<Object> LoadObjectById(uint64_t object_id, uint32_t type)
+    {
+        auto find_iter = loaded_objects_.find(object_id);
 
+        if (find_iter != loaded_objects_.end())
+        {
+            throw swganh::object::InvalidObject("Requested object already loaded");
+        }
+        
+        auto object = object_manager_->CreateObjectFromStorage(object_id, type);
+
+        loaded_objects_.insert(make_pair(object_id, object));
+
+        return object;
+    }
     const shared_ptr<Object>& GetObjectById(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);
@@ -145,7 +160,7 @@ public:
         }
         
         auto controller = make_shared<ObjectController>(object, client);
-		object->SetController(controller);
+        object->SetController(controller);
 
         auto connection_client = std::static_pointer_cast<ConnectionClient>(client);
         connection_client->SetController(controller);
@@ -209,10 +224,11 @@ public:
         shared_ptr<ConnectionClient> client, 
         const SelectCharacter& message)
     {
-        auto object = LoadObjectById(message.character_id);
-		auto player = LoadObjectById(message.character_id + 1); // PLAYER offset
-		auto hair = LoadObjectById(message.character_id + 6); // HAIR OFFSET
-		StartControllingObject(object, client);
+        // character_id = player
+        auto object = LoadObjectById(message.character_id - 1, creature::Creature::type);
+        auto player = LoadObjectById(message.character_id, player::Player::type); // PLAYER offset
+        auto hair = LoadObjectById(message.character_id + 5, tangible::Tangible::type); // HAIR OFFSET
+        StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
 
@@ -220,26 +236,35 @@ public:
         {
             throw std::runtime_error("Invalid scene selected for object");
         }
-		// PLAYER CONTAINMENT
-		UpdateContainmentMessage ucm;
-		ucm.object_id = player->GetObjectId();
-		ucm.container_id = object->GetObjectId();
-		ucm.containment_type = 4;
-		client->GetSession()->SendMessage(ucm);
+        // PLAYER CONTAINMENT
+        UpdateContainmentMessage ucm;
+        ucm.object_id = player->GetObjectId();
+        ucm.container_id = object->GetObjectId();
+        ucm.containment_type = 4;
+        client->GetSession()->SendMessage(ucm);
 
-		// CmdStartScene
+        // HAIR CONTAINMENT
+        UpdateContainmentMessage ucm2;
+        ucm2.object_id = hair->GetObjectId();
+        ucm2.container_id = object->GetObjectId();
+        ucm2.containment_type = 4;
+        client->GetSession()->SendMessage(ucm2);
+
+        // CmdStartScene
         CmdStartScene start_scene;
         start_scene.ignore_layout = 0;
         start_scene.character_id = object->GetObjectId();
-		
+        
         start_scene.terrain_map = scene->GetTerrainMap();
         start_scene.position = object->GetPosition();
         start_scene.shared_race_template = object->GetTemplate();
         start_scene.galaxy_time = 0;
         client->GetSession()->SendMessage(start_scene);
 
-		// Add object to scene and send baselines
-		scene->AddObject(object);
+        // Add object to scene and send baselines
+        scene->AddObject(object);
+        //scene->AddObject(player);
+        scene->AddObject(hair);
     }
 
 private:
@@ -280,10 +305,10 @@ ServiceDescription GalaxyService::GetServiceDescription()
 
 void GalaxyService::StartScene(const std::string& scene_label)
 {
-	impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel()->GetDatabaseManager()->getConnection("galaxy"));
+    impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel()->GetDatabaseManager()->getConnection("galaxy"));
     impl_->GetSceneManager()->StartScene(scene_label);
-	// load factories
-	RegisterObjectFactories(kernel());
+    // load factories
+    RegisterObjectFactories(kernel());
 
     std::shared_ptr<swganh::object::guild::Guild> guild(new swganh::object::guild::Guild());
     impl_->GetSceneManager()->GetScene(scene_label)->AddObject(guild);
@@ -295,14 +320,17 @@ void GalaxyService::StopScene(const std::string& scene_label)
 }
 void GalaxyService::RegisterObjectFactories(anh::app::KernelInterface* kernel)
 {
-	impl_->RegisterObjectFactories(kernel);
+    impl_->RegisterObjectFactories(kernel);
 }
 
 shared_ptr<Object> GalaxyService::LoadObjectById(uint64_t object_id)
 {
     return impl_->LoadObjectById(object_id);
 }
-
+shared_ptr<Object> GalaxyService::LoadObjectById(uint64_t object_id, uint32_t type)
+{
+    return impl_->LoadObjectById(object_id, type);
+}
 const shared_ptr<Object>& GalaxyService::GetObjectById(uint64_t object_id)
 {
     return impl_->GetObjectById(object_id);

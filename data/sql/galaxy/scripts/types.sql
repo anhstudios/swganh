@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
+# Server version:               5.3.2-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-21 00:47:35
+# Date/time:                    2011-10-21 14:46:06
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -16,27 +16,28 @@ CREATE TABLE IF NOT EXISTS `types` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `description` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COMMENT='These are all of the possible object types';
+) ENGINE=MyISAM AUTO_INCREMENT=1874303457 DEFAULT CHARSET=utf8 COMMENT='These are all of the possible object types';
 
-# Dumping data for table galaxy.types: 15 rows
+# Dumping data for table galaxy.types: 16 rows
 DELETE FROM `types`;
 /*!40000 ALTER TABLE `types` DISABLE KEYS */;
 INSERT INTO `types` (`id`, `description`) VALUES
-	(1, 'player'),
-	(2, 'creature'),
-	(3, 'tangible'),
-	(4, 'intangible'),
-	(5, 'cell'),
-	(6, 'manufacture_schematic'),
-	(7, 'mission'),
-	(8, 'waypoint'),
-	(9, 'building'),
-	(10, 'factory_crate'),
-	(11, 'installation'),
-	(12, 'ship'),
-	(13, 'weapon'),
-	(14, 'guild'),
-	(15, 'group');
+	(1347174745, 'player'),
+	(1129465167, 'creature'),
+	(1413566031, 'tangible'),
+	(1230261839, 'intangible'),
+	(1396919380, 'cell'),
+	(1297302351, 'manufacture_schematic'),
+	(1296651087, 'mission'),
+	(1463900496, 'waypoint'),
+	(1112885583, 'building'),
+	(1178818900, 'factory_crate'),
+	(1229869903, 'installation'),
+	(1874303456, 'ship'),
+	(1789660414, 'weapon'),
+	(1145850183, 'guild'),
+	(1196578128, 'group'),
+	(1398030671, 'static');
 /*!40000 ALTER TABLE `types` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

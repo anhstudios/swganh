@@ -36,9 +36,21 @@ namespace simulation {
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
 
-		void RegisterObjectFactories(anh::app::KernelInterface* kernel);
+        void RegisterObjectFactories(anh::app::KernelInterface* kernel);
         
         std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id);
+        std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id, uint32_t type);
+        
+        template<typename T>
+        std::shared_ptr<T> LoadObjectById(uint64_t object_id)
+        {
+            std::shared_ptr<Object> object = LoadObjectById(object_id, T::type);
+#if _DEBUG
+            return std::dynamic_pointer_cast<T>(object);
+#else
+            return std::static_pointer_cast<T>(object);
+#endif
+        }
         
         const std::shared_ptr<swganh::object::Object>& GetObjectById(uint64_t object_id);
 
