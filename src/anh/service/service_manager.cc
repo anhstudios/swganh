@@ -7,8 +7,8 @@
 
 #include <boost/thread.hpp>
 
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/service_interface.h"
+#include "anh/service/service_directory_interface.h"
+#include "anh/service/service_description.h"
 
 #ifndef WIN32
 #include <boost/regex.hpp>
@@ -20,28 +20,30 @@
     using std::regex_search;
 #endif
 
-//using namespace anh::plugin;
 using namespace anh::service;
-using namespace anh::plugin;
 using namespace std;
 
-ServiceManager::ServiceManager(shared_ptr<PluginManager> plugin_manager)
-    : plugin_manager_(plugin_manager) {}
+ServiceManager::ServiceManager(const shared_ptr<ServiceDirectoryInterface>& service_directory) 
+    : service_directory_(service_directory)
+{}
+
+ServiceManager::~ServiceManager()
+{
+    for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {            
+        service_directory_->removeService(*entry.second.first);
+    });
+
+    services_.clear();
+}
 
 shared_ptr<ServiceInterface> ServiceManager::GetService(string name) {
     auto it = services_.find(name);
 
-    if (it != services_.end()) {
-        return it->second;
-    }
-
-    auto service = plugin_manager_->CreateObject<ServiceInterface>(name);
-
-    if (!service) {
+    if (it == services_.end()) {
         return nullptr;
     }
 
-    return service;
+    return it->second.second;
 }
 
 void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> service) {
@@ -53,39 +55,35 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
         return;
     }
 
-    services_[name] = service;
-}
+    auto service_description = service->GetServiceDescription();
+    if (!service_directory_->registerService(service_description)) 
+    {
+        throw std::runtime_error("Unable to register service " + service_description.name());
+    }
+            
+    // update the status of the service
+    service_description.status(anh::service::Galaxy::LOADING);
+    service_directory_->updateService(service_description);
 
-void ServiceManager::Initialize() {
-    auto registration_map = plugin_manager_->registration_map();
-
-    regex rx("Service");
-
-    for_each(registration_map.begin(), registration_map.end(), [this, &rx] (RegistrationMap::value_type& entry) {
-        std::string name = entry.first;
-
-        if (entry.first.length() > 7 && regex_search(name.begin(), name.end(), rx)) {
-            auto service = GetService(entry.first);
-
-            if (service) {
-                services_.insert(make_pair(entry.first, service));
-            }
-        }
-    });
+    services_[name] = make_pair(make_shared<ServiceDescription>(service_description), service);
 }
 
 void ServiceManager::Start() {
-    for_each(services_.begin(), services_.end(), [] (ServiceMap::value_type& entry) {
-       if (entry.second) {
-           entry.second->Start();
-       } 
+    for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
+        if (entry.second.second) {
+            entry.second.second->Start();
+            entry.second.first->status(anh::service::Galaxy::ONLINE);
+            service_directory_->updateService(*entry.second.first);
+        } 
     });    
 }
 
 void ServiceManager::Stop() {
-    for_each(services_.begin(), services_.end(), [] (ServiceMap::value_type& entry) {
-       if (entry.second) {
-           entry.second->Stop();
-       } 
+    for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
+        if (entry.second.second) {
+            entry.second.second->Stop();
+            entry.second.first->status(anh::service::Galaxy::OFFLINE);
+            service_directory_->updateService(*entry.second.first);
+        } 
     });
 }

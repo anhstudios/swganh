@@ -36,73 +36,29 @@ using namespace swganh::base;
 using namespace event_dispatcher;
 using namespace std;
 
-BaseService::BaseService(shared_ptr<KernelInterface> kernel)
+BaseService::BaseService(anh::app::KernelInterface* kernel)
     : kernel_(kernel)
-    , active_(kernel->GetIoService()) {
-    auto data_store = make_shared<service::Datastore>(kernel->GetDatabaseManager()->getConnection("galaxy_manager"));
-    service_directory_ = make_shared<service::ServiceDirectory>(data_store, kernel->GetEventDispatcher());
-
-    auto swganh_kernel = static_pointer_cast<SwganhKernel>(kernel);
-    service_directory_->joinGalaxy(swganh_kernel->GetAppConfig().galaxy_name, kernel_->GetVersion().ToString());
-}
+    , active_(kernel->GetIoService()) 
+{}
 
 void BaseService::Start() {
-    // update the status of the service
-    //service_directory_->updateServiceStatus(service_directory()->service(), anh::service::Galaxy::LOADING);
-    
-    active_.Async([this] () {
         running_ = true;
         
         subscribe();
-
-        auto service_description = GetServiceDescription();
-        if (!service_directory_->registerService(service_description.name(), service_description.type(), service_description.version(), service_description.address(), service_description.tcp_port(), service_description.udp_port(), service_description.ping_port())) {
-            running_ = false;
-            throw std::runtime_error("Unable to register service " + service_description.name());
-        }
-                
-        // update the status of the service
-        service_directory_->updateServiceStatus(anh::service::Galaxy::ONLINE);
-
-        // @TODO: Change this time to a value based on the timeout for services in the service directory's watchdog operations.
-        active_.AsyncRepeated(boost::posix_time::seconds(3), [=] () {
-            if (IsRunning()) {
-                service_directory_->pulse();
-            }
-        });
         
-        // @TODO: change this time to a value based on the timeout for galaxy
-        active_.AsyncRepeated(boost::posix_time::seconds(30), [=] () {
-            if (IsRunning()) {
-                service_directory_->updateGalaxyStatus();
-            }
-        });
-
         onStart();
-    });
 }
 
 void BaseService::Stop() {
-    active_.Async([this] () {
         running_ = false;
-
-        // update the status of the service
-        service_directory_->updateServiceStatus(anh::service::Galaxy::OFFLINE);
-
-        service_directory_->removeService(service_directory_->service());
-
+        
         onStop();
-    });
 }
 
 bool BaseService::IsRunning() const { return running_; }
 
-shared_ptr<KernelInterface> BaseService::kernel() {
+KernelInterface* BaseService::kernel() {
     return kernel_;
-}
-
-shared_ptr<service::ServiceDirectory> BaseService::service_directory() {
-    return service_directory_;
 }
 
 ActiveObject& BaseService::active() {
