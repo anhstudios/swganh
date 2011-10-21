@@ -1,0 +1,138 @@
+
+#include "plugins/phpbb_auth/phpbb_session_provider.h"
+
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+
+#include <glog/logging.h>
+
+using namespace anh::database;
+using namespace plugins::phpbb_auth;
+using namespace std;
+using namespace swganh::connection;
+
+
+PhpbbSessionProvider::PhpbbSessionProvider(const shared_ptr<DatabaseManagerInterface>& database_manager)
+    : database_manager_(database_manager) 
+{}
+
+uint64_t PhpbbSessionProvider::GetPlayerId(uint32_t account_id)
+{
+    uint64_t player_id = FindPlayerByReferenceId_(account_id);
+
+    if (player_id == 0)
+    {
+        CreatePlayerAccount_(account_id);
+        player_id = FindPlayerByReferenceId_(account_id);
+    }
+
+    return player_id;
+}
+
+uint32_t PhpbbSessionProvider::GetAccountId(uint64_t player_id)
+{
+    uint32_t account_id = 0;
+
+    try {
+        string sql = "select reference_id from player_account where id = ?";
+        auto conn = database_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt(1, player_id);
+        auto result_set = statement->executeQuery();
+        
+        if (result_set->next()) {
+            account_id = result_set->getUInt("reference_id");
+            
+        } else {
+            DLOG(WARNING) << "No account Id found for player id : " << player_id << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+    return account_id;
+}
+
+bool PhpbbSessionProvider::CreateGameSession(uint64_t player_id, uint32_t session_id)
+{
+    bool updated = false;
+    // create new game session 
+    std::string game_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
+        + boost::lexical_cast<std::string>(session_id);
+
+    try {
+        string sql = "INSERT INTO player_session(player,session_key) VALUES (?,?)";
+        auto conn = database_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt64(1, player_id);
+        statement->setString(2, game_session);
+        auto rows_updated = statement->executeUpdate();
+        
+        if (rows_updated > 0) {
+           updated = true;
+            
+        } else {
+            DLOG(WARNING) << "Couldn't create session for player " << player_id << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+    return updated;
+}
+
+bool PhpbbSessionProvider::CreatePlayerAccount_(uint64_t account_id)
+{
+	bool success = false;
+    try 
+    {
+        string sql = "call sp_CreatePlayerAccount(?);";
+        auto conn = database_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt64(1, account_id);
+        auto rows_updated = statement->executeUpdate();
+        if (rows_updated > 0)
+            success = true;
+    } 
+    catch(sql::SQLException &e) 
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return success;
+}
+    
+uint64_t PhpbbSessionProvider::FindPlayerByReferenceId_(uint64_t account_id)
+{
+    uint64_t player_id = 0;
+
+    try {
+        string sql = "select id from player_account where reference_id = ?";
+        auto conn = database_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt(1, account_id);
+        auto result_set = statement->executeQuery();
+        
+        if (result_set->next()) {
+            player_id = result_set->getUInt64("id");
+            
+        } else {
+            DLOG(WARNING) << "No Player Id found for account_id: " << account_id << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return player_id;
+}
