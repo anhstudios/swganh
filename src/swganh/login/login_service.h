@@ -77,7 +77,7 @@ public:
     LoginService(
         std::string listen_address, 
         uint16_t listen_port, 
-        std::shared_ptr<anh::app::KernelInterface> kernel);
+        anh::app::KernelInterface* kernel);
     ~LoginService();
     
     anh::service::ServiceDescription GetServiceDescription();
@@ -89,6 +89,9 @@ public:
 
     int galaxy_status_check_duration_secs() const;
     void galaxy_status_check_duration_secs(int new_duration);
+
+    bool login_auto_registration() const;
+    void login_auto_registration(bool auto_registeration);
     
     int login_error_timeout_secs() const;
     void login_error_timeout_secs(int new_timeout);
@@ -116,6 +119,7 @@ private:
     
     std::vector<GalaxyStatus> galaxy_status_;
     
+    bool login_auto_registration_;
     int galaxy_status_check_duration_secs_;
     int login_error_timeout_secs_;
     boost::asio::deadline_timer galaxy_status_timer_;

@@ -35,6 +35,7 @@
 #include "anh/network/soe/session.h"
 #include "anh/network/soe/server.h"
 
+#include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 #include "anh/plugin/plugin_manager.h"
 
@@ -64,7 +65,7 @@ using namespace std;
 
 using anh::network::soe::Session;
 
-LoginService::LoginService(string listen_address, uint16_t listen_port, shared_ptr<KernelInterface> kernel)     
+LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)     
     : BaseService(kernel)
 #pragma warning(push)
 #pragma warning(disable: 4355)
@@ -74,7 +75,8 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, shared_p
 #pragma warning(pop) 
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_address_(listen_address)
-    , listen_port_(listen_port) {
+    , listen_port_(listen_port)
+     {
     
     soe_server_.reset(new anh::network::soe::Server(
         kernel->GetIoService(),
@@ -160,6 +162,16 @@ int LoginService::login_error_timeout_secs() const
     return login_error_timeout_secs_;
 }
 
+void LoginService::login_auto_registration(bool auto_registration)
+{
+    login_auto_registration_ = auto_registration;
+}
+
+bool LoginService::login_auto_registration() const
+{
+    return login_auto_registration_;
+}
+
 void LoginService::login_error_timeout_secs(int new_timeout)
 {
     login_error_timeout_secs_ = new_timeout;
@@ -171,11 +183,10 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> sessio
     if (!client) {
         DLOG(WARNING) << "Adding login client";
 
-        client = make_shared<LoginClient>();
-        client->session = session;
+        client = make_shared<LoginClient>(session);
         
         ClientMap::accessor a;
-        clients_.insert(a, client->session->remote_endpoint());
+        clients_.insert(a, client->GetSession()->remote_endpoint());
         a->second = client;
     }
 
@@ -184,16 +195,14 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> sessio
 }
 
 void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    active().Async([=] () {
-        std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
-        
-        if (client) {
-            DLOG(WARNING) << "Removing disconnected client";
-            clients_.erase(session->remote_endpoint());
-        }
+    std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
+    
+    if (client) {
+        DLOG(WARNING) << "Removing disconnected client";
+        clients_.erase(session->remote_endpoint());
+    }
 
-        DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
-    });
+    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
 }
 
 void LoginService::UpdateGalaxyStatus_() {    
@@ -205,7 +214,7 @@ void LoginService::UpdateGalaxyStatus_() {
 
     std::for_each(clients_.begin(), clients_.end(), [&status] (ClientMap::value_type& client_entry) {
         if (client_entry.second) {                
-            client_entry.second->session->SendMessage(
+            client_entry.second->Send(
                 BuildLoginClusterStatus(status));
         }
     });
@@ -214,7 +223,7 @@ void LoginService::UpdateGalaxyStatus_() {
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     std::vector<GalaxyStatus> galaxy_status;
     
-    auto service_directory = this->service_directory();
+    auto service_directory = kernel()->GetServiceDirectory();
 
     auto galaxy_list = service_directory->getGalaxySnapshot();
 
@@ -251,53 +260,65 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
 
 void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_client, const LoginClientId& message) {
 
-    login_client->username = message.username;
-    login_client->password = message.password;
-    login_client->version = message.client_version;
+    login_client->SetUsername(message.username);
+    login_client->SetPassword(message.password);
+    login_client->SetVersion(message.client_version);
     
     auto account = account_provider_->FindByUsername(message.username);
 
     if (! account || ! authentication_manager_->Authenticate(login_client, account)) {
-        DLOG(WARNING) << "Login request for invalid user: " << login_client->username;
+        if(login_auto_registration_ == true)
+        {
+            if(account_provider_->AutoRegisterAccount(message.username, message.password))
+            {
+                DLOG(WARNING) << "Auto-Registering Account: " << message.username;
+                HandleLoginClientId_(login_client, message);
+                return;
+            }
+        }
+
+        DLOG(WARNING) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
         error.type = "@cpt_login_fail";
         error.message = "@msg_login_fail";
         error.force_fatal = false;
         
-        login_client->session->SendMessage(error);
-
-        active().AsyncDelayed(boost::posix_time::seconds(login_error_timeout_secs_), [login_client] () {
-            login_client->session->Close();
+        login_client->Send(error);
+        
+        auto timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
+        timer->async_wait([&login_client] (const boost::system::error_code& e)
+        {
+            login_client->GetSession()->Close();
             DLOG(WARNING) << "Closing connection";
-            return;
+            return;            
         });
 
         return;
     }
     
-    login_client->account = account;
+    login_client->SetAccount(account);
     
-    clients_.insert(make_pair(login_client->session->remote_endpoint(), login_client));
+    clients_.insert(make_pair(login_client->GetSession()->remote_endpoint(), login_client));
     DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
     
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
-        + boost::lexical_cast<string>(login_client->session->remote_endpoint().address());
+        + boost::lexical_cast<string>(login_client->GetSession()->remote_endpoint().address());
 
     account_provider_->CreateAccountSession(account->account_id(), account_session);
-    login_client->session->SendMessage(
+    login_client->Send(
         messages::BuildLoginClientToken(login_client, account_session));
     
-    login_client->session->SendMessage(
+    login_client->Send(
         messages::BuildLoginEnumCluster(login_client, galaxy_status_));
     
-    login_client->session->SendMessage(
+    login_client->Send(
         messages::BuildLoginClusterStatus(galaxy_status_));
     
-    auto characters = character_service_->GetCharactersForAccount(login_client->account->account_id());
+    auto characters = character_service_->GetCharactersForAccount(login_client->GetAccount()->account_id());
 
-    login_client->session->SendMessage(
+    login_client->Send(
         messages::BuildEnumerateCharacterId(characters));
 }
 

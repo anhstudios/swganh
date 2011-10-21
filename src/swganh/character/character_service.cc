@@ -41,28 +41,25 @@
 #include <boost/regex.hpp>
 #endif
 
-#include "anh/app/kernel_interface.h"
 #include "anh/database/database_manager.h"
 
 #include "anh/network/soe/session.h"
 #include "anh/network/soe/server_interface.h"
 
+#include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 
 #include "swganh/login/login_service.h"
 #include "swganh/login/login_client.h"
 #include "swganh/login/account.h"
 
-#include "swganh/scene/messages/cmd_start_scene.h"
-#include "swganh/scene/messages/scene_create_object_by_crc.h"
-#include "swganh/scene/messages/scene_end_baselines.h"
-
 #include "swganh/connection/connection_service.h"
 #include "swganh/connection/connection_client.h"
-#include "swganh/connection/messages/heart_beat.h"
+#include "swganh/messages/heart_beat.h"
 
-#include "swganh/character/messages/delete_character_reply_message.h"
+#include "swganh/messages/delete_character_reply_message.h"
 
+#include "swganh/app/swganh_kernel.h"
 
 #ifdef WIN32
 #else
@@ -73,19 +70,17 @@ using boost::smatch;
 using boost::regex_match;
 #endif
 
-using namespace swganh::character;
-using namespace swganh::character::messages;
-using namespace swganh::connection::messages;
-using namespace swganh::login;
-using namespace swganh::scene::messages;
 using namespace anh;
-using namespace app;
-using namespace event_dispatcher;
-using namespace database;
+using namespace anh::app;
+using namespace anh::database;
+using namespace anh::event_dispatcher;
 using namespace std;
+using namespace swganh::character;
 using namespace swganh::connection;
+using namespace swganh::login;
+using namespace swganh::messages;
 
-CharacterService::CharacterService(shared_ptr<KernelInterface> kernel) 
+CharacterService::CharacterService(KernelInterface* kernel) 
     : BaseService(kernel) {
 }
 
@@ -110,9 +105,6 @@ void CharacterService::onStop() {}
 
 void CharacterService::subscribe() {
     auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
-
-    connection_service->RegisterMessageHandler<SelectCharacter>(
-        bind(&CharacterService::HandleSelectCharacter_, this, placeholders::_1, placeholders::_2));
 
     connection_service->RegisterMessageHandler<ClientCreateCharacter>(
         bind(&CharacterService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
@@ -146,21 +138,20 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
             while (result_set->next())
             {
                 CharacterData character;
-                character.character_id = result_set->getUInt64("entity_id");
+                character.character_id = result_set->getUInt64("id");
 
-                string firstname = result_set->getString("firstName");
-                string lastname = result_set->getString("lastName");
+                string custom_name = result_set->getString("custom_name");
+                character.name = std::wstring(custom_name.begin(), custom_name.end());
+                
+                std::string non_shared_template = result_set->getString("iff_template");
+				if (non_shared_template.size() > 30)
+				{
+					non_shared_template.erase(23, 7);
+				}
 
-                string name = firstname;
-
-                if (!lastname.empty()) {
-                    name += " " + lastname;
-                }
-
-                character.name = std::wstring(name.begin(), name.end());
-                character.race_crc = anh::memcrc(result_set->getString("baseModel"));
-                character.galaxy_id = service_directory()->galaxy().id();
-                character.status = result_set->getInt("jediState");
+                character.race_crc = anh::memcrc(non_shared_template);
+                character.galaxy_id = kernel()->GetServiceDirectory()->galaxy().id();
+                character.status = result_set->getInt("jedi_state");
                 characters.push_back(character);
             } while (statement->getMoreResults());
         }
@@ -171,44 +162,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 
     return characters;
 }
-CharacterLoginData CharacterService::GetLoginCharacter(uint64_t character_id, uint64_t account_id) {
-    CharacterLoginData character;
-    
-    try {
-        string sql = "CALL sp_GetLoginCharacter(?,?);";
-        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-        statement->setUInt64(1, character_id);
-        statement->setUInt64(2, account_id);
 
-        auto result_set = statement->executeQuery();
-        if (result_set->next())
-        {
-            character.character_id = result_set->getUInt64("entity_id");
-            character.position.x = result_set->getDouble("x");
-            character.position.y = result_set->getDouble("y");
-            character.position.z = result_set->getDouble("z");
-            character.orientation.x = result_set->getDouble("oX");
-            character.orientation.y = result_set->getDouble("oY");
-            character.orientation.z = result_set->getDouble("oZ");
-            character.orientation.w = result_set->getDouble("oW");
-            character.race_template = result_set->getString("baseModel");
-            if (result_set->getInt("gender") == 0)
-                character.gender = "female";
-            else
-                character.gender = "male";
-            character.race = result_set->getString("species");
-            character.terrain_map = result_set->getString("terrainMap");
-        } else {
-            throw sql::SQLException("No Login Character found for character_id =" + character_id);
-        }
-        
-    } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-    return character;
-}
 bool CharacterService::DeleteCharacter(uint64_t character_id, uint64_t account_id){
     // this actually just archives the character and all their data so it can still be retrieved at a later time
     string sql = "CALL sp_CharacterDelete(?,?);";
@@ -255,7 +209,7 @@ uint16_t CharacterService::GetMaxCharacters(uint64_t player_id) {
     try {
         auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("SELECT maxCharacters from player where id = ?")
+            conn->prepareStatement("SELECT max_characters from player_account where id = ?")
             );
         statement->setUInt64(1, player_id);
         auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
@@ -270,7 +224,6 @@ uint16_t CharacterService::GetMaxCharacters(uint64_t player_id) {
     return max_chars;
 }
 
-
 std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const ClientCreateCharacter& character_info, uint32_t account_id) {
     try {
         // A regular expression that searches for a first name and optional sirname.
@@ -284,44 +237,37 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
             LOG(WARNING) << "Invalid character name [" << std::string(character_info.character_name.begin(), character_info.character_name.end()) << "]";
             return make_tuple(0,"name_declined_syntax");
         }
+
         std::wstring first_name = m[1].str();
-        std::wstring last_name = L"";
-        if (m[2].matched) {
-            last_name = m[2].str();
+        std::wstring last_name = m[2].str();
+
+        std::wstring custom_name = first_name;
+        if (!last_name.empty())
+        {
+            custom_name += L" " + last_name;
         }
 
         auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
-        std::shared_ptr<sql::PreparedStatement> statement;
-        std::stringstream sql_sf;
-        // @TODO add in 2nd parameter as option to select galaxy_id
-        sql_sf << "CALL sp_CharacterCreate(?,2,?,?,?,?,?";
-        // get bio info
-        if (character_info.biography.size() > 0)
-        {
-            sql_sf << ",\'" << parseBio_(character_info.biography) << "\'";
-        }
-        else
-        {
-            sql_sf << ", \'\'";
-        }
-        // get appearance info
-        sql_sf << ",?";
-        // get hair
-        sql_sf << parseHair_(character_info.hair_object, character_info.hair_customization);
-    
-        // base model and finish statement
-        sql_sf << ",\'" << character_info.player_race_iff << "\');";
-        statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement(sql_sf.str())
-            );
-        statement->setUInt(1, account_id);
-        statement->setString(2, string(first_name.begin(), first_name.end()));
-        statement->setString(3, string(last_name.begin(), last_name.end()));
-        statement->setString(4, character_info.starting_profession);
-        statement->setString(5, character_info.start_location);
-        statement->setDouble(6, character_info.height);
-        statement->setString(7, character_info.character_customization);
 
+        auto statement = conn->prepareStatement(
+            "CALL sp_CharacterCreate(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        DLOG(WARNING) << "Creating character with location " << account_id;
+
+        statement->setUInt(1, account_id);
+        statement->setUInt(2, kernel()->GetServiceDirectory()->galaxy().id());
+        statement->setString(3, string(first_name.begin(), first_name.end()));
+        statement->setString(4, string(last_name.begin(), last_name.end()));
+        statement->setString(5, string(custom_name.begin(), custom_name.end()));
+        statement->setString(6, character_info.starting_profession);
+        statement->setString(7, character_info.start_location);
+        statement->setDouble(8, character_info.height);
+        statement->setString(9, character_info.biography);
+        statement->setString(10, character_info.character_customization);
+        statement->setString(11, character_info.hair_object);
+        statement->setString(12, character_info.hair_customization);
+        statement->setString(13, character_info.player_race_iff);
+        
         auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
@@ -333,39 +279,16 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
             }
             return make_tuple(char_id, "");
         }
-    } catch(sql::SQLException &e) {
+    } 
+    catch(sql::SQLException &e) 
+    {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-    return make_tuple(0,"");
+
+    return make_tuple(0, "name_declined_internal_error");
 }
 
-std::string CharacterService::parseBio_(const std::string& bio)
-{
-    //regex_replace
-    std::string parsed_bio = regex_replace(bio, regex("'"), std::string("''"));    
-    // escape the escape characters - necessary for how regex and C++ works...
-    parsed_bio = regex_replace(parsed_bio, regex("\\\\"), std::string("\\\\"));
-    return parsed_bio;
-}
-std::string CharacterService::parseHair_(const std::string& hair_model,
-    const std::string& hair_customization)
-{
-    stringstream ss;
-    if (hair_model.size() > 0)
-    {
-        ss << ",\'" << hair_model << "\', \'" ;
-        ss << setfill('0') << setw(2);
-        std::for_each(hair_customization.begin(), hair_customization.end(), [&ss] (uint16_t data) {
-            ss << std::hex << data;
-        });
-        ss << "\'";
-    }
-    else
-        ss << ",NULL, 0";
-
-    return ss.str();
-}
 std::string CharacterService::setCharacterCreateErrorCode_(uint32_t error_code)
 {
     std::string error_string;
@@ -450,58 +373,26 @@ std::string CharacterService::setCharacterCreateErrorCode_(uint32_t error_code)
     return error_string;
 }
 
-void CharacterService::HandleSelectCharacter_(std::shared_ptr<ConnectionClient> client, const SelectCharacter& message) {    
-    swganh::character::CharacterLoginData character = GetLoginCharacter(message.character_id, client->account_id);
-
-    // @TODO: Trigger an event here with the character data.
-
-    CmdStartScene start_scene;
-    // @TODO: Replace with configurable value
-    start_scene.ignore_layout = 0;
-    start_scene.character_id = character.character_id;
-    start_scene.terrain_map = character.terrain_map;
-    start_scene.position = character.position;
-    start_scene.shared_race_template = "object/creature/player/shared_" + character.race + "_" + character.gender + ".iff";
-    start_scene.galaxy_time = service_directory()->galaxy().GetGalaxyTimeInMilliseconds();
-        
-    client->session->SendMessage(start_scene);
-
-    SceneCreateObjectByCrc scene_object;
-    scene_object.object_id = character.character_id;
-    scene_object.orientation = character.orientation;
-    scene_object.position = character.position;
-    scene_object.object_crc = anh::memcrc(character.race_template);
-    // @TODO: Replace with configurable value
-    scene_object.byte_flag = 0;
-    
-    client->session->SendMessage(scene_object);
-    
-    SceneEndBaselines scene_object_end;
-    scene_object_end.object_id = character.character_id;
-    
-    client->session->SendMessage(scene_object_end);
-}
-
 void CharacterService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const ClientCreateCharacter& message) {
     DLOG(WARNING) << "Handling ClientCreateCharacter";
 
     uint64_t character_id;
     string error_code;
-    tie(character_id, error_code) = CreateCharacter(message, client->account_id);
+    tie(character_id, error_code) = CreateCharacter(message, client->GetAccountId());
 
     // heartbeat to let the client know we're still here    
     HeartBeat heartbeat;
-    client->session->SendMessage(heartbeat);
+    client->Send(heartbeat);
 
     if (error_code.length() > 0 && character_id == 0) {
         ClientCreateCharacterFailed failed;
         failed.stf_file = "ui";
         failed.error_string = error_code;
-        client->session->SendMessage(failed);
+        client->Send(failed);
     } else {
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
-        client->session->SendMessage(success);
+        client->Send(success);
     }
 }
 
@@ -515,16 +406,16 @@ void CharacterService::HandleClientRandomNameRequest_(std::shared_ptr<Connection
         response.approval_string = "name_approved";
     }
 
-    client->session->SendMessage(response);
+    client->Send(response);
 }
 
 void CharacterService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const DeleteCharacterMessage& message) {
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
 
-    if (DeleteCharacter(message.character_id, login_client->account->account_id())) {
+    if (DeleteCharacter(message.character_id, login_client->GetAccount()->account_id())) {
         reply_message.failure_flag = 0;
     }
 
-    login_client->session->SendMessage(reply_message);
+    login_client->Send(reply_message);
 }

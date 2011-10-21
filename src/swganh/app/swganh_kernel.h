@@ -33,6 +33,7 @@ struct AppConfig {
         uint16_t listen_port;
         int galaxy_status_check_duration_secs;
         int login_error_timeout_secs;
+        bool login_auto_registration;
     } login_config;
 
     struct ConnectionConfig {
@@ -47,6 +48,7 @@ struct AppConfig {
 class SwganhKernel : public anh::app::KernelInterface, public std::enable_shared_from_this<SwganhKernel> {
 public:
     SwganhKernel();
+    ~SwganhKernel();
 
     const anh::app::Version& GetVersion();
 
@@ -60,6 +62,8 @@ public:
 
     std::shared_ptr<anh::service::ServiceManager> GetServiceManager();
     
+    std::shared_ptr<anh::service::ServiceDirectoryInterface> GetServiceDirectory();
+    
     boost::asio::io_service& GetIoService();
 
 private:
@@ -70,6 +74,7 @@ private:
     std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
     std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
     std::shared_ptr<anh::service::ServiceManager> service_manager_;
+    std::shared_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
 
     boost::asio::io_service io_service_;
 };

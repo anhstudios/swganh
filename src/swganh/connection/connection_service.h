@@ -19,13 +19,13 @@
 
 #include "swganh/character/character_service.h"
 #include "swganh/login/login_service.h"
-#include "swganh/scene/messages/cmd_scene_ready.h"
+#include "swganh/messages/cmd_scene_ready.h"
 
 #include "swganh/connection/providers/session_provider_interface.h"
 
-#include "swganh/connection/messages/client_permissions_message.h"
-#include "swganh/connection/messages/client_id_msg.h"
-#include "swganh/connection/messages/heart_beat.h"
+#include "swganh/messages/client_permissions_message.h"
+#include "swganh/messages/client_id_msg.h"
+#include "swganh/messages/heart_beat.h"
 
 namespace anh {
 namespace network {
@@ -37,7 +37,7 @@ namespace swganh {
 namespace connection {
     
 class PingServer;
-struct ConnectionClient;
+class ConnectionClient;
     
 class ConnectionService 
     : public swganh::base::BaseService
@@ -54,7 +54,7 @@ public:
         std::string listen_address, 
         uint16_t listen_port, 
         uint16_t ping_port, 
-        std::shared_ptr<anh::app::KernelInterface> kernel);
+        anh::app::KernelInterface* kernel);
 
     anh::service::ServiceDescription GetServiceDescription();
 
@@ -82,8 +82,12 @@ protected:
 private:    
     ClientMap clients_;
     
-    void HandleClientIdMsg_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::connection::messages::ClientIdMsg& message);
-    void HandleCmdSceneReady_(std::shared_ptr<swganh::connection::ConnectionClient> client, const swganh::scene::messages::CmdSceneReady& message);
+    void HandleClientIdMsg_(
+        std::shared_ptr<swganh::connection::ConnectionClient> client, 
+        const swganh::messages::ClientIdMsg& message);
+    void HandleCmdSceneReady_(
+        std::shared_ptr<swganh::connection::ConnectionClient> client, 
+        const swganh::messages::CmdSceneReady& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
     void AddClient_(uint64_t player_id, std::shared_ptr<swganh::connection::ConnectionClient> client);
@@ -93,8 +97,8 @@ private:
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     
-    std::shared_ptr<swganh::character::CharacterService> character_service_;
-    std::shared_ptr<swganh::login::LoginService> login_service_;
+    std::weak_ptr<swganh::character::CharacterService> character_service_;
+    std::weak_ptr<swganh::login::LoginService> login_service_;
 
     std::string listen_address_;
     uint16_t listen_port_;

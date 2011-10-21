@@ -118,6 +118,11 @@ uint32_t ServiceDescription::id() const {
     return id_;
 }
 
+void ServiceDescription::id(uint32_t id) 
+{
+    id_ = id;
+}
+
 uint32_t ServiceDescription::galaxy_id() const {
     return galaxy_id_;
 }
