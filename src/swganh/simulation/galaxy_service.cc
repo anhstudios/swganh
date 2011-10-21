@@ -36,6 +36,7 @@
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
 #include "swganh/messages/obj_controller_message.h"
+#include "swganh/messages/update_containment_message.h"
 
 #include "swganh/simulation/movement_manager.h"
 
@@ -209,6 +210,8 @@ public:
         const SelectCharacter& message)
     {
         auto object = LoadObjectById(message.character_id);
+		auto player = LoadObjectById(message.character_id + 1); // PLAYER offset
+		auto hair = LoadObjectById(message.character_id + 6); // HAIR OFFSET
 		StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
@@ -217,6 +220,12 @@ public:
         {
             throw std::runtime_error("Invalid scene selected for object");
         }
+		// PLAYER CONTAINMENT
+		UpdateContainmentMessage ucm;
+		ucm.object_id = player->GetObjectId();
+		ucm.container_id = object->GetObjectId();
+		ucm.containment_type = 4;
+		client->GetSession()->SendMessage(ucm);
 
 		// CmdStartScene
         CmdStartScene start_scene;
