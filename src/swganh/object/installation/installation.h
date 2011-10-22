@@ -31,7 +31,7 @@ public:
 
 public:
     uint32_t GetType() const;
-    const static uint32_t type = 0x49544e4f;
+    const static uint32_t type = 0x2FB6FB8C;
 
     bool IsActive() const;
     void Activate();

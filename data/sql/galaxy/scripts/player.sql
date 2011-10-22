@@ -3,15 +3,13 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-16 19:39:53
+# Date/time:                    2011-10-21 22:52:08
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-
-use galaxy;
 
 # Dumping structure for table galaxy.player
 CREATE TABLE IF NOT EXISTS `player` (
@@ -37,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `player` (
   CONSTRAINT `FK_98197A65BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.player: ~15 rows (approximately)
+# Dumping data for table galaxy.player: ~8 rows (approximately)
 DELETE FROM `player`;
 /*!40000 ALTER TABLE `player` DISABLE KEYS */;
 /*!40000 ALTER TABLE `player` ENABLE KEYS */;

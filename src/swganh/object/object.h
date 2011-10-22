@@ -50,6 +50,25 @@ public:
         VIEW_8,
         VIEW_9
     };
+
+	enum Type : uint16_t
+	{
+		PLAYER = 1,
+		CREATURE,
+		TANGIBLE,
+		INTANGIBLE,
+		CELL,
+		MANUFACTURE_SCHEMATIC,
+		MISSION,
+		WAYPOINT,
+		BUILDING,
+		FACTORY_CRATE,
+		INSTALLATION,
+		SHIP,
+		WEAPON,
+		GUILD,
+		GROUP
+	};
     
 public:
     Object();

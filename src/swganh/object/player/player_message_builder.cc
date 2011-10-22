@@ -474,24 +474,27 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
         message.data.write(xp.value);
     });
     // waypoints
-    message.data.write(object->waypoints_.size());
-    message.data.write(object->waypoint_counter_);
-    for_each(begin(object->waypoints_), end(object->waypoints_), [&message] (shared_ptr<Waypoint> waypoint){
-        message.data.write<uint8_t>(0);
-        message.data.write<uint64_t>(waypoint->GetObjectId());
-        // cell id
-        message.data.write(0);
-        auto position = waypoint->GetPosition();
-        message.data.write(position.x);
-        message.data.write(position.y);
-        message.data.write(position.z);
-        message.data.write(0);
-        message.data.write(anh::memcrc(waypoint->GetPlanet()));
-        message.data.write(waypoint->GetName());
-        message.data.write(waypoint->GetObjectId());
-        message.data.write<uint8_t>(waypoint->GetColorByte());
-        message.data.write<uint8_t>(waypoint->GetActiveFlag());
-    });
+    message.data.write(0);
+    message.data.write(0);
+    message.data.write(0);
+    //message.data.write(object->waypoints_.size());
+    //message.data.write(object->waypoint_counter_);
+    //for_each(begin(object->waypoints_), end(object->waypoints_), [&message] (shared_ptr<Waypoint> waypoint){
+    //    message.data.write<uint8_t>(0);
+    //    message.data.write<uint64_t>(waypoint->GetObjectId());
+    //    // cell id
+    //    message.data.write(0);
+    //    auto position = waypoint->GetPosition();
+    //    message.data.write(position.x);
+    //    message.data.write(position.y);
+    //    message.data.write(position.z);
+    //    message.data.write(0);
+    //    message.data.write(anh::memcrc(waypoint->GetPlanet()));
+    //    message.data.write(waypoint->GetName());
+    //    message.data.write(waypoint->GetObjectId());
+    //    message.data.write<uint8_t>(waypoint->GetColorByte());
+    //    message.data.write<uint8_t>(waypoint->GetActiveFlag());
+    //});
     // The Force
     message.data.write(object->GetCurrentForcePower());
     message.data.write(object->GetMaxForcePower());
@@ -499,7 +502,10 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write(object->GetCurrentForceSensitiveQuests());
     message.data.write(object->GetCompletedForceSensitiveQuests());
     // Quests
-    message.data.write(object->quest_journal_.size());
+    message.data.write(0);
+    message.data.write(0);
+    message.data.write(0);
+    /*message.data.write(object->quest_journal_.size());
     message.data.write(0);
     for_each(begin(object->quest_journal_), end(object->quest_journal_), [&message](Player::QuestJournalData quest){
         message.data.write<uint8_t>(0);
@@ -509,7 +515,7 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
         message.data.write(quest.completed_step_bitmask);
         message.data.write(quest.completed_flag);
         message.data.write(quest.counter);
-    });
+    });*/
     return boost::optional<BaselinesMessage>(move(message));
 }
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(Player* object)

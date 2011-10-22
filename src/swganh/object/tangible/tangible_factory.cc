@@ -108,17 +108,10 @@ void TangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
-
-shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
+void TangibleFactory::CreateBaseTangible(const shared_ptr<BaseTangible>& tangible, const std::shared_ptr<sql::Statement>& statement)
 {
-    auto tangible = make_shared<Tangible>();
-    tangible->SetObjectId(object_id);
     try {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        stringstream ss;
-        ss << "CALL sp_GetTangible(" << object_id << ");";
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
+        auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
         CreateBaseObjectFromStorage(tangible, result);
         if (statement->getMoreResults())
         {
@@ -134,6 +127,24 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
                 tangible->SetStatic(is_static == 0);
             }
         }
+    }
+    catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
+{
+    auto tangible = make_shared<Tangible>();
+    tangible->SetObjectId(object_id);
+    try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        stringstream ss;
+        ss << "CALL sp_GetTangible(" << object_id << ");";
+        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
+        
     }
     catch(sql::SQLException &e)
     {

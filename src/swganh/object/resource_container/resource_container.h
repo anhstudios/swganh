@@ -40,10 +40,10 @@ public:
 
 private:
     uint32_t current_quantity_;			                    // update 3
-	uint64_t global_resource_id_;		                    // update 3
-	uint32_t max_quantity_;				                    // update 6
-	std::string resource_type_;			                    // update 6
-	std::wstring variation_name_;		                    // update 6
+    uint64_t global_resource_id_;		                    // update 3
+    uint32_t max_quantity_;				                    // update 6
+    std::string resource_type_;			                    // update 6
+    std::wstring variation_name_;		                    // update 6
 };
 
 }}} // swganh::object::resource_container

@@ -57,7 +57,13 @@ namespace object {
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name) = 0;
-
+        /**
+         * Gets the type of the object from a db lookup call
+         *
+         * @param the object_id of which to find the type
+         * @returns the object type
+         */
+        virtual uint32_t LookupType(uint64_t object_id) const = 0;
         virtual uint32_t GetType() const = 0;
 
     };
