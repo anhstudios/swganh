@@ -11,6 +11,8 @@ This project aims to recreate the Star Wars Galaxies Pre-Combat Upgrade experien
 *   GCC 4.6 (*nix)
 *   CMake 2.8.3 or higher
 *   Git 1.7 or higher
+*   Python 3.2
+*   MySQL 5.1/MariaDB 5.2 or higher
 
 First, check out the project completely with the following, Windows users should run these commands from the Git Bash utility:
 
