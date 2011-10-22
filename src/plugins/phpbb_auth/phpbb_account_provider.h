@@ -14,7 +14,8 @@ namespace phpbb_auth {
 class PhpbbAccountProvider : public swganh::login::providers::AccountProviderInterface 
 {
 public:
-    PhpbbAccountProvider(const std::shared_ptr<anh::database::DatabaseManagerInterface>& database_manager);
+    PhpbbAccountProvider(const std::shared_ptr<anh::database::DatabaseManagerInterface>& database_manager,
+        std::string table_prefix);
     ~PhpbbAccountProvider() {}
 
     std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
@@ -26,6 +27,7 @@ private:
     bool CreatePlayerAccount_(uint64_t account_id);
 
     std::shared_ptr<anh::database::DatabaseManagerInterface> database_manager_;
+    std::string table_prefix_;
 };
 
 }}  // namespace plugins::phpbb_auth

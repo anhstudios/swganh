@@ -18,8 +18,11 @@ using namespace std;
 using namespace swganh::connection;
 
 
-PhpbbSessionProvider::PhpbbSessionProvider(const shared_ptr<DatabaseManagerInterface>& database_manager)
-    : database_manager_(database_manager) 
+PhpbbSessionProvider::PhpbbSessionProvider(
+    const shared_ptr<DatabaseManagerInterface>& database_manager,
+    string table_prefix)
+    : database_manager_(database_manager)
+    , table_prefix_(table_prefix)
 {}
 
 uint64_t PhpbbSessionProvider::GetPlayerId(uint32_t account_id)

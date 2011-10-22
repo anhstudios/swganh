@@ -15,8 +15,11 @@ using namespace plugins::phpbb_auth;
 using namespace std;
 using namespace swganh::login;
 
-PhpbbAccountProvider::PhpbbAccountProvider(const shared_ptr<DatabaseManagerInterface>& database_manager)
+PhpbbAccountProvider::PhpbbAccountProvider(
+    const shared_ptr<DatabaseManagerInterface>& database_manager,
+    string table_prefix)
     : database_manager_(database_manager)
+    , table_prefix_(table_prefix)
 {}
 
 shared_ptr<Account> PhpbbAccountProvider::FindByUsername(string username)
@@ -25,7 +28,7 @@ shared_ptr<Account> PhpbbAccountProvider::FindByUsername(string username)
 
     try 
     {
-        string sql = "select user_id, username, user_password, user_form_salt, group_id from phpbb_users where username = ?";
+        string sql = "select user_id, username, user_password, user_form_salt, group_id from " + table_prefix_ + "users where username = ?";
         auto conn = database_manager_->getConnection("phpbb");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);

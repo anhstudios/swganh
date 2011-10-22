@@ -30,6 +30,7 @@ struct PhpbbConfig
     std::string schema;
     std::string username;
     std::string password;
+    std::string table_prefix;
 } config;
 
 extern "C" PLUGIN_API void ExitModule() 
@@ -49,6 +50,8 @@ extern "C" PLUGIN_API  void ConfigurePlugin(options_description& description)
             "Username for authentication with the galaxy_manager datastore")
         ("phpbb_database.password", boost::program_options::value<std::string>(&config.password),
             "Password for authentication with the galaxy_manager datastore")
+        ("phpbb_database.table_prefix", boost::program_options::value<std::string>(&config.table_prefix),
+            "Prefix used for all table names (commonly phpbb_)")
     ;
 
     return;
@@ -81,13 +84,13 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     kernel->GetPluginManager()->RegisterObject("LoginService::Encoder", &registration);
     
     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
-        return new PhpbbAccountProvider(kernel->GetDatabaseManager());
+        return new PhpbbAccountProvider(kernel->GetDatabaseManager(), config.table_prefix);
     };
     
     kernel->GetPluginManager()->RegisterObject("LoginService::AccountProvider", &registration);
         
     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
-        return new PhpbbSessionProvider(kernel->GetDatabaseManager());
+        return new PhpbbSessionProvider(kernel->GetDatabaseManager(), config.table_prefix);
     };
     
     kernel->GetPluginManager()->RegisterObject("ConnectionService::SessionProvider", &registration);

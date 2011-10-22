@@ -13,7 +13,8 @@ namespace phpbb_auth {
 class PhpbbSessionProvider : public swganh::connection::providers::SessionProviderInterface 
 {
 public:
-    PhpbbSessionProvider(const std::shared_ptr<anh::database::DatabaseManagerInterface>& database_manager);
+    PhpbbSessionProvider(const std::shared_ptr<anh::database::DatabaseManagerInterface>& database_manager,
+        std::string table_prefix);
 
     uint64_t GetPlayerId(uint32_t account_id);
     uint32_t GetAccountId(uint64_t player_id);
@@ -24,6 +25,7 @@ private:
     uint64_t FindPlayerByReferenceId_(uint64_t account_id);
 
     std::shared_ptr<anh::database::DatabaseManagerInterface> database_manager_;
+    std::string table_prefix_;
 };
 
 }}  // namespace plugins::phpbb_auth
