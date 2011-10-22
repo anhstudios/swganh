@@ -22,7 +22,7 @@ using namespace swganh::object::creature;
 
 
 CreatureFactory::CreatureFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : ObjectFactory(db_manager)
+    : TangibleFactory(db_manager)
 {
 }
 
@@ -47,10 +47,12 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        shared_ptr<sql::ResultSet> result;
         stringstream ss;
         ss << "CALL sp_GetCreature(" << object_id << ");" ;
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
-        CreateBaseObjectFromStorage(creature, result);
+        statement->execute(ss.str());
+        CreateBaseTangible(creature, statement);
+        
         if (statement->getMoreResults())
         {
             result.reset(statement->getResultSet());

@@ -1,5 +1,6 @@
 
 #include "swganh/object/object_manager.h"
+#include "swganh/object/object_factory.h"
 
 using namespace std;
 using namespace swganh::object;
@@ -32,24 +33,24 @@ void ObjectManager::UnregisterObjectType(uint32_t object_type)
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id)
 {
     shared_ptr<Object> object;
-	
-	if (factories_.size() == 0)
-		return object;
+    
+    if (factories_.size() == 0)
+        return object;
+    
+    // lookup the type
+    uint32_t object_type = factories_[0]->LookupType(object_id);
+    auto find_iter = factories_.find(object_type);
 
-    auto find_iter = find_if(
-        begin(factories_),
-        end(factories_),
-        [&object, object_id] (const ObjectFactoryMap::value_type& factory_entry) -> bool
+    if (find_iter == factories_.end())
     {
-        object = factory_entry.second->CreateObjectFromStorage(object_id);
-
-        return object != nullptr;
-    });
+        throw InvalidObjectType("Cannot create object for an unregistered type.");
+    }
+    object = find_iter->second->CreateObjectFromStorage(object_id);
 
     return object;
 }
 
-shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint32_t object_type, uint64_t object_id)
+shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, uint32_t object_type)
 {
     auto find_iter = factories_.find(object_type);
 

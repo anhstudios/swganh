@@ -86,11 +86,11 @@ public:
     LOOT_MODE GetLootMode() { return (LOOT_MODE)loot_mode_; }
     uint16_t GetCapacity() { return member_list_.capacity(); }
 
-	uint32_t GetType() const { return type; }
+    uint32_t GetType() const { return type; }
     const static uint32_t type = 0x47525550;
 
 protected:
-	virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:
     friend class GroupMessageBuilder;
