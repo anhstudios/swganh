@@ -225,8 +225,8 @@ public:
         const SelectCharacter& message)
     {
         // character_id = player
-        auto object = LoadObjectById(message.character_id - 1, creature::Creature::type);
-        auto player = LoadObjectById(message.character_id, player::Player::type); // PLAYER offset
+        auto object = LoadObjectById(message.character_id, creature::Creature::type);
+        auto player = LoadObjectById(message.character_id + 1, player::Player::type); // PLAYER offset
         auto hair = LoadObjectById(message.character_id + 5, tangible::Tangible::type); // HAIR OFFSET
         StartControllingObject(object, client);
 
