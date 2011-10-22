@@ -9,6 +9,7 @@
 #include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/server.h"
+#include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 
@@ -60,8 +61,12 @@ ConnectionService::ConnectionService(
         kernel->GetIoService(),
         bind(&ConnectionService::RouteMessage, this, placeholders::_1)));
     soe_server_->event_dispatcher(kernel->GetEventDispatcher());
-
-    session_provider_ = make_shared<providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
+        
+    session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
+    if (!session_provider_) 
+    {
+        session_provider_ = make_shared<providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
+    }
 }
 
 ServiceDescription ConnectionService::GetServiceDescription() {

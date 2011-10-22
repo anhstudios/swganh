@@ -109,8 +109,8 @@ FUNCTION(AddANHPlugin name)
     ENDIF()
 	    
     # if unit tests have been specified break out the project into a library to make it testable
-    LIST(LENGTH SOURCES _sources_list_length)    
-    IF(_sources_list_length GREATER 1)        
+    LIST(LENGTH TEST_SOURCES _test_sources_list_length)    
+    IF(ENABLE_TEST_REPORT AND _test_sources_list_length GREATER 1)        
         SET(__project_library "lib${name}")
         
         list(REMOVE_ITEM SOURCES ${MAIN_EXISTS})

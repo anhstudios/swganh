@@ -89,7 +89,7 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, KernelIn
         account_provider_ = make_shared<providers::MysqlAccountProvider>(kernel->GetDatabaseManager());
     }
 
-    auto encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
+    shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
     if (!encoder) {
         encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
     }
@@ -266,7 +266,8 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
     
     auto account = account_provider_->FindByUsername(message.username);
 
-    if (! account || ! authentication_manager_->Authenticate(login_client, account)) {
+    if (!account)
+    {
         if(login_auto_registration_ == true)
         {
             if(account_provider_->AutoRegisterAccount(message.username, message.password))
@@ -276,7 +277,9 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
                 return;
             }
         }
+    }
 
+    if (! authentication_manager_->Authenticate(login_client, account)) {
         DLOG(WARNING) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;

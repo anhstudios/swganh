@@ -110,7 +110,7 @@ void PluginManager::ConfigurePlugin(std::string plugin_name, ConfigFunc config_f
         throw runtime_error("Unable to open the configuration file at: config/swganh.cfg");
     }
 
-    ifstream config_file("config/plugins/" + plugin_name + ".cfg");
+    ifstream config_file("config/plugins/" + plugin_name + "/" + plugin_name + ".cfg");
     
     if (!config_file.is_open()) {
         throw runtime_error("Unable to open the configuration file at: config/plugins/" + plugin_name + ".cfg");

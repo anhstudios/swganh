@@ -97,7 +97,9 @@ if(WIN32)
     include(Win32PostBuild)
 endif()
 
-enable_testing()
+if (ENABLE_TEST_REPORT)
+    enable_testing()
+endif()
 
 # make sure the source directory and the binary directory (where any generated
 # files will be found) are automatically searched for includes
@@ -105,6 +107,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 ## project libraries
 add_subdirectory(anh)
+
+## project plugins
+add_subdirectory(plugins)
 
 ## project executables
 add_subdirectory(swganh)
