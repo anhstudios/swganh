@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.3.2-MariaDB
+# Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-21 14:46:00
+# Date/time:                    2011-10-21 22:52:08
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -40,17 +40,11 @@ CREATE TABLE IF NOT EXISTS `creature` (
   CONSTRAINT `FK_2A6C6AF4BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.creature: ~6 rows (approximately)
+# Dumping data for table galaxy.creature: ~9 rows (approximately)
 DELETE FROM `creature`;
 /*!40000 ALTER TABLE `creature` DISABLE KEYS */;
 INSERT INTO `creature` (`id`, `owner_id`, `musician_id`, `bank_credits`, `cash_credits`, `posture`, `faction_rank`, `scale`, `battle_fatigue`, `state`, `acceleration_base`, `acceleration_modifier`, `speed_base`, `speed_modifier`, `run_speed`, `slope_modifier_angle`, `slope_modifier_percent`, `walking_speed`, `water_modifier_percent`) VALUES
-	(0, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-	(8589934603, 0, NULL, 2000, 0, 0, 0, 1.02974224090576, 0, 0, 1, 5, 1, 5, 10, 5, 5, 5, 0),
-	(8589934619, 0, NULL, 2000, 0, 0, 0, 0.86513888835907, 0, 0, 1, 5, 1, 5, 10, 5, 5, 5, 0),
-	(8589934635, 0, NULL, 2000, 0, 0, 0, 0.865587890148163, 0, 0, 1, 5, 1, 5, 10, 5, 5, 5, 0),
-	(8589934651, 0, NULL, 2000, 0, 0, 0, 0.992042183876038, 0, 0, 1, 5, 1, 5, 10, 5, 5, 5, 0),
-	(8589934667, 0, NULL, 2000, 0, 0, 0, 0.891310393810272, 0, 0, 1, 5, 1, 5, 10, 5, 5, 5, 0),
-	(8589934683, 0, NULL, 2000, 0, 0, 0, 1.01809656620026, 0, 0, 1, 5, 1, 5, 10, 5, 5, 5, 0);
+	(0, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 /*!40000 ALTER TABLE `creature` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

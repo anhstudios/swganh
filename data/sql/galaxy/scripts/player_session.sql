@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.3.2-MariaDB
+# Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-21 14:46:05
+# Date/time:                    2011-10-21 22:52:08
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -17,9 +17,9 @@ CREATE TABLE IF NOT EXISTS `player_session` (
   `player` int(11) NOT NULL,
   `session_key` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.player_session: ~22 rows (approximately)
+# Dumping data for table galaxy.player_session: ~28 rows (approximately)
 DELETE FROM `player_session`;
 /*!40000 ALTER TABLE `player_session` DISABLE KEYS */;
 INSERT INTO `player_session` (`id`, `player`, `session_key`) VALUES
@@ -49,7 +49,16 @@ INSERT INTO `player_session` (`id`, `player`, `session_key`) VALUES
 	(103, 4, '2011-Oct-21 14:37:35.7130211302670454'),
 	(104, 4, '2011-Oct-21 14:38:00.0540211786793218'),
 	(105, 4, '2011-Oct-21 14:39:04.711021683239055'),
-	(106, 4, '2011-Oct-21 14:40:42.1580211482361664');
+	(106, 4, '2011-Oct-21 14:40:42.1580211482361664'),
+	(107, 3, '2011-Oct-21 22:26:33.6853071487939274'),
+	(108, 1, '2011-Oct-21 22:38:35.7226062075744114'),
+	(109, 1, '2011-Oct-21 22:39:35.4390211764510336'),
+	(110, 1, '2011-Oct-21 22:40:35.4054511754873045'),
+	(111, 1, '2011-Oct-21 22:41:13.7366431757296091'),
+	(112, 1, '2011-Oct-21 22:41:22.5551481639721547'),
+	(113, 1, '2011-Oct-21 22:41:26.411368167380932'),
+	(114, 1, '2011-Oct-21 22:43:11.751394894061114'),
+	(115, 1, '2011-Oct-21 22:43:57.190993915998978');
 /*!40000 ALTER TABLE `player_session` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
