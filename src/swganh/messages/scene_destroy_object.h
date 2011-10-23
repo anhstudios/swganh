@@ -31,7 +31,7 @@ namespace messages {
 struct SceneDestroyObject : public swganh::messages::BaseSwgMessage<SceneDestroyObject> 
 {
     static uint16_t opcount() { return 3; }
-    static uint32_t opcode() { return 0x43FD1C22; }
+    static uint32_t opcode() { return 0x4D45D504; }
     
     uint64_t object_id;
 
