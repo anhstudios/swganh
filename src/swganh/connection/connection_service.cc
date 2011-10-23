@@ -107,7 +107,7 @@ void ConnectionService::onStart() {
     
     character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
     login_service_ = std::static_pointer_cast<swganh::login::LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
-    simulation_service_ = std::static_pointer_cast<swganh::simulation::GalaxyService>(kernel()->GetServiceManager()->GetService("GalaxyService"));
+    simulation_service_ = std::static_pointer_cast<swganh::simulation::SimulationService>(kernel()->GetServiceManager()->GetService("SimulationService"));
 }
 
 void ConnectionService::onStop() {

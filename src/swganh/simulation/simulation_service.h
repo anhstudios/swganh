@@ -1,6 +1,6 @@
 
-#ifndef SWGANH_SIMULATION_GALAXY_SERVICE_H_
-#define SWGANH_SIMULATION_GALAXY_SERVICE_H_
+#ifndef SWGANH_SIMULATION_SIMULATION_SERVICE_H_
+#define SWGANH_SIMULATION_SIMULATION_SERVICE_H_
 
 #include <cstdint>
 #include <map>
@@ -22,14 +22,14 @@ namespace object {
 namespace swganh {
 namespace simulation {
     
-    class GalaxyServiceImpl;
+    class SimulationServiceImpl;
 
-    class GalaxyService : public swganh::base::BaseService
+    class SimulationService : public swganh::base::BaseService
     {
     public:
-        explicit GalaxyService(anh::app::KernelInterface* kernel);
+        explicit SimulationService(anh::app::KernelInterface* kernel);
     
-        ~GalaxyService();
+        ~SimulationService();
 
         anh::service::ServiceDescription GetServiceDescription();
 
@@ -85,9 +85,9 @@ namespace simulation {
 
         void onStart();
 
-        std::unique_ptr<GalaxyServiceImpl> impl_;
+        std::unique_ptr<SimulationServiceImpl> impl_;
     };
 
 }}  // namespace swganh::simulation
 
-#endif  // SWGANH_SIMULATION_GALAXY_SERVICE_H_
+#endif  // SWGANH_SIMULATION_SIMULATION_SERVICE_H_

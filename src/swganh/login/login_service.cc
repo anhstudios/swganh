@@ -59,6 +59,7 @@ using namespace messages;
 using namespace swganh::login;
 using namespace swganh::base;
 using namespace swganh::character;
+using namespace swganh::galaxy;
 using namespace database;
 using namespace event_dispatcher;
 using namespace std;
@@ -114,6 +115,7 @@ service::ServiceDescription LoginService::GetServiceDescription() {
 
 void LoginService::onStart() {
     character_service_ = static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
+	galaxy_service_  = static_pointer_cast<GalaxyService>(kernel()->GetServiceManager()->GetService("GalaxyService"));
 
     soe_server_->Start(listen_port_);
     
@@ -247,8 +249,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
             status.max_population = 0x00000cb2;
             status.name = galaxy.name();
             status.ping_port = it->ping_port();
-            // TODO: Keep track of people logged in to server and update to db
-            status.server_population = 10;
+            status.server_population = galaxy_service_->GetPopulation();
             status.status = service_directory->galaxy().status();
 
             galaxy_status.push_back(std::move(status));
