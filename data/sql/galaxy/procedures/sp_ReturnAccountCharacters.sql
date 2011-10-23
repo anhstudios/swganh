@@ -17,13 +17,13 @@ use galaxy;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ReturnAccountCharacters`(IN `account_id` INT)
 BEGIN
-	 SELECT A.id, B.custom_name, A.jedi_state, E.iff_template
-    FROM player A
+	 SELECT A.id, B.custom_name, E.iff_template
+    FROM creature A
     INNER JOIN object B ON (A.id = B.id)
-    INNER JOIN player_accounts_players C ON (A.id = C.player_character_id)
+    INNER JOIN player_accounts_creatures C ON (A.id = C.creature_id)
     INNER JOIN player_account D ON (C.player_id = D.id)
     LEFT JOIN iff_templates E ON (E.id = B.iff_template_id)
-    WHERE A.id = C.player_character_id and D.reference_id = account_id AND B.deleted_at IS NULL;
+    WHERE D.reference_id = account_id AND B.deleted_at IS NULL;
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
