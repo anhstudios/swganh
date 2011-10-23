@@ -22,6 +22,7 @@
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
+#include "swganh/galaxy/galaxy_service.h"
 
 
 using namespace anh;
@@ -34,6 +35,7 @@ using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::connection;
 using namespace swganh::simulation;
+using namespace swganh::galaxy;
 
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
@@ -287,13 +289,14 @@ void SwganhApp::LoadCoreServices_()
 		auto character_service = make_shared<CharacterService>(kernel_.get());
 
 		kernel_->GetServiceManager()->AddService("CharacterService", character_service);
-	}
-	if(strcmp("galaxy", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
+
 		auto simulation_service = make_shared<SimulationService>(kernel_.get());
 		simulation_service->StartScene("corellia");
 		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
 	}
+	// always need a galaxy service running
+	auto galaxy_service = make_shared<GalaxyService>(kernel_.get());
+	kernel_->GetServiceManager()->AddService("GalaxyService", galaxy_service);
 }
 
     
