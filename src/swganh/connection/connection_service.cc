@@ -21,8 +21,6 @@
 
 #include "swganh/object/object.h"
 
-#include "swganh/simulation/galaxy_service.h"
-
 #include "swganh/messages/logout_message.h"
 
 using namespace anh::app;
@@ -109,6 +107,7 @@ void ConnectionService::onStart() {
     
     character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
     login_service_ = std::static_pointer_cast<swganh::login::LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
+    simulation_service_ = std::static_pointer_cast<swganh::simulation::GalaxyService>(kernel()->GetServiceManager()->GetService("GalaxyService"));
 }
 
 void ConnectionService::onStop() {
@@ -190,6 +189,15 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
     auto client_map = clients();
 
     if (client) {
+
+        auto controller = client->GetController();
+        if (controller)
+        {
+            DLOG(WARNING) << "Destroying Object";
+            auto simulation_service = simulation_service_.lock();
+            simulation_service->RemoveObjectById(controller->GetObject()->GetObjectId());
+        }
+
         DLOG(WARNING) << "Removing disconnected client";
         client_map.erase(session->remote_endpoint());
     }

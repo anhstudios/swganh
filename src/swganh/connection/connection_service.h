@@ -19,6 +19,7 @@
 
 #include "swganh/character/character_service.h"
 #include "swganh/login/login_service.h"
+#include "swganh/simulation/galaxy_service.h"
 #include "swganh/messages/cmd_scene_ready.h"
 
 #include "swganh/connection/providers/session_provider_interface.h"
@@ -99,6 +100,7 @@ private:
     
     std::weak_ptr<swganh::character::CharacterService> character_service_;
     std::weak_ptr<swganh::login::LoginService> login_service_;
+    std::weak_ptr<swganh::simulation::GalaxyService> simulation_service_;
 
     std::string listen_address_;
     uint16_t listen_port_;
