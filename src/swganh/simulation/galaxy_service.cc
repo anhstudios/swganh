@@ -147,6 +147,14 @@ public:
             throw swganh::object::InvalidObject("Requested an invalid object");
         }
 
+        auto scene = scene_manager_->GetScene(find_iter->second->GetSceneId());
+        if (scene)
+        {
+            scene->RemoveObject(find_iter->second);
+        }
+
+        StopControllingObject(find_iter->second);
+
         loaded_objects_.erase(find_iter);
     }
 
@@ -314,6 +322,7 @@ shared_ptr<Object> GalaxyService::LoadObjectById(uint64_t object_id, uint32_t ty
 {
     return impl_->LoadObjectById(object_id, type);
 }
+
 const shared_ptr<Object>& GalaxyService::GetObjectById(uint64_t object_id)
 {
     return impl_->GetObjectById(object_id);
