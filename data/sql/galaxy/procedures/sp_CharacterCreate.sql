@@ -93,7 +93,7 @@ charCreate:BEGIN
 	VALUES (object_id + 1, start_profession, NOW(), 0, 0, 0);
 	-- PLAYER ACCOUNT
 	SELECT id FROM player_account where start_account_id = reference_id INTO player_id;
-   INSERT INTO player_accounts_players values (player_id, object_id + 1);
+   INSERT INTO player_accounts_creatures values (player_id, object_id);
 
 	
    COMMIT;
