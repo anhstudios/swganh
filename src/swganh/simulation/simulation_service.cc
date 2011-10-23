@@ -1,5 +1,5 @@
 
-#include "swganh/simulation/galaxy_service.h"
+#include "swganh/simulation/simulation_service.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -54,7 +54,7 @@ using swganh::base::BaseService;
 namespace swganh {
 namespace simulation {
 
-class GalaxyServiceImpl {
+class SimulationServiceImpl {
 public:
     const shared_ptr<ObjectManager>& GetObjectManager()
     {
@@ -272,19 +272,19 @@ private:
 
 }}  // namespace swganh::simulation
 
-GalaxyService::GalaxyService(KernelInterface* kernel)
+SimulationService::SimulationService(KernelInterface* kernel)
     : BaseService(kernel) 
-    , impl_(new GalaxyServiceImpl)
+    , impl_(new SimulationServiceImpl)
 {}
     
-GalaxyService::~GalaxyService()
+SimulationService::~SimulationService()
 {}
 
-ServiceDescription GalaxyService::GetServiceDescription()
+ServiceDescription SimulationService::GetServiceDescription()
 {
     ServiceDescription service_description(
-        "GalaxyService",
-        "galaxy",
+        "SimulationService",
+        "simulation",
         "0.1",
         "127.0.0.1", 
         0, 
@@ -294,7 +294,7 @@ ServiceDescription GalaxyService::GetServiceDescription()
     return service_description;
 }
 
-void GalaxyService::StartScene(const std::string& scene_label)
+void SimulationService::StartScene(const std::string& scene_label)
 {
     impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel()->GetDatabaseManager()->getConnection("galaxy"));
     impl_->GetSceneManager()->StartScene(scene_label);
@@ -305,59 +305,59 @@ void GalaxyService::StartScene(const std::string& scene_label)
     impl_->GetSceneManager()->GetScene(scene_label)->AddObject(guild);
 }
 
-void GalaxyService::StopScene(const std::string& scene_label)
+void SimulationService::StopScene(const std::string& scene_label)
 {
     impl_->GetSceneManager()->StopScene(scene_label);
 }
-void GalaxyService::RegisterObjectFactories(anh::app::KernelInterface* kernel)
+void SimulationService::RegisterObjectFactories(anh::app::KernelInterface* kernel)
 {
     impl_->RegisterObjectFactories(kernel);
 }
 
-shared_ptr<Object> GalaxyService::LoadObjectById(uint64_t object_id)
+shared_ptr<Object> SimulationService::LoadObjectById(uint64_t object_id)
 {
     return impl_->LoadObjectById(object_id);
 }
-shared_ptr<Object> GalaxyService::LoadObjectById(uint64_t object_id, uint32_t type)
+shared_ptr<Object> SimulationService::LoadObjectById(uint64_t object_id, uint32_t type)
 {
     return impl_->LoadObjectById(object_id, type);
 }
 
-const shared_ptr<Object>& GalaxyService::GetObjectById(uint64_t object_id)
+const shared_ptr<Object>& SimulationService::GetObjectById(uint64_t object_id)
 {
     return impl_->GetObjectById(object_id);
 }
 
-void GalaxyService::RemoveObjectById(uint64_t object_id)
+void SimulationService::RemoveObjectById(uint64_t object_id)
 {
     impl_->RemoveObjectById(object_id);
 }
 
-shared_ptr<ObjectController> GalaxyService::StartControllingObject(
+shared_ptr<ObjectController> SimulationService::StartControllingObject(
     const shared_ptr<Object>& object, 
     shared_ptr<RemoteClient> client)
 {
     return impl_->StartControllingObject(object, client);
 }
 
-void GalaxyService::StopControllingObject(const shared_ptr<Object>& object)
+void SimulationService::StopControllingObject(const shared_ptr<Object>& object)
 {
     impl_->StopControllingObject(object);
 }
 
-void GalaxyService::RegisterControllerHandler(
+void SimulationService::RegisterControllerHandler(
     uint32_t handler_id, 
     swganh::object::ObjControllerHandler&& handler)
 {
     impl_->RegisterControllerHandler(handler_id, move(handler));
 }
 
-void GalaxyService::UnregisterControllerHandler(uint32_t handler_id)
+void SimulationService::UnregisterControllerHandler(uint32_t handler_id)
 {
     impl_->UnregisterControllerHandler(handler_id);
 }
 
-void GalaxyService::onStart()
+void SimulationService::onStart()
 {
     auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
         
