@@ -26,6 +26,7 @@ shift $(($OPTIND - 1))
 
 for i in $(find . ! -name . -type d -prune)
 do
+	schema=$(basename $i)
     if [ ! -f $i/create.sql ]; then
         continue;
     fi
@@ -40,19 +41,19 @@ do
     
     for j in $(find $i/scripts -name *.sql)
     do
-    $mysql -u $username -p$passwd --default-character-set=utf8 <$j
+    $mysql -u $username -p$passwd --database=$schema --default-character-set=utf8 <$j
         printf "Installing $j [Done]\n"
     done
         
     for j in $(find $i/functions -name *.sql)
     do
-    $mysql -u $username -p$passwd --default-character-set=utf8 <$j
+    $mysql -u $username -p$passwd --database=$schema --default-character-set=utf8 <$j
         printf "Installing $j [Done]\n"
     done
     
     for j in $(find $i/procedures -name *.sql)
     do
-    $mysql -u $username -p$passwd --default-character-set=utf8 <$j
+    $mysql -u $username -p$passwd --database=$schema --default-character-set=utf8 <$j
         printf "Installing $j [Done]\n"
     done
 done
