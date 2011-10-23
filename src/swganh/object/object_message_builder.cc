@@ -71,7 +71,7 @@ optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline3(Object* object)
     message.data.write(object->GetComplexity());
     message.data.write(object->GetStfNameFile());
     // spacer
-    message.data.write(0);
+    message.data.write(static_cast<uint32_t>(0));
     message.data.write(object->GetStfNameString());
     message.data.write(object->GetCustomName());
     message.data.write(object->GetVolume());
