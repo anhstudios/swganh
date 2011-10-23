@@ -34,6 +34,7 @@ public:
     virtual uint64_t GetPlayerId(uint32_t account_id) = 0;
     virtual uint32_t GetAccountId(uint64_t player_id) = 0;
     virtual bool CreateGameSession(uint64_t player_id, uint32_t session_id) = 0;
+	virtual void EndGameSession(uint64_t player_id) = 0;
 };
 
 }}}  // namespace swganh::connection::providers

@@ -39,6 +39,7 @@ public:
     virtual uint64_t GetPlayerId(uint32_t account_id);
     virtual uint32_t GetAccountId(uint64_t player_id);
     virtual bool CreateGameSession(uint64_t player_id, uint32_t session_id);
+	virtual void EndGameSession(uint64_t player_id);
 private:
     std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };

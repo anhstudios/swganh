@@ -95,6 +95,24 @@ bool MysqlSessionProvider::CreateGameSession(uint64_t player_id, uint32_t sessio
     }
     return updated;
 }
+void MysqlSessionProvider::EndGameSession(uint64_t player_id)
+{
+	try {
+        string sql = "DELETE FROM player_session where player = ?";
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt64(1, player_id);
+        auto rows_updated = statement->executeUpdate();
+        
+        if (rows_updated <= 0) {
+            DLOG(WARNING) << "Couldn't delete session for player " << player_id << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
 uint32_t MysqlSessionProvider::GetAccountId(uint64_t player_id) {
     uint32_t account_id = 0;
 
