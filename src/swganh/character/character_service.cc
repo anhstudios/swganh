@@ -151,7 +151,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 
                 character.race_crc = anh::memcrc(non_shared_template);
                 character.galaxy_id = kernel()->GetServiceDirectory()->galaxy().id();
-                character.status = result_set->getInt("jedi_state");
+                character.status = 1;
                 characters.push_back(character);
             } while (statement->getMoreResults());
         }

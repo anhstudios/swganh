@@ -14,7 +14,7 @@
 # Dumping structure for table galaxy.tangible
 CREATE TABLE IF NOT EXISTS `tangible` (
   `id` bigint(20) NOT NULL,
-  `customization` varchar(255) NOT NULL,
+  `customization` blob NOT NULL,
   `options_bitmask` int(11) NOT NULL,
   `incap_timer` int(11) NOT NULL,
   `condition_damage` int(11) NOT NULL,

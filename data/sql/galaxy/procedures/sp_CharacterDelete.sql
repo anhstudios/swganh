@@ -24,7 +24,7 @@ BEGIN
 	 SET deleted_code = 0;
 	 SELECT D.reference_id
 	 FROM object A
-    INNER JOIN player_accounts_players C ON (A.id = C.player_character_id)
+    INNER JOIN player_accounts_creatures C ON (A.id = C.player_character_id)
     INNER JOIN player_account D ON (C.player_id = D.id)
     WHERE A.id = character_id INTO acc_id;
     
