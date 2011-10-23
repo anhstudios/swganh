@@ -18,33 +18,30 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
-#define SWGANH_LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+#ifndef SWGANH_GALAXY_PROVIDERS_MYSQL_GALAXY_PROVIDER_H_
+#define SWGANH_GALAXY_PROVIDERS_MYSQL_GALAXY_PROVIDER_H_
 
-#include "swganh/login/providers/account_provider_interface.h"
+#include "swganh/galaxy/providers/galaxy_provider_interface.h"
+#include <memory>
 
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
 namespace swganh {
-namespace login {
+namespace galaxy {
 namespace providers {
 
-class MysqlAccountProvider : public AccountProviderInterface {
+class MysqlGalaxyProvider : public GalaxyProviderInterface {
 public:
-    explicit MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
-    ~MysqlAccountProvider();
+    explicit MysqlGalaxyProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    ~MysqlGalaxyProvider();
 
-    virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
-    virtual uint32_t FindBySessionKey(const std::string& session_key);
-    virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
-    virtual bool AutoRegisterAccount(std::string username, std::string password);
-	virtual bool CreatePlayerAccount(uint64_t account_id);
+	virtual uint32_t GetPopulation();
 	
 private:
     std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };
 
-}}}  // namespace swganh::login::providers
+}}}  // namespace swganh::galaxy::providers
 
-#endif  // SWGANH_LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+#endif  // SWGANH_GALAXY_PROVIDERS_MYSQL_GALAXY_PROVIDER_H_
