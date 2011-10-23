@@ -226,8 +226,6 @@ public:
     {
         // character_id = player
         auto object = LoadObjectById(message.character_id, creature::Creature::type);
-        auto player = LoadObjectById(message.character_id + 1, player::Player::type); // PLAYER offset
-        auto hair = LoadObjectById(message.character_id + 5, tangible::Tangible::type); // HAIR OFFSET
         StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
@@ -236,19 +234,6 @@ public:
         {
             throw std::runtime_error("Invalid scene selected for object");
         }
-        // PLAYER CONTAINMENT
-        UpdateContainmentMessage ucm;
-        ucm.object_id = player->GetObjectId();
-        ucm.container_id = object->GetObjectId();
-        ucm.containment_type = 4;
-        client->GetSession()->SendMessage(ucm);
-
-        // HAIR CONTAINMENT
-        UpdateContainmentMessage ucm2;
-        ucm2.object_id = hair->GetObjectId();
-        ucm2.container_id = object->GetObjectId();
-        ucm2.containment_type = 4;
-        client->GetSession()->SendMessage(ucm2);
 
         // CmdStartScene
         CmdStartScene start_scene;
@@ -263,8 +248,6 @@ public:
 
         // Add object to scene and send baselines
         scene->AddObject(object);
-        //scene->AddObject(player);
-        scene->AddObject(hair);
     }
 
 private:
