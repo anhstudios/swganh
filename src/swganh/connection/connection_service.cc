@@ -200,6 +200,8 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
 
         DLOG(WARNING) << "Removing disconnected client";
         client_map.erase(session->remote_endpoint());
+		DLOG(WARNING) << "Removing Session";
+		session_provider_->EndGameSession(client->GetPlayerId());
     }
             
     DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
