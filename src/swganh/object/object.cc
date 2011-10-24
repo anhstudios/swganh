@@ -96,6 +96,10 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
     if (aware_objects_.find(object->GetObjectId()) != aware_objects_.end())
     {
         // @TODO consider whether encountering this scenario is an error
+		// someone could be logging back in and we want to make them aware again, so we'll send clean baselines.
+		if (object->HasController()) {
+			MakeClean(object->GetController());
+		}
         return;
     }
 

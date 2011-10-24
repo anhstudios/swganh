@@ -13,6 +13,29 @@ using namespace swganh::object::waypoint;
 using namespace swganh::messages;
 
 Player::Player()
+: status_flags_(0)
+, profile_flags_(0)
+, profession_tag_("")
+, born_date_(0)
+, total_playtime_(0)
+, admin_tag_(0)
+, region_(0)
+, current_force_power_(0)
+, max_force_power_(0)
+, current_force_sensitive_quests_(0)
+, completed_force_sensitive_quests_(0)
+, experimentation_flag_(0)
+, crafting_stage_(0)
+, nearest_crafting_station_(0)
+, experimentation_points_(0)
+, accomplishment_counter_(0)
+, language_(0)
+, current_stomach_(0)
+, max_stomach_(0)
+, current_drink_(0)
+, max_drink_(0)
+, jedi_state_(0)
+, gender_(MALE)
 {
     // TEMP manually resize these vectors
     abilities_.resize(25);

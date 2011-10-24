@@ -44,7 +44,7 @@ namespace simulation {
         template<typename T>
         std::shared_ptr<T> LoadObjectById(uint64_t object_id)
         {
-            std::shared_ptr<Object> object = LoadObjectById(object_id, T::type);
+            std::shared_ptr<swganh::object::Object> object = LoadObjectById(object_id, T::type);
 #if _DEBUG
             return std::dynamic_pointer_cast<T>(object);
 #else
@@ -57,12 +57,12 @@ namespace simulation {
         template<typename T>
         const std::shared_ptr<T>& GetObjectById(uint64_t object_id)
         {
-            std::shared_ptr<Object> object = GetObjectById(object_id);
+            std::shared_ptr<swganh::object::Object> object = GetObjectById(object_id);
 
 #if _DEBUG
-            return std::dynamic_pointer_cast<T>(object);
+            return std::dynamic_pointer_cast<T>(move(object));
 #else
-            return std::static_pointer_cast<T>(object);
+            return std::static_pointer_cast<T>(move(object));
 #endif
         }
 
