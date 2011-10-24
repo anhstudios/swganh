@@ -100,7 +100,8 @@ public:
 
         if (find_iter != loaded_objects_.end())
         {
-            throw swganh::object::InvalidObject("Requested object already loaded");
+            return find_iter->second;
+            //throw swganh::object::InvalidObject("Requested object already loaded");
         }
         
         auto object = object_manager_->CreateObjectFromStorage(object_id);
@@ -115,7 +116,8 @@ public:
 
         if (find_iter != loaded_objects_.end())
         {
-            throw swganh::object::InvalidObject("Requested object already loaded");
+			return find_iter->second;
+            //throw swganh::object::InvalidObject("Requested object already loaded");
         }
         
         auto object = object_manager_->CreateObjectFromStorage(object_id, type);
@@ -162,7 +164,8 @@ public:
 
         if (find_iter != controlled_objects_.end())
         {
-            throw swganh::object::InvalidObject("Object already has a controller");
+			return find_iter->second;
+            //throw swganh::object::InvalidObject("Object already has a controller");
         }
         
         auto controller = make_shared<ObjectController>(object, client);
@@ -194,7 +197,9 @@ public:
 
         if (find_iter != controller_handlers_.end())
         {
-            throw std::runtime_error("ObjControllerHandler already exists");
+			// just return, we already have the handler registered
+			return;
+            //throw std::runtime_error("ObjControllerHandler already exists");
         }
 
         controller_handlers_.insert(make_pair(handler_id, move(handler)));
@@ -231,7 +236,7 @@ public:
         const SelectCharacter& message)
     {
         // character_id = player
-        auto object = LoadObjectById(message.character_id, creature::Creature::type);
+		auto object = LoadObjectById(message.character_id, creature::Creature::type);
         StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
@@ -253,7 +258,7 @@ public:
         client->GetSession()->SendMessage(start_scene);
 
         // Add object to scene and send baselines
-        scene->AddObject(object);
+		scene->AddObject(object);
     }
 
 private:

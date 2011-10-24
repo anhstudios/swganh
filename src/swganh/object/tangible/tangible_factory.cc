@@ -144,7 +144,7 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
         stringstream ss;
         ss << "CALL sp_GetTangible(" << object_id << ");";
         auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
-        
+        CreateBaseTangible(tangible, statement);
     }
     catch(sql::SQLException &e)
     {
