@@ -19,8 +19,7 @@ BaseTangible::BaseTangible()
     , condition_damage_(0)
     , max_condition_(0)
     , is_static_(false)
-    , defender_list_(std::vector<uint64_t>())
-    , defender_list_counter_(0)
+    , defender_list_(swganh::messages::containers::NetworkSortedVector<Defender>(3))
 {}
 BaseTangible::BaseTangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
         uint32_t incap_timer, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders)
@@ -32,8 +31,11 @@ BaseTangible::BaseTangible(const std::string& customization, std::vector<uint32_
     , condition_damage_(condition_damage)
     , max_condition_(max_condition)
     , is_static_(is_static)
-    , defender_list_(defenders)
+    , defender_list_(swganh::messages::containers::NetworkSortedVector<Defender>(3))
 {
+    std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& def) {
+        defender_list_.Add(Defender(def));
+    });
 }
 void BaseTangible::AddCustomization(const string& customization)
 {
@@ -99,46 +101,48 @@ void BaseTangible::SetStatic(bool is_static)
     is_static_ = is_static;
     TangibleMessageBuilder::BuildStaticDelta(this);
 }
-std::vector<uint64_t>::iterator BaseTangible::FindDefender_(uint64_t defender)
-{
-    auto found = find_if(begin(defender_list_), end(defender_list_), [defender](uint64_t defender_check){
-        return defender == defender_check;
-    });
 
-    return found;
-}
 bool BaseTangible::IsDefending(uint64_t defender)
 {
-    return FindDefender_(defender) != end(defender_list_);
+    auto iter = std::find_if(defender_list_.Begin(), defender_list_.End(), [=](const Defender& x)->bool {
+        return (x.object_id == defender);
+    });
+
+    if(iter != defender_list_.End())
+        return true;
+    else
+        return false;
 }
 void BaseTangible::AddDefender(uint64_t defender)
 {
-    uint16_t next_index = GetNextAvailableSlot(defender_list_, defender_index_free_list_);
-    defender_list_[next_index] = defender;
-    TangibleMessageBuilder::BuildDefendersDelta(this, 1, next_index, defender);
+    defender_list_.Add(Defender(defender));
+    TangibleMessageBuilder::BuildDefendersDelta(this);
 }
 void BaseTangible::RemoveDefender(uint64_t defender)
 {
-    // bail if not found
-    auto found = FindDefender_(defender);
-    if (found == end(defender_list_))
-        return;
-    uint16_t index_position = found - begin(defender_list_);
-    defender_list_.erase(found);
-    TangibleMessageBuilder::BuildDefendersDelta(this, 0, index_position, defender);
-    defender_index_free_list_.push_back(index_position);
+    auto iter = std::find_if(defender_list_.Begin(), defender_list_.End(), [=](const Defender& x)->bool {
+        return (x.object_id == defender);
+    });
+
+    if(iter != defender_list_.End())
+    {
+        defender_list_.Remove(iter);
+        TangibleMessageBuilder::BuildDefendersDelta(this);
+    }
 }
 void BaseTangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
-    defender_list_ = defenders;
-    TangibleMessageBuilder::BuildNewDefendersDelta(this);
-    defender_index_free_list_.clear();
+    defender_list_.Clear();
+    std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& x) {
+        defender_list_.Insert(Defender(x));
+    });
+    defender_list_.Reinstall();
+    TangibleMessageBuilder::BuildDefendersDelta(this);
 }
 void BaseTangible::ClearDefenders()
 {
-    defender_list_.clear();
-    TangibleMessageBuilder::BuildDefendersDelta(this, 4, 0, 0);
-    defender_index_free_list_.clear();
+    defender_list_.Clear();
+    TangibleMessageBuilder::BuildDefendersDelta(this);
 }
 
 boost::optional<BaselinesMessage> BaseTangible::GetBaseline3()

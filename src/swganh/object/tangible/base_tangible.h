@@ -9,6 +9,7 @@
 #include <list>
 
 #include "swganh/object/object.h"
+#include "swganh/messages/containers/network_sorted_vector.h"
 
 namespace swganh {
 namespace object {
@@ -17,6 +18,34 @@ namespace tangible {
 enum StaticType {
     MOVEABLE = 0,
     STATIC
+};
+
+struct Defender
+{
+    Defender()
+        : object_id(0)
+    {}
+
+    Defender(uint64_t object_id_)
+        : object_id(object_id_)
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint64_t>(object_id);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint64_t>(object_id);
+    }
+
+    bool operator==(const Defender& other)
+    {
+        return other.object_id == object_id;
+    }
+
+    uint64_t object_id;
 };
 
 class TangibleMessageBuilder;
@@ -57,7 +86,7 @@ public:
     void RemoveDefender(uint64_t defender);
     void ResetDefenders(std::vector<uint64_t> defenders);
     bool IsDefending(uint64_t defender);
-    std::vector<uint64_t>& GetDefenders() { return defender_list_; }
+    swganh::messages::containers::NetworkSortedVector<Defender> GetDefenders() { return defender_list_; }
     void ClearDefenders();
 
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
@@ -76,9 +105,7 @@ private:
     uint32_t condition_damage_;                          // update 3
     uint32_t max_condition_;                             // update 3
     bool is_static_;                                     // update 3
-    std::vector<uint64_t> defender_list_;                // update 6
-    std::list<uint16_t> defender_index_free_list_;
-    uint32_t defender_list_counter_;                     // update 6
+    swganh::messages::containers::NetworkSortedVector<Defender> defender_list_; // update 6
 };
     
 }}}  // namespace swganh::object::tangible

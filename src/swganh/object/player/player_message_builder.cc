@@ -323,35 +323,16 @@ void PlayerMessageBuilder::BuildNearestCraftingStationDelta(Player* object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object, uint8_t sub_type, uint16_t index, Player::DraftSchematicData schematic)
+void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object)
 {
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 4);
-        message.data.write(object->draft_schematics_.size());
-        // list counter
-        message.data.write(++object->draft_schematics_counter_);
-        // subtype
-        message.data.write<uint8_t>(sub_type);
-        switch (sub_type)
-        {
-        case 0:
-            message.data.write(index);
-            break;
-        case 1:
-        case 2:
-            message.data.write(index);
-            message.data.write(schematic.schematic_id);
-            message.data.write(schematic.schematic_crc);
-            break;
-        case 4:
-             break;
-        }
-
+        object->draft_schematics_.Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildResetDraftSchematicDelta(Player* object, std::vector<Player::DraftSchematicData> schematics){}
+
 void PlayerMessageBuilder::BuildExperimentationPointsDelta(Player* object)
 {
     if (object->HasObservers())
@@ -492,8 +473,7 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write<uint32_t>(object->GetCraftingStage());
     message.data.write<uint64_t>(object->GetNearestCraftingStation());
 
-    message.data.write<uint32_t>(0); // Draft Schematic List Size
-    message.data.write<uint32_t>(0); // Draft Schematic List Counter
+    object->draft_schematics_.Serialize(message);
 
 
     message.data.write<uint32_t>(object->GetExperimentationPoints());

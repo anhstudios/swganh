@@ -98,60 +98,17 @@ void TangibleMessageBuilder::BuildStaticDelta(BaseTangible* tangible)
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible, uint8_t subType, uint16_t index, uint64_t defender)
-{
-    if (tangible->HasObservers())
-    {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_6, 1);
-        auto defender_list = tangible->GetDefenders();
-        message.data.write(defender_list.size());
-        // list counter
-        message.data.write(tangible->defender_list_counter_++);
-        // subtype
-        message.data.write<uint8_t>(subType);
-        switch (subType)
-        {
-        // remove
-        case 0:
-            message.data.write(index);
-            break;
-        // Add
-        case 1:
-        // Change
-        case 2:
-            // index
-            message.data.write(index);
-            message.data.write(defender);
-            break;
-        
-        // Clear
-        case 4:
-            break;
-        }
-        tangible->AddDeltasUpdate(move(message));
-    }
-}
-void TangibleMessageBuilder::BuildNewDefendersDelta(BaseTangible* tangible)
-{
-    if (tangible->HasObservers())
-    {
-        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_6, 1);
-        auto defender_list = tangible->GetDefenders();
-        message.data.write(defender_list.size());
-        // list counter
-        message.data.write(tangible->defender_list_counter_++);
-        // Reset All
-        message.data.write<uint8_t>(3);
-        // loop through all defenders
-        for_each(begin(defender_list), end(defender_list), [&message] (uint64_t defender) {
-            message.data.write(defender);
-        });
-        // clear the free list
-        tangible->defender_index_free_list_.clear();
 
+void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible)
+{
+    if (tangible->HasObservers())
+    {
+        DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_6, 1);
+        tangible->defender_list_.Serialize(message);
         tangible->AddDeltasUpdate(move(message));
     }
 }
+
 // baselines
 boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(BaseTangible* tangible)
 {
@@ -179,16 +136,8 @@ boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(BaseTan
 boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(BaseTangible* tangible)
 {
     auto message = tangible->CreateBaselinesMessage(Object::VIEW_6, 2);
-    
-    // server id
     message.data.append(tangible->Object::GetBaseline6().get().data);
-    // defender list
-    message.data.write(tangible->defender_list_.size());
-    message.data.write(tangible->defender_list_counter_);
-    for_each(begin(tangible->GetDefenders()), end(tangible->GetDefenders()), [&message](uint64_t defender) {
-        message.data.write(defender);
-    });
-
+    tangible->defender_list_.Serialize(message);
     return boost::optional<BaselinesMessage>(std::move(message));
 }
 boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline7(BaseTangible* tangible)

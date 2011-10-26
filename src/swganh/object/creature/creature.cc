@@ -10,32 +10,26 @@ Creature::Creature()
 : BaseTangible()
 , bank_credits_(0)
 , cash_credits_(0)
-, stat_base_list_counter_(0)
-, stat_base_list_(std::vector<uint32_t>(10))
-, skill_list_counter_(0)
-, skill_list_(std::list<std::string>())
+, stat_base_list_(swganh::messages::containers::NetworkArray<Stat>(9))
+, skills_(swganh::messages::containers::NetworkList<Skill>())
 , posture_(0)
 , faction_rank_(0)
 , owner_id_(0)
 , scale_(1.0f)
 , battle_fatigue_(0)
 , state_bitmask_(0)
-, stat_wound_list_counter_(0)
-, stat_wound_list_(std::vector<uint32_t>(10))
+, stat_wound_list_(swganh::messages::containers::NetworkArray<Stat>(9))
 , acceleration_multiplier_base_(1.0f)
 , acceleration_multiplier_modifier_(1.0f)
-, stat_encumberance_list_counter_(0)
-, stat_encumberance_list_(std::vector<uint32_t>(10))
-, skill_mod_list_counter_(0)
-, skill_mod_list_(std::list<SkillMod>())
+, stat_encumberance_list_(swganh::messages::containers::NetworkArray<Stat>(9))
+, skill_mod_list_(swganh::messages::containers::NetworkMap<std::string, SkillMod>())
 , speed_multiplier_base_(1.0f)
 , speed_multiplier_modifier_(1.0f)
 , listen_to_id_(0)
 , run_speed_(5.0f)
 , slope_modifier_angle_(1.02f)
 , slope_modifier_percent_(0)
-, mission_critical_object_list_counter_(0)
-, mission_critical_object_list_(std::list<MissionCriticalObject>())
+, mission_critical_object_list_(swganh::messages::containers::NetworkList<MissionCriticalObject>())
 , turn_radius_(1.0f)
 , walking_speed_(1.0f)
 , water_modifier_percent_(0.0125f)
@@ -51,12 +45,9 @@ Creature::Creature()
 , mood_id_(0)
 , performance_counter_(0)
 , performance_id_(0)
-, stat_current_list_counter_(0)
-, stat_current_list_(std::vector<uint32_t>(10))
-, stat_max_list_counter_(0)
-, stat_max_list_(std::vector<uint32_t>(10))
-, equipment_list_counter_(0)
-, equipment_list_(std::list<EquipmentItem>())
+, stat_current_list_(swganh::messages::containers::NetworkArray<Stat>(9))
+, stat_max_list_(swganh::messages::containers::NetworkArray<Stat>(9))
+, equipment_list_(swganh::messages::containers::NetworkSortedList<EquipmentItem>())
 , disguise_("")
 , stationary_(0)
 {}
@@ -81,50 +72,55 @@ void Creature::SetCashCredits(uint32_t cash_credits)
     CreatureMessageBuilder::BuildCashCreditsDelta(this);
 }
 
-void Creature::SetStatBase(Stat stat, uint32_t value)
+void Creature::SetStatBase(StatIndex stat_index, uint32_t value)
 {
-    stat_base_list_[stat] = value;
-    CreatureMessageBuilder::BuildStatBaseDelta(this, 2, stat);
+    stat_base_list_.Update(stat_index, Stat(value));
+    CreatureMessageBuilder::BuildStatBaseDelta(this);
 }
 
-void Creature::AddStatBase(Stat stat, uint32_t value)
+void Creature::AddStatBase(StatIndex stat_index, uint32_t value)
 {
-    stat_base_list_[stat] += value;
-    CreatureMessageBuilder::BuildStatBaseDelta(this, 2, stat);
+    uint32_t new_stat = stat_base_list_[stat_index].value + value;
+    stat_base_list_.Update(stat_index, Stat(new_stat));
+    CreatureMessageBuilder::BuildStatBaseDelta(this);
 }
 
-void Creature::DeductStatBase(Stat stat, uint32_t value)
+void Creature::DeductStatBase(StatIndex stat_index, uint32_t value)
 {
-    stat_base_list_[stat] -= value;
-    CreatureMessageBuilder::BuildStatBaseDelta(this, 2, stat);
+    uint32_t new_stat = stat_base_list_[stat_index].value - value;
+    stat_base_list_.Update(stat_index, Stat(new_stat));
+    CreatureMessageBuilder::BuildStatBaseDelta(this);
 }
 
 void Creature::AddSkill(std::string skill)
 {
-    if(std::find(skill_list_.begin(), skill_list_.end(), skill) == skill_list_.end())
-    {
-        skill_list_.push_back(skill);
-        CreatureMessageBuilder::BuildSkillDelta(this, 1, skill);
-    }
+    skills_.Add(Skill(skill));
+    CreatureMessageBuilder::BuildSkillDelta(this);
 }
 
 void Creature::RemoveSkill(std::string skill)
 {
-    if(std::find(skill_list_.begin(), skill_list_.end(), skill) != skill_list_.end())
+    auto iter = std::find_if(skills_.Begin(), skills_.End(), [=](const Skill& other_skill){
+        return (skill == other_skill.name);
+    });
+
+    if(iter != skills_.End())
     {
-        skill_list_.remove(skill);
-        CreatureMessageBuilder::BuildSkillDelta(this, 0, skill);
+        skills_.Remove(iter);
+        CreatureMessageBuilder::BuildSkillDelta(this);
     }
 }
 
 bool Creature::HasSkill(std::string skill)
 {
-    if(std::find(skill_list_.begin(), skill_list_.end(), skill) != skill_list_.end())
-    {
-        return true;
-    }
+    auto iter = std::find_if(skills_.Begin(), skills_.End(), [=](const Skill& other_skill){
+        return (skill == other_skill.name);
+    });
 
-    return false;
+    if(iter != skills_.End())
+        return true;
+    else
+        return false;
 }
 
 void Creature::SetPosture(Posture posture)
@@ -163,22 +159,24 @@ void Creature::SetStateBitmask(uint64_t state_bitmask)
     CreatureMessageBuilder::BuildStateBitmaskDelta(this);
 }
 
-void Creature::SetStatWound(Stat stat, uint32_t value)
+void Creature::SetStatWound(StatIndex stat_index, uint32_t value)
 {
-    stat_wound_list_[stat] = value;
-    CreatureMessageBuilder::BuildStatWoundDelta(this, 2, stat);
+    stat_wound_list_.Update(stat_index, Stat(value));
+    CreatureMessageBuilder::BuildStatWoundDelta(this);
 }
 
-void Creature::AddStatWound(Stat stat, uint32_t value)
+void Creature::AddStatWound(StatIndex stat_index, uint32_t value)
 {
-    stat_wound_list_[stat] += value;
-    CreatureMessageBuilder::BuildStatWoundDelta(this, 2, stat);
+    uint32_t new_stat = stat_wound_list_[stat_index].value + value;
+    stat_wound_list_.Update(stat_index, Stat(new_stat));
+    CreatureMessageBuilder::BuildStatWoundDelta(this);
 }
 
-void Creature::DeductStatWound(Stat stat, uint32_t value)
+void Creature::DeductStatWound(StatIndex stat_index, uint32_t value)
 {
-    stat_wound_list_[stat] -= value;
-    CreatureMessageBuilder::BuildStatWoundDelta(this, 2, stat);
+    uint32_t new_stat = stat_wound_list_[stat_index].value - value;
+    stat_wound_list_.Update(stat_index, Stat(new_stat));
+    CreatureMessageBuilder::BuildStatWoundDelta(this);
 }
 
 void Creature::SetAccelerationMultiplierBase(float acceleration_multiplier_base)
@@ -193,53 +191,55 @@ void Creature::SetAccelerationMultiplierModifier(float acceleration_multiplier_m
     CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(this);
 }
 
-void Creature::SetStatEncumberance(Stat stat, uint32_t value)
+void Creature::SetStatEncumberance(StatIndex stat_index, uint32_t value)
 {
-    stat_encumberance_list_[stat] = value;
-    CreatureMessageBuilder::BuildStatEncumberanceDelta(this, 2, stat);
+    stat_encumberance_list_.Update(stat_index, Stat(value));
+    CreatureMessageBuilder::BuildStatEncumberanceDelta(this);
 }
 
-void Creature::AddStatEncumberance(Stat stat, uint32_t value)
+void Creature::AddStatEncumberance(StatIndex stat_index, uint32_t value)
 {
-    stat_encumberance_list_[stat] += value;
-    CreatureMessageBuilder::BuildStatEncumberanceDelta(this, 2, stat);
+    uint32_t new_stat = stat_encumberance_list_[stat_index].value + value;
+    stat_encumberance_list_.Update(stat_index, Stat(new_stat));
+    CreatureMessageBuilder::BuildStatEncumberanceDelta(this);
 }
 
-void Creature::DeductStatEncumberance(Stat stat, uint32_t value)
+void Creature::DeductStatEncumberance(StatIndex stat_index, uint32_t value)
 {
-    stat_encumberance_list_[stat] -= value;
-    CreatureMessageBuilder::BuildStatEncumberanceDelta(this, 2, stat);
+    uint32_t new_stat = stat_encumberance_list_[stat_index].value - value;
+    stat_encumberance_list_.Update(stat_index, Stat(new_stat));
+    CreatureMessageBuilder::BuildStatEncumberanceDelta(this);
 }
 
 void Creature::AddSkillMod(Creature::SkillMod mod)
 {
-    if(std::find_if(skill_mod_list_.begin(), skill_mod_list_.end(), [=](Creature::SkillMod x)->bool {
-        if(x.indenfitier == mod.indenfitier)
-            return true;
-        else
-            return false;
-    }) == skill_mod_list_.end())
-    {
-        skill_mod_list_.push_back(mod);
-        CreatureMessageBuilder::BuildSkillModDelta(this, 1, mod);
-    }
+    skill_mod_list_.Add(mod.identifier, mod);
+    CreatureMessageBuilder::BuildSkillModDelta(this);
 }
 
 void Creature::RemoveSkillMod(std::string identifier)
 {
-
-    auto iter = std::find_if(skill_mod_list_.begin(), skill_mod_list_.end(), [=](Creature::SkillMod x)->bool {
-        if(x.indenfitier == identifier)
-            return true;
-        else
-            return false;
+    auto iter = std::find_if(skill_mod_list_.Begin(), skill_mod_list_.End(), [=](std::pair<std::string, SkillMod> pair)->bool {
+        return (identifier == pair.first);
     });
 
-    if(iter != skill_mod_list_.end())
+    if(iter != skill_mod_list_.End())
     {
-        skill_mod_list_.erase(iter);
-        CreatureMessageBuilder::BuildSkillModDelta(this, 0, *iter);
+        skill_mod_list_.Remove(iter);
+        CreatureMessageBuilder::BuildSkillModDelta(this);
     }
+}
+
+void Creature::SetSkillMod(SkillMod mod)
+{
+    skill_mod_list_.Update(mod.identifier, mod);
+    CreatureMessageBuilder::BuildSkillModDelta(this);
+}
+
+void Creature::ClearSkillMods(void)
+{
+    skill_mod_list_.Clear();
+    CreatureMessageBuilder::BuildSkillModDelta(this);
 }
 
 void Creature::SetSpeedMultiplierBase(float speed_multiplier_base)
@@ -298,58 +298,32 @@ void Creature::SetWaterModifierPercent(float water_modifier_percent)
 
 void Creature::AddMissionCriticalObject(MissionCriticalObject& object)
 {
-    auto iter = std::find_if(mission_critical_object_list_.begin(), mission_critical_object_list_.end(), [=](MissionCriticalObject x)->bool {
-        if(object.critical_object_id_ != x.critical_object_id_)
-            return false;
-
-        if(object.mission_owner_id_ != x.mission_owner_id_)
-            return false;
-
-        return true;
-    });
-
-    if(iter == mission_critical_object_list_.end())
-    {
-        mission_critical_object_list_.push_back(object);
-        CreatureMessageBuilder::BuildMissionCriticalObjectDelta(this, 1, object);
-    }
+    mission_critical_object_list_.Add(object);
+    CreatureMessageBuilder::BuildMissionCriticalObjectDelta(this);
 }
 
-void Creature::RemoveMissionCriticalObject(MissionCriticalObject& object)
+void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id)
 {
-    auto iter = std::find_if(mission_critical_object_list_.begin(), mission_critical_object_list_.end(), [=](MissionCriticalObject x)->bool {
-        if(object.critical_object_id_ != x.critical_object_id_)
+    auto iter = std::find_if(mission_critical_object_list_.Begin(), mission_critical_object_list_.End(), [=](const MissionCriticalObject& obj)->bool {
+        if(mission_owner != obj.mission_owner_id_)
             return false;
 
-        if(object.mission_owner_id_ != x.mission_owner_id_)
+        if(object_id != obj.critical_object_id_)
             return false;
 
         return true;
     });
 
-    if(iter != mission_critical_object_list_.end())
+    if(iter != mission_critical_object_list_.End())
     {
-        mission_critical_object_list_.erase(iter);
-        CreatureMessageBuilder::BuildMissionCriticalObjectDelta(this, 0, object);
+        mission_critical_object_list_.Remove(iter);
+        CreatureMessageBuilder::BuildMissionCriticalObjectDelta(this);
     }
 }
 
 Creature::MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner)
 {
-    auto iter = std::find_if(mission_critical_object_list_.begin(), mission_critical_object_list_.end(), [=](MissionCriticalObject x)->bool {
-        if(object_id != x.critical_object_id_)
-            return false;
-
-        if(mission_owner != x.mission_owner_id_)
-            return false;
-
-        return true;
-    });
-
-    if(iter != mission_critical_object_list_.end())
-        return *iter;
-    else
-        return Creature::MissionCriticalObject(0, 0);
+    return MissionCriticalObject(0,0);//return mission_critical_object_list_.Find(MissionCriticalObject(mission_owner, object_id));
 }
 
 void Creature::SetCombatLevel(uint16_t combat_level)
@@ -412,72 +386,66 @@ void Creature::SetPerformanceId(uint32_t performance_id)
     CreatureMessageBuilder::BuildPerformanceIdDelta(this);
 }
 
-void Creature::SetStatCurrent(Stat stat, uint32_t value)
+void Creature::SetStatCurrent(StatIndex stat_index, uint32_t value)
 {
-    stat_current_list_[stat] = value;
-    CreatureMessageBuilder::BuildStatCurrentDelta(this, 2, stat);
+    stat_current_list_.Update(stat_index, Stat(value));
+    CreatureMessageBuilder::BuildStatCurrentDelta(this);
 }
 
-void Creature::AddStatCurrent(Stat stat, uint32_t value)
+void Creature::AddStatCurrent(StatIndex stat_index, uint32_t value)
 {
-    stat_current_list_[stat] += value;
-    CreatureMessageBuilder::BuildStatCurrentDelta(this, 2, stat);
+    uint32_t new_value = stat_current_list_[stat_index].value + value;
+    stat_current_list_.Update(stat_index, Stat(new_value));
+    CreatureMessageBuilder::BuildStatCurrentDelta(this);
 }
 
-void Creature::DeductStatCurrent(Stat stat, uint32_t value)
+void Creature::DeductStatCurrent(StatIndex stat_index, uint32_t value)
 {
-    stat_current_list_[stat] -= value;
-    CreatureMessageBuilder::BuildStatCurrentDelta(this, 2, stat);
+    uint32_t new_value = stat_current_list_[stat_index].value - value;
+    stat_current_list_.Update(stat_index, Stat(new_value));
+    CreatureMessageBuilder::BuildStatCurrentDelta(this);
 }
 
-void Creature::SetStatMax(Stat stat, uint32_t value)
+void Creature::SetStatMax(StatIndex stat_index, uint32_t value)
 {
-    stat_max_list_[stat] = value;
-    CreatureMessageBuilder::BuildStatMaxDelta(this, 2, stat);
+    stat_max_list_.Update(stat_index, Stat(value));
+    CreatureMessageBuilder::BuildStatMaxDelta(this);
 }
 
-void Creature::AddStatMax(Stat stat, uint32_t value)
+void Creature::AddStatMax(StatIndex stat_index, uint32_t value)
 {
-    stat_max_list_[stat] += value;
-    CreatureMessageBuilder::BuildStatMaxDelta(this, 2, stat);
+    stat_max_list_.Update(stat_index, Stat(stat_max_list_.At(stat_index).value + value));
+    CreatureMessageBuilder::BuildStatMaxDelta(this);
 }
 
-void Creature::DeductStatMax(Stat stat, uint32_t value)
+void Creature::DeductStatMax(StatIndex stat_index, uint32_t value)
 {
-    stat_max_list_[stat] -= value;
-    CreatureMessageBuilder::BuildStatMaxDelta(this, 2, stat);
+    stat_max_list_.Update(stat_index, Stat(stat_max_list_.At(stat_index).value - value));
+    CreatureMessageBuilder::BuildStatMaxDelta(this);
 }
 
 void Creature::AddEquipmentItem(EquipmentItem& item)
 {
-    auto iter = std::find_if(equipment_list_.begin(), equipment_list_.end(), [=](EquipmentItem x)->bool {
-        if(item.object_id != x.object_id)
-            return false;
-        else
-            return true;
-    });
-
-    if(iter == equipment_list_.end())
-    {
-        equipment_list_.push_back(item);
-        CreatureMessageBuilder::BuildEquipmentDelta(this, 2, item);
-    }
+    equipment_list_.Add(item);
+    CreatureMessageBuilder::BuildEquipmentDelta(this);
 }
 
 void Creature::RemoveEquipmentItem(uint64_t object_id)
 {
-    auto iter = std::find_if(equipment_list_.begin(), equipment_list_.end(), [=](EquipmentItem x)->bool {
-        if(object_id != x.object_id)
-            return false;
-        else
-            return true;
+    auto iter = std::find_if(equipment_list_.Begin(), equipment_list_.End(), [=](std::pair<uint16_t, EquipmentItem> item)->bool {
+        return (object_id == item.second.object_id);
     });
 
-    if(iter != equipment_list_.end())
+    if(iter != equipment_list_.End())
     {
-        equipment_list_.erase(iter);
-        CreatureMessageBuilder::BuildEquipmentDelta(this, 2, *iter);
+        equipment_list_.Remove(iter);
+        CreatureMessageBuilder::BuildEquipmentDelta(this);
     }
+}
+
+void Creature::UpdateEquipmentItem(EquipmentItem& item)
+{
+    equipment_list_.Update(equipment_list_.Find(item)->first, item);
 }
 
 void Creature::SetDisguise(std::string disguise)
