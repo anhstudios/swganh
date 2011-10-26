@@ -229,6 +229,7 @@ bool Object::IsDirty() const
 
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
+    boost::lock_guard<boost::mutex> lock(mutex_);
     baselines_.clear();
     deltas_.clear();
     

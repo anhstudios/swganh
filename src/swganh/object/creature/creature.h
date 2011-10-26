@@ -163,7 +163,7 @@ public:
             message.data.write<uint32_t>(modifier);         // Modifier
         }
 
-        bool operator==(SkillMod other)
+        bool operator==(const SkillMod& other)
         {
             return (identifier == other.identifier);
         }
@@ -239,7 +239,7 @@ public:
             message.data.write<uint32_t>(template_crc);
         }
 
-        bool operator==(EquipmentItem other)
+        bool operator==(const EquipmentItem& other)
         {
             return (object_id != other.object_id);
         }
@@ -278,7 +278,7 @@ public:
             message.data.write<uint64_t>(critical_object_id_);
         }
 
-        bool operator==(MissionCriticalObject object)
+        bool operator==(const MissionCriticalObject& object)
         {
             if(mission_owner_id_ != object.mission_owner_id_)
                 return false;
@@ -314,7 +314,7 @@ public:
             message.data.write<std::string>(name);
         }
 
-        bool operator==(Skill other)
+        bool operator==(const Skill& other)
         {
             return (name == other.name);
         }

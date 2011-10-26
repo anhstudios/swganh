@@ -32,6 +32,8 @@ void CreatureMessageBuilder::BuildStatBaseDelta(Creature* creature)
         creature->stat_base_list_.Serialize(message);
         creature->AddDeltasUpdate(std::move(message));
     }
+    else
+        creature->stat_base_list_.ClearDeltas();
 }
 
 void CreatureMessageBuilder::BuildSkillDelta(Creature* creature)
@@ -42,6 +44,8 @@ void CreatureMessageBuilder::BuildSkillDelta(Creature* creature)
         creature->skills_.Serialize(message);
         creature->AddDeltasUpdate(std::move(message));
     }
+    else
+        creature->skills_.ClearDeltas();
 }
 
 void CreatureMessageBuilder::BuildPostureDelta(Creature* creature)
@@ -112,6 +116,8 @@ void CreatureMessageBuilder::BuildStatWoundDelta(Creature* creature)
         creature->stat_wound_list_.Serialize(message);
         creature->AddDeltasUpdate(std::move(message));
     }
+    else
+        creature->stat_wound_list_.ClearDeltas();
 }
 
 void CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(Creature* creature)
@@ -142,6 +148,8 @@ void CreatureMessageBuilder::BuildStatEncumberanceDelta(Creature* creature)
         creature->stat_encumberance_list_.Serialize(message);
         creature->AddDeltasUpdate(std::move(message));
     }
+    else
+        creature->stat_encumberance_list_.ClearDeltas();
 }
 
 void CreatureMessageBuilder::BuildSkillModDelta(Creature* creature)
@@ -152,6 +160,8 @@ void CreatureMessageBuilder::BuildSkillModDelta(Creature* creature)
         creature->skill_mod_list_.Serialize(message);
         creature->AddDeltasUpdate(std::move(message));
     }
+    else
+        creature->skill_mod_list_.ClearDeltas();
 }
 
 void CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(Creature* creature)
@@ -252,6 +262,8 @@ void CreatureMessageBuilder::BuildMissionCriticalObjectDelta(Creature* creature)
         creature->mission_critical_object_list_.Serialize(message);
         creature->AddDeltasUpdate(std::move(message));
     }
+    else
+        creature->mission_critical_object_list_.ClearDeltas();
 }
 
 void CreatureMessageBuilder::BuildCombatLevelDelta(Creature* creature)
@@ -363,6 +375,8 @@ void CreatureMessageBuilder::BuildStatCurrentDelta(Creature* creature)
         creature->stat_current_list_.Serialize(message);
         creature->AddDeltasUpdate(std::move(message));
     }
+    else
+        creature->stat_current_list_.ClearDeltas();
 }
 
 void CreatureMessageBuilder::BuildStatMaxDelta(Creature* creature)
@@ -373,6 +387,8 @@ void CreatureMessageBuilder::BuildStatMaxDelta(Creature* creature)
         creature->stat_max_list_.Serialize(message);
         creature->AddDeltasUpdate(std::move(message));
     }
+    else
+        creature->stat_max_list_.ClearDeltas();
 }
 
 void CreatureMessageBuilder::BuildEquipmentDelta(Creature* creature)
@@ -383,6 +399,8 @@ void CreatureMessageBuilder::BuildEquipmentDelta(Creature* creature)
         creature->equipment_list_.Serialize(message);
         creature->AddDeltasUpdate(std::move(message));
     }
+    else
+        creature->equipment_list_.ClearDeltas();
 }
 
 void CreatureMessageBuilder::BuildDisguiseDelta(Creature* creature)
