@@ -326,190 +326,190 @@ public:
 
     // Bank Credits
     void SetBankCredits(uint32_t bank_credits);
-    uint32_t GetBankCredits(void) const { return bank_credits_; }
+    uint32_t GetBankCredits(void);
 
     // Cash Credits
     void SetCashCredits(uint32_t cash_credits);
-    uint32_t GetCashCredits(void) const { return cash_credits_; }
+    uint32_t GetCashCredits(void);
 
     // Stat Base
     void SetStatBase(StatIndex stat_index, uint32_t value);
     void AddStatBase(StatIndex stat_index, uint32_t value);
     void DeductStatBase(StatIndex stat_index, uint32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetBaseStats(void) const { return stat_base_list_; }
-    uint32_t GetStatBase(StatIndex stat_index) { return stat_base_list_.At(stat_index).value; }
+    swganh::messages::containers::NetworkArray<Stat> GetBaseStats(void);
+    uint32_t GetStatBase(StatIndex stat_index);
 
     // Skills
     void AddSkill(std::string skill);
     void RemoveSkill(std::string skill);
-    swganh::messages::containers::NetworkList<Skill> GetSkills(void) { return skills_; }
+    swganh::messages::containers::NetworkList<Skill> GetSkills(void);
     bool HasSkill(std::string skill);
 
     // Posture
     void SetPosture(Posture posture);
-    Posture GetPosture(void) const { return (Posture)posture_; }
+    Posture GetPosture(void);
 
     // Faction Rank
     void SetFactionRank(uint8_t faction_rank);
-    uint8_t GetFactionRank(void) const { return faction_rank_; }
+    uint8_t GetFactionRank(void);
 
     // Owner Id
     void SetOwnerId(uint64_t owner_id);
-    uint64_t GetOwnerId(void) const { return owner_id_; }
+    uint64_t GetOwnerId(void);
 
     // Scale
     void SetScale(float scale);
-    float GetScale(void) const { return scale_; }
+    float GetScale(void);
 
     // Battle Fatigue
     void SetBattleFatigue(uint32_t battle_fatigue);
-    uint32_t GetBattleFatigue(void) const { return battle_fatigue_; }
+    uint32_t GetBattleFatigue(void);
 
     // State Bitmask
     void SetStateBitmask(uint64_t state_bitmask);
     void ToggleStateBitmask(uint64_t state_bitmask);
-    uint64_t GetStateBitmask(void) const { return state_bitmask_; }
+    uint64_t GetStateBitmask(void);
 
     // Wounds
     void DeductStatWound(StatIndex stat_index, uint32_t value);
     void AddStatWound(StatIndex stat_index, uint32_t value);
     void SetStatWound(StatIndex stat_index, uint32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetStatWounds(void) const { return stat_wound_list_; }
-    uint32_t GetStatWound(StatIndex stat_index) { return stat_wound_list_.At(stat_index).value; }
+    swganh::messages::containers::NetworkArray<Stat> GetStatWounds(void);
+    uint32_t GetStatWound(StatIndex stat_index);
 
     // Acceleration Multiplier Base
     void SetAccelerationMultiplierBase(float acceleration_multiplier_base);
-    float GetAccelerationMultiplierBase(void) const { return acceleration_multiplier_base_; }
+    float GetAccelerationMultiplierBase(void);
 
     // Acceleration Multiplier Modifier
     void SetAccelerationMultiplierModifier(float acceleration_multiplier_modifier);
-    float GetAccelerationMultiplierModifier(void) const { return acceleration_multiplier_modifier_; }
+    float GetAccelerationMultiplierModifier(void);
 
     // Stat Encumberance
     void AddStatEncumberance(StatIndex stat_index, uint32_t value);
     void DeductStatEncumberance(StatIndex stat_index, uint32_t value);
     void SetStatEncumberance(StatIndex stat_index, uint32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetStatEncumberances(void) const { return stat_encumberance_list_; }
-    uint32_t GetStatEncumberance(StatIndex stat_index) { return stat_encumberance_list_.At(stat_index).value; }
+    swganh::messages::containers::NetworkArray<Stat> GetStatEncumberances(void);
+    uint32_t GetStatEncumberance(StatIndex stat_index);
 
     // Skill Mods
     void AddSkillMod(SkillMod mod);
     void RemoveSkillMod(std::string identifier);
     void SetSkillMod(SkillMod mod);
     void ClearSkillMods(void);
-    swganh::messages::containers::NetworkMap<std::string, SkillMod> GetSkillMods(void) const { return skill_mod_list_; }
+    swganh::messages::containers::NetworkMap<std::string, SkillMod> GetSkillMods(void);
     SkillMod GetSkillMod(std::string identifier);
 
     // Speed Multiplier Base
     void SetSpeedMultiplierBase(float speed_multiplier_base);
-    float GetSpeedMultiplierBase(void) const { return speed_multiplier_base_; }
+    float GetSpeedMultiplierBase(void);
 
     // Speed Multiplier Modifier
     void SetSpeedMultiplierModifier(float speed_multiplier_modifier);
-    float GetSpeedMultiplierModifier(void) const { return speed_multiplier_modifier_; }
+    float GetSpeedMultiplierModifier(void);
 
     // Listen To Id
     void SetListenToId(uint64_t listen_to_id);
-    uint64_t GetListenToId(void) const { return listen_to_id_; }
+    uint64_t GetListenToId(void);
 
     // Run Speed
     void SetRunSpeed(float run_speed);
-    float GetRunSpeed(void) const { return run_speed_; }
+    float GetRunSpeed(void);
 
     // Slop Modifier Angle
     void SetSlopeModifierAngle(float slope_modifier_angle);
-    float GetSlopeModifierAngle(void) const { return slope_modifier_angle_; }
+    float GetSlopeModifierAngle(void);
 
     // Slope Modifier Percent
     void SetSlopeModifierPercent(float slope_modifier_percent);
-    float GetSlopeModifierPercent(void) const { return slope_modifier_percent_; }
+    float GetSlopeModifierPercent(void);
 
     // Turn Radius
     void SetTurnRadius(float turn_radius);
-    float GetTurnRadius(void) const { return turn_radius_; }
+    float GetTurnRadius(void);
 
     // Walking Speed
     void SetWalkingSpeed(float walking_speed);
-    float GetWalkingSpeed(void) const { return walking_speed_; }
+    float GetWalkingSpeed(void);
 
     // Water Modifier Percent
     void SetWaterModifierPercent(float water_modifier_percent);
-    float GetWaterModifierPercent(void) const { return water_modifier_percent_; }
+    float GetWaterModifierPercent(void);
 
     // Mission Critical Objects
     void AddMissionCriticalObject(MissionCriticalObject& object);
     void RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id);
     MissionCriticalObject GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner);
-    swganh::messages::containers::NetworkList<MissionCriticalObject> GetMissionCriticalObjects(void) const { return mission_critical_object_list_; }
+    swganh::messages::containers::NetworkList<MissionCriticalObject> GetMissionCriticalObjects(void);
 
     // Combat Level
     void SetCombatLevel(uint16_t);
-    uint16_t GetCombatLevel(void) const { return combat_level_; }
+    uint16_t GetCombatLevel(void);
 
     // Animation
     void SetAnimation(std::string animation);
-    std::string GetAnimation(void) const { return animation_; }
+    std::string GetAnimation(void);
 
     // Mood Animation
     void SetMoodAnimation(std::string mood_animation);
-    std::string GetMoodAnimation(void) const { return mood_animation_; }
+    std::string GetMoodAnimation(void);
 
     // Weapon Id
     void SetWeaponId(uint64_t weapon_id);
-    uint64_t GetWeaponId(void) const { return weapon_id_; }
+    uint64_t GetWeaponId(void);
 
     // Group Id
     void SetGroupId(uint64_t group_id);
-    uint64_t GetGroupId(void) const { return group_id_; }
+    uint64_t GetGroupId(void);
 
     // Invite Sender Id
     void SetInviteSenderId(uint64_t invite_sender_id);
-    uint64_t GetInviteSenderId(void) const { return invite_sender_id_; }
+    uint64_t GetInviteSenderId(void);
 
     // Guild Id
     void SetGuildId(uint32_t guild_id);
-    uint32_t GetGuildId(void) const { return guild_id_; }
+    uint32_t GetGuildId(void);
 
     // Target Id
     void SetTargetId(uint64_t target_id); 
-    uint64_t GetTargetId(void) const { return target_id_; }
+    uint64_t GetTargetId(void);
 
     // Mood Id
     void SetMoodId(uint8_t mood_id);
-    uint8_t GetMoodId(void) const { return mood_id_; }
+    uint8_t GetMoodId(void) ;
 
     // Performance Id
     void SetPerformanceId(uint32_t performance_id);
-    uint32_t GetPerformanceId(void) const { return performance_id_; }
+    uint32_t GetPerformanceId(void);
 
     // Current Stats
     void SetStatCurrent(StatIndex stat_index, uint32_t value);
     void AddStatCurrent(StatIndex stat_index, uint32_t value);
     void DeductStatCurrent(StatIndex stat_index, uint32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetCurrentStats(void) const { return stat_current_list_; }
-    uint32_t GetStatCurrent(StatIndex stat_index) { return stat_current_list_.At(stat_index).value; }
+    swganh::messages::containers::NetworkArray<Stat> GetCurrentStats(void);
+    uint32_t GetStatCurrent(StatIndex stat_index);
 
     // Max Stats
     void SetStatMax(StatIndex stat_index, uint32_t value);
     void AddStatMax(StatIndex stat_index, uint32_t value);
     void DeductStatMax(StatIndex stat_index, uint32_t value);
-    swganh::messages::containers::NetworkArray<Stat> GetMaxStats(void) const { return stat_max_list_; }
-    uint32_t GetStatMax(StatIndex stat_index) { return stat_max_list_.At(stat_index).value; }
+    swganh::messages::containers::NetworkArray<Stat> GetMaxStats(void);
+    uint32_t GetStatMax(StatIndex stat_index);
 
     // Equipment List
     void AddEquipmentItem(EquipmentItem& item);
     void RemoveEquipmentItem(uint64_t object_id);
     void UpdateEquipmentItem(EquipmentItem& item);
-    swganh::messages::containers::NetworkSortedList<EquipmentItem> GetEquipment() { return equipment_list_; }
+    swganh::messages::containers::NetworkSortedList<EquipmentItem> GetEquipment();
     EquipmentItem GetEquipmentItem(uint64_t object_id);
 
     // Disguise
     void SetDisguise(std::string disguise);
-    std::string GetDisguise(void) const { return disguise_; }
+    std::string GetDisguise(void);
 
     // Stationary
     void SetStationary(bool stationary);
-    bool IsStationary(void) const { return stationary_; }
+    bool IsStationary(void);
 
     // Baselines
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1();
@@ -522,7 +522,7 @@ private:
 
     uint32_t    bank_credits_;                                                              // update 1 variable 0
     uint32_t    cash_credits_;                                                              // update 1 variable 1
-    swganh::messages::containers::NetworkArray<Stat> stat_base_list_;                      // update 1 variable 2
+    swganh::messages::containers::NetworkArray<Stat> stat_base_list_;                       // update 1 variable 2
     swganh::messages::containers::NetworkList<Skill> skills_;                               // update 1 variable 3
     uint32_t    posture_;                                                                   // update 3 variable 11
     uint8_t     faction_rank_;                                                              // update 3 variable 12
@@ -530,11 +530,11 @@ private:
     float       scale_;                                                                     // update 3 variable 14
     uint32_t    battle_fatigue_;                                                            // update 3 variable 15
     uint64_t    state_bitmask_;                                                             // update 3 variable 16
-    swganh::messages::containers::NetworkArray<Stat> stat_wound_list_;                     // update 3 variable 17
+    swganh::messages::containers::NetworkArray<Stat> stat_wound_list_;                      // update 3 variable 17
     float       acceleration_multiplier_base_;                                              // update 4 variable 0
     float       acceleration_multiplier_modifier_;                                          // update 4 variable 1
-    swganh::messages::containers::NetworkArray<Stat> stat_encumberance_list_;              // update 4 variable 2
-    swganh::messages::containers::NetworkMap<std::string, SkillMod> skill_mod_list_;                    // update 4 variable 3
+    swganh::messages::containers::NetworkArray<Stat> stat_encumberance_list_;               // update 4 variable 2
+    swganh::messages::containers::NetworkMap<std::string, SkillMod> skill_mod_list_;        // update 4 variable 3
     float       speed_multiplier_base_;                                                     // update 4 variable 4
     float       speed_multiplier_modifier_;                                                 // update 4 variable 5
     uint64_t    listen_to_id_;                                                              // update 4 variable 6
@@ -557,11 +557,11 @@ private:
     uint8_t     mood_id_;                                                                   // update 6 variable 10
     uint32_t    performance_counter_;                                                       // update 6 variable 11
     uint32_t    performance_id_;                                                            // update 6 variable 12
-    swganh::messages::containers::NetworkArray<Stat> stat_current_list_;                   // update 6 variable 13
-    swganh::messages::containers::NetworkArray<Stat> stat_max_list_;                       // update 6 variable 14
-    swganh::messages::containers::NetworkSortedList<EquipmentItem> equipment_list_;               // update 6 variable 15
+    swganh::messages::containers::NetworkArray<Stat> stat_current_list_;                    // update 6 variable 13
+    swganh::messages::containers::NetworkArray<Stat> stat_max_list_;                        // update 6 variable 14
+    swganh::messages::containers::NetworkSortedList<EquipmentItem> equipment_list_;         // update 6 variable 15
     std::string disguise_;                                                                  // update 6 variable 16
-    bool stationary_;                                                                // update 6 variable 17
+    bool stationary_;                                                                       // update 6 variable 17
 
 };
 

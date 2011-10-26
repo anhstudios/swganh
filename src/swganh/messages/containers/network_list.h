@@ -117,8 +117,8 @@ public:
      */
     void ClearDeltas(void)
     {
-        items_added_.clear();
-        items_removed_.clear();
+        added_items_.clear();
+        removed_items_.clear();
         clear_ = false;
     }
 
