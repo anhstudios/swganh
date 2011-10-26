@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-16 19:39:53
+# Date/time:                    2011-10-21 22:52:08
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -14,7 +14,7 @@
 # Dumping structure for table galaxy.tangible
 CREATE TABLE IF NOT EXISTS `tangible` (
   `id` bigint(20) NOT NULL,
-  `customization` varchar(255) NOT NULL,
+  `customization` blob NOT NULL,
   `options_bitmask` int(11) NOT NULL,
   `incap_timer` int(11) NOT NULL,
   `condition_damage` int(11) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `tangible` (
   CONSTRAINT `FK_80F8D49EBF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.tangible: ~0 rows (approximately)
+# Dumping data for table galaxy.tangible: ~16 rows (approximately)
 DELETE FROM `tangible`;
 /*!40000 ALTER TABLE `tangible` DISABLE KEYS */;
 /*!40000 ALTER TABLE `tangible` ENABLE KEYS */;

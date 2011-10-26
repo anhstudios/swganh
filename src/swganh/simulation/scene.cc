@@ -4,8 +4,11 @@
 #include <algorithm>
 
 #include "swganh/object/object.h"
+#include "swganh/object/object_controller.h"
+#include "swganh/messages/scene_destroy_object.h"
 
 using namespace std;
+using namespace swganh::messages;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
@@ -38,14 +41,22 @@ public:
     void RemoveObject(const shared_ptr<Object>& object)
     {
 		EraseObject(object);
+                
+        SceneDestroyObject destroy_message;
+        destroy_message.object_id = object->GetObjectId();
 
         for_each(begin(object_map_), end(object_map_),
-            [&object] (const ObjectMap::value_type& object_entry) 
+            [&object, &destroy_message] (const ObjectMap::value_type& object_entry) 
         {
             auto& stored_object = object_entry.second;
             
             stored_object->RemoveContainedObject(object);
             stored_object->RemoveAwareObject(object);
+
+            if (stored_object->HasController())
+            {
+                stored_object->GetController()->Notify(destroy_message);
+            }
         });
     }
 

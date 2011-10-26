@@ -2,7 +2,7 @@
 #ifndef SWGANH_OBJECT_CREATURE_CREATURE_FACTORY_H_
 #define SWGANH_OBJECT_CREATURE_CREATURE_FACTORY_H_
 
-#include "swganh/object/object_factory.h"
+#include "swganh/object/tangible/tangible_factory.h"
 #include <unordered_map>
 
 namespace anh {
@@ -15,7 +15,7 @@ namespace object {
 namespace creature {
 
     class Creature;
-    class CreatureFactory : public swganh::object::ObjectFactory
+    class CreatureFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
         CreatureFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);

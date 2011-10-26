@@ -46,6 +46,7 @@
 #include "anh/network/soe/session.h"
 #include "anh/network/soe/server_interface.h"
 
+#include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 
 #include "swganh/login/login_service.h"
@@ -79,7 +80,7 @@ using namespace swganh::connection;
 using namespace swganh::login;
 using namespace swganh::messages;
 
-CharacterService::CharacterService(shared_ptr<KernelInterface> kernel) 
+CharacterService::CharacterService(KernelInterface* kernel) 
     : BaseService(kernel) {
 }
 
@@ -149,8 +150,8 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 				}
 
                 character.race_crc = anh::memcrc(non_shared_template);
-                character.galaxy_id = service_directory()->galaxy().id();
-                character.status = result_set->getInt("jedi_state");
+                character.galaxy_id = kernel()->GetServiceDirectory()->galaxy().id();
+                character.status = 1;
                 characters.push_back(character);
             } while (statement->getMoreResults());
         }
@@ -185,7 +186,7 @@ bool CharacterService::DeleteCharacter(uint64_t character_id, uint64_t account_i
 }
 std::wstring CharacterService::GetRandomNameRequest(const std::string& base_model) {
     try {
-        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy_manager");
+        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
             conn->prepareStatement("SELECT sf_CharacterNameCreate(?);")
             );
@@ -254,7 +255,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         DLOG(WARNING) << "Creating character with location " << account_id;
 
         statement->setUInt(1, account_id);
-        statement->setUInt(2, service_directory()->galaxy().id());
+        statement->setUInt(2, kernel()->GetServiceDirectory()->galaxy().id());
         statement->setString(3, string(first_name.begin(), first_name.end()));
         statement->setString(4, string(last_name.begin(), last_name.end()));
         statement->setString(5, string(custom_name.begin(), custom_name.end()));

@@ -35,11 +35,12 @@ public:
     explicit MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
     ~MysqlAccountProvider();
 
-    std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
-    uint32_t FindBySessionKey(const std::string& session_key);
-    bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
-    bool AutoRegisterAccount(std::string username, std::string password);
-	bool CreatePlayerAccount(uint64_t account_id);
+    virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
+    virtual uint32_t FindBySessionKey(const std::string& session_key);
+    virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
+    virtual bool AutoRegisterAccount(std::string username, std::string password);
+	virtual bool CreatePlayerAccount(uint64_t account_id);
+	
 private:
     std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
 };

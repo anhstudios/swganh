@@ -23,6 +23,7 @@
 #include <sstream>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <glog/logging.h>
 
@@ -137,7 +138,7 @@ void Datastore::saveGalaxyStatus(int32_t galaxy_id, int32_t status) const
     }
 }
 
-std::shared_ptr<ServiceDescription> Datastore::createService(const Galaxy& galaxy, const std::string& name, const std::string& type, const std::string& version, const std::string& address, uint16_t tcp_port, uint16_t udp_port, uint16_t ping_port) const {
+bool Datastore::createService(const Galaxy& galaxy, ServiceDescription& description) const {
     shared_ptr<ServiceDescription> service = nullptr;
 
     try {
@@ -159,17 +160,17 @@ std::shared_ptr<ServiceDescription> Datastore::createService(const Galaxy& galax
         uint32_t galaxy_id = galaxy.id();
 
         statement->setInt(1, galaxy_id);
-        statement->setString(2, name);
-        statement->setString(3, type);
-        statement->setString(4, version);
-        statement->setString(5, address);
-        statement->setUInt(6, static_cast<uint32_t>(tcp_port));
-        statement->setUInt(7, static_cast<uint32_t>(udp_port));
-        statement->setUInt(8, static_cast<uint32_t>(ping_port));
+        statement->setString(2, description.name());
+        statement->setString(3, description.type());
+        statement->setString(4, description.version());
+        statement->setString(5, description.address());
+        statement->setUInt(6, static_cast<uint32_t>(description.tcp_port()));
+        statement->setUInt(7, static_cast<uint32_t>(description.udp_port()));
+        statement->setUInt(8, static_cast<uint32_t>(description.ping_port()));
         statement->setInt(9, static_cast<int32_t>(-1));
         
         if (! (statement->executeUpdate() > 0)) {
-            return nullptr;
+            return false;
         }
         
         statement.reset(connection_->prepareStatement(
@@ -178,29 +179,19 @@ std::shared_ptr<ServiceDescription> Datastore::createService(const Galaxy& galax
         std::unique_ptr<sql::ResultSet> result(statement->executeQuery());
         
         if (!result->next()) {
-            return nullptr;
+            return false;
         }
     
-        service = make_shared<ServiceDescription>(
-            result->getUInt("id"),
-            result->getUInt("galaxy_id"),
-            result->getString("name"),
-            result->getString("type"),
-            result->getString("version"),
-            result->getString("address_string"),
-            result->getUInt("tcp_port"),
-            result->getUInt("udp_port"),
-            result->getUInt("ping_port")
-            );
-        
-        service->status(result->getInt("status"));
-        service->last_pulse(result->getString("last_pulse_timestamp"));
+        description.id(result->getUInt("id"));
+        description.status(result->getInt("status"));
+        description.last_pulse(result->getString("last_pulse_timestamp"));
     } catch(sql::SQLException &e) {
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        return false;
     }
 
-    return service;
+    return true;
 }
 
 void Datastore::saveService(const ServiceDescription& service) const {
@@ -379,9 +370,12 @@ list<ServiceDescription> Datastore::getServiceList(uint32_t galaxy_id) const {
 std::string Datastore::prepareTimestampForStorage(const std::string& timestamp) const {    
     std::stringstream ss;
     
-    boost::posix_time::time_facet* facet = new boost::posix_time::time_facet("%Y%m%d%H%M%S%F");    
-    ss.imbue(std::locale(ss.getloc(), facet));
+    ss.imbue(std::locale(ss.getloc(), new boost::posix_time::time_facet("%Y%m%d%H%M%S%F")));
     
+    static boost::mutex mutex;
+
+    boost::lock_guard<boost::mutex> lk(mutex);
+
     ss << boost::posix_time::time_from_string(timestamp);
     
     return ss.str();

@@ -27,7 +27,6 @@
 #include <boost/asio.hpp>
 #include <tbb/atomic.h>
 
-#include "anh/service/service_directory.h"
 #include "anh/service/service_interface.h"
 
 #include "anh/active_object.h"
@@ -47,7 +46,7 @@ namespace base {
 
 class BaseService : public anh::service::ServiceInterface {
 public:    
-    BaseService(std::shared_ptr<anh::app::KernelInterface> kernel);
+    BaseService(anh::app::KernelInterface* kernel);
 
     void Start();
     void Stop();
@@ -55,8 +54,7 @@ public:
     bool IsRunning() const;
         
 protected:
-    std::shared_ptr<anh::app::KernelInterface> kernel();
-    std::shared_ptr<anh::service::ServiceDirectory> service_directory();
+    anh::app::KernelInterface* kernel();
 
     anh::ActiveObject& active();
 
@@ -76,12 +74,9 @@ protected:
 
 private:
     BaseService();
-    std::shared_ptr<anh::app::KernelInterface> kernel_;
-    std::shared_ptr<anh::service::ServiceDirectory> service_directory_;
+    anh::app::KernelInterface* kernel_;
         
     tbb::atomic<bool> running_;
-
-    std::string galaxy_name_;
 
     anh::ActiveObject active_;
 };

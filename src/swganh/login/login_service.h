@@ -32,6 +32,7 @@
 #include "swganh/base/swg_message_router.h"
 
 #include "swganh/character/character_service.h"
+#include "swganh/galaxy/galaxy_service.h"
 
 #include "swganh/login/login_client.h"
 
@@ -77,7 +78,7 @@ public:
     LoginService(
         std::string listen_address, 
         uint16_t listen_port, 
-        std::shared_ptr<anh::app::KernelInterface> kernel);
+        anh::app::KernelInterface* kernel);
     ~LoginService();
     
     anh::service::ServiceDescription GetServiceDescription();
@@ -114,6 +115,7 @@ private:
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::CharacterService> character_service_;
+	std::shared_ptr<swganh::galaxy::GalaxyService> galaxy_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
     

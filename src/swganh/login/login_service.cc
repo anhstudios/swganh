@@ -35,6 +35,7 @@
 #include "anh/network/soe/session.h"
 #include "anh/network/soe/server.h"
 
+#include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 #include "anh/plugin/plugin_manager.h"
 
@@ -58,13 +59,14 @@ using namespace messages;
 using namespace swganh::login;
 using namespace swganh::base;
 using namespace swganh::character;
+using namespace swganh::galaxy;
 using namespace database;
 using namespace event_dispatcher;
 using namespace std;
 
 using anh::network::soe::Session;
 
-LoginService::LoginService(string listen_address, uint16_t listen_port, shared_ptr<KernelInterface> kernel)     
+LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)     
     : BaseService(kernel)
 #pragma warning(push)
 #pragma warning(disable: 4355)
@@ -88,7 +90,7 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, shared_p
         account_provider_ = make_shared<providers::MysqlAccountProvider>(kernel->GetDatabaseManager());
     }
 
-    auto encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
+    shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
     if (!encoder) {
         encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
     }
@@ -113,6 +115,7 @@ service::ServiceDescription LoginService::GetServiceDescription() {
 
 void LoginService::onStart() {
     character_service_ = static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
+	galaxy_service_  = static_pointer_cast<GalaxyService>(kernel()->GetServiceManager()->GetService("GalaxyService"));
 
     soe_server_->Start(listen_port_);
     
@@ -194,16 +197,14 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> sessio
 }
 
 void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    active().Async([=] () {
-        std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
-        
-        if (client) {
-            DLOG(WARNING) << "Removing disconnected client";
-            clients_.erase(session->remote_endpoint());
-        }
+    std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
+    
+    if (client) {
+        DLOG(WARNING) << "Removing disconnected client";
+        clients_.erase(session->remote_endpoint());
+    }
 
-        DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
-    });
+    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
 }
 
 void LoginService::UpdateGalaxyStatus_() {    
@@ -224,7 +225,7 @@ void LoginService::UpdateGalaxyStatus_() {
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     std::vector<GalaxyStatus> galaxy_status;
     
-    auto service_directory = this->service_directory();
+    auto service_directory = kernel()->GetServiceDirectory();
 
     auto galaxy_list = service_directory->getGalaxySnapshot();
 
@@ -248,8 +249,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
             status.max_population = 0x00000cb2;
             status.name = galaxy.name();
             status.ping_port = it->ping_port();
-            // TODO: Keep track of people logged in to server and update to db
-            status.server_population = 10;
+            status.server_population = galaxy_service_->GetPopulation();
             status.status = service_directory->galaxy().status();
 
             galaxy_status.push_back(std::move(status));
@@ -267,7 +267,8 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
     
     auto account = account_provider_->FindByUsername(message.username);
 
-    if (! account || ! authentication_manager_->Authenticate(login_client, account)) {
+    if (!account)
+    {
         if(login_auto_registration_ == true)
         {
             if(account_provider_->AutoRegisterAccount(message.username, message.password))
@@ -277,7 +278,9 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
                 return;
             }
         }
+    }
 
+    if (! authentication_manager_->Authenticate(login_client, account)) {
         DLOG(WARNING) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
@@ -286,11 +289,13 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
         error.force_fatal = false;
         
         login_client->Send(error);
-
-        active().AsyncDelayed(boost::posix_time::seconds(login_error_timeout_secs_), [login_client] () {
+        
+        auto timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
+        timer->async_wait([&login_client] (const boost::system::error_code& e)
+        {
             login_client->GetSession()->Close();
             DLOG(WARNING) << "Closing connection";
-            return;
+            return;            
         });
 
         return;

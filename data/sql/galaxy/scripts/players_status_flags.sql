@@ -11,6 +11,8 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+use galaxy;
+
 # Dumping structure for table galaxy.players_status_flags
 CREATE TABLE IF NOT EXISTS `players_status_flags` (
   `player_id` bigint(20) NOT NULL,

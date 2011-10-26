@@ -19,6 +19,7 @@
 
 #include "swganh/character/character_service.h"
 #include "swganh/login/login_service.h"
+#include "swganh/simulation/simulation_service.h"
 #include "swganh/messages/cmd_scene_ready.h"
 
 #include "swganh/connection/providers/session_provider_interface.h"
@@ -54,7 +55,7 @@ public:
         std::string listen_address, 
         uint16_t listen_port, 
         uint16_t ping_port, 
-        std::shared_ptr<anh::app::KernelInterface> kernel);
+        anh::app::KernelInterface* kernel);
 
     anh::service::ServiceDescription GetServiceDescription();
 
@@ -97,8 +98,9 @@ private:
     
     std::unique_ptr<anh::network::soe::Server> soe_server_;
     
-    std::shared_ptr<swganh::character::CharacterService> character_service_;
-    std::shared_ptr<swganh::login::LoginService> login_service_;
+    std::weak_ptr<swganh::character::CharacterService> character_service_;
+    std::weak_ptr<swganh::login::LoginService> login_service_;
+    std::weak_ptr<swganh::simulation::SimulationService> simulation_service_;
 
     std::string listen_address_;
     uint16_t listen_port_;

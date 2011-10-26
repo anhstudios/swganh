@@ -21,11 +21,13 @@
 #include "swganh/character/character_service.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
-#include "swganh/simulation/galaxy_service.h"
+#include "swganh/simulation/simulation_service.h"
+#include "swganh/galaxy/galaxy_service.h"
 
 
 using namespace anh;
 using namespace anh::app;
+using namespace boost::asio;
 using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
@@ -33,6 +35,7 @@ using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::connection;
 using namespace swganh::simulation;
+using namespace swganh::galaxy;
 
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
@@ -102,6 +105,9 @@ SwganhApp::SwganhApp() {
     initialized_ = false;
 }
 
+SwganhApp::~SwganhApp() 
+{}
+
 void SwganhApp::Initialize(int argc, char* argv[]) {
     // Load the configuration    
     LoadAppConfig_(argc, argv);
@@ -123,9 +129,6 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
         app_config.galaxy_db.username,
         app_config.galaxy_db.password);
     
-    auto data_store = make_shared<service::Datastore>(kernel_->GetDatabaseManager()->getConnection("galaxy_manager"));
-    service_directory_ = make_shared<service::ServiceDirectory>(data_store, kernel_->GetEventDispatcher(), app_config.galaxy_name, kernel_->GetVersion().ToString(), true);
-    
     CleanupServices_();
 
     // Load the plugin configuration.
@@ -133,9 +136,6 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 
     // Load core services
     LoadCoreServices_();
-
-    // Initialize plugin services
-    kernel_->GetServiceManager()->Initialize();
     
     initialized_ = true;
 }
@@ -163,19 +163,24 @@ void SwganhApp::Start() {
 
         io_threads_.push_back(t);
     }
+    
     kernel_->GetServiceManager()->Start();
     
+    auto timer = make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
+
+    timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 10));
+
     do {
         kernel_->GetEventDispatcher()->tick();
 
         boost::this_thread::sleep(boost::posix_time::milliseconds(1));
     } while(IsRunning());
-                
+        
     kernel_->GetServiceManager()->Stop();
 
     // stop io handling    
     kernel_->GetIoService().stop();
-
+    
     // join the threadpool threads until each one has exited.
     for_each(io_threads_.begin(), io_threads_.end(), [] (shared_ptr<boost::thread> t) {
         t->join();
@@ -236,7 +241,10 @@ void SwganhApp::LoadPlugins_(vector<string> plugins) {
 }
 
 void SwganhApp::CleanupServices_() {
-    auto services = service_directory_->getServiceSnapshot(service_directory_->galaxy());
+
+    auto service_directory = kernel_->GetServiceDirectory();
+
+    auto services = service_directory->getServiceSnapshot(service_directory->galaxy());
 
     if (services.empty()) {
         return;
@@ -244,8 +252,8 @@ void SwganhApp::CleanupServices_() {
 
     DLOG(WARNING) << "Services were not shutdown properly";
 
-    for_each(services.begin(), services.end(), [this] (anh::service::ServiceDescription& service) {
-        service_directory_->removeService(service);
+    for_each(services.begin(), services.end(), [this, &service_directory] (anh::service::ServiceDescription& service) {
+        service_directory->removeService(service);
     });
 }
 
@@ -258,7 +266,7 @@ void SwganhApp::LoadCoreServices_()
 		auto login_service = make_shared<LoginService>(
 		app_config.login_config.listen_address, 
 		app_config.login_config.listen_port, 
-		kernel_);
+		kernel_.get());
 
 		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
 		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
@@ -272,20 +280,30 @@ void SwganhApp::LoadCoreServices_()
 			app_config.connection_config.listen_address, 
 			app_config.connection_config.listen_port, 
 			app_config.connection_config.ping_port, 
-			kernel_);
+			kernel_.get());
 
 		kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
 	}
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		auto character_service = make_shared<CharacterService>(kernel_);
+		auto character_service = make_shared<CharacterService>(kernel_.get());
 
 		kernel_->GetServiceManager()->AddService("CharacterService", character_service);
+
+		auto simulation_service = make_shared<SimulationService>(kernel_.get());
+		simulation_service->StartScene("corellia");
+		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
 	}
-	if(strcmp("galaxy", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
-		auto galaxy_service = make_shared<GalaxyService>(kernel_);
-		galaxy_service->StartScene("corellia");
-		kernel_->GetServiceManager()->AddService("GalaxyService", galaxy_service);
-	}
+	// always need a galaxy service running
+	auto galaxy_service = make_shared<GalaxyService>(kernel_.get());
+	kernel_->GetServiceManager()->AddService("GalaxyService", galaxy_service);
+}
+
+    
+void SwganhApp::GalaxyStatusTimerHandler_(const boost::system::error_code& e, shared_ptr<deadline_timer> timer, int delay_in_secs)
+{
+    kernel_->GetServiceDirectory()->updateGalaxyStatus();
+
+    timer->expires_at(timer->expires_at() + boost::posix_time::seconds(delay_in_secs));    
+    timer->async_wait(std::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, std::placeholders::_1, timer, delay_in_secs));
 }
