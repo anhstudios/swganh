@@ -25,6 +25,7 @@ public:
     virtual uint32_t GetType() const { return Waypoint::type; }
     const static uint32_t type = 0x57415950;
 
+
     Waypoint();
     Waypoint(glm::vec3 coordinates, bool activated, const std::string& planet, const std::wstring& name, const std::string& color);
 
