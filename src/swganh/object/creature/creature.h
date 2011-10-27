@@ -35,7 +35,7 @@ namespace object {
 namespace creature {
 
 /**
- *
+ * Represents a Stats index.
  */
 enum StatIndex : uint32_t
 {
@@ -51,7 +51,7 @@ enum StatIndex : uint32_t
 };
 
 /**
- *
+ * Represents the id offset of various "linked" items.
  */
 enum CreatureOffSet
 {
@@ -531,6 +531,7 @@ public:
 
 private:
     friend class CreatureMessageBuilder;
+    friend class CreatureFactory;
 
     uint32_t    bank_credits_;                                                              // update 1 variable 0
     uint32_t    cash_credits_;                                                              // update 1 variable 1

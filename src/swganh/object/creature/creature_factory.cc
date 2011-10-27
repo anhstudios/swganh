@@ -58,14 +58,14 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
             result.reset(statement->getResultSet());
             while (result->next())
             {
-                creature->SetOwnerId(result->getUInt64("owner_id"));
-                creature->SetBankCredits(result->getUInt("bank_credits"));
-                creature->SetCashCredits(result->getUInt("cash_credits"));
-                creature->SetPosture((Posture)result->getUInt("posture"));
-                creature->SetFactionRank(result->getUInt("faction_rank"));
-                creature->SetScale(result->getDouble("scale"));
-                creature->SetBattleFatigue(result->getUInt("battle_fatigue"));
-                creature->SetStateBitmask(result->getUInt("state"));
+                creature->owner_id_ = result->getUInt64("owner_id");
+                creature->bank_credits_ = result->getUInt("bank_credits");
+                creature->cash_credits_ = result->getUInt("cash_credits");
+                creature->posture_ = (Posture)result->getUInt("posture");
+                creature->faction_rank_ = result->getUInt("faction_rank");
+                creature->scale_ = result->getDouble("scale");
+                creature->battle_fatigue_ = result->getUInt("battle_fatigue");
+                creature->state_bitmask_ = result->getUInt("state");
                 // TODO: Add rest of creature table
             }
         }
