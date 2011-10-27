@@ -37,288 +37,300 @@ namespace creature {
 /**
  *
  */
+enum StatIndex : uint32_t
+{
+    HEALTH = 0,
+    STRENGTH,
+    CONSTITUTION,
+    ACTION,
+    QUICKNESS,
+    STAMINA,
+    MIND,
+    FOCUS,
+    WILLPOWER
+};
+
+/**
+ *
+ */
+enum CreatureOffSet
+{
+	PLAYER_OFFSET = 1,
+	DATAPAD_OFFSET,
+	INVENTORY_OFFSET,
+	BANK_OFFSET,
+	MISSION_OFFSET,
+	HAIR_OFFSET, 
+	EQUIPED_OFFSET
+};
+
+/**
+ *
+ */
+enum Posture : uint8_t
+{
+    STANDING = 1,
+    SNEAKING,
+    WALKING,
+    RUNNING,
+    KNEELING,
+    CROUCH_SNEAKING,
+    CROUCH_WALKING,
+    PRONE,
+    SKILL_ANIMATING,
+    CRAWLING,
+    CLIMBING_STATIONARY,
+    CLIMBING,
+    HOVERING,
+    FLING,
+    LYING_DOWN,
+    SITTING,
+    DRIVING_VEHICLE,
+    RIDING_CREATURE,
+    KNOCKED_DOWN,
+    INCAPACITATED,
+    DEAD,
+    BLOCKING
+};
+
+/**
+ *
+ */
+enum State
+{
+    COVER = 1,
+    COMBAT,
+    PEACE,
+    AIMING,
+    ALERT,
+    BERSERK,
+    FEIGN_DEATH,
+    COMBAT_ATTITUDE_EVASIVE,
+    COMBAT_ATTITUDE_NORMAL,
+    COMBAT_ATTITUDE_AGGRESSIVE,
+    TUMBLING,
+    RALLIED,
+    STUNNED,
+    BLINDED,
+    DIZZY,
+    INTIMIDATED,
+    IMMOBILIZED,
+    FROZEN,
+    SWIMMING,
+    SITTING_ON_CHAIR,
+    CRAFTING,
+    GLOWING_JEDI,
+    MASK_SCENT,
+    POISONED,
+    BLEEDING,
+    DISEASED,
+    ON_FIRE,
+    RIDING_MOUNT,
+    MOUNTED_CREATURE,
+    PILOTING_SHIP,
+    SHIP_OPERATIONS,
+    SHIP_GUNNER,
+    SHIP_INTERIOR,
+    PILOTING_POB_SHIP
+};
+
+/**
+ *
+ */
+struct SkillMod
+{
+    SkillMod()
+    {}
+
+    SkillMod(std::string identifier_, uint32_t base_, uint32_t modifier_)
+        : identifier(identifier_)
+        , base(base_)
+        , modifier(modifier_)
+    {}
+
+    ~SkillMod(void)
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint8_t>(0);                 // Unused
+        message.data.write<std::string>(identifier);    // Identifier
+        message.data.write<uint32_t>(base);             // Base
+        message.data.write<uint32_t>(modifier);         // Modifier
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<std::string>(identifier);    // Identifier
+        message.data.write<uint32_t>(base);             // Base
+        message.data.write<uint32_t>(modifier);         // Modifier
+    }
+
+    bool operator==(const SkillMod& other)
+    {
+        return (identifier == other.identifier);
+    }
+
+    std::string identifier;
+    uint32_t base;
+    uint32_t modifier;
+};
+
+/**
+ *
+ */
+struct Stat
+{
+    Stat(void)
+        : value(0)
+    {}
+
+    Stat(uint32_t value_)
+        : value(value_)
+    {}
+
+    ~Stat()
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint32_t>(value);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint32_t>(value);
+    }
+
+    uint32_t value;
+};
+    
+/**
+ *
+ */
+struct EquipmentItem
+{
+    EquipmentItem()
+    {
+    }
+
+    EquipmentItem(uint64_t object_id_, uint32_t template_crc_ = 0, std::string customization_ = std::string(""), uint32_t containment_type_ = 4)
+        : object_id(object_id_)
+        , template_crc(template_crc_)
+        , customization(customization_)
+        , containment_type(containment_type_)
+    {
+    }
+
+    ~EquipmentItem()
+    {
+    }
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<std::string>(customization);
+        message.data.write<uint32_t>(containment_type);
+        message.data.write<uint64_t>(object_id);
+        message.data.write<uint32_t>(template_crc);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<std::string>(customization);
+        message.data.write<uint32_t>(containment_type);
+        message.data.write<uint64_t>(object_id);
+        message.data.write<uint32_t>(template_crc);
+    }
+
+    bool operator==(const EquipmentItem& other)
+    {
+        return (object_id != other.object_id);
+    }
+
+    std::string customization;
+    uint32_t containment_type;
+    uint64_t object_id;
+    uint32_t template_crc;
+};
+
+/**
+ *
+ */
+struct MissionCriticalObject
+{
+    MissionCriticalObject(uint64_t mission_owner_id, uint16_t critical_object_id)
+        : mission_owner_id_(mission_owner_id)
+        , critical_object_id_(critical_object_id)
+    {}
+
+    ~MissionCriticalObject(void)
+    {}
+
+    uint64_t mission_owner_id_;
+    uint64_t critical_object_id_;
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint64_t>(mission_owner_id_);
+        message.data.write<uint64_t>(critical_object_id_);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint64_t>(mission_owner_id_);
+        message.data.write<uint64_t>(critical_object_id_);
+    }
+
+    bool operator==(const MissionCriticalObject& object)
+    {
+        if(mission_owner_id_ != object.mission_owner_id_)
+            return false;
+
+        if(critical_object_id_ != object.critical_object_id_)
+            return false;
+
+        return true;
+    }
+};
+
+/**
+ *
+ */
+struct Skill
+{
+    Skill(std::string name_)
+        : name(name_)
+    {}
+
+    ~Skill()
+    {}
+
+    std::string name;
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<std::string>(name);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<std::string>(name);
+    }
+
+    bool operator==(const Skill& other)
+    {
+        return (name == other.name);
+    }
+};
+
+/**
+ *
+ */
 class Creature : public swganh::object::tangible::BaseTangible
 {
 public:
     Creature();
     ~Creature();
-
-    enum StatIndex
-    {
-        HEALTH = 0,
-        STRENGTH,
-        CONSTITUTION,
-        ACTION,
-        QUICKNESS,
-        STAMINA,
-        MIND,
-        FOCUS,
-        WILLPOWER
-    };
-
-	enum CreatureOffSet
-	{
-		PLAYER_OFFSET = 1,
-		DATAPAD_OFFSET,
-		INVENTORY_OFFSET,
-		BANK_OFFSET,
-		MISSION_OFFSET,
-		HAIR_OFFSET, 
-		EQUIPED_OFFSET
-	};
-
-    enum Posture
-    {
-        STANDING = 1,
-        SNEAKING,
-        WALKING,
-        RUNNING,
-        KNEELING,
-        CROUCH_SNEAKING,
-        CROUCH_WALKING,
-        PRONE,
-        SKILL_ANIMATING,
-        CRAWLING,
-        CLIMBING_STATIONARY,
-        CLIMBING,
-        HOVERING,
-        FLING,
-        LYING_DOWN,
-        SITTING,
-        DRIVING_VEHICLE,
-        RIDING_CREATURE,
-        KNOCKED_DOWN,
-        INCAPACITATED,
-        DEAD,
-        BLOCKING
-    };
-
-    enum State
-    {
-        COVER = 1,
-        COMBAT,
-        PEACE,
-        AIMING,
-        ALERT,
-        BERSERK,
-        FEIGN_DEATH,
-        COMBAT_ATTITUDE_EVASIVE,
-        COMBAT_ATTITUDE_NORMAL,
-        COMBAT_ATTITUDE_AGGRESSIVE,
-        TUMBLING,
-        RALLIED,
-        STUNNED,
-        BLINDED,
-        DIZZY,
-        INTIMIDATED,
-        IMMOBILIZED,
-        FROZEN,
-        SWIMMING,
-        SITTING_ON_CHAIR,
-        CRAFTING,
-        GLOWING_JEDI,
-        MASK_SCENT,
-        POISONED,
-        BLEEDING,
-        DISEASED,
-        ON_FIRE,
-        RIDING_MOUNT,
-        MOUNTED_CREATURE,
-        PILOTING_SHIP,
-        SHIP_OPERATIONS,
-        SHIP_GUNNER,
-        SHIP_INTERIOR,
-        PILOTING_POB_SHIP
-    };
-
-    /**
-     *
-     */
-    struct SkillMod
-    {
-        SkillMod()
-        {}
-
-        SkillMod(std::string identifier_, uint32_t base_, uint32_t modifier_)
-            : identifier(identifier_)
-            , base(base_)
-            , modifier(modifier_)
-        {}
-
-        ~SkillMod(void)
-        {}
-
-        void Serialize(swganh::messages::BaselinesMessage& message)
-        {
-            message.data.write<uint8_t>(0);                 // Unused
-            message.data.write<std::string>(identifier);    // Identifier
-            message.data.write<uint32_t>(base);             // Base
-            message.data.write<uint32_t>(modifier);         // Modifier
-        }
-
-        void Serialize(swganh::messages::DeltasMessage& message)
-        {
-            message.data.write<std::string>(identifier);    // Identifier
-            message.data.write<uint32_t>(base);             // Base
-            message.data.write<uint32_t>(modifier);         // Modifier
-        }
-
-        bool operator==(const SkillMod& other)
-        {
-            return (identifier == other.identifier);
-        }
-
-        std::string identifier;
-        uint32_t base;
-        uint32_t modifier;
-    };
-
-    /**
-     *
-     */
-    struct Stat
-    {
-        Stat(void)
-            : value(0)
-        {}
-
-        Stat(uint32_t value_)
-            : value(value_)
-        {}
-
-        ~Stat()
-        {}
-
-        void Serialize(swganh::messages::BaselinesMessage& message)
-        {
-            message.data.write<uint32_t>(value);
-        }
-
-        void Serialize(swganh::messages::DeltasMessage& message)
-        {
-            message.data.write<uint32_t>(value);
-        }
-
-        uint32_t value;
-    };
-    
-    /**
-     *
-     */
-    struct EquipmentItem
-    {
-        EquipmentItem()
-        {
-        }
-
-        EquipmentItem(uint64_t object_id_, uint32_t template_crc_ = 0, std::string customization_ = std::string(""), uint32_t containment_type_ = 4)
-            : object_id(object_id_)
-            , template_crc(template_crc_)
-            , customization(customization_)
-            , containment_type(containment_type_)
-        {
-        }
-
-        ~EquipmentItem()
-        {
-        }
-
-        void Serialize(swganh::messages::BaselinesMessage& message)
-        {
-            message.data.write<std::string>(customization);
-            message.data.write<uint32_t>(containment_type);
-            message.data.write<uint64_t>(object_id);
-            message.data.write<uint32_t>(template_crc);
-        }
-
-        void Serialize(swganh::messages::DeltasMessage& message)
-        {
-            message.data.write<std::string>(customization);
-            message.data.write<uint32_t>(containment_type);
-            message.data.write<uint64_t>(object_id);
-            message.data.write<uint32_t>(template_crc);
-        }
-
-        bool operator==(const EquipmentItem& other)
-        {
-            return (object_id != other.object_id);
-        }
-
-        std::string customization;
-        uint32_t containment_type;
-        uint64_t object_id;
-        uint32_t template_crc;
-    };
-
-    /**
-     *
-     */
-    struct MissionCriticalObject
-    {
-        MissionCriticalObject(uint64_t mission_owner_id, uint16_t critical_object_id)
-            : mission_owner_id_(mission_owner_id)
-            , critical_object_id_(critical_object_id)
-        {}
-
-        ~MissionCriticalObject(void)
-        {}
-
-        uint64_t mission_owner_id_;
-        uint64_t critical_object_id_;
-
-        void Serialize(swganh::messages::BaselinesMessage& message)
-        {
-            message.data.write<uint64_t>(mission_owner_id_);
-            message.data.write<uint64_t>(critical_object_id_);
-        }
-
-        void Serialize(swganh::messages::DeltasMessage& message)
-        {
-            message.data.write<uint64_t>(mission_owner_id_);
-            message.data.write<uint64_t>(critical_object_id_);
-        }
-
-        bool operator==(const MissionCriticalObject& object)
-        {
-            if(mission_owner_id_ != object.mission_owner_id_)
-                return false;
-
-            if(critical_object_id_ != object.critical_object_id_)
-                return false;
-
-            return true;
-        }
-    };
-
-    /**
-     *
-     */
-    struct Skill
-    {
-        Skill(std::string name_)
-            : name(name_)
-        {}
-
-        ~Skill()
-        {}
-
-        std::string name;
-
-        void Serialize(swganh::messages::BaselinesMessage& message)
-        {
-            message.data.write<std::string>(name);
-        }
-
-        void Serialize(swganh::messages::DeltasMessage& message)
-        {
-            message.data.write<std::string>(name);
-        }
-
-        bool operator==(const Skill& other)
-        {
-            return (name == other.name);
-        }
-    };
 
     // CREO
     uint32_t GetType() const;

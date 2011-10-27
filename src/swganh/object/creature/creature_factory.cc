@@ -61,7 +61,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
                 creature->SetOwnerId(result->getUInt64("owner_id"));
                 creature->SetBankCredits(result->getUInt("bank_credits"));
                 creature->SetCashCredits(result->getUInt("cash_credits"));
-                creature->SetPosture((Creature::Posture)result->getUInt("posture"));
+                creature->SetPosture((Posture)result->getUInt("posture"));
                 creature->SetFactionRank(result->getUInt("faction_rank"));
                 creature->SetScale(result->getDouble("scale"));
                 creature->SetBattleFatigue(result->getUInt("battle_fatigue"));
