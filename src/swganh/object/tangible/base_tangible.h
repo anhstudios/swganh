@@ -10,6 +10,7 @@
 
 #include "swganh/object/object.h"
 #include "swganh/messages/containers/network_sorted_vector.h"
+#include "swganh/messages/containers/network_list.h"
 
 namespace swganh {
 namespace object {
@@ -48,45 +49,83 @@ struct Defender
     uint64_t object_id;
 };
 
+struct ComponentCustomization
+{
+    ComponentCustomization(uint32_t component_customization_crc_)
+        : component_customization_crc(component_customization_crc_)
+    {}
+
+    ~ComponentCustomization(void)
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint32_t>(component_customization_crc);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint32_t>(component_customization_crc);
+    }
+
+    bool operator==(const ComponentCustomization& other)
+    {
+        return component_customization_crc == other.component_customization_crc;
+    }
+
+    uint32_t component_customization_crc;
+};
+
 class TangibleMessageBuilder;
-    
+
+/**
+ * 
+ */
 class BaseTangible : public swganh::object::Object
 {
 public:
     BaseTangible();
     BaseTangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
         uint32_t incap_timer, uint32_t damage_amount, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders);
+
+    // Customization
     void AddCustomization(const std::string& customization);
     void SetCustomization(const std::string& customization);
-    const std::string& GetCustomization() { return customization_; }
+    std::string GetCustomization();
 
-    const std::vector<uint32_t>& GetComponentCustomization() { return component_customization_list_; }
-    void AddComponentCustomization(uint32_t customization);
-    void RemoveComponentCustomization(uint32_t customization);
+    // Component Customization
+    swganh::messages::containers::NetworkList<ComponentCustomization> GetComponentCustomization(void);
+    void AddComponentCustomization(uint32_t customization_crc);
+    void RemoveComponentCustomization(uint32_t customization_crc);
     void ClearComponentCustomization();
     
-    // no idea what options these are...
-    uint32_t GetOptionsMask() { return options_bitmask_; }
+    // Options Mask
+    uint32_t GetOptionsMask();
     void ToggleOption(uint32_t option);
     void SetOptionsMask(uint32_t options);
 
-    uint32_t GetIncapTimer() { return incap_timer_; }
+    // Incap Timer
+    uint32_t GetIncapTimer();
     void SetIncapTimer(uint32_t incap_timer);
 
-    uint32_t GetCondition() { return condition_damage_; }
+    // Condition
+    uint32_t GetCondition();
     void SetConditionDamage(uint32_t damage_amount);
 
-    uint32_t GetMaxCondition() { return max_condition_; }
+    // Max Condition
+    uint32_t GetMaxCondition();
     void SetMaxCondition(uint32_t max_condition);
 
-    bool IsStatic() { return is_static_; }
+    // Static
+    bool IsStatic();
     void SetStatic(bool is_static);
 
+    // Defenders
     void AddDefender(uint64_t defender);
     void RemoveDefender(uint64_t defender);
     void ResetDefenders(std::vector<uint64_t> defenders);
     bool IsDefending(uint64_t defender);
-    swganh::messages::containers::NetworkSortedVector<Defender> GetDefenders() { return defender_list_; }
+    swganh::messages::containers::NetworkSortedVector<Defender> GetDefenders();
     void ClearDefenders();
 
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
@@ -95,17 +134,14 @@ public:
 private:
     friend TangibleMessageBuilder;
 
-    std::vector<uint64_t>::iterator FindDefender_(uint64_t defender);
-
-    std::string customization_;                          // update 3
-    std::vector<uint32_t> component_customization_list_; // update 3
-    uint32_t component_customization_counter_;           // update 3
-    uint32_t options_bitmask_;                           // update 3
-    uint32_t incap_timer_;                               // update 3
-    uint32_t condition_damage_;                          // update 3
-    uint32_t max_condition_;                             // update 3
-    bool is_static_;                                     // update 3
-    swganh::messages::containers::NetworkSortedVector<Defender> defender_list_; // update 6
+    std::string customization_;                                                                         // update 3 variable 4
+    swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;    // update 3 variable 5
+    uint32_t options_bitmask_;                                                                          // update 3 variable 6
+    uint32_t incap_timer_;                                                                              // update 3 variable 7
+    uint32_t condition_damage_;                                                                         // update 3 variable 8
+    uint32_t max_condition_;                                                                            // update 3 variable 9
+    bool is_static_;                                                                                    // update 3 variable 10
+    swganh::messages::containers::NetworkSortedVector<Defender> defender_list_;                         // update 6 variable 1
 };
     
 }}}  // namespace swganh::object::tangible

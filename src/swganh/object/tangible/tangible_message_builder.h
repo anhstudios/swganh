@@ -21,7 +21,7 @@ namespace tangible {
     public:
         // deltas
         static void BuildCustomizationDelta(BaseTangible* tangible);
-        static void BuildComponentCustomizationDelta(BaseTangible* tangible, uint8_t subType, uint32_t crc);
+        static void BuildComponentCustomizationDelta(BaseTangible* tangible);
         static void BuildOptionsMaskDelta(BaseTangible* tangible);
         static void BuildIncapTimerDelta(BaseTangible* tangible);
         static void BuildConditionDamageDelta(BaseTangible* tangible);

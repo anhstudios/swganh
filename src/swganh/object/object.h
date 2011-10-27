@@ -10,7 +10,7 @@
 #include <vector>
 
 #include <boost/optional.hpp>
-#include <boost/thread/mutex.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/locks.hpp>
 
 #include <glm/glm.hpp>
@@ -249,7 +249,7 @@ public:
     swganh::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type, uint16_t update_type, uint16_t update_count = 1) const;
     
 protected:
-    boost::mutex    mutex_;
+    boost::recursive_mutex    mutex_;
 
 private:
     void AddBaselinesBuilders_();

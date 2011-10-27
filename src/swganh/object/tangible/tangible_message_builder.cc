@@ -16,42 +16,28 @@ void TangibleMessageBuilder::BuildCustomizationDelta(BaseTangible* tangible)
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 4);
-        message.data.write(tangible->GetCustomization());
+        message.data.write<std::string>(tangible->customization_);
 
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildComponentCustomizationDelta(BaseTangible* tangible, uint8_t subType, uint32_t crc)
+void TangibleMessageBuilder::BuildComponentCustomizationDelta(BaseTangible* tangible)
 {
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 5);
-        message.data.write(tangible->component_customization_list_.size());
-        // list counter
-        message.data.write(tangible->component_customization_counter_++);
-        // subtype
-        message.data.write<uint8_t>(subType);
-        switch (subType)
-        {
-            case 0:
-            case 1:
-                message.data.write(crc);
-                break;
-            case 2:
-                break;
-            default:
-                return;
-        }
+        tangible->component_customization_list_.Serialize(message);
         tangible->AddDeltasUpdate(move(message));
     }
+    else
+        tangible->component_customization_list_.ClearDeltas();
 }
 void TangibleMessageBuilder::BuildOptionsMaskDelta(BaseTangible* tangible)
 {
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 6);
-        message.data.write(tangible->GetOptionsMask());
-
+        message.data.write(tangible->options_bitmask_);
         tangible->AddDeltasUpdate(move(message));
     }
 }
@@ -60,8 +46,7 @@ void TangibleMessageBuilder::BuildIncapTimerDelta(BaseTangible* tangible)
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 7);
-        message.data.write(tangible->GetIncapTimer());
-
+        message.data.write(tangible->incap_timer_);
         tangible->AddDeltasUpdate(move(message));
     }
 }
@@ -70,8 +55,7 @@ void TangibleMessageBuilder::BuildConditionDamageDelta(BaseTangible* tangible)
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 8);
-        message.data.write(tangible->GetCondition());
-
+        message.data.write(tangible->condition_damage_);
         tangible->AddDeltasUpdate(move(message));
     }
 }
@@ -80,8 +64,7 @@ void TangibleMessageBuilder::BuildMaxConditionDelta(BaseTangible* tangible)
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 9);
-        message.data.write(tangible->GetMaxCondition());
-
+        message.data.write(tangible->max_condition_);
         tangible->AddDeltasUpdate(move(message));
     }
 }
@@ -90,11 +73,10 @@ void TangibleMessageBuilder::BuildStaticDelta(BaseTangible* tangible)
     if (tangible->HasObservers())
     {
         uint8_t val = MOVEABLE;
-        if (tangible->IsStatic())
+        if (tangible->is_static_)
             val = STATIC;
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 10);
         message.data.write(val);
-
         tangible->AddDeltasUpdate(move(message));
     }
 }
@@ -107,30 +89,22 @@ void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible)
         tangible->defender_list_.Serialize(message);
         tangible->AddDeltasUpdate(move(message));
     }
+    else
+        tangible->component_customization_list_.ClearDeltas();
 }
 
 // baselines
 boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(BaseTangible* tangible)
 {
     auto message = tangible->CreateBaselinesMessage(tangible->Object::VIEW_3, 11);
-    
-    // base data
     message.data.append(tangible->Object::GetBaseline3().get().data);
-    message.data.write(tangible->GetCustomization());
-    message.data.write(tangible->component_customization_list_.size());
-    message.data.write(tangible->component_customization_counter_);
-    for_each(tangible->GetComponentCustomization().begin(), tangible->GetComponentCustomization().end(), [&message](uint32_t crc){
-        message.data.write(crc);
-    });
-    message.data.write(tangible->GetOptionsMask());
-    message.data.write(tangible->GetIncapTimer());
-    message.data.write(tangible->GetCondition());
-    message.data.write(tangible->GetMaxCondition());
-    uint8_t static_val = MOVEABLE;
-    if (tangible->IsStatic())
-        static_val = STATIC;
-    message.data.write<uint8_t>(0);
-    
+    message.data.write<std::string>(tangible->customization_);
+    tangible->component_customization_list_.Serialize(message);
+    message.data.write<uint32_t>(tangible->options_bitmask_);
+    message.data.write<uint32_t>(tangible->incap_timer_);
+    message.data.write<uint32_t>(tangible->condition_damage_);
+    message.data.write<uint32_t>(tangible->max_condition_);
+    message.data.write<uint8_t>(tangible->is_static_ ? 1 : 0);
     return boost::optional<BaselinesMessage>(std::move(message));
 }
 boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(BaseTangible* tangible)
@@ -143,9 +117,7 @@ boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(BaseTan
 boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline7(BaseTangible* tangible)
 {
     auto message = tangible->CreateBaselinesMessage(Object::VIEW_7, 2);
-    // always seen 0, used for crafting tool
     message.data.write<uint64_t>(0);
     message.data.write<uint64_t>(0);
-
     return boost::optional<BaselinesMessage>(std::move(message));
 }
