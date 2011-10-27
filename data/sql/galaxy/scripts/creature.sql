@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
+# Server version:               5.3.2-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-21 22:52:08
+# Date/time:                    2011-10-26 22:15:44
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -32,6 +32,42 @@ CREATE TABLE IF NOT EXISTS `creature` (
   `slope_modifier_percent` double NOT NULL,
   `walking_speed` double NOT NULL,
   `water_modifier_percent` double NOT NULL,
+  `health_wounds` int(10) unsigned NOT NULL,
+  `strength_wounds` int(10) unsigned NOT NULL,
+  `constitution_wounds` int(10) unsigned NOT NULL,
+  `action_wounds` int(10) unsigned NOT NULL,
+  `quickness_wounds` int(10) unsigned NOT NULL,
+  `stamina_wounds` int(10) unsigned NOT NULL,
+  `mind_wounds` int(10) unsigned NOT NULL,
+  `focus_wounds` int(10) unsigned NOT NULL,
+  `willpower_wounds` int(10) unsigned NOT NULL,
+  `health_encumberance` int(10) unsigned NOT NULL,
+  `strength_enumberance` int(10) unsigned NOT NULL,
+  `constitution_encumberance` int(10) unsigned NOT NULL,
+  `action_encumberance` int(10) unsigned NOT NULL,
+  `quickness_encumberance` int(10) unsigned NOT NULL,
+  `stamina_encumberance` int(10) unsigned NOT NULL,
+  `mind_encumberance` int(10) unsigned NOT NULL,
+  `focus_encumberance` int(10) unsigned NOT NULL,
+  `willpower_encumberance` int(10) unsigned NOT NULL,
+  `current_health` int(10) unsigned NOT NULL,
+  `current_strength` int(10) unsigned NOT NULL,
+  `current_constitution` int(10) unsigned NOT NULL,
+  `current_action` int(10) unsigned NOT NULL,
+  `current_quickness` int(10) unsigned NOT NULL,
+  `current_stamina` int(10) unsigned NOT NULL,
+  `current_mind` int(10) unsigned NOT NULL,
+  `current_focus` int(10) unsigned NOT NULL,
+  `current_willpower` int(10) unsigned NOT NULL,
+  `max_health` int(10) unsigned NOT NULL,
+  `max_strength` int(10) unsigned NOT NULL,
+  `max_constitution` int(10) unsigned NOT NULL,
+  `max_action` int(10) unsigned NOT NULL,
+  `max_quickness` int(10) unsigned NOT NULL,
+  `max_stamina` int(10) unsigned NOT NULL,
+  `max_mind` int(10) unsigned NOT NULL,
+  `max_focus` int(10) unsigned NOT NULL,
+  `max_willpower` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_2A6C6AF47E3C61F9` (`owner_id`),
   KEY `IDX_2A6C6AF49523AA8A` (`musician_id`),
@@ -40,12 +76,7 @@ CREATE TABLE IF NOT EXISTS `creature` (
   CONSTRAINT `FK_2A6C6AF4BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.creature: ~9 rows (approximately)
-DELETE FROM `creature`;
-/*!40000 ALTER TABLE `creature` DISABLE KEYS */;
-INSERT INTO `creature` (`id`, `owner_id`, `musician_id`, `bank_credits`, `cash_credits`, `posture`, `faction_rank`, `scale`, `battle_fatigue`, `state`, `acceleration_base`, `acceleration_modifier`, `speed_base`, `speed_modifier`, `run_speed`, `slope_modifier_angle`, `slope_modifier_percent`, `walking_speed`, `water_modifier_percent`) VALUES
-	(0, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-/*!40000 ALTER TABLE `creature` ENABLE KEYS */;
+# Data exporting was unselected.
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

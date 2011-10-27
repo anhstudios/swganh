@@ -3,7 +3,7 @@
 # Server version:               5.3.2-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-21 14:46:06
+# Date/time:                    2011-10-26 22:15:44
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -82,8 +82,8 @@ charCreate:BEGIN
 
    INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1129465167);
    INSERT INTO `tangible` VALUES (object_id, start_appearance_customization, 0, 0, 0, 0, 1);
-   INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture, scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier, run_speed, slope_modifier_angle, slope_modifier_percent, walking_speed)
-	VALUES (object_id, parent_id, 2000, 0, 0,start_scale, 1, 5, 1, 5, 10, 5, 5, 5 );
+   INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture, scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier, run_speed, slope_modifier_angle, slope_modifier_percent, walking_speed, max_health, max_strength, max_constitution, max_action, max_quickness, max_stamina, max_mind, max_focus, max_willpower, current_health, current_strength, current_constitution, current_action, current_quickness, current_stamina, current_mind, current_focus, current_willpower)
+	VALUES (object_id, parent_id, 2000, 0, 0,start_scale, 1, 5, 1, 5, 10, 5, 5, 5, 1000, 10, 10, 1000, 10, 10, 1000, 10, 10, 1000, 10, 10, 1000, 10, 10, 1000, 10, 10 );
 	-- APPEARANCE
 	INSERT INTO `appearance` VALUES (object_id, scale, gender, shortSpecies, start_appearance_customization);
 	-- DATAPAD

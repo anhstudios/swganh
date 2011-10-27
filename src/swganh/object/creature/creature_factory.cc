@@ -66,7 +66,27 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
                 creature->scale_ = result->getDouble("scale");
                 creature->battle_fatigue_ = result->getUInt("battle_fatigue");
                 creature->state_bitmask_ = result->getUInt("state");
-                // TODO: Add rest of creature table
+                creature->listen_to_id_ = result->getUInt64("musician_id");
+
+                creature->stat_current_list_.Set(creature::HEALTH, Stat(result->getUInt("current_health")));
+                creature->stat_current_list_.Set(creature::STRENGTH, Stat(result->getUInt("current_strength")));
+                creature->stat_current_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("current_constitution")));
+                creature->stat_current_list_.Set(creature::ACTION, Stat(result->getUInt("current_action")));
+                creature->stat_current_list_.Set(creature::QUICKNESS, Stat(result->getUInt("current_quickness")));
+                creature->stat_current_list_.Set(creature::STAMINA, Stat(result->getUInt("current_stamina")));
+                creature->stat_current_list_.Set(creature::MIND, Stat(result->getUInt("current_mind")));
+                creature->stat_current_list_.Set(creature::FOCUS, Stat(result->getUInt("current_focus")));
+                creature->stat_current_list_.Set(creature::WILLPOWER, Stat(result->getUInt("current_willpower")));
+
+                creature->stat_max_list_.Set(creature::HEALTH, Stat(result->getUInt("max_health")));
+                creature->stat_max_list_.Set(creature::STRENGTH, Stat(result->getUInt("max_strength")));
+                creature->stat_max_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("max_constitution")));
+                creature->stat_max_list_.Set(creature::ACTION, Stat(result->getUInt("max_action")));
+                creature->stat_max_list_.Set(creature::QUICKNESS, Stat(result->getUInt("max_quickness")));
+                creature->stat_max_list_.Set(creature::STAMINA, Stat(result->getUInt("max_stamina")));
+                creature->stat_max_list_.Set(creature::MIND, Stat(result->getUInt("max_mind")));
+                creature->stat_max_list_.Set(creature::FOCUS, Stat(result->getUInt("max_focus")));
+                creature->stat_max_list_.Set(creature::WILLPOWER, Stat(result->getUInt("max_willpower")));
             }
         }
     }
