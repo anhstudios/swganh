@@ -48,8 +48,8 @@ void PlayerFactory::LoadTemplates()
             player->SetCustomName(wstring(begin(custom_string), end(custom_string)));
             player->SetVolume(result->getUInt(12));
             // Player specific start
-            player->AddStatusFlag(result->getUInt(13));
-            player->AddProfileFlag(result->getUInt(14));
+            player->AddStatusFlag((StatusFlags)result->getUInt(13));
+            player->AddProfileFlag((ProfileFlags)result->getUInt(14));
             player->SetProfessionTag(result->getString(15));
             player->SetBornDate(result->getUInt(16));
             player->SetTotalPlayTime(result->getUInt(17));
@@ -155,8 +155,8 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
             while (result->next())
             {
                 // Player specific start
-                player->AddStatusFlag(result->getUInt("status_flag_id"));
-                player->AddProfileFlag(result->getUInt("profile_flag_id"));
+                player->AddStatusFlag((StatusFlags)result->getUInt("status_flag_id"));
+                player->AddProfileFlag((ProfileFlags)result->getUInt("profile_flag_id"));
                 player->SetProfessionTag(result->getString("profession_tag"));
                 player->SetBornDate(result->getUInt("born_date"));
                 player->SetTotalPlayTime(result->getUInt("total_playtime"));
@@ -248,7 +248,7 @@ void PlayerFactory::LoadXP_(shared_ptr<Player> player, shared_ptr<sql::ResultSet
     {
         while (result->next())
         {
-            player->AddExperience(result->getString("name"), result->getUInt("value"));
+            player->AddExperience(XpData(result->getString("name"), result->getUInt("value")));
 
         }
     }
@@ -264,10 +264,10 @@ void PlayerFactory::PersistXP_(const shared_ptr<Player>& player)
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto xp = player->GetXp();
-        for_each(begin(xp), end(xp), [this,&conn] (Player::XpData xpData){
+        for_each(xp.Begin(), xp.End(), [this,&conn] (pair<string, XpData> xpData){
             auto statement = conn->prepareStatement("CALL sp_SaveExperience(?,?);");
-            statement->setString(1,xpData.type);
-            statement->setUInt(2,xpData.value);
+            statement->setString(1,xpData.first);
+            statement->setUInt(2,xpData.second.value);
             auto result = statement->executeQuery();
         });
     }
@@ -284,26 +284,15 @@ void PlayerFactory::LoadWaypoints_(shared_ptr<Player> player, shared_ptr<sql::Re
         while (result->next())
         {
             // Check to see if the waypoint is already available?
-            auto waypoint = make_shared<Waypoint>();
-            waypoint->SetObjectId(result->getUInt64("id"));
-            waypoint->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
-            waypoint->SetOrientation(glm::quat(result->getDouble("x_orientation"),result->getDouble("y_orientation"), result->getDouble("z_orientation"), result->getDouble("w_orientation")));
-            waypoint->SetComplexity(result->getDouble("complexity"));
-            waypoint->SetStfNameFile(result->getString("stf_name_file"));
-            waypoint->SetStfNameString(result->getString("stf_name_string"));
+            WaypointData waypoint;
+            waypoint.object_id_ = result->getUInt64("id");
+            waypoint.coordinates_ = glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position"));
+            waypoint.location_network_id_ = result->getUInt("scene_id");
             string custom_string = result->getString("custom_name");
-            waypoint->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            waypoint->SetVolume(result->getUInt("volume"));
-            waypoint->SetTemplate(result->getString("discr"));
-            bool active = result->getUInt("is_active") == 1;
-            if (active)
-                waypoint->Activate();
-            else
-                waypoint->DeActivate();
-            string name = result->getString("name");
-            waypoint->SetName(wstring(begin(name), end(name)));
-            waypoint->SetColorByte(result->getUInt("color"));
-
+            waypoint.name_ = wstring(begin(custom_string), end(custom_string));
+            waypoint.activated_flag_ = result->getUInt("is_active");
+            waypoint.color_ = result->getUInt("color");
+            
             player->AddWaypoint(move(waypoint));
         }
     }
@@ -323,7 +312,7 @@ void PlayerFactory::LoadDraftSchematics_(shared_ptr<Player> player, shared_ptr<s
     {
         while (result->next())
         {
-            Player::DraftSchematicData data;
+            DraftSchematicData data;
             data.schematic_id = result->getUInt("id");
             data.schematic_crc = result->getUInt("schematic");
             // didn't move here because you can't get faster than copying 2 ints
@@ -347,7 +336,7 @@ void PlayerFactory::LoadQuestJournal_(shared_ptr<Player> player, shared_ptr<sql:
     {
         while (result->next())
         {
-            Player::QuestJournalData data;
+            QuestJournalData data;
             data.owner_id = result->getUInt64("quest_owner_id");
             data.quest_crc = anh::memcrc(result->getString("name"));
             data.active_step_bitmask = result->getUInt("active_step_bitmask");
