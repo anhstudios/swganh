@@ -233,6 +233,7 @@ bool Object::IsDirty() const
 
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     baselines_.clear();
     deltas_.clear();
     
@@ -243,12 +244,12 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     scene_object.position = GetPosition();
 	scene_object.orientation = GetOrientation();
     controller->GetRemoteClient()->Send(scene_object);
-
+    
     // Baselines
     optional<BaselinesMessage> message;
     for_each(begin(baselines_builders_), end(baselines_builders_),
         [this, &message, &controller] (BaselinesBuilder& builder)
-    {       
+    {   
         if (!(message = builder()))
         {
             return;

@@ -21,14 +21,13 @@ namespace tangible {
     public:
         // deltas
         static void BuildCustomizationDelta(BaseTangible* tangible);
-        static void BuildComponentCustomizationDelta(BaseTangible* tangible, uint8_t subType, uint32_t crc);
+        static void BuildComponentCustomizationDelta(BaseTangible* tangible);
         static void BuildOptionsMaskDelta(BaseTangible* tangible);
         static void BuildIncapTimerDelta(BaseTangible* tangible);
         static void BuildConditionDamageDelta(BaseTangible* tangible);
         static void BuildMaxConditionDelta(BaseTangible* tangible);
         static void BuildStaticDelta(BaseTangible* tangible);
-        static void BuildDefendersDelta(BaseTangible* tangible, uint8_t subtype, uint16_t index_position, uint64_t defender);
-        static void BuildNewDefendersDelta(BaseTangible* tangible);
+        static void BuildDefendersDelta(BaseTangible* tangible);
         
         // baselines
         static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(BaseTangible* tangible);

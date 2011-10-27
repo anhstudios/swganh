@@ -41,7 +41,6 @@ Player::Player()
     abilities_.resize(25);
     experience_.resize(25);
     waypoints_.resize(25);
-    draft_schematics_.resize(25);
     friends_.resize(25);
     ignored_players_.resize(25);
     for (int i = 0; i < 26; i++)
@@ -590,59 +589,31 @@ void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
     PlayerMessageBuilder::BuildNearestCraftingStationDelta(this);
 }
 
-vector<Player::DraftSchematicData> Player::GetDraftSchematics() const
+swganh::messages::containers::NetworkSortedList<Player::DraftSchematicData> Player::GetDraftSchematics() const
 {
     return draft_schematics_;
-}
-vector<Player::DraftSchematicData>::iterator Player::GetSchematicIter_(uint32_t schematic_crc)
-{
-    auto find_iter = find_if(
-        draft_schematics_.begin(),
-        draft_schematics_.end(),
-        [&schematic_crc] (const DraftSchematicData& stored_schematic)
-    {
-        return stored_schematic.schematic_crc == schematic_crc;
-    });
-    return find_iter;
 }
 
 void Player::AddDraftSchematic(DraftSchematicData schematic)
 {
-    if (GetSchematicIter_(schematic.schematic_crc) != draft_schematics_.end())
-    {
-        return;
-    }
-    uint16_t next_index = GetNextAvailableSlot(draft_schematics_, draft_schematics_free_list_);
-    draft_schematics_[next_index] = move(schematic);
-    PlayerMessageBuilder::BuildDraftSchematicDelta(this, 1, next_index, schematic);
+    draft_schematics_.Add(schematic);
+    PlayerMessageBuilder::BuildDraftSchematicDelta(this);
 }
 
-void Player::RemoveDraftSchematic(uint32_t schematic_crc)
+void Player::RemoveDraftSchematic(uint32_t schematic_id)
 {
-    auto iter = GetSchematicIter_(schematic_crc);
-    if ( iter == draft_schematics_.end())
+    auto iter = draft_schematics_.Find(DraftSchematicData(schematic_id));
+    if(iter != draft_schematics_.End())
     {
-        return;
+        draft_schematics_.Remove(iter);
+        PlayerMessageBuilder::BuildDraftSchematicDelta(this);
     }
-    uint16_t index_position = iter - begin(draft_schematics_);
-    PlayerMessageBuilder::BuildDraftSchematicDelta(this, 0, index_position, *iter);
-
-    draft_schematics_.erase(iter);
-    draft_schematics_free_list_.push_back(index_position);
 }
 
 void Player::ClearDraftSchematics()
 {
-    draft_schematics_.clear();
-    PlayerMessageBuilder::BuildDraftSchematicDelta(this, 4, 0, DraftSchematicData());
-    draft_schematics_free_list_.clear();
-}
-
-void Player::ResetDraftSchematics(std::vector<DraftSchematicData> draft_schematics)
-{
-    draft_schematics_ = move(draft_schematics);
-    PlayerMessageBuilder::BuildResetDraftSchematicDelta(this, draft_schematics);
-    draft_schematics_free_list_.clear();
+    draft_schematics_.Clear();
+    PlayerMessageBuilder::BuildDraftSchematicDelta(this);
 }
 
 uint32_t Player::GetExperimentationPoints() const
