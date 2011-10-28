@@ -127,7 +127,7 @@ public:
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
         message.data.write<uint32_t>(items_.size());
-        message.data.write<uint32_t>(update_counter_++);
+        message.data.write<uint32_t>(0);
         std::for_each(items_.begin(), items_.end(), [=, &message](T& item){
             item.Serialize(message);
         });
@@ -136,7 +136,7 @@ public:
     void Serialize(swganh::messages::DeltasMessage& message)
     {
         message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_);
-        message.data.write<uint32_t>(update_counter_++);
+        message.data.write<uint32_t>(++update_counter_);
 
         // Removed Items
         std::for_each(items_removed_.begin(), items_removed_.end(), [=, &message](uint16_t index) {

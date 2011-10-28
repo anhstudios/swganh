@@ -12,7 +12,7 @@ using namespace swganh::object::group;
 using namespace swganh::object::tangible;
 
 Group::Group()
-    : member_list_counter_(0)
+    : member_list_(5)
     , difficulty_(0)
     , loot_master_(0)
     , loot_mode_(FREE_LOOT)
@@ -20,71 +20,83 @@ Group::Group()
 }
 
 Group::Group(uint32_t max_member_size)
-    : member_list_counter_(0)
+    : member_list_(max_member_size)
     , difficulty_(0)
     , loot_master_(0)
     , loot_mode_(FREE_LOOT)
 {
-    member_list_.resize(max_member_size);
 }
 
 Group::~Group()
 {
 }
 
-void Group::AddGroupMember(std::shared_ptr<BaseTangible> member)
+void Group::AddGroupMember(uint64_t member, std::string name)
 {
-    uint16_t next_index = swganh::object::GetNextAvailableSlot(member_list_, member_index_free_list_);
-    member_list_[next_index] = member;
-    GroupMessageBuilder::BuildMemberListDelta(this, 1, member);
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    member_list_.Add(Member(member, name));
+    GroupMessageBuilder::BuildMemberListDelta(this);
 }
 
-void Group::RemoveGroupMember(std::shared_ptr<BaseTangible> member)
+void Group::RemoveGroupMember(uint64_t member)
 {
-    auto iter = FindMemberIterById_(member->GetObjectId());
-    if(iter != member_list_.end())
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto iter = std::find_if(member_list_.Begin(), member_list_.End(), [=](const Member& x)->bool {
+        return member == x.object_id;
+    });
+
+    if(iter != member_list_.End())
     {
-        uint16_t index_position = std::distance(member_list_.begin(), iter);
-        member_list_.erase(iter);
-        GroupMessageBuilder::BuildMemberListDelta(this, 0, member);
-        member_index_free_list_.push_back(index_position);
+        member_list_.Remove(iter);
+        GroupMessageBuilder::BuildMemberListDelta(this);
     }
 }
 
-void Group::SetLootMode(LOOT_MODE loot_mode)
+void Group::SetLootMode(LootMode loot_mode)
 {
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     loot_mode_ = loot_mode;
     GroupMessageBuilder::BuildLootMasterDelta(this);
 }
 
+LootMode Group::GetLootMode(void)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return (LootMode)loot_mode_;
+}
+
 void Group::SetDifficulty(uint16_t difficulty)
 {
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     difficulty_ = difficulty;
     GroupMessageBuilder::BuildDifficultyDelta(this);
 }
 
+uint16_t Group::GetDifficulty(void)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return difficulty_;
+}
+
 void Group::SetLootMaster(uint64_t loot_master)
 {
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     loot_master_ = loot_master;
     GroupMessageBuilder::BuildLootMasterDelta(this);
+}
+
+uint64_t Group::GetLootMaster(void)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return loot_master_;
+}
+
+boost::optional<BaselinesMessage> Group::GetBaseline3()
+{
+    return GroupMessageBuilder::BuildBaseline3(this);
 }
 
 boost::optional<BaselinesMessage> Group::GetBaseline6()
 {
     return GroupMessageBuilder::BuildBaseline6(this);
-}
-
-Group::MemberList::iterator Group::FindMemberIterById_(uint64_t id)
-{
-    auto iter = std::find_if(member_list_.begin(), member_list_.end(), [=](std::shared_ptr<swganh::object::tangible::BaseTangible> member)->bool {
-        if(member->GetObjectId() == id)
-            return true;
-        else
-            return false;
-    });
-
-    if(iter == member_list_.end())
-        throw std::out_of_range("Group member does not exist.");
-
-    return iter;
 }

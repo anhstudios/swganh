@@ -30,8 +30,6 @@
 #include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player.h"
 
-#include "swganh/object/guild/guild.h"
-
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
@@ -263,7 +261,6 @@ private:
     shared_ptr<SceneManager> scene_manager_;
     shared_ptr<MovementManager> movement_manager_;
 
-
     ObjControllerHandlerMap controller_handlers_;
 
     map<uint64_t, shared_ptr<Object>> loaded_objects_;
@@ -300,9 +297,6 @@ void SimulationService::StartScene(const std::string& scene_label)
     impl_->GetSceneManager()->StartScene(scene_label);
     // load factories
     RegisterObjectFactories(kernel());
-
-    std::shared_ptr<swganh::object::guild::Guild> guild(new swganh::object::guild::Guild());
-    impl_->GetSceneManager()->GetScene(scene_label)->AddObject(guild);
 }
 
 void SimulationService::StopScene(const std::string& scene_label)

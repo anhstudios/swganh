@@ -131,6 +131,11 @@ public:
             return false;
     }
 
+    typename std::map<I, T>::const_iterator Find(const I& index)
+    {
+        return items_.find(index);
+    }
+
     /**
      * Clears the NetworkMap.
      */
@@ -178,7 +183,7 @@ public:
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
         message.data.write<uint32_t>(items_.size());
-        message.data.write<uint32_t>(update_counter_++);
+        message.data.write<uint32_t>(0);
         std::for_each(items_.begin(), items_.end(), [=, &message](std::pair<I, T> item) {
             item.second.Serialize(message);
         });
@@ -188,7 +193,7 @@ public:
     {
         uint32_t size = items_added_.size() + items_removed_.size() + items_changed_.size() + reinstall_ + clear_;
         message.data.write<uint32_t>(size);
-        message.data.write<uint32_t>(update_counter_++);
+        message.data.write<uint32_t>(++update_counter_);
 
         // Added Items
         std::for_each(items_added_.begin(), items_added_.end(), [=, &message](I index){

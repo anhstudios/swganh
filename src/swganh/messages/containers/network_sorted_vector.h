@@ -110,7 +110,7 @@ public:
 
     const_iterator Find(T& item)
     {
-        auto iter = std::find_if(items_.begin(), items_.end(), [=](T& x)->bool {
+        auto iter = std::find_if(items_.begin(), items_.end(), [=](const T& x)->bool {
             return (item == x);
         });
 
@@ -131,6 +131,7 @@ public:
         reinstall_ = false;
     }
 
+    uint16_t Capacity() { return items_.capacity(); }
     uint16_t Size() { return items_.size(); }
     const_iterator Begin() { return items_.begin(); }
     const_iterator End() { return items_.end(); } 
@@ -138,7 +139,7 @@ public:
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
         message.data.write<uint32_t>(items_.size());
-        message.data.write<uint32_t>(update_counter_++);
+        message.data.write<uint32_t>(0);
         std::for_each(items_.begin(), items_.end(), [=, &message](T& item){
             item.Serialize(message);
         });
@@ -147,7 +148,7 @@ public:
     void Serialize(swganh::messages::DeltasMessage& message)
     {
         message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_ + reinstall_);
-        message.data.write<uint32_t>(update_counter_++);
+        message.data.write<uint32_t>(++update_counter_);
 
         // Remove Items
         std::for_each(items_removed_.begin(), items_removed_.end(), [=, &message](const uint16_t& index) {
