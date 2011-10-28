@@ -195,10 +195,10 @@ public:
     void SetGender(Gender value);
 
     // baselines
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9();
+    //virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    //virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+    //virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8();
+    //virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9();
 
 private:
     friend PlayerMessageBuilder;

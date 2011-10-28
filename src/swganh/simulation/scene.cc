@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "swganh/object/object.h"
+#include "swganh/object/player/player.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/messages/scene_destroy_object.h"
 
@@ -36,6 +37,19 @@ public:
             stored_object->AddAwareObject(object);
             object->AddAwareObject(stored_object);
         });
+
+        auto contained_objects = object->GetContainedObjects();
+        
+        for_each(begin(contained_objects), end(contained_objects),
+            [this] (const ObjectMap::value_type& object_entry) 
+        {
+            auto& stored_object = object_entry.second;
+            if (stored_object->GetType() != player::Player::type)
+            {
+                AddObject(stored_object);
+            }
+        });
+
     }
     
     void RemoveObject(const shared_ptr<Object>& object)

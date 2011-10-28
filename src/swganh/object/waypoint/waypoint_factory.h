@@ -11,13 +11,20 @@ class DatabaseManagerInterface;
 }} // anh::database
 
 namespace swganh {
+namespace simulation {
+    class SimulationService;
+}}  // namespace swganh::simulation
+
+
+namespace swganh {
 namespace object {
 namespace waypoint {
     class Waypoint;
     class WaypointFactory : public swganh::object::ObjectFactory
     {
     public:
-        WaypointFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
+        WaypointFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+            swganh::simulation::SimulationService* simulation_service);
 
         void LoadTemplates();
 

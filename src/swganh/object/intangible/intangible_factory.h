@@ -11,6 +11,11 @@ class DatabaseManagerInterface;
 }} // anh::database
 
 namespace swganh {
+namespace simulation {
+    class SimulationService;
+}}  // namespace swganh::simulation
+
+namespace swganh {
 namespace object {
 namespace intangible {
     class Intangible;
@@ -18,7 +23,8 @@ namespace intangible {
     class IntangibleFactory : public swganh::object::ObjectFactory
     {
     public:
-        IntangibleFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
+        IntangibleFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+            swganh::simulation::SimulationService* simulation_service);
         void LoadTemplates();
 
         bool HasTemplate(const std::string& template_name);

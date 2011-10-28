@@ -11,6 +11,11 @@ class DatabaseManagerInterface;
 }} // anh::database
 
 namespace swganh {
+namespace simulation {
+    class SimulationService;
+}}  // namespace swganh::simulation
+
+namespace swganh {
 namespace object {
 namespace creature {
 
@@ -18,7 +23,8 @@ namespace creature {
     class CreatureFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
-        CreatureFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
+        CreatureFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+            swganh::simulation::SimulationService* simulation_service);
 
         void LoadTemplates();
 

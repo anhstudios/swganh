@@ -14,15 +14,18 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/exception.h"
+#include "swganh/simulation/simulation_service.h"
 
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::object::creature;
+using namespace swganh::simulation;
 
 
-CreatureFactory::CreatureFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : TangibleFactory(db_manager)
+CreatureFactory::CreatureFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+                             SimulationService* simulation_service)
+    : TangibleFactory(db_manager, simulation_service)
 {
 }
 
@@ -67,6 +70,23 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
                 creature->SetBattleFatigue(result->getUInt("battle_fatigue"));
                 creature->SetStateBitmask(result->getUInt("state"));
                 // TODO: Add rest of creature table
+            }
+        }
+
+        // Check for contained objects        
+        if (statement->getMoreResults())
+        {
+            result.reset(statement->getResultSet());
+
+            uint64_t contained_id;
+            uint32_t contained_type;
+            while (result->next())
+            {
+                contained_id = result->getUInt64("id");
+                contained_type = result->getUInt("type_id");
+                auto object = simulation_service_->LoadObjectById(contained_id, contained_type);
+
+                creature->AddContainedObject(object, Object::LINK);
             }
         }
     }

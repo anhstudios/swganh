@@ -14,14 +14,17 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/intangible/intangible.h"
 #include "swganh/object/exception.h"
+#include "swganh/simulation/simulation_service.h"
 
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::object::intangible;
+using namespace swganh::simulation;
 
-IntangibleFactory::IntangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : ObjectFactory(db_manager)
+IntangibleFactory::IntangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+                             SimulationService* simulation_service)
+    : ObjectFactory(db_manager, simulation_service)
 {
 }
 void IntangibleFactory::LoadTemplates()

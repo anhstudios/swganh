@@ -15,17 +15,20 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/player/player.h"
 #include "swganh/object/exception.h"
+#include "swganh/simulation/simulation_service.h"
 
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::object::player;
 using namespace swganh::object::waypoint;
+using namespace swganh::simulation;
 
 uint32_t PlayerFactory::GetType() const { return Player::type; }
 
-PlayerFactory::PlayerFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : ObjectFactory(db_manager)
+PlayerFactory::PlayerFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+                             SimulationService* simulation_service)
+    : ObjectFactory(db_manager, simulation_service)
 {
 }
 
