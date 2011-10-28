@@ -91,6 +91,18 @@ uint64_t Group::GetLootMaster(void)
     return loot_master_;
 }
 
+uint16_t Group::GetCapacity(void)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return member_list_.Capacity();
+}
+
+uint16_t Group::GetSize(void)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return member_list_.Size();
+}
+
 boost::optional<BaselinesMessage> Group::GetBaseline3()
 {
     return GroupMessageBuilder::BuildBaseline3(this);

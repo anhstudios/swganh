@@ -29,6 +29,7 @@
 #include "swganh/object/intangible/intangible.h"
 #include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player.h"
+#include "swganh/object/guild/guild.h"
 
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/messages/cmd_start_scene.h"
@@ -262,6 +263,8 @@ private:
     shared_ptr<MovementManager> movement_manager_;
 
     ObjControllerHandlerMap controller_handlers_;
+
+    shared_ptr<guild::Guild> guild_;
 
     map<uint64_t, shared_ptr<Object>> loaded_objects_;
     map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
