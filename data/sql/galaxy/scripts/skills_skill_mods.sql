@@ -15,7 +15,7 @@ use galaxy;
 
 # Dumping structure for table galaxy.skills_skill_mods
 CREATE TABLE IF NOT EXISTS `skills_skill_mods` (
-  `skill_id` bigint(20) NOT NULL,
+  `skill_id` int(11) NOT NULL,
   `skillmod_id` bigint(20) NOT NULL,
   PRIMARY KEY (`skill_id`,`skillmod_id`),
   KEY `IDX_E43191855585C142` (`skill_id`),

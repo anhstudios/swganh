@@ -19,6 +19,8 @@ charCreate:BEGIN
   DECLARE oX FLOAT;DECLARE oY FLOAT;DECLARE oZ FLOAT;DECLARE oW FLOAT;
   DECLARE race_id INT;
   DECLARE iff_template_id INT;
+  DECLARE player_iff_template_id INT;
+  DECLARE hair_iff_template_id INT;
   DECLARE object_id BIGINT(20);
   DECLARE player_id BIGINT(20);
   DECLARE character_id BIGINT(20);
@@ -29,6 +31,7 @@ charCreate:BEGIN
   DECLARE start_x FLOAT;DECLARE start_y FLOAT;DECLARE start_z FLOAT;
   DECLARE shortSpecies CHAR(255);
   DECLARE longSpecies CHAR(255);
+  DECLARE longHair CHAR(255);
   DECLARE shared_template_string CHAR(64);
   DECLARE model_position INT;
   DECLARE gender INT(3);
@@ -66,14 +69,24 @@ charCreate:BEGIN
    SELECT scene_id, x, y, z FROM starting_location WHERE location LIKE 'coronet' INTO start_scene, start_x, start_y, start_z;
 
 	SELECT sf_SpeciesShort(base_model_string) INTO shortSpecies;
-   SELECT id from species where species.name like shortSpecies into race_id;
-   
-   SET longSpecies = REPLACE(base_model_string, 'object/creature/player/', 'object/creature/player/shared_');
-   SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longSpecies INTO iff_template_id;
-   
+	SELECT id from species where species.name like shortSpecies into race_id;
+
+	SET longSpecies = REPLACE(base_model_string, 'object/creature/player/', 'object/creature/player/shared_');
+	SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longSpecies INTO iff_template_id;
+
+    SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE 'object/player/shared_player.iff' INTO player_iff_template_id;
+
+	SET longHair = REPLACE(start_hair_model, '/hair_', '/shared_hair_');
+
+	SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longHair INTO hair_iff_template_id;
+
+    SELECT id from skill where name like start_profession INTO profession_id;
+    
+    SELECT id from species where species.name like shortSpecies into race_id;
+    
    INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1129465167);
    INSERT INTO `tangible` VALUES (object_id, start_appearance_customization, 0, 0, 0, 0, 1);
-   INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture, scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier, run_speed, slope_modifier_angle, slope_modifier_percent, walking_speed) 
+   INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture, scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier, run_speed, slope_modifier_angle, slope_modifier_percent, walking_speed)
 	VALUES (object_id, parent_id, 2000, 0, 0,start_scale, 1, 5, 1, 5, 10, 5, 5, 5 );
 	-- APPEARANCE
 	INSERT INTO `appearance` VALUES (object_id, scale, gender, shortSpecies, start_appearance_customization);
@@ -83,21 +96,22 @@ charCreate:BEGIN
 	-- BANK
 	-- MISSION
 	-- HAIR
-   INSERT INTO `object` VALUES (object_id + 6, start_scene, parent_id, start_hair_model, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', 'hair' ,0, NOW(), NOW(), null, 1413566031);
+   INSERT INTO `object` VALUES (object_id + 6, start_scene, object_id, hair_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', '' ,0, NOW(), NOW(), null, 1413566031);
    INSERT INTO `tangible` VALUES (object_id + 6, hair_customization, 0, 0, 0, 0, 0);
   	INSERT INTO `appearance` VALUES (object_id + 6, scale, gender, shortSpecies, hair_customization);
 	-- EQUIPED
 	-- PLAYER
-	INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1347174745);
+	INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, player_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'string_id_table', '', start_custom_name,0, NOW(), NOW(), null, 1347174745);
 	INSERT INTO `player` (id, profession_tag, born_date, csr_tag, current_language, jedi_state)
 	VALUES (object_id + 1, start_profession, NOW(), 0, 0, 0);
 	-- PLAYER ACCOUNT
 	SELECT id FROM player_account where start_account_id = reference_id INTO player_id;
    INSERT INTO player_accounts_creatures values (player_id, object_id);
 
-	
+
    COMMIT;
-	
+   
+   CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender);
 
    SELECT(object_id);
 
