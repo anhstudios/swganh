@@ -80,6 +80,10 @@ charCreate:BEGIN
 
 	SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longHair INTO hair_iff_template_id;
 
+    SELECT id from skill where name like start_profession INTO profession_id;
+    
+    SELECT id from species where species.name like shortSpecies into race_id;
+    
    INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1129465167);
    INSERT INTO `tangible` VALUES (object_id, start_appearance_customization, 0, 0, 0, 0, 1);
    INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture, scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier, run_speed, slope_modifier_angle, slope_modifier_percent, walking_speed)
@@ -106,7 +110,8 @@ charCreate:BEGIN
 
 
    COMMIT;
-
+   
+   CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender);
 
    SELECT(object_id);
 
