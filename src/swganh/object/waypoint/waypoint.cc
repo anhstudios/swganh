@@ -123,5 +123,5 @@ void Waypoint::SetColorByte(uint8_t color_byte)
 }
 boost::optional<BaselinesMessage> Waypoint::GetBaseline3()
 {
-    return boost::optional<BaselinesMessage>(WaypointMessageBuilder::BuildBaseline3(this));
+    return WaypointMessageBuilder::BuildBaseline3(this);
 }
