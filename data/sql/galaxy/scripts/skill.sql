@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `skill` (
   `is_profession` tinyint(1) default NULL,
   `money_required` int(10) unsigned default NULL,
   `points_required` int(10) unsigned default NULL,
-  `xp_type` int(11) NOT NULL default '49',
+  `xp_type_id` int(11) NOT NULL default '49',
   `xp_cost` int(10) default NULL,
   `xp_cap` int(10) default NULL,
   `jedi_state_required` int(11) unsigned NOT NULL default '0',
@@ -25,12 +25,12 @@ CREATE TABLE IF NOT EXISTS `skill` (
   `is_badge` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   CONSTRAINT `FK_98197A65BF489024` FOREIGN KEY (`jedi_state_required`) REFERENCES `skills_jedi_state` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FK_98197A65BF155890` FOREIGN KEY (`xp_type`) REFERENCES `xp_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `FK_98197A65BF155890` FOREIGN KEY (`xp_type_id`) REFERENCES `xp_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 # Dumping data for table galaxy.skill: ~0 rows (approximately)
 DELETE FROM `skill`;
 /*!40000 ALTER TABLE `skill` DISABLE KEYS */;
-INSERT INTO `skill` (`id`,`name`,`god_only`,`is_title`,`is_profession`,`money_required`,`points_required`,`xp_type`,`xp_cost`,`xp_cap`,`jedi_state_required`,`is_searchable`,`is_badge`) VALUES 
+INSERT INTO `skill` (`id`,`name`,`god_only`,`is_title`,`is_profession`,`money_required`,`points_required`,`xp_type_id`,`xp_cost`,`xp_cap`,`jedi_state_required`,`is_searchable`,`is_badge`) VALUES 
  (1,'combat_melee_basic',0,0,0,0,0,49,0,0,0,1,0),
  (2,'combat_ranged_weapons_basic',0,0,0,0,0,49,0,0,0,1,0),
  (3,'demo_combat',0,0,0,0,0,49,0,0,0,1,0),
@@ -907,7 +907,7 @@ INSERT INTO `skill` (`id`,`name`,`god_only`,`is_title`,`is_profession`,`money_re
  (874,'force_discipline_light_saber_polearm_04',0,0,0,0,2,10,1600000,4000000,2,0,0),
  (875,'force_discipline_light_saber_technique_01',0,0,0,0,8,10,200000,600000,2,0,0),
  (876,'force_discipline_light_saber_technique_02',0,0,0,0,6,10,400000,1000000,2,0,0);
-INSERT INTO `skill` (`id`,`name`,`god_only`,`is_title`,`is_profession`,`money_required`,`points_required`,`xp_type`,`xp_cost`,`xp_cap`,`jedi_state_required`,`is_searchable`,`is_badge`) VALUES 
+INSERT INTO `skill` (`id`,`name`,`god_only`,`is_title`,`is_profession`,`money_required`,`points_required`,`xp_type_id`,`xp_cost`,`xp_cap`,`jedi_state_required`,`is_searchable`,`is_badge`) VALUES 
  (877,'force_discipline_light_saber_technique_03',0,0,0,0,4,10,800000,2000000,2,0,0),
  (878,'force_discipline_light_saber_technique_04',0,0,0,0,2,10,1600000,4000000,2,0,0),
  (879,'force_discipline_powers',0,0,1,0,0,49,0,0,2,0,0),
