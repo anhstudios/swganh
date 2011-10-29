@@ -1,6 +1,7 @@
 
 #include "swganh/connection/connection_service.h"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
 #include <glog/logging.h>
 
@@ -20,6 +21,7 @@
 #include "swganh/connection/providers/mysql_session_provider.h"
 
 #include "swganh/object/object.h"
+#include "swganh/object/player/player.h"
 
 #include "swganh/messages/logout_message.h"
 
@@ -193,9 +195,14 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
         auto controller = client->GetController();
         if (controller)
         {
-            DLOG(WARNING) << "Destroying Object";
-            auto simulation_service = simulation_service_.lock();
-            simulation_service->RemoveObjectById(controller->GetObject()->GetObjectId());
+			// player is always + 1 from the creature
+			auto simulation_service = simulation_service_.lock();
+			auto player = simulation_service->LoadObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
+			player->AddStatusFlag(swganh::object::player::LD);
+			
+			// set a timer to 5 minutes to destroy the object, unless logged back in.
+			auto deadline_timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
+			deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));
         }
 
         DLOG(WARNING) << "Removing disconnected client";
@@ -206,7 +213,20 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
             
     DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
 }
-
+void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_code& e, shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs, shared_ptr<swganh::object::ObjectController> controller)
+{
+	if (controller)
+	{
+		// destroy if they haven't reconnected
+		if (controller->GetRemoteClient()->GetSession() == nullptr || !controller->GetRemoteClient()->GetSession()->connected())
+		{
+			auto object_id = controller->GetObject()->GetObjectId();
+			DLOG(WARNING) << "Destroying Object " << object_id << " after " << delay_in_secs << " seconds.";
+			auto simulation_service = simulation_service_.lock();
+			simulation_service->RemoveObjectById(object_id);
+		}
+	}
+}
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
     DLOG(WARNING) << "Handling CmdSceneReady";
     
