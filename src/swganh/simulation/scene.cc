@@ -4,7 +4,6 @@
 #include <algorithm>
 
 #include "swganh/object/object.h"
-#include "swganh/object/player/player.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/messages/scene_destroy_object.h"
 
@@ -44,10 +43,7 @@ public:
             [this] (const ObjectMap::value_type& object_entry) 
         {
             auto& stored_object = object_entry.second;
-            if (stored_object->GetType() != player::Player::type)
-            {
-                AddObject(stored_object);
-            }
+            AddObject(stored_object);
         });
 
     }
