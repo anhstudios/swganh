@@ -21,7 +21,7 @@ namespace observer {
          *
          * @return True if has observers, false if not.
          */
-        virtual bool HasObservers() const = 0;
+        virtual bool HasObservers()  = 0;
 
         /**
          * Start receiving notifications when the observable object changes state.
