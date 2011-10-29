@@ -45,12 +45,13 @@ class GroupMessageBuilder
 public:
 
     // deltas
-    static void BuildMemberListDelta(Group* group, uint8_t subtype, std::shared_ptr<swganh::object::tangible::BaseTangible> member);
+    static void BuildMemberListDelta(Group* group);
     static void BuildLootModeDelta(Group* group);
     static void BuildDifficultyDelta(Group* group);
     static void BuildLootMasterDelta(Group* group);
 
     // baselines
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Group* group);
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Group* group);
 };
 

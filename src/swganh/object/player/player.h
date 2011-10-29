@@ -9,6 +9,8 @@
 #include "swganh/object/object.h"
 #include "swganh/object/waypoint/waypoint.h"
 
+#include "swganh/messages/containers/network_sorted_list.h"
+
 namespace swganh {
 namespace object {
 namespace player {
@@ -18,7 +20,6 @@ class PlayerMessageBuilder;
 class Player : public swganh::object::Object
 {
 public:
-
     Player();
 	
     enum Gender
@@ -26,6 +27,7 @@ public:
         FEMALE = 0,
         MALE
     };
+
     enum StatusFlags
     {
         LFG = 1,
@@ -36,6 +38,13 @@ public:
         FACTION_RANK = 200,
         ANON = 80000000
     };
+
+    enum AdminTag
+    {
+        CSR = 1,
+        DEVELOPER = 2
+    };
+
     struct XpData
     {
         std::string type;
@@ -54,8 +63,43 @@ public:
 
     struct DraftSchematicData
     {
+        DraftSchematicData()
+            : schematic_id(0)
+            , schematic_crc(0)
+        {}
+
+        DraftSchematicData(uint32_t schematic_id_)
+            : schematic_id(schematic_id_)
+            , schematic_crc(0)
+        {}
+
+        DraftSchematicData(uint32_t schematic_id_, uint32_t schematic_crc_)
+            : schematic_id(schematic_id_)
+            , schematic_crc(schematic_crc_)
+        {}
+
+        ~DraftSchematicData()
+        {}
+
         uint32_t schematic_id;
         uint32_t schematic_crc;
+
+        void Serialize(swganh::messages::BaselinesMessage& message)
+        {
+            message.data.write<uint32_t>(schematic_id);
+            message.data.write<uint32_t>(schematic_crc);
+        }
+
+        void Serialize(swganh::messages::DeltasMessage& message)
+        {
+            message.data.write<uint32_t>(schematic_id);
+            message.data.write<uint32_t>(schematic_crc);
+        }
+
+        bool operator==(const DraftSchematicData& other)
+        {
+            return schematic_id == other.schematic_id;
+        }
     };
    
     virtual uint32_t GetType() const { return Player::type; }
@@ -143,12 +187,11 @@ public:
     uint64_t GetNearestCraftingStation() const;
     void SetNearestCraftingStation( uint64_t crafting_station_id);
     
-    std::vector<DraftSchematicData> GetDraftSchematics() const;
+    swganh::messages::containers::NetworkSortedList<DraftSchematicData> GetDraftSchematics() const;
     void AddDraftSchematic(DraftSchematicData schematic);
-    void RemoveDraftSchematic(uint32_t schematic_crc);
+    void RemoveDraftSchematic(uint32_t schematic_id);
     void ClearDraftSchematics();
-    void ResetDraftSchematics(std::vector<DraftSchematicData> draft_schematics);
-    
+
     uint32_t GetExperimentationPoints() const;
     void AddExperimentationPoints(uint32_t points);
     void RemoveExperimentationPoints(uint32_t points);
@@ -230,7 +273,7 @@ private:
     uint32_t experimentation_flag_;
     uint32_t crafting_stage_;
     uint64_t nearest_crafting_station_;
-    std::vector<DraftSchematicData> draft_schematics_;
+    swganh::messages::containers::NetworkSortedList<DraftSchematicData> draft_schematics_;
     std::list<uint16_t> draft_schematics_free_list_;
     uint32_t draft_schematics_counter_;
     std::vector<DraftSchematicData>::iterator GetSchematicIter_(uint32_t schematic_crc);

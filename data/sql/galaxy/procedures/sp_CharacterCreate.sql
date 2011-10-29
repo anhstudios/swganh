@@ -3,7 +3,7 @@
 # Server version:               5.3.2-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-21 14:46:06
+# Date/time:                    2011-10-26 22:57:06
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -49,7 +49,6 @@ charCreate:BEGIN
     ELSE
         SET gender = 0;
     END IF;
-
 
     SET parent_id = 0;
     SET oX = 0;

@@ -48,8 +48,7 @@ namespace player {
         static void BuildExperimentationFlagDelta(Player* object);
         static void BuildCraftingStageDelta(Player* object);
         static void BuildNearestCraftingStationDelta(Player* object);
-        static void BuildDraftSchematicDelta(Player* object, uint8_t sub_type, uint16_t index, Player::DraftSchematicData schematic);
-        static void BuildResetDraftSchematicDelta(Player* object, std::vector<Player::DraftSchematicData> schematics);
+        static void BuildDraftSchematicDelta(Player* object);
         static void BuildExperimentationPointsDelta(Player* object);
         static void BuildAccomplishmentCounterDelta(Player* object);
         static void BuildFriendsDelta(Player* object, uint8_t sub_type, uint16_t index, std::string friend_name);
