@@ -749,20 +749,20 @@ void Player::SetGender(Gender value)
 
 boost::optional<BaselinesMessage> Player::GetBaseline3()
 {
-    return move(PlayerMessageBuilder::BuildBaseline3(this));
+    return PlayerMessageBuilder::BuildBaseline3(this);
 }
 
 boost::optional<BaselinesMessage> Player::GetBaseline6()
 {
-    return move(PlayerMessageBuilder::BuildBaseline6(this));
+    return PlayerMessageBuilder::BuildBaseline6(this);
 }
 
 boost::optional<BaselinesMessage> Player::GetBaseline8()
 {
-    return move(PlayerMessageBuilder::BuildBaseline8(this));
+    return PlayerMessageBuilder::BuildBaseline8(this);
 }
 
 boost::optional<BaselinesMessage> Player::GetBaseline9()
 {
-    return move(PlayerMessageBuilder::BuildBaseline9(this));
+    return PlayerMessageBuilder::BuildBaseline9(this);
 }

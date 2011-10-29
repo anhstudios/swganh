@@ -33,29 +33,17 @@ void WaypointFactory::LoadTemplates()
         auto statement = conn->prepareStatement("CALL sp_GetWaypointTemplates();");
         auto result = statement->executeQuery();
 
-        while (result->next())
+		while (result->next())
         {
             auto waypoint = make_shared<Waypoint>();
             // position orientation not used in waypoints
-            waypoint->SetComplexity(result->getDouble(1));
-            waypoint->SetStfNameFile(result->getString(2));
-            waypoint->SetStfNameString(result->getString(3));
-            string custom_string = result->getString(4);
-            waypoint->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            waypoint->SetVolume(result->getUInt(5));
-            waypoint->SetCoordinates(result->getDouble(6),result->getDouble(7),result->getDouble(8));
-            bool active = result->getUInt(9) == 1;
-            if (active)
-                waypoint->Activate();
-            else
-                waypoint->DeActivate();
+            
+            waypoint->SetCoordinates(result->getDouble("coord_x"),result->getDouble("coord_y"),result->getDouble("coord_z"));
+            waypoint->activated_flag_ = result->getUInt("active");
 
-            waypoint->SetPlanet(result->getString(10));
-            string name = result->getString(11);
-            waypoint->SetName(wstring(begin(name), end(name)));
-            waypoint->SetColor(result->getString(12));
-            waypoint->SetTemplate(result->getString(13));
-
+            waypoint->planet_name_ = result->getString("planet");
+            waypoint->color_ = result->getString("color");
+            
             waypoint_templates_.insert(make_pair(waypoint->GetTemplate(), move(waypoint)));
         } while (statement->getMoreResults());
     }
@@ -130,23 +118,19 @@ void WaypointFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto waypoint = make_shared<Waypoint>();
-    waypoint->SetObjectId(object_id);
+    waypoint->object_id_ = object_id;
     try{
         auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetWaypoint(?);");
-        statement->setUInt64(1, object_id);
-        auto result = statement->executeQuery();
+        auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        stringstream ss;
+        ss << "CALL sp_GetWaypoint(" << object_id << ");";
+        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
+        CreateBaseObjectFromStorage(waypoint, result);
+        
         while (result->next())
         {
-            bool active = result->getUInt("is_active") == 1;
-            if (active)
-                waypoint->Activate();
-            else
-                waypoint->DeActivate();
-
-            string name = result->getString("name");
-            waypoint->SetName(wstring(begin(name), end(name)));
-            waypoint->SetColor(result->getString("color"));
+			waypoint->activated_flag_ = result->getUInt("is_active");
+            waypoint->color_ = result->getString("color");
         }
     }
     catch(sql::SQLException &e)
