@@ -55,7 +55,7 @@ namespace simulation {
         const std::shared_ptr<swganh::object::Object>& GetObjectById(uint64_t object_id);
 
         template<typename T>
-        const std::shared_ptr<T>& GetObjectById(uint64_t object_id)
+        std::shared_ptr<T> GetObjectById(uint64_t object_id)
         {
             std::shared_ptr<swganh::object::Object> object = GetObjectById(object_id);
 
