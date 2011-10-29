@@ -38,17 +38,9 @@ void IntangibleFactory::LoadTemplates()
         while (result->next())
         {
             auto intangible = make_shared<Intangible>();
-            intangible->SetPosition(glm::vec3(result->getDouble(1),result->getDouble(2), result->getDouble(3)));
-            intangible->SetOrientation(glm::quat(result->getDouble(4),result->getDouble(5), result->getDouble(6), result->getDouble(7)));
-            intangible->SetComplexity(result->getDouble(8));
-            intangible->SetStfNameFile(result->getString(9));
-            intangible->SetStfNameString(result->getString(10));
-            string custom_string = result->getString(11);
-            intangible->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            intangible->SetVolume(result->getUInt(12));
-            intangible->SetStfDetailFile(result->getString(13));
+            
+			intangible->SetStfDetailFile(result->getString(13));
             intangible->SetStfDetailString(result->getString(14));
-            intangible->SetTemplate(result->getString(15));
             
             intangible_templates_.insert(make_pair(intangible->GetTemplate(), move(intangible)));
         } while (statement->getMoreResults());
@@ -109,7 +101,7 @@ void IntangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object
 shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto intangible = make_shared<Intangible>();
-    intangible->SetObjectId(object_id);
+    intangible->object_id_ = object_id;
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
@@ -124,8 +116,8 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
             result.reset(statement->getResultSet());
             while (result->next())
             {
-                intangible->SetStfDetailFile(result->getString("stf_detail_file"));
-                intangible->SetStfDetailString(result->getString("stf_detail_string"));
+                intangible->stf_detail_file_ = result->getString("stf_detail_file");
+                intangible->stf_detail_string_ = result->getString("stf_detail_string");
             }
         }
     }

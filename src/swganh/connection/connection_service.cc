@@ -195,11 +195,8 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
         auto controller = client->GetController();
         if (controller)
         {
-			// player is always + 1 from the creature
 			auto simulation_service = simulation_service_.lock();
-			auto player = simulation_service->LoadObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
-			player->AddStatusFlag(swganh::object::player::LD);
-			
+						
 			// set a timer to 5 minutes to destroy the object, unless logged back in.
 			auto deadline_timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
 			deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));

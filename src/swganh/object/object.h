@@ -260,8 +260,21 @@ public:
     
 protected:
     boost::recursive_mutex    mutex_;
+	uint64_t object_id_;             // create
+	uint32_t scene_id_;				 // create
+    std::string template_string_;    // create
+    glm::vec3 position_;             // create
+    glm::quat orientation_;          // create
+    float complexity_;               // update 3
+    std::string stf_name_file_;      // update 3
+    std::string stf_name_string_;    // update 3
+    std::wstring custom_name_;       // update 3
+    uint32_t volume_;                // update 3
 
 private:
+	friend class ObjectMessageBuilder;
+    friend class ObjectFactory;
+
     void AddBaselinesBuilders_();
         
     typedef std::vector<
@@ -283,18 +296,7 @@ private:
     std::shared_ptr<Object> container_;
     std::shared_ptr<ObjectController> controller_;
 
-    bool is_dirty_;
-
-    uint64_t object_id_;             // create
-	uint32_t scene_id_;				 // create
-    std::string template_string_;    // create
-    glm::vec3 position_;             // create
-    glm::quat orientation_;          // create
-    float complexity_;               // update 3
-    std::string stf_name_file_;      // update 3
-    std::string stf_name_string_;    // update 3
-    std::wstring custom_name_;       // update 3
-    uint32_t volume_;                // update 3  
+    bool is_dirty_;  
 };
 
 }}  // namespace

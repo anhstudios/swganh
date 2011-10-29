@@ -314,7 +314,7 @@ void PlayerMessageBuilder::BuildJediStateDelta(Player* object)
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_3, 10);
-    message.data.append(object->GetBaseline3().get().data);
+    message.data.append(object->Object::GetBaseline3().get().data);
     message.data.write<uint32_t>(0);                                    // Not Used
     object->status_flags_.Serialize(message);                           // Status Flag
     object->profile_flags_.Serialize(message);                          // Profile Flags
