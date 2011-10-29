@@ -126,10 +126,16 @@ charCreate:BEGIN
 	    -- PLAYER ACCOUNT
 	    SELECT id FROM player_account where start_account_id = reference_id INTO player_id;
         INSERT INTO player_accounts_creatures values (player_id, object_id);
+        
+        IF start_city <> 'tutorial' THEN
+            SET base_skill_id = profession_id + 1;
+            CALL sp_CharacterSkillsCreate(object_id,base_skill_id,race_id);
+            CALL sp_CharacterXpCreate(object_id,base_skill_id);
+        END IF;
+        
+        CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender);
     COMMIT;
    
-   CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender);
-
    SELECT(object_id);
 
 END//

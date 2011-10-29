@@ -27,6 +27,15 @@ CREATE TABLE IF NOT EXISTS `skills_preclusion_skills` (
 # Dumping data for table galaxy.skills_preclusion_skills: ~0 rows (approximately)
 DELETE FROM `skills_preclusion_skills`;
 /*!40000 ALTER TABLE `skills_preclusion_skills` DISABLE KEYS */;
+INSERT INTO `skills_preclusion_skills` (`skill_id`,`preclusion_skill_id`) VALUES 
+ (745,707),
+ (707,745),
+ (1031,1012),
+ (1050,1012),
+ (1012,1031),
+ (1050,1031),
+ (1012,1050),
+ (1031,1050);
 /*!40000 ALTER TABLE `skills_preclusion_skills` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
