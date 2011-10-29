@@ -84,16 +84,6 @@ public:
         return movement_manager_;
     }
 
-    void RegisterObjectFactories(anh::app::KernelInterface* kernel)
-    {
-        auto db_manager = kernel->GetDatabaseManager();
-        GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager));
-        GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager));
-        GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager));
-        GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager));
-        GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager));
-    }
-
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);
@@ -310,7 +300,12 @@ void SimulationService::StopScene(const std::string& scene_label)
 }
 void SimulationService::RegisterObjectFactories(anh::app::KernelInterface* kernel)
 {
-    impl_->RegisterObjectFactories(kernel);
+        auto db_manager = kernel->GetDatabaseManager();
+        impl_->GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager, this));
+        impl_->GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager, this));
+        impl_->GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager, this));
+        impl_->GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager, this));
+        impl_->GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager, this));
 }
 
 shared_ptr<Object> SimulationService::LoadObjectById(uint64_t object_id)

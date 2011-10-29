@@ -12,14 +12,17 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/waypoint/waypoint.h"
 #include "swganh/object/exception.h"
+#include "swganh/simulation/simulation_service.h"
 
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::object::waypoint;
+using namespace swganh::simulation;
 
-WaypointFactory::WaypointFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : ObjectFactory(db_manager)
+WaypointFactory::WaypointFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+                             SimulationService* simulation_service)
+    : ObjectFactory(db_manager, simulation_service)
 {
 }
 

@@ -746,18 +746,22 @@ void Player::SetGender(Gender value)
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     gender_ = value;
 }
+
 boost::optional<BaselinesMessage> Player::GetBaseline3()
 {
     return move(PlayerMessageBuilder::BuildBaseline3(this));
 }
+
 boost::optional<BaselinesMessage> Player::GetBaseline6()
 {
     return move(PlayerMessageBuilder::BuildBaseline6(this));
 }
+
 boost::optional<BaselinesMessage> Player::GetBaseline8()
 {
     return move(PlayerMessageBuilder::BuildBaseline8(this));
 }
+
 boost::optional<BaselinesMessage> Player::GetBaseline9()
 {
     return move(PlayerMessageBuilder::BuildBaseline9(this));

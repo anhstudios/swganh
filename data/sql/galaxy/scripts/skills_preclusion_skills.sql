@@ -15,8 +15,8 @@ use galaxy;
 
 # Dumping structure for table galaxy.skills_preclusion_skills
 CREATE TABLE IF NOT EXISTS `skills_preclusion_skills` (
-  `skill_id` bigint(20) NOT NULL,
-  `preclusion_skill_id` bigint(20) NOT NULL,
+  `skill_id` int(11) NOT NULL,
+  `preclusion_skill_id` int(11) NOT NULL,
   PRIMARY KEY (`skill_id`,`preclusion_skill_id`),
   KEY `IDX_F89ED6FB5585C142` (`skill_id`),
   KEY `IDX_F89ED6FBB334A428` (`preclusion_skill_id`),

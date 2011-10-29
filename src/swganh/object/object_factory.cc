@@ -12,13 +12,17 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/object.h"
 #include "swganh/object/exception.h"
+#include "swganh/simulation/simulation_service.h"
 
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
+using namespace swganh::simulation;
 
-ObjectFactory::ObjectFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
+ObjectFactory::ObjectFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+                             SimulationService* simulation_service)
     : db_manager_(db_manager)
+    , simulation_service_(simulation_service)
 {
 }
 

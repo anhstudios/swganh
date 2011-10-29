@@ -13,16 +13,19 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/exception.h"
+#include "swganh/simulation/simulation_service.h"
 
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::object::tangible;
+using namespace swganh::simulation;
 
 uint32_t TangibleFactory::GetType() const { return Tangible::type; }
 
- TangibleFactory::TangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : ObjectFactory(db_manager)
+ TangibleFactory::TangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+                             SimulationService* simulation_service)
+    : ObjectFactory(db_manager, simulation_service)
 {
 }
 void TangibleFactory::LoadTemplates()
@@ -141,10 +144,12 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+        
         stringstream ss;
-        ss << "CALL sp_GetTangible(" << object_id << ");";
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
-        CreateBaseTangible(tangible, statement);
+        ss << "CALL sp_GetTangible(" << object_id << ");";   
+
+        statement->execute(ss.str());
+        CreateBaseTangible(tangible, statement);  
     }
     catch(sql::SQLException &e)
     {

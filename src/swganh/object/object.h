@@ -37,7 +37,7 @@ typedef std::vector<
     swganh::messages::DeltasMessage
 > DeltasCacheContainer;
 
-class Object : public anh::observer::ObservableInterface
+class Object : public anh::observer::ObservableInterface, public std::enable_shared_from_this<Object>
 {
 public:
     enum ViewType : uint16_t
@@ -71,7 +71,18 @@ public:
 		GUILD,
 		GROUP
 	};
+
+    enum ContainmentType : uint32_t
+    {
+        UNLINK = 0xFFFFFFFF,
+        LINK = 4
+    };
     
+    typedef std::map<
+        uint64_t,
+        std::shared_ptr<Object>
+    > ObjectMap;
+
 public:
     Object();
     virtual ~Object() {}
@@ -84,6 +95,7 @@ public:
     void AddContainedObject(const std::shared_ptr<Object>& object, uint32_t containment_type);
     bool IsContainerForObject(const std::shared_ptr<Object>& object);
     void RemoveContainedObject(const std::shared_ptr<Object>& object);
+    ObjectMap GetContainedObjects();
 
     void AddAwareObject(const std::shared_ptr<Object>& object);
     bool IsAwareOfObject(const std::shared_ptr<Object>& object);
@@ -253,12 +265,7 @@ protected:
 
 private:
     void AddBaselinesBuilders_();
-    
-    typedef std::map<
-        uint64_t,
-        std::shared_ptr<Object>
-    > ObjectMap;
-    
+        
     typedef std::vector<
         std::shared_ptr<anh::observer::ObserverInterface>
     > ObserverContainer;

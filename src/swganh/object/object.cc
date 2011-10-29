@@ -6,6 +6,7 @@
 #include "swganh/messages/base_baselines_message.h"
 #include "swganh/messages/scene_create_object_by_crc.h"
 #include "swganh/messages/scene_end_baselines.h"
+#include "swganh/messages/update_containment_message.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_message_builder.h"
 #include "swganh/network/remote_client.h"
@@ -61,6 +62,7 @@ void Object::AddContainedObject(const shared_ptr<Object>& object, uint32_t conta
     }
 
     contained_objects_.insert(make_pair(object->GetObjectId(), object));
+    object->SetContainer(shared_from_this());
 
     if (HasController())
     {
@@ -83,12 +85,17 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
         return;
     }
 
-    contained_objects_.erase(find_iter);
+    contained_objects_.erase(find_iter);    
 
     if (HasController())
     {
         object->Unsubscribe(GetController());
     }
+}
+
+Object::ObjectMap Object::GetContainedObjects()
+{
+    return contained_objects_;
 }
 
 void Object::AddAwareObject(const shared_ptr<Object>& object)
@@ -243,8 +250,18 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     scene_object.object_crc = anh::memcrc(GetTemplate());
     scene_object.position = GetPosition();
 	scene_object.orientation = GetOrientation();
-    controller->GetRemoteClient()->Send(scene_object);
+    controller->Notify(scene_object);
+         
+    if (GetContainer())
+    {
+        UpdateContainmentMessage containment_message;
+        containment_message.container_id = GetContainer()->GetObjectId();
+        containment_message.object_id = GetObjectId();
+        containment_message.containment_type = 4;
     
+        controller->Notify(containment_message);
+    }
+
     // Baselines
     optional<BaselinesMessage> message;
     for_each(begin(baselines_builders_), end(baselines_builders_),
@@ -255,14 +272,14 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
             return;
         }
 
-        controller->GetRemoteClient()->Send(*message);
+        controller->Notify(*message);
         baselines_.push_back(*message);
     });
 
     // SceneEndBaselines
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = GetObjectId();
-    controller->GetRemoteClient()->Send(scene_end_baselines);
+    controller->Notify(scene_end_baselines);
 }
 
 const BaselinesCacheContainer& Object::GetBaselines(uint64_t viewer_id) const

@@ -11,6 +11,11 @@ namespace database {
 class DatabaseManagerInterface;
 }} // anh::database
 
+namespace swganh {
+namespace simulation {
+    class SimulationService;
+}}  // namespace swganh::simulation
+
 namespace sql {
 class Statement;
 }
@@ -24,7 +29,8 @@ namespace tangible {
     class TangibleFactory : public swganh::object::ObjectFactory
     {
     public:
-        TangibleFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
+        TangibleFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+            swganh::simulation::SimulationService* simulation_service);
         void LoadTemplates();
 
         bool HasTemplate(const std::string& template_name);
