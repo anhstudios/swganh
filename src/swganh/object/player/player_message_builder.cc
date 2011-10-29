@@ -19,8 +19,16 @@ void PlayerMessageBuilder::BuildStatusBitmaskDelta(Player* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 5);
-        object->status_flags_.Serialize(message);
 
+        message.data.write<uint32_t>(object->status_flags_.size());
+
+        for_each(begin(object->status_flags_),
+            end(object->status_flags_),
+            [&message] (vector<FlagBitmask>::value_type& flag)
+        {
+            flag.Serialize(message);
+        });
+        
         object->AddDeltasUpdate(move(message));
     }
 }
@@ -29,7 +37,15 @@ void PlayerMessageBuilder::BuildProfileBitmaskDelta(Player* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 6);
-        object->profile_flags_.Serialize(message);
+        
+        message.data.write<uint32_t>(object->profile_flags_.size());
+
+        for_each(begin(object->profile_flags_),
+            end(object->profile_flags_),
+            [&message] (vector<FlagBitmask>::value_type& flag)
+        {
+            flag.Serialize(message);
+        });
 
         object->AddDeltasUpdate(move(message));
     }
@@ -316,8 +332,25 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     auto message = object->CreateBaselinesMessage(Object::VIEW_3, 10);
     message.data.append(object->Object::GetBaseline3().get().data);
     message.data.write<uint32_t>(0);                                    // Not Used
-    object->status_flags_.Serialize(message);                           // Status Flag
-    object->profile_flags_.Serialize(message);                          // Profile Flags
+    
+    message.data.write<uint32_t>(object->status_flags_.size());
+
+    for_each(begin(object->status_flags_),
+        end(object->status_flags_),
+        [&message] (vector<FlagBitmask>::value_type& flag)
+    {
+        flag.Serialize(message);
+    });
+
+    message.data.write<uint32_t>(object->profile_flags_.size());
+
+    for_each(begin(object->profile_flags_),
+        end(object->profile_flags_),
+        [&message] (vector<FlagBitmask>::value_type& flag)
+    {
+        flag.Serialize(message);
+    });
+
     message.data.write<std::string>(object->GetProfessionTag());        // Profession Tag
     message.data.write<uint32_t>(object->GetBornDate());                // Born Date
     message.data.write<uint32_t>(object->GetTotalPlayTime());           // Total Play Time
