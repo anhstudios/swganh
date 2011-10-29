@@ -32,7 +32,7 @@ public:
     /**
     *   @brief Waypoints do not have uses
     */
-    uint32_t GetUses() const { return uses_; }
+    uint32_t GetUses();
     void SetUses(uint32_t uses);
 
     /**
@@ -40,7 +40,7 @@ public:
     *
     *   @returns glm::vec3 coordinates
     */
-    glm::vec3 GetCoordinates() const { return coordinates_; }
+    glm::vec3 GetCoordinates() ;
     /**
     *   @brief sets the glm::vec3 coordinates of the waypoint
     *   @param coords referenced glm::vec3 object
@@ -127,6 +127,9 @@ public:
 protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
 private:
+	friend class WaypointFactory;
+	friend class WaypointMessageBuilder;
+
     uint32_t uses_;					//update 3
     glm::vec3 coordinates_;			//update 3
     uint8_t activated_flag_;		//update 3
