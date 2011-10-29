@@ -314,7 +314,7 @@ void PlayerMessageBuilder::BuildJediStateDelta(Player* object)
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_3, 10);
-    message.data.append(object->GetBaseline3().get().data);
+    message.data.append(object->Object::GetBaseline3().get().data);
     message.data.write<uint32_t>(0);                                    // Not Used
     object->status_flags_.Serialize(message);                           // Status Flag
     object->profile_flags_.Serialize(message);                          // Profile Flags
@@ -323,6 +323,7 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write<uint32_t>(object->GetTotalPlayTime());           // Total Play Time
     return boost::optional<BaselinesMessage>(move(message));
 }
+
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline6(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_6, 2);
@@ -330,48 +331,46 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write<uint8_t>(object->GetAdminTag());     // Admin Tag
     return boost::optional<BaselinesMessage>(move(message));
 }
+
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(Player* object)
 {
-
     auto message = object->CreateBaselinesMessage(Object::VIEW_8, 7);
     object->experience_.Serialize(message);
-    message.data.write<uint8_t>(0);
-    message.data.write<std::string>("combat_general");
-    message.data.write<uint32_t>(100);
     object->waypoints_.Serialize(message);
-
+    
     message.data.write<uint32_t>(object->GetCurrentForcePower());
     message.data.write<uint32_t>(object->GetMaxForcePower());
     
     message.data.write<uint32_t>(0); // Force Sensetive Quest List Soze
     message.data.write<uint32_t>(0); // Force Sensetive Quest List Counter
-
+    
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Size
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Counter
-
+    
     object->quest_journal_.Serialize(message);
-
+    
     return boost::optional<BaselinesMessage>(std::move(message));
 }
+
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_9, 17);
-
+    
     object->abilities_.Serialize(message);
     message.data.write<uint32_t>(object->GetExperimentationFlag());
     message.data.write<uint32_t>(object->GetCraftingStage());
     message.data.write<uint64_t>(object->GetNearestCraftingStation());
-
+    
     object->draft_schematics_.Serialize(message);
-
-
+    
+    
     message.data.write<uint32_t>(object->GetExperimentationPoints());
     message.data.write<uint32_t>(object->GetAccomplishmentCounter());
- 
+    
     object->friends_.Serialize(message);
-
+    
     object->ignored_players_.Serialize(message);
-
+    
     message.data.write<uint32_t>(object->GetLanguage());
     message.data.write<uint32_t>(object->GetCurrentStomach());
     message.data.write<uint32_t>(object->GetMaxStomach());
@@ -382,6 +381,6 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write<uint32_t>(0); // Unused
     message.data.write<uint32_t>(0); // Unused
     message.data.write<uint32_t>(object->GetJediState()); // Jedi State
-
+    
     return boost::optional<BaselinesMessage>(std::move(message));
 }
