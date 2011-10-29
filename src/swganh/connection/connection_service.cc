@@ -197,7 +197,7 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
         {
 			// player is always + 1 from the creature
 			auto simulation_service = simulation_service_.lock();
-			auto player = simulation_service->LoadObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
+            auto player = simulation_service->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
 			player->AddStatusFlag(swganh::object::player::LD);
 			
 			// set a timer to 5 minutes to destroy the object, unless logged back in.
