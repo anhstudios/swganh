@@ -338,12 +338,12 @@ public:
     virtual uint32_t GetType() const { return Player::type; }
     const static uint32_t type = 0x504c4159;
 
-    swganh::messages::containers::NetworkArray<FlagBitmask> GetStatusFlags();
+    std::vector<FlagBitmask> GetStatusFlags();
     void AddStatusFlag(StatusFlags flag, StatusIndex index = DEFAULT);
     void RemoveStatusFlag(StatusFlags flag, StatusIndex index = DEFAULT);
     void ClearStatusFlags();
     
-    swganh::messages::containers::NetworkArray<FlagBitmask> GetProfileFlags() ;
+    std::vector<FlagBitmask> GetProfileFlags() ;
     void AddProfileFlag(ProfileFlags flag, StatusIndex index = DEFAULT);
     void RemoveProfileFlag(ProfileFlags flag, StatusIndex index = DEFAULT);
     void ClearProfileFlags();
@@ -476,8 +476,8 @@ private:
 
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
-    swganh::messages::containers::NetworkArray<FlagBitmask> status_flags_;
-    swganh::messages::containers::NetworkArray<FlagBitmask> profile_flags_;
+    std::vector<FlagBitmask> status_flags_;
+    std::vector<FlagBitmask> profile_flags_;
     std::string profession_tag_;
     uint32_t born_date_;
     uint32_t total_playtime_;
