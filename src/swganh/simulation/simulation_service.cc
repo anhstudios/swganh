@@ -218,8 +218,8 @@ public:
             throw std::runtime_error("No handler registered to process the given message.");
         }
         
-        find_iter->second(client->GetController(), message);
-    }
+		find_iter->second(client->GetController(), message);
+	}
     
     void HandleSelectCharacter(
         shared_ptr<ConnectionClient> client, 
