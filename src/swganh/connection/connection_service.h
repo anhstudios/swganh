@@ -91,6 +91,8 @@ private:
         const swganh::messages::CmdSceneReady& message);
     
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
+	// Async Remove
+	void RemoveClientTimerHandler_(const boost::system::error_code& e, std::shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs, std::shared_ptr<swganh::object::ObjectController> controller);
     void AddClient_(uint64_t player_id, std::shared_ptr<swganh::connection::ConnectionClient> client);
 
     std::shared_ptr<PingServer> ping_server_;

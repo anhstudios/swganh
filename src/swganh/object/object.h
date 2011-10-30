@@ -10,6 +10,8 @@
 #include <vector>
 
 #include <boost/optional.hpp>
+#include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread/locks.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -35,7 +37,7 @@ typedef std::vector<
     swganh::messages::DeltasMessage
 > DeltasCacheContainer;
 
-class Object : public anh::observer::ObservableInterface
+class Object : public anh::observer::ObservableInterface, public std::enable_shared_from_this<Object>
 {
 public:
     enum ViewType : uint16_t
@@ -69,20 +71,31 @@ public:
 		GUILD,
 		GROUP
 	};
+
+    enum ContainmentType : uint32_t
+    {
+        UNLINK = 0xFFFFFFFF,
+        LINK = 4
+    };
     
+    typedef std::map<
+        uint64_t,
+        std::shared_ptr<Object>
+    > ObjectMap;
+
 public:
     Object();
-
     virtual ~Object() {}
     
-    bool HasController() const;
-    const std::shared_ptr<ObjectController>& GetController() const;
+    bool HasController();
+    const std::shared_ptr<ObjectController>& GetController();
     void SetController(const std::shared_ptr<ObjectController>& controller);
     void ClearController();
 
     void AddContainedObject(const std::shared_ptr<Object>& object, uint32_t containment_type);
     bool IsContainerForObject(const std::shared_ptr<Object>& object);
     void RemoveContainedObject(const std::shared_ptr<Object>& object);
+    ObjectMap GetContainedObjects();
 
     void AddAwareObject(const std::shared_ptr<Object>& object);
     bool IsAwareOfObject(const std::shared_ptr<Object>& object);
@@ -93,7 +106,7 @@ public:
      *
      * @return True if has observers, false if not.
      */
-    bool HasObservers() const;
+    bool HasObservers();
 
     /**
      * Start receiving notifications when the observable object changes state.
@@ -161,7 +174,7 @@ public:
      *
      * @return Modified since last reliable update.
      */
-    bool IsDirty() const;
+    bool IsDirty();
 
     /**
      * Regenerates the baselines and updates observers.
@@ -174,7 +187,7 @@ public:
      * @param viewer_id The id of the object viewing this Object instance.
      * @return The most recently generated baselines.
      */
-    const BaselinesCacheContainer& GetBaselines(uint64_t viewer_id) const;
+    const BaselinesCacheContainer& GetBaselines(uint64_t viewer_id) ;
 
     /**
      * Returns the deltas messages generated since the last time the 
@@ -183,37 +196,37 @@ public:
      * @param viewer_id The id of the object viewing this Object instance.
      * @return The most recently generated deltas.
      */
-    const DeltasCacheContainer& GetDeltas(uint64_t viewer_id) const;
+    const DeltasCacheContainer& GetDeltas(uint64_t viewer_id) ;
     
-    const std::string& GetTemplate() { return template_string_; }
-    void SetTemplate(const std::string& template_string){ template_string_ =  template_string; }
-    glm::vec3 GetPosition() { return position_; }
+    const std::string& GetTemplate();
+    void SetTemplate(const std::string& template_string);
+    glm::vec3 GetPosition();
     void SetPosition(glm::vec3 position);
-    glm::quat GetOrientation() { return orientation_; }
+    glm::quat GetOrientation();
 
     void SetOrientation(glm::quat orientation);
 
     /**
      * @return Heading of the object in (angle/0.0625) where angle is in radians.
      */
-    uint8_t GetHeading() const;
+    uint8_t GetHeading() ;
 
-    const std::shared_ptr<Object>& GetContainer() const { return container_; }
+    const std::shared_ptr<Object>& GetContainer();
     void SetContainer(const std::shared_ptr<Object>& container);
 
-    float GetComplexity() { return complexity_; }
+    float GetComplexity();
     void SetComplexity(float complexity);
-    const std::string& GetStfNameFile() { return stf_name_file_; }
+    const std::string& GetStfNameFile();
     void SetStfNameFile(const std::string& stf_name_file);
-    const std::string& GetStfNameString() { return stf_name_string_; }
+    const std::string& GetStfNameString();
     void SetStfNameString(const std::string& stf_name_string);
-    const std::wstring& GetCustomName() { return custom_name_; }
-    std::string GetCustomNameStandard() { return std::string(std::begin(custom_name_), std::end(custom_name_)); }
+    const std::wstring& GetCustomName();
+	std::string GetCustomNameStandard();
     void SetCustomName(std::wstring custom_name); 
-    uint32_t GetVolume() { return volume_; }
+    uint32_t GetVolume();
     void SetVolume(uint32_t volume);
 	
-	uint32_t GetSceneId() { return scene_id_; }
+	uint32_t GetSceneId();
 	void SetSceneId(uint32_t scene_id);
 
     /**
@@ -223,13 +236,11 @@ public:
      */
     void AddDeltasUpdate(swganh::messages::DeltasMessage message);
     
-    void SetObjectId(uint64_t id) { object_id_ = id; }
+    void SetObjectId(uint64_t id);
     /**
      * @return The id of this Object instance.
      */
-    uint64_t GetObjectId() const;
-    
-    std::wstring GetCustomName() const;
+    uint64_t GetObjectId() ;
     
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
@@ -243,18 +254,29 @@ public:
     
     virtual uint32_t GetType() const { return 0; }
         
-    swganh::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0) const;
+    swganh::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0) ;
     
-    swganh::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type, uint16_t update_type, uint16_t update_count = 1) const;
+    swganh::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
     
+protected:
+    boost::recursive_mutex    mutex_;
+	uint64_t object_id_;             // create
+	uint32_t scene_id_;				 // create
+    std::string template_string_;    // create
+    glm::vec3 position_;             // create
+    glm::quat orientation_;          // create
+    float complexity_;               // update 3
+    std::string stf_name_file_;      // update 3
+    std::string stf_name_string_;    // update 3
+    std::wstring custom_name_;       // update 3
+    uint32_t volume_;                // update 3
+
 private:
+	friend class ObjectMessageBuilder;
+    friend class ObjectFactory;
+
     void AddBaselinesBuilders_();
-    
-    typedef std::map<
-        uint64_t,
-        std::shared_ptr<Object>
-    > ObjectMap;
-    
+        
     typedef std::vector<
         std::shared_ptr<anh::observer::ObserverInterface>
     > ObserverContainer;
@@ -274,33 +296,8 @@ private:
     std::shared_ptr<Object> container_;
     std::shared_ptr<ObjectController> controller_;
 
-    bool is_dirty_;
-
-    uint64_t object_id_;             // create
-	uint32_t scene_id_;				 // create
-    std::string template_string_;    // create
-    glm::vec3 position_;             // create
-    glm::quat orientation_;          // create
-    float complexity_;               // update 3
-    std::string stf_name_file_;      // update 3
-    std::string stf_name_string_;    // update 3
-    std::wstring custom_name_;       // update 3
-    uint32_t volume_;                // update 3  
+    bool is_dirty_;  
 };
-
-template<typename Container, typename FreeList>
-uint16_t GetNextAvailableSlot(Container& container, FreeList& free_list)
-{
-    if (free_list.empty())
-    {        
-        return container.size() - 1;
-    }
-    
-    free_list.sort();
-    auto ret = free_list.front();
-    free_list.pop_front();
-    return ret;
-}
 
 }}  // namespace
 

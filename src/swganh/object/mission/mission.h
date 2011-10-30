@@ -68,9 +68,6 @@ public:
     std::string GetTargetName() const;
     void SetTargetName(std::string target_name);
 
-    swganh::object::waypoint::Waypoint GetWaypoint() const;
-    void SetWaypoint(swganh::object::waypoint::Waypoint waypoint);
-
 private:
     uint32_t difficulty_level_;
     glm::vec3 starting_position_;

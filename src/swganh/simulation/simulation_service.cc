@@ -30,8 +30,6 @@
 #include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player.h"
 
-#include "swganh/object/guild/guild.h"
-
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
@@ -86,23 +84,14 @@ public:
         return movement_manager_;
     }
 
-    void RegisterObjectFactories(anh::app::KernelInterface* kernel)
-    {
-        auto db_manager = kernel->GetDatabaseManager();
-        GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager));
-        GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager));
-        GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager));
-        GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager));
-        GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager));
-    }
-
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);
 
         if (find_iter != loaded_objects_.end())
         {
-            throw swganh::object::InvalidObject("Requested object already loaded");
+            return find_iter->second;
+            //throw swganh::object::InvalidObject("Requested object already loaded");
         }
         
         auto object = object_manager_->CreateObjectFromStorage(object_id);
@@ -117,7 +106,8 @@ public:
 
         if (find_iter != loaded_objects_.end())
         {
-            throw swganh::object::InvalidObject("Requested object already loaded");
+			return find_iter->second;
+            //throw swganh::object::InvalidObject("Requested object already loaded");
         }
         
         auto object = object_manager_->CreateObjectFromStorage(object_id, type);
@@ -155,7 +145,7 @@ public:
 
         StopControllingObject(find_iter->second);
 
-        loaded_objects_.erase(find_iter);
+        loaded_objects_.unsafe_erase(find_iter);
     }
 
     shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<RemoteClient> client)
@@ -164,7 +154,8 @@ public:
 
         if (find_iter != controlled_objects_.end())
         {
-            throw swganh::object::InvalidObject("Object already has a controller");
+			return find_iter->second;
+            //throw swganh::object::InvalidObject("Object already has a controller");
         }
         
         auto controller = make_shared<ObjectController>(object, client);
@@ -187,7 +178,7 @@ public:
             throw swganh::object::InvalidObject("Object has no controller");
         }
         
-        controlled_objects_.erase(find_iter);
+        controlled_objects_.unsafe_erase(find_iter);
     }
         
     void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler)
@@ -196,7 +187,9 @@ public:
 
         if (find_iter != controller_handlers_.end())
         {
-            throw std::runtime_error("ObjControllerHandler already exists");
+			// just return, we already have the handler registered
+			return;
+            //throw std::runtime_error("ObjControllerHandler already exists");
         }
 
         controller_handlers_.insert(make_pair(handler_id, move(handler)));
@@ -233,7 +226,7 @@ public:
         const SelectCharacter& message)
     {
         // character_id = player
-        auto object = LoadObjectById(message.character_id, creature::Creature::type);
+		auto object = LoadObjectById(message.character_id, creature::Creature::type);
         StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
@@ -255,7 +248,7 @@ public:
         client->GetSession()->SendMessage(start_scene);
 
         // Add object to scene and send baselines
-        scene->AddObject(object);
+		scene->AddObject(object);
     }
 
 private:
@@ -263,11 +256,10 @@ private:
     shared_ptr<SceneManager> scene_manager_;
     shared_ptr<MovementManager> movement_manager_;
 
-
     ObjControllerHandlerMap controller_handlers_;
 
-    map<uint64_t, shared_ptr<Object>> loaded_objects_;
-    map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
+    tbb::concurrent_unordered_map<uint64_t, shared_ptr<Object>> loaded_objects_;
+    tbb::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
 };
 
 }}  // namespace swganh::simulation
@@ -300,9 +292,6 @@ void SimulationService::StartScene(const std::string& scene_label)
     impl_->GetSceneManager()->StartScene(scene_label);
     // load factories
     RegisterObjectFactories(kernel());
-
-    std::shared_ptr<swganh::object::guild::Guild> guild(new swganh::object::guild::Guild());
-    impl_->GetSceneManager()->GetScene(scene_label)->AddObject(guild);
 }
 
 void SimulationService::StopScene(const std::string& scene_label)
@@ -311,7 +300,12 @@ void SimulationService::StopScene(const std::string& scene_label)
 }
 void SimulationService::RegisterObjectFactories(anh::app::KernelInterface* kernel)
 {
-    impl_->RegisterObjectFactories(kernel);
+        auto db_manager = kernel->GetDatabaseManager();
+        impl_->GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager, this));
+        impl_->GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager, this));
+        impl_->GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager, this));
+        impl_->GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager, this));
+        impl_->GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager, this));
 }
 
 shared_ptr<Object> SimulationService::LoadObjectById(uint64_t object_id)

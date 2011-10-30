@@ -174,12 +174,3 @@ void Mission::SetTargetName(std::string target_name)
     target_name_ = target_name;
 }
 
-Waypoint Mission::GetWaypoint() const
-{
-    return waypoint_;
-}
-
-void Mission::SetWaypoint(Waypoint waypoint)
-{
-    waypoint_ = move(waypoint);
-}

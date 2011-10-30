@@ -15,6 +15,11 @@ class ResultSet;
 }
 
 namespace swganh {
+namespace simulation {
+    class SimulationService;
+}}  // namespace swganh::simulation
+
+namespace swganh {
 namespace object {
 namespace player {
     
@@ -22,7 +27,8 @@ namespace player {
     class PlayerFactory : public swganh::object::ObjectFactory
     {
     public:
-        PlayerFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
+        PlayerFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+            swganh::simulation::SimulationService* simulation_service);
 
         void LoadTemplates();
 

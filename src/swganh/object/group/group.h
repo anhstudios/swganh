@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "swganh/object/object.h"
+#include "swganh/messages/containers/network_sorted_vector.h"
 
 namespace swganh {
 namespace object {
@@ -38,71 +39,88 @@ namespace swganh {
 namespace object {
 namespace group {
 
+enum LootMode
+{
+    FREE_LOOT,
+    MASTER_LOOTER,
+    LOTTERY,
+    RANDOM
+};
+
+struct Member
+{
+    Member(uint64_t object_id_, std::string name_)
+        : object_id(object_id_)
+        , name(name_)
+    {}
+
+    ~Member()
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint64_t>(object_id);
+        message.data.write<std::string>(name);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint64_t>(object_id);
+        message.data.write<std::string>(name);
+    }
+
+    bool operator==(const Member& other)
+    {
+        return object_id == other.object_id;
+    }
+
+    uint64_t object_id;
+    std::string name;
+};
+
+class GroupFactory;
 class GroupMessageBuilder;
 class Group : public swganh::object::Object
 {
 public:
-    typedef std::vector<std::shared_ptr<swganh::object::tangible::BaseTangible>> MemberList;
-
-    enum LOOT_MODE
-    {
-        FREE_LOOT,
-        MASTER_LOOTER,
-        LOTTERY,
-        RANDOM
-    };
-
     Group();
     Group(uint32_t max_member_size);
     ~Group();
 
-    /**
-     * Adds a new member to the group.
-     */
-    void AddGroupMember(std::shared_ptr<swganh::object::tangible::BaseTangible> member);
-
-    /**
-     * Removes a member from the group.
-     */
-    void RemoveGroupMember(std::shared_ptr<swganh::object::tangible::BaseTangible> member);
+    // Group Members
+    void AddGroupMember(uint64_t member, std::string name);
+    void RemoveGroupMember(uint64_t member);
     
-    /**
-     * Updates the loot mode.
-     */
-    void SetLootMode(LOOT_MODE loot_mode);
+    // Loot Mode
+    void SetLootMode(LootMode loot_mode);
+    LootMode GetLootMode(void);
 
-    /**
-     * Sets the group difficulty level.
-     */
+    // Difficulty
     void SetDifficulty(uint16_t group_level);
+    uint16_t GetDifficulty(void);
 
-    /**
-     * Sets the Loot master of the group (by id).
-     */
+    // Loot Master
     void SetLootMaster(uint64_t loot_master);
+    uint64_t GetLootMaster(void);
 
-    uint16_t GetDifficulty() { return difficulty_; }
-    uint64_t GetLootMaster() { return loot_master_; }
-    LOOT_MODE GetLootMode() { return (LOOT_MODE)loot_mode_; }
-    uint16_t GetCapacity() { return member_list_.capacity(); }
+    uint16_t GetSize();
+    uint16_t GetCapacity();
 
     uint32_t GetType() const { return type; }
     const static uint32_t type = 0x47525550;
 
 protected:
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:
     friend class GroupMessageBuilder;
+    friend class GroupFactory;
 
-    MemberList::iterator FindMemberIterById_(uint64_t member_id);
-
-    uint32_t member_list_counter_;              // update 6 variable 1
-    MemberList member_list_;                    // update 6 variable 1
-    std::list<uint16_t> member_index_free_list_;
-    uint16_t difficulty_;                       // update 6 variable 4
-    uint64_t loot_master_;                      // update 6 variable 6
-    uint32_t loot_mode_;                        // update 6 variable 7 
+    swganh::messages::containers::NetworkSortedVector<Member> member_list_;                     // update 6 variable 1
+    uint16_t difficulty_;                                                                       // update 6 variable 4
+    uint64_t loot_master_;                                                                      // update 6 variable 6
+    uint32_t loot_mode_;                                                                        // update 6 variable 7 
 };
 
 }}} // namespace swganh::object::group

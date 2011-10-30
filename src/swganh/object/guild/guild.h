@@ -21,23 +21,58 @@
 #ifndef SWGANH_OBJECT_GUILD_GUILD_H_
 #define SWGANH_OBJECT_GUILD_GUILD_H_
 
-#include <map>
-
 #include "swganh/object/object.h"
+
+#include "swganh/messages/containers/network_list.h"
 
 namespace swganh {
 namespace object {
 namespace guild {
 
+struct GuildTag
+{
+    GuildTag(uint32_t id_, std::string abbreviation_)
+        : id(id_)
+        , abbreviation(abbreviation_)
+    {}
+
+    ~GuildTag(void)
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        std::stringstream ss;
+        ss << id << ":" << abbreviation;
+
+        message.data.write<std::string>(ss.str());
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        std::stringstream ss;
+        ss << id << ":" << abbreviation;
+
+        message.data.write<std::string>(ss.str());
+    }
+
+    bool operator==(const GuildTag& other)
+    {
+        return id == other.id;
+    }
+
+    uint32_t id;
+    std::string abbreviation;
+};
+
+class GuildFactory;
 class GuildMessageBuilder;
 class Guild : public swganh::object::Object {
 public:
     Guild();
-    Guild(std::map<uint32_t, std::string> guild_list);
     ~Guild();
 
-    void AddGuild(uint32_t, std::string);
-    void RemoveGuild(uint32_t);
+    void AddGuildTag(uint32_t guild_id, std::string abbreviation);
+    void RemoveGuildTag(uint32_t guild_id);
 
     virtual uint32_t GetType() const { return type; }
     const static uint32_t type = 0x444C4947;
@@ -46,10 +81,10 @@ public:
     boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:
+    friend class GuildFactory;
     friend class GuildMessageBuilder;
 
-    std::map<uint32_t, std::string>     guild_list_;
-    uint32_t    guild_list_counter_;
+    swganh::messages::containers::NetworkList<GuildTag>     guild_list_;
 };
 
 }}}  // namespaces swganh::object::guild

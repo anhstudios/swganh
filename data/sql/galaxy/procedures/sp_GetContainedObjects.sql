@@ -13,21 +13,14 @@
 
 use galaxy;
 
-# Dumping structure for table galaxy.skills_commands
-CREATE TABLE IF NOT EXISTS `skills_commands` (
-  `skill_id` bigint(20) NOT NULL,
-  `command_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`skill_id`,`command_id`),
-  KEY `IDX_B26E8E4F5585C142` (`skill_id`),
-  KEY `IDX_B26E8E4F33E1689A` (`command_id`),
-  CONSTRAINT `FK_B26E8E4F33E1689A` FOREIGN KEY (`command_id`) REFERENCES `command` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `FK_B26E8E4F5585C142` FOREIGN KEY (`skill_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-# Dumping data for table galaxy.skills_commands: ~0 rows (approximately)
-DELETE FROM `skills_commands`;
-/*!40000 ALTER TABLE `skills_commands` DISABLE KEYS */;
-/*!40000 ALTER TABLE `skills_commands` ENABLE KEYS */;
+# Dumping structure for procedure galaxy.sp_GetObject
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetContainedObjects`(IN `object_id` BIGINT)
+    COMMENT 'Get''s the base object that all game objects have'
+BEGIN
+SELECT object.id, object.type_id FROM object WHERE (object.parent_id = object_id);
+END//
+DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

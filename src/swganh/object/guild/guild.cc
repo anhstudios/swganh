@@ -11,48 +11,37 @@ using namespace swganh::object::guild;
 
 Guild::Guild()
     : Object()
-    , guild_list_counter_(0)
 {
-    SetObjectId(0xDEADBEEF);
     SetTemplate("object/guild/shared_guild_object.iff");
-    guild_list_.insert(std::pair<uint32_t, std::string>(1, "SWGANH"));
-}
-
-Guild::Guild(std::map<uint32_t, std::string> guild_list)
-    : guild_list_(guild_list)
-    , guild_list_counter_(0)
-{
 }
 
 Guild::~Guild()
 {
 }
 
-void Guild::AddGuild(uint32_t guild_id, std::string guild_tag)
+void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag)
 {
-    auto iter = guild_list_.find(guild_id);
-    if(iter == guild_list_.end())
-    {
-        std::stringstream guild_id_tag;
-        guild_id_tag << guild_id << ":" << guild_tag;
+    auto iter = std::find_if(guild_list_.Begin(), guild_list_.End(), [=](const GuildTag& tag)->bool {
+        return guild_id == tag.id;
+    });
 
-        guild_list_.insert(std::pair<uint32_t, std::string>(guild_id, guild_tag));
-       
-        GuildMessageBuilder::BuildGuildListDelta(this, 1, guild_id_tag.str());
+    if(iter == guild_list_.End())
+    {
+        guild_list_.Add(GuildTag(guild_id, guild_tag));
+        GuildMessageBuilder::BuildGuildTagsDelta(this);
     }
 }
 
-void Guild::RemoveGuild(uint32_t guild_id)
+void Guild::RemoveGuildTag(uint32_t guild_id)
 {
-    auto iter = guild_list_.find(guild_id);
-    if(iter != guild_list_.end())
-    {
-        std::stringstream guild_id_tag;
-        guild_id_tag << iter->first << ":" << iter->second;
+    auto iter = std::find_if(guild_list_.Begin(), guild_list_.End(), [=](const GuildTag& tag)->bool {
+        return guild_id == tag.id;
+    });
 
-        guild_list_.erase(iter);
-        
-        GuildMessageBuilder::BuildGuildListDelta(this, 0, guild_id_tag.str());
+    if(iter != guild_list_.End())
+    {
+        guild_list_.Remove(iter);
+        GuildMessageBuilder::BuildGuildTagsDelta(this);
     }
 }
 

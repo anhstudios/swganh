@@ -36,6 +36,16 @@ public:
             stored_object->AddAwareObject(object);
             object->AddAwareObject(stored_object);
         });
+
+        auto contained_objects = object->GetContainedObjects();
+        
+        for_each(begin(contained_objects), end(contained_objects),
+            [this] (const ObjectMap::value_type& object_entry) 
+        {
+            auto& stored_object = object_entry.second;
+            AddObject(stored_object);
+        });
+
     }
     
     void RemoveObject(const shared_ptr<Object>& object)

@@ -10,8 +10,14 @@ class DatabaseManagerInterface;
 }} // anh::database
 
 namespace sql {
-class ResultSet;
-}
+    class ResultSet;
+    class Statement;
+}  // namespace sql
+
+namespace swganh {
+namespace simulation {
+    class SimulationService;
+}}  // namespace swganh::simulation
 
 namespace swganh {
 namespace object {
@@ -21,7 +27,8 @@ namespace object {
     class ObjectFactory : public ObjectFactoryInterface
     {
     public:
-        ObjectFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
+        ObjectFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+            swganh::simulation::SimulationService* simulation_service);
         virtual ~ObjectFactory() {}
         
         void CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::ResultSet>& result);
@@ -35,7 +42,12 @@ namespace object {
         virtual uint32_t GetType() const { return 0; }
         const static uint32_t type;
     protected:
+
+        void LoadContainedObjects(const std::shared_ptr<Object>& object,
+            const std::shared_ptr<sql::Statement>& statement);
+
         std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;   
+        swganh::simulation::SimulationService* simulation_service_;
     };
 
 }}  // namespace swganh::object

@@ -10,7 +10,8 @@ namespace swganh {
 namespace object {
 
     class Object;
-
+    class ObjectManager;
+    
     class ObjectFactoryInterface
     {
     public:
@@ -64,6 +65,7 @@ namespace object {
          * @returns the object type
          */
         virtual uint32_t LookupType(uint64_t object_id) const = 0;
+
         virtual uint32_t GetType() const = 0;
 
     };

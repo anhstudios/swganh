@@ -31,39 +31,16 @@ namespace swganh {
 namespace object {
 namespace group {
 
-void GroupMessageBuilder::BuildMemberListDelta(Group* group, uint8_t subtype, std::shared_ptr<swganh::object::tangible::BaseTangible> member)
+void GroupMessageBuilder::BuildMemberListDelta(Group* group)
 {
     if(group->HasObservers())
     {
         DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 1);
-        message.data.write<uint32_t>(group->member_list_.size());
-        message.data.write<uint32_t>(group->member_list_counter_++);
-        message.data.write<uint8_t>(subtype);
-
-        auto iter = group->FindMemberIterById_(member->GetObjectId());
-        switch(subtype)
-        {
-        case 0:
-            {
-                message.data.write<uint16_t>(iter - begin(group->member_list_));
-                break;
-            }
-
-        case 1:
-            {
-                message.data.write<uint16_t>(iter - begin(group->member_list_));
-                message.data.write<uint64_t>(iter->get()->GetObjectId());
-                message.data.write<std::string>(std::string(iter->get()->GetCustomName().begin(), member->GetCustomName().end()));
-                break;
-            }
-        default:
-            {
-                break;
-            }
-        }
-
+        group->member_list_.Serialize(message);
         group->AddDeltasUpdate(move(message));
     }
+    else
+        group->member_list_.ClearDeltas();
 }
 
 void GroupMessageBuilder::BuildLootModeDelta(Group* group)
@@ -72,7 +49,6 @@ void GroupMessageBuilder::BuildLootModeDelta(Group* group)
     {
         DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 7);
         message.data.write<uint32_t>(group->loot_mode_);
-
         group->AddDeltasUpdate(move(message));
     }
 }
@@ -83,7 +59,6 @@ void GroupMessageBuilder::BuildDifficultyDelta(Group* group)
     {
         DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 4);
         message.data.write<uint16_t>(group->difficulty_);
-
         group->AddDeltasUpdate(move(message));
     }
 }
@@ -94,27 +69,27 @@ void GroupMessageBuilder::BuildLootMasterDelta(Group* group)
     {
         DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 6);
         message.data.write<uint64_t>(group->loot_master_);
-
         group->AddDeltasUpdate(move(message));
     }
 }
 
+boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline3(Group* group)
+{
+    auto message = group->CreateBaselinesMessage(Object::VIEW_3, 8);
+	message.data.append(group->Object::GetBaseline3().get().data);
+    return boost::optional<BaselinesMessage>(std::move(message));
+}
+
 boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline6(Group* group)
 {
-    auto message = group->CreateBaselinesMessage(Object::VIEW_6, 8);
+    auto message = group->CreateBaselinesMessage(Object::VIEW_6, 6);
 	message.data.append(group->Object::GetBaseline6().get().data);
-	message.data.write<uint32_t>(0);
-	message.data.write<uint32_t>(group->member_list_.size());
-    message.data.write<uint32_t>(group->member_list_counter_++);
-    std::for_each(group->member_list_.begin(), group->member_list_.end(), [=, &message](Group::MemberList::value_type list_member) {
-		message.data.write<uint64_t>(list_member.get()->GetObjectId());
-		message.data.write<std::string>(std::string(list_member.get()->GetCustomName().begin(), list_member.get()->GetCustomName().end()));
-	});
+    group->member_list_.Serialize(message);
 	message.data.write<uint32_t>(0);
 	message.data.write<uint32_t>(0);
 	message.data.write<std::string>("");
     message.data.write<uint16_t>(group->difficulty_);
-	message.data.write<uint32_t>(0);
+	message.data.write<uint32_t>(4);
     message.data.write<uint64_t>(group->loot_master_);
     message.data.write<uint32_t>(group->loot_mode_);
 	return boost::optional<BaselinesMessage>(std::move(message));

@@ -10,6 +10,15 @@ namespace database {
 class DatabaseManagerInterface;
 }} // anh::database
 
+namespace sql {
+    class Statement;
+}  // namespace sql
+
+namespace swganh {
+namespace simulation {
+    class SimulationService;
+}}  // namespace swganh::simulation
+
 namespace swganh {
 namespace object {
 namespace creature {
@@ -18,7 +27,8 @@ namespace creature {
     class CreatureFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
-        CreatureFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager);
+        CreatureFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+            swganh::simulation::SimulationService* simulation_service);
 
         void LoadTemplates();
 
@@ -31,7 +41,14 @@ namespace creature {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+        
     private:
+        void LoadSkills_(const std::shared_ptr<Creature>& creature, 
+            const std::shared_ptr<sql::Statement>& statement);
+
+        void LoadSkillMods_(const std::shared_ptr<Creature>& creature, 
+            const std::shared_ptr<sql::Statement>& statement);
+
         std::unordered_map<std::string, std::shared_ptr<Creature>>::iterator GetTemplateIter_(const std::string& template_name);
         std::unordered_map<std::string, std::shared_ptr<Creature>> creature_templates_;
     };

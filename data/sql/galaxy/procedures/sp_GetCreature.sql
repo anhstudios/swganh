@@ -3,7 +3,7 @@
 # Server version:               5.3.2-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-21 14:46:06
+# Date/time:                    2011-10-26 22:53:03
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -16,7 +16,10 @@ DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetCreature`(IN `object_id` BIGINT)
 BEGIN
 call sp_GetTangible(object_id);
-select * from creature where id = object_id;
+select * from creature LEFT JOIN iff_templates ON (creature.disguise_template_id = iff_templates.id) where creature.id = object_id;
+call sp_GetCreatureSkills(object_id);
+call sp_GetCreatureSkillMods(object_id);
+call sp_GetContainedObjects(object_id);
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
