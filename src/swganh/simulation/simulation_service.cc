@@ -145,7 +145,7 @@ public:
 
         StopControllingObject(find_iter->second);
 
-        loaded_objects_.erase(find_iter);
+        loaded_objects_.unsafe_erase(find_iter);
     }
 
     shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<RemoteClient> client)
@@ -178,7 +178,7 @@ public:
             throw swganh::object::InvalidObject("Object has no controller");
         }
         
-        controlled_objects_.erase(find_iter);
+        controlled_objects_.unsafe_erase(find_iter);
     }
         
     void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler)
@@ -258,8 +258,8 @@ private:
 
     ObjControllerHandlerMap controller_handlers_;
 
-    map<uint64_t, shared_ptr<Object>> loaded_objects_;
-    map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
+    tbb::concurrent_unordered_map<uint64_t, shared_ptr<Object>> loaded_objects_;
+    tbb::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
 };
 
 }}  // namespace swganh::simulation
