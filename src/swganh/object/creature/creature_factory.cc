@@ -131,6 +131,20 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
                 creature->stat_base_list_.Set(creature::WILLPOWER, Stat(result->getUInt("willpower_wounds")));
             }
         }
+        
+        // Check for contained objects        
+        if (statement->getMoreResults())
+        {
+            result.reset(statement->getResultSet());
+            string skill_name;
+
+            while (result->next())
+            {
+                skill_name = result->getString("name");
+
+                creature->skills_.Insert(Skill(skill_name));
+            }
+        }
 
         // Check for contained objects        
         if (statement->getMoreResults())
