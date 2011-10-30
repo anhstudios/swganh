@@ -145,6 +145,23 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
                 creature->skills_.Insert(Skill(skill_name));
             }
         }
+        
+        // Check for contained objects        
+        if (statement->getMoreResults())
+        {
+            result.reset(statement->getResultSet());
+            string skill_mod_name;
+            uint32_t skill_mod_value;
+
+            while (result->next())
+            {
+                skill_mod_name = result->getString("name");
+                skill_mod_value = result->getUInt("value");
+
+
+                creature->skill_mod_list_.Insert(skill_mod_name, SkillMod(skill_mod_name, skill_mod_value, 0));
+            }
+        }
 
         // Check for contained objects        
         if (statement->getMoreResults())
