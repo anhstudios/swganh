@@ -132,36 +132,10 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
             }
         }
         
-        // Check for contained objects        
-        if (statement->getMoreResults())
-        {
-            result.reset(statement->getResultSet());
-            string skill_name;
+        LoadSkills_(creature, statement);
+        LoadSkillMods_(creature, statement);
 
-            while (result->next())
-            {
-                skill_name = result->getString("name");
-
-                creature->skills_.Insert(Skill(skill_name));
-            }
-        }
-
-        // Check for contained objects        
-        if (statement->getMoreResults())
-        {
-            result.reset(statement->getResultSet());
-
-            uint64_t contained_id;
-            uint32_t contained_type;
-            while (result->next())
-            {
-                contained_id = result->getUInt64("id");
-                contained_type = result->getUInt("type_id");
-                auto object = simulation_service_->LoadObjectById(contained_id, contained_type);
-
-                creature->AddContainedObject(object, Object::LINK);
-            }
-        }
+        LoadContainedObjects(creature, statement);
     }
     catch(sql::SQLException &e)
     {
@@ -174,4 +148,48 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
 shared_ptr<Object> CreatureFactory::CreateObjectFromTemplate(const string& template_name)
 {
     return make_shared<Creature>();
+}
+
+void CreatureFactory::LoadSkills_(
+    const shared_ptr<Creature>& creature, 
+    const shared_ptr<sql::Statement>& statement)
+{
+    // Check for contained objects        
+    if (statement->getMoreResults())
+    {
+        unique_ptr<sql::ResultSet> result(statement->getResultSet());
+
+        string skill_name;
+
+        while (result->next())
+        {
+            skill_name = result->getString("name");
+
+            creature->skills_.Insert(Skill(skill_name));
+        }
+    }
+}
+
+void CreatureFactory::LoadSkillMods_(
+    const shared_ptr<Creature>& creature, 
+    const shared_ptr<sql::Statement>& statement)
+{
+    // Check for contained objects        
+    if (statement->getMoreResults())
+    {
+        unique_ptr<sql::ResultSet> result(statement->getResultSet());
+
+        string skill_mod_name;
+        uint32_t skill_mod_value;
+
+        while (result->next())
+        {
+            skill_mod_name = result->getString("name");
+            skill_mod_value = result->getUInt("value");
+
+            creature->skill_mod_list_.Insert(
+                skill_mod_name, 
+                SkillMod(skill_mod_name, skill_mod_value, 0));
+        }
+    }
 }

@@ -11,6 +11,7 @@ class DatabaseManagerInterface;
 
 namespace sql {
     class ResultSet;
+    class Statement;
 }  // namespace sql
 
 namespace swganh {
@@ -41,6 +42,10 @@ namespace object {
         virtual uint32_t GetType() const { return 0; }
         const static uint32_t type;
     protected:
+
+        void LoadContainedObjects(const std::shared_ptr<Object>& object,
+            const std::shared_ptr<sql::Statement>& statement);
+
         std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;   
         swganh::simulation::SimulationService* simulation_service_;
     };
