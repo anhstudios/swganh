@@ -3,7 +3,7 @@
 # Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-17 22:07:04
+# Date/time:                    2011-10-29 14:50:11
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -11,9 +11,8 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-use galaxy;
-
 # Dumping structure for procedure galaxy.sp_CharacterDelete
+DROP PROCEDURE IF EXISTS `sp_CharacterDelete`;
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CharacterDelete`(IN `character_id` BIGINT, IN `account_id` BIGINT)
 BEGIN
@@ -24,7 +23,7 @@ BEGIN
 	 SET deleted_code = 0;
 	 SELECT D.reference_id
 	 FROM object A
-    INNER JOIN player_accounts_creatures C ON (A.id = C.player_character_id)
+    INNER JOIN player_accounts_creatures C ON (A.id = C.creature_id)
     INNER JOIN player_account D ON (C.player_id = D.id)
     WHERE A.id = character_id INTO acc_id;
     
