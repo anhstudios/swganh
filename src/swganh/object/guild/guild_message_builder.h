@@ -24,7 +24,7 @@ class GuildMessageBuilder
 public:
 
     // deltas
-    static void BuildGuildListDelta(Guild*, uint8_t sub_type, std::string guild_id_tag);
+    static void BuildGuildTagsDelta(Guild* guild);
 
     // baselines
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Guild* guild);

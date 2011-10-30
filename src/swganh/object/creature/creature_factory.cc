@@ -14,15 +14,18 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/exception.h"
+#include "swganh/simulation/simulation_service.h"
 
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::object::creature;
+using namespace swganh::simulation;
 
 
-CreatureFactory::CreatureFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
-    : TangibleFactory(db_manager)
+CreatureFactory::CreatureFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+                             SimulationService* simulation_service)
+    : TangibleFactory(db_manager, simulation_service)
 {
 }
 
@@ -58,17 +61,81 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
             result.reset(statement->getResultSet());
             while (result->next())
             {
-                creature->SetOwnerId(result->getUInt64("owner_id"));
-                creature->SetBankCredits(result->getUInt("bank_credits"));
-                creature->SetCashCredits(result->getUInt("cash_credits"));
-                creature->SetPosture((Creature::POSTURE)result->getUInt("posture"));
-                creature->SetFactionRank(result->getUInt("faction_rank"));
-                creature->SetScale(result->getDouble("scale"));
-                creature->SetBattleFatigue(result->getUInt("battle_fatigue"));
-                creature->SetStateBitmask(result->getUInt("state"));
-                // TODO: Add rest of creature table
+                creature->owner_id_ = result->getUInt64("owner_id");
+                creature->listen_to_id_ = result->getUInt64("musician_id");
+                creature->bank_credits_ = result->getUInt("bank_credits");
+                creature->cash_credits_ = result->getUInt("cash_credits");
+                creature->posture_ = (Posture)result->getUInt("posture");
+                creature->faction_rank_ = result->getUInt("faction_rank");
+                creature->scale_ = result->getDouble("scale");
+                creature->battle_fatigue_ = result->getUInt("battle_fatigue");
+                creature->state_bitmask_ = result->getUInt("state");
+                creature->acceleration_multiplier_base_ = result->getDouble("acceleration_base");
+                creature->acceleration_multiplier_modifier_ = result->getDouble("acceleration_modifier");
+                creature->speed_multiplier_base_ = result->getDouble("speed_base");
+                creature->speed_multiplier_modifier_ = result->getDouble("speed_modifier");
+                creature->run_speed_ = result->getDouble("run_speed");
+                creature->slope_modifier_angle_ = result->getDouble("slope_modifier_angle");
+                creature->slope_modifier_percent_ = result->getDouble("slope_modifier_percent");
+                creature->walking_speed_ = result->getDouble("walking_speed");
+                creature->turn_radius_ = result->getDouble("turn_radius");
+                creature->water_modifier_percent_ = result->getDouble("water_modifier_percent");
+                creature->combat_level_ = result->getUInt("combat_level");
+                creature->animation_ = result->getString("animation");
+                creature->mood_animation_ = result->getString("mood_animation");
+                creature->group_id_ = result->getUInt64("group_id");
+                creature->guild_id_ = result->getUInt("guild_id");
+                creature->weapon_id_ = result->getUInt64("weapon_id");
+                creature->mood_id_ = result->getUInt("mood_id");
+                creature->performance_id_ = result->getUInt("performance_id");
+                creature->disguise_ = result->getString("iff_template");
+
+                creature->stat_current_list_.Set(creature::HEALTH, Stat(result->getUInt("current_health")));
+                creature->stat_current_list_.Set(creature::STRENGTH, Stat(result->getUInt("current_strength")));
+                creature->stat_current_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("current_constitution")));
+                creature->stat_current_list_.Set(creature::ACTION, Stat(result->getUInt("current_action")));
+                creature->stat_current_list_.Set(creature::QUICKNESS, Stat(result->getUInt("current_quickness")));
+                creature->stat_current_list_.Set(creature::STAMINA, Stat(result->getUInt("current_stamina")));
+                creature->stat_current_list_.Set(creature::MIND, Stat(result->getUInt("current_mind")));
+                creature->stat_current_list_.Set(creature::FOCUS, Stat(result->getUInt("current_focus")));
+                creature->stat_current_list_.Set(creature::WILLPOWER, Stat(result->getUInt("current_willpower")));
+
+                creature->stat_max_list_.Set(creature::HEALTH, Stat(result->getUInt("max_health")));
+                creature->stat_max_list_.Set(creature::STRENGTH, Stat(result->getUInt("max_strength")));
+                creature->stat_max_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("max_constitution")));
+                creature->stat_max_list_.Set(creature::ACTION, Stat(result->getUInt("max_action")));
+                creature->stat_max_list_.Set(creature::QUICKNESS, Stat(result->getUInt("max_quickness")));
+                creature->stat_max_list_.Set(creature::STAMINA, Stat(result->getUInt("max_stamina")));
+                creature->stat_max_list_.Set(creature::MIND, Stat(result->getUInt("max_mind")));
+                creature->stat_max_list_.Set(creature::FOCUS, Stat(result->getUInt("max_focus")));
+                creature->stat_max_list_.Set(creature::WILLPOWER, Stat(result->getUInt("max_willpower")));
+
+                creature->stat_wound_list_.Set(creature::HEALTH, Stat(result->getUInt("health_wounds")));
+                creature->stat_wound_list_.Set(creature::STRENGTH, Stat(result->getUInt("strength_wounds")));
+                creature->stat_wound_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("constitution_wounds")));
+                creature->stat_wound_list_.Set(creature::ACTION, Stat(result->getUInt("action_wounds")));
+                creature->stat_wound_list_.Set(creature::QUICKNESS, Stat(result->getUInt("quickness_wounds")));
+                creature->stat_wound_list_.Set(creature::STAMINA, Stat(result->getUInt("stamina_wounds")));
+                creature->stat_wound_list_.Set(creature::MIND, Stat(result->getUInt("mind_wounds")));
+                creature->stat_wound_list_.Set(creature::FOCUS, Stat(result->getUInt("focus_wounds")));
+                creature->stat_wound_list_.Set(creature::WILLPOWER, Stat(result->getUInt("willpower_wounds")));
+
+                creature->stat_base_list_.Set(creature::HEALTH, Stat(result->getUInt("health_wounds")));
+                creature->stat_base_list_.Set(creature::STRENGTH, Stat(result->getUInt("strength_wounds")));
+                creature->stat_base_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("constitution_wounds")));
+                creature->stat_base_list_.Set(creature::ACTION, Stat(result->getUInt("action_wounds")));
+                creature->stat_base_list_.Set(creature::QUICKNESS, Stat(result->getUInt("quickness_wounds")));
+                creature->stat_base_list_.Set(creature::STAMINA, Stat(result->getUInt("stamina_wounds")));
+                creature->stat_base_list_.Set(creature::MIND, Stat(result->getUInt("mind_wounds")));
+                creature->stat_base_list_.Set(creature::FOCUS, Stat(result->getUInt("focus_wounds")));
+                creature->stat_base_list_.Set(creature::WILLPOWER, Stat(result->getUInt("willpower_wounds")));
             }
         }
+        
+        LoadSkills_(creature, statement);
+        LoadSkillMods_(creature, statement);
+
+        LoadContainedObjects(creature, statement);
     }
     catch(sql::SQLException &e)
     {
@@ -81,4 +148,48 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
 shared_ptr<Object> CreatureFactory::CreateObjectFromTemplate(const string& template_name)
 {
     return make_shared<Creature>();
+}
+
+void CreatureFactory::LoadSkills_(
+    const shared_ptr<Creature>& creature, 
+    const shared_ptr<sql::Statement>& statement)
+{
+    // Check for contained objects        
+    if (statement->getMoreResults())
+    {
+        unique_ptr<sql::ResultSet> result(statement->getResultSet());
+
+        string skill_name;
+
+        while (result->next())
+        {
+            skill_name = result->getString("name");
+
+            creature->skills_.Insert(Skill(skill_name));
+        }
+    }
+}
+
+void CreatureFactory::LoadSkillMods_(
+    const shared_ptr<Creature>& creature, 
+    const shared_ptr<sql::Statement>& statement)
+{
+    // Check for contained objects        
+    if (statement->getMoreResults())
+    {
+        unique_ptr<sql::ResultSet> result(statement->getResultSet());
+
+        string skill_mod_name;
+        uint32_t skill_mod_value;
+
+        while (result->next())
+        {
+            skill_mod_name = result->getString("name");
+            skill_mod_value = result->getUInt("value");
+
+            creature->skill_mod_list_.Insert(
+                skill_mod_name, 
+                SkillMod(skill_mod_name, skill_mod_value, 0));
+        }
+    }
 }

@@ -18,9 +18,17 @@ void PlayerMessageBuilder::BuildStatusBitmaskDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 5);
-        message.data.write(object->GetStatusFlags());
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 5);
 
+        message.data.write<uint32_t>(object->status_flags_.size());
+
+        for_each(begin(object->status_flags_),
+            end(object->status_flags_),
+            [&message] (vector<FlagBitmask>::value_type& flag)
+        {
+            flag.Serialize(message);
+        });
+        
         object->AddDeltasUpdate(move(message));
     }
 }
@@ -28,8 +36,16 @@ void PlayerMessageBuilder::BuildProfileBitmaskDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 6);
-        message.data.write(object->GetProfileFlags());
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 6);
+        
+        message.data.write<uint32_t>(object->profile_flags_.size());
+
+        for_each(begin(object->profile_flags_),
+            end(object->profile_flags_),
+            [&message] (vector<FlagBitmask>::value_type& flag)
+        {
+            flag.Serialize(message);
+        });
 
         object->AddDeltasUpdate(move(message));
     }
@@ -38,7 +54,7 @@ void PlayerMessageBuilder::BuildProfessionTagDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 7);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 7);
         message.data.write(object->GetProfessionTag());
 
         object->AddDeltasUpdate(move(message));
@@ -48,7 +64,7 @@ void PlayerMessageBuilder::BuildBornDateDelta(Player* object)
 {
      if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 8);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 8);
         message.data.write(object->GetBornDate());
 
         object->AddDeltasUpdate(move(message));
@@ -58,7 +74,7 @@ void PlayerMessageBuilder::BuildPlayTimeDelta(Player* object)
 {
      if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_3, 9);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 9);
         message.data.write(object->GetTotalPlayTime());
 
         object->AddDeltasUpdate(move(message));
@@ -68,7 +84,7 @@ void PlayerMessageBuilder::BuildRegionIdDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_6, 0);
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6, 0);
         message.data.write(object->GetRegionId());
 
         object->AddDeltasUpdate(move(message));
@@ -78,99 +94,28 @@ void PlayerMessageBuilder::BuildAdminTagDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_6, 1);
-        message.data.write(object->GetAdminTag());
-
-        object->AddDeltasUpdate(move(message));
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6, 1);
+        message.data.write<uint8_t>(object->GetAdminTag());
+        object->AddDeltasUpdate(std::move(message));
     }
 }
-void PlayerMessageBuilder::BuildXpDelta(Player* object, uint8_t sub_type, std::string type, uint32_t amount)
+void PlayerMessageBuilder::BuildXpDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_7, 0);
-        message.data.write(object->experience_.size());
-        // list counter
-        message.data.write(++object->experience_counter_);
-        // subtype
-        message.data.write<uint8_t>(sub_type);
-        message.data.write(type);
-        message.data.write(amount);
-
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_7, 0);
+        object->experience_.Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
+    else
+        object->experience_.ClearDeltas();
 }
-void PlayerMessageBuilder::BuildResetXpDelta(Player* object, std::vector<Player::XpData> experience)
-{
-    // do the delta update
-    if (object->HasObservers())
-    {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 0);
-        // @TODO: Check if there is a reset
-        message.data.write<uint16_t>(2);
-        message.data.write(object->experience_.size());
-        message.data.write(object->experience_.size());
-        for_each(begin(object->experience_), end(object->experience_),[&message](Player::XpData xp){
-            message.data.write(xp.type);
-            message.data.write(xp.value);
-        });
-
-        object->AddDeltasUpdate(move(message));
-    }
-}
-void PlayerMessageBuilder::BuildWaypointDelta(Player* object, uint8_t sub_type, shared_ptr<Waypoint> waypoint)
+void PlayerMessageBuilder::BuildWaypointDelta(Player* object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_7, 1);
-        message.data.write(object->waypoints_.size());
-        // list counter
-        message.data.write(++object->waypoint_counter_);
-        // subtype
-        message.data.write<uint8_t>(sub_type);
-        message.data.write(waypoint->GetObjectId());
-        // TODO: Add CELL ID?
-        message.data.write(0);
-        auto position = waypoint->GetPosition();
-        message.data.write(position.x);
-        message.data.write(position.z);
-        message.data.write(position.y);
-        // TODO: network id
-        message.data.write<uint64_t>(0);
-        message.data.write(anh::memcrc(waypoint->GetPlanet()));
-        message.data.write(waypoint->GetName());
-        message.data.write(waypoint->GetObjectId());
-        message.data.write<uint8_t>(waypoint->GetColorByte());
-        message.data.write<uint8_t>(waypoint->GetActiveFlag());
-
-        object->AddDeltasUpdate(move(message));
-    }
-}
-void PlayerMessageBuilder::BuildResetWaypointDelta(Player* object, std::vector<shared_ptr<Waypoint>> waypoints)
-{
-    if (object->HasObservers())
-    {
-        DeltasMessage message = object->CreateDeltasMessage(object->Object::VIEW_8, 1);
-        message.data.write(object->waypoints_.size());
-        message.data.write(object->waypoints_.size());
-        message.data.write<uint16_t>(2);
-        std::for_each(begin(object->waypoints_), end(object->waypoints_), [&message](shared_ptr<Waypoint> waypoint){
-            // waypoint
-            message.data.write<uint64_t>(waypoint->GetObjectId());
-            // cell id
-            message.data.write(0);
-            auto position = waypoint->GetPosition();
-            message.data.write(position.x);
-            message.data.write(position.y);
-            message.data.write(position.z);
-            message.data.write(0);
-            message.data.write(anh::memcrc(waypoint->GetPlanet()));
-            message.data.write(waypoint->GetName());
-            message.data.write(waypoint->GetObjectId());
-            message.data.write<uint8_t>(waypoint->GetColorByte());
-            message.data.write<uint8_t>(waypoint->GetActiveFlag());
-        });
-
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_7, 1);
+        object->waypoints_.Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
 }
@@ -214,86 +159,29 @@ void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(Player* object
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildQuestJournalDelta(Player* object, uint8_t sub_type, Player::QuestJournalData quest)
+void PlayerMessageBuilder::BuildQuestJournalDelta(Player* object)
 {
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 6);
-        // subtype
-        message.data.write<uint8_t>(sub_type);
-        message.data.write(quest.quest_crc);
-        message.data.write(quest.owner_id);
-        message.data.write(quest.active_step_bitmask);
-        message.data.write(quest.completed_step_bitmask);
-        message.data.write(quest.completed_flag);
-        message.data.write(quest.counter);        
-
+        object->quest_journal_.Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
+    else
+        object->quest_journal_.ClearDeltas();
 }
-void PlayerMessageBuilder::BuildResetQuestJournalDelta(Player* object, std::vector<Player::QuestJournalData> quests)
-{
-    if (object->HasObservers())
-    {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 6);
-        // update counter
-        message.data.write<uint16_t>(1);
-        message.data.write<uint8_t>(3);
-        std::for_each(begin(quests), end(quests), [&message] (Player::QuestJournalData quest){
-            message.data.write(quest.quest_crc);
-            message.data.write(quest.owner_id);
-            message.data.write(quest.active_step_bitmask);
-            message.data.write(quest.completed_step_bitmask);
-            message.data.write(quest.completed_flag);
-            message.data.write(quest.counter);   
-        });     
-
-        object->AddDeltasUpdate(move(message));
-    }
-}
-void PlayerMessageBuilder::BuildAbilityDelta(Player* object, uint8_t sub_type, uint16_t index, std::string ability)
+void PlayerMessageBuilder::BuildAbilityDelta(Player* object)
 {
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 0);
-        message.data.write(object->abilities_.size());
-        // list counter
-        message.data.write(++object->abilities_counter_);
-        // subtype
-        message.data.write<uint8_t>(sub_type);
-        switch (sub_type)
-        {
-        case 0:
-            message.data.write(index);
-            break;
-        case 1:
-        case 2:
-            message.data.write(index);
-            message.data.write(ability);
-            break;
-        case 4:
-             break;
-        }
+        object->abilities_.Serialize(message);
+        object->AddDeltasUpdate(move(message));
+    }
+    else
+        object->abilities_.ClearDeltas();
+}
 
-        object->AddDeltasUpdate(move(message));
-    }
-}
-void PlayerMessageBuilder::BuildResetAbilityDelta(Player* object, std::vector<std::string> abilities)
-{
-    if (object->HasObservers())
-    {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 0);
-        message.data.write(object->abilities_.size());
-        // list counter
-        message.data.write(++object->abilities_counter_);
-        // subtype
-        message.data.write<uint8_t>(3);
-        for_each(begin(abilities), end(abilities), [&message] (string ability) {
-            message.data.write(ability);
-        });
-        object->AddDeltasUpdate(move(message));
-    }
-}
 void PlayerMessageBuilder::BuildExperimentationFlagDelta(Player* object)
 {
     if (object->HasObservers())
@@ -324,35 +212,18 @@ void PlayerMessageBuilder::BuildNearestCraftingStationDelta(Player* object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object, uint8_t sub_type, uint16_t index, Player::DraftSchematicData schematic)
+void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object)
 {
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 4);
-        message.data.write(object->draft_schematics_.size());
-        // list counter
-        message.data.write(++object->draft_schematics_counter_);
-        // subtype
-        message.data.write<uint8_t>(sub_type);
-        switch (sub_type)
-        {
-        case 0:
-            message.data.write(index);
-            break;
-        case 1:
-        case 2:
-            message.data.write(index);
-            message.data.write(schematic.schematic_id);
-            message.data.write(schematic.schematic_crc);
-            break;
-        case 4:
-             break;
-        }
-
+        object->draft_schematics_.Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
+    else
+        object->draft_schematics_.ClearDeltas();
 }
-void PlayerMessageBuilder::BuildResetDraftSchematicDelta(Player* object, std::vector<Player::DraftSchematicData> schematics){}
+
 void PlayerMessageBuilder::BuildExperimentationPointsDelta(Player* object)
 {
     if (object->HasObservers())
@@ -373,10 +244,28 @@ void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(Player* object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildFriendsDelta(Player* object, uint8_t sub_type, uint16_t index, std::string friend_name){}
-void PlayerMessageBuilder::BuildResetFriendsDelta(Player* object, std::vector<std::string> friends){}
-void PlayerMessageBuilder::BuildIgnoredDelta(Player* object, uint8_t sub_type, uint16_t index, std::string ignored_name){}
-void PlayerMessageBuilder::BuildResetIgnoredDelta(Player* object, std::vector<std::string> ignored_players){}
+void PlayerMessageBuilder::BuildFriendsDelta(Player* object)
+{
+    if (object->HasObservers())
+    {
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 7);
+        object->friends_.Serialize(message);
+        object->AddDeltasUpdate(move(message));
+    }
+    else
+        object->friends_.ClearDeltas();
+}
+void PlayerMessageBuilder::BuildIgnoredDelta(Player* object)
+{
+    if (object->HasObservers())
+    {
+        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 8);
+        object->ignored_players_.Serialize(message);
+        object->AddDeltasUpdate(move(message));
+    }
+    else
+        object->ignored_players_.ClearDeltas();
+}
 void PlayerMessageBuilder::BuildLanguageDelta(Player* object)
 {
     if (object->HasObservers())
@@ -441,130 +330,90 @@ void PlayerMessageBuilder::BuildJediStateDelta(Player* object)
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_3, 10);
-
     message.data.append(object->Object::GetBaseline3().get().data);
-    // not used
-    message.data.write(0);
-    message.data.write(object->GetStatusFlags());
-    message.data.write(object->GetProfileFlags());
-    message.data.write(object->GetProfessionTag());
-    message.data.write(object->GetBornDate());
-    message.data.write(object->GetTotalPlayTime());
+    message.data.write<uint32_t>(0);                                    // Not Used
+    
+    message.data.write<uint32_t>(object->status_flags_.size());
 
+    for_each(begin(object->status_flags_),
+        end(object->status_flags_),
+        [&message] (vector<FlagBitmask>::value_type& flag)
+    {
+        flag.Serialize(message);
+    });
+
+    message.data.write<uint32_t>(object->profile_flags_.size());
+
+    for_each(begin(object->profile_flags_),
+        end(object->profile_flags_),
+        [&message] (vector<FlagBitmask>::value_type& flag)
+    {
+        flag.Serialize(message);
+    });
+
+    message.data.write<std::string>(object->GetProfessionTag());        // Profession Tag
+    message.data.write<uint32_t>(object->GetBornDate());                // Born Date
+    message.data.write<uint32_t>(object->GetTotalPlayTime());           // Total Play Time
     return boost::optional<BaselinesMessage>(move(message));
 }
+
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline6(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_6, 2);
-
-    message.data.write(object->GetRegionId());
-    message.data.write<uint8_t>(object->GetAdminTag());
-
+    message.data.write<uint32_t>(object->GetRegionId());    // Region Id
+    message.data.write<uint8_t>(object->GetAdminTag());     // Admin Tag
     return boost::optional<BaselinesMessage>(move(message));
 }
+
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_8, 7);
+    object->experience_.Serialize(message);
+    object->waypoints_.Serialize(message);
     
-    // experience
-    message.data.write(object->experience_.size());
-    message.data.write(object->experience_counter_);
-    for_each(begin(object->experience_), end(object->experience_), [&message] (Player::XpData xp){
-        message.data.write(xp.type);
-        message.data.write(xp.value);
-    });
-    // waypoints
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(0);
-    //message.data.write(object->waypoints_.size());
-    //message.data.write(object->waypoint_counter_);
-    //for_each(begin(object->waypoints_), end(object->waypoints_), [&message] (shared_ptr<Waypoint> waypoint){
-    //    message.data.write<uint8_t>(0);
-    //    message.data.write<uint64_t>(waypoint->GetObjectId());
-    //    // cell id
-    //    message.data.write(0);
-    //    auto position = waypoint->GetPosition();
-    //    message.data.write(position.x);
-    //    message.data.write(position.y);
-    //    message.data.write(position.z);
-    //    message.data.write(0);
-    //    message.data.write(anh::memcrc(waypoint->GetPlanet()));
-    //    message.data.write(waypoint->GetName());
-    //    message.data.write(waypoint->GetObjectId());
-    //    message.data.write<uint8_t>(waypoint->GetColorByte());
-    //    message.data.write<uint8_t>(waypoint->GetActiveFlag());
-    //});
-    // The Force
-    message.data.write(object->GetCurrentForcePower());
-    message.data.write(object->GetMaxForcePower());
-    // TODO: Are these really lists or just bitmasks?
-    message.data.write(object->GetCurrentForceSensitiveQuests());
-    message.data.write(object->GetCompletedForceSensitiveQuests());
-    // Quests
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(0);
-    /*message.data.write(object->quest_journal_.size());
-    message.data.write(0);
-    for_each(begin(object->quest_journal_), end(object->quest_journal_), [&message](Player::QuestJournalData quest){
-        message.data.write<uint8_t>(0);
-        message.data.write(quest.quest_crc);
-        message.data.write(quest.owner_id);
-        message.data.write(quest.active_step_bitmask);
-        message.data.write(quest.completed_step_bitmask);
-        message.data.write(quest.completed_flag);
-        message.data.write(quest.counter);
-    });*/
-    return boost::optional<BaselinesMessage>(move(message));
+    message.data.write<uint32_t>(object->GetCurrentForcePower());
+    message.data.write<uint32_t>(object->GetMaxForcePower());
+    
+    message.data.write<uint32_t>(0); // Force Sensetive Quest List Soze
+    message.data.write<uint32_t>(0); // Force Sensetive Quest List Counter
+    
+    message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Size
+    message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Counter
+    
+    object->quest_journal_.Serialize(message);
+    
+    return boost::optional<BaselinesMessage>(std::move(message));
 }
+
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_9, 17);
-
-    // Ability
-    message.data.write(object->abilities_.size());
-    message.data.write(0);
-    for_each(begin(object->abilities_), end(object->abilities_), [&message](string ability){
-        message.data.write(ability);
-    });
-    // Crafting
-    message.data.write(object->GetExperimentationFlag());
-    message.data.write(object->GetCraftingStage());
-    message.data.write(object->GetNearestCraftingStation());
-    // Schematics
-    message.data.write(object->draft_schematics_.size());
-    message.data.write(0);
-    for_each(begin(object->draft_schematics_), end(object->draft_schematics_), [&message](Player::DraftSchematicData schem) {
-        message.data.write(schem.schematic_id);
-        message.data.write(schem.schematic_crc);
-    });
-
-    message.data.write(object->GetExperimentationPoints());
-    message.data.write(object->GetAccomplishmentCounter());
-    // friend list
-    message.data.write(object->friends_.size());
-    message.data.write(0);
-    for_each(begin(object->friends_), end(object->friends_), [&message](string name){
-        message.data.write(name);
-    });
-    // ignore list
-    message.data.write(object->ignored_players_.size());
-    message.data.write(0);
-    for_each(begin(object->ignored_players_), end(object->ignored_players_), [&message] (string name) {
-        message.data.write(name);
-    });
-    message.data.write(object->GetLanguage());
-    message.data.write(object->GetCurrentStomach());
-    message.data.write(object->GetMaxStomach());
-    message.data.write(object->GetCurrentDrink());
-    message.data.write(object->GetMaxDrink());
-    // unused
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(0);
-    message.data.write(object->GetJediState());
-
-    return boost::optional<BaselinesMessage>(move(message));
+    
+    object->abilities_.Serialize(message);
+    message.data.write<uint32_t>(object->GetExperimentationFlag());
+    message.data.write<uint32_t>(object->GetCraftingStage());
+    message.data.write<uint64_t>(object->GetNearestCraftingStation());
+    
+    object->draft_schematics_.Serialize(message);
+    
+    
+    message.data.write<uint32_t>(object->GetExperimentationPoints());
+    message.data.write<uint32_t>(object->GetAccomplishmentCounter());
+    
+    object->friends_.Serialize(message);
+    
+    object->ignored_players_.Serialize(message);
+    
+    message.data.write<uint32_t>(object->GetLanguage());
+    message.data.write<uint32_t>(object->GetCurrentStomach());
+    message.data.write<uint32_t>(object->GetMaxStomach());
+    message.data.write<uint32_t>(object->GetCurrentDrink());
+    message.data.write<uint32_t>(object->GetMaxDrink());
+    message.data.write<uint32_t>(0); // Unused
+    message.data.write<uint32_t>(0); // Unused
+    message.data.write<uint32_t>(0); // Unused
+    message.data.write<uint32_t>(0); // Unused
+    message.data.write<uint32_t>(object->GetJediState()); // Jedi State
+    
+    return boost::optional<BaselinesMessage>(std::move(message));
 }

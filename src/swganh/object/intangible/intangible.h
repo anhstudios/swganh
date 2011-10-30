@@ -18,14 +18,16 @@ public:
     virtual uint32_t GetType() const { return Intangible::type; }
     const static uint32_t type = 0x494E534F;
 
-    std::string GetStfDetailFile() const;
+    std::string GetStfDetailFile() ;
     void SetStfDetailFile(std::string stf_detail_file);
 
-    std::string GetStfDetailString() const;
+    std::string GetStfDetailString() ;
     void SetStfDetailString(std::string stf_detail_string);
 
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 private:
+	friend class IntangibleMessageBuilder;
+    friend class IntangibleFactory;
     std::string stf_detail_file_;
     std::string stf_detail_string_;
 };

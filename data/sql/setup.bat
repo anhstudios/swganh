@@ -583,4 +583,4 @@ ECHO. IP: %db_host%
 	GOTO:EOF
 
 :end
-	GOTO:EOF
+	exit

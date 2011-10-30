@@ -12,13 +12,18 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/object.h"
 #include "swganh/object/exception.h"
+#include "swganh/simulation/simulation_service.h"
 
+using namespace sql;
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
+using namespace swganh::simulation;
 
-ObjectFactory::ObjectFactory(const shared_ptr<DatabaseManagerInterface>& db_manager)
+ObjectFactory::ObjectFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+                             SimulationService* simulation_service)
     : db_manager_(db_manager)
+    , simulation_service_(simulation_service)
 {
 }
 
@@ -26,16 +31,16 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 {
     try {
         result->next();
-        object->SetSceneId(result->getUInt("scene_id"));
-        object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
-        object->SetOrientation(glm::quat(result->getDouble("x_orientation"),result->getDouble("y_orientation"), result->getDouble("z_orientation"), result->getDouble("w_orientation")));
-        object->SetComplexity(result->getDouble("complexity"));
-        object->SetStfNameFile(result->getString("stf_name_file"));
-        object->SetStfNameString(result->getString("stf_name_string"));
+        object->scene_id_ = result->getUInt("scene_id");
+        object->position_ = glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position"));
+        object->orientation_ = glm::quat(result->getDouble("x_orientation"),result->getDouble("y_orientation"), result->getDouble("z_orientation"), result->getDouble("w_orientation"));
+        object->complexity_ = result->getDouble("complexity");
+        object->stf_name_file_ = result->getString("stf_name_file");
+        object->stf_name_string_ = result->getString("stf_name_string");
         string custom_string = result->getString("custom_name");
-        object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-        object->SetVolume(result->getUInt("volume"));
-        object->SetTemplate(result->getString("iff_template"));
+        object->custom_name_ = wstring(begin(custom_string), end(custom_string));
+        object->volume_ = result->getUInt("volume");
+        object->template_string_ = result->getString("iff_template");
         
     }
     catch(sql::SQLException &e)
@@ -64,5 +69,28 @@ uint32_t ObjectFactory::LookupType(uint64_t object_id) const
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
         return type;
+    }
+}
+
+void ObjectFactory::LoadContainedObjects(
+    const shared_ptr<Object>& object,
+    const shared_ptr<Statement>& statement)
+{
+    // Check for contained objects        
+    if (statement->getMoreResults())
+    {
+        unique_ptr<ResultSet> result(statement->getResultSet());
+
+        uint64_t contained_id;
+        uint32_t contained_type;
+
+        while (result->next())
+        {
+            contained_id = result->getUInt64("id");
+            contained_type = result->getUInt("type_id");
+            auto contained_object = simulation_service_->LoadObjectById(contained_id, contained_type);
+
+            object->AddContainedObject(contained_object, Object::LINK);
+        }
     }
 }
