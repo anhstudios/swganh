@@ -14,6 +14,7 @@
 #include "swganh/object/exception.h"
 #include "swganh/simulation/simulation_service.h"
 
+using namespace sql;
 using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
@@ -68,5 +69,28 @@ uint32_t ObjectFactory::LookupType(uint64_t object_id) const
         DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
         return type;
+    }
+}
+
+void ObjectFactory::LoadContainedObjects(
+    const shared_ptr<Object>& object,
+    const shared_ptr<Statement>& statement)
+{
+    // Check for contained objects        
+    if (statement->getMoreResults())
+    {
+        unique_ptr<ResultSet> result(statement->getResultSet());
+
+        uint64_t contained_id;
+        uint32_t contained_type;
+
+        while (result->next())
+        {
+            contained_id = result->getUInt64("id");
+            contained_type = result->getUInt("type_id");
+            auto contained_object = simulation_service_->LoadObjectById(contained_id, contained_type);
+
+            object->AddContainedObject(contained_object, Object::LINK);
+        }
     }
 }

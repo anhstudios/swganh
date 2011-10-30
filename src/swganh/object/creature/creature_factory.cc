@@ -163,22 +163,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
             }
         }
 
-        // Check for contained objects        
-        if (statement->getMoreResults())
-        {
-            result.reset(statement->getResultSet());
-
-            uint64_t contained_id;
-            uint32_t contained_type;
-            while (result->next())
-            {
-                contained_id = result->getUInt64("id");
-                contained_type = result->getUInt("type_id");
-                auto object = simulation_service_->LoadObjectById(contained_id, contained_type);
-
-                creature->AddContainedObject(object, Object::LINK);
-            }
-        }
+        LoadContainedObjects(creature, statement);
     }
     catch(sql::SQLException &e)
     {
