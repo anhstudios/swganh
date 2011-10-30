@@ -37,7 +37,7 @@ charCreate:BEGIN
     DECLARE gender INT(3);
     DECLARE base_skill_id INT;
     DECLARE nameCheck INT;
-    
+
     DECLARE health INT;
     DECLARE strength INT;
     DECLARE constitution INT;
@@ -47,13 +47,13 @@ charCreate:BEGIN
     DECLARE mind INT;
     DECLARE focus INT;
     DECLARE willpower INT;
-    
+
     SELECT sf_CharacterNameInUseCheck(start_firstname) INTO nameCheck;
     IF nameCheck <> 666 THEN
         SELECT(nameCheck);
         LEAVE charCreate;
     END IF;
-    
+
     IF base_model_string like '%female%' THEN
         SET gender = 1;
     ELSE
@@ -68,37 +68,33 @@ charCreate:BEGIN
 
     START TRANSACTION;
         SELECT MAX(id) + 10 FROM object INTO object_id FOR UPDATE;
-        
+
         IF object_id IS NULL THEN
             SET object_id = 8589934593;
         END IF;
-        
-        
+
+
         SELECT scene_id, x, y, z FROM starting_location WHERE location LIKE 'coronet' INTO start_scene, start_x, start_y, start_z;
-        
+
         SELECT id from skill where name like start_profession INTO profession_id;
-        
+
 	    SELECT sf_SpeciesShort(base_model_string) INTO shortSpecies;
 	    SELECT id from species where species.name like shortSpecies into race_id;
-        
+
 	    SET longSpecies = REPLACE(base_model_string, 'object/creature/player/', 'object/creature/player/shared_');
 	    SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longSpecies INTO iff_template_id;
-        
+
         SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE 'object/player/shared_player.iff' INTO player_iff_template_id;
-        
-	    SET longHair = REPLACE(start_hair_model, '/hair_', '/shared_hair_');
-        
-	    SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longHair INTO hair_iff_template_id;
-        
-        SELECT creation_attributes.health, creation_attributes.strength, creation_attributes.constitution, creation_attributes.action, 
-        creation_attributes.quickness, creation_attributes.stamina, creation_attributes.mind, creation_attributes.focus, creation_attributes.willpower 
+
+        SELECT creation_attributes.health, creation_attributes.strength, creation_attributes.constitution, creation_attributes.action,
+        creation_attributes.quickness, creation_attributes.stamina, creation_attributes.mind, creation_attributes.focus, creation_attributes.willpower
         FROM creation_attributes WHERE creation_attributes.species_id = race_id AND creation_attributes.profession_id = profession_id
         INTO health, strength, constitution, action, quickness, stamina, mind, focus, willpower;
-        
+
         INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1129465167);
         INSERT INTO `tangible` VALUES (object_id, start_appearance_customization, 0, 0, 0, 0, 1);
-        INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture, 
-            scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier, 
+        INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture,
+            scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier,
             run_speed, slope_modifier_angle, slope_modifier_percent, turn_radius, walking_speed,
             max_health, max_strength, max_constitution, max_action, max_quickness, max_stamina,
             max_mind, max_focus, max_willpower, current_health, current_strength, current_constitution,
@@ -115,10 +111,18 @@ charCreate:BEGIN
 	    -- BANK
 	    -- MISSION
 	    -- HAIR
-        INSERT INTO `object` VALUES (object_id + 6, start_scene, object_id, hair_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', '' ,0, NOW(), NOW(), null, 1413566031);
-        INSERT INTO `tangible` VALUES (object_id + 6, hair_customization, 0, 0, 0, 0, 0);
-  	    INSERT INTO `appearance` VALUES (object_id + 6, scale, gender, shortSpecies, hair_customization);
-	    -- EQUIPED
+
+        IF start_hair_model != '' THEN
+            SET longHair = REPLACE(start_hair_model, '/hair_', '/shared_hair_');
+            SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longHair INTO hair_iff_template_id;
+
+            INSERT INTO `object` VALUES (object_id + 6, start_scene, object_id, hair_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', '' ,0, NOW(), NOW(), null, 1413566031);
+            INSERT INTO `tangible` VALUES (object_id + 6, hair_customization, 0, 0, 0, 0, 0);
+            INSERT INTO `appearance` VALUES (object_id + 6, scale, gender, shortSpecies, hair_customization);
+
+        END IF;
+
+        -- EQUIPED
 	    -- PLAYER
 	    INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, player_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'string_id_table', '', start_custom_name,0, NOW(), NOW(), null, 1347174745);
 	    INSERT INTO `player` (id, profession_tag, born_date, csr_tag, current_language, jedi_state)
@@ -126,16 +130,16 @@ charCreate:BEGIN
 	    -- PLAYER ACCOUNT
 	    SELECT id FROM player_account where start_account_id = reference_id INTO player_id;
         INSERT INTO player_accounts_creatures values (player_id, object_id);
-        
+
         IF start_city <> 'tutorial' THEN
             SET base_skill_id = profession_id + 1;
             CALL sp_CharacterSkillsCreate(object_id,base_skill_id,race_id);
             CALL sp_CharacterXpCreate(object_id,base_skill_id);
         END IF;
-        
+
         CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender);
     COMMIT;
-   
+
    SELECT(object_id);
 
 END//
