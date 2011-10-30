@@ -10,6 +10,10 @@ namespace database {
 class DatabaseManagerInterface;
 }} // anh::database
 
+namespace sql {
+    class Statement;
+}  // namespace sql
+
 namespace swganh {
 namespace simulation {
     class SimulationService;
@@ -39,6 +43,12 @@ namespace creature {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
         
     private:
+        void LoadSkills_(const std::shared_ptr<Creature>& creature, 
+            const std::shared_ptr<sql::Statement>& statement);
+
+        void LoadSkillMods_(const std::shared_ptr<Creature>& creature, 
+            const std::shared_ptr<sql::Statement>& statement);
+
         std::unordered_map<std::string, std::shared_ptr<Creature>>::iterator GetTemplateIter_(const std::string& template_name);
         std::unordered_map<std::string, std::shared_ptr<Creature>> creature_templates_;
     };
