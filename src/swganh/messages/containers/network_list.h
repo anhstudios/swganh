@@ -38,6 +38,9 @@ template <typename T>
 class NetworkList
 {
 public:
+    typedef typename std::list<T>::const_iterator const_iterator;
+    typedef typename std::list<T>::iterator iterator;
+    
     NetworkList()
         : items_(std::list<T>())
         , update_counter_(0)
@@ -52,9 +55,9 @@ public:
     /**
      * Inserts the item and queues a change to the added_items_ list.
      */
-    void Add(T& item)
+    void Add(T item)
     {
-        auto iter = std::find_if(items_.begin(), items_.end(), [=](T& x)->bool {
+        auto iter = std::find_if(items_.begin(), items_.end(), [&item](T& x)->bool {
             return (x == item);
         });
 
@@ -68,7 +71,7 @@ public:
     /**
      * Removes an item and queues a change to the removed_items_ list.
      */
-    void Remove(typename std::list<T>::const_iterator iter)
+    void Remove(iterator iter)
     {
         if(iter != items_.end())
         {
@@ -80,7 +83,7 @@ public:
     /**
      * Inserts an item without queueing a change.
      */
-    void Insert(T& item)
+    void Insert(T item)
     {
         auto iter = std::find_if(items_.begin(), items_.end(), [=](T& x)->bool {
             return (x == item);
@@ -98,9 +101,9 @@ public:
         clear_ = true;
     }
 
-    bool Contains(T& item)
+    bool Contains(const T& item)
     {
-        auto iter = std::find_if(items_.begin(), items_.end(), [=](T& x)->bool {
+        auto iter = std::find_if(items_.begin(), items_.end(), [&item](T& x)->bool {
             return (x == item);
         });
 
@@ -122,9 +125,8 @@ public:
         clear_ = false;
     }
 
-    typedef typename std::list<T>::const_iterator const_iterator;
-    typename std::list<T>::const_iterator Begin(void) const { return items_.begin(); }
-    typename std::list<T>::const_iterator End(void) const { return items_.end(); }
+    iterator Begin(void) { return items_.begin(); }
+    iterator End(void) { return items_.end(); }
 
     uint16_t Size(void) const { return items_.size(); }
 

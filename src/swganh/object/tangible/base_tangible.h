@@ -132,7 +132,7 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7();
 private:
-    friend TangibleMessageBuilder;
+    friend class TangibleMessageBuilder;
 
     std::string customization_;                                                                         // update 3 variable 4
     swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;    // update 3 variable 5

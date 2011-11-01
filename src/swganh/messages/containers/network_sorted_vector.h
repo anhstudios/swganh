@@ -38,6 +38,7 @@ class NetworkSortedVector
 {
 public:
     typedef typename std::vector<T>::const_iterator const_iterator;
+    typedef typename std::vector<T>::iterator iterator;
 
     NetworkSortedVector(uint16_t capacity)
         : items_(std::vector<T>())
@@ -67,7 +68,7 @@ public:
         }
     }
 
-    void Remove(const_iterator iter)
+    void Remove(iterator iter)
     {
         uint16_t distance = std::distance<const_iterator>(items_.begin(), iter);
         items_removed_.push_back(distance);
@@ -86,12 +87,12 @@ public:
         }
     }
 
-    void Erase(const_iterator iter)
+    void Erase(iterator iter)
     {
         items_.erase(iter);
     }
 
-    void Update(const_iterator iter, T& item)
+    void Update(iterator iter, T& item)
     {
         uint16_t index = std::distance<const_iterator>(items_.begin(), iter);
         items_[index] = item;
@@ -108,7 +109,7 @@ public:
         reinstall_ = true;
     }
 
-    const_iterator Find(T& item)
+    iterator Find(T& item)
     {
         auto iter = std::find_if(items_.begin(), items_.end(), [=](const T& x)->bool {
             return (item == x);
@@ -133,8 +134,8 @@ public:
 
     uint16_t Capacity() { return items_.capacity(); }
     uint16_t Size() { return items_.size(); }
-    const_iterator Begin() { return items_.begin(); }
-    const_iterator End() { return items_.end(); } 
+    iterator Begin() { return items_.begin(); }
+    iterator End() { return items_.end(); } 
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {

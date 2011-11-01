@@ -23,11 +23,10 @@
 #include "swganh/messages/baselines_message.h"
 #include "swganh/messages/deltas_message.h"
 
+#include "swganh/object/object_controller.h"
 
 namespace swganh {
 namespace object {
-                    
-class ObjectController;
 
 typedef std::vector<
     swganh::messages::BaselinesMessage

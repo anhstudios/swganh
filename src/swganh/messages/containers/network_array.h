@@ -55,7 +55,7 @@ public:
     /**
      * Sets the value of the index without queueing a change.
      */
-    void Set(uint16_t index, T& item)
+    void Set(uint16_t index, T item)
     {
         if(index < 0 || index > Size())
             throw std::out_of_range("NetworkArray::Set index out of range.");
@@ -66,7 +66,7 @@ public:
     /**
      * Sets the value of the index and queues a change.
      */
-    void Update(uint16_t index, T& item)
+    void Update(uint16_t index, T item)
     {
         if(index < 0 || index > Size())
             throw std::out_of_range("NetworkArray::Update index out of range.");

@@ -41,7 +41,10 @@ namespace containers {
 template <typename T>
 class NetworkSortedList
 {
-public:
+public:    
+    typedef typename std::map<uint16_t, T>::const_iterator const_iterator;
+    typedef typename std::map<uint16_t, T>::iterator iterator;
+    
     NetworkSortedList()
         : items_(std::map<uint16_t, T>())
         , update_counter_(0)
@@ -58,7 +61,7 @@ public:
     /**
      *
      */
-    uint16_t Add(T& item)
+    uint16_t Add(T item)
     {
         auto iter = std::find_if(items_.begin(), items_.end(), [=](std::pair<uint16_t, T> x)->bool {
             return (x.second == item);
@@ -92,7 +95,7 @@ public:
     /**
      * Inserts an item into the list without queue an update.
      */
-    uint16_t Insert(T& item)
+    uint16_t Insert(T item)
     {
         uint16_t index = items_.size();
         items_.insert(std::pair<uint16_t, T>(index, item));
@@ -106,7 +109,7 @@ public:
     void Erase(uint16_t index)
     {
         auto iter = std::find_if(items_.begin(), items_.end(), [=](std::pair<uint16_t, T> x)->bool {
-            return (x.second == item);
+            return (x.first == index);
         });
 
         if(iter != items_.end())
@@ -157,9 +160,9 @@ public:
     /**
      *
      */
-    typename std::map<uint16_t, T>::const_iterator Find(T& item)
+    iterator Find(const T& item)
     {
-        auto iter = std::find_if(items_.begin(), items_.end(), [=](std::pair<uint16_t, T> x)->bool {
+        auto iter = std::find_if(items_.begin(), items_.end(), [&item](std::pair<uint16_t, T> x)->bool {
             return (x.second == item);
         });
 
@@ -181,9 +184,9 @@ public:
     }
 
     uint16_t Size(void) const { return items_.size(); }
-    typedef typename std::map<uint16_t, T>::const_iterator const_iterator;
-    typename std::map<uint16_t, T>::const_iterator Begin() const { return items_.begin(); }
-    typename std::map<uint16_t, T>::const_iterator End() const { return items_.end(); }
+    
+    iterator Begin() { return items_.begin(); }
+    iterator End() { return items_.end(); }
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
