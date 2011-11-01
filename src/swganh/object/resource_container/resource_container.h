@@ -13,8 +13,8 @@ class ResourceContainer : public swganh::object::tangible::BaseTangible
 {
 public:
     // RCNO
-    ResourceContainer::ResourceContainer();
-    ResourceContainer::ResourceContainer(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
+    ResourceContainer();
+    ResourceContainer(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
         uint32_t incap_timer, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders,
         uint32_t current_quantity, uint64_t global_resource_id, uint32_t max_quantity, std::string resource_type, std::wstring name);
 
