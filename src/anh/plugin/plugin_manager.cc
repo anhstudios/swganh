@@ -2,6 +2,7 @@
 #include "anh/plugin/plugin_manager.h"
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 
 #define BOOST_FILESYSTEM_VERSION 3
