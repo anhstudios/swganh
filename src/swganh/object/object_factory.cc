@@ -26,7 +26,54 @@ ObjectFactory::ObjectFactory(const shared_ptr<DatabaseManagerInterface>& db_mana
     , simulation_service_(simulation_service)
 {
 }
+void ObjectFactory::PersistObject(const shared_ptr<Object>& object)
+{
+    try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>
+            (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+        PersistObject(object, statement);
+        // Now execute the update
+        int updated = statement->executeUpdate();
+    }
+    catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared_ptr<sql::PreparedStatement>& prepared_statement)
+{
+    try {
+        prepared_statement->setUInt64(1, object->object_id_);
+        prepared_statement->setUInt(2, object->scene_id_);
+        if (object->container_ != nullptr)
+            prepared_statement->setUInt64(3, object->container_->object_id_);
+        else
+            prepared_statement->setUInt64(3, 0);
+        prepared_statement->setString(4, object->template_string_);
+        auto position = object->position_;
+        prepared_statement->setDouble(5, position.x);
+        prepared_statement->setDouble(6, position.y);
+        prepared_statement->setDouble(7, position.z);
+        auto orientation = object->orientation_;
+        prepared_statement->setDouble(8, orientation.x);
+        prepared_statement->setDouble(9, orientation.y);
+        prepared_statement->setDouble(10, orientation.z);
+        prepared_statement->setDouble(11, orientation.w);
+        prepared_statement->setDouble(12, object->complexity_);
+        prepared_statement->setString(13, object->stf_name_file_);
+        prepared_statement->setString(14, object->stf_name_string_);
+        prepared_statement->setString(15, string(begin(object->custom_name_), end(object->custom_name_)));
+        prepared_statement->setUInt(16, object->volume_);
 
+    }
+    catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
 void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object, const shared_ptr<sql::ResultSet>& result)
 {
     try {

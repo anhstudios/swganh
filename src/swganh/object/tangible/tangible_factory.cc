@@ -84,9 +84,19 @@ void TangibleFactory::PersistObject(const shared_ptr<Object>& object)
         try 
         {
             auto conn = db_manager_->getConnection("galaxy");
-            auto statement = conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
-            // TODO: Add in values to persist
-            statement->execute();
+            auto statement = shared_ptr<sql::PreparedStatement>
+                (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+            ObjectFactory::PersistObject(object, statement);
+            // cast to tangible
+            auto tangible = static_pointer_cast<Tangible>(object);
+            statement->setString(17, tangible->customization_);
+            statement->setInt(18, tangible->options_bitmask_);
+            statement->setInt(19, tangible->incap_timer_);
+            statement->setInt(20, tangible->condition_damage_);
+            statement->setInt(21, tangible->max_condition_);
+            int moveable = tangible->is_static_ ? 0 : 1;
+            statement->setInt(22, moveable);
+            statement->executeUpdate();
         }
             catch(sql::SQLException &e)
         {
