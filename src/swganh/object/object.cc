@@ -7,7 +7,6 @@
 #include "swganh/messages/scene_create_object_by_crc.h"
 #include "swganh/messages/scene_end_baselines.h"
 #include "swganh/messages/update_containment_message.h"
-#include "swganh/object/object_controller.h"
 #include "swganh/object/object_message_builder.h"
 #include "swganh/network/remote_client.h"
 
@@ -34,7 +33,7 @@ Object::Object()
 bool Object::HasController() 
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    return controller_;
+    return controller_ != nullptr;
 }
 
 const shared_ptr<ObjectController>& Object::GetController()

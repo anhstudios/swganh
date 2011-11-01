@@ -39,6 +39,9 @@ template <typename I, typename T>
 class NetworkMap
 {
 public:
+    typedef typename std::map<I, T>::const_iterator const_iterator;
+    typedef typename std::map<I, T>::iterator iterator;
+    
     NetworkMap()
         : items_(std::map<I, T>())
         , items_added_(std::list<I>())
@@ -56,7 +59,7 @@ public:
      * Inserts a new entry into the NetworkMap without
      * queueing a update.
      */
-    void Insert(const I& index, T& item)
+    void Insert(const I& index, T item)
     {
         auto iter = items_.find(index);
         if(iter == items_.end())
@@ -69,7 +72,7 @@ public:
      * Erases an entry from the NetworkMap without
      * queueing a update.
      */
-    void Erase(const I& index, T& item)
+    void Erase(const I& index)
     {
         auto iter = items_.find(index);
         if(iter != items_.end())
@@ -82,7 +85,7 @@ public:
      * Inserts a new entry into the NetworkMap and
      * queues a update.
      */
-    void Add(const I& index, T& item)
+    void Add(const I& index, T item)
     {
         auto iter = items_.find(index);
         if(iter == items_.end())
@@ -96,7 +99,7 @@ public:
      * Erases an entry from the NetworkMap and
      * queues a update.
      */
-    void Remove(typename std::map<I, T>::const_iterator iter)
+    void Remove(iterator iter)
     {
         if(iter != items_.end())
         {
@@ -109,7 +112,7 @@ public:
      * Updates an entry in the NetworkMap and
      * queues a update.
      */
-    void Update(const I& index, T& item)
+    void Update(const I& index, T item)
     {
         auto iter = items_.find(index);
         if(iter != items_.end())
@@ -131,7 +134,7 @@ public:
             return false;
     }
 
-    typename std::map<I, T>::const_iterator Find(const I& index)
+    iterator Find(const I& index)
     {
         return items_.find(index);
     }
@@ -176,9 +179,8 @@ public:
         reinstall_ = false;
     }
 
-    typedef typename std::map<I, T>::const_iterator const_iterator;
-    typename std::map<I, T>::const_iterator Begin() const { return items_.begin(); }
-    typename std::map<I, T>::const_iterator End() const { return items_.end(); }
+    iterator Begin() { return items_.begin(); }
+    iterator End() { return items_.end(); }
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {

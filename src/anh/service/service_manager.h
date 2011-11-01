@@ -55,7 +55,7 @@ public:
             services_.end(),
             [&services, &type_name, &tmp] (ServiceMap::value_type& entry)
         {
-            anh::service::ServiceDescription description = entry.second->GetServiceDescription();
+            anh::service::ServiceDescription description = entry.second.second->GetServiceDescription();
 
             if (description.type().compare(type_name) == 0) 
 
