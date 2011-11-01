@@ -113,7 +113,7 @@ vector<shared_ptr<ByteBuffer>> Session::GetUnacknowledgedMessages() const {
 
 void Session::Update() {
     // Exit as quickly as possible if there is no work currently.
-    if (outgoing_data_messages_.empty()) {
+    if (!connected_ || outgoing_data_messages_.empty()) {
         return;
     }
 
