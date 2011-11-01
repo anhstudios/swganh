@@ -55,6 +55,7 @@ ConnectionService::ConnectionService(
     , ping_server_(nullptr)
     , listen_address_(listen_address)
     , listen_port_(listen_port)
+    , ping_port_(ping_port)
     , soe_server_(nullptr)
 {
     soe_server_.reset(new soe::Server(
