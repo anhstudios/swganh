@@ -33,7 +33,7 @@ Object::Object()
 bool Object::HasController() 
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    return controller_;
+    return controller_ != nullptr;
 }
 
 const shared_ptr<ObjectController>& Object::GetController()
