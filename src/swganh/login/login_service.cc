@@ -291,11 +291,15 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
         login_client->Send(error);
         
         auto timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
-        timer->async_wait([&login_client] (const boost::system::error_code& e)
+        timer->async_wait([login_client] (const boost::system::error_code& e)
         {
 			if (login_client)
 			{
-				login_client->GetSession()->Close();
+			    if (login_client->GetSession())
+			    {
+				    login_client->GetSession()->Close();
+			    }
+			    
 				DLOG(WARNING) << "Closing connection";
 			}
             return;            
