@@ -472,7 +472,7 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9();
 
 private:
-    friend PlayerMessageBuilder;
+    friend class PlayerMessageBuilder;
 
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
