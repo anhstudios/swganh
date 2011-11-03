@@ -38,7 +38,9 @@ bool CreatureFactory::HasTemplate(const string& template_name)
 }
 
 void CreatureFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+{
+    TangibleFactory::PersistObject(object);
+}
 
 void CreatureFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

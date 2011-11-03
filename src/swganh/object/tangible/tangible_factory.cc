@@ -79,30 +79,27 @@ unordered_map<string, shared_ptr<Tangible>>::iterator TangibleFactory::GetTempla
 }
 void TangibleFactory::PersistObject(const shared_ptr<Object>& object)
 {
-    if (object->IsDirty())
+    try 
     {
-        try 
-        {
-            auto conn = db_manager_->getConnection("galaxy");
-            auto statement = shared_ptr<sql::PreparedStatement>
-                (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
-            ObjectFactory::PersistObject(object, statement);
-            // cast to tangible
-            auto tangible = static_pointer_cast<Tangible>(object);
-            statement->setString(17, tangible->customization_);
-            statement->setInt(18, tangible->options_bitmask_);
-            statement->setInt(19, tangible->incap_timer_);
-            statement->setInt(20, tangible->condition_damage_);
-            statement->setInt(21, tangible->max_condition_);
-            int moveable = tangible->is_static_ ? 0 : 1;
-            statement->setInt(22, moveable);
-            statement->executeUpdate();
-        }
-            catch(sql::SQLException &e)
-        {
-            DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-            DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-        }
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>
+            (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+        ObjectFactory::PersistObject(object, statement);
+        // cast to tangible
+        auto tangible = static_pointer_cast<Tangible>(object);
+        statement->setString(17, tangible->customization_);
+        statement->setInt(18, tangible->options_bitmask_);
+        statement->setInt(19, tangible->incap_timer_);
+        statement->setInt(20, tangible->condition_damage_);
+        statement->setInt(21, tangible->max_condition_);
+        int moveable = tangible->is_static_ ? 0 : 1;
+        statement->setInt(22, moveable);
+        statement->executeUpdate();
+    }
+    catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
