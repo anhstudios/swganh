@@ -3,7 +3,7 @@
 # Server version:               5.3.2-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-11-03 10:57:35
+# Date/time:                    2011-11-03 16:10:55
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;

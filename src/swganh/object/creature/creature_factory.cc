@@ -39,7 +39,95 @@ bool CreatureFactory::HasTemplate(const string& template_name)
 
 void CreatureFactory::PersistObject(const shared_ptr<Object>& object)
 {
+    // Persist Tangible and Base Object First
     TangibleFactory::PersistObject(object);
+    // Now for the biggy
+    try
+    {
+        auto conn = db_manager_->getConnection("galaxy");
+        // 65 of these
+        string sql = "CALL sp_PersistCreature(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
+            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+        auto statement = unique_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        auto creature = static_pointer_cast<Creature>(object);
+        statement->setUInt64(1, creature->object_id_);
+        statement->setUInt64(2, creature->owner_id_);
+        statement->setUInt64(3, creature->listen_to_id_);
+        statement->setUInt64(4, creature->bank_credits_);
+        statement->setUInt64(5, creature->cash_credits_);
+        statement->setUInt64(6, creature->posture_);
+        statement->setUInt(7, creature->faction_rank_);
+        statement->setDouble(8, creature->scale_);
+        statement->setUInt64(9, creature->battle_fatigue_);
+        statement->setUInt64(10, creature->state_bitmask_);
+        statement->setDouble(11, creature->acceleration_multiplier_base_);
+        statement->setDouble(12, creature->acceleration_multiplier_modifier_);
+        statement->setDouble(13, creature->speed_multiplier_base_);
+        statement->setDouble(14, creature->speed_multiplier_modifier_);
+        statement->setDouble(15, creature->run_speed_);
+        statement->setDouble(16, creature->slope_modifier_angle_);
+        statement->setDouble(17, creature->slope_modifier_percent_);
+        statement->setDouble(18, creature->turn_radius_);
+        statement->setDouble(19, creature->walking_speed_);
+        statement->setDouble(20, creature->water_modifier_percent_);
+        statement->setInt(21, creature->combat_level_);
+        statement->setString(22, creature->animation_);
+        statement->setString(23, creature->mood_animation_);
+        statement->setUInt64(24, creature->group_id_);
+        statement->setUInt(25, creature->guild_id_);
+        statement->setUInt64(26, creature->weapon_id_);
+        statement->setUInt(27, creature->mood_id_);
+        statement->setUInt(28, creature->performance_id_);
+        statement->setString(29, creature->disguise_);
+        // WOUNDS
+        statement->setInt(30, creature->stat_wound_list_.At(HEALTH).value);
+        statement->setInt(31, creature->stat_wound_list_.At(STRENGTH).value);
+        statement->setInt(32, creature->stat_wound_list_.At(CONSTITUTION).value);
+        statement->setInt(33, creature->stat_wound_list_.At(ACTION).value);
+        statement->setInt(34, creature->stat_wound_list_.At(QUICKNESS).value);
+        statement->setInt(35, creature->stat_wound_list_.At(STAMINA).value);
+        statement->setInt(36, creature->stat_wound_list_.At(MIND).value);
+        statement->setInt(37, creature->stat_wound_list_.At(FOCUS).value);
+        statement->setInt(38, creature->stat_wound_list_.At(WILLPOWER).value);
+        // ENCUMBERANCE
+        statement->setInt(39, creature->stat_encumberance_list_.At(HEALTH).value);
+        statement->setInt(40, creature->stat_encumberance_list_.At(STRENGTH).value);
+        statement->setInt(41, creature->stat_encumberance_list_.At(CONSTITUTION).value);
+        statement->setInt(42, creature->stat_encumberance_list_.At(ACTION).value);
+        statement->setInt(43, creature->stat_encumberance_list_.At(QUICKNESS).value);
+        statement->setInt(44, creature->stat_encumberance_list_.At(STAMINA).value);
+        statement->setInt(45, creature->stat_encumberance_list_.At(MIND).value);
+        statement->setInt(46, creature->stat_encumberance_list_.At(FOCUS).value);
+        statement->setInt(47, creature->stat_encumberance_list_.At(WILLPOWER).value);
+        // CURRENT
+        statement->setInt(48, creature->stat_current_list_.At(HEALTH).value);
+        statement->setInt(49, creature->stat_current_list_.At(STRENGTH).value);
+        statement->setInt(50, creature->stat_current_list_.At(CONSTITUTION).value);
+        statement->setInt(51, creature->stat_current_list_.At(ACTION).value);
+        statement->setInt(52, creature->stat_current_list_.At(QUICKNESS).value);
+        statement->setInt(53, creature->stat_current_list_.At(STAMINA).value);
+        statement->setInt(54, creature->stat_current_list_.At(MIND).value);
+        statement->setInt(55, creature->stat_current_list_.At(FOCUS).value);
+        statement->setInt(56, creature->stat_current_list_.At(WILLPOWER).value);
+        // MAX
+        statement->setInt(57, creature->stat_max_list_.At(HEALTH).value);
+        statement->setInt(58, creature->stat_max_list_.At(STRENGTH).value);
+        statement->setInt(59, creature->stat_max_list_.At(CONSTITUTION).value);
+        statement->setInt(60, creature->stat_max_list_.At(ACTION).value);
+        statement->setInt(61, creature->stat_max_list_.At(QUICKNESS).value);
+        statement->setInt(62, creature->stat_max_list_.At(STAMINA).value);
+        statement->setInt(63, creature->stat_max_list_.At(MIND).value);
+        statement->setInt(64, creature->stat_max_list_.At(FOCUS).value);
+        statement->setInt(65, creature->stat_max_list_.At(WILLPOWER).value);
+
+        int updated = statement->executeUpdate();
+        DLOG(WARNING) << "Updated " << updated << " rows in sp_PersistCreature";
+    }
+    catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
 
 void CreatureFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
