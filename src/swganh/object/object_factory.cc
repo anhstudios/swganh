@@ -46,11 +46,16 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared
 {
     try {
         prepared_statement->setUInt64(1, object->object_id_);
-        prepared_statement->setUInt(2, object->scene_id_);
-        if (object->container_ != nullptr)
-            prepared_statement->setUInt64(3, object->container_->object_id_);
+		if (object->container_ != nullptr)
+		{
+			prepared_statement->setUInt(2, object->container_->scene_id_);
+			prepared_statement->setUInt64(3, object->container_->object_id_);
+		}
         else
+		{
+			prepared_statement->setUInt(2, object->scene_id_);
             prepared_statement->setUInt64(3, 0);
+		}
         prepared_statement->setString(4, object->template_string_);
         auto position = object->position_;
         prepared_statement->setDouble(5, position.x);

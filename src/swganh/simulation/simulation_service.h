@@ -39,6 +39,10 @@ namespace simulation {
         void RegisterObjectFactories(anh::app::KernelInterface* kernel);
 
         void PersistObject(uint64_t object_id);
+		/*
+		*	@brief this persists the given object and all related objects (ie: everything contained inside this object)
+		*/
+		void PersistRelatedObjects(uint64_t parent_object_id);
         
         std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id);
         std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id, uint32_t type);

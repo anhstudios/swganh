@@ -89,12 +89,41 @@ public:
 
         if (find_iter == loaded_objects_.end())
         {
-            DLOG(WARNING) << "Nothing to persist, no object loaded";
+            DLOG(WARNING) << "Nothing to persist, no object saved";
             return;
             //throw swganh::object::InvalidObject("Requested object already loaded");
         }
         object_manager_->PersistObject(find_iter->second);
     }
+	void PersistRelatedObjects(uint64_t parent_object_id)
+	{
+		auto find_iter = loaded_objects_.find(parent_object_id);
+
+        if (find_iter == loaded_objects_.end())
+        {
+            DLOG(WARNING) << "Nothing to persist, no object saved";
+            return;
+            //throw swganh::object::InvalidObject("Requested object already loaded");
+        }
+		// first persist the parent object
+		PersistObject(parent_object_id);
+		// get all the contained objects
+		auto contained_objects = find_iter->second->GetContainedObjects();
+		for_each(begin(contained_objects), end(contained_objects), [=](pair<uint64_t, shared_ptr<Object>> pair){
+			// if there's objects contained within this object do a recursion call
+			auto inner_contained = pair.second->GetContainedObjects();
+			if (inner_contained.size() > 0)
+			{
+				DLOG(WARNING) << "Persist inner container recursively:" << pair.first;
+				PersistRelatedObjects(pair.first);
+			}
+			else
+			{
+				DLOG(WARNING) << "Persist inner container:" << pair.first;
+				PersistObject(pair.first);
+			}
+		});
+	}
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);
@@ -322,6 +351,10 @@ void SimulationService::RegisterObjectFactories(anh::app::KernelInterface* kerne
 void SimulationService::PersistObject(uint64_t object_id)
 {
     impl_->PersistObject(object_id);
+}
+void SimulationService::PersistRelatedObjects(uint64_t parent_object_id)
+{
+	impl_->PersistRelatedObjects(parent_object_id);
 }
 shared_ptr<Object> SimulationService::LoadObjectById(uint64_t object_id)
 {

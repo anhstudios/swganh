@@ -105,21 +105,38 @@ unordered_map<string,shared_ptr<Player>>::iterator PlayerFactory::GetTemplateIte
 
 void PlayerFactory::PersistObject(const shared_ptr<Object>& object)
 {
-    if (object->IsDirty())
+    try 
     {
-        try 
-        {
-            auto conn = db_manager_->getConnection("galaxy");
-            auto statement = conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
-            // TODO: Add in values to persist 33 minus lists
-            statement->execute();
-        }
-            catch(sql::SQLException &e)
-        {
-            DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-            DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-        }
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>
+			(conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+        ObjectFactory::PersistObject(object, statement);
+
+		auto player = static_pointer_cast<Player>(object);
+		statement->setString(17, player->profession_tag_);
+		statement->setUInt64(18, player->total_playtime_);
+		statement->setUInt(19, player->admin_tag_);
+		statement->setUInt(20, player->max_force_power_);
+		statement->setUInt(21, player->experimentation_flag_);
+		statement->setUInt(22, player->crafting_stage_);
+		statement->setUInt64(23, player->nearest_crafting_station_);
+		statement->setUInt(24, player->experimentation_points_);
+		statement->setUInt(25, player->accomplishment_counter_);
+		statement->setUInt(26, player->language_);
+		statement->setUInt(27, player->current_stomach_);
+		statement->setUInt(28, player->max_stomach_);
+		statement->setUInt(29, player->current_drink_);
+		statement->setUInt(30, player->max_drink_);
+		statement->setUInt(31, player->jedi_state_);
+
+        statement->executeUpdate();
     }
+        catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+    
 }
 
 void PlayerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
