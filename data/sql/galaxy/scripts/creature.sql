@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.3.2-MariaDB
+# Server version:               5.3.1-MariaDB
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-11-03 16:11:08
+# Date/time:                    2011-11-05 12:08:18
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -36,11 +36,10 @@ CREATE TABLE IF NOT EXISTS `creature` (
   `water_modifier_percent` double NOT NULL,
   `combat_level` smallint(5) unsigned NOT NULL,
   `animation` varchar(255) NOT NULL,
-  `mood_animation` varchar(255) NOT NULL,
   `group_id` bigint(20) unsigned DEFAULT NULL,
   `guild_id` int(10) unsigned DEFAULT NULL,
   `weapon_id` bigint(20) unsigned DEFAULT NULL,
-  `mood_id` tinyint(3) unsigned NOT NULL,
+  `mood_id` int(11) unsigned NOT NULL,
   `performance_id` int(10) unsigned NOT NULL,
   `disguise_template_id` int(10) DEFAULT NULL,
   `health_wounds` int(10) unsigned NOT NULL,
@@ -82,23 +81,17 @@ CREATE TABLE IF NOT EXISTS `creature` (
   PRIMARY KEY (`id`),
   KEY `IDX_2A6C6AF47E3C61F9` (`owner_id`),
   KEY `IDX_2A6C6AF49523AA8A` (`musician_id`),
+  KEY `FK_2A6C6AF49582386B` (`mood_id`),
   CONSTRAINT `FK_2A6C6AF47E3C61F9` FOREIGN KEY (`owner_id`) REFERENCES `creature` (`id`),
   CONSTRAINT `FK_2A6C6AF49523AA8A` FOREIGN KEY (`musician_id`) REFERENCES `creature` (`id`),
-	CONSTRAINT `FK_2A6C6AF49582386B` FOREIGN KEY (`mood_id`) REFERENCES `mood` (`id`),
+  CONSTRAINT `FK_2A6C6AF49582386B` FOREIGN KEY (`mood_id`) REFERENCES `mood` (`id`),
   CONSTRAINT `FK_2A6C6AF4BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-# Dumping data for table galaxy.creature: ~9 rows (approximately)
 DELETE FROM `creature`;
 /*!40000 ALTER TABLE `creature` DISABLE KEYS */;
 INSERT INTO `creature` (`id`, `owner_id`, `musician_id`, `bank_credits`, `cash_credits`, `posture`, `faction_rank`, `scale`, `battle_fatigue`, `state`, `acceleration_base`, `acceleration_modifier`, `speed_base`, `speed_modifier`, `run_speed`, `slope_modifier_angle`, `slope_modifier_percent`, `walking_speed`, `water_modifier_percent`) VALUES
 (0, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 # Data exporting was unselected.
-# Dumping data for table galaxy.creature: ~9 rows (approximately)
-DELETE FROM `creature`;
-/*!40000 ALTER TABLE `creature` DISABLE KEYS */;
-INSERT INTO `creature` (`id`, `owner_id`, `musician_id`, `bank_credits`, `cash_credits`, `posture`, `faction_rank`, `scale`, `battle_fatigue`, `state`, `acceleration_base`, `acceleration_modifier`, `speed_base`, `speed_modifier`, `run_speed`, `slope_modifier_angle`, `slope_modifier_percent`, `walking_speed`, `water_modifier_percent`) VALUES
-	(0, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

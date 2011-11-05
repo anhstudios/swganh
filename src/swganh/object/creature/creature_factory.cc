@@ -47,7 +47,7 @@ void CreatureFactory::PersistObject(const shared_ptr<Object>& object)
         auto conn = db_manager_->getConnection("galaxy");
         // 65 of these
         string sql = "CALL sp_PersistCreature(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
-            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
         auto statement = unique_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         auto creature = static_pointer_cast<Creature>(object);
         statement->setUInt64(1, creature->object_id_);
@@ -72,53 +72,52 @@ void CreatureFactory::PersistObject(const shared_ptr<Object>& object)
         statement->setDouble(20, creature->water_modifier_percent_);
         statement->setInt(21, creature->combat_level_);
         statement->setString(22, creature->animation_);
-        statement->setString(23, creature->mood_animation_);
-        statement->setUInt64(24, creature->group_id_);
-        statement->setUInt(25, creature->guild_id_);
-        statement->setUInt64(26, creature->weapon_id_);
-        statement->setUInt(27, creature->mood_id_);
-        statement->setUInt(28, creature->performance_id_);
-        statement->setString(29, creature->disguise_);
+        statement->setUInt64(23, creature->group_id_);
+        statement->setUInt(24, creature->guild_id_);
+        statement->setUInt64(25, creature->weapon_id_);
+        statement->setUInt(26, creature->mood_id_);
+        statement->setUInt(27, creature->performance_id_);
+        statement->setString(28, creature->disguise_);
         // WOUNDS
-        statement->setInt(30, creature->stat_wound_list_.At(HEALTH).value);
-        statement->setInt(31, creature->stat_wound_list_.At(STRENGTH).value);
-        statement->setInt(32, creature->stat_wound_list_.At(CONSTITUTION).value);
-        statement->setInt(33, creature->stat_wound_list_.At(ACTION).value);
-        statement->setInt(34, creature->stat_wound_list_.At(QUICKNESS).value);
-        statement->setInt(35, creature->stat_wound_list_.At(STAMINA).value);
-        statement->setInt(36, creature->stat_wound_list_.At(MIND).value);
-        statement->setInt(37, creature->stat_wound_list_.At(FOCUS).value);
-        statement->setInt(38, creature->stat_wound_list_.At(WILLPOWER).value);
+        statement->setInt(29, creature->stat_wound_list_.At(HEALTH).value);
+        statement->setInt(30, creature->stat_wound_list_.At(STRENGTH).value);
+        statement->setInt(31, creature->stat_wound_list_.At(CONSTITUTION).value);
+        statement->setInt(32, creature->stat_wound_list_.At(ACTION).value);
+        statement->setInt(33, creature->stat_wound_list_.At(QUICKNESS).value);
+        statement->setInt(34, creature->stat_wound_list_.At(STAMINA).value);
+        statement->setInt(35, creature->stat_wound_list_.At(MIND).value);
+        statement->setInt(36, creature->stat_wound_list_.At(FOCUS).value);
+        statement->setInt(37, creature->stat_wound_list_.At(WILLPOWER).value);
         // ENCUMBERANCE
-        statement->setInt(39, creature->stat_encumberance_list_.At(HEALTH).value);
-        statement->setInt(40, creature->stat_encumberance_list_.At(STRENGTH).value);
-        statement->setInt(41, creature->stat_encumberance_list_.At(CONSTITUTION).value);
-        statement->setInt(42, creature->stat_encumberance_list_.At(ACTION).value);
-        statement->setInt(43, creature->stat_encumberance_list_.At(QUICKNESS).value);
-        statement->setInt(44, creature->stat_encumberance_list_.At(STAMINA).value);
-        statement->setInt(45, creature->stat_encumberance_list_.At(MIND).value);
-        statement->setInt(46, creature->stat_encumberance_list_.At(FOCUS).value);
-        statement->setInt(47, creature->stat_encumberance_list_.At(WILLPOWER).value);
+        statement->setInt(38, creature->stat_encumberance_list_.At(HEALTH).value);
+        statement->setInt(39, creature->stat_encumberance_list_.At(STRENGTH).value);
+        statement->setInt(40, creature->stat_encumberance_list_.At(CONSTITUTION).value);
+        statement->setInt(41, creature->stat_encumberance_list_.At(ACTION).value);
+        statement->setInt(42, creature->stat_encumberance_list_.At(QUICKNESS).value);
+        statement->setInt(43, creature->stat_encumberance_list_.At(STAMINA).value);
+        statement->setInt(44, creature->stat_encumberance_list_.At(MIND).value);
+        statement->setInt(45, creature->stat_encumberance_list_.At(FOCUS).value);
+        statement->setInt(46, creature->stat_encumberance_list_.At(WILLPOWER).value);
         // CURRENT
-        statement->setInt(48, creature->stat_current_list_.At(HEALTH).value);
-        statement->setInt(49, creature->stat_current_list_.At(STRENGTH).value);
-        statement->setInt(50, creature->stat_current_list_.At(CONSTITUTION).value);
-        statement->setInt(51, creature->stat_current_list_.At(ACTION).value);
-        statement->setInt(52, creature->stat_current_list_.At(QUICKNESS).value);
-        statement->setInt(53, creature->stat_current_list_.At(STAMINA).value);
-        statement->setInt(54, creature->stat_current_list_.At(MIND).value);
-        statement->setInt(55, creature->stat_current_list_.At(FOCUS).value);
-        statement->setInt(56, creature->stat_current_list_.At(WILLPOWER).value);
+        statement->setInt(47, creature->stat_current_list_.At(HEALTH).value);
+        statement->setInt(48, creature->stat_current_list_.At(STRENGTH).value);
+        statement->setInt(49, creature->stat_current_list_.At(CONSTITUTION).value);
+        statement->setInt(50, creature->stat_current_list_.At(ACTION).value);
+        statement->setInt(51, creature->stat_current_list_.At(QUICKNESS).value);
+        statement->setInt(52, creature->stat_current_list_.At(STAMINA).value);
+        statement->setInt(53, creature->stat_current_list_.At(MIND).value);
+        statement->setInt(54, creature->stat_current_list_.At(FOCUS).value);
+        statement->setInt(55, creature->stat_current_list_.At(WILLPOWER).value);
         // MAX
-        statement->setInt(57, creature->stat_max_list_.At(HEALTH).value);
-        statement->setInt(58, creature->stat_max_list_.At(STRENGTH).value);
-        statement->setInt(59, creature->stat_max_list_.At(CONSTITUTION).value);
-        statement->setInt(60, creature->stat_max_list_.At(ACTION).value);
-        statement->setInt(61, creature->stat_max_list_.At(QUICKNESS).value);
-        statement->setInt(62, creature->stat_max_list_.At(STAMINA).value);
-        statement->setInt(63, creature->stat_max_list_.At(MIND).value);
-        statement->setInt(64, creature->stat_max_list_.At(FOCUS).value);
-        statement->setInt(65, creature->stat_max_list_.At(WILLPOWER).value);
+        statement->setInt(56, creature->stat_max_list_.At(HEALTH).value);
+        statement->setInt(57, creature->stat_max_list_.At(STRENGTH).value);
+        statement->setInt(58, creature->stat_max_list_.At(CONSTITUTION).value);
+        statement->setInt(59, creature->stat_max_list_.At(ACTION).value);
+        statement->setInt(60, creature->stat_max_list_.At(QUICKNESS).value);
+        statement->setInt(61, creature->stat_max_list_.At(STAMINA).value);
+        statement->setInt(62, creature->stat_max_list_.At(MIND).value);
+        statement->setInt(63, creature->stat_max_list_.At(FOCUS).value);
+        statement->setInt(64, creature->stat_max_list_.At(WILLPOWER).value);
 
         int updated = statement->executeUpdate();
         DLOG(WARNING) << "Updated " << updated << " rows in sp_PersistCreature";
@@ -185,7 +184,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
                 creature->weapon_id_ = result->getUInt64("weapon_id");
                 creature->mood_id_ = result->getUInt("mood_id");
                 creature->performance_id_ = result->getUInt("performance_id");
-                creature->disguise_ = result->getString("iff_template");
+                creature->disguise_ = result->getString("disguise_template");
 
                 creature->stat_current_list_.Set(creature::HEALTH, Stat(result->getUInt("current_health")));
                 creature->stat_current_list_.Set(creature::STRENGTH, Stat(result->getUInt("current_strength")));
