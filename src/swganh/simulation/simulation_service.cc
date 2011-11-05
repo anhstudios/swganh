@@ -83,7 +83,47 @@ public:
 
         return movement_manager_;
     }
+    void PersistObject(uint64_t object_id)
+    {
+        auto find_iter = loaded_objects_.find(object_id);
 
+        if (find_iter == loaded_objects_.end())
+        {
+            DLOG(WARNING) << "Nothing to persist, no object saved";
+            return;
+            //throw swganh::object::InvalidObject("Requested object already loaded");
+        }
+        object_manager_->PersistObject(find_iter->second);
+    }
+	void PersistRelatedObjects(uint64_t parent_object_id)
+	{
+		auto find_iter = loaded_objects_.find(parent_object_id);
+
+        if (find_iter == loaded_objects_.end())
+        {
+            DLOG(WARNING) << "Nothing to persist, no object saved";
+            return;
+            //throw swganh::object::InvalidObject("Requested object already loaded");
+        }
+		// first persist the parent object
+		PersistObject(parent_object_id);
+		// get all the contained objects
+		auto contained_objects = find_iter->second->GetContainedObjects();
+		for_each(begin(contained_objects), end(contained_objects), [=](pair<uint64_t, shared_ptr<Object>> pair){
+			// if there's objects contained within this object do a recursion call
+			auto inner_contained = pair.second->GetContainedObjects();
+			if (inner_contained.size() > 0)
+			{
+				DLOG(WARNING) << "Persist inner container recursively:" << pair.first;
+				PersistRelatedObjects(pair.first);
+			}
+			else
+			{
+				DLOG(WARNING) << "Persist inner container:" << pair.first;
+				PersistObject(pair.first);
+			}
+		});
+	}
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);
@@ -106,7 +146,7 @@ public:
 
         if (find_iter != loaded_objects_.end())
         {
-			return find_iter->second;
+            return find_iter->second;
             //throw swganh::object::InvalidObject("Requested object already loaded");
         }
         
@@ -154,7 +194,7 @@ public:
 
         if (find_iter != controlled_objects_.end())
         {
-			return find_iter->second;
+            return find_iter->second;
             //throw swganh::object::InvalidObject("Object already has a controller");
         }
         
@@ -187,8 +227,8 @@ public:
 
         if (find_iter != controller_handlers_.end())
         {
-			// just return, we already have the handler registered
-			return;
+            // just return, we already have the handler registered
+            return;
             //throw std::runtime_error("ObjControllerHandler already exists");
         }
 
@@ -218,15 +258,15 @@ public:
             throw std::runtime_error("No handler registered to process the given message.");
         }
         
-		find_iter->second(client->GetController(), message);
-	}
+        find_iter->second(client->GetController(), message);
+    }
     
     void HandleSelectCharacter(
         shared_ptr<ConnectionClient> client, 
         const SelectCharacter& message)
     {
         // character_id = player
-		auto object = LoadObjectById(message.character_id, creature::Creature::type);
+        auto object = LoadObjectById(message.character_id, creature::Creature::type);
         StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
@@ -248,7 +288,7 @@ public:
         client->GetSession()->SendMessage(start_scene);
 
         // Add object to scene and send baselines
-		scene->AddObject(object);
+        scene->AddObject(object);
     }
 
 private:
@@ -308,6 +348,14 @@ void SimulationService::RegisterObjectFactories(anh::app::KernelInterface* kerne
         impl_->GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager, this));
 }
 
+void SimulationService::PersistObject(uint64_t object_id)
+{
+    impl_->PersistObject(object_id);
+}
+void SimulationService::PersistRelatedObjects(uint64_t parent_object_id)
+{
+	impl_->PersistRelatedObjects(parent_object_id);
+}
 shared_ptr<Object> SimulationService::LoadObjectById(uint64_t object_id)
 {
     return impl_->LoadObjectById(object_id);
