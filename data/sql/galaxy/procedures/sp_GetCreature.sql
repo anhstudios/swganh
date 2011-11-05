@@ -15,11 +15,17 @@
 DELIMITER //
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetCreature`(IN `object_id` BIGINT)
 BEGIN
-call sp_GetTangible(object_id);
-select * from creature LEFT JOIN iff_templates ON (creature.disguise_template_id = iff_templates.id) where creature.id = object_id;
-call sp_GetCreatureSkills(object_id);
-call sp_GetCreatureSkillMods(object_id);
-call sp_GetContainedObjects(object_id);
+    call sp_GetTangible(object_id);
+
+    SELECT creature.*, mood.name as mood_animation 
+    FROM creature 
+    LEFT JOIN iff_templates ON (creature.disguise_template_id = iff_templates.id)
+    LEFT JOIN mood ON (creature.mood_id = mood.id)
+    WHERE creature.id = object_id;
+
+    call sp_GetCreatureSkills(object_id);
+    call sp_GetCreatureSkillMods(object_id);
+    call sp_GetContainedObjects(object_id);
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
