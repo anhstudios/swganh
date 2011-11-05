@@ -83,6 +83,13 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
                 creature->combat_level_ = result->getUInt("combat_level");
                 creature->animation_ = result->getString("animation");
                 creature->mood_animation_ = result->getString("mood_animation");
+
+                // @TODO: Find a better place for this.
+                if (creature->mood_animation_.compare("none") == 0)
+                {
+                    creature->mood_animation_ = "neutral";
+                }
+
                 creature->group_id_ = result->getUInt64("group_id");
                 creature->guild_id_ = result->getUInt("guild_id");
                 creature->weapon_id_ = result->getUInt64("weapon_id");
