@@ -39,21 +39,7 @@ void TangibleFactory::LoadTemplates()
         while (result->next())
         {
             auto tangible = make_shared<Tangible>();
-            tangible->SetPosition(glm::vec3(result->getDouble(1),result->getDouble(2), result->getDouble(3)));
-            tangible->SetOrientation(glm::quat(result->getDouble(4),result->getDouble(5), result->getDouble(6), result->getDouble(7)));
-            tangible->SetComplexity(result->getDouble(8));
-            tangible->SetStfNameFile(result->getString(9));
-            tangible->SetStfNameString(result->getString(10));
-            string custom_string = result->getString(11);
-            tangible->SetCustomName(wstring(begin(custom_string), end(custom_string)));
-            tangible->SetVolume(result->getUInt(12));
-            tangible->SetCustomization(result->getString(13));
-            tangible->SetOptionsMask(result->getUInt(14));
-            tangible->SetIncapTimer(result->getUInt(15));
-            tangible->SetConditionDamage(result->getUInt(16));
-            uint8_t is_static = result->getInt(17);
-            tangible->SetStatic(is_static == 1);
-            tangible->SetTemplate(result->getString(18));
+            
             
             tangible_templates_.insert(make_pair(tangible->GetTemplate(), move(tangible)));
         } while (statement->getMoreResults());
@@ -92,8 +78,7 @@ void TangibleFactory::PersistObject(const shared_ptr<Object>& object)
         statement->setInt(19, tangible->incap_timer_);
         statement->setInt(20, tangible->condition_damage_);
         statement->setInt(21, tangible->max_condition_);
-        int moveable = tangible->is_static_ ? 0 : 1;
-        statement->setInt(22, moveable);
+        statement->setBoolean(22, tangible->is_static_);
         statement->executeUpdate();
     }
     catch(sql::SQLException &e)
@@ -133,8 +118,7 @@ void TangibleFactory::CreateBaseTangible(const shared_ptr<BaseTangible>& tangibl
                 tangible->SetIncapTimer(result->getUInt("incap_timer"));
                 tangible->SetConditionDamage(result->getUInt("condition_damage"));
                 tangible->SetMaxCondition(result->getUInt("max_condition"));
-                uint8_t is_static = result->getInt("is_moveable");
-                tangible->SetStatic(is_static == 0);
+                tangible->SetStatic(result->getBoolean("is_static"));
             }
         }
     }

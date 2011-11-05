@@ -72,11 +72,8 @@ void TangibleMessageBuilder::BuildStaticDelta(BaseTangible* tangible)
 {
     if (tangible->HasObservers())
     {
-        uint8_t val = MOVEABLE;
-        if (tangible->is_static_)
-            val = STATIC;
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 10);
-        message.data.write(val);
+        message.data.write(tangible->is_static_);
         tangible->AddDeltasUpdate(move(message));
     }
 }
