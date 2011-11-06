@@ -17,7 +17,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetCreature`(IN `object_id` BIGI
 BEGIN
     call sp_GetTangible(object_id);
 
-    SELECT creature.*, mood.name as mood_animation 
+    SELECT 
+        creature.*, 
+        mood.name as mood_animation, 
+        iff_templates.iff_template as disguise_template
     FROM creature 
     LEFT JOIN iff_templates ON (creature.disguise_template_id = iff_templates.id)
     LEFT JOIN mood ON (creature.mood_id = mood.id)
