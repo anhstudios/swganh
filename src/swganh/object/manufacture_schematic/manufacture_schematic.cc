@@ -18,7 +18,7 @@ uint32_t ManufactureSchematic::GetSchematicQuantity() const
     return schematic_quantity_;
 }
 
-void ManufactureSchematic::ResetSchematicQuantity(uint32_t quantity)
+void ManufactureSchematic::SetSchematicQuantity(uint32_t quantity)
 {
     schematic_quantity_ = (quantity > 1000) ? 1000 : quantity;
     if (HasObservers())
@@ -30,9 +30,9 @@ void ManufactureSchematic::ResetSchematicQuantity(uint32_t quantity)
     }
 }
 
-void ManufactureSchematic::IncreaseSchematicQuantity(uint32_t increase_by)
+void ManufactureSchematic::IncrementSchematicQuantity(int32_t increment_by)
 {
-    uint32_t tmp = schematic_quantity_ + increase_by;
+    uint32_t tmp = schematic_quantity_ + increment_by;
     schematic_quantity_ = (tmp > 1000) ? 1000 : tmp;
     if (HasObservers())
     {
@@ -176,12 +176,12 @@ void ManufactureSchematic::SetCreatorName(std::wstring creator)
     }
 }
 
-uint32_t ManufactureSchematic::GetComplexity() const
+uint32_t ManufactureSchematic::GetSchematicComplexity() const
 {
     return complexity_;
 }
 
-void ManufactureSchematic::SetComplexity(uint32_t complexity)
+void ManufactureSchematic::SetSchematicComplexity(uint32_t complexity)
 {
     complexity_ = complexity;
     if (HasObservers())
@@ -233,7 +233,7 @@ std::string ManufactureSchematic::GetCustomizationModel() const
     return customization_model_;
 }
 
-void ManufactureSchematic::GetCustomizationModel(std::string customization_model)
+void ManufactureSchematic::SetCustomizationModel(std::string customization_model)
 {
     customization_model_ = customization_model;
     if (HasObservers())

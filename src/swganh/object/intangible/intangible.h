@@ -15,16 +15,33 @@ class Intangible : public swganh::object::Object
 {
 public:
     // ITNO
+    /**
+     * @returns The type of this object instance.
+     */
     virtual uint32_t GetType() const { return Intangible::type; }
     const static uint32_t type = 0x494E534F;
 
-    std::string GetStfDetailFile() ;
-    void SetStfDetailFile(std::string stf_detail_file);
+    /**
+     * @return The stf file containing the detailed description of the object.
+     */
+    std::string GetStfDetailFile();
 
-    std::string GetStfDetailString() ;
-    void SetStfDetailString(std::string stf_detail_string);
+    /**
+     * @return The stf string containing the detailed description of the object.
+     */
+    std::string GetStfDetailString();
 
+    /** 
+     * Sets the stf string that contains the detailed description of the object.
+     *
+     * @param stf_file_name Stf file containing the string.
+     * @param stf_string Name of the string containing the detailed description.
+     */
+    void SetStfDetail(const std::string& stf_file_name, const std::string& stf_string);
+    
+protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+
 private:
 	friend class IntangibleMessageBuilder;
     friend class IntangibleFactory;

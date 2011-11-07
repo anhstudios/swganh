@@ -31,7 +31,6 @@ namespace player {
         static void BuildProfessionTagDelta(Player* object);
         static void BuildBornDateDelta(Player* object);
         static void BuildPlayTimeDelta(Player* object);
-        static void BuildRegionIdDelta(Player* object);
         static void BuildAdminTagDelta(Player* object);
         static void BuildXpDelta(Player* object);
         static void BuildWaypointDelta(Player* object);

@@ -45,8 +45,7 @@ void PlayerFactory::LoadTemplates()
             player->SetPosition(glm::vec3(result->getDouble(1),result->getDouble(2), result->getDouble(3)));
             player->SetOrientation(glm::quat(result->getDouble(4),result->getDouble(5), result->getDouble(6), result->getDouble(7)));
             player->SetComplexity(result->getDouble(8));
-            player->SetStfNameFile(result->getString(9));
-            player->SetStfNameString(result->getString(10));
+            player->SetStfName(result->getString(9), result->getString(10));
             string custom_string = result->getString(11);
             player->SetCustomName(wstring(begin(custom_string), end(custom_string)));
             player->SetVolume(result->getUInt(12));
@@ -57,7 +56,6 @@ void PlayerFactory::LoadTemplates()
             player->SetBornDate(result->getUInt(16));
             player->SetTotalPlayTime(result->getUInt(17));
             player->SetAdminTag(result->getUInt(18));
-            player->SetRegionId(result->getUInt(19));
             // TODO: XP
             // TODO: Waypoints
             player->SetCurrentForcePower(result->getUInt(20));

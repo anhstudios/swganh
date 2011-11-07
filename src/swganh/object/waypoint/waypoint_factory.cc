@@ -79,8 +79,12 @@ void WaypointFactory::PersistObject(const shared_ptr<Object>& object)
             statement->setDouble(1,waypoint->GetComplexity());
             statement->setString(2, waypoint->GetStfNameFile());
             statement->setString(3, waypoint->GetStfNameString());
-            statement->setString(4, waypoint->GetCustomNameStandard());
+
+            auto custom_name = waypoint->GetCustomName();
+            statement->setString(4, string(begin(custom_name), end(custom_name)));
+
             statement->setUInt(5, waypoint->GetVolume());
+
             auto coords = waypoint->GetCoordinates();
             statement->setDouble(6, coords.x);
             statement->setDouble(7, coords.y);

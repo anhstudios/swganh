@@ -39,8 +39,7 @@ void IntangibleFactory::LoadTemplates()
         {
             auto intangible = make_shared<Intangible>();
             
-			intangible->SetStfDetailFile(result->getString(13));
-            intangible->SetStfDetailString(result->getString(14));
+			intangible->SetStfDetail(result->getString(13), result->getString(14));
             
             intangible_templates_.insert(make_pair(intangible->GetTemplate(), move(intangible)));
         } while (statement->getMoreResults());

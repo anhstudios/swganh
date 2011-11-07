@@ -86,18 +86,79 @@ public:
     Object();
     virtual ~Object() {}
     
+    /**
+     * @return True if object has a controller, false if not.
+     */
     bool HasController();
-    const std::shared_ptr<ObjectController>& GetController();
+
+    /**
+     * @return The current controller for the object, or nullptr if none exists.
+     *
+     * @TODO Consider returning a null object instead of nullptr.
+     */
+    std::shared_ptr<ObjectController> GetController();
+
+    /**
+     * Sets the controller for this Object instance.
+     *
+     * @param controller
+     */
     void SetController(const std::shared_ptr<ObjectController>& controller);
+    
+    /**
+     * Clears the active current controller, if one exists, for this instance.
+     */
     void ClearController();
 
-    void AddContainedObject(const std::shared_ptr<Object>& object, uint32_t containment_type);
+    /**
+     * Adds an object to be contained by the current instance.
+     *
+     * All Object instances are composite objects that can serve as containers
+     * for other Objects. For example, storing items in an inventory. 
+     *
+     * @param object The object to contain.
+     * @param containment_type The type of containment in which to hold the given object.
+     */
+    void AddContainedObject(const std::shared_ptr<Object>& object, ContainmentType containment_type);
+
+    /**
+     * Checks to see if the current Object contains the given instance.
+     *
+     * @param object The object to for which to check containment.
+     */
     bool IsContainerForObject(const std::shared_ptr<Object>& object);
+
+    /**
+     * Removes an object from containment.
+     *
+     * @param object The Object to remove from containment.
+     */
     void RemoveContainedObject(const std::shared_ptr<Object>& object);
+
+    /**
+     * @return A map of all contained objects and their containment types.
+     */
     ObjectMap GetContainedObjects();
 
+    /**
+     * Adds an Object to the awareness list of the existing instance.
+     *
+     * Aware Objects receive all message updates of the Objects they
+     * are aware of.
+     *
+     * @param object The object to be aware of.
+     */
     void AddAwareObject(const std::shared_ptr<Object>& object);
+
+    /**
+     * @return True if the current Object is aware of the 
+     *  given instance, false if not.
+     */
     bool IsAwareOfObject(const std::shared_ptr<Object>& object);
+
+    /**
+     * Removes an object from the awareness list of the existing instance.
+     */
     void RemoveAwareObject(const std::shared_ptr<Object>& object);
         
     /**
@@ -197,12 +258,42 @@ public:
      */
     const DeltasCacheContainer& GetDeltas(uint64_t viewer_id) ;
     
+    /**
+     * Return the client iff template file that describes this Object.
+     *
+     * @return The object iff template file name.
+     */
     const std::string& GetTemplate();
+
+    /**
+     * Sets the client iff template file that describes this Object.
+     *
+     * @param template_string The object iff template file name.
+     */
     void SetTemplate(const std::string& template_string);
+    
+    /**
+     * @return The object position as a vector.
+     */
     glm::vec3 GetPosition();
+
+    /**
+     * Updates the object's position.
+     *
+     * @param position The updated position.
+     */
     void SetPosition(glm::vec3 position);
+
+    /**
+     * @return The object orientation as a quaternion.
+     */
     glm::quat GetOrientation();
 
+    /**
+     * Updates the object's orientation.
+     *
+     * @param orientation The updated orientation.
+     */
     void SetOrientation(glm::quat orientation);
 
     /**
@@ -210,22 +301,89 @@ public:
      */
     uint8_t GetHeading() ;
 
-    const std::shared_ptr<Object>& GetContainer();
+    /**
+     * @return The container for the current object.
+     */
+    std::shared_ptr<Object> GetContainer();
+
+    /**
+     * Sets the container for the current object.
+     *
+     * @param container The new object container.
+     */
     void SetContainer(const std::shared_ptr<Object>& container);
 
+    /**
+     * Base complexity for this object (primarily used for crafting).
+     *
+     * @return The complexity for the object.
+     */
     float GetComplexity();
+
+    /**
+     * Sets the complexity for the object.
+     *
+     * @param complexity The new complexity for the object.
+     */
     void SetComplexity(float complexity);
+
+    /**
+     * @return The stf file containing the default name for this object.
+     */
     const std::string& GetStfNameFile();
-    void SetStfNameFile(const std::string& stf_name_file);
+
+    /**
+     * @return The stf string containing the default name for this object.
+     */
     const std::string& GetStfNameString();
-    void SetStfNameString(const std::string& stf_name_string);
+
+    /** 
+     * Sets the stf string that is the default name for this object.
+     *
+     * @param stf_file_name The file name containing the stf string.
+     * @param stf_string The stf string containing the default object name.
+     */
+    void SetStfName(const std::string& stf_file_name, const std::string& stf_string);
+    
+    /**
+     * @return The custom name of the object or an empty string if not set.
+     */
     const std::wstring& GetCustomName();
-	std::string GetCustomNameStandard();
+
+    /**
+     * Sets the custom name for the object.
+     *
+     * @param custom_name The new custom name for the object.
+     */
     void SetCustomName(std::wstring custom_name); 
+    
+    /**
+     * Returns the volume of the object, which is a measure of the "space"
+     * an object takes up inside of a container.
+     *
+     * @return The volume of the object.
+     */
     uint32_t GetVolume();
+
+    /**
+     * Sets the volume of the object.
+     * 
+     * @param volume The new volume for the object.
+     */
     void SetVolume(uint32_t volume);
 	
+    /**
+     * @return The ID of the scene this object belongs to.
+     *
+     * @TODO Consider holding a pointer back to the scene.
+     */
 	uint32_t GetSceneId();
+
+    /**
+     * Set's the scene id for this object.
+     *
+     * @param scene_id The id of the scene this object belongs to.
+     */
 	void SetSceneId(uint32_t scene_id);
 
     /**
@@ -235,11 +393,24 @@ public:
      */
     void AddDeltasUpdate(swganh::messages::DeltasMessage message);
     
+    /**
+     * Sets the id of this object instance.
+     * 
+     * @param id The object id.
+     */
     void SetObjectId(uint64_t id);
+
     /**
      * @return The id of this Object instance.
      */
     uint64_t GetObjectId() ;
+    
+    /**
+     * @return The type of the object.
+     */
+    virtual uint32_t GetType() const { return 0; }
+            
+protected:
     
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
@@ -251,13 +422,10 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     
-    virtual uint32_t GetType() const { return 0; }
-        
     swganh::messages::BaselinesMessage CreateBaselinesMessage(uint16_t view_type, uint16_t opcount = 0) ;
     
     swganh::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
-    
-protected:
+
     boost::recursive_mutex    mutex_;
 	uint64_t object_id_;             // create
 	uint32_t scene_id_;				 // create

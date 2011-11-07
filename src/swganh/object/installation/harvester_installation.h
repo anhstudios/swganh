@@ -11,7 +11,11 @@ namespace installation {
 class HarvesterInstallation : public Installation
 {
 public:
+    /**
+     * @returns The type of this object instance.
+     */
     uint32_t GetType() const;
+
     const static uint32_t type = 0x48494e4f;
     
 private:
