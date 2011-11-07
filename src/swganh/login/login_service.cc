@@ -267,20 +267,15 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
     
     auto account = account_provider_->FindByUsername(message.username);
 
-    if (!account)
+    if (!account && login_auto_registration_ == true)
     {
-        if(login_auto_registration_ == true)
+        if(account_provider_->AutoRegisterAccount(message.username, message.password))
         {
-            if(account_provider_->AutoRegisterAccount(message.username, message.password))
-            {
-                DLOG(WARNING) << "Auto-Registering Account: " << message.username;
-                HandleLoginClientId_(login_client, message);
-                return;
-            }
+            account = account_provider_->FindByUsername(message.username); 
         }
     }
 
-    if (! authentication_manager_->Authenticate(login_client, account)) {
+    if (!account || !authentication_manager_->Authenticate(login_client, account)) {
         DLOG(WARNING) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
