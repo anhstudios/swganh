@@ -36,7 +36,7 @@ bool Object::HasController()
     return controller_ != nullptr;
 }
 
-const shared_ptr<ObjectController>& Object::GetController()
+shared_ptr<ObjectController> Object::GetController()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return controller_;
@@ -56,7 +56,7 @@ void Object::ClearController()
     controller_.reset();
 }
 
-void Object::AddContainedObject(const shared_ptr<Object>& object, uint32_t containment_type)
+void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentType containment_type)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
@@ -413,65 +413,71 @@ void Object::SetContainer(const std::shared_ptr<Object>& container)
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     container_ = container;
 }
-const shared_ptr<Object>& Object::GetContainer()
+
+shared_ptr<Object> Object::GetContainer()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	return container_;
 }
+
 void Object::SetComplexity(float complexity)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     complexity_ = complexity;
     ObjectMessageBuilder::BuildComplexityDelta(this);
 }
+
 float Object::GetComplexity()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	return complexity_;
 }
-void Object::SetStfNameFile(const string& stf_name_file)
+
+void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    stf_name_file_ = stf_name_file;
+    stf_name_file_ = stf_file_name;
+    stf_name_string_ = stf_string;
     ObjectMessageBuilder::BuildStfNameDelta(this);
 }
+
 const string& Object::GetStfNameFile()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	return stf_name_file_;
 }
-void Object::SetStfNameString(const string& stf_name_string)
-{
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    stf_name_string_ = stf_name_string;
-    ObjectMessageBuilder::BuildStfNameDelta(this);
-}
+
 const string& Object::GetStfNameString()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	return stf_name_string_;
 }
+
 void Object::SetVolume(uint32_t volume)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     volume_ = volume;
     ObjectMessageBuilder::BuildVolumeDelta(this);
 }
+
 uint32_t Object::GetVolume()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	return volume_;
 }
+
 void Object::SetSceneId(uint32_t scene_id)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	scene_id_ = scene_id;
 }
+
 uint32_t Object::GetSceneId()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	return scene_id_;
 }
+
 optional<BaselinesMessage> Object::GetBaseline3()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);

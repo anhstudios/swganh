@@ -99,19 +99,15 @@ std::string Mission::GetMissionDescriptionStfFile() const
     return mission_description_stf_file_;
 }
 
-void Mission::SetMissionDescriptionStfFile(std::string stf_file)
-{
-    mission_description_stf_file_ = stf_file;
-}
-
 std::string Mission::GetMissionDescriptionStfName() const
 {
     return mission_description_stf_name_;
 }
 
-void Mission::SetMissionDescriptionStfName(std::string stf_name)
+void Mission::SetMissionDescription(const std::string& stf_file_name, const std::string& stf_string)
 {
-    mission_description_stf_name_ = stf_name;
+    mission_description_stf_file_ = stf_file_name;
+    mission_description_stf_name_ = stf_string;
 }
 
 std::string Mission::GetMissionTitleStfFile() const
@@ -119,19 +115,15 @@ std::string Mission::GetMissionTitleStfFile() const
     return mission_title_stf_file_;
 }
 
-void Mission::SetMissionTitleStfFile(std::string stf_file)
-{
-    mission_title_stf_file_ = stf_file;
-}
-
 std::string Mission::GetMissionTitleStfName() const
 {
     return mission_title_stf_name_;
 }
 
-void Mission::SetMissionTitleStfName(std::string stf_name)
+void Mission::SetMissionTitle(const std::string& stf_file_name, const std::string& stf_string)
 {
-    mission_title_stf_name_ = stf_name;
+    mission_title_stf_file_ = stf_file_name;
+    mission_title_stf_name_ = stf_string;
 }
 
 uint32_t Mission::GetRepeatCounter() const

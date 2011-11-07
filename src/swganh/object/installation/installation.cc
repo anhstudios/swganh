@@ -40,7 +40,7 @@ float Installation::GetPowerReserve() const
     return power_reserve_;
 }
 
-void Installation::ResetPowerReserve(float power_reserve)
+void Installation::SetPowerReserve(float power_reserve)
 {
     power_reserve_ = power_reserve;
 }
@@ -50,7 +50,7 @@ float Installation::GetPowerCost() const
     return power_cost_;
 }
 
-void Installation::ResetPowerCost(float power_cost)
+void Installation::SetPowerCost(float power_cost)
 {
     power_cost_ = power_cost;
 }

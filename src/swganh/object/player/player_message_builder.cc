@@ -80,16 +80,7 @@ void PlayerMessageBuilder::BuildPlayTimeDelta(Player* object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildRegionIdDelta(Player* object)
-{
-    if (object->HasObservers())
-    {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6, 0);
-        message.data.write(object->GetRegionId());
 
-        object->AddDeltasUpdate(move(message));
-    }
-}
 void PlayerMessageBuilder::BuildAdminTagDelta(Player* object)
 {
     if (object->HasObservers())
@@ -360,7 +351,7 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline6(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_6, 2);
-    message.data.write<uint32_t>(object->GetRegionId());    // Region Id
+    message.data.write<uint32_t>(object->GetSceneId());    // Region Id
     message.data.write<uint8_t>(object->GetAdminTag());     // Admin Tag
     return boost::optional<BaselinesMessage>(move(message));
 }
