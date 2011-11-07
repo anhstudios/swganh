@@ -28,9 +28,14 @@ shared_ptr<Object> ObjectController::GetObject() const
     return object_;
 }
 
-const shared_ptr<RemoteClient>& ObjectController::GetRemoteClient() const
+shared_ptr<RemoteClient> ObjectController::GetRemoteClient()
 {
     return client_;
+}
+
+void ObjectController::SetRemoteClient(shared_ptr<RemoteClient> remote_client)
+{
+    client_ = remote_client;
 }
 
 void ObjectController::Notify(const anh::ByteBuffer& message)

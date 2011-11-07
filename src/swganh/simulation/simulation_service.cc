@@ -191,20 +191,22 @@ public:
 
     shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<RemoteClient> client)
     {    
-        auto controller = make_shared<ObjectController>(object, client);
+        shared_ptr<ObjectController> controller = nullptr;
         
         // If a controller already exists update it, otherwise create a new controller record.
         auto find_iter = controlled_objects_.find(object->GetObjectId());                    
         if (find_iter != controlled_objects_.end())
         {
-            find_iter->second = controller;
+            controller = find_iter->second;
+            controller->SetRemoteClient(client);
         }
         else 
         {
+            controller = make_shared<ObjectController>(object, client);
+            object->SetController(controller);
+
             controlled_objects_.insert(make_pair(object->GetObjectId(), controller));            
         }
-        
-        object->SetController(controller);
 
         auto connection_client = std::static_pointer_cast<ConnectionClient>(client);
         connection_client->SetController(controller);
