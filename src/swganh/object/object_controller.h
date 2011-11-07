@@ -55,7 +55,14 @@ namespace object {
         /**
          * @return Handle to the remote client controlling the object.
          */
-        const std::shared_ptr<swganh::network::RemoteClient>& GetRemoteClient() const;
+        std::shared_ptr<swganh::network::RemoteClient> GetRemoteClient();
+        
+        /**
+         * Sets handle to the remote client controlling the object.
+         *
+         * @param remote_client the new remote client for this controller.
+         */
+        void SetRemoteClient(std::shared_ptr<swganh::network::RemoteClient> remote_client);
 
         using anh::observer::ObserverInterface::Notify;
 
