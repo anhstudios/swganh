@@ -146,18 +146,6 @@ void Player::IncrementTotalPlayTime(uint32_t increment)
     PlayerMessageBuilder::BuildPlayTimeDelta(this);
 }
 
-uint32_t Player::GetRegionId() 
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    return region_;
-}
-void Player::SetRegionId(uint32_t region)
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    region_ = region;
-    PlayerMessageBuilder::BuildRegionIdDelta(this);
-}
-
 uint8_t Player::GetAdminTag() 
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
@@ -282,20 +270,13 @@ void Player::SetCurrentForcePower(uint32_t force_power)
     PlayerMessageBuilder::BuildCurrentForcePowerDelta(this);
 }
 
-void Player::IncreaseForcePower(uint32_t force_power)
+void Player::IncrementForcePower(int32_t force_power)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     uint32_t new_force_power = current_force_power_ + force_power;
 
     current_force_power_ = (new_force_power > GetMaxForcePower()) ? GetMaxForcePower() : new_force_power;
     
-    PlayerMessageBuilder::BuildCurrentForcePowerDelta(this);
-}
-
-void Player::DecreaseForcePower(uint32_t force_power)
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    current_force_power_ -= force_power;
     PlayerMessageBuilder::BuildCurrentForcePowerDelta(this);
 }
 
