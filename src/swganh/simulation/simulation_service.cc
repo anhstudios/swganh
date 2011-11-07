@@ -156,13 +156,14 @@ public:
 
         return object;
     }
-    const shared_ptr<Object>& GetObjectById(uint64_t object_id)
+    
+    shared_ptr<Object> GetObjectById(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);
 
         if (find_iter == loaded_objects_.end())
         {
-            throw swganh::object::InvalidObject("Requested an invalid object");
+            return nullptr;
         }
 
         return find_iter->second;
@@ -189,22 +190,24 @@ public:
     }
 
     shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<RemoteClient> client)
-    {
-        auto find_iter = controlled_objects_.find(object->GetObjectId());
-
+    {    
+        auto controller = make_shared<ObjectController>(object, client);
+        
+        // If a controller already exists update it, otherwise create a new controller record.
+        auto find_iter = controlled_objects_.find(object->GetObjectId());                    
         if (find_iter != controlled_objects_.end())
         {
-            return find_iter->second;
-            //throw swganh::object::InvalidObject("Object already has a controller");
+            find_iter->second = controller;
+        }
+        else 
+        {
+            controlled_objects_.insert(make_pair(object->GetObjectId(), controller));            
         }
         
-        auto controller = make_shared<ObjectController>(object, client);
         object->SetController(controller);
 
         auto connection_client = std::static_pointer_cast<ConnectionClient>(client);
         connection_client->SetController(controller);
-
-        controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
 
         return controller;
     }
@@ -265,8 +268,13 @@ public:
         shared_ptr<ConnectionClient> client, 
         const SelectCharacter& message)
     {
-        // character_id = player
-        auto object = LoadObjectById(message.character_id, creature::Creature::type);
+        auto object = GetObjectById(message.character_id);
+        
+        if (!object)
+        {
+            object = LoadObjectById(message.character_id, creature::Creature::type);
+        }
+        
         StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
@@ -365,7 +373,7 @@ shared_ptr<Object> SimulationService::LoadObjectById(uint64_t object_id, uint32_
     return impl_->LoadObjectById(object_id, type);
 }
 
-const shared_ptr<Object>& SimulationService::GetObjectById(uint64_t object_id)
+shared_ptr<Object> SimulationService::GetObjectById(uint64_t object_id)
 {
     return impl_->GetObjectById(object_id);
 }
