@@ -46,6 +46,8 @@ namespace player {
         const static uint32_t type;
     private:
         // Helpers
+        void LoadStatusFlags_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
+        void LoadProfileFlags_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
         void LoadXP_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
         void PersistXP_(const std::shared_ptr<Player>& player);
         void LoadWaypoints_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
