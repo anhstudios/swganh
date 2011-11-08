@@ -31,11 +31,22 @@ namespace object {
         ObjectFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
             swganh::simulation::SimulationService* simulation_service);
         virtual ~ObjectFactory() {}
-        
+        /**
+         * Loads in base values from a result set
+         *
+         * @param the object which to load values into
+         * @param the result set from which to load the values from
+         */
         void CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::ResultSet>& result);
         virtual void LoadTemplates(){}
         virtual bool HasTemplate(const std::string& template_name){ return false; }
         virtual void PersistObject(const std::shared_ptr<Object>& object);
+        /**
+         * Persists the Base Object Data
+         *
+         * @param object data to persist
+         * @param PreparedStatement to add values to.
+         */
         void PersistObject(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::PreparedStatement>& prepared_statement);
         virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object){}
         virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
