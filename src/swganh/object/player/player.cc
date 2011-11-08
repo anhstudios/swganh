@@ -14,8 +14,8 @@ using namespace swganh::messages;
 using namespace containers;
 
 Player::Player()
-: status_flags_(vector<FlagBitmask>(4))
-, profile_flags_(vector<FlagBitmask>(4))
+: status_flags_(array<FlagBitmask, 4>())
+, profile_flags_(array<FlagBitmask, 4>())
 , profession_tag_("")
 , born_date_(0)
 , total_playtime_(0)
@@ -45,9 +45,10 @@ Player::Player()
 , friends_(NetworkSortedVector<Name>(25))
 , ignored_players_(NetworkSortedVector<Name>(25))
 {
-    
+    status_flags_.fill(FlagBitmask(0));
+    profile_flags_.fill(FlagBitmask(0));
 }
-std::vector<FlagBitmask> Player::GetStatusFlags() 
+std::array<FlagBitmask, 4> Player::GetStatusFlags() 
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return status_flags_;
@@ -55,25 +56,33 @@ std::vector<FlagBitmask> Player::GetStatusFlags()
 void Player::AddStatusFlag(StatusFlags flag, StatusIndex index)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    status_flags_[index] = FlagBitmask(flag);
+    status_flags_[index] = FlagBitmask(status_flags_[index].bitmask | flag);
     PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 
 void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    status_flags_[index] = FlagBitmask(flag);
+    status_flags_[index] = FlagBitmask(status_flags_[index].bitmask & ~flag);
     PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 
 void Player::ClearStatusFlags()
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    //status_flags_.Clear();
+
+    for_each(
+        begin(status_flags_), 
+        end(status_flags_),
+        [] (vector<FlagBitmask>::value_type& value) 
+    {
+        value = FlagBitmask(0);
+    });
+
     PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 
-std::vector<FlagBitmask> Player::GetProfileFlags() 
+std::array<FlagBitmask, 4> Player::GetProfileFlags() 
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return profile_flags_;
@@ -82,21 +91,29 @@ std::vector<FlagBitmask> Player::GetProfileFlags()
 void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    profile_flags_[index] = FlagBitmask(flag);
+    profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask | flag);
     PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 
 void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index)
 {    
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    profile_flags_[index] = FlagBitmask(flag);
+    profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask & ~flag);
     PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 
 void Player::ClearProfileFlags()
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    //profile_flags_.Clear();
+    
+    for_each(
+        begin(profile_flags_), 
+        end(profile_flags_),
+        [] (vector<FlagBitmask>::value_type& value) 
+    {
+        value = FlagBitmask(0);
+    });
+
     PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 
