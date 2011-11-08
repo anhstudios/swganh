@@ -2,8 +2,8 @@
 #define SWGANH_OBJECT_PLAYER_PLAYER_H_
 
 #include <cstdint>
+#include <array>
 #include <string>
-#include <vector>
 #include <list>
 
 #include "anh/crc.h"
@@ -28,14 +28,14 @@ enum Gender
 
 enum StatusFlags
 {
-    CLEAR = 0,
-    LFG = 1,
-    HELPER = 2,
-    ROLEPLAYER = 4,
-    AFK = 80,
-    LD = 100,
-    FACTION_RANK = 200,
-    ANONYMOUS = 80000000
+    CLEAR           = 0,
+    LFG             = 0x00000001,
+    HELPER          = 0x00000002,
+    ROLEPLAYER      = 0x00000004,
+    AFK             = 0x00000080,
+    LD              = 0x00000100,
+    FACTION_RANK    = 0x00000200,
+    ANONYMOUS       = 0x80000000
 };
 enum StatusIndex
 {
@@ -343,7 +343,7 @@ public:
     /**
      * @return The status flags for the player object.
      */
-    std::vector<FlagBitmask> GetStatusFlags();
+    std::array<FlagBitmask, 4> GetStatusFlags();
 
     /**
      * Adds a flag to the status flags.
@@ -379,7 +379,7 @@ public:
     /**
      * @return The profile flags for the player object.
      */
-    std::vector<FlagBitmask> GetProfileFlags();
+    std::array<FlagBitmask, 4> GetProfileFlags();
     
     /**
      * Adds a flag to the profile flags.
@@ -910,8 +910,8 @@ private:
 
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
-    std::vector<FlagBitmask> status_flags_;
-    std::vector<FlagBitmask> profile_flags_;
+    std::array<FlagBitmask, 4> status_flags_;
+    std::array<FlagBitmask, 4> profile_flags_;
     std::string profession_tag_;
     uint32_t born_date_;
     uint32_t total_playtime_;
