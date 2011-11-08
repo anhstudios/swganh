@@ -44,10 +44,7 @@ Player::Player()
 , draft_schematics_(NetworkSortedList<DraftSchematicData>())
 , friends_(NetworkSortedVector<Name>(25))
 , ignored_players_(NetworkSortedVector<Name>(25))
-{
-    status_flags_.fill(FlagBitmask(0));
-    profile_flags_.fill(FlagBitmask(0));
-}
+{}
 std::array<FlagBitmask, 4> Player::GetStatusFlags() 
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
