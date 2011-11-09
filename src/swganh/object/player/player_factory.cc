@@ -173,8 +173,6 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
             while (result->next())
             {
                 // Player specific start
-                player->AddStatusFlag((StatusFlags)result->getUInt("status_flag_id"));
-                player->AddProfileFlag((ProfileFlags)result->getUInt("profile_flag_id"));
                 player->SetProfessionTag(result->getString("profession_tag"));
                 player->SetBornDate(result->getUInt("born_date"));
                 player->SetTotalPlayTime(result->getUInt("total_playtime"));
@@ -192,6 +190,18 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
                 player->ResetCurrentDrink(result->getUInt("current_drink"));
                 player->ResetMaxDrink(result->getUInt("max_drink"));
                 player->SetJediState(result->getUInt("jedi_state"));
+                
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadStatusFlags_(player, result);
+                }
+                
+                if (statement->getMoreResults())
+                {
+                    result.reset(statement->getResultSet());
+                    LoadProfileFlags_(player, result);
+                }
 
                 if (statement->getMoreResults())
                 {
@@ -259,6 +269,39 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromTemplate(const string& templat
     
     return object;
 }
+
+void PlayerFactory::LoadStatusFlags_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result)
+{    
+    try 
+    {
+        while (result->next())
+        {
+           player->AddStatusFlag(static_cast<StatusFlags>(result->getUInt("flag")));
+        }
+    }
+        catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+
+void PlayerFactory::LoadProfileFlags_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result)
+{
+    try 
+    {
+        while (result->next())
+        {
+           player->AddProfileFlag(static_cast<ProfileFlags>(result->getUInt("flag")));
+        }
+    }
+        catch(sql::SQLException &e)
+    {
+        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+
 // Helpers
 void PlayerFactory::LoadXP_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
 {
@@ -304,7 +347,10 @@ void PlayerFactory::LoadWaypoints_(shared_ptr<Player> player, shared_ptr<sql::Re
             // Check to see if the waypoint is already available?
             WaypointData waypoint;
             waypoint.object_id_ = result->getUInt64("id");
-            waypoint.coordinates_ = glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position"));
+            waypoint.coordinates_ = glm::vec3(
+                result->getDouble("x_position"),
+                result->getDouble("y_position"), 
+                result->getDouble("z_position"));
             waypoint.location_network_id_ = result->getUInt("scene_id");
             string custom_string = result->getString("custom_name");
             waypoint.name_ = wstring(begin(custom_string), end(custom_string));
