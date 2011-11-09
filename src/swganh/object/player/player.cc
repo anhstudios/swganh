@@ -1,6 +1,8 @@
 
 #include "swganh/object/player/player.h"
 
+#include <glog/logging.h>
+
 #include "anh/crc.h"
 
 #include "swganh/object/player/player_message_builder.h"

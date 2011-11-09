@@ -77,6 +77,7 @@ public:
     static void BuildEquipmentDelta(Creature* creature);
     static void BuildDisguiseDelta(Creature* creature);
     static void BuildStationaryDelta(Creature* creature);
+    static void BuildUpdatePvpStatusMessage(Creature* object);
 
     // baselines
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline1(Creature* creature);

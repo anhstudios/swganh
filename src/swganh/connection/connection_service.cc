@@ -197,8 +197,12 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
         if (controller)
         {
             auto simulation_service = simulation_service_.lock();
+
+            // @TODO REFACTOR Move this functionality out to a PlayerService
             auto player = simulation_service->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
 			player->AddStatusFlag(swganh::object::player::LD);
+            // END TODO
+
             simulation_service->PersistRelatedObjects(controller->GetObject()->GetObjectId());
             
             // set a timer to 5 minutes to destroy the object, unless logged back in.

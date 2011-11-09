@@ -51,6 +51,7 @@ Creature::Creature()
 , equipment_list_(swganh::messages::containers::NetworkSortedList<EquipmentItem>())
 , disguise_("")
 , stationary_(0)
+, pvp_status_(PvPStatus_Player)
 {}
 
 Creature::~Creature()
@@ -831,6 +832,46 @@ bool Creature::IsStationary(void)
     return stationary_;
 }
 
+PvpStatus Creature::GetPvpStatus() const
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return pvp_status_;
+}
+
+void Creature::SetPvPStatus(PvpStatus status)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    pvp_status_ = status;
+    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
+}
+
+void Creature::TogglePvpStateOn(PvpStatus state)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    pvp_status_ = static_cast<PvpStatus>(pvp_status_ | state);
+    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
+}
+
+void Creature::TogglePvpStateOff(PvpStatus state)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    pvp_status_ = static_cast<PvpStatus>(pvp_status_ & ~state);
+    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
+}
+
+void Creature::TogglePvpState(PvpStatus state)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    pvp_status_ = static_cast<PvpStatus>(pvp_status_ ^ state);
+    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
+}
+
+bool Creature::CheckPvpState(PvpStatus state) const
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return static_cast<PvpStatus>(pvp_status_ & state) == state;
+}
+
 boost::optional<BaselinesMessage> Creature::GetBaseline1()
 {
     return move(CreatureMessageBuilder::BuildBaseline1(this));
@@ -849,4 +890,9 @@ boost::optional<BaselinesMessage> Creature::GetBaseline4()
 boost::optional<BaselinesMessage> Creature::GetBaseline6()
 {
     return move(CreatureMessageBuilder::BuildBaseline6(this));
+}
+
+void Creature::OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
+{
+    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
 }
