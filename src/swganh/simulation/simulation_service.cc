@@ -276,7 +276,24 @@ public:
         {
             object = LoadObjectById(message.character_id, creature::Creature::type);
         }
+
+        // @TODO REFACTOR Move this functionality out to a PlayerService
+        auto contained = object->GetContainedObjects();
         
+        for_each(
+            begin(contained),
+            end(contained),
+            [] (Object::ObjectMap::value_type& object_entry)
+        {
+            auto player = dynamic_pointer_cast<player::Player>(object_entry.second);
+
+            if (player)
+            {
+                player->RemoveStatusFlag(player::LD);
+            }
+        });
+        // END TODO
+
         StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());

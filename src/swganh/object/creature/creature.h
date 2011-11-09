@@ -134,6 +134,18 @@ enum State
     PILOTING_POB_SHIP
 };
 
+enum PvpStatus
+{
+    PvPStatus_None          = 0x00000000,
+    PvPStatus_Attackable    = 0x00000001,
+    PvPStatus_Aggressive    = 0x00000002,
+    PvPStatus_Overt         = 0x00000004,
+    PvPStatus_Tef           = 0x00000008,
+    PvPStatus_Player        = 0x00000010,
+    PvPStatus_Enemy         = 0x00000020,
+    PvPStatus_Duel          = 0x00000040
+};
+
 /**
  *
  */
@@ -523,6 +535,13 @@ public:
     void SetStationary(bool stationary);
     bool IsStationary(void);
 
+    PvpStatus GetPvpStatus() const;
+    void SetPvPStatus(PvpStatus status);
+    void TogglePvpStateOn(PvpStatus state);
+    void TogglePvpStateOff(PvpStatus state);
+    void TogglePvpState(PvpStatus state);
+    bool CheckPvpState(PvpStatus state) const;
+
     // Baselines
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
@@ -532,6 +551,8 @@ public:
 private:
     friend class CreatureMessageBuilder;
     friend class CreatureFactory;
+
+    void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
 
     uint32_t    bank_credits_;                                                              // update 1 variable 0
     uint32_t    cash_credits_;                                                              // update 1 variable 1
@@ -575,7 +596,7 @@ private:
     swganh::messages::containers::NetworkSortedList<EquipmentItem> equipment_list_;         // update 6 variable 15
     std::string disguise_;                                                                  // update 6 variable 16
     bool stationary_;                                                                       // update 6 variable 17
-
+    PvpStatus pvp_status_;
 };
 
 }}}  // namespace swganh::object::creature

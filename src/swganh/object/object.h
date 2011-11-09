@@ -217,7 +217,7 @@ public:
     template<typename T>
     void NotifyObservers(const T& message)
     {
-        for_each(
+        std::for_each(
             observers_.begin(),
             observers_.end(),
             [&message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
@@ -411,6 +411,7 @@ public:
     virtual uint32_t GetType() const { return 0; }
             
 protected:
+    virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
     
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
@@ -426,7 +427,7 @@ protected:
     
     swganh::messages::DeltasMessage CreateDeltasMessage(uint16_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
 
-    boost::recursive_mutex    mutex_;
+    mutable boost::recursive_mutex mutex_;
 	uint64_t object_id_;             // create
 	uint32_t scene_id_;				 // create
     std::string template_string_;    // create

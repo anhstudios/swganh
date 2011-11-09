@@ -314,6 +314,8 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = GetObjectId();
     controller->Notify(scene_end_baselines);
+
+    OnMakeClean(controller);
 }
 
 const BaselinesCacheContainer& Object::GetBaselines(uint64_t viewer_id) 

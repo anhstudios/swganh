@@ -1,5 +1,6 @@
 #include "creature_message_builder.h"
 #include "creature.h"
+#include "swganh/messages/update_pvp_status_message.h"
 
 using namespace swganh::object::creature;
 using namespace swganh::messages;
@@ -423,6 +424,19 @@ void CreatureMessageBuilder::BuildStationaryDelta(Creature* creature)
     }
 }
 
+
+void CreatureMessageBuilder::BuildUpdatePvpStatusMessage(Creature* creature)
+{
+    if (creature->HasObservers())
+    {
+        UpdatePvpStatusMessage message;
+        message.object_id = creature->object_id_;
+        message.faction = 0;
+        message.pvp_status = creature->pvp_status_;
+
+        creature->NotifyObservers(message);
+    }
+}
 
 boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline1(Creature* creature)
 {
