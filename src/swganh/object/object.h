@@ -217,7 +217,7 @@ public:
     template<typename T>
     void NotifyObservers(const T& message)
     {
-        for_each(
+        std::for_each(
             observers_.begin(),
             observers_.end(),
             [&message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
@@ -411,6 +411,7 @@ public:
     virtual uint32_t GetType() const { return 0; }
             
 protected:
+    virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
     
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
