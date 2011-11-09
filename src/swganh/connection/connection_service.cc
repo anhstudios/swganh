@@ -21,6 +21,7 @@
 #include "swganh/connection/providers/mysql_session_provider.h"
 
 #include "swganh/object/object.h"
+#include "swganh/object/object_event.h"
 #include "swganh/object/player/player.h"
 
 #include "swganh/messages/logout_message.h"
@@ -34,6 +35,7 @@ using namespace swganh::character;
 using namespace swganh::connection;
 using namespace swganh::login;
 using namespace swganh::messages;
+using namespace swganh::object;
 using namespace swganh::simulation;
 
 using namespace std;
@@ -233,9 +235,17 @@ void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_cod
     }
 }
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
-    DLOG(WARNING) << "Handling CmdSceneReady";
-    
+    DLOG(WARNING) << "Handling CmdSceneReady";    
+
     client->Send(CmdSceneReady());
+
+    auto object = client->GetController()->GetObject();
+
+    ObjectData object_ready_event_data;
+    object_ready_event_data.object = object;
+
+    kernel()->GetEventDispatcher()->triggerAsync(
+        make_shared_event("ObjectReadyEvent", move(object_ready_event_data)));
 }
 
 void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const ClientIdMsg& message) {

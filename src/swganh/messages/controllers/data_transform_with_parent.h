@@ -13,6 +13,7 @@ namespace controllers {
     class DataTransformWithParent
     {
     public:
+        static uint32_t header() { return 0x000000F1; }
         uint32_t counter;
         uint64_t cell_id;
         glm::quat orientation;
