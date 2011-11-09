@@ -1,6 +1,8 @@
 
 #include "swganh/object/player/player.h"
 
+#include <glog/logging.h>
+
 #include "anh/crc.h"
 
 #include "swganh/object/player/player_message_builder.h"
@@ -740,42 +742,6 @@ void Player::SetGender(Gender value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     gender_ = value;
-}
-
-PvpStatus Player::GetPvpStatus() const
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    return pvp_status_;
-}
-
-void Player::SetPvPStatus(PvpStatus status)
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    pvp_status_ = status;
-}
-
-void Player::TogglePvpStateOn(PvpStatus state)
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    pvp_status_ = static_cast<PvpStatus>(pvp_status_ | state);
-}
-
-void Player::TogglePvpStateOff(PvpStatus state)
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    pvp_status_ = static_cast<PvpStatus>(pvp_status_ & ~state);
-}
-
-void Player::TogglePvpState(PvpStatus state)
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    pvp_status_ = static_cast<PvpStatus>(pvp_status_ ^ state);
-}
-
-bool Player::CheckPvpState(PvpStatus state) const
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    return static_cast<PvpStatus>(pvp_status_ & state) == state;
 }
 
 boost::optional<BaselinesMessage> Player::GetBaseline3()
