@@ -54,6 +54,19 @@ enum AdminTag
     CSR = 1,
     DEVELOPER = 2
 };
+
+enum PvpStatus
+{
+    PvPStatus_None          = 0x00000000,
+    PvPStatus_Attackable    = 0x00000001,
+    PvPStatus_Aggressive    = 0x00000002,
+    PvPStatus_Overt         = 0x00000004,
+    PvPStatus_Tef           = 0x00000008,
+    PvPStatus_Player        = 0x00000010,
+    PvPStatus_Enemy         = 0x00000020,
+    PvPStatus_Duel          = 0x00000040
+};
+
 struct Ability
 {
     Ability(void)
@@ -896,6 +909,12 @@ public:
      */
     void SetGender(Gender gender);
 
+    PvpStatus GetPvpStatus() const;
+    void SetPvPStatus(PvpStatus status);
+    void TogglePvpStateOn(PvpStatus state);
+    void TogglePvpStateOff(PvpStatus state);
+    void TogglePvpState(PvpStatus state);
+    bool CheckPvpState(PvpStatus state) const;
 
 protected:
     // baselines
@@ -942,6 +961,7 @@ private:
     uint32_t max_drink_;
     uint32_t jedi_state_;
     Gender gender_;
+    PvpStatus pvp_status_;
 };
 
 }}}  // namespace swganh::object::player

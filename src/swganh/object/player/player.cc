@@ -742,6 +742,42 @@ void Player::SetGender(Gender value)
     gender_ = value;
 }
 
+PvpStatus Player::GetPvpStatus() const
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return pvp_status_;
+}
+
+void Player::SetPvPStatus(PvpStatus status)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    pvp_status_ = status;
+}
+
+void Player::TogglePvpStateOn(PvpStatus state)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    pvp_status_ = static_cast<PvpStatus>(pvp_status_ | state);
+}
+
+void Player::TogglePvpStateOff(PvpStatus state)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    pvp_status_ = static_cast<PvpStatus>(pvp_status_ & ~state);
+}
+
+void Player::TogglePvpState(PvpStatus state)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    pvp_status_ = static_cast<PvpStatus>(pvp_status_ ^ state);
+}
+
+bool Player::CheckPvpState(PvpStatus state) const
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return static_cast<PvpStatus>(pvp_status_ & state) == state;
+}
+
 boost::optional<BaselinesMessage> Player::GetBaseline3()
 {
     return PlayerMessageBuilder::BuildBaseline3(this);
