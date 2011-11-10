@@ -54,6 +54,7 @@ enum AdminTag
     CSR = 1,
     DEVELOPER = 2
 };
+
 struct Ability
 {
     Ability(void)
@@ -895,7 +896,6 @@ public:
      * @param gender The gender of the player.
      */
     void SetGender(Gender gender);
-
 
 protected:
     // baselines

@@ -4,6 +4,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "anh/crc.h"
+#include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/service/service_manager.h"
 #include "anh/database/database_manager.h"
 
@@ -54,6 +55,11 @@ namespace simulation {
 
 class SimulationServiceImpl {
 public:
+    SimulationServiceImpl(KernelInterface* kernel)
+        : kernel_(kernel)
+    {
+    }
+
     const shared_ptr<ObjectManager>& GetObjectManager()
     {
         if (!object_manager_)
@@ -78,11 +84,12 @@ public:
     {
         if (!movement_manager_)
         {
-            movement_manager_ = make_shared<MovementManager>();
+            movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher());
         }
 
         return movement_manager_;
     }
+
     void PersistObject(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);
@@ -276,7 +283,24 @@ public:
         {
             object = LoadObjectById(message.character_id, creature::Creature::type);
         }
+
+        // @TODO REFACTOR Move this functionality out to a PlayerService
+        auto contained = object->GetContainedObjects();
         
+        for_each(
+            begin(contained),
+            end(contained),
+            [] (Object::ObjectMap::value_type& object_entry)
+        {
+            auto player = dynamic_pointer_cast<player::Player>(object_entry.second);
+
+            if (player)
+            {
+                player->RemoveStatusFlag(player::LD);
+            }
+        });
+        // END TODO
+
         StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
@@ -305,6 +329,7 @@ private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManager> scene_manager_;
     shared_ptr<MovementManager> movement_manager_;
+    KernelInterface* kernel_;
 
     ObjControllerHandlerMap controller_handlers_;
 
@@ -316,7 +341,7 @@ private:
 
 SimulationService::SimulationService(KernelInterface* kernel)
     : BaseService(kernel) 
-    , impl_(new SimulationServiceImpl)
+    , impl_(new SimulationServiceImpl(kernel))
 {}
     
 SimulationService::~SimulationService()
