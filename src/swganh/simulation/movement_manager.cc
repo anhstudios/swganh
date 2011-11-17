@@ -55,6 +55,8 @@ void MovementManager::HandleDataTransformWithParent(
     const std::shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
 {
+    throw std::runtime_error("Cell movement currently disabled");
+
     DataTransformWithParent transform;
     transform.Deserialize(message.data);
     
