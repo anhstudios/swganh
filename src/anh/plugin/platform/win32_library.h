@@ -2,6 +2,8 @@
 #ifndef ANH_PLUGIN_PLATFORM_WIN32_LIBRARY_H_
 #define ANH_PLUGIN_PLATFORM_WIN32_LIBRARY_H_
 
+#ifdef WIN32
+
 #include <memory>
 #include <string>
 
@@ -31,9 +33,11 @@ private:
     
 private:
     HMODULE handle_;
-    ExitFunc exit_func_;
+    anh::plugin::ExitFunc exit_func_;
 };
 
 }}}  // namespace anh::plugin::platform
+
+#endif  // WIN32
 
 #endif  // ANH_PLUGIN_PLATFORM_WIN32_LIBRARY_H_

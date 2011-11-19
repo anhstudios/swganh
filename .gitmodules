@@ -1,3 +1,0 @@
-[submodule "tools/cmake"]
-	path = tools/cmake
-	url = https://github.com/anhstudios/cmake-modules.git

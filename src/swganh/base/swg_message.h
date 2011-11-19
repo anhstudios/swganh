@@ -20,6 +20,7 @@
 #ifndef SWGANH_BASE_SWG_MESSAGE_H_
 #define SWGANH_BASE_SWG_MESSAGE_H_
 
+#include <cassert>
 #include <cstdint>
 
 #include "anh/byte_buffer.h"
@@ -31,8 +32,8 @@ namespace base {
 template<typename T>
 struct SwgMessage {
     void serialize(anh::ByteBuffer& buffer) const {
-        buffer.write(anh::hostToLittle(T::opcount));
-        buffer.write(T::opcode);
+        buffer.write(anh::hostToLittle(T::opcount()));
+        buffer.write(T::opcode());
         
         onSerialize(buffer);
     }
@@ -41,7 +42,7 @@ struct SwgMessage {
         uint16_t opcount = anh::littleToHost(buffer.read<uint16_t>());
         uint32_t opcode = buffer.read<uint32_t>();
 
-        if (opcode != T::opcode) {
+        if (opcode != T::opcode()) {
             assert(true && "opcodes don't match, expected:" + opcode );
             return;
         }

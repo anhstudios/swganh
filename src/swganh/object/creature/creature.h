@@ -1,0 +1,604 @@
+/*
+ This file is part of SWGANH. For more information, visit http://swganh.com
+ 
+ Copyright (c) 2006 - 2011 The SWG:ANH Team
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+#ifndef SWGANH_OBJECT_CREATURE_H_
+#define SWGANH_OBJECT_CREATURE_H_
+
+#include <list>
+
+#include "swganh/object/tangible/base_tangible.h"
+
+#include "swganh/messages/containers/network_array.h"
+#include "swganh/messages/containers/network_sorted_list.h"
+#include "swganh/messages/containers/network_list.h"
+#include "swganh/messages/containers/network_map.h"
+
+namespace swganh {
+namespace object {
+namespace creature {
+
+/**
+ * Represents a Stats index.
+ */
+enum StatIndex : uint32_t
+{
+    HEALTH = 0,
+    STRENGTH,
+    CONSTITUTION,
+    ACTION,
+    QUICKNESS,
+    STAMINA,
+    MIND,
+    FOCUS,
+    WILLPOWER
+};
+
+/**
+ * Represents the id offset of various "linked" items.
+ */
+enum CreatureOffSet
+{
+	PLAYER_OFFSET = 1,
+	DATAPAD_OFFSET,
+	INVENTORY_OFFSET,
+	BANK_OFFSET,
+	MISSION_OFFSET,
+	HAIR_OFFSET, 
+	EQUIPED_OFFSET
+};
+
+/**
+ *
+ */
+enum Posture : uint8_t
+{
+    STANDING = 1,
+    SNEAKING,
+    WALKING,
+    RUNNING,
+    KNEELING,
+    CROUCH_SNEAKING,
+    CROUCH_WALKING,
+    PRONE,
+    SKILL_ANIMATING,
+    CRAWLING,
+    CLIMBING_STATIONARY,
+    CLIMBING,
+    HOVERING,
+    FLING,
+    LYING_DOWN,
+    SITTING,
+    DRIVING_VEHICLE,
+    RIDING_CREATURE,
+    KNOCKED_DOWN,
+    INCAPACITATED,
+    DEAD,
+    BLOCKING
+};
+
+/**
+ *
+ */
+enum State
+{
+    COVER = 1,
+    COMBAT,
+    PEACE,
+    AIMING,
+    ALERT,
+    BERSERK,
+    FEIGN_DEATH,
+    COMBAT_ATTITUDE_EVASIVE,
+    COMBAT_ATTITUDE_NORMAL,
+    COMBAT_ATTITUDE_AGGRESSIVE,
+    TUMBLING,
+    RALLIED,
+    STUNNED,
+    BLINDED,
+    DIZZY,
+    INTIMIDATED,
+    IMMOBILIZED,
+    FROZEN,
+    SWIMMING,
+    SITTING_ON_CHAIR,
+    CRAFTING,
+    GLOWING_JEDI,
+    MASK_SCENT,
+    POISONED,
+    BLEEDING,
+    DISEASED,
+    ON_FIRE,
+    RIDING_MOUNT,
+    MOUNTED_CREATURE,
+    PILOTING_SHIP,
+    SHIP_OPERATIONS,
+    SHIP_GUNNER,
+    SHIP_INTERIOR,
+    PILOTING_POB_SHIP
+};
+
+enum PvpStatus
+{
+    PvPStatus_None          = 0x00000000,
+    PvPStatus_Attackable    = 0x00000001,
+    PvPStatus_Aggressive    = 0x00000002,
+    PvPStatus_Overt         = 0x00000004,
+    PvPStatus_Tef           = 0x00000008,
+    PvPStatus_Player        = 0x00000010,
+    PvPStatus_Enemy         = 0x00000020,
+    PvPStatus_Duel          = 0x00000040
+};
+
+/**
+ *
+ */
+struct SkillMod
+{
+    SkillMod()
+    {}
+
+    SkillMod(std::string identifier_, uint32_t base_, uint32_t modifier_)
+        : identifier(identifier_)
+        , base(base_)
+        , modifier(modifier_)
+    {}
+
+    ~SkillMod(void)
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint8_t>(0);                 // Unused
+        message.data.write<std::string>(identifier);    // Identifier
+        message.data.write<uint32_t>(base);             // Base
+        message.data.write<uint32_t>(modifier);         // Modifier
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<std::string>(identifier);    // Identifier
+        message.data.write<uint32_t>(base);             // Base
+        message.data.write<uint32_t>(modifier);         // Modifier
+    }
+
+    bool operator==(const SkillMod& other)
+    {
+        return (identifier == other.identifier);
+    }
+
+    std::string identifier;
+    uint32_t base;
+    uint32_t modifier;
+};
+
+/**
+ *
+ */
+struct Stat
+{
+    Stat(void)
+        : value(0)
+    {}
+
+    Stat(uint32_t value_)
+        : value(value_)
+    {}
+
+    ~Stat()
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint32_t>(value);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint32_t>(value);
+    }
+
+    uint32_t value;
+};
+    
+/**
+ *
+ */
+struct EquipmentItem
+{
+    EquipmentItem()
+    {
+    }
+
+    EquipmentItem(uint64_t object_id_, uint32_t template_crc_ = 0, std::string customization_ = std::string(""), uint32_t containment_type_ = 4)
+        : object_id(object_id_)
+        , template_crc(template_crc_)
+        , customization(customization_)
+        , containment_type(containment_type_)
+    {
+    }
+
+    ~EquipmentItem()
+    {
+    }
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<std::string>(customization);
+        message.data.write<uint32_t>(containment_type);
+        message.data.write<uint64_t>(object_id);
+        message.data.write<uint32_t>(template_crc);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<std::string>(customization);
+        message.data.write<uint32_t>(containment_type);
+        message.data.write<uint64_t>(object_id);
+        message.data.write<uint32_t>(template_crc);
+    }
+
+    bool operator==(const EquipmentItem& other)
+    {
+        return (object_id != other.object_id);
+    }
+
+    std::string customization;
+    uint32_t containment_type;
+    uint64_t object_id;
+    uint32_t template_crc;
+};
+
+/**
+ *
+ */
+struct MissionCriticalObject
+{
+    MissionCriticalObject(uint64_t mission_owner_id, uint16_t critical_object_id)
+        : mission_owner_id_(mission_owner_id)
+        , critical_object_id_(critical_object_id)
+    {}
+
+    ~MissionCriticalObject(void)
+    {}
+
+    uint64_t mission_owner_id_;
+    uint64_t critical_object_id_;
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint64_t>(mission_owner_id_);
+        message.data.write<uint64_t>(critical_object_id_);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint64_t>(mission_owner_id_);
+        message.data.write<uint64_t>(critical_object_id_);
+    }
+
+    bool operator==(const MissionCriticalObject& object)
+    {
+        if(mission_owner_id_ != object.mission_owner_id_)
+            return false;
+
+        if(critical_object_id_ != object.critical_object_id_)
+            return false;
+
+        return true;
+    }
+};
+
+/**
+ *
+ */
+struct Skill
+{
+    Skill(std::string name_)
+        : name(name_)
+    {}
+
+    ~Skill()
+    {}
+
+    std::string name;
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<std::string>(name);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<std::string>(name);
+    }
+
+    bool operator==(const Skill& other)
+    {
+        return (name == other.name);
+    }
+};
+
+/**
+ *
+ */
+class Creature : public swganh::object::tangible::BaseTangible
+{
+public:
+    Creature();
+    ~Creature();
+
+    // CREO
+    uint32_t GetType() const;
+    const static uint32_t type = 0x4352454F;
+
+    // Bank Credits
+    void SetBankCredits(uint32_t bank_credits);
+    uint32_t GetBankCredits(void);
+
+    // Cash Credits
+    void SetCashCredits(uint32_t cash_credits);
+    uint32_t GetCashCredits(void);
+
+    // Stat Base
+    void SetStatBase(StatIndex stat_index, uint32_t value);
+    void AddStatBase(StatIndex stat_index, uint32_t value);
+    void DeductStatBase(StatIndex stat_index, uint32_t value);
+    swganh::messages::containers::NetworkArray<Stat> GetBaseStats(void);
+    uint32_t GetStatBase(StatIndex stat_index);
+
+    // Skills
+    void AddSkill(std::string skill);
+    void RemoveSkill(std::string skill);
+    swganh::messages::containers::NetworkList<Skill> GetSkills(void);
+    bool HasSkill(std::string skill);
+
+    // Posture
+    void SetPosture(Posture posture);
+    Posture GetPosture(void);
+
+    // Faction Rank
+    void SetFactionRank(uint8_t faction_rank);
+    uint8_t GetFactionRank(void);
+
+    // Owner Id
+    void SetOwnerId(uint64_t owner_id);
+    uint64_t GetOwnerId(void);
+
+    // Scale
+    void SetScale(float scale);
+    float GetScale(void);
+
+    // Battle Fatigue
+    void SetBattleFatigue(uint32_t battle_fatigue);
+    uint32_t GetBattleFatigue(void);
+
+    // State Bitmask
+    void SetStateBitmask(uint64_t state_bitmask);
+    void ToggleStateBitmask(uint64_t state_bitmask);
+    uint64_t GetStateBitmask(void);
+
+    // Wounds
+    void DeductStatWound(StatIndex stat_index, uint32_t value);
+    void AddStatWound(StatIndex stat_index, uint32_t value);
+    void SetStatWound(StatIndex stat_index, uint32_t value);
+    swganh::messages::containers::NetworkArray<Stat> GetStatWounds(void);
+    uint32_t GetStatWound(StatIndex stat_index);
+
+    // Acceleration Multiplier Base
+    void SetAccelerationMultiplierBase(float acceleration_multiplier_base);
+    float GetAccelerationMultiplierBase(void);
+
+    // Acceleration Multiplier Modifier
+    void SetAccelerationMultiplierModifier(float acceleration_multiplier_modifier);
+    float GetAccelerationMultiplierModifier(void);
+
+    // Stat Encumberance
+    void AddStatEncumberance(StatIndex stat_index, uint32_t value);
+    void DeductStatEncumberance(StatIndex stat_index, uint32_t value);
+    void SetStatEncumberance(StatIndex stat_index, uint32_t value);
+    swganh::messages::containers::NetworkArray<Stat> GetStatEncumberances(void);
+    uint32_t GetStatEncumberance(StatIndex stat_index);
+
+    // Skill Mods
+    void AddSkillMod(SkillMod mod);
+    void RemoveSkillMod(std::string identifier);
+    void SetSkillMod(SkillMod mod);
+    void ClearSkillMods(void);
+    swganh::messages::containers::NetworkMap<std::string, SkillMod> GetSkillMods(void);
+    SkillMod GetSkillMod(std::string identifier);
+
+    // Speed Multiplier Base
+    void SetSpeedMultiplierBase(float speed_multiplier_base);
+    float GetSpeedMultiplierBase(void);
+
+    // Speed Multiplier Modifier
+    void SetSpeedMultiplierModifier(float speed_multiplier_modifier);
+    float GetSpeedMultiplierModifier(void);
+
+    // Listen To Id
+    void SetListenToId(uint64_t listen_to_id);
+    uint64_t GetListenToId(void);
+
+    // Run Speed
+    void SetRunSpeed(float run_speed);
+    float GetRunSpeed(void);
+
+    // Slop Modifier Angle
+    void SetSlopeModifierAngle(float slope_modifier_angle);
+    float GetSlopeModifierAngle(void);
+
+    // Slope Modifier Percent
+    void SetSlopeModifierPercent(float slope_modifier_percent);
+    float GetSlopeModifierPercent(void);
+
+    // Turn Radius
+    void SetTurnRadius(float turn_radius);
+    float GetTurnRadius(void);
+
+    // Walking Speed
+    void SetWalkingSpeed(float walking_speed);
+    float GetWalkingSpeed(void);
+
+    // Water Modifier Percent
+    void SetWaterModifierPercent(float water_modifier_percent);
+    float GetWaterModifierPercent(void);
+
+    // Mission Critical Objects
+    void AddMissionCriticalObject(MissionCriticalObject& object);
+    void RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id);
+    MissionCriticalObject GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner);
+    swganh::messages::containers::NetworkList<MissionCriticalObject> GetMissionCriticalObjects(void);
+
+    // Combat Level
+    void SetCombatLevel(uint16_t);
+    uint16_t GetCombatLevel(void);
+
+    // Animation
+    void SetAnimation(std::string animation);
+    std::string GetAnimation(void);
+
+    // Mood Animation
+    void SetMoodAnimation(std::string mood_animation);
+    std::string GetMoodAnimation(void);
+
+    // Weapon Id
+    void SetWeaponId(uint64_t weapon_id);
+    uint64_t GetWeaponId(void);
+
+    // Group Id
+    void SetGroupId(uint64_t group_id);
+    uint64_t GetGroupId(void);
+
+    // Invite Sender Id
+    void SetInviteSenderId(uint64_t invite_sender_id);
+    uint64_t GetInviteSenderId(void);
+
+    // Guild Id
+    void SetGuildId(uint32_t guild_id);
+    uint32_t GetGuildId(void);
+
+    // Target Id
+    void SetTargetId(uint64_t target_id); 
+    uint64_t GetTargetId(void);
+
+    // Mood Id
+    void SetMoodId(uint8_t mood_id);
+    uint8_t GetMoodId(void) ;
+
+    // Performance Id
+    void SetPerformanceId(uint32_t performance_id);
+    uint32_t GetPerformanceId(void);
+
+    // Current Stats
+    void SetStatCurrent(StatIndex stat_index, uint32_t value);
+    void AddStatCurrent(StatIndex stat_index, uint32_t value);
+    void DeductStatCurrent(StatIndex stat_index, uint32_t value);
+    swganh::messages::containers::NetworkArray<Stat> GetCurrentStats(void);
+    uint32_t GetStatCurrent(StatIndex stat_index);
+
+    // Max Stats
+    void SetStatMax(StatIndex stat_index, uint32_t value);
+    void AddStatMax(StatIndex stat_index, uint32_t value);
+    void DeductStatMax(StatIndex stat_index, uint32_t value);
+    swganh::messages::containers::NetworkArray<Stat> GetMaxStats(void);
+    uint32_t GetStatMax(StatIndex stat_index);
+
+    // Equipment List
+    void AddEquipmentItem(EquipmentItem& item);
+    void RemoveEquipmentItem(uint64_t object_id);
+    void UpdateEquipmentItem(EquipmentItem& item);
+    swganh::messages::containers::NetworkSortedList<EquipmentItem> GetEquipment();
+    EquipmentItem GetEquipmentItem(uint64_t object_id);
+
+    // Disguise
+    void SetDisguise(std::string disguise);
+    std::string GetDisguise(void);
+
+    // Stationary
+    void SetStationary(bool stationary);
+    bool IsStationary(void);
+
+    PvpStatus GetPvpStatus() const;
+    void SetPvPStatus(PvpStatus status);
+    void TogglePvpStateOn(PvpStatus state);
+    void TogglePvpStateOff(PvpStatus state);
+    void TogglePvpState(PvpStatus state);
+    bool CheckPvpState(PvpStatus state) const;
+
+    // Baselines
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline4();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+
+private:
+    friend class CreatureMessageBuilder;
+    friend class CreatureFactory;
+
+    void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
+
+    uint32_t    bank_credits_;                                                              // update 1 variable 0
+    uint32_t    cash_credits_;                                                              // update 1 variable 1
+    swganh::messages::containers::NetworkArray<Stat> stat_base_list_;                       // update 1 variable 2
+    swganh::messages::containers::NetworkList<Skill> skills_;                               // update 1 variable 3
+    uint32_t    posture_;                                                                   // update 3 variable 11
+    uint8_t     faction_rank_;                                                              // update 3 variable 12
+    uint64_t    owner_id_;                                                                  // update 3 variable 13
+    float       scale_;                                                                     // update 3 variable 14
+    uint32_t    battle_fatigue_;                                                            // update 3 variable 15
+    uint64_t    state_bitmask_;                                                             // update 3 variable 16
+    swganh::messages::containers::NetworkArray<Stat> stat_wound_list_;                      // update 3 variable 17
+    float       acceleration_multiplier_base_;                                              // update 4 variable 0
+    float       acceleration_multiplier_modifier_;                                          // update 4 variable 1
+    swganh::messages::containers::NetworkArray<Stat> stat_encumberance_list_;               // update 4 variable 2
+    swganh::messages::containers::NetworkMap<std::string, SkillMod> skill_mod_list_;        // update 4 variable 3
+    float       speed_multiplier_base_;                                                     // update 4 variable 4
+    float       speed_multiplier_modifier_;                                                 // update 4 variable 5
+    uint64_t    listen_to_id_;                                                              // update 4 variable 6
+    float       run_speed_;                                                                 // update 4 variable 7
+    float       slope_modifier_angle_;                                                      // update 4 variable 8
+    float       slope_modifier_percent_;                                                    // update 4 variable 9
+    float       turn_radius_;                                                               // update 4 variable 10
+    float       walking_speed_;                                                             // update 4 variable 11
+    float       water_modifier_percent_;                                                    // update 4 variable 12
+    swganh::messages::containers::NetworkList<MissionCriticalObject> mission_critical_object_list_;     // update 4 variable 13
+    uint16_t    combat_level_;                                                              // update 6 variable 2
+    std::string animation_;                                                                 // update 6 variable 3
+    std::string mood_animation_;                                                            // update 6 variable 4
+    uint64_t    weapon_id_;                                                                 // update 6 variable 5
+    uint64_t    group_id_;                                                                  // update 6 variable 6
+    uint64_t    invite_sender_id_;                                                          // update 6 variable 7
+    uint64_t    invite_counter_;                                                            // update 6 variable 7
+    uint32_t    guild_id_;                                                                  // update 6 variable 8
+    uint64_t    target_id_;                                                                 // update 6 variable 9
+    uint8_t     mood_id_;                                                                   // update 6 variable 10
+    uint32_t    performance_counter_;                                                       // update 6 variable 11
+    uint32_t    performance_id_;                                                            // update 6 variable 12
+    swganh::messages::containers::NetworkArray<Stat> stat_current_list_;                    // update 6 variable 13
+    swganh::messages::containers::NetworkArray<Stat> stat_max_list_;                        // update 6 variable 14
+    swganh::messages::containers::NetworkSortedList<EquipmentItem> equipment_list_;         // update 6 variable 15
+    std::string disguise_;                                                                  // update 6 variable 16
+    bool stationary_;                                                                       // update 6 variable 17
+    PvpStatus pvp_status_;
+};
+
+}}}  // namespace swganh::object::creature
+
+#endif // SWGANH_OBJECT_CREATURE_CREATURE_H_

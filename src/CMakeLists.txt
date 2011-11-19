@@ -67,6 +67,11 @@ if(DEFINED VENDOR_PREFIX)
     set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX}/mysql-connector-cpp)
     set(NOISE_ROOT ${VENDOR_PREFIX}/noise)
     set(PYTHON_ROOT ${VENDOR_PREFIX}/python)
+    
+    if(WIN32)
+        set(ENV{TBB_ARCH_PLATFORM} "ia32\\vc10")
+    endif()
+    
     set(TBB_INSTALL_DIR ${VENDOR_PREFIX}/tbb)
     set(TOLUAPP_ROOT ${VENDOR_PREFIX}/tolua++)
     set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
@@ -92,7 +97,9 @@ if(WIN32)
     include(Win32PostBuild)
 endif()
 
-enable_testing()
+if (ENABLE_TEST_REPORT)
+    enable_testing()
+endif()
 
 # make sure the source directory and the binary directory (where any generated
 # files will be found) are automatically searched for includes
@@ -102,9 +109,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 add_subdirectory(anh)
 
 ## project plugins
-add_subdirectory(login)
-add_subdirectory(connection)
-add_subdirectory(character)
+add_subdirectory(plugins)
 
 ## project executables
 add_subdirectory(swganh)

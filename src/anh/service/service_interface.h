@@ -46,10 +46,6 @@ public:
     *  @brief returns true if running is set to true
     */
     virtual bool IsRunning() const = 0;
-    /*
-    *  @brief Sets up options from the configuration files
-    */
-    virtual void DescribeConfigOptions(boost::program_options::options_description& description) = 0;
 };
 
 }}  // namespace anh::service
