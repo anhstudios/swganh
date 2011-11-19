@@ -28,8 +28,8 @@ using swganh::base::SwgMessage;
 namespace {
     
 struct DataMessage : public SwgMessage<DataMessage> {
-    static const uint16_t opcount = 1;
-    static const uint32_t opcode = 0x5BE5CD7;
+    static uint16_t opcount() { return 1; }
+    static uint32_t opcode() { return 0x5BE5CD7; }
     
     uint32_t test_value;
 

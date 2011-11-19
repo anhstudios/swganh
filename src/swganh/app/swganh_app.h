@@ -7,9 +7,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/asio/deadline_timer.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
 #include <boost/thread/thread.hpp>
 #include <tbb/atomic.h>
 
@@ -26,11 +25,10 @@ namespace app {
 
 class SwganhKernel;
 
-typedef std::pair<boost::program_options::options_description, boost::program_options::variables_map> ServiceConfig;
-
 class SwganhApp : public anh::app::AppInterface, private boost::noncopyable {
 public:    
     SwganhApp();
+    ~SwganhApp();
 
     void Initialize(int argc, char* argv[]);
 
@@ -44,18 +42,18 @@ public:
 
 private:
     void LoadAppConfig_(int argc, char* argv[]);
-    void LoadServiceConfig_(ServiceConfig& service_config);
     void LoadPlugins_(std::vector<std::string> plugins);
+    void LoadCoreServices_();
 
     void CleanupServices_();
+
+    void GalaxyStatusTimerHandler_(const boost::system::error_code& e,
+        std::shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs);
     
     std::list<std::shared_ptr<boost::thread>> io_threads_;
     std::shared_ptr<SwganhKernel> kernel_;
-    std::shared_ptr<anh::service::ServiceDirectory> service_directory_;
     tbb::atomic<bool> running_;
     bool initialized_;
-    
-    ServiceConfig service_config_;
 };
 
 }}  // namespace swganh::app

@@ -37,6 +37,21 @@ using namespace std;
 
 class anh::database::DatabaseManagerImpl {
 public:
+     
+    struct ConnectionData {
+        ConnectionData(std::string schema_, std::string host_, std::string username_, std::string password_)
+            : schema(std::move(schema_))
+            , host(std::move(host_))
+            , username(std::move(username_))
+            , password(std::move(password_))
+        {}
+    
+        std::string schema;
+        std::string host;
+        std::string username;
+        std::string password;
+    };
+
     explicit DatabaseManagerImpl(sql::Driver* driver)
         : driver_(driver) {}
 
@@ -99,32 +114,38 @@ public:
     std::shared_ptr<sql::Connection> getConnection(const StorageType& storage_type) {        
         ConnectionPoolMap::accessor a;
 
-        // return false if unable to find a connection pool for the requested type
-        if (!connections_.find(a, storage_type) || a->second.empty()) {
-            // lookup the connection data for the requested storage type and fail out
-            // if not found
-            ConnectionDataMap::accessor data_accessor;
-            if (!connection_data_.find(data_accessor, storage_type)) {
-                assert(false && "Requested a storage type that has not been registered");
-                return nullptr;
-            }
-            
-            // create a valid connection to verify the integrity of the data passed in
-            auto connection_data = data_accessor->second;
-            auto connection = std::shared_ptr<sql::Connection>(driver_->connect(connection_data->host, connection_data->username, connection_data->password), 
-                std::bind(&DatabaseManagerImpl::recycleConnection_, this, storage_type, std::placeholders::_1));
-            connection->setSchema(connection_data->schema);
+        if (connections_.find(a, storage_type) && !a->second.empty()) {
+            std::shared_ptr<sql::Connection> connection;
+            a->second.try_pop(connection);
 
-            return connection;
+            if (!connection->isClosed())
+            {
+                return connection;
+            }
+        }
+                
+        // lookup the connection data for the requested storage type and fail out
+        // if not found
+        ConnectionDataMap::accessor data_accessor;
+        if (!connection_data_.find(data_accessor, storage_type)) {
+            assert(false && "Requested a storage type that has not been registered");
+            return nullptr;
         }
         
-        std::shared_ptr<sql::Connection> connection;
-        a->second.try_pop(connection);
-
-        return connection;
+        // create a valid connection to verify the integrity of the data passed in
+        return CreateConnection(data_accessor->second, storage_type);
     }
 
 private:
+
+    std::shared_ptr<sql::Connection> CreateConnection(const shared_ptr<ConnectionData>& connection_data, const StorageType& storage_type)
+    {
+        auto connection = std::shared_ptr<sql::Connection>(driver_->connect(connection_data->host, connection_data->username, connection_data->password), 
+                std::bind(&DatabaseManagerImpl::recycleConnection_, this, storage_type, std::placeholders::_1));
+        connection->setSchema(connection_data->schema);
+
+        return connection;
+    }
 
     void recycleConnection_(const StorageType& storage_type, sql::Connection* connection) {
         if (connection->isClosed()) {
@@ -136,21 +157,7 @@ private:
         connections_.insert(pool_accessor, storage_type);
         pool_accessor->second.push(std::shared_ptr<sql::Connection>(connection, std::bind(&DatabaseManagerImpl::recycleConnection_, this, storage_type, std::placeholders::_1)));
     }
-        
-    struct ConnectionData {
-        ConnectionData(std::string schema_, std::string host_, std::string username_, std::string password_)
-            : schema(std::move(schema_))
-            , host(std::move(host_))
-            , username(std::move(username_))
-            , password(std::move(password_))
-        {}
-    
-        std::string schema;
-        std::string host;
-        std::string username;
-        std::string password;
-    };
-
+       
     sql::Driver* driver_;
     
     typedef tbb::concurrent_hash_map<StorageType, std::shared_ptr<ConnectionData>> ConnectionDataMap;

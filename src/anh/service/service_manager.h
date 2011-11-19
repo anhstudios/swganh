@@ -5,40 +5,85 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/variables_map.hpp>
+#include "anh/service/service_interface.h"
 
 namespace anh {
-namespace plugin {
-class PluginManager;
-}}  // namespace anh::plugin
+namespace database {
+    class DatabaseManagerInterface;
+}}  // namespace anh::database
 
 namespace anh {
 namespace service {
 
-class ServiceInterface;
-    
-typedef std::pair<boost::program_options::options_description, boost::program_options::variables_map> ServiceConfig;
+class ServiceDirectoryInterface;
 
 class ServiceManager {
 public:
-    explicit ServiceManager(std::shared_ptr<anh::plugin::PluginManager> plugin_manager);
+    explicit ServiceManager(const std::shared_ptr<ServiceDirectoryInterface>& service_directory);
+    
+    ~ServiceManager();
 
-    void Initialize(ServiceConfig& service_config);
+    void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
 
     std::shared_ptr<ServiceInterface> GetService(std::string name);
-    void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
+
+    template<typename T>
+    std::shared_ptr<T> GetService(std::string name)
+    {
+        std::shared_ptr<T> service;
+
+        auto tmp = GetService(name);
+
+#ifdef _DEBUG
+        service = std::dynamic_pointer_cast<T>(tmp);
+#else
+        service = std::static_pointer_cast<T>(tmp);
+#endif
+
+        return service;
+    }
+
+    template<typename T>
+    std::vector<std::shared_ptr<T>> GetServicesByType(std::string type_name)
+    {
+        std::vector<std::shared_ptr<T>> services;
+        std::shared_ptr<T> tmp;
+
+        std::for_each(services_.begin(),
+            services_.end(),
+            [&services, &type_name, &tmp] (ServiceMap::value_type& entry)
+        {
+            anh::service::ServiceDescription description = entry.second.second->GetServiceDescription();
+
+            if (description.type().compare(type_name) == 0) 
+
+            {
+#ifdef _DEBUG
+                tmp = std::dynamic_pointer_cast<T>(entry.second);
+#else
+                tmp = std::static_pointer_cast<T>(entry.second);
+#endif
+                services.push_back(tmp);
+            }
+        });
+
+        return services;
+    }
 
     // add start/stop services, all and individually
     void Start();
     void Stop();
 
 private:
-    typedef std::map<std::string, std::shared_ptr<ServiceInterface>> ServiceMap;
+    typedef std::map<std::string, std::pair<
+        std::shared_ptr<ServiceDescription>, 
+        std::shared_ptr<ServiceInterface>>
+    > ServiceMap;
     ServiceMap services_;
 
-    std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
+    std::shared_ptr<ServiceDirectoryInterface> service_directory_;
 };
     
 }}  // namespace anh::service

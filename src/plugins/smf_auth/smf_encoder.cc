@@ -1,0 +1,48 @@
+
+#include "plugins/smf_auth/smf_encoder.h"
+
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/sqlstring.h>
+
+#include <glog/logging.h>
+
+#include "anh/database/database_manager_interface.h"
+
+using namespace anh::database;
+using namespace plugins::smf_auth;
+using namespace std;
+
+SmfEncoder::SmfEncoder(const shared_ptr<DatabaseManagerInterface>& database_manager)
+: database_manager_(database_manager)
+{
+}
+
+string SmfEncoder::EncodePassword(
+    string raw, 
+    string test)
+{
+    string result;
+
+    string sql = "SELECT SHA1(CONCAT('" + test + "', '" + raw + "'))";
+    auto conn = database_manager_->getConnection("galaxy_manager");
+    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+    auto result_set = statement->executeQuery(sql);
+    if (result_set->next())
+    {
+        result = result_set->getString(1);
+    }
+    else
+        DLOG(WARNING) << "SmfEncoder::EncodePassword failed to encode password" << endl;
+
+    return result;
+}
+
+bool SmfEncoder::IsPasswordValid(
+    std::string encoded, 
+    std::string raw, 
+    std::string salt)
+{
+    return encoded == EncodePassword(move(raw), move(salt));
+}
