@@ -227,10 +227,10 @@ void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_cod
         // destroy if they haven't reconnected
         if (controller->GetRemoteClient()->GetSession() == nullptr || !controller->GetRemoteClient()->GetSession()->connected())
         {
-            auto object_id = controller->GetObject()->GetObjectId();
-            DLOG(WARNING) << "Destroying Object " << object_id << " after " << delay_in_secs << " seconds.";
+            auto object = controller->GetObject();
+            DLOG(WARNING) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
             auto simulation_service = simulation_service_.lock();
-            simulation_service->RemoveObjectById(object_id);
+            simulation_service->RemoveObject(object);
         }
     }
 }
