@@ -76,6 +76,7 @@ namespace simulation {
          * Removes the requested object from the simulation.
          */
         void RemoveObjectById(uint64_t object_id);
+        void RemoveObject(const std::shared_ptr<swganh::object::Object>& object);
         
         std::shared_ptr<swganh::object::ObjectController> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,

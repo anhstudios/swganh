@@ -185,15 +185,29 @@ public:
             throw swganh::object::InvalidObject("Requested an invalid object");
         }
 
-        auto scene = scene_manager_->GetScene(find_iter->second->GetSceneId());
+        RemoveObject(find_iter->second);
+    }
+
+    void RemoveObject(const shared_ptr<Object>& object)
+    {        
+        auto scene = scene_manager_->GetScene(object->GetSceneId());
         if (scene)
         {
-            scene->RemoveObject(find_iter->second);
+            scene->RemoveObject(object);
         }
 
-        StopControllingObject(find_iter->second);
+        StopControllingObject(object);
 
-        loaded_objects_.unsafe_erase(find_iter);
+        loaded_objects_.unsafe_erase(loaded_objects_.find(object->GetObjectId()));
+        
+        auto contained_objects = object->GetContainedObjects();
+        for_each(
+            begin(contained_objects),
+            end(contained_objects),
+            [this] (const Object::ObjectMap::value_type& item)
+        {
+            RemoveObject(item.second);
+        });
     }
 
     shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<RemoteClient> client)
@@ -227,7 +241,7 @@ public:
 
         if (find_iter == controlled_objects_.end())
         {
-            throw swganh::object::InvalidObject("Object has no controller");
+            return;
         }
         
         controlled_objects_.unsafe_erase(find_iter);
@@ -408,6 +422,11 @@ shared_ptr<Object> SimulationService::GetObjectById(uint64_t object_id)
 void SimulationService::RemoveObjectById(uint64_t object_id)
 {
     impl_->RemoveObjectById(object_id);
+}
+
+void SimulationService::RemoveObject(const shared_ptr<Object>& object)
+{
+    impl_->RemoveObject(object);
 }
 
 shared_ptr<ObjectController> SimulationService::StartControllingObject(
