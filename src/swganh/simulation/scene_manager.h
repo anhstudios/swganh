@@ -22,8 +22,8 @@ namespace simulation {
 
         void LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::Connection>& connection);
         
-        const std::shared_ptr<Scene>& GetScene(const std::string& scene_label) const;
-		const std::shared_ptr<Scene>& GetScene(uint32_t scene_id) const;
+        std::shared_ptr<Scene> GetScene(const std::string& scene_label) const;
+		std::shared_ptr<Scene> GetScene(uint32_t scene_id) const;
 
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
