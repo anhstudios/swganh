@@ -1,7 +1,11 @@
 
 #include "swganh/chat/chat_service.h"
 
+#ifdef WIN32
 #include <regex>
+#else
+#include <boost/regex.hpp>
+#endif
 
 #include <glog/logging.h>
 
@@ -27,6 +31,16 @@ using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;
 using namespace swganh::simulation;
+
+#ifdef WIN32
+using std::wregex;
+using std::wsmatch;
+using std::regex_match;
+#else
+using boost::wregex;
+using boost::wsmatch;
+using boost::regex_match;
+#endif
 
 ChatService::ChatService(KernelInterface* kernel)
 : BaseService(kernel)
