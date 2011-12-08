@@ -47,18 +47,19 @@ void SceneManager::LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::
     }
 }
 
-const std::shared_ptr<Scene>& SceneManager::GetScene(const std::string& scene_label) const
+std::shared_ptr<Scene> SceneManager::GetScene(const std::string& scene_label) const
 {
     auto find_iter = scenes_.find(scene_label);
 
     if (find_iter == scenes_.end())
     {
-        throw std::runtime_error("Invalid scene requested");
+        return nullptr;
     }
 
     return find_iter->second;
 }
-const std::shared_ptr<Scene>& SceneManager::GetScene(uint32_t scene_id) const
+
+std::shared_ptr<Scene> SceneManager::GetScene(uint32_t scene_id) const
 {
 	auto find_iter = find_if(begin(scenes_), end(scenes_), [scene_id] (ScenePair scene_pair) {
 		return scene_pair.second->GetSceneId() == scene_id;
@@ -66,10 +67,10 @@ const std::shared_ptr<Scene>& SceneManager::GetScene(uint32_t scene_id) const
 
 	if (find_iter == scenes_.end())
     {
-        throw std::runtime_error("Invalid scene requested");
+        return nullptr;
     }
+    
 	return find_iter->second;
-
 }
 
 void SceneManager::StartScene(const std::string& scene_label)
