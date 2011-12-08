@@ -24,6 +24,11 @@ public:
         return description_;
     }
 
+    bool HasObject(const shared_ptr<Object>& object)
+    {
+        return objects_.find(object) != objects_.end();
+    }
+
     void AddObject(const shared_ptr<Object>& object)
     {
 		InsertObject(object);
@@ -50,6 +55,11 @@ public:
     
     void RemoveObject(const shared_ptr<Object>& object)
     {
+        if (!HasObject(object))
+        {
+            return;
+        }
+
 		EraseObject(object);
                 
         SceneDestroyObject destroy_message;
