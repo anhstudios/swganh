@@ -126,7 +126,7 @@ FUNCTION(AddANHPythonBinding name)
         
     IF(WIN32)
         # Set the default output directory for binaries for convenience.
-        set(RUNTIME_OUTPUT_BASE_DIRECTORY "${PROJECT_BINARY_DIR}/../..")
+        set(RUNTIME_OUTPUT_BASE_DIRECTORY "${CMAKE_BINARY_DIR}")
             
         # Set the default output directory for binaries for convenience.
         SET_TARGET_PROPERTIES(${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${RUNTIME_OUTPUT_BASE_DIRECTORY}/bin/${CMAKE_BUILD_TYPE}")

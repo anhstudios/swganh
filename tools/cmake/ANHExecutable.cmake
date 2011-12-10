@@ -89,25 +89,6 @@ FUNCTION(AddANHExecutable name)
         ENDIF()      
     ENDFOREACH()
     
-    # if python bindings have been specified generate a module
-    LIST(LENGTH BINDINGS _bindings_list_length)
-    IF(_bindings_list_length GREATER 0)
-        list(REMOVE_ITEM SOURCES ${BINDINGS})
-        
-        AddANHPythonBinding(${name}_binding
-            DEPENDS
-                ${ANHEXE_DEPENDS}
-            SOURCES
-                ${BINDINGS}
-            ADDITIONAL_INCLUDE_DIRS
-                ${ANHEXE_ADDITIONAL_INCLUDE_DIRS}
-            DEBUG_LIBRARIES
-                ${ANHEXE_DEBUG_LIBRARIES}
-            OPTIMIZED_LIBRARIES
-                ${ANHEXE_OPTIMIZED_LIBRARIES}
-        )
-    ENDIF()
-    
     # if unit tests have been specified break out the project into a library to make it testable
     LIST(LENGTH SOURCES _sources_list_length)    
     IF(_sources_list_length GREATER 1)        
@@ -132,9 +113,29 @@ FUNCTION(AddANHExecutable name)
                 ${ANHEXE_OPTIMIZED_LIBRARIES}
         )
     
+        list(APPEND ANHEXE_DEPENDS ${__project_library})
         set(SOURCES ${MAIN_EXISTS})
     ENDIF()
         
+    # if python bindings have been specified generate a module
+    LIST(LENGTH BINDINGS _bindings_list_length)
+    IF(_bindings_list_length GREATER 0)
+        list(REMOVE_ITEM SOURCES ${BINDINGS})
+        
+        AddANHPythonBinding(${name}_binding
+            DEPENDS
+                ${ANHEXE_DEPENDS}
+            SOURCES
+                ${BINDINGS}
+            ADDITIONAL_INCLUDE_DIRS
+                ${ANHEXE_ADDITIONAL_INCLUDE_DIRS}
+            DEBUG_LIBRARIES
+                ${ANHEXE_DEBUG_LIBRARIES}
+            OPTIMIZED_LIBRARIES
+                ${ANHEXE_OPTIMIZED_LIBRARIES}
+        )
+    ENDIF()
+    
     IF(_includes_list_length GREATER 0)
         INCLUDE_DIRECTORIES(${ANHEXE_ADDITIONAL_INCLUDE_DIRS})
     ENDIF()
@@ -145,14 +146,7 @@ FUNCTION(AddANHExecutable name)
     
     # Create the executable and link to it's library
     ADD_EXECUTABLE(${name} ${SOURCES})
-    
-    # If a project library was created link to it
-    IF(DEFINED __project_library)
-        TARGET_LINK_LIBRARIES(${name}
-            ${__project_library}
-        )
-    ENDIF()
-    
+        
     IF(_project_deps_list_length GREATER 0)
         TARGET_LINK_LIBRARIES(${name} ${ANHEXE_DEPENDS})
         ADD_DEPENDENCIES(${name} DEPS)
@@ -176,7 +170,7 @@ FUNCTION(AddANHExecutable name)
     
     IF(WIN32)
         # Set the default output directory for binaries for convenience.
-        set(RUNTIME_OUTPUT_BASE_DIRECTORY "${PROJECT_BINARY_DIR}/../..")
+        set(RUNTIME_OUTPUT_BASE_DIRECTORY "${CMAKE_BINARY_DIR}")
             
         # Set the default output directory for binaries for convenience.
         SET_TARGET_PROPERTIES(${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${RUNTIME_OUTPUT_BASE_DIRECTORY}/bin")

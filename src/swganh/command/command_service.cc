@@ -44,6 +44,13 @@ void CommandService::AddCommandHandler(uint32_t command_crc, CommandHandler&& ha
     handlers_[command_crc] = move(handler);
 }
 
+void CommandService::EnqueueCommand(
+    uint64_t object_id, 
+    CommandQueueEnqueue command)
+{
+    command_queues_[object_id].push(command);    
+}
+
 void CommandService::HandleCommandQueueEnqueue(
     const shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
@@ -51,7 +58,7 @@ void CommandService::HandleCommandQueueEnqueue(
     CommandQueueEnqueue enqueue;
     enqueue.Deserialize(message.data);
 
-    command_queues_[controller->GetObject()->GetObjectId()].push(enqueue);
+    EnqueueCommand(controller->GetObject()->GetObjectId(), enqueue);
 }
 
 void CommandService::HandleCommandQueueRemove(

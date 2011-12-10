@@ -22,6 +22,8 @@
 #include "swganh/command/command_service.h"
 #include "swganh/simulation/simulation_service.h"
 
+#include "swganh/scripting/python_command.h"
+
 using namespace anh::app;
 using namespace anh::service;
 using namespace std;
@@ -116,14 +118,7 @@ void ChatService::SendSpatialChat(
     auto speaker_tmp = static_pointer_cast<player::Player>(speaker);
     spatial_chat.language = static_cast<uint8_t>(0);
     
-    ObjControllerMessage message;
-    message.object_id = speaker->GetObjectId();
-    message.unknown = 0x0000000B;
-    message.tick_count = 0;
-    message.header = SpatialChat::header();
-    spatial_chat.Serialize(message.data);
-
-    speaker->NotifyObservers(message);
+    speaker->NotifyObservers(ObjControllerMessage(0x0000000B, spatial_chat));
 }
 
 void ChatService::onStart()
@@ -131,8 +126,9 @@ void ChatService::onStart()
     auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
     
     command_service->AddCommandHandler(0x7C8D63D4,
-        [this] (uint64_t object, uint64_t target, std::wstring command_options)
+        [] (uint32_t object_id, uint32_t target_id, std::wstring command_string) 
     {
-        HandleSpatialChatInternal(object, target, command_options);
+        swganh::scripting::PythonCommand command("scripts/commands/spatialchatinternal.py");
+        command(object_id, target_id, command_string);
     });
 }

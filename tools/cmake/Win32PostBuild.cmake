@@ -1,5 +1,5 @@
 
-string(REPLACE "/" "\\" WIN_PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}/../..")
+string(REPLACE "/" "\\" WIN_PROJECT_BINARY_DIR "${CMAKE_BINARY_DIR}")
 string(REPLACE "/" "\\" WIN_PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 
 ## create a target that gathers up the necessary dll's from the above
