@@ -22,6 +22,7 @@
 #include "swganh/messages/base_baselines_message.h"
 #include "swganh/messages/baselines_message.h"
 #include "swganh/messages/deltas_message.h"
+#include "swganh/messages/obj_controller_message.h"
 
 #include "swganh/object/object_controller.h"
 
@@ -227,6 +228,8 @@ public:
     }
 
     void NotifyObservers(const anh::ByteBuffer& message);
+
+    void NotifyObservers(const swganh::messages::ObjControllerMessage& message);
 
     /**
      * Returns whether or not the object has been modified since the last reliable

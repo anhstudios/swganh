@@ -16,6 +16,18 @@ namespace messages {
         static uint16_t opcount() { return 5; }
         static uint32_t opcode() { return 0x80CE5E46; }
 
+        ObjControllerMessage()
+        {}
+
+        template<typename T>
+        ObjControllerMessage(uint32_t unknown, const T& payload)
+        {
+            unknown = unknown;
+            tick_count = 0;
+            header = T::header();
+            payload.Serialize(data);
+        }
+
         uint32_t unknown;
         uint32_t header;
         uint64_t object_id;

@@ -85,12 +85,7 @@ void MovementManager::SendDataTransformMessage(const shared_ptr<Object>& object,
     transform.position = object->GetPosition();
     transform.speed = creature->GetWalkingSpeed();
     
-    ObjControllerMessage message;
-    message.object_id = object->GetObjectId();
-    message.unknown = unknown;
-    message.tick_count = 0;
-    message.header = DataTransform::header();
-    transform.Serialize(message.data);
+    ObjControllerMessage message(unknown, move(transform));
 
     object->NotifyObservers(message);
 }
@@ -117,12 +112,7 @@ void MovementManager::SendDataTransformWithParentMessage(const shared_ptr<Object
     transform.position      = object->GetPosition();
     transform.speed         = creature->GetWalkingSpeed();
     
-    ObjControllerMessage message;
-    message.object_id = object->GetObjectId();
-    message.unknown = unknown;
-    message.tick_count = 0;
-    message.header = DataTransformWithParent::header();
-    transform.Serialize(message.data);
+    ObjControllerMessage message(unknown, move(transform));
 
     object->NotifyObservers(message);
 }

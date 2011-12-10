@@ -286,7 +286,7 @@ void Session::handleChildDataA_(ChildDataA& packet)
 
     std::for_each(packet.messages.begin(), packet.messages.end(), [this] (shared_ptr<ByteBuffer> message) {
         try {
-            auto packet = make_shared<Packet>(shared_from_this(), message);
+            auto packet = make_shared<Packet>(this->shared_from_this(), message);
 
             this->server_->HandleMessage(packet);
         } catch(...) {

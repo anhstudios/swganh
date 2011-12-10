@@ -23,6 +23,16 @@ ObjectController::~ObjectController()
     object_->ClearController();
 }
 
+uint64_t ObjectController::GetId() const
+{
+    if (!object_)
+    {
+        return 0;
+    }
+
+    return object_->GetObjectId();
+}
+
 shared_ptr<Object> ObjectController::GetObject() const
 {
     return object_;

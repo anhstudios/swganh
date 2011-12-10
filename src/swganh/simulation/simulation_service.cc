@@ -461,14 +461,14 @@ void SimulationService::onStart()
         shared_ptr<ConnectionClient> client, 
         const SelectCharacter& message)
     {
-        impl_->HandleSelectCharacter(client, message);
+        this->impl_->HandleSelectCharacter(client, message);
     });
 
     connection_service->RegisterMessageHandler<ObjControllerMessage>([=] (
         shared_ptr<ConnectionClient> client, 
         const ObjControllerMessage& message)
     {
-        impl_->HandleObjControllerMessage(client, message);
+        this->impl_->HandleObjControllerMessage(client, message);
     });
 
 
@@ -476,13 +476,13 @@ void SimulationService::onStart()
         const std::shared_ptr<ObjectController>& controller, 
         const swganh::messages::ObjControllerMessage& message) 
     {
-        impl_->GetMovementManager()->HandleDataTransform(controller, message);
+        this->impl_->GetMovementManager()->HandleDataTransform(controller, message);
     });
     
     RegisterControllerHandler(0x000000F1, [this] (
         const std::shared_ptr<ObjectController>& controller, 
         const swganh::messages::ObjControllerMessage& message) 
     {
-        impl_->GetMovementManager()->HandleDataTransformWithParent(controller, message);
+        this->impl_->GetMovementManager()->HandleDataTransformWithParent(controller, message);
     });
 }

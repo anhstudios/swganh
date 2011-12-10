@@ -47,6 +47,8 @@ namespace object {
 
         ~ObjectController();
 
+        uint64_t GetId() const;
+
         /**
          * @return Handle to the object this controller manages.
          */

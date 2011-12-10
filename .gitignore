@@ -1,7 +1,8 @@
 # ignore directories created for the build process
 bin/*
-build/*
+build*/
 vendor/*
+swgtk/
 
 # ignore configuration files
 data/sql/setup.cg

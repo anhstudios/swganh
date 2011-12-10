@@ -29,6 +29,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if(MSVC)
+message(STATUS " - MSVC: Version ${MSVC_VERSION}")
     if(MSVC_VERSION LESS 1600)
     	message(FATAL_ERROR "Visual Studio 2010 or newer is required ")
     endif()
@@ -50,6 +51,9 @@ if(MSVC)
         
     ADD_DEFINITIONS (/D __TBB_NO_IMPLICIT_LINKAGE=1)
     MESSAGE(STATUS "- MSVC: Disable automatic linking for TBB library")
+    
+    ADD_DEFINITIONS (/D _VARIADIC_MAX=10)
+    MESSAGE(STATUS "- MSVC: Set variadic max to 10 for compatibility with all supported platforms")
 endif()
 
 # Use the static/multithreaded libraries.
@@ -68,8 +72,10 @@ if(DEFINED VENDOR_PREFIX)
     set(NOISE_ROOT ${VENDOR_PREFIX}/noise)
     set(PYTHON_ROOT ${VENDOR_PREFIX}/python)
     
-    if(WIN32)
+    if(MSVC10)        
         set(ENV{TBB_ARCH_PLATFORM} "ia32\\vc10")
+    elseif(MSVC11)
+        set(ENV{TBB_ARCH_PLATFORM} "ia32\\vc11")
     endif()
     
     set(TBB_INSTALL_DIR ${VENDOR_PREFIX}/tbb)
@@ -78,7 +84,7 @@ if(DEFINED VENDOR_PREFIX)
 endif()
 
 find_package(PythonLibs REQUIRED)
-find_package(Boost 1.45.0 COMPONENTS date_time regex thread system program_options filesystem serialization REQUIRED)
+find_package(Boost 1.45.0 COMPONENTS date_time regex thread system program_options filesystem REQUIRED)
 
 set(Boost_USE_STATIC_LIBS OFF)
 find_package(Boost 1.45.0 COMPONENTS python REQUIRED)

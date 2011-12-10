@@ -18,7 +18,9 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/chat/chat_service.h"
 #include "swganh/character/character_service.h"
+#include "swganh/command/command_service.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
@@ -31,6 +33,8 @@ using namespace boost::asio;
 using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
+using namespace swganh::chat;
+using namespace swganh::command;
 using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::connection;
@@ -286,9 +290,17 @@ void SwganhApp::LoadCoreServices_()
 	}
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		auto character_service = make_shared<CharacterService>(kernel_.get());
+		kernel_->GetServiceManager()->AddService(
+            "CommandService", 
+            make_shared<CommandService>(kernel_.get()));
 
-		kernel_->GetServiceManager()->AddService("CharacterService", character_service);
+		kernel_->GetServiceManager()->AddService(
+            "CharacterService", 
+            make_shared<CharacterService>(kernel_.get()));
+        
+		kernel_->GetServiceManager()->AddService(
+            "ChatService", 
+            make_shared<ChatService>(kernel_.get()));
 
 		auto simulation_service = make_shared<SimulationService>(kernel_.get());
 		simulation_service->StartScene("corellia");
