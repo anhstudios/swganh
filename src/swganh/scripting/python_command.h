@@ -19,7 +19,7 @@ namespace scripting {
         void operator()(uint32_t object_id, uint32_t target_id, std::wstring command_string);
 
     private:
-        std::unique_ptr<PythonScript> script_;
+        PythonScript script_;
     };
 
 }}  // namespace swganh::scripting

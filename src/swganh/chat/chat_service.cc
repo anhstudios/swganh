@@ -126,9 +126,5 @@ void ChatService::onStart()
     auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
     
     command_service->AddCommandHandler(0x7C8D63D4,
-        [] (uint32_t object_id, uint32_t target_id, std::wstring command_string) 
-    {
-        swganh::scripting::PythonCommand command("scripts/commands/spatialchatinternal.py");
-        command(object_id, target_id, command_string);
-    });
+        swganh::scripting::PythonCommand("scripts/commands/spatialchatinternal.py"));
 }
