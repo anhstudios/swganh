@@ -32,7 +32,10 @@ namespace scripting {
     private:
         PythonScript();
 
+        void ReadFileContents();
+
         std::string filename_;
+        std::string filecontents_;
         boost::python::object file_object_;
         boost::python::object globals_;
     };
