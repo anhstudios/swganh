@@ -17,16 +17,12 @@ using namespace swganh::scripting;
 PythonScript::PythonScript(const string& filename)
         : filename_(filename)
 {
-    FILE* fp = fopen(filename.c_str(), "r");
-    if (!fp)
-    {
-        throw runtime_error(filename + ": " + strerror(errno));
-    }
-    fclose(fp);
+    ReadFileContents();
 
     Py_Initialize();
     
-	try{
+	try
+    {
         object main = import("__main__");
         globals_ = main.attr("__dict__");
 
@@ -35,22 +31,31 @@ PythonScript::PythonScript(const string& filename)
     catch (error_already_set &) 
     {
         PyErr_Print();
-    }   
+    }
 }
 
 void PythonScript::Run()
 {
-	try{
-        ifstream file(filename_);
-        vector<char> input;
+	try
+    {
+#ifdef _DEBUG
+        ReadFileContents();
+#endif
 
-        file >> std::noskipws;
-        std::copy(istream_iterator<char>(file), istream_iterator<char>(), back_inserter(input));
-        input.push_back(0);
-        file_object_ = exec(&input[0], globals_, globals_);
+        file_object_ = exec(filecontents_.c_str(), globals_, globals_);
     } 
     catch (error_already_set &) 
     {
         PyErr_Print();
     }   
+}
+
+void PythonScript::ReadFileContents()
+{
+    ifstream filestream(filename_);
+    filestream >> noskipws;
+    
+    filecontents_ = string(
+        (istreambuf_iterator<char>(filestream)),
+        istreambuf_iterator<char>());
 }

@@ -22,8 +22,6 @@
 #include "swganh/command/command_service.h"
 #include "swganh/simulation/simulation_service.h"
 
-#include "swganh/scripting/python_command.h"
-
 using namespace anh::app;
 using namespace anh::service;
 using namespace std;
@@ -123,12 +121,8 @@ void ChatService::SendSpatialChat(
 
 void ChatService::onStart()
 {
-    auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
-    
-    command_service->AddCommandHandler(0x7C8D63D4,
-        [] (uint32_t object_id, uint32_t target_id, std::wstring command_string) 
-    {
-        swganh::scripting::PythonCommand command("scripts/commands/spatialchatinternal.py");
-        command(object_id, target_id, command_string);
-    });
+    //auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
+    //
+    //command_service->AddCommandHandler(0x7C8D63D4,
+    //    swganh::scripting::PythonCommand("scripts/commands/spatialchatinternal.py"));
 }
