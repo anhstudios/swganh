@@ -12,6 +12,7 @@
 #include "swganh/base/base_service.h"
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
+#include "swganh/command/command_properties.h"
 
 namespace swganh {
 namespace object {
@@ -41,6 +42,10 @@ namespace command {
         
 
     private:
+
+        void LoadProperties();
+
+        void RegisterCommandScript(const CommandProperties& properties);
         
         void HandleCommandQueueEnqueue(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
@@ -67,9 +72,15 @@ namespace command {
             uint64_t, 
             CommandQueue
         > CommandQueueMap;
+
+        typedef std::map<
+            uint32_t,
+            CommandProperties
+        > CommandPropertiesMap;
         
         HandlerMap handlers_;
         CommandQueueMap command_queues_;
+        CommandPropertiesMap command_properties_map_;
     };
 
 }}  // namespace swganh::command
