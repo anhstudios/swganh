@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+#include <boost/asio/deadline_timer.hpp>
+
 #include <tbb/concurrent_queue.h>
 #include <tbb/concurrent_unordered_map.h>
 
@@ -43,6 +45,8 @@ namespace command {
 
     private:
 
+        void ProcessCommand(uint64_t object_id, const swganh::messages::controllers::CommandQueueEnqueue& command);
+
         void LoadProperties();
 
         void RegisterCommandScript(const CommandProperties& properties);
@@ -56,6 +60,8 @@ namespace command {
             const swganh::messages::ObjControllerMessage& message);
 
         void ProcessNextCommand();
+        
+        void ProcessNextCommand(uint64_t object_id);
 
         void onStart();
 
@@ -73,6 +79,11 @@ namespace command {
             CommandQueue
         > CommandQueueMap;
 
+        typedef tbb::concurrent_unordered_map<
+            uint64_t,
+            std::shared_ptr<boost::asio::deadline_timer>
+        > CommandQueueTimerMap;
+
         typedef std::map<
             uint32_t,
             CommandProperties
@@ -80,6 +91,7 @@ namespace command {
         
         HandlerMap handlers_;
         CommandQueueMap command_queues_;
+        CommandQueueTimerMap command_queue_timers_;
         CommandPropertiesMap command_properties_map_;
     };
 

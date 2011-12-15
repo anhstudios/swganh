@@ -64,6 +64,16 @@ void CommandService::EnqueueCommand(
     CommandQueueEnqueue command)
 {
     command_queues_[object_id].push(command);    
+
+    if (!command_queue_timers_[object_id])
+    {
+        command_queue_timers_[object_id] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
+    }
+
+    if (command_queue_timers_[object_id]->expires_at() > boost::posix_time::second_clock::universal_time())
+    {
+        ProcessNextCommand(object_id);
+    }
 }
 
 void CommandService::HandleCommandQueueEnqueue(
@@ -73,7 +83,22 @@ void CommandService::HandleCommandQueueEnqueue(
     CommandQueueEnqueue enqueue;
     enqueue.Deserialize(message.data);
 
-    EnqueueCommand(controller->GetObject()->GetObjectId(), enqueue);
+    auto find_iter = command_properties_map_.find(enqueue.command_crc);
+
+    if (find_iter == command_properties_map_.end())
+    {
+        LOG(WARNING) << "Invalid handler requested: " << hex << enqueue.command_crc;
+        return;
+    }
+
+    if (find_iter->second.add_to_combat_queue)
+    {
+        EnqueueCommand(controller->GetObject()->GetObjectId(), enqueue);
+    }
+    else
+    {
+        ProcessCommand(controller->GetObject()->GetObjectId(), enqueue);
+    }
 }
 
 void CommandService::HandleCommandQueueRemove(
@@ -94,16 +119,37 @@ void CommandService::ProcessNextCommand()
             return;
         }
 
-        auto find_iter = handlers_.find(command.command_crc);
-
-        if (find_iter != handlers_.end())
-        {
-            find_iter->second(
-                object_commands.first,
-                command.target_id,
-                command.command_options);
-        }
+        ProcessCommand(object_commands.first, command);
     });
+}
+
+void CommandService::ProcessNextCommand(uint64_t object_id)
+{
+    auto find_iter = command_queues_.find(object_id);
+        
+    CommandQueueEnqueue command; 
+        
+    if (!find_iter->second.try_pop(command))
+    {
+        return;
+    }
+    
+    ProcessCommand(object_id, command);
+
+    command_queue_timers_[object_id]->expires_from_now(
+        boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time * 1000));
+    
+    command_queue_timers_[object_id]->async_wait(bind(&CommandService::ProcessNextCommand, this, object_id));
+}
+
+void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::controllers::CommandQueueEnqueue& command)
+{    
+     auto find_iter = handlers_.find(command.command_crc);
+
+     if (find_iter != handlers_.end())
+     {
+         find_iter->second(object_id, command.target_id, command.command_options);
+     }
 }
 
 void CommandService::onStart()
@@ -125,12 +171,6 @@ void CommandService::onStart()
         const swganh::messages::ObjControllerMessage& message) 
     {
         HandleCommandQueueRemove(controller, message);
-    });
-
-    active().AsyncRepeated(boost::posix_time::milliseconds(0),
-        [=] ()
-    {
-        ProcessNextCommand();
     });
 }
 
@@ -192,7 +232,7 @@ void CommandService::LoadProperties()
             properties.cone_angle = result->getDouble("cone_angle");
             properties.deny_in_locomotion = result->getUInt64("deny_in_locomotion");
             
-            command_properties_map_.insert(make_pair(anh::memcrc(properties.name), move(properties)));
+            command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
 
             RegisterCommandScript(properties);
         }
