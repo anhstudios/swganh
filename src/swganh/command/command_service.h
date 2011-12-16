@@ -58,9 +58,7 @@ namespace command {
         void HandleCommandQueueRemove(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
             const swganh::messages::ObjControllerMessage& message);
-
-        void ProcessNextCommand();
-        
+                
         void ProcessNextCommand(uint64_t object_id);
 
         void onStart();
@@ -88,11 +86,22 @@ namespace command {
             uint32_t,
             CommandProperties
         > CommandPropertiesMap;
+
+        typedef std::map<
+            uint32_t,
+            std::shared_ptr<boost::asio::deadline_timer>
+        > CooldownTimerMap;
+
+        typedef std::map<
+            uint64_t,
+            CooldownTimerMap
+        > PlayerCooldownTimerMap;
         
         HandlerMap handlers_;
         CommandQueueMap command_queues_;
         CommandQueueTimerMap command_queue_timers_;
         CommandPropertiesMap command_properties_map_;
+        PlayerCooldownTimerMap cooldown_timers_;
     };
 
 }}  // namespace swganh::command

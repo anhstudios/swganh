@@ -80,6 +80,8 @@ void CommandService::HandleCommandQueueEnqueue(
     const shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
 {
+    uint64_t object_id = controller->GetObject()->GetObjectId();
+
     CommandQueueEnqueue enqueue;
     enqueue.Deserialize(message.data);
 
@@ -91,13 +93,21 @@ void CommandService::HandleCommandQueueEnqueue(
         return;
     }
 
+    auto cooldown_find_iter = cooldown_timers_[object_id].find(enqueue.command_crc);
+
+    if (cooldown_find_iter != cooldown_timers_[object_id].end())
+    {
+        LOG(WARNING) << "Cooldown timer still running";
+        return;
+    }
+
     if (find_iter->second.add_to_combat_queue)
     {
-        EnqueueCommand(controller->GetObject()->GetObjectId(), enqueue);
+        EnqueueCommand(object_id, enqueue);
     }
     else
     {
-        ProcessCommand(controller->GetObject()->GetObjectId(), enqueue);
+        ProcessCommand(object_id, enqueue);
     }
 }
 
@@ -105,23 +115,6 @@ void CommandService::HandleCommandQueueRemove(
     const shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
 {}
-
-void CommandService::ProcessNextCommand()
-{
-    for_each(
-        begin(command_queues_),
-        end(command_queues_),
-        [this] (CommandQueueMap::value_type& object_commands)
-    {
-        CommandQueueEnqueue command; 
-        if (!object_commands.second.try_pop(command))
-        {
-            return;
-        }
-
-        ProcessCommand(object_commands.first, command);
-    });
-}
 
 void CommandService::ProcessNextCommand(uint64_t object_id)
 {
@@ -137,19 +130,33 @@ void CommandService::ProcessNextCommand(uint64_t object_id)
     ProcessCommand(object_id, command);
 
     command_queue_timers_[object_id]->expires_from_now(
-        boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time * 1000));
+        boost::posix_time::milliseconds(command_properties_map_[command.command_crc].delay_multiplier * 1000));
     
     command_queue_timers_[object_id]->async_wait(bind(&CommandService::ProcessNextCommand, this, object_id));
 }
 
 void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::controllers::CommandQueueEnqueue& command)
 {    
-     auto find_iter = handlers_.find(command.command_crc);
+    auto find_iter = handlers_.find(command.command_crc);
 
-     if (find_iter != handlers_.end())
-     {
-         find_iter->second(object_id, command.target_id, command.command_options);
-     }
+    if (find_iter == handlers_.end())
+    {
+        return;
+    }
+     
+    find_iter->second(object_id, command.target_id, command.command_options);
+     
+    if (command_properties_map_[command.command_crc].default_time != 0)
+    {
+        cooldown_timers_[object_id][command.command_crc] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
+        
+        cooldown_timers_[object_id][command.command_crc]->expires_from_now(
+            boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
+    
+        cooldown_timers_[object_id][command.command_crc]->async_wait([this, object_id, command] (const boost::system::error_code& ec) {
+            cooldown_timers_[object_id].erase(command.command_crc);
+        });
+    }
 }
 
 void CommandService::onStart()
