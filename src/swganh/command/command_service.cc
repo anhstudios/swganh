@@ -54,7 +54,17 @@ ServiceDescription CommandService::GetServiceDescription()
     return service_description;
 }
 
-void CommandService::AddCommandHandler(uint32_t command_crc, CommandHandler&& handler)
+void CommandService::AddCommandEnqueueFilter(CommandFilter&& filter)
+{
+    enqueue_filters_.push_back(move(filter));
+}
+
+void CommandService::AddCommandProcessFilter(CommandFilter&& filter)
+{
+    process_filters_.push_back(move(filter));
+}
+
+void CommandService::SetCommandHandler(uint32_t command_crc, CommandHandler&& handler)
 {
     handlers_[command_crc] = move(handler);
 }
@@ -101,6 +111,12 @@ void CommandService::HandleCommandQueueEnqueue(
         return;
     }
 
+    if (!ValidateCommand(object_id, enqueue, find_iter->second, enqueue_filters_))
+    {
+        LOG(WARNING) << "Invalid command";
+        return;
+    }
+
     if (find_iter->second.add_to_combat_queue)
     {
         EnqueueCommand(object_id, enqueue);
@@ -141,6 +157,12 @@ void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::
 
     if (find_iter == handlers_.end())
     {
+        return;
+    }
+
+    if (!ValidateCommand(object_id, command, command_properties_map_[command.command_crc], process_filters_))
+    {
+        LOG(WARNING) << "Invalid command";
         return;
     }
      
@@ -260,5 +282,20 @@ void CommandService::RegisterCommandScript(const CommandProperties& properties)
         return;
     }
     
-    AddCommandHandler(properties.name_crc, PythonCommand(properties));
+    SetCommandHandler(properties.name_crc, PythonCommand(properties));
+}
+
+bool CommandService::ValidateCommand(
+    uint64_t object_id, 
+    const swganh::messages::controllers::CommandQueueEnqueue& command, 
+    const CommandProperties& command_properties,
+    const std::vector<CommandFilter>& filters)
+{
+    return all_of(
+        begin(filters),
+        end(filters),
+        [object_id, &command, &command_properties] (const CommandFilter& filter)
+    {
+        return filter(object_id, command, command_properties);
+    });
 }

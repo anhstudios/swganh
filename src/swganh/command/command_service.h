@@ -30,6 +30,12 @@ namespace command {
         uint64_t, // target
         std::wstring command_options)
     > CommandHandler;
+
+    typedef std::function<bool (
+        uint64_t, // object
+        const swganh::messages::controllers::CommandQueueEnqueue&,
+        const CommandProperties&)
+    > CommandFilter;
     
     class CommandService: public swganh::base::BaseService
     {
@@ -38,13 +44,23 @@ namespace command {
         
         anh::service::ServiceDescription GetServiceDescription();
 
-        void AddCommandHandler(uint32_t command_crc, CommandHandler&& handler);
+        void AddCommandEnqueueFilter(CommandFilter&& filter);
+        
+        void AddCommandProcessFilter(CommandFilter&& filter);
+
+        void SetCommandHandler(uint32_t command_crc, CommandHandler&& handler);
 
         void EnqueueCommand(uint64_t object_id, swganh::messages::controllers::CommandQueueEnqueue command);
         
 
     private:
 
+        bool ValidateCommand(
+            uint64_t object_id, 
+            const swganh::messages::controllers::CommandQueueEnqueue& command, 
+            const CommandProperties& command_properties,
+            const std::vector<CommandFilter>& filters);
+        
         void ProcessCommand(uint64_t object_id, const swganh::messages::controllers::CommandQueueEnqueue& command);
 
         void LoadProperties();
@@ -102,6 +118,8 @@ namespace command {
         CommandQueueTimerMap command_queue_timers_;
         CommandPropertiesMap command_properties_map_;
         PlayerCooldownTimerMap cooldown_timers_;
+        std::vector<CommandFilter> enqueue_filters_;
+        std::vector<CommandFilter> process_filters_;
     };
 
 }}  // namespace swganh::command
