@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include <boost/asio/deadline_timer.hpp>
 
@@ -34,7 +35,9 @@ namespace command {
     typedef std::function<bool (
         uint64_t, // object
         const swganh::messages::controllers::CommandQueueEnqueue&,
-        const CommandProperties&)
+        const CommandProperties&,
+        uint32_t&,
+        uint32_t&)
     > CommandFilter;
     
     class CommandService: public swganh::base::BaseService
@@ -51,11 +54,17 @@ namespace command {
         void SetCommandHandler(uint32_t command_crc, CommandHandler&& handler);
 
         void EnqueueCommand(uint64_t object_id, swganh::messages::controllers::CommandQueueEnqueue command);
-        
 
     private:
 
-        bool ValidateCommand(
+        void SendCommandQueueRemove(
+            uint64_t object_id,
+            const swganh::messages::controllers::CommandQueueEnqueue& command,
+            float default_time,
+            uint32_t error,
+            uint32_t action);
+
+        std::tuple<bool, uint32_t, uint32_t> ValidateCommand(
             uint64_t object_id, 
             const swganh::messages::controllers::CommandQueueEnqueue& command, 
             const CommandProperties& command_properties,

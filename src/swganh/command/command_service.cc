@@ -73,6 +73,18 @@ void CommandService::EnqueueCommand(
     uint64_t object_id, 
     CommandQueueEnqueue command)
 {
+    bool is_valid;
+    uint32_t error = 0, action = 0;
+
+    std::tie(is_valid, error, action) = ValidateCommand(object_id, command, command_properties_map_[command.command_crc], enqueue_filters_);
+    
+    if (!is_valid)
+    {
+        LOG(WARNING) << "Invalid command";
+        SendCommandQueueRemove(object_id, command, 0.0f, error, action);
+        return;
+    }
+
     command_queues_[object_id].push(command);    
 
     if (!command_queue_timers_[object_id])
@@ -110,13 +122,7 @@ void CommandService::HandleCommandQueueEnqueue(
         LOG(WARNING) << "Cooldown timer still running";
         return;
     }
-
-    if (!ValidateCommand(object_id, enqueue, find_iter->second, enqueue_filters_))
-    {
-        LOG(WARNING) << "Invalid command";
-        return;
-    }
-
+    
     if (find_iter->second.add_to_combat_queue)
     {
         EnqueueCommand(object_id, enqueue);
@@ -159,26 +165,32 @@ void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::
     {
         return;
     }
-
-    if (!ValidateCommand(object_id, command, command_properties_map_[command.command_crc], process_filters_))
-    {
-        LOG(WARNING) << "Invalid command";
-        return;
-    }
-     
-    find_iter->second(object_id, command.target_id, command.command_options);
-     
-    if (command_properties_map_[command.command_crc].default_time != 0)
-    {
-        cooldown_timers_[object_id][command.command_crc] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
-        
-        cooldown_timers_[object_id][command.command_crc]->expires_from_now(
-            boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
     
-        cooldown_timers_[object_id][command.command_crc]->async_wait([this, object_id, command] (const boost::system::error_code& ec) {
-            cooldown_timers_[object_id].erase(command.command_crc);
-        });
-    }
+    bool is_valid;
+    uint32_t error = 0, action = 0;
+
+    std::tie(is_valid, error, action) = ValidateCommand(object_id, command, command_properties_map_[command.command_crc], enqueue_filters_);
+    
+    if (is_valid)
+    {
+        find_iter->second(object_id, command.target_id, command.command_options);
+    
+        SendCommandQueueRemove(object_id, command, command_properties_map_[command.command_crc].default_time / 1000, 0, 0);
+         
+        if (command_properties_map_[command.command_crc].default_time != 0)
+        {
+            cooldown_timers_[object_id][command.command_crc] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
+            
+            cooldown_timers_[object_id][command.command_crc]->expires_from_now(
+                boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
+        
+            cooldown_timers_[object_id][command.command_crc]->async_wait([this, object_id, command] (const boost::system::error_code& ec) {
+                cooldown_timers_[object_id].erase(command.command_crc);
+            });
+        }
+    }     
+        
+    SendCommandQueueRemove(object_id, command, 0.0f, error, action);
 }
 
 void CommandService::onStart()
@@ -285,17 +297,42 @@ void CommandService::RegisterCommandScript(const CommandProperties& properties)
     SetCommandHandler(properties.name_crc, PythonCommand(properties));
 }
 
-bool CommandService::ValidateCommand(
+tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
     uint64_t object_id, 
     const swganh::messages::controllers::CommandQueueEnqueue& command, 
     const CommandProperties& command_properties,
     const std::vector<CommandFilter>& filters)
 {
-    return all_of(
+    uint32_t error = 0, action = 0;
+
+    bool result = all_of(
         begin(filters),
         end(filters),
-        [object_id, &command, &command_properties] (const CommandFilter& filter)
+        [object_id, &command, &command_properties, &error, &action] (const CommandFilter& filter)
     {
-        return filter(object_id, command, command_properties);
+        return filter(object_id, command, command_properties, error, action);
     });
+
+    return make_tuple(result, error, action);
+}
+
+void CommandService::SendCommandQueueRemove(
+    uint64_t object_id,
+    const swganh::messages::controllers::CommandQueueEnqueue& command,
+    float default_time,
+    uint32_t error,
+    uint32_t action)
+{
+    auto simulation_service = kernel()->GetServiceManager()
+        ->GetService<SimulationService>("SimulationService");
+
+    shared_ptr<Object> object = simulation_service->GetObjectById(object_id);
+
+    CommandQueueRemove remove;
+    remove.action_counter = command.action_counter;
+    remove.timer = default_time / 1000;
+    remove.error = error;
+    remove.action = action;
+
+    object->GetController()->Notify(ObjControllerMessage(0x0000000B, remove));
 }
