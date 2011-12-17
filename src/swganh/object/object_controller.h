@@ -74,6 +74,8 @@ namespace object {
          * @param message The message to be delivered to the remote client.
          */
         void Notify(const anh::ByteBuffer& message);
+        
+        void Notify(const swganh::messages::ObjControllerMessage& message);
 
     private:
         ObjectController();
