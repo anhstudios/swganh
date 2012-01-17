@@ -163,6 +163,7 @@ void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::
 
     if (find_iter == handlers_.end())
     {
+        LOG(WARNING) << "No handler for command: " << std::hex << command.command_crc;
         return;
     }
     
