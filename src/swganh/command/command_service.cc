@@ -174,7 +174,11 @@ void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::
     
     if (is_valid)
     {
-        find_iter->second(object_id, command.target_id, command.command_options);
+		auto simulation_service = kernel()->GetServiceManager()
+        ->GetService<SimulationService>("SimulationService");
+		auto object = simulation_service->GetObjectById(object_id);
+
+        find_iter->second(object, object_id, command.target_id, command.command_options);
     
         SendCommandQueueRemove(object_id, command, command_properties_map_[command.command_crc].default_time / 1000, 0, 0);
          

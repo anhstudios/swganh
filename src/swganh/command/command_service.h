@@ -27,6 +27,7 @@ namespace swganh {
 namespace command {
 
     typedef std::function<void (
+		std::shared_ptr<swganh::object::Object>, // object
         uint64_t, // object 
         uint64_t, // target
         std::wstring command_options)

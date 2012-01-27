@@ -21,14 +21,17 @@ namespace scripting {
         void SetContext(const std::string& key, T value)
         {
 	        try{
-                globals_["context"][key.c_str()] = value;
+				globals_["context"][key.c_str()] = value;
             } 
             catch (error_already_set &) 
             {
                 PyErr_Print();
             }   
         }
-
+		void SetImport(const std::string& import)
+		{
+			imports_ = import;
+		}
     private:
         PythonScript();
 
@@ -36,6 +39,7 @@ namespace scripting {
 
         std::string filename_;
         std::string filecontents_;
+		std::string imports_;
         boost::python::object file_object_;
         boost::python::object globals_;
     };

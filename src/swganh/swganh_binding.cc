@@ -33,7 +33,18 @@ void exportUpdateContainmentMessage();
 using namespace boost::python;
 using namespace std;
 
-BOOST_PYTHON_MODULE(swganh) {
+void exportObject();
+void exportUpdateTransformWithParentMessage();
+void exportUpdateTransformMessage();
+void exportUpdatePvpStatusMessage();
+void exportUpdatePostureMessage();
+void exportUpdateContainmentMessage();
+
+string hello () { return "Hello" ; }
+
+BOOST_PYTHON_MODULE(swganh_binding) {
+	
+	def("hello", &hello);
 	exportObject();
 	exportUpdateTransformWithParentMessage();
 	exportUpdateTransformMessage();

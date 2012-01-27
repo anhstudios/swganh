@@ -11,6 +11,9 @@
 #include "command_properties.h"
 
 namespace swganh {
+namespace object {
+	class Object;
+}
 namespace command {
 
     class PythonCommand
@@ -18,11 +21,12 @@ namespace command {
     public:
         PythonCommand(const CommandProperties& command_properties);
 
-        void operator()(uint32_t object_id, uint32_t target_id, std::wstring command_string);
+        void operator()(std::shared_ptr<swganh::object::Object> object, uint32_t object_id, uint32_t target_id, std::wstring command_string);
 
     private:
         swganh::scripting::PythonScript script_;
     };
+
 
 }}  // namespace swganh::command
 

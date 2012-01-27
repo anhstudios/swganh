@@ -23,7 +23,7 @@ PythonScript::PythonScript(const string& filename)
     
 	try
     {
-        object main = import("__main__");
+		object main = import("__main__");
         globals_ = main.attr("__dict__");
 
         globals_["context"] = dict();
@@ -41,6 +41,10 @@ void PythonScript::Run()
 #ifdef _DEBUG
         ReadFileContents();
 #endif
+		if (imports_.length() > 0)
+		{
+			globals_["__import__"] = import(imports_.c_str());
+		}
 
         file_object_ = exec(filecontents_.c_str(), globals_, globals_);
     } 

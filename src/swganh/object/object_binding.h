@@ -33,5 +33,10 @@ struct ObjectWrapper : Object, wrapper<Object>
 
 void exportObject()
 {
-    class_<ObjectWrapper, boost::noncopyable>("Object");
+    class_<ObjectWrapper, boost::noncopyable>("Object")
+		.def("id", &ObjectWrapper::GetObjectId)
+		.def("type", &ObjectWrapper::GetType)
+		.def("set_container", &ObjectWrapper::SetContainer)
+		.def("set_position", &ObjectWrapper::SetPosition)
+		.def("get_heading", &ObjectWrapper::GetHeading);
 }
