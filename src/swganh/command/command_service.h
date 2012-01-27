@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include <boost/asio/deadline_timer.hpp>
 
@@ -30,6 +31,14 @@ namespace command {
         uint64_t, // target
         std::wstring command_options)
     > CommandHandler;
+
+    typedef std::function<bool (
+        uint64_t, // object
+        const swganh::messages::controllers::CommandQueueEnqueue&,
+        const CommandProperties&,
+        uint32_t&,
+        uint32_t&)
+    > CommandFilter;
     
     class CommandService: public swganh::base::BaseService
     {
@@ -38,13 +47,29 @@ namespace command {
         
         anh::service::ServiceDescription GetServiceDescription();
 
-        void AddCommandHandler(uint32_t command_crc, CommandHandler&& handler);
+        void AddCommandEnqueueFilter(CommandFilter&& filter);
+        
+        void AddCommandProcessFilter(CommandFilter&& filter);
+
+        void SetCommandHandler(uint32_t command_crc, CommandHandler&& handler);
 
         void EnqueueCommand(uint64_t object_id, swganh::messages::controllers::CommandQueueEnqueue command);
-        
 
     private:
 
+        void SendCommandQueueRemove(
+            uint64_t object_id,
+            const swganh::messages::controllers::CommandQueueEnqueue& command,
+            float default_time,
+            uint32_t error,
+            uint32_t action);
+
+        std::tuple<bool, uint32_t, uint32_t> ValidateCommand(
+            uint64_t object_id, 
+            const swganh::messages::controllers::CommandQueueEnqueue& command, 
+            const CommandProperties& command_properties,
+            const std::vector<CommandFilter>& filters);
+        
         void ProcessCommand(uint64_t object_id, const swganh::messages::controllers::CommandQueueEnqueue& command);
 
         void LoadProperties();
@@ -58,9 +83,7 @@ namespace command {
         void HandleCommandQueueRemove(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
             const swganh::messages::ObjControllerMessage& message);
-
-        void ProcessNextCommand();
-        
+                
         void ProcessNextCommand(uint64_t object_id);
 
         void onStart();
@@ -88,11 +111,24 @@ namespace command {
             uint32_t,
             CommandProperties
         > CommandPropertiesMap;
+
+        typedef std::map<
+            uint32_t,
+            std::shared_ptr<boost::asio::deadline_timer>
+        > CooldownTimerMap;
+
+        typedef std::map<
+            uint64_t,
+            CooldownTimerMap
+        > PlayerCooldownTimerMap;
         
         HandlerMap handlers_;
         CommandQueueMap command_queues_;
         CommandQueueTimerMap command_queue_timers_;
         CommandPropertiesMap command_properties_map_;
+        PlayerCooldownTimerMap cooldown_timers_;
+        std::vector<CommandFilter> enqueue_filters_;
+        std::vector<CommandFilter> process_filters_;
     };
 
 }}  // namespace swganh::command

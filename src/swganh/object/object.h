@@ -218,6 +218,8 @@ public:
     template<typename T>
     void NotifyObservers(const T& message)
     {
+	    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+
         std::for_each(
             observers_.begin(),
             observers_.end(),
@@ -228,9 +230,7 @@ public:
     }
 
     void NotifyObservers(const anh::ByteBuffer& message);
-
-    void NotifyObservers(const swganh::messages::ObjControllerMessage& message);
-
+    
     /**
      * Returns whether or not the object has been modified since the last reliable
      * update was sent out.

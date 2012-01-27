@@ -54,7 +54,17 @@ ServiceDescription CommandService::GetServiceDescription()
     return service_description;
 }
 
-void CommandService::AddCommandHandler(uint32_t command_crc, CommandHandler&& handler)
+void CommandService::AddCommandEnqueueFilter(CommandFilter&& filter)
+{
+    enqueue_filters_.push_back(move(filter));
+}
+
+void CommandService::AddCommandProcessFilter(CommandFilter&& filter)
+{
+    process_filters_.push_back(move(filter));
+}
+
+void CommandService::SetCommandHandler(uint32_t command_crc, CommandHandler&& handler)
 {
     handlers_[command_crc] = move(handler);
 }
@@ -63,6 +73,18 @@ void CommandService::EnqueueCommand(
     uint64_t object_id, 
     CommandQueueEnqueue command)
 {
+    bool is_valid;
+    uint32_t error = 0, action = 0;
+
+    std::tie(is_valid, error, action) = ValidateCommand(object_id, command, command_properties_map_[command.command_crc], enqueue_filters_);
+    
+    if (!is_valid)
+    {
+        LOG(WARNING) << "Invalid command";
+        SendCommandQueueRemove(object_id, command, 0.0f, error, action);
+        return;
+    }
+
     command_queues_[object_id].push(command);    
 
     if (!command_queue_timers_[object_id])
@@ -80,6 +102,8 @@ void CommandService::HandleCommandQueueEnqueue(
     const shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
 {
+    uint64_t object_id = controller->GetObject()->GetObjectId();
+
     CommandQueueEnqueue enqueue;
     enqueue.Deserialize(message.data);
 
@@ -91,13 +115,21 @@ void CommandService::HandleCommandQueueEnqueue(
         return;
     }
 
+    auto cooldown_find_iter = cooldown_timers_[object_id].find(enqueue.command_crc);
+
+    if (cooldown_find_iter != cooldown_timers_[object_id].end())
+    {
+        LOG(WARNING) << "Cooldown timer still running";
+        return;
+    }
+    
     if (find_iter->second.add_to_combat_queue)
     {
-        EnqueueCommand(controller->GetObject()->GetObjectId(), enqueue);
+        EnqueueCommand(object_id, enqueue);
     }
     else
     {
-        ProcessCommand(controller->GetObject()->GetObjectId(), enqueue);
+        ProcessCommand(object_id, enqueue);
     }
 }
 
@@ -105,23 +137,6 @@ void CommandService::HandleCommandQueueRemove(
     const shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
 {}
-
-void CommandService::ProcessNextCommand()
-{
-    for_each(
-        begin(command_queues_),
-        end(command_queues_),
-        [this] (CommandQueueMap::value_type& object_commands)
-    {
-        CommandQueueEnqueue command; 
-        if (!object_commands.second.try_pop(command))
-        {
-            return;
-        }
-
-        ProcessCommand(object_commands.first, command);
-    });
-}
 
 void CommandService::ProcessNextCommand(uint64_t object_id)
 {
@@ -137,19 +152,46 @@ void CommandService::ProcessNextCommand(uint64_t object_id)
     ProcessCommand(object_id, command);
 
     command_queue_timers_[object_id]->expires_from_now(
-        boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time * 1000));
+        boost::posix_time::milliseconds(command_properties_map_[command.command_crc].delay_multiplier * 1000));
     
     command_queue_timers_[object_id]->async_wait(bind(&CommandService::ProcessNextCommand, this, object_id));
 }
 
 void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::controllers::CommandQueueEnqueue& command)
 {    
-     auto find_iter = handlers_.find(command.command_crc);
+    auto find_iter = handlers_.find(command.command_crc);
 
-     if (find_iter != handlers_.end())
-     {
-         find_iter->second(object_id, command.target_id, command.command_options);
-     }
+    if (find_iter == handlers_.end())
+    {
+        LOG(WARNING) << "No handler for command: " << std::hex << command.command_crc;
+        return;
+    }
+    
+    bool is_valid;
+    uint32_t error = 0, action = 0;
+
+    std::tie(is_valid, error, action) = ValidateCommand(object_id, command, command_properties_map_[command.command_crc], enqueue_filters_);
+    
+    if (is_valid)
+    {
+        find_iter->second(object_id, command.target_id, command.command_options);
+    
+        SendCommandQueueRemove(object_id, command, command_properties_map_[command.command_crc].default_time / 1000, 0, 0);
+         
+        if (command_properties_map_[command.command_crc].default_time != 0)
+        {
+            cooldown_timers_[object_id][command.command_crc] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
+            
+            cooldown_timers_[object_id][command.command_crc]->expires_from_now(
+                boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
+        
+            cooldown_timers_[object_id][command.command_crc]->async_wait([this, object_id, command] (const boost::system::error_code& ec) {
+                cooldown_timers_[object_id].erase(command.command_crc);
+            });
+        }
+    }     
+        
+    SendCommandQueueRemove(object_id, command, 0.0f, error, action);
 }
 
 void CommandService::onStart()
@@ -253,5 +295,45 @@ void CommandService::RegisterCommandScript(const CommandProperties& properties)
         return;
     }
     
-    AddCommandHandler(properties.name_crc, PythonCommand(properties));
+    SetCommandHandler(properties.name_crc, PythonCommand(properties));
+}
+
+tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
+    uint64_t object_id, 
+    const swganh::messages::controllers::CommandQueueEnqueue& command, 
+    const CommandProperties& command_properties,
+    const std::vector<CommandFilter>& filters)
+{
+    uint32_t error = 0, action = 0;
+
+    bool result = all_of(
+        begin(filters),
+        end(filters),
+        [object_id, &command, &command_properties, &error, &action] (const CommandFilter& filter)
+    {
+        return filter(object_id, command, command_properties, error, action);
+    });
+
+    return make_tuple(result, error, action);
+}
+
+void CommandService::SendCommandQueueRemove(
+    uint64_t object_id,
+    const swganh::messages::controllers::CommandQueueEnqueue& command,
+    float default_time,
+    uint32_t error,
+    uint32_t action)
+{
+    auto simulation_service = kernel()->GetServiceManager()
+        ->GetService<SimulationService>("SimulationService");
+
+    shared_ptr<Object> object = simulation_service->GetObjectById(object_id);
+
+    CommandQueueRemove remove;
+    remove.action_counter = command.action_counter;
+    remove.timer = default_time / 1000;
+    remove.error = error;
+    remove.action = action;
+
+    object->GetController()->Notify(ObjControllerMessage(0x0000000B, remove));
 }

@@ -260,20 +260,6 @@ void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
     observers_.erase(find_iter);
 }
 
-void Object::NotifyObservers(const swganh::messages::ObjControllerMessage& message)
-{
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    swganh::messages::ObjControllerMessage tmp = message;
-    std::for_each(
-        observers_.begin(),
-        observers_.end(),
-        [&tmp] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
-    {
-        tmp.object_id = observer->GetId();
-        observer->Notify(tmp);
-    });
-}
-
 void Object::NotifyObservers(const anh::ByteBuffer& message)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);

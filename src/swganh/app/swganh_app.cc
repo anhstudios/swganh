@@ -304,6 +304,7 @@ void SwganhApp::LoadCoreServices_()
 
 		auto simulation_service = make_shared<SimulationService>(kernel_.get());
 		simulation_service->StartScene("corellia");
+
 		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
 	}
 	// always need a galaxy service running

@@ -1,21 +1,18 @@
-# All command scripts have a context that contains a reference to
-# the object that initiated the command, the target of the command,
-# a string containing any parameters, and finally a dictionary containing
-# information about the command.
-#
-# anh.context.object
-# anh.context.target
-# anh.context.command_string
-# anh.context.command_info
 
+import anh
+import anh.messages.object_controller.send_spatial_chat as _send_spatial_chat
 import re
 
-def send_spatial_chat(object, target, message, chat_type, mood):
-    print('Spatial Chat: ' + message)
-    return
-
-match = re.search(r'(\d+) (\d+) (\d+) (\d+) (\d+) (.*)', context['command_string'])
+class SpatialChatInternalCommand(anh.base.Command):
+    label = "spatialchatinternal"
+    regex = r'(\d+) (\d+) (\d+) (\d+) (\d+) (.*)'
     
-if not match: raise RuntimeError("Invalid spatial chat message")
+    def execute(self, context):
+        match = re.search(regex, context.command_string)
     
-send_spatial_chat(context['object'], context['target'], match.group(6), match.group(2), match.group(3))    
+        if not match: raise RuntimeError("Invalid spatial chat message")
+    
+        _send_spatial_chat(
+                context.object, context.target, 
+                match.group(6), match.group(2), 
+                match.group(3))    
