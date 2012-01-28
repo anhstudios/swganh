@@ -26,17 +26,70 @@ using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
 
+
 struct ObjectWrapper : Object, wrapper<Object>
 {
-	
+	//// Wrappers because python has the concept of immutable types, meaning can't pass as const reference
+	//const string GetTemplateStr()
+	//{
+	//	return GetTemplate();
+	//}
+	//void SetTemplateStr(const string template_str)
+	//{
+	//	SetTemplate(template_str);
+	//}
+	//const string GetStfNameFileStr()
+	//{
+	//	return GetStfNameFile();
+	//}
+	//const string GetStfNameStringStr()
+	//{
+	//	return GetStfNameString();
+	//}
+	//void SetStfNameStr(const string file, const string name)
+	//{
+	//	SetStfName(file, name);
+	//}
+	//const string GetCustomNameStr()
+	//{
+	//	wstring custom = GetCustomName();
+	//	return string(custom.begin(), custom.end());
+	//}
+	//void SetCustomNameStr(const string custom_name)
+	//{
+	//	SetCustomName(wstring(custom_name.begin(), custom_name.end()));
+	//}
 };
 
 void exportObject()
 {
-    class_<ObjectWrapper, boost::noncopyable>("Object")
-		.def("id", &ObjectWrapper::GetObjectId)
-		.def("type", &ObjectWrapper::GetType)
-		.def("set_container", &ObjectWrapper::SetContainer)
-		.def("set_position", &ObjectWrapper::SetPosition)
-		.def("get_heading", &ObjectWrapper::GetHeading);
+	class_<ObjectWrapper, boost::noncopyable>("Object")
+		.add_property("id", &ObjectWrapper::GetObjectId, "Gets The id of the object")
+		.add_property("scene_id", &ObjectWrapper::GetSceneId, "Gets the scene id the object is in")
+		.add_property("type", &ObjectWrapper::GetType, "Gets the type of the object")
+		.add_property("position", &ObjectWrapper::GetPosition, &ObjectWrapper::SetPosition, "Gets and Sets the position of the object, using glm::vec3")
+		.add_property("heading", &ObjectWrapper::GetHeading, "Gets the heading as an int of the object")
+		.add_property("orientation", &ObjectWrapper::GetOrientation, &ObjectWrapper::SetOrientation, "Property to get or set the orientation of the object")
+		.add_property("template", make_function(
+								&ObjectWrapper::GetTemplate, return_value_policy<copy_const_reference>()
+							)
+							, &ObjectWrapper::SetTemplate, "the .iff file associated with this object"
+					)
+		.add_property("volume", &ObjectWrapper::GetVolume, &ObjectWrapper::SetVolume, 
+						"Property to get or set the volume of the object (how much it can store)"
+					)
+		.add_property("stf_name_file", make_function(
+									&ObjectWrapper::GetStfNameFile, return_value_policy<copy_const_reference>()
+								), "gets the stf name file of the object"
+					)
+		.add_property("stf_name_string", make_function(
+									&ObjectWrapper::GetStfNameString, return_value_policy<copy_const_reference>()
+								), "gets the stf name file of the object"
+					)
+		.def("stf_name", &ObjectWrapper::SetStfName, "sets the full stf name, takes stf_name_file and stf_name_string as parameters")
+		.add_property("custom_name", make_function(
+								&ObjectWrapper::GetCustomName, return_value_policy<copy_const_reference>()
+							), &ObjectWrapper::SetCustomName, "Property to get and set the custom name"
+					)
+		;
 }
