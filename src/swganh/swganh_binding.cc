@@ -22,14 +22,6 @@
 #include <boost/python.hpp>
 #include "swganh_binding.h"
 
-void exportObject();
-void exportUpdateTransformWithParentMessage();
-void exportUpdateTransformMessage();
-void exportUpdatePvpStatusMessage();
-void exportUpdatePostureMessage();
-void exportUpdateContainmentMessage();
-
-
 using namespace boost::python;
 using namespace std;
 

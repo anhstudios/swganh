@@ -28,7 +28,7 @@ using namespace swganh::object;
 
 struct ObjectWrapper : Object, wrapper<Object>
 {
-
+	
 };
 
 void exportObject()

@@ -21,7 +21,7 @@ namespace scripting {
         void SetContext(const std::string& key, T value)
         {
 	        try{
-				globals_["context"][key.c_str()] = value;
+				globals_[key.c_str()] = value;
             } 
             catch (error_already_set &) 
             {

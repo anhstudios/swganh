@@ -10,6 +10,8 @@
 #include <boost/python.hpp>
 #include <Python.h>
 
+#include "swganh/swganh_binding.cc"
+
 using namespace boost::python;
 using namespace std;
 using namespace swganh::scripting;
@@ -23,10 +25,15 @@ PythonScript::PythonScript(const string& filename)
     
 	try
     {
-		object main = import("__main__");
-        globals_ = main.attr("__dict__");
 
-        globals_["context"] = dict();
+		PyInit_swganh_binding();
+		
+		boost::python::object main = boost::python::object (boost::python::handle<>(boost::python::borrowed(
+			PyImport_AddModule("__main__")
+		)));
+
+        globals_ = main.attr("__dict__");
+		globals_["context"] = dict();
     } 
     catch (error_already_set &) 
     {
@@ -41,12 +48,7 @@ void PythonScript::Run()
 #ifdef _DEBUG
         ReadFileContents();
 #endif
-		if (imports_.length() > 0)
-		{
-			globals_["__import__"] = import(imports_.c_str());
-		}
-
-        file_object_ = exec(filecontents_.c_str(), globals_, globals_);
+		file_object_ = exec(filecontents_.c_str(), globals_, globals_);
     } 
     catch (error_already_set &) 
     {

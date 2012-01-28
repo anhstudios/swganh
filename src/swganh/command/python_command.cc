@@ -14,8 +14,7 @@ PythonCommand::PythonCommand(const CommandProperties& properties)
 
 void PythonCommand::operator()(std::shared_ptr<swganh::object::Object> object, uint32_t object_id, uint32_t target_id, std::wstring command_string)
 {
-	script_.SetImport("swganh_binding");
-	script_.SetContext("object", boost::python::ptr(object.get()));
+	script_.SetContext("actor", boost::python::ptr(object.get()));
     script_.SetContext("object_id", object_id);
     script_.SetContext("target", target_id);
     script_.SetContext("command_string", command_string);
