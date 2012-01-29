@@ -18,6 +18,9 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#ifndef  SWGANH_OBJECT_OBJECT_BINDING_H_
+#define  SWGANH_OBJECT_OBJECT_BINDING_H_
+
 #include "swganh/object/object.h"
 
 #include <boost/python.hpp>
@@ -29,36 +32,6 @@ using namespace swganh::object;
 
 struct ObjectWrapper : Object, wrapper<Object>
 {
-	//// Wrappers because python has the concept of immutable types, meaning can't pass as const reference
-	//const string GetTemplateStr()
-	//{
-	//	return GetTemplate();
-	//}
-	//void SetTemplateStr(const string template_str)
-	//{
-	//	SetTemplate(template_str);
-	//}
-	//const string GetStfNameFileStr()
-	//{
-	//	return GetStfNameFile();
-	//}
-	//const string GetStfNameStringStr()
-	//{
-	//	return GetStfNameString();
-	//}
-	//void SetStfNameStr(const string file, const string name)
-	//{
-	//	SetStfName(file, name);
-	//}
-	//const string GetCustomNameStr()
-	//{
-	//	wstring custom = GetCustomName();
-	//	return string(custom.begin(), custom.end());
-	//}
-	//void SetCustomNameStr(const string custom_name)
-	//{
-	//	SetCustomName(wstring(custom_name.begin(), custom_name.end()));
-	//}
 };
 
 void exportObject()
@@ -93,3 +66,5 @@ void exportObject()
 					)
 		;
 }
+
+#endif   //SWGANH_OBJECT_OBJECT_BINDING_H_

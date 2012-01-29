@@ -21,15 +21,16 @@ namespace swganh {
 namespace object {
     class Object;
     class ObjectController;
-}}  // namespace swganh::object;
+namespace creature {
+	class Creature;
+}}}  // namespace swganh::object::creature;
 
 namespace swganh {
 namespace command {
 
     typedef std::function<void (
-		std::shared_ptr<swganh::object::Object>, // object
-        uint64_t, // object 
-        uint64_t, // target
+		std::shared_ptr<swganh::object::creature::Creature>, // creature object
+		std::shared_ptr<swganh::object::Object>,	// target object
         std::wstring command_options)
     > CommandHandler;
 

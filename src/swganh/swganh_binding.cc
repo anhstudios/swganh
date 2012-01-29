@@ -32,12 +32,10 @@ void exportUpdatePvpStatusMessage();
 void exportUpdatePostureMessage();
 void exportUpdateContainmentMessage();
 
-string hello () { return "Hello" ; }
-
 BOOST_PYTHON_MODULE(swganh_binding) {
 	
-	def("hello", &hello);
 	exportObject();
+	exportCreature();
 	exportUpdateTransformWithParentMessage();
 	exportUpdateTransformMessage();
 	exportUpdatePvpStatusMessage();

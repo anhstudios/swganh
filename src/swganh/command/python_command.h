@@ -13,7 +13,9 @@
 namespace swganh {
 namespace object {
 	class Object;
-}
+namespace creature {
+	class Creature;
+}}
 namespace command {
 
     class PythonCommand
@@ -21,7 +23,7 @@ namespace command {
     public:
         PythonCommand(const CommandProperties& command_properties);
 
-        void operator()(std::shared_ptr<swganh::object::Object> object, uint32_t object_id, uint32_t target_id, std::wstring command_string);
+        void operator()(std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::Object> target, std::wstring command_string);
 
     private:
         swganh::scripting::PythonScript script_;

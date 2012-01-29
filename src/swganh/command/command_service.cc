@@ -20,7 +20,7 @@
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 #include "swganh/messages/controllers/command_queue_remove.h"
 
-#include "swganh/object/object.h"
+#include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
 
 #include "python_command.h"
@@ -33,6 +33,7 @@ using namespace swganh::command;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;
+using namespace swganh::object::creature;
 using namespace swganh::scripting;
 using namespace swganh::simulation;
 
@@ -176,9 +177,10 @@ void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::
     {
 		auto simulation_service = kernel()->GetServiceManager()
         ->GetService<SimulationService>("SimulationService");
-		auto object = simulation_service->GetObjectById(object_id);
+		auto creature = simulation_service->GetObjectById<Creature>(object_id);
+		auto target = simulation_service->GetObjectById(command.target_id);
 
-        find_iter->second(object, object_id, command.target_id, command.command_options);
+        find_iter->second(creature, target, command.command_options);
     
         SendCommandQueueRemove(object_id, command, command_properties_map_[command.command_crc].default_time / 1000, 0, 0);
          

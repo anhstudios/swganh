@@ -64,34 +64,53 @@ enum CreatureOffSet
 	EQUIPED_OFFSET
 };
 
+enum Posture : uint8_t
+{
+	INVALID = 0xFF,
+	UPRIGHT = 0,
+	CROUCHED = 1,
+	PRONE,
+	SNEAKING,
+	BLOCKING,
+	CLIMBING,
+	LYING_DOWN,
+	SITTING,
+	SKILL_ANIMATING,
+	DRIVING_VEHICLE,
+	RIDING_CREATURE,
+	KNOCKED_DOWN,
+	INCAPACITATED,
+	DEAD
+};
+
 /**
  *
  */
-enum Posture : uint8_t
-{
-    STANDING = 1,
-    SNEAKING,
-    WALKING,
-    RUNNING,
-    KNEELING,
-    CROUCH_SNEAKING,
-    CROUCH_WALKING,
-    PRONE,
-    SKILL_ANIMATING,
-    CRAWLING,
-    CLIMBING_STATIONARY,
-    CLIMBING,
-    HOVERING,
-    FLING,
-    LYING_DOWN,
-    SITTING,
-    DRIVING_VEHICLE,
-    RIDING_CREATURE,
-    KNOCKED_DOWN,
-    INCAPACITATED,
-    DEAD,
-    BLOCKING
-};
+//enum Locomotion : uint8_t
+//{
+//    STANDING = 1,
+//    SNEAKING,
+//    WALKING,
+//    RUNNING,
+//    KNEELING,
+//    CROUCH_SNEAKING,
+//    CROUCH_WALKING,
+//    PRONE,
+//    SKILL_ANIMATING,
+//    CRAWLING,
+//    CLIMBING_STATIONARY,
+//    CLIMBING,
+//    HOVERING,
+//    FLYING,
+//    LYING_DOWN,
+//    SITTING,
+//    DRIVING_VEHICLE,
+//    RIDING_CREATURE,
+//    KNOCKED_DOWN,
+//    INCAPACITATED,
+//    DEAD,
+//    BLOCKING
+//};
 
 /**
  *
