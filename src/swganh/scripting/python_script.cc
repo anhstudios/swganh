@@ -10,8 +10,6 @@
 #include <boost/python.hpp>
 #include <Python.h>
 
-#include "swganh/swganh_binding.cc"
-
 using namespace boost::python;
 using namespace std;
 using namespace swganh::scripting;
@@ -24,15 +22,13 @@ PythonScript::PythonScript(const string& filename)
     Py_Initialize();
     
 	try
-    {
-
-		PyInit_swganh_binding();
-		
+    {		
 		boost::python::object main = boost::python::object (boost::python::handle<>(boost::python::borrowed(
 			PyImport_AddModule("__main__")
 		)));
 
         globals_ = main.attr("__dict__");
+        globals_["swganh"] = boost::python::import("swganh_binding");
 		globals_["context"] = dict();
     } 
     catch (error_already_set &) 
