@@ -1,15 +1,7 @@
-
-import anh
-
-import anh.object.creature.postures.prone as _prone
-
-class ProneCommand(anh.base.Command):
+class ProneCommand():
     label = "prone"
     
     def execute(self, context):
-        obj = context.object
-        
-        obj.set_posture(_prone)
-        
-        anh.messages.broadcast_update_posture_message(obj)
+    #validation that we can transfer into posture is done before the script is run
+        actor.posture = swganh.POSTURE.PRONE
         
