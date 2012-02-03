@@ -1,4 +1,3 @@
-
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
  
@@ -19,16 +18,27 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-// Bindings
-#include "swganh/glm_binding.h"
-#include "swganh/python_shared_ptr.h"
-#include "swganh/object/object_binding.h"
-#include "swganh/object/creature/creature_binding.h"
-#include "swganh/object/player/player_binding.h"
-#include "swganh/object/guild/guild_binding.h"
-#include "swganh/object/tangible/tangible_binding.h"
-#include "swganh/messages/update_transform_message_with_parent_binding.h"
-#include "swganh/messages/update_transform_message_binding.h"
-#include "swganh/messages/update_pvp_status_message_binding.h"
-#include "swganh/messages/update_posture_message_binding.h"
-#include "swganh/messages/update_containment_message_binding.h"
+#ifndef SWGANH_OBJECT_GUILD_GUILD_BINDING_H_
+#define SWGANH_OBJECT_GUILD_GUILD_BINDING_H_
+
+#include "swganh/object/guild/guild.h"
+
+#include <boost/python.hpp>
+
+using namespace boost::python;
+using namespace std;
+using namespace swganh::object::guild;
+
+struct GuildWrapper : Guild,  wrapper<Guild>
+{
+};
+
+void exportGuild()
+{
+	class_<GuildWrapper, bases<swganh::object::Object>, boost::noncopyable>("Guild")
+		.def("add_guild_tag", &GuildWrapper::AddGuildTag, "adds guild tag to the specified guild_id")
+		.def("remove_guild_tag", &GuildWrapper::RemoveGuildTag, "remove guild tag")
+		;
+}
+
+#endif // SWGANH_OBJECT_GUILD_GUILD_BINDING_H_
