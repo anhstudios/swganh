@@ -21,6 +21,7 @@
 #include "swganh/chat/chat_service.h"
 #include "swganh/character/character_service.h"
 #include "swganh/command/command_service.h"
+#include "swganh/command/command_filter.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
@@ -290,9 +291,12 @@ void SwganhApp::LoadCoreServices_()
 	}
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
+		auto command_service = make_shared<CommandService>(kernel_.get());
 		kernel_->GetServiceManager()->AddService(
             "CommandService", 
-            make_shared<CommandService>(kernel_.get()));
+            command_service);
+		// add filters
+		command_service->AddCommandProcessFilter(bind(&RangeCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
 		kernel_->GetServiceManager()->AddService(
             "CharacterService", 

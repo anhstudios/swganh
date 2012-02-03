@@ -287,6 +287,11 @@ public:
      */
     void SetPosition(glm::vec3 position);
 
+	/**
+	* @return bool if the object is in range
+	*/
+	bool InRange(glm::vec3 target, float range);
+
     /**
      * @return The object orientation as a quaternion.
      */

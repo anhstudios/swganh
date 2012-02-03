@@ -29,17 +29,16 @@ namespace swganh {
 namespace command {
 
     typedef std::function<void (
-		std::shared_ptr<swganh::object::creature::Creature>, // creature object
-		std::shared_ptr<swganh::object::Object>,	// target object
+		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
+		const std::shared_ptr<swganh::object::Object>&,	// target object
         std::wstring command_options)
     > CommandHandler;
 
-    typedef std::function<bool (
-        uint64_t, // object
+    typedef std::function<std::tuple<bool, uint32_t, uint32_t> (
+        const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
+		const std::shared_ptr<swganh::object::Object>&, // target object
         const swganh::messages::controllers::CommandQueueEnqueue&,
-        const CommandProperties&,
-        uint32_t&,
-        uint32_t&)
+        const CommandProperties&)	// action
     > CommandFilter;
     
     class CommandService: public swganh::base::BaseService
@@ -55,38 +54,47 @@ namespace command {
 
         void SetCommandHandler(uint32_t command_crc, CommandHandler&& handler);
 
-        void EnqueueCommand(uint64_t object_id, swganh::messages::controllers::CommandQueueEnqueue command);
+        void EnqueueCommand(const std::shared_ptr<swganh::object::creature::Creature>& actor,
+			const std::shared_ptr<swganh::object::Object>& target,
+			swganh::messages::controllers::CommandQueueEnqueue command);
+
+
 
     private:
 
         void SendCommandQueueRemove(
-            uint64_t object_id,
+            const std::shared_ptr<swganh::object::creature::Creature>& actor,
             const swganh::messages::controllers::CommandQueueEnqueue& command,
             float default_time,
             uint32_t error,
             uint32_t action);
 
         std::tuple<bool, uint32_t, uint32_t> ValidateCommand(
-            uint64_t object_id, 
+            const std::shared_ptr<swganh::object::creature::Creature>& actor,
+			const std::shared_ptr<swganh::object::Object>& target,
             const swganh::messages::controllers::CommandQueueEnqueue& command, 
             const CommandProperties& command_properties,
             const std::vector<CommandFilter>& filters);
         
-        void ProcessCommand(uint64_t object_id, const swganh::messages::controllers::CommandQueueEnqueue& command);
+        void ProcessCommand(
+			const std::shared_ptr<swganh::object::creature::Creature>& actor,
+			const std::shared_ptr<swganh::object::Object>& target,
+			const swganh::messages::controllers::CommandQueueEnqueue& command);
 
         void LoadProperties();
 
         void RegisterCommandScript(const CommandProperties& properties);
         
         void HandleCommandQueueEnqueue(
-            const std::shared_ptr<swganh::object::ObjectController>& controller, 
+            const std::shared_ptr<swganh::object::ObjectController>& controller,
             const swganh::messages::ObjControllerMessage& message);
 
         void HandleCommandQueueRemove(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
             const swganh::messages::ObjControllerMessage& message);
                 
-        void ProcessNextCommand(uint64_t object_id);
+        void ProcessNextCommand(
+			const std::shared_ptr<swganh::object::creature::Creature>& actor);
 
         void onStart();
 

@@ -71,21 +71,22 @@ void CommandService::SetCommandHandler(uint32_t command_crc, CommandHandler&& ha
 }
 
 void CommandService::EnqueueCommand(
-    uint64_t object_id, 
+    const shared_ptr<Creature>& actor,
+	const shared_ptr<Object>& target,
     CommandQueueEnqueue command)
 {
     bool is_valid;
     uint32_t error = 0, action = 0;
 
-    std::tie(is_valid, error, action) = ValidateCommand(object_id, command, command_properties_map_[command.command_crc], enqueue_filters_);
+    std::tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], enqueue_filters_);
     
     if (!is_valid)
     {
         LOG(WARNING) << "Invalid command";
-        SendCommandQueueRemove(object_id, command, 0.0f, error, action);
+        SendCommandQueueRemove(actor, command, 0.0f, error, action);
         return;
     }
-
+	auto object_id = actor->GetObjectId();
     command_queues_[object_id].push(command);    
 
     if (!command_queue_timers_[object_id])
@@ -95,7 +96,7 @@ void CommandService::EnqueueCommand(
 
     if (command_queue_timers_[object_id]->expires_at() > boost::posix_time::second_clock::universal_time())
     {
-        ProcessNextCommand(object_id);
+        ProcessNextCommand(actor);
     }
 }
 
@@ -103,10 +104,14 @@ void CommandService::HandleCommandQueueEnqueue(
     const shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
 {
-    uint64_t object_id = controller->GetObject()->GetObjectId();
-
+    auto actor = dynamic_pointer_cast<Creature>(controller->GetObject());
+	auto simulation_service = kernel()->GetServiceManager()
+        ->GetService<SimulationService>("SimulationService");
+    
     CommandQueueEnqueue enqueue;
     enqueue.Deserialize(message.data);
+
+	auto target = simulation_service->GetObjectById(enqueue.target_id);
 
     auto find_iter = command_properties_map_.find(enqueue.command_crc);
 
@@ -116,9 +121,9 @@ void CommandService::HandleCommandQueueEnqueue(
         return;
     }
 
-    auto cooldown_find_iter = cooldown_timers_[object_id].find(enqueue.command_crc);
+    auto cooldown_find_iter = cooldown_timers_[actor->GetObjectId()].find(enqueue.command_crc);
 
-    if (cooldown_find_iter != cooldown_timers_[object_id].end())
+    if (cooldown_find_iter != cooldown_timers_[actor->GetObjectId()].end())
     {
         LOG(WARNING) << "Cooldown timer still running";
         return;
@@ -126,11 +131,11 @@ void CommandService::HandleCommandQueueEnqueue(
     
     if (find_iter->second.add_to_combat_queue)
     {
-        EnqueueCommand(object_id, enqueue);
+        EnqueueCommand(actor, target, enqueue);
     }
     else
     {
-        ProcessCommand(object_id, enqueue);
+        ProcessCommand(actor, target, enqueue);
     }
 }
 
@@ -139,9 +144,9 @@ void CommandService::HandleCommandQueueRemove(
     const ObjControllerMessage& message)
 {}
 
-void CommandService::ProcessNextCommand(uint64_t object_id)
+void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
 {
-    auto find_iter = command_queues_.find(object_id);
+    auto find_iter = command_queues_.find(actor->GetObjectId());
         
     CommandQueueEnqueue command; 
         
@@ -149,17 +154,22 @@ void CommandService::ProcessNextCommand(uint64_t object_id)
     {
         return;
     }
-    
-    ProcessCommand(object_id, command);
+	auto simulation_service = kernel()->GetServiceManager()
+        ->GetService<SimulationService>("SimulationService");
+    auto target = simulation_service->GetObjectById(command.target_id);
 
-    command_queue_timers_[object_id]->expires_from_now(
+    ProcessCommand(actor, target, command);
+
+    command_queue_timers_[actor->GetObjectId()]->expires_from_now(
         boost::posix_time::milliseconds(command_properties_map_[command.command_crc].delay_multiplier * 1000));
     
-    command_queue_timers_[object_id]->async_wait(bind(&CommandService::ProcessNextCommand, this, object_id));
+    command_queue_timers_[actor->GetObjectId()]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
 }
 
-void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::controllers::CommandQueueEnqueue& command)
+void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const shared_ptr<Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command)
 {    
+	auto object_id = actor->GetObjectId();
+
     auto find_iter = handlers_.find(command.command_crc);
 
     if (find_iter == handlers_.end())
@@ -171,18 +181,13 @@ void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::
     bool is_valid;
     uint32_t error = 0, action = 0;
 
-    std::tie(is_valid, error, action) = ValidateCommand(object_id, command, command_properties_map_[command.command_crc], enqueue_filters_);
+    std::tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], enqueue_filters_);
     
     if (is_valid)
     {
-		auto simulation_service = kernel()->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
-		auto creature = simulation_service->GetObjectById<Creature>(object_id);
-		auto target = simulation_service->GetObjectById(command.target_id);
-
-        find_iter->second(creature, target, command.command_options);
+		find_iter->second(actor, target, command.command_options);
     
-        SendCommandQueueRemove(object_id, command, command_properties_map_[command.command_crc].default_time / 1000, 0, 0);
+        SendCommandQueueRemove(actor, command, command_properties_map_[command.command_crc].default_time / 1000, 0, 0);
          
         if (command_properties_map_[command.command_crc].default_time != 0)
         {
@@ -197,7 +202,7 @@ void CommandService::ProcessCommand(uint64_t object_id, const swganh::messages::
         }
     }     
         
-    SendCommandQueueRemove(object_id, command, 0.0f, error, action);
+    SendCommandQueueRemove(actor, command, 0.0f, error, action);
 }
 
 void CommandService::onStart()
@@ -305,41 +310,37 @@ void CommandService::RegisterCommandScript(const CommandProperties& properties)
 }
 
 tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
-    uint64_t object_id, 
+    const shared_ptr<Creature>& actor, 
+	const shared_ptr<Object>& target,
     const swganh::messages::controllers::CommandQueueEnqueue& command, 
     const CommandProperties& command_properties,
     const std::vector<CommandFilter>& filters)
 {
-    uint32_t error = 0, action = 0;
-
-    bool result = all_of(
+	tuple<bool, uint32_t, uint32_t> result;
+    bool all_run = all_of(
         begin(filters),
         end(filters),
-        [object_id, &command, &command_properties, &error, &action] (const CommandFilter& filter)
+        [&result, actor, target, &command, &command_properties] (const CommandFilter& filter)->bool
     {
-        return filter(object_id, command, command_properties, error, action);
+        result =  filter(actor, target, command, command_properties);
+		return get<0>(result);
     });
 
-    return make_tuple(result, error, action);
+    return result;
 }
 
 void CommandService::SendCommandQueueRemove(
-    uint64_t object_id,
+    const shared_ptr<Creature>& actor,
     const swganh::messages::controllers::CommandQueueEnqueue& command,
     float default_time,
     uint32_t error,
     uint32_t action)
 {
-    auto simulation_service = kernel()->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
-
-    shared_ptr<Object> object = simulation_service->GetObjectById(object_id);
-
     CommandQueueRemove remove;
     remove.action_counter = command.action_counter;
     remove.timer = default_time / 1000;
     remove.error = error;
     remove.action = action;
 
-    object->GetController()->Notify(ObjControllerMessage(0x0000000B, remove));
+    actor->GetController()->Notify(ObjControllerMessage(0x0000000B, remove));
 }
