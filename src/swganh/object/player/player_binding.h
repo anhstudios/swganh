@@ -49,7 +49,7 @@ void exportPlayer()
 		.value("AFK", AFK)
 		.value("LD", LD)
 		.value("FACTION_RANK", FACTION_RANK)
-		.value("ANONYMOUS", ANONYMOUS)
+		//.value("ANONYMOUS", ANONYMOUS)
 		;
 	enum_<AdminTag>("ADMIN_TAG")
 		.value("CSR", CSR)
