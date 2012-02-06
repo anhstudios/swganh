@@ -2,10 +2,23 @@
 #ifndef SWGANH_COMMAND_COMMAND_FILTER_H_
 #define SWGANH_COMMAND_COMMAND_FILTER_H_
 
-#include "command_service.h"
+#include <tuple>
+#include <memory>
+#include <cstdint>
 
 namespace swganh {
+namespace messages {
+namespace controllers {
+class CommandQueueEnqueue;
+}} // messages::controllers
+namespace object {
+class Object;
+namespace creature {
+class Creature;
+}} // object::creature
 namespace command {
+
+struct CommandProperties;
 
 enum ERROR
 {
@@ -17,11 +30,14 @@ enum ERROR
 	GOD_LEVEL = 6
 };
 
-std::tuple<bool, uint32_t, uint32_t> RangeCheckFilter(
+struct CommandFilters {
+
+static std::tuple<bool, uint32_t, uint32_t> RangeCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::Object>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties);
+};
 
 }} // swganh::command
 

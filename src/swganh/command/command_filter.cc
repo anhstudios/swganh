@@ -1,5 +1,6 @@
 #include "command_filter.h"
-
+#include "command_properties.h"
+#include "command_service.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
@@ -10,10 +11,10 @@ using namespace swganh::messages::controllers;
 using namespace std;
 
 
-tuple<bool, uint32_t, uint32_t> RangeCheckFilter(
-		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Object>& target, 
-		const CommandQueueEnqueue& command_queue_enqueue,
+std::tuple<bool, uint32_t, uint32_t> CommandFilters::RangeCheckFilter(
+		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
+		const std::shared_ptr<swganh::object::Object>& target, 
+		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties)
 {
 	bool check_passed = false;

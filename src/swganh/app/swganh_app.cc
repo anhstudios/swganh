@@ -1,4 +1,3 @@
-
 #include "swganh/app/swganh_app.h"
 
 #include <algorithm>
@@ -296,7 +295,9 @@ void SwganhApp::LoadCoreServices_()
             "CommandService", 
             command_service);
 		// add filters
-		command_service->AddCommandProcessFilter(bind(&RangeCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		//RangeCheckFilter (nullptr, nullptr, swganh::messages::controllers::CommandQueueEnqueue(), swganh::command::CommandProperties());
+
+		command_service->AddCommandProcessFilter(bind(&CommandFilters::RangeCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
 		kernel_->GetServiceManager()->AddService(
             "CharacterService", 

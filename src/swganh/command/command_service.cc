@@ -17,6 +17,8 @@
 #include "anh/database/database_manager_interface.h"
 #include "anh/service/service_manager.h"
 
+#include "swganh/command/command_filter.h"
+
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 #include "swganh/messages/controllers/command_queue_remove.h"
 
@@ -57,7 +59,7 @@ ServiceDescription CommandService::GetServiceDescription()
 
 void CommandService::AddCommandEnqueueFilter(CommandFilter&& filter)
 {
-    enqueue_filters_.push_back(move(filter));
+	enqueue_filters_.push_back(move(filter));
 }
 
 void CommandService::AddCommandProcessFilter(CommandFilter&& filter)
