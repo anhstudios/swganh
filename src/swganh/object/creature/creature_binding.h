@@ -55,8 +55,9 @@ void exportCreature()
 		.value("DEAD", DEAD)
 		;
 
-	enum_<State>("ACTION")
-		 .value("COVER", COVER)
+	enum_<State>("ACTION", "State Bitmask, see creature.h")
+		.value("NONE", NONE)
+		.value("COVER", COVER)
 		.value("COMBAT", COMBAT)
 		.value("PEACE", PEACE)
 		.value("AIMING", AIMING)
@@ -85,11 +86,13 @@ void exportCreature()
 		.value("ON_FIRE", ON_FIRE)
 		.value("RIDING_MOUNT", RIDING_MOUNT)
 		.value("MOUNTED_CREATURE", MOUNTED_CREATURE)
-		.value("PILOTING_SHIP", PILOTING_SHIP)
+
+		// TODO: NEED TO FIND OUT HOW TO GET BOOST PYTHON TO ALLOW UINT64_T VALUES
+		/*.value("PILOTING_SHIP", PILOTING_SHIP)
 		.value("SHIP_OPERATIONS", SHIP_OPERATIONS)
 		.value("SHIP_GUNNER", SHIP_GUNNER)
 		.value("SHIP_INTERIOR", SHIP_INTERIOR)
-		.value("PILOTING_POB_SHIP", PILOTING_POB_SHIP)
+		.value("PILOTING_POB_SHIP", PILOTING_POB_SHIP)*/
 		;
 	enum_<PvpStatus>("PVPSTATUS")
 		.value("PvPStatus_None", PvPStatus_None)

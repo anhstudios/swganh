@@ -55,10 +55,9 @@ void CreatureMessageBuilder::BuildPostureUpdate(Creature* creature)
 	if (creature->HasObservers())
     {
 		// Update the posture message
-		UpdatePostureMessage upm;
-		upm.object_id = creature->GetObjectId();
+		controllers::UpdatePostureMessage upm;
 		upm.posture_id = creature->GetPosture();
-		creature->GetController()->Notify(upm);
+		creature->GetController()->Notify(ObjControllerMessage(0x1B, upm));
 	}
 }
 

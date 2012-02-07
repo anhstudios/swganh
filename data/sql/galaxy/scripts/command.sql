@@ -4,7 +4,7 @@ This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Em
 
 For more information, visit http://www.swganh.com
 
-Copyright (c) 2006 - 2010 The SWG:ANH Team
+Copyright (c) 2006 - 2012 The SWG:ANH Team
 ---------------------------------------------------------------------------------------
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -22,21 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
 
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
---
--- Definition of table `command`
---
-
+# Dumping structure for table galaxy.command
 DROP TABLE IF EXISTS `command`;
-CREATE TABLE `command` (
+CREATE TABLE IF NOT EXISTS `command` (
   `id` int(10) unsigned NOT NULL,
   `name` char(255) COLLATE utf8_bin NOT NULL,
   `ability` char(255) COLLATE utf8_bin NOT NULL,
@@ -80,12 +74,8 @@ CREATE TABLE `command` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- Dumping data for table `command`
---
-
+# Dumping data for table galaxy.command: ~781 rows (approximately)
 /*!40000 ALTER TABLE `command` DISABLE KEYS */;
-
 INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`, `fail_script_hook`, `default_time`, `command_group`, `max_range_to_target`, `add_to_combat_queue`, `health_cost`, `health_cost_multiplier`, `action_cost`, `action_cost_multiplier`, `mind_cost`, `mind_cost_multiplier`, `damage_multiplier`, `delay_multiplier`, `accuracy_bonus`, `force_cost`, `force_cost_multiplier`, `animation_crc`, `required_weapon_group`, `combat_spam`, `trail1`, `trail2`, `allow_in_posture`, `health_hit_chance`, `action_hit_chance`, `mind_hit_chance`, `knockdown_chance`, `dizzy_chance`, `blind_chance`, `stun_chance`, `intimidate_chance`, `posture_down_chance`, `extended_range`, `cone_angle`, `posture_up_chance`, `deny_in_locomotion`) VALUES
 (1, 'actionShot1', 'actionShot1', 3894805552, '', 'failSpecialAttack', 2000, 1, 64, 1, 0, 2, 0, 1, 0, 1, 2, 2, 25, 0, 0, 3749773518, 64, 'impairingshot', 0, 0, 15, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
 (2, 'actionShot2', 'actionShot2', 3894805552, '', 'failSpecialAttack', 2000, 2, 64, 1, 0, 2, 0, 1, 0, 1, 3, 2, 25, 0, 0, 307222173, 64, 'debilitatingshot', 0, 0, 15, 0, 100, 0, 0, 0, 0, 0, 0, 25, 0, 40, 0, 4193826),
@@ -374,8 +364,7 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 (286, 'harvestCorpse', 'harvestCorpse', 3894881371, '', 'cmdHarvestCorpseFail', 1000, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4194274),
 (287, 'harvesterActivate', '', 2097184, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (288, 'harvesterDeactivate', '', 2097184, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-(289, 'harvesterDiscardHopper', '', 2097184, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`, `fail_script_hook`, `default_time`, `command_group`, `max_range_to_target`, `add_to_combat_queue`, `health_cost`, `health_cost_multiplier`, `action_cost`, `action_cost_multiplier`, `mind_cost`, `mind_cost_multiplier`, `damage_multiplier`, `delay_multiplier`, `accuracy_bonus`, `force_cost`, `force_cost_multiplier`, `animation_crc`, `required_weapon_group`, `combat_spam`, `trail1`, `trail2`, `allow_in_posture`, `health_hit_chance`, `action_hit_chance`, `mind_hit_chance`, `knockdown_chance`, `dizzy_chance`, `blind_chance`, `stun_chance`, `intimidate_chance`, `posture_down_chance`, `extended_range`, `cone_angle`, `posture_up_chance`, `deny_in_locomotion`) VALUES
+(289, 'harvesterDiscardHopper', '', 2097184, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (290, 'harvesterGetResourceData', '', 2097184, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (291, 'harvesterHarvest', '', 2097184, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (292, 'harvesterMakeCrate', '', 2097184, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -450,7 +439,7 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 (361, 'kill', 'admin', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (362, 'killPlayer', 'admin', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (363, 'kipUpShot', 'kipUpShot', 3894805552, '', 'failSpecialAttack', 2000, 1, 0, 1, 0, 1, 0, 1, 0, 1, 3, 2, 50, 0, 0, 0, 0, 'kipup', 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
-(364, 'kneel', '', 3894804480, '', 'kneelFail', 2000, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 4415, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1816576),
+(364, 'kneel', '', 3894804480, 'scripts/commands/kneel.py', 'kneelFail', 2000, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 4415, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1816576),
 (365, 'knockdownAttack', '', 3894870032, '', '', 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193824),
 (366, 'knockdownFire', 'knockdownFire', 3894805552, '', 'failSpecialAttack', 2000, 1, 64, 1, 0, 2, 0, 1, 0, 1, 3, 2, 25, 0, 0, 2566241028, 64, 'knockdownfire', 0, 0, 15, 0, 0, 0, 30, 30, 0, 0, 0, 0, 0, 0, 0, 4193826),
 (367, 'lag', 'admin', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -580,7 +569,7 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 (491, 'postureDownAttack', '', 3894870032, '', '', 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193824),
 (492, 'postureUpAttack', '', 3894870032, '', '', 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193824),
 (493, 'powerBoost', 'powerBoost', 3963615214, '', '', 2000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 256, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4177663),
-(494, 'prone', '', 3894804480, '', 'proneFail', 2000, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 4415, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1816576),
+(494, 'prone', '', 3894804480, 'scripts/commands/prone.py', 'proneFail', 2000, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 4415, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1816576),
 (495, 'purchaseReinforcement', '', 3894934635, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4194298),
 (496, 'purchaseTicket', '', 3894934651, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 911, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4136482),
 (497, 'quickHeal', 'quickHeal', 3894542352, '', '', 2000, 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 10, 0, 0, 0, 0, 0, '', 0, 0, 331, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4171680),
@@ -644,8 +633,7 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 (555, 'saber1hHeadHit3', 'saber1hHeadHit3', 3894805552, '', 'failSpecialAttack', 2000, 1, 0, 1, 0, 0, 0, 0, 0, 0, 2, 2, 25, 0, 2, 0, 256, '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
 (556, 'saber1hHit1', 'saber1hHit1', 3894805552, '', 'failSpecialAttack', 2000, 1, 0, 1, 0, 0, 0, 0, 0, 0, 2, 1, 25, 0, 1, 2383186666, 256, 'melee', 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
 (557, 'saber1hHit2', 'saber1hHit2', 3894805552, '', 'failSpecialAttack', 2000, 1, 0, 1, 0, 0, 0, 0, 0, 0, 2, 2, 25, 0, 2, 2383186666, 256, 'melee', 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
-(558, 'saber1hHit3', 'saber1hHit3', 3894805552, '', 'failSpecialAttack', 2000, 1, 0, 1, 0, 0, 0, 0, 0, 0, 3, 2, 25, 0, 2, 2383186666, 256, 'melee', 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826);
-INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`, `fail_script_hook`, `default_time`, `command_group`, `max_range_to_target`, `add_to_combat_queue`, `health_cost`, `health_cost_multiplier`, `action_cost`, `action_cost_multiplier`, `mind_cost`, `mind_cost_multiplier`, `damage_multiplier`, `delay_multiplier`, `accuracy_bonus`, `force_cost`, `force_cost_multiplier`, `animation_crc`, `required_weapon_group`, `combat_spam`, `trail1`, `trail2`, `allow_in_posture`, `health_hit_chance`, `action_hit_chance`, `mind_hit_chance`, `knockdown_chance`, `dizzy_chance`, `blind_chance`, `stun_chance`, `intimidate_chance`, `posture_down_chance`, `extended_range`, `cone_angle`, `posture_up_chance`, `deny_in_locomotion`) VALUES
+(558, 'saber1hHit3', 'saber1hHit3', 3894805552, '', 'failSpecialAttack', 2000, 1, 0, 1, 0, 0, 0, 0, 0, 0, 3, 2, 25, 0, 2, 2383186666, 256, 'melee', 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
 (559, 'saber2hBodyHit1', 'saber2hBodyHit1', 3894805552, '', 'failSpecialAttack', 2000, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 2, 10, 0, 1, 0, 0, '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
 (560, 'saber2hBodyHit2', 'saber2hBodyHit2', 3894805552, '', 'failSpecialAttack', 2000, 1, 0, 1, 0, 0, 0, 0, 0, 0, 2, 2, 10, 0, 2, 0, 0, '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
 (561, 'saber2hBodyHit3', 'saber2hBodyHit3', 3894805552, '', 'failSpecialAttack', 2000, 1, 0, 1, 0, 0, 0, 0, 0, 0, 2, 3, 10, 0, 2, 0, 0, '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
@@ -731,7 +719,7 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 (643, 'showMusicianVisuals', '', 136838267, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4161530),
 (644, 'showPvPRating', '', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (645, 'showSpawnRegion', 'admin', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-(646, 'sitServer', '', 3894935466, '', '', 2000, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2088960),
+(646, 'sitServer', '', 3894935466, 'scripts/commands/sitServer.py', '', 2000, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2088960),
 (647, 'skill', 'admin', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (648, 'smokebomb', 'smokebomb', 3894934651, '', '', 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, '', 0, 0, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4161530),
 (649, 'sniperShot', 'sniperShot', 3894805552, '', 'failSpecialAttack', 2000, 1, 64, 1, 0, 1, 0, 1, 0, 2, 1, 2, 5, 0, 0, 2566241028, 16, 'snipershot', 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
@@ -744,7 +732,7 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 (656, 'splitCreditsWithGroup', '', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 8191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1572864),
 (657, 'spotlight', 'spotlight', 3894934635, '', '', 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, '', 0, 0, 513, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4161530),
 (658, 'sprayShot', 'sprayShot', 3894805552, '', 'failSpecialAttack', 2000, 1, 64, 1, 0, 2, 0, 3, 0, 1, 6, 3, 25, 0, 0, 884264322, 64, 'sprayshot', 0, 0, 15, 0, 0, 0, 0, 30, 30, 30, 0, 0, 0, 0, 0, 4193826),
-(659, 'stand', '', 3894542336, '', 'standFail', 2000, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 5055, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1775616),
+(659, 'stand', '', 3894542336, 'scripts/commands/stand.py', 'standFail', 2000, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 5055, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1775616),
 (660, 'startBand', '', 3894934651, '', 'failMusic', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4194298),
 (661, 'startCitySpawner', 'admin', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (662, 'startDance', '', 3894934651, '', 'failDance', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4194298),
@@ -863,11 +851,6 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 (2100, 'shutdownGalaxy', 'admin_shutdownGalaxy', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (2101, 'cancelShutdownGalaxy', 'admin_cancelShutdownGalaxy', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 /*!40000 ALTER TABLE `command` ENABLE KEYS */;
-
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

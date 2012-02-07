@@ -1,0 +1,1 @@
+actor.posture = swganh.POSTURE.SITTING
