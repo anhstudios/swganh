@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `types` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `description` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1874303457 DEFAULT CHARSET=utf8 COMMENT='These are all of the possible object types';
+) ENGINE=InnoDB AUTO_INCREMENT=1874303457 DEFAULT CHARSET=latin1 COMMENT='These are all of the possible object types';
 
 DELETE FROM `types`;
     

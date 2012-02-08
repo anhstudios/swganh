@@ -4,7 +4,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-CREATE TABLE `command` (
+CREATE TABLE IF NOT EXISTS `command` (
   `id` int(10) unsigned NOT NULL,
   `name` char(255) COLLATE utf8_bin NOT NULL,
   `ability` char(255) COLLATE utf8_bin NOT NULL,
@@ -46,14 +46,11 @@ CREATE TABLE `command` (
   `posture_up_chance` float NOT NULL DEFAULT '0',
   `deny_in_locomotion` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `command`
---
-
+DELETE FROM `command`;
+    
 /*!40000 ALTER TABLE `command` DISABLE KEYS */;
-
 INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`, `fail_script_hook`, `default_time`, `command_group`, `max_range_to_target`, `add_to_combat_queue`, `health_cost`, `health_cost_multiplier`, `action_cost`, `action_cost_multiplier`, `mind_cost`, `mind_cost_multiplier`, `damage_multiplier`, `delay_multiplier`, `accuracy_bonus`, `force_cost`, `force_cost_multiplier`, `animation_crc`, `required_weapon_group`, `combat_spam`, `trail1`, `trail2`, `allow_in_posture`, `health_hit_chance`, `action_hit_chance`, `mind_hit_chance`, `knockdown_chance`, `dizzy_chance`, `blind_chance`, `stun_chance`, `intimidate_chance`, `posture_down_chance`, `extended_range`, `cone_angle`, `posture_up_chance`, `deny_in_locomotion`) VALUES
 (1, 'actionShot1', 'actionShot1', 3894805552, '', 'failSpecialAttack', 2000, 1, 64, 1, 0, 2, 0, 1, 0, 1, 2, 2, 25, 0, 0, 3749773518, 64, 'impairingshot', 0, 0, 15, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
 (2, 'actionShot2', 'actionShot2', 3894805552, '', 'failSpecialAttack', 2000, 2, 64, 1, 0, 2, 0, 1, 0, 1, 3, 2, 25, 0, 0, 307222173, 64, 'debilitatingshot', 0, 0, 15, 0, 100, 0, 0, 0, 0, 0, 0, 25, 0, 40, 0, 4193826),

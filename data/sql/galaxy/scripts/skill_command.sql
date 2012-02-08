@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `skill_command` (
   UNIQUE KEY `pk_skillcommands_name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=942 DEFAULT CHARSET=latin1;
 
-DELETE FROM `skill_mod`;
+DELETE FROM `skill_command`;
     
 /*!40000 ALTER TABLE `skill_command` DISABLE KEYS */;
 INSERT INTO `skill_command` (`id`,`name`) VALUES 
