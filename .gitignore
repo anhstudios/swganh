@@ -5,7 +5,7 @@ vendor/*
 swgtk/
 
 # ignore configuration files
-data/sql/setup.cg
+data/sql/setup.cfg
 
 # ignore OS generated files
 .DS_Store
