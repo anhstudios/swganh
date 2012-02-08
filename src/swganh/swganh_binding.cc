@@ -29,11 +29,6 @@ void exportObject();
 void exportTangible();
 void exportCreature();
 void exportPlayer();
-void exportUpdateTransformWithParentMessage();
-void exportUpdateTransformMessage();
-void exportUpdatePvpStatusMessage();
-void exportUpdatePostureMessage();
-void exportUpdateContainmentMessage();
 
 BOOST_PYTHON_MODULE(swganh_binding) {
 	
@@ -41,9 +36,4 @@ BOOST_PYTHON_MODULE(swganh_binding) {
 	exportTangible();
 	exportCreature();
 	exportPlayer();
-	exportUpdateTransformWithParentMessage();
-	exportUpdateTransformMessage();
-	exportUpdatePvpStatusMessage();
-	exportUpdatePostureMessage();
-	exportUpdateContainmentMessage();
 }

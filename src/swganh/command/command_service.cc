@@ -96,10 +96,10 @@ void CommandService::EnqueueCommand(
         command_queue_timers_[object_id] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
     }
 
-    if (command_queue_timers_[object_id]->expires_at() > boost::posix_time::second_clock::universal_time())
-    {
+    /*if (command_queue_timers_[object_id]->expires_at() > boost::posix_time::second_clock::universal_time())
+    {*/
         ProcessNextCommand(actor);
-    }
+    //}
 }
 
 void CommandService::HandleCommandQueueEnqueue(
@@ -163,7 +163,7 @@ void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
     ProcessCommand(actor, target, command);
 
     command_queue_timers_[actor->GetObjectId()]->expires_from_now(
-        boost::posix_time::milliseconds(command_properties_map_[command.command_crc].delay_multiplier * 1000));
+        boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
     
     command_queue_timers_[actor->GetObjectId()]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
 }
@@ -189,7 +189,7 @@ void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const sha
     {
 		find_iter->second(actor, target, command.command_options);
     
-        SendCommandQueueRemove(actor, command, command_properties_map_[command.command_crc].default_time / 1000, 0, 0);
+        SendCommandQueueRemove(actor, command, command_properties_map_[command.command_crc].default_time, 0, 0);
          
         if (command_properties_map_[command.command_crc].default_time != 0)
         {
@@ -351,5 +351,6 @@ void CommandService::SendCommandQueueRemove(
     remove.error = error;
     remove.action = action;
 
+	//actor->GetController()->Notify(remove);
     actor->GetController()->Notify(ObjControllerMessage(0x0000000B, remove));
 }
