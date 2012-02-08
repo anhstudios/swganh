@@ -1,21 +1,14 @@
-# --------------------------------------------------------
-# Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
-# Server OS:                    Win32
-# HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-16 19:39:53
-# --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-use galaxy;
+DROP PROCEDURE IF EXISTS `sp_CharacterNameCreate`;
 
-# Dumping structure for function galaxy.sf_CharacterNameCreate
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` FUNCTION `sf_CharacterNameCreate`(base_model_string CHAR(64)) RETURNS char(64) CHARSET utf8
+CREATE PROCEDURE `sp_CharacterNameCreate`(
+IN `base_model_string` CHAR(64))
 BEGIN
 	DECLARE shortSpecies CHAR(16);
 	DECLARE gender INT(11);
@@ -29,8 +22,8 @@ BEGIN
 
     SELECT sf_SpeciesShort(base_model_string) INTO shortSpecies;
 
-    SELECT sf_GenerateFirstName(shortSpecies, gender) INTO gen_firstname;
-    SELECT sf_GenerateLastName(shortSpecies, gender) INTO gen_lastname;
+    CALL sp_GenerateFirstName(shortSpecies, gender, gen_firstname);
+    CALL sp_GenerateLastName(shortSpecies, gender, gen_lastname);
 
     IF shortSpecies = 'wookiee' THEN SET gen_lastname = NULL;
     END IF;
@@ -39,10 +32,10 @@ BEGIN
     ELSE SET gen_fullname = gen_firstname;
     END IF;
 
-	RETURN gen_fullname;
-
-	END//
+	SELECT gen_fullname;
+END//
 DELIMITER ;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
