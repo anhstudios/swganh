@@ -20,15 +20,14 @@ CREATE PROCEDURE `sp_CharacterCreate`(
     IN `start_appearance_customization` TINYBLOB, 
     IN `start_hair_model` CHAR(64), 
     IN `hair_customization` TEXT(200), 
-    IN `base_model_string` CHAR(64))
+    IN `base_model_string` CHAR(64),
+    OUT `object_id` BIGINT(20))
 charCreate:BEGIN
-
     DECLARE oX FLOAT;DECLARE oY FLOAT;DECLARE oZ FLOAT;DECLARE oW FLOAT;
     DECLARE race_id INT;
     DECLARE iff_template_id INT;
     DECLARE player_iff_template_id INT;
     DECLARE hair_iff_template_id INT;
-    DECLARE object_id BIGINT(20);
     DECLARE player_id BIGINT(20);
     DECLARE character_id BIGINT(20);
     DECLARE parent_id BIGINT(20);
@@ -145,9 +144,6 @@ charCreate:BEGIN
 
         CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender);
     COMMIT;
-
-    SELECT(object_id);
-
 END//
 DELIMITER ;
 
