@@ -69,13 +69,13 @@ TEST(BasicEventTest, CanMakeSharedEvent) {
 TEST(BasicEventTest, CanMakeSimpleEvent) {
     auto my_event = make_event("SomeEvent");
 
-    EXPECT_EQ("SomeEvent", my_event.type().ident_string());
+    EXPECT_EQ(0xEE6D3AEB, my_event.type());
 }
 
 TEST(BasicEventTest, CanMakeSimpleSharedEvent) {
     auto my_event = make_shared_event("SomeEvent");
 
-    EXPECT_EQ("SomeEvent", my_event->type().ident_string());
+    EXPECT_EQ(0xEE6D3AEB, my_event->type());
 }
 
 TEST(BasicEventTest, CanMakeEventFromHash) {

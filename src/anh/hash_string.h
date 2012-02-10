@@ -31,30 +31,23 @@ namespace anh {
  */
 class HashString {
 public:
+    /// Default constructor.
+    HashString();
+
     /// Takes a regular std::string and stores a hash of it.
     HashString(const std::string& std_string); 
+
     /// Takes a human readable string and stores a hash of it.
     HashString(const char* ident_string);
+
     /// Takes an already hashed value and stores it.
     HashString(uint32_t ident);
-
-    /// Default destructor.
-    ~HashString();
-
-    /// Copy constructor.
-    HashString(const HashString& other);
-
-    /// Move constructor.
-    HashString(HashString&& other);
     
-    /// Swap the contents of two HashStrings.
-    void swap(HashString& other);
-
-    /// Universal assignment operator.
-    HashString& operator=(HashString other);
-
     /// Conversion operator allows a hash string to be cast to a uint32_t
     operator uint32_t () const;
+
+    /// Returns a 32bit hash representation of the string.
+    uint32_t ident() const;
 
     /*! Uses a less-than comparison on two HashStrings.
      *
@@ -83,13 +76,6 @@ public:
      */
     bool operator==(const HashString& other) const;
 
-    /*! Compares a char* and a HashString to determine if they are equal.
-     *
-     * \param other The char* to compare to the current HashString.
-     * \returns True if the HashString and char* are equal, false if not.
-     */
-    bool operator==(const char* other) const;
-
     /*! Compares two HashStrings to determine if they are not equal.
      *
      * \param other The HashString to compare to the current one.
@@ -97,21 +83,7 @@ public:
      */
     bool operator!=(const HashString& other) const;
 
-    /*! Compares a char* and a HashString to determine if they are not equal.
-     *
-     * \param other The char* to compare to the current HashString.
-     * \returns True if the HashString and char * are not equal, false if they are.
-     */
-    bool operator!=(const char* other) const;
-
-    /// Returns a 32bit hash representation of the string.
-    uint32_t ident() const;
-
-    /// Returns a human readable identifier.
-    const std::string& ident_string() const;
-
 private:
-    HashString();
 
     // \note: ident_ is stored as a void * not an int, so that in
     // the debugger it will show up as hex-values instead of
@@ -119,7 +91,6 @@ private:
     // we're doing here and makes it easy to allow external code
     // to assign event types as desired.
     void * ident_;              ///< A 32bit hash of the ident_string.
-    std::string ident_string_;  ///< A human readable form of the event type.
 };
 
 }  // namespace anh
