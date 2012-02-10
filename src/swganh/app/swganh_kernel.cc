@@ -7,6 +7,7 @@
 
 #include "anh/database/database_manager.h"
 #include "anh/event_dispatcher/event_dispatcher.h"
+#include "anh/event_dispatcher.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/datastore.h"
 #include "anh/service/service_directory.h"
@@ -64,6 +65,14 @@ shared_ptr<EventDispatcherInterface> SwganhKernel::GetEventDispatcher() {
     }
 
     return event_dispatcher_;
+}
+
+anh::EventDispatcher* SwganhKernel::GetEventDispatcher2() {
+    if (!event_dispatcher2_) {
+        event_dispatcher2_.reset(new anh::EventDispatcher(GetIoService()));
+    }
+
+    return event_dispatcher2_.get();
 }
 
 shared_ptr<PluginManager> SwganhKernel::GetPluginManager() {

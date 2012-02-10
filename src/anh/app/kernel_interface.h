@@ -14,6 +14,7 @@ namespace database {
 }}  // namespace anh::database
 
 namespace anh {
+    class EventDispatcher;
 namespace event_dispatcher {
     class EventDispatcherInterface; 
 }}  // namespace anh::event_dispatcher
@@ -46,6 +47,8 @@ public:
     virtual ~KernelInterface() {}
 
     virtual const Version& GetVersion() = 0;
+    
+    virtual anh::EventDispatcher* GetEventDispatcher2() = 0;
 
     virtual std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> GetEventDispatcher() = 0;
 
@@ -56,7 +59,7 @@ public:
     virtual std::shared_ptr<anh::service::ServiceDirectoryInterface> GetServiceDirectory() = 0;
 
     virtual std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager() = 0;
-
+    
     virtual boost::asio::io_service& GetIoService() = 0;
 
     // also add entity manager, blah blah.
