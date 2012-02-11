@@ -81,7 +81,7 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, KernelIn
     
     soe_server_.reset(new Server(
         kernel->GetIoService(),
-        kernel->GetEventDispatcher2(),
+        kernel->GetEventDispatcher(),
         bind(&LoginService::RouteMessage, this, placeholders::_1)));
     
     account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
@@ -127,7 +127,7 @@ void LoginService::onStop() {
 }
 
 void LoginService::subscribe() {
-    auto event_dispatcher = kernel()->GetEventDispatcher2();
+    auto event_dispatcher = kernel()->GetEventDispatcher();
     
     RegisterMessageHandler<LoginClientId>(
         bind(&LoginService::HandleLoginClientId_, this, placeholders::_1, placeholders::_2), false);

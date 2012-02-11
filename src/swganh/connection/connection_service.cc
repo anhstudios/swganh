@@ -62,7 +62,7 @@ ConnectionService::ConnectionService(
 {
     soe_server_.reset(new Server(
         kernel->GetIoService(),
-        kernel->GetEventDispatcher2(),
+        kernel->GetEventDispatcher(),
         bind(&ConnectionService::RouteMessage, this, placeholders::_1)));
         
     session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
@@ -86,7 +86,7 @@ ServiceDescription ConnectionService::GetServiceDescription() {
 }
 
 void ConnectionService::subscribe() {
-    auto event_dispatcher = kernel()->GetEventDispatcher2();
+    auto event_dispatcher = kernel()->GetEventDispatcher();
      
     RegisterMessageHandler<ClientIdMsg>(
         bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
@@ -241,7 +241,7 @@ void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> c
 
     auto object = client->GetController()->GetObject();
 
-    kernel()->GetEventDispatcher2()->Dispatch(
+    kernel()->GetEventDispatcher()->Dispatch(
         make_shared<ValueEvent<shared_ptr<Object>>>("ObjectReadyEvent", object));
 }
 

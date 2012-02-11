@@ -46,7 +46,7 @@ public:
 
     virtual const Version& GetVersion() = 0;
     
-    virtual anh::EventDispatcher* GetEventDispatcher2() = 0;
+    virtual anh::EventDispatcher* GetEventDispatcher() = 0;
     
     virtual std::shared_ptr<anh::plugin::PluginManager> GetPluginManager() = 0;
 

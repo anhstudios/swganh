@@ -55,12 +55,12 @@ shared_ptr<DatabaseManagerInterface> SwganhKernel::GetDatabaseManager() {
     return database_manager_;
 }
 
-anh::EventDispatcher* SwganhKernel::GetEventDispatcher2() {
-    if (!event_dispatcher2_) {
-        event_dispatcher2_.reset(new anh::EventDispatcher(GetIoService()));
+anh::EventDispatcher* SwganhKernel::GetEventDispatcher() {
+    if (!event_dispatcher_) {
+        event_dispatcher_.reset(new anh::EventDispatcher(GetIoService()));
     }
 
-    return event_dispatcher2_.get();
+    return event_dispatcher_.get();
 }
 
 shared_ptr<PluginManager> SwganhKernel::GetPluginManager() {
@@ -84,7 +84,7 @@ shared_ptr<ServiceDirectoryInterface> SwganhKernel::GetServiceDirectory() {
         auto data_store = make_shared<Datastore>(GetDatabaseManager()->getConnection("galaxy_manager"));
         service_directory_ = make_shared<ServiceDirectory>(
             data_store, 
-            GetEventDispatcher2(),
+            GetEventDispatcher(),
             app_config_.galaxy_name, 
             GetVersion().ToString(),
             true);

@@ -83,7 +83,7 @@ public:
     {
         if (!movement_manager_)
         {
-            movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher2());
+            movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher());
         }
 
         return movement_manager_;
