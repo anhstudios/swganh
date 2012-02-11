@@ -5,7 +5,6 @@
 
 #include <boost/asio/io_service.hpp>
 #include <boost/chrono/system_clocks.hpp>
-#include <boost/thread/future.hpp>
 
 using namespace anh;
 using namespace std;

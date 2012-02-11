@@ -7,6 +7,7 @@
 #include <memory>
 
 #include <boost/asio/strand.hpp>
+#include <boost/thread/future.hpp>
 
 #include <tbb/concurrent_unordered_map.h>
 #include <tbb/concurrent_vector.h>
@@ -47,6 +48,33 @@ namespace anh {
 
     private:
         EventType type_;
+    };
+
+    template<typename T>
+    class ValueEvent : public BaseEvent
+    {
+    public:
+        ValueEvent(EventType type)
+            : BaseEvent(type)
+        {}
+
+        ValueEvent(EventType type, T data)
+            : BaseEvent(type)
+            , data_(move(data))
+        {}
+
+        const T& GetConst() const
+        {
+            return data_;
+        }
+
+        T& Get()
+        {
+            return data_;
+        }
+
+    private:
+        T data_;
     };
     
     class EventDispatcher
