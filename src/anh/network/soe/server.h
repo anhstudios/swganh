@@ -43,10 +43,7 @@
 namespace anh {
 
 class ByteBuffer;
-
-namespace event_dispatcher {
-class EventDispatcherInterface;
-}
+class EventDispatcher;
 
 namespace network {
 namespace soe {
@@ -65,7 +62,7 @@ typedef std::function<void (std::shared_ptr<Packet>)> MessageHandler;
  */
 class Server : public std::enable_shared_from_this<Server>, public ServerInterface {
 public:
-    Server(boost::asio::io_service& io_service, MessageHandler message_handler);
+    Server(boost::asio::io_service& io_service, anh::EventDispatcher* event_dispatcher, MessageHandler message_handler);
     ~Server(void);
 
     /**
@@ -80,9 +77,6 @@ public:
      */
     void Shutdown(void);
     
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
-    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
-
     void SendMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message);
     
     void HandleMessage(std::shared_ptr<Packet> packet);
@@ -111,7 +105,7 @@ private:
     boost::asio::io_service&	io_service_;
 
     SessionManager				session_manager_;
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
+    anh::EventDispatcher*       event_dispatcher_;
     uint32_t					crc_seed_;
     
     tbb::filter_t<void, void>   incoming_filter_;

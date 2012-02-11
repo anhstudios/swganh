@@ -4,7 +4,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include "anh/crc.h"
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/service/service_manager.h"
 #include "anh/database/database_manager.h"
 
@@ -84,7 +83,7 @@ public:
     {
         if (!movement_manager_)
         {
-            movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher());
+            movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher2());
         }
 
         return movement_manager_;

@@ -3,10 +3,9 @@
 
 #include <glog/logging.h>
 
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/event_dispatcher.h"
 
 #include "swganh/object/object.h"
-#include "swganh/object/object_event.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
 
@@ -24,9 +23,9 @@ using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::simulation;
 
-MovementManager::MovementManager(const shared_ptr<EventDispatcherInterface>& event_dispatcher)
+MovementManager::MovementManager(anh::EventDispatcher* event_dispatcher)
 {
-    RegisterEvents_(event_dispatcher);
+    RegisterEvents(event_dispatcher);
 }
 
 void MovementManager::HandleDataTransform(
@@ -129,32 +128,27 @@ void MovementManager::SendUpdateDataTransformWithParentMessage(const shared_ptr<
     object->NotifyObservers(transform_update);
 }
 
-void MovementManager::RegisterEvents_(const shared_ptr<EventDispatcherInterface>& event_dispatcher)
-{    
-    event_dispatcher->subscribe(
-        "ObjectReadyEvent", 
-        [this] (shared_ptr<EventInterface> incoming_event) -> bool 
+void MovementManager::RegisterEvents(anh::EventDispatcher* event_dispatcher)
+{
+    event_dispatcher->Subscribe(
+        "ObjectReadyEvent",
+        [this] (shared_ptr<anh::EventInterface> incoming_event)
     {
-        auto object_ready_event = static_pointer_cast<ObjectEvent>(incoming_event);
-        auto container = object_ready_event->object->GetContainer();
+        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
         
-        auto find_iter = counter_map_.find(object_ready_event->object->GetObjectId());
-
-        if (find_iter == counter_map_.end())
+        if (counter_map_.find(object->GetObjectId()) == counter_map_.end())
         {
-            counter_map_[object_ready_event->object->GetObjectId()] = 0;
+            counter_map_[object->GetObjectId()] = 0;
         }
 
-        if (container)
+        if (object->GetContainer())
         {
-            SendDataTransformWithParentMessage(object_ready_event->object);
+            SendDataTransformWithParentMessage(object);
         }
         else
         {
-            SendDataTransformMessage(object_ready_event->object);
+            SendDataTransformMessage(object);
         }
-
-        return true;
     });
 }
 

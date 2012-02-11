@@ -15,9 +15,7 @@ namespace database {
 
 namespace anh {
     class EventDispatcher;
-namespace event_dispatcher {
-    class EventDispatcherInterface; 
-}}  // namespace anh::event_dispatcher
+}  // namespace anh
 
 namespace anh {
 namespace plugin {
@@ -49,9 +47,7 @@ public:
     virtual const Version& GetVersion() = 0;
     
     virtual anh::EventDispatcher* GetEventDispatcher2() = 0;
-
-    virtual std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> GetEventDispatcher() = 0;
-
+    
     virtual std::shared_ptr<anh::plugin::PluginManager> GetPluginManager() = 0;
 
     virtual std::shared_ptr<anh::service::ServiceManager> GetServiceManager() = 0;

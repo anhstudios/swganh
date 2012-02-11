@@ -27,9 +27,8 @@ class ByteBuffer;
 }  // namespace anh
 
 namespace anh {
-namespace event_dispatcher {
-class EventDispatcherInterface;
-}}  // namesapce anh::event_dispatcher
+class EventDispatcher;
+}  // namesapce anh
 
 namespace anh {
 namespace network {
@@ -43,14 +42,14 @@ namespace base {
       
 class SwgMessageHandler {
 public:
-    explicit SwgMessageHandler(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    explicit SwgMessageHandler(anh::EventDispatcher* event_dispatcher);
 
     void operator() (std::shared_ptr<anh::network::soe::Packet> packet) const;
 
 private:
     SwgMessageHandler();
 
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
+    anh::EventDispatcher* event_dispatcher_;
 };
         
 }}  // namespace swganh::base
