@@ -32,7 +32,7 @@ namespace providers {
 
 class MysqlAccountProvider : public AccountProviderInterface {
 public:
-    explicit MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    explicit MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager);
     ~MysqlAccountProvider();
 
     virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
@@ -42,7 +42,7 @@ public:
 	virtual bool CreatePlayerAccount(uint64_t account_id);
 	
 private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
+    anh::database::DatabaseManagerInterface* db_manager_;
 };
 
 }}}  // namespace swganh::login::providers

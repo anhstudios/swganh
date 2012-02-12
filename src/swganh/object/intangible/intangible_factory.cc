@@ -22,7 +22,7 @@ using namespace swganh::object;
 using namespace swganh::object::intangible;
 using namespace swganh::simulation;
 
-IntangibleFactory::IntangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
                              SimulationService* simulation_service)
     : ObjectFactory(db_manager, simulation_service)
 {

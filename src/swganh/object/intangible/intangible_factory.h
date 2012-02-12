@@ -23,7 +23,7 @@ namespace intangible {
     class IntangibleFactory : public swganh::object::ObjectFactory
     {
     public:
-        IntangibleFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+        IntangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
             swganh::simulation::SimulationService* simulation_service);
         void LoadTemplates();
 

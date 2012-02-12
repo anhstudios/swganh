@@ -17,13 +17,13 @@ namespace smf_auth {
 class SmfEncoder : public swganh::login::encoders::EncoderInterface 
 {
 public:
-    SmfEncoder(const std::shared_ptr<anh::database::DatabaseManagerInterface>& database_manager);
+    SmfEncoder(anh::database::DatabaseManagerInterface* database_manager);
 
     std::string EncodePassword(std::string raw, std::string test);
     bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
     
 private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> database_manager_;
+    anh::database::DatabaseManagerInterface* database_manager_;
 };
 
 }}  // namespace plugins::smf_auth

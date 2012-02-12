@@ -48,13 +48,13 @@ public:
     
     virtual anh::EventDispatcher* GetEventDispatcher() = 0;
     
-    virtual std::shared_ptr<anh::plugin::PluginManager> GetPluginManager() = 0;
+    virtual anh::plugin::PluginManager* GetPluginManager() = 0;
 
-    virtual std::shared_ptr<anh::service::ServiceManager> GetServiceManager() = 0;
+    virtual anh::service::ServiceManager* GetServiceManager() = 0;
 
-    virtual std::shared_ptr<anh::service::ServiceDirectoryInterface> GetServiceDirectory() = 0;
+    virtual anh::service::ServiceDirectoryInterface* GetServiceDirectory() = 0;
 
-    virtual std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager() = 0;
+    virtual anh::database::DatabaseManagerInterface* GetDatabaseManager() = 0;
     
     virtual boost::asio::io_service& GetIoService() = 0;
 

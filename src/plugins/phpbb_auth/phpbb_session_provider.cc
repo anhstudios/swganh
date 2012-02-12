@@ -19,7 +19,7 @@ using namespace swganh::connection;
 
 
 PhpbbSessionProvider::PhpbbSessionProvider(
-    const shared_ptr<DatabaseManagerInterface>& database_manager,
+    DatabaseManagerInterface* database_manager,
     string table_prefix)
     : MysqlSessionProvider(database_manager)
     , database_manager_(database_manager)

@@ -20,7 +20,7 @@ using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
-ObjectFactory::ObjectFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
                              SimulationService* simulation_service)
     : db_manager_(db_manager)
     , simulation_service_(simulation_service)

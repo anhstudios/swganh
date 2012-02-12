@@ -34,7 +34,7 @@ using namespace swganh::login;
 using namespace encoders;
 using namespace std;
 
-Sha512Encoder::Sha512Encoder(shared_ptr<DatabaseManagerInterface> db_manager)
+Sha512Encoder::Sha512Encoder(DatabaseManagerInterface* db_manager)
     : db_manager_(db_manager) {}
 Sha512Encoder::~Sha512Encoder() {}
 

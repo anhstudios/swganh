@@ -36,7 +36,7 @@ using namespace swganh::galaxy;
 using namespace providers;
 using namespace std;
 
-MysqlGalaxyProvider::MysqlGalaxyProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+MysqlGalaxyProvider::MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager)
     : GalaxyProviderInterface()
     , db_manager_(db_manager) {}
 
