@@ -14,7 +14,7 @@ using namespace anh::database;
 using namespace plugins::smf_auth;
 using namespace std;
 
-SmfEncoder::SmfEncoder(const shared_ptr<DatabaseManagerInterface>& database_manager)
+SmfEncoder::SmfEncoder(DatabaseManagerInterface* database_manager)
 : database_manager_(database_manager)
 {
 }

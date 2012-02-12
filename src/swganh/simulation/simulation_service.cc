@@ -4,7 +4,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include "anh/crc.h"
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/service/service_manager.h"
 #include "anh/database/database_manager.h"
 

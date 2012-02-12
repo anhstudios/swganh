@@ -10,7 +10,6 @@
 #include <glog/logging.h>
 
 #include "anh/database/database_manager_interface.h"
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/datastore.h"
 #include "anh/service/service_manager.h"
@@ -175,13 +174,11 @@ void SwganhApp::Start() {
     auto timer = make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
 
     timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 10));
+}
 
-    do {
-        kernel_->GetEventDispatcher()->tick();
-
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
-    } while(IsRunning());
-        
+void SwganhApp::Stop() {
+    running_ = false;
+      
     kernel_->GetServiceManager()->Stop();
 
     // stop io handling    
@@ -191,10 +188,6 @@ void SwganhApp::Start() {
     for_each(io_threads_.begin(), io_threads_.end(), [] (shared_ptr<boost::thread> t) {
         t->join();
     });
-}
-
-void SwganhApp::Stop() {
-    running_ = false;
 }
 
 bool SwganhApp::IsRunning() {

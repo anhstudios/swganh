@@ -54,15 +54,15 @@ public:
 
     AppConfig& GetAppConfig();
 
-    std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager();
-
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> GetEventDispatcher();
-
-    std::shared_ptr<anh::plugin::PluginManager> GetPluginManager();
-
-    std::shared_ptr<anh::service::ServiceManager> GetServiceManager();
+    anh::database::DatabaseManagerInterface* GetDatabaseManager();
     
-    std::shared_ptr<anh::service::ServiceDirectoryInterface> GetServiceDirectory();
+    anh::EventDispatcher* GetEventDispatcher();
+
+    anh::plugin::PluginManager* GetPluginManager();
+
+    anh::service::ServiceManager* GetServiceManager();
+    
+    anh::service::ServiceDirectoryInterface* GetServiceDirectory();
     
     boost::asio::io_service& GetIoService();
 
@@ -70,11 +70,11 @@ private:
     anh::app::Version version_;
     swganh::app::AppConfig app_config_;
     
-    std::shared_ptr<anh::database::DatabaseManagerInterface> database_manager_;
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-    std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
-    std::shared_ptr<anh::service::ServiceManager> service_manager_;
-    std::shared_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
+    std::unique_ptr<anh::database::DatabaseManagerInterface> database_manager_;
+    std::unique_ptr<anh::EventDispatcher> event_dispatcher_;
+    std::unique_ptr<anh::plugin::PluginManager> plugin_manager_;
+    std::unique_ptr<anh::service::ServiceManager> service_manager_;
+    std::unique_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
 
     boost::asio::io_service io_service_;
 };
