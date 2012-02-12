@@ -52,7 +52,7 @@ public:
 
     virtual anh::service::ServiceManager* GetServiceManager() = 0;
 
-    virtual std::shared_ptr<anh::service::ServiceDirectoryInterface> GetServiceDirectory() = 0;
+    virtual anh::service::ServiceDirectoryInterface* GetServiceDirectory() = 0;
 
     virtual std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager() = 0;
     

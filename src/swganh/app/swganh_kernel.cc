@@ -79,18 +79,18 @@ ServiceManager* SwganhKernel::GetServiceManager() {
     return service_manager_.get();
 }
 
-shared_ptr<ServiceDirectoryInterface> SwganhKernel::GetServiceDirectory() {
+ServiceDirectoryInterface* SwganhKernel::GetServiceDirectory() {
     if (!service_directory_) {        
         auto data_store = make_shared<Datastore>(GetDatabaseManager()->getConnection("galaxy_manager"));
-        service_directory_ = make_shared<ServiceDirectory>(
+        service_directory_.reset(new ServiceDirectory(
             data_store, 
             GetEventDispatcher(),
             app_config_.galaxy_name, 
             GetVersion().ToString(),
-            true);
+            true));
     }
 
-    return service_directory_;
+    return service_directory_.get();
 }
 
 boost::asio::io_service& SwganhKernel::GetIoService() {
