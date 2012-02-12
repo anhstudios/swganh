@@ -143,7 +143,7 @@ void LoginService::subscribe() {
         "NetworkSessionRemoved", 
         [this] (const shared_ptr<anh::EventInterface>& incoming_event)
     {
-        auto session = static_pointer_cast<ValueEvent<shared_ptr<Session>>>(incoming_event)->GetConst();
+        const auto& session = static_pointer_cast<ValueEvent<shared_ptr<Session>>>(incoming_event)->Get();
         
         // Message was triggered from our server so process it.
         if (session->server() == soe_server_.get()) {

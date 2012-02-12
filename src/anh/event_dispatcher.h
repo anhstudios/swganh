@@ -63,7 +63,7 @@ namespace anh {
             , data_(move(data))
         {}
 
-        const T& GetConst() const
+        const T& Get() const
         {
             return data_;
         }
@@ -77,7 +77,18 @@ namespace anh {
         T data_;
     };
     
-    class EventDispatcher
+    class EventDispatcherInterface
+    {
+    public:
+        virtual ~EventDispatcherInterface() = 0 {}
+        
+        virtual CallbackId Subscribe(EventType type, EventHandlerCallback callback) = 0;
+        virtual void Unsubscribe(EventType type, CallbackId identifier) = 0;
+
+        virtual boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event) = 0;
+    };
+
+    class EventDispatcher : public EventDispatcherInterface
     {
     public:
         EventDispatcher(boost::asio::io_service& io_service);
