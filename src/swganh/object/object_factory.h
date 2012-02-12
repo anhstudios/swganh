@@ -28,7 +28,7 @@ namespace object {
     class ObjectFactory : public ObjectFactoryInterface
     {
     public:
-        ObjectFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+        ObjectFactory(anh::database::DatabaseManagerInterface* db_manager,
             swganh::simulation::SimulationService* simulation_service);
         virtual ~ObjectFactory() {}
         /**
@@ -59,7 +59,7 @@ namespace object {
         void LoadContainedObjects(const std::shared_ptr<Object>& object,
             const std::shared_ptr<sql::Statement>& statement);
 
-        std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;   
+        anh::database::DatabaseManagerInterface* db_manager_;   
         swganh::simulation::SimulationService* simulation_service_;
     };
 

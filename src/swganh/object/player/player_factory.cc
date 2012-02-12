@@ -26,7 +26,7 @@ using namespace swganh::simulation;
 
 uint32_t PlayerFactory::GetType() const { return Player::type; }
 
-PlayerFactory::PlayerFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+PlayerFactory::PlayerFactory(DatabaseManagerInterface* db_manager,
                              SimulationService* simulation_service)
     : ObjectFactory(db_manager, simulation_service)
 {
