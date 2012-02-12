@@ -58,7 +58,7 @@ namespace command {
 			const std::shared_ptr<swganh::object::Object>& target,
 			swganh::messages::controllers::CommandQueueEnqueue command);
 
-
+		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
 
     private:
 
@@ -120,11 +120,6 @@ namespace command {
             uint64_t,
             std::shared_ptr<boost::asio::deadline_timer>
         > CommandQueueTimerMap;
-
-        typedef std::map<
-            uint32_t,
-            CommandProperties
-        > CommandPropertiesMap;
 
         typedef std::map<
             uint32_t,

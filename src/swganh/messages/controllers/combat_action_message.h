@@ -36,7 +36,7 @@ public:
 	static uint32_t header() { return 0xCC; }
 
 	CombatActionMessage()
-		:defender_list(swganh::messages::containers::NetworkSortedVector<swganh::object::tangible::Defender>(25))
+		: defender_list(swganh::messages::containers::NetworkSortedVector<swganh::object::tangible::Defender>(25))
 	{}
     
 	uint32_t action_crc;

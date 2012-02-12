@@ -239,7 +239,7 @@ void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const sha
 
 void CommandService::onStart()
 {
-    LoadProperties();
+	LoadProperties();
 
     auto simulation_service = kernel()->GetServiceManager()
         ->GetService<SimulationService>("SimulationService");
@@ -263,6 +263,8 @@ void CommandService::onStart()
     {
         HandleCombatAction(controller, message);
     });
+
+	auto event_dispatcher = kernel()->GetEventDispatcher();
 }
 
 void CommandService::LoadProperties()

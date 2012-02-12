@@ -455,6 +455,7 @@ void SimulationService::UnregisterControllerHandler(uint32_t handler_id)
 
 void SimulationService::onStart()
 {
+	LOG(WARNING) << "SIMULATION SERVICE START";
     auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
         
     connection_service->RegisterMessageHandler<SelectCharacter>([=] (

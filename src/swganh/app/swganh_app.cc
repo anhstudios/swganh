@@ -25,6 +25,7 @@
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
 #include "swganh/galaxy/galaxy_service.h"
+#include "swganh/combat/combat_service.h"
 
 
 using namespace anh;
@@ -38,6 +39,7 @@ using namespace swganh::command;
 using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::connection;
+using namespace swganh::combat;
 using namespace swganh::simulation;
 using namespace swganh::galaxy;
 
@@ -301,9 +303,14 @@ void SwganhApp::LoadCoreServices_()
 		command_service->AddCommandProcessFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 		command_service->AddCommandProcessFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
+		// These will be loaded in alphabetical order because of how std::map generates its keys
 		kernel_->GetServiceManager()->AddService(
             "CommandService", 
             command_service);
+
+		kernel_->GetServiceManager()->AddService(
+			"CombatService",
+			make_shared<CombatService>(kernel_.get()));
 		
 		kernel_->GetServiceManager()->AddService(
             "CharacterService", 
@@ -317,6 +324,7 @@ void SwganhApp::LoadCoreServices_()
 		simulation_service->StartScene("corellia");
 
 		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
+
 	}
 	// always need a galaxy service running
 	auto galaxy_service = make_shared<GalaxyService>(kernel_.get());

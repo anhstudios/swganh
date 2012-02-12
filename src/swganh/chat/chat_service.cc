@@ -121,6 +121,7 @@ void ChatService::SendSpatialChat(
 
 void ChatService::onStart()
 {
+	LOG(WARNING) << "CHAT SERVICE START";
     //auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
     //
     //command_service->AddCommandHandler(0x7C8D63D4,

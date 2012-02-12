@@ -4,11 +4,12 @@
 
 #include <cstdint>
 #include <string>
+#include <map>
 
 namespace swganh {
 namespace command {
 
-    struct CommandProperties
+	struct CommandProperties
     {
         std::string name;
         uint32_t name_crc;
@@ -50,6 +51,11 @@ namespace command {
         float cone_angle;
         uint64_t deny_in_locomotion;
     };
+
+	typedef std::map<
+		uint32_t,
+		CommandProperties
+	> CommandPropertiesMap;
 
 }}  // namespace swganh::command
 
