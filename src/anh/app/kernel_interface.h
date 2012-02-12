@@ -50,7 +50,7 @@ public:
     
     virtual anh::plugin::PluginManager* GetPluginManager() = 0;
 
-    virtual std::shared_ptr<anh::service::ServiceManager> GetServiceManager() = 0;
+    virtual anh::service::ServiceManager* GetServiceManager() = 0;
 
     virtual std::shared_ptr<anh::service::ServiceDirectoryInterface> GetServiceDirectory() = 0;
 

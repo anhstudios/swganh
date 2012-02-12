@@ -71,12 +71,12 @@ PluginManager* SwganhKernel::GetPluginManager() {
     return plugin_manager_.get();
 }
 
-shared_ptr<ServiceManager> SwganhKernel::GetServiceManager() {
+ServiceManager* SwganhKernel::GetServiceManager() {
     if (!service_manager_) {        
-        service_manager_ = make_shared<ServiceManager>(GetServiceDirectory());
+        service_manager_.reset(new ServiceManager(GetServiceDirectory()));
     }
 
-    return service_manager_;
+    return service_manager_.get();
 }
 
 shared_ptr<ServiceDirectoryInterface> SwganhKernel::GetServiceDirectory() {
