@@ -37,7 +37,7 @@ using namespace swganh::connection;
 using namespace providers;
 using namespace std;
 
-MysqlSessionProvider::MysqlSessionProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+MysqlSessionProvider::MysqlSessionProvider(anh::database::DatabaseManagerInterface* db_manager)
     : SessionProviderInterface()
     , db_manager_(db_manager) {}
 

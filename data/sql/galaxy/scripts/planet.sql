@@ -1,19 +1,9 @@
-# --------------------------------------------------------
-# Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
-# Server OS:                    Win32
-# HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-16 19:39:53
-# --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-use galaxy;
-
-# Dumping structure for table galaxy.planet
 CREATE TABLE IF NOT EXISTS `planet` (
   `planet_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -21,8 +11,8 @@ CREATE TABLE IF NOT EXISTS `planet` (
   PRIMARY KEY (`planet_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
-# Dumping data for table galaxy.planet: ~44 rows (approximately)
 DELETE FROM `planet`;
+    
 /*!40000 ALTER TABLE `planet` DISABLE KEYS */;
 INSERT INTO `planet` (`planet_id`, `name`, `terrainMap`) VALUES
 	(0, 'corellia', 'terrain/corellia.trn'),
@@ -70,6 +60,7 @@ INSERT INTO `planet` (`planet_id`, `name`, `terrainMap`) VALUES
 	(42, 'taanab', 'terrain/taanab.trn'),
 	(43, 'dagobah', 'terrain/dagobah.trn');
 /*!40000 ALTER TABLE `planet` ENABLE KEYS */;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

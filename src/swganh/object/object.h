@@ -22,6 +22,7 @@
 #include "swganh/messages/base_baselines_message.h"
 #include "swganh/messages/baselines_message.h"
 #include "swganh/messages/deltas_message.h"
+#include "swganh/messages/obj_controller_message.h"
 
 #include "swganh/object/object_controller.h"
 
@@ -217,6 +218,8 @@ public:
     template<typename T>
     void NotifyObservers(const T& message)
     {
+	    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+
         std::for_each(
             observers_.begin(),
             observers_.end(),
@@ -227,7 +230,7 @@ public:
     }
 
     void NotifyObservers(const anh::ByteBuffer& message);
-
+    
     /**
      * Returns whether or not the object has been modified since the last reliable
      * update was sent out.
@@ -283,6 +286,11 @@ public:
      * @param position The updated position.
      */
     void SetPosition(glm::vec3 position);
+
+	/**
+	* @return bool if the object is in range
+	*/
+	bool InRange(glm::vec3 target, float range);
 
     /**
      * @return The object orientation as a quaternion.

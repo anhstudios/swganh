@@ -28,8 +28,7 @@
 
 #include "anh/database/database_manager.h"
 
-#include "anh/event_dispatcher/basic_event.h"
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/event_dispatcher.h"
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
@@ -56,6 +55,7 @@ using namespace anh;
 using namespace app;
 using namespace swganh::login;
 using namespace messages;
+using namespace network::soe;
 using namespace swganh::login;
 using namespace swganh::base;
 using namespace swganh::character;
@@ -79,10 +79,10 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, KernelIn
     , listen_port_(listen_port)
      {
     
-    soe_server_.reset(new anh::network::soe::Server(
+    soe_server_.reset(new Server(
         kernel->GetIoService(),
+        kernel->GetEventDispatcher(),
         bind(&LoginService::RouteMessage, this, placeholders::_1)));
-    soe_server_->event_dispatcher(kernel->GetEventDispatcher());
     
     account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
     if (!account_provider_) 
@@ -132,20 +132,23 @@ void LoginService::subscribe() {
     RegisterMessageHandler<LoginClientId>(
         bind(&LoginService::HandleLoginClientId_, this, placeholders::_1, placeholders::_2), false);
 
-    event_dispatcher->subscribe("UpdateGalaxyStatus", [this] (shared_ptr<EventInterface> incoming_event) -> bool{
+    event_dispatcher->Subscribe(
+        "UpdateGalaxyStatus", 
+        [this] (const shared_ptr<anh::EventInterface>& incoming_event) 
+    {
         UpdateGalaxyStatus_();
-        return true;
     });
     
-    event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
-        auto session_removed = static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
+    event_dispatcher->Subscribe(
+        "NetworkSessionRemoved", 
+        [this] (const shared_ptr<anh::EventInterface>& incoming_event)
+    {
+        const auto& session = static_pointer_cast<ValueEvent<shared_ptr<Session>>>(incoming_event)->Get();
         
         // Message was triggered from our server so process it.
-        if (session_removed->session->server() == soe_server_.get()) {
-            RemoveClient_(session_removed->session);
+        if (session->server() == soe_server_.get()) {
+            RemoveClient_(session);
         }
-
-        return true;
     });
 }
 

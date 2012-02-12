@@ -47,6 +47,8 @@ namespace object {
 
         ~ObjectController();
 
+        uint64_t GetId() const;
+
         /**
          * @return Handle to the object this controller manages.
          */
@@ -72,6 +74,8 @@ namespace object {
          * @param message The message to be delivered to the remote client.
          */
         void Notify(const anh::ByteBuffer& message);
+        
+        void Notify(const swganh::messages::ObjControllerMessage& message);
 
     private:
         ObjectController();

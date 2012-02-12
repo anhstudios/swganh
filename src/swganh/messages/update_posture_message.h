@@ -23,29 +23,26 @@
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
-#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
 namespace messages {
-    
-struct UpdatePostureMessage : public swganh::messages::BaseSwgMessage<UpdatePostureMessage> {
-    static uint16_t opcount() { return 3; }
-    static uint32_t opcode() { return 0x0BDE6B41; }
+namespace controllers {
+class UpdatePostureMessage {
+public:
+    static uint32_t header() { return 0x131; }
     
     uint8_t posture_id;
-    uint64_t object_id;
     
-    void onSerialize(anh::ByteBuffer& buffer) const {
+    void Serialize(anh::ByteBuffer& buffer) const {
         buffer.write(posture_id);
-        buffer.write(object_id);
+		buffer.write<uint8_t>(1);
     }
 
-    void onDeserialize(anh::ByteBuffer buffer) {
+    void Deserialize(anh::ByteBuffer buffer) {
         posture_id = buffer.read<uint8_t>();
-        object_id = buffer.read<uint64_t>();
     }
 };
 
-}}  // namespace swganh::messages
+}}}  // namespace swganh::messages::controllers
 
 #endif  // SWGANH_MESSAGES_UPDATE_POSTURE_MESSAGE_H_

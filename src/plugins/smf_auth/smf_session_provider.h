@@ -13,7 +13,7 @@ namespace smf_auth {
 class SmfSessionProvider : public swganh::connection::providers::MysqlSessionProvider 
 {
 public:
-    SmfSessionProvider(const std::shared_ptr<anh::database::DatabaseManagerInterface>& database_manager,
+    SmfSessionProvider(anh::database::DatabaseManagerInterface* database_manager,
         std::string table_prefix);
 
     uint64_t GetPlayerId(uint32_t account_id);
@@ -22,7 +22,7 @@ private:
     bool CreatePlayerAccount_(uint64_t account_id);
     uint64_t FindPlayerByReferenceId_(uint64_t account_id);
 
-    std::shared_ptr<anh::database::DatabaseManagerInterface> database_manager_;
+    anh::database::DatabaseManagerInterface* database_manager_;
     std::string table_prefix_;
 };
 
