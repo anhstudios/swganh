@@ -63,12 +63,12 @@ anh::EventDispatcher* SwganhKernel::GetEventDispatcher() {
     return event_dispatcher_.get();
 }
 
-shared_ptr<PluginManager> SwganhKernel::GetPluginManager() {
+PluginManager* SwganhKernel::GetPluginManager() {
     if (!plugin_manager_) {
-        plugin_manager_ = make_shared<PluginManager>(this);
+        plugin_manager_.reset(new PluginManager(this));
     }
 
-    return plugin_manager_;
+    return plugin_manager_.get();
 }
 
 shared_ptr<ServiceManager> SwganhKernel::GetServiceManager() {

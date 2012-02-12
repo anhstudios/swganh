@@ -48,7 +48,7 @@ public:
     
     virtual anh::EventDispatcher* GetEventDispatcher() = 0;
     
-    virtual std::shared_ptr<anh::plugin::PluginManager> GetPluginManager() = 0;
+    virtual anh::plugin::PluginManager* GetPluginManager() = 0;
 
     virtual std::shared_ptr<anh::service::ServiceManager> GetServiceManager() = 0;
 
