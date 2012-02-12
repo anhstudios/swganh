@@ -6,8 +6,7 @@
 #include <glog/logging.h>
 
 #include "anh/crc.h"
-#include "anh/event_dispatcher/basic_event.h"
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/event_dispatcher.h"
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/server.h"
 #include "anh/plugin/plugin_manager.h"
@@ -21,14 +20,13 @@
 #include "swganh/connection/providers/mysql_session_provider.h"
 
 #include "swganh/object/object.h"
-#include "swganh/object/object_event.h"
 #include "swganh/object/player/player.h"
 
 #include "swganh/messages/logout_message.h"
 
 using namespace anh::app;
 using namespace anh::event_dispatcher;
-using namespace anh::network;
+using namespace anh::network::soe;
 using namespace anh::service;
 using namespace swganh::base;
 using namespace swganh::character;
@@ -39,6 +37,8 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 using namespace std;
+
+using anh::ValueEvent;
 
 using boost::asio::ip::udp;
 
@@ -60,10 +60,10 @@ ConnectionService::ConnectionService(
     , ping_port_(ping_port)
     , soe_server_(nullptr)
 {
-    soe_server_.reset(new soe::Server(
+    soe_server_.reset(new Server(
         kernel->GetIoService(),
+        kernel->GetEventDispatcher(),
         bind(&ConnectionService::RouteMessage, this, placeholders::_1)));
-    soe_server_->event_dispatcher(kernel->GetEventDispatcher());
         
     session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
     if (!session_provider_) 
@@ -94,15 +94,15 @@ void ConnectionService::subscribe() {
     RegisterMessageHandler<CmdSceneReady>(
         bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
 
-    event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
-        auto session_removed = std::static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
+    event_dispatcher->Subscribe("NetworkSessionRemoved", 
+        [this] (const shared_ptr<anh::EventInterface>& incoming_event) 
+    {
+        const auto& session = static_pointer_cast<ValueEvent<shared_ptr<Session>>>(incoming_event)->Get();
         
         // Message was triggered from our server so process it.
-        if (session_removed->session->server() == server().get()) {
-            RemoveClient_(session_removed->session);
+        if (session->server() == server().get()) {
+            RemoveClient_(session);
         }
-
-        return true;
     });
 }
 
@@ -241,11 +241,8 @@ void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> c
 
     auto object = client->GetController()->GetObject();
 
-    ObjectData object_ready_event_data;
-    object_ready_event_data.object = object;
-
-    kernel()->GetEventDispatcher()->triggerAsync(
-        make_shared_event("ObjectReadyEvent", move(object_ready_event_data)));
+    kernel()->GetEventDispatcher()->Dispatch(
+        make_shared<ValueEvent<shared_ptr<Object>>>("ObjectReadyEvent", object));
 }
 
 void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const ClientIdMsg& message) {

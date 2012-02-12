@@ -23,8 +23,6 @@
 #include <boost/python.hpp>
 #include <glog/logging.h>
 
-#include <anh/event_dispatcher/event_dispatcher.h>
-
 using namespace std;
 using namespace anh::scripting;
 using namespace boost::python;

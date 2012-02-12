@@ -39,8 +39,6 @@ public:
 
     virtual void HandleMessage(std::shared_ptr<Packet> packet) = 0;
     
-    virtual std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher() = 0;
-    
     virtual bool AddSession(std::shared_ptr<Session> session) = 0;
 
     virtual bool RemoveSession(std::shared_ptr<Session> session) = 0;
