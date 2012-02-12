@@ -6,7 +6,7 @@
 #include <cppconn/driver.h>
 
 #include "anh/database/database_manager.h"
-#include "anh/event_dispatcher/event_dispatcher.h"
+#include "anh/event_dispatcher.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/datastore.h"
 #include "anh/service/service_directory.h"
@@ -20,8 +20,6 @@ using namespace swganh::app;
 using anh::app::Version;
 using anh::database::DatabaseManagerInterface;
 using anh::database::DatabaseManager;
-using anh::event_dispatcher::EventDispatcherInterface;
-using anh::event_dispatcher::EventDispatcher;
 using anh::plugin::PluginManager;
 using anh::service::ServiceManager;
 
@@ -32,7 +30,6 @@ SwganhKernel::SwganhKernel() {
     version_.major = VERSION_MAJOR;
     version_.minor = VERSION_MINOR;
 
-    event_dispatcher_ = nullptr;
     plugin_manager_ = nullptr;
     service_manager_ = nullptr;
 }
@@ -58,12 +55,12 @@ shared_ptr<DatabaseManagerInterface> SwganhKernel::GetDatabaseManager() {
     return database_manager_;
 }
 
-shared_ptr<EventDispatcherInterface> SwganhKernel::GetEventDispatcher() {
+anh::EventDispatcher* SwganhKernel::GetEventDispatcher() {
     if (!event_dispatcher_) {
-        event_dispatcher_ = make_shared<EventDispatcher>();
+        event_dispatcher_.reset(new anh::EventDispatcher(GetIoService()));
     }
 
-    return event_dispatcher_;
+    return event_dispatcher_.get();
 }
 
 shared_ptr<PluginManager> SwganhKernel::GetPluginManager() {

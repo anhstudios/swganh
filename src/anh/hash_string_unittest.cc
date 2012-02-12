@@ -41,13 +41,6 @@ TEST(HashStringTest, CreatingEventTypeFromStringGeneratesUniqueIdentifier) {
     EXPECT_EQ(uint32_t(0x107D0089), hash_string.ident()) << "HashString did not create the expected identifier";
 }
 
-/// This test shows how to get the string value back from the hash.
-TEST(HashStringTest, CanRetrieveStringNameBackFromHashString) {
-    HashString hash_string("test_hash_string");
-    
-    EXPECT_EQ("test_hash_string", hash_string.ident_string()) << "HashString did not store the string identifier correctly";
-}
-
 /// This test shows how to compare two hash strings.
 TEST(HashStringTest, CanCompareTwoHashStrings) {
     HashString hash_string1("test_string1");
@@ -56,16 +49,6 @@ TEST(HashStringTest, CanCompareTwoHashStrings) {
 
     EXPECT_TRUE(hash_string1 != hash_string2) << "hash_string1 and hash_string2 should not match."; 
     EXPECT_TRUE(hash_string2 == hash_string3) << "hash_string2 and hash_string3 should match";
-}
-
-/// This test shows how to compare two hash strings.
-TEST(HashStringTest, CanCompareHashStringAndCharStar) {
-    HashString hash_string1("test_string1");
-    HashString hash_string2("another_hash_string");
-    const char* char_ = "another_hash_string";
-
-    EXPECT_TRUE(hash_string1 != hash_string2) << "hash_string1 and hash_string2 should not match."; 
-    EXPECT_TRUE(hash_string2 == char_) << "hash_string2 and hash_string3 should match";
 }
 
 /// This test shows how to use HashString as a key in std containers.
