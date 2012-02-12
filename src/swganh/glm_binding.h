@@ -29,7 +29,7 @@
 using namespace boost::python;
 using namespace std;
 
-struct Vec3Wrapper: glm::vec3, wrapper<glm::vec3>
+struct Vec3Wrapper: glm::vec3, wrapper<glm::detail::tvec3<float>>
 {
 };
 
@@ -42,7 +42,7 @@ void exportVec3()
 		;
 };
 
-struct QuatWrapper: glm::quat, wrapper<glm::quat>
+struct QuatWrapper: glm::quat, wrapper<glm::detail::tquat<float>>
 {
 };
 

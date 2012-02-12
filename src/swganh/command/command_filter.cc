@@ -10,7 +10,6 @@ using namespace swganh::object::creature;
 using namespace swganh::messages::controllers;
 using namespace std;
 
-
 tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(
 		const shared_ptr<Creature>& actor, 
 		const shared_ptr<Object>& target, 
@@ -25,7 +24,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(
 	// if (actor->CanAttack(target))
 	//{
 	// range check
-		if (actor->InRange(target->GetPosition(), command_properties.max_range_to_target))
+		if (command_properties.max_range_to_target <= 0.0f || actor->InRange(target->GetPosition(), command_properties.max_range_to_target))
 		{
 			check_passed = true;
 		}

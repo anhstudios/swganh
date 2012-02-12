@@ -21,6 +21,7 @@
 
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 #include "swganh/messages/controllers/command_queue_remove.h"
+#include "swganh/messages/controllers/combat_action_message.h"
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
@@ -96,10 +97,7 @@ void CommandService::EnqueueCommand(
         command_queue_timers_[object_id] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
     }
 
-    /*if (command_queue_timers_[object_id]->expires_at() > boost::posix_time::second_clock::universal_time())
-    {*/
-        ProcessNextCommand(actor);
-    //}
+	ProcessNextCommand(actor);
 }
 
 void CommandService::HandleCommandQueueEnqueue(
@@ -128,6 +126,7 @@ void CommandService::HandleCommandQueueEnqueue(
     if (cooldown_find_iter != cooldown_timers_[actor->GetObjectId()].end())
     {
         LOG(WARNING) << "Cooldown timer still running";
+		SendCommandQueueRemove(actor, enqueue, 0.0f, 0, 0);
         return;
     }
     
@@ -145,6 +144,37 @@ void CommandService::HandleCommandQueueRemove(
     const shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
 {}
+
+void CommandService::HandleCombatAction(
+	const std::shared_ptr<swganh::object::ObjectController>& controller, 
+	const swganh::messages::ObjControllerMessage& message)
+{
+	auto actor = dynamic_pointer_cast<Creature>(controller->GetObject());
+	auto simulation_service = kernel()->GetServiceManager()
+        ->GetService<SimulationService>("SimulationService");
+
+	auto target = dynamic_pointer_cast<Creature>(simulation_service->GetObjectById(actor->GetTargetId()));
+
+	CombatActionMessage incoming;
+	incoming.Deserialize(message.data);
+
+	uint64_t weapon_id = actor->GetWeaponId();
+
+	CombatActionMessage cam;
+	cam.attacker_id = actor->GetObjectId();
+	cam.action_crc = incoming.action_crc;
+	cam.weapon_id = weapon_id;
+	cam.attacker_end_posture = actor->GetPosture();
+	cam.trails_bit_flag = incoming.trails_bit_flag;
+	cam.combat_special_move_effect = incoming.combat_special_move_effect;
+	if (target)
+	{
+		swganh::object::tangible::Defender def;
+		def.object_id = target->GetObjectId();
+		cam.defender_list.Add(def);
+	}
+	actor->GetController()->Notify(ObjControllerMessage(0x0000001B, cam));
+}
 
 void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
 {
@@ -226,6 +256,12 @@ void CommandService::onStart()
         const swganh::messages::ObjControllerMessage& message) 
     {
         HandleCommandQueueRemove(controller, message);
+    });
+	simulation_service->RegisterControllerHandler(0x0000001B, [this] (
+        const std::shared_ptr<ObjectController>& controller, 
+        const swganh::messages::ObjControllerMessage& message) 
+    {
+        HandleCombatAction(controller, message);
     });
 }
 
@@ -351,6 +387,5 @@ void CommandService::SendCommandQueueRemove(
     remove.error = error;
     remove.action = action;
 
-	//actor->GetController()->Notify(remove);
-    actor->GetController()->Notify(ObjControllerMessage(0x0000000B, remove));
+	actor->GetController()->Notify(ObjControllerMessage(0x0000000B, remove));
 }

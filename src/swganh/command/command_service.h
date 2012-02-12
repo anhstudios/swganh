@@ -92,6 +92,10 @@ namespace command {
         void HandleCommandQueueRemove(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
             const swganh::messages::ObjControllerMessage& message);
+
+		void HandleCombatAction(
+			const std::shared_ptr<swganh::object::ObjectController>& controller, 
+            const swganh::messages::ObjControllerMessage& message);
                 
         void ProcessNextCommand(
 			const std::shared_ptr<swganh::object::creature::Creature>& actor);

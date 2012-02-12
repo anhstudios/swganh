@@ -3,6 +3,7 @@ bin/*
 build*/
 vendor/*
 swgtk/
+docs/*
 
 # ignore configuration files
 data/sql/setup.cg

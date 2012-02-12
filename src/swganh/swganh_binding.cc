@@ -30,10 +30,20 @@ void exportTangible();
 void exportCreature();
 void exportPlayer();
 
+void exportVec3();
+void exportQuat();
+
+void exportCombatActionMessage();
+
 BOOST_PYTHON_MODULE(swganh_binding) {
-	
+	docstring_options local_docstring_options(true, true, false);
+
 	exportObject();
 	exportTangible();
 	exportCreature();
 	exportPlayer();
+	exportVec3();
+	exportQuat();
+
+	exportCombatActionMessage();
 }
