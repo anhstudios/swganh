@@ -47,12 +47,12 @@ AppConfig& SwganhKernel::GetAppConfig() {
     return app_config_;
 }
 
-shared_ptr<DatabaseManagerInterface> SwganhKernel::GetDatabaseManager() {
+DatabaseManagerInterface* SwganhKernel::GetDatabaseManager() {
     if (!database_manager_) {
-        database_manager_ = make_shared<DatabaseManager>(sql::mysql::get_driver_instance());
+        database_manager_.reset(new DatabaseManager(sql::mysql::get_driver_instance()));
     }
 
-    return database_manager_;
+    return database_manager_.get();
 }
 
 anh::EventDispatcher* SwganhKernel::GetEventDispatcher() {

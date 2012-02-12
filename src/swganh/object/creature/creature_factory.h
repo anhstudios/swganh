@@ -27,7 +27,7 @@ namespace creature {
     class CreatureFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
-        CreatureFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+        CreatureFactory(anh::database::DatabaseManagerInterface* db_manager,
             swganh::simulation::SimulationService* simulation_service);
 
         void LoadTemplates();

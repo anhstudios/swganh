@@ -16,7 +16,7 @@ using namespace std;
 using namespace swganh::login;
 
 PhpbbAccountProvider::PhpbbAccountProvider(
-    const shared_ptr<DatabaseManagerInterface>& database_manager,
+    DatabaseManagerInterface* database_manager,
     string table_prefix)
     : MysqlAccountProvider(database_manager)
     , database_manager_(database_manager)

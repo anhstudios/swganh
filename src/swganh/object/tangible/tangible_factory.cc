@@ -23,8 +23,9 @@ using namespace swganh::simulation;
 
 uint32_t TangibleFactory::GetType() const { return Tangible::type; }
 
- TangibleFactory::TangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
-                             SimulationService* simulation_service)
+ TangibleFactory::TangibleFactory(
+    DatabaseManagerInterface* db_manager,
+    SimulationService* simulation_service)
     : ObjectFactory(db_manager, simulation_service)
 {
 }

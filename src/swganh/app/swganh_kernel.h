@@ -54,7 +54,7 @@ public:
 
     AppConfig& GetAppConfig();
 
-    std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager();
+    anh::database::DatabaseManagerInterface* GetDatabaseManager();
     
     anh::EventDispatcher* GetEventDispatcher();
 
@@ -70,7 +70,7 @@ private:
     anh::app::Version version_;
     swganh::app::AppConfig app_config_;
     
-    std::shared_ptr<anh::database::DatabaseManagerInterface> database_manager_;
+    std::unique_ptr<anh::database::DatabaseManagerInterface> database_manager_;
     std::unique_ptr<anh::EventDispatcher> event_dispatcher_;
     std::unique_ptr<anh::plugin::PluginManager> plugin_manager_;
     std::unique_ptr<anh::service::ServiceManager> service_manager_;
