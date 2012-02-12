@@ -188,7 +188,7 @@ std::wstring CharacterService::GetRandomNameRequest(const std::string& base_mode
     try {
         auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("SELECT sf_CharacterNameCreate(?);")
+            conn->prepareStatement("CALL sp_CharacterNameCreate(?);")
             );
         statement->setString(1, base_model);
         auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
@@ -249,8 +249,8 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
 
         auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
 
-        auto statement = conn->prepareStatement(
-            "CALL sp_CharacterCreate(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        std::unique_ptr<sql::PreparedStatement> statement(conn->prepareStatement(
+            "CALL sp_CharacterCreate(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @output)"));
 
         DLOG(WARNING) << "Creating character with location " << account_id;
 
@@ -267,7 +267,11 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         statement->setString(11, character_info.hair_object);
         statement->setString(12, character_info.hair_customization);
         statement->setString(13, character_info.player_race_iff);
-        
+
+        statement->execute();        
+
+        statement.reset(conn->prepareStatement("SELECT @output as _object_id"));
+
         auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {

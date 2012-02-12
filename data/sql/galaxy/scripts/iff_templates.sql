@@ -1,29 +1,19 @@
-# --------------------------------------------------------
-# Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
-# Server OS:                    Win32
-# HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-10-16 19:39:50
-# --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-use galaxy;
-
-# Dumping structure for table galaxy.iff_templates
 CREATE TABLE IF NOT EXISTS `iff_templates` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `iff_template` varchar(255) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `iff_template` (`iff_template`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15856 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15856 DEFAULT CHARSET=latin1;
 
-# Dumping data for table galaxy.iff_templates: ~15,641 rows (approximately)
 DELETE FROM `iff_templates`;
+    
 /*!40000 ALTER TABLE `iff_templates` DISABLE KEYS */;
 INSERT INTO `iff_templates` (`id`, `iff_template`) VALUES
 	(2, 'object/battlefield_marker/shared_battlefield_marker.iff'),
@@ -15882,6 +15872,7 @@ INSERT INTO `iff_templates` (`id`, `iff_template`) VALUES
 	(15854, 'object/weapon/ranged/vehicle/shared_vehicle_atst_ranged.iff'),
 	(15855, 'object/weapon/trap/shared_eqp_weapon_auto_laser_trap.iff');
 /*!40000 ALTER TABLE `iff_templates` ENABLE KEYS */;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

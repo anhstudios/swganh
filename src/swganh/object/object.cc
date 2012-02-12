@@ -387,6 +387,14 @@ glm::vec3 Object::GetPosition()
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	return position_;
 }
+bool Object::InRange(glm::vec3 target, float range)
+{
+	if (glm::distance(GetPosition(), target) > range)
+	{
+		return false;
+	}
+	return true;
+}
 void Object::SetOrientation(glm::quat orientation)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);

@@ -39,7 +39,7 @@ using namespace providers;
 using namespace swganh::login;
 using namespace std;
 
-MysqlAccountProvider::MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+MysqlAccountProvider::MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager)
     : AccountProviderInterface()
     , db_manager_(db_manager) {}
 

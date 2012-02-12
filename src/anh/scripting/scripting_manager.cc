@@ -17,13 +17,11 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "scripting_manager.h"
-#include <anh/event_dispatcher/event_dispatcher.h>
 
 #include <iostream>
 #include <fstream>
 #include <boost/python.hpp>
 #include <glog/logging.h>
-
 
 using namespace std;
 using namespace anh::scripting;

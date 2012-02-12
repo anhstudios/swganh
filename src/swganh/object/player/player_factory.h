@@ -27,7 +27,7 @@ namespace player {
     class PlayerFactory : public swganh::object::ObjectFactory
     {
     public:
-        PlayerFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+        PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
             swganh::simulation::SimulationService* simulation_service);
 
         void LoadTemplates();

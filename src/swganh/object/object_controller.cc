@@ -23,6 +23,16 @@ ObjectController::~ObjectController()
     object_->ClearController();
 }
 
+uint64_t ObjectController::GetId() const
+{
+    if (!object_)
+    {
+        return 0;
+    }
+
+    return object_->GetObjectId();
+}
+
 shared_ptr<Object> ObjectController::GetObject() const
 {
     return object_;
@@ -41,4 +51,13 @@ void ObjectController::SetRemoteClient(shared_ptr<RemoteClient> remote_client)
 void ObjectController::Notify(const anh::ByteBuffer& message)
 {
     client_->Send(message);
+}
+
+void ObjectController::Notify(const ObjControllerMessage& message)
+{
+    ObjControllerMessage tmp = message;
+    
+    tmp.object_id = object_->GetObjectId();
+    
+    ObserverInterface::Notify(tmp);
 }

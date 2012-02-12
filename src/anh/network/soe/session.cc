@@ -24,9 +24,6 @@
 
 #include <glog/logging.h>
 
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
-#include "anh/event_dispatcher/basic_event.h"
-
 #include "anh/network/soe/socket.h"
 #include "anh/network/soe/session_manager.h"
 #include "anh/network/soe/server_interface.h"
@@ -286,7 +283,7 @@ void Session::handleChildDataA_(ChildDataA& packet)
 
     std::for_each(packet.messages.begin(), packet.messages.end(), [this] (shared_ptr<ByteBuffer> message) {
         try {
-            auto packet = make_shared<Packet>(shared_from_this(), message);
+            auto packet = make_shared<Packet>(this->shared_from_this(), message);
 
             this->server_->HandleMessage(packet);
         } catch(...) {

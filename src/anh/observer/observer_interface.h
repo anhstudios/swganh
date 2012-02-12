@@ -21,6 +21,8 @@ namespace observer {
             Notify(buffer);
         }
 
+        virtual uint64_t GetId() const = 0;
+
         /**
          * Notifies observer that the observable object has changed state.
          *

@@ -23,7 +23,7 @@ using namespace swganh::object::creature;
 using namespace swganh::simulation;
 
 
-CreatureFactory::CreatureFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+CreatureFactory::CreatureFactory(DatabaseManagerInterface* db_manager,
                              SimulationService* simulation_service)
     : TangibleFactory(db_manager, simulation_service)
 {

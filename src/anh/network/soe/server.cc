@@ -23,8 +23,7 @@
 #include <boost/pool/pool_alloc.hpp>
 
 #include "anh/byte_buffer.h"
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
-#include "anh/event_dispatcher/basic_event.h"
+#include "anh/event_dispatcher.h"
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
@@ -47,9 +46,9 @@ using namespace filters;
 using namespace std;
 using namespace tbb;
 
-Server::Server(boost::asio::io_service& io_service, MessageHandler message_handler)
+Server::Server(boost::asio::io_service& io_service, EventDispatcher* event_dispatcher, MessageHandler message_handler)
     : io_service_(io_service) 
-    , event_dispatcher_(nullptr)
+    , event_dispatcher_(event_dispatcher)
     , crc_seed_(0xDEADBABE)
     , active_(io_service)
     , message_handler_(message_handler)
@@ -114,20 +113,9 @@ void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::
     incoming_messages_.push(make_shared<Packet>(session, message));
 }
 
-std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> Server::event_dispatcher() {
-    return event_dispatcher_;
-}
-
-void Server::event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher) {
-    event_dispatcher_ = event_dispatcher;
-}
-
 bool Server::AddSession(std::shared_ptr<Session> session) {
     if (session_manager_.AddSession(session)) {
-        SessionData event_data;
-        event_data.session = session;
-
-        event_dispatcher_->triggerAsync(anh::event_dispatcher::make_shared_event("NetworkSessionAdded", event_data));
+        event_dispatcher_->Dispatch(make_shared<ValueEvent<shared_ptr<Session>>>("NetworkSessionAdded", session));
         return true;
     }
 
@@ -136,10 +124,7 @@ bool Server::AddSession(std::shared_ptr<Session> session) {
 
 bool Server::RemoveSession(std::shared_ptr<Session> session) {
     if (session_manager_.RemoveSession(session)) {
-        SessionData event_data;
-        event_data.session = session;
-
-        event_dispatcher_->triggerAsync(anh::event_dispatcher::make_shared_event("NetworkSessionRemoved", event_data));
+        event_dispatcher_->Dispatch(make_shared<ValueEvent<shared_ptr<Session>>>("NetworkSessionRemoved", session));
         return true;
     }
 

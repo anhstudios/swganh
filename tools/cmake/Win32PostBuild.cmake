@@ -1,24 +1,10 @@
 
-string(REPLACE "/" "\\" WIN_PROJECT_BINARY_DIR "${PROJECT_BINARY_DIR}/../..")
+string(REPLACE "/" "\\" WIN_PROJECT_BINARY_DIR "${CMAKE_BINARY_DIR}")
 string(REPLACE "/" "\\" WIN_PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 
 ## create a target that gathers up the necessary dll's from the above
 ## dependencies and places them in the runtime directory for this project
 add_custom_target(DEPS)
-
-add_custom_command(
-    TARGET DEPS
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${WIN_PROJECT_BINARY_DIR}\\bin"
-    VERBATIM
-)
-
-add_custom_command(
-    TARGET DEPS
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)"
-    VERBATIM
-)
 
 add_custom_command(
     TARGET DEPS

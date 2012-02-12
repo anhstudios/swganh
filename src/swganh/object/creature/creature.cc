@@ -2,6 +2,7 @@
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/creature/creature_message_builder.h"
 
+
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::messages::containers;
@@ -168,6 +169,7 @@ void Creature::SetPosture(Posture posture)
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     posture_ = posture;
     CreatureMessageBuilder::BuildPostureDelta(this);
+	CreatureMessageBuilder::BuildPostureUpdate(this);
 }
 
 Posture Creature::GetPosture(void)

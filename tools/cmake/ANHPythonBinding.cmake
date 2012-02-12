@@ -1,4 +1,4 @@
-# AddMMOServerLibrary is a standardized way to build libraries in the MMOServer
+# AddANHPythonBinding is a standardized way to build python modules in the swganh
 # project. Particularly on windows platforms this manages all the
 # machinary to set up a default environment and creating/building/running unit
 # unit tests an afterthought for developers.
@@ -6,7 +6,7 @@
 # Function Definition:
 #
 # AddANHPythonBinding(library_name
-#     DEPENDS [ARGS] [args1...]           	     # Dependencies on other MMOServer projects
+#     DEPENDS [ARGS] [args1...]           	     # Dependencies on other swganh projects
 #     ADDITIONAL_INCLUDE_DIRS [ARGS] [args1...]  # Additional directories to search for includes
 #     ADDITIONAL_SOURCE_DIRS [ARGS] [args1...]   # Additional directories to search for files to include in the project
 #     DEBUG_LIBRARIES [ARGS] [args1....]         # Additional debug libraries to link the project against
@@ -126,7 +126,7 @@ FUNCTION(AddANHPythonBinding name)
         
     IF(WIN32)
         # Set the default output directory for binaries for convenience.
-        set(RUNTIME_OUTPUT_BASE_DIRECTORY "${PROJECT_BINARY_DIR}/../..")
+        set(RUNTIME_OUTPUT_BASE_DIRECTORY "${CMAKE_BINARY_DIR}")
             
         # Set the default output directory for binaries for convenience.
         SET_TARGET_PROPERTIES(${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${RUNTIME_OUTPUT_BASE_DIRECTORY}/bin/${CMAKE_BUILD_TYPE}")

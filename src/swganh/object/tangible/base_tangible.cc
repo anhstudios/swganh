@@ -102,6 +102,13 @@ void BaseTangible::SetOptionsMask(uint32_t options_mask)
     TangibleMessageBuilder::BuildOptionsMaskDelta(this);    
 }
 
+void BaseTangible::ToggleOption(uint32_t option)
+{
+	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	options_bitmask_ ^= option;
+	TangibleMessageBuilder::BuildOptionsMaskDelta(this);
+}
+
 uint32_t BaseTangible::GetOptionsMask(void)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);

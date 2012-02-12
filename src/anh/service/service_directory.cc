@@ -21,22 +21,22 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include <anh/event_dispatcher/event_dispatcher.h>
+#include <anh/event_dispatcher.h>
 #include <anh/service/datastore.h>
 
 using namespace anh::service;
-using namespace anh::event_dispatcher;
 using namespace std;
 
-ServiceDirectory::ServiceDirectory(shared_ptr<DatastoreInterface> datastore,
-        shared_ptr<EventDispatcherInterface> event_dispatcher) 
+ServiceDirectory::ServiceDirectory(
+    shared_ptr<DatastoreInterface> datastore,
+    anh::EventDispatcher* event_dispatcher) 
     : datastore_(datastore)
     , event_dispatcher_(event_dispatcher)
 {}
 
 ServiceDirectory::ServiceDirectory(
     shared_ptr<DatastoreInterface> datastore, 
-    std::shared_ptr<EventDispatcherInterface> event_dispatcher,
+    anh::EventDispatcher* event_dispatcher,
     const string& galaxy_name, 
     const string& version , 
     bool create_galaxy) 
@@ -53,7 +53,6 @@ Galaxy ServiceDirectory::galaxy() const {
 ServiceDescription ServiceDirectory::service() const {
     return active_service_;
 }
-
 
 void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::string& version, bool create_galaxy) {    
     boost::lock_guard<boost::recursive_mutex> lk(mutex_);
@@ -105,7 +104,7 @@ void ServiceDirectory::updateGalaxyStatus() {
     active_galaxy_.status((Galaxy::StatusType)galaxy_status);
     datastore_->saveGalaxyStatus(active_galaxy_.id(), active_galaxy_.status());
         
-    event_dispatcher_->triggerAsync(make_shared_event("UpdateGalaxyStatus"));
+    event_dispatcher_->Dispatch(make_shared<BaseEvent>("UpdateGalaxyStatus"));
 }
 
 bool ServiceDirectory::registerService(ServiceDescription& service) {
@@ -114,8 +113,7 @@ bool ServiceDirectory::registerService(ServiceDescription& service) {
     if (datastore_->createService(active_galaxy_, service)) {
         active_service_ = service;
         // trigger the event to let any listeners we have added the service
-        auto event_ = make_shared_event("RegisterService", active_service_);
-        event_dispatcher_->trigger(event_);
+        event_dispatcher_->Dispatch(make_shared<anh::ValueEvent<ServiceDescription>>("RegisterService", service));
         return true;
     }
 
@@ -127,9 +125,7 @@ bool ServiceDirectory::removeService(const ServiceDescription& service) {
 
     if (datastore_->deleteServiceById(service.id())) {
         // trigger the event to let any listeners we have removed the service
-        auto remove_event = make_shared_event("RemoveService", ServiceDescription(service));
-        event_dispatcher_->trigger(remove_event);
-
+        event_dispatcher_->Dispatch(make_shared<anh::ValueEvent<ServiceDescription>>("RemoveService", service));
         return true;
     }
 

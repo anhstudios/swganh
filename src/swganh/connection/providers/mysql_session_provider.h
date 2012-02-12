@@ -33,7 +33,7 @@ namespace providers {
 
 class MysqlSessionProvider : public SessionProviderInterface {
 public:
-    explicit MysqlSessionProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    explicit MysqlSessionProvider(anh::database::DatabaseManagerInterface* db_manager);
     ~MysqlSessionProvider();
 
     virtual uint64_t GetPlayerId(uint32_t account_id);
@@ -41,7 +41,7 @@ public:
     virtual bool CreateGameSession(uint64_t player_id, uint32_t session_id);
 	virtual void EndGameSession(uint64_t player_id);
 private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
+    anh::database::DatabaseManagerInterface* db_manager_;
 };
 
 }}}  // namespace swganh::connection::providers

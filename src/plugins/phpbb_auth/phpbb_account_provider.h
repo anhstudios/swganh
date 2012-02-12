@@ -14,14 +14,14 @@ namespace phpbb_auth {
 class PhpbbAccountProvider : public swganh::login::providers::MysqlAccountProvider 
 {
 public:
-    PhpbbAccountProvider(const std::shared_ptr<anh::database::DatabaseManagerInterface>& database_manager,
+    PhpbbAccountProvider(anh::database::DatabaseManagerInterface* database_manager,
         std::string table_prefix);
 
     std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
     bool AutoRegisterAccount(std::string username, std::string password);
 
 private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> database_manager_;
+    anh::database::DatabaseManagerInterface* database_manager_;
     std::string table_prefix_;
 };
 

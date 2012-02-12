@@ -22,8 +22,11 @@
 #define SWGANH_MESSAGES_UPDATE_TRANSFORM_WITH_PARENT_MESSAGE_H_
 
 #include <cstdint>
+#include <glm/glm.hpp>
+
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
+
 
 namespace swganh {
 namespace messages {

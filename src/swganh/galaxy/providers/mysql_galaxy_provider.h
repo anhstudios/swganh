@@ -33,13 +33,13 @@ namespace providers {
 
 class MysqlGalaxyProvider : public GalaxyProviderInterface {
 public:
-    explicit MysqlGalaxyProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    explicit MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager);
     ~MysqlGalaxyProvider();
 
 	virtual uint32_t GetPopulation();
 	
 private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
+    anh::database::DatabaseManagerInterface* db_manager_;
 };
 
 }}}  // namespace swganh::galaxy::providers
