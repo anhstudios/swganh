@@ -31,7 +31,7 @@ namespace command {
     typedef std::function<void (
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
 		const std::shared_ptr<swganh::object::Object>&,	// target object
-        std::wstring command_options)
+        const swganh::messages::controllers::CommandQueueEnqueue&)
     > CommandHandler;
 
     typedef std::function<std::tuple<bool, uint32_t, uint32_t> (
@@ -93,11 +93,7 @@ namespace command {
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
             const swganh::messages::ObjControllerMessage& message);
 
-		void HandleCombatAction(
-			const std::shared_ptr<swganh::object::ObjectController>& controller, 
-            const swganh::messages::ObjControllerMessage& message);
-                
-        void ProcessNextCommand(
+		void ProcessNextCommand(
 			const std::shared_ptr<swganh::object::creature::Creature>& actor);
 
         void onStart();

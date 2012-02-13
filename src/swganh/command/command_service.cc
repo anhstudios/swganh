@@ -14,6 +14,7 @@
 #include <glog/logging.h>
 
 #include "anh/crc.h"
+#include "anh/event_dispatcher.h"
 #include "anh/database/database_manager_interface.h"
 #include "anh/service/service_manager.h"
 
@@ -145,37 +146,6 @@ void CommandService::HandleCommandQueueRemove(
     const ObjControllerMessage& message)
 {}
 
-void CommandService::HandleCombatAction(
-	const std::shared_ptr<swganh::object::ObjectController>& controller, 
-	const swganh::messages::ObjControllerMessage& message)
-{
-	auto actor = dynamic_pointer_cast<Creature>(controller->GetObject());
-	auto simulation_service = kernel()->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
-
-	auto target = dynamic_pointer_cast<Creature>(simulation_service->GetObjectById(actor->GetTargetId()));
-
-	CombatActionMessage incoming;
-	incoming.Deserialize(message.data);
-
-	uint64_t weapon_id = actor->GetWeaponId();
-
-	CombatActionMessage cam;
-	cam.attacker_id = actor->GetObjectId();
-	cam.action_crc = incoming.action_crc;
-	cam.weapon_id = weapon_id;
-	cam.attacker_end_posture = actor->GetPosture();
-	cam.trails_bit_flag = incoming.trails_bit_flag;
-	cam.combat_special_move_effect = incoming.combat_special_move_effect;
-	if (target)
-	{
-		swganh::object::tangible::Defender def;
-		def.object_id = target->GetObjectId();
-		cam.defender_list.Add(def);
-	}
-	actor->GetController()->Notify(ObjControllerMessage(0x0000001B, cam));
-}
-
 void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
 {
     auto find_iter = command_queues_.find(actor->GetObjectId());
@@ -217,7 +187,7 @@ void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const sha
     
     if (is_valid)
     {
-		find_iter->second(actor, target, command.command_options);
+		find_iter->second(actor, target, command);
     
         SendCommandQueueRemove(actor, command, command_properties_map_[command.command_crc].default_time, 0, 0);
          
@@ -257,14 +227,10 @@ void CommandService::onStart()
     {
         HandleCommandQueueRemove(controller, message);
     });
-	simulation_service->RegisterControllerHandler(0x0000001B, [this] (
-        const std::shared_ptr<ObjectController>& controller, 
-        const swganh::messages::ObjControllerMessage& message) 
-    {
-        HandleCombatAction(controller, message);
-    });
-
+	
 	auto event_dispatcher = kernel()->GetEventDispatcher();
+	event_dispatcher->Dispatch(
+        make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
 }
 
 void CommandService::LoadProperties()
