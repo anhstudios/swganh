@@ -24,11 +24,16 @@
 #include <cstdint>
 #include "anh/byte_buffer.h"
 
-#include "swganh/object/tangible/tangible.h"
-
 namespace swganh {
 namespace messages {
 namespace controllers {
+
+struct CombatDefender{
+    uint64_t defender_id;
+    uint8_t defender_end_posture;
+    uint8_t hit_type;
+    uint8_t defender_special_move_effect;
+};
 
 class CombatActionMessage
 {
@@ -36,7 +41,12 @@ public:
 	static uint32_t header() { return 0xCC; }
 
 	CombatActionMessage()
-		: defender_list(swganh::messages::containers::NetworkSortedVector<swganh::object::tangible::Defender>(25))
+        : action_crc(0)
+        , attacker_id(0)
+        , attacker_end_posture(0)
+        , trails_bit_flag(0xFF)
+        , combat_special_move_effect(0xFF)
+		, defender_list(std::vector<CombatDefender>())
 	{}
     
 	uint32_t action_crc;
@@ -46,7 +56,7 @@ public:
 	uint8_t trails_bit_flag;
 	uint8_t combat_special_move_effect;
 
-	swganh::messages::containers::NetworkSortedVector<swganh::object::tangible::Defender>& defender_list;                         
+	std::vector<CombatDefender> defender_list;                         
 
 	void Serialize(anh::ByteBuffer& buffer) const {
 		buffer.write(action_crc);
@@ -56,11 +66,13 @@ public:
 		buffer.write(trails_bit_flag);
 		buffer.write(combat_special_move_effect);
 
-		buffer.write(defender_list.Size());
-		buffer.write<uint32_t>(0);
-		std::for_each(defender_list.Begin(), defender_list.End(), [=, &buffer](swganh::object::tangible::Defender& defender){
-			buffer.write(defender.object_id);
-		});
+        std::for_each(begin(defender_list), end(defender_list),[&buffer](CombatDefender defender){
+            buffer.write<uint32_t>(0);
+            buffer.write(defender.defender_id);
+            buffer.write(defender.defender_end_posture);
+            buffer.write(defender.hit_type);
+            buffer.write(defender.defender_special_move_effect);
+        });
 	}
 
 	void Deserialize(anh::ByteBuffer buffer) {
@@ -73,7 +85,12 @@ public:
 		int defender_size = buffer.read<uint16_t>();
 		for(int i = 0; i< defender_size; i++)
 		{
-			defender_list.Add(buffer.read<uint64_t>());
+            CombatDefender list;
+            list.defender_id = buffer.read<uint64_t>();
+            list.defender_end_posture = buffer.read<uint8_t>();
+            list.hit_type = buffer.read<uint8_t>();
+            list.defender_special_move_effect = buffer.read<uint8_t>();
+			defender_list.push_back(list);
 		}
 	}
 };

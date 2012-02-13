@@ -9,6 +9,7 @@
 #include "swganh/scripting/python_script.h"
 
 #include "command_properties.h"
+#include "swganh/messages/controllers/command_queue_enqueue.h"
 
 namespace swganh {
 namespace object {
@@ -23,7 +24,7 @@ namespace command {
     public:
         PythonCommand(const CommandProperties& command_properties);
 
-        void operator()(std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::Object> target, std::wstring command_string);
+        void operator()(std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::Object> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
 
     private:
         swganh::scripting::PythonScript script_;

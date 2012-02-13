@@ -14,11 +14,11 @@ PythonCommand::PythonCommand(const CommandProperties& properties)
 {
 }
 
-void PythonCommand::operator()(shared_ptr<Creature> actor, shared_ptr<Object> target, std::wstring command_string)
+void PythonCommand::operator()(shared_ptr<Creature> actor, shared_ptr<Object> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)
 {
 	script_.SetContext("actor", boost::python::ptr(actor.get()));
     script_.SetContext("target", boost::python::ptr(target.get()));
-    script_.SetContext("command_string", command_string);
+    script_.SetContext("command_string", command_queue_message.command_options);
 	
 	script_.Run();
 }

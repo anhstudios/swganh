@@ -28,4 +28,3 @@
 #include "swganh/object/guild/guild_binding.h"
 #include "swganh/object/tangible/tangible_binding.h"
 // controllers
-#include "swganh/messages/bindings/obj_controller_message_binding.h"
