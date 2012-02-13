@@ -355,6 +355,13 @@ struct Skill
         return (name == other.name);
     }
 };
+/**
+ *
+ */
+struct SkillCommands
+{
+
+};
 
 /**
  *
@@ -389,6 +396,13 @@ public:
     void RemoveSkill(std::string skill);
     swganh::messages::containers::NetworkList<Skill> GetSkills(void);
     bool HasSkill(std::string skill);
+
+    // Skill Commands
+    std::map<uint32_t, std::string> GetSkillCommands();
+    bool HasSkillCommand(std::string skill);
+    void AddSkillCommand(std::pair<uint32_t, std::string> skill_command);
+    void RemoveSkillCommand(std::string skill_command);
+
 
     // Posture
     void SetPosture(Posture posture);
@@ -579,6 +593,7 @@ private:
     uint32_t    cash_credits_;                                                              // update 1 variable 1
     swganh::messages::containers::NetworkArray<Stat> stat_base_list_;                       // update 1 variable 2
     swganh::messages::containers::NetworkList<Skill> skills_;                               // update 1 variable 3
+    std::map<uint32_t, std::string> skill_commands_;
     uint32_t    posture_;                                                                   // update 3 variable 11
     uint8_t     faction_rank_;                                                              // update 3 variable 12
     uint64_t    owner_id_;                                                                  // update 3 variable 13

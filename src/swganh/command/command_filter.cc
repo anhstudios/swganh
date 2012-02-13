@@ -2,6 +2,7 @@
 #include "command_properties.h"
 #include "command_service.h"
 #include "swganh/object/creature/creature.h"
+#include "swganh/object/player/player.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 using namespace swganh::command;
@@ -96,14 +97,14 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
 		const CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties)
 {
-	bool check_passed = false;
+    bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
 	uint32_t current_state = actor->GetStateBitmask();
 	// check to see if this command requires an ability
 	if (command_properties.ability.length() > 0)
 	{
-		if (actor->HasSkill(command_properties.ability))
+        if (actor->HasSkillCommand(command_properties.ability))
 		{
 			check_passed = true;
 		}
@@ -111,7 +112,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
 		{
 			error = INSUFFICIENT_ABILITY;
 		}
-	}
+    }
 	// doesn't require ability
 	else
 		check_passed = true;

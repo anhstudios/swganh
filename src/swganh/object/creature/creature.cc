@@ -164,6 +164,43 @@ bool Creature::HasSkill(std::string skill)
         return false;
 }
 
+std::map<uint32_t, std::string>  Creature::GetSkillCommands()
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return skill_commands_;
+}
+bool  Creature::HasSkillCommand(std::string skill_command)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto find_it = find_if(begin(skill_commands_), end(skill_commands_), [=] (pair<uint32_t, string> command){
+        return command.second == skill_command;
+    });
+    if (find_it != end(skill_commands_))
+        return true;
+
+    return false;
+}
+void  Creature::AddSkillCommand(std::pair<uint32_t, std::string> skill_command)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto find_it = skill_commands_.find(skill_command.first);
+    
+    if (find_it == end(skill_commands_))
+        skill_commands_.insert(skill_command);
+
+}
+void  Creature::RemoveSkillCommand(std::string skill_command)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto find_it = find_if(begin(skill_commands_), end(skill_commands_), [=] (pair<uint32_t, string> command){
+        return command.second == skill_command;
+    });
+    if (find_it != end(skill_commands_))
+    {
+        skill_commands_.erase(find_it);
+    }
+}
+
 void Creature::SetPosture(Posture posture)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);

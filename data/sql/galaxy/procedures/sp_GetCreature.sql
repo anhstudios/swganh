@@ -22,6 +22,7 @@ BEGIN
 
     call sp_GetCreatureSkills(object_id);
     call sp_GetCreatureSkillMods(object_id);
+	call sp_GetCreatureSkillCommands(object_id);
     call sp_GetContainedObjects(object_id);
 END//
 DELIMITER ;
