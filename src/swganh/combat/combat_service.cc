@@ -19,6 +19,7 @@
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
+#include "swganh/object/weapon/weapon.h"
 
 #include "swganh/command/command_service.h"
 #include "swganh/command/python_command.h"
@@ -34,6 +35,7 @@ using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;
 using namespace swganh::object::creature;
+using namespace swganh::object::weapon;
 using namespace swganh::simulation;
 using namespace swganh::combat;
 using namespace swganh::command;
@@ -213,7 +215,7 @@ void CombatService::SendCombatAction(
 
         // If we ended in combat, re-queue this back into the command queue
         // is AutoAttack
-        command_service_->EnqueueCommand(attacker, target, command_message);
+        //command_service_->EnqueueCommand(attacker, target, command_message);
     }
 }
 bool CombatService::SingleTargetCombatAction(
@@ -223,7 +225,39 @@ bool CombatService::SingleTargetCombatAction(
 {
     return true;
 }
-uint16_t CombatService::GetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker){ return 0; }
-uint16_t CombatService::GetAccuracyModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker) { return 0; }
-uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::creature::Creature>& attacker) { return 0; }
-void CombatService::ApplyStates(const std::shared_ptr<swganh::object::creature::Creature>& attacker){}
+uint16_t CombatService::GetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker){
+    uint16_t accuracy = 0;
+    uint32_t posture = attacker->GetPosture();
+    if (posture == creature::CROUCHED)
+        accuracy += 16;
+    else if (posture == creature::PRONE)
+        accuracy += 50;
+    // If Running
+    // accuracy -= 50;
+
+    return accuracy; 
+}
+uint16_t CombatService::GetTargetPostureModifier(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)
+{
+    uint16_t accuracy = 0;
+    uint32_t posture = attacker->GetPosture();
+    auto weapon = attacker->GetEquipmentItem(attacker->GetWeaponId());
+    
+    if (posture == creature::CROUCHED)
+        
+        accuracy += 16;
+    else if (posture == creature::PRONE)
+        accuracy += 25;
+
+    return accuracy;
+
+}
+uint16_t CombatService::GetAccuracyModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker) { 
+    return 0; 
+}
+uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::creature::Creature>& attacker) { 
+    return 0; 
+}
+void CombatService::ApplyStates(const std::shared_ptr<swganh::object::creature::Creature>& attacker) {
+
+}

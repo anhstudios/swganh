@@ -67,6 +67,7 @@ namespace combat {
         bool SingleTargetCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker,const std::shared_ptr<swganh::object::Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
 
         uint16_t GetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
+        uint16_t GetTargetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         uint16_t GetAccuracyModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
         uint16_t GetAccuracyBonus(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
         void ApplyStates(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
