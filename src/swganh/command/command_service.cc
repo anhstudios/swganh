@@ -309,12 +309,10 @@ void CommandService::LoadProperties()
 
 void CommandService::RegisterCommandScript(const CommandProperties& properties)
 {
-    if (properties.script_hook.length() == 0)
+    if (properties.script_hook.length() != 0)
     {
-        return;
+        SetCommandHandler(properties.name_crc, PythonCommand(properties));
     }
-    
-    SetCommandHandler(properties.name_crc, PythonCommand(properties));
 }
 
 tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
