@@ -41,6 +41,9 @@ using namespace swganh::object::creature;
 using namespace swganh::scripting;
 using namespace swganh::simulation;
 
+using boost::asio::deadline_timer;
+using boost::posix_time::milliseconds;
+
 CommandService::CommandService(KernelInterface* kernel)
 : BaseService(kernel)
 {}
@@ -82,12 +85,12 @@ void CommandService::EnqueueCommand(
     bool is_valid;
     uint32_t error = 0, action = 0;
 
-    std::tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], enqueue_filters_);
+    tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], enqueue_filters_);
     
     if (!is_valid)
     {
         LOG(WARNING) << "Invalid command";
-        SendCommandQueueRemove(actor, command, 0.0f, error, action);
+        SendCommandQueueRemove(actor, command.action_counter, 0.0f, error, action);
         return;
     }
 	auto object_id = actor->GetObjectId();
@@ -95,14 +98,12 @@ void CommandService::EnqueueCommand(
 
     if (!command_queue_timers_[object_id])
     {
-        command_queue_timers_[object_id] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
+        command_queue_timers_[object_id] = make_shared<deadline_timer>(kernel()->GetIoService());
         command_queue_timers_[object_id]->expires_from_now(
-                boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
+                milliseconds(command_properties_map_[command.command_crc].default_time));
+
+        command_queue_timers_[object_id]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
     }
-    
-	command_queue_timers_[actor->GetObjectId()]->async_wait([=] (const boost::system::error_code& ec){
-        ProcessNextCommand(actor);
-    });
 }
 
 void CommandService::HandleCommandQueueEnqueue(
@@ -110,28 +111,17 @@ void CommandService::HandleCommandQueueEnqueue(
     const ObjControllerMessage& message)
 {
     auto actor = dynamic_pointer_cast<Creature>(controller->GetObject());
-	auto simulation_service = kernel()->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
     
     CommandQueueEnqueue enqueue;
     enqueue.Deserialize(message.data);
 
-	auto target = simulation_service->GetObjectById(enqueue.target_id);
+	auto target = simulation_service_->GetObjectById(enqueue.target_id);
 
     auto find_iter = command_properties_map_.find(enqueue.command_crc);
 
     if (find_iter == command_properties_map_.end())
     {
         LOG(WARNING) << "Invalid handler requested: " << hex << enqueue.command_crc;
-        return;
-    }
-
-    auto cooldown_find_iter = cooldown_timers_[actor->GetObjectId()].find(enqueue.command_crc);
-
-    if (cooldown_find_iter != cooldown_timers_[actor->GetObjectId()].end())
-    {
-        LOG(WARNING) << "Cooldown timer still running";
-		SendCommandQueueRemove(actor, enqueue, 0.0f, 0, 0);
         return;
     }
     
@@ -160,28 +150,20 @@ void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
     {
         return;
     }
-    auto simulation_service = kernel()->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
-    auto target = simulation_service->GetObjectById(command.target_id);
+
+    auto target = simulation_service_->GetObjectById(command.target_id);
 
     ProcessCommand(actor, target, command);
 
-    auto default_time = command_properties_map_[command.command_crc].default_time;
-    default_time > 1000 ? default_time : 1000;
     command_queue_timers_[actor->GetObjectId()]->expires_from_now(
-        boost::posix_time::milliseconds(default_time));
-    
-    command_queue_timers_[actor->GetObjectId()]->async_wait([=] (const boost::system::error_code& ec){
-        ProcessNextCommand(actor);
-    });
+        milliseconds(command_properties_map_[command.command_crc].default_time));
+
+    command_queue_timers_[actor->GetObjectId()]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
 }
 
 void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const shared_ptr<Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command)
 {    
-	auto object_id = actor->GetObjectId();
-
     auto find_iter = handlers_.find(command.command_crc);
-
     if (find_iter == handlers_.end())
     {
         LOG(WARNING) << "No handler for command: " << std::hex << command.command_crc;
@@ -190,46 +172,34 @@ void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const sha
     
     bool is_valid;
     uint32_t error = 0, action = 0;
+    float default_time = 0.0f;
 
-    std::tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], process_filters_);
+    tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], process_filters_);
     
     if (is_valid)
     {
 		find_iter->second(actor, target, command);
-
-        SendCommandQueueRemove(actor, command, command_properties_map_[command.command_crc].default_time, 0, 0);
-         
-        if (command_properties_map_[command.command_crc].default_time != 0)
-        {
-            cooldown_timers_[object_id][command.command_crc] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
-            
-            cooldown_timers_[object_id][command.command_crc]->expires_from_now(
-                boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
-        
-            cooldown_timers_[object_id][command.command_crc]->async_wait([this, object_id, command] (const boost::system::error_code& ec) {
-                cooldown_timers_[object_id].erase(command.command_crc);
-            });
-        }
+        default_time = command_properties_map_[command.command_crc].default_time / 1000;
     }     
         
-    SendCommandQueueRemove(actor, command, 0.0f, error, action);
+    SendCommandQueueRemove(actor, command.action_counter, default_time, error, action);
 }
 
 void CommandService::onStart()
 {
 	LoadProperties();
 
-    auto simulation_service = kernel()->GetServiceManager()
+    simulation_service_ = kernel()->GetServiceManager()
         ->GetService<SimulationService>("SimulationService");
     
-    simulation_service->RegisterControllerHandler(0x00000116, [this] (
+    simulation_service_->RegisterControllerHandler(0x00000116, [this] (
         const std::shared_ptr<ObjectController>& controller, 
         const swganh::messages::ObjControllerMessage& message) 
     {
         HandleCommandQueueEnqueue(controller, message);
     });
     
-    simulation_service->RegisterControllerHandler(0x00000117, [this] (
+    simulation_service_->RegisterControllerHandler(0x00000117, [this] (
         const std::shared_ptr<ObjectController>& controller, 
         const swganh::messages::ObjControllerMessage& message) 
     {
@@ -247,9 +217,9 @@ void CommandService::LoadProperties()
         auto db_manager = kernel()->GetDatabaseManager();
 
         auto conn = db_manager->getConnection("galaxy");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_LoadCommandProperties();"));
+        auto statement =  unique_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_LoadCommandProperties();"));
 
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
                
         while (result->next())
         {
@@ -315,12 +285,10 @@ void CommandService::LoadProperties()
 
 void CommandService::RegisterCommandScript(const CommandProperties& properties)
 {
-    if (properties.script_hook.length() == 0)
+    if (properties.script_hook.length() != 0)
     {
-        return;
+        SetCommandHandler(properties.name_crc, PythonCommand(properties));
     }
-    
-    SetCommandHandler(properties.name_crc, PythonCommand(properties));
 }
 
 tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
@@ -345,21 +313,14 @@ tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
 
 void CommandService::SendCommandQueueRemove(
     const shared_ptr<Creature>& actor,
-    const swganh::messages::controllers::CommandQueueEnqueue& command,
-    float default_time,
+    uint32_t action_counter,
+    float default_time_sec,
     uint32_t error,
     uint32_t action)
 {
     CommandQueueRemove remove;
-    remove.action_counter = command.action_counter;
-	if (default_time > 1000)
-	{
-		remove.timer = default_time / 1000;
-	}
-	else
-	{
-		remove.timer = 1;
-	}
+    remove.action_counter = action_counter;
+    remove.timer = default_time_sec;
     remove.error = error;
     remove.action = action;
 

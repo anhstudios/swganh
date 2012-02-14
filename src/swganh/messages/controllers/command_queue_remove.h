@@ -16,7 +16,7 @@ namespace controllers {
         static uint32_t header() { return 0x00000117; }
         
         uint32_t action_counter;
-        uint32_t timer;
+        float timer;
         uint32_t error;
         uint32_t action;
 
@@ -31,7 +31,7 @@ namespace controllers {
         void Deserialize(anh::ByteBuffer buffer)
         {
             action_counter = buffer.read<uint32_t>();
-            timer = buffer.read<uint32_t>();
+            timer = buffer.read<float>();
             error = buffer.read<uint32_t>();
             action = buffer.read<uint32_t>();
         }
