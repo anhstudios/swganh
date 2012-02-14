@@ -346,14 +346,7 @@ void CommandService::SendCommandQueueRemove(
 {
     CommandQueueRemove remove;
     remove.action_counter = command.action_counter;
-	if (default_time > 1000)
-	{
-		remove.timer = default_time / 1000;
-	}
-	else
-	{
-		remove.timer = 1;
-	}
+    remove.timer = default_time / 1000; // Convert from milliseconds to seconds
     remove.error = error;
     remove.action = action;
 
