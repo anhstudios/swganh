@@ -67,8 +67,8 @@ namespace command {
 
         void SendCommandQueueRemove(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
-            const swganh::messages::controllers::CommandQueueEnqueue& command,
-            float default_time,
+            uint32_t action_counter,
+            float default_time_sec,
             uint32_t error,
             uint32_t action);
 
@@ -120,23 +120,12 @@ namespace command {
             uint64_t,
             std::shared_ptr<boost::asio::deadline_timer>
         > CommandQueueTimerMap;
-
-        typedef std::map<
-            uint32_t,
-            std::shared_ptr<boost::asio::deadline_timer>
-        > CooldownTimerMap;
-
-        typedef std::map<
-            uint64_t,
-            CooldownTimerMap
-        > PlayerCooldownTimerMap;
-        
+                
         std::shared_ptr<swganh::simulation::SimulationService> simulation_service_;
         HandlerMap handlers_;
         CommandQueueMap command_queues_;
         CommandQueueTimerMap command_queue_timers_;
         CommandPropertiesMap command_properties_map_;
-        PlayerCooldownTimerMap cooldown_timers_;
         std::vector<CommandFilter> enqueue_filters_;
         std::vector<CommandFilter> process_filters_;
     };

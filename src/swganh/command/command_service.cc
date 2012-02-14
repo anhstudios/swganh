@@ -90,7 +90,7 @@ void CommandService::EnqueueCommand(
     if (!is_valid)
     {
         LOG(WARNING) << "Invalid command";
-        SendCommandQueueRemove(actor, command, 0.0f, error, action);
+        SendCommandQueueRemove(actor, command.action_counter, 0.0f, error, action);
         return;
     }
 	auto object_id = actor->GetObjectId();
@@ -122,15 +122,6 @@ void CommandService::HandleCommandQueueEnqueue(
     if (find_iter == command_properties_map_.end())
     {
         LOG(WARNING) << "Invalid handler requested: " << hex << enqueue.command_crc;
-        return;
-    }
-
-    auto cooldown_find_iter = cooldown_timers_[actor->GetObjectId()].find(enqueue.command_crc);
-
-    if (cooldown_find_iter != cooldown_timers_[actor->GetObjectId()].end())
-    {
-        LOG(WARNING) << "Cooldown timer still running";
-		SendCommandQueueRemove(actor, enqueue, 0.0f, 0, 0);
         return;
     }
     
@@ -172,10 +163,7 @@ void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
 
 void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const shared_ptr<Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command)
 {    
-	auto object_id = actor->GetObjectId();
-
     auto find_iter = handlers_.find(command.command_crc);
-
     if (find_iter == handlers_.end())
     {
         LOG(WARNING) << "No handler for command: " << std::hex << command.command_crc;
@@ -184,29 +172,17 @@ void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const sha
     
     bool is_valid;
     uint32_t error = 0, action = 0;
+    float default_time = 0.0f;
 
-    std::tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], process_filters_);
+    tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], process_filters_);
     
     if (is_valid)
     {
 		find_iter->second(actor, target, command);
-
-        SendCommandQueueRemove(actor, command, command_properties_map_[command.command_crc].default_time, 0, 0);
-         
-        if (command_properties_map_[command.command_crc].default_time != 0)
-        {
-            cooldown_timers_[object_id][command.command_crc] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
-            
-            cooldown_timers_[object_id][command.command_crc]->expires_from_now(
-                boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
-        
-            cooldown_timers_[object_id][command.command_crc]->async_wait([this, object_id, command] (const boost::system::error_code& ec) {
-                cooldown_timers_[object_id].erase(command.command_crc);
-            });
-        }
+        default_time = command_properties_map_[command.command_crc].default_time / 1000;
     }     
         
-    SendCommandQueueRemove(actor, command, 0.0f, error, action);
+    SendCommandQueueRemove(actor, command.action_counter, default_time, error, action);
 }
 
 void CommandService::onStart()
@@ -337,14 +313,14 @@ tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
 
 void CommandService::SendCommandQueueRemove(
     const shared_ptr<Creature>& actor,
-    const swganh::messages::controllers::CommandQueueEnqueue& command,
-    float default_time,
+    uint32_t action_counter,
+    float default_time_sec,
     uint32_t error,
     uint32_t action)
 {
     CommandQueueRemove remove;
-    remove.action_counter = command.action_counter;
-    remove.timer = default_time / 1000; // Convert from milliseconds to seconds
+    remove.action_counter = action_counter;
+    remove.timer = default_time_sec;
     remove.error = error;
     remove.action = action;
 
