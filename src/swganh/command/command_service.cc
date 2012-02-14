@@ -98,11 +98,11 @@ void CommandService::EnqueueCommand(
         command_queue_timers_[object_id] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
         command_queue_timers_[object_id]->expires_from_now(
                 boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
+
+        command_queue_timers_[actor->GetObjectId()]->async_wait([=] (const boost::system::error_code& ec){
+            ProcessNextCommand(actor);
+        });
     }
-    
-	command_queue_timers_[actor->GetObjectId()]->async_wait([=] (const boost::system::error_code& ec){
-        ProcessNextCommand(actor);
-    });
 }
 
 void CommandService::HandleCommandQueueEnqueue(
