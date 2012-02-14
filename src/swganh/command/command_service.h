@@ -23,7 +23,12 @@ namespace object {
     class ObjectController;
 namespace creature {
 	class Creature;
-}}}  // namespace swganh::object::creature;
+}} // namespace object::creature
+
+namespace simulation {
+    class SimulationService;
+}}  // namespace swganh::simulation;
+
 
 namespace swganh {
 namespace command {
@@ -126,6 +131,7 @@ namespace command {
             CooldownTimerMap
         > PlayerCooldownTimerMap;
         
+        std::shared_ptr<swganh::simulation::SimulationService> simulation_service_;
         HandlerMap handlers_;
         CommandQueueMap command_queues_;
         CommandQueueTimerMap command_queue_timers_;

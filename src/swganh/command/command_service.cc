@@ -41,6 +41,9 @@ using namespace swganh::object::creature;
 using namespace swganh::scripting;
 using namespace swganh::simulation;
 
+using boost::asio::deadline_timer;
+using boost::posix_time::milliseconds;
+
 CommandService::CommandService(KernelInterface* kernel)
 : BaseService(kernel)
 {}
@@ -82,7 +85,7 @@ void CommandService::EnqueueCommand(
     bool is_valid;
     uint32_t error = 0, action = 0;
 
-    std::tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], enqueue_filters_);
+    tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], enqueue_filters_);
     
     if (!is_valid)
     {
@@ -95,13 +98,11 @@ void CommandService::EnqueueCommand(
 
     if (!command_queue_timers_[object_id])
     {
-        command_queue_timers_[object_id] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
+        command_queue_timers_[object_id] = make_shared<deadline_timer>(kernel()->GetIoService());
         command_queue_timers_[object_id]->expires_from_now(
-                boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
+                milliseconds(command_properties_map_[command.command_crc].default_time));
 
-        command_queue_timers_[actor->GetObjectId()]->async_wait([=] (const boost::system::error_code& ec){
-            ProcessNextCommand(actor);
-        });
+        command_queue_timers_[object_id]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
     }
 }
 
@@ -110,13 +111,11 @@ void CommandService::HandleCommandQueueEnqueue(
     const ObjControllerMessage& message)
 {
     auto actor = dynamic_pointer_cast<Creature>(controller->GetObject());
-	auto simulation_service = kernel()->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
     
     CommandQueueEnqueue enqueue;
     enqueue.Deserialize(message.data);
 
-	auto target = simulation_service->GetObjectById(enqueue.target_id);
+	auto target = simulation_service_->GetObjectById(enqueue.target_id);
 
     auto find_iter = command_properties_map_.find(enqueue.command_crc);
 
@@ -160,20 +159,15 @@ void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
     {
         return;
     }
-    auto simulation_service = kernel()->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
-    auto target = simulation_service->GetObjectById(command.target_id);
+
+    auto target = simulation_service_->GetObjectById(command.target_id);
 
     ProcessCommand(actor, target, command);
 
-    auto default_time = command_properties_map_[command.command_crc].default_time;
-    default_time > 1000 ? default_time : 1000;
     command_queue_timers_[actor->GetObjectId()]->expires_from_now(
-        boost::posix_time::milliseconds(default_time));
-    
-    command_queue_timers_[actor->GetObjectId()]->async_wait([=] (const boost::system::error_code& ec){
-        ProcessNextCommand(actor);
-    });
+        milliseconds(command_properties_map_[command.command_crc].default_time));
+
+    command_queue_timers_[actor->GetObjectId()]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
 }
 
 void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const shared_ptr<Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command)
@@ -219,17 +213,17 @@ void CommandService::onStart()
 {
 	LoadProperties();
 
-    auto simulation_service = kernel()->GetServiceManager()
+    simulation_service_ = kernel()->GetServiceManager()
         ->GetService<SimulationService>("SimulationService");
     
-    simulation_service->RegisterControllerHandler(0x00000116, [this] (
+    simulation_service_->RegisterControllerHandler(0x00000116, [this] (
         const std::shared_ptr<ObjectController>& controller, 
         const swganh::messages::ObjControllerMessage& message) 
     {
         HandleCommandQueueEnqueue(controller, message);
     });
     
-    simulation_service->RegisterControllerHandler(0x00000117, [this] (
+    simulation_service_->RegisterControllerHandler(0x00000117, [this] (
         const std::shared_ptr<ObjectController>& controller, 
         const swganh::messages::ObjControllerMessage& message) 
     {
