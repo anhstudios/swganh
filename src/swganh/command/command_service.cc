@@ -241,9 +241,9 @@ void CommandService::LoadProperties()
         auto db_manager = kernel()->GetDatabaseManager();
 
         auto conn = db_manager->getConnection("galaxy");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_LoadCommandProperties();"));
+        auto statement =  unique_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_LoadCommandProperties();"));
 
-        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
                
         while (result->next())
         {
