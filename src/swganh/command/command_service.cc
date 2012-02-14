@@ -96,9 +96,13 @@ void CommandService::EnqueueCommand(
     if (!command_queue_timers_[object_id])
     {
         command_queue_timers_[object_id] = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService());
+        command_queue_timers_[object_id]->expires_from_now(
+                boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
     }
-
-	ProcessNextCommand(actor);
+    
+	command_queue_timers_[actor->GetObjectId()]->async_wait([=] (const boost::system::error_code& ec){
+        ProcessNextCommand(actor);
+    });
 }
 
 void CommandService::HandleCommandQueueEnqueue(
@@ -149,23 +153,27 @@ void CommandService::HandleCommandQueueRemove(
 void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
 {
     auto find_iter = command_queues_.find(actor->GetObjectId());
-        
+    
     CommandQueueEnqueue command; 
         
     if (!find_iter->second.try_pop(command))
     {
         return;
     }
-	auto simulation_service = kernel()->GetServiceManager()
+    auto simulation_service = kernel()->GetServiceManager()
         ->GetService<SimulationService>("SimulationService");
     auto target = simulation_service->GetObjectById(command.target_id);
 
     ProcessCommand(actor, target, command);
 
+    auto default_time = command_properties_map_[command.command_crc].default_time;
+    default_time > 1000 ? default_time : 1000;
     command_queue_timers_[actor->GetObjectId()]->expires_from_now(
-        boost::posix_time::milliseconds(command_properties_map_[command.command_crc].default_time));
+        boost::posix_time::milliseconds(default_time));
     
-    command_queue_timers_[actor->GetObjectId()]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
+    command_queue_timers_[actor->GetObjectId()]->async_wait([=] (const boost::system::error_code& ec){
+        ProcessNextCommand(actor);
+    });
 }
 
 void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const shared_ptr<Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command)
@@ -183,12 +191,12 @@ void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const sha
     bool is_valid;
     uint32_t error = 0, action = 0;
 
-    std::tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], enqueue_filters_);
+    std::tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], process_filters_);
     
     if (is_valid)
     {
 		find_iter->second(actor, target, command);
-    
+
         SendCommandQueueRemove(actor, command, command_properties_map_[command.command_crc].default_time, 0, 0);
          
         if (command_properties_map_[command.command_crc].default_time != 0)

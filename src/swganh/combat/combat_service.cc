@@ -3,8 +3,6 @@
 
 #include <cctype>
 
-#include "anh/app/kernel_interface.h"
-
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -13,6 +11,7 @@
 #include <cppconn/sqlstring.h>
 #include <glog/logging.h>
 
+#include "anh/app/kernel_interface.h"
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
 #include "anh/database/database_manager_interface.h"
@@ -193,7 +192,7 @@ void CombatService::SendCombatAction(
         // Send Message
         
         CombatActionMessage cam;
-        cam.action_crc = command_property.ability_crc;
+        cam.action_crc = 1136984016;//command_property.ability_crc;
         cam.attacker_id = attacker->GetObjectId();
         cam.weapon_id = attacker->GetWeaponId();
         cam.attacker_end_posture = attacker->GetPosture();
@@ -211,6 +210,10 @@ void CombatService::SendCombatAction(
         cam.combat_special_move_effect = 0;
         
         attacker->GetController()->Notify(ObjControllerMessage(0x000000CC, cam));
+
+        // If we ended in combat, re-queue this back into the command queue
+        // is AutoAttack
+        command_service_->EnqueueCommand(attacker, target, command_message);
     }
 }
 bool CombatService::SingleTargetCombatAction(

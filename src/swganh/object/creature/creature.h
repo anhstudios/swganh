@@ -428,6 +428,9 @@ public:
     void SetStateBitmask(uint64_t state_bitmask);
     void ToggleStateBitmask(uint64_t state_bitmask);
     uint64_t GetStateBitmask(void);
+    bool HasState(uint64_t state) {
+        return state == (state & state_bitmask_);
+    }
 
     // Wounds
     void DeductStatWound(StatIndex stat_index, uint32_t value);

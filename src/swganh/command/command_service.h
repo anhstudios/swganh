@@ -60,8 +60,6 @@ namespace command {
 
 		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
 
-    private:
-
         void SendCommandQueueRemove(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
             const swganh::messages::controllers::CommandQueueEnqueue& command,
@@ -69,6 +67,7 @@ namespace command {
             uint32_t error,
             uint32_t action);
 
+    private:
         std::tuple<bool, uint32_t, uint32_t> ValidateCommand(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
 			const std::shared_ptr<swganh::object::Object>& target,
