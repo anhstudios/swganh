@@ -78,10 +78,14 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
 {
     combat_handlers_[command_crc] = move(handler);
 
-	command_service_->SetCommandHandler(command_crc, [=] (const shared_ptr<Creature>& actor,
-			const shared_ptr<Object>& target, const CommandQueueEnqueue& command_queue_message){
-
-        ProcessCombatCommand(actor, target, command_queue_message);
+	command_service_->SetCommandHandler(command_crc, 
+        [this, command_crc] (
+            const shared_ptr<Creature>& actor,
+			const shared_ptr<Object>& target, 
+            const CommandQueueEnqueue& command_queue_message)
+    {
+        combat_handlers_[command_crc](actor, target, command_queue_message);
+        SendCombatAction(actor, target, command_queue_message);
     });
 }
 
@@ -106,24 +110,6 @@ void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command
 		}
 	});
     DLOG(WARNING) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
-}
-
-void CombatService::ProcessCombatCommand(
-			const shared_ptr<Creature>& actor,
-			const shared_ptr<Object>& target,
-			const CommandQueueEnqueue& command_queue_message)
-{
-    // Get all the data we need to determine what to do with this command
-    auto find_iter = combat_handlers_.find(command_queue_message.command_crc);
-
-    if (find_iter == end(combat_handlers_))
-    {
-        LOG(WARNING) << "No combat handler for command: " << std::hex << command_queue_message.command_crc;
-        return;
-    }
-    /*auto combat_data =*/ find_iter->second(actor, target, command_queue_message);
-
-    SendCombatAction(actor, target, command_queue_message);
 }
 
 bool CombatService::InitiateCombat(

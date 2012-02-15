@@ -54,11 +54,6 @@ namespace combat {
             CombatHandler
         > HandlerMap;
 
-        void ProcessCombatCommand(
-			const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::Object>& target,
-			const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
-
         void RegisterCombatScript(const swganh::command::CommandProperties& properties);
 
         bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker,const std::shared_ptr<swganh::object::Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
