@@ -1,6 +1,8 @@
 
 #include "swganh/combat/combat_service.h"
 
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 #include <cctype>
 
 #include <cppconn/exception.h>
@@ -19,6 +21,7 @@
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
+#include "swganh/object/tangible/tangible.h"
 #include "swganh/object/weapon/weapon.h"
 
 #include "swganh/command/command_service.h"
@@ -36,9 +39,12 @@ using namespace swganh::messages::controllers;
 using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::object::weapon;
+using namespace swganh::object::tangible;
 using namespace swganh::simulation;
 using namespace swganh::combat;
 using namespace swganh::command;
+
+boost::random::mt19937 gen;
 
 CombatService::CombatService(KernelInterface* kernel)
 : BaseService(kernel)
@@ -81,7 +87,7 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
     combat_handlers_[command_crc] = move(handler);
 
 	command_service_->SetCommandHandler(command_crc, [=] (const shared_ptr<Creature>& actor,
-			const shared_ptr<Object>& target, const CommandQueueEnqueue& command_queue_message){
+			const shared_ptr<Tangible>& target, const CommandQueueEnqueue& command_queue_message){
 
         ProcessCombatCommand(actor, target, command_queue_message);
     });
@@ -112,7 +118,7 @@ void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command
 
 void CombatService::ProcessCombatCommand(
 			const shared_ptr<Creature>& actor,
-			const shared_ptr<Object>& target,
+			const shared_ptr<Tangible>& target,
 			const CommandQueueEnqueue& command_queue_message)
 {
     // Get all the data we need to determine what to do with this command
@@ -130,13 +136,13 @@ void CombatService::ProcessCombatCommand(
 
 bool CombatService::InitiateCombat(
     const std::shared_ptr<Creature>& attacker, 
-    const shared_ptr<Object>& target, 
+    const shared_ptr<Tangible>& target, 
     const CommandQueueEnqueue& command_message)
 {
     // check to see if we are able to start combat ( are we in peace? )
     if (command_message.command_crc == anh::HashString("peace"))
         return false;
-    if (attacker == target)
+    if (attacker->GetObjectId() == target->GetObjectId())
         return false;
 
     if (target == nullptr)
@@ -160,7 +166,7 @@ bool CombatService::InitiateCombat(
 
 void CombatService::SendCombatAction(
     const shared_ptr<Creature>& attacker, 
-    const shared_ptr<Object>& target, 
+    const shared_ptr<Tangible>& target, 
     const CommandQueueEnqueue& command_message)
 {
     if (InitiateCombat(attacker, target, command_message))
@@ -169,7 +175,8 @@ void CombatService::SendCombatAction(
         if (find_iter == end(combat_properties_map_))
             return;
         auto command_property = find_iter->second;
-
+        int damage = 0;
+        string string_hit = "";
         // Check For Hit
 
         // Apply Special Attack Cost
@@ -181,16 +188,7 @@ void CombatService::SendCombatAction(
         // Apply Damage
 
         // Combat Spam
-        if (command_property.combat_spam.length() > 0)
-        {
-            CombatSpamMessage spam;
-            spam.attacker_id = attacker->GetObjectId();
-            spam.defender_id = target->GetObjectId();
-            spam.damage = 100;
-            spam.file = command_property.combat_spam + "_hit";
-        
-            attacker->GetController()->Notify(ObjControllerMessage(0x00000134, spam));
-        }
+        BroadcastCombatSpam(attacker, target, command_property, damage, string_hit);
         // Send Message
         
         CombatActionMessage cam;
@@ -201,7 +199,7 @@ void CombatService::SendCombatAction(
         
         auto defenders = attacker->GetDefenders();
         // build up the defenders
-        for_each(defenders.Begin(), defenders.End(), [=, &cam](swganh::object::tangible::Defender defender) {
+        for_each(defenders.Begin(), defenders.End(), [=, &cam](Defender defender) {
             CombatDefender def_list;
             def_list.defender_id = defender.object_id;
             def_list.defender_end_posture = simulation_service_->GetObjectById<Creature>(defender.object_id)->GetPosture();
@@ -215,12 +213,13 @@ void CombatService::SendCombatAction(
 
         // If we ended in combat, re-queue this back into the command queue
         // is AutoAttack
-        //command_service_->EnqueueCommand(attacker, target, command_message);
+        if (command_property.name.compare("attack") > 0)
+            command_service_->EnqueueCommand(attacker, target, command_message);
     }
 }
 bool CombatService::SingleTargetCombatAction(
     const shared_ptr<Creature>& attacker, 
-    const shared_ptr<Object>& target, 
+    const shared_ptr<Tangible>& target, 
     const CommandQueueEnqueue& command_message)
 {
     return true;
@@ -253,11 +252,81 @@ uint16_t CombatService::GetTargetPostureModifier(const shared_ptr<Creature>& att
 
 }
 uint16_t CombatService::GetAccuracyModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker) { 
+    // TODO: Get weapon calculation modifiers
+    // Get Accuracy Modifiers from weapon and add up the modifiers the creature has
     return 0; 
 }
 uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::creature::Creature>& attacker) { 
+    // get base attacker accuracy mods
+
+    // give additional mods based on Posture and weapon type
     return 0; 
 }
-void CombatService::ApplyStates(const std::shared_ptr<swganh::object::creature::Creature>& attacker) {
+void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target, CommandProperties& properties) {
+    auto states = move(properties.getStates());
+    for_each(begin(states), end(states),[=](pair<float, string> state){
+        boost::random::uniform_int_distribution<> dist(1, 100);
+        int generated = dist(gen);
+        // Didn't trigger this time
+        if (generated > state.first)
+        {
+            return;
+        }
+        // Check recovery timers
 
+        // Defender State Modifiers
+
+        // Strength of Modifier
+
+        // GetHitChance(strength, 0.0f, target_defence);
+
+        // Jedi Defences
+
+        // Send Message
+
+        // Check Equilibrium
+    });
+}
+float CombatService::GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence) 
+{
+    // TODO: Verify this is the appropriate formula
+    return (66.0 + attacker_bonus + (attacker_accuracy - target_defence) / 2.0);
+}
+int CombatService::GetDamagingPool(int pool_to_damage)
+{
+    if (pool_to_damage) 
+    {
+        boost::random::uniform_int_distribution<> dist(1, 100);
+        int generated = dist(gen);
+
+        if (generated < 50) {
+            pool_to_damage = 0; // HEALTH
+        }
+        else if (generated < 85) {
+            pool_to_damage = 1; // ACTION
+        }
+        else {
+            pool_to_damage = 2; // MIND
+        }
+    }
+    return pool_to_damage;
+}
+
+void CombatService::BroadcastCombatSpam(
+    const shared_ptr<Creature>& attacker,
+    const shared_ptr<Tangible>& target, 
+    const CommandProperties& properties,
+    uint32_t damage, const string& string_file)
+{
+    if (properties.combat_spam.length() > 0)
+        {
+            CombatSpamMessage spam;
+            spam.attacker_id = attacker->GetObjectId();
+            spam.defender_id = target->GetObjectId();
+            spam.weapon_id = attacker->GetWeaponId();
+            spam.damage = damage;
+            spam.file = properties.combat_spam + string_file;
+        
+            attacker->GetController()->Notify(ObjControllerMessage(0x00000134, spam));
+        }
 }

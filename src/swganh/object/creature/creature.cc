@@ -9,7 +9,7 @@ using namespace swganh::messages::containers;
 using namespace swganh::object::creature;
 
 Creature::Creature()
-: BaseTangible()
+: Tangible()
 , bank_credits_(0)
 , cash_credits_(0)
 , stat_base_list_(swganh::messages::containers::NetworkArray<Stat>(9))

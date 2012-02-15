@@ -26,6 +26,9 @@ class CommandService;
 namespace object {
     class Object;
     class ObjectController;
+namespace tangible {
+    class Tangible;
+}
 namespace creature {
 	class Creature;
 }}}  // namespace swganh::object::creature;
@@ -36,7 +39,7 @@ namespace combat {
 
     typedef std::function<void (
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::Object>&,	// target object
+		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)
     > CombatHandler;
 
@@ -56,26 +59,31 @@ namespace combat {
 
         void ProcessCombatCommand(
 			const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::Object>& target,
+			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
 			const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
 
         void RegisterCombatScript(const swganh::command::CommandProperties& properties);
 
-        bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker,const std::shared_ptr<swganh::object::Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
+        bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
         void GetCombatData(boost::python::object python_object);
-        void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker,const std::shared_ptr<swganh::object::Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
-        bool SingleTargetCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker,const std::shared_ptr<swganh::object::Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
+        void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
+        bool SingleTargetCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
 
         uint16_t GetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
         uint16_t GetTargetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         uint16_t GetAccuracyModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
         uint16_t GetAccuracyBonus(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
-        void ApplyStates(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
+        float GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence);
+        void ApplyStates(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target, swganh::command::CommandProperties& properties);
+        int GetDamagingPool(int pool_to_damage);
 
-		std::shared_ptr<swganh::simulation::SimulationService> simulation_service_;
+
+        // Message Helpers
+        void BroadcastCombatSpam(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible>& target, const swganh::command::CommandProperties& properties, uint32_t damage, const std::string& string_file);
+
+        std::shared_ptr<swganh::simulation::SimulationService> simulation_service_;
 		std::shared_ptr<swganh::command::CommandService> command_service_;
         void LoadProperties(swganh::command::CommandPropertiesMap command_properties);
-
 		void onStart();
 
         HandlerMap	combat_handlers_;

@@ -25,6 +25,7 @@
 #include "swganh/messages/controllers/combat_action_message.h"
 
 #include "swganh/object/creature/creature.h"
+#include "swganh/object/tangible/tangible.h"
 #include "swganh/object/object_controller.h"
 
 #include "python_command.h"
@@ -38,6 +39,7 @@ using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;
 using namespace swganh::object::creature;
+using namespace swganh::object::tangible;
 using namespace swganh::scripting;
 using namespace swganh::simulation;
 
@@ -79,7 +81,7 @@ void CommandService::SetCommandHandler(uint32_t command_crc, CommandHandler&& ha
 
 void CommandService::EnqueueCommand(
     const shared_ptr<Creature>& actor,
-	const shared_ptr<Object>& target,
+	const shared_ptr<Tangible>& target,
     CommandQueueEnqueue command)
 {
     bool is_valid;
@@ -115,7 +117,7 @@ void CommandService::HandleCommandQueueEnqueue(
     CommandQueueEnqueue enqueue;
     enqueue.Deserialize(message.data);
 
-	auto target = simulation_service_->GetObjectById(enqueue.target_id);
+	auto target = simulation_service_->GetObjectById<Tangible>(enqueue.target_id);
 
     auto find_iter = command_properties_map_.find(enqueue.command_crc);
 
@@ -151,7 +153,7 @@ void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
         return;
     }
 
-    auto target = simulation_service_->GetObjectById(command.target_id);
+    auto target = simulation_service_->GetObjectById<Tangible>(command.target_id);
 
     ProcessCommand(actor, target, command);
 
@@ -161,7 +163,7 @@ void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
     command_queue_timers_[actor->GetObjectId()]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
 }
 
-void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const shared_ptr<Object>& target, const swganh::messages::controllers::CommandQueueEnqueue& command)
+void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const shared_ptr<Tangible>& target, const swganh::messages::controllers::CommandQueueEnqueue& command)
 {    
     auto find_iter = handlers_.find(command.command_crc);
     if (find_iter == handlers_.end())
@@ -293,7 +295,7 @@ void CommandService::RegisterCommandScript(const CommandProperties& properties)
 
 tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
     const shared_ptr<Creature>& actor, 
-	const shared_ptr<Object>& target,
+	const shared_ptr<Tangible>& target,
     const swganh::messages::controllers::CommandQueueEnqueue& command, 
     const CommandProperties& command_properties,
     const std::vector<CommandFilter>& filters)

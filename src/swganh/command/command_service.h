@@ -21,6 +21,9 @@ namespace swganh {
 namespace object {
     class Object;
     class ObjectController;
+namespace tangible {
+    class Tangible;
+}
 namespace creature {
 	class Creature;
 }} // namespace object::creature
@@ -35,13 +38,13 @@ namespace command {
 
     typedef std::function<void (
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::Object>&,	// target object
+		const std::shared_ptr<swganh::object::tangible::Tangible> & target,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)
     > CommandHandler;
 
     typedef std::function<std::tuple<bool, uint32_t, uint32_t> (
         const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::Object>&, // target object
+		const std::shared_ptr<swganh::object::tangible::Tangible> & target, // target object
         const swganh::messages::controllers::CommandQueueEnqueue&,
         const CommandProperties&)	// action
     > CommandFilter;
@@ -60,7 +63,7 @@ namespace command {
         void SetCommandHandler(uint32_t command_crc, CommandHandler&& handler);
 
         void EnqueueCommand(const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::Object>& target,
+			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
 			swganh::messages::controllers::CommandQueueEnqueue command);
 
 		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
@@ -75,14 +78,14 @@ namespace command {
     private:
         std::tuple<bool, uint32_t, uint32_t> ValidateCommand(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::Object>& target,
+			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
             const swganh::messages::controllers::CommandQueueEnqueue& command, 
             const CommandProperties& command_properties,
             const std::vector<CommandFilter>& filters);
         
         void ProcessCommand(
 			const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::Object>& target,
+			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
 			const swganh::messages::controllers::CommandQueueEnqueue& command);
 
         void LoadProperties();
