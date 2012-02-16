@@ -52,12 +52,3 @@ void ObjectController::Notify(const anh::ByteBuffer& message)
 {
     client_->Send(message);
 }
-
-void ObjectController::Notify(const ObjControllerMessage& message)
-{
-    ObjControllerMessage tmp = message;
-    
-    tmp.object_id = object_->GetObjectId();
-    
-    ObserverInterface::Notify(tmp);
-}

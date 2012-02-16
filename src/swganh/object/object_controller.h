@@ -75,8 +75,6 @@ namespace object {
          */
         void Notify(const anh::ByteBuffer& message);
         
-        void Notify(const swganh::messages::ObjControllerMessage& message);
-
     private:
         ObjectController();
 
