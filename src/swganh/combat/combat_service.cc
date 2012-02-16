@@ -203,7 +203,7 @@ void CombatService::SendCombatAction(
         });
         cam.combat_special_move_effect = 0;
         
-        attacker->GetController()->Notify(ObjControllerMessage(0x000000CC, cam));
+        attacker->NotifyObservers(ObjControllerMessage(0x000000CC, cam));
 
         // If we ended in combat, re-queue this back into the command queue
         // is AutoAttack
