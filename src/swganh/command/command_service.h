@@ -8,9 +8,12 @@
 #include <tuple>
 
 #include <boost/asio/deadline_timer.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <tbb/concurrent_queue.h>
 #include <tbb/concurrent_unordered_map.h>
+
+#include "anh/delayed_task_processor.h"
 
 #include "swganh/base/base_service.h"
 #include "swganh/messages/obj_controller_message.h"
@@ -100,34 +103,22 @@ namespace command {
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
             const swganh::messages::ObjControllerMessage& message);
 
-		void ProcessNextCommand(
-			const std::shared_ptr<swganh::object::creature::Creature>& actor);
-
         void onStart();
+
+        typedef std::map<
+            uint64_t,
+            std::unique_ptr<anh::SimpleDelayedTaskProcessor>
+        > CommandProcessorMap;
 
         typedef tbb::concurrent_unordered_map<
             uint32_t, 
             CommandHandler
-        > HandlerMap;
+        > HandlerMap;        
         
-        typedef tbb::concurrent_queue<
-            swganh::messages::controllers::CommandQueueEnqueue
-        > CommandQueue;
-
-        typedef tbb::concurrent_unordered_map<
-            uint64_t, 
-            CommandQueue
-        > CommandQueueMap;
-
-        typedef tbb::concurrent_unordered_map<
-            uint64_t,
-            std::shared_ptr<boost::asio::deadline_timer>
-        > CommandQueueTimerMap;
-                
         std::shared_ptr<swganh::simulation::SimulationService> simulation_service_;
+        boost::mutex processor_map_mutex_;
+        CommandProcessorMap processor_map_;
         HandlerMap handlers_;
-        CommandQueueMap command_queues_;
-        CommandQueueTimerMap command_queue_timers_;
         CommandPropertiesMap command_properties_map_;
         std::vector<CommandFilter> enqueue_filters_;
         std::vector<CommandFilter> process_filters_;

@@ -96,20 +96,10 @@ void CommandService::EnqueueCommand(
         return;
     }
 	auto object_id = actor->GetObjectId();
-    command_queues_[object_id].push(command);    
 
-    if (!command_queue_timers_[object_id])
-    {
-        command_queue_timers_[object_id] = make_shared<deadline_timer>(kernel()->GetIoService());
-        command_queue_timers_[object_id]->expires_at(boost::posix_time::second_clock::universal_time());
-    }
-
-    if (command_queue_timers_[object_id]->expires_at() <= boost::posix_time::second_clock::universal_time())
-    {
-        command_queue_timers_[object_id]->expires_from_now(
-                milliseconds(command_properties_map_[command.command_crc].default_time));
-        command_queue_timers_[object_id]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
-    }
+    processor_map_[object_id]->PushTask(
+        milliseconds(command_properties_map_[command.command_crc].default_time),
+        bind(&CommandService::ProcessCommand, this, actor, target, command));
 }
 
 void CommandService::HandleCommandQueueEnqueue(
@@ -145,26 +135,6 @@ void CommandService::HandleCommandQueueRemove(
     const shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
 {}
-
-void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
-{
-    auto find_iter = command_queues_.find(actor->GetObjectId());
-    
-    CommandQueueEnqueue command; 
-        
-    if (!find_iter->second.try_pop(command))
-    {
-        return;
-    }
-
-    auto target = simulation_service_->GetObjectById<Tangible>(command.target_id);
-
-    ProcessCommand(actor, target, command);
-    
-    command_queue_timers_[actor->GetObjectId()]->expires_from_now(
-        milliseconds(command_properties_map_[command.command_crc].default_time));
-    command_queue_timers_[actor->GetObjectId()]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
-}
 
 void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const shared_ptr<Tangible>& target, const swganh::messages::controllers::CommandQueueEnqueue& command)
 {    
@@ -214,6 +184,16 @@ void CommandService::onStart()
 	auto event_dispatcher = kernel()->GetEventDispatcher();
 	event_dispatcher->Dispatch(
         make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
+    
+    event_dispatcher->Subscribe(
+        "ObjectReadyEvent",
+        [this] (shared_ptr<anh::EventInterface> incoming_event)
+    {
+        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
+        
+        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
+        processor_map_[object->GetObjectId()].reset(new anh::SimpleDelayedTaskProcessor(kernel()->GetIoService()));
+    });
 }
 
 void CommandService::LoadProperties()
