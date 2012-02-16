@@ -219,6 +219,13 @@ void Tangible::ClearDefenders()
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     defender_list_.Clear();
+    // TODO: NOT SURE WHY CLEAR DOESN'T WIPE OUT THE LIST
+    /*auto iter = defender_list_.Begin();
+    while (iter != defender_list_.End())
+    {
+        defender_list_.Remove(iter);
+        iter++;
+    }*/
     TangibleMessageBuilder::BuildDefendersDelta(this);
 }
 

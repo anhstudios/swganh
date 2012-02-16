@@ -37,6 +37,14 @@ namespace creature {
 namespace swganh {
 namespace combat {
 
+    enum HIT_TYPE {
+        HIT = 0,
+        BLOCK,
+        DODGE,
+        COUNTER,
+        MISS
+    };
+
     typedef std::function<void (
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
 		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
@@ -62,15 +70,17 @@ namespace combat {
         bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
         void GetCombatData(boost::python::object python_object);
         void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
-        bool SingleTargetCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
+        int SingleTargetCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, swganh::command::CommandProperties& properties);
+        int SingleTargetCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature> & target, swganh::command::CommandProperties& properties);
 
         uint16_t GetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
         uint16_t GetTargetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         uint16_t GetAccuracyModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
         uint16_t GetAccuracyBonus(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
         float GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence);
-        void ApplyStates(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target, swganh::command::CommandProperties& properties);
-        int GetDamagingPool(int pool_to_damage);
+        void ApplyStates(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& defender, swganh::command::CommandProperties& properties);
+        int ApplyDamage(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& defender, int damage, int pool);
+        int GetDamagingPool(int pool);
 
 
         // Message Helpers
@@ -84,6 +94,14 @@ namespace combat {
         HandlerMap	combat_handlers_;
 
 		swganh::command::CommandPropertiesMap combat_properties_map_;
+
+        static std::string HIT_spam() { return "_hit"; }
+        static std::string BLOCK_spam() { return "_block"; }
+        static std::string EVADE_spam() { "_evade"; }
+        static std::string COUNTER_spam() { return "_counter"; }
+        static std::string MISS_spam() { return "_miss"; }
+        
+        const static uint32_t DefaultAttacks[9];
     };
 
 }}  // namespace swganh::combat

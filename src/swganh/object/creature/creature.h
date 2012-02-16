@@ -421,16 +421,17 @@ public:
     float GetScale(void);
 
     // Battle Fatigue
+    void AddBattleFatigue(uint32_t battle_fatigue);
     void SetBattleFatigue(uint32_t battle_fatigue);
     uint32_t GetBattleFatigue(void);
 
     // State Bitmask
     void SetStateBitmask(uint64_t state_bitmask);
     void ToggleStateBitmask(uint64_t state_bitmask);
+    void ToggleStateOn(uint64_t state);
+    void ToggleStateOff(uint64_t state);
     uint64_t GetStateBitmask(void);
-    bool HasState(uint64_t state) {
-        return state == (state & state_bitmask_);
-    }
+    bool HasState(uint64_t state);
 
     // Wounds
     void DeductStatWound(StatIndex stat_index, uint32_t value);
