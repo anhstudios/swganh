@@ -99,9 +99,13 @@ void CommandService::EnqueueCommand(
     if (!command_queue_timers_[object_id])
     {
         command_queue_timers_[object_id] = make_shared<deadline_timer>(kernel()->GetIoService());
+        command_queue_timers_[object_id]->expires_at(boost::posix_time::second_clock::universal_time());
+    }
+
+    if (command_queue_timers_[object_id]->expires_at() <= boost::posix_time::second_clock::universal_time())
+    {
         command_queue_timers_[object_id]->expires_from_now(
                 milliseconds(command_properties_map_[command.command_crc].default_time));
-
         command_queue_timers_[object_id]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
     }
 }
@@ -154,10 +158,9 @@ void CommandService::ProcessNextCommand(const shared_ptr<Creature>& actor)
     auto target = simulation_service_->GetObjectById(command.target_id);
 
     ProcessCommand(actor, target, command);
-
+    
     command_queue_timers_[actor->GetObjectId()]->expires_from_now(
         milliseconds(command_properties_map_[command.command_crc].default_time));
-
     command_queue_timers_[actor->GetObjectId()]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
 }
 
