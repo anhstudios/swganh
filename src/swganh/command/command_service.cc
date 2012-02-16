@@ -84,51 +84,66 @@ void CommandService::EnqueueCommand(
 	const shared_ptr<Tangible>& target,
     CommandQueueEnqueue command)
 {
-    bool is_valid;
-    uint32_t error = 0, action = 0;
-
-    tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], enqueue_filters_);
-    
-    if (!is_valid)
+    auto properties_iter = command_properties_map_.find(command.command_crc);
+    if (properties_iter == command_properties_map_.end())
     {
-        LOG(WARNING) << "Invalid command";
-        SendCommandQueueRemove(actor, command.action_counter, 0.0f, error, action);
+        LOG(WARNING) << "Invalid handler requested: " << hex << command.command_crc;
         return;
     }
-	auto object_id = actor->GetObjectId();
+    
+    auto handlers_iter = handlers_.find(command.command_crc);
+    if (handlers_iter == handlers_.end())
+    {
+        LOG(WARNING) << "No handler for command: " << std::hex << command.command_crc;
+        return;
+    }
 
-    processor_map_[object_id]->PushTask(
-        milliseconds(command_properties_map_[command.command_crc].default_time),
-        bind(&CommandService::ProcessCommand, this, actor, target, command));
+    if (!ValidateCommand(actor, target, command, properties_iter->second, enqueue_filters_))
+    {
+        LOG(WARNING) << "Command validation failed";
+        return;
+    }
+
+    if (properties_iter->second.add_to_combat_queue)
+    {
+        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
+
+        auto find_iter = processor_map_.find(actor->GetObjectId());
+        if (find_iter != processor_map_.end())
+        {
+            find_iter->second->PushTask(
+                milliseconds(properties_iter->second.default_time),
+                bind(&CommandService::ProcessCommand,
+                    this,
+                    actor,
+                    target,
+                    command,
+                    properties_iter->second,
+                    handlers_iter->second));
+        }
+    }
+    else
+    {
+        ProcessCommand(
+            actor,
+            target,
+            command,
+            properties_iter->second,
+            handlers_iter->second);
+    }
 }
 
 void CommandService::HandleCommandQueueEnqueue(
     const shared_ptr<ObjectController>& controller, 
     const ObjControllerMessage& message)
 {
-    auto actor = dynamic_pointer_cast<Creature>(controller->GetObject());
-    
     CommandQueueEnqueue enqueue;
     enqueue.Deserialize(message.data);
 
+    auto actor = static_pointer_cast<Creature>(controller->GetObject());
 	auto target = simulation_service_->GetObjectById<Tangible>(enqueue.target_id);
 
-    auto find_iter = command_properties_map_.find(enqueue.command_crc);
-
-    if (find_iter == command_properties_map_.end())
-    {
-        LOG(WARNING) << "Invalid handler requested: " << hex << enqueue.command_crc;
-        return;
-    }
-    
-    if (find_iter->second.add_to_combat_queue)
-    {
-        EnqueueCommand(actor, target, enqueue);
-    }
-    else
-    {
-        ProcessCommand(actor, target, enqueue);
-    }
+    EnqueueCommand(actor, target, move(enqueue));
 }
 
 void CommandService::HandleCommandQueueRemove(
@@ -136,28 +151,23 @@ void CommandService::HandleCommandQueueRemove(
     const ObjControllerMessage& message)
 {}
 
-void CommandService::ProcessCommand(const shared_ptr<Creature>& actor, const shared_ptr<Tangible>& target, const swganh::messages::controllers::CommandQueueEnqueue& command)
+void CommandService::ProcessCommand(
+    const shared_ptr<Creature>& actor,
+    const shared_ptr<Tangible>& target,
+    const swganh::messages::controllers::CommandQueueEnqueue& command,
+    const CommandProperties& properties,
+    const CommandHandler& handler
+    )
 {    
-    auto find_iter = handlers_.find(command.command_crc);
-    if (find_iter == handlers_.end())
+    if (ValidateCommand(actor, target, command, properties, process_filters_))
     {
-        LOG(WARNING) << "No handler for command: " << std::hex << command.command_crc;
-        return;
-    }
-    
-    bool is_valid;
-    uint32_t error = 0, action = 0;
-    float default_time = 0.0f;
+		handler(actor, target, command);
 
-    tie(is_valid, error, action) = ValidateCommand(actor, target, command, command_properties_map_[command.command_crc], process_filters_);
-    
-    if (is_valid)
-    {
-		find_iter->second(actor, target, command);
-        default_time = command_properties_map_[command.command_crc].default_time / 1000;
+        // Convert the default time to a float of seconds.
+        float default_time = command_properties_map_[command.command_crc].default_time / 1000;
+
+        SendCommandQueueRemove(actor, command.action_counter, default_time, 0, 0);
     }     
-        
-    SendCommandQueueRemove(actor, command.action_counter, default_time, error, action);
 }
 
 void CommandService::onStart()
@@ -184,7 +194,7 @@ void CommandService::onStart()
 	auto event_dispatcher = kernel()->GetEventDispatcher();
 	event_dispatcher->Dispatch(
         make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
-    
+
     event_dispatcher->Subscribe(
         "ObjectReadyEvent",
         [this] (shared_ptr<anh::EventInterface> incoming_event)
@@ -193,6 +203,16 @@ void CommandService::onStart()
         
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
         processor_map_[object->GetObjectId()].reset(new anh::SimpleDelayedTaskProcessor(kernel()->GetIoService()));
+    });
+
+    event_dispatcher->Subscribe(
+        "ObjectRemovedEvent",
+        [this] (shared_ptr<anh::EventInterface> incoming_event)
+    {
+        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
+
+        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
+        processor_map_.erase(object->GetObjectId());
     });
 }
 
@@ -276,7 +296,7 @@ void CommandService::RegisterCommandScript(const CommandProperties& properties)
     }
 }
 
-tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
+bool CommandService::ValidateCommand(
     const shared_ptr<Creature>& actor, 
 	const shared_ptr<Tangible>& target,
     const swganh::messages::controllers::CommandQueueEnqueue& command, 
@@ -284,16 +304,22 @@ tuple<bool, uint32_t, uint32_t> CommandService::ValidateCommand(
     const std::vector<CommandFilter>& filters)
 {
 	tuple<bool, uint32_t, uint32_t> result;
+
     bool all_run = all_of(
         begin(filters),
         end(filters),
         [&result, actor, target, &command, &command_properties] (const CommandFilter& filter)->bool
     {
-        result =  filter(actor, target, command, command_properties);
+        result = filter(actor, target, command, command_properties);
 		return get<0>(result);
     });
 
-    return result;
+    if (!all_run)
+    {
+        SendCommandQueueRemove(actor, command.action_counter, 0.0f, get<1>(result), get<2>(result));
+    }
+
+    return all_run;
 }
 
 void CommandService::SendCommandQueueRemove(

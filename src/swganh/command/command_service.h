@@ -70,16 +70,9 @@ namespace command {
 			swganh::messages::controllers::CommandQueueEnqueue command);
 
 		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
-
-        void SendCommandQueueRemove(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-            uint32_t action_counter,
-            float default_time_sec,
-            uint32_t error,
-            uint32_t action);
-
+        
     private:
-        std::tuple<bool, uint32_t, uint32_t> ValidateCommand(
+        bool ValidateCommand(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
 			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
             const swganh::messages::controllers::CommandQueueEnqueue& command, 
@@ -89,7 +82,9 @@ namespace command {
         void ProcessCommand(
 			const std::shared_ptr<swganh::object::creature::Creature>& actor,
 			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-			const swganh::messages::controllers::CommandQueueEnqueue& command);
+			const swganh::messages::controllers::CommandQueueEnqueue& command,
+            const CommandProperties& properties,
+            const CommandHandler& handler);
 
         void LoadProperties();
 
@@ -102,6 +97,13 @@ namespace command {
         void HandleCommandQueueRemove(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
             const swganh::messages::ObjControllerMessage& message);
+        
+        void SendCommandQueueRemove(
+            const std::shared_ptr<swganh::object::creature::Creature>& actor,
+            uint32_t action_counter,
+            float default_time_sec,
+            uint32_t error,
+            uint32_t action);
 
         void onStart();
 
