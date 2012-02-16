@@ -2,18 +2,20 @@
 #include "command_properties.h"
 #include "command_service.h"
 #include "swganh/object/creature/creature.h"
+#include "swganh/object/tangible/tangible.h"
 #include "swganh/object/player/player.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 using namespace swganh::command;
 using namespace swganh::object;
 using namespace swganh::object::creature;
+using namespace swganh::object::tangible;
 using namespace swganh::messages::controllers;
 using namespace std;
 
 tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(
 		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Object>& target, 
+		const shared_ptr<Tangible>& target, 
 		const CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties)
 {
@@ -49,7 +51,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(
 
 tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(
 		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Object>& target, 
+		const shared_ptr<Tangible>& target, 
 		const CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties)
 {
@@ -71,7 +73,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(
 
 tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(
 		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Object>& target, 
+		const shared_ptr<Tangible>& target, 
 		const CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties)
 {
@@ -93,7 +95,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(
 
 tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
 		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Object>& target, 
+		const shared_ptr<Tangible>& target, 
 		const CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties)
 {

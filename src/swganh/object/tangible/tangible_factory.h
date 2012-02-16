@@ -25,7 +25,7 @@ namespace object {
 namespace tangible {
 
     class Tangible;
-    class BaseTangible;
+    class Tangible;
     class TangibleFactory : public swganh::object::ObjectFactory
     {
     public:
@@ -40,7 +40,7 @@ namespace tangible {
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
-        void CreateBaseTangible(const std::shared_ptr<BaseTangible>& tangible, const std::shared_ptr<sql::Statement>& statement);
+        void CreateTangible(const std::shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
         

@@ -50,6 +50,16 @@ namespace command {
         float extended_range;
         float cone_angle;
         uint64_t deny_in_locomotion;
+        std::map<float, std::string> getStates() { 
+            std::map<float, std::string> states;
+            states.insert(std::make_pair(knockdown_hit_chance, "knockdown"));
+            states.insert(std::make_pair(dizzy_hit_chance, "dizzy"));
+            states.insert(std::make_pair(blind_chance, "blind"));
+            states.insert(std::make_pair(stun_chance, "stun"));
+            states.insert(std::make_pair(intimidate_chance, "intimidate"));
+            states.insert(std::make_pair(posture_down_chance, "posture_down"));
+            return states;
+        }
     };
 
 	typedef std::map<

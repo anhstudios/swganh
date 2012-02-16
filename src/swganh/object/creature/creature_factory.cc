@@ -143,7 +143,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
         stringstream ss;
         ss << "CALL sp_GetCreature(" << object_id << ");" ;
         statement->execute(ss.str());
-        CreateBaseTangible(creature, statement);
+        CreateTangible(creature, statement);
         
         if (statement->getMoreResults())
         {

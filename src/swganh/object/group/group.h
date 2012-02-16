@@ -31,7 +31,7 @@ namespace swganh {
 namespace object {
 namespace tangible {
 
-    class BaseTangible;
+    class Tangible;
 
 }}}  // namespace swganh::object::tangible
 

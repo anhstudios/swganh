@@ -36,7 +36,7 @@ public:
 	CombatSpamMessage()
         : attacker_id(0)
         , defender_id(0)
-        , armor_id(0)
+        , weapon_id(0)
         , damage(0)
         , file("")
         , text("cbt_spam")
@@ -46,7 +46,7 @@ public:
     
 	uint64_t attacker_id;
     uint64_t defender_id;
-	uint64_t armor_id;
+	uint64_t weapon_id;
     int32_t damage;
 	std::string file;
 	std::string text;
@@ -56,7 +56,7 @@ public:
 	void Serialize(anh::ByteBuffer& buffer) const {
 		buffer.write(attacker_id);
 		buffer.write(defender_id);
-		buffer.write(armor_id);
+		buffer.write(weapon_id);
 		buffer.write(damage);
 		buffer.write(file);
 		buffer.write(0);
@@ -69,7 +69,7 @@ public:
 	void Deserialize(anh::ByteBuffer buffer) {
 		attacker_id = buffer.read<uint64_t>();
 		defender_id = buffer.read<uint64_t>();
-		armor_id = buffer.read<uint64_t>();
+		weapon_id = buffer.read<uint64_t>();
 		damage = buffer.read<int>();
 		file = buffer.read<std::string>();
         buffer.read<uint32_t>();

@@ -7,13 +7,13 @@
 #include <vector>
 
 #include "swganh/object/object.h"
-#include "swganh/object/tangible/base_tangible.h"
+#include "swganh/object/tangible/tangible.h"
 
 namespace swganh {
 namespace object {
 namespace building {
 
-class Building : public swganh::object::tangible::BaseTangible
+class Building : public swganh::object::tangible::Tangible
 {
 public:
     uint32_t GetType() const;

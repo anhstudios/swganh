@@ -23,7 +23,7 @@
 
 #include <list>
 
-#include "swganh/object/tangible/base_tangible.h"
+#include "swganh/object/tangible/tangible.h"
 
 #include "swganh/messages/containers/network_array.h"
 #include "swganh/messages/containers/network_sorted_list.h"
@@ -366,7 +366,7 @@ struct SkillCommands
 /**
  *
  */
-class Creature : public swganh::object::tangible::BaseTangible
+class Creature : public swganh::object::tangible::Tangible
 {
 public:
     Creature();
