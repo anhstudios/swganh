@@ -131,13 +131,6 @@ void CommandService::EnqueueCommand(
             properties_iter->second,
             handlers_iter->second);
     }
-    auto expires = command_queue_timers_[object_id]->expires_at();
-    if ( !expires.is_infinity() && expires < boost::posix_time::second_clock::universal_time())
-    {
-        command_queue_timers_[object_id]->expires_from_now(
-                milliseconds(command_properties_map_[command.command_crc].default_time));
-        command_queue_timers_[object_id]->async_wait(bind(&CommandService::ProcessNextCommand, this, actor));
-    }
 }
 
 void CommandService::HandleCommandQueueEnqueue(
