@@ -107,8 +107,15 @@ void Creature::AddStatBase(StatIndex stat_index, uint32_t value)
 void Creature::DeductStatBase(StatIndex stat_index, uint32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    uint32_t new_stat = (stat_base_list_[stat_index].value - value) > 0 ? (stat_base_list_[stat_index].value - value) : 0 ;
-    stat_base_list_.Update(stat_index, Stat(new_stat));
+    int current = stat_base_list_[stat_index].value;
+    if (current > value)
+    {
+        stat_base_list_.Update(stat_index, Stat(current - value));
+    }
+    else
+    {
+        stat_base_list_.Update(stat_index, Stat(0));
+    }
     CreatureMessageBuilder::BuildStatBaseDelta(this);
 }
 
@@ -323,8 +330,15 @@ void Creature::AddStatWound(StatIndex stat_index, uint32_t value)
 void Creature::DeductStatWound(StatIndex stat_index, uint32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    uint32_t new_stat = (stat_wound_list_[stat_index].value - value) > 0 ? (stat_wound_list_[stat_index].value - value) : 0 ;
-    stat_wound_list_.Update(stat_index, Stat(new_stat));
+    int current = stat_wound_list_[stat_index].value;
+    if (current > value)
+    {
+        stat_wound_list_.Update(stat_index, Stat(current - value));
+    }
+    else
+    {
+        stat_wound_list_.Update(stat_index, Stat(0));
+    }
     CreatureMessageBuilder::BuildStatWoundDelta(this);
 }
 
@@ -384,8 +398,15 @@ void Creature::AddStatEncumberance(StatIndex stat_index, uint32_t value)
 void Creature::DeductStatEncumberance(StatIndex stat_index, uint32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    uint32_t new_stat = (stat_encumberance_list_[stat_index].value - value) > 0 ? (stat_encumberance_list_[stat_index].value - value) : 0 ;
-    stat_encumberance_list_.Update(stat_index, Stat(new_stat));
+    int current = stat_encumberance_list_[stat_index].value;
+    if (current > value)
+    {
+        stat_encumberance_list_.Update(stat_index, Stat(current - value));
+    }
+    else
+    {
+        stat_encumberance_list_.Update(stat_index, Stat(0));
+    }
     CreatureMessageBuilder::BuildStatEncumberanceDelta(this);
 }
 
@@ -764,7 +785,7 @@ void Creature::SetStatCurrent(StatIndex stat_index, uint32_t value)
 void Creature::AddStatCurrent(StatIndex stat_index, uint32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    uint32_t new_value = stat_current_list_[stat_index].value + value;
+    int new_value = stat_current_list_[stat_index].value + value;
     stat_current_list_.Update(stat_index, Stat(new_value));
     CreatureMessageBuilder::BuildStatCurrentDelta(this);
 }
@@ -772,8 +793,15 @@ void Creature::AddStatCurrent(StatIndex stat_index, uint32_t value)
 void Creature::DeductStatCurrent(StatIndex stat_index, uint32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    uint32_t new_value = (stat_current_list_[stat_index].value - value) > 0 ? (stat_current_list_[stat_index].value - value) : 0 ;
-    stat_current_list_.Update(stat_index, Stat(new_value));
+    int current = stat_current_list_[stat_index].value;
+    if (current > value)
+    {
+        stat_current_list_.Update(stat_index, Stat(current - value));
+    }
+    else
+    {
+        stat_current_list_.Update(stat_index, Stat(0));
+    }
     CreatureMessageBuilder::BuildStatCurrentDelta(this);
 }
 
@@ -806,8 +834,15 @@ void Creature::AddStatMax(StatIndex stat_index, uint32_t value)
 void Creature::DeductStatMax(StatIndex stat_index, uint32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    uint32_t stat_max = (stat_max_list_.At(stat_index).value - value) > 0 ? (stat_max_list_.At(stat_index).value - value) : 0 ;
-    stat_max_list_.Update(stat_index, Stat(stat_max));
+    int current = stat_max_list_[stat_index].value;
+    if (current > value)
+    {
+        stat_max_list_.Update(stat_index, Stat(current - value));
+    }
+    else
+    {
+        stat_max_list_.Update(stat_index, Stat(0));
+    }
     CreatureMessageBuilder::BuildStatMaxDelta(this);
 }
 
