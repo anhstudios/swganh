@@ -408,6 +408,10 @@ public:
     void SetPosture(Posture posture);
     Posture GetPosture(void);
 
+    // IsDead
+    bool IsDead();
+    // IsIncapacitated
+    bool IsIncapacitated();
     // Faction Rank
     void SetFactionRank(uint8_t faction_rank);
     uint8_t GetFactionRank(void);
@@ -580,6 +584,13 @@ public:
     void TogglePvpStateOff(PvpStatus state);
     void TogglePvpState(PvpStatus state);
     bool CheckPvpState(PvpStatus state) const;
+    bool CanAttack(Creature* creature);
+
+
+    void AddToDuelList(uint64_t id);
+    void RemoveFromDuelList(uint64_t id);
+    bool InDuelList(uint64_t id);
+    std::vector<uint64_t>& GetDuelList();
 
     // Baselines
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1();
@@ -637,6 +648,7 @@ private:
     std::string disguise_;                                                                  // update 6 variable 16
     bool stationary_;                                                                       // update 6 variable 17
     PvpStatus pvp_status_;
+    std::vector<uint64_t> duel_list_;
 };
 
 }}}  // namespace swganh::object::creature

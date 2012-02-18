@@ -132,6 +132,10 @@ public:
     swganh::messages::containers::NetworkSortedVector<Defender> GetDefenders();
     void ClearDefenders();
 
+    void ActivateAutoAttack();
+    void ClearAutoAttack();
+    bool IsAutoAttacking();
+
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7();
@@ -147,6 +151,8 @@ private:
     uint32_t max_condition_;                                                                            // update 3 variable 9
     bool is_static_;                                                                                    // update 3 variable 10
     swganh::messages::containers::NetworkSortedVector<Defender> defender_list_;                         // update 6 variable 1
+    // Flag to help out in combat situations
+    bool auto_attack_;
 };
     
 }}}  // namespace swganh::object::tangible

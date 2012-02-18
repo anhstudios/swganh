@@ -222,6 +222,17 @@ Posture Creature::GetPosture(void)
     return (Posture)posture_;
 }
 
+bool Creature::IsDead()
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return posture_ == DEAD;
+}
+bool Creature::IsIncapacitated()
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return posture_ == INCAPACITATED;
+}
+
 void Creature::SetFactionRank(uint8_t faction_rank)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
@@ -970,6 +981,56 @@ bool Creature::CheckPvpState(PvpStatus state) const
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return static_cast<PvpStatus>(pvp_status_ & state) == state;
+}
+bool Creature::CanAttack(Creature* creature)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    if (creature->CheckPvpState(PvPStatus_Attackable) || creature->CheckPvpState(PvPStatus_Enemy))
+    {
+       return true;
+    }
+    if (creature->CheckPvpState(PvPStatus_Overt) || creature->CheckPvpState(PvPStatus_Tef))
+    {
+        if (CheckPvpState(PvPStatus_Overt) || CheckPvpState(PvPStatus_Tef))
+            return true;
+    }
+    if (creature->CheckPvpState(PvPStatus_Duel) && InDuelList(creature->GetObjectId()) && creature->InDuelList(GetObjectId()))
+        return true;
+    
+    return false;
+}
+
+void Creature::AddToDuelList(uint64_t id)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto found = find_if(begin(duel_list_), end(duel_list_), [=] (uint64_t dueler) {
+        return id == dueler;
+    });
+    if (found == end(duel_list_))
+        duel_list_.push_back(id);
+}
+void Creature::RemoveFromDuelList(uint64_t id)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto found = find_if(begin(duel_list_), end(duel_list_), [=] (uint64_t dueler) {
+        return id == dueler;
+    });
+    if (found != end(duel_list_))
+        duel_list_.erase(found);
+}
+bool Creature::InDuelList(uint64_t id)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto found = find_if(begin(duel_list_), end(duel_list_), [=] (uint64_t dueler) {
+        return id == dueler;
+    });
+    return found != end(duel_list_);
+    
+}
+std::vector<uint64_t>& Creature::GetDuelList()
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return duel_list_;
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline1()

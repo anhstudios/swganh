@@ -229,6 +229,22 @@ void Tangible::ClearDefenders()
     TangibleMessageBuilder::BuildDefendersDelta(this);
 }
 
+void Tangible::ActivateAutoAttack()
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto_attack_ = true;
+}
+void Tangible::ClearAutoAttack()
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto_attack_ = false;
+}
+bool Tangible::IsAutoAttacking()
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return auto_attack_ == true;
+}
+
 boost::optional<BaselinesMessage> Tangible::GetBaseline3()
 {
     return move(TangibleMessageBuilder::BuildBaseline3(this));

@@ -86,8 +86,6 @@ void TangibleMessageBuilder::BuildDefendersDelta(Tangible* tangible)
         tangible->defender_list_.Serialize(message);
         tangible->AddDeltasUpdate(move(message));
     }
-    else
-        tangible->component_customization_list_.ClearDeltas();
 }
 
 // baselines

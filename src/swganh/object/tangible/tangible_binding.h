@@ -22,12 +22,14 @@
 #define SWGANH_OBJECT_TANGIBLE_TANGIBLE_BINDING_H_
 
 #include "swganh/object/tangible/tangible.h"
+#include "swganh/object/creature/creature_binding.h"
 
 #include <boost/python.hpp>
 
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object::tangible;
+using namespace swganh::object::creature;
 
 struct TangibleWrapper : Tangible,  wrapper<Tangible>
 {
@@ -51,7 +53,10 @@ void exportTangible()
 		.def("remove_defender", &TangibleWrapper::RemoveDefender, "Removes a defender from the list")
 		.def("defended", &TangibleWrapper::IsDefending, "Checks if the object is being defended")
 		.def("reset_defenders", &TangibleWrapper::ResetDefenders, "Resets the defenders to the specified tangible")
-		.def("clear_defenders", &TangibleWrapper::ClearDefenders, "Clears all defenders from the tangible object");
+		.def("clear_defenders", &TangibleWrapper::ClearDefenders, "Clears all defenders from the tangible object")
+        .def("activate_auto_attack", &TangibleWrapper::ActivateAutoAttack, "Activates auto attack for the tangible object")
+        .def("clear_auto_attack", &TangibleWrapper::ClearAutoAttack, "Clears the auto attack flag")
+        .def("is_auto_attacking", &TangibleWrapper::IsAutoAttacking, "returns true if currently auto attacking")
 		;
 }
 
