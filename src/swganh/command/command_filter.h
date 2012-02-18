@@ -58,6 +58,12 @@ static std::tuple<bool, uint32_t, uint32_t> AbilityCheckFilter(
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties);
+
+static std::tuple<bool, uint32_t, uint32_t> CombatTargetCheckFilter(
+        const std::shared_ptr<swganh::object::creature::Creature>& actor, 
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
+		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
+        const CommandProperties& command_properties);
 };
 
 }} // swganh::command

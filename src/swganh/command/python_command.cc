@@ -18,8 +18,13 @@ PythonCommand::PythonCommand(const CommandProperties& properties)
 
 void PythonCommand::operator()(shared_ptr<Creature> actor, shared_ptr<Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)
 {
+    shared_ptr<Creature> creature = nullptr;
+    if (target->GetType() == Creature::type)
+        creature = static_pointer_cast<Creature>(target);
+
 	script_.SetContext("actor", boost::python::ptr(actor.get()));
     script_.SetContext("target", boost::python::ptr(target.get()));
+    script_.SetContext("creature_target", boost::python::ptr(creature.get()));
     script_.SetContext("command_string", command_queue_message.command_options);
 	
 	script_.Run();

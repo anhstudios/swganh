@@ -1,5 +1,6 @@
 
 #include "swganh/combat/combat_service.h"
+#include "combat_data.h"
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
@@ -45,10 +46,6 @@ using namespace swganh::combat;
 using namespace swganh::command;
 
 boost::random::mt19937 gen;
-
-const uint32_t CombatService::DefaultAttacks[9] = {
-    0x99476628, 0xF5547B91, 0x3CE273EC, 0x734C00C,0x43C4FFD0, 0x56D7CC78, 0x4B41CAFB, 0x2257D06B,0x306887EB
-};
 
 CombatService::CombatService(KernelInterface* kernel)
 : BaseService(kernel)
@@ -131,7 +128,7 @@ bool CombatService::InitiateCombat(
     const CommandQueueEnqueue& command_message)
 {
     // check to see if we are able to start combat ( are we in peace? )
-    if (command_message.command_crc == anh::HashString("peace") || attacker->HasState(PEACE)) {
+    if (command_message.command_crc == anh::HashString("peace")) {
         return false;
     }
     if (attacker->GetObjectId() == target->GetObjectId())
@@ -146,16 +143,26 @@ bool CombatService::InitiateCombat(
     // Check if mounted
 
     // Check if target can be attacked
-    if (creature_target != nullptr  && creature_target->GetPosture() == INCAPACITATED)
+    if (creature_target != nullptr  && creature_target->IsDead() || creature_target->IsIncapacitated())
+        return false;
+    if (!attacker->CanAttack(creature_target.get()))
+        return false;
+
+    if (!attacker->InRange(target->GetPosition(), 25))
         return false;
 
     // Add Combat
     attacker->ToggleStateOn(COMBAT);
     creature_target->ToggleStateOn(COMBAT);
-    attacker->AddDefender(target->GetObjectId());
-    if (creature_target != nullptr)
+    if (!creature_target->IsDefending(attacker->GetObjectId()))
+    {
         creature_target->AddDefender(attacker->GetObjectId());
-
+    }
+    if (!attacker->IsDefending(creature_target->GetObjectId()))
+    {
+        attacker->AddDefender(creature_target->GetObjectId());
+    }
+    
     return true;
 }
 
@@ -186,7 +193,7 @@ void CombatService::SendCombatAction(
         boost::random::uniform_int_distribution<> dist(0, 9);
         CombatActionMessage cam;
         int rand = dist(gen);
-        cam.action_crc = DefaultAttacks[rand];//command_property.ability_crc;
+        cam.action_crc = CombatData::DefaultAttacks[rand];//command_property.ability_crc;
         cam.attacker_id = attacker->GetObjectId();
         cam.weapon_id = attacker->GetWeaponId();
         cam.attacker_end_posture = attacker->GetPosture();
@@ -214,7 +221,7 @@ void CombatService::SendCombatAction(
         // Apply Damage
         ApplyDamage(attacker, creature_target, dist(gen), 0);
 
-        if (command_property.name == "attack") {
+        if (command_property.name == "attack" && attacker->IsAutoAttacking()) {
             command_service_->EnqueueCommand(attacker, target, command_message);
             //command_service_->EnqueueCommand(creature_target, attacker, command_message);
         }
@@ -226,7 +233,7 @@ int CombatService::SingleTargetCombatAction(
     CommandProperties& properties)
 {
     int damage = 0;
-    if (target->type == Creature::type)
+    if (target->GetType() == Creature::type)
     {
         auto creature = static_pointer_cast<Creature>(target);
         SingleTargetCombatAction(attacker, creature, properties);
@@ -237,7 +244,7 @@ int CombatService::SingleTargetCombatAction(
         //int pools = GetDamagingPool((int)(properties.health_hit_chance + properties.action_hit_chance + properties.mind_hit_chance));
         //damage = ApplyDamage(attacker, target, damage, HEALTH);
 
-        BroadcastCombatSpam(attacker, target, properties, damage, HIT_spam());
+        BroadcastCombatSpam(attacker, target, properties, damage, CombatData::HIT_spam());
     }
     return damage;
 }
@@ -262,19 +269,21 @@ int CombatService::SingleTargetCombatAction(
 
     switch (hit) {
     case HIT:
-        BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + HIT_spam());
+        BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + CombatData::HIT_spam());
         break;
     case BLOCK:
         // Block
-        //BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + BLOCK_spam());
+        BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + CombatData::BLOCK_spam());
         damage_multiplier = 0.5f;
         break;
     case DODGE:
         // Dodge
         damage_multiplier = 0.0f;
+        BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + CombatData::DODGE_spam());
         break;
     case MISS:
         // Miss
+        BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + CombatData::MISS_spam());
         damage_multiplier = 0.0f;
         return 0;
         break;
@@ -437,6 +446,6 @@ void CombatService::BroadcastCombatSpam(
             spam.damage = damage;
             spam.file = properties.combat_spam + string_file;
         
-            attacker->GetController()->Notify(ObjControllerMessage(0x00000134, spam));
+            attacker->NotifyObservers(ObjControllerMessage(0x00000134, spam));
         }
 }

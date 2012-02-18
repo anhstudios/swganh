@@ -291,10 +291,12 @@ void SwganhApp::LoadCoreServices_()
 		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+        command_service->AddCommandEnqueueFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 		command_service->AddCommandProcessFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 		command_service->AddCommandProcessFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 		command_service->AddCommandProcessFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 		command_service->AddCommandProcessFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+        command_service->AddCommandProcessFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
 		// These will be loaded in alphabetical order because of how std::map generates its keys
 		kernel_->GetServiceManager()->AddService(
