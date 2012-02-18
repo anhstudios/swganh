@@ -94,14 +94,6 @@ namespace combat {
         HandlerMap	combat_handlers_;
 
 		swganh::command::CommandPropertiesMap combat_properties_map_;
-
-        static std::string HIT_spam() { return "_hit"; }
-        static std::string BLOCK_spam() { return "_block"; }
-        static std::string EVADE_spam() { "_evade"; }
-        static std::string COUNTER_spam() { return "_counter"; }
-        static std::string MISS_spam() { return "_miss"; }
-        
-        const static uint32_t DefaultAttacks[9];
     };
 
 }}  // namespace swganh::combat
