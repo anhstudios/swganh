@@ -463,7 +463,7 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
 boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline3(Creature* creature)
 {
     auto message = creature->CreateBaselinesMessage(Object::VIEW_3, 18);
-    message.data.append(creature->BaseTangible::GetBaseline3().get().data);
+    message.data.append(creature->Tangible::GetBaseline3().get().data);
     message.data.write<uint8_t>(creature->posture_);                        // Posture
     message.data.write<uint8_t>(creature->faction_rank_);                   // Faction Rank
     message.data.write<uint64_t>(creature->owner_id_);                      // Owner Id
@@ -497,7 +497,7 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
 boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline6(Creature* creature)
 {
     auto message = creature->CreateBaselinesMessage(Object::VIEW_6, 23);
-    message.data.append(creature->BaseTangible::GetBaseline6().get().data);
+    message.data.append(creature->Tangible::GetBaseline6().get().data);
     message.data.write<uint16_t>(creature->combat_level_);                      // Combat Level
     message.data.write<std::string>(creature->animation_);                      // Current Animation
     message.data.write<std::string>(creature->mood_animation_);                 // Mood Animation

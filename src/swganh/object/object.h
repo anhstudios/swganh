@@ -130,6 +130,28 @@ public:
     bool IsContainerForObject(const std::shared_ptr<Object>& object);
 
     /**
+     * Checks to see if the object_id contains the given instance.
+     *
+     * @param the object_id to check for
+     * @returns object The Object to return
+     */
+    template<typename T>
+    std::shared_ptr<T> GetContainedObject(uint64_t object_id)
+    {
+        boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+
+        auto find_iter = contained_objects_.find(object_id);
+        if (find_iter == end(contained_objects_))
+            return nullptr;
+        auto object = find_iter->second;
+#ifdef _DEBUG
+            return std::dynamic_pointer_cast<T>(object);
+#else
+            return std::static_pointer_cast<T>(object);
+#endif
+    }
+
+    /**
      * Removes an object from containment.
      *
      * @param object The Object to remove from containment.
@@ -313,6 +335,21 @@ public:
      * @return The container for the current object.
      */
     std::shared_ptr<Object> GetContainer();
+
+    /**
+    *  @param Type of object to return
+     * @return The container for the current object.
+     */
+    template<typename T>
+    std::shared_ptr<T> GetContainer()
+    {
+        boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+#ifdef _DEBUG
+            return std::dynamic_pointer_cast<T>(container_);
+#else
+            return std::static_pointer_cast<T>(container_);
+#endif
+    }
 
     /**
      * Sets the container for the current object.

@@ -6,6 +6,7 @@
 #include "anh/crc.h"
 
 #include "swganh/object/player/player_message_builder.h"
+#include "swganh/object/creature/creature.h"
 #include "swganh/messages/deltas_message.h"
 
 using namespace std;
@@ -42,7 +43,6 @@ Player::Player()
 , experience_(NetworkMap<string, XpData>())
 , waypoints_(NetworkMap<uint64_t, WaypointData>())
 , quest_journal_(NetworkMap<uint32_t, QuestJournalData>())
-, abilities_(NetworkSortedList<Ability>())
 , draft_schematics_(NetworkSortedList<DraftSchematicData>())
 , friends_(NetworkSortedVector<Name>(25))
 , ignored_players_(NetworkSortedVector<Name>(25))
@@ -413,32 +413,26 @@ void Player::ClearAllQuests()
 
 swganh::messages::containers::NetworkSortedList<Ability> Player::GetAbilityList() 
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    return abilities_;
-}
-void Player::AddAbility(string ability)
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    abilities_.Add(Ability(ability));
-    PlayerMessageBuilder::BuildAbilityDelta(this);
-}
-void Player::RemoveAbility(string ability)
-{
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = abilities_.Find(Ability(ability));
-    
-    if (iter != abilities_.End())
-    {
-        abilities_.Remove(iter);
-        PlayerMessageBuilder::BuildAbilityDelta(this);
-    }
+    auto creature = GetContainer<creature::Creature>();
+    auto skill_commands = creature->GetSkillCommands();
+    swganh::messages::containers::NetworkSortedList<Ability> abilities;
+    for_each(begin(skill_commands), end(skill_commands),[&abilities](pair<uint32_t, string> skill_command){
+        abilities.Add(Ability(skill_command.second));
+    });
+    return abilities;
 }
 
-void Player::ClearAllAbilities()
+bool Player::HasAbility(string ability)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    abilities_.Clear();
-    PlayerMessageBuilder::BuildAbilityDelta(this);
+    auto creature = GetContainer<creature::Creature>();
+    auto abilities = creature->GetSkillCommands();
+    
+    auto find_it = find_if(begin(abilities), end(abilities),[=, &abilities](pair<uint32_t, string> skill_command){
+        return (ability == skill_command.second);
+       });
+    if (find_it != end(abilities))
+        return true;
+    return false;
 }
 
 uint32_t Player::GetExperimentationFlag() 

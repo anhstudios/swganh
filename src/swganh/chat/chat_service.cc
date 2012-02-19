@@ -121,7 +121,7 @@ void ChatService::SendSpatialChat(
 
 void ChatService::onStart()
 {
-    //auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
+	//auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
     //
     //command_service->AddCommandHandler(0x7C8D63D4,
     //    swganh::scripting::PythonCommand("scripts/commands/spatialchatinternal.py"));

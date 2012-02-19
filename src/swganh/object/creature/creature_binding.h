@@ -22,13 +22,14 @@
 #define SWGANH_OBJECT_CREATURE_CREATURE_BINDING_H_
 
 #include "swganh/object/creature/creature.h"
-#include "swganh/object/object.h"
+#include "swganh/object/tangible/tangible.h"
 
 #include <boost/python.hpp>
 
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object::creature;
+using namespace swganh::object::tangible;
 
 
 struct CreatureWrapper : Creature,  wrapper<Creature>
@@ -130,7 +131,7 @@ void exportCreature()
 		.def_readwrite("modifier", &SkillMod::modifier)
 		.def("__eq__", &SkillMod::operator==)
 		;
-	class_<CreatureWrapper, bases<Object>, boost::noncopyable>("Creature")
+	class_<CreatureWrapper, bases<Tangible>, boost::noncopyable>("Creature")
 		// STATS
 		.def("set_stat_base", &CreatureWrapper::SetStatBase, "sets the base STAT value, see enum STAT")
 		.def("add_stat_base", &CreatureWrapper::AddStatBase, "adds to the given STAT")
@@ -160,11 +161,17 @@ void exportCreature()
 		.add_property("bank_credits", &CreatureWrapper::GetBankCredits, &CreatureWrapper::SetBankCredits, "Gets and Sets the credits that a creature has in their bank")
 		.add_property("cash_credits", &CreatureWrapper::GetCashCredits, &CreatureWrapper::SetCashCredits, "Gets and Sets the credits that a creature has on themselves")
 		.add_property("posture", &CreatureWrapper::GetPosture, &CreatureWrapper::SetPosture, "Gets and Sets the posture of the creature, see POSTURE enum")
-		.add_property("faction_rank", &CreatureWrapper::GetFactionRank, &CreatureWrapper::SetFactionRank, "Gets and Sets the faction rank for this creature")
+        .def("is_dead", &CreatureWrapper::IsDead, "returns true if this creature is dead")
+        .def("is_incap", &CreatureWrapper::IsIncapacitated, "returns true if this creature is incapacitated")
+        .add_property("faction_rank", &CreatureWrapper::GetFactionRank, &CreatureWrapper::SetFactionRank, "Gets and Sets the faction rank for this creature")
 		.add_property("owner_id", &CreatureWrapper::GetOwnerId, &CreatureWrapper::SetOwnerId, "Gets and Sets the owner id for the creature")
 		.add_property("scale", &CreatureWrapper::GetScale, &CreatureWrapper::SetScale, "Gets and Sets the scale of the creature 1-10")
 		.add_property("battle_fatigue", &CreatureWrapper::GetBattleFatigue, &CreatureWrapper::SetBattleFatigue, "Gets and Sets the battle fatigue of the creature")
 		.add_property("state_bitmask", &CreatureWrapper::GetStateBitmask, &CreatureWrapper::SetStateBitmask, "Gets and Sets the state bitmask see enum STATES")
+        .def("has_state", &CreatureWrapper::HasState, "Checks to see if the state exists in the bitmask")
+        .def("toggle_state", &CreatureWrapper::ToggleStateBitmask, "Toggles the provided State")
+        .def("toggle_state_on", &CreatureWrapper::ToggleStateOn, "Toggles the provided State On")
+        .def("toggle_state_off", &CreatureWrapper::ToggleStateOff, "Toggles the provided State Off")
 		.add_property("acceleration_multiplayer_base", &CreatureWrapper::GetAccelerationMultiplierBase, &CreatureWrapper::SetAccelerationMultiplierBase, "Gets and Sets the base acceleration multiplier")
 		.add_property("acceleration_multiplayer_modifier", &CreatureWrapper::GetAccelerationMultiplierModifier, &CreatureWrapper::SetAccelerationMultiplierModifier, "Gets and Sets the acceleration multiplier modifier")
 		.add_property("listen_to_id", &CreatureWrapper::GetListenToId, &CreatureWrapper::SetListenToId, "Gets and Sets who this creature is listening to, see Entertainer")
@@ -185,7 +192,11 @@ void exportCreature()
 		.add_property("mood_id", &CreatureWrapper::GetMoodId, &CreatureWrapper::SetMoodId, "Gets and Sets the current mood of the creature")
 		.add_property("disguise", &CreatureWrapper::GetDisguise, &CreatureWrapper::SetDisguise, "Gets and Sets the disguise of the current creature, this makes the creature look like the given iff file")
 		.add_property("stationary", &CreatureWrapper::SetStationary, &CreatureWrapper::SetStationary, "Gets and Sets if the creature can move or not")
-		;
+        .add_property("pvp_status", &CreatureWrapper::GetPvpStatus, &CreatureWrapper::SetPvPStatus, "Gets and Sets the pvp status of the creature")
+        .def("in_duel_list", &CreatureWrapper::InDuelList, "Returns a boolean based on if the creature is currently dueling the target")
+        .def("add_duel_list", &CreatureWrapper::AddToDuelList, "Adds the creature id to the duel list")
+        .def("remove_duel_list", &CreatureWrapper::RemoveFromDuelList, "Removes the creature from the duel list")
+        ;
 }
 
 #endif  //SWGANH_OBJECT_CREATURE_CREATURE_BINDING_H_

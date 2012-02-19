@@ -619,23 +619,12 @@ public:
     swganh::messages::containers::NetworkSortedList<Ability> GetAbilityList() ;
 
     /**
-     * Adds an ability to the players ability list.
+     * Checks to see if the player has the input ability
      *
-     * @param ability ability to add.
+     * @param ability to check for
+     * @returns bool true if the ability has been found
      */
-    void AddAbility(std::string ability);
-    
-    /**
-     * Removes an ability from the players ability list.
-     *
-     * @param ability ability to remove.
-     */
-    void RemoveAbility(std::string ability);
-
-    /**
-     * Clears all player abilities.
-     */
-    void ClearAllAbilities();
+    bool HasAbility(std::string ability);
     
     /**
      * @return whether player can experiment or not.
@@ -926,7 +915,6 @@ private:
     uint32_t current_force_sensitive_quests_;
     uint32_t completed_force_sensitive_quests_;
     swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> quest_journal_;
-    swganh::messages::containers::NetworkSortedList<Ability> abilities_;
     uint32_t experimentation_flag_;
     uint32_t crafting_stage_;
     uint64_t nearest_crafting_station_;

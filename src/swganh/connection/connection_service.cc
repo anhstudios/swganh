@@ -231,6 +231,9 @@ void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_cod
             DLOG(WARNING) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
             auto simulation_service = simulation_service_.lock();
             simulation_service->RemoveObject(object);
+
+            kernel()->GetEventDispatcher()->Dispatch(
+                make_shared<ValueEvent<shared_ptr<Object>>>("ObjectRemovedEvent", object));
         }
     }
 }

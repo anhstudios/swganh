@@ -22,12 +22,14 @@
 #define SWGANH_OBJECT_TANGIBLE_TANGIBLE_BINDING_H_
 
 #include "swganh/object/tangible/tangible.h"
+#include "swganh/object/creature/creature_binding.h"
 
 #include <boost/python.hpp>
 
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object::tangible;
+using namespace swganh::object::creature;
 
 struct TangibleWrapper : Tangible,  wrapper<Tangible>
 {
@@ -37,9 +39,9 @@ void exportTangible()
 {
 	class_<TangibleWrapper, bases<swganh::object::Object>, boost::noncopyable>("Tangible")
 		.add_property("customization", &TangibleWrapper::GetCustomization, &TangibleWrapper::SetCustomization, "Gets and Sets the tangible customization")
-		.def("__add__", &TangibleWrapper::AddCustomization, "Adds a string to the existing customization")
-		.def("__add__", &TangibleWrapper::AddComponentCustomization, "Adds a crc to the component customization list")
-		.def("__sub__", &TangibleWrapper::RemoveComponentCustomization, "Removes crc from the component customization list")
+		.def("customization.__add__", &TangibleWrapper::AddCustomization, "Adds a string to the existing customization")
+		.def("component_customization.__add__", &TangibleWrapper::AddComponentCustomization, "Adds a crc to the component customization list")
+		.def("component_customization.__sub__", &TangibleWrapper::RemoveComponentCustomization, "Removes crc from the component customization list")
 		.def("clear_component_customization", &TangibleWrapper::ClearComponentCustomization, "Clears all crc's from the component customization list")
 		.add_property("options_mask", &TangibleWrapper::GetOptionsMask, &TangibleWrapper::SetOptionsMask, "Gets and Sets the options mask")
 		.def("toggle_option", &TangibleWrapper::ToggleOption, "Toggles the specified option")
@@ -47,11 +49,14 @@ void exportTangible()
 		.add_property("condition", &TangibleWrapper::GetCondition, &TangibleWrapper::SetConditionDamage, "Gets and Sets the current condition of the tangible")
 		.add_property("max_condition", &TangibleWrapper::GetMaxCondition, &TangibleWrapper::SetMaxCondition, "Gets and Sets the max condition of the tangible")
 		.add_property("static", &TangibleWrapper::IsStatic, &TangibleWrapper::SetStatic, "Gets and Sets the static property")
-		.def("__add__", &TangibleWrapper::AddDefender, "Adds a defender to the list")
-		.def("__sub__", &TangibleWrapper::RemoveDefender, "Removes a defender from the list")
+		.def("add_defender", &TangibleWrapper::AddDefender, "Adds a defender to the list")
+		.def("remove_defender", &TangibleWrapper::RemoveDefender, "Removes a defender from the list")
 		.def("defended", &TangibleWrapper::IsDefending, "Checks if the object is being defended")
 		.def("reset_defenders", &TangibleWrapper::ResetDefenders, "Resets the defenders to the specified tangible")
-		.def("clear_defenders", &TangibleWrapper::ClearDefenders, "Clears all defenders from the tangible object");
+		.def("clear_defenders", &TangibleWrapper::ClearDefenders, "Clears all defenders from the tangible object")
+        .def("activate_auto_attack", &TangibleWrapper::ActivateAutoAttack, "Activates auto attack for the tangible object")
+        .def("clear_auto_attack", &TangibleWrapper::ClearAutoAttack, "Clears the auto attack flag")
+        .def("is_auto_attacking", &TangibleWrapper::IsAutoAttacking, "returns true if currently auto attacking")
 		;
 }
 

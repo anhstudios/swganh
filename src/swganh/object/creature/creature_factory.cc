@@ -143,7 +143,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
         stringstream ss;
         ss << "CALL sp_GetCreature(" << object_id << ");" ;
         statement->execute(ss.str());
-        CreateBaseTangible(creature, statement);
+        CreateTangible(creature, statement);
         
         if (statement->getMoreResults())
         {
@@ -230,6 +230,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
         
         LoadSkills_(creature, statement);
         LoadSkillMods_(creature, statement);
+        LoadSkillCommands_(creature, statement);
 
         LoadContainedObjects(creature, statement);
     }
@@ -286,6 +287,21 @@ void CreatureFactory::LoadSkillMods_(
             creature->skill_mod_list_.Insert(
                 skill_mod_name, 
                 SkillMod(skill_mod_name, skill_mod_value, 0));
+        }
+    }
+}
+
+void CreatureFactory::LoadSkillCommands_(
+    const shared_ptr<Creature>& creature, 
+    const shared_ptr<sql::Statement>& statement)
+{
+     // Check for contained objects        
+    if (statement->getMoreResults())
+    {
+        unique_ptr<sql::ResultSet> result(statement->getResultSet());
+        while (result->next())
+        {
+           creature->AddSkillCommand(make_pair(result->getInt("id"), result->getString("name")));
         }
     }
 }

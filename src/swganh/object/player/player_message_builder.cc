@@ -166,11 +166,9 @@ void PlayerMessageBuilder::BuildAbilityDelta(Player* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 0);
-        object->abilities_.Serialize(message);
+        object->GetAbilityList().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
-    else
-        object->abilities_.ClearDeltas();
 }
 
 void PlayerMessageBuilder::BuildExperimentationFlagDelta(Player* object)
@@ -380,7 +378,7 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_9, 17);
     
-    object->abilities_.Serialize(message);
+    object->GetAbilityList().Serialize(message);
     message.data.write<uint32_t>(object->GetExperimentationFlag());
     message.data.write<uint32_t>(object->GetCraftingStage());
     message.data.write<uint64_t>(object->GetNearestCraftingStation());
