@@ -166,7 +166,7 @@ private:
     void handleAckA_(AckA& packet);
     void handleOutOfOrderA_(OutOfOrderA& packet);
 
-    void SendSoePacket_(std::shared_ptr<anh::ByteBuffer> message);
+    void SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message);
 
     bool SequenceIsValid_(const uint16_t& sequence);
     void AcknowledgeSequence_(const uint16_t& sequence);

@@ -362,7 +362,7 @@ void Session::handleOutOfOrderA_(OutOfOrderA& packet)
     });
 }
 
-void Session::SendSoePacket_(std::shared_ptr<anh::ByteBuffer> message)
+void Session::SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message)
 {
     server_->SendMessage(shared_from_this(), message);
 }
