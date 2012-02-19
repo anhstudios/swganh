@@ -218,7 +218,7 @@ struct Stat
         : value(0)
     {}
 
-    Stat(uint32_t value_)
+    Stat(int32_t value_)
         : value(value_)
     {}
 
@@ -227,15 +227,15 @@ struct Stat
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
-        message.data.write<uint32_t>(value);
+        message.data.write<int32_t>(value);
     }
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
-        message.data.write<uint32_t>(value);
+        message.data.write<int32_t>(value);
     }
 
-    uint32_t value;
+    int32_t value;
 };
     
 /**
@@ -385,11 +385,11 @@ public:
     uint32_t GetCashCredits(void);
 
     // Stat Base
-    void SetStatBase(StatIndex stat_index, uint32_t value);
-    void AddStatBase(StatIndex stat_index, uint32_t value);
-    void DeductStatBase(StatIndex stat_index, uint32_t value);
+    void SetStatBase(StatIndex stat_index, int32_t value);
+    void AddStatBase(StatIndex stat_index, int32_t value);
+    void DeductStatBase(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetBaseStats(void);
-    uint32_t GetStatBase(StatIndex stat_index);
+    int32_t GetStatBase(StatIndex stat_index);
 
     // Skills
     void AddSkill(std::string skill);
@@ -438,11 +438,11 @@ public:
     bool HasState(uint64_t state);
 
     // Wounds
-    void DeductStatWound(StatIndex stat_index, uint32_t value);
-    void AddStatWound(StatIndex stat_index, uint32_t value);
-    void SetStatWound(StatIndex stat_index, uint32_t value);
+    void DeductStatWound(StatIndex stat_index, int32_t value);
+    void AddStatWound(StatIndex stat_index, int32_t value);
+    void SetStatWound(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetStatWounds(void);
-    uint32_t GetStatWound(StatIndex stat_index);
+    int32_t GetStatWound(StatIndex stat_index);
 
     // Acceleration Multiplier Base
     void SetAccelerationMultiplierBase(float acceleration_multiplier_base);
@@ -453,11 +453,11 @@ public:
     float GetAccelerationMultiplierModifier(void);
 
     // Stat Encumberance
-    void AddStatEncumberance(StatIndex stat_index, uint32_t value);
-    void DeductStatEncumberance(StatIndex stat_index, uint32_t value);
-    void SetStatEncumberance(StatIndex stat_index, uint32_t value);
+    void AddStatEncumberance(StatIndex stat_index, int32_t value);
+    void DeductStatEncumberance(StatIndex stat_index, int32_t value);
+    void SetStatEncumberance(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetStatEncumberances(void);
-    uint32_t GetStatEncumberance(StatIndex stat_index);
+    int32_t GetStatEncumberance(StatIndex stat_index);
 
     // Skill Mods
     void AddSkillMod(SkillMod mod);
@@ -550,18 +550,18 @@ public:
     uint32_t GetPerformanceId(void);
 
     // Current Stats
-    void SetStatCurrent(StatIndex stat_index, uint32_t value);
-    void AddStatCurrent(StatIndex stat_index, uint32_t value);
-    void DeductStatCurrent(StatIndex stat_index, uint32_t value);
+    void SetStatCurrent(StatIndex stat_index, int32_t value);
+    void AddStatCurrent(StatIndex stat_index, int32_t value);
+    void DeductStatCurrent(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetCurrentStats(void);
-    uint32_t GetStatCurrent(StatIndex stat_index);
+    int32_t GetStatCurrent(StatIndex stat_index);
 
     // Max Stats
-    void SetStatMax(StatIndex stat_index, uint32_t value);
-    void AddStatMax(StatIndex stat_index, uint32_t value);
-    void DeductStatMax(StatIndex stat_index, uint32_t value);
+    void SetStatMax(StatIndex stat_index, int32_t value);
+    void AddStatMax(StatIndex stat_index, int32_t value);
+    void DeductStatMax(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetMaxStats(void);
-    uint32_t GetStatMax(StatIndex stat_index);
+    int32_t GetStatMax(StatIndex stat_index);
 
     // Equipment List
     void AddEquipmentItem(EquipmentItem& item);
@@ -585,7 +585,6 @@ public:
     void TogglePvpState(PvpStatus state);
     bool CheckPvpState(PvpStatus state) const;
     bool CanAttack(Creature* creature);
-
 
     void AddToDuelList(uint64_t id);
     void RemoveFromDuelList(uint64_t id);

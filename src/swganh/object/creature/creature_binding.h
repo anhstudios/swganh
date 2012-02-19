@@ -196,7 +196,7 @@ void exportCreature()
         .def("in_duel_list", &CreatureWrapper::InDuelList, "Returns a boolean based on if the creature is currently dueling the target")
         .def("add_duel_list", &CreatureWrapper::AddToDuelList, "Adds the creature id to the duel list")
         .def("remove_duel_list", &CreatureWrapper::RemoveFromDuelList, "Removes the creature from the duel list")
-		;
+        ;
 }
 
 #endif  //SWGANH_OBJECT_CREATURE_CREATURE_BINDING_H_

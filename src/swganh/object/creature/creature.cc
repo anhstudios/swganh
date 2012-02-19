@@ -89,14 +89,14 @@ uint32_t Creature::GetCashCredits(void)
     return cash_credits_;
 }
 
-void Creature::SetStatBase(StatIndex stat_index, uint32_t value)
+void Creature::SetStatBase(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     stat_base_list_.Update(stat_index, Stat(value));
     CreatureMessageBuilder::BuildStatBaseDelta(this);
 }
 
-void Creature::AddStatBase(StatIndex stat_index, uint32_t value)
+void Creature::AddStatBase(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     uint32_t new_stat = stat_base_list_[stat_index].value + value;
@@ -104,10 +104,10 @@ void Creature::AddStatBase(StatIndex stat_index, uint32_t value)
     CreatureMessageBuilder::BuildStatBaseDelta(this);
 }
 
-void Creature::DeductStatBase(StatIndex stat_index, uint32_t value)
+void Creature::DeductStatBase(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    int current = stat_base_list_[stat_index].value;
+    int32_t current = stat_base_list_[stat_index].value;
     if (current > value)
     {
         stat_base_list_.Update(stat_index, Stat(current - value));
@@ -125,7 +125,7 @@ NetworkArray<Stat> Creature::GetBaseStats(void)
     return stat_base_list_;
 }
 
-uint32_t Creature::GetStatBase(StatIndex stat_index)
+int32_t Creature::GetStatBase(StatIndex stat_index)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return stat_base_list_.At(stat_index).value;
@@ -323,25 +323,25 @@ void Creature::ToggleStateBitmask(uint64_t state_bitmask)
     state_bitmask_ = (state_bitmask_ ^ state_bitmask); 
 }
 
-void Creature::SetStatWound(StatIndex stat_index, uint32_t value)
+void Creature::SetStatWound(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     stat_wound_list_.Update(stat_index, Stat(value));
     CreatureMessageBuilder::BuildStatWoundDelta(this);
 }
 
-void Creature::AddStatWound(StatIndex stat_index, uint32_t value)
+void Creature::AddStatWound(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    uint32_t new_stat = stat_wound_list_[stat_index].value + value;
+    int32_t new_stat = stat_wound_list_[stat_index].value + value;
     stat_wound_list_.Update(stat_index, Stat(new_stat));
     CreatureMessageBuilder::BuildStatWoundDelta(this);
 }
 
-void Creature::DeductStatWound(StatIndex stat_index, uint32_t value)
+void Creature::DeductStatWound(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    int current = stat_wound_list_[stat_index].value;
+    int32_t current = stat_wound_list_[stat_index].value;
     if (current > value)
     {
         stat_wound_list_.Update(stat_index, Stat(current - value));
@@ -359,7 +359,7 @@ NetworkArray<Stat> Creature::GetStatWounds(void)
     return stat_wound_list_;
 }
 
-uint32_t Creature::GetStatWound(StatIndex stat_index)
+int32_t Creature::GetStatWound(StatIndex stat_index)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return stat_wound_list_.At(stat_index).value;
@@ -391,25 +391,25 @@ float Creature::GetAccelerationMultiplierModifier(void)
     return acceleration_multiplier_modifier_;
 }
 
-void Creature::SetStatEncumberance(StatIndex stat_index, uint32_t value)
+void Creature::SetStatEncumberance(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     stat_encumberance_list_.Update(stat_index, Stat(value));
     CreatureMessageBuilder::BuildStatEncumberanceDelta(this);
 }
 
-void Creature::AddStatEncumberance(StatIndex stat_index, uint32_t value)
+void Creature::AddStatEncumberance(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    uint32_t new_stat = stat_encumberance_list_[stat_index].value + value;
+    int32_t new_stat = stat_encumberance_list_[stat_index].value + value;
     stat_encumberance_list_.Update(stat_index, Stat(new_stat));
     CreatureMessageBuilder::BuildStatEncumberanceDelta(this);
 }
 
-void Creature::DeductStatEncumberance(StatIndex stat_index, uint32_t value)
+void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    int current = stat_encumberance_list_[stat_index].value;
+    int32_t current = stat_encumberance_list_[stat_index].value;
     if (current > value)
     {
         stat_encumberance_list_.Update(stat_index, Stat(current - value));
@@ -427,7 +427,7 @@ NetworkArray<Stat> Creature::GetStatEncumberances(void)
     return stat_encumberance_list_;
 }
 
-uint32_t Creature::GetStatEncumberance(StatIndex stat_index)
+int32_t Creature::GetStatEncumberance(StatIndex stat_index)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return stat_encumberance_list_.At(stat_index).value;
@@ -786,25 +786,25 @@ uint32_t Creature::GetPerformanceId(void)
     return performance_id_;
 }
 
-void Creature::SetStatCurrent(StatIndex stat_index, uint32_t value)
+void Creature::SetStatCurrent(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     stat_current_list_.Update(stat_index, Stat(value));
     CreatureMessageBuilder::BuildStatCurrentDelta(this);
 }
 
-void Creature::AddStatCurrent(StatIndex stat_index, uint32_t value)
+void Creature::AddStatCurrent(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    int new_value = stat_current_list_[stat_index].value + value;
+    int32_t new_value = stat_current_list_[stat_index].value + value;
     stat_current_list_.Update(stat_index, Stat(new_value));
     CreatureMessageBuilder::BuildStatCurrentDelta(this);
 }
 
-void Creature::DeductStatCurrent(StatIndex stat_index, uint32_t value)
+void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    int current = stat_current_list_[stat_index].value;
+    int32_t current = stat_current_list_[stat_index].value;
     if (current > value)
     {
         stat_current_list_.Update(stat_index, Stat(current - value));
@@ -822,30 +822,30 @@ NetworkArray<Stat> Creature::GetCurrentStats(void)
     return stat_current_list_;
 }
 
-uint32_t Creature::GetStatCurrent(StatIndex stat_index)
+int32_t Creature::GetStatCurrent(StatIndex stat_index)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return stat_current_list_.At(stat_index).value;
 }
 
-void Creature::SetStatMax(StatIndex stat_index, uint32_t value)
+void Creature::SetStatMax(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     stat_max_list_.Update(stat_index, Stat(value));
     CreatureMessageBuilder::BuildStatMaxDelta(this);
 }
 
-void Creature::AddStatMax(StatIndex stat_index, uint32_t value)
+void Creature::AddStatMax(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     stat_max_list_.Update(stat_index, Stat(stat_max_list_.At(stat_index).value + value));
     CreatureMessageBuilder::BuildStatMaxDelta(this);
 }
 
-void Creature::DeductStatMax(StatIndex stat_index, uint32_t value)
+void Creature::DeductStatMax(StatIndex stat_index, int32_t value)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    int current = stat_max_list_[stat_index].value;
+    int32_t current = stat_max_list_[stat_index].value;
     if (current > value)
     {
         stat_max_list_.Update(stat_index, Stat(current - value));
@@ -863,7 +863,7 @@ NetworkArray<Stat> Creature::GetMaxStats(void)
     return stat_max_list_;
 }
 
-uint32_t Creature::GetStatMax(StatIndex stat_index)
+int32_t Creature::GetStatMax(StatIndex stat_index)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return stat_max_list_.At(stat_index).value;
@@ -984,7 +984,6 @@ bool Creature::CheckPvpState(PvpStatus state) const
 }
 bool Creature::CanAttack(Creature* creature)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     if (creature->CheckPvpState(PvPStatus_Attackable) || creature->CheckPvpState(PvPStatus_Enemy))
     {
        return true;

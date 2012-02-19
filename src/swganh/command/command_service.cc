@@ -162,7 +162,6 @@ void CommandService::ProcessCommand(
     if (ValidateCommand(actor, target, command, properties, process_filters_))
     {
 		handler(actor, target, command);
-
         // Convert the default time to a float of seconds.
         float default_time = command_properties_map_[command.command_crc].default_time / 1000;
 

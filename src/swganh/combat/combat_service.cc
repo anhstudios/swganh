@@ -1,9 +1,6 @@
 
 #include "swganh/combat/combat_service.h"
 #include "combat_data.h"
-
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
 #include <cctype>
 
 #include <cppconn/exception.h>
@@ -32,9 +29,10 @@
 #include "swganh/messages/controllers/combat_action_message.h"
 #include "swganh/messages/controllers/combat_spam_message.h"
 
+using namespace std;
+using namespace anh;
 using namespace anh::app;
 using namespace anh::service;
-using namespace std;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;
@@ -45,10 +43,10 @@ using namespace swganh::simulation;
 using namespace swganh::combat;
 using namespace swganh::command;
 
-boost::random::mt19937 gen;
-
 CombatService::CombatService(KernelInterface* kernel)
 : BaseService(kernel)
+, generator_(1, 100)
+, delayed_task_(new anh::SimpleDelayedTaskProcessor(kernel->GetIoService()))
 {
 }
 
@@ -131,10 +129,11 @@ bool CombatService::InitiateCombat(
     if (command_message.command_crc == anh::HashString("peace")) {
         return false;
     }
-    if (attacker->GetObjectId() == target->GetObjectId())
-        return false;
 
     if (target == nullptr)
+        return false;
+    
+    if (attacker->GetObjectId() == target->GetObjectId())
         return false;
 
     shared_ptr<Creature> creature_target = nullptr;
@@ -148,6 +147,7 @@ bool CombatService::InitiateCombat(
     if (!attacker->CanAttack(creature_target.get()))
         return false;
 
+    // TODO: Base this on weapon range
     if (!attacker->InRange(target->GetPosition(), 25))
         return false;
 
@@ -177,41 +177,17 @@ void CombatService::SendCombatAction(
         if (find_iter == end(combat_properties_map_))
             return;
         auto command_property = find_iter->second;
-        int damage = 0;
         string string_hit = "";
         // Check For Hit
-
+        // Combat Spam
+        // Check for AOE 
+        // if ! AOE
+        int damage = SingleTargetCombatAction(attacker, target, command_property);
         // Apply Special Attack Cost
 
-        // Check for AOE 
-
-        // Do Animation
-
-        // Combat Spam
-        BroadcastCombatSpam(attacker, target, command_property, damage, string_hit);
         // Send Message
-        boost::random::uniform_int_distribution<> dist(0, 9);
-        CombatActionMessage cam;
-        int rand = dist(gen);
-        cam.action_crc = CombatData::DefaultAttacks[rand];//command_property.ability_crc;
-        cam.attacker_id = attacker->GetObjectId();
-        cam.weapon_id = attacker->GetWeaponId();
-        cam.attacker_end_posture = attacker->GetPosture();
+        SendCombatActionMessage(attacker, target, command_property);
         
-        auto defenders = attacker->GetDefenders();
-        // build up the defenders
-        for_each(defenders.Begin(), defenders.End(), [=, &cam](Defender defender) {
-            CombatDefender def_list;
-            def_list.defender_id = defender.object_id;
-            def_list.defender_end_posture = simulation_service_->GetObjectById<Creature>(defender.object_id)->GetPosture();
-            def_list.hit_type = 0x1;
-            def_list.defender_special_move_effect = 0;
-            cam.defender_list.push_back(def_list);
-        });
-        cam.combat_special_move_effect = 0;
-        
-        attacker->NotifyObservers(ObjControllerMessage(0x000000CC, cam));
-
         // If we ended in combat, re-queue this back into the command queue
         // is AutoAttack
         // if target is creature, then auto-attack back
@@ -219,7 +195,7 @@ void CombatService::SendCombatAction(
         if (target->GetType() == Creature::type)
             creature_target = static_pointer_cast<Creature>(target);
         // Apply Damage
-        ApplyDamage(attacker, creature_target, dist(gen), 0);
+        ApplyDamage(attacker, creature_target, damage, 0);
 
         if (command_property.name == "attack" && attacker->IsAutoAttacking()) {
             command_service_->EnqueueCommand(attacker, target, command_message);
@@ -261,40 +237,108 @@ int CombatService::SingleTargetCombatAction(
 
     if (damage_multiplier != 0)
         total_damage = 16; /*CalculateDamage(attacker, defender) * damage_multiplier);*/
-
+    else
+    {
+        total_damage = 10; // obviously temp
+    }
     damage_multiplier = 1.0f;
 
-    hit = GetHitChance(35, 5, 25);
+    hit = GetHitResult(attacker, defender, total_damage, 0); // properties.GetAccuracybonus() + attacker->GetSkillMod(properties.GetAccuracySkillMod()));
     string combat_spam_msg = properties.combat_spam;
-
-    switch (hit) {
+    
+    switch (hit)
+    {
     case HIT:
-        BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + CombatData::HIT_spam());
+        total_damage = ApplyDamage(attacker, defender, total_damage, HEALTH);
+        BroadcastCombatSpam(attacker, defender, properties, total_damage, CombatData::HIT_spam());
         break;
-    case BLOCK:
         // Block
-        BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + CombatData::BLOCK_spam());
+    case BLOCK:
+        BroadcastCombatSpam(attacker, defender, properties, total_damage, CombatData::BLOCK_spam());
         damage_multiplier = 0.5f;
         break;
     case DODGE:
         // Dodge
         damage_multiplier = 0.0f;
-        BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + CombatData::DODGE_spam());
+        BroadcastCombatSpam(attacker, defender, properties, total_damage, CombatData::DODGE_spam());
         break;
     case MISS:
         // Miss
-        BroadcastCombatSpam(attacker, defender, properties, total_damage, combat_spam_msg + CombatData::MISS_spam());
+        BroadcastCombatSpam(attacker, defender, properties, total_damage, CombatData::MISS_spam());
         damage_multiplier = 0.0f;
         return 0;
-        break;
     default:
-        break;
+        return 0;
     }
     ApplyStates(attacker, defender, properties);
     // Apply Dots
     //int pool = GetDamagingPool(
     // Attack Delay?
     return total_damage;
+}
+
+uint16_t CombatService::GetHitResult(
+    const shared_ptr<Creature>& attacker, 
+    const shared_ptr<Creature>& defender, 
+    int damage, int accuracy_bonus)
+{
+    int hit_outcome = 0;
+    // Get Weapon Attack Type
+    float weapon_accuracy = 15.0f;
+    // Get Weapon Accuracy Mods
+
+    int attacker_accuracy = GetAccuracyModifier(defender);
+
+    accuracy_bonus += GetAccuracyBonus(attacker);
+
+    int target_defense = 15;//GetDefenseModifier(attacker, target);
+    float accuracy_total = GetHitChance(attacker_accuracy + weapon_accuracy, accuracy_bonus, target_defense);
+
+    // Scout/Ranger creature hit bonus
+
+    if (accuracy_total > 100.0)
+        accuracy_total = 100.0;
+    else if(accuracy_total < 0.0f)
+        accuracy_total = 0.0f;
+
+    if (generator_.Rand(1,100) > accuracy_total) 
+        return MISS;
+
+    // Successful hit
+    if (damage > 0)
+    {
+        // Get Secondary Defense Modifiers
+
+        if (target_defense <= 0)
+            return HIT;
+
+        accuracy_total = GetHitChance(attacker_accuracy + weapon_accuracy, accuracy_bonus, target_defense);
+        if (accuracy_total > 100.0)
+            accuracy_total = 100.0;
+        else if(accuracy_total < 0.0f)
+            accuracy_total = 0.0f;
+
+        if (generator_.Rand(1,100) > accuracy_total) // Successful secondary defense
+        {
+            // Get Weapon to see if block makes sense
+            // Get Secondary Modifiers
+            string def = "counterattack"; // GetWeaponDefenseModifiers
+
+            if (def == "block")
+                return BLOCK;
+            else if (def == "dodge")
+                return DODGE;
+            else if (def == "counterattack")
+                return COUNTER;
+            else if (def == "unarmed_passive_defense")
+            {
+                generator_.Rand(1,2);
+            }
+            else
+                return HIT;
+        }
+    }
+    return HIT;
 }
 uint16_t CombatService::GetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker){
     uint16_t accuracy = 0;
@@ -337,8 +381,7 @@ uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::c
 void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target, CommandProperties& properties) {
     auto states = move(properties.getStates());
     for_each(begin(states), end(states),[=](pair<float, string> state){
-        boost::random::uniform_int_distribution<> dist(1, 100);
-        int generated = dist(gen);
+        int generated = generator_.Rand(1, 100);
         // Didn't trigger this time
         if (generated > state.first)
         {
@@ -372,9 +415,7 @@ int CombatService::ApplyDamage(
     if (damage == 0 || pool < 0)
         return 0;
 
-    boost::random::uniform_int_distribution<> rand100(1, 100);
-    boost::random::uniform_int_distribution<> rand2(1, 2);
-    int generated = rand100(gen);
+    int generated = generator_.Rand(1, 100);
 
     float wounds_ratio = 0; /*attacker->GetWeapon()->GetWoundsRatio();*/
     float health_damage = 0.0f, action_damage = 0.0f, mind_damage = 0.0f;
@@ -384,23 +425,41 @@ int CombatService::ApplyDamage(
 
     if (pool == HEALTH) {
         //health_damage = GetArmorReduction(attacker, defender, damage, HEALTH) * damage_multiplier;
-        defender->DeductStatCurrent(HEALTH, generated);
+        if (defender->GetStatCurrent(HEALTH) - generated <= 0)
+        {
+            SetIncapacitated(defender);
+        }
+        else
+            defender->DeductStatCurrent(HEALTH, generated);
+        // Will this reduce this pool <= 0 ?
         if (!wounded && generated < wounds_ratio) {
-            defender->AddStatWound(HEALTH, rand2(gen));
+            defender->AddStatWound(HEALTH, generator_.Rand(1,2));
             wounded = true;
         }
     }
     if (pool == ACTION) {
         //action_damage = GetArmorReduction(attacker, defender, damage, ACTION) * damage_multiplier;
+        if (defender->GetStatCurrent(ACTION) - generated <= 0)
+        {
+            SetIncapacitated(defender);
+        }
+        else
+            defender->DeductStatCurrent(HEALTH, generated);
         if (!wounded && generated < wounds_ratio) {
-            defender->AddStatWound(ACTION, rand2(gen));
+            defender->AddStatWound(ACTION, generator_.Rand(1,2));
             wounded = true;
         }
     }
     if (pool == MIND) {
         //mind_damage = GetArmorReduction(attacker, defender, damage, MIND) * damage_multiplier;
+        if (defender->GetStatCurrent(MIND) - generated <= 0)
+        {
+            SetIncapacitated(defender);
+        }
+        else
+            defender->DeductStatCurrent(HEALTH, generated);
         if (!wounded && generated < wounds_ratio) {
-            defender->AddStatWound(MIND, rand2(gen));
+            defender->AddStatWound(MIND, generator_.Rand(1,2));
             wounded = true;
         }
     }
@@ -408,15 +467,14 @@ int CombatService::ApplyDamage(
     if (wounded)
         defender->AddBattleFatigue(1);
 
-    return (int) (health_damage + action_damage + mind_damage);
+    return generated;
 
 }
 int CombatService::GetDamagingPool(int pool)
 {
     if (pool) 
     {
-        boost::random::uniform_int_distribution<> dist(1, 100);
-        int generated = dist(gen);
+        int generated = generator_.Rand(1,100);
 
         if (generated < 50) {
             pool = HEALTH;
@@ -444,8 +502,62 @@ void CombatService::BroadcastCombatSpam(
             spam.defender_id = target->GetObjectId();
             spam.weapon_id = attacker->GetWeaponId();
             spam.damage = damage;
-            spam.file = properties.combat_spam + string_file;
-        
+            spam.file = "cbt_spam";
+            spam.text = properties.combat_spam + string_file;
+            
             attacker->NotifyObservers(ObjControllerMessage(0x00000134, spam));
         }
+}
+
+void CombatService::SendCombatActionMessage(
+    const shared_ptr<Creature>& attacker, 
+    const shared_ptr<Tangible> & target, 
+    CommandProperties& command_property)
+{
+        CombatActionMessage cam;
+        if (command_property.animation_crc == 0)
+            cam.action_crc = CombatData::DefaultAttacks[generator_.Rand(0, 9)];//command_property.ability_crc;
+        else
+        {
+            cam.action_crc = command_property.animation_crc;
+        }
+        cam.attacker_id = attacker->GetObjectId();
+        cam.weapon_id = attacker->GetWeaponId();
+        cam.attacker_end_posture = attacker->GetPosture();
+        
+        auto defenders = attacker->GetDefenders();
+        // build up the defenders
+        for_each(defenders.Begin(), defenders.End(), [=, &cam](Defender defender) {
+            CombatDefender def_list;
+            def_list.defender_id = defender.object_id;
+            def_list.defender_end_posture = simulation_service_->GetObjectById<Creature>(defender.object_id)->GetPosture();
+            def_list.hit_type = 0x1;
+            def_list.defender_special_move_effect = 0;
+            cam.defender_list.push_back(def_list);
+        });
+        cam.combat_special_move_effect = 0;
+        
+        attacker->NotifyObservers(ObjControllerMessage(0x000000CC, cam));
+}
+
+void CombatService::SetIncapacitated(const shared_ptr<Creature>& target)
+{
+    target->SetPosture(INCAPACITATED);
+    // TODO: Get this from config Default Incap Timer 
+    target->SetIncapTimer(15);
+
+    delayed_task_->PushTask(boost::posix_time::seconds(15), [=](){
+        // Incap Recovery
+        if (!target || target->IsDead())
+            return;
+        target->SetPosture(UPRIGHT);
+        target->SetIncapTimer(0);
+    });
+    
+}
+void CombatService::SetDead(const std::shared_ptr<swganh::object::creature::Creature>& target)
+{
+    target->SetPosture(DEAD);
+    // Clear States
+    target->SetStateBitmask(NONE);
 }

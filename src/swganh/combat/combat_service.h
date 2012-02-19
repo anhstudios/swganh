@@ -12,6 +12,9 @@
 
 #include <tbb/concurrent_unordered_map.h>
 
+#include "anh/delayed_task_processor.h"
+#include "anh/random_generator.h"
+
 #include "swganh/base/base_service.h"
 #include "swganh/command/command_properties.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
@@ -70,6 +73,7 @@ namespace combat {
         bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
         void GetCombatData(boost::python::object python_object);
         void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
+        void SendCombatActionMessage(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, swganh::command::CommandProperties& properties);
         int SingleTargetCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, swganh::command::CommandProperties& properties);
         int SingleTargetCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature> & target, swganh::command::CommandProperties& properties);
 
@@ -78,11 +82,15 @@ namespace combat {
         uint16_t GetAccuracyModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
         uint16_t GetAccuracyBonus(const std::shared_ptr<swganh::object::creature::Creature>& attacker);
         float GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence);
+        uint16_t GetHitResult(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature> & target, int damage, int accuracy_bonus);
         void ApplyStates(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& defender, swganh::command::CommandProperties& properties);
         int ApplyDamage(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& defender, int damage, int pool);
         int GetDamagingPool(int pool);
 
-
+        void SetIncapacitated(const std::shared_ptr<swganh::object::creature::Creature>& target);
+        
+        void SetDead(const std::shared_ptr<swganh::object::creature::Creature>& target);
+        
         // Message Helpers
         void BroadcastCombatSpam(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible>& target, const swganh::command::CommandProperties& properties, uint32_t damage, const std::string& string_file);
 
@@ -94,6 +102,10 @@ namespace combat {
         HandlerMap	combat_handlers_;
 
 		swganh::command::CommandPropertiesMap combat_properties_map_;
+
+        anh::RandomGenerator generator_;
+
+        std::unique_ptr<anh::SimpleDelayedTaskProcessor> delayed_task_;
     };
 
 }}  // namespace swganh::combat
