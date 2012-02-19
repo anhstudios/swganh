@@ -27,7 +27,7 @@ namespace anh {
 namespace network {
 namespace soe {
 class Packet;
-class Socket;
+class Server;
 }}}  // namespace anh::network::soe
 
 namespace anh {
@@ -40,11 +40,11 @@ namespace filters {
  */
 class SendPacketFilter {
 public:
-	SendPacketFilter(Socket* socket);
+	SendPacketFilter(Server* server);
 
 	void operator()(const std::shared_ptr<Packet>& packet) const;
 private:
-	Socket* socket_;
+	Server* server_;
 };
 
 }}}} // namespace anh::network::soe::filters

@@ -77,8 +77,13 @@ public:
      */
     void Shutdown(void);
     
-    void SendMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message);
+    void SendMessage(std::shared_ptr<Session> session, const std::shared_ptr<anh::ByteBuffer>&  message);
     
+    /**
+     * @brief Sends a message on the wire to the target endpoint.
+     */
+    void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer);
+
     void HandleMessage(std::shared_ptr<Packet> packet);
     
     bool AddSession(std::shared_ptr<Session> session);
@@ -87,7 +92,7 @@ public:
 
     std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
 
-    std::shared_ptr<Socket> socket();
+    boost::asio::ip::udp::socket* socket();
     
     uint32_t max_receive_size();
 
@@ -95,14 +100,23 @@ public:
     
 private:
     Server();
+    
+    void AsyncReceive();
 
     /**
      * @brief Called when the socket receives a message.
      */
     void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const std::shared_ptr<anh::ByteBuffer>& message);
 
-    std::shared_ptr<Socket>		socket_;
+    //std::shared_ptr<Socket>		socket_;
     boost::asio::io_service&	io_service_;
+    
+    uint64_t	bytes_recv_;
+    uint64_t	bytes_sent_;
+
+    boost::asio::ip::udp::socket		socket_;
+    boost::asio::ip::udp::endpoint		current_remote_endpoint_;
+    std::array<char, 496>				recv_buffer_;
 
     SessionManager				session_manager_;
     anh::EventDispatcher*       event_dispatcher_;

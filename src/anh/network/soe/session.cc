@@ -24,7 +24,6 @@
 
 #include <glog/logging.h>
 
-#include "anh/network/soe/socket.h"
 #include "anh/network/soe/session_manager.h"
 #include "anh/network/soe/server_interface.h"
 
@@ -222,17 +221,18 @@ void Session::handleSessionRequest_(SessionRequest& packet)
 
     SessionResponse session_response(connection_id_, crc_seed_);
     session_response.server_udp_buffer_size = server_->max_receive_size();
+    
+    auto buffer = server_->AllocateBuffer();
+    session_response.serialize(*buffer);
 
-    anh::ByteBuffer session_response_buffer;
-    session_response.serialize(session_response_buffer);
+    if (server_->AddSession(shared_from_this()))
+    {
+        // Directly put this on the wire, it requires no outgoing processing.
+        server_->SendTo(remote_endpoint_, buffer);
 
-    // Directly put this on the wire, it requires no outgoing processing.
-    server_->socket()->Send(remote_endpoint_, session_response_buffer);
-
-    // Add our Session to the SessionManager and flag ourselves as connected.
-    server_->AddSession(shared_from_this());
-    connected_ = true;
-    LOG(INFO) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
+        connected_ = true;
+        LOG(INFO) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
+    }
 }
 
 void Session::handleMultiPacket_(MultiPacket& packet)

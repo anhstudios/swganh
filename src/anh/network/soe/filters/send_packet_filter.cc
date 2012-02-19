@@ -24,22 +24,20 @@
 
 #include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
-#include "anh/network/soe/socket.h"
+#include "anh/network/soe/server.h"
 #include "anh/network/soe/packet.h"
 
 using namespace anh::network::soe;
 using namespace filters;
 using namespace std;
 
-SendPacketFilter::SendPacketFilter(Socket* socket)
-    : socket_(socket) {}
+SendPacketFilter::SendPacketFilter(Server* server)
+    : server_(server) {}
 
 void SendPacketFilter::operator()(const shared_ptr<Packet>& packet) const {   
-    auto message = packet->message();
-
     try {
-        socket_->Send(packet->session()->remote_endpoint(), *message);
+        server_->SendTo(packet->session()->remote_endpoint(), packet->message());
     } catch(...) {
-        DLOG(WARNING) << "Error sending remote message\n\n" << *message;
+        DLOG(WARNING) << "Error sending remote message\n\n" << *(packet->message());
     }
 }
