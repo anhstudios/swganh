@@ -1,7 +1,7 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
  
- Copyright (c) 2006 - 2011 The SWG:ANH Team
+ Copyright (c) 2006 - 2012 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
