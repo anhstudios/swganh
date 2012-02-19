@@ -41,13 +41,13 @@ namespace command {
 
     typedef std::function<void (
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible> & target,	// target object
+		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)
     > CommandHandler;
 
     typedef std::function<std::tuple<bool, uint32_t, uint32_t> (
         const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible> & target, // target object
+		const std::shared_ptr<swganh::object::tangible::Tangible>&, // target object
         const swganh::messages::controllers::CommandQueueEnqueue&,
         const CommandProperties&)	// action
     > CommandFilter;
