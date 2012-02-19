@@ -47,7 +47,7 @@ public:
     bool AddSession(const std::shared_ptr<Session>& session);
     bool RemoveSession(const std::shared_ptr<Session>& session);
     bool SessionExists();
-    const std::shared_ptr<Session>& GetSession(boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
 private:
     typedef tbb::concurrent_hash_map<uint32_t, std::shared_ptr<Session>> SessionMap;
 

@@ -59,7 +59,7 @@ bool SessionManager::RemoveSession(const std::shared_ptr<Session>& session) {
     return false;
 }
 
-const std::shared_ptr<Session>& SessionManager::GetSession(boost::asio::ip::udp::endpoint& endpoint) {
+std::shared_ptr<Session> SessionManager::GetSession(boost::asio::ip::udp::endpoint& endpoint) {
     SessionMap::accessor a;
     if (sessions_.find(a, CreateEndpointHash(endpoint))) {
         return a->second;
