@@ -99,7 +99,8 @@ service::ServiceDescription CharacterService::GetServiceDescription() {
     return service_description;
 }
 
-void CharacterService::onStart() {}
+void CharacterService::onStart() {
+}
 
 void CharacterService::onStop() {}
 

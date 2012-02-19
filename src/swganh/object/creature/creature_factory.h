@@ -49,6 +49,9 @@ namespace creature {
         void LoadSkillMods_(const std::shared_ptr<Creature>& creature, 
             const std::shared_ptr<sql::Statement>& statement);
 
+        void LoadSkillCommands_(const std::shared_ptr<Creature>& creature, 
+            const std::shared_ptr<sql::Statement>& statement);
+
         std::unordered_map<std::string, std::shared_ptr<Creature>>::iterator GetTemplateIter_(const std::string& template_name);
         std::unordered_map<std::string, std::shared_ptr<Creature>> creature_templates_;
     };

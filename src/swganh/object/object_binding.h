@@ -64,6 +64,7 @@ void exportObject()
 								&ObjectWrapper::GetCustomName, return_value_policy<copy_const_reference>()
 							), &ObjectWrapper::SetCustomName, "Property to get and set the custom name"
 					)
+		.def("NotifyObservers", &ObjectWrapper::NotifyObservers, "Notifies Observers of the passed in message")
 		;
 }
 

@@ -104,7 +104,7 @@ void TangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
         DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
-void TangibleFactory::CreateBaseTangible(const shared_ptr<BaseTangible>& tangible, const std::shared_ptr<sql::Statement>& statement)
+void TangibleFactory::CreateTangible(const shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement)
 {
     try {
         auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
@@ -141,7 +141,7 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
         ss << "CALL sp_GetTangible(" << object_id << ");";   
 
         statement->execute(ss.str());
-        CreateBaseTangible(tangible, statement);  
+        CreateTangible(tangible, statement);  
     }
     catch(sql::SQLException &e)
     {

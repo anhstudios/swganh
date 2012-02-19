@@ -58,8 +58,8 @@ namespace player {
         void PersistQuestJournal_(const std::shared_ptr<Player>& player);
         void LoadForceSensitiveQuests_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
         void PersistForceSensitiveQuests_(const std::shared_ptr<Player>& player);
-        void LoadAbilities_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
-        void PersistAbilities_(const std::shared_ptr<Player>& player);
+        //void LoadAbilities_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
+        //void PersistAbilities_(const std::shared_ptr<Player>& player);
         void LoadFriends_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
         void PersistFriends_(const std::shared_ptr<Player>& player);
         void LoadIgnoredList_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);

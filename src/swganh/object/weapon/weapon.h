@@ -4,13 +4,13 @@
 
 #include <set>
 #include "swganh/object/object.h"
-#include "swganh/object/tangible/base_tangible.h"
+#include "swganh/object/tangible/tangible.h"
 
 namespace swganh {
 namespace object {
 namespace weapon {
     
-class Weapon : public swganh::object::tangible::BaseTangible
+class Weapon : public swganh::object::tangible::Tangible
 {
 public:
     Weapon();
@@ -22,7 +22,27 @@ protected:
     // baselines
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
 private:
-    
+    int attack_type;
+    std::string weapon_effect;
+    int weaponEffectIndex;
+    bool certified;
+    int armor_piercing;
+    int point_blank_acc;
+    int point_blank_range;
+    int ideal_range;
+    int ideal_accuracy;
+    int max_range;
+    int max_range_accuracy;
+    int damage_type;
+    float attack_speed;
+    float min_damage;
+    float max_damage;
+    float area;
+    float wounds_ratio;
+    int health_attack_cost;
+    int action_attack_cost;
+    int mind_attack_cost;
+    int force_cost;
     // weapon customization ??
     uint32_t ukn1;
     uint32_t ukn2;

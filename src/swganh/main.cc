@@ -65,8 +65,11 @@ int main(int argc, char* argv[]) {
                 
                 // Stop the application and join the thread until it's finished.
                 app.Stop();
-                application_thread.join();
-
+                if (application_thread.joinable())
+					application_thread.join();
+				else
+					application_thread.interrupt();
+				
                 break;
             } else {
                 LOG(WARNING) << "Invalid command received: " << cmd;

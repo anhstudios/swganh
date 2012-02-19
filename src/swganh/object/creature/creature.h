@@ -23,7 +23,7 @@
 
 #include <list>
 
-#include "swganh/object/tangible/base_tangible.h"
+#include "swganh/object/tangible/tangible.h"
 
 #include "swganh/messages/containers/network_array.h"
 #include "swganh/messages/containers/network_sorted_list.h"
@@ -218,7 +218,7 @@ struct Stat
         : value(0)
     {}
 
-    Stat(uint32_t value_)
+    Stat(int32_t value_)
         : value(value_)
     {}
 
@@ -227,15 +227,15 @@ struct Stat
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
-        message.data.write<uint32_t>(value);
+        message.data.write<int32_t>(value);
     }
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
-        message.data.write<uint32_t>(value);
+        message.data.write<int32_t>(value);
     }
 
-    uint32_t value;
+    int32_t value;
 };
     
 /**
@@ -355,11 +355,18 @@ struct Skill
         return (name == other.name);
     }
 };
+/**
+ *
+ */
+struct SkillCommands
+{
+
+};
 
 /**
  *
  */
-class Creature : public swganh::object::tangible::BaseTangible
+class Creature : public swganh::object::tangible::Tangible
 {
 public:
     Creature();
@@ -378,11 +385,11 @@ public:
     uint32_t GetCashCredits(void);
 
     // Stat Base
-    void SetStatBase(StatIndex stat_index, uint32_t value);
-    void AddStatBase(StatIndex stat_index, uint32_t value);
-    void DeductStatBase(StatIndex stat_index, uint32_t value);
+    void SetStatBase(StatIndex stat_index, int32_t value);
+    void AddStatBase(StatIndex stat_index, int32_t value);
+    void DeductStatBase(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetBaseStats(void);
-    uint32_t GetStatBase(StatIndex stat_index);
+    int32_t GetStatBase(StatIndex stat_index);
 
     // Skills
     void AddSkill(std::string skill);
@@ -390,10 +397,21 @@ public:
     swganh::messages::containers::NetworkList<Skill> GetSkills(void);
     bool HasSkill(std::string skill);
 
+    // Skill Commands
+    std::map<uint32_t, std::string> GetSkillCommands();
+    bool HasSkillCommand(std::string skill);
+    void AddSkillCommand(std::pair<uint32_t, std::string> skill_command);
+    void RemoveSkillCommand(std::string skill_command);
+
+
     // Posture
     void SetPosture(Posture posture);
     Posture GetPosture(void);
 
+    // IsDead
+    bool IsDead();
+    // IsIncapacitated
+    bool IsIncapacitated();
     // Faction Rank
     void SetFactionRank(uint8_t faction_rank);
     uint8_t GetFactionRank(void);
@@ -407,20 +425,24 @@ public:
     float GetScale(void);
 
     // Battle Fatigue
+    void AddBattleFatigue(uint32_t battle_fatigue);
     void SetBattleFatigue(uint32_t battle_fatigue);
     uint32_t GetBattleFatigue(void);
 
     // State Bitmask
     void SetStateBitmask(uint64_t state_bitmask);
     void ToggleStateBitmask(uint64_t state_bitmask);
+    void ToggleStateOn(uint64_t state);
+    void ToggleStateOff(uint64_t state);
     uint64_t GetStateBitmask(void);
+    bool HasState(uint64_t state);
 
     // Wounds
-    void DeductStatWound(StatIndex stat_index, uint32_t value);
-    void AddStatWound(StatIndex stat_index, uint32_t value);
-    void SetStatWound(StatIndex stat_index, uint32_t value);
+    void DeductStatWound(StatIndex stat_index, int32_t value);
+    void AddStatWound(StatIndex stat_index, int32_t value);
+    void SetStatWound(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetStatWounds(void);
-    uint32_t GetStatWound(StatIndex stat_index);
+    int32_t GetStatWound(StatIndex stat_index);
 
     // Acceleration Multiplier Base
     void SetAccelerationMultiplierBase(float acceleration_multiplier_base);
@@ -431,11 +453,11 @@ public:
     float GetAccelerationMultiplierModifier(void);
 
     // Stat Encumberance
-    void AddStatEncumberance(StatIndex stat_index, uint32_t value);
-    void DeductStatEncumberance(StatIndex stat_index, uint32_t value);
-    void SetStatEncumberance(StatIndex stat_index, uint32_t value);
+    void AddStatEncumberance(StatIndex stat_index, int32_t value);
+    void DeductStatEncumberance(StatIndex stat_index, int32_t value);
+    void SetStatEncumberance(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetStatEncumberances(void);
-    uint32_t GetStatEncumberance(StatIndex stat_index);
+    int32_t GetStatEncumberance(StatIndex stat_index);
 
     // Skill Mods
     void AddSkillMod(SkillMod mod);
@@ -528,18 +550,18 @@ public:
     uint32_t GetPerformanceId(void);
 
     // Current Stats
-    void SetStatCurrent(StatIndex stat_index, uint32_t value);
-    void AddStatCurrent(StatIndex stat_index, uint32_t value);
-    void DeductStatCurrent(StatIndex stat_index, uint32_t value);
+    void SetStatCurrent(StatIndex stat_index, int32_t value);
+    void AddStatCurrent(StatIndex stat_index, int32_t value);
+    void DeductStatCurrent(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetCurrentStats(void);
-    uint32_t GetStatCurrent(StatIndex stat_index);
+    int32_t GetStatCurrent(StatIndex stat_index);
 
     // Max Stats
-    void SetStatMax(StatIndex stat_index, uint32_t value);
-    void AddStatMax(StatIndex stat_index, uint32_t value);
-    void DeductStatMax(StatIndex stat_index, uint32_t value);
+    void SetStatMax(StatIndex stat_index, int32_t value);
+    void AddStatMax(StatIndex stat_index, int32_t value);
+    void DeductStatMax(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetMaxStats(void);
-    uint32_t GetStatMax(StatIndex stat_index);
+    int32_t GetStatMax(StatIndex stat_index);
 
     // Equipment List
     void AddEquipmentItem(EquipmentItem& item);
@@ -562,6 +584,12 @@ public:
     void TogglePvpStateOff(PvpStatus state);
     void TogglePvpState(PvpStatus state);
     bool CheckPvpState(PvpStatus state) const;
+    bool CanAttack(Creature* creature);
+
+    void AddToDuelList(uint64_t id);
+    void RemoveFromDuelList(uint64_t id);
+    bool InDuelList(uint64_t id);
+    std::vector<uint64_t>& GetDuelList();
 
     // Baselines
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1();
@@ -579,6 +607,7 @@ private:
     uint32_t    cash_credits_;                                                              // update 1 variable 1
     swganh::messages::containers::NetworkArray<Stat> stat_base_list_;                       // update 1 variable 2
     swganh::messages::containers::NetworkList<Skill> skills_;                               // update 1 variable 3
+    std::map<uint32_t, std::string> skill_commands_;
     uint32_t    posture_;                                                                   // update 3 variable 11
     uint8_t     faction_rank_;                                                              // update 3 variable 12
     uint64_t    owner_id_;                                                                  // update 3 variable 13
@@ -618,6 +647,7 @@ private:
     std::string disguise_;                                                                  // update 6 variable 16
     bool stationary_;                                                                       // update 6 variable 17
     PvpStatus pvp_status_;
+    std::vector<uint64_t> duel_list_;
 };
 
 }}}  // namespace swganh::object::creature

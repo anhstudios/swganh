@@ -206,11 +206,6 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
                 if (statement->getMoreResults())
                 {
                     result.reset(statement->getResultSet());
-                    LoadAbilities_(player, result);
-                }
-                if (statement->getMoreResults())
-                {
-                    result.reset(statement->getResultSet());
                     LoadDraftSchematics_(player, result);
                 }
                 if (statement->getMoreResults())
@@ -444,24 +439,7 @@ void PlayerFactory::LoadForceSensitiveQuests_(shared_ptr<Player> player, shared_
 void PlayerFactory::PersistForceSensitiveQuests_(const shared_ptr<Player>& player)
 {
 }
-void PlayerFactory::LoadAbilities_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
-{
-    try 
-    {
-        while (result->next())
-        {
-           player->AddAbility(result->getString("ability"));
-        }
-    }
-        catch(sql::SQLException &e)
-    {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-void PlayerFactory::PersistAbilities_(const shared_ptr<Player>& player)
-{
-}
+
 void PlayerFactory::LoadFriends_(shared_ptr<Player> player, shared_ptr<sql::ResultSet> result)
 {
     try 

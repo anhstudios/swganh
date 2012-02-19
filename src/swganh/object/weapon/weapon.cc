@@ -9,7 +9,7 @@ using namespace swganh::object;
 using namespace swganh::object::weapon;
 
 Weapon::Weapon()
-    : BaseTangible()
+    : Tangible()
     , ukn1(3)
     , ukn2(0)
     , ukn3(0)
@@ -25,7 +25,7 @@ boost::optional<BaselinesMessage> Weapon::GetBaseline3()
     auto message = CreateBaselinesMessage(Object::VIEW_3, 11);
     
     // base data
-    message.data.append(BaseTangible::GetBaseline3().get().data);
+    message.data.append(Tangible::GetBaseline3().get().data);
     // ukns
     message.data.write(ukn1);
     message.data.write(ukn2);

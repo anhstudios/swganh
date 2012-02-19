@@ -454,7 +454,7 @@ void SimulationService::UnregisterControllerHandler(uint32_t handler_id)
 
 void SimulationService::onStart()
 {
-    auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
+	auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
         
     connection_service->RegisterMessageHandler<SelectCharacter>([=] (
         shared_ptr<ConnectionClient> client, 

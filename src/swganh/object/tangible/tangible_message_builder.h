@@ -15,24 +15,24 @@ namespace swganh {
 namespace object {
 namespace tangible {
 
-    class BaseTangible;
+    class Tangible;
     class TangibleMessageBuilder
     {
     public:
         // deltas
-        static void BuildCustomizationDelta(BaseTangible* tangible);
-        static void BuildComponentCustomizationDelta(BaseTangible* tangible);
-        static void BuildOptionsMaskDelta(BaseTangible* tangible);
-        static void BuildIncapTimerDelta(BaseTangible* tangible);
-        static void BuildConditionDamageDelta(BaseTangible* tangible);
-        static void BuildMaxConditionDelta(BaseTangible* tangible);
-        static void BuildStaticDelta(BaseTangible* tangible);
-        static void BuildDefendersDelta(BaseTangible* tangible);
+        static void BuildCustomizationDelta(Tangible* tangible);
+        static void BuildComponentCustomizationDelta(Tangible* tangible);
+        static void BuildOptionsMaskDelta(Tangible* tangible);
+        static void BuildIncapTimerDelta(Tangible* tangible);
+        static void BuildConditionDamageDelta(Tangible* tangible);
+        static void BuildMaxConditionDelta(Tangible* tangible);
+        static void BuildStaticDelta(Tangible* tangible);
+        static void BuildDefendersDelta(Tangible* tangible);
         
         // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(BaseTangible* tangible);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(BaseTangible* tangible);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(BaseTangible* tangible);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Tangible* tangible);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Tangible* tangible);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(Tangible* tangible);
     };
 
 }}}  // swganh::object::tangible

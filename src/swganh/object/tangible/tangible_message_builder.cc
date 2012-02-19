@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "base_tangible.h"
+#include "tangible.h"
 #include "swganh/messages/deltas_message.h"
 #include "swganh/messages/baselines_message.h"
 
@@ -11,7 +11,7 @@ using namespace swganh::object::tangible;
 using namespace swganh::messages;
 
 
-void TangibleMessageBuilder::BuildCustomizationDelta(BaseTangible* tangible)
+void TangibleMessageBuilder::BuildCustomizationDelta(Tangible* tangible)
 {
     if (tangible->HasObservers())
     {
@@ -21,7 +21,7 @@ void TangibleMessageBuilder::BuildCustomizationDelta(BaseTangible* tangible)
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildComponentCustomizationDelta(BaseTangible* tangible)
+void TangibleMessageBuilder::BuildComponentCustomizationDelta(Tangible* tangible)
 {
     if (tangible->HasObservers())
     {
@@ -32,7 +32,7 @@ void TangibleMessageBuilder::BuildComponentCustomizationDelta(BaseTangible* tang
     else
         tangible->component_customization_list_.ClearDeltas();
 }
-void TangibleMessageBuilder::BuildOptionsMaskDelta(BaseTangible* tangible)
+void TangibleMessageBuilder::BuildOptionsMaskDelta(Tangible* tangible)
 {
     if (tangible->HasObservers())
     {
@@ -41,7 +41,7 @@ void TangibleMessageBuilder::BuildOptionsMaskDelta(BaseTangible* tangible)
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildIncapTimerDelta(BaseTangible* tangible)
+void TangibleMessageBuilder::BuildIncapTimerDelta(Tangible* tangible)
 {
     if (tangible->HasObservers())
     {
@@ -50,7 +50,7 @@ void TangibleMessageBuilder::BuildIncapTimerDelta(BaseTangible* tangible)
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildConditionDamageDelta(BaseTangible* tangible)
+void TangibleMessageBuilder::BuildConditionDamageDelta(Tangible* tangible)
 {
     if (tangible->HasObservers())
     {
@@ -59,7 +59,7 @@ void TangibleMessageBuilder::BuildConditionDamageDelta(BaseTangible* tangible)
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildMaxConditionDelta(BaseTangible* tangible)
+void TangibleMessageBuilder::BuildMaxConditionDelta(Tangible* tangible)
 {
     if (tangible->HasObservers())
     {
@@ -68,7 +68,7 @@ void TangibleMessageBuilder::BuildMaxConditionDelta(BaseTangible* tangible)
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildStaticDelta(BaseTangible* tangible)
+void TangibleMessageBuilder::BuildStaticDelta(Tangible* tangible)
 {
     if (tangible->HasObservers())
     {
@@ -78,7 +78,7 @@ void TangibleMessageBuilder::BuildStaticDelta(BaseTangible* tangible)
     }
 }
 
-void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible)
+void TangibleMessageBuilder::BuildDefendersDelta(Tangible* tangible)
 {
     if (tangible->HasObservers())
     {
@@ -86,12 +86,10 @@ void TangibleMessageBuilder::BuildDefendersDelta(BaseTangible* tangible)
         tangible->defender_list_.Serialize(message);
         tangible->AddDeltasUpdate(move(message));
     }
-    else
-        tangible->component_customization_list_.ClearDeltas();
 }
 
 // baselines
-boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(BaseTangible* tangible)
+boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(Tangible* tangible)
 {
     auto message = tangible->CreateBaselinesMessage(tangible->Object::VIEW_3, 11);
     message.data.append(tangible->Object::GetBaseline3().get().data);
@@ -104,14 +102,14 @@ boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(BaseTan
     message.data.write<uint8_t>(tangible->is_static_ ? 1 : 0);
     return boost::optional<BaselinesMessage>(std::move(message));
 }
-boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(BaseTangible* tangible)
+boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(Tangible* tangible)
 {
     auto message = tangible->CreateBaselinesMessage(Object::VIEW_6, 2);
     message.data.append(tangible->Object::GetBaseline6().get().data);
     tangible->defender_list_.Serialize(message);
     return boost::optional<BaselinesMessage>(std::move(message));
 }
-boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline7(BaseTangible* tangible)
+boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline7(Tangible* tangible)
 {
     auto message = tangible->CreateBaselinesMessage(Object::VIEW_7, 2);
     message.data.write<uint64_t>(0);

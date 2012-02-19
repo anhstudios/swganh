@@ -13,6 +13,9 @@ class CommandQueueEnqueue;
 }} // messages::controllers
 namespace object {
 class Object;
+namespace tangible {
+    class Tangible;
+}
 namespace creature {
 class Creature;
 }} // object::creature
@@ -34,25 +37,31 @@ struct CommandFilters {
 
 static std::tuple<bool, uint32_t, uint32_t> TargetCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
-		const std::shared_ptr<swganh::object::Object>& target, 
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties);
 
 static std::tuple<bool, uint32_t, uint32_t> PostureCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
-		const std::shared_ptr<swganh::object::Object>& target, 
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties);
 
 static std::tuple<bool, uint32_t, uint32_t> StateCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
-		const std::shared_ptr<swganh::object::Object>& target, 
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties);
 
 static std::tuple<bool, uint32_t, uint32_t> AbilityCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
-		const std::shared_ptr<swganh::object::Object>& target, 
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
+		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
+        const CommandProperties& command_properties);
+
+static std::tuple<bool, uint32_t, uint32_t> CombatTargetCheckFilter(
+        const std::shared_ptr<swganh::object::creature::Creature>& actor, 
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties);
 };
