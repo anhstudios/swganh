@@ -60,7 +60,7 @@ typedef std::function<void (std::shared_ptr<Packet>)> MessageHandler;
  *
  * 
  */
-class Server : public std::enable_shared_from_this<Server>, public ServerInterface {
+class Server : public ServerInterface {
 public:
     Server(boost::asio::io_service& io_service, anh::EventDispatcher* event_dispatcher, MessageHandler message_handler);
     ~Server(void);
