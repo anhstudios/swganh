@@ -40,11 +40,11 @@ namespace filters {
  */
 class SendPacketFilter {
 public:
-	SendPacketFilter(std::shared_ptr<Socket> socket);
+	SendPacketFilter(Socket* socket);
 
-	void operator()(std::shared_ptr<Packet> packet) const;
+	void operator()(const std::shared_ptr<Packet>& packet) const;
 private:
-	std::shared_ptr<Socket> socket_;
+	Socket* socket_;
 };
 
 }}}} // namespace anh::network::soe::filters

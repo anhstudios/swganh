@@ -29,7 +29,7 @@ using namespace anh::network::soe;
 using namespace filters;
 using namespace std;
 
-void SoeProtocolFilter::operator()(shared_ptr<Packet> packet) const {
+void SoeProtocolFilter::operator()(const shared_ptr<Packet>& packet) const {
     if (!packet) { return; }
     
     auto message = packet->message();

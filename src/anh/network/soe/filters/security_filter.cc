@@ -32,7 +32,7 @@ using namespace std;
 SecurityFilter::SecurityFilter(uint32_t max_receive_size)
     : max_receive_size_(max_receive_size) {}
 
-shared_ptr<Packet> SecurityFilter::operator()(shared_ptr<Packet> packet) const {
+shared_ptr<Packet> SecurityFilter::operator()(const std::shared_ptr<Packet>& packet) const {
     if (!packet) { return nullptr; }
 
     auto message_size = packet->message()->size();
@@ -43,7 +43,7 @@ shared_ptr<Packet> SecurityFilter::operator()(shared_ptr<Packet> packet) const {
         // @TODO: Track the number of errors for a session and set a threshhold where
         // their connection is dropped after a certain number of bad packets.
 
-        packet = nullptr;
+        return nullptr;
     }
 
     
@@ -53,7 +53,7 @@ shared_ptr<Packet> SecurityFilter::operator()(shared_ptr<Packet> packet) const {
         // @TODO: Track the number of errors for a session and set a threshhold where
         // their connection is dropped after a certain number of bad packets.
 
-        packet = nullptr;
+        return nullptr;
     }
 
     return packet;

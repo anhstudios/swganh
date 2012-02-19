@@ -54,7 +54,7 @@ public:
      * @param packet An IncomingPacket token to process.
      * @return An IncomingPacket token to process in the pipeline.
      */
-    std::shared_ptr<Packet> operator()(std::shared_ptr<Packet> packet) const;
+    std::shared_ptr<Packet> operator()(const std::shared_ptr<Packet>& packet) const;
 
 private:
     // Disable default construction.

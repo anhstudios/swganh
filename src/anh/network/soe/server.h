@@ -99,7 +99,7 @@ private:
     /**
      * @brief Called when the socket receives a message.
      */
-    void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
+    void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const std::shared_ptr<anh::ByteBuffer>& message);
 
     std::shared_ptr<Socket>		socket_;
     boost::asio::io_service&	io_service_;

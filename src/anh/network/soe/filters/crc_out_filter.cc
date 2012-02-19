@@ -32,7 +32,7 @@ using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-shared_ptr<Packet> CrcOutFilter::operator()(shared_ptr<Packet> packet) const {
+std::shared_ptr<Packet> CrcOutFilter::operator()(const std::shared_ptr<Packet>& packet) const {
     auto message = packet->message();
 
     try {

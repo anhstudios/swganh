@@ -34,7 +34,7 @@ using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-shared_ptr<Packet> DecompressionFilter::operator()(shared_ptr<Packet> packet) const {
+std::shared_ptr<Packet> DecompressionFilter::operator()(const std::shared_ptr<Packet>& packet) const {
     if (!packet) { return nullptr; }
 
     auto session = packet->session();
@@ -63,7 +63,7 @@ shared_ptr<Packet> DecompressionFilter::operator()(shared_ptr<Packet> packet) co
     return packet;
 }
 
-void DecompressionFilter::Decompress_(shared_ptr<ByteBuffer> buffer) const {
+void DecompressionFilter::Decompress_(shared_ptr<ByteBuffer>& buffer) const {
     std::vector<uint8_t>& packet_data = buffer->raw();
 
     uint16_t offset = (packet_data[0] == 0x00) ? 2 : 1;

@@ -32,7 +32,7 @@ using namespace anh::network::soe;
 using namespace filters;
 using namespace std;
 
-shared_ptr<Packet> DecryptionFilter::operator()(shared_ptr<Packet> packet) const {
+shared_ptr<Packet> DecryptionFilter::operator()(const std::shared_ptr<Packet>& packet) const {
     if (!packet) { return nullptr; }
 
     auto session = packet->session();

@@ -31,10 +31,10 @@ using namespace anh::network::soe;
 using namespace filters;
 using namespace std;
 
-SendPacketFilter::SendPacketFilter(shared_ptr<Socket> socket)
+SendPacketFilter::SendPacketFilter(Socket* socket)
     : socket_(socket) {}
 
-void SendPacketFilter::operator()(shared_ptr<Packet> packet) const {   
+void SendPacketFilter::operator()(const shared_ptr<Packet>& packet) const {   
     auto message = packet->message();
 
     try {

@@ -29,7 +29,7 @@ using namespace anh::network::soe;
 using namespace filters;
 using namespace std;
 
-shared_ptr<Packet> EncryptionFilter::operator()(shared_ptr<Packet> packet) const {
+shared_ptr<Packet> EncryptionFilter::operator()(const std::shared_ptr<Packet>& packet) const {
     auto message = packet->message();
 
     try {

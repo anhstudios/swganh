@@ -39,7 +39,7 @@ namespace filters {
  */
 class SoeProtocolFilter {
 public:
-	void operator()(std::shared_ptr<Packet> item) const;
+	void operator()(const std::shared_ptr<Packet>& item) const;
 };
 
 }}}} // namespace anh::network::soe::filters

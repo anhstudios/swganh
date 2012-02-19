@@ -34,7 +34,7 @@ using namespace std;
 
 CrcInFilter::CrcInFilter(void) {}
 
-shared_ptr<Packet> CrcInFilter::operator()(shared_ptr<Packet> packet) const {
+std::shared_ptr<Packet> CrcInFilter::operator()(const std::shared_ptr<Packet>& packet) const {
     if (!packet) { return nullptr; }
 
 

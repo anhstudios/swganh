@@ -36,7 +36,7 @@ namespace filters {
 	
 class CrcOutFilter {
 public:
-	std::shared_ptr<Packet> operator()(std::shared_ptr<Packet> packet) const;
+	std::shared_ptr<Packet> operator()(const std::shared_ptr<Packet>& packet) const;
 };
 
 }}}} // namespace anh::network::soe::filters

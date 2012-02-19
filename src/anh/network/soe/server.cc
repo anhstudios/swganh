@@ -101,7 +101,7 @@ void Server::HandleMessage(shared_ptr<Packet> packet) {
     message_handler_(packet);
 }
 
-void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message) {
+void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const std::shared_ptr<anh::ByteBuffer>& message) {
     // Query the SessionManager for the Session.
     std::shared_ptr<Session> session = session_manager_.GetSession(remote_endpoint);
 

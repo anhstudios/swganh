@@ -42,10 +42,10 @@ namespace filters {
  */
 class DecompressionFilter {
 public:
-	std::shared_ptr<Packet> operator()(std::shared_ptr<Packet> item) const;
+	std::shared_ptr<Packet> operator()(const std::shared_ptr<Packet>& item) const;
 
 private:
-	void Decompress_(std::shared_ptr<anh::ByteBuffer> buffer) const;
+	void Decompress_(std::shared_ptr<anh::ByteBuffer>& buffer) const;
 };
 
 }}}} // namespace anh::network::soe::filters
