@@ -79,9 +79,9 @@ void Server::Start(uint16_t port)
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CompressionFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, EncryptionFilter()) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CrcOutFilter()) &
-        make_filter<shared_ptr<Packet>, void>(filter::serial_in_order, SendPacketFilter(socket_));
+        make_filter<shared_ptr<Packet>, void>(filter::serial_in_order, SendPacketFilter(socket_.get()));
 
-    active_.AsyncRepeated(boost::posix_time::milliseconds(1), [this] () {
+    active_.AsyncRepeated(boost::posix_time::microseconds(1), [this] () {
         parallel_pipeline(1000, incoming_filter_);
         parallel_pipeline(1000, outgoing_filter_);
 
