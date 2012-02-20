@@ -28,6 +28,8 @@
 
 #include "swganh/messages/controllers/combat_action_message.h"
 #include "swganh/messages/controllers/combat_spam_message.h"
+#include "swganh/messages/chat_system_message.h"
+#include "swganh/messages/out_of_band.h"
 
 using namespace std;
 using namespace anh;
@@ -134,7 +136,10 @@ bool CombatService::InitiateCombat(
         return false;
     
     if (attacker->GetObjectId() == target->GetObjectId())
+    {
+        attacker->GetController()->SendSystemMessage(OutOfBand("cbt_spam","shoot_self"));
         return false;
+    }
 
     shared_ptr<Creature> creature_target = nullptr;
     if (target->GetType() == Creature::type)
@@ -201,6 +206,10 @@ void CombatService::SendCombatAction(
             command_service_->EnqueueCommand(attacker, target, command_message);
             //command_service_->EnqueueCommand(creature_target, attacker, command_message);
         }
+    }
+    else
+    {
+        attacker->GetController()->SendSystemMessage(OutOfBand("error_message","target_not_attackable"));
     }
 }
 int CombatService::SingleTargetCombatAction(
@@ -427,7 +436,7 @@ int CombatService::ApplyDamage(
         //health_damage = GetArmorReduction(attacker, defender, damage, HEALTH) * damage_multiplier;
         if (defender->GetStatCurrent(HEALTH) - generated <= 0)
         {
-            SetIncapacitated(defender);
+            SetIncapacitated(attacker, defender);
         }
         else
             defender->DeductStatCurrent(HEALTH, generated);
@@ -441,7 +450,7 @@ int CombatService::ApplyDamage(
         //action_damage = GetArmorReduction(attacker, defender, damage, ACTION) * damage_multiplier;
         if (defender->GetStatCurrent(ACTION) - generated <= 0)
         {
-            SetIncapacitated(defender);
+            SetIncapacitated(attacker, defender);
         }
         else
             defender->DeductStatCurrent(HEALTH, generated);
@@ -454,7 +463,7 @@ int CombatService::ApplyDamage(
         //mind_damage = GetArmorReduction(attacker, defender, damage, MIND) * damage_multiplier;
         if (defender->GetStatCurrent(MIND) - generated <= 0)
         {
-            SetIncapacitated(defender);
+            SetIncapacitated(attacker, defender);
         }
         else
             defender->DeductStatCurrent(HEALTH, generated);
@@ -540,11 +549,20 @@ void CombatService::SendCombatActionMessage(
         attacker->NotifyObservers(ObjControllerMessage(0x000000CC, cam));
 }
 
-void CombatService::SetIncapacitated(const shared_ptr<Creature>& target)
+void CombatService::SetIncapacitated(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)
 {
     target->SetPosture(INCAPACITATED);
     // TODO: Get this from config Default Incap Timer 
     target->SetIncapTimer(15);
+    EndCombat(attacker, target);
+
+    attacker->GetController()->SendSystemMessage(OutOfBand("base_player", "prose_target_incap", TT, target->GetObjectId()));
+    if (attacker)
+    {
+        target->GetController()->SendSystemMessage(OutOfBand("base_player", "prose_victim_incap", TT, attacker->GetObjectId()));
+    }
+    else
+        target->GetController()->SendSystemMessage(OutOfBand("base_player", "victim_incapacitated"));
 
     delayed_task_->PushTask(boost::posix_time::seconds(15), [=](){
         // Incap Recovery
@@ -555,9 +573,39 @@ void CombatService::SetIncapacitated(const shared_ptr<Creature>& target)
     });
     
 }
-void CombatService::SetDead(const std::shared_ptr<swganh::object::creature::Creature>& target)
+void CombatService::SetDead(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)
 {
     target->SetPosture(DEAD);
     // Clear States
     target->SetStateBitmask(NONE);
+    EndCombat(attacker, target);
+    attacker->GetController()->SendSystemMessage(OutOfBand("base_player", "killer_target_dead", TT, target->GetObjectId()));
+    attacker->GetController()->SendSystemMessage(OutOfBand("base_player", "prose_target_dead", TT, target->GetObjectId()));
+    if (attacker)
+        target->GetController()->SendSystemMessage(OutOfBand("base_player", "prose_victim_dead", TT, attacker->GetObjectId()));
+    else
+        target->GetController()->SendSystemMessage(OutOfBand("base_player", "victim_dead"));
+}
+
+void CombatService::EndDuel(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)
+{
+    if (attacker->InDuelList(target->GetObjectId()))
+    {
+        attacker->RemoveFromDuelList(target->GetObjectId());
+        attacker->SetPvPStatus(PvPStatus_Player);
+        attacker->ToggleStateOff(COMBAT);
+        // End the Duel for the target as well
+        EndDuel(target, attacker);
+    }
+}
+void CombatService::EndCombat(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)
+{
+    attacker->ClearAutoAttack();
+    attacker->ToggleStateOff(COMBAT);
+    // For Some Reason This Crashes...
+    //attacker->RemoveDefender(target->GetObjectId());
+    target->RemoveDefender(attacker->GetObjectId());
+    attacker->SetTargetId(0);
+    // End Duel
+    EndDuel(attacker, target);
 }

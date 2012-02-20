@@ -125,7 +125,7 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(
 	uint32_t error = 0;
 	uint32_t action = 0;
     // Command groups 1 and 2 are combat commands
-    if (command_properties.command_group != 0)
+    if (command_properties.command_group != 0 && target != nullptr) 
     {
         if (target->GetType() == Creature::type)
         {
