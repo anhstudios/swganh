@@ -86,7 +86,7 @@ void MovementManager::SendDataTransformMessage(const shared_ptr<Object>& object,
     
     ObjControllerMessage message(unknown, move(transform));
 
-    object->NotifyObservers(message);
+    object->GetController()->Notify(message);
 }
 
 void MovementManager::SendUpdateDataTransformMessage(const shared_ptr<Object>& object)
@@ -113,7 +113,7 @@ void MovementManager::SendDataTransformWithParentMessage(const shared_ptr<Object
     
     ObjControllerMessage message(unknown, move(transform));
 
-    object->NotifyObservers(message);
+    object->GetController()->Notify(message);
 }
 
 void MovementManager::SendUpdateDataTransformWithParentMessage(const shared_ptr<Object>& object)
