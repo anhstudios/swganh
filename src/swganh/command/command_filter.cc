@@ -75,7 +75,8 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(
 	uint32_t error = 0;
 	uint32_t action = 0;
 	uint32_t current_state = actor->GetStateBitmask();
-	if ((current_state & command_properties.deny_in_states) != command_properties.deny_in_states)
+	if (command_properties.deny_in_states == 0 ||
+        (current_state & command_properties.deny_in_states) != command_properties.deny_in_states)
 	{
 		check_passed = true;
 	}
