@@ -35,6 +35,13 @@ namespace messages {
  *
  * Credit to Xenozephyr for information.
  */
+enum ProseType {
+    TU = 0,
+    TT,
+    TO,
+    DI,
+    DF
+};
 struct ProsePackage {
     /**
      * Default constructor.
@@ -116,6 +123,13 @@ public:
      */
     explicit OutOfBand(const ProsePackage& prose);
 
+    /**
+     * Constructor overload for common Prose Packages
+     *
+     *
+     */
+    OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
+              ProseType prose_type, uint64_t object_id, bool display_flag = 0);
     /**
      * Constructor overload for OutOfBand taking a ProsePackage.
      *

@@ -89,9 +89,9 @@ namespace object {
          * @param chatbox_only used to send to only the chatbox or to the screen as well
          * @param send_to_inrange used to determine to send to any players in range as well
          */
-        bool SendSystemMessage(const std::wstring& custom_message, bool chatbox_only = false, bool send_to_inrange = true);
+        bool SendSystemMessage(const std::wstring& custom_message, bool chatbox_only = false, bool send_to_inrange = false);
 
-        bool SendSystemMessage(const swganh::messages::OutOfBand& prose, bool chatbox_only = false, bool send_to_inrange = true);
+        bool SendSystemMessage(const swganh::messages::OutOfBand& prose, bool chatbox_only = false, bool send_to_inrange = false);
         
     private:
         /**

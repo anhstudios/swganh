@@ -45,6 +45,30 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                     di_integer, df_float, display_flag);
 }
 
+OutOfBand::OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
+              ProseType prose_type, uint64_t object_id, bool display_flag)
+    : count_(0)
+    , data_(new ByteBuffer())
+{
+    Initialize_();
+    switch (prose_type)
+    {
+        case TU:
+            AddProsePackage(base_stf_file, base_stf_string, object_id, 0, 0, 0, 0.0f, display_flag);
+            break;
+        case TT:
+            AddProsePackage(base_stf_file, base_stf_string, 0, object_id, 0, 0, 0.0f, display_flag);
+            break;
+        case TO:
+            AddProsePackage(base_stf_file, base_stf_string, 0, 0, object_id, 0, 0.0f, display_flag);
+            break;
+        default:
+            AddProsePackage(base_stf_file, base_stf_string, 0, object_id, 0, 0, 0.0f, display_flag);
+            break;
+    }
+    
+}
+
 OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                      uint64_t tu_object_id, uint64_t tt_object_id, uint64_t to_object_id,
                      int32_t di_integer, float df_float, bool display_flag)
