@@ -20,6 +20,11 @@ namespace network {
 }}
 
 namespace swganh {
+namespace messages {
+    class OutOfBand;
+}}
+
+namespace swganh {
 namespace object {
 
     class Object;
@@ -74,8 +79,36 @@ namespace object {
          * @param message The message to be delivered to the remote client.
          */
         void Notify(const anh::ByteBuffer& message);
+
+        // Send System Message
+
+        /**
+         * Used to send a specific system message to the player
+         *
+         * @param custom_message, the custom message to send
+         * @param chatbox_only used to send to only the chatbox or to the screen as well
+         * @param send_to_inrange used to determine to send to any players in range as well
+         */
+        bool SendSystemMessage(const std::wstring& custom_message, bool chatbox_only = false, bool send_to_inrange = true);
+
+        bool SendSystemMessage(const swganh::messages::OutOfBand& prose, bool chatbox_only = false, bool send_to_inrange = true);
         
     private:
+        /**
+         * Sends out a system message.
+         *
+         * This internal method is invoked by the two SendSystemMessage overloads to send out a system message.
+         *
+         * @param custom_message A custom text string to be sent.
+         * @param prose A custom STF string package.
+         * @param player The recepient of the system message. If no player is passed the message is sent to everyone.
+         * @param chatbox_only Determines whether the message is displayed on screen or in the chatbox
+         *                     only. By default this is false meaning messages are by default displayed on screen and the chatbox.
+         * @param send_to_inrange If true the message is sent to all in-range players of the target recipient.
+         */
+        bool SendSystemMessage_(const std::wstring& custom_message, const swganh::messages::OutOfBand& prose, bool chatbox_only, bool send_to_inrange);
+
+
         ObjectController();
 
         std::shared_ptr<Object> object_;
