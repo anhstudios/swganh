@@ -48,6 +48,8 @@ class ByteBuffer;
 namespace network {
 namespace soe {
 
+
+
 typedef std::function<void (uint32_t, std::shared_ptr<ByteBuffer>)> DatachannelHandler;
 
 /**

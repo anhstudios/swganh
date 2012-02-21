@@ -24,7 +24,6 @@
 
 #include <glog/logging.h>
 
-#include "anh/network/soe/session_manager.h"
 #include "anh/network/soe/server_interface.h"
 
 #include "anh/network/soe/protocol_opcodes.h"

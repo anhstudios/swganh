@@ -78,12 +78,12 @@ void DecompressionFilter::Decompress_(shared_ptr<ByteBuffer>& buffer) const {
     
     inflateInit(&zstream_);
 
-    std::vector<uint8_t> decompression_output(800);
+    std::vector<uint8_t> decompression_output(496);
     
     zstream_.next_in   = reinterpret_cast<Bytef *>(&packet_data[offset]);
     zstream_.avail_in  = packet_data.size() - offset;
     zstream_.next_out  = reinterpret_cast<Bytef *>(&decompression_output[0]);
-    zstream_.avail_out = 800;
+    zstream_.avail_out = 496;
 
     inflate(&zstream_, Z_FINISH); // Decompress Data
     

@@ -32,7 +32,6 @@
 #include <tbb/pipeline.h>
 
 #include "anh/network/soe/server_interface.h"
-#include "anh/network/soe/session_manager.h"
 
 #include "anh/active_object.h"
 
@@ -109,7 +108,8 @@ private:
     void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const std::shared_ptr<anh::ByteBuffer>& message);
 
     //std::shared_ptr<Socket>		socket_;
-    boost::asio::io_service&	io_service_;
+    boost::asio::io_service& io_service_;
+    boost::asio::strand strand_;
     
     uint64_t	bytes_recv_;
     uint64_t	bytes_sent_;
@@ -117,8 +117,15 @@ private:
     boost::asio::ip::udp::socket		socket_;
     boost::asio::ip::udp::endpoint		current_remote_endpoint_;
     std::array<char, 496>				recv_buffer_;
+    
+    typedef std::map<
+        boost::asio::ip::udp::endpoint,
+        std::shared_ptr<Session>
+    > SessionMap;
+    
+    boost::mutex session_map_mutex_;
+    SessionMap session_map_;
 
-    SessionManager				session_manager_;
     anh::EventDispatcher*       event_dispatcher_;
     uint32_t					crc_seed_;
     

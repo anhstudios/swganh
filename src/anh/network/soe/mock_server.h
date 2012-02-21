@@ -23,7 +23,6 @@
 
 #include <gmock/gmock.h>
 #include "anh/network/soe/server.h"
-#include "anh/network/soe/session_manager.h"
 
 namespace anh{
 
