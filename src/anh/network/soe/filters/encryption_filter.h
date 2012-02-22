@@ -25,19 +25,21 @@
 #include <memory>
 
 namespace anh {
-namespace network {
-namespace soe {
-class Packet;
-}}}  // namespace anh::network::soe
 
-namespace anh {
+    class ByteBuffer;
+
 namespace network {
 namespace soe {
+
+    class Session;
+
 namespace filters {
 
 class EncryptionFilter {
 public:
-	std::shared_ptr<Packet> operator()(const std::shared_ptr<Packet>& item) const;
+    void operator()(
+        const std::shared_ptr<Session>& session,
+        const std::shared_ptr<ByteBuffer>& message);
 
 private:
 	void Encrypt_(char* buffer, uint32_t len, uint32_t seed) const;

@@ -54,21 +54,12 @@ Server::~Server(void)
 
 void Server::Start(uint16_t port)
 {
-    outgoing_filter_ = 
-        make_filter<void, shared_ptr<Packet>>(filter::serial_in_order, OutgoingStartFilter(outgoing_messages_)) &
-        make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CompressionFilter()) &
-        make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, EncryptionFilter()) &
-        make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CrcOutFilter()) &
-        make_filter<shared_ptr<Packet>, void>(filter::serial_in_order, SendPacketFilter(this));
-    
     socket_.open(udp::v4());
     socket_.bind(udp::endpoint(udp::v4(), port));
     
     AsyncReceive();
 
     active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
-        parallel_pipeline(1000, outgoing_filter_);
-        
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_), 

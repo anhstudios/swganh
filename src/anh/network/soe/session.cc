@@ -386,7 +386,16 @@ void Session::handleOutOfOrderA_(OutOfOrderA& packet)
 
 void Session::SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message)
 {
-    server_->SendMessage(shared_from_this(), message);
+    strand_.post([=] () 
+    {
+        auto session = shared_from_this();
+
+        compression_filter_(session, message);
+        encryption_filter_(session, message);
+        crc_output_filter_(session, message);
+
+        server_->SendTo(session->remote_endpoint(), message);
+    });
 }
 
 bool Session::SequenceIsValid_(const uint16_t& sequence)

@@ -20,30 +20,24 @@
 
 #include "anh/network/soe/filters/encryption_filter.h"
 
-#include <glog/logging.h>
-
-#include "anh/network/soe/packet.h"
+#include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
 
-using namespace anh::network::soe;
+using namespace anh;
+using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-shared_ptr<Packet> EncryptionFilter::operator()(const std::shared_ptr<Packet>& packet) const {
-    auto message = packet->message();
-
-    try {
-        uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;
-                
-        Encrypt_(
-            (char*)message->data() + offset,
-            message->size() - offset, 
-            packet->session()->crc_seed());
-    } catch(...) {
-        DLOG(WARNING) << "Error encrypting outgoing message \n\n" << *message;
-    }
-
-    return packet;
+void EncryptionFilter::operator()(
+    const std::shared_ptr<Session>& session,
+    const std::shared_ptr<ByteBuffer>& message)
+{
+    uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;
+            
+    Encrypt_(
+        (char*)message->data() + offset,
+        message->size() - offset, 
+        session->crc_seed());
 }
 
 void EncryptionFilter::Encrypt_(char* data, uint32_t len, uint32_t seed) const {
