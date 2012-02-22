@@ -250,7 +250,7 @@ public:
      */
     const anh::ByteBuffer* Pack() const;
 
-private:
+protected:
     void Initialize_();
     void SetCount_(anh::ByteBuffer& buffer, uint16_t count);
     void SetLength_(anh::ByteBuffer& buffer);

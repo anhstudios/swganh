@@ -28,6 +28,7 @@
 
 using namespace boost::python;
 using namespace std;
+using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::object::tangible;
 
@@ -131,7 +132,7 @@ void exportCreature()
 		.def_readwrite("modifier", &SkillMod::modifier)
 		.def("__eq__", &SkillMod::operator==)
 		;
-	class_<CreatureWrapper, bases<Tangible>, boost::noncopyable>("Creature")
+	class_<CreatureWrapper, bases<Tangible>, std::shared_ptr<Creature>, boost::noncopyable>("Creature")
 		// STATS
 		.def("set_stat_base", &CreatureWrapper::SetStatBase, "sets the base STAT value, see enum STAT")
 		.def("add_stat_base", &CreatureWrapper::AddStatBase, "adds to the given STAT")
