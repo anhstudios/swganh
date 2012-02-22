@@ -46,8 +46,6 @@ Server::Server(boost::asio::io_service& io_service, EventDispatcher* event_dispa
     , active_(io_service)
     , message_handler_(message_handler)
     , max_receive_size_(496)
-    , decompression_filter_(max_receive_size_)
-    , security_filter_(max_receive_size_)
 {}
 
 Server::~Server(void)
@@ -125,16 +123,7 @@ void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const
     strand_.post([=] () {
         auto session = GetSession(remote_endpoint);
 
-        security_filter_(session, message);
-
-        if (session->connected())
-        {
-            crc_input_filter_(session, message);
-            decryption_filter_(session, message);
-            decompression_filter_(session, message);
-        }
-
-        session->HandleMessage(message);
+        session->HandleProtocolMessage(message);
     });
 }
 

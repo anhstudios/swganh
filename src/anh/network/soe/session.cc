@@ -50,6 +50,8 @@ Session::Session(boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface
     , outgoing_data_message_(0)
     , incoming_fragmented_total_len_(0)
     , incoming_fragmented_curr_len_(0)
+    , decompression_filter_(server_->max_receive_size())
+    , security_filter_(server_->max_receive_size())
 {
     server_sequence_ = 0;
 }
@@ -196,6 +198,26 @@ void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)
         }
     });
 }
+
+void Session::HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& message)
+{
+    strand_.post([=] () 
+    {
+        auto session = shared_from_this();
+        
+        security_filter_(session, message);
+        
+        if (connected())
+        {
+            crc_input_filter_(session, message);
+            decryption_filter_(session, message);
+            decompression_filter_(session, message);
+        }
+
+        HandleMessage(message);
+    });
+}
+
 
 void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message) {
     // Get the next sequence number

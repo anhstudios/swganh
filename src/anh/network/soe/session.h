@@ -36,6 +36,18 @@
 #include "anh/network/soe/protocol_packets.h"
 #include "anh/network/soe/server_interface.h"
 
+#include "anh/network/soe/filters/receive_packet_filter.h"
+#include "anh/network/soe/filters/crc_in_filter.h"
+#include "anh/network/soe/filters/decryption_filter.h"
+#include "anh/network/soe/filters/decompression_filter.h"
+#include "anh/network/soe/filters/soe_protocol_filter.h"
+#include "anh/network/soe/filters/outgoing_start_filter.h"
+#include "anh/network/soe/filters/compression_filter.h"
+#include "anh/network/soe/filters/crc_out_filter.h"
+#include "anh/network/soe/filters/encryption_filter.h"
+#include "anh/network/soe/filters/send_packet_filter.h"
+#include "anh/network/soe/filters/security_filter.h"
+
 #ifdef SendMessage
 #undef SendMessage
 #endif
@@ -130,6 +142,8 @@ public:
 
     void HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message);
 
+    void HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& message);
+
     /**
      * Clears each message pump.
      */
@@ -204,6 +218,11 @@ private:
     std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
     uint16_t							incoming_fragmented_total_len_;
     uint16_t							incoming_fragmented_curr_len_;
+
+    filters::CrcInFilter crc_input_filter_;
+    filters::DecryptionFilter decryption_filter_;
+    filters::DecompressionFilter decompression_filter_;
+    filters::SecurityFilter security_filter_;
 };
 
 }}} // namespace anh::network::soe
