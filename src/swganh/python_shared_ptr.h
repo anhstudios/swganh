@@ -1,23 +1,29 @@
 #ifndef SWGANH_PYTHON_SHAREDPTR_H_
 #define SWGANH_PYTHON_SHAREDPTR_H_
 
-#include "boost/python.hpp"
 #include <memory>
 
-namespace std {
-template<class T>
-inline T * get_pointer(std::shared_ptr<T> const& p){
-    return p.get();
-}
+namespace boost { 
+  template<class T> const T* get_pointer(const std::shared_ptr<T>& ptr) 
+  {
+    return ptr.get();
+  }
+
+  template<class T> T* get_pointer(std::shared_ptr<T>& ptr)
+  {
+    return ptr.get();
+  }
 }
 
-namespace boost{ namespace python{
-    template <class T>
-    struct pointee< std::shared_ptr<T> >{
-        typedef T type;
-    };
-
-} }
+//#include <boost/python.hpp>
+//namespace boost{ namespace python{
+//    template <class T>
+//    struct pointee< std::shared_ptr<T> >
+//    {
+//        typedef T type;
+//    };
+//
+//}}
 
 
 #endif//SWGANH_PYTHON_SHAREDPTR_H_

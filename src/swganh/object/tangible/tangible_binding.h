@@ -21,23 +21,24 @@
 #ifndef SWGANH_OBJECT_TANGIBLE_TANGIBLE_BINDING_H_
 #define SWGANH_OBJECT_TANGIBLE_TANGIBLE_BINDING_H_
 
+#include "swganh/object/object_binding.h"
 #include "swganh/object/tangible/tangible.h"
-#include "swganh/object/creature/creature_binding.h"
 
 #include <boost/python.hpp>
 
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object::tangible;
-using namespace swganh::object::creature;
 
+namespace swganh { namespace object { namespace tangible {
 struct TangibleWrapper : Tangible,  wrapper<Tangible>
 {
 };
+}}}
 
 void exportTangible()
 {
-	class_<TangibleWrapper, bases<swganh::object::Object>, boost::noncopyable>("Tangible")
+	class_<TangibleWrapper, bases<swganh::object::Object>, std::shared_ptr<Tangible>, boost::noncopyable>("Tangible")
 		.add_property("customization", &TangibleWrapper::GetCustomization, &TangibleWrapper::SetCustomization, "Gets and Sets the tangible customization")
 		.def("customization.__add__", &TangibleWrapper::AddCustomization, "Adds a string to the existing customization")
 		.def("component_customization.__add__", &TangibleWrapper::AddComponentCustomization, "Adds a crc to the component customization list")
