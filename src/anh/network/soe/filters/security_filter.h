@@ -43,7 +43,7 @@ namespace filters {
         /**
          * @param max_receive_size Maximum allowed size of incoming messages.
          */
-        SecurityFilter(uint32_t max_receive_size);
+        explicit SecurityFilter(uint32_t max_receive_size);
     
         void operator()(
             const std::shared_ptr<Session>& session,
