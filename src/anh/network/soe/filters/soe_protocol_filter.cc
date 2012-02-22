@@ -35,7 +35,7 @@ void SoeProtocolFilter::operator()(const shared_ptr<Packet>& packet) const {
     auto message = packet->message();
 
     try {
-        packet->session()->HandleMessage(*message);
+        packet->session()->HandleMessage(message);
     } catch(...) {
         DLOG(WARNING) << "Error while handling soe protocol processing\n\n" << *message;
     }

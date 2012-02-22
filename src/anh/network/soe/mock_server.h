@@ -50,7 +50,7 @@ public:
 
     MOCK_METHOD1(AddSession, bool(std::shared_ptr<Session> session));
     MOCK_METHOD1(RemoveSession, bool(std::shared_ptr<Session> session));
-    MOCK_METHOD1(GetSession, std::shared_ptr<Session>(boost::asio::ip::udp::endpoint& endpoint));
+    MOCK_METHOD1(GetSession, std::shared_ptr<Session>(const boost::asio::ip::udp::endpoint& endpoint));
 
     MOCK_METHOD0(socket, boost::asio::ip::udp::socket*());
     MOCK_METHOD0(max_receive_size, uint32_t());

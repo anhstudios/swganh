@@ -28,17 +28,6 @@
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
-#include "anh/network/soe/filters/receive_packet_filter.h"
-#include "anh/network/soe/filters/crc_in_filter.h"
-#include "anh/network/soe/filters/decryption_filter.h"
-#include "anh/network/soe/filters/decompression_filter.h"
-#include "anh/network/soe/filters/soe_protocol_filter.h"
-#include "anh/network/soe/filters/outgoing_start_filter.h"
-#include "anh/network/soe/filters/compression_filter.h"
-#include "anh/network/soe/filters/crc_out_filter.h"
-#include "anh/network/soe/filters/encryption_filter.h"
-#include "anh/network/soe/filters/send_packet_filter.h"
-#include "anh/network/soe/filters/security_filter.h"
 
 using namespace anh;
 using namespace network::soe;
@@ -57,6 +46,8 @@ Server::Server(boost::asio::io_service& io_service, EventDispatcher* event_dispa
     , active_(io_service)
     , message_handler_(message_handler)
     , max_receive_size_(496)
+    , decompression_filter_(max_receive_size_)
+    , security_filter_(max_receive_size_)
 {}
 
 Server::~Server(void)
@@ -65,14 +56,6 @@ Server::~Server(void)
 
 void Server::Start(uint16_t port)
 {
-    incoming_filter_ = 
-        make_filter<void, shared_ptr<Packet>>(filter::serial_in_order, ReceivePacketFilter(incoming_messages_)) &
-        make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, SecurityFilter(max_receive_size_)) &
-        make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CrcInFilter()) &
-        make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, DecryptionFilter()) &
-        make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, DecompressionFilter()) &
-        make_filter<shared_ptr<Packet>, void>(filter::serial_in_order, SoeProtocolFilter());
-        
     outgoing_filter_ = 
         make_filter<void, shared_ptr<Packet>>(filter::serial_in_order, OutgoingStartFilter(outgoing_messages_)) &
         make_filter<shared_ptr<Packet>, shared_ptr<Packet>>(filter::parallel, CompressionFilter()) &
@@ -86,7 +69,6 @@ void Server::Start(uint16_t port)
     AsyncReceive();
 
     active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
-        parallel_pipeline(1000, incoming_filter_);
         parallel_pipeline(1000, outgoing_filter_);
         
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
@@ -140,15 +122,20 @@ void Server::AsyncReceive() {
     });
 }
 void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const std::shared_ptr<anh::ByteBuffer>& message) {
-    // Query the SessionManager for the Session.
-    std::shared_ptr<Session> session = GetSession(remote_endpoint);
+    strand_.post([=] () {
+        auto session = GetSession(remote_endpoint);
 
-    // If the Session doesnt exist, check for a Session Requesst.
-    if(session == nullptr) {
-        session = make_shared<Session>(remote_endpoint, this);
-    }
-        
-    incoming_messages_.push(make_shared<Packet>(session, message));
+        security_filter_(session, message);
+
+        if (session->connected())
+        {
+            crc_input_filter_(session, message);
+            decryption_filter_(session, message);
+            decompression_filter_(session, message);
+        }
+
+        session->HandleMessage(message);
+    });
 }
 
 bool Server::AddSession(std::shared_ptr<Session> session) {
@@ -157,7 +144,6 @@ bool Server::AddSession(std::shared_ptr<Session> session) {
     {
         session_map_.insert(make_pair(session->remote_endpoint(), session));
         event_dispatcher_->Dispatch(make_shared<ValueEvent<shared_ptr<Session>>>("NetworkSessionAdded", session));
-    
         return true;
     }
 
@@ -172,16 +158,21 @@ bool Server::RemoveSession(std::shared_ptr<Session> session) {
     return true;
 }
 
-shared_ptr<Session> Server::GetSession(udp::endpoint& endpoint) {
-    boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-
-    auto find_iter = session_map_.find(endpoint);
-    if (find_iter != session_map_.end())
+shared_ptr<Session> Server::GetSession(const udp::endpoint& endpoint) {
     {
-        return find_iter->second;
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+
+        auto find_iter = session_map_.find(endpoint);
+        if (find_iter != session_map_.end())
+        {
+            return find_iter->second;
+        }
     }
 
-    return nullptr;
+    auto session = make_shared<Session>(endpoint, this);
+    AddSession(session);
+
+    return session;
 }
 
 boost::asio::ip::udp::socket* Server::socket() {

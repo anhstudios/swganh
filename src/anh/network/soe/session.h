@@ -48,8 +48,6 @@ class ByteBuffer;
 namespace network {
 namespace soe {
 
-
-
 typedef std::function<void (uint32_t, std::shared_ptr<ByteBuffer>)> DatachannelHandler;
 
 /**
@@ -130,7 +128,7 @@ public:
         outgoing_data_messages_.push(message_buffer);
     }
 
-    void HandleMessage(anh::ByteBuffer& message);
+    void HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message);
 
     /**
      * Clears each message pump.
@@ -167,7 +165,6 @@ private:
     void handleDataFragA_(DataFragA& packet);
     void handleAckA_(AckA& packet);
     void handleOutOfOrderA_(OutOfOrderA& packet);
-
     void SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message);
 
     bool SequenceIsValid_(const uint16_t& sequence);
@@ -175,8 +172,8 @@ private:
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
     ServerInterface*					server_; // owner
-
-
+    boost::asio::strand strand_;
+    
     SequencedMessageMap					sent_messages_;
 
     bool								connected_;

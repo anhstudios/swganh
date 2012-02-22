@@ -24,44 +24,37 @@
 #include <cstdint>
 #include <memory>
 
-#include <tbb/concurrent_queue.h>
-#include <tbb/pipeline.h>
-
 namespace anh {
+
+    class ByteBuffer;
+
 namespace network {
 namespace soe {
-class Packet;
-}}}  // namespace anh::network::soe
 
-namespace anh {
-namespace network {
-namespace soe {
+    class Session;
+
 namespace filters {
 
-/**
- * Performs basic checks for malformed packets.
- */
-class SecurityFilter {
-public:
     /**
-     * @param max_receive_size Maximum allowed size of incoming messages.
+     * Performs basic checks for malformed packets.
      */
-    SecurityFilter(uint32_t max_receive_size);
-
-    /**
-     * Processes messages waiting in the incoming queue.
-     *
-     * @param packet An IncomingPacket token to process.
-     * @return An IncomingPacket token to process in the pipeline.
-     */
-    std::shared_ptr<Packet> operator()(const std::shared_ptr<Packet>& packet) const;
-
-private:
-    // Disable default construction.
-    SecurityFilter();
-
-    uint32_t max_receive_size_;
-};
+    class SecurityFilter {
+    public:
+        /**
+         * @param max_receive_size Maximum allowed size of incoming messages.
+         */
+        SecurityFilter(uint32_t max_receive_size);
+    
+        void operator()(
+            const std::shared_ptr<Session>& session,
+            const std::shared_ptr<ByteBuffer>& message) const;
+    
+    private:
+        // Disable default construction.
+        SecurityFilter();
+    
+        uint32_t max_receive_size_;
+    };
 
 }}}} // namespace anh::network::soe::filters
 

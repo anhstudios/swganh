@@ -20,66 +20,49 @@
 
 #include "anh/network/soe/filters/crc_in_filter.h"
 
-#include <algorithm>
-#include <glog/logging.h>
-
 #include "anh/byte_buffer.h"
 #include "anh/crc.h"
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
 
-using namespace anh::network::soe;
+using namespace anh;
+using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-CrcInFilter::CrcInFilter(void) {}
+CrcInFilter::CrcInFilter(void) 
+{}
 
-std::shared_ptr<Packet> CrcInFilter::operator()(const std::shared_ptr<Packet>& packet) const {
-    if (!packet) { return nullptr; }
-
-
-    auto session = packet->session();
-
-    // Don't do any processing on messages from non-connected sessions.
-    if (!session->connected()) {
-        return packet;
-    }
-
-    auto crc_length = session->crc_length();
-
-    // If crc length is 0 then crc testing is not being used, return the packet.
-    if (crc_length == 0) {
-        return packet;
-    }
+void CrcInFilter::operator()(
+    const shared_ptr<Session>& session,
+    const shared_ptr<ByteBuffer>& message) const
+{
+    uint32_t crc_length = session->crc_length();
     
-    auto message = packet->message();
-
-    try {
-        // Peel off the crc bits from the packet data.
-        ByteBuffer packet_data(message->data(), message->size() - crc_length);
-        vector<uint8_t> crc_bits(message->data() + message->size() - crc_length, message->data() + message->size());
+    // If crc length is 0 then crc testing is not being used, return the packet.
+    if (crc_length == 0)
+    {
+        return;
+    }
         
-        uint32_t packet_crc = memcrc(packet_data.data(), packet_data.size(), session->crc_seed());
-        uint32_t test_crc = 0;
-        uint32_t mask = 0;
+    // Peel off the crc bits from the packet data.
+    uint32_t message_size = message->size() - crc_length;
+    vector<uint8_t> crc_bits(message->data() + message_size, message->data() + message->size());
+    message->resize(message_size);
+    
+    uint32_t packet_crc = memcrc(message->data(), message->size(), session->crc_seed());
+    uint32_t test_crc = 0;
+    uint32_t mask = 0;
 
-        for (uint32_t i = 0; i < crc_length; ++i) {
-            test_crc |= (crc_bits[i] << (((crc_length - 1) -  i) * 8));
-            mask <<= 8;
-            mask |= 0xFF;
-        }
-
-        packet_crc &= mask;
-
-        if (test_crc != packet_crc) {       
-            LOG(WARNING) << "Crc mismatch: packet[" << hex << packet_crc << "] test[" << hex << test_crc << "]\n\n" << *message;
-            return nullptr;
-        }
-        
-        message->swap(packet_data);
-    } catch(...) {
-        DLOG(WARNING) << "Error while performing crc checking on incoming packet\n\n" << *message;
+    for (uint32_t i = 0; i < crc_length; ++i) {
+        test_crc |= (crc_bits[i] << (((crc_length - 1) -  i) * 8));
+        mask <<= 8;
+        mask |= 0xFF;
     }
 
-    return packet;
+    packet_crc &= mask;
+
+    if (test_crc != packet_crc) 
+    {
+        throw runtime_error("Crc mismatch");
+    }
 }

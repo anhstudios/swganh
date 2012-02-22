@@ -33,6 +33,18 @@
 
 #include "anh/network/soe/server_interface.h"
 
+#include "anh/network/soe/filters/receive_packet_filter.h"
+#include "anh/network/soe/filters/crc_in_filter.h"
+#include "anh/network/soe/filters/decryption_filter.h"
+#include "anh/network/soe/filters/decompression_filter.h"
+#include "anh/network/soe/filters/soe_protocol_filter.h"
+#include "anh/network/soe/filters/outgoing_start_filter.h"
+#include "anh/network/soe/filters/compression_filter.h"
+#include "anh/network/soe/filters/crc_out_filter.h"
+#include "anh/network/soe/filters/encryption_filter.h"
+#include "anh/network/soe/filters/send_packet_filter.h"
+#include "anh/network/soe/filters/security_filter.h"
+
 #include "anh/active_object.h"
 
 #ifdef SendMessage
@@ -89,7 +101,7 @@ public:
 
     bool RemoveSession(std::shared_ptr<Session> session);
 
-    std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
 
     boost::asio::ip::udp::socket* socket();
     
@@ -140,6 +152,11 @@ private:
     MessageHandler message_handler_;
 
     uint32_t max_receive_size_;
+
+    filters::CrcInFilter crc_input_filter_;
+    filters::DecryptionFilter decryption_filter_;
+    filters::DecompressionFilter decompression_filter_;
+    filters::SecurityFilter security_filter_;
 };
 
 }}} // namespace anh::network::soe

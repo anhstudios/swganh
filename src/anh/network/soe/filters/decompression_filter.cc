@@ -20,13 +20,9 @@
 
 #include "anh/network/soe/filters/decompression_filter.h"
 
-#include <array>
-
-#include <glog/logging.h>
 #include <zlib.h>
 
 #include "anh/byte_buffer.h"
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
 
 using namespace anh;
@@ -34,37 +30,27 @@ using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-std::shared_ptr<Packet> DecompressionFilter::operator()(const std::shared_ptr<Packet>& packet) const {
-    if (!packet) { return nullptr; }
+DecompressionFilter::DecompressionFilter(uint32_t max_message_size)
+    : max_message_size_(max_message_size)
+{}
 
-    auto session = packet->session();
-    
-    // Don't do any processing on messages from non-connected sessions.
-    if (!session->connected()) {
-        return packet;
+void DecompressionFilter::operator()(
+    const std::shared_ptr<Session>& session,
+    const std::shared_ptr<ByteBuffer>& message) const
+{
+    uint32_t size_without_compression_bit = message->size() - 1;
+    uint8_t compressed_bit = message->peekAt<uint8_t>(size_without_compression_bit);
+   
+    message->resize(size_without_compression_bit);
+
+    if(compressed_bit == 1) {
+        Decompress_(message);
     }
-    
-    auto message = packet->message();
-
-    try {        
-        uint8_t compressed = message->peekAt<uint8_t>(message->size() - 1);
-
-        ByteBuffer tmp(message->data(), message->size() - 1);
-        message->swap(tmp);
-
-        if(compressed == 1) {
-            Decompress_(message);
-        }
-    } catch(...) {
-        DLOG(WARNING) << "Exception thrown while decompressing message \n\n" << *message;
-        return nullptr;
-    }
-    
-    return packet;
 }
 
-void DecompressionFilter::Decompress_(shared_ptr<ByteBuffer>& buffer) const {
-    std::vector<uint8_t>& packet_data = buffer->raw();
+void DecompressionFilter::Decompress_(const shared_ptr<ByteBuffer>& buffer) const 
+{
+    auto packet_data = buffer->raw();    
 
     uint16_t offset = (packet_data[0] == 0x00) ? 2 : 1;
     
@@ -78,19 +64,17 @@ void DecompressionFilter::Decompress_(shared_ptr<ByteBuffer>& buffer) const {
     
     inflateInit(&zstream_);
 
-    std::vector<uint8_t> decompression_output(496);
+    vector<uint8_t> decompression_output(max_message_size_);
     
     zstream_.next_in   = reinterpret_cast<Bytef *>(&packet_data[offset]);
     zstream_.avail_in  = packet_data.size() - offset;
     zstream_.next_out  = reinterpret_cast<Bytef *>(&decompression_output[0]);
-    zstream_.avail_out = 496;
+    zstream_.avail_out = decompression_output.size();
 
     inflate(&zstream_, Z_FINISH); // Decompress Data
     
-    ByteBuffer decompressed(&packet_data[0], offset);
-    decompressed.write(&decompression_output[0], zstream_.total_out);
+    buffer->write_position(offset);
+    buffer->write(&decompression_output[0], zstream_.total_out);
     
     inflateEnd(&zstream_);
-
-    buffer->swap(decompressed);
 }

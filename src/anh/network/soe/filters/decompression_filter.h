@@ -21,20 +21,18 @@
 #ifndef ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
 #define ANH_NETWORK_SOE_DECOMPRESSION_FILTER_H_
 
+#include <cstdint>
 #include <memory>
 
 namespace anh {
-namespace network {
-namespace soe {
-class Packet;
-}}}  // namespace anh::network::soe
 
-namespace anh {
-
-class ByteBuffer;
+    class ByteBuffer;
 
 namespace network {
 namespace soe {
+
+    class Session;
+
 namespace filters {
 
 /**
@@ -42,10 +40,21 @@ namespace filters {
  */
 class DecompressionFilter {
 public:
-	std::shared_ptr<Packet> operator()(const std::shared_ptr<Packet>& item) const;
+    /**
+     * @param max_receive_size Maximum allowed size of incoming messages.
+     */
+    explicit DecompressionFilter(uint32_t max_message_size);
+
+    void operator()(
+        const std::shared_ptr<Session>& session,
+        const std::shared_ptr<ByteBuffer>& message) const;
 
 private:
-	void Decompress_(std::shared_ptr<anh::ByteBuffer>& buffer) const;
+    DecompressionFilter();
+
+	void Decompress_(const std::shared_ptr<anh::ByteBuffer>& buffer) const;
+    
+    uint32_t max_message_size_;
 };
 
 }}}} // namespace anh::network::soe::filters

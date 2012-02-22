@@ -45,7 +45,7 @@ public:
 
     virtual bool RemoveSession(std::shared_ptr<Session> session) = 0;
 
-    virtual std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint) = 0;
+    virtual std::shared_ptr<Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
     
     virtual boost::asio::ip::udp::socket* socket() = 0;
 
