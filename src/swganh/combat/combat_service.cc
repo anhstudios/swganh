@@ -207,10 +207,6 @@ void CombatService::SendCombatAction(
             //command_service_->EnqueueCommand(creature_target, attacker, command_message);
         }
     }
-    else
-    {
-        attacker->GetController()->SendSystemMessage(OutOfBand("error_message","target_not_attackable"));
-    }
 }
 int CombatService::SingleTargetCombatAction(
     const shared_ptr<Creature>& attacker, 
