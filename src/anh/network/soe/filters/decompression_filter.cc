@@ -20,8 +20,6 @@
 
 #include "anh/network/soe/filters/decompression_filter.h"
 
-#include <zlib.h>
-
 #include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
 
@@ -32,11 +30,12 @@ using namespace std;
 
 DecompressionFilter::DecompressionFilter(uint32_t max_message_size)
     : max_message_size_(max_message_size)
+    , decompression_output_(max_message_size_)
 {}
 
 void DecompressionFilter::operator()(
     const std::shared_ptr<Session>& session,
-    const std::shared_ptr<ByteBuffer>& message) const
+    const std::shared_ptr<ByteBuffer>& message)
 {
     uint32_t size_without_compression_bit = message->size() - 1;
     uint8_t compressed_bit = message->peekAt<uint8_t>(size_without_compression_bit);
@@ -48,14 +47,12 @@ void DecompressionFilter::operator()(
     }
 }
 
-void DecompressionFilter::Decompress_(const shared_ptr<ByteBuffer>& buffer) const 
+void DecompressionFilter::Decompress_(const shared_ptr<ByteBuffer>& buffer) 
 {
     auto packet_data = buffer->raw();    
 
     uint16_t offset = (packet_data[0] == 0x00) ? 2 : 1;
     
-    z_stream zstream_;
-
     zstream_.zalloc = Z_NULL;
     zstream_.zfree = Z_NULL;
     zstream_.opaque = Z_NULL;
@@ -64,17 +61,15 @@ void DecompressionFilter::Decompress_(const shared_ptr<ByteBuffer>& buffer) cons
     
     inflateInit(&zstream_);
 
-    vector<uint8_t> decompression_output(max_message_size_);
-    
     zstream_.next_in   = reinterpret_cast<Bytef *>(&packet_data[offset]);
     zstream_.avail_in  = packet_data.size() - offset;
-    zstream_.next_out  = reinterpret_cast<Bytef *>(&decompression_output[0]);
-    zstream_.avail_out = decompression_output.size();
+    zstream_.next_out  = reinterpret_cast<Bytef *>(&decompression_output_[0]);
+    zstream_.avail_out = decompression_output_.size();
 
     inflate(&zstream_, Z_FINISH); // Decompress Data
     
     buffer->write_position(offset);
-    buffer->write(&decompression_output[0], zstream_.total_out);
+    buffer->write(&decompression_output_[0], zstream_.total_out);
     
     inflateEnd(&zstream_);
 }

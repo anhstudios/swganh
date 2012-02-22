@@ -23,6 +23,9 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
+
+#include <zlib.h>
 
 namespace anh {
 
@@ -47,14 +50,17 @@ public:
 
     void operator()(
         const std::shared_ptr<Session>& session,
-        const std::shared_ptr<ByteBuffer>& message) const;
+        const std::shared_ptr<ByteBuffer>& message);
 
 private:
     DecompressionFilter();
 
-	void Decompress_(const std::shared_ptr<anh::ByteBuffer>& buffer) const;
+	void Decompress_(const std::shared_ptr<anh::ByteBuffer>& buffer);
     
     uint32_t max_message_size_;
+    
+    z_stream zstream_;
+    std::vector<uint8_t> decompression_output_;
 };
 
 }}}} // namespace anh::network::soe::filters
