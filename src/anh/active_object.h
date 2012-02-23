@@ -84,13 +84,11 @@ public:
         auto shared_func = std::make_shared<Handler>(move(func));
 
         Async([this, period, shared_func] () {
-            auto local_shared_func = shared_func;
-
-            (*local_shared_func)();
+            (*shared_func)();
             
-            auto wrapped_func = [local_shared_func] (const boost::system::error_code& error) {
+            auto wrapped_func = [shared_func] (const boost::system::error_code& error) {
                 if (!error) {
-                    (*local_shared_func)();
+                    (*shared_func)();
                 }
             };
 
