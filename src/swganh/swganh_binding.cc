@@ -19,8 +19,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <boost/python.hpp>
 #include "swganh_binding.h"
+#include <boost/python.hpp>
 
 using namespace boost::python;
 using namespace std;
@@ -29,18 +29,20 @@ void exportObject();
 void exportTangible();
 void exportCreature();
 void exportPlayer();
-
+void exportObjectController();
+void exportOutOfBand();
 void exportVec3();
 void exportQuat();
 
 BOOST_PYTHON_MODULE(swganh_binding) {
 	docstring_options local_docstring_options(true, true, false);
 
-	exportObject();
+    exportObject();
 	exportTangible();
 	exportCreature();
 	exportPlayer();
+    exportObjectController();
 	exportVec3();
 	exportQuat();
-
+    exportOutOfBand();
 }

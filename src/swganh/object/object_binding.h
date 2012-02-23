@@ -22,6 +22,8 @@
 #define  SWGANH_OBJECT_OBJECT_BINDING_H_
 
 #include "swganh/object/object.h"
+#include "swganh/object/object_controller_binding.h"
+#include "swganh/python_shared_ptr.h"
 
 #include <boost/python.hpp>
 
@@ -29,14 +31,18 @@ using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
 
-
+namespace swganh {
+namespace object {
 struct ObjectWrapper : Object, wrapper<Object>
 {
 };
+}}
 
 void exportObject()
 {
-	class_<ObjectWrapper, boost::noncopyable>("Object")
+    //std::shared_ptr<ObjectController> (ObjectWrapper::*GetControllerPtr)() = &ObjectWrapper::GetController;
+        
+    class_<ObjectWrapper, boost::noncopyable>("Object", no_init)
 		.add_property("id", &ObjectWrapper::GetObjectId, "Gets The id of the object")
 		.add_property("scene_id", &ObjectWrapper::GetSceneId, "Gets the scene id the object is in")
 		.add_property("type", &ObjectWrapper::GetType, "Gets the type of the object")
@@ -65,6 +71,7 @@ void exportObject()
 							), &ObjectWrapper::SetCustomName, "Property to get and set the custom name"
 					)
 		.def("NotifyObservers", &ObjectWrapper::NotifyObservers, "Notifies Observers of the passed in message")
+        .def("Controller", &ObjectWrapper::GetController, "Get the controller of the object")
 		;
 }
 
