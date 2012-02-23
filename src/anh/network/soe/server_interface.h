@@ -33,8 +33,6 @@ public:
     
     virtual void Shutdown(void) = 0;
 
-    virtual void SendMessage(std::shared_ptr<Session> session, const std::shared_ptr<anh::ByteBuffer>& outgoing_packet) = 0;
-    
     virtual void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer) = 0;
 
     virtual std::shared_ptr<anh::ByteBuffer> AllocateBuffer() = 0;

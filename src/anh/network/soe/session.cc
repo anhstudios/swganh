@@ -187,7 +187,7 @@ void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)
             default:
                 if (message->peek<uint8_t>() != 0)
                 {
-                    auto packet = make_shared<Packet>(shared_from_this(), message);
+                    auto packet = make_shared<Packet>(this->shared_from_this(), message);
                     this->server_->HandleMessage(packet);
                 }
                 else 
@@ -203,7 +203,7 @@ void Session::HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& mess
 {
     strand_.post([=] () 
     {
-        auto session = shared_from_this();
+        auto session = this->shared_from_this();
         
         security_filter_(session, message);
         
@@ -388,7 +388,7 @@ void Session::SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message)
 {
     strand_.post([=] () 
     {
-        auto session = shared_from_this();
+        auto session = this->shared_from_this();
 
         compression_filter_(session, message);
         encryption_filter_(session, message);

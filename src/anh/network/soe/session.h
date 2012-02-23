@@ -22,13 +22,13 @@
 #define ANH_NETWORK_SOE_SESSION_H_
 
 #include <array>
+#include <atomic>
 #include <functional>
 #include <list>
 #include <memory>
 #include <vector>
 
-#include <tbb/atomic.h>
-#include <tbb/concurrent_queue.h>
+#include <concurrent_queue.h>
 
 #include <boost/asio.hpp>
 
@@ -200,7 +200,7 @@ private:
     uint16_t							last_acknowledged_sequence_;
     uint16_t							next_client_sequence_;
     uint16_t							current_client_sequence_;
-    tbb::atomic<uint16_t>				server_sequence_;
+    std::atomic<uint16_t>				server_sequence_;
 
     uint32_t							next_frag_size_;
 
@@ -209,7 +209,7 @@ private:
 
     ChildDataA							outgoing_data_message_;
     
-    tbb::concurrent_queue<std::shared_ptr<anh::ByteBuffer>> outgoing_data_messages_;
+    Concurrency::concurrent_queue<std::shared_ptr<anh::ByteBuffer>> outgoing_data_messages_;
 
     std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
     uint16_t							incoming_fragmented_total_len_;

@@ -43,7 +43,6 @@ public:
     MOCK_METHOD1(Start, void(uint16_t port));
     MOCK_METHOD0(Update, void());
     MOCK_METHOD0(Shutdown, void());
-    MOCK_METHOD2(SendMessage, void(std::shared_ptr<Session> session, const std::shared_ptr<anh::ByteBuffer>& message));
     MOCK_METHOD2(SendTo, void(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer));
     MOCK_METHOD1(HandleMessage, void(std::shared_ptr<Packet> packet));
     MOCK_METHOD0(event_dispatcher, std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>());

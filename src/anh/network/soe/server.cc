@@ -33,7 +33,6 @@ using namespace anh;
 using namespace network::soe;
 using namespace filters;
 using namespace std;
-using namespace tbb;
 using boost::asio::ip::udp;
 using boost::asio::buffer;
 
@@ -75,10 +74,6 @@ void Server::Shutdown(void) {
     socket_.close();
 }
     
-void Server::SendMessage(shared_ptr<Session> session, const shared_ptr<ByteBuffer>& message) {    
-    outgoing_messages_.push(make_shared<Packet>(session, message));
-}
-
 void Server::SendTo(const udp::endpoint& endpoint, const shared_ptr<ByteBuffer>& buffer) {
     socket_.async_send_to(boost::asio::buffer(buffer->data(), buffer->size()), 
         endpoint, 

@@ -9,7 +9,7 @@
 
 #include <boost/noncopyable.hpp>
 
-#include <tbb/concurrent_unordered_map.h>
+#include <concurrent_unordered_map.h>
 
 #include "anh/observer/observer_interface.h"
 #include "swganh/messages/obj_controller_message.h"
@@ -35,7 +35,7 @@ namespace object {
         const swganh::messages::ObjControllerMessage&)
     > ObjControllerHandler;
 
-    typedef tbb::concurrent_unordered_map<
+    typedef Concurrency::concurrent_unordered_map<
         uint32_t, 
         ObjControllerHandler
     > ObjControllerHandlerMap;

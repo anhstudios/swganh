@@ -22,15 +22,8 @@
 #define ANH_NETWORK_SOE_COMPRESSION_FILTER_H_
 
 #include <memory>
-#include <tbb/pipeline.h>
 
 #include "anh/byte_buffer.h"
-
-namespace anh {
-namespace network {
-namespace soe {
-class Packet;
-}}}  // namespace anh::network::soe
 
 namespace anh {
 

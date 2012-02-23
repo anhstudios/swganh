@@ -28,8 +28,6 @@
 
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
-#include <tbb/concurrent_queue.h>
-#include <tbb/pipeline.h>
 
 #include "anh/network/soe/server_interface.h"
 
@@ -75,8 +73,6 @@ public:
      * @brief
      */
     void Shutdown(void);
-    
-    void SendMessage(std::shared_ptr<Session> session, const std::shared_ptr<anh::ByteBuffer>&  message);
     
     /**
      * @brief Sends a message on the wire to the target endpoint.
@@ -129,12 +125,6 @@ private:
     anh::EventDispatcher*       event_dispatcher_;
     uint32_t					crc_seed_;
     
-    tbb::filter_t<void, void>   incoming_filter_;
-    tbb::filter_t<void, void>   outgoing_filter_;
-
-    tbb::concurrent_queue<std::shared_ptr<Packet>> incoming_messages_;
-    tbb::concurrent_queue<std::shared_ptr<Packet>> outgoing_messages_;
-
     anh::ActiveObject active_;
 
     MessageHandler message_handler_;

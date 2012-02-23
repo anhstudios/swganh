@@ -26,7 +26,7 @@
 
 #include <boost/asio/ip/udp.hpp>
 #include <glog/logging.h>
-#include <tbb/concurrent_hash_map.h>
+#include <concurrent_unordered_map.h>
 
 #include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
@@ -48,7 +48,7 @@ public:
         std::shared_ptr<anh::network::soe::Packet> packet)
     > MessageHandler;
 
-    typedef tbb::concurrent_hash_map<
+    typedef Concurrency::concurrent_unordered_map<
         anh::HashString,
         std::pair<MessageHandler, bool> // bool IsClientRequired
     > MessageHandlerMap;
@@ -79,8 +79,7 @@ public:
         std::function<void (std::shared_ptr<ClientType>, MessageType)> handler,
         bool client_required = true)
     {
-        typename MessageHandlerMap::accessor a;
-        if (handlers_.find(a, MessageType::opcode())) {
+        if (handlers_.find(MessageType::opcode()) != handlers_.end()) {
             DLOG(WARNING) << "Handler has already been defined: " << std::hex << MessageType::opcode();
             throw HandlerAlreadyDefined("Requested registration of handler that has already been defined.");
         }
@@ -111,10 +110,10 @@ public:
 
         uint32_t message_type = message->peekAt<uint32_t>(message->read_position() + sizeof(uint16_t));
         
-        typename MessageHandlerMap::accessor a;
+        auto find_iter = handlers_.find(message_type);
 
         // No handler specified, trigger an event.
-        if (!handlers_.find(a, message_type)) {
+        if (find_iter == handlers_.end()) {
             DLOG(WARNING) << "Received message with no handler, triggering event: "
                     << std::hex << message_type << "\n\n" << *message; 
             
@@ -126,7 +125,7 @@ public:
         auto client = find_client_(packet->session()->remote_endpoint());
 
         if (!client) {
-            if (a->second.second) {
+            if (find_iter->second.second) {
                 DLOG(WARNING) << "Received a message from an invalid source: "
                         << std::hex << message_type << "\n\n" << *message; 
 
@@ -136,7 +135,7 @@ public:
             }
         }
 
-        a->second.first(client, packet);
+        find_iter->second.first(client, packet);
     }
 
 private:    
