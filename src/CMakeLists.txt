@@ -49,9 +49,6 @@ message(STATUS " - MSVC: Version ${MSVC_VERSION}")
     ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D WIN32_LEAN_AND_MEAN /D NOGDI)
     MESSAGE(STATUS "- MSVC: Disabled NON-SECURE warnings")
         
-    ADD_DEFINITIONS (/D __TBB_NO_IMPLICIT_LINKAGE=1)
-    MESSAGE(STATUS "- MSVC: Disable automatic linking for TBB library")
-    
     ADD_DEFINITIONS (/D _VARIADIC_MAX=10)
     MESSAGE(STATUS "- MSVC: Set variadic max to 10 for compatibility with all supported platforms")
 endif()
@@ -78,7 +75,6 @@ if(DEFINED VENDOR_PREFIX)
         set(ENV{TBB_ARCH_PLATFORM} "ia32\\vc11")
     endif()
     
-    set(TBB_INSTALL_DIR ${VENDOR_PREFIX}/tbb)
     set(TOLUAPP_ROOT ${VENDOR_PREFIX}/tolua++)
     set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
 endif()
@@ -95,9 +91,7 @@ find_package(GTest REQUIRED)
 find_package(GMock REQUIRED)
 find_package(MysqlConnectorC REQUIRED)
 find_package(MysqlConnectorCpp REQUIRED)
-find_package(TBB REQUIRED)
 find_package(ZLib REQUIRED)
-
 
 if(WIN32)
     include(Win32PostBuild)

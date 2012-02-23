@@ -181,6 +181,14 @@ public:
     * \param length The length to reserve for the ByteBuffer.
     */
     void reserve(size_t length);
+    
+    /*! Resizes the buffer.
+    *
+    * This does not release any memory, simply changes the end point.
+    *
+    * \param length The length to reserve for the ByteBuffer.
+    */
+    void resize(size_t length);
 
     /*! \return Returns the size of the ByteBuffer (actual memory used)
     */

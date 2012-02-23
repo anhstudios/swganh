@@ -2,6 +2,7 @@
 #ifndef SWGANH_APP_SWGANH_APP_H_
 #define SWGANH_APP_SWGANH_APP_H_
 
+#include <atomic>
 #include <list>
 #include <memory>
 #include <string>
@@ -10,7 +11,6 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/thread/thread.hpp>
-#include <tbb/atomic.h>
 
 #include "anh/app/app_interface.h"
 #include "anh/service/service_directory.h"
@@ -52,7 +52,7 @@ private:
     
     std::list<std::shared_ptr<boost::thread>> io_threads_;
     std::shared_ptr<SwganhKernel> kernel_;
-    tbb::atomic<bool> running_;
+    std::atomic<bool> running_;
     bool initialized_;
 };
 

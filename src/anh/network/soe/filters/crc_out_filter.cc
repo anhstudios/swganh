@@ -32,20 +32,15 @@ using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-shared_ptr<Packet> CrcOutFilter::operator()(shared_ptr<Packet> packet) const {
-    auto message = packet->message();
-
-    try {
-        uint32_t packet_crc = memcrc(message->data(), message->size(), packet->session()->crc_seed());
-        
-        uint8_t crc_low = (uint8_t)packet_crc;
-        uint8_t crc_high = (uint8_t)(packet_crc >> 8);
-        
-        message->write<uint8_t>(crc_high);
-        message->write<uint8_t>(crc_low);
-    } catch(...) {
-        DLOG(WARNING) << "Error performing crc checksum on outgoing message\n\n" << *message;
-    }
-
-    return packet;
+void CrcOutFilter::operator()(
+    const std::shared_ptr<Session>& session,
+    const std::shared_ptr<ByteBuffer>& message) 
+{
+    uint32_t packet_crc = memcrc(message->data(), message->size(), session->crc_seed());
+    
+    uint8_t crc_low = (uint8_t)packet_crc;
+    uint8_t crc_high = (uint8_t)(packet_crc >> 8);
+    
+    message->write<uint8_t>(crc_high);
+    message->write<uint8_t>(crc_low);
 }

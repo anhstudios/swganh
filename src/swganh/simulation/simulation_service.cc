@@ -346,8 +346,8 @@ private:
 
     ObjControllerHandlerMap controller_handlers_;
 
-    tbb::concurrent_unordered_map<uint64_t, shared_ptr<Object>> loaded_objects_;
-    tbb::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
+    Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<Object>> loaded_objects_;
+    Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
 };
 
 }}  // namespace swganh::simulation

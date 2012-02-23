@@ -60,15 +60,6 @@ add_custom_command(
     VERBATIM
 )
 
-get_filename_component(TBB_CPP_DLL_PATH ${TBB_LIBRARY_DEBUG} PATH)
-string(REPLACE "/" "\\" TBB_CPP_DLL_PATH "${TBB_CPP_DLL_PATH}")
-add_custom_command(
-    TARGET DEPS
-    POST_BUILD
-    COMMAND xcopy "${TBB_CPP_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
-    VERBATIM
-)
-
 get_filename_component(ZLIB_DLL_PATH ${ZLIB_LIBRARY_DEBUG} PATH)
 string(REPLACE "/" "\\" ZLIB_DLL_PATH "${ZLIB_DLL_PATH}\\..")
 add_custom_command(

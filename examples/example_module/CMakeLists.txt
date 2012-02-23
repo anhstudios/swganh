@@ -11,7 +11,6 @@ AddANHModule(example_module
         ${GLM_INCLUDE_DIR}
         ${GLOG_INCLUDE_DIR}
         ${PYTHON_INCLUDE_DIR}
-        ${TBB_INCLUDE_DIRS}
 		${ZLIB_INCLUDE_DIR}
     ADDITIONAL_LIBRARY_DIRS
         ${Boost_LIBRARY_DIRS}
@@ -19,7 +18,6 @@ AddANHModule(example_module
     DEBUG_LIBRARIES 
         ${MYSQL_LIB}
         ${MYSQLCONNECTORCPP_LIBRARY_DEBUG}
-        ${TBB_DEBUG_LIBRARIES}
         ${Boost_DATE_TIME_LIBRARY_DEBUG}
         ${Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG}
         ${Boost_PYTHON_LIBRARY_DEBUG}
@@ -40,7 +38,6 @@ AddANHModule(example_module
         ${Boost_SYSTEM_LIBRARY_RELEASE}
         ${Boost_THREAD_LIBRARY_RELEASE}
         ${Boost_FILESYSTEM_LIBRARY_RELEASE}
-        ${TBB_LIBRARIES}
         ${PYTHON_LIBRARY}
         ${GLOG_LIBRARY_RELEASE}
 		${ZLIB_LIBRARY_RELEASE}

@@ -5,8 +5,9 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
-#include <tbb/concurrent_hash_map.h>
+#include <boost/thread/mutex.hpp>
 
 #include "anh/hash_string.h"
 
@@ -45,10 +46,11 @@ class ConnectionService
     , public swganh::base::SwgMessageRouter<ConnectionClient>
 {
 public:
-    typedef tbb::concurrent_hash_map<
+    typedef std::unordered_map<
         boost::asio::ip::udp::endpoint, 
         std::shared_ptr<ConnectionClient>,
-        anh::network::soe::EndpointHashCompare
+        anh::network::soe::EndpointHash,
+        anh::network::soe::EndpointEqual
     > ClientMap;
 public:
     ConnectionService(
@@ -81,6 +83,7 @@ protected:
     std::shared_ptr<swganh::login::LoginService> login_service();
 
 private:    
+    boost::mutex clients_mutex_;
     ClientMap clients_;
     
     void HandleClientIdMsg_(

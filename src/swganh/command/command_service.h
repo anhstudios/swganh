@@ -10,8 +10,7 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include <tbb/concurrent_queue.h>
-#include <tbb/concurrent_unordered_map.h>
+#include <concurrent_unordered_map.h>
 
 #include "anh/delayed_task_processor.h"
 
@@ -41,13 +40,13 @@ namespace command {
 
     typedef std::function<void (
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible> & target,	// target object
+		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)
     > CommandHandler;
 
     typedef std::function<std::tuple<bool, uint32_t, uint32_t> (
         const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible> & target, // target object
+		const std::shared_ptr<swganh::object::tangible::Tangible>&, // target object
         const swganh::messages::controllers::CommandQueueEnqueue&,
         const CommandProperties&)	// action
     > CommandFilter;
@@ -112,7 +111,7 @@ namespace command {
             std::unique_ptr<anh::SimpleDelayedTaskProcessor>
         > CommandProcessorMap;
 
-        typedef tbb::concurrent_unordered_map<
+        typedef Concurrency::concurrent_unordered_map<
             uint32_t, 
             CommandHandler
         > HandlerMap;        

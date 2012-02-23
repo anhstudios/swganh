@@ -22,19 +22,27 @@
 #define ANH_NETWORK_SOE_SESSION_H_
 
 #include <array>
+#include <atomic>
 #include <functional>
 #include <list>
 #include <memory>
 #include <vector>
 
-#include <tbb/atomic.h>
-#include <tbb/concurrent_queue.h>
+#include <concurrent_queue.h>
 
 #include <boost/asio.hpp>
 
 #include "anh/network/soe/packet.h"
 #include "anh/network/soe/protocol_packets.h"
 #include "anh/network/soe/server_interface.h"
+
+#include "anh/network/soe/filters/crc_in_filter.h"
+#include "anh/network/soe/filters/decryption_filter.h"
+#include "anh/network/soe/filters/decompression_filter.h"
+#include "anh/network/soe/filters/compression_filter.h"
+#include "anh/network/soe/filters/crc_out_filter.h"
+#include "anh/network/soe/filters/encryption_filter.h"
+#include "anh/network/soe/filters/security_filter.h"
 
 #ifdef SendMessage
 #undef SendMessage
@@ -128,7 +136,9 @@ public:
         outgoing_data_messages_.push(message_buffer);
     }
 
-    void HandleMessage(anh::ByteBuffer& message);
+    void HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message);
+
+    void HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& message);
 
     /**
      * Clears each message pump.
@@ -165,16 +175,15 @@ private:
     void handleDataFragA_(DataFragA& packet);
     void handleAckA_(AckA& packet);
     void handleOutOfOrderA_(OutOfOrderA& packet);
-
-    void SendSoePacket_(std::shared_ptr<anh::ByteBuffer> message);
+    void SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message);
 
     bool SequenceIsValid_(const uint16_t& sequence);
     void AcknowledgeSequence_(const uint16_t& sequence);
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
     ServerInterface*					server_; // owner
-
-
+    boost::asio::strand strand_;
+    
     SequencedMessageMap					sent_messages_;
 
     bool								connected_;
@@ -191,7 +200,7 @@ private:
     uint16_t							last_acknowledged_sequence_;
     uint16_t							next_client_sequence_;
     uint16_t							current_client_sequence_;
-    tbb::atomic<uint16_t>				server_sequence_;
+    std::atomic<uint16_t>				server_sequence_;
 
     uint32_t							next_frag_size_;
 
@@ -200,11 +209,19 @@ private:
 
     ChildDataA							outgoing_data_message_;
     
-    tbb::concurrent_queue<std::shared_ptr<anh::ByteBuffer>> outgoing_data_messages_;
+    Concurrency::concurrent_queue<std::shared_ptr<anh::ByteBuffer>> outgoing_data_messages_;
 
     std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
     uint16_t							incoming_fragmented_total_len_;
     uint16_t							incoming_fragmented_curr_len_;
+    
+    filters::CompressionFilter compression_filter_;
+    filters::CrcInFilter crc_input_filter_;
+    filters::CrcOutFilter crc_output_filter_;
+    filters::DecompressionFilter decompression_filter_;
+    filters::DecryptionFilter decryption_filter_;
+    filters::EncryptionFilter encryption_filter_;
+    filters::SecurityFilter security_filter_;
 };
 
 }}} // namespace anh::network::soe

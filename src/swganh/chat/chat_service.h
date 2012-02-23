@@ -7,10 +7,12 @@
 #include <string>
 
 #include "swganh/base/base_service.h"
+#include "swganh/messages/controllers/command_queue_enqueue.h"
 
 namespace swganh {
 namespace object {
-    class Object;
+    namespace creature { class Creature; }
+    namespace tangible { class Tangible; }
 }}  // namespace swganh::object
 
 namespace swganh {
@@ -25,13 +27,13 @@ namespace chat {
 
     private:        
         void HandleSpatialChatInternal(
-            uint64_t object_id,
-            uint64_t target_id,
-            std::wstring command_options);
+		    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+		    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+            const swganh::messages::controllers::CommandQueueEnqueue& command);
 
         void SendSpatialChat(
-            std::shared_ptr<swganh::object::Object> speaker,
-            std::shared_ptr<swganh::object::Object> target,
+		    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+		    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
             std::wstring chat_message,
             uint16_t chat_type,
             uint16_t mood);

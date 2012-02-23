@@ -9,8 +9,8 @@
 #include <boost/asio/strand.hpp>
 #include <boost/thread/future.hpp>
 
-#include <tbb/concurrent_unordered_map.h>
-#include <tbb/concurrent_vector.h>
+#include <concurrent_unordered_map.h>
+#include <concurrent_vector.h>
 
 #include "hash_string.h"
 
@@ -110,9 +110,9 @@ namespace anh {
             EventHandlerCallback callback;
         };
         
-        typedef tbb::concurrent_vector<EventHandler> EventHandlerList;
+        typedef Concurrency::concurrent_vector<EventHandler> EventHandlerList;
         
-        typedef tbb::concurrent_unordered_map<
+        typedef Concurrency::concurrent_unordered_map<
             EventType, 
             EventHandlerList
         > EventHandlerMap;

@@ -23,25 +23,27 @@
 
 #include <cstdint>
 #include <memory>
-#include <tbb/pipeline.h>
 
 namespace anh {
-namespace network {
-namespace soe {
-class Packet;
-}}}  // namespace anh::network::soe
 
-namespace anh {
+    class ByteBuffer;
+
 namespace network {
 namespace soe {
+
+    class Session;
+
 namespace filters {
 
-class DecryptionFilter {
-public:
-	std::shared_ptr<Packet> operator()(std::shared_ptr<Packet> item) const;
-private:
-	int Decrypt_(char* buffer, uint32_t len, uint32_t seed) const;
-};
+    class DecryptionFilter {
+    public:
+        void operator()(
+            const std::shared_ptr<Session>& session,
+            const std::shared_ptr<ByteBuffer>& message) const;
+    
+    private:
+    	int Decrypt_(char* buffer, uint32_t len, uint32_t seed) const;
+    };
 
 }}}} // namespace anh::network::soe::filters
 

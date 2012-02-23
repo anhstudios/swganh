@@ -33,12 +33,12 @@ class Session;
 
 class Packet {
 public:
-    Packet(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message) 
+    Packet(const std::shared_ptr<Session>& session, const std::shared_ptr<anh::ByteBuffer>& message) 
         : session_(session)
         , message_(message) {}
 
-    std::shared_ptr<Session> session() { return session_; }
-    std::shared_ptr<anh::ByteBuffer> message() { return message_; }
+    const std::shared_ptr<Session>& session() { return session_; }
+    const std::shared_ptr<anh::ByteBuffer>& message() { return message_; }
 
 private:
     Packet();

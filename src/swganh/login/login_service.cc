@@ -189,12 +189,12 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> sessio
         DLOG(WARNING) << "Adding login client";
 
         client = make_shared<LoginClient>(session);
-        
-        ClientMap::accessor a;
-        clients_.insert(a, client->GetSession()->remote_endpoint());
-        a->second = client;
-    }
 
+        boost::lock_guard<boost::mutex> lg(clients_mutex_);
+        clients_.insert(make_pair(client->GetSession()->remote_endpoint(), client));
+    }
+    
+    boost::lock_guard<boost::mutex> lg(clients_mutex_);
     DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
     return client;
 }
@@ -204,9 +204,11 @@ void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> ses
     
     if (client) {
         DLOG(WARNING) << "Removing disconnected client";
+        boost::lock_guard<boost::mutex> lg(clients_mutex_);
         clients_.erase(session->remote_endpoint());
     }
-
+    
+    boost::lock_guard<boost::mutex> lg(clients_mutex_);
     DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
 }
 
@@ -216,7 +218,8 @@ void LoginService::UpdateGalaxyStatus_() {
     galaxy_status_ = GetGalaxyStatus_();
         
     const vector<GalaxyStatus>& status = galaxy_status_;
-
+    
+    boost::lock_guard<boost::mutex> lg(clients_mutex_);
     std::for_each(clients_.begin(), clients_.end(), [&status] (ClientMap::value_type& client_entry) {
         if (client_entry.second) {                
             client_entry.second->Send(
@@ -337,14 +340,17 @@ uint32_t LoginService::GetAccountBySessionKey(const string& session_key) {
 
 
 shared_ptr<LoginClient> LoginService::GetClientFromEndpoint(
-        const boost::asio::ip::udp::endpoint& remote_endpoint)
+    const boost::asio::ip::udp::endpoint& remote_endpoint)
 {
     shared_ptr<LoginClient> client = nullptr;
     
-    ClientMap::accessor a;
+    boost::lock_guard<boost::mutex> lg(clients_mutex_);
 
-    if (clients_.find(a, remote_endpoint)) {
-        client = a->second;
+    auto find_iter = clients_.find(remote_endpoint);
+
+    if (find_iter != clients_.end()) 
+    {
+        client = find_iter->second;
     }
 
     return client;

@@ -1,7 +1,7 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
  
- Copyright (c) 2006 - 2011 The SWG:ANH Team
+ Copyright (c) 2006 - 2012 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -21,9 +21,12 @@
 #ifndef SWGANH_LOGIN_LOGIN_SERVICE_H_
 #define SWGANH_LOGIN_LOGIN_SERVICE_H_
 
+#include <unordered_map>
+
 #include <boost/asio.hpp>
+#include <boost/thread/mutex.hpp>
+
 #include <glog/logging.h>
-#include <tbb/concurrent_hash_map.h>
 
 #include "anh/network/soe/packet_utilities.h"
 #include "anh/network/soe/server.h"
@@ -69,10 +72,11 @@ class LoginService
     , public swganh::base::SwgMessageRouter<LoginClient>
 {
 public:
-    typedef tbb::concurrent_hash_map<
+    typedef std::unordered_map<
         boost::asio::ip::udp::endpoint, 
         std::shared_ptr<swganh::login::LoginClient>,
-        anh::network::soe::EndpointHashCompare
+        anh::network::soe::EndpointHash,
+        anh::network::soe::EndpointEqual
     > ClientMap;
 
     LoginService(
@@ -126,6 +130,7 @@ private:
     int login_error_timeout_secs_;
     boost::asio::deadline_timer galaxy_status_timer_;
 
+    boost::mutex clients_mutex_;
     ClientMap clients_;
 
     std::string listen_address_;

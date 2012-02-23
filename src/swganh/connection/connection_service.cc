@@ -149,10 +149,13 @@ shared_ptr<ConnectionClient> ConnectionService::GetClientFromEndpoint(
 {
     shared_ptr<ConnectionClient> client = nullptr;
     
-    ClientMap::accessor a;
+    boost::lock_guard<boost::mutex> lg(clients_mutex_);
 
-    if (clients_.find(a, remote_endpoint)) {
-        client = a->second;
+    auto find_iter = clients_.find(remote_endpoint);
+
+    if (find_iter != clients_.end()) 
+    {
+        client = find_iter->second;
     }
 
     return client;
@@ -162,6 +165,7 @@ void ConnectionService::AddClient_(
     uint64_t player_id, 
     std::shared_ptr<ConnectionClient> client) 
 {
+    boost::lock_guard<boost::mutex> lg(clients_mutex_);
     ClientMap& client_map = clients();
 
     auto find_it = std::find_if(
@@ -181,9 +185,7 @@ void ConnectionService::AddClient_(
     
     DLOG(WARNING) << "Adding connection client";
 
-    ClientMap::accessor a;
-    client_map.insert(a, client->GetSession()->remote_endpoint());
-    a->second = client;
+    client_map.insert(make_pair(client->GetSession()->remote_endpoint(), client));
 
     DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
 }
@@ -213,12 +215,18 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
         }
 
         DLOG(WARNING) << "Removing disconnected client";
-        client_map.erase(session->remote_endpoint());
+        {
+            boost::lock_guard<boost::mutex> lg(clients_mutex_);
+            client_map.erase(session->remote_endpoint());
+        }
         DLOG(WARNING) << "Removing Session";
         session_provider_->EndGameSession(client->GetPlayerId());
     }
-            
-    DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
+     
+    {
+        boost::lock_guard<boost::mutex> lg(clients_mutex_);       
+        DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
+    }
 }
 void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_code& e, shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs, shared_ptr<swganh::object::ObjectController> controller)
 {
