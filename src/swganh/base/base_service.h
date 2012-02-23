@@ -21,11 +21,11 @@
 #ifndef SWGANH_BASE_BASE_SERVICE_H_
 #define SWGANH_BASE_BASE_SERVICE_H_
 
+#include <atomic>
 #include <memory>
 #include <string>
 
 #include <boost/asio.hpp>
-#include <tbb/atomic.h>
 
 #include "anh/service/service_interface.h"
 
@@ -76,7 +76,7 @@ private:
     BaseService();
     anh::app::KernelInterface* kernel_;
         
-    tbb::atomic<bool> running_;
+    std::atomic<bool> running_;
 
     anh::ActiveObject active_;
 };

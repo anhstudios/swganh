@@ -26,7 +26,6 @@
 
 #include <glog/logging.h>
 #include <boost/thread.hpp>
-#include <tbb/task_scheduler_init.h>
 
 using namespace boost;
 using namespace swganh;
@@ -46,8 +45,6 @@ int main(int argc, char* argv[]) {
     setvbuf( stdout, NULL, _IONBF, 0);
 
     try {
-        tbb::task_scheduler_init init;
-
         app::SwganhApp app;
 
         app.Initialize(argc, argv);

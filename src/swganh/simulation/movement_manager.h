@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include <tbb/concurrent_unordered_map.h>
+#include <concurrent_unordered_map.h>
 
 #include "swganh/messages/obj_controller_message.h"
 
@@ -48,7 +48,7 @@ namespace simulation {
 
         bool ValidateCounter_(uint64_t object_id, uint32_t counter);
 
-        typedef tbb::concurrent_unordered_map<
+        typedef Concurrency::concurrent_unordered_map<
             uint64_t, uint32_t
         > UpdateCounterMap;
 

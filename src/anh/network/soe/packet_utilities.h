@@ -73,17 +73,20 @@ std::list<anh::ByteBuffer> SplitDataChannelMessage(anh::ByteBuffer message, uint
  */
 uint32_t CreateEndpointHash(const boost::asio::ip::udp::endpoint& endpoint);
 
-class EndpointHashCompare {
-public:
-    static size_t hash(const boost::asio::ip::udp::endpoint& endpoint) { 
+class EndpointHash {
+  public:
+    size_t operator ()(const boost::asio::ip::udp::endpoint& endpoint) const { 
         return anh::network::soe::CreateEndpointHash(endpoint); 
     }
+};
 
-    static bool equal( 
-        const boost::asio::ip::udp::endpoint& endpoint,
-        const boost::asio::ip::udp::endpoint& other) 
+class EndpointEqual {
+  public:
+    bool operator ()(
+        const boost::asio::ip::udp::endpoint& endpoint1, 
+        const boost::asio::ip::udp::endpoint& endpoint2) const
     {
-        return hash(endpoint) == hash(other);
+        return endpoint1 == endpoint2;
     }
 };
 

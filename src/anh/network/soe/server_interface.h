@@ -33,7 +33,7 @@ public:
     
     virtual void Shutdown(void) = 0;
 
-    virtual void SendMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> outgoing_packet) = 0;
+    virtual void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer) = 0;
 
     virtual std::shared_ptr<anh::ByteBuffer> AllocateBuffer() = 0;
 
@@ -43,9 +43,9 @@ public:
 
     virtual bool RemoveSession(std::shared_ptr<Session> session) = 0;
 
-    virtual std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint) = 0;
+    virtual std::shared_ptr<Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
     
-    virtual std::shared_ptr<Socket> socket() = 0;
+    virtual boost::asio::ip::udp::socket* socket() = 0;
 
     virtual uint32_t max_receive_size() = 0;
 };
