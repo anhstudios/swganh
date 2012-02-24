@@ -16,7 +16,7 @@ PythonCommand::PythonCommand(const CommandProperties& properties)
 {
 }
 
-void PythonCommand::operator()(shared_ptr<Creature> actor, shared_ptr<Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)
+boost::python::object PythonCommand::operator()(shared_ptr<Creature> actor, shared_ptr<Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)
 {
     shared_ptr<Creature> creature = nullptr;
     if (target && target->GetType() == Creature::type)
@@ -28,4 +28,6 @@ void PythonCommand::operator()(shared_ptr<Creature> actor, shared_ptr<Tangible> 
     script_.SetContext("command_string", command_queue_message.command_options);
 	
 	script_.Run();
+
+    return script_.GetGlobals();
 }

@@ -32,6 +32,8 @@ namespace scripting {
 		{
 			imports_ = import;
 		}
+
+        boost::python::object GetGlobals() { return globals_; }
     private:
         PythonScript();
 

@@ -27,7 +27,7 @@ namespace command {
     public:
         PythonCommand(const CommandProperties& command_properties);
 
-        void operator()(std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
+       boost::python::object operator()(std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
 
     private:
         swganh::scripting::PythonScript script_;
