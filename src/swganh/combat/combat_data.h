@@ -1,6 +1,8 @@
 #include <cstdint>
 #include <unordered_map>
+
 #include "swganh/command/command_properties.h"
+
 #include <boost/python.hpp>
 
 namespace swganh {
@@ -11,12 +13,16 @@ struct CombatData : swganh::command::CommandProperties
     // TEMP
     class StateEffect;
     class DotEffect;
-    class PythonCommand;
     CombatData(swganh::command::CommandProperties&& properties) 
         : swganh::command::CommandProperties(properties)
     {
-        
     }
+    CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties )
+        : swganh::command::CommandProperties(properties) 
+    {
+        GetPythonData(p_object);
+    }
+
     float damage_multiplier;
     int accuracy_bonus;
     float speed_multiplier;
@@ -38,10 +44,11 @@ struct CombatData : swganh::command::CommandProperties
 
     uint32_t animation_crc;
 
+    void GetPythonData(boost::python::object global);
+
     //std::unordered_map<uint64_t, StateEffect> state_effects;
     //std::unordered_map<uint64_t, DotEffect> dot_effects;
-    std::unordered_map<std::string, boost::python::object*> python_objects;
-
+    
     static std::string HIT_spam() { return "_hit"; }
     static std::string BLOCK_spam() { return "_block"; }
     static std::string DODGE_spam() { return "_evade"; }
@@ -50,6 +57,5 @@ struct CombatData : swganh::command::CommandProperties
         
     const static uint32_t DefaultAttacks[9];
 };
-const uint32_t CombatData::DefaultAttacks[9] = {0x99476628, 0xF5547B91, 0x3CE273EC, 0x734C00C,0x43C4FFD0, 0x56D7CC78, 0x4B41CAFB, 0x2257D06B,0x306887EB};
 
 }} // swganh::combat

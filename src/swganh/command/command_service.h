@@ -9,6 +9,7 @@
 
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/python.hpp>
 
 #include <concurrent_unordered_map.h>
 
@@ -18,6 +19,7 @@
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 #include "swganh/command/command_properties.h"
+
 
 namespace swganh {
 namespace object {
