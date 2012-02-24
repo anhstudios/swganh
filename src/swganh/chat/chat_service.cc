@@ -17,7 +17,9 @@
 
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"
+#include "swganh/object/creature/creature.h"
 #include "swganh/object/player/player.h"
+#include "swganh/object/tangible/tangible.h"
 
 #include "swganh/command/command_service.h"
 #include "swganh/simulation/simulation_service.h"
@@ -61,33 +63,22 @@ ServiceDescription ChatService::GetServiceDescription()
 }
 
 void ChatService::HandleSpatialChatInternal(
-    uint64_t object_id,
-    uint64_t target_id,
-    std::wstring command_options)
+	const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+	const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+    const swganh::messages::controllers::CommandQueueEnqueue& command)
 {
-    auto simulation_service = kernel()->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
-
-    shared_ptr<Object> object = simulation_service->GetObjectById(object_id);
-    shared_ptr<Object> target = nullptr;
-
-    if (target_id != 0)
-    {
-        target = simulation_service->GetObjectById(target_id);
-    }
-
     // This regular expression searches for 5 numbers separated by spaces
     // followed by a string text message.
     const wregex p(L"(\\d+) (\\d+) (\\d+) (\\d+) (\\d+) (.*)");
     wsmatch m;
 
-    if (! regex_match(command_options, m, p)) {
+    if (! regex_match(command.command_options, m, p)) {
         LOG(ERROR) << "Invalid spatial chat message format";
         return; // We suffered an unrecoverable error, bail out now.
     }
     
     SendSpatialChat(
-        object, 
+        actor, 
         target, 
         m[6].str().substr(0, 256),
         std::stoi(m[2].str()),
@@ -95,14 +86,14 @@ void ChatService::HandleSpatialChatInternal(
 }
 
 void ChatService::SendSpatialChat(
-    shared_ptr<Object> speaker,
-    shared_ptr<Object> target,
+	const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+	const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
     wstring chat_message,
     uint16_t chat_type,
     uint16_t mood)
 {    
     SpatialChat spatial_chat;
-    spatial_chat.speaker_id = speaker->GetObjectId();
+    spatial_chat.speaker_id = actor->GetObjectId();
     
     if (target)
     {
@@ -113,16 +104,21 @@ void ChatService::SendSpatialChat(
     spatial_chat.chat_type = chat_type;
     spatial_chat.mood = mood;
 
-    auto speaker_tmp = static_pointer_cast<player::Player>(speaker);
     spatial_chat.language = static_cast<uint8_t>(0);
     
-    speaker->NotifyObservers(ObjControllerMessage(0x0000000B, spatial_chat));
+    actor->NotifyObservers(ObjControllerMessage(0x0000000B, spatial_chat));
 }
 
 void ChatService::onStart()
 {
-	//auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
-    //
-    //command_service->AddCommandHandler(0x7C8D63D4,
-    //    swganh::scripting::PythonCommand("scripts/commands/spatialchatinternal.py"));
+	auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
+    
+    command_service->SetCommandHandler(0x7C8D63D4,
+        [this] (
+		const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+        const swganh::messages::controllers::CommandQueueEnqueue& command)
+    {
+        HandleSpatialChatInternal(actor, target, command);
+    });
 }

@@ -10,7 +10,7 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/python.hpp>
 
-#include <tbb/concurrent_unordered_map.h>
+#include <concurrent_unordered_map.h>
 
 #include "anh/delayed_task_processor.h"
 #include "anh/random_generator.h"
@@ -72,7 +72,7 @@ namespace combat {
 		void RegisterCombatHandler(uint32_t command_crc, CombatHandler&& handler);
         
     private:
-		typedef tbb::concurrent_unordered_map<
+		typedef Concurrency::concurrent_unordered_map<
             uint32_t, 
             CombatHandler
         > HandlerMap;
