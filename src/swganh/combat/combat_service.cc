@@ -23,7 +23,7 @@
 #include "swganh/object/weapon/weapon.h"
 
 #include "swganh/command/command_service.h"
-#include "swganh/command/python_command.h"
+#include "swganh/command/python_combat_command.h"
 #include "swganh/simulation/simulation_service.h"
 
 #include "swganh/messages/controllers/combat_action_message.h"
@@ -92,12 +92,10 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
         [this, command_crc] (
             const shared_ptr<Creature>& actor,
 			const shared_ptr<Tangible>& target, 
-            const CommandQueueEnqueue& command_queue_message)->boost::python::object {
+            const CommandQueueEnqueue& command_queue_message)->void {
 
-        // Load Up A CombatData Object and pass it along here...
-        auto python_data = combat_handlers_[command_crc](actor, target, command_queue_message);
-        SendCombatAction(actor, target, command_queue_message, python_data);
-        return python_data;
+        auto global = combat_handlers_[command_crc](actor, target, command_queue_message);
+        SendCombatAction(actor, target, command_queue_message, global);
     });
 }
 
@@ -108,7 +106,7 @@ void CombatService::RegisterCombatScript(const CommandProperties& properties)
         return;
     }
     
-    RegisterCombatHandler(properties.name_crc, PythonCommand(properties));
+    RegisterCombatHandler(properties.name_crc, PythonCombatCommand(properties));
 }
 
 void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command_properties)

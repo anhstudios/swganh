@@ -55,7 +55,7 @@ namespace combat {
         MISS
     };
 
-    typedef std::function<boost::python::object  (
+    typedef std::function<boost::python::object (
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
 		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)
