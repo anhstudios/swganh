@@ -3,6 +3,28 @@
 using namespace swganh::combat;
 using namespace boost::python;
 
+
+
+CombatData::CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties )
+    : swganh::command::CommandProperties(properties)
+    , damage_multiplier(0.0f)
+    , accuracy_bonus(0)
+    , speed_multiplier(0)
+    , pool(-1)
+    , attack_delay_chance(0)
+    , state_duration(0)
+    , dot_duration(0)
+    , dot_type(0)
+    , dot_pool(-1)
+    , dot_strength(0)
+    , dot_potency(0)
+    , range(0)
+    , cone_angle(0)
+    , area_range(0)
+    , animation_crc("")
+{
+    GetPythonData(p_object);
+}
 void CombatData::GetPythonData(boost::python::object global)
 {
     try {
@@ -33,7 +55,17 @@ void CombatData::GetPythonData(boost::python::object global)
 
 
 }
+bool CombatData::IsRandomPool()
+{
+    if (health_hit_chance > 0)
+        return false;
+    if (action_hit_chance > 0)
+        return false;
+    if (mind_hit_chance > 0)
+        return false;
 
+    return true;
+}
 // Unarmed Default
 const uint32_t CombatData::DefaultAttacks[9] = 
 {
