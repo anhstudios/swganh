@@ -115,6 +115,7 @@ void ChatService::onStart()
     
     command_service->SetCommandHandler(0x7C8D63D4,
         [this] (
+        anh::app::KernelInterface* kernel,
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue& command)

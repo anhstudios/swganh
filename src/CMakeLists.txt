@@ -63,10 +63,8 @@ if(DEFINED VENDOR_PREFIX)
     set(GLOG_ROOT ${VENDOR_PREFIX}/glog)
     set(GTEST_ROOT ${VENDOR_PREFIX}/gtest)
     set(GMOCK_ROOT ${VENDOR_PREFIX}/gmock)
-    set(LUA_ROOT ${VENDOR_PREFIX}/lua)
     set(ENV{MYSQL_DIR} ${VENDOR_PREFIX}/mysql-connector-c)
     set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX}/mysql-connector-cpp)
-    set(NOISE_ROOT ${VENDOR_PREFIX}/noise)
     set(PYTHON_ROOT ${VENDOR_PREFIX}/python)
     
     if(MSVC10)        
@@ -75,7 +73,6 @@ if(DEFINED VENDOR_PREFIX)
         set(ENV{TBB_ARCH_PLATFORM} "ia32\\vc11")
     endif()
     
-    set(TOLUAPP_ROOT ${VENDOR_PREFIX}/tolua++)
     set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
 endif()
 

@@ -90,11 +90,12 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
 
 	command_service_->SetCommandHandler(command_crc, 
         [this, command_crc] (
+            anh::app::KernelInterface* kernel,
             const shared_ptr<Creature>& actor,
 			const shared_ptr<Tangible>& target, 
             const CommandQueueEnqueue& command_queue_message)->void {
 
-        auto global = combat_handlers_[command_crc](actor, target, command_queue_message);
+        auto global = combat_handlers_[command_crc](kernel, actor, target, command_queue_message);
         SendCombatAction(actor, target, command_queue_message, global);
     });
 }
@@ -590,11 +591,21 @@ void CombatService::EndDuel(const shared_ptr<Creature>& attacker, const shared_p
 {
     if (attacker->InDuelList(target->GetObjectId()))
     {
+        attacker->ClearAutoAttack();
         attacker->RemoveFromDuelList(target->GetObjectId());
+        attacker->RemoveDefender(target->GetObjectId());
         attacker->SetPvPStatus(PvPStatus_Player);
         attacker->ToggleStateOff(COMBAT);
+        attacker->SetTargetId(0);
+        attacker->GetController()->SendSystemMessage(OutOfBand("duel", "end_self", TT, target->GetObjectId()));
+        target->GetController()->SendSystemMessage(OutOfBand("duel", "end_target", TT, attacker->GetObjectId()));
         // End the Duel for the target as well
-        EndDuel(target, attacker);
+        target->ClearAutoAttack();
+        target->RemoveFromDuelList(attacker->GetObjectId());
+        target->RemoveDefender(target->GetObjectId());
+        target->SetPvPStatus(PvPStatus_Player);
+        target->ToggleStateOff(COMBAT);
+        target->SetTargetId(0);
     }
 }
 void CombatService::EndCombat(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)

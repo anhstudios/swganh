@@ -30,4 +30,6 @@
 #include "swganh/object/guild/guild_binding.h"
 #include "swganh/object/tangible/tangible_binding.h"
 #include "swganh/object/object_controller_binding.h"
-// controllers
+// Services
+#include "swganh/app/swganh_kernel_binding.h"
+#include "swganh/combat/combat_service_binding.h"
