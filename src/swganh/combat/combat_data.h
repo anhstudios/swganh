@@ -23,6 +23,16 @@ struct CombatData : swganh::command::CommandProperties
         GetPythonData(p_object);
     }
 
+    /*template <typename T, typename U>
+    void ExtractData<T>(boost::python::object& p_object, char* key, U& extract_value)
+    {
+        if (p_object.contains(key))
+        {
+            boost::python::extract<T> tmp_x(p_object[key]);
+            if (tmp_x.check())
+                U = tmp_x();
+        }
+    }*/
     float damage_multiplier;
     int accuracy_bonus;
     float speed_multiplier;

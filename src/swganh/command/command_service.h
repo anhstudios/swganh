@@ -41,6 +41,7 @@ namespace swganh {
 namespace command {
 
     typedef std::function<void (
+        anh::app::KernelInterface*,
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
 		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)

@@ -11,6 +11,11 @@
 #include "command_properties.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
+namespace anh {
+namespace app {
+    class KernelInterface;
+}}
+
 namespace swganh {
 namespace object {
 	class Object;
@@ -27,7 +32,7 @@ class PythonCommand
 public:
     PythonCommand(const CommandProperties& command_properties);
 
-    void operator()(std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
+    void operator()(anh::app::KernelInterface* kernel, std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
 private:
     swganh::scripting::PythonScript script_;
 };
