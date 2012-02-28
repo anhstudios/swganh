@@ -36,6 +36,15 @@ using namespace std;
 using boost::asio::ip::udp;
 using boost::asio::buffer;
 
+Server::Server(boost::asio::io_service& io_service)
+    : io_service_(io_service)
+    , strand_(io_service)
+    , socket_(io_service)
+    , crc_seed_(0xDEADBABE)
+    , active_(io_service)
+    , max_receive_size_(496)
+{}
+
 Server::Server(boost::asio::io_service& io_service, EventDispatcher* event_dispatcher, MessageHandler message_handler)
     : io_service_(io_service)
     , strand_(io_service)
