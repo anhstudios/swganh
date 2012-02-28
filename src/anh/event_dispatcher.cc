@@ -2,9 +2,9 @@
 #include "event_dispatcher.h"
 
 #include <algorithm>
+#include <chrono>
 
 #include <boost/asio/io_service.hpp>
-#include <boost/chrono/system_clocks.hpp>
 
 using namespace anh;
 using namespace std;
@@ -81,7 +81,7 @@ unique_future<shared_ptr<EventInterface>> EventDispatcher::Dispatch(const shared
 
 CallbackId EventDispatcher::GenerateCallbackId()
 {
-    return CallbackId(boost::chrono::steady_clock::now().time_since_epoch().count());
+    return CallbackId(chrono::steady_clock::now().time_since_epoch().count());
 }
 
 void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch_event)
