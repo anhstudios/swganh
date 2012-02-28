@@ -115,8 +115,8 @@ void CharacterService::subscribe() {
       
     auto login_service = std::static_pointer_cast<LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
   
-    login_service->RegisterMessageHandler<DeleteCharacterMessage>(
-        bind(&CharacterService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
+    //login_service->RegisterMessageHandler<DeleteCharacterMessage>(
+    //    bind(&CharacterService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
     
 }
 
@@ -422,5 +422,5 @@ void CharacterService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient
         reply_message.failure_flag = 0;
     }
 
-    login_client->Send(reply_message);
+    login_client->SendMessage(reply_message);
 }

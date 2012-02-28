@@ -24,26 +24,17 @@
 #include <memory>
 #include <string>
 
-#include "swganh/network/remote_client.h"
-
-namespace anh {
-namespace network {
-namespace soe {
-class Session;
-}}}  // namespace anh::network::soe
+#include "anh/network/soe/session.h"
 
 namespace swganh {
 namespace login {
 
 class Account;
 
-class LoginClient : public swganh::network::RemoteClient {
+class LoginClient : public anh::network::soe::Session {
 public:    
-    explicit LoginClient(
-        std::shared_ptr<anh::network::soe::Session> session);
+    LoginClient(boost::asio::ip::udp::endpoint remote_endpoint, anh::network::soe::ServerInterface* server);
     
-    ~LoginClient();
-
     std::string GetUsername() const;
     void SetUsername(std::string username);
 
@@ -57,7 +48,6 @@ public:
     void SetAccount(const std::shared_ptr<Account>& account);
 
 private:
-
     LoginClient();
 
     std::string username_;

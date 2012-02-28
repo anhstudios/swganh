@@ -69,7 +69,6 @@ class AccountProviderInterface;
 
 class LoginService 
     : public swganh::base::BaseService 
-    , public swganh::base::SwgMessageRouter<LoginClient>
 {
 public:
     typedef std::unordered_map<
@@ -112,12 +111,10 @@ private:
     void HandleLoginClientId_(std::shared_ptr<swganh::login::LoginClient> login_client, const messages::LoginClientId& message);
 
     void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
-    std::shared_ptr<swganh::login::LoginClient> AddClient_(std::shared_ptr<anh::network::soe::Session> session);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
     
-    std::unique_ptr<anh::network::soe::Server> soe_server_;
     std::shared_ptr<swganh::character::CharacterService> character_service_;
 	std::shared_ptr<swganh::galaxy::GalaxyService> galaxy_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
