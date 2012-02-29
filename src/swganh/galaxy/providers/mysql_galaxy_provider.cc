@@ -49,7 +49,7 @@ uint32_t MysqlGalaxyProvider::GetPopulation()
         string sql = "call sp_GetPopulation();";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        auto result_set = statement->executeQuery(sql);
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery(sql));
 
 		if (result_set->next())
 			population = result_set->getUInt(1);

@@ -129,7 +129,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
             conn->prepareStatement("CALL sp_ReturnAccountCharacters(?);")
             );
         statement->setInt64(1, account_id);
-        auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
+        auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
 
         uint16_t chars_count = result_set->rowsCount();
         
@@ -173,7 +173,7 @@ bool CharacterService::DeleteCharacter(uint64_t character_id, uint64_t account_i
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, character_id);
         statement->setUInt64(2, account_id);
-        auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
+        auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
            rows_updated = result_set->getInt(1);
@@ -192,7 +192,7 @@ std::wstring CharacterService::GetRandomNameRequest(const std::string& base_mode
             conn->prepareStatement("CALL sp_CharacterNameCreate(?);")
             );
         statement->setString(1, base_model);
-        auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
+        auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
             std::string str = result_set->getString(1);
@@ -213,7 +213,7 @@ uint16_t CharacterService::GetMaxCharacters(uint64_t player_id) {
             conn->prepareStatement("SELECT max_characters from player_account where id = ?")
             );
         statement->setUInt64(1, player_id);
-        auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
+        auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
             max_chars = result_set->getUInt(1);
@@ -273,7 +273,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
 
         statement.reset(conn->prepareStatement("SELECT @output as _object_id"));
 
-        auto result_set = std::shared_ptr<sql::ResultSet>(statement->executeQuery());
+        auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
             uint64_t char_id = result_set->getUInt64(1);
