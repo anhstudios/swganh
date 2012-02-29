@@ -272,6 +272,7 @@ int CombatService::SingleTargetCombatAction(
         break;
     case MISS:
         // Miss
+        defender->GetController()->SendFlyText("@combat_effects:miss", FlyTextColor::MIX, true, 0xFF, 0xFF, 0xFF); 
         BroadcastCombatSpam(attacker, defender, properties, total_damage, CombatData::MISS_spam());
         damage_multiplier = 0.0f;
         return 0;
@@ -621,7 +622,7 @@ void CombatService::EndDuel(const shared_ptr<Creature>& attacker, const shared_p
     {
         attacker->ClearAutoAttack();
         attacker->RemoveFromDuelList(target->GetObjectId());
-        attacker->RemoveDefender(target->GetObjectId());
+        //attacker->RemoveDefender(target->GetObjectId());
         attacker->SetPvPStatus(PvPStatus_Player);
         attacker->ToggleStateOff(COMBAT);
         attacker->SetTargetId(0);

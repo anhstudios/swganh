@@ -41,6 +41,7 @@ void exportObjectController()
         .value("RED", controllers::RED)
         .value("GREEN", controllers::GREEN)
         .value("BLUE", controllers::BLUE)
+        .value("WHITE", controllers::WHITE)
         .value("MIX", controllers::MIX)
         ;
 

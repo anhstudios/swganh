@@ -14,6 +14,7 @@ namespace controllers {
         RED = 0,
         GREEN,
         BLUE,
+        WHITE,
         MIX
     };
 
@@ -23,7 +24,6 @@ namespace controllers {
         static uint32_t header() { return 0x000001BD; }
         
         uint64_t object_id;
-        uint16_t stf_loc_size;
         std::string stf_location; // string file without extention ie: combat_effects
         std::string text; // text to display ie: center_start_fly
         uint8_t red;
@@ -34,7 +34,6 @@ namespace controllers {
         void Serialize(anh::ByteBuffer& buffer) const
         {
             buffer.write(object_id);
-            buffer.write(stf_loc_size);
             buffer.write(stf_location);
             buffer.write<uint32_t>(0);
             buffer.write(text);
@@ -48,7 +47,7 @@ namespace controllers {
         void Deserialize(anh::ByteBuffer buffer)
         {
             object_id = buffer.read<uint64_t>();
-            stf_loc_size = buffer.read<uint16_t>();
+            //buffer.read<uint16_t>();
             stf_location = buffer.read<std::string>();
             buffer.read<uint32_t>();
             text = buffer.read<std::string>();
