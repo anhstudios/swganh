@@ -1034,22 +1034,22 @@ std::vector<uint64_t>& Creature::GetDuelList()
 
 boost::optional<BaselinesMessage> Creature::GetBaseline1()
 {
-    return move(CreatureMessageBuilder::BuildBaseline1(this));
+    return std::move(CreatureMessageBuilder::BuildBaseline1(this));
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline3()
 {
-    return move(CreatureMessageBuilder::BuildBaseline3(this));
+    return std::move(CreatureMessageBuilder::BuildBaseline3(this));
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline4()
 {
-    return move(CreatureMessageBuilder::BuildBaseline4(this));
+    return std::move(CreatureMessageBuilder::BuildBaseline4(this));
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline6()
 {
-    return move(CreatureMessageBuilder::BuildBaseline6(this));
+    return std::move(CreatureMessageBuilder::BuildBaseline6(this));
 }
 
 void Creature::OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller)

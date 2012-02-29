@@ -1,5 +1,7 @@
-#include "python_command.h"
+
+#include "python_combat_command.h"
 #include "swganh/app/swganh_kernel.h"
+
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
 
@@ -11,12 +13,12 @@ using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::object::tangible;
 
-PythonCommand::PythonCommand(const CommandProperties& properties)
-: script_(PythonScript(properties.script_hook))
+PythonCombatCommand::PythonCombatCommand(const CommandProperties& properties)
+: script_(properties.script_hook)
 {
 }
 
-void PythonCommand::operator()(anh::app::KernelInterface* kernel, shared_ptr<Creature> actor, shared_ptr<Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)
+boost::python::object PythonCombatCommand::operator()(anh::app::KernelInterface* kernel, shared_ptr<Creature> actor, shared_ptr<Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)
 {
     shared_ptr<Creature> creature = nullptr;
     if (target && target->GetType() == Creature::type)
@@ -29,4 +31,6 @@ void PythonCommand::operator()(anh::app::KernelInterface* kernel, shared_ptr<Cre
     script_.SetContext("command_string", command_queue_message.command_options);
 	
 	script_.Run();
+
+    return script_.GetGlobals();
 }

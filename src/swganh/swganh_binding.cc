@@ -33,6 +33,8 @@ void exportObjectController();
 void exportOutOfBand();
 void exportVec3();
 void exportQuat();
+void exportSWGANHKernel();
+void exportCombatService();
 
 BOOST_PYTHON_MODULE(swganh_binding) {
 	docstring_options local_docstring_options(true, true, false);
@@ -45,4 +47,6 @@ BOOST_PYTHON_MODULE(swganh_binding) {
 	exportVec3();
 	exportQuat();
     exportOutOfBand();
+    exportSWGANHKernel();
+    exportCombatService();
 }
