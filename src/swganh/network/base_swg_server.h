@@ -7,7 +7,6 @@
 #include <functional>
 #include <map>
 #include <memory>
-#include <mutex>
 
 #include <concurrent_unordered_map.h>
 

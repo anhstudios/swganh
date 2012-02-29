@@ -123,21 +123,22 @@ void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const
 }
 
 bool Server::AddSession(std::shared_ptr<Session> session) {
-    boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-    if (session_map_.find(session->remote_endpoint()) == session_map_.end())
     {
-        session_map_.insert(make_pair(session->remote_endpoint(), session));
-        event_dispatcher_->Dispatch(make_shared<ValueEvent<shared_ptr<Session>>>("NetworkSessionAdded", session));
-        return true;
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        if (session_map_.find(session->remote_endpoint()) == session_map_.end())
+        {
+            session_map_.insert(make_pair(session->remote_endpoint(), session));
+        }
     }
-
+    
     return false;
 }
 
 bool Server::RemoveSession(std::shared_ptr<Session> session) {
-    boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-    session_map_.erase(session->remote_endpoint());
-    event_dispatcher_->Dispatch(make_shared<ValueEvent<shared_ptr<Session>>>("NetworkSessionRemoved", session));
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        session_map_.erase(session->remote_endpoint());
+    }
 
     return true;
 }
@@ -153,7 +154,7 @@ shared_ptr<Session> Server::GetSession(const udp::endpoint& endpoint) {
         }
     }
 
-    auto session = make_shared<Session>(endpoint, this);
+    auto session = CreateSession(endpoint);
     AddSession(session);
 
     return session;

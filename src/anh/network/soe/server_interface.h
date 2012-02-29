@@ -47,7 +47,7 @@ public:
 
     virtual bool RemoveSession(std::shared_ptr<Session> session) = 0;
     
-    virtual std::shared_ptr<Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint) { return nullptr; } // TODO: Make pure virtual after cleanup
+    virtual std::shared_ptr<Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
     
     virtual std::shared_ptr<Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
     

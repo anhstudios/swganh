@@ -64,7 +64,7 @@ using namespace database;
 using namespace event_dispatcher;
 using namespace std;
 
-using anh::network::soe::Session;
+using boost::asio::ip::udp;
 
 LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)     
     : BaseService(kernel)
@@ -102,10 +102,16 @@ service::ServiceDescription LoginService::GetServiceDescription() {
     return service_description;
 }
 
+shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
+{
+    return make_shared<LoginClient>(endpoint, this);
+}
+
 void LoginService::onStart() {
     character_service_ = static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
 	galaxy_service_  = static_pointer_cast<GalaxyService>(kernel()->GetServiceManager()->GetService("GalaxyService"));
 
+    Server::Start(listen_port_);
     
     UpdateGalaxyStatus_();
 }
@@ -114,6 +120,10 @@ void LoginService::onStop() {
 }
 
 void LoginService::subscribe() {
+    
+    RegisterMessageHandler<LoginClientId>(
+        bind(&LoginService::HandleLoginClientId_, this, placeholders::_1, placeholders::_2));
+    
     auto event_dispatcher = kernel()->GetEventDispatcher();
     
     event_dispatcher->Subscribe(
@@ -220,7 +230,8 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_client, const LoginClientId& message) {
+void LoginService::HandleLoginClientId_(std::shared_ptr<anh::network::soe::Session> connection, const LoginClientId& message) {
+    auto login_client = static_pointer_cast<LoginClient>(connection);
 
     login_client->SetUsername(message.username);
     login_client->SetPassword(message.password);

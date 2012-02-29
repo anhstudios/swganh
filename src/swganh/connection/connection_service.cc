@@ -60,10 +60,6 @@ ConnectionService::ConnectionService(
     , ping_port_(ping_port)
     , soe_server_(nullptr)
 {
-    soe_server_.reset(new Server(
-        kernel->GetIoService(),
-        kernel->GetEventDispatcher(),
-        bind(&ConnectionService::RouteMessage, this, placeholders::_1)));
         
     session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
     if (!session_provider_) 
@@ -107,8 +103,6 @@ void ConnectionService::subscribe() {
 }
 
 void ConnectionService::onStart() {
-    ping_server_ = make_shared<PingServer>(kernel()->GetIoService(), ping_port_);
-    soe_server_->Start(listen_port_);
     
     character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
     login_service_ = std::static_pointer_cast<swganh::login::LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
@@ -116,7 +110,6 @@ void ConnectionService::onStart() {
 }
 
 void ConnectionService::onStop() {
-    soe_server_->Shutdown();
     clients_.clear();
 }
 
