@@ -15,8 +15,8 @@
 #include "swganh/messages/obj_controller_message.h"
 
 namespace swganh {
-namespace network {
-    class RemoteClient;
+namespace connection {
+    class ConnectionClient;
 }}
 
 namespace swganh {
@@ -48,7 +48,7 @@ namespace object {
     public:
         ObjectController(
             std::shared_ptr<Object> object,
-            std::shared_ptr<swganh::network::RemoteClient> client);
+            std::shared_ptr<swganh::connection::ConnectionClient> client);
 
         ~ObjectController();
 
@@ -62,14 +62,14 @@ namespace object {
         /**
          * @return Handle to the remote client controlling the object.
          */
-        std::shared_ptr<swganh::network::RemoteClient> GetRemoteClient();
+        std::shared_ptr<swganh::connection::ConnectionClient> GetRemoteClient();
         
         /**
          * Sets handle to the remote client controlling the object.
          *
          * @param remote_client the new remote client for this controller.
          */
-        void SetRemoteClient(std::shared_ptr<swganh::network::RemoteClient> remote_client);
+        void SetRemoteClient(std::shared_ptr<swganh::connection::ConnectionClient> remote_client);
 
         using anh::observer::ObserverInterface::Notify;
 
@@ -113,7 +113,7 @@ namespace object {
         ObjectController();
 
         std::shared_ptr<Object> object_;
-        std::shared_ptr<swganh::network::RemoteClient> client_;
+        std::shared_ptr<swganh::connection::ConnectionClient> client_;
     };
 
 }}  // namespace swganh::object

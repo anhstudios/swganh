@@ -80,7 +80,7 @@ if(DEFINED VENDOR_PREFIX)
 endif()
 
 find_package(PythonLibs REQUIRED)
-find_package(Boost 1.45.0 COMPONENTS date_time regex thread system program_options filesystem REQUIRED)
+find_package(Boost 1.45.0 COMPONENTS date_time thread system program_options filesystem REQUIRED)
 
 set(Boost_USE_STATIC_LIBS OFF)
 find_package(Boost 1.45.0 COMPONENTS python REQUIRED)

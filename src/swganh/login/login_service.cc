@@ -116,7 +116,9 @@ void LoginService::onStart() {
     UpdateGalaxyStatus_();
 }
 
-void LoginService::onStop() {
+void LoginService::onStop() 
+{
+    Server::Shutdown();
 }
 
 void LoginService::subscribe() 

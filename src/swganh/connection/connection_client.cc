@@ -8,13 +8,8 @@ using namespace swganh::connection;
 using namespace swganh::object;
 
 ConnectionClient::ConnectionClient(
-    shared_ptr<Session> session)
-    : RemoteClient(session)
-    , state_(CONNECTING)
-    , controller_(nullptr)
-{}
-
-ConnectionClient::~ConnectionClient()
+    boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface* server)
+    : Session(remote_endpoint, server)
 {}
 
 ConnectionClient::State ConnectionClient::GetState() const
@@ -44,7 +39,7 @@ void ConnectionClient::Disconnect()
 {
     state_ = DISCONNECTING;
 
-    GetSession()->Close();
+    Close();
 }
 
 const shared_ptr<ObjectController>& ConnectionClient::GetController() const

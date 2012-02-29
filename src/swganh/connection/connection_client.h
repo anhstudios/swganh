@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-#include "swganh/network/remote_client.h"
+#include "anh/network/soe/session.h"
 
 namespace swganh {
 namespace object {
@@ -14,7 +14,7 @@ namespace object {
 namespace swganh {
 namespace connection {
 
-class ConnectionClient : public swganh::network::RemoteClient 
+class ConnectionClient : public anh::network::soe::Session
 {
 public:
     enum State
@@ -25,11 +25,8 @@ public:
         DISCONNECTING
     };
     
-    explicit ConnectionClient(
-        std::shared_ptr<anh::network::soe::Session> session);
-
-    ~ConnectionClient();
-
+    ConnectionClient(boost::asio::ip::udp::endpoint remote_endpoint, anh::network::soe::ServerInterface* server);
+    
     State GetState() const;
 
     uint32_t GetAccountId() const;
