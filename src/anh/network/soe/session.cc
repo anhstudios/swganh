@@ -171,7 +171,7 @@ void Session::Close(void)
 
 void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)
 {
-    auto session = this->shared_from_this();
+    auto session = shared_from_this();
     strand_.post([=] () 
     {
         switch(message->peek<uint16_t>(true))
@@ -202,7 +202,7 @@ void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)
 
 void Session::HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& message)
 {
-    auto session = this->shared_from_this();
+    auto session = shared_from_this();
     strand_.post([=] () 
     {        
         security_filter_(session, message);
@@ -380,8 +380,7 @@ void Session::handleOutOfOrderA_(OutOfOrderA& packet)
 
 void Session::SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message)
 {
-    auto session = this->shared_from_this();
-
+    auto session = shared_from_this();
     strand_.post([=] () 
     {
         compression_filter_(session, message);
