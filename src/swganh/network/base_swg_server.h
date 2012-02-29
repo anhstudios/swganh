@@ -50,7 +50,7 @@ namespace network {
             std::shared_ptr<anh::ByteBuffer> message);
         
         template<typename T, typename ConnectionType, typename MessageType>
-        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, const MessageType&), T* instance)
+        void RegisterMessageHandler(void (T::*memfunc)(std::shared_ptr<ConnectionType>, const MessageType&), T* instance)
         {
             RegisterMessageHandler<ConnectionType, MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }

@@ -163,19 +163,6 @@ void LoginService::login_error_timeout_secs(int new_timeout)
     login_error_timeout_secs_ = new_timeout;
 }
 
-void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
-    
-    if (client) {
-        DLOG(WARNING) << "Removing disconnected client";
-        boost::lock_guard<boost::mutex> lg(clients_mutex_);
-        clients_.erase(session->remote_endpoint());
-    }
-    
-    boost::lock_guard<boost::mutex> lg(clients_mutex_);
-    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
-}
-
 void LoginService::UpdateGalaxyStatus_() {    
     DLOG(INFO) << "Updating galaxy status";
 
@@ -183,13 +170,13 @@ void LoginService::UpdateGalaxyStatus_() {
         
     const vector<GalaxyStatus>& status = galaxy_status_;
     
-    boost::lock_guard<boost::mutex> lg(clients_mutex_);
-    std::for_each(clients_.begin(), clients_.end(), [&status] (ClientMap::value_type& client_entry) {
-        if (client_entry.second) {                
-            client_entry.second->SendMessage(
-                BuildLoginClusterStatus(status));
-        }
-    });
+    //boost::lock_guard<boost::mutex> lg(clients_mutex_);
+    //std::for_each(clients_.begin(), clients_.end(), [&status] (ClientMap::value_type& client_entry) {
+    //    if (client_entry.second) {                
+    //        client_entry.second->SendMessage(
+    //            BuildLoginClusterStatus(status));
+    //    }
+    //});
 }
 
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
@@ -229,7 +216,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const LoginClientId& message) 
+void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_client, const LoginClientId& message) 
 {
     login_client->SetUsername(message.username);
     login_client->SetPassword(message.password);
@@ -270,10 +257,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& logi
     }
     
     login_client->SetAccount(account);
-    
-    clients_.insert(make_pair(login_client->remote_endpoint(), login_client));
-    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
-    
+        
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
         + boost::lexical_cast<string>(login_client->remote_endpoint().address());
@@ -296,22 +280,4 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& logi
 
 uint32_t LoginService::GetAccountBySessionKey(const string& session_key) {
     return account_provider_->FindBySessionKey(session_key);
-}
-
-
-shared_ptr<LoginClient> LoginService::GetClientFromEndpoint(
-    const boost::asio::ip::udp::endpoint& remote_endpoint)
-{
-    shared_ptr<LoginClient> client = nullptr;
-    
-    boost::lock_guard<boost::mutex> lg(clients_mutex_);
-
-    auto find_iter = clients_.find(remote_endpoint);
-
-    if (find_iter != clients_.end()) 
-    {
-        client = find_iter->second;
-    }
-
-    return client;
 }
