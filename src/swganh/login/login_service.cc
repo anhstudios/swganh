@@ -119,10 +119,9 @@ void LoginService::onStart() {
 void LoginService::onStop() {
 }
 
-void LoginService::subscribe() {
-    
-    RegisterMessageHandler<LoginClientId>(
-        bind(&LoginService::HandleLoginClientId_, this, placeholders::_1, placeholders::_2));
+void LoginService::subscribe() 
+{    
+    RegisterMessageHandler(&LoginService::HandleLoginClientId_, this);
     
     auto event_dispatcher = kernel()->GetEventDispatcher();
     
@@ -230,9 +229,8 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-void LoginService::HandleLoginClientId_(std::shared_ptr<anh::network::soe::Session> connection, const LoginClientId& message) {
-    auto login_client = static_pointer_cast<LoginClient>(connection);
-
+void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const LoginClientId& message) 
+{
     login_client->SetUsername(message.username);
     login_client->SetPassword(message.password);
     login_client->SetVersion(message.client_version);
