@@ -70,7 +70,7 @@ uint64_t SmfSessionProvider::FindPlayerByReferenceId_(uint64_t account_id)
         auto conn = database_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt(1, account_id);
-        auto result_set = statement->executeQuery();
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
             player_id = result_set->getUInt64("id");

@@ -51,7 +51,7 @@ uint64_t MysqlSessionProvider::GetPlayerId(uint32_t account_id) {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt(1, account_id);
-        auto result_set = statement->executeQuery();
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
             player_id = result_set->getUInt64("id");
@@ -121,7 +121,7 @@ uint32_t MysqlSessionProvider::GetAccountId(uint64_t player_id) {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt(1, player_id);
-        auto result_set = statement->executeQuery();
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
             account_id = result_set->getUInt("reference_id");

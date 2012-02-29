@@ -35,7 +35,7 @@ void TangibleFactory::LoadTemplates()
 
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = conn->prepareStatement("CALL sp_GetTangibleTemplates();");
-        auto result = statement->executeQuery();
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
 
         while (result->next())
         {
