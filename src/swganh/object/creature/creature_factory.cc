@@ -139,7 +139,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        shared_ptr<sql::ResultSet> result;
+        unique_ptr<sql::ResultSet> result;
         stringstream ss;
         ss << "CALL sp_GetCreature(" << object_id << ");" ;
         statement->execute(ss.str());

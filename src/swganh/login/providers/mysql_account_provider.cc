@@ -53,7 +53,7 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
         auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);
-        auto result_set = statement->executeQuery();
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
             account = make_shared<Account>(true);
@@ -88,7 +88,7 @@ uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
         auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, session_key);
-        auto result_set = statement->executeQuery();
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
             account_id = result_set->getInt("account");

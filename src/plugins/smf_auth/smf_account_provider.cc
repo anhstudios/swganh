@@ -33,7 +33,7 @@ shared_ptr<Account> SmfAccountProvider::FindByUsername(string username)
         auto conn = database_manager_->getConnection("smf");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);
-        auto result_set = statement->executeQuery();
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) 
         {
