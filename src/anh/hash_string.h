@@ -95,4 +95,16 @@ private:
 
 }  // namespace anh
 
+namespace std {    
+    // specialization of std::hash to make using
+    // with unordered_maps easier by default.
+    template <> struct hash<anh::HashString>
+    {
+        size_t operator()(const anh::HashString & x) const
+        {
+            return x.ident();
+        }
+    };
+}  // namespace std
+
 #endif  // LIBANH_HASH_STRING_H_

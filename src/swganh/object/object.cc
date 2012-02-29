@@ -491,11 +491,11 @@ uint32_t Object::GetSceneId()
 optional<BaselinesMessage> Object::GetBaseline3()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-	return move(ObjectMessageBuilder::BuildBaseline3(this));
+	return std::move(ObjectMessageBuilder::BuildBaseline3(this));
 }
 
 optional<BaselinesMessage> Object::GetBaseline6()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-	return move(ObjectMessageBuilder::BuildBaseline6(this));
+	return std::move(ObjectMessageBuilder::BuildBaseline6(this));
 }

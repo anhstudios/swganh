@@ -247,13 +247,13 @@ bool Tangible::IsAutoAttacking()
 
 boost::optional<BaselinesMessage> Tangible::GetBaseline3()
 {
-    return move(TangibleMessageBuilder::BuildBaseline3(this));
+    return std::move(TangibleMessageBuilder::BuildBaseline3(this));
 }
 boost::optional<BaselinesMessage> Tangible::GetBaseline6()
 {
-    return move(TangibleMessageBuilder::BuildBaseline6(this));
+    return std::move(TangibleMessageBuilder::BuildBaseline6(this));
 }
 boost::optional<BaselinesMessage> Tangible::GetBaseline7()
 {
-    return move(TangibleMessageBuilder::BuildBaseline7(this));
+    return std::move(TangibleMessageBuilder::BuildBaseline7(this));
 }
