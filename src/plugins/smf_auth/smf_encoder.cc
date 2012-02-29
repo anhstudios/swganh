@@ -28,7 +28,7 @@ string SmfEncoder::EncodePassword(
     string sql = "SELECT SHA1(CONCAT('" + test + "', '" + raw + "'))";
     auto conn = database_manager_->getConnection("galaxy_manager");
     auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-    auto result_set = statement->executeQuery(sql);
+    auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery(sql));
     if (result_set->next())
     {
         result = result_set->getString(1);
