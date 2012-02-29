@@ -68,12 +68,11 @@ using anh::network::soe::Session;
 
 LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)     
     : BaseService(kernel)
+    , swganh::network::BaseSwgServer(kernel->GetIoService())
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
-     {
-    
-    
+{    
     account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
     if (!account_provider_) 
     {

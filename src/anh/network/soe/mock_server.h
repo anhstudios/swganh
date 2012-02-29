@@ -45,10 +45,12 @@ public:
     MOCK_METHOD0(Shutdown, void());
     MOCK_METHOD2(SendTo, void(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer));
     MOCK_METHOD1(HandleMessage, void(std::shared_ptr<Packet> packet));
+    MOCK_METHOD2(HandleMessage, void(std::shared_ptr<Session> connection, std::shared_ptr<anh::ByteBuffer> message));    
     MOCK_METHOD0(event_dispatcher, std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>());
 
     MOCK_METHOD1(AddSession, bool(std::shared_ptr<Session> session));
     MOCK_METHOD1(RemoveSession, bool(std::shared_ptr<Session> session));
+    MOCK_METHOD1(CreateSession, std::shared_ptr<Session>(const boost::asio::ip::udp::endpoint& endpoint));
     MOCK_METHOD1(GetSession, std::shared_ptr<Session>(const boost::asio::ip::udp::endpoint& endpoint));
 
     MOCK_METHOD0(socket, boost::asio::ip::udp::socket*());

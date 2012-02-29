@@ -187,8 +187,7 @@ void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)
             default:
                 if (message->peek<uint8_t>() != 0)
                 {
-                    auto packet = make_shared<Packet>(this->shared_from_this(), message);
-                    this->server_->HandleMessage(packet);
+                    server_->HandleMessage(this->shared_from_this(), message);
                 }
                 else 
                 {
@@ -303,13 +302,7 @@ void Session::handleChildDataA_(ChildDataA& packet)
     AcknowledgeSequence_(packet.sequence);
 
     std::for_each(packet.messages.begin(), packet.messages.end(), [this] (shared_ptr<ByteBuffer> message) {
-        try {
-            auto packet = make_shared<Packet>(this->shared_from_this(), message);
-
-            this->server_->HandleMessage(packet);
-        } catch(...) {
-
-        }
+        server_->HandleMessage(this->shared_from_this(), message);
     });
 }
 

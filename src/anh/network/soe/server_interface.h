@@ -36,13 +36,19 @@ public:
     virtual void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer) = 0;
 
     virtual std::shared_ptr<anh::ByteBuffer> AllocateBuffer() = 0;
+    
+    virtual void HandleMessage(
+        std::shared_ptr<Session> connection, 
+        std::shared_ptr<anh::ByteBuffer> message) {} // TODO: Make pure virtual after cleanup
 
     virtual void HandleMessage(std::shared_ptr<Packet> packet) = 0;
     
     virtual bool AddSession(std::shared_ptr<Session> session) = 0;
 
     virtual bool RemoveSession(std::shared_ptr<Session> session) = 0;
-
+    
+    virtual std::shared_ptr<Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint) { return nullptr; } // TODO: Make pure virtual after cleanup
+    
     virtual std::shared_ptr<Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
     
     virtual boost::asio::ip::udp::socket* socket() = 0;

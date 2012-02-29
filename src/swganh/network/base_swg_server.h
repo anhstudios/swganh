@@ -27,6 +27,7 @@ namespace network {
     class BaseSwgServer : public anh::network::soe::Server
     {
     public:
+        BaseSwgServer(boost::asio::io_service& io_service);
         
         template<typename MessageType>
         struct GenericMessageHandler

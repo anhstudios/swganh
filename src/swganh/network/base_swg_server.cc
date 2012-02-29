@@ -9,6 +9,11 @@
 
 using namespace swganh::network;
         
+BaseSwgServer::BaseSwgServer(
+    boost::asio::io_service& io_service)
+    : anh::network::soe::Server(io_service)
+{}
+
 void BaseSwgServer::HandleMessage(
     std::shared_ptr<anh::network::soe::Session> connection, 
     std::shared_ptr<anh::ByteBuffer> message)

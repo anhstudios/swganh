@@ -32,7 +32,7 @@
 #include "anh/network/soe/server.h"
 
 #include "swganh/base/base_service.h"
-#include "swganh/base/swg_message_router.h"
+#include "swganh/network/base_swg_server.h"
 
 #include "swganh/character/character_service.h"
 #include "swganh/galaxy/galaxy_service.h"
@@ -68,7 +68,8 @@ class AccountProviderInterface;
 }
 
 class LoginService 
-    : public swganh::base::BaseService 
+    : public swganh::base::BaseService
+    , public swganh::network::BaseSwgServer
 {
 public:
     typedef std::unordered_map<
