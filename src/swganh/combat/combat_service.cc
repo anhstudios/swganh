@@ -26,6 +26,7 @@
 #include "swganh/command/python_combat_command.h"
 #include "swganh/simulation/simulation_service.h"
 
+#include "swganh/messages/controllers/animate.h"
 #include "swganh/messages/controllers/combat_action_message.h"
 #include "swganh/messages/controllers/combat_spam_message.h"
 #include "swganh/messages/controllers/show_fly_text.h"
@@ -205,7 +206,7 @@ void CombatService::SendCombatAction(
         if (target->GetType() == Creature::type)
             creature_target = static_pointer_cast<Creature>(target);
         // Apply Damage
-        ApplyDamage(attacker, creature_target, combat_data, damage, GetDamagingPool(combat_data));
+        //ApplyDamage(attacker, creature_target, combat_data, damage, GetDamagingPool(combat_data));
         if (command_property.name == "attack" && attacker->IsAutoAttacking()) {
             command_service_->EnqueueCommand(attacker, target, command_message);
             //command_service_->EnqueueCommand(creature_target, attacker, command_message);
@@ -242,44 +243,60 @@ int CombatService::SingleTargetCombatAction(
     int hit = 0;
     float damage_multiplier = properties.damage_multiplier;
     int total_damage = 0;
+    int damage = 0;
 
     if (damage_multiplier != 0)
-        total_damage = 16; /*CalculateDamage(attacker, defender) * damage_multiplier);*/
+        damage = 16; /*CalculateDamage(attacker, defender) * damage_multiplier);*/
     else
     {
-        total_damage = 10; // obviously temp
+        damage = 10; // obviously temp
     }
     if (damage_multiplier < 1.0f)
         damage_multiplier = 1.0f;
 
-    hit = GetHitResult(attacker, defender, total_damage, properties.accuracy_bonus + GetAccuracyModifier(attacker)); 
+    hit = GetHitResult(attacker, defender, damage, properties.accuracy_bonus + GetAccuracyModifier(attacker)); 
         
     switch (hit)
     {
     case HIT:
-        total_damage = ApplyDamage(attacker, defender, properties, total_damage, HEALTH);
-        BroadcastCombatSpam(attacker, defender, properties, total_damage, CombatData::HIT_spam());
+        BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::HIT_spam());
         break;
         // Block
     case BLOCK:
-        BroadcastCombatSpam(attacker, defender, properties, total_damage, CombatData::BLOCK_spam());
+        defender->GetController()->SendFlyText("@combat_effects:block", FlyTextColor::GREEN); 
+        BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::BLOCK_spam());
         damage_multiplier = 0.5f;
         break;
     case DODGE:
         // Dodge
+        defender->GetController()->SendFlyText("@combat_effects:dodge", FlyTextColor::GREEN); 
+        defender->NotifyObservers(ObjControllerMessage(0x1B, Animate("dodge")));
         damage_multiplier = 0.0f;
-        BroadcastCombatSpam(attacker, defender, properties, total_damage, CombatData::DODGE_spam());
+        BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::DODGE_spam());
         break;
+    case COUNTER:
+        defender->GetController()->SendFlyText("@combat_effects:counterattack", FlyTextColor::GREEN); 
+        BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::COUNTER_spam());
+        damage_multiplier = 0.0f;
     case MISS:
         // Miss
-        defender->GetController()->SendFlyText("@combat_effects:miss", FlyTextColor::MIX, true, 0xFF, 0xFF, 0xFF); 
-        BroadcastCombatSpam(attacker, defender, properties, total_damage, CombatData::MISS_spam());
+        defender->GetController()->SendFlyText("@combat_effects:miss", FlyTextColor::WHITE); 
+        defender->NotifyObservers(ObjControllerMessage(0x1B, Animate("dodge")));
+        BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::MISS_spam());
         damage_multiplier = 0.0f;
         return 0;
     default:
         return 0;
     }
+    int pool = GetDamagingPool(properties);
+    total_damage = ApplyDamage(attacker, defender, properties, damage, pool);
+
+    // If they aren't auto-attacking they should
+    if (!defender->IsAutoAttacking())
+        defender->ActivateAutoAttack();
+
     ApplyStates(attacker, defender, properties);
+    
     // Apply Dots
     //int pool = GetDamagingPoolDots(
     // Attack Delay?

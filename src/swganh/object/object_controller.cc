@@ -146,7 +146,7 @@ void ObjectController::SendFlyText(const std::string& fly_text, FlyTextColor col
                 fly_text.green = green;
                 fly_text.blue = blue;
                 break;
-            case BLACK:
+            case WHITE:
                 fly_text.red = 0xFF;
                 fly_text.green = 0xFF;
                 fly_text.blue = 0xFF;
@@ -154,7 +154,7 @@ void ObjectController::SendFlyText(const std::string& fly_text, FlyTextColor col
                 break;
         }
         fly_text.display_flag = (display_flag == true) ? 0 : 1;
-        Notify(ObjControllerMessage(0x1B, fly_text));
+        object_->NotifyObservers(ObjControllerMessage(0x1B, fly_text));
         
     }
 }
