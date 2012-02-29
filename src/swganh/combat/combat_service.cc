@@ -28,6 +28,7 @@
 
 #include "swganh/messages/controllers/combat_action_message.h"
 #include "swganh/messages/controllers/combat_spam_message.h"
+#include "swganh/messages/controllers/show_fly_text.h"
 #include "swganh/messages/chat_system_message.h"
 #include "swganh/messages/out_of_band.h"
 
@@ -204,8 +205,7 @@ void CombatService::SendCombatAction(
         if (target->GetType() == Creature::type)
             creature_target = static_pointer_cast<Creature>(target);
         // Apply Damage
-        //ApplyDamage(attacker, creature_target,  damage, 0);
-        SingleTargetCombatAction(attacker, target, combat_data);
+        ApplyDamage(attacker, creature_target, combat_data, damage, GetDamagingPool(combat_data));
         if (command_property.name == "attack" && attacker->IsAutoAttacking()) {
             command_service_->EnqueueCommand(attacker, target, command_message);
             //command_service_->EnqueueCommand(creature_target, attacker, command_message);
@@ -249,11 +249,11 @@ int CombatService::SingleTargetCombatAction(
     {
         total_damage = 10; // obviously temp
     }
-    damage_multiplier = 1.0f;
+    if (damage_multiplier < 1.0f)
+        damage_multiplier = 1.0f;
 
-    hit = GetHitResult(attacker, defender, total_damage, 0); // properties.GetAccuracybonus() + attacker->GetSkillMod(properties.GetAccuracySkillMod()));
-    string combat_spam_msg = properties.combat_spam;
-    
+    hit = GetHitResult(attacker, defender, total_damage, properties.accuracy_bonus + GetAccuracyModifier(attacker)); 
+        
     switch (hit)
     {
     case HIT:
@@ -280,7 +280,7 @@ int CombatService::SingleTargetCombatAction(
     }
     ApplyStates(attacker, defender, properties);
     // Apply Dots
-    //int pool = GetDamagingPool(
+    //int pool = GetDamagingPoolDots(
     // Attack Delay?
     return total_damage;
 }
@@ -630,7 +630,7 @@ void CombatService::EndDuel(const shared_ptr<Creature>& attacker, const shared_p
         // End the Duel for the target as well
         target->ClearAutoAttack();
         target->RemoveFromDuelList(attacker->GetObjectId());
-        target->RemoveDefender(target->GetObjectId());
+        //target->RemoveDefender(target->GetObjectId());
         target->SetPvPStatus(PvPStatus_Player);
         target->ToggleStateOff(COMBAT);
         target->SetTargetId(0);

@@ -29,6 +29,8 @@ void CombatData::GetPythonData(boost::python::object global)
 {
     try {
         // Exception Safe way to pull out data
+        ExtractData(global, "min_damage", min_damage);
+        ExtractData(global, "max_damage", max_damage);
         ExtractData(global, "damage_multiplier", damage_multiplier);
         ExtractData(global, "accuracy_bonus", accuracy_bonus);
         ExtractData(global, "speed_multiplier", speed_multiplier);

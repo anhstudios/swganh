@@ -20,6 +20,9 @@ struct CombatData : swganh::command::CommandProperties
     }
     CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties );
 
+    int min_damage;
+    int max_damage;
+
     float damage_multiplier;
     int accuracy_bonus;
     float speed_multiplier;
@@ -45,6 +48,7 @@ struct CombatData : swganh::command::CommandProperties
 
     bool IsRandomPool();
     int GetDamagingPool();
+    
     template <typename T>
     void ExtractData(boost::python::object& p_object, std::string key, T& extract_value)
     {
