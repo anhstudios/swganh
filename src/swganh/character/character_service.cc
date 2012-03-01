@@ -231,7 +231,13 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         // Only letters, and the ' and - characters are allowed. Only 3 instances
         // of the ' and - characters may be in the entire name, which must be between
         // 3 and 16 characters long.
-        const wregex p(L"(?!['-])(?!.*['-].*['-].*['-].*['-])([a-zA-Z][a-z'-]{3,16}?)(?: ([a-zA-Z][a-z'-]{3,16}?))?");
+        const wregex p(
+            L"(?!['-])" // confirm the first character is not ' or -
+            L"(?!(.*['-]){4,})" // Confirm that no more than 3 instances of ' or - appear
+            L"([a-zA-Z][a-z'-]{2,15})"  // Firstname capture group: 3-16 chars must be a-zA-Z or ' or -
+            L"(\\s([a-zA-Z][a-z'-]{2,15}))?"  // Optional sirname group, same restrictions as sirname
+        );
+
         wsmatch m;
 
         if (! regex_match(character_info.character_name, m, p)) {
@@ -239,8 +245,8 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
             return make_tuple(0,"name_declined_syntax");
         }
 
-        std::wstring first_name = m[1].str();
-        std::wstring last_name = m[2].str();
+        std::wstring first_name = m[2].str();
+        std::wstring last_name = m[4].str();
 
         std::wstring custom_name = first_name;
         if (!last_name.empty())
