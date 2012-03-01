@@ -3,6 +3,8 @@
 
 #include "base_swg_server.h"
 
+#include <boost/log/trivial.hpp>
+
 #include "anh/byte_buffer.h"
 
 #include "anh/network/soe/session.h"
@@ -23,10 +25,18 @@ void BaseSwgServer::HandleMessage(
     auto find_iter = message_handlers_.find(message_type);
     if (find_iter == message_handlers_.end())
     {
-        throw UnidentifiedMessageReceived("Received an unidentified message");
+        BOOST_LOG_TRIVIAL(warning) << "Received an unidentified message";
+        return;
     }
 
-    find_iter->second(connection, message);
+    try 
+    {
+        find_iter->second(connection, message);
+    }
+    catch(std::exception& e)
+    {
+        BOOST_LOG_TRIVIAL(error) << e.what();
+    }
 }
 
 void BaseSwgServer::RegisterMessageHandler(
