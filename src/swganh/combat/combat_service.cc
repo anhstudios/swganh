@@ -270,7 +270,7 @@ int CombatService::SingleTargetCombatAction(
     case DODGE:
         // Dodge
         defender->GetController()->SendFlyText("@combat_effects:dodge", FlyTextColor::GREEN); 
-        defender->NotifyObservers(ObjControllerMessage(0x1B, Animate("dodge")));
+        defender->NotifyObservers(ObjControllerMessage(0x1B, Animate("dodge", defender->GetObjectId())));
         damage_multiplier = 0.0f;
         BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::DODGE_spam());
         break;
@@ -281,7 +281,7 @@ int CombatService::SingleTargetCombatAction(
     case MISS:
         // Miss
         defender->GetController()->SendFlyText("@combat_effects:miss", FlyTextColor::WHITE); 
-        defender->NotifyObservers(ObjControllerMessage(0x1B, Animate("dodge")));
+        defender->NotifyObservers(ObjControllerMessage(0x1B, Animate("dodge", defender->GetObjectId())));
         BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::MISS_spam());
         damage_multiplier = 0.0f;
         return 0;
