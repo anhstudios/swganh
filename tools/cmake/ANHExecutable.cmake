@@ -107,6 +107,8 @@ FUNCTION(AddANHExecutable name)
                 ${TEST_SOURCES}
             ADDITIONAL_INCLUDE_DIRS
                 ${ANHEXE_ADDITIONAL_INCLUDE_DIRS}
+            ADDITIONAL_LIBRARY_DIRS
+                ${ANHEXE_ADDITIONAL_LIBRARY_DIRS}
             DEBUG_LIBRARIES
                 ${ANHEXE_DEBUG_LIBRARIES}
             OPTIMIZED_LIBRARIES
@@ -129,6 +131,8 @@ FUNCTION(AddANHExecutable name)
                 ${BINDINGS}
             ADDITIONAL_INCLUDE_DIRS
                 ${ANHEXE_ADDITIONAL_INCLUDE_DIRS}
+            ADDITIONAL_LIBRARY_DIRS
+                ${ANHEXE_ADDITIONAL_LIBRARY_DIRS}
             DEBUG_LIBRARIES
                 ${ANHEXE_DEBUG_LIBRARIES}
             OPTIMIZED_LIBRARIES
@@ -174,11 +178,6 @@ FUNCTION(AddANHExecutable name)
             
         # Set the default output directory for binaries for convenience.
         SET_TARGET_PROPERTIES(${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${RUNTIME_OUTPUT_BASE_DIRECTORY}/bin")
-        
-        # Mysql is built with the static runtime but all of our projects and deps
-        # use the dynamic runtime, in this instance it's a non-issue so ignore
-        # the problem lib.
-        SET_TARGET_PROPERTIES(${name} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:LIBCMT")
         
         # Link to some standard windows libs that all projects need.
     	TARGET_LINK_LIBRARIES(${name} "winmm.lib" "ws2_32.lib")

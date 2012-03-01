@@ -3,7 +3,7 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
@@ -183,11 +183,11 @@ void ConnectionService::AddClient_(
         client_map.erase(find_it->first);
     }
     
-    DLOG(WARNING) << "Adding connection client";
+    BOOST_LOG_TRIVIAL(warning) << "Adding connection client";
 
     client_map.insert(make_pair(client->GetSession()->remote_endpoint(), client));
 
-    DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
+    BOOST_LOG_TRIVIAL(warning) << "Connection service currently has ("<< client_map.size() << ") clients";
 }
 
 void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
@@ -210,22 +210,22 @@ void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session
             simulation_service->PersistRelatedObjects(controller->GetObject()->GetObjectId());
             
             // set a timer to 5 minutes to destroy the object, unless logged back in.
-            auto deadline_timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
+            auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
             deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));
         }
 
-        DLOG(WARNING) << "Removing disconnected client";
+        BOOST_LOG_TRIVIAL(warning) << "Removing disconnected client";
         {
             boost::lock_guard<boost::mutex> lg(clients_mutex_);
             client_map.erase(session->remote_endpoint());
         }
-        DLOG(WARNING) << "Removing Session";
+        BOOST_LOG_TRIVIAL(warning) << "Removing Session";
         session_provider_->EndGameSession(client->GetPlayerId());
     }
      
     {
         boost::lock_guard<boost::mutex> lg(clients_mutex_);       
-        DLOG(WARNING) << "Connection service currently has ("<< client_map.size() << ") clients";
+        BOOST_LOG_TRIVIAL(warning) << "Connection service currently has ("<< client_map.size() << ") clients";
     }
 }
 void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_code& e, shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs, shared_ptr<swganh::object::ObjectController> controller)
@@ -236,7 +236,7 @@ void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_cod
         if (controller->GetRemoteClient()->GetSession() == nullptr || !controller->GetRemoteClient()->GetSession()->connected())
         {
             auto object = controller->GetObject();
-            DLOG(WARNING) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
+            BOOST_LOG_TRIVIAL(warning) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
             auto simulation_service = simulation_service_.lock();
             simulation_service->RemoveObject(object);
 
@@ -246,7 +246,7 @@ void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_cod
     }
 }
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
-    DLOG(WARNING) << "Handling CmdSceneReady";    
+    BOOST_LOG_TRIVIAL(warning) << "Handling CmdSceneReady";    
 
     client->Send(CmdSceneReady());
 
@@ -257,14 +257,14 @@ void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> c
 }
 
 void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const ClientIdMsg& message) {
-    DLOG(WARNING) << "Handling ClientIdMsg";
+    BOOST_LOG_TRIVIAL(warning) << "Handling ClientIdMsg";
 
     // get session key from login service
     uint32_t account_id = login_service()->GetAccountBySessionKey(message.session_hash);
 
     // authorized
     if (! account_id) {
-        DLOG(WARNING) << "Account_id not found from session key, unauthorized access.";
+        BOOST_LOG_TRIVIAL(warning) << "Account_id not found from session key, unauthorized access.";
         return;
     }
     
@@ -273,13 +273,13 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
                 
     // authorized
     if (! player_id) {
-        DLOG(WARNING) << "No player found for the requested account, unauthorized access.";
+        BOOST_LOG_TRIVIAL(warning) << "No player found for the requested account, unauthorized access.";
         return;
     }
     
     // creates a new session and stores it for later use
     if (!session_provider_->CreateGameSession(player_id, client->GetSession()->connection_id())) {    
-        DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
+        BOOST_LOG_TRIVIAL(warning) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
     
     client->Connect(account_id, player_id);

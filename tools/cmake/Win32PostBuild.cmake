@@ -22,15 +22,6 @@ add_custom_command(
     VERBATIM
 )
 
-get_filename_component(GLOG_DLL_PATH ${GLOG_LIBRARY_DEBUG} PATH)
-string(REPLACE "/" "\\" GLOG_DLL_PATH "${GLOG_DLL_PATH}\\..")
-add_custom_command(
-    TARGET DEPS
-    POST_BUILD
-    COMMAND xcopy "${GLOG_DLL_PATH}\\$\(Configuration\)\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
-    VERBATIM
-)
-
 get_filename_component(MYSQL_CONNECTOR_C_DLL_PATH ${MYSQL_LIB} PATH)
 string(REPLACE "/" "\\" MYSQL_CONNECTOR_C_DLL_PATH "${MYSQL_CONNECTOR_C_DLL_PATH}\\..")
 add_custom_command(

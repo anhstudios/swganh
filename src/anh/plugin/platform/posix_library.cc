@@ -9,7 +9,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 using namespace anh::plugin;
 using namespace boost::filesystem;
@@ -24,7 +24,7 @@ shared_ptr<PosixLibrary> PosixLibrary::Load(std::string library) {
     void* handle = dlopen(library_path.c_str(), RTLD_LAZY | RTLD_GLOBAL);
 
     if (handle == NULL) {
-        DLOG(WARNING) << "Error opening " << library << " library: " << dlerror();
+        BOOST_LOG_TRIVIAL(warning) << "Error opening " << library << " library: " << dlerror();
         throw runtime_error("Unable to open posix library: " + library);
     }
 

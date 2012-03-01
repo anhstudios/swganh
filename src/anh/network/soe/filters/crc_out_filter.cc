@@ -20,8 +20,6 @@
 
 #include "anh/network/soe/filters/crc_out_filter.h"
 
-#include <glog/logging.h>
-
 #include "anh/byte_buffer.h"
 #include "anh/crc.h"
 #include "anh/network/soe/session.h"

@@ -20,7 +20,7 @@
 
 #include "swganh/login/login_service.h"
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -186,7 +186,7 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> sessio
     std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
 
     if (!client) {
-        DLOG(WARNING) << "Adding login client";
+        BOOST_LOG_TRIVIAL(warning) << "Adding login client";
 
         client = make_shared<LoginClient>(session);
 
@@ -195,7 +195,7 @@ std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> sessio
     }
     
     boost::lock_guard<boost::mutex> lg(clients_mutex_);
-    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
+    BOOST_LOG_TRIVIAL(warning) << "Login service currently has ("<< clients_.size() << ") clients";
     return client;
 }
 
@@ -203,17 +203,17 @@ void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> ses
     std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
     
     if (client) {
-        DLOG(WARNING) << "Removing disconnected client";
+        BOOST_LOG_TRIVIAL(warning) << "Removing disconnected client";
         boost::lock_guard<boost::mutex> lg(clients_mutex_);
         clients_.erase(session->remote_endpoint());
     }
     
     boost::lock_guard<boost::mutex> lg(clients_mutex_);
-    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
+    BOOST_LOG_TRIVIAL(warning) << "Login service currently has ("<< clients_.size() << ") clients";
 }
 
 void LoginService::UpdateGalaxyStatus_() {    
-    DLOG(INFO) << "Updating galaxy status";
+    BOOST_LOG_TRIVIAL(info) << "Updating galaxy status";
 
     galaxy_status_ = GetGalaxyStatus_();
         
@@ -282,7 +282,7 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
     }
 
     if (!account || !authentication_manager_->Authenticate(login_client, account)) {
-        DLOG(WARNING) << "Login request for invalid user: " << login_client->GetUsername();
+        BOOST_LOG_TRIVIAL(warning) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
         error.type = "@cpt_login_fail";
@@ -291,7 +291,7 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
         
         login_client->Send(error);
         
-        auto timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
+        auto timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
         timer->async_wait([login_client] (const boost::system::error_code& e)
         {
 			if (login_client)
@@ -301,7 +301,7 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
 				    login_client->GetSession()->Close();
 			    }
 			    
-				DLOG(WARNING) << "Closing connection";
+				BOOST_LOG_TRIVIAL(warning) << "Closing connection";
 			}
             return;            
         });
@@ -312,7 +312,7 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
     login_client->SetAccount(account);
     
     clients_.insert(make_pair(login_client->GetSession()->remote_endpoint(), login_client));
-    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
+    BOOST_LOG_TRIVIAL(warning) << "Login service currently has ("<< clients_.size() << ") clients";
     
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())

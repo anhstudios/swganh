@@ -24,26 +24,15 @@
 #include <iostream>
 #include <string>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 #include <boost/thread.hpp>
 
 using namespace boost;
 using namespace swganh;
 using namespace std;
 
-int main(int argc, char* argv[]) {
-    /// pre startup
-    // Initialize the google logging.
-    google::InitGoogleLogging(argv[0]);
-
-    #ifndef _WIN32
-        google::InstallFailureSignalHandler();
-    #endif
-
-    FLAGS_log_dir = "./logs";
-    FLAGS_stderrthreshold = 1;
-    setvbuf( stdout, NULL, _IONBF, 0);
-
+int main(int argc, char* argv[]) 
+{
     try {
         app::SwganhApp app;
 
@@ -58,7 +47,7 @@ int main(int argc, char* argv[]) {
             cin >> cmd;
 
             if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
-                LOG(INFO) << "Exit command received from command line. Shutting down.";
+                BOOST_LOG_TRIVIAL(info) << "Exit command received from command line. Shutting down.";
                 
                 // Stop the application and join the thread until it's finished.
                 app.Stop();
@@ -69,12 +58,12 @@ int main(int argc, char* argv[]) {
 				
                 break;
             } else {
-                LOG(WARNING) << "Invalid command received: " << cmd;
+                BOOST_LOG_TRIVIAL(warning) << "Invalid command received: " << cmd;
             }
         }
 
     } catch(std::exception& e) {
-        DLOG(FATAL) << "Unhandled application exception occurred: " << e.what();
+        BOOST_LOG_TRIVIAL(fatal) << "Unhandled application exception occurred: " << e.what();
     }
 
     return 0;

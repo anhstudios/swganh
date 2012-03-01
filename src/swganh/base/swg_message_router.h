@@ -25,7 +25,7 @@
 #include <memory>
 
 #include <boost/asio/ip/udp.hpp>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 #include <concurrent_unordered_map.h>
 
 #include "anh/byte_buffer.h"
@@ -80,7 +80,7 @@ public:
         bool client_required = true)
     {
         if (handlers_.find(MessageType::opcode()) != handlers_.end()) {
-            DLOG(WARNING) << "Handler has already been defined: " << std::hex << MessageType::opcode();
+            BOOST_LOG_TRIVIAL(warning) << "Handler has already been defined: " << std::hex << MessageType::opcode();
             throw HandlerAlreadyDefined("Requested registration of handler that has already been defined.");
         }
 
@@ -114,7 +114,7 @@ public:
 
         // No handler specified, trigger an event.
         if (find_iter == handlers_.end()) {
-            DLOG(WARNING) << "Received message with no handler, triggering event: "
+            BOOST_LOG_TRIVIAL(warning) << "Received message with no handler, triggering event: "
                     << std::hex << message_type << "\n\n" << *message; 
             
             throw UnidentifiedMessageReceived("Received an unidentified message");
@@ -126,7 +126,7 @@ public:
 
         if (!client) {
             if (find_iter->second.second) {
-                DLOG(WARNING) << "Received a message from an invalid source: "
+                BOOST_LOG_TRIVIAL(warning) << "Received a message from an invalid source: "
                         << std::hex << message_type << "\n\n" << *message; 
 
                 throw ValidClientRequired("A valid client is required to invoke this message handler");

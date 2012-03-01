@@ -11,7 +11,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
@@ -87,20 +87,20 @@ void CommandService::EnqueueCommand(
     auto properties_iter = command_properties_map_.find(command.command_crc);
     if (properties_iter == command_properties_map_.end())
     {
-        LOG(WARNING) << "Invalid handler requested: " << hex << command.command_crc;
+        BOOST_LOG_TRIVIAL(warning) << "Invalid handler requested: " << hex << command.command_crc;
         return;
     }
     
     auto handlers_iter = handlers_.find(command.command_crc);
     if (handlers_iter == handlers_.end())
     {
-        LOG(WARNING) << "No handler for command: " << std::hex << command.command_crc;
+        BOOST_LOG_TRIVIAL(warning) << "No handler for command: " << std::hex << command.command_crc;
         return;
     }
 
     if (!ValidateCommand(actor, target, command, properties_iter->second, enqueue_filters_))
     {
-        LOG(WARNING) << "Command validation failed";
+        BOOST_LOG_TRIVIAL(warning) << "Command validation failed";
         return;
     }
 
@@ -278,12 +278,12 @@ void CommandService::LoadProperties()
             RegisterCommandScript(properties);
         }
 
-        DLOG(WARNING) << "Loaded (" << command_properties_map_.size() << ") Commands";
+        BOOST_LOG_TRIVIAL(warning) << "Loaded (" << command_properties_map_.size() << ") Commands";
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 

@@ -20,7 +20,7 @@
 
 #include "scripting_manager.h"
 #include <boost/python.hpp>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <fstream>

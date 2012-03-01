@@ -9,7 +9,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/app/kernel_interface.h"
 #include "anh/crc.h"
@@ -120,7 +120,7 @@ void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command
             RegisterCombatScript(command.second);
 		}
 	});
-    DLOG(WARNING) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
+    BOOST_LOG_TRIVIAL(warning) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
 }
 
 bool CombatService::InitiateCombat(

@@ -131,9 +131,9 @@ FUNCTION(AddANHPythonBinding name)
         # Set the default output directory for binaries for convenience.
         SET_TARGET_PROPERTIES(${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${RUNTIME_OUTPUT_BASE_DIRECTORY}/bin/${CMAKE_BUILD_TYPE}")
         
-		SET_TARGET_PROPERTIES( ${name} PROPERTIES SUFFIX ".pyd")
-		SET_TARGET_PROPERTIES( ${name} PROPERTIES DEBUG_POSTFIX "")
-								 
+		SET_TARGET_PROPERTIES(${name} PROPERTIES SUFFIX ".pyd")
+		SET_TARGET_PROPERTIES(${name} PROPERTIES DEBUG_POSTFIX "")
+		
 		# After each executable project is built make sure the environment is
 		# properly set up (scripts, default configs, etc exist).
 	ENDIF()

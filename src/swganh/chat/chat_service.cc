@@ -7,7 +7,7 @@
 #include <boost/regex.hpp>
 #endif
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/app/kernel_interface.h"
 #include "anh/service/service_manager.h"
@@ -73,7 +73,7 @@ void ChatService::HandleSpatialChatInternal(
     wsmatch m;
 
     if (! regex_match(command.command_options, m, p)) {
-        LOG(ERROR) << "Invalid spatial chat message format";
+        BOOST_LOG_TRIVIAL(error) << "Invalid spatial chat message format";
         return; // We suffered an unrecoverable error, bail out now.
     }
     
