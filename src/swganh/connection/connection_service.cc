@@ -3,7 +3,7 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
@@ -117,7 +117,7 @@ shared_ptr<LoginService> ConnectionService::login_service() {
 }
 
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
-    DLOG(WARNING) << "Handling CmdSceneReady";    
+    BOOST_LOG_TRIVIAL(warning) << "Handling CmdSceneReady";    
 
     client->SendMessage(CmdSceneReady());
 
@@ -128,14 +128,14 @@ void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> c
 }
 
 void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> client, const ClientIdMsg& message) {
-    DLOG(WARNING) << "Handling ClientIdMsg";
+    BOOST_LOG_TRIVIAL(warning) << "Handling ClientIdMsg";
 
     // get session key from login service
     uint32_t account_id = login_service()->GetAccountBySessionKey(message.session_hash);
 
     // authorized
     if (! account_id) {
-        DLOG(WARNING) << "Account_id not found from session key, unauthorized access.";
+        BOOST_LOG_TRIVIAL(warning) << "Account_id not found from session key, unauthorized access.";
         return;
     }
     
@@ -144,13 +144,13 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
                 
     // authorized
     if (! player_id) {
-        DLOG(WARNING) << "No player found for the requested account, unauthorized access.";
+        BOOST_LOG_TRIVIAL(warning) << "No player found for the requested account, unauthorized access.";
         return;
     }
     
     // creates a new session and stores it for later use
     if (!session_provider_->CreateGameSession(player_id, client->connection_id())) {    
-        DLOG(WARNING) << "Player Not Inserted into Session Map because No Game Session Created!";
+        BOOST_LOG_TRIVIAL(warning) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
     
     client->Connect(account_id, player_id);

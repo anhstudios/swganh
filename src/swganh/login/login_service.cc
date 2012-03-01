@@ -20,7 +20,7 @@
 
 #include "swganh/login/login_service.h"
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -166,7 +166,7 @@ void LoginService::login_error_timeout_secs(int new_timeout)
 }
 
 void LoginService::UpdateGalaxyStatus_() {    
-    DLOG(INFO) << "Updating galaxy status";
+    BOOST_LOG_TRIVIAL(info) << "Updating galaxy status";
 
     galaxy_status_ = GetGalaxyStatus_();
         
@@ -235,7 +235,7 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
     }
 
     if (!account || !authentication_manager_->Authenticate(login_client, account)) {
-        DLOG(WARNING) << "Login request for invalid user: " << login_client->GetUsername();
+        BOOST_LOG_TRIVIAL(warning) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
         error.type = "@cpt_login_fail";
@@ -244,22 +244,21 @@ void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_clien
         
         login_client->SendMessage(error);
         
-        auto timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
+        auto timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
         timer->async_wait([login_client] (const boost::system::error_code& e)
         {
 			if (login_client)
 			{
                 login_client->Close();
 			    
-				DLOG(WARNING) << "Closing connection";
-			}        
+				BOOST_LOG_TRIVIAL(warning) << "Closing connection";
+			}
         });
 
         return;
     }
     
     login_client->SetAccount(account);
-        
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
         + boost::lexical_cast<string>(login_client->remote_endpoint().address());

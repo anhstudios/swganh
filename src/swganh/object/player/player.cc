@@ -1,7 +1,7 @@
 
 #include "swganh/object/player/player.h"
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/crc.h"
 

@@ -8,9 +8,8 @@
 #define BOOST_FILESYSTEM_VERSION 3
 
 #include <boost/filesystem.hpp>
+#include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
-
-#include <glog/logging.h>
 
 #include "anh/app/kernel_interface.h"
 
@@ -102,7 +101,7 @@ void PluginManager::LoadAllPlugins(const std::string& directory) {
         });
 
     } catch(const std::exception& e) {
-        LOG(FATAL) << e.what();
+        BOOST_LOG_TRIVIAL(fatal) << e.what();
     }
 }
 

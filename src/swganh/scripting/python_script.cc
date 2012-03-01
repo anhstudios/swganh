@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iterator>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include <boost/python.hpp>
 #include <Python.h>

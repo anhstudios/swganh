@@ -22,7 +22,6 @@
 
 #include <vector>
 
-#include <glog/logging.h>
 #include <zlib.h>
 
 #include "anh/network/soe/packet.h"

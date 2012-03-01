@@ -22,7 +22,7 @@
 
 #include <algorithm>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/network/soe/server_interface.h"
 
@@ -60,7 +60,7 @@ Session::~Session(void)
 {
     Close();
 
-    LOG(WARNING) << "Session [" << connection_id_ << "] Closed.";
+    BOOST_LOG_TRIVIAL(warning) << "Session [" << connection_id_ << "] Closed.";
 }
 
 uint16_t Session::server_sequence() const {
@@ -193,7 +193,7 @@ void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)
                 }
                 else 
                 {
-                    LOG(WARNING) << "Unhandled SOE Opcode: " << std::hex << message->peek<uint16_t>(true)
+                    BOOST_LOG_TRIVIAL(warning) << "Unhandled SOE Opcode: " << std::hex << message->peek<uint16_t>(true)
                         << "\n\n" << message;
                 }
         }
@@ -254,12 +254,11 @@ void Session::handleSessionRequest_(SessionRequest& packet)
     server_->SendTo(remote_endpoint_, buffer);
 
     connected_ = true;
-    LOG(INFO) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
+    BOOST_LOG_TRIVIAL(info) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
 }
 
 void Session::handleMultiPacket_(MultiPacket& packet)
 {
-    VLOG(3) << "Handling MULTIPACKET";
     std::for_each(packet.packets.begin(), packet.packets.end(), [=](anh::ByteBuffer& buffer) {
         HandleMessage(make_shared<ByteBuffer>(buffer));
     });
@@ -267,13 +266,11 @@ void Session::handleMultiPacket_(MultiPacket& packet)
 
 void Session::handleDisconnect_(Disconnect& packet)
 {
-    VLOG(3) << "Handling DISCONNECT";
     Close();
 }
 
 void Session::handlePing_(Ping& packet)
 {
-    VLOG(3) << "Handling PING";
     Ping pong;
     
     auto buffer = server_->AllocateBuffer();
@@ -284,7 +281,6 @@ void Session::handlePing_(Ping& packet)
 
 void Session::handleNetStatsClient_(NetStatsClient& packet)
 {
-    VLOG(3) << "Handling NET_STATS_CLIENT";
     server_net_stats_.client_tick_count = packet.client_tick_count;
 
     auto buffer = server_->AllocateBuffer();
@@ -294,9 +290,8 @@ void Session::handleNetStatsClient_(NetStatsClient& packet)
 
 void Session::handleChildDataA_(ChildDataA& packet)
 {	
-    VLOG(3) << "Handling CHILD_DATA_A";
     if(!SequenceIsValid_(packet.sequence)) {
-        DLOG(WARNING) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
+        BOOST_LOG_TRIVIAL(warning) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
         return;
     }
 
@@ -309,7 +304,6 @@ void Session::handleChildDataA_(ChildDataA& packet)
 
 void Session::handleDataFragA_(DataFragA& packet)
 {
-    VLOG(3) << "Handling DATA_FRAG_A";
     if(!SequenceIsValid_(packet.sequence))
         return;
     
@@ -354,8 +348,6 @@ void Session::handleDataFragA_(DataFragA& packet)
 
 void Session::handleAckA_(AckA& packet)
 {
-    VLOG(3) << "Handle ACK_A";
-
     auto it = find_if(
         sent_messages_.begin(), 
         sent_messages_.end(), 
@@ -371,8 +363,6 @@ void Session::handleAckA_(AckA& packet)
 
 void Session::handleOutOfOrderA_(OutOfOrderA& packet)
 {
-    VLOG(3) << "Handle OUT_OF_ORDER_A";
-    
     std::for_each(sent_messages_.begin(), sent_messages_.end(), [=](SequencedMessageMap::value_type& item) {
         SendSoePacket_(item.second);
     });
