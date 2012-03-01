@@ -7,9 +7,9 @@ This project aims to recreate the Star Wars Galaxies Pre-Combat Upgrade experien
 
 ### Requirements ###
 
-*   Microsoft Visual Studio 10.0 or higher (windows)
+*   Microsoft Visual Studio 11.0 Beta or higher (windows)
 *   GCC 4.6 (*nix)
-*   CMake 2.8.3 or higher
+*   CMake 2.8.7 or higher
 *   Git 1.7 or higher
 *   Python 3.2
 *   MySQL 5.1/MariaDB 5.2 or higher
@@ -28,7 +28,17 @@ This process can take anywhere from 15-40 minutes on the first build depending o
 
 ### Visual Studio / Windows Development ###
 
-On windows the platform of choice is Visual Studio 2010 or better. While other compilers such as GCC 4.6 via cygwin is possible it's hard to top the Visual Studio IDE for development. To get started, after you've run the bootstrap script as outlined in the Quick Build Guide, open the **/build/swganh/swganh.sln** solution file.
+Download the deps here: https://github.com/downloads/anhstudios/swganh/swganh-deps-0.4.0-vc11.7z
+extract to the same level as your swganh dir
+ie: C:/swganh, c:/vendor
+Run the following command in a BASH SHELL ( I just use git bash ) 
+cmake -G "Visual Studio 11" -DVENDOR_PREFIX=$PWD/../../vendor ..
+
+This will generate a bootstrap.sln file, open this up and do a build all, If this succeeds binaries will be created and you can configure your server.
+You are now ready for development on swganh.
+
+On windows the platform of choice is Visual Studio 2011 or better. 
+While other compilers such as GCC 4.6 via cygwin is possible it's hard to top the Visual Studio IDE for development. 
 
 * **NOTE** Since the project files are located outside the source directory adding new files from within visual studio requires changing the default save location.*
 
