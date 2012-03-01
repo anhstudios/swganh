@@ -107,6 +107,8 @@ FUNCTION(AddANHExecutable name)
                 ${TEST_SOURCES}
             ADDITIONAL_INCLUDE_DIRS
                 ${ANHEXE_ADDITIONAL_INCLUDE_DIRS}
+            ADDITIONAL_LIBRARY_DIRS
+                ${ANHEXE_ADDITIONAL_LIBRARY_DIRS}
             DEBUG_LIBRARIES
                 ${ANHEXE_DEBUG_LIBRARIES}
             OPTIMIZED_LIBRARIES
@@ -129,6 +131,8 @@ FUNCTION(AddANHExecutable name)
                 ${BINDINGS}
             ADDITIONAL_INCLUDE_DIRS
                 ${ANHEXE_ADDITIONAL_INCLUDE_DIRS}
+            ADDITIONAL_LIBRARY_DIRS
+                ${ANHEXE_ADDITIONAL_LIBRARY_DIRS}
             DEBUG_LIBRARIES
                 ${ANHEXE_DEBUG_LIBRARIES}
             OPTIMIZED_LIBRARIES

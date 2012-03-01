@@ -20,8 +20,9 @@
 
 #include <iostream>
 #include <fstream>
+
+#include <boost/log/trivial.hpp>
 #include <boost/python.hpp>
-#include <glog/logging.h>
 
 using namespace std;
 using namespace anh::scripting;
@@ -37,10 +38,12 @@ ScriptingManager::ScriptingManager(const string& base_path)
     // Retrieve the main dictionary 'global' namespace if you will
     global_ = main_.attr("__dict__");
 }
+
 ScriptingManager::~ScriptingManager()
 {
     loaded_files_.empty();
 }
+
 void ScriptingManager::load(const string& filename)
 {
     try{              
@@ -56,6 +59,7 @@ void ScriptingManager::load(const string& filename)
         getExceptionFromPy();
     }
 }
+
 void ScriptingManager::run(const string& filename)
 {
     // are you trying to run a file that's not loaded?
@@ -73,6 +77,7 @@ void ScriptingManager::run(const string& filename)
         getExceptionFromPy();
     }
 }
+
 object ScriptingManager::embed(const string& filename, const string& return_name) {
     // are you trying to run a file that's not loaded?
     // lets load the file and run it anyway
@@ -92,18 +97,20 @@ object ScriptingManager::embed(const string& filename, const string& return_name
     }
     return embed;
 }
+
 bool ScriptingManager::loadModules(std::vector<_inittab> modules)
 {
     int failures = 0;
     for_each(modules.begin(), modules.end(), [modules, &failures](_inittab module) {
         if(PyImport_AppendInittab(module.name, module.initfunc) == -1) {
-            LOG(WARNING) << "Module " << module.name << " could not be loaded";
+            BOOST_LOG_TRIVIAL(warning) << "Module " << module.name << " could not be loaded";
             failures++;
             }
         });
     
     return failures == 0;
 }
+
 void ScriptingManager::reload(const string& filename)
 {
     if (isFileLoaded(filename))
@@ -112,6 +119,7 @@ void ScriptingManager::reload(const string& filename)
     }
     load(filename);
 }
+
 void ScriptingManager::removeFile(const string& filename)
 {
     auto it = loaded_files_.begin();
@@ -127,6 +135,7 @@ void ScriptingManager::removeFile(const string& filename)
         }
     }
 }
+
 bool ScriptingManager::isFileLoaded(const string& filename)
 {
     auto it = find_if(loaded_files_.begin(), loaded_files_.end(), [this,&filename](bp_object_map::value_type& file){
@@ -134,16 +143,19 @@ bool ScriptingManager::isFileLoaded(const string& filename)
     });
     return it != loaded_files_.end();
 }
+
 void ScriptingManager::setFullPath_(const string& filename)
 {
     setFullPath_(filename, base_path_);
 }
+
 void ScriptingManager::setFullPath_(const string& filename, const string& root_path)
 {
     full_path_.clear();
     full_path_.append(root_path);
     full_path_.append(filename);
 }
+
 str ScriptingManager::getLoadedFile(const string& filename)
 {
     auto it = find_if(loaded_files_.begin(), loaded_files_.end(), [&](bp_object_map::value_type& file){
@@ -154,6 +166,7 @@ str ScriptingManager::getLoadedFile(const string& filename)
     else 
         return str();
 }
+
 char* ScriptingManager::fullPath_(const string& filename)
 {
     setFullPath_(filename);
@@ -179,6 +192,7 @@ vector<char> ScriptingManager::getFileInput_(const string& filename)
     
     return input;
 }
+
 void ScriptingManager::getExceptionFromPy()
 {
     std::ostringstream os;
@@ -226,5 +240,5 @@ void ScriptingManager::getExceptionFromPy()
     }
     PyErr_Clear();
     std::cerr << os.str() << endl;
-    LOG(WARNING) << os.str();
+    BOOST_LOG_TRIVIAL(warning) << os.str();
 }

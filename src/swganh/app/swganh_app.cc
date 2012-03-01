@@ -7,7 +7,7 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager_interface.h"
 #include "anh/plugin/plugin_manager.h"
@@ -171,7 +171,7 @@ void SwganhApp::Start() {
     
     kernel_->GetServiceManager()->Start();
     
-    auto timer = make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
+    auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
 
     timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 10));
 }
@@ -226,7 +226,7 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
 }
 
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
-    DLOG(INFO) << "Loading plugins";
+    BOOST_LOG_TRIVIAL(info) << "Loading plugins";
 
     auto plugin_manager = kernel_->GetPluginManager();
 
@@ -249,7 +249,7 @@ void SwganhApp::CleanupServices_() {
         return;
     }
 
-    DLOG(WARNING) << "Services were not shutdown properly";
+    BOOST_LOG_TRIVIAL(warning) << "Services were not shutdown properly";
 
     for_each(services.begin(), services.end(), [this, &service_directory] (anh::service::ServiceDescription& service) {
         service_directory->removeService(service);
