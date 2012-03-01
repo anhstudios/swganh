@@ -20,8 +20,8 @@
 
 #include "anh/network/soe/server.h"
 
+#include <boost/log/trivial.hpp>
 #include <boost/pool/pool_alloc.hpp>
-#include <glog/logging.h>
 
 #include "anh/byte_buffer.h"
 #include "anh/event_dispatcher.h"
@@ -80,7 +80,7 @@ void Server::SendTo(const udp::endpoint& endpoint, const shared_ptr<ByteBuffer>&
         [this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
     {
         if (bytes_transferred == 0) {
-            DLOG(WARNING) << "Sent 0 bytes";
+            BOOST_LOG_TRIVIAL(warning) << "Sent 0 bytes";
         }
 
         bytes_sent_ += bytes_transferred;
@@ -159,7 +159,7 @@ uint32_t Server::max_receive_size() {
 }
 
 shared_ptr<ByteBuffer> Server::AllocateBuffer() {    
-    auto allocated_buffer = allocate_shared<ByteBuffer, boost::pool_allocator<ByteBuffer>>(
+    auto allocated_buffer = std::allocate_shared<ByteBuffer, boost::pool_allocator<ByteBuffer>>(
         boost::pool_allocator<ByteBuffer>());
 
     return allocated_buffer;
