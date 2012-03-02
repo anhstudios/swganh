@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <unordered_map>
 
+#include <anh/hash_string.h>
 #include "swganh/command/command_properties.h"
 
 #include <boost/python.hpp>
@@ -17,22 +18,11 @@ struct CombatData : swganh::command::CommandProperties
         : swganh::command::CommandProperties(properties)
     {
     }
-    CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties )
-        : swganh::command::CommandProperties(properties) 
-    {
-        GetPythonData(p_object);
-    }
+    CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties );
 
-    /*template <typename T, typename U>
-    void ExtractData<T>(boost::python::object& p_object, char* key, U& extract_value)
-    {
-        if (p_object.contains(key))
-        {
-            boost::python::extract<T> tmp_x(p_object[key]);
-            if (tmp_x.check())
-                U = tmp_x();
-        }
-    }*/
+    int min_damage;
+    int max_damage;
+
     float damage_multiplier;
     int accuracy_bonus;
     float speed_multiplier;
@@ -52,12 +42,23 @@ struct CombatData : swganh::command::CommandProperties
     int cone_angle;
     int area_range;
 
-    uint32_t animation_crc;
+    anh::HashString animation_crc;
 
     void GetPythonData(boost::python::object global);
 
-    //std::unordered_map<uint64_t, StateEffect> state_effects;
-    //std::unordered_map<uint64_t, DotEffect> dot_effects;
+    bool IsRandomPool();
+    int GetDamagingPool();
+    
+    template <typename T>
+    void ExtractData(boost::python::object& p_object, std::string key, T& extract_value)
+    {
+        if (p_object.contains(key))
+        {
+            boost::python::extract<T> tmp_x(p_object[key]);
+            if (tmp_x.check())
+                extract_value = tmp_x();
+        }
+    }
     
     static std::string HIT_spam() { return "_hit"; }
     static std::string BLOCK_spam() { return "_block"; }
