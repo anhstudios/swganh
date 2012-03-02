@@ -4,6 +4,7 @@
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/out_of_band.h"
 #include "swganh/messages/chat_system_message.h"
+#include "swganh/messages/controllers/show_fly_text.h"
 #include "swganh/connection/connection_client.h"
 #include "swganh/object/object.h"
 
@@ -18,8 +19,9 @@
 #endif
 
 using namespace std;
-using namespace swganh::messages;
 using namespace swganh::connection;
+using namespace swganh::messages;
+using namespace swganh::messages::controllers;
 using namespace swganh::object;
 
 ObjectController::ObjectController(
@@ -109,4 +111,54 @@ bool ObjectController::SendSystemMessage_(const wstring& custom_message, const O
         Notify(SystemMessage);
 
     return true;
+}
+
+void ObjectController::SendFlyText(const std::string& fly_text, FlyTextColor color, bool display_flag, uint8_t red, uint8_t green, uint8_t blue)
+{
+    // Use regex to check if the chat string matches the stf string format.
+    static const regex pattern("@([a-zA-Z0-9/_]+):([a-zA-Z0-9_]+)");
+    smatch result;
+
+    // If it's an exact match (2 sub-patterns + the full string = 3 elements) it's an stf string.
+    // Reroute the call to the appropriate overload.
+    if (regex_search(fly_text, result, pattern))
+    {
+        string file(result[1].str());
+        string string(result[2].str());
+
+        controllers::ShowFlyText fly_text;
+        fly_text.object_id = object_->GetObjectId();
+        fly_text.stf_location = file;
+        fly_text.text = string;
+        switch (color)
+        {
+            case RED:
+                fly_text.red = 0xFF;
+                break;
+            case GREEN:
+                fly_text.green = 0xFF;
+                break;
+            case BLUE:
+                fly_text.blue = 0xFF;
+                break;
+            case MIX:
+                fly_text.red = red;
+                fly_text.green = green;
+                fly_text.blue = blue;
+                break;
+            case WHITE:
+                fly_text.red = 0xFF;
+                fly_text.green = 0xFF;
+                fly_text.blue = 0xFF;
+            default:
+                break;
+        }
+        fly_text.display_flag = (display_flag == true) ? 0 : 1;
+        object_->NotifyObservers(ObjControllerMessage(0x1B, fly_text));
+        
+    }
+}
+void ObjectController::SendFlyText(const std::string& fly_text, FlyTextColor color)
+{
+    SendFlyText(fly_text, color, true);
 }

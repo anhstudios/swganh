@@ -22,6 +22,9 @@ namespace connection {
 namespace swganh {
 namespace messages {
     class OutOfBand;
+namespace controllers{
+    enum FlyTextColor;
+}
 }}
 
 namespace swganh {
@@ -93,6 +96,14 @@ namespace object {
         bool SendSystemMessage(const std::wstring& custom_message, bool chatbox_only = false, bool send_to_inrange = false);
 
         bool SendSystemMessage(const swganh::messages::OutOfBand& prose, bool chatbox_only = false, bool send_to_inrange = false);
+
+        /**
+         * Used to send Fly Text to the character
+         *
+         * @param
+         */
+        void SendFlyText(const std::string& fly_text, swganh::messages::controllers::FlyTextColor color, bool display_flag, uint8_t red = 0, uint8_t green = 0, uint8_t blue = 0);
+        void SendFlyText(const std::string& fly_text, swganh::messages::controllers::FlyTextColor color);
         
     private:
         /**

@@ -2,6 +2,7 @@
 #define SWGANH_OBJECT_OBJECT_CONTROLLER_H_
 
 #include "swganh/object/object_controller.h"
+#include "swganh/messages/controllers/show_fly_text.h"
 #include "swganh/messages/out_of_band.h"
 
 #include <boost/python.hpp>
@@ -15,13 +16,6 @@ struct ProsePackageWrapper : ProsePackage, wrapper<ProsePackage>
 {
     ProsePackageWrapper() : ProsePackage(){}
 };
-
-//struct OutOfBandWrapper : OutOfBand, wrapper<OutOfBand>
-//{
-//    explicit OutOfBandWrapper(const OutOfBandWrapper& wrapper) : OutOfBand() {}
-//    OutOfBandWrapper(std::string base_stf_file, std::string base_stf_string, ProseType prose_type, uint64_t object_id) 
-//        : OutOfBand(base_stf_file, base_stf_string, prose_type, object_id) {}
-//};
 
 void exportOutOfBand()
 {
@@ -43,14 +37,25 @@ struct ObjectControllerWrapper : ObjectController, wrapper<ObjectController>
 
 void exportObjectController()
 {
+    enum_<controllers::FlyTextColor>("FlyTextColor")
+        .value("RED", controllers::RED)
+        .value("GREEN", controllers::GREEN)
+        .value("BLUE", controllers::BLUE)
+        .value("WHITE", controllers::WHITE)
+        .value("MIX", controllers::MIX)
+        ;
+
     bool (ObjectController::*SendSystemMessageStr)(const std::string&) = &ObjectController::SendSystemMessage;
     bool (ObjectController::*SendSystemMessageOutOfBand)(const OutOfBand&, bool, bool) = &ObjectController::SendSystemMessage;
     bool (ObjectController::*SendSystemMessageString)(const std::wstring&, bool, bool) = &ObjectController::SendSystemMessage;
+
+    void (ObjectController::*SendFlyText)(const std::string&, controllers::FlyTextColor) = &ObjectController::SendFlyText;
 
     class_<ObjectControllerWrapper, std::shared_ptr<ObjectController>, boost::noncopyable>("ObjectController", no_init)
         .def("SendSystemMessage", SendSystemMessageOutOfBand, "Sends the specified system message to the player with an out of band object attached")
         .def("SendSystemMessage", SendSystemMessageString, "Sends System Message to the player, taking a string as the message and boolean for chatbox only and another boolean to send to in range")
         .def("SendSystemMessage", SendSystemMessageStr, "Sends System Message to the player, taking a string as the message")
+        .def("SendFlyText", SendFlyText, "Sends Fly Text to the player, see @FlyTextColor")
         .def("Notify", &ObjectControllerWrapper::Notify, "Notifies the controller whent he object has been updated")
     ;
 }
