@@ -32,7 +32,6 @@
 
 #include <boost/asio.hpp>
 
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/protocol_packets.h"
 #include "anh/network/soe/server_interface.h"
 

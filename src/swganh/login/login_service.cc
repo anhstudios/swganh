@@ -30,15 +30,12 @@
 
 #include "anh/event_dispatcher.h"
 
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
 #include "anh/network/soe/server.h"
 
 #include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 #include "anh/plugin/plugin_manager.h"
-
-#include "swganh/base/swg_message_handler.h"
 
 #include "swganh/login/messages/enumerate_character_id.h"
 #include "swganh/login/messages/error_message.h"

@@ -7,7 +7,6 @@
 
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/server.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_directory_interface.h"

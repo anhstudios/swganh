@@ -11,7 +11,6 @@
 
 #include "anh/hash_string.h"
 
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/packet_utilities.h"
 #include "anh/network/soe/session.h"
 
