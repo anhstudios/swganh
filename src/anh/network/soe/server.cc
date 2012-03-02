@@ -24,7 +24,6 @@
 #include <boost/pool/pool_alloc.hpp>
 
 #include "anh/byte_buffer.h"
-#include "anh/event_dispatcher.h"
 
 #include "anh/network/soe/session.h"
 
@@ -39,19 +38,6 @@ Server::Server(boost::asio::io_service& io_service)
     : io_service_(io_service)
     , strand_(io_service)
     , socket_(io_service)
-    , crc_seed_(0xDEADBABE)
-    , active_(io_service)
-    , max_receive_size_(496)
-{}
-
-Server::Server(boost::asio::io_service& io_service, EventDispatcher* event_dispatcher, MessageHandler message_handler)
-    : io_service_(io_service)
-    , strand_(io_service)
-    , socket_(io_service)
-    , event_dispatcher_(event_dispatcher)
-    , crc_seed_(0xDEADBABE)
-    , active_(io_service)
-    , message_handler_(message_handler)
     , max_receive_size_(496)
 {}
 
@@ -84,10 +70,6 @@ void Server::SendTo(const udp::endpoint& endpoint, const shared_ptr<ByteBuffer>&
     });
 }
 
-void Server::HandleMessage(shared_ptr<Packet> packet) {    
-    message_handler_(packet);
-}
-
 void Server::AsyncReceive() {
     socket_.async_receive_from(
         buffer(&recv_buffer_[0], recv_buffer_.size()), 
@@ -96,17 +78,13 @@ void Server::AsyncReceive() {
             if(bytes_transferred > 2 || !error || error == boost::asio::error::message_size)
             {
                 bytes_recv_ += bytes_transferred;
-                OnSocketRecv_(current_remote_endpoint_, std::make_shared<ByteBuffer>((const unsigned char*)recv_buffer_.data(), bytes_transferred));
+
+                auto session = GetSession(current_remote_endpoint_);
+
+                session->HandleProtocolMessage(std::make_shared<ByteBuffer>((const unsigned char*)recv_buffer_.data(), bytes_transferred));
             }
 
             AsyncReceive();
-    });
-}
-void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const std::shared_ptr<anh::ByteBuffer>& message) {
-    strand_.post([=] () {
-        auto session = GetSession(remote_endpoint);
-
-        session->HandleProtocolMessage(message);
     });
 }
 

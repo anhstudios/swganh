@@ -39,9 +39,7 @@ public:
     
     virtual void HandleMessage(
         std::shared_ptr<Session> connection, 
-        std::shared_ptr<anh::ByteBuffer> message) {} // TODO: Make pure virtual after cleanup
-
-    virtual void HandleMessage(std::shared_ptr<Packet> packet) = 0;
+        std::shared_ptr<anh::ByteBuffer> message) = 0;
     
     virtual bool RemoveSession(std::shared_ptr<Session> session) = 0;
     

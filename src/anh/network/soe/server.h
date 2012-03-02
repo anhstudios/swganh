@@ -22,35 +22,21 @@
 #define ANH_NETWORK_SOE_SERVER_H_
 
 #include <cstdint>
-#include <list>
-#include <map>
 #include <memory>
 
 #include <boost/asio.hpp>
-#include <boost/thread/thread.hpp>
 
 #include "anh/network/soe/server_interface.h"
-
-#include "anh/active_object.h"
-
-#ifdef SendMessage
-#undef SendMessage
-#endif
 
 namespace anh {
 
 class ByteBuffer;
-class EventDispatcher;
 
 namespace network {
 namespace soe {
 
 // FORWARD DECLARATION
-class Packet;
 class Session;
-class Socket;
-
-typedef std::function<void (std::shared_ptr<Packet>)> MessageHandler;
 
 /**
  * @brief An SOE Protocol Service.
@@ -61,8 +47,7 @@ class Server : public ServerInterface {
 public:
     explicit Server(boost::asio::io_service& io_service);
 
-    Server(boost::asio::io_service& io_service, anh::EventDispatcher* event_dispatcher, MessageHandler message_handler);
-    ~Server(void);
+    ~Server();
 
     /**
      * @brief Starts the SOE Frontend Service.
@@ -94,29 +79,15 @@ private:
     
     void AsyncReceive();
 
-    /**
-     * @brief Called when the socket receives a message.
-     */
-    void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const std::shared_ptr<anh::ByteBuffer>& message);
-
-    //std::shared_ptr<Socket>		socket_;
     boost::asio::io_service& io_service_;
     boost::asio::strand strand_;
     
-    uint64_t	bytes_recv_;
-    uint64_t	bytes_sent_;
-
-    boost::asio::ip::udp::socket		socket_;
-    boost::asio::ip::udp::endpoint		current_remote_endpoint_;
-    std::array<char, 496>				recv_buffer_;
+    boost::asio::ip::udp::socket socket_;
+    boost::asio::ip::udp::endpoint current_remote_endpoint_;
+    std::array<char, 496> recv_buffer_;
     
-    anh::EventDispatcher*       event_dispatcher_;
-    uint32_t					crc_seed_;
-    
-    anh::ActiveObject active_;
-
-    MessageHandler message_handler_;
-
+    uint64_t bytes_recv_;
+    uint64_t bytes_sent_;
     uint32_t max_receive_size_;
 };
 
