@@ -77,7 +77,6 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
         BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-
     return account;
 }
 uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
