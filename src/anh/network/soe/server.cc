@@ -79,9 +79,10 @@ void Server::AsyncReceive() {
             {
                 bytes_recv_ += bytes_transferred;
 
-                auto session = GetSession(current_remote_endpoint_);
+                auto message = AllocateBuffer();
+                message->write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
 
-                session->HandleProtocolMessage(std::make_shared<ByteBuffer>((const unsigned char*)recv_buffer_.data(), bytes_transferred));
+                GetSession(current_remote_endpoint_)->HandleProtocolMessage(message);
             }
 
             AsyncReceive();
