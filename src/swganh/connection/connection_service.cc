@@ -89,6 +89,17 @@ void ConnectionService::onStart() {
     simulation_service_ = std::static_pointer_cast<swganh::simulation::SimulationService>(kernel()->GetServiceManager()->GetService("SimulationService"));
     
     Server::Start(listen_port_);
+    
+    active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        for_each(
+            begin(session_map_), 
+            end(session_map_), 
+            [=] (SessionMap::value_type& type) 
+        {
+            type.second->Update();
+        });
+    });
 }
 
 void ConnectionService::onStop() {
@@ -105,7 +116,65 @@ uint16_t ConnectionService::listen_port() {
 
 shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoint)
 {
-    return make_shared<ConnectionClient>(endpoint, this);
+    shared_ptr<ConnectionClient> session = nullptr;
+
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        if (session_map_.find(endpoint) == session_map_.end())
+        {
+            session = make_shared<ConnectionClient>(endpoint, this);
+            session_map_.insert(make_pair(endpoint, session));
+        }
+    }
+
+    return session;
+}
+
+bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        session_map_.erase(session->remote_endpoint());
+    }
+
+    return true;
+}
+
+shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint) {
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+
+        auto find_iter = session_map_.find(endpoint);
+        if (find_iter != session_map_.end())
+        {
+            return find_iter->second;
+        }
+    }
+
+    return CreateSession(endpoint);
+}
+
+std::shared_ptr<ConnectionClient> ConnectionService::FindConnectionByPlayerId(uint64_t player_id)
+{    
+    shared_ptr<ConnectionClient> connection = nullptr;
+
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+
+        auto find_iter = find_if(
+            begin(session_map_),
+            end(session_map_),
+            [player_id] (SessionMap::value_type& item)
+        {
+            return item.second->GetPlayerId() == player_id;
+        });
+
+        if (find_iter != end(session_map_))
+        {
+            connection = find_iter->second;
+        }
+    }
+
+    return connection;
 }
 
 shared_ptr<CharacterService> ConnectionService::character_service() {
@@ -146,6 +215,12 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
     if (! player_id) {
         BOOST_LOG_TRIVIAL(warning) << "No player found for the requested account, unauthorized access.";
         return;
+    }
+
+    auto existing_session_connection = FindConnectionByPlayerId(player_id);
+    if (existing_session_connection)
+    {
+        existing_session_connection->Close();
     }
     
     // creates a new session and stores it for later use

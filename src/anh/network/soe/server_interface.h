@@ -43,8 +43,6 @@ public:
 
     virtual void HandleMessage(std::shared_ptr<Packet> packet) = 0;
     
-    virtual bool AddSession(std::shared_ptr<Session> session) = 0;
-
     virtual bool RemoveSession(std::shared_ptr<Session> session) = 0;
     
     virtual std::shared_ptr<Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;

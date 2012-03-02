@@ -53,6 +53,12 @@ public:
         anh::app::KernelInterface* kernel);
 
     anh::service::ServiceDescription GetServiceDescription();
+    
+    bool RemoveSession(std::shared_ptr<anh::network::soe::Session> session);
+
+    std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
+    
+    std::shared_ptr<ConnectionClient> FindConnectionByPlayerId(uint64_t player_id);
 
 protected:
     const std::string& listen_address();
@@ -74,10 +80,19 @@ private:
     void HandleClientIdMsg_(
         std::shared_ptr<swganh::connection::ConnectionClient> client, 
         const swganh::messages::ClientIdMsg& message);
+
     void HandleCmdSceneReady_(
         std::shared_ptr<swganh::connection::ConnectionClient> client, 
         const swganh::messages::CmdSceneReady& message);
    
+    typedef std::map<
+        boost::asio::ip::udp::endpoint,
+        std::shared_ptr<ConnectionClient>
+    > SessionMap;
+    
+    boost::mutex session_map_mutex_;
+    SessionMap session_map_;
+
     std::shared_ptr<PingServer> ping_server_;
     
     std::shared_ptr<providers::SessionProviderInterface> session_provider_;

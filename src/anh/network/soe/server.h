@@ -82,12 +82,6 @@ public:
     void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer);
 
     void HandleMessage(std::shared_ptr<Packet> packet);
-    
-    bool AddSession(std::shared_ptr<Session> session);
-
-    bool RemoveSession(std::shared_ptr<Session> session);
-
-    std::shared_ptr<Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
 
     boost::asio::ip::udp::socket* socket();
     
@@ -116,14 +110,6 @@ private:
     boost::asio::ip::udp::endpoint		current_remote_endpoint_;
     std::array<char, 496>				recv_buffer_;
     
-    typedef std::map<
-        boost::asio::ip::udp::endpoint,
-        std::shared_ptr<Session>
-    > SessionMap;
-    
-    boost::mutex session_map_mutex_;
-    SessionMap session_map_;
-
     anh::EventDispatcher*       event_dispatcher_;
     uint32_t					crc_seed_;
     

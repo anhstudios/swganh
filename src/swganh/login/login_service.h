@@ -79,6 +79,10 @@ public:
     ~LoginService();
     
     anh::service::ServiceDescription GetServiceDescription();
+    
+    bool RemoveSession(std::shared_ptr<anh::network::soe::Session> session);
+
+    std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
 
     uint32_t GetAccountBySessionKey(const std::string& session_key);
         
@@ -106,6 +110,14 @@ private:
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
     
+    typedef std::map<
+        boost::asio::ip::udp::endpoint,
+        std::shared_ptr<LoginClient>
+    > SessionMap;
+    
+    boost::mutex session_map_mutex_;
+    SessionMap session_map_;
+
     std::shared_ptr<swganh::character::CharacterService> character_service_;
 	std::shared_ptr<swganh::galaxy::GalaxyService> galaxy_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;

@@ -66,17 +66,6 @@ void Server::Start(uint16_t port)
     socket_.bind(udp::endpoint(udp::v4(), port));
     
     AsyncReceive();
-
-    active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-        for_each(
-            begin(session_map_), 
-            end(session_map_), 
-            [=] (Server::SessionMap::value_type& type) 
-        {
-            type.second->Update();
-        });
-    });
 }
 
 void Server::Shutdown(void) {
@@ -120,44 +109,6 @@ void Server::OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, const
 
         session->HandleProtocolMessage(message);
     });
-}
-
-bool Server::AddSession(std::shared_ptr<Session> session) {
-    {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-        if (session_map_.find(session->remote_endpoint()) == session_map_.end())
-        {
-            session_map_.insert(make_pair(session->remote_endpoint(), session));
-        }
-    }
-    
-    return false;
-}
-
-bool Server::RemoveSession(std::shared_ptr<Session> session) {
-    {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-        session_map_.erase(session->remote_endpoint());
-    }
-
-    return true;
-}
-
-shared_ptr<Session> Server::GetSession(const udp::endpoint& endpoint) {
-    {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
-
-        auto find_iter = session_map_.find(endpoint);
-        if (find_iter != session_map_.end())
-        {
-            return find_iter->second;
-        }
-    }
-
-    auto session = CreateSession(endpoint);
-    AddSession(session);
-
-    return session;
 }
 
 boost::asio::ip::udp::socket* Server::socket() {

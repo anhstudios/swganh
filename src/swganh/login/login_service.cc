@@ -104,7 +104,41 @@ service::ServiceDescription LoginService::GetServiceDescription() {
 
 shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
 {
-    return make_shared<LoginClient>(endpoint, this);
+    shared_ptr<LoginClient> session = nullptr;
+
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        if (session_map_.find(endpoint) == session_map_.end())
+        {
+            session = make_shared<LoginClient>(endpoint, this);
+            session_map_.insert(make_pair(endpoint, session));
+        }
+    }
+
+    return session;
+}
+
+bool LoginService::RemoveSession(std::shared_ptr<Session> session) {
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        session_map_.erase(session->remote_endpoint());
+    }
+
+    return true;
+}
+
+shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+
+        auto find_iter = session_map_.find(endpoint);
+        if (find_iter != session_map_.end())
+        {
+            return find_iter->second;
+        }
+    }
+
+    return CreateSession(endpoint);
 }
 
 void LoginService::onStart() {
@@ -114,6 +148,17 @@ void LoginService::onStart() {
     Server::Start(listen_port_);
     
     UpdateGalaxyStatus_();
+    
+    active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        for_each(
+            begin(session_map_), 
+            end(session_map_), 
+            [=] (SessionMap::value_type& type) 
+        {
+            type.second->Update();
+        });
+    });
 }
 
 void LoginService::onStop() 
