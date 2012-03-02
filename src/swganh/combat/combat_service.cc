@@ -26,7 +26,6 @@
 #include "swganh/command/python_combat_command.h"
 #include "swganh/simulation/simulation_service.h"
 
-#include "swganh/messages/controllers/animate.h"
 #include "swganh/messages/controllers/combat_action_message.h"
 #include "swganh/messages/controllers/combat_spam_message.h"
 #include "swganh/messages/controllers/show_fly_text.h"
@@ -263,14 +262,15 @@ int CombatService::SingleTargetCombatAction(
         break;
         // Block
     case BLOCK:
+        SendCombatActionMessage(defender, attacker, properties, "block");
         defender->GetController()->SendFlyText("@combat_effects:block", FlyTextColor::GREEN); 
         BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::BLOCK_spam());
         damage_multiplier = 0.5f;
         break;
     case DODGE:
         // Dodge
+        SendCombatActionMessage(defender, attacker, properties, "dodge");
         defender->GetController()->SendFlyText("@combat_effects:dodge", FlyTextColor::GREEN); 
-        defender->NotifyObservers(ObjControllerMessage(0x1B, Animate("dodge", defender->GetObjectId())));
         damage_multiplier = 0.0f;
         BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::DODGE_spam());
         break;
@@ -281,7 +281,6 @@ int CombatService::SingleTargetCombatAction(
     case MISS:
         // Miss
         defender->GetController()->SendFlyText("@combat_effects:miss", FlyTextColor::WHITE); 
-        defender->NotifyObservers(ObjControllerMessage(0x1B, Animate("dodge", defender->GetObjectId())));
         BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::MISS_spam());
         damage_multiplier = 0.0f;
         return 0;
@@ -529,15 +528,15 @@ int CombatService::GetDamagingPool(CombatData& properties)
     {
         int generated = generator_.Rand(1, 100);
         if (generated < properties.health_hit_chance) {
-            LOG(INFO) << "Damaging Pool picked HEALTH with " << generated << " number and " << properties.health_hit_chance;
+            BOOST_LOG_TRIVIAL(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << properties.health_hit_chance;
             pool = HEALTH;
         }
         else if (generated < properties.action_hit_chance) {
-            LOG(INFO) << "Damaging Pool picked ACTION with " << generated << " number and " << properties.action_hit_chance;
+            BOOST_LOG_TRIVIAL(info)  << "Damaging Pool picked ACTION with " << generated << " number and " << properties.action_hit_chance;
             pool = ACTION;
         }
         else {
-            LOG(INFO) << "Damaging Pool picked MIND with " << generated << " number and " << properties.mind_hit_chance;
+            BOOST_LOG_TRIVIAL(info)  << "Damaging Pool picked MIND with " << generated << " number and " << properties.mind_hit_chance;
             pool = MIND;
         }
     }
@@ -560,21 +559,27 @@ void CombatService::BroadcastCombatSpam(
             spam.file = "cbt_spam";
             spam.text = properties.combat_spam + string_file;
             
-            attacker->NotifyObservers(ObjControllerMessage(0x00000134, spam));
+            attacker->NotifyObservers(ObjControllerMessage(0x1B, spam));
         }
 }
 
 void CombatService::SendCombatActionMessage(
     const shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible> & target, 
-    CombatData& command_property)
+    CombatData& command_property,
+    string animation)
 {
         CombatActionMessage cam;
-        if (command_property.animation_crc == 0)
-            cam.action_crc = CombatData::DefaultAttacks[generator_.Rand(0, 9)];//command_property.ability_crc;
+        if (command_property.animation_crc == 0 && animation.length() == 0)
+            cam.action_crc = CombatData::DefaultAttacks[generator_.Rand(0, 9)];
         else
         {
-            cam.action_crc = command_property.animation_crc;
+            if (animation.length() > 0)
+            {
+                cam.action_crc = anh::HashString(animation);
+            }
+            else
+                cam.action_crc = command_property.animation_crc;
         }
         cam.attacker_id = attacker->GetObjectId();
         cam.weapon_id = attacker->GetWeaponId();
@@ -592,7 +597,7 @@ void CombatService::SendCombatActionMessage(
         });
         cam.combat_special_move_effect = 0;
         
-        attacker->NotifyObservers(ObjControllerMessage(0x000000CC, cam));
+        attacker->NotifyObservers(ObjControllerMessage(0x1B, cam));
 }
 
 void CombatService::SetIncapacitated(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)
