@@ -220,7 +220,7 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
     auto existing_session_connection = FindConnectionByPlayerId(player_id);
     if (existing_session_connection)
     {
-        existing_session_connection->Close();
+        existing_session_connection->Disconnect();
     }
     
     // creates a new session and stores it for later use
