@@ -34,14 +34,15 @@ public:
     uint64_t GetPlayerId() const;
 
     void Connect(uint32_t account_id, uint64_t player_id);
-
-    void Disconnect();
     
     const std::shared_ptr<swganh::object::ObjectController>& GetController() const;
 
     void SetController(const std::shared_ptr<swganh::object::ObjectController>& controller);
 
 private:
+
+    void OnClose();
+
     State state_;
     uint32_t account_id_;
     uint64_t player_id_;
