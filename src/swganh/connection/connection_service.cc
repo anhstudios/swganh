@@ -82,7 +82,8 @@ void ConnectionService::subscribe() {
 }
 
 void ConnectionService::onStart() {
-    
+    ping_server_ = make_shared<PingServer>(kernel()->GetIoService(), ping_port_);
+
     character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
     login_service_ = std::static_pointer_cast<swganh::login::LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
     simulation_service_ = std::static_pointer_cast<swganh::simulation::SimulationService>(kernel()->GetServiceManager()->GetService("SimulationService"));
