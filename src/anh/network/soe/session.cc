@@ -166,6 +166,8 @@ void Session::Close(void)
         SendSoePacket_(buffer);
 
         server_->RemoveSession(shared_from_this());
+
+        OnClose();
     }
 }
 

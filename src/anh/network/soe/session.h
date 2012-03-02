@@ -165,6 +165,8 @@ private:
     typedef std::function<anh::ByteBuffer(uint16_t)> HeaderBuilder;
 
     void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message);    
+    
+    virtual void OnClose() {}
 
     void handleSessionRequest_(SessionRequest& packet);
     void handleMultiPacket_(MultiPacket& packet);
