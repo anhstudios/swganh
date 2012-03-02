@@ -5,7 +5,7 @@
 #include "swganh/messages/out_of_band.h"
 #include "swganh/messages/chat_system_message.h"
 #include "swganh/messages/controllers/show_fly_text.h"
-#include "swganh/network/remote_client.h"
+#include "swganh/connection/connection_client.h"
 #include "swganh/object/object.h"
 
 #ifndef WIN32
@@ -19,14 +19,14 @@
 #endif
 
 using namespace std;
+using namespace swganh::connection;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;
-using namespace swganh::network;
 using namespace swganh::object;
 
 ObjectController::ObjectController(
     shared_ptr<Object> object,
-    shared_ptr<RemoteClient> client)
+    shared_ptr<ConnectionClient> client)
     : object_(object)
     , client_(client)
 {
@@ -52,19 +52,19 @@ shared_ptr<Object> ObjectController::GetObject() const
     return object_;
 }
 
-shared_ptr<RemoteClient> ObjectController::GetRemoteClient()
+shared_ptr<ConnectionClient> ObjectController::GetRemoteClient()
 {
     return client_;
 }
 
-void ObjectController::SetRemoteClient(shared_ptr<RemoteClient> remote_client)
+void ObjectController::SetRemoteClient(shared_ptr<ConnectionClient> remote_client)
 {
     client_ = remote_client;
 }
 
 void ObjectController::Notify(const anh::ByteBuffer& message)
 {
-    client_->Send(message);
+    client_->SendMessage(message);
 }
 
 bool ObjectController::SendSystemMessage(const wstring& custom_message, bool chatbox_only, bool send_to_inrange)

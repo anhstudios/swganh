@@ -209,7 +209,7 @@ public:
         });
     }
 
-    shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<RemoteClient> client)
+    shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<ConnectionClient> client)
     {    
         shared_ptr<ObjectController> controller = nullptr;
         
@@ -332,7 +332,7 @@ public:
         start_scene.position = object->GetPosition();
         start_scene.shared_race_template = object->GetTemplate();
         start_scene.galaxy_time = 0;
-        client->GetSession()->SendMessage(start_scene);
+        client->SendMessage(start_scene);
 
         // Add object to scene and send baselines
         scene->AddObject(object);
@@ -430,7 +430,7 @@ void SimulationService::RemoveObject(const shared_ptr<Object>& object)
 
 shared_ptr<ObjectController> SimulationService::StartControllingObject(
     const shared_ptr<Object>& object, 
-    shared_ptr<RemoteClient> client)
+    shared_ptr<ConnectionClient> client)
 {
     return impl_->StartControllingObject(object, client);
 }
@@ -456,20 +456,11 @@ void SimulationService::onStart()
 {
 	auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
         
-    connection_service->RegisterMessageHandler<SelectCharacter>([=] (
-        shared_ptr<ConnectionClient> client, 
-        const SelectCharacter& message)
-    {
-        this->impl_->HandleSelectCharacter(client, message);
-    });
-
-    connection_service->RegisterMessageHandler<ObjControllerMessage>([=] (
-        shared_ptr<ConnectionClient> client, 
-        const ObjControllerMessage& message)
-    {
-        this->impl_->HandleObjControllerMessage(client, message);
-    });
-
+    connection_service->RegisterMessageHandler(
+        &SimulationServiceImpl::HandleSelectCharacter, impl_.get());
+    
+    connection_service->RegisterMessageHandler(
+        &SimulationServiceImpl::HandleObjControllerMessage, impl_.get());
 
     RegisterControllerHandler(0x00000071, [this] (
         const std::shared_ptr<ObjectController>& controller, 

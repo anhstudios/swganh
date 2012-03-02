@@ -23,7 +23,6 @@
 #include "anh/byte_buffer.h"
 #include "anh/crc.h"
 #include "anh/network/soe/session.h"
-#include "anh/network/soe/packet.h"
 
 using namespace anh;
 using namespace network::soe;

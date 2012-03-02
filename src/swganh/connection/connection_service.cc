@@ -7,7 +7,6 @@
 
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/server.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_directory_interface.h"
@@ -48,22 +47,12 @@ ConnectionService::ConnectionService(
         uint16_t ping_port, 
         KernelInterface* kernel)
     : BaseService(kernel)
-#pragma warning(push)
-#pragma warning(disable: 4355)
-    , SwgMessageRouter([=] (const boost::asio::ip::udp::endpoint& endpoint) {
-        return GetClientFromEndpoint(endpoint);  
-      })
-#pragma warning(pop)
+    , swganh::network::BaseSwgServer(kernel->GetIoService())
     , ping_server_(nullptr)
     , listen_address_(listen_address)
     , listen_port_(listen_port)
     , ping_port_(ping_port)
-    , soe_server_(nullptr)
 {
-    soe_server_.reset(new Server(
-        kernel->GetIoService(),
-        kernel->GetEventDispatcher(),
-        bind(&ConnectionService::RouteMessage, this, placeholders::_1)));
         
     session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
     if (!session_provider_) 
@@ -88,36 +77,33 @@ ServiceDescription ConnectionService::GetServiceDescription() {
 void ConnectionService::subscribe() {
     auto event_dispatcher = kernel()->GetEventDispatcher();
      
-    RegisterMessageHandler<ClientIdMsg>(
-        bind(&ConnectionService::HandleClientIdMsg_, this, placeholders::_1, placeholders::_2), false);
-
-    RegisterMessageHandler<CmdSceneReady>(
-        bind(&ConnectionService::HandleCmdSceneReady_, this, placeholders::_1, placeholders::_2));
-
-    event_dispatcher->Subscribe("NetworkSessionRemoved", 
-        [this] (const shared_ptr<anh::EventInterface>& incoming_event) 
-    {
-        const auto& session = static_pointer_cast<ValueEvent<shared_ptr<Session>>>(incoming_event)->Get();
-        
-        // Message was triggered from our server so process it.
-        if (session->server() == server().get()) {
-            RemoveClient_(session);
-        }
-    });
+    RegisterMessageHandler(&ConnectionService::HandleClientIdMsg_, this);
+    RegisterMessageHandler(&ConnectionService::HandleCmdSceneReady_, this);
 }
 
 void ConnectionService::onStart() {
     ping_server_ = make_shared<PingServer>(kernel()->GetIoService(), ping_port_);
-    soe_server_->Start(listen_port_);
-    
+
     character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
     login_service_ = std::static_pointer_cast<swganh::login::LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
     simulation_service_ = std::static_pointer_cast<swganh::simulation::SimulationService>(kernel()->GetServiceManager()->GetService("SimulationService"));
+    
+    Server::Start(listen_port_);
+    
+    active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        for_each(
+            begin(session_map_), 
+            end(session_map_), 
+            [=] (SessionMap::value_type& type) 
+        {
+            type.second->Update();
+        });
+    });
 }
 
 void ConnectionService::onStop() {
-    soe_server_->Shutdown();
-    clients_.clear();
+    Server::Shutdown();
 }
 
 const string& ConnectionService::listen_address() {
@@ -128,12 +114,89 @@ uint16_t ConnectionService::listen_port() {
     return listen_port_;
 }
 
-ConnectionService::ClientMap& ConnectionService::clients() {
-    return clients_;
+shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoint)
+{
+    shared_ptr<ConnectionClient> session = nullptr;
+
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        if (session_map_.find(endpoint) == session_map_.end())
+        {
+            session = make_shared<ConnectionClient>(endpoint, this);
+            session_map_.insert(make_pair(endpoint, session));
+        }
+    }
+
+    return session;
 }
 
-std::unique_ptr<anh::network::soe::Server>& ConnectionService::server() {
-    return soe_server_;
+bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        session_map_.erase(session->remote_endpoint());
+    }
+
+    auto connection_client = static_pointer_cast<ConnectionClient>(session);
+    
+    auto controller = connection_client->GetController();
+    if (controller)
+    {
+        auto simulation_service = simulation_service_.lock();
+
+        // @TODO REFACTOR Move this functionality out to a PlayerService
+        auto player = simulation_service->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
+		player->AddStatusFlag(swganh::object::player::LD);
+        // END TODO
+
+        simulation_service->PersistRelatedObjects(controller->GetObject()->GetObjectId());
+        
+        // set a timer to 5 minutes to destroy the object, unless logged back in.
+        auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
+        deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));
+    }
+
+    BOOST_LOG_TRIVIAL(info) << "Removing disconnected client";
+    session_provider_->EndGameSession(connection_client->GetPlayerId());
+
+    return true;
+}
+
+shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint) {
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+
+        auto find_iter = session_map_.find(endpoint);
+        if (find_iter != session_map_.end())
+        {
+            return find_iter->second;
+        }
+    }
+
+    return CreateSession(endpoint);
+}
+
+std::shared_ptr<ConnectionClient> ConnectionService::FindConnectionByPlayerId(uint64_t player_id)
+{    
+    shared_ptr<ConnectionClient> connection = nullptr;
+
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+
+        auto find_iter = find_if(
+            begin(session_map_),
+            end(session_map_),
+            [player_id] (SessionMap::value_type& item)
+        {
+            return item.second->GetPlayerId() == player_id;
+        });
+
+        if (find_iter != end(session_map_))
+        {
+            connection = find_iter->second;
+        }
+    }
+
+    return connection;
 }
 
 shared_ptr<CharacterService> ConnectionService::character_service() {
@@ -144,96 +207,16 @@ shared_ptr<LoginService> ConnectionService::login_service() {
     return login_service_.lock();
 }
 
-shared_ptr<ConnectionClient> ConnectionService::GetClientFromEndpoint(
-        const udp::endpoint& remote_endpoint)
-{
-    shared_ptr<ConnectionClient> client = nullptr;
-    
-    boost::lock_guard<boost::mutex> lg(clients_mutex_);
-
-    auto find_iter = clients_.find(remote_endpoint);
-
-    if (find_iter != clients_.end()) 
-    {
-        client = find_iter->second;
-    }
-
-    return client;
-}
-
-void ConnectionService::AddClient_(
-    uint64_t player_id, 
-    std::shared_ptr<ConnectionClient> client) 
-{
-    boost::lock_guard<boost::mutex> lg(clients_mutex_);
-    ClientMap& client_map = clients();
-
-    auto find_it = std::find_if(
-        client_map.begin(), 
-        client_map.end(), 
-        [client, player_id] (ClientMap::value_type& conn_client) 
-    {
-        return conn_client.second->GetPlayerId() == player_id;
-    });
-
-    if (find_it != client_map.end()) {
-        LogoutMessage message;
-        (*find_it).second->Send(message);
-
-        client_map.erase(find_it->first);
-    }
-    
-    BOOST_LOG_TRIVIAL(warning) << "Adding connection client";
-
-    client_map.insert(make_pair(client->GetSession()->remote_endpoint(), client));
-
-    BOOST_LOG_TRIVIAL(warning) << "Connection service currently has ("<< client_map.size() << ") clients";
-}
-
-void ConnectionService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    auto client = GetClientFromEndpoint(session->remote_endpoint());
-    
-    auto client_map = clients();
-
-    if (client) {
-
-        auto controller = client->GetController();
-        if (controller)
-        {
-            auto simulation_service = simulation_service_.lock();
-
-            // @TODO REFACTOR Move this functionality out to a PlayerService
-            auto player = simulation_service->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
-			player->AddStatusFlag(swganh::object::player::LD);
-            // END TODO
-
-            simulation_service->PersistRelatedObjects(controller->GetObject()->GetObjectId());
-            
-            // set a timer to 5 minutes to destroy the object, unless logged back in.
-            auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
-            deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));
-        }
-
-        BOOST_LOG_TRIVIAL(warning) << "Removing disconnected client";
-        {
-            boost::lock_guard<boost::mutex> lg(clients_mutex_);
-            client_map.erase(session->remote_endpoint());
-        }
-        BOOST_LOG_TRIVIAL(warning) << "Removing Session";
-        session_provider_->EndGameSession(client->GetPlayerId());
-    }
-     
-    {
-        boost::lock_guard<boost::mutex> lg(clients_mutex_);       
-        BOOST_LOG_TRIVIAL(warning) << "Connection service currently has ("<< client_map.size() << ") clients";
-    }
-}
-void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_code& e, shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs, shared_ptr<swganh::object::ObjectController> controller)
+void ConnectionService::RemoveClientTimerHandler_(
+    const boost::system::error_code& e, 
+    shared_ptr<boost::asio::deadline_timer> timer, 
+    int delay_in_secs, 
+    shared_ptr<swganh::object::ObjectController> controller)
 {
     if (controller)
     {
         // destroy if they haven't reconnected
-        if (controller->GetRemoteClient()->GetSession() == nullptr || !controller->GetRemoteClient()->GetSession()->connected())
+        if (controller->GetRemoteClient() == nullptr || !controller->GetRemoteClient()->connected())
         {
             auto object = controller->GetObject();
             BOOST_LOG_TRIVIAL(warning) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
@@ -245,10 +228,11 @@ void ConnectionService::RemoveClientTimerHandler_(const boost::system::error_cod
         }
     }
 }
+
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {
     BOOST_LOG_TRIVIAL(warning) << "Handling CmdSceneReady";    
 
-    client->Send(CmdSceneReady());
+    client->SendMessage(CmdSceneReady());
 
     auto object = client->GetController()->GetObject();
 
@@ -276,15 +260,19 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
         BOOST_LOG_TRIVIAL(warning) << "No player found for the requested account, unauthorized access.";
         return;
     }
+
+    auto existing_session_connection = FindConnectionByPlayerId(player_id);
+    if (existing_session_connection)
+    {
+        existing_session_connection->Close();
+    }
     
     // creates a new session and stores it for later use
-    if (!session_provider_->CreateGameSession(player_id, client->GetSession()->connection_id())) {    
+    if (!session_provider_->CreateGameSession(player_id, client->connection_id())) {    
         BOOST_LOG_TRIVIAL(warning) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
     
     client->Connect(account_id, player_id);
-
-    AddClient_(player_id, client);
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = kernel()->GetServiceDirectory()->galaxy().status();
@@ -292,5 +280,5 @@ void ConnectionService::HandleClientIdMsg_(std::shared_ptr<ConnectionClient> cli
     // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 
-    client->Send(client_permissions);
+    client->SendMessage(client_permissions);
 }

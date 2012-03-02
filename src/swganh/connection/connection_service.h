@@ -11,12 +11,11 @@
 
 #include "anh/hash_string.h"
 
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/packet_utilities.h"
 #include "anh/network/soe/session.h"
 
 #include "swganh/base/base_service.h"
-#include "swganh/base/swg_message_router.h"
+#include "swganh/network/base_swg_server.h"
 
 #include "swganh/character/character_service.h"
 #include "swganh/login/login_service.h"
@@ -43,15 +42,8 @@ class ConnectionClient;
     
 class ConnectionService 
     : public swganh::base::BaseService
-    , public swganh::base::SwgMessageRouter<ConnectionClient>
+    , public swganh::network::BaseSwgServer
 {
-public:
-    typedef std::unordered_map<
-        boost::asio::ip::udp::endpoint, 
-        std::shared_ptr<ConnectionClient>,
-        anh::network::soe::EndpointHash,
-        anh::network::soe::EndpointEqual
-    > ClientMap;
 public:
     ConnectionService(
         std::string listen_address, 
@@ -60,48 +52,54 @@ public:
         anh::app::KernelInterface* kernel);
 
     anh::service::ServiceDescription GetServiceDescription();
-
-    void subscribe();
-
-    void onStart();
-    void onStop();
     
-    std::shared_ptr<ConnectionClient> GetClientFromEndpoint(
-        const boost::asio::ip::udp::endpoint& remote_endpoint);
+    bool RemoveSession(std::shared_ptr<anh::network::soe::Session> session);
+
+    std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
+    
+    std::shared_ptr<ConnectionClient> FindConnectionByPlayerId(uint64_t player_id);
 
 protected:
     const std::string& listen_address();
 
     uint16_t listen_port();
-
-    ClientMap& clients();
-
-    std::unique_ptr<anh::network::soe::Server>& server();
-    
+        
     std::shared_ptr<swganh::character::CharacterService> character_service();
 
     std::shared_ptr<swganh::login::LoginService> login_service();
 
-private:    
-    boost::mutex clients_mutex_;
-    ClientMap clients_;
+private:        
+    std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
     
+    void onStart();
+    void onStop();
+    
+    void subscribe();
+    void RemoveClientTimerHandler_(
+        const boost::system::error_code& e, 
+        std::shared_ptr<boost::asio::deadline_timer> timer, 
+        int delay_in_secs, 
+        std::shared_ptr<swganh::object::ObjectController> controller);
+
     void HandleClientIdMsg_(
         std::shared_ptr<swganh::connection::ConnectionClient> client, 
         const swganh::messages::ClientIdMsg& message);
+
     void HandleCmdSceneReady_(
         std::shared_ptr<swganh::connection::ConnectionClient> client, 
         const swganh::messages::CmdSceneReady& message);
+   
+    typedef std::map<
+        boost::asio::ip::udp::endpoint,
+        std::shared_ptr<ConnectionClient>
+    > SessionMap;
     
-    void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
-	// Async Remove
-	void RemoveClientTimerHandler_(const boost::system::error_code& e, std::shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs, std::shared_ptr<swganh::object::ObjectController> controller);
-    void AddClient_(uint64_t player_id, std::shared_ptr<swganh::connection::ConnectionClient> client);
+    boost::mutex session_map_mutex_;
+    SessionMap session_map_;
 
     std::shared_ptr<PingServer> ping_server_;
-    std::shared_ptr<providers::SessionProviderInterface> session_provider_;
     
-    std::unique_ptr<anh::network::soe::Server> soe_server_;
+    std::shared_ptr<providers::SessionProviderInterface> session_provider_;
     
     std::weak_ptr<swganh::character::CharacterService> character_service_;
     std::weak_ptr<swganh::login::LoginService> login_service_;

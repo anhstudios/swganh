@@ -24,7 +24,6 @@
 
 #include <zlib.h>
 
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
 
 using namespace anh;
