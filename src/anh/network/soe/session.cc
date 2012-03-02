@@ -26,7 +26,6 @@
 
 #include "anh/network/soe/server_interface.h"
 
-#include "anh/network/soe/protocol_opcodes.h"
 #include "anh/network/soe/packet_utilities.h"
 
 using namespace anh;
@@ -47,7 +46,6 @@ Session::Session(boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface
     , current_client_sequence_(0)
     , next_client_sequence_(0)
     , server_sequence_()
-    , outgoing_data_message_(0)
     , incoming_fragmented_total_len_(0)
     , incoming_fragmented_curr_len_(0)
     , decompression_filter_(server_->max_receive_size())
@@ -60,7 +58,7 @@ Session::~Session(void)
 {
     Close();
 
-    BOOST_LOG_TRIVIAL(warning) << "Session [" << connection_id_ << "] Closed.";
+    BOOST_LOG_TRIVIAL(info) << "Session closed: " << connection_id_;
 }
 
 uint16_t Session::server_sequence() const {
@@ -89,10 +87,6 @@ void Session::crc_seed(uint32_t crc_seed) {
 
 uint32_t Session::crc_seed() const {
     return crc_seed_;
-}
-
-void Session::datachannel_handler(DatachannelHandler handler) {
-    datachannel_handler_ = make_shared<DatachannelHandler>(handler);
 }
 
 vector<shared_ptr<ByteBuffer>> Session::GetUnacknowledgedMessages() const {
@@ -169,6 +163,11 @@ void Session::Close(void)
 
         OnClose();
     }
+}
+
+ServerInterface* Session::server() 
+{ 
+    return server_; 
 }
 
 void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)

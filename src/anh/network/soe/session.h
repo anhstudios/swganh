@@ -21,9 +21,7 @@
 #ifndef ANH_NETWORK_SOE_SESSION_H_
 #define ANH_NETWORK_SOE_SESSION_H_
 
-#include <array>
 #include <atomic>
-#include <functional>
 #include <list>
 #include <memory>
 #include <vector>
@@ -33,7 +31,6 @@
 #include <boost/asio.hpp>
 
 #include "anh/network/soe/protocol_packets.h"
-#include "anh/network/soe/server_interface.h"
 
 #include "anh/network/soe/filters/crc_in_filter.h"
 #include "anh/network/soe/filters/decryption_filter.h"
@@ -55,7 +52,7 @@ class ByteBuffer;
 namespace network {
 namespace soe {
 
-typedef std::function<void (uint32_t, std::shared_ptr<ByteBuffer>)> DatachannelHandler;
+    class ServerInterface;
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
@@ -66,7 +63,7 @@ public:
      * Adds itself to the Session Manager.
      */
     Session(boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface* server);
-    ~Session(void);
+    ~Session();
 
     /**
     * @return The current send sequence for the server.
@@ -96,8 +93,6 @@ public:
      * @return The crc seed used to encrypt this session's messages.
      */
     uint32_t crc_seed() const;
-
-    void datachannel_handler(DatachannelHandler handler);
 
     /**
      * Get a list of all outgoing data channel messages that have not yet been acknowledged
@@ -155,13 +150,12 @@ public:
 
     boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
 
-    ServerInterface* server() { return server_; }
+    ServerInterface* server();
 
 private:
     typedef std::list<std::pair<uint16_t, std::shared_ptr<anh::ByteBuffer>>> SequencedMessageMap;
-    //typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
-    
-    typedef std::function<anh::ByteBuffer(uint16_t)> HeaderBuilder;
+
+    typedef anh::ByteBuffer(*HeaderBuilder)(uint16_t);
 
     void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message);    
     
@@ -189,8 +183,6 @@ private:
 
     bool								connected_;
 
-    std::shared_ptr<DatachannelHandler> datachannel_handler_;
-
     // SOE Session Variables
     uint32_t							connection_id_;
     uint32_t							receive_buffer_size_;
@@ -208,8 +200,6 @@ private:
     // Net Stats
     NetStatsServer						server_net_stats_;
 
-    ChildDataA							outgoing_data_message_;
-    
     Concurrency::concurrent_queue<std::shared_ptr<anh::ByteBuffer>> outgoing_data_messages_;
 
     std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
