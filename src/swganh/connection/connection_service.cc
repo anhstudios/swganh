@@ -136,6 +136,28 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
         session_map_.erase(session->remote_endpoint());
     }
 
+    auto connection_client = static_pointer_cast<ConnectionClient>(session);
+    
+    auto controller = connection_client->GetController();
+    if (controller)
+    {
+        auto simulation_service = simulation_service_.lock();
+
+        // @TODO REFACTOR Move this functionality out to a PlayerService
+        auto player = simulation_service->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
+		player->AddStatusFlag(swganh::object::player::LD);
+        // END TODO
+
+        simulation_service->PersistRelatedObjects(controller->GetObject()->GetObjectId());
+        
+        // set a timer to 5 minutes to destroy the object, unless logged back in.
+        auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
+        deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));
+    }
+
+    BOOST_LOG_TRIVIAL(info) << "Removing disconnected client";
+    session_provider_->EndGameSession(connection_client->GetPlayerId());
+
     return true;
 }
 
@@ -183,6 +205,28 @@ shared_ptr<CharacterService> ConnectionService::character_service() {
 
 shared_ptr<LoginService> ConnectionService::login_service() {
     return login_service_.lock();
+}
+
+void ConnectionService::RemoveClientTimerHandler_(
+    const boost::system::error_code& e, 
+    shared_ptr<boost::asio::deadline_timer> timer, 
+    int delay_in_secs, 
+    shared_ptr<swganh::object::ObjectController> controller)
+{
+    if (controller)
+    {
+        // destroy if they haven't reconnected
+        if (controller->GetRemoteClient() == nullptr || !controller->GetRemoteClient()->connected())
+        {
+            auto object = controller->GetObject();
+            BOOST_LOG_TRIVIAL(warning) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
+            auto simulation_service = simulation_service_.lock();
+            simulation_service->RemoveObject(object);
+
+            kernel()->GetEventDispatcher()->Dispatch(
+                make_shared<ValueEvent<shared_ptr<Object>>>("ObjectRemovedEvent", object));
+        }
+    }
 }
 
 void ConnectionService::HandleCmdSceneReady_(std::shared_ptr<ConnectionClient> client, const CmdSceneReady& message) {

@@ -76,6 +76,11 @@ private:
     void onStop();
     
     void subscribe();
+    void RemoveClientTimerHandler_(
+        const boost::system::error_code& e, 
+        std::shared_ptr<boost::asio::deadline_timer> timer, 
+        int delay_in_secs, 
+        std::shared_ptr<swganh::object::ObjectController> controller);
 
     void HandleClientIdMsg_(
         std::shared_ptr<swganh::connection::ConnectionClient> client, 

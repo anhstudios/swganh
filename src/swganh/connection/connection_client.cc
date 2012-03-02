@@ -40,24 +40,6 @@ void ConnectionClient::Connect(uint32_t account_id, uint64_t player_id)
 void ConnectionClient::OnClose()
 {
     state_ = DISCONNECTING;
-
-    // @TODO REFACTOR Move this functionality out to a PlayerService
-    auto object = controller_->GetObject();
-    auto contained = object->GetContainedObjects();
-    
-    for_each(
-        begin(contained),
-        end(contained),
-        [] (Object::ObjectMap::value_type& object_entry)
-    {
-        auto player = dynamic_pointer_cast<player::Player>(object_entry.second);
-
-        if (player)
-        {
-            player->AddStatusFlag(player::LD);
-        }
-    });
-    // END TODO
 }
 
 const shared_ptr<ObjectController>& ConnectionClient::GetController() const
