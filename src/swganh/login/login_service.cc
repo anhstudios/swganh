@@ -215,15 +215,18 @@ void LoginService::UpdateGalaxyStatus_() {
 
     galaxy_status_ = GetGalaxyStatus_();
         
-    const vector<GalaxyStatus>& status = galaxy_status_;
-    
-    //boost::lock_guard<boost::mutex> lg(clients_mutex_);
-    //std::for_each(clients_.begin(), clients_.end(), [&status] (ClientMap::value_type& client_entry) {
-    //    if (client_entry.second) {                
-    //        client_entry.second->SendMessage(
-    //            BuildLoginClusterStatus(status));
-    //    }
-    //});
+    auto status_message = BuildLoginClusterStatus(galaxy_status_);
+
+    boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+    std::for_each(
+        begin(session_map_), 
+        end(session_map_), 
+        [&status_message] (SessionMap::value_type& item) 
+    {
+        if (item.second) {                
+            item.second->SendMessage(status_message);
+        }
+    });
 }
 
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
