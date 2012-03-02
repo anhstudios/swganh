@@ -1,6 +1,8 @@
 
 #include "swganh/connection/connection_client.h"
 #include "swganh/object/object_controller.h"
+#include "swganh/object/object.h"
+#include "swganh/object/player/player.h"
 
 using namespace anh::network::soe;
 using namespace std;
@@ -8,13 +10,8 @@ using namespace swganh::connection;
 using namespace swganh::object;
 
 ConnectionClient::ConnectionClient(
-    shared_ptr<Session> session)
-    : RemoteClient(session)
-    , state_(CONNECTING)
-    , controller_(nullptr)
-{}
-
-ConnectionClient::~ConnectionClient()
+    boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface* server)
+    : Session(remote_endpoint, server)
 {}
 
 ConnectionClient::State ConnectionClient::GetState() const
@@ -40,11 +37,9 @@ void ConnectionClient::Connect(uint32_t account_id, uint64_t player_id)
     state_ = CONNECTED;
 }
 
-void ConnectionClient::Disconnect()
+void ConnectionClient::OnClose()
 {
     state_ = DISCONNECTING;
-
-    GetSession()->Close();
 }
 
 const shared_ptr<ObjectController>& ConnectionClient::GetController() const

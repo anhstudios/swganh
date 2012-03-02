@@ -10,8 +10,8 @@
 #include "swganh/object/object_controller.h"
 
 namespace swganh {
-namespace network {
-    class RemoteClient;
+namespace connection {
+    class ConnectionClient;
 }}  // namespace swganh::network
 
 namespace swganh {
@@ -80,7 +80,7 @@ namespace simulation {
         
         std::shared_ptr<swganh::object::ObjectController> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
-            std::shared_ptr<swganh::network::RemoteClient> client);
+            std::shared_ptr<swganh::connection::ConnectionClient> client);
 
         void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object);
 

@@ -107,16 +107,16 @@ void CharacterService::onStop() {}
 void CharacterService::subscribe() {
     auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
 
-    connection_service->RegisterMessageHandler<ClientCreateCharacter>(
-        bind(&CharacterService::HandleClientCreateCharacter_, this, placeholders::_1, placeholders::_2));
+    connection_service->RegisterMessageHandler(
+        &CharacterService::HandleClientCreateCharacter_, this);
     
-    connection_service->RegisterMessageHandler<ClientRandomNameRequest>(
-        bind(&CharacterService::HandleClientRandomNameRequest_, this, placeholders::_1, placeholders::_2));    
+    connection_service->RegisterMessageHandler(
+        &CharacterService::HandleClientRandomNameRequest_, this);    
       
     auto login_service = std::static_pointer_cast<LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
   
-    login_service->RegisterMessageHandler<DeleteCharacterMessage>(
-        bind(&CharacterService::HandleDeleteCharacterMessage_, this, placeholders::_1, placeholders::_2));
+    login_service->RegisterMessageHandler(
+        &CharacterService::HandleDeleteCharacterMessage_, this);
     
 }
 
@@ -393,17 +393,17 @@ void CharacterService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionCl
 
     // heartbeat to let the client know we're still here    
     HeartBeat heartbeat;
-    client->Send(heartbeat);
+    client->SendMessage(heartbeat);
 
     if (error_code.length() > 0 && character_id == 0) {
         ClientCreateCharacterFailed failed;
         failed.stf_file = "ui";
         failed.error_string = error_code;
-        client->Send(failed);
+        client->SendMessage(failed);
     } else {
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
-        client->Send(success);
+        client->SendMessage(success);
     }
 }
 
@@ -417,7 +417,7 @@ void CharacterService::HandleClientRandomNameRequest_(std::shared_ptr<Connection
         response.approval_string = "name_approved";
     }
 
-    client->Send(response);
+    client->SendMessage(response);
 }
 
 void CharacterService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const DeleteCharacterMessage& message) {
@@ -428,5 +428,5 @@ void CharacterService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient
         reply_message.failure_flag = 0;
     }
 
-    login_client->Send(reply_message);
+    login_client->SendMessage(reply_message);
 }
