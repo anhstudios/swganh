@@ -19,7 +19,7 @@ CREATE PROCEDURE `sp_CharacterCreate`(
     IN `start_biography` text(2048), 
     IN `start_appearance_customization` TINYBLOB, 
     IN `start_hair_model` CHAR(64), 
-    IN `hair_customization` TEXT(200), 
+    IN `hair_customization` TINYBLOB,
     IN `base_model_string` CHAR(64),
     OUT `object_id` BIGINT(20))
 charCreate:BEGIN
