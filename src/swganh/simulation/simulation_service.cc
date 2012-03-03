@@ -14,8 +14,6 @@
 
 #include "swganh/messages/select_character.h"
 
-#include "swganh/network/remote_client.h"
-
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_manager.h"
