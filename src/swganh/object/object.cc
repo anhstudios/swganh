@@ -8,7 +8,6 @@
 #include "swganh/messages/scene_end_baselines.h"
 #include "swganh/messages/update_containment_message.h"
 #include "swganh/object/object_message_builder.h"
-#include "swganh/network/remote_client.h"
 
 using namespace anh::observer;
 using namespace std;

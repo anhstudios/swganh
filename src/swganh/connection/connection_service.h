@@ -82,11 +82,11 @@ private:
         std::shared_ptr<swganh::object::ObjectController> controller);
 
     void HandleClientIdMsg_(
-        std::shared_ptr<swganh::connection::ConnectionClient> client, 
+        const std::shared_ptr<ConnectionClient>& client, 
         const swganh::messages::ClientIdMsg& message);
 
     void HandleCmdSceneReady_(
-        std::shared_ptr<swganh::connection::ConnectionClient> client, 
+        const std::shared_ptr<ConnectionClient>& client, 
         const swganh::messages::CmdSceneReady& message);
    
     typedef std::map<
