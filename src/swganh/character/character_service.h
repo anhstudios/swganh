@@ -77,13 +77,13 @@ public:
 
 private:
     void HandleClientRandomNameRequest_(
-        std::shared_ptr<swganh::connection::ConnectionClient> client, 
+        const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
         const swganh::messages::ClientRandomNameRequest& message);
     void HandleClientCreateCharacter_(
-        std::shared_ptr<swganh::connection::ConnectionClient> client, 
+        const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
         const swganh::messages::ClientCreateCharacter& message);
     void HandleDeleteCharacterMessage_(
-        std::shared_ptr<swganh::login::LoginClient> login_client, 
+        const std::shared_ptr<swganh::login::LoginClient>& login_client, 
         const swganh::messages::DeleteCharacterMessage& message);
 
     // helpers
