@@ -19,7 +19,7 @@ struct ProsePackageWrapper : ProsePackage, wrapper<ProsePackage>
 
 void exportOutOfBand()
 {
-    enum_<ProseType>("ProseType")
+    enum_<ProseType>("ProseType", "Prose type of the :class:`.OutOfBand` Message")
         .value("TU", TU)
         .value("TT", TT)
         .value("TO", TO)
@@ -37,7 +37,7 @@ struct ObjectControllerWrapper : ObjectController, wrapper<ObjectController>
 
 void exportObjectController()
 {
-    enum_<controllers::FlyTextColor>("FlyTextColor")
+    enum_<controllers::FlyTextColor>("FlyTextColor", "Object that describes the different colors Fly Text Can be")
         .value("RED", controllers::RED)
         .value("GREEN", controllers::GREEN)
         .value("BLUE", controllers::BLUE)
@@ -51,11 +51,11 @@ void exportObjectController()
 
     void (ObjectController::*SendFlyText)(const std::string&, controllers::FlyTextColor) = &ObjectController::SendFlyText;
 
-    class_<ObjectControllerWrapper, std::shared_ptr<ObjectController>, boost::noncopyable>("ObjectController", no_init)
-        .def("SendSystemMessage", SendSystemMessageOutOfBand, "Sends the specified system message to the player with an out of band object attached")
+    class_<ObjectControllerWrapper, std::shared_ptr<ObjectController>, boost::noncopyable>("ObjectController", "Object that describes the Controller of an object", no_init)
+        .def("SendSystemMessage", SendSystemMessageOutOfBand, "Sends the specified system message to the player with an :class:`.OutOfBand` object attached")
         .def("SendSystemMessage", SendSystemMessageString, "Sends System Message to the player, taking a string as the message and boolean for chatbox only and another boolean to send to in range")
         .def("SendSystemMessage", SendSystemMessageStr, "Sends System Message to the player, taking a string as the message")
-        .def("SendFlyText", SendFlyText, "Sends Fly Text to the player, see @FlyTextColor")
+        .def("SendFlyText", SendFlyText, "Sends Fly Text to the player, see :class:`.FlyTextColor`")
         .def("Notify", &ObjectControllerWrapper::Notify, "Notifies the controller whent he object has been updated")
     ;
 }
