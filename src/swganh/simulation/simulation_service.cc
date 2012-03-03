@@ -273,7 +273,7 @@ public:
     }
 
     void HandleObjControllerMessage(
-        shared_ptr<ConnectionClient> client,
+        const shared_ptr<ConnectionClient>& client,
         const ObjControllerMessage& message)
     {
         auto find_iter = controller_handlers_.find(message.header);
@@ -287,7 +287,7 @@ public:
     }
     
     void HandleSelectCharacter(
-        shared_ptr<ConnectionClient> client, 
+        const shared_ptr<ConnectionClient>& client, 
         const SelectCharacter& message)
     {
         auto object = GetObjectById(message.character_id);
