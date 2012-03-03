@@ -31,13 +31,13 @@ public:
 
 public:
     /**
-     * @returns The type of this object instance.
+     * \return The type of this object instance.
      */
     uint32_t GetType() const;
     const static uint32_t type = 0x2FB6FB8C;
 
     /**
-     * @return True if the installation is active, false if not.
+     * \return True if the installation is active, false if not.
      */
     bool IsActive() const;
     
@@ -57,7 +57,7 @@ public:
     void ToggleActive();
 
     /**
-     * @return The amount of power/energy put into the installation.
+     * \return The amount of power/energy put into the installation.
      */
     float GetPowerReserve() const;
     
@@ -67,7 +67,7 @@ public:
     void SetPowerReserve(float power_reserve);
 
     /**
-     * @return This is a decimal value for the amount of power being 
+     * \return This is a decimal value for the amount of power being 
      *  consumed PER HOUR of operation.
      */
     float GetPowerCost() const;
@@ -75,28 +75,28 @@ public:
     /**
      * Sets the power consumption rate.
      *
-     * @param power_cost The new power consumption rate.
+     * \param power_cost The new power consumption rate.
      */
     void SetPowerCost(float power_cost);
 
     /**
-     * @return A list of available resources for consumption.
+     * \return A list of available resources for consumption.
      */
     std::vector<Resource> GetAvailableResources() const;
 
     /**
      * Adds an available resource to the installation.
      * 
-     * @param global_id The identifier for the resource.
-     * @param name The name of the resource.
-     * @param type The type/category of the resource.
+     * \param global_id The identifier for the resource.
+     * \param name The name of the resource.
+     * \param type The type/category of the resource.
      */
     void AddAvailableResource(uint64_t global_id, std::string name, std::string type);
 
     /**
      * Removes available resources by the specied id.
      *
-     * @param global_id The resource to remove.
+     * \param global_id The resource to remove.
      */
     void RemoveAvailableResourceById(uint64_t global_id);
     
@@ -104,16 +104,16 @@ public:
      * Updates an existing resource. Not generally used as resource name/types
      * don't change.
      *
-     * @param global_id The identifier for the resource.
-     * @param name The name of the resource.
-     * @param type The type/category of the resource.
+     * \param global_id The identifier for the resource.
+     * \param name The name of the resource.
+     * \param type The type/category of the resource.
      */
     void UpdateResource(uint64_t global_id, std::string name, std::string type);
     
     /**
      * Resets the list of available resources.
      *
-     * @param available_resource_pool The new resource pool.
+     * \param available_resource_pool The new resource pool.
      */
     void ResetAvailableResources(std::vector<Resource> available_resource_pool);
     
@@ -123,55 +123,55 @@ public:
     void ClearAllAvailableResources();
 
     /**
-     * @return The max possible extraction rate on this machine.
+     * \return The max possible extraction rate on this machine.
      */
     float GetMaxExtractionRate() const;
 
     /**
      * Sets the maximum possible extraction rate.
      *
-     * @param extraction_rate New maximum extraction rate.
+     * \param extraction_rate New maximum extraction rate.
      */
     void SetMaxExtractionRate(float extraction_rate);
     
     /**
-     * @return The current percentage efficiency of extraction.
+     * \return The current percentage efficiency of extraction.
      */
     float GetCurrentExtractionRate() const;
 
     /**
      * Sets the current percentage efficiency.
      * 
-     * @param extraction_rate The new extraction rate.
+     * \param extraction_rate The new extraction rate.
      */
     void SetCurrentExtractionRate(float extraction_rate);
     
     /**
-     * @return The current amount of resources in the hopper.
+     * \return The current amount of resources in the hopper.
      */
     float GetCurrentHopperSize() const;
 
     /**
      * Sets the current amount of resources in the hopper.
      * 
-     * @param extraction_rate The new extraction rate.
+     * \param extraction_rate The new extraction rate.
      */
     void SetCurrentHopperSize(float hopper_size);
     
     /**
-     * @return The maximum number of resources that can fit into the hopper.
+     * \return The maximum number of resources that can fit into the hopper.
      */
     float GetMaxHopperSize() const;
 
     /**
      * Sets the maximum number of resources that can fit into the hopper.
      * 
-     * @param extraction_rate The new extraction rate.
+     * \param extraction_rate The new extraction rate.
      */
     void SetMaxHopperSize(float hopper_size);
         
     /**
-     * @return True if the installation is updating, false if not.
+     * \return True if the installation is updating, false if not.
      */
     bool IsUpdating() const;
     
@@ -191,37 +191,37 @@ public:
     void ToggleUpdating();
 
     /**
-     * @return the current hopper contents.
+     * \return the current hopper contents.
      */
     std::vector<HopperItem> GetHopperContents() const;
 
     /**
      * Adds a quantity of a resource to the hopper.
      *
-     * @param global_id The resoruce to add.
-     * @param quantity The quantity of the resource to add.
+     * \param global_id The resoruce to add.
+     * \param quantity The quantity of the resource to add.
      */
     void AddToHopper(uint64_t global_id, float quantity);
     
     /**
      * Removes a resource from the hopper.
      *
-     * @param global_id The resource to remove from the hopper.
+     * \param global_id The resource to remove from the hopper.
      */
     void RemoveHopperItem(uint64_t global_id);
 
     /**
      * Updates the quantity of resources for a type in the hopper.
      *
-     * @param global_id The resource type to update.
-     * @param quantity The new quantity for the resource type.
+     * \param global_id The resource type to update.
+     * \param quantity The new quantity for the resource type.
      */ 
     void UpdateHopperItem(uint64_t global_id, float quantity);
 
     /**
      * Resets the contents of the hopper.
      *
-     * @param hopper The new contents of the hopper.
+     * \param hopper The new contents of the hopper.
      */
     void ResetContents(std::vector<HopperItem> hopper);
 
@@ -231,14 +231,14 @@ public:
     void ClearAllHopperContents();
     
     /**
-     * @return The percentage condition the installation is in.
+     * \return The percentage condition the installation is in.
      */
     uint8_t GetConditionPercentage() const;
 
     /**
      * Sets the percentage condition the installation is in.
      *
-     * @param condition The new condition.
+     * \param condition The new condition.
      */
     void SetConditionPercentage(uint8_t condition);
 

@@ -55,7 +55,7 @@ public:
      * containers like std::map.
      *
      * \param other The HashString to compare to the current one.
-     * \returns True if the ident is less than that of the other's, false if not.
+     * \return True if the ident is less than that of the other's, false if not.
      */
     bool operator<(const HashString& other) const;
 
@@ -65,21 +65,21 @@ public:
      * containers like std::map.
      *
      * \param other The HashString to compare to the current one.
-     * \returns True if the ident is greater than that of the other's, false if not.
+     * \return True if the ident is greater than that of the other's, false if not.
      */
     bool operator>(const HashString& other) const;
 
     /*! Compares two HashStrings to determine if they are equal.
      *
      * \param other The HashString to compare to the current one.
-     * \returns True if the two HashStrings are equal, false if not.
+     * \return True if the two HashStrings are equal, false if not.
      */
     bool operator==(const HashString& other) const;
 
     /*! Compares two HashStrings to determine if they are not equal.
      *
      * \param other The HashString to compare to the current one.
-     * \returns True if the two HashStrings are not equal, false if they are.
+     * \return True if the two HashStrings are not equal, false if they are.
      */
     bool operator!=(const HashString& other) const;
 

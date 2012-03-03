@@ -429,7 +429,7 @@ void ManufactureSchematic::RemoveSlot(uint16_t index)
 }
 
 /**
- * @return The index the slot was added into.
+ * \return The index the slot was added into.
  */
 uint16_t ManufactureSchematic::AddSlot(
     std::string slot_stf_file,
@@ -562,7 +562,7 @@ void ManufactureSchematic::RemoveExperiment(uint16_t index)
 }
 
 /**
- * @return The index the experiment was added into.
+ * \return The index the experiment was added into.
  */
 uint16_t ManufactureSchematic::AddExperiment(
     std::string experiment_stf_file, 
@@ -666,7 +666,7 @@ void ManufactureSchematic::RemoveCustomization(uint16_t index)
 }
 
 /**
- * @return The index the slot was added into.
+ * \return The index the slot was added into.
  */
 uint16_t ManufactureSchematic::AddCustomization(
     std::string name,

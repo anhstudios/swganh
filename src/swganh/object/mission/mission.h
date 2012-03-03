@@ -18,20 +18,20 @@ class Mission : public swganh::object::Object
 {
 public:
     /**
-     * @returns The type of this object instance.
+     * \return The type of this object instance.
      */
     virtual uint32_t GetType() const { return Mission::type; }
     const static uint32_t type = 0x4d49534f;
 
     /**
-     * @return The difficulty level of the mission.
+     * \return The difficulty level of the mission.
      */
     uint32_t GetDifficultyLevel() const;
     
     /**
      * Sets the difficulty level for the mission.
      *
-     * @param difficulty_level The difficulty level for the mission.
+     * \param difficulty_level The difficulty level for the mission.
      */
     void SetDifficultyLevel(uint32_t difficulty_level);
 
@@ -46,124 +46,124 @@ public:
     /**
      * Sets the starting position for the mission.
      * 
-     * @param starting_position The starting position for the mission.
+     * \param starting_position The starting position for the mission.
      */
     void SetStartingPosition(glm::vec3 starting_position);
 
     /**
-     * @returns the crc of the scene where the mission starts.
+     * \return the crc of the scene where the mission starts.
      */
     uint32_t GetStartingSceneCrc() const;
 
     /**
      * Sets the starting scene crc.
      *
-     * @param scene_crc The crc of the start scene.
+     * \param scene_crc The crc of the start scene.
      *
-     * @TODO consider holding the actual scene instance.
+     * \TODO consider holding the actual scene instance.
      */
     void SetStartingSceneCrc(uint32_t scene_crc);
     
     /**
-     * @returns the name of the creator of this mission.
+     * \return the name of the creator of this mission.
      */
     std::wstring GetMissionCreator() const;
 
     /**
      * Sets the name of the mission creator.
      *
-     * @param mission_creator The creator of the mission.
+     * \param mission_creator The creator of the mission.
      */
     void SetMissionCreator(std::wstring mission_creator);
     
     /**
-     * @returns the amount of credits awarded for completing this mission.
+     * \return the amount of credits awarded for completing this mission.
      */
     uint32_t GetMissionReward() const;
 
     /**
      * Sets the amount of credits to award for this mission.
      *
-     * @param mission_reward The amount of credits to award.
+     * \param mission_reward The amount of credits to award.
      */
     void SetMissionReward(uint32_t mission_reward);
     
     /**
-     * @returns the destination position of the mission.
+     * \return the destination position of the mission.
      */
     glm::vec3 GetDestinationPosition() const;
 
     /**
      * Sets the destination position of the mission.
      *
-     * @param destination_position The destination position of the mission.
+     * \param destination_position The destination position of the mission.
      */
     void SetDestinationPosition(glm::vec3 destination_position);
     
     /**
-     * @returns the crc of the scene where the destination is located.
+     * \return the crc of the scene where the destination is located.
      */
     uint32_t GetDestinationSceneCrc() const;
     
     /**
      * Sets the destination scene crc.
      *
-     * @param scene_crc The crc of the destination scene.
+     * \param scene_crc The crc of the destination scene.
      *
-     * @TODO consider holding the actual scene instance.
+     * \TODO consider holding the actual scene instance.
      */
     void SetDestinationSceneCrc(uint32_t scene_crc);
     
     /**
-     * @returns the object template used in the mission description.
+     * \return the object template used in the mission description.
      */
     std::string GetTargetObjectTemplate() const;
 
     /**
-     * @returns the object template used in the mission description in crc format.
+     * \return the object template used in the mission description in crc format.
      */
     uint32_t GetTargetObjectTemplateCrc() const;
 
     /**
      * Sets the object template used in the mission description.
      *
-     * @param object_template The iff object template file name.
+     * \param object_template The iff object template file name.
      */
     void SetTargetObjectTemplate(std::string object_template);
     
     /**
-     * @returns the stf file containing the mission description.
+     * \return the stf file containing the mission description.
      */
     std::string GetMissionDescriptionStfFile() const;
     
     /**
-     * @returns the stf string containing the mission description.
+     * \return the stf string containing the mission description.
      */
     std::string GetMissionDescriptionStfName() const;
 
     /**
      * Sets the mission description
      *
-     * @param stf_file_name The stf file containing the mission description.
-     * @param stf_string The string containing the mission description.
+     * \param stf_file_name The stf file containing the mission description.
+     * \param stf_string The string containing the mission description.
      */
     void SetMissionDescription(const std::string& stf_file_name, const std::string& stf_string);
     
     /**
-     * @returns the stf file containing the mission title.
+     * \return the stf file containing the mission title.
      */
     std::string GetMissionTitleStfFile() const;
 
     /**
-     * @returns the stf string containing the mission title.
+     * \return the stf string containing the mission title.
      */
     std::string GetMissionTitleStfName() const;
     
     /**
      * Sets the mission title
      *
-     * @param stf_file_name The stf file containing the mission title.
-     * @param stf_string The string containing the mission title.
+     * \param stf_file_name The stf file containing the mission title.
+     * \param stf_string The string containing the mission title.
      */
     void SetMissionTitle(const std::string& stf_file_name, const std::string& stf_string);
 
@@ -172,7 +172,7 @@ public:
      * display on a delta  that CHANGES the object) by changing it, and nothing 
      * else, you can get it to redisplay the mission similar to an update counter.
      *
-     * @return The current repeat counter value.
+     * \return The current repeat counter value.
      */
     uint32_t GetRepeatCounter() const;
     
@@ -184,17 +184,17 @@ public:
     /**
      * Sets the repeat counter to a specific value.
      *
-     * @param counter The new counter value.
+     * \param counter The new counter value.
      */
     void SetRepeatCounter(uint32_t counter);
     
     /**
-     * @returns the type of the mission.
+     * \return the type of the mission.
      */
     std::string GetMissionType();
 
     /**
-     * @returns the type of the mission in crc format.
+     * \return the type of the mission in crc format.
      */
     uint32_t GetMissionTypeCrc();
 
@@ -211,21 +211,21 @@ public:
      *  hunting
      *  survey
      *
-     * @param mission_type The type of the mision.
+     * \param mission_type The type of the mision.
      */
     void SetMissionType(std::string mission_type);
     
     /** 
-     * @return The name of the target object.
+     * \return The name of the target object.
      */
     std::string GetTargetName() const;
 
     /**
      * Sets the name of the target object.
      *
-     * @param target_name The name of the target object.
+     * \param target_name The name of the target object.
      *
-     * @TODO Consider holding a reference to the actual target object.
+     * \TODO Consider holding a reference to the actual target object.
      */
     void SetTargetName(std::string target_name);
 
