@@ -6,13 +6,6 @@ string(REPLACE "/" "\\" WIN_PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 ## dependencies and places them in the runtime directory for this project
 add_custom_target(DEPS)
 
-add_custom_command(
-    TARGET DEPS
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\logs"
-    VERBATIM
-)
-
 get_filename_component(BOOST_PYTHON_DLL_PATH ${Boost_PYTHON3_LIBRARY_DEBUG} PATH)
 string(REPLACE "/" "\\" BOOST_PYTHON_DLL_PATH "${BOOST_PYTHON_DLL_PATH}")
 add_custom_command(
