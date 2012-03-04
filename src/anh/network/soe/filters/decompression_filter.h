@@ -39,12 +39,12 @@ namespace soe {
 namespace filters {
 
 /**
- * @brief Decompresses packet data that is flagged as compressed.
+ * \brief Decompresses packet data that is flagged as compressed.
  */
 class DecompressionFilter {
 public:
     /**
-     * @param max_receive_size Maximum allowed size of incoming messages.
+     * \param max_receive_size Maximum allowed size of incoming messages.
      */
     explicit DecompressionFilter(uint32_t max_message_size);
 

@@ -35,41 +35,41 @@ namespace soe {
 /**
  * Builds a data channel message header with the provided sequence.
  *
- * @param sequence The sequence of the data channel message header being created.
- * @return A byte buffer containing the fully constructed data channel message header.
+ * \param sequence The sequence of the data channel message header being created.
+ * \return A byte buffer containing the fully constructed data channel message header.
  */
 anh::ByteBuffer BuildDataChannelHeader(uint16_t sequence);
 
 /**
  * Builds a fragmented data channel message header with the provided sequence.
  *
- * @param sequence The sequence of the data channel message header being created.
- * @return A byte buffer containing the fully constructed fragmented data channel message header.
+ * \param sequence The sequence of the data channel message header being created.
+ * \return A byte buffer containing the fully constructed fragmented data channel message header.
  */
 anh::ByteBuffer BuildFragmentedDataChannelHeader(uint16_t sequence);
 
 /**
  * Packs a list of game messages into a single message body.
  *
- * @param data_list A list of game messages to pack.
- * @return A single data channel message containing 1 or more game messages.
+ * \param data_list A list of game messages to pack.
+ * \return A single data channel message containing 1 or more game messages.
  */
 anh::ByteBuffer PackDataChannelMessages(std::list<std::shared_ptr<anh::ByteBuffer>>& data_list);
 
 /**
  * Splits a large data channel message into fragments.
  *
- * @param message The message to split.
- * @param max_size The maximum size of of each fragment.
- * @return A list containing the in-order message fragments.
+ * \param message The message to split.
+ * \param max_size The maximum size of of each fragment.
+ * \return A list containing the in-order message fragments.
  */
 std::list<anh::ByteBuffer> SplitDataChannelMessage(anh::ByteBuffer message, uint32_t max_size);
 
 /**
  * Creates a uint32_t hash from an endpoint.
  *
- * @param endpoint The endpoint to hash.
- * @return A hash of the provided endpoint.
+ * \param endpoint The endpoint to hash.
+ * \return A hash of the provided endpoint.
  */
 uint32_t CreateEndpointHash(const boost::asio::ip::udp::endpoint& endpoint);
 

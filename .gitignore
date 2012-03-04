@@ -14,3 +14,5 @@ data/sql/setup.cfg
 .cproject
 .project
 .settings
+
+data/docs/generated

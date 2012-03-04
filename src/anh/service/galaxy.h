@@ -70,31 +70,31 @@ public:
         
     /*! Returns the id of the galaxy in the data store.
     *
-    * \returns Returns the id of the galaxy in the data store.
+    * \return Returns the id of the galaxy in the data store.
     */
     uint32_t id() const;
         
     /*! Returns the id of the primary process for this galaxy.
     *
-    * \returns Returns the id of the primary process for this galaxy.
+    * \return Returns the id of the primary process for this galaxy.
     */
     uint32_t primary_id() const;
         
     /*! Returns the name of the galaxy.
     *
-    * \returns Returns the name of the galaxy.
+    * \return Returns the name of the galaxy.
     */
     const std::string& name() const;    
         
     /*! Returns the version of the galaxy.
     *
-    * \returns Returns the version of the galaxy.
+    * \return Returns the version of the galaxy.
     */
     const std::string& version() const;   
     
     /*! Returns the current status of the galaxy.
     *
-    * \returns Returns the current status of the galaxy.
+    * \return Returns the current status of the galaxy.
     */
     Galaxy::StatusType status() const;  
 
@@ -105,19 +105,19 @@ public:
     
     /*! Returns the timestamp indicating the time the galaxy was first created.
     *
-    * \returns Returns the timestamp indicating the time the galaxy was first created.
+    * \return Returns the timestamp indicating the time the galaxy was first created.
     */
     const std::string& created_at() const;    
     
     /*! Returns the last time this galaxy was modified manually.
     *
-    * \returns Returns the last time this galaxy was modified manually.
+    * \return Returns the last time this galaxy was modified manually.
     */
     const std::string& updated_at() const;
 
     /*! Returns the last time this galaxy was updated in milleseconds.
     *
-    * \returns Returns the last time this galaxy was updated in milleseconds.
+    * \return Returns the last time this galaxy was updated in milleseconds.
     */
     uint64_t GetGalaxyTimeInMilliseconds();
 

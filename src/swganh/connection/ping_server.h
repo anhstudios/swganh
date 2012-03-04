@@ -15,8 +15,8 @@ class PingServer
 public:
     /*! \brief Start a ping service listening on all addresses for a specified port.
      *
-     * @param io_service The instance of io_service that drives this server.
-     * @param port The port to listen for ping requests on.
+     * \param io_service The instance of io_service that drives this server.
+     * \param port The port to listen for ping requests on.
      */
     PingServer(boost::asio::io_service& io_service, uint16_t port);
 

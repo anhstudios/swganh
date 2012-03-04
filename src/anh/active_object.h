@@ -35,7 +35,7 @@ public:
      * Triggers an asyncronous task on the active object's strand. Returns a future
      * containing the return value. Can be used to confirm when the async task has completed.
      *
-     * @param func The function handler to perform and retrieve results of asyncronously.
+     * \param func The function handler to perform and retrieve results of asyncronously.
      */
     template<typename Handler>
     boost::unique_future<typename std::result_of<Handler()>::type>
@@ -53,8 +53,8 @@ public:
      * Sends a message to be handled by the ActiveObject's asio strand. Delays
      * execution of the message by a specified period of time.
      *
-     * @param period The period of time to delay execution of the given message.
-     * @param message The message to be handled by the active object.
+     * \param period The period of time to delay execution of the given message.
+     * \param message The message to be handled by the active object.
      */
     template<typename Handler>
     boost::unique_future<typename std::result_of<Handler()>::type>
@@ -76,8 +76,8 @@ public:
      * Repeatedly sends a message to be handled by the ActiveObject's asio 
      * strand. The specified period of time determines the interval between resends.
      *
-     * @param period The period of time to delay execution of the given message.
-     * @param message The message to be handled by the active object.
+     * \param period The period of time to delay execution of the given message.
+     * \param message The message to be handled by the active object.
      */
     template<typename Handler>
     void AsyncRepeated(boost::posix_time::time_duration period, Handler&& func) {

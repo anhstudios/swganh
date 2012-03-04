@@ -1,8 +1,8 @@
 /*
  * SWG:ANH Combat Upgrade Sandbox
  *
- * @copyright   Copyright (c) 2010 The SWG:ANH Team
- * @author      Eric Barr <apathy@swganh.org>
+ * \copyright   Copyright (c) 2010 The SWG:ANH Team
+ * \author      Eric Barr <apathy@swganh.org>
 **/
 
 #include <gtest/gtest.h>
