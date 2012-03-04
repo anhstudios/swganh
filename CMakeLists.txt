@@ -64,6 +64,9 @@ message(STATUS " - MSVC: Version ${MSVC_VERSION}")
         
     ADD_DEFINITIONS (/D _VARIADIC_MAX=10)
     MESSAGE(STATUS "- MSVC: Set variadic max to 10 for compatibility with all supported platforms")
+    
+    ADD_DEFINITIONS (/D BOOST_ALL_DYN_LINK)
+    MESSAGE(STATUS "- BOOST: Enable dynamic linking")
 endif()
 
 # Use the static/multithreaded libraries.
