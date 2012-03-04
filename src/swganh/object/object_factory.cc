@@ -85,8 +85,13 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         result->next();
         object->scene_id_ = result->getUInt("scene_id");
         object->position_ = glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position"));
-        object->orientation_ = glm::quat(result->getDouble("x_orientation"),result->getDouble("y_orientation"), result->getDouble("z_orientation"), result->getDouble("w_orientation"));
-        object->complexity_ = result->getDouble("complexity");
+        object->orientation_ = glm::quat(
+            static_cast<float>(result->getDouble("x_orientation")),
+            static_cast<float>(result->getDouble("y_orientation")),
+            static_cast<float>(result->getDouble("z_orientation")), 
+            static_cast<float>(result->getDouble("w_orientation")));
+
+        object->complexity_ = static_cast<float>(result->getDouble("complexity"));
         object->stf_name_file_ = result->getString("stf_name_file");
         object->stf_name_string_ = result->getString("stf_name_string");
         string custom_string = result->getString("custom_name");

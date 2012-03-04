@@ -120,7 +120,7 @@ uint32_t MysqlSessionProvider::GetAccountId(uint64_t player_id) {
         string sql = "select reference_id from player_account where id = ?";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-        statement->setUInt(1, player_id);
+        statement->setUInt64(1, player_id);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
