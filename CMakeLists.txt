@@ -38,6 +38,9 @@ option(USE_SYSTEM_LIBRARIES
 option(BUILD_PLUGINS
     "Build plugins" ON)
 
+option(TREAT_WARNINGS_AS_ERRORS
+    "Treat all warnings as errors" ON)
+
 if(ENABLE_TEST_REPORT)
     enable_testing()
 endif()
@@ -79,7 +82,13 @@ if(MSVC)
     MESSAGE(STATUS "- MSVC: Disabled NON-SECURE warnings")
         
     ADD_DEFINITIONS (/D _VARIADIC_MAX=10)
-    MESSAGE(STATUS "- MSVC: Set variadic max to 10 for compatibility with all supported platforms")
+    MESSAGE(STATUS "- MSVC: Set variadic max to 10 for compatibility with dependencies")
+
+    if(TREAT_WARNINGS_AS_ERRORS)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
+        message(STATUS "- MSVC: Treating all warnings as errors")
+	endif()
     
     ADD_DEFINITIONS (/D BOOST_ALL_DYN_LINK)
     MESSAGE(STATUS "- BOOST: Enable dynamic linking")
