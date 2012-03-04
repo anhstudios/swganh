@@ -72,20 +72,13 @@ FUNCTION(AddANHLibrary name)
         FILE(GLOB_RECURSE SOURCES *.cc *.cpp *.h)
         FILE(GLOB_RECURSE HEADERS *.h)
         FILE(GLOB_RECURSE TEST_SOURCES *_unittest.cc *_unittest.cpp mock_*.h)
-            
-        FOREACH(__source_file ${SOURCES})
-            STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/)((.*/)*)(.*)" "\\2" __source_dir "${__source_file}")
-            STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/${__source_dir})(.*)" "\\2" __source_filename "${__source_file}")
-            
-            STRING(REPLACE "/" "\\\\" __source_group "${__source_dir}")
-            SOURCE_GROUP("${__source_group}" FILES ${__source_file})
-        ENDFOREACH()
     ELSE()
         set(SOURCES ${ANHLIB_SOURCES})
         set(TEST_SOURCES ${ANHLIB_TEST_SOURCES})
         set(HEADERS ${ANHLIB_HEADERS})
     ENDIF()
     
+    # Group the source files based on the directory structure.
     FOREACH(__source_file ${SOURCES})
         STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/)((.*/)*)(.*)" "\\2" __source_dir "${__source_file}")
         STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/${__source_dir})(.*)" "\\2" __source_filename "${__source_file}")
@@ -146,7 +139,6 @@ FUNCTION(AddANHLibrary name)
                             
         IF(_project_deps_list_length GREATER 0)
             ADD_DEPENDENCIES(${name}_tests ${ANHLIB_DEPENDS})
-            ADD_DEPENDENCIES(${name}_tests DEPS)
         ENDIF()
     
         IF(_debug_list_length GREATER 0)
@@ -181,16 +173,14 @@ FUNCTION(AddANHLibrary name)
             # works without any issues.
     	    CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/tools/windows/user_project.vcxproj.in 
     	        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tests.vcxproj.user @ONLY)
-            IF(ENABLE_TEST_REPORT)
-                foreach(configuration Debug Release MinSizeRel RelWithDebInfo)
-                    ADD_TEST(
-                        NAME all_${name}_tests_${configuration}
-                        CONFIGURATIONS ${configuration}
-                        COMMAND ${name}_tests "--gtest_output=xml:${PROJECT_BINARY_DIR}/reports/$<CONFIGURATION>/"
-                        WORKING_DIRECTORY ${RUNTIME_OUTPUT_BASE_DIRECTORY}/bin/${configuration}
-                    )
-                endforeach()
-            ENDIF()
+
+            if(ENABLE_TEST_REPORT)
+                add_test(
+                    NAME all_${name}_tests
+                    COMMAND ${name}_tests "--gtest_output=xml:${PROJECT_BINARY_DIR}/reports/$<CONFIGURATION>/"
+                    WORKING_DIRECTORY "${RUNTIME_OUTPUT_BASE_DIRECTORY}/bin/\$(configuration)"
+                )
+            endif()
         ELSE()        
             IF(ENABLE_TEST_REPORT)
                 foreach(configuration Debug Release MinSizeRel RelWithDebInfo)
