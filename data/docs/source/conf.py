@@ -17,7 +17,7 @@ import sys, os, re, glob
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-sys.path.append('c:\\swganh\\build\\bin\\Debug')
+sys.path.append(os.path.abspath('..\\..\\..\\build\\bin\\Debug'))
 #sys.path.append("C:/python32/")
 #sys.path.append("C:/python32/lib/")
 #sys.path.append("C:/swganh_docs/breathe")
