@@ -179,7 +179,7 @@ FUNCTION(AddANHLibrary name)
             
             # Create a custom built user configuration so that the "run in debug mode"
             # works without any issues.
-    	    CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/../tools/windows/user_project.vcxproj.in 
+    	    CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/tools/windows/user_project.vcxproj.in 
     	        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tests.vcxproj.user @ONLY)
             IF(ENABLE_TEST_REPORT)
                 foreach(configuration Debug Release MinSizeRel RelWithDebInfo)

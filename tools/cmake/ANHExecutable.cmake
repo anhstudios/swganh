@@ -184,7 +184,7 @@ FUNCTION(AddANHExecutable name)
         
         # Create a custom built user configuration so that the "run in debug mode"
         # works without any issues.
-    	CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/../tools/windows/user_project.vcxproj.in 
+    	CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/tools/windows/user_project.vcxproj.in 
     	    ${CMAKE_CURRENT_BINARY_DIR}/${name}.vcxproj.user @ONLY)
     ELSE()
         # On unix platforms put the built runtimes in the /bin directory.
