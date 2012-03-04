@@ -1,5 +1,5 @@
 
-#include "plugins/phpbb_auth/phpbb_session_provider.h"
+#include "phpbb_session_provider.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 

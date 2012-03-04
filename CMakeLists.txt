@@ -12,16 +12,31 @@ set(swganh_VERSION
 # set the path for custom cmake scripts
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
 
+#-----------------------------------------------------------------------------
+# Redirect output files
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
+# DLL should be in the same directory as EXE under Windows
+if(WIN32)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+else(WIN32)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+endif(WIN32)
+
 ## Global Configuration Options
 
 # Some automated systems need an xml report which requires a second run of the
 # tests. To prevent these unnecessary runnings during normal builds the
 # following option is set with a default of false.
 option(ENABLE_TEST_REPORT
-    "Enables the generation of a test report when running tests" false)
+    "Enables the generation of a test report when running tests" OFF)
 
 option(USE_SYSTEM_LIBRARIES
-    "Uses system libraries instead of downloading them" false)
+    "Uses system libraries instead of downloading them" OFF)
+    
+option(BUILD_PLUGINS
+    "Build plugins" ON)
 
 if(ENABLE_TEST_REPORT)
     enable_testing()
@@ -48,13 +63,14 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if(MSVC)
-message(STATUS " - MSVC: Version ${MSVC_VERSION}")
+    message(STATUS " - MSVC: Version ${MSVC_VERSION}")
+    
     if(MSVC_VERSION LESS 1700)
     	message(FATAL_ERROR "Visual Studio 11 or newer is required ")
     endif()
     
     SET(_WIN32_WINNT 0x0601 CACHE INTERNAL "Setting _WIN32_WINNT to 0x0601 for Windows Vista minimum APIs")
-    SET(WINVER 0x0601 CACHE INTERNAL "Setting WINVER to 0x0601 for Windows Vista minimum APIs")
+    SET(WINVER ${_WIN32_WINNT} CACHE INTERNAL "Setting WINVER to 0x0601 for Windows Vista minimum APIs")
 	
     ADD_DEFINITIONS (/D _WIN32_WINNT=${_WIN32_WINNT})
     MESSAGE(STATUS "- MSVC: Set minimum Windows API version")
@@ -97,4 +113,12 @@ find_package(MysqlConnectorCpp REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(ZLib REQUIRED)
 
+# make sure the source directory and the binary directory (where any generated
+# files will be found) are automatically searched for includes
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src)
+
 add_subdirectory(src)
+
+if(BUILD_PLUGINS)
+    add_subdirectory(plugins)
+endif()

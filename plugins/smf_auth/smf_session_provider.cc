@@ -1,5 +1,5 @@
 
-#include "plugins/smf_auth/smf_session_provider.h"
+#include "smf_session_provider.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 

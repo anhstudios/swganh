@@ -71,8 +71,8 @@ FUNCTION(AddANHExecutable name)
     # load up all of the source and header files for the project
     FILE(GLOB_RECURSE SOURCES *.cc *.cpp *.h)   
     FILE(GLOB_RECURSE HEADERS *.h)
-    FILE(GLOB_RECURSE TEST_SOURCES *_unittest.cc *_unittest.cpp mock_*.h)
-    FILE(GLOB_RECURSE BINDINGS *_binding.cc *_binding.cpp)
+    FILE(GLOB_RECURSE TEST_SOURCES *_unittest.h *_unittest.cc *_unittest.cpp mock_*.h)
+    FILE(GLOB_RECURSE BINDINGS *_binding.h *_binding.cc *_binding.cpp)
         
     FOREACH(__source_file ${SOURCES})
         STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/)((.*/)*)(.*)" "\\2" __source_dir "${__source_file}")
@@ -173,12 +173,6 @@ FUNCTION(AddANHExecutable name)
     ENDIF()
     
     IF(WIN32)
-        # Set the default output directory for binaries for convenience.
-        set(RUNTIME_OUTPUT_BASE_DIRECTORY "${CMAKE_BINARY_DIR}")
-            
-        # Set the default output directory for binaries for convenience.
-        SET_TARGET_PROPERTIES(${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${RUNTIME_OUTPUT_BASE_DIRECTORY}/bin")
-        
         # Link to some standard windows libs that all projects need.
     	TARGET_LINK_LIBRARIES(${name} "winmm.lib" "ws2_32.lib")
         
