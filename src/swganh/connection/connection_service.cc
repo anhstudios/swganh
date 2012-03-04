@@ -122,7 +122,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
-            session = make_shared<ConnectionClient>(endpoint, this);
+            session = make_shared<ConnectionClient>(this, kernel()->GetIoService(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
         }
     }

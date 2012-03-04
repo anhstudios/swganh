@@ -62,7 +62,7 @@ public:
     /**
      * Adds itself to the Session Manager.
      */
-    Session(boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface* server);
+    Session(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
     ~Session();
 
     /**

@@ -10,8 +10,8 @@ using namespace swganh::connection;
 using namespace swganh::object;
 
 ConnectionClient::ConnectionClient(
-    boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface* server)
-    : Session(remote_endpoint, server)
+    ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
+    : Session(server, io_service, remote_endpoint)
 {}
 
 ConnectionClient::State ConnectionClient::GetState() const
