@@ -11,7 +11,8 @@ string(REPLACE "/" "\\" BOOST_PYTHON_DLL_PATH "${BOOST_PYTHON_DLL_PATH}")
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND xcopy "${BOOST_PYTHON_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
+    COMMAND xcopy "${BOOST_PYTHON_DLL_PATH}\\*-gd-*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\Debug" /D /I /Y /s
+    COMMAND xcopy "${BOOST_PYTHON_DLL_PATH}\\*-mt-1*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\Release" /D /I /Y /s    
     VERBATIM
 )
 
