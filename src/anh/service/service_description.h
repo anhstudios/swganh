@@ -99,62 +99,62 @@ public:
         
     /*! Returns the id of the service in the data store.
     *
-    * \returns Returns the id of the service in the data store.
+    * \return Returns the id of the service in the data store.
     */
     uint32_t id() const;
     void id(uint32_t id);
 
     /*! Returns The id of the galaxy this service belongs to.
     *
-    * \returns Returns The id of the galaxy this service belongs to.
+    * \return Returns The id of the galaxy this service belongs to.
     */
     uint32_t galaxy_id() const;
 
     /*! Returns The name of the service.
     *
-    * \returns Returns The name of the service.
+    * \return Returns The name of the service.
     */
     const std::string& name() const;    
 
     /*! Returns The type of the service.
     *
-    * \returns Returns The type of the service.
+    * \return Returns The type of the service.
     */
     const std::string& type() const;    
     
     /*! Returns the version of the service.
     *
-    * \returns Returns the version of the service.
+    * \return Returns the version of the service.
     */
     const std::string& version() const;    
     
     /*! Returns the address to communicate with the service.
     *
-    * \returns Returns the address to communicate with the service.
+    * \return Returns the address to communicate with the service.
     */
     const std::string& address() const;    
     
     /*! Returns the tcp port to connect to the service on, default to 0 if not used.
     *
-    * \returns Returns the tcp port to connect to the service on, default to 0 if not used.
+    * \return Returns the tcp port to connect to the service on, default to 0 if not used.
     */
     uint16_t tcp_port() const;    
     
     /*! Returns the udp port to connect to the service on, default to 0 if not used.
     *
-    * \returns Returns the udp port to connect to the service on, default to 0 if not used.
+    * \return Returns the udp port to connect to the service on, default to 0 if not used.
     */
     uint16_t udp_port() const;    
     
     /*! Returns the ping port, default to 0 if not used.
     *
-    * \returns Returns the udp port, default to 0 if not used.
+    * \return Returns the udp port, default to 0 if not used.
     */
     uint16_t ping_port() const;    
     
     /*! Returns the current status of the service.
     *
-    * \returns Returns -1 if the service is not operational otherwise it returns
+    * \return Returns -1 if the service is not operational otherwise it returns
     *   the number of connected clients.
     */
     int32_t status() const;    
@@ -162,7 +162,7 @@ public:
     
     /*! Returns the last time the service synced with the data store.
     *
-    * \returns Returns the last time the service synced with the data store.
+    * \return Returns the last time the service synced with the data store.
     */
     const std::string& last_pulse() const;
     void last_pulse(std::string last_pulse);

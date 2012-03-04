@@ -58,19 +58,19 @@ namespace object {
         uint64_t GetId() const;
 
         /**
-         * @return Handle to the object this controller manages.
+         * \return Handle to the object this controller manages.
          */
         std::shared_ptr<Object> GetObject() const;
 
         /**
-         * @return Handle to the remote client controlling the object.
+         * \return Handle to the remote client controlling the object.
          */
         std::shared_ptr<swganh::connection::ConnectionClient> GetRemoteClient();
         
         /**
          * Sets handle to the remote client controlling the object.
          *
-         * @param remote_client the new remote client for this controller.
+         * \param remote_client the new remote client for this controller.
          */
         void SetRemoteClient(std::shared_ptr<swganh::connection::ConnectionClient> remote_client);
 
@@ -79,7 +79,7 @@ namespace object {
         /**
          * Notifies the controller when the object has been updated.
          *
-         * @param message The message to be delivered to the remote client.
+         * \param message The message to be delivered to the remote client.
          */
         void Notify(const anh::ByteBuffer& message);
 
@@ -88,9 +88,9 @@ namespace object {
         /**
          * Used to send a specific system message to the player
          *
-         * @param custom_message, the custom message to send
-         * @param chatbox_only used to send to only the chatbox or to the screen as well
-         * @param send_to_inrange used to determine to send to any players in range as well
+         * \param custom_message, the custom message to send
+         * \param chatbox_only used to send to only the chatbox or to the screen as well
+         * \param send_to_inrange used to determine to send to any players in range as well
          */
         bool SendSystemMessage(const std::string& custom_message) { return SendSystemMessage(std::wstring(custom_message.begin(), custom_message.end())); }
         bool SendSystemMessage(const std::wstring& custom_message, bool chatbox_only = false, bool send_to_inrange = false);
@@ -100,7 +100,7 @@ namespace object {
         /**
          * Used to send Fly Text to the character
          *
-         * @param
+         * \param
          */
         void SendFlyText(const std::string& fly_text, swganh::messages::controllers::FlyTextColor color, bool display_flag, uint8_t red = 0, uint8_t green = 0, uint8_t blue = 0);
         void SendFlyText(const std::string& fly_text, swganh::messages::controllers::FlyTextColor color);
@@ -111,12 +111,12 @@ namespace object {
          *
          * This internal method is invoked by the two SendSystemMessage overloads to send out a system message.
          *
-         * @param custom_message A custom text string to be sent.
-         * @param prose A custom STF string package.
-         * @param player The recepient of the system message. If no player is passed the message is sent to everyone.
-         * @param chatbox_only Determines whether the message is displayed on screen or in the chatbox
+         * \param custom_message A custom text string to be sent.
+         * \param prose A custom STF string package.
+         * \param player The recepient of the system message. If no player is passed the message is sent to everyone.
+         * \param chatbox_only Determines whether the message is displayed on screen or in the chatbox
          *                     only. By default this is false meaning messages are by default displayed on screen and the chatbox.
-         * @param send_to_inrange If true the message is sent to all in-range players of the target recipient.
+         * \param send_to_inrange If true the message is sent to all in-range players of the target recipient.
          */
         bool SendSystemMessage_(const std::wstring& custom_message, const swganh::messages::OutOfBand& prose, bool chatbox_only, bool send_to_inrange);
 
