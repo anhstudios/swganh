@@ -14,6 +14,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
 
 #-----------------------------------------------------------------------------
 # Redirect output files
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
@@ -24,6 +25,7 @@ else(WIN32)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 endif(WIN32)
 
+#-----------------------------------------------------------------------------
 ## Global Configuration Options
 
 # Some automated systems need an xml report which requires a second run of the
@@ -63,6 +65,12 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     IF(HAS_CPP0X_SUPPORT)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
     ENDIF()
+
+    if(TREAT_WARNINGS_AS_ERRORS)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -pedantic-error")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pedantic-error")
+        message(STATUS "- Treating all warnings as errors")
+    endif()
 endif()
 
 if(MSVC)
