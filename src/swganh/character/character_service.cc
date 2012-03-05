@@ -385,7 +385,7 @@ std::string CharacterService::setCharacterCreateErrorCode_(uint32_t error_code)
     return error_string;
 }
 
-void CharacterService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionClient> client, const ClientCreateCharacter& message) {
+void CharacterService::HandleClientCreateCharacter_(const std::shared_ptr<ConnectionClient>& client, const ClientCreateCharacter& message) {
     BOOST_LOG_TRIVIAL(warning) << "Handling ClientCreateCharacter";
 
     uint64_t character_id;
@@ -408,7 +408,7 @@ void CharacterService::HandleClientCreateCharacter_(std::shared_ptr<ConnectionCl
     }
 }
 
-void CharacterService::HandleClientRandomNameRequest_(std::shared_ptr<ConnectionClient> client, const ClientRandomNameRequest& message) {
+void CharacterService::HandleClientRandomNameRequest_(const std::shared_ptr<ConnectionClient>& client, const ClientRandomNameRequest& message) {
     ClientRandomNameResponse response;
     response.player_race_iff = message.player_race_iff;
     
@@ -421,7 +421,7 @@ void CharacterService::HandleClientRandomNameRequest_(std::shared_ptr<Connection
     client->SendMessage(response);
 }
 
-void CharacterService::HandleDeleteCharacterMessage_(std::shared_ptr<LoginClient> login_client, const DeleteCharacterMessage& message) {
+void CharacterService::HandleDeleteCharacterMessage_(const std::shared_ptr<LoginClient>& login_client, const DeleteCharacterMessage& message) {
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
 

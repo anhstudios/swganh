@@ -105,7 +105,7 @@ private:
 
     void subscribe();
     
-    void HandleLoginClientId_(std::shared_ptr<LoginClient> login_client, const messages::LoginClientId& message);
+    void HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const messages::LoginClientId& message);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
