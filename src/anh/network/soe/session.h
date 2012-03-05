@@ -26,11 +26,21 @@
 #include <memory>
 #include <vector>
 
+#ifdef WIN32
 #include <concurrent_queue.h>
+#else
+#include <tbb/concurrent_queue.h>
+
+namespace Concurrency {
+    using ::tbb::concurrent_queue;
+}
+
+#endif
 
 #include <boost/asio.hpp>
 
 #include "anh/network/soe/protocol_packets.h"
+#include "anh/network/soe/server_interface.h"
 
 #include "anh/network/soe/filters/crc_in_filter.h"
 #include "anh/network/soe/filters/decryption_filter.h"
@@ -51,9 +61,7 @@ class ByteBuffer;
 
 namespace network {
 namespace soe {
-
-    class ServerInterface;
-
+    
 /**
  * \brief An estabilished connection between a SOE Client and a SOE Service.
  */

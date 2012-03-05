@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 2.8.7)
+if(WIN32)
+    cmake_minimum_required(VERSION 2.8.7)
+else()
+    cmake_minimum_required(VERSION 2.8.5)
+endif()
 
 project(swganh CXX)
 
@@ -67,8 +71,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     ENDIF()
 
     if(TREAT_WARNINGS_AS_ERRORS)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -pedantic-error")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pedantic-error")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -pedantic-errors")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pedantic-errors")
         message(STATUS "- Treating all warnings as errors")
     endif()
 endif()
@@ -119,6 +123,10 @@ if(DEFINED VENDOR_PREFIX)
     set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX}/mysql-connector-cpp)
     set(PYTHON_ROOT ${VENDOR_PREFIX}/python)    
     set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
+endif()
+
+if (NOT WIN32)
+    find_package(TBB REQUIRED)
 endif()
 
 find_package(Boost 1.49.0 COMPONENTS date_time filesystem log program_options python3 regex system thread REQUIRED)

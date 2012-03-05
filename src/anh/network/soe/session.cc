@@ -37,15 +37,15 @@ using namespace std;
 Session::Session(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
     : std::enable_shared_from_this<Session>()
     , remote_endpoint_(remote_endpoint)
-    , connected_(false)
     , server_(server)
     , strand_(io_service)
+    , connected_(false)
     , crc_seed_(0xDEADBABE)
-    , server_net_stats_(0, 0, 0, 0, 0, 0)
     , last_acknowledged_sequence_(0)
-    , current_client_sequence_(0)
     , next_client_sequence_(0)
+    , current_client_sequence_(0)
     , server_sequence_()
+    , server_net_stats_(0, 0, 0, 0, 0, 0)
     , incoming_fragmented_total_len_(0)
     , incoming_fragmented_curr_len_(0)
     , decompression_filter_(server_->max_receive_size())
@@ -234,9 +234,6 @@ void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer mes
     
     // Store it for resending later if necessary
     sent_messages_.push_back(make_pair(message_sequence, data_channel_message));
-    
-    // If the data channel message is too big
-    uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 5;
 }
 
 void Session::handleSessionRequest_(SessionRequest& packet)
