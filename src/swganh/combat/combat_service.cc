@@ -316,8 +316,8 @@ uint16_t CombatService::GetHitResult(
 
     accuracy_bonus += GetAccuracyBonus(attacker);
 
-    int target_defense = 15;//GetDefenseModifier(attacker, target);
-    float accuracy_total = GetHitChance(attacker_accuracy + weapon_accuracy, accuracy_bonus, target_defense);
+    float target_defense = 15;//GetDefenseModifier(attacker, target);
+    float accuracy_total = GetHitChance(attacker_accuracy + weapon_accuracy, static_cast<float>(accuracy_bonus), target_defense);
 
     // Scout/Ranger creature hit bonus
 
@@ -337,7 +337,7 @@ uint16_t CombatService::GetHitResult(
         if (target_defense <= 0)
             return HIT;
 
-        accuracy_total = GetHitChance(attacker_accuracy + weapon_accuracy, accuracy_bonus, target_defense);
+        accuracy_total = GetHitChance(attacker_accuracy + weapon_accuracy, static_cast<float>(accuracy_bonus), target_defense);
         if (accuracy_total > 100.0)
             accuracy_total = 100.0;
         else if(accuracy_total < 0.0f)
@@ -430,7 +430,7 @@ void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shar
 float CombatService::GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence) 
 {
     // TODO: Verify this is the appropriate formula
-    return (66.0 + attacker_bonus + (attacker_accuracy - target_defence) / 2.0);
+    return (66.0f + attacker_bonus + (attacker_accuracy - target_defence) / 2.0f);
 }
 int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,

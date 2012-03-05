@@ -33,7 +33,7 @@ class Account;
 
 class LoginClient : public anh::network::soe::Session {
 public:    
-    LoginClient(boost::asio::ip::udp::endpoint remote_endpoint, anh::network::soe::ServerInterface* server);
+    LoginClient(anh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
     
     std::string GetUsername() const;
     void SetUsername(std::string username);

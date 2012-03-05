@@ -7,7 +7,7 @@ http://pypi.python.org/pypi/distribute#installation-instructions
 
 For Windows
 
-Python32 needs to be in your path
+Python32 needs to be in your path as well as the Python32/Scripts folder
 
 after that is installed run:
 easy_install Sphinx

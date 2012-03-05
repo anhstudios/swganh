@@ -34,12 +34,12 @@ using namespace anh::network;
 using namespace anh::network::soe;
 using namespace std;
 
-Session::Session(boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface* server)
+Session::Session(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
     : std::enable_shared_from_this<Session>()
     , remote_endpoint_(remote_endpoint)
     , connected_(false)
     , server_(server)
-    , strand_(server->socket()->get_io_service())
+    , strand_(io_service)
     , crc_seed_(0xDEADBABE)
     , server_net_stats_(0, 0, 0, 0, 0, 0)
     , last_acknowledged_sequence_(0)
@@ -105,7 +105,7 @@ vector<shared_ptr<ByteBuffer>> Session::GetUnacknowledgedMessages() const {
 
 void Session::Update() {
     // Exit as quickly as possible if there is no work currently.
-    if (!connected_ || outgoing_data_messages_.empty()) {
+    if (outgoing_data_messages_.empty()) {
         return;
     }
 

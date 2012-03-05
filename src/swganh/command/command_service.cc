@@ -163,7 +163,7 @@ void CommandService::ProcessCommand(
     {
 		handler(kernel(), actor, target, command);
         // Convert the default time to a float of seconds.
-        float default_time = command_properties_map_[command.command_crc].default_time / 1000;
+        float default_time = command_properties_map_[command.command_crc].default_time / 1000.0f;
 
         SendCommandQueueRemove(actor, command.action_counter, default_time, 0, 0);
     }     
@@ -242,7 +242,7 @@ void CommandService::LoadProperties()
             properties.fail_script_hook = result->getString("fail_script_hook");
             properties.default_time = result->getUInt64("default_time");
             properties.command_group = result->getUInt("command_group");
-            properties.max_range_to_target = result->getDouble("max_range_to_target");
+            properties.max_range_to_target = static_cast<float>(result->getDouble("max_range_to_target"));
             properties.add_to_combat_queue = result->getUInt("add_to_combat_queue");
             properties.health_cost = result->getUInt("health_cost");
             properties.health_cost_multiplier = result->getUInt("health_cost_multiplier");
@@ -250,8 +250,8 @@ void CommandService::LoadProperties()
             properties.action_cost_multiplier = result->getUInt("action_cost_multiplier");
             properties.mind_cost = result->getUInt("mind_cost");
             properties.mind_cost_multiplier = result->getUInt("mind_cost");
-            properties.damage_multiplier = result->getDouble("damage_multiplier");
-            properties.delay_multiplier = result->getDouble("delay_multiplier");
+            properties.damage_multiplier = static_cast<float>(result->getDouble("damage_multiplier"));
+            properties.delay_multiplier = static_cast<float>(result->getDouble("delay_multiplier"));
             properties.force_cost = result->getUInt("force_cost");
             properties.force_cost_multiplier = result->getUInt("force_cost_multiplier");
             properties.animation_crc = result->getUInt("animation_crc");
@@ -260,17 +260,17 @@ void CommandService::LoadProperties()
             properties.trail1 = result->getUInt("trail1");
             properties.trail2 = result->getUInt("trail2");
             properties.allow_in_posture = result->getUInt("allow_in_posture");
-            properties.health_hit_chance = result->getDouble("health_hit_chance");
-            properties.action_hit_chance = result->getDouble("action_hit_chance");
-            properties.mind_hit_chance = result->getDouble("mind_hit_chance");
-            properties.knockdown_hit_chance = result->getDouble("knockdown_chance");
-            properties.dizzy_hit_chance = result->getDouble("dizzy_chance");
-            properties.blind_chance = result->getDouble("blind_chance");
-            properties.stun_chance = result->getDouble("stun_chance");
-            properties.intimidate_chance = result->getDouble("intimidate_chance");
-            properties.posture_down_chance = result->getDouble("posture_down_chance");
-            properties.extended_range = result->getDouble("extended_range");
-            properties.cone_angle = result->getDouble("cone_angle");
+            properties.health_hit_chance = static_cast<float>(result->getDouble("health_hit_chance"));
+            properties.action_hit_chance = static_cast<float>(result->getDouble("action_hit_chance"));
+            properties.mind_hit_chance = static_cast<float>(result->getDouble("mind_hit_chance"));
+            properties.knockdown_hit_chance = static_cast<float>(result->getDouble("knockdown_chance"));
+            properties.dizzy_hit_chance = static_cast<float>(result->getDouble("dizzy_chance"));
+            properties.blind_chance = static_cast<float>(result->getDouble("blind_chance"));
+            properties.stun_chance = static_cast<float>(result->getDouble("stun_chance"));
+            properties.intimidate_chance = static_cast<float>(result->getDouble("intimidate_chance"));
+            properties.posture_down_chance = static_cast<float>(result->getDouble("posture_down_chance"));
+            properties.extended_range = static_cast<float>(result->getDouble("extended_range"));
+            properties.cone_angle = static_cast<float>(result->getDouble("cone_angle"));
             properties.deny_in_locomotion = result->getUInt64("deny_in_locomotion");
             
             command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));

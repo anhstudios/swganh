@@ -1,5 +1,5 @@
 
-#include "plugins/phpbb_auth/phpbb_account_provider.h"
+#include "smf_account_provider.h"
 
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
@@ -11,11 +11,11 @@
 #include <boost/log/trivial.hpp>
 
 using namespace anh::database;
-using namespace plugins::phpbb_auth;
+using namespace plugins::smf_auth;
 using namespace std;
 using namespace swganh::login;
 
-PhpbbAccountProvider::PhpbbAccountProvider(
+SmfAccountProvider::SmfAccountProvider(
     DatabaseManagerInterface* database_manager,
     string table_prefix)
     : MysqlAccountProvider(database_manager)
@@ -23,14 +23,14 @@ PhpbbAccountProvider::PhpbbAccountProvider(
     , table_prefix_(table_prefix)
 {}
 
-shared_ptr<Account> PhpbbAccountProvider::FindByUsername(string username)
+shared_ptr<Account> SmfAccountProvider::FindByUsername(string username)
 {
     shared_ptr<Account> account = nullptr;
 
     try 
     {
-        string sql = "select user_id, username, user_password, user_form_salt, group_id from " + table_prefix_ + "users where username = ?";
-        auto conn = database_manager_->getConnection("phpbb");
+        string sql = "select id_member, member_name, passwd, id_group from " + table_prefix_ + "members where member_name = ?";
+        auto conn = database_manager_->getConnection("smf");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
@@ -39,13 +39,13 @@ shared_ptr<Account> PhpbbAccountProvider::FindByUsername(string username)
         {
             account = make_shared<Account>(true);
 
-            account->account_id(result_set->getInt("user_id"));
-            account->username(result_set->getString("username"));
-            account->password(result_set->getString("user_password"));
-            account->salt(result_set->getString("user_form_salt"));
+            account->account_id(result_set->getInt("id_member"));
+            account->username(result_set->getString("member_name"));
+            account->password(result_set->getString("passwd"));
+            account->salt(result_set->getString("member_name"));
 
-            uint32_t group_id = result_set->getInt("group_id");
-            if (group_id == 5 || group_id == 2) {
+            uint32_t group_id = result_set->getInt("id_group");
+            if (group_id != 0) {
                 account->Enable();
             } else {
                 account->Disable();
@@ -66,7 +66,7 @@ shared_ptr<Account> PhpbbAccountProvider::FindByUsername(string username)
     return account;
 }
 
-bool PhpbbAccountProvider::AutoRegisterAccount(
+bool SmfAccountProvider::AutoRegisterAccount(
     std::string username, 
     std::string password)
 {
