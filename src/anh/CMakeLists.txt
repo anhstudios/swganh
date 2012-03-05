@@ -14,6 +14,7 @@ AddANHLibrary(anh
     DEBUG_LIBRARIES 
         ${Boost_LOG_LIBRARY_DEBUG}
         ${Boost_FILESYSTEM_LIBRARY_DEBUG}
+        ${Boost_PYTHON3_LIBRARY_DEBUG}
         ${Boost_SYSTEM_LIBRARY_DEBUG}
         ${Boost_THREAD_LIBRARY_DEBUG}
         ${MYSQL_LIBRARY_DEBUG}
@@ -24,6 +25,7 @@ AddANHLibrary(anh
     OPTIMIZED_LIBRARIES 
         ${Boost_LOG_LIBRARY_RELEASE}
         ${Boost_FILESYSTEM_LIBRARY_RELEASE}
+        ${Boost_PYTHON3_LIBRARY_RELEASE}
         ${Boost_SYSTEM_LIBRARY_RELEASE}
         ${Boost_THREAD_LIBRARY_RELEASE}
         ${MYSQL_LIBRARY_RELEASE}
