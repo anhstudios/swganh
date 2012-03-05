@@ -122,7 +122,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
-            session = make_shared<ConnectionClient>(endpoint, this);
+            session = make_shared<ConnectionClient>(this, kernel()->GetIoService(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
         }
     }
@@ -276,7 +276,7 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = kernel()->GetServiceDirectory()->galaxy().status();
-    client_permissions.available_character_slots = character_service()->GetMaxCharacters(account_id);
+    client_permissions.available_character_slots = static_cast<uint8_t>(character_service()->GetMaxCharacters(account_id));
     // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 

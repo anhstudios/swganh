@@ -251,7 +251,7 @@ private:
     float max_extraction_rate_;
     float current_extraction_rate_;
     float current_hopper_size_;
-    uint32_t max_hopper_size_;
+    float max_hopper_size_;
     bool is_updating_;
     std::vector<HopperItem> hopper_;
     uint8_t condition_percent_;

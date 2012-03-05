@@ -191,7 +191,7 @@ void Object::SetCustomName(wstring custom_name)
     }
 }
 
-BaselinesMessage Object::CreateBaselinesMessage(uint16_t view_type, uint16_t opcount)
+BaselinesMessage Object::CreateBaselinesMessage(uint8_t view_type, uint16_t opcount)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     BaselinesMessage message;
@@ -203,7 +203,7 @@ BaselinesMessage Object::CreateBaselinesMessage(uint16_t view_type, uint16_t opc
     return message;
 }
 
-DeltasMessage Object::CreateDeltasMessage(uint16_t view_type, uint16_t update_type, uint16_t update_count) 
+DeltasMessage Object::CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count) 
 {        
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     DeltasMessage message;

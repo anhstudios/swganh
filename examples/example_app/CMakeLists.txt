@@ -2,7 +2,7 @@ include(ANHExecutable)
 
 AddANHExecutable(example_app
     DEPENDS 
-    	libanh
+        anh_lib
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}

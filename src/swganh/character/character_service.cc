@@ -286,7 +286,8 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
             if (char_id < 1002) 
             {
                 // if we get a special character_id back it means there was an error.
-                return make_tuple(0, setCharacterCreateErrorCode_(char_id));
+                // @TODO Change this to return a separate output value for the error code
+                return make_tuple(0, setCharacterCreateErrorCode_(static_cast<uint32_t>(char_id)));
             }
             return make_tuple(char_id, "");
         }

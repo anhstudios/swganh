@@ -1,5 +1,5 @@
 
-#include "plugins/smf_auth/smf_encoder.h"
+#include "smf_encoder.h"
 
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>

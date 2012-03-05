@@ -42,9 +42,16 @@ void PlayerFactory::LoadTemplates()
         while (result->next())
         {
             auto player = make_shared<Player>();
-            player->SetPosition(glm::vec3(result->getDouble(1),result->getDouble(2), result->getDouble(3)));
-            player->SetOrientation(glm::quat(result->getDouble(4),result->getDouble(5), result->getDouble(6), result->getDouble(7)));
-            player->SetComplexity(result->getDouble(8));
+            player->SetPosition(glm::vec3(
+                static_cast<float>(result->getDouble(1)),
+                static_cast<float>(result->getDouble(2)),
+                static_cast<float>(result->getDouble(3))));
+            player->SetOrientation(glm::quat(
+                static_cast<float>(result->getDouble(4)),
+                static_cast<float>(result->getDouble(5)),
+                static_cast<float>(result->getDouble(6)),
+                static_cast<float>(result->getDouble(7))));
+            player->SetComplexity(static_cast<float>(result->getDouble(8)));
             player->SetStfName(result->getString(9), result->getString(10));
             string custom_string = result->getString(11);
             player->SetCustomName(wstring(begin(custom_string), end(custom_string)));

@@ -1,5 +1,5 @@
 
-#include "plugins/smf_auth/smf_session_provider.h"
+#include "smf_session_provider.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -69,7 +69,7 @@ uint64_t SmfSessionProvider::FindPlayerByReferenceId_(uint64_t account_id)
         string sql = "select id from player_account where reference_id = ?";
         auto conn = database_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-        statement->setUInt(1, account_id);
+        statement->setUInt64(1, account_id);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {

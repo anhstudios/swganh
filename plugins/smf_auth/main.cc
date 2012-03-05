@@ -11,9 +11,9 @@
 #include "anh/plugin/bindings.h"
 #include "anh/plugin/plugin_manager.h"
 
-#include "plugins/smf_auth/smf_account_provider.h"
-#include "plugins/smf_auth/smf_encoder.h"
-#include "plugins/smf_auth/smf_session_provider.h"
+#include "smf_account_provider.h"
+#include "smf_encoder.h"
+#include "smf_session_provider.h"
 
 using namespace anh::app;
 using namespace anh::plugin;

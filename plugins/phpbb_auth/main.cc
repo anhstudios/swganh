@@ -11,9 +11,9 @@
 #include "anh/plugin/bindings.h"
 #include "anh/plugin/plugin_manager.h"
 
-#include "plugins/phpbb_auth/phpbb_account_provider.h"
-#include "plugins/phpbb_auth/phpbb_encoder.h"
-#include "plugins/phpbb_auth/phpbb_session_provider.h"
+#include "phpbb_account_provider.h"
+#include "phpbb_encoder.h"
+#include "phpbb_session_provider.h"
 
 using namespace anh::app;
 using namespace anh::plugin;

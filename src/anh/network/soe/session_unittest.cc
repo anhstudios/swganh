@@ -60,7 +60,8 @@ protected:
 /// This test verifies that new sessions have a send sequence of 0
 TEST_F(SessionTests, NewSessionHasZeroSendSequence) {
     auto service = buildMockServer();
-    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
+    boost::asio::io_service io_service;
+    shared_ptr<Session> session = make_shared<Session>(service.get(), io_service, buildTestEndpoint());
 
     EXPECT_EQ(0, session->server_sequence());
 }
@@ -68,7 +69,8 @@ TEST_F(SessionTests, NewSessionHasZeroSendSequence) {
 /// This test verifies that data packets sent out on the data channel are sequenced.
 TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
     auto service = buildMockServer();
-    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
+    boost::asio::io_service io_service;
+    shared_ptr<Session> session = make_shared<Session>(service.get(), io_service, buildTestEndpoint());
 
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
     for (int i = 1; i <= 3; ++i ) {
@@ -81,7 +83,8 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
 /// This test verifies that data channel messages are stored in case they need to be re-sent.
 TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
     auto service = buildMockServer();
-    shared_ptr<Session> session = make_shared<Session>(buildTestEndpoint(), service.get());
+    boost::asio::io_service io_service;
+    shared_ptr<Session> session = make_shared<Session>(service.get(), io_service, buildTestEndpoint());
 
     // Send 3 data channel messages.
     for (int i = 1; i <= 3; ++i ) {
@@ -148,8 +151,12 @@ udp::endpoint SessionTests::buildTestEndpoint() const {
 
 shared_ptr<NiceMock<MockServer>> SessionTests::buildMockServer() const {
     auto server = make_shared<NiceMock<MockServer>>();
+    
     ON_CALL(*server, AllocateBuffer())
         .WillByDefault(Return(make_shared<ByteBuffer>()));
+    
+    ON_CALL(*server, max_receive_size())
+        .WillByDefault(Return(496));
 
     return server;
 }

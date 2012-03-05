@@ -25,7 +25,7 @@ public:
         DISCONNECTING
     };
     
-    ConnectionClient(boost::asio::ip::udp::endpoint remote_endpoint, anh::network::soe::ServerInterface* server);
+    ConnectionClient(anh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
     
     State GetState() const;
 

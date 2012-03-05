@@ -2,8 +2,8 @@ include(ANHModule)
 
 AddANHModule(example_module
     DEPENDS 
-        libanh  
-        libexample_app
+        anh_lib
+        example_app_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${MYSQL_INCLUDE_DIR}

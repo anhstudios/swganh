@@ -38,7 +38,10 @@ void WaypointFactory::LoadTemplates()
             auto waypoint = make_shared<Waypoint>();
             // position orientation not used in waypoints
             
-            waypoint->SetCoordinates(result->getDouble("coord_x"),result->getDouble("coord_y"),result->getDouble("coord_z"));
+            waypoint->SetCoordinates(
+                static_cast<int16_t>(result->getDouble("coord_x")),
+                static_cast<int16_t>(result->getDouble("coord_y")),
+                static_cast<int16_t>(result->getDouble("coord_z")));
             waypoint->activated_flag_ = result->getUInt("active");
 
             waypoint->planet_name_ = result->getString("planet");

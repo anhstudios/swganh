@@ -28,8 +28,8 @@ namespace command {
         uint32_t action_cost_multiplier;
         uint32_t mind_cost;
         uint32_t mind_cost_multiplier;
-        uint32_t damage_multiplier;
-        uint32_t delay_multiplier;
+        float damage_multiplier;
+        float delay_multiplier;
         uint32_t force_cost;
         uint32_t force_cost_multiplier;
         uint32_t animation_crc;

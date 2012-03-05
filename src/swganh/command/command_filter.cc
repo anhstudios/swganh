@@ -74,7 +74,9 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(
 	bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
-	uint32_t current_state = actor->GetStateBitmask();
+
+    // @TODO This is not the correct way to get a state out of the bitmask, revisit later.
+	uint32_t current_state = static_cast<uint32_t>(actor->GetStateBitmask());
 	if (command_properties.deny_in_states == 0 ||
         (current_state & command_properties.deny_in_states) != command_properties.deny_in_states)
 	{
@@ -97,7 +99,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
-	uint32_t current_state = actor->GetStateBitmask();
+	uint32_t current_state = static_cast<uint32_t>(actor->GetStateBitmask());
 	// check to see if this command requires an ability
 	if (command_properties.ability.length() > 0)
 	{
