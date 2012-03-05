@@ -1,6 +1,6 @@
 include(ANHLibrary)
 
-AddANHLibrary(libanh
+AddANHLibrary(anh
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}

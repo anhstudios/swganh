@@ -2,8 +2,8 @@ include(ANHPlugin)
 
 AddANHPlugin(phpbb_auth
     DEPENDS
-        libanh
-        libswganh
+        anh_lib
+        swganh_lib
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}

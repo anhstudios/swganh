@@ -89,14 +89,16 @@ FUNCTION(AddANHExecutable name)
         ENDIF()      
     ENDFOREACH()
     
+    list(REMOVE_ITEM SOURCES ${BINDINGS})
+    
     # if unit tests have been specified break out the project into a library to make it testable
     LIST(LENGTH SOURCES _sources_list_length)    
     IF(_sources_list_length GREATER 1)        
-        SET(__project_library "lib${name}")
+        SET(__project_library "${name}_lib")
         
         list(REMOVE_ITEM SOURCES ${MAIN_EXISTS})
-    
-        AddANHLibrary(${__project_library}
+        
+        AddANHLibrary(${name}
             DEPENDS
                 ${ANHEXE_DEPENDS}
             SOURCES
@@ -114,17 +116,17 @@ FUNCTION(AddANHExecutable name)
             OPTIMIZED_LIBRARIES
                 ${ANHEXE_OPTIMIZED_LIBRARIES}
         )
-    
-        list(APPEND ANHEXE_DEPENDS ${__project_library})
+        
         set(SOURCES ${MAIN_EXISTS})
+        list(APPEND ANHEXE_DEPENDS ${__project_library})
     ENDIF()
         
     # if python bindings have been specified generate a module
     LIST(LENGTH BINDINGS _bindings_list_length)
-    IF(_bindings_list_length GREATER 0)
-        list(REMOVE_ITEM SOURCES ${BINDINGS})
+    IF(_bindings_list_length GREATER 0)    
+        set(__project_binding_library "${name}_binding")
         
-        AddANHPythonBinding(${name}_binding
+        AddANHPythonBinding(${name}
             DEPENDS
                 ${ANHEXE_DEPENDS}
             SOURCES
@@ -138,6 +140,8 @@ FUNCTION(AddANHExecutable name)
             OPTIMIZED_LIBRARIES
                 ${ANHEXE_OPTIMIZED_LIBRARIES}
         )
+        
+        list(APPEND ANHEXE_DEPENDS ${__project_binding_library})
     ENDIF()
     
     IF(_includes_list_length GREATER 0)
