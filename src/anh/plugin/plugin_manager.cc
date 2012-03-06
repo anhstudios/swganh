@@ -5,8 +5,6 @@
 #include <fstream>
 #include <iostream>
 
-#define BOOST_FILESYSTEM_VERSION 3
-
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
