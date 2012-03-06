@@ -40,8 +40,8 @@ struct ClientIdMsg : public swganh::messages::BaseSwgMessage<ClientIdMsg> {
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-        int temp = buffer.read<uint32_t>();
-        int size = buffer.read<uint32_t>();
+        buffer.read<uint32_t>();  // unknown
+        buffer.read<uint32_t>();  // size @TODO Investigate if this is proper usage.
         session_hash = buffer.read<std::string>();
     }
 };
