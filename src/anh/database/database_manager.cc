@@ -106,7 +106,14 @@ public:
 
     bool hasConnection(const StorageType& storage_type) const {
         // return whether or not the connection pool for this storage type is empty
-        return connections_.find(storage_type) != connections_.end();
+        auto find_iter = connections_.find(storage_type);
+
+        if (find_iter != end(connections_))
+        {
+            return !find_iter->second.empty();
+        }
+
+        return false;
     }
 
     std::shared_ptr<sql::Connection> getConnection(const StorageType& storage_type) 

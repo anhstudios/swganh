@@ -36,7 +36,7 @@ void exportQuat();
 void exportSWGANHKernel();
 void exportCombatService();
 
-BOOST_PYTHON_MODULE(swganh_binding) {
+BOOST_PYTHON_MODULE(py_swganh) {
 	docstring_options local_docstring_options(true, true, false);
 
     exportObject();

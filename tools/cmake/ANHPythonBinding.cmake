@@ -60,6 +60,9 @@ INCLUDE(CMakeMacroParseArguments)
 FUNCTION(AddANHPythonBinding name)
     PARSE_ARGUMENTS(ANHPYTHONLIB "DEPENDS;SOURCES;ADDITIONAL_LIBRARY_DIRS;ADDITIONAL_INCLUDE_DIRS;ADDITIONAL_SOURCE_DIRS;DEBUG_LIBRARIES;OPTIMIZED_LIBRARIES" "" ${ARGN})
     
+    set(base_name ${name})
+    set(name ${name}_binding)
+    
     LIST(LENGTH ANHPYTHONLIB_SOURCES __source_files_list_length)
     LIST(LENGTH ANHPYTHONLIB_DEBUG_LIBRARIES _debug_list_length)
     LIST(LENGTH ANHPYTHONLIB_OPTIMIZED_LIBRARIES _optimized_list_length)
@@ -102,6 +105,8 @@ FUNCTION(AddANHPythonBinding name)
 	    
     # Create the Common library
     ADD_LIBRARY(${name} SHARED ${ANHPYTHONLIB_SOURCES})    
+    SET_TARGET_PROPERTIES(${name}
+        PROPERTIES OUTPUT_NAME py_${base_name})  
     
     IF(_project_deps_list_length GREATER 0)
         ADD_DEPENDENCIES(${name} ${ANHPYTHONLIB_DEPENDS})

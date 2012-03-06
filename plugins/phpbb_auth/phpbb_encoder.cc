@@ -1,9 +1,9 @@
 
-#include "plugins/phpbb_auth/phpbb_encoder.h"
+#include "phpbb_encoder.h"
 
 #include <cmath>
 
-#include "plugins/phpbb_auth/md5.h"
+#include "md5.h"
 
 using namespace plugins::phpbb_auth;
 using namespace std;
