@@ -75,6 +75,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -pedantic-errors")
         message(STATUS "- Treating all warnings as errors")
     endif()
+
+    set(AdditionalBoostLibs chrono)
 endif()
 
 if(MSVC)
@@ -129,7 +131,7 @@ if (NOT WIN32)
     find_package(TBB REQUIRED)
 endif()
 
-find_package(Boost 1.49.0 COMPONENTS date_time filesystem log program_options python3 regex system thread REQUIRED)
+find_package(Boost 1.49.0 COMPONENTS date_time filesystem log program_options python3 regex system thread ${AdditionalBoostLibs} REQUIRED)
 find_package(Glm REQUIRED)
 find_package(GTest REQUIRED)
 find_package(GMock REQUIRED)
