@@ -16,7 +16,7 @@ namespace swganh {
 namespace app {
 
 /*!
- * \Brief Contains information about the app config"
+ * @Brief Contains information about the app config"
  */
 struct AppConfig {
 	std::string server_mode;
@@ -25,7 +25,7 @@ struct AppConfig {
     std::string galaxy_name;
 
     /*!
-    * \Brief Contains information about the database config"
+    * @Brief Contains information about the database config"
     */
     struct DatabaseConfig {
         std::string host;
@@ -35,7 +35,7 @@ struct AppConfig {
     } galaxy_manager_db, galaxy_db;
 
     /*!
-    * \Brief Contains information about the Login config"
+    * @Brief Contains information about the Login config"
      */
     struct LoginConfig {
         std::string listen_address;
@@ -45,7 +45,7 @@ struct AppConfig {
         bool login_auto_registration;
     } login_config;
     /*!
-    * \Brief Contains information about the app config"
+    * @Brief Contains information about the app config"
     */
     struct ConnectionConfig {
         std::string listen_address;

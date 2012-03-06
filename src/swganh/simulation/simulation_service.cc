@@ -295,7 +295,7 @@ public:
             object = LoadObjectById(message.character_id, creature::Creature::type);
         }
 
-        // @TODO REFACTOR Move this functionality out to a PlayerService
+        /// @TODO REFACTOR Move this functionality out to a PlayerService
         auto contained = object->GetContainedObjects();
         
         for_each(
@@ -310,7 +310,7 @@ public:
                 player->RemoveStatusFlag(player::LD);
             }
         });
-        // END TODO
+        // END todo
 
         StartControllingObject(object, client);
 

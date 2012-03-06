@@ -60,7 +60,7 @@ void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentTyp
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
     {
-        // @TODO consider whether encountering this scenario is an error
+        /// @TODO consider whether encountering this scenario is an error
         return;
     }
 
@@ -86,7 +86,7 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 
     if (find_iter == contained_objects_.end())
     {
-        // @TODO consider whether encountering this scenario is an error
+        /// @TODO consider whether encountering this scenario is an error
         return;
     }
 
@@ -109,7 +109,7 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     if (aware_objects_.find(object->GetObjectId()) != aware_objects_.end())
     {
-        // @TODO consider whether encountering this scenario is an error
+        /// @TODO consider whether encountering this scenario is an error
 		// someone could be logging back in and we want to make them aware again, so we'll send clean baselines.
 		if (object->HasController()) {
 			MakeClean(object->GetController());
@@ -138,7 +138,7 @@ void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 
     if (find_iter == aware_objects_.end())
     {
-        // @TODO consider whether encountering this scenario is an error
+        /// @TODO consider whether encountering this scenario is an error
         return;
     }
 

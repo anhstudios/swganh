@@ -133,7 +133,7 @@ void PluginManager::ConfigurePlugin(std::string plugin_name, ConfigFunc config_f
 
 bool PluginManager::InitializePlugin(InitFunc init_func) {
     if (!init_func) {
-        false;
+        return false;
     }
 
     ExitFunc exit_func = init_func(kernel_);

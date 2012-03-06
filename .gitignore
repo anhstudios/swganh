@@ -16,3 +16,4 @@ data/sql/setup.cfg
 .settings
 
 data/docs/generated
+data/docs/doxygen

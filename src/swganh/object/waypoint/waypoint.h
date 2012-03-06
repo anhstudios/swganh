@@ -16,8 +16,7 @@ enum WaypointStatus
 };
 
 /**
-*  @brief Object that defines the data in a Waypoint
-*  @inherits Object
+* @brief Object that defines the data in a Waypoint
 */
 class Waypoint : public swganh::object::Object {
 
@@ -30,24 +29,24 @@ public:
     Waypoint(glm::vec3 coordinates, bool activated, const std::string& planet, const std::wstring& name, const std::string& color);
 
     /**
-    *   @brief Waypoints do not have uses
+    * @brief Waypoints do not have uses
     */
     uint32_t GetUses();
     void SetUses(uint32_t uses);
 
     /**
-    *   @brief gets the glm::vec3 coordinates of the waypoint
+    * @brief gets the glm::vec3 coordinates of the waypoint
     *
     *   @returns glm::vec3 coordinates
     */
     glm::vec3 GetCoordinates() ;
     /**
-    *   @brief sets the glm::vec3 coordinates of the waypoint
+    * @brief sets the glm::vec3 coordinates of the waypoint
     *   @param coords referenced glm::vec3 object
     */
     void SetCoordinates(const glm::vec3& coords);
     /**
-    *   @brief sets the coordinates of the waypoint
+    * @brief sets the coordinates of the waypoint
     *   @param float x, x coordinate
     *   @param float y, y coordinate
     *   @param float z, z coordinate
@@ -55,70 +54,70 @@ public:
     void SetCoordinates(float x, float y, float z);
 
     /**
-    *   @brief checks if the waypoint is activated
+    * @brief checks if the waypoint is activated
     *   @returns true if the waypoint is activated
     */
     bool Active() const { return activated_flag_ == 1; }
     /**
-    *   @brief checks if the waypoint is activated
+    * @brief checks if the waypoint is activated
     *   @returns 0 if the waypoint is activated, 1 else
     */
     uint8_t GetActiveFlag() { return activated_flag_; }
     /**
-    *   @brief sets the current waypoint to Activated
+    * @brief sets the current waypoint to Activated
     */
     void Activate();
     /**
-    *   @brief sets the current waypoint to DeActivated
+    * @brief sets the current waypoint to DeActivated
     */
     void DeActivate();
 
     /**
-    *   @brief Gets the string of the planet name as seen in the CRC Tables
+    * @brief Gets the string of the planet name as seen in the CRC Tables
     *   @returns string of the planet the waypoint is located
     */
     const std::string& GetPlanet() { return planet_name_; }
     /**
-    *   @brief sets the current waypoint's planet
+    * @brief sets the current waypoint's planet
     *   @param planet_name the planet to set the string to
     */
     void SetPlanet(const std::string& planet_name);
 
     /**
-    *   @brief gets the waypoint's Unicode name
+    * @brief gets the waypoint's Unicode name
     *   @returns name of the waypoint in Unicode
     */
     const std::wstring& GetName() { return name_; }
     std::string GetNameStandard() { return std::string(std::begin(name_), std::end(name_)); }
     /**
-    *   @brief sets the waypoint's Unicode name
+    * @brief sets the waypoint's Unicode name
     *   @param name of the waypoint in Unicode
     */
     void SetName(const std::wstring& name);
 
     /**
-    *   @brief gets the waypoint's current color
+    * @brief gets the waypoint's current color
     *
     *   Possible Options: green,purple,white,blue,yellow,orange,space
     *   @returns color of the waypoint
     */
     const std::string& GetColor() { return color_; }
     /**
-    *   @brief gets the waypoint's current color as a Byte
+    * @brief gets the waypoint's current color as a Byte
     *
     *   Possible Options: 1 - blue,2 - green,3 - orange,4 - yellow,5 - purple/red,6 - white,7 - JTL
     *   @returns Byte color of the waypoint
     */
     uint8_t GetColorByte();
     /**
-    *   @brief sets the waypoint's color
+    * @brief sets the waypoint's color
     *
     *   Possible Options: green,purple,white,blue,yellow,orange,space
     *   @param color of the waypoint
     */
     void SetColor(const std::string& color);
     /**
-    *   @brief sets the waypoint's color byte
+    * @brief sets the waypoint's color byte
     *
     *   Possible Options: 1 - blue,2 - green,3 - orange,4 - yellow,5 - purple/red,6 - white,7 - JTL
     *   @param color_byte to set the waypoint
