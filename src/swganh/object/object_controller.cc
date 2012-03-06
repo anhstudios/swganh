@@ -12,10 +12,9 @@
 #include <boost/regex.hpp>
     using boost::regex;
     using boost::regex_search;
+    using boost::smatch;
 #else
     #include <regex>
-    using std::regex;
-    using std::regex_search;
 #endif
 
 using namespace std;
