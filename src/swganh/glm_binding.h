@@ -40,7 +40,7 @@ void exportVec3()
 		.def_readwrite("y", &Vec3Wrapper::y, "the y coordinate")
 		.def_readwrite("z", &Vec3Wrapper::z, "the z coordinate")
 		;
-};
+}
 
 struct QuatWrapper: glm::quat, wrapper<glm::detail::tquat<float>>
 {
@@ -54,6 +54,6 @@ void exportQuat()
 		.def_readwrite("z", &QuatWrapper::z, "the z coordinate")
 		.def_readwrite("w", &QuatWrapper::w, "the w coordinate")
 		;
-};
+}
 
 #endif //  SWGANH_GLM_BINDING_H_

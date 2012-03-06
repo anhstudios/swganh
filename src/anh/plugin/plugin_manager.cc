@@ -5,8 +5,6 @@
 #include <fstream>
 #include <iostream>
 
-#define BOOST_FILESYSTEM_VERSION 3
-
 #include <boost/filesystem.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/program_options.hpp>
@@ -46,8 +44,11 @@ PluginManager::PluginManager(KernelInterface* kernel)
 }
 
 PluginManager::~PluginManager() {    
-    auto end = exit_funcs_.end();
-    std::for_each(exit_funcs_.begin(), exit_funcs_.end(), [] (ExitFunc exit_func) {
+    std::for_each(
+        begin(exit_funcs_), 
+        end(exit_funcs_), 
+        [] (ExitFunc exit_func) 
+    {
         try {
             (*exit_func)();
         } catch(...) {
@@ -133,7 +134,7 @@ void PluginManager::ConfigurePlugin(std::string plugin_name, ConfigFunc config_f
 
 bool PluginManager::InitializePlugin(InitFunc init_func) {
     if (!init_func) {
-        false;
+        return false;
     }
 
     ExitFunc exit_func = init_func(kernel_);

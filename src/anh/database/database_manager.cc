@@ -30,8 +30,19 @@
 #include <cppconn/connection.h>
 #include <cppconn/prepared_statement.h>
 
+#ifdef WIN32
 #include <concurrent_unordered_map.h>
 #include <concurrent_queue.h>
+#else
+#include <tbb/concurrent_unordered_map.h>
+#include <tbb/concurrent_queue.h>
+
+namespace Concurrency {
+    using ::tbb::concurrent_unordered_map;
+    using ::tbb::concurrent_queue;
+}
+
+#endif
 
 using namespace anh::database;
 using namespace std;
