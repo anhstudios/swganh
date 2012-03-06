@@ -8,6 +8,6 @@ Creature
 .. toctree::
 	CreatureEnums
 		
-.. automodule:: swganh_binding
+.. automodule:: py_swganh
 .. autoclass:: Creature
 	:members:
