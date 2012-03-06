@@ -23,7 +23,7 @@ namespace scripting {
 	        try{
 				globals_[key.c_str()] = value;
             } 
-            catch (error_already_set &) 
+            catch (boost::python::error_already_set &) 
             {
                 PyErr_Print();
             }   
