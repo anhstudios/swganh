@@ -9,10 +9,20 @@
 
 #include <boost/noncopyable.hpp>
 
+#ifdef WIN32
 #include <concurrent_unordered_map.h>
+#else
+#include <tbb/concurrent_unordered_map.h>
+
+namespace Concurrency {
+    using ::tbb::concurrent_unordered_map;
+}
+
+#endif
 
 #include "anh/observer/observer_interface.h"
 #include "swganh/messages/obj_controller_message.h"
+#include "swganh/messages/controllers/show_fly_text.h"
 
 namespace swganh {
 namespace connection {
@@ -22,9 +32,6 @@ namespace connection {
 namespace swganh {
 namespace messages {
     class OutOfBand;
-namespace controllers{
-    enum FlyTextColor;
-}
 }}
 
 namespace swganh {

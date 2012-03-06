@@ -75,8 +75,6 @@ ServiceDescription ConnectionService::GetServiceDescription() {
 }
 
 void ConnectionService::subscribe() {
-    auto event_dispatcher = kernel()->GetEventDispatcher();
-     
     RegisterMessageHandler(&ConnectionService::HandleClientIdMsg_, this);
     RegisterMessageHandler(&ConnectionService::HandleCmdSceneReady_, this);
 }

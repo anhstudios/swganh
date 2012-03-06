@@ -74,23 +74,29 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
         return new SmfEncoder(kernel->GetDatabaseManager());
     };
-
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
-            delete object;
-        }
-    };
-
+    
     kernel->GetPluginManager()->RegisterObject("LoginService::Encoder", &registration);
     
     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
         return new SmfAccountProvider(kernel->GetDatabaseManager(), config.table_prefix);
     };
     
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete static_cast<SmfAccountProvider*>(object);
+        }
+    };
+    
     kernel->GetPluginManager()->RegisterObject("LoginService::AccountProvider", &registration);
         
     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
         return new SmfSessionProvider(kernel->GetDatabaseManager(), config.table_prefix);
+    };
+    
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete static_cast<SmfSessionProvider*>(object);
+        }
     };
     
     kernel->GetPluginManager()->RegisterObject("ConnectionService::SessionProvider", &registration);

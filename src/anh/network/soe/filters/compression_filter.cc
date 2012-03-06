@@ -48,7 +48,6 @@ void CompressionFilter::Compress_(const shared_ptr<ByteBuffer>& message)
 {
     vector<uint8_t>& packet_data = message->raw();
     uint32_t packet_size = message->size();
-    uint32_t compressed_size = 0;
 
     // Determine the offset to begin compressing data at
     uint16_t offset = (packet_data[0] == 0x00) ? 2 : 1;

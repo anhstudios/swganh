@@ -50,13 +50,13 @@ void exportObjectController()
     bool (ObjectController::*SendSystemMessageString)(const std::wstring&, bool, bool) = &ObjectController::SendSystemMessage;
 
     void (ObjectController::*SendFlyText)(const std::string&, controllers::FlyTextColor) = &ObjectController::SendFlyText;
-
-    class_<ObjectControllerWrapper, std::shared_ptr<ObjectController>, boost::noncopyable>("ObjectController", "Object that describes the Controller of an object", no_init)
+    typedef void (ObjectController::*NotifyFunc)(const anh::ByteBuffer& message);
+    class_<ObjectController, std::shared_ptr<ObjectController>, boost::noncopyable>("ObjectController", "Object that describes the Controller of an object", no_init)
         .def("SendSystemMessage", SendSystemMessageOutOfBand, "Sends the specified system message to the player with an :class:`.OutOfBand` object attached")
         .def("SendSystemMessage", SendSystemMessageString, "Sends System Message to the player, taking a string as the message and boolean for chatbox only and another boolean to send to in range")
         .def("SendSystemMessage", SendSystemMessageStr, "Sends System Message to the player, taking a string as the message")
         .def("SendFlyText", SendFlyText, "Sends Fly Text to the player, see :class:`.FlyTextColor`")
-        .def("Notify", &ObjectControllerWrapper::Notify, "Notifies the controller whent he object has been updated")
+        .def("Notify", NotifyFunc(&ObjectController::Notify), "Notifies the controller whent he object has been updated")
     ;
 }
 

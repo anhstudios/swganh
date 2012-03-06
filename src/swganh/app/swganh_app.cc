@@ -228,8 +228,6 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
     BOOST_LOG_TRIVIAL(info) << "Loading plugins";
 
-    auto plugin_manager = kernel_->GetPluginManager();
-
     if (!plugins.empty()) {
         auto plugin_manager = kernel_->GetPluginManager();
 

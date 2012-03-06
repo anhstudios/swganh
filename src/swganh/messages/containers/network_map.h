@@ -43,13 +43,13 @@ public:
     typedef typename std::map<I, T>::iterator iterator;
     
     NetworkMap()
-        : items_(std::map<I, T>())
+        : update_counter_(0)
+        , items_(std::map<I, T>())
         , items_added_(std::list<I>())
         , items_removed_(std::list<T>())
         , items_changed_(std::list<I>())
-        , reinstall_(false)
         , clear_(false)
-        , update_counter_(0)
+        , reinstall_(false)
     {}
 
     ~NetworkMap()

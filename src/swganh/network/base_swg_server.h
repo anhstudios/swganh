@@ -8,7 +8,16 @@
 #include <map>
 #include <memory>
 
+#ifdef WIN32
 #include <concurrent_unordered_map.h>
+#else
+#include <tbb/concurrent_unordered_map.h>
+
+namespace Concurrency {
+    using ::tbb::concurrent_unordered_map;
+}
+
+#endif
 
 #include "anh/hash_string.h"
 #include "anh/network/soe/server.h"
@@ -59,7 +68,7 @@ namespace network {
         void RegisterMessageHandler(
             typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType&& handler)
         {
-            auto shared_handler = make_shared<typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType>(move(handler));
+            auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType>(move(handler));
 
             auto wrapped_handler = [this, shared_handler] (
                 std::shared_ptr<anh::network::soe::Session> client, 
@@ -68,7 +77,7 @@ namespace network {
                 MessageType tmp;
                 tmp.deserialize(*message);
 
-                (*shared_handler)(static_pointer_cast<ConnectionType>(client), std::move(tmp));
+                (*shared_handler)(std::static_pointer_cast<ConnectionType>(client), std::move(tmp));
             };
 
             RegisterMessageHandler(MessageType::opcode(), move(wrapped_handler));

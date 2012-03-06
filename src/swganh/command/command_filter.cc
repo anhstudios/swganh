@@ -99,7 +99,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
-	uint32_t current_state = static_cast<uint32_t>(actor->GetStateBitmask());
+	//uint32_t current_state = static_cast<uint32_t>(actor->GetStateBitmask());
 	// check to see if this command requires an ability
 	if (command_properties.ability.length() > 0)
 	{

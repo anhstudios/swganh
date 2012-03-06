@@ -248,10 +248,10 @@ struct EquipmentItem
     }
 
     EquipmentItem(uint64_t object_id_, uint32_t template_crc_ = 0, std::string customization_ = std::string(""), uint32_t containment_type_ = 4)
-        : object_id(object_id_)
-        , template_crc(template_crc_)
-        , customization(customization_)
+        : customization(customization_)
         , containment_type(containment_type_)
+        , object_id(object_id_)
+        , template_crc(template_crc_)
     {
     }
 

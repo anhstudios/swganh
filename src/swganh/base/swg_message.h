@@ -39,7 +39,7 @@ struct SwgMessage {
     }
     
     void deserialize(anh::ByteBuffer buffer) {
-        uint16_t opcount = anh::littleToHost(buffer.read<uint16_t>());
+        anh::littleToHost(buffer.read<uint16_t>());  // opcount
         uint32_t opcode = buffer.read<uint32_t>();
 
         if (opcode != T::opcode()) {

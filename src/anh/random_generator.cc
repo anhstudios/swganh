@@ -4,14 +4,14 @@ using namespace anh;
 using namespace boost::random;
 
 RandomGenerator::RandomGenerator(uniform_int_distribution<> distribution)
-    : distribution_(distribution)
-    , generator()
+    : generator()
+    , distribution_(distribution)    
 {
 }
 
 RandomGenerator::RandomGenerator(int start, int end)
-    : distribution_(uniform_int_distribution<>(start, end))
-    , generator()
+    : generator()
+    , distribution_(uniform_int_distribution<>(start, end))
 {
 }
 

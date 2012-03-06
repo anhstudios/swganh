@@ -4,7 +4,16 @@
 
 #include <memory>
 
+#ifdef WIN32
 #include <concurrent_unordered_map.h>
+#else
+#include <tbb/concurrent_unordered_map.h>
+
+namespace Concurrency {
+    using ::tbb::concurrent_unordered_map;
+}
+
+#endif
 
 #include "swganh/messages/obj_controller_message.h"
 

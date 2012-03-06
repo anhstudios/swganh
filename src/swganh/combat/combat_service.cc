@@ -149,7 +149,7 @@ bool CombatService::InitiateCombat(
     // Check if mounted
 
     // Check if target can be attacked
-    if (creature_target != nullptr  && creature_target->IsDead() || creature_target->IsIncapacitated())
+    if (creature_target != nullptr  && (creature_target->IsDead() || creature_target->IsIncapacitated()))
         return false;
     if (!attacker->CanAttack(creature_target.get()))
         return false;
@@ -192,7 +192,7 @@ void CombatService::SendCombatAction(
         // Combat Spam
         // Check for AOE 
         // if ! AOE
-        int damage = SingleTargetCombatAction(attacker, target, combat_data);
+        /*int damage = */SingleTargetCombatAction(attacker, target, combat_data);
         // Apply Special Attack Cost
 
         // Send Message
@@ -307,7 +307,7 @@ uint16_t CombatService::GetHitResult(
     const shared_ptr<Creature>& defender, 
     int damage, int accuracy_bonus)
 {
-    int hit_outcome = 0;
+//    int hit_outcome = 0;
     // Get Weapon Attack Type
     float weapon_accuracy = 15.0f;
     // Get Weapon Accuracy Mods
@@ -570,7 +570,7 @@ void CombatService::SendCombatActionMessage(
     string animation)
 {
         CombatActionMessage cam;
-        if (command_property.animation_crc == 0 && animation.length() == 0)
+        if ((uint32_t)command_property.animation_crc == 0 && animation.length() == 0)
             cam.action_crc = CombatData::DefaultAttacks[generator_.Rand(0, 9)];
         else
         {
