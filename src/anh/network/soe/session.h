@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -50,10 +50,6 @@ namespace Concurrency {
 #include "anh/network/soe/filters/encryption_filter.h"
 #include "anh/network/soe/filters/security_filter.h"
 
-#ifdef SendMessage
-#undef SendMessage
-#endif
-
 namespace anh {
 
 // FORWARD DECLARATIONS
@@ -61,7 +57,7 @@ class ByteBuffer;
 
 namespace network {
 namespace soe {
-    
+
 /**
  * \brief An estabilished connection between a SOE Client and a SOE Service.
  */
@@ -91,7 +87,7 @@ public:
      * Set the crc length for footers
      */
     void crc_length(uint32_t crc_length);
-    
+
     /**
      * Sets the crc seed used to encrypt this session's messages.
      */
@@ -108,33 +104,33 @@ public:
      *
      * \return List of unacknowledged data channel messages.
      */
-    std::vector<std::shared_ptr<anh::ByteBuffer>> GetUnacknowledgedMessages() const;    
+    std::vector<std::shared_ptr<anh::ByteBuffer>> GetUnacknowledgedMessages() const;
 
     /**
     * Sends a data channel message to the remote client.
     *
-    * Increases the server sequence count by 1 for each individual packet sent to the 
-    * remote end. This call can result in multiple packets being generated depending on 
+    * Increases the server sequence count by 1 for each individual packet sent to the
+    * remote end. This call can result in multiple packets being generated depending on
     * the size of the payload and whether or not it needs to be fragmented.
     *
     * \param message The payload to send in the data channel message(s).
     */
-    void SendMessage(anh::ByteBuffer message);
-    
+    void SendTo(anh::ByteBuffer message);
+
     /**
     * Sends a data channel message to the remote client.
     *
-    * Increases the server sequence count by 1 for each individual packet sent to the 
-    * remote end. This call can result in multiple packets being generated depending on 
+    * Increases the server sequence count by 1 for each individual packet sent to the
+    * remote end. This call can result in multiple packets being generated depending on
     * the size of the payload and whether or not it needs to be fragmented.
     *
     * \param message The payload to send in the data channel message(s).
     */
     template<typename T>
-    void SendMessage(const T& message) {
+    void SendTo(const T& message) {
         auto message_buffer = server_->AllocateBuffer();
         message.serialize(*message_buffer);
-        
+
         outgoing_data_messages_.push(message_buffer);
     }
 
@@ -165,8 +161,8 @@ private:
 
     typedef anh::ByteBuffer(*HeaderBuilder)(uint16_t);
 
-    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message);    
-    
+    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message);
+
     virtual void OnClose() {}
 
     void handleSessionRequest_(SessionRequest& packet);
@@ -186,7 +182,7 @@ private:
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
     ServerInterface*					server_; // owner
     boost::asio::strand strand_;
-    
+
     SequencedMessageMap					sent_messages_;
 
     bool								connected_;
@@ -213,7 +209,7 @@ private:
     std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
     uint16_t							incoming_fragmented_total_len_;
     uint16_t							incoming_fragmented_curr_len_;
-    
+
     filters::CompressionFilter compression_filter_;
     filters::CrcInFilter crc_input_filter_;
     filters::CrcOutFilter crc_output_filter_;
