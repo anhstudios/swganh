@@ -4,6 +4,7 @@ build*/
 vendor/*
 swgtk/
 docs/*
+nbproject/
 
 # ignore configuration files
 data/sql/setup.cfg
@@ -16,4 +17,4 @@ data/sql/setup.cfg
 .settings
 
 data/docs/generated
-data/docs/doxygen
+/nbproject/private/

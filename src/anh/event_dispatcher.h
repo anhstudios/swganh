@@ -9,8 +9,19 @@
 #include <boost/asio/strand.hpp>
 #include <boost/thread/future.hpp>
 
+#ifdef WIN32
 #include <concurrent_unordered_map.h>
 #include <concurrent_vector.h>
+#else
+#include <tbb/concurrent_unordered_map.h>
+#include <tbb/concurrent_vector.h>
+
+namespace Concurrency {
+    using ::tbb::concurrent_unordered_map;
+    using ::tbb::concurrent_vector;
+}
+
+#endif
 
 #include "hash_string.h"
 
@@ -34,7 +45,7 @@ namespace anh {
     class EventInterface
     {
     public:
-        virtual ~EventInterface() = 0 {}
+        virtual ~EventInterface() {}
 
         virtual EventType Type() const = 0;
     };
@@ -80,7 +91,7 @@ namespace anh {
     class EventDispatcherInterface
     {
     public:
-        virtual ~EventDispatcherInterface() = 0 {}
+        virtual ~EventDispatcherInterface() {}
         
         virtual CallbackId Subscribe(EventType type, EventHandlerCallback callback) = 0;
         virtual void Unsubscribe(EventType type, CallbackId identifier) = 0;

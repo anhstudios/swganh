@@ -75,22 +75,28 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
         return new PhpbbEncoder();
     };
 
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
-            delete object;
-        }
-    };
-
     kernel->GetPluginManager()->RegisterObject("LoginService::Encoder", &registration);
     
     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
         return new PhpbbAccountProvider(kernel->GetDatabaseManager(), config.table_prefix);
+    };
+
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete static_cast<PhpbbAccountProvider*>(object);
+        }
     };
     
     kernel->GetPluginManager()->RegisterObject("LoginService::AccountProvider", &registration);
         
     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
         return new PhpbbSessionProvider(kernel->GetDatabaseManager(), config.table_prefix);
+    };
+    
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete static_cast<PhpbbSessionProvider*>(object);
+        }
     };
     
     kernel->GetPluginManager()->RegisterObject("ConnectionService::SessionProvider", &registration);

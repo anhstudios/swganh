@@ -65,7 +65,7 @@ namespace anh {
                             processing_ = false;
                         }
 
-                        Notify();
+                        this->Notify();
                     });
 
                     queue_.pop();

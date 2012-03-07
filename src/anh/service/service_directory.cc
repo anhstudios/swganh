@@ -80,9 +80,9 @@ void ServiceDirectory::updateGalaxyStatus() {
     if (services.empty()) {
         return;
     }
-    int offline_count = 0;
-    int loading_count = 0;
-    int online_count = 0;
+    uint32_t offline_count = 0;
+    uint32_t loading_count = 0;
+    uint32_t online_count = 0;
     service::Galaxy::StatusType galaxy_status;
     for_each(services.begin(), services.end(), [&] (anh::service::ServiceDescription& service) {
         if (service.status() == service::Galaxy::OFFLINE) {
