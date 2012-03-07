@@ -137,7 +137,7 @@ public:
             return find_iter->second;
             //throw swganh::object::InvalidObject("Requested object already loaded");
         }
-        
+
         auto object = object_manager_->CreateObjectFromStorage(object_id);
 
         loaded_objects_.insert(make_pair(object_id, object));
@@ -153,14 +153,14 @@ public:
             return find_iter->second;
             //throw swganh::object::InvalidObject("Requested object already loaded");
         }
-        
+
         auto object = object_manager_->CreateObjectFromStorage(object_id, type);
 
         loaded_objects_.insert(make_pair(object_id, object));
 
         return object;
     }
-    
+
     shared_ptr<Object> GetObjectById(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);
@@ -186,7 +186,7 @@ public:
     }
 
     void RemoveObject(const shared_ptr<Object>& object)
-    {        
+    {
         auto scene = scene_manager_->GetScene(object->GetSceneId());
         if (scene)
         {
@@ -196,7 +196,7 @@ public:
         StopControllingObject(object);
 
         loaded_objects_.unsafe_erase(loaded_objects_.find(object->GetObjectId()));
-        
+
         auto contained_objects = object->GetContainedObjects();
         for_each(
             begin(contained_objects),
@@ -208,22 +208,22 @@ public:
     }
 
     shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<ConnectionClient> client)
-    {    
+    {
         shared_ptr<ObjectController> controller = nullptr;
-        
+
         // If a controller already exists update it, otherwise create a new controller record.
-        auto find_iter = controlled_objects_.find(object->GetObjectId());                    
+        auto find_iter = controlled_objects_.find(object->GetObjectId());
         if (find_iter != controlled_objects_.end())
         {
             controller = find_iter->second;
             controller->SetRemoteClient(client);
         }
-        else 
+        else
         {
             controller = make_shared<ObjectController>(object, client);
             object->SetController(controller);
 
-            controlled_objects_.insert(make_pair(object->GetObjectId(), controller));            
+            controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
         }
 
         auto connection_client = std::static_pointer_cast<ConnectionClient>(client);
@@ -240,10 +240,10 @@ public:
         {
             return;
         }
-        
+
         controlled_objects_.unsafe_erase(find_iter);
     }
-        
+
     void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler)
     {
         auto find_iter = controller_handlers_.find(handler_id);
@@ -275,21 +275,21 @@ public:
         const ObjControllerMessage& message)
     {
         auto find_iter = controller_handlers_.find(message.header);
-        
+
         if (find_iter == controller_handlers_.end())
         {
             throw std::runtime_error("No handler registered to process the given message.");
         }
-        
+
         find_iter->second(client->GetController(), message);
     }
-    
+
     void HandleSelectCharacter(
-        const shared_ptr<ConnectionClient>& client, 
+        const shared_ptr<ConnectionClient>& client,
         const SelectCharacter& message)
     {
         auto object = GetObjectById(message.character_id);
-        
+
         if (!object)
         {
             object = LoadObjectById(message.character_id, creature::Creature::type);
@@ -297,7 +297,7 @@ public:
 
         /// @TODO REFACTOR Move this functionality out to a PlayerService
         auto contained = object->GetContainedObjects();
-        
+
         for_each(
             begin(contained),
             end(contained),
@@ -316,7 +316,7 @@ public:
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
 
-        if (!scene) 
+        if (!scene)
         {
             throw std::runtime_error("Invalid scene selected for object");
         }
@@ -325,12 +325,12 @@ public:
         CmdStartScene start_scene;
         start_scene.ignore_layout = 0;
         start_scene.character_id = object->GetObjectId();
-        
+
         start_scene.terrain_map = scene->GetTerrainMap();
         start_scene.position = object->GetPosition();
         start_scene.shared_race_template = object->GetTemplate();
         start_scene.galaxy_time = 0;
-        client->SendMessage(start_scene);
+        client->SendTo(start_scene);
 
         // Add object to scene and send baselines
         scene->AddObject(object);
@@ -351,10 +351,10 @@ private:
 }}  // namespace swganh::simulation
 
 SimulationService::SimulationService(KernelInterface* kernel)
-    : BaseService(kernel) 
+    : BaseService(kernel)
     , impl_(new SimulationServiceImpl(kernel))
 {}
-    
+
 SimulationService::~SimulationService()
 {}
 
@@ -364,9 +364,9 @@ ServiceDescription SimulationService::GetServiceDescription()
         "SimulationService",
         "simulation",
         "0.1",
-        "127.0.0.1", 
-        0, 
-        0, 
+        "127.0.0.1",
+        0,
+        0,
         0);
 
     return service_description;
@@ -427,7 +427,7 @@ void SimulationService::RemoveObject(const shared_ptr<Object>& object)
 }
 
 shared_ptr<ObjectController> SimulationService::StartControllingObject(
-    const shared_ptr<Object>& object, 
+    const shared_ptr<Object>& object,
     shared_ptr<ConnectionClient> client)
 {
     return impl_->StartControllingObject(object, client);
@@ -439,7 +439,7 @@ void SimulationService::StopControllingObject(const shared_ptr<Object>& object)
 }
 
 void SimulationService::RegisterControllerHandler(
-    uint32_t handler_id, 
+    uint32_t handler_id,
     swganh::object::ObjControllerHandler&& handler)
 {
     impl_->RegisterControllerHandler(handler_id, move(handler));
@@ -453,23 +453,23 @@ void SimulationService::UnregisterControllerHandler(uint32_t handler_id)
 void SimulationService::onStart()
 {
 	auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
-        
+
     connection_service->RegisterMessageHandler(
         &SimulationServiceImpl::HandleSelectCharacter, impl_.get());
-    
+
     connection_service->RegisterMessageHandler(
         &SimulationServiceImpl::HandleObjControllerMessage, impl_.get());
 
     RegisterControllerHandler(0x00000071, [this] (
-        const std::shared_ptr<ObjectController>& controller, 
-        const swganh::messages::ObjControllerMessage& message) 
+        const std::shared_ptr<ObjectController>& controller,
+        const swganh::messages::ObjControllerMessage& message)
     {
         this->impl_->GetMovementManager()->HandleDataTransform(controller, message);
     });
-    
+
     RegisterControllerHandler(0x000000F1, [this] (
-        const std::shared_ptr<ObjectController>& controller, 
-        const swganh::messages::ObjControllerMessage& message) 
+        const std::shared_ptr<ObjectController>& controller,
+        const swganh::messages::ObjControllerMessage& message)
     {
         this->impl_->GetMovementManager()->HandleDataTransformWithParent(controller, message);
     });

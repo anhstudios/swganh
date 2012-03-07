@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -80,7 +80,7 @@ using namespace swganh::connection;
 using namespace swganh::login;
 using namespace swganh::messages;
 
-CharacterService::CharacterService(KernelInterface* kernel) 
+CharacterService::CharacterService(KernelInterface* kernel)
     : BaseService(kernel) {
 }
 
@@ -91,9 +91,9 @@ service::ServiceDescription CharacterService::GetServiceDescription() {
         "ANH Character Service",
         "character",
         "0.1",
-        "127.0.0.1", 
-        0, 
-        0, 
+        "127.0.0.1",
+        0,
+        0,
         0);
 
     return service_description;
@@ -109,20 +109,20 @@ void CharacterService::subscribe() {
 
     connection_service->RegisterMessageHandler(
         &CharacterService::HandleClientCreateCharacter_, this);
-    
+
     connection_service->RegisterMessageHandler(
-        &CharacterService::HandleClientRandomNameRequest_, this);    
-      
+        &CharacterService::HandleClientRandomNameRequest_, this);
+
     auto login_service = std::static_pointer_cast<LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
-  
+
     login_service->RegisterMessageHandler(
         &CharacterService::HandleDeleteCharacterMessage_, this);
-    
+
 }
 
 vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account_id) {
     vector<CharacterData> characters;
-    
+
     try {
         auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
@@ -132,7 +132,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
         auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
 
         uint16_t chars_count = result_set->rowsCount();
-        
+
         if (chars_count > 0)
         {
             // this is needed to ensure we don't get commands out of sync errors
@@ -143,7 +143,7 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
 
                 string custom_name = result_set->getString("custom_name");
                 character.name = std::wstring(custom_name.begin(), custom_name.end());
-                
+
                 std::string non_shared_template = result_set->getString("iff_template");
 				if (non_shared_template.size() > 30)
 				{
@@ -275,7 +275,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         statement->setString(12, character_info.hair_customization);
         statement->setString(13, character_info.player_race_iff);
 
-        statement->execute();        
+        statement->execute();
 
         statement.reset(conn->prepareStatement("SELECT @output as _object_id"));
 
@@ -283,7 +283,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         if (result_set->next())
         {
             uint64_t char_id = result_set->getUInt64(1);
-            if (char_id < 1002) 
+            if (char_id < 1002)
             {
                 // if we get a special character_id back it means there was an error.
                 /// @TODO Change this to return a separate output value for the error code
@@ -291,8 +291,8 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
             }
             return make_tuple(char_id, "");
         }
-    } 
-    catch(sql::SQLException &e) 
+    }
+    catch(sql::SQLException &e)
     {
         BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -392,33 +392,33 @@ void CharacterService::HandleClientCreateCharacter_(const std::shared_ptr<Connec
     string error_code;
     tie(character_id, error_code) = CreateCharacter(message, client->GetAccountId());
 
-    // heartbeat to let the client know we're still here    
+    // heartbeat to let the client know we're still here
     HeartBeat heartbeat;
-    client->SendMessage(heartbeat);
+    client->SendTo(heartbeat);
 
     if (error_code.length() > 0 && character_id == 0) {
         ClientCreateCharacterFailed failed;
         failed.stf_file = "ui";
         failed.error_string = error_code;
-        client->SendMessage(failed);
+        client->SendTo(failed);
     } else {
         ClientCreateCharacterSuccess success;
         success.character_id = character_id;
-        client->SendMessage(success);
+        client->SendTo(success);
     }
 }
 
 void CharacterService::HandleClientRandomNameRequest_(const std::shared_ptr<ConnectionClient>& client, const ClientRandomNameRequest& message) {
     ClientRandomNameResponse response;
     response.player_race_iff = message.player_race_iff;
-    
+
     response.random_name = GetRandomNameRequest(message.player_race_iff);
     if (response.random_name.length() > 0) {
         response.stf_file = "ui";
         response.approval_string = "name_approved";
     }
 
-    client->SendMessage(response);
+    client->SendTo(response);
 }
 
 void CharacterService::HandleDeleteCharacterMessage_(const std::shared_ptr<LoginClient>& login_client, const DeleteCharacterMessage& message) {
@@ -429,5 +429,5 @@ void CharacterService::HandleDeleteCharacterMessage_(const std::shared_ptr<Login
         reply_message.failure_flag = 0;
     }
 
-    login_client->SendMessage(reply_message);
+    login_client->SendTo(reply_message);
 }
