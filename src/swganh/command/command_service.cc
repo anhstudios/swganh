@@ -104,12 +104,12 @@ void CommandService::EnqueueCommand(
         return;
     }
 
-    if (properties_iter->second.add_to_combat_queue)
+    if (properties_iter->second.add_to_combat_queue && actor->HasState(COMBAT))
     {
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
 
         auto find_iter = processor_map_.find(actor->GetObjectId());
-        if (find_iter != processor_map_.end())
+        if (find_iter != processor_map_.end() )
         {
             find_iter->second->PushTask(
                 milliseconds(properties_iter->second.default_time),
