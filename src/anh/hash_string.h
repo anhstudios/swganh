@@ -54,8 +54,8 @@ public:
      * This is a requirement for this data type to be used as a key value in
      * containers like std::map.
      *
-     * \param other The HashString to compare to the current one.
-     * \return True if the ident is less than that of the other's, false if not.
+     * @param other The HashString to compare to the current one.
+     * @return True if the ident is less than that of the other's, false if not.
      */
     bool operator<(const HashString& other) const;
 
@@ -64,22 +64,22 @@ public:
      * This is a requirement for this data type to be used as a key value in
      * containers like std::map.
      *
-     * \param other The HashString to compare to the current one.
-     * \return True if the ident is greater than that of the other's, false if not.
+     * @param other The HashString to compare to the current one.
+     * @return True if the ident is greater than that of the other's, false if not.
      */
     bool operator>(const HashString& other) const;
 
     /*! Compares two HashStrings to determine if they are equal.
      *
-     * \param other The HashString to compare to the current one.
-     * \return True if the two HashStrings are equal, false if not.
+     * @param other The HashString to compare to the current one.
+     * @return True if the two HashStrings are equal, false if not.
      */
     bool operator==(const HashString& other) const;
 
     /*! Compares two HashStrings to determine if they are not equal.
      *
-     * \param other The HashString to compare to the current one.
-     * \return True if the two HashStrings are not equal, false if they are.
+     * @param other The HashString to compare to the current one.
+     * @return True if the two HashStrings are not equal, false if they are.
      */
     bool operator!=(const HashString& other) const;
 

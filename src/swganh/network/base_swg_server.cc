@@ -25,7 +25,7 @@ void BaseSwgServer::HandleMessage(
     auto find_iter = message_handlers_.find(message_type);
     if (find_iter == message_handlers_.end())
     {
-        BOOST_LOG_TRIVIAL(warning) << "Received an unidentified message" << std::hex << message_type;
+        BOOST_LOG_TRIVIAL(warning) << "Received an unidentified message: " << std::hex << message_type;
         return;
     }
 

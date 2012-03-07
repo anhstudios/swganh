@@ -124,7 +124,7 @@ void Session::Update() {
     ByteBuffer data_channel_payload = PackDataChannelMessages(process_list);
 
     // Split up the message if it's too big
-    // @note: in determining the max size 3 is the size of the soe header + the compression flag.
+    // \note: in determining the max size 3 is the size of the soe header + the compression flag.
     uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 3;
 
     if (data_channel_payload.size() > max_data_channel_size) {

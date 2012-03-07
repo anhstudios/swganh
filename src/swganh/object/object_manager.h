@@ -26,8 +26,8 @@ namespace object {
         /**
          * Registers an object type for management.
          *
-         * \param object_type the type of object to manage.
-         * \param factory a concrete ObjectFactoryInterface implementation.
+         * @param object_type the type of object to manage.
+         * @param factory a concrete ObjectFactoryInterface implementation.
          */
         void RegisterObjectType(uint32_t object_type,
             const std::shared_ptr<ObjectFactoryInterface>& factory);
@@ -36,7 +36,7 @@ namespace object {
          * Registers an object type for management based on the concrete
          * factory provided.
          *
-         * \param factory A concrete ObjectFactoryInterface implementation.
+         * @param factory A concrete ObjectFactoryInterface implementation.
          */
         template<typename T>
         void RegisterObjectType(const std::shared_ptr<T>& factory)
@@ -47,7 +47,7 @@ namespace object {
         /**
          * Unregisters an object type.
          *
-         * \param object_type the type of object to stop managing.
+         * @param object_type the type of object to stop managing.
          */
         void UnregisterObjectType(uint32_t object_type);
                 
@@ -58,28 +58,28 @@ namespace object {
          * to have each registered factory create the object one by one until
          * an object is successfully created.
          *
-         * \param object_id The id of the object being created.
-         * \return the created object instance.
-         * \throws InvalidObject when no object exists for the specified id.
+         * @param object_id The id of the object being created.
+         * @return the created object instance.
+         * @throws InvalidObject when no object exists for the specified id.
          */
         std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id);
                 
         /**
          * Creates an instance of a stored object with the specified id.
          *
-         * \param object_type The type of the object being created.
-         * \param object_id The id of the object being created.
-         * \return the created object instance.
-         * \throws InvalidObject when no object exists for the specified id.
+         * @param object_type The type of the object being created.
+         * @param object_id The id of the object being created.
+         * @return the created object instance.
+         * @throws InvalidObject when no object exists for the specified id.
          */
         std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id, uint32_t object_type);
         
         /**
          * Creates an instance of a stored object with the specified id.
          *
-         * \param object_id The id of the object being created.
-         * \return the created object instance as the specified type.
-         * \throws InvalidObject when no object exists for the specified id.
+         * @param object_id The id of the object being created.
+         * @return the created object instance as the specified type.
+         * @throws InvalidObject when no object exists for the specified id.
          */
         template<typename T>
         std::shared_ptr<T> CreateObjectFromStorage(uint64_t object_id)
@@ -96,16 +96,16 @@ namespace object {
         /**
          * Creates an instance of an object from the specified template.
          *
-         * \return the created object instance.
-         * \throws InvalidObjectTemplate when the specified template does not exist.
+         * @return the created object instance.
+         * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name);
         
         /**
          * Creates an instance of an object from the specified template.
          *
-         * \return the created object instance as the specified type.
-         * \throws InvalidObjectTemplate when the specified template does not exist.
+         * @return the created object instance as the specified type.
+         * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         template<typename T>
         std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name)
@@ -122,14 +122,14 @@ namespace object {
         /**
          * Deletes the requested object from storage.
          *
-         * \param object the object instance to delete from storage.
+         * @param object the object instance to delete from storage.
          */
         void DeleteObjectFromStorage(const std::shared_ptr<Object>& object);
         
         /**
          * Persists the object's state to storage.
          *
-         * \param object the object instance to persist.
+         * @param object the object instance to persist.
          */
         void PersistObject(const std::shared_ptr<Object>& object);
 

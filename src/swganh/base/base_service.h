@@ -59,16 +59,16 @@ protected:
     anh::ActiveObject& active();
 
     /*
-    *  @brief used to subscribe to events on a serivce
+    * @brief used to subscribe to events on a serivce
     */
     virtual void subscribe() {}
     /*
-    *  @brief used to perform any startup specific tasks for the service
+    * @brief used to perform any startup specific tasks for the service
     */
     virtual void onStart() {}
 
     /*
-    *  @brief used to perform any shutdown specific tasks for the service
+    * @brief used to perform any shutdown specific tasks for the service
     */
     virtual void onStop() {}
 
