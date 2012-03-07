@@ -1,7 +1,7 @@
 
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -37,15 +37,15 @@ void exportSWGANHKernel();
 void exportCombatService();
 
 BOOST_PYTHON_MODULE(py_swganh) {
-	docstring_options local_docstring_options(true, true, false);
+    docstring_options local_docstring_options(true, true, false);
 
     exportObject();
-	exportTangible();
-	exportCreature();
-	exportPlayer();
+    exportTangible();
+    exportCreature();
+    exportPlayer();
     exportObjectController();
-	exportVec3();
-	exportQuat();
+    exportVec3();
+    exportQuat();
     exportOutOfBand();
     exportSWGANHKernel();
     exportCombatService();

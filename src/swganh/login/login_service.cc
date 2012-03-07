@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -63,15 +63,15 @@ using namespace std;
 
 using boost::asio::ip::udp;
 
-LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)     
+LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)
     : BaseService(kernel)
     , swganh::network::BaseSwgServer(kernel->GetIoService())
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
-{    
+{
     account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
-    if (!account_provider_) 
+    if (!account_provider_)
     {
         account_provider_ = make_shared<providers::MysqlAccountProvider>(kernel->GetDatabaseManager());
     }
@@ -91,9 +91,9 @@ service::ServiceDescription LoginService::GetServiceDescription() {
         "ANH Login Service",
         "login",
         "0.1",
-        listen_address_, 
-        0, 
-        listen_port_, 
+        listen_address_,
+        0,
+        listen_port_,
         0);
 
     return service_description;
@@ -143,41 +143,41 @@ void LoginService::onStart() {
 	galaxy_service_  = static_pointer_cast<GalaxyService>(kernel()->GetServiceManager()->GetService("GalaxyService"));
 
     Server::Start(listen_port_);
-    
+
     UpdateGalaxyStatus_();
-    
+
     active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         for_each(
-            begin(session_map_), 
-            end(session_map_), 
-            [=] (SessionMap::value_type& type) 
+            begin(session_map_),
+            end(session_map_),
+            [=] (SessionMap::value_type& type)
         {
             type.second->Update();
         });
     });
 }
 
-void LoginService::onStop() 
+void LoginService::onStop()
 {
     Server::Shutdown();
 }
 
-void LoginService::subscribe() 
-{    
+void LoginService::subscribe()
+{
     RegisterMessageHandler(&LoginService::HandleLoginClientId_, this);
-    
+
     auto event_dispatcher = kernel()->GetEventDispatcher();
-    
+
     event_dispatcher->Subscribe(
-        "UpdateGalaxyStatus", 
-        [this] (const shared_ptr<anh::EventInterface>& incoming_event) 
+        "UpdateGalaxyStatus",
+        [this] (const shared_ptr<anh::EventInterface>& incoming_event)
     {
         UpdateGalaxyStatus_();
     });
 }
 
-int LoginService::galaxy_status_check_duration_secs() const 
+int LoginService::galaxy_status_check_duration_secs() const
 {
     return galaxy_status_check_duration_secs_;
 }
@@ -207,28 +207,28 @@ void LoginService::login_error_timeout_secs(int new_timeout)
     login_error_timeout_secs_ = new_timeout;
 }
 
-void LoginService::UpdateGalaxyStatus_() {    
+void LoginService::UpdateGalaxyStatus_() {
     BOOST_LOG_TRIVIAL(info) << "Updating galaxy status";
 
     galaxy_status_ = GetGalaxyStatus_();
-        
+
     auto status_message = BuildLoginClusterStatus(galaxy_status_);
 
     boost::lock_guard<boost::mutex> lg(session_map_mutex_);
     std::for_each(
-        begin(session_map_), 
-        end(session_map_), 
-        [&status_message] (SessionMap::value_type& item) 
+        begin(session_map_),
+        end(session_map_),
+        [&status_message] (SessionMap::value_type& item)
     {
-        if (item.second) {                
-            item.second->SendMessage(status_message);
+        if (item.second) {
+            item.second->SendTo(status_message);
         }
     });
 }
 
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     std::vector<GalaxyStatus> galaxy_status;
-    
+
     auto service_directory = kernel()->GetServiceDirectory();
 
     auto galaxy_list = service_directory->getGalaxySnapshot();
@@ -263,19 +263,19 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const LoginClientId& message) 
+void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const LoginClientId& message)
 {
     login_client->SetUsername(message.username);
     login_client->SetPassword(message.password);
     login_client->SetVersion(message.client_version);
-    
+
     auto account = account_provider_->FindByUsername(message.username);
 
     if (!account && login_auto_registration_ == true)
     {
         if(account_provider_->AutoRegisterAccount(message.username, message.password))
         {
-            account = account_provider_->FindByUsername(message.username); 
+            account = account_provider_->FindByUsername(message.username);
         }
     }
 
@@ -286,41 +286,41 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& logi
         error.type = "@cpt_login_fail";
         error.message = "@msg_login_fail";
         error.force_fatal = false;
-        
-        login_client->SendMessage(error);
-        
+
+        login_client->SendTo(error);
+
         auto timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
         timer->async_wait([login_client] (const boost::system::error_code& e)
         {
 			if (login_client)
 			{
                 login_client->Close();
-			    
+
 				BOOST_LOG_TRIVIAL(warning) << "Closing connection";
 			}
         });
 
         return;
     }
-    
+
     login_client->SetAccount(account);
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
         + boost::lexical_cast<string>(login_client->remote_endpoint().address());
 
     account_provider_->CreateAccountSession(account->account_id(), account_session);
-    login_client->SendMessage(
+    login_client->SendTo(
         messages::BuildLoginClientToken(login_client, account_session));
-    
-    login_client->SendMessage(
+
+    login_client->SendTo(
         messages::BuildLoginEnumCluster(login_client, galaxy_status_));
-    
-    login_client->SendMessage(
+
+    login_client->SendTo(
         messages::BuildLoginClusterStatus(galaxy_status_));
-    
+
     auto characters = character_service_->GetCharactersForAccount(login_client->GetAccount()->account_id());
 
-    login_client->SendMessage(
+    login_client->SendTo(
         messages::BuildEnumerateCharacterId(characters));
 }
 

@@ -56,9 +56,9 @@ ServiceDescription CommandService::GetServiceDescription()
         "CommandService",
         "command",
         "0.1",
-        "127.0.0.1", 
-        0, 
-        0, 
+        "127.0.0.1",
+        0,
+        0,
         0);
 
     return service_description;
@@ -90,7 +90,7 @@ void CommandService::EnqueueCommand(
         BOOST_LOG_TRIVIAL(warning) << "Invalid handler requested: " << hex << command.command_crc;
         return;
     }
-    
+
     auto handlers_iter = handlers_.find(command.command_crc);
     if (handlers_iter == handlers_.end())
     {
@@ -134,7 +134,7 @@ void CommandService::EnqueueCommand(
 }
 
 void CommandService::HandleCommandQueueEnqueue(
-    const shared_ptr<ObjectController>& controller, 
+    const shared_ptr<ObjectController>& controller,
     const ObjControllerMessage& message)
 {
     CommandQueueEnqueue enqueue;
@@ -147,7 +147,7 @@ void CommandService::HandleCommandQueueEnqueue(
 }
 
 void CommandService::HandleCommandQueueRemove(
-    const shared_ptr<ObjectController>& controller, 
+    const shared_ptr<ObjectController>& controller,
     const ObjControllerMessage& message)
 {}
 
@@ -158,7 +158,7 @@ void CommandService::ProcessCommand(
     const CommandProperties& properties,
     const CommandHandler& handler
     )
-{    
+{
     if (ValidateCommand(actor, target, command, properties, process_filters_))
     {
 		handler(kernel(), actor, target, command);
@@ -166,7 +166,7 @@ void CommandService::ProcessCommand(
         float default_time = command_properties_map_[command.command_crc].default_time / 1000.0f;
 
         SendCommandQueueRemove(actor, command.action_counter, default_time, 0, 0);
-    }     
+    }
 }
 
 void CommandService::onStart()
@@ -175,21 +175,21 @@ void CommandService::onStart()
 
     simulation_service_ = kernel()->GetServiceManager()
         ->GetService<SimulationService>("SimulationService");
-    
+
     simulation_service_->RegisterControllerHandler(0x00000116, [this] (
-        const std::shared_ptr<ObjectController>& controller, 
-        const swganh::messages::ObjControllerMessage& message) 
+        const std::shared_ptr<ObjectController>& controller,
+        const swganh::messages::ObjControllerMessage& message)
     {
         HandleCommandQueueEnqueue(controller, message);
     });
-    
+
     simulation_service_->RegisterControllerHandler(0x00000117, [this] (
-        const std::shared_ptr<ObjectController>& controller, 
-        const swganh::messages::ObjControllerMessage& message) 
+        const std::shared_ptr<ObjectController>& controller,
+        const swganh::messages::ObjControllerMessage& message)
     {
         HandleCommandQueueRemove(controller, message);
     });
-	
+
 	auto event_dispatcher = kernel()->GetEventDispatcher();
 	event_dispatcher->Dispatch(
         make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
@@ -199,7 +199,7 @@ void CommandService::onStart()
         [this] (shared_ptr<anh::EventInterface> incoming_event)
     {
         const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
-        
+
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
         processor_map_[object->GetObjectId()].reset(new anh::SimpleDelayedTaskProcessor(kernel()->GetIoService()));
     });
@@ -216,7 +216,7 @@ void CommandService::onStart()
 }
 
 void CommandService::LoadProperties()
-{    
+{
     try {
         auto db_manager = kernel()->GetDatabaseManager();
 
@@ -224,11 +224,11 @@ void CommandService::LoadProperties()
         auto statement =  unique_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_LoadCommandProperties();"));
 
         auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-               
+
         while (result->next())
         {
             CommandProperties properties;
-            
+
             properties.name = result->getString("name");
 
             string tmp = properties.name;
@@ -272,10 +272,10 @@ void CommandService::LoadProperties()
             properties.extended_range = static_cast<float>(result->getDouble("extended_range"));
             properties.cone_angle = static_cast<float>(result->getDouble("cone_angle"));
             properties.deny_in_locomotion = result->getUInt64("deny_in_locomotion");
-            
-            command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
 
             RegisterCommandScript(properties);
+
+            command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
         }
 
         BOOST_LOG_TRIVIAL(warning) << "Loaded (" << command_properties_map_.size() << ") Commands";
@@ -296,9 +296,9 @@ void CommandService::RegisterCommandScript(const CommandProperties& properties)
 }
 
 bool CommandService::ValidateCommand(
-    const shared_ptr<Creature>& actor, 
+    const shared_ptr<Creature>& actor,
 	const shared_ptr<Tangible>& target,
-    const swganh::messages::controllers::CommandQueueEnqueue& command, 
+    const swganh::messages::controllers::CommandQueueEnqueue& command,
     const CommandProperties& command_properties,
     const std::vector<CommandFilter>& filters)
 {

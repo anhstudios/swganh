@@ -42,9 +42,9 @@ using anh::ValueEvent;
 using boost::asio::ip::udp;
 
 ConnectionService::ConnectionService(
-        string listen_address, 
-        uint16_t listen_port, 
-        uint16_t ping_port, 
+        string listen_address,
+        uint16_t listen_port,
+        uint16_t ping_port,
         KernelInterface* kernel)
     : BaseService(kernel)
     , swganh::network::BaseSwgServer(kernel->GetIoService())
@@ -53,9 +53,9 @@ ConnectionService::ConnectionService(
     , listen_port_(listen_port)
     , ping_port_(ping_port)
 {
-        
+
     session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
-    if (!session_provider_) 
+    if (!session_provider_)
     {
         session_provider_ = make_shared<providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
     }
@@ -66,9 +66,9 @@ ServiceDescription ConnectionService::GetServiceDescription() {
         "ANH Connection Service",
         "connection",
         "0.1",
-        listen_address(), 
+        listen_address(),
         0,
-        listen_port(), 
+        listen_port(),
         ping_port_);
 
     return service_description;
@@ -82,18 +82,18 @@ void ConnectionService::subscribe() {
 void ConnectionService::onStart() {
     ping_server_ = make_shared<PingServer>(kernel()->GetIoService(), ping_port_);
 
-    character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));    
+    character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
     login_service_ = std::static_pointer_cast<swganh::login::LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
     simulation_service_ = std::static_pointer_cast<swganh::simulation::SimulationService>(kernel()->GetServiceManager()->GetService("SimulationService"));
-    
+
     Server::Start(listen_port_);
-    
+
     active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         for_each(
-            begin(session_map_), 
-            end(session_map_), 
-            [=] (SessionMap::value_type& type) 
+            begin(session_map_),
+            end(session_map_),
+            [=] (SessionMap::value_type& type)
         {
             type.second->Update();
         });
@@ -135,7 +135,7 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     }
 
     auto connection_client = static_pointer_cast<ConnectionClient>(session);
-    
+
     auto controller = connection_client->GetController();
     if (controller)
     {
@@ -147,7 +147,7 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
         // END TODO
 
         simulation_service->PersistRelatedObjects(controller->GetObject()->GetObjectId());
-        
+
         // set a timer to 5 minutes to destroy the object, unless logged back in.
         auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
         deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));
@@ -174,7 +174,7 @@ shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint)
 }
 
 std::shared_ptr<ConnectionClient> ConnectionService::FindConnectionByPlayerId(uint64_t player_id)
-{    
+{
     shared_ptr<ConnectionClient> connection = nullptr;
 
     {
@@ -206,9 +206,9 @@ shared_ptr<LoginService> ConnectionService::login_service() {
 }
 
 void ConnectionService::RemoveClientTimerHandler_(
-    const boost::system::error_code& e, 
-    shared_ptr<boost::asio::deadline_timer> timer, 
-    int delay_in_secs, 
+    const boost::system::error_code& e,
+    shared_ptr<boost::asio::deadline_timer> timer,
+    int delay_in_secs,
     shared_ptr<swganh::object::ObjectController> controller)
 {
     if (controller)
@@ -228,9 +228,9 @@ void ConnectionService::RemoveClientTimerHandler_(
 }
 
 void ConnectionService::HandleCmdSceneReady_(const std::shared_ptr<ConnectionClient>& client, const CmdSceneReady& message) {
-    BOOST_LOG_TRIVIAL(warning) << "Handling CmdSceneReady";    
+    BOOST_LOG_TRIVIAL(warning) << "Handling CmdSceneReady";
 
-    client->SendMessage(CmdSceneReady());
+    client->SendTo(CmdSceneReady());
 
     auto object = client->GetController()->GetObject();
 
@@ -249,10 +249,10 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
         BOOST_LOG_TRIVIAL(warning) << "Account_id not found from session key, unauthorized access.";
         return;
     }
-    
+
     // gets player from account
     uint64_t player_id = session_provider_->GetPlayerId(account_id);
-                
+
     // authorized
     if (! player_id) {
         BOOST_LOG_TRIVIAL(warning) << "No player found for the requested account, unauthorized access.";
@@ -264,12 +264,12 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
     {
         existing_session_connection->Close();
     }
-    
+
     // creates a new session and stores it for later use
-    if (!session_provider_->CreateGameSession(player_id, client->connection_id())) {    
+    if (!session_provider_->CreateGameSession(player_id, client->connection_id())) {
         BOOST_LOG_TRIVIAL(warning) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
-    
+
     client->Connect(account_id, player_id);
 
     ClientPermissionsMessage client_permissions;
@@ -278,5 +278,5 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
     // @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 
-    client->SendMessage(client_permissions);
+    client->SendTo(client_permissions);
 }

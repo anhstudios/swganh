@@ -1,6 +1,6 @@
 /*
  This file is part of MMOServer. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2010 The SWG:ANH Team
 
  MMOServer is free software: you can redistribute it and/or modify
@@ -47,7 +47,7 @@ protected:
 
     // builds a simple data channel packet from buildSimpleMessage with the given sequence
     ByteBuffer buildSimpleDataChannelPacket(uint16_t sequence) const;
-    
+
     ByteBuffer buildSimpleFragmentedMessage() const;
 
     ByteBuffer buildSimpleFragmentedPacket(uint16_t sequence) const;
@@ -74,7 +74,7 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
 
     // Send 3 data channel messages and ensure the sequence is increased appropriately.
     for (int i = 1; i <= 3; ++i ) {
-        session->SendMessage(buildSimpleMessage());
+        session->SendTo(buildSimpleMessage());
 		session->Update();
         EXPECT_EQ(i, session->server_sequence());
     }
@@ -88,7 +88,7 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
 
     // Send 3 data channel messages.
     for (int i = 1; i <= 3; ++i ) {
-        session->SendMessage(buildSimpleMessage());
+        session->SendTo(buildSimpleMessage());
 		session->Update();
     }
 
@@ -120,8 +120,8 @@ ByteBuffer SessionTests::buildSimpleDataChannelPacket(uint16_t sequence) const {
 }
 
 ByteBuffer SessionTests::buildSimpleFragmentedMessage() const {
-    ByteBuffer buffer;    
-    
+    ByteBuffer buffer;
+
     for (int i = 0; i < 6; ++i) {
         buffer.write<uint32_t>(5);
     }
@@ -151,10 +151,10 @@ udp::endpoint SessionTests::buildTestEndpoint() const {
 
 shared_ptr<NiceMock<MockServer>> SessionTests::buildMockServer() const {
     auto server = make_shared<NiceMock<MockServer>>();
-    
+
     ON_CALL(*server, AllocateBuffer())
         .WillByDefault(Return(make_shared<ByteBuffer>()));
-    
+
     ON_CALL(*server, max_receive_size())
         .WillByDefault(Return(496));
 
