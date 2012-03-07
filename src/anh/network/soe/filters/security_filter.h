@@ -41,7 +41,7 @@ namespace filters {
     class SecurityFilter {
     public:
         /**
-         * \param max_receive_size Maximum allowed size of incoming messages.
+         * @param max_receive_size Maximum allowed size of incoming messages.
          */
         explicit SecurityFilter(uint32_t max_receive_size);
     

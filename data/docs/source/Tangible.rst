@@ -5,6 +5,6 @@
 
 Tangible
 ==================================================	
-.. automodule:: swganh_binding
+.. automodule:: py_swganh
 .. autoclass:: Tangible
 	:members:

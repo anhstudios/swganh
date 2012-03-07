@@ -16,7 +16,7 @@ namespace swganh {
 namespace messages {
 
 /**
- * \brief The ProsePackage is part of the OutOfBand attachment and is used to send custom STF strings.
+ * @brief The ProsePackage is part of the OutOfBand attachment and is used to send custom STF strings.
  *
  * Several types of text responses such as spatial chat and system messages use
  * this package for displaying custom text or text from an STF file. Once initialized
@@ -56,8 +56,8 @@ struct ProsePackage {
      * This overloaded constructor takes the message STF as its
      * arguments. Custom data can then be set as needed.
      *
-     * \param stf_file The file containing the STF message.
-     * \param stf_label The label of the STF message.
+     * @param stf_file The file containing the STF message.
+     * @param stf_label The label of the STF message.
      */
     ProsePackage(std::string stf_file, std::string stf_label);
 
@@ -85,11 +85,11 @@ struct ProsePackage {
     int32_t di_integer; ///< Decimal value: integer
     float df_float;     ///< Decimal value: float
 
-    // @todo: this value needs further testing.
+    /// @TODO: this value needs further testing.
     bool display_flag; ///< True display's the message and false leaves it blank
 };
 
-// @todo fully document the WaypointPackage
+/// @TODO fully document the WaypointPackage
 struct WaypointPackage {
     float position_x;
     float position_y;
@@ -102,14 +102,14 @@ struct WaypointPackage {
 };
 
 /**
- * \brief The OutOfBand attachment is used in multiple places to send out
+ * @brief The OutOfBand attachment is used in multiple places to send out
  * customized data to the client.
  *
  * The OutOfBand attachment is actually made up of several sub-types,
  * for further information on each sub-type supported see it's related struct.
  *
- * \see ProsePackage
- * \see WaypointPackage
+ * @see ProsePackage
+ * @see WaypointPackage
  */
 class OutOfBand {
 public:
@@ -119,7 +119,7 @@ public:
     /**
      * Constructor overload for OutOfBand taking a ProsePackage.
      *
-     * \see ProsePackage for further information on parameters.
+     * @see ProsePackage for further information on parameters.
      */
     explicit OutOfBand(const ProsePackage& prose);
 
@@ -133,7 +133,7 @@ public:
     /**
      * Constructor overload for OutOfBand taking a ProsePackage.
      *
-     * \see ProsePackage for further information on parameters.
+     * @see ProsePackage for further information on parameters.
      */
     OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
               uint64_t tu_object_id = 0, const std::string& tu_stf_file = "", const std::string& tu_stf_string ="", const std::wstring& tu_custom_string = L"",
@@ -144,7 +144,7 @@ public:
     /**
      * Constructor overload for OutOfBand taking a ProsePackage that uses object ids for value replacement.
      *
-     * \see ProsePackage for further information on parameters.
+     * @see ProsePackage for further information on parameters.
      */
     OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
               uint64_t tu_object_id, uint64_t tt_object_id, uint64_t to_object_id,
@@ -154,7 +154,7 @@ public:
     /**
      * Constructor overload for OutOfBand taking a ProsePackage that uses stfs for value replacement.
      *
-     * \see ProsePackage for further information on parameters.
+     * @see ProsePackage for further information on parameters.
      */
     OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
               const std::string& tu_stf_file, const std::string& tu_stf_string,
@@ -165,7 +165,7 @@ public:
     /**
      * Constructor overload for OutOfBand taking a ProsePackage that uses custom strings for value replacement.
      *
-     * \see ProsePackage for further information on parameters.
+     * @see ProsePackage for further information on parameters.
      */
     OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
               const std::wstring& tu_custom_string, const std::wstring& tt_custom_string, const std::wstring& to_custom_string,
@@ -177,7 +177,7 @@ public:
     /**
      * Returns a count of the packages contained in this OutOfBand attachment.
      *
-     * \return Count of packages in the OutOfBand attachment.
+     * @return Count of packages in the OutOfBand attachment.
      */
     uint16_t Count() const;
 
@@ -188,22 +188,22 @@ public:
      * under the hood. This returns the length of the OutOfBand attachment as if it
      * where a wide character string.
      *
-     * \return Length of the OutOfBand attachment.
+     * @return Length of the OutOfBand attachment.
      */
     uint32_t Length() const;
 
     /**
      * Adds a prose package to the OutOfBand attachment.
      *
-     * \param prose A reference to a prebuilt prose package..
+     * @param prose A reference to a prebuilt prose package..
      */
     void AddProsePackage(const ProsePackage& prose);
 
     /**
      * Adds a prose package to the OutOfBand attachment.
      *
-     * \param stf_file The stf file containing the referenced text.
-     * \param stf_label The label used to identify the referenced text in the stf file.
+     * @param stf_file The stf file containing the referenced text.
+     * @param stf_label The label used to identify the referenced text in the stf file.
      */
     void AddProsePackage(const std::string& base_stf_file, const std::string& base_stf_string,
                          uint64_t tu_object_id = 0, const std::string& tu_stf_file = "", const std::string& tu_stf_label ="", const std::wstring& tu_custom_string = L"",
@@ -214,8 +214,8 @@ public:
     /**
      * Adds a prose package to the OutOfBand attachment.
      *
-     * \param stf_file The stf file containing the referenced text.
-     * \param stf_label The label used to identify the referenced text in the stf file.
+     * @param stf_file The stf file containing the referenced text.
+     * @param stf_label The label used to identify the referenced text in the stf file.
      */
     void AddProsePackage(const std::string& base_stf_file, const std::string& base_stf_string,
                          uint64_t tu_object_id, uint64_t tt_object_id, uint64_t to_object_id,
@@ -224,8 +224,8 @@ public:
     /**
      * Adds a prose package to the OutOfBand attachment.
      *
-     * \param stf_file The stf file containing the referenced text.
-     * \param stf_label The label used to identify the referenced text in the stf file.
+     * @param stf_file The stf file containing the referenced text.
+     * @param stf_label The label used to identify the referenced text in the stf file.
      */
     void AddProsePackage(const std::string& base_stf_file, const std::string& base_stf_string,
                          const std::string& tu_stf_file, const std::string& tu_stf_label,
@@ -236,8 +236,8 @@ public:
     /**
      * Adds a prose package to the OutOfBand attachment.
      *
-     * \param stf_file The stf file containing the referenced text.
-     * \param stf_label The label used to identify the referenced text in the stf file.
+     * @param stf_file The stf file containing the referenced text.
+     * @param stf_label The label used to identify the referenced text in the stf file.
      */
     void AddProsePackage(const std::string& base_stf_file, const std::string& base_stf_string,
                          const std::wstring& tu_custom_string, const std::wstring& tt_custom_string, const std::wstring& to_custom_string,
@@ -246,7 +246,7 @@ public:
     /**
      * Packs the OutOfBand for packet use.
      *
-     * \return A const pointer to a ByteBuffer instance containing the OutOfBand data.
+     * @return A const pointer to a ByteBuffer instance containing the OutOfBand data.
      */
     const anh::ByteBuffer* Pack() const;
 

@@ -5,7 +5,7 @@
 
 Object
 ==================================================	
-.. automodule:: swganh_binding
+.. automodule:: py_swganh
 .. autoclass:: Object
 	:members:
 	:inherited-members:

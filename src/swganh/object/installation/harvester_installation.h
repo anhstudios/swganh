@@ -12,7 +12,7 @@ class HarvesterInstallation : public Installation
 {
 public:
     /**
-     * \return The type of this object instance.
+     * @return The type of this object instance.
      */
     uint32_t GetType() const;
 

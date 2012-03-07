@@ -244,12 +244,12 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
             GalaxyStatus status;
             status.address = it->address();
             status.connection_port = it->udp_port();
-            // TODO: Add a meaningful value here (ping to client from server?)
+            //@TODO: Add a meaningful value here (ping to client from server?)
             status.distance = 0xffff8f80;
             status.galaxy_id = galaxy.id();
-            // TODO: Add a configurable value here
+            //@TODO: Add a configurable value here
             status.max_characters = 2;
-            // TODO: Add a configurable value here
+            //@TODO: Add a configurable value here
             status.max_population = 0x00000cb2;
             status.name = galaxy.name();
             status.ping_port = it->ping_port();

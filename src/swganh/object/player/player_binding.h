@@ -52,7 +52,7 @@ void exportPlayer()
 		//.value("ANONYMOUS", ANONYMOUS)
 		;
     
-    //TODO: Discover Profile Flags
+    //@TODO: Discover Profile Flags
     enum_<ProfileFlags>("PROFILE_FLAGS", "Flags that describe a :class:`.Player` profile.")
         ;
 	

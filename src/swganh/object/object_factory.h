@@ -34,8 +34,8 @@ namespace object {
         /**
          * Loads in base values from a result set
          *
-         * \param the object which to load values into
-         * \param the result set from which to load the values from
+         * @param the object which to load values into
+         * @param the result set from which to load the values from
          */
         void CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::ResultSet>& result);
         virtual void LoadTemplates(){}
@@ -44,8 +44,8 @@ namespace object {
         /**
          * Persists the Base Object Data
          *
-         * \param object data to persist
-         * \param PreparedStatement to add values to.
+         * @param object data to persist
+         * @param PreparedStatement to add values to.
          */
         void PersistObject(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::PreparedStatement>& prepared_statement);
         virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object){}

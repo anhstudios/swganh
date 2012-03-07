@@ -29,12 +29,6 @@ namespace Concurrency {
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 
-//namespace boost {
-//namespace python {
-//namespace api {
-//    class object;
-//}}}
-
 namespace swganh {
 namespace simulation {
 class SimulationService;

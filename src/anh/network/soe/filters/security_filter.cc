@@ -40,7 +40,7 @@ void SecurityFilter::operator()(
 
     if (message_size > max_receive_size_)
     {
-        // @TODO: Track the number of errors for a session and set a threshhold where
+        /// @TODO: Track the number of errors for a session and set a threshhold where
         // their connection is dropped after a certain number of bad packets.
         
         throw runtime_error("Malformed message received: message larger than allowed size");
@@ -49,7 +49,7 @@ void SecurityFilter::operator()(
     
     if (message_size < sizeof(uint16_t)) // Size of the message header
     {
-        // @TODO: Track the number of errors for a session and set a threshhold where
+        /// @TODO: Track the number of errors for a session and set a threshhold where
         // their connection is dropped after a certain number of bad packets.
 
         throw runtime_error("Malformed message received: message smaller than allowed size");

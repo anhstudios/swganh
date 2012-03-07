@@ -39,7 +39,7 @@ namespace soe {
 class Session;
 
 /**
- * \brief An SOE Protocol Service.
+ * @brief An SOE Protocol Service.
  *
  * 
  */
@@ -50,19 +50,19 @@ public:
     ~Server();
 
     /**
-     * \brief Starts the SOE Frontend Service.
+     * @brief Starts the SOE Frontend Service.
      * 
-     * \parama port The port to listen for messages on.
+     * @parama port The port to listen for messages on.
      */
     void Start(uint16_t port);
     
     /**
-     * \brief
+     * @brief
      */
     void Shutdown(void);
     
     /**
-     * \brief Sends a message on the wire to the target endpoint.
+     * @brief Sends a message on the wire to the target endpoint.
      */
     void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer);
 

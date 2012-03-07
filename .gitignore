@@ -18,3 +18,5 @@ data/sql/setup.cfg
 
 data/docs/generated
 /nbproject/private/
+
+data/docs/doxygen

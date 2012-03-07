@@ -154,7 +154,7 @@ bool CombatService::InitiateCombat(
     if (!attacker->CanAttack(creature_target.get()))
         return false;
 
-    // TODO: Base this on weapon range
+    //@TODO: Base this on weapon range
     if (!attacker->InRange(target->GetPosition(), 25))
         return false;
 
@@ -393,7 +393,7 @@ uint16_t CombatService::GetTargetPostureModifier(const shared_ptr<Creature>& att
 
 }
 uint16_t CombatService::GetAccuracyModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker) { 
-    // TODO: Get weapon calculation modifiers
+    //@TODO: Get weapon calculation modifiers
     // Get Accuracy Modifiers from weapon and add up the modifiers the creature has
     return 0; 
 }
@@ -429,7 +429,7 @@ void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shar
 }
 float CombatService::GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence) 
 {
-    // TODO: Verify this is the appropriate formula
+    //@TODO: Verify this is the appropriate formula
     return (66.0f + attacker_bonus + (attacker_accuracy - target_defence) / 2.0f);
 }
 int CombatService::ApplyDamage(
@@ -442,7 +442,7 @@ int CombatService::ApplyDamage(
     if (damage == 0 || pool < 0)
         return 0;
 
-    // TODO: Tangible apply damage
+    //@TODO: Tangible apply damage
     return 0;
 }
 
@@ -603,7 +603,7 @@ void CombatService::SendCombatActionMessage(
 void CombatService::SetIncapacitated(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)
 {
     target->SetPosture(INCAPACITATED);
-    // TODO: Get this from config Default Incap Timer 
+    //@TODO: Get this from config Default Incap Timer 
     target->SetIncapTimer(15);
     EndCombat(attacker, target);
 

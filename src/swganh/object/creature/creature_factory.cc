@@ -173,7 +173,7 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
                 creature->animation_ = result->getString("animation");
                 creature->mood_animation_ = result->getString("mood_animation");
 
-                // @TODO: Find a better place for this.
+                /// @TODO: Find a better place for this.
                 if (creature->mood_animation_.compare("none") == 0)
                 {
                     creature->mood_animation_ = "neutral";

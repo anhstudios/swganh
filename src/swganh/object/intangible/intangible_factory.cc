@@ -70,7 +70,7 @@ void IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
         {
             auto conn = db_manager_->getConnection("galaxy");
             auto statement = conn->prepareStatement("CALL sp_PersistIntangible(?,?,?,?,?,?,?,?);");
-            // TODO: Add in values to persist
+            //@TODO: Add in values to persist
             statement->execute();
         }
             catch(sql::SQLException &e)

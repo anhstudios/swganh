@@ -63,22 +63,22 @@ void PlayerFactory::LoadTemplates()
             player->SetBornDate(result->getUInt(16));
             player->SetTotalPlayTime(result->getUInt(17));
             player->SetAdminTag(result->getUInt(18));
-            // TODO: XP
-            // TODO: Waypoints
+            //@TODO: XP
+            //@TODO: Waypoints
             player->SetCurrentForcePower(result->getUInt(20));
             player->SetMaxForcePower(result->getUInt(21));
             player->AddCurrentForceSensitiveQuest(result->getUInt(22));
             player->AddCompletedForceSensitiveQuest(result->getUInt(23));
-            // TODO: Quests
-            // TODO: Abilities
+            //@TODO: Quests
+            //@TODO: Abilities
             player->SetExperimentationFlag(result->getUInt(24));
             player->SetCraftingStage(result->getUInt(25));
             player->SetNearestCraftingStation(result->getUInt64(26));
-            // TODO: Draft Schematics
+            //@TODO: Draft Schematics
             player->AddExperimentationPoints(result->getUInt(27));
             player->ResetAccomplishmentCounter(result->getUInt(28));
-            // TODO: Friends
-            // TODO: Ignored
+            //@TODO: Friends
+            //@TODO: Ignored
             player->ResetCurrentStomach(result->getUInt(29));
             player->ResetMaxStomach(result->getUInt(30));
             player->ResetCurrentDrink(result->getUInt(31));
