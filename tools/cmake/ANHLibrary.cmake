@@ -184,12 +184,15 @@ FUNCTION(AddANHLibrary name)
     	    CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/tools/windows/user_project.vcxproj.in
     	        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tests.vcxproj.user @ONLY)
 
-            if(ENABLE_TEST_REPORT)
-                add_test(
-                    NAME all_${name}_tests
-                    COMMAND ${name}_test "--gtest_output=xml:${PROJECT_BINARY_DIR}/reports/$<CONFIGURATION>/"
-                    WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/\$(configuration)"
-                )
+            if(ENABLE_TEST_REPORT)                
+                foreach(configuration Debug Release MinSizeRel RelWithDebInfo)
+                    add_test(
+                        NAME all_${name}_tests_${configuration}
+                        CONFIGURATIONS ${configuration}
+                        COMMAND ${name}_test "--gtest_output=xml:${PROJECT_BINARY_DIR}/reports/$<CONFIGURATION>/"
+                        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${configuration}
+                    )
+                endforeach()
             endif()
         ELSE()
             IF(ENABLE_TEST_REPORT)
