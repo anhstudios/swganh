@@ -187,8 +187,8 @@ FUNCTION(AddANHLibrary name)
             if(ENABLE_TEST_REPORT)                
                 foreach(configuration Debug Release MinSizeRel RelWithDebInfo)
                     add_test(
-                        NAME all_${name}_tests_${configuration}
-                        CONFIGURATIONS ${configuration}
+                        NAME all_${name}_tests_${CMAKE_BUILD_TYPE}
+                        CONFIGURATIONS ${CMAKE_BUILD_TYPE}
                         COMMAND ${name}_test "--gtest_output=xml:${PROJECT_BINARY_DIR}/reports/$<CONFIGURATION>/"
                         WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${configuration}
                     )
