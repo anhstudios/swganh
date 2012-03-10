@@ -197,8 +197,7 @@ FUNCTION(AddANHLibrary name)
         ELSE()
             IF(ENABLE_TEST_REPORT)
                 add_test(
-                    NAME all_${name}_tests_${configuration}
-                    CONFIGURATIONS ${configuration}
+                    NAME all_${name}_tests
                     COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${name}_test "--gtest_output=xml:${PROJECT_BINARY_DIR}/reports/$<CONFIGURATION>/"
                 )
             ENDIF()
