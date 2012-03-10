@@ -14,20 +14,29 @@
 
 namespace swganh {
 namespace app {
-    
+
+/*!
+ * @Brief Contains information about the app config"
+ */
 struct AppConfig {
 	std::string server_mode;
     std::vector<std::string> plugins;
     std::string plugin_directory;
     std::string galaxy_name;
 
+    /*!
+    * @Brief Contains information about the database config"
+    */
     struct DatabaseConfig {
         std::string host;
         std::string schema;
         std::string username;
         std::string password;
     } galaxy_manager_db, galaxy_db;
-    
+
+    /*!
+    * @Brief Contains information about the Login config"
+     */
     struct LoginConfig {
         std::string listen_address;
         uint16_t listen_port;
@@ -35,7 +44,9 @@ struct AppConfig {
         int login_error_timeout_secs;
         bool login_auto_registration;
     } login_config;
-
+    /*!
+    * @Brief Contains information about the app config"
+    */
     struct ConnectionConfig {
         std::string listen_address;
         uint16_t listen_port;

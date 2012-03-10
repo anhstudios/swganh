@@ -34,45 +34,45 @@ class ScriptingManagerInterface
 {
 public:
     /**
-    * \brief creates script_engine with the base path specified
+    * @brief creates script_engine with the base path specified
     *
-    * \param base_path sets where the engine looks for the files
+    * @param base_path sets where the engine looks for the files
     */
     virtual ~ScriptingManagerInterface(){}
     /**
-    * \brief load's the script into memory
+    * @brief load's the script into memory
     *  and stores the str into a 
-    *  private map for later use in @run
+    *  private map for later use in \run
     *
-    * \param filename The file to load into memory
+    * @param filename The file to load into memory
     */
     virtual void load(const std::string& filename) = 0;
 
      /**
-    * \brief run's the script file
+    * @brief run's the script file
     *
-    * \param filename The file to run 
+    * @param filename The file to run 
     *   if not found, a message will be given
     */
     virtual void run(const std::string& filename) = 0;
 
      /**
-    * \brief reload's the script file
+    * @brief reload's the script file
     *
-    * \param filename The file to reload
+    * @param filename The file to reload
     *  the file will be (re)loaded
     */
     virtual void reload(const std::string& filename) = 0;
 
     /**
-    * \brief remove the script file
+    * @brief remove the script file
     *
-    * \param filename The file to remove
+    * @param filename The file to remove
     *   if not found, no action occurs
     */
     virtual void removeFile(const std::string& filename) = 0;
     /**
-    * \brief gets data from scripting error and 
+    * @brief gets data from scripting error and 
     *       creates a friendly message
     *  
     */

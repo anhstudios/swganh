@@ -34,16 +34,16 @@ public:
     virtual ServiceDescription GetServiceDescription() = 0;
 
     /*
-    *  @brief Starts up the service, sets running_ to true
+    * @brief Starts up the service, sets running_ to true
     */
     virtual void Start() = 0;
     /*
-    *  @brief Stops the service, sets running_ to false
+    * @brief Stops the service, sets running_ to false
     */
     virtual void Stop() = 0;
 
     /*
-    *  @brief returns true if running is set to true
+    * @brief returns true if running is set to true
     */
     virtual bool IsRunning() const = 0;
 };

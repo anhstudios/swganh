@@ -19,28 +19,28 @@ namespace observer {
         /**
          * Returns whether or not this observable object has any observers.
          *
-         * \return True if has observers, false if not.
+         * @return True if has observers, false if not.
          */
         virtual bool HasObservers()  = 0;
 
         /**
          * Start receiving notifications when the observable object changes state.
          *
-         * \param observer The object interested in receiving state change notifications.
+         * @param observer The object interested in receiving state change notifications.
          */
         virtual void Subscribe(const std::shared_ptr<ObserverInterface>& observer) = 0;
 
         /**
          * Stop receiving state notification changes for the observable object.
          *
-         * \param observer The object that no longer wants state change notifications.
+         * @param observer The object that no longer wants state change notifications.
          */
         virtual void Unsubscribe(const std::shared_ptr<ObserverInterface>& observer) = 0;
 
         /**
          * Notifies observers that the observable object has changed state.
          *
-         * \param message Message containing the updated state of the observable object.
+         * @param message Message containing the updated state of the observable object.
          */
         virtual void NotifyObservers(const anh::ByteBuffer& message) = 0;
     };

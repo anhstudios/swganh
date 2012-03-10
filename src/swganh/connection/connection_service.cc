@@ -141,10 +141,10 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     {
         auto simulation_service = simulation_service_.lock();
 
-        // @TODO REFACTOR Move this functionality out to a PlayerService
+        /// @TODO REFACTOR Move this functionality out to a PlayerService
         auto player = simulation_service->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
 		player->AddStatusFlag(swganh::object::player::LD);
-        // END TODO
+        // END todo
 
         simulation_service->PersistRelatedObjects(controller->GetObject()->GetObjectId());
 
@@ -275,7 +275,7 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = kernel()->GetServiceDirectory()->galaxy().status();
     client_permissions.available_character_slots = static_cast<uint8_t>(character_service()->GetMaxCharacters(account_id));
-    // @TODO: Replace with configurable value
+    /// @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 
     client->SendTo(client_permissions);

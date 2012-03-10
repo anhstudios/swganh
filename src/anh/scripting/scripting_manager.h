@@ -37,85 +37,85 @@ class ScriptingManager : public ScriptingManagerInterface
 public:
     typedef std::map<std::string, std::shared_ptr<boost::python::str>> bp_object_map;
     /**
-    * \brief creates ScriptingManager with the base path specified
+    * @brief creates ScriptingManager with the base path specified
     *
-    * \param base_path sets where the manager looks for the files
+    * @param base_path sets where the manager looks for the files
     */
     ScriptingManager(const std::string& base_path);
     ~ScriptingManager();
     /**
-    * \brief load's the python script into memory
+    * @brief load's the python script into memory
     *  and stores the Boost Python str into a 
-    *  private map for later use in @run
+    *  private map for later use in \run
     *
-    * \param filename The file to load into memory
+    * @param filename The file to load into memory
     */
     void load(const std::string& filename);
 
      /**
-    * \brief run's the python file
+    * @brief run's the python file
     *
-    * \param filename The file to run from the loaded_files_ map
+    * @param filename The file to run from the loaded_files_ map
     *   if not found, a message will be given
     */
     void run(const std::string& filename);
 
      /**
-    * \brief reload's the python file
+    * @brief reload's the python file
     *
-    * \param filename The file to remove from the loaded_files_ map
+    * @param filename The file to remove from the loaded_files_ map
     *  the file will be (re)loaded
     */
     void reload(const std::string& filename);
 
     /**
-    * \brief remove the python file
+    * @brief remove the python file
     *
-    * \param filename The file to remove from the loaded_files_ map
+    * @param filename The file to remove from the loaded_files_ map
     *   if not found, no action occurs
     */
     void removeFile(const std::string& filename);
 
     /**
-    * \brief outputs the currently loaded files available
+    * @brief outputs the currently loaded files available
     *   for immediate execution.
     *
     */
     bp_object_map getLoadedFiles() { return loaded_files_; }
 
     /**
-    * \brief checks to see if the filename has been loaded
+    * @brief checks to see if the filename has been loaded
     * 
-    * \return true if the file has been loaded, false else.
+    * @return true if the file has been loaded, false else.
     */
     bool isFileLoaded(const std::string& filename);
 
     /**
-    * \brief sets the default file path to find scripts
+    * @brief sets the default file path to find scripts
     *  
-    * \param filepath sets the path_ behind the scenes
+    * @param filepath sets the path_ behind the scenes
     */
     boost::python::str getLoadedFile(const std::string& filename);
     /**
-    * \brief gets data from PYEXCEPTION struct and 
+    * @brief gets data from PYEXCEPTION struct and 
     *       creates a friendly message
     *  
     */
     
     /**
-    * \brief loads a python file, loads a C++ module into memory and executes the file
+    * @brief loads a python file, loads a C++ module into memory and executes the file
     *
-    * \param filename the file to execute
-    * \param class_name the class to extract from python for use in C++
-    * \param init_obj the _inittab which has a function pointer to the module to be loaded
-    * \return boost::python::api::object the object containing the Python class for use in C++
+    * @param filename the file to execute
+    * @param class_name the class to extract from python for use in C++
+    * @param init_obj the _inittab which has a function pointer to the module to be loaded
+    * @return boost::python::api::object the object containing the Python class for use in C++
     */
     boost::python::api::object embed(const std::string& filename,const std::string& return_name);
 
     /**
-    * \brief loads modules from a vector of _inittab
+    * @brief loads modules from a vector of _inittab
     *
-    * \return true if load was successful
+    * @return true if load was successful
     */
     bool loadModules(std::vector<_inittab> modules);
     
@@ -125,7 +125,7 @@ private:
     // hide default ctor
     ScriptingManager();
     /**
-    * \brief displays error message to commandline and logs
+    * @brief displays error message to commandline and logs
     *
     */
     void getExceptionFromPy();
@@ -133,31 +133,31 @@ private:
     void setFullPath_(const std::string& filename, const std::string& root_path);
     void setFullPath_(const std::string& filename);
     /**
-    * \brief used to get the file input and load into a vector of chars for later processings
+    * @brief used to get the file input and load into a vector of chars for later processings
     * 
-    * \param filename the file to load
+    * @param filename the file to load
     *
-    * \return std::vector<char> inputstream converted to vector of chars.
+    * @return std::vector<char> inputstream converted to vector of chars.
     */
     std::vector<char> getFileInput_(const std::string& filename);
 
     // base path set by the default ctor
     std::string base_path_;
     /**
-    * \brief helper function to take in base filename and return full path
+    * @brief helper function to take in base filename and return full path
     *
-    * \param filename to add to base path
-    * \return char* of full path after adding filename
+    * @param filename to add to base path
+    * @return char* of full path after adding filename
     */
     char* fullPath_(const std::string& filename);
 
     /**
-    * \brief full path including .py
+    * @brief full path including .py
     */
     std::string full_path_;
 
     /**
-    * \brief a std::map containing the name and boost python object
+    * @brief a std::map containing the name and boost python object
     *   of all loaded files
     */
     bp_object_map loaded_files_; 

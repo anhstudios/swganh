@@ -59,7 +59,7 @@ namespace network {
 namespace soe {
 
 /**
- * \brief An estabilished connection between a SOE Client and a SOE Service.
+ * @brief An estabilished connection between a SOE Client and a SOE Service.
  */
 class Session : public std::enable_shared_from_this<Session> {
 public:
@@ -70,7 +70,7 @@ public:
     ~Session();
 
     /**
-    * \return The current send sequence for the server.
+    * @return The current send sequence for the server.
     */
     uint16_t server_sequence() const;
 
@@ -94,7 +94,7 @@ public:
     void crc_seed(uint32_t crc_seed);
 
     /**
-     * \return The crc seed used to encrypt this session's messages.
+     * @return The crc seed used to encrypt this session's messages.
      */
     uint32_t crc_seed() const;
 
@@ -102,7 +102,7 @@ public:
      * Get a list of all outgoing data channel messages that have not yet been acknowledged
      * by the remote end.
      *
-     * \return List of unacknowledged data channel messages.
+     * @return List of unacknowledged data channel messages.
      */
     std::vector<std::shared_ptr<anh::ByteBuffer>> GetUnacknowledgedMessages() const;
 
@@ -113,7 +113,7 @@ public:
     * remote end. This call can result in multiple packets being generated depending on
     * the size of the payload and whether or not it needs to be fragmented.
     *
-    * \param message The payload to send in the data channel message(s).
+    * @param message The payload to send in the data channel message(s).
     */
     void SendTo(anh::ByteBuffer message);
 
@@ -124,7 +124,7 @@ public:
     * remote end. This call can result in multiple packets being generated depending on
     * the size of the payload and whether or not it needs to be fragmented.
     *
-    * \param message The payload to send in the data channel message(s).
+    * @param message The payload to send in the data channel message(s).
     */
     template<typename T>
     void SendTo(const T& message) {
