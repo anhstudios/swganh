@@ -25,7 +25,7 @@ namespace scripting {
             } 
             catch (boost::python::error_already_set &) 
             {
-                PyErr_Print();
+                GetPythonException();
             }   
         }
 		void SetImport(const std::string& import)
@@ -36,6 +36,8 @@ namespace scripting {
         boost::python::object GetGlobals() { return globals_; }
     private:
         PythonScript();
+
+        void GetPythonException();
 
         void ReadFileContents();
 
