@@ -108,8 +108,7 @@ FUNCTION(AddANHPythonBinding name)
     SET_TARGET_PROPERTIES(${name}
         PROPERTIES OUTPUT_NAME py_${base_name}
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        PREFIX ""
-        SUFFIX ".pyd")
+        PREFIX "")
 
     IF(_project_deps_list_length GREATER 0)
         ADD_DEPENDENCIES(${name} ${ANHPYTHONLIB_DEPENDS})
