@@ -185,7 +185,7 @@ FUNCTION(AddANHLibrary name)
     	        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tests.vcxproj.user @ONLY)
 
             if(ENABLE_TEST_REPORT)                
-                foreach(configuration Debug Release MinSizeRel RelWithDebInfo)
+                foreach(configuration ${CMAKE_CONFIGURATION_TYPES})
                     add_test(
                         NAME all_${name}_tests_${configuration}
                         CONFIGURATIONS ${configuration}
