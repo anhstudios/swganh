@@ -25,16 +25,6 @@
 using namespace boost::python;
 using namespace std;
 
-void exportObject();
-void exportTangible();
-void exportCreature();
-void exportPlayer();
-void exportObjectController();
-void exportOutOfBand();
-void exportVec3();
-void exportQuat();
-void exportSWGANHKernel();
-void exportCombatService();
 
 BOOST_PYTHON_MODULE(py_swganh) {
     docstring_options local_docstring_options(true, true, false);
@@ -44,9 +34,9 @@ BOOST_PYTHON_MODULE(py_swganh) {
     exportCreature();
     exportPlayer();
     exportObjectController();
-    exportVec3();
-    exportQuat();
     exportOutOfBand();
     exportSWGANHKernel();
     exportCombatService();
+    swganh::scripting::define_class_glm_vec3();
+    swganh::scripting::define_class_glm_quat();
 }
