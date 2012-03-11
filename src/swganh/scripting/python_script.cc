@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 
 #include <boost/log/trivial.hpp>
