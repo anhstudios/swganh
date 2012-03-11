@@ -185,7 +185,7 @@ FUNCTION(AddANHLibrary name)
     	        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tests.vcxproj.user @ONLY)
 
             if(ENABLE_TEST_REPORT)                
-                foreach(configuration Debug Release MinSizeRel RelWithDebInfo)
+                foreach(configuration ${CMAKE_CONFIGURATION_TYPES})
                     add_test(
                         NAME all_${name}_tests_${configuration}
                         CONFIGURATIONS ${configuration}
@@ -197,8 +197,7 @@ FUNCTION(AddANHLibrary name)
         ELSE()
             IF(ENABLE_TEST_REPORT)
                 add_test(
-                    NAME all_${name}_tests_${configuration}
-                    CONFIGURATIONS ${configuration}
+                    NAME all_${name}_tests
                     COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${name}_test "--gtest_output=xml:${PROJECT_BINARY_DIR}/reports/$<CONFIGURATION>/"
                 )
             ENDIF()
