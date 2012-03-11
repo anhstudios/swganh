@@ -159,14 +159,19 @@ void CommandService::ProcessCommand(
     const CommandHandler& handler
     )
 {
-    if (ValidateCommand(actor, target, command, properties, process_filters_))
-    {
-		handler(kernel(), actor, target, command);
-        // Convert the default time to a float of seconds.
-        float default_time = command_properties_map_[command.command_crc].default_time / 1000.0f;
+    try {
+        if (ValidateCommand(actor, target, command, properties, process_filters_))
+        {
+		    handler(kernel(), actor, target, command);
+            // Convert the default time to a float of seconds.
+            float default_time = command_properties_map_[command.command_crc].default_time / 1000.0f;
 
-        SendCommandQueueRemove(actor, command.action_counter, default_time, 0, 0);
+            SendCommandQueueRemove(actor, command.action_counter, default_time, 0, 0);
+        }
+    } catch(const exception& e) {
+        BOOST_LOG_TRIVIAL(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].name << "\n" << e.what();
     }
+
 }
 
 void CommandService::onStart()

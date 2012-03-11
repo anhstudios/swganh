@@ -175,47 +175,59 @@ void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)
     auto session = shared_from_this();
     strand_.post([=] ()
     {
-        switch(message->peek<uint16_t>(true))
-        {
-            case CHILD_DATA_A:	   { ChildDataA child_data_a(*message); session->handleChildDataA_(child_data_a); break; }
-            case MULTI_PACKET:	   { MultiPacket multi_packet(*message); session->handleMultiPacket_(multi_packet); break; }
-            case DATA_FRAG_A:	   { DataFragA data_frag_a(*message); session->handleDataFragA_(data_frag_a); break; }
-            case ACK_A:			   { AckA ack_a(*message); session->handleAckA_(ack_a); break; }
-            case PING:			   { Ping ping(*message); session->handlePing_(ping); break; }
-            case NET_STATS_CLIENT: { NetStatsClient net_stats_client(*message); session->handleNetStatsClient_(net_stats_client); break; }
-            case OUT_OF_ORDER_A:   { OutOfOrderA out_of_order_a(*message); session->handleOutOfOrderA_(out_of_order_a); break; }
-            case DISCONNECT:	   { Disconnect disconnect(*message); session->handleDisconnect_(disconnect); break; }
-            case SESSION_REQUEST:  { SessionRequest session_request(*message); session->handleSessionRequest_(session_request); break; }
-            case FATAL_ERROR:      { session->Close(); break; }
-            default:
-                if (message->peek<uint8_t>() != 0)
-                {
-                    server_->HandleMessage(session, message);
-                }
-                else
-                {
-                    BOOST_LOG_TRIVIAL(warning) << "Unhandled SOE Opcode: " << std::hex << message->peek<uint16_t>(true)
-                        << "\n\n" << message;
-                }
+        try {
+            switch(message->peek<uint16_t>(true))
+            {
+                case CHILD_DATA_A:	   { ChildDataA child_data_a(*message); session->handleChildDataA_(child_data_a); break; }
+                case MULTI_PACKET:	   { MultiPacket multi_packet(*message); session->handleMultiPacket_(multi_packet); break; }
+                case DATA_FRAG_A:	   { DataFragA data_frag_a(*message); session->handleDataFragA_(data_frag_a); break; }
+                case ACK_A:			   { AckA ack_a(*message); session->handleAckA_(ack_a); break; }
+                case PING:			   { Ping ping(*message); session->handlePing_(ping); break; }
+                case NET_STATS_CLIENT: { NetStatsClient net_stats_client(*message); session->handleNetStatsClient_(net_stats_client); break; }
+                case OUT_OF_ORDER_A:   { OutOfOrderA out_of_order_a(*message); session->handleOutOfOrderA_(out_of_order_a); break; }
+                case DISCONNECT:	   { Disconnect disconnect(*message); session->handleDisconnect_(disconnect); break; }
+                case SESSION_REQUEST:  { SessionRequest session_request(*message); session->handleSessionRequest_(session_request); break; }
+                case FATAL_ERROR:      { session->Close(); break; }
+                default:
+                    if (message->peek<uint8_t>() != 0)
+                    {
+                        server_->HandleMessage(session, message);
+                    }
+                    else
+                    {
+                        BOOST_LOG_TRIVIAL(warning) << "Unhandled SOE Opcode: " << std::hex << message->peek<uint16_t>(true)
+                            << "\n\n" << message;
+                    }
+            }
+            
+        } catch(const std::exception& e) {
+            BOOST_LOG_TRIVIAL(warning) << "Error handling protocol message " << std::hex << message->peek<uint16_t>(true)
+                << "\n\n" << e.what();
         }
     });
 }
 
 void Session::HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& message)
 {
+    
     auto session = shared_from_this();
     strand_.post([=] ()
     {
-        security_filter_(session, message);
+        try {
+            security_filter_(session, message);
 
-        if (connected())
-        {
-            crc_input_filter_(session, message);
-            decryption_filter_(session, message);
-            decompression_filter_(session, message);
+            if (connected())
+            {
+                crc_input_filter_(session, message);
+                decryption_filter_(session, message);
+                decompression_filter_(session, message);
+            }
+
+            HandleMessage(message);
+        } catch(const std::exception& e) {
+            BOOST_LOG_TRIVIAL(warning) << "Error handling protocol message " << std::hex << message->peek<uint16_t>(true)
+                << "\n\n" << e.what();
         }
-
-        HandleMessage(message);
     });
 }
 
