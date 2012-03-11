@@ -17,7 +17,7 @@ set(SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
 set(SPHINX_HTML_DIR "${CMAKE_BINARY_DIR}/docs/html")
 	
 if(WIN32)
-    foreach(configuration Debug Release MinSizeRel RelWithDebInfo)    
+    foreach(configuration ${CMAKE_CONFIGURATION_TYPES})    
         configure_file(
 	        "${CMAKE_CURRENT_SOURCE_DIR}/conf.py.in"
 	        "${BINARY_BUILD_DIR}/${configuration}/conf.py"
