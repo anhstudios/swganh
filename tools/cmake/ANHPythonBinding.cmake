@@ -103,12 +103,18 @@ FUNCTION(AddANHPythonBinding name)
         LINK_DIRECTORIES(${ANHPYTHONLIB_ADDITIONAL_LIBRARY_DIRS})
     ENDIF()
 
+    if(WIN32)
+        set(BINDING_POSTFIX .pyd)
+    endif()
+
     # Create the Common library
     ADD_LIBRARY(${name} SHARED ${ANHPYTHONLIB_SOURCES})
     SET_TARGET_PROPERTIES(${name}
         PROPERTIES OUTPUT_NAME py_${base_name}
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-        PREFIX "")
+        PREFIX ""
+        SUFFIX "${BINDING_POSTFIX}"
+    )
 
     IF(_project_deps_list_length GREATER 0)
         ADD_DEPENDENCIES(${name} ${ANHPYTHONLIB_DEPENDS})
