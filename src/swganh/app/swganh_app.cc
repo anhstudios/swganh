@@ -185,9 +185,7 @@ void SwganhApp::Stop() {
     kernel_->GetIoService().stop();
     
     // join the threadpool threads until each one has exited.
-    for_each(io_threads_.begin(), io_threads_.end(), [] (shared_ptr<boost::thread> t) {
-        t->join();
-    });
+    for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
 }
 
 bool SwganhApp::IsRunning() {

@@ -5,10 +5,7 @@
 
 Services
 ==================================================	
-.. toctree::
-	CombatService
-	
-	
+
 .. automodule:: py_swganh
 .. autoclass:: CombatService
 	:members:
