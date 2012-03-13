@@ -156,7 +156,9 @@ void SwganhApp::Start() {
     boost::asio::io_service::work io_work(kernel_->GetIoService());
 
     // Start up a threadpool for running io_service based tasks/active objects
-    for (uint32_t i = 0; i < boost::thread::hardware_concurrency(); ++i) {
+    // The increment starts at 1 because the main thread of execution already counts
+    // as thread in use.
+    for (uint32_t i = 1; i < boost::thread::hardware_concurrency(); ++i) {
         auto t = make_shared<boost::thread>([this] () {
             kernel_->GetIoService().run();
         });
