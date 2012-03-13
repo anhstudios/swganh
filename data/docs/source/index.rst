@@ -6,6 +6,7 @@ Contents:
 .. toctree::
    :maxdepth: 6
    
+   Installation Guide (Windows) <install_guide_windows>
    Installation Guide (Linux) <install_guide_linux>
    
    Scripting in SWGANH <intro>
