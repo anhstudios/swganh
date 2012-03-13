@@ -1,6 +1,6 @@
-=================
-Linux Setup Guide
-=================
+===================
+Linux Install Guide
+===================
 
 This chapter cover's the setup of SWGANH from source in a linux environment. This particular guide cover's installation using Ubuntu and should apply directly to most debian based flavors. Other flavors of linux should at minimum support GCC 4.6 and Python3.
 
@@ -43,7 +43,7 @@ The remaining dependencies require a little extra work to install properly on an
     
 .. NOTE::
     
-    It is important that Sphinx is installed with support for Python3. The key to this is ensuring you install Sphinx using an easy_install (via the setuptools package) that was built against Python 3.
+    It is important that Sphinx is installed with support for Python3. The key to this is ensuring you install Sphinx using an easy_install (via the distribute package) that was built against Python 3.
 
 Next up is Boost which needs to be linked specifically against Python3 so requires manual compilation and installation. In addition we make use of Boost-Log, a logging library that has been officially accepted into Boost but is currently in an incubation period. The interface is stable however and meets our requirments for logging.
 
