@@ -4,7 +4,7 @@ Welcome to SWGANH documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 1
    
    Installation Guide (Windows) <install_guide_windows>
    Installation Guide (Linux) <install_guide_linux>
