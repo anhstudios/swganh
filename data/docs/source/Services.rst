@@ -5,10 +5,7 @@
 
 Services
 ==================================================	
-.. toctree::
-	CombatService
-	
-	
+
 .. automodule:: bindings.combat
 .. autoclass:: CombatService
 	:members:
