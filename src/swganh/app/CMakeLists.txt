@@ -1,13 +1,10 @@
-#python directories
-add_subdirectory(app)
-add_subdirectory(object)
-add_subdirectory(combat)
+include(ANHPythonBinding)
 
-include(ANHExecutable)
-
-AddANHExecutable(swganh
+AddANHPythonBinding(app
+	ONLY_BINDINGS ON
     DEPENDS 
-        anh_lib
+		anh_lib
+        swganh_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}

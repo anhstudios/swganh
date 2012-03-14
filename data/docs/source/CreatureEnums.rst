@@ -5,7 +5,7 @@
 
 Creature Enums
 ==================================================	
-.. currentmodule:: py_swganh
+.. currentmodule:: bindings.object
 .. autoclass:: POSTURE
 
 	* UPRIGHT

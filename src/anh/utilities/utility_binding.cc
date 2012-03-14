@@ -11,4 +11,5 @@ BOOST_PYTHON_MODULE(py_utility)
 
     define_class_glm_vec3();
     define_class_glm_quat();
+    
 }

@@ -8,6 +8,6 @@ Player
 .. toctree::
 	PlayerEnums
 	
-.. automodule:: py_swganh
+.. automodule:: bindings.object
 .. autoclass:: Player
 	:members:

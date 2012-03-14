@@ -5,7 +5,7 @@
 
 ObjectController
 ==================================================	
-.. automodule:: py_swganh
+.. automodule:: bindings.object
 .. autoclass:: ObjectController
 	:members:
 	:inherited-members:

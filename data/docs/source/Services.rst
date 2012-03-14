@@ -9,7 +9,7 @@ Services
 	CombatService
 	
 	
-.. automodule:: py_swganh
+.. currentmodule:: bindings.combat
 .. autoclass:: CombatService
 	:members:
 	:inherited-members:
