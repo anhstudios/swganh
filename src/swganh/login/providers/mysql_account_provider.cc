@@ -29,7 +29,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager.h"
 
@@ -39,7 +39,7 @@ using namespace providers;
 using namespace swganh::login;
 using namespace std;
 
-MysqlAccountProvider::MysqlAccountProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+MysqlAccountProvider::MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager)
     : AccountProviderInterface()
     , db_manager_(db_manager) {}
 
@@ -53,7 +53,7 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
         auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);
-        auto result_set = statement->executeQuery();
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
             account = make_shared<Account>(true);
@@ -70,14 +70,13 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
 
             account->algorithm("sha1");
         } else {
-            DLOG(WARNING) << "No account information found for user: " << username << endl;
+            BOOST_LOG_TRIVIAL(warning) << "No account information found for user: " << username << endl;
         }
 
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-
     return account;
 }
 uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
@@ -88,18 +87,18 @@ uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
         auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, session_key);
-        auto result_set = statement->executeQuery();
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
             account_id = result_set->getInt("account");
             
         } else {
-            DLOG(WARNING) << "No account found for session_key: " << session_key << endl;
+            BOOST_LOG_TRIVIAL(warning) << "No account found for session_key: " << session_key << endl;
         }
 
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
      return account_id;
 }
@@ -116,8 +115,8 @@ bool MysqlAccountProvider::CreateAccountSession(uint32_t account_id, const std::
             success = true;
 
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return success;
@@ -139,8 +138,8 @@ bool MysqlAccountProvider::AutoRegisterAccount(std::string username, std::string
 				success = true;
 		}
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return success;
@@ -157,8 +156,8 @@ bool MysqlAccountProvider::CreatePlayerAccount(uint64_t account_id)
         if (rows_updated > 0)
             success = true;
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return success;

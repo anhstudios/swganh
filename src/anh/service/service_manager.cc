@@ -23,7 +23,7 @@
 using namespace anh::service;
 using namespace std;
 
-ServiceManager::ServiceManager(const shared_ptr<ServiceDirectoryInterface>& service_directory) 
+ServiceManager::ServiceManager(ServiceDirectoryInterface* service_directory) 
     : service_directory_(service_directory)
 {}
 

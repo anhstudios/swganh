@@ -7,13 +7,13 @@
 #include <vector>
 
 #include "swganh/object/object.h"
-#include "swganh/object/tangible/base_tangible.h"
+#include "swganh/object/tangible/tangible.h"
 
 namespace swganh {
 namespace object {
 namespace installation {
 
-class Installation : public swganh::object::tangible::BaseTangible
+class Installation : public swganh::object::tangible::Tangible
 {
 public:
     struct Resource
@@ -31,7 +31,7 @@ public:
 
 public:
     /**
-     * @returns The type of this object instance.
+     * @return The type of this object instance.
      */
     uint32_t GetType() const;
     const static uint32_t type = 0x2FB6FB8C;
@@ -251,7 +251,7 @@ private:
     float max_extraction_rate_;
     float current_extraction_rate_;
     float current_hopper_size_;
-    uint32_t max_hopper_size_;
+    float max_hopper_size_;
     bool is_updating_;
     std::vector<HopperItem> hopper_;
     uint8_t condition_percent_;

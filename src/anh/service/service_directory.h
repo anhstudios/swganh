@@ -33,7 +33,7 @@
 #include "anh/service/service_directory_interface.h"
 
 // Forward Declare
-namespace anh { namespace event_dispatcher { class EventDispatcherInterface; }  }
+namespace anh { class EventDispatcher; }
 
 namespace anh {
 namespace service {
@@ -58,10 +58,10 @@ public:
 class ServiceDirectory : public ServiceDirectoryInterface{
 public:
     ServiceDirectory(std::shared_ptr<DatastoreInterface> datastore, 
-        std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+        anh::EventDispatcher* event_dispatcher);
     ServiceDirectory(std::shared_ptr<DatastoreInterface> datastore, 
-        std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher
-        , const std::string& galaxy_name, const std::string& version = "", bool create_galaxy = false);
+        anh::EventDispatcher* event_dispatcher, const std::string& galaxy_name, 
+        const std::string& version = "", bool create_galaxy = false);
 
     Galaxy galaxy() const;
     ServiceDescription service() const;
@@ -91,7 +91,7 @@ private:
 
     boost::recursive_mutex mutex_;
 
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>    event_dispatcher_;
+    anh::EventDispatcher* event_dispatcher_;
 };
 
 }  // namespace service

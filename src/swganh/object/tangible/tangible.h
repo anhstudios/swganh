@@ -2,29 +2,157 @@
 #ifndef SWGANH_OBJECT_TANGIBLE_TANGIBLE_H_
 #define SWGANH_OBJECT_TANGIBLE_TANGIBLE_H_
 
+#include <cstdint>
 #include <set>
+#include <string>
+#include <vector>
+#include <list>
 
 #include "swganh/object/object.h"
-#include "swganh/object/tangible/base_tangible.h"
+#include "swganh/messages/containers/network_sorted_vector.h"
+#include "swganh/messages/containers/network_list.h"
 
 namespace swganh {
 namespace object {
 namespace tangible {
+
+enum StaticType {
+    MOVEABLE = 0,
+    STATIC
+};
+
+struct Defender
+{
+    Defender()
+        : object_id(0)
+    {}
+
+    Defender(uint64_t object_id_)
+        : object_id(object_id_)
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint64_t>(object_id);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint64_t>(object_id);
+    }
+
+    bool operator==(const Defender& other)
+    {
+        return other.object_id == object_id;
+    }
+
+    uint64_t object_id;
+};
+
+struct ComponentCustomization
+{
+    ComponentCustomization(uint32_t component_customization_crc_)
+        : component_customization_crc(component_customization_crc_)
+    {}
+
+    ~ComponentCustomization(void)
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint32_t>(component_customization_crc);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint32_t>(component_customization_crc);
+    }
+
+    bool operator==(const ComponentCustomization& other)
+    {
+        return component_customization_crc == other.component_customization_crc;
+    }
+
+    uint32_t component_customization_crc;
+};
+
+class TangibleMessageBuilder;
+
 /**
-*   @brief Tangible Object
-*   @inherits BaseTangible
-*/
-class Tangible : public BaseTangible
+ * 
+ */
+class Tangible : public swganh::object::Object
 {
 public:
-    Tangible();
-
     // TANO
     virtual uint32_t GetType() const { return Tangible::type; }
     const static uint32_t type = 0x54414e4f;
 
-private:
+    Tangible();
+    Tangible(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
+        uint32_t incap_timer, uint32_t damage_amount, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders);
+
+    // Customization
+    void AddCustomization(const std::string& customization);
+    void SetCustomization(const std::string& customization);
+    std::string GetCustomization();
+
+    // Component Customization
+    swganh::messages::containers::NetworkList<ComponentCustomization> GetComponentCustomization(void);
+    void AddComponentCustomization(uint32_t customization_crc);
+    void RemoveComponentCustomization(uint32_t customization_crc);
+    void ClearComponentCustomization();
     
+    // Options Mask
+    uint32_t GetOptionsMask();
+    void ToggleOption(uint32_t option);
+    void SetOptionsMask(uint32_t options);
+
+    // Incap Timer
+    uint32_t GetIncapTimer();
+    void SetIncapTimer(uint32_t incap_timer);
+
+    // Condition
+    uint32_t GetCondition();
+    void SetConditionDamage(uint32_t damage_amount);
+
+    // Max Condition
+    uint32_t GetMaxCondition();
+    void SetMaxCondition(uint32_t max_condition);
+
+    // Static
+    bool IsStatic();
+    void SetStatic(bool is_static);
+
+    // Defenders
+    void AddDefender(uint64_t defender);
+    void RemoveDefender(uint64_t defender);
+    void ResetDefenders(std::vector<uint64_t> defenders);
+    bool IsDefending(uint64_t defender);
+    swganh::messages::containers::NetworkSortedVector<Defender> GetDefenders();
+    void ClearDefenders();
+
+    void ActivateAutoAttack();
+    void ClearAutoAttack();
+    bool IsAutoAttacking();
+
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7();
+private:
+    friend class TangibleMessageBuilder;
+    friend class TangibleFactory;
+
+    std::string customization_;                                                                         // update 3 variable 4
+    swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;    // update 3 variable 5
+    uint32_t options_bitmask_;                                                                          // update 3 variable 6
+    uint32_t incap_timer_;                                                                              // update 3 variable 7
+    uint32_t condition_damage_;                                                                         // update 3 variable 8
+    uint32_t max_condition_;                                                                            // update 3 variable 9
+    bool is_static_;                                                                                    // update 3 variable 10
+    swganh::messages::containers::NetworkSortedVector<Defender> defender_list_;                         // update 6 variable 1
+    // Flag to help out in combat situations
+    bool auto_attack_;
 };
     
 }}}  // namespace swganh::object::tangible

@@ -34,7 +34,7 @@ namespace anh {
  *
  * @param source_string The string to use as the basis for generating the checksum.
  * @param length The length of the source_string.
- * @returns A 32-bit checksum of the string.
+ * @return A 32-bit checksum of the string.
  */
 uint32_t memcrc(const char* source_string, uint32_t length);
 
@@ -46,7 +46,7 @@ uint32_t memcrc(const char* source_string, uint32_t length);
  * @see http://www.opengroup.org/onlinepubs/009695399/utilities/cksum.html
  *
  * @param source_string The string to use as the basis for generating the checksum.
- * @returns A 32-bit checksum of the string.
+ * @return A 32-bit checksum of the string.
  */
 uint32_t memcrc(const std::string& source_string);
 
@@ -58,7 +58,7 @@ uint32_t memcrc(const std::string& source_string);
  * @param source_string The string to use as the basis for generating the checksum.
  * @param length The length of the source_string.
  * @param seed Crc Seed.
- * @returns A 32-bit checksum of the string.
+ * @return A 32-bit checksum of the string.
  */
 uint32_t memcrc(const unsigned char* src_buffer, uint32_t length, uint32_t seed);
 

@@ -8,7 +8,6 @@
 #include "swganh/messages/scene_end_baselines.h"
 #include "swganh/messages/update_containment_message.h"
 #include "swganh/object/object_message_builder.h"
-#include "swganh/network/remote_client.h"
 
 using namespace anh::observer;
 using namespace std;
@@ -61,7 +60,7 @@ void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentTyp
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
     {
-        // @TODO consider whether encountering this scenario is an error
+        /// @TODO consider whether encountering this scenario is an error
         return;
     }
 
@@ -87,7 +86,7 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 
     if (find_iter == contained_objects_.end())
     {
-        // @TODO consider whether encountering this scenario is an error
+        /// @TODO consider whether encountering this scenario is an error
         return;
     }
 
@@ -110,7 +109,7 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     if (aware_objects_.find(object->GetObjectId()) != aware_objects_.end())
     {
-        // @TODO consider whether encountering this scenario is an error
+        /// @TODO consider whether encountering this scenario is an error
 		// someone could be logging back in and we want to make them aware again, so we'll send clean baselines.
 		if (object->HasController()) {
 			MakeClean(object->GetController());
@@ -139,7 +138,7 @@ void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 
     if (find_iter == aware_objects_.end())
     {
-        // @TODO consider whether encountering this scenario is an error
+        /// @TODO consider whether encountering this scenario is an error
         return;
     }
 
@@ -192,7 +191,7 @@ void Object::SetCustomName(wstring custom_name)
     }
 }
 
-BaselinesMessage Object::CreateBaselinesMessage(uint16_t view_type, uint16_t opcount)
+BaselinesMessage Object::CreateBaselinesMessage(uint8_t view_type, uint16_t opcount)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     BaselinesMessage message;
@@ -204,7 +203,7 @@ BaselinesMessage Object::CreateBaselinesMessage(uint16_t view_type, uint16_t opc
     return message;
 }
 
-DeltasMessage Object::CreateDeltasMessage(uint16_t view_type, uint16_t update_type, uint16_t update_count) 
+DeltasMessage Object::CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count) 
 {        
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     DeltasMessage message;
@@ -387,6 +386,14 @@ glm::vec3 Object::GetPosition()
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	return position_;
 }
+bool Object::InRange(glm::vec3 target, float range)
+{
+	if (glm::distance(GetPosition(), target) > range)
+	{
+		return false;
+	}
+	return true;
+}
 void Object::SetOrientation(glm::quat orientation)
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
@@ -483,11 +490,11 @@ uint32_t Object::GetSceneId()
 optional<BaselinesMessage> Object::GetBaseline3()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-	return move(ObjectMessageBuilder::BuildBaseline3(this));
+	return std::move(ObjectMessageBuilder::BuildBaseline3(this));
 }
 
 optional<BaselinesMessage> Object::GetBaseline6()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-	return move(ObjectMessageBuilder::BuildBaseline6(this));
+	return std::move(ObjectMessageBuilder::BuildBaseline6(this));
 }

@@ -23,10 +23,10 @@ public:
     /*! Default destructor */
     ~PingServer();
 
-    /*! @returns Returns the bytes received since the Ping Server was started */
+    /*! @return Returns the bytes received since the Ping Server was started */
     uint64_t BytesReceived() const;
 
-    /*! @returns Returns the bytes sent since the Ping Server was started */
+    /*! @return Returns the bytes sent since the Ping Server was started */
     uint64_t BytesSent() const;
 
 private:

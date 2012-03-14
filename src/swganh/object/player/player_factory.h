@@ -27,7 +27,7 @@ namespace player {
     class PlayerFactory : public swganh::object::ObjectFactory
     {
     public:
-        PlayerFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+        PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
             swganh::simulation::SimulationService* simulation_service);
 
         void LoadTemplates();
@@ -46,23 +46,21 @@ namespace player {
         const static uint32_t type;
     private:
         // Helpers
-        void LoadStatusFlags_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
-        void LoadProfileFlags_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
-        void LoadXP_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
+        void LoadStatusFlags_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
+        void LoadProfileFlags_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
+        void LoadXP_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void PersistXP_(const std::shared_ptr<Player>& player);
-        void LoadWaypoints_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
+        void LoadWaypoints_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void PersistWaypoints_(const std::shared_ptr<Player>& player);
-        void LoadDraftSchematics_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
+        void LoadDraftSchematics_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void PersistDraftSchematics_(const std::shared_ptr<Player>& player);
-        void LoadQuestJournal_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
+        void LoadQuestJournal_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void PersistQuestJournal_(const std::shared_ptr<Player>& player);
-        void LoadForceSensitiveQuests_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
+        void LoadForceSensitiveQuests_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void PersistForceSensitiveQuests_(const std::shared_ptr<Player>& player);
-        void LoadAbilities_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
-        void PersistAbilities_(const std::shared_ptr<Player>& player);
-        void LoadFriends_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
+        void LoadFriends_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void PersistFriends_(const std::shared_ptr<Player>& player);
-        void LoadIgnoredList_(std::shared_ptr<Player> player, std::shared_ptr<sql::ResultSet> result);
+        void LoadIgnoredList_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void PersistIgnoredList_(const std::shared_ptr<Player>& player);
 
         std::unordered_map<std::string, std::shared_ptr<Player>>::iterator GetTemplateIter_(const std::string& template_name);

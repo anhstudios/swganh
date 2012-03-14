@@ -7,7 +7,7 @@ using namespace swganh::object;
 using namespace swganh::object::resource_container;
 using namespace swganh::messages;
 
-ResourceContainer::ResourceContainer() : BaseTangible()
+ResourceContainer::ResourceContainer() : Tangible()
     , current_quantity_(0)
     , global_resource_id_(0)
     , max_quantity_(0)
@@ -18,7 +18,7 @@ ResourceContainer::ResourceContainer() : BaseTangible()
 ResourceContainer::ResourceContainer(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
         uint32_t incap_timer, uint32_t condition_damage, uint32_t max_condition, bool is_static, std::vector<uint64_t> defenders,
         uint32_t current_quantity, uint64_t global_resource_id, uint32_t max_quantity, std::string resource_type, std::wstring name)
-    : BaseTangible(customization, component_customization, bitmask_options, incap_timer, condition_damage, max_condition, is_static, defenders)
+    : Tangible(customization, component_customization, bitmask_options, incap_timer, condition_damage, max_condition, is_static, defenders)
     , current_quantity_(current_quantity)
     , global_resource_id_(global_resource_id)
     , max_quantity_(max_quantity)
@@ -77,7 +77,7 @@ boost::optional<BaselinesMessage> ResourceContainer::GetBaseline3()
     auto message = CreateBaselinesMessage(Object::VIEW_3, 13);
     
     // base data
-    message.data.append(BaseTangible::GetBaseline3().get().data);
+    message.data.append(Tangible::GetBaseline3().get().data);
     message.data.write(GetCurrentQuantity());
     message.data.write(GetGlobalResource());
 
@@ -88,7 +88,7 @@ boost::optional<BaselinesMessage> ResourceContainer::GetBaseline6()
     auto message = CreateBaselinesMessage(Object::VIEW_6, 5);
     
     // base data
-    message.data.append(BaseTangible::GetBaseline6().get().data);
+    message.data.append(Tangible::GetBaseline6().get().data);
     message.data.write(GetMaxQuantity());
     message.data.write(GetResourceType());
     message.data.write(GetResourceName());

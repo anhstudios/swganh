@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -21,41 +21,42 @@
 #ifndef ANH_NETWORK_SOE_SESSION_H_
 #define ANH_NETWORK_SOE_SESSION_H_
 
-#include <array>
-#include <functional>
+#include <atomic>
 #include <list>
 #include <memory>
 #include <vector>
 
-#include <tbb/atomic.h>
+#ifdef WIN32
+#include <concurrent_queue.h>
+#else
 #include <tbb/concurrent_queue.h>
+
+namespace Concurrency {
+    using ::tbb::concurrent_queue;
+}
+
+#endif
 
 #include <boost/asio.hpp>
 
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/protocol_packets.h"
 #include "anh/network/soe/server_interface.h"
 
-#ifdef SendMessage
-#undef SendMessage
-#endif
+#include "anh/network/soe/filters/crc_in_filter.h"
+#include "anh/network/soe/filters/decryption_filter.h"
+#include "anh/network/soe/filters/decompression_filter.h"
+#include "anh/network/soe/filters/compression_filter.h"
+#include "anh/network/soe/filters/crc_out_filter.h"
+#include "anh/network/soe/filters/encryption_filter.h"
+#include "anh/network/soe/filters/security_filter.h"
 
 namespace anh {
 
 // FORWARD DECLARATIONS
 class ByteBuffer;
-namespace event_dispatcher { class EventInterface; }
 
 namespace network {
 namespace soe {
-
-typedef std::function<void (uint32_t, std::shared_ptr<ByteBuffer>)> DatachannelHandler;
-
-class Session;
-
-struct SessionData {
-    std::shared_ptr<Session> session;    
-};
 
 /**
  * @brief An estabilished connection between a SOE Client and a SOE Service.
@@ -65,8 +66,8 @@ public:
     /**
      * Adds itself to the Session Manager.
      */
-    Session(boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface* server);
-    ~Session(void);
+    Session(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
+    ~Session();
 
     /**
     * @return The current send sequence for the server.
@@ -86,7 +87,7 @@ public:
      * Set the crc length for footers
      */
     void crc_length(uint32_t crc_length);
-    
+
     /**
      * Sets the crc seed used to encrypt this session's messages.
      */
@@ -97,45 +98,45 @@ public:
      */
     uint32_t crc_seed() const;
 
-    void datachannel_handler(DatachannelHandler handler);
-
     /**
      * Get a list of all outgoing data channel messages that have not yet been acknowledged
      * by the remote end.
      *
      * @return List of unacknowledged data channel messages.
      */
-    std::vector<std::shared_ptr<anh::ByteBuffer>> GetUnacknowledgedMessages() const;    
+    std::vector<std::shared_ptr<anh::ByteBuffer>> GetUnacknowledgedMessages() const;
 
     /**
     * Sends a data channel message to the remote client.
     *
-    * Increases the server sequence count by 1 for each individual packet sent to the 
-    * remote end. This call can result in multiple packets being generated depending on 
+    * Increases the server sequence count by 1 for each individual packet sent to the
+    * remote end. This call can result in multiple packets being generated depending on
     * the size of the payload and whether or not it needs to be fragmented.
     *
     * @param message The payload to send in the data channel message(s).
     */
-    void SendMessage(anh::ByteBuffer message);
-    
+    void SendTo(anh::ByteBuffer message);
+
     /**
     * Sends a data channel message to the remote client.
     *
-    * Increases the server sequence count by 1 for each individual packet sent to the 
-    * remote end. This call can result in multiple packets being generated depending on 
+    * Increases the server sequence count by 1 for each individual packet sent to the
+    * remote end. This call can result in multiple packets being generated depending on
     * the size of the payload and whether or not it needs to be fragmented.
     *
     * @param message The payload to send in the data channel message(s).
     */
     template<typename T>
-    void SendMessage(const T& message) {
+    void SendTo(const T& message) {
         auto message_buffer = server_->AllocateBuffer();
         message.serialize(*message_buffer);
-        
+
         outgoing_data_messages_.push(message_buffer);
     }
 
-    void HandleMessage(anh::ByteBuffer& message);
+    void HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message);
+
+    void HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& message);
 
     /**
      * Clears each message pump.
@@ -153,15 +154,16 @@ public:
 
     boost::asio::ip::udp::endpoint& remote_endpoint() { return remote_endpoint_; }
 
-    ServerInterface* server() { return server_; }
+    ServerInterface* server();
 
 private:
     typedef std::list<std::pair<uint16_t, std::shared_ptr<anh::ByteBuffer>>> SequencedMessageMap;
-    //typedef	std::map<uint16_t, std::shared_ptr<anh::ByteBuffer>>				SequencedMessageMap;
-    
-    typedef std::function<anh::ByteBuffer(uint16_t)> HeaderBuilder;
 
-    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message);    
+    typedef anh::ByteBuffer(*HeaderBuilder)(uint16_t);
+
+    void SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message);
+
+    virtual void OnClose() {}
 
     void handleSessionRequest_(SessionRequest& packet);
     void handleMultiPacket_(MultiPacket& packet);
@@ -172,21 +174,18 @@ private:
     void handleDataFragA_(DataFragA& packet);
     void handleAckA_(AckA& packet);
     void handleOutOfOrderA_(OutOfOrderA& packet);
-
-    void SendSoePacket_(std::shared_ptr<anh::ByteBuffer> message);
+    void SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message);
 
     bool SequenceIsValid_(const uint16_t& sequence);
     void AcknowledgeSequence_(const uint16_t& sequence);
 
     boost::asio::ip::udp::endpoint		remote_endpoint_; // ip_address
     ServerInterface*					server_; // owner
-
+    boost::asio::strand strand_;
 
     SequencedMessageMap					sent_messages_;
 
     bool								connected_;
-
-    std::shared_ptr<DatachannelHandler> datachannel_handler_;
 
     // SOE Session Variables
     uint32_t							connection_id_;
@@ -198,20 +197,26 @@ private:
     uint16_t							last_acknowledged_sequence_;
     uint16_t							next_client_sequence_;
     uint16_t							current_client_sequence_;
-    tbb::atomic<uint16_t>				server_sequence_;
+    std::atomic<uint16_t>				server_sequence_;
 
     uint32_t							next_frag_size_;
 
     // Net Stats
     NetStatsServer						server_net_stats_;
 
-    ChildDataA							outgoing_data_message_;
-    
-    tbb::concurrent_queue<std::shared_ptr<anh::ByteBuffer>> outgoing_data_messages_;
+    Concurrency::concurrent_queue<std::shared_ptr<anh::ByteBuffer>> outgoing_data_messages_;
 
     std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
     uint16_t							incoming_fragmented_total_len_;
     uint16_t							incoming_fragmented_curr_len_;
+
+    filters::CompressionFilter compression_filter_;
+    filters::CrcInFilter crc_input_filter_;
+    filters::CrcOutFilter crc_output_filter_;
+    filters::DecompressionFilter decompression_filter_;
+    filters::DecryptionFilter decryption_filter_;
+    filters::EncryptionFilter encryption_filter_;
+    filters::SecurityFilter security_filter_;
 };
 
 }}} // namespace anh::network::soe

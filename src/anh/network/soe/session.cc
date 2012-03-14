@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -22,16 +22,10 @@
 
 #include <algorithm>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
-#include "anh/event_dispatcher/basic_event.h"
-
-#include "anh/network/soe/socket.h"
-#include "anh/network/soe/session_manager.h"
 #include "anh/network/soe/server_interface.h"
 
-#include "anh/network/soe/protocol_opcodes.h"
 #include "anh/network/soe/packet_utilities.h"
 
 using namespace anh;
@@ -40,20 +34,22 @@ using namespace anh::network;
 using namespace anh::network::soe;
 using namespace std;
 
-Session::Session(boost::asio::ip::udp::endpoint remote_endpoint, ServerInterface* server)
+Session::Session(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
     : std::enable_shared_from_this<Session>()
     , remote_endpoint_(remote_endpoint)
-    , connected_(false)
     , server_(server)
+    , strand_(io_service)
+    , connected_(false)
     , crc_seed_(0xDEADBABE)
-    , server_net_stats_(0, 0, 0, 0, 0, 0)
     , last_acknowledged_sequence_(0)
-    , current_client_sequence_(0)
     , next_client_sequence_(0)
+    , current_client_sequence_(0)
     , server_sequence_()
-    , outgoing_data_message_(0)
+    , server_net_stats_(0, 0, 0, 0, 0, 0)
     , incoming_fragmented_total_len_(0)
     , incoming_fragmented_curr_len_(0)
+    , decompression_filter_(server_->max_receive_size())
+    , security_filter_(server_->max_receive_size())
 {
     server_sequence_ = 0;
 }
@@ -62,7 +58,7 @@ Session::~Session(void)
 {
     Close();
 
-    LOG(WARNING) << "Session [" << connection_id_ << "] Closed.";
+    BOOST_LOG_TRIVIAL(info) << "Session closed: " << connection_id_;
 }
 
 uint16_t Session::server_sequence() const {
@@ -93,17 +89,13 @@ uint32_t Session::crc_seed() const {
     return crc_seed_;
 }
 
-void Session::datachannel_handler(DatachannelHandler handler) {
-    datachannel_handler_ = make_shared<DatachannelHandler>(handler);
-}
-
 vector<shared_ptr<ByteBuffer>> Session::GetUnacknowledgedMessages() const {
     vector<shared_ptr<ByteBuffer>> unacknowledged_messages;
 
     for_each(
-        sent_messages_.begin(), 
-        sent_messages_.end(), 
-        [&unacknowledged_messages] (const SequencedMessageMap::value_type& i) 
+        sent_messages_.begin(),
+        sent_messages_.end(),
+        [&unacknowledged_messages] (const SequencedMessageMap::value_type& i)
     {
         unacknowledged_messages.push_back(i.second);
     });
@@ -113,7 +105,7 @@ vector<shared_ptr<ByteBuffer>> Session::GetUnacknowledgedMessages() const {
 
 void Session::Update() {
     // Exit as quickly as possible if there is no work currently.
-    if (!connected_ || outgoing_data_messages_.empty()) {
+    if (outgoing_data_messages_.empty()) {
         return;
     }
 
@@ -130,28 +122,28 @@ void Session::Update() {
 
     // Pack the message list into a single data channel payload and send it.
     ByteBuffer data_channel_payload = PackDataChannelMessages(process_list);
-    
+
     // Split up the message if it's too big
-    // @note: in determining the max size 3 is the size of the soe header + the compression flag.
+    // \note: in determining the max size 3 is the size of the soe header + the compression flag.
     uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 3;
 
     if (data_channel_payload.size() > max_data_channel_size) {
         list<ByteBuffer> fragmented_message = SplitDataChannelMessage(
-            data_channel_payload, 
+            data_channel_payload,
             max_data_channel_size);
 
         for_each(fragmented_message.begin(), fragmented_message.end(), [this] (ByteBuffer& fragment) {
             SendSequencedMessage_(&BuildFragmentedDataChannelHeader, move(fragment));
         });
-    } else {        
+    } else {
         SendSequencedMessage_(&BuildDataChannelHeader, move(data_channel_payload));
     }
 }
 
-void Session::SendMessage(ByteBuffer message) {
+void Session::SendTo(ByteBuffer message) {
     auto message_buffer = server_->AllocateBuffer();
     message_buffer->swap(message);
-    
+
     outgoing_data_messages_.push(message_buffer);
 }
 
@@ -160,43 +152,85 @@ void Session::Close(void)
     if(connected_)
     {
         connected_ = false;
-        server_->RemoveSession(shared_from_this());
 
         Disconnect disconnect(connection_id_);
         auto buffer = server_->AllocateBuffer();
 
         disconnect.serialize(*buffer);
         SendSoePacket_(buffer);
+
+        server_->RemoveSession(shared_from_this());
+
+        OnClose();
     }
 }
 
-void Session::HandleMessage(anh::ByteBuffer& message)
+ServerInterface* Session::server()
 {
-    switch(message.peek<uint16_t>(true))
-    {
-        case CHILD_DATA_A:	   { ChildDataA child_data_a(message); handleChildDataA_(child_data_a); break; }
-        case MULTI_PACKET:	   { MultiPacket multi_packet(message); handleMultiPacket_(multi_packet); break; }
-        case DATA_FRAG_A:	   { DataFragA data_frag_a(message); handleDataFragA_(data_frag_a); break; }
-        case ACK_A:			   { AckA ack_a(message); handleAckA_(ack_a); break; }
-        case PING:			   { Ping ping(message); handlePing_(ping); break; }
-        case NET_STATS_CLIENT: { NetStatsClient net_stats_client(message); handleNetStatsClient_(net_stats_client); break; }
-        case OUT_OF_ORDER_A:   { OutOfOrderA out_of_order_a(message); handleOutOfOrderA_(out_of_order_a); break; }
-        case DISCONNECT:	   { Disconnect disconnect(message); handleDisconnect_(disconnect); break; }
-        case SESSION_REQUEST:  { SessionRequest session_request(message); handleSessionRequest_(session_request); break; }
-        case FATAL_ERROR:      { Close(); break; }
-        default:
-            if (message.peek<uint8_t>() != 0)
-            {
-                auto packet = make_shared<Packet>(shared_from_this(), make_shared<ByteBuffer>(message));
-                this->server_->HandleMessage(packet);
-            }
-            else 
-            {
-                LOG(WARNING) << "Unhandled SOE Opcode: " << std::hex << message.peek<uint16_t>(true)
-                    << "\n\n" << message;
-            }
-    }
+    return server_;
 }
+
+void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)
+{
+    auto session = shared_from_this();
+    strand_.post([=] ()
+    {
+        try {
+            switch(message->peek<uint16_t>(true))
+            {
+                case CHILD_DATA_A:	   { ChildDataA child_data_a(*message); session->handleChildDataA_(child_data_a); break; }
+                case MULTI_PACKET:	   { MultiPacket multi_packet(*message); session->handleMultiPacket_(multi_packet); break; }
+                case DATA_FRAG_A:	   { DataFragA data_frag_a(*message); session->handleDataFragA_(data_frag_a); break; }
+                case ACK_A:			   { AckA ack_a(*message); session->handleAckA_(ack_a); break; }
+                case PING:			   { Ping ping(*message); session->handlePing_(ping); break; }
+                case NET_STATS_CLIENT: { NetStatsClient net_stats_client(*message); session->handleNetStatsClient_(net_stats_client); break; }
+                case OUT_OF_ORDER_A:   { OutOfOrderA out_of_order_a(*message); session->handleOutOfOrderA_(out_of_order_a); break; }
+                case DISCONNECT:	   { Disconnect disconnect(*message); session->handleDisconnect_(disconnect); break; }
+                case SESSION_REQUEST:  { SessionRequest session_request(*message); session->handleSessionRequest_(session_request); break; }
+                case FATAL_ERROR:      { session->Close(); break; }
+                default:
+                    if (message->peek<uint8_t>() != 0)
+                    {
+                        server_->HandleMessage(session, message);
+                    }
+                    else
+                    {
+                        BOOST_LOG_TRIVIAL(warning) << "Unhandled SOE Opcode: " << std::hex << message->peek<uint16_t>(true)
+                            << "\n\n" << message;
+                    }
+            }
+            
+        } catch(const std::exception& e) {
+            BOOST_LOG_TRIVIAL(warning) << "Error handling protocol message " << std::hex << message->peek<uint16_t>(true)
+                << "\n\n" << e.what();
+        }
+    });
+}
+
+void Session::HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& message)
+{
+    
+    auto session = shared_from_this();
+    strand_.post([=] ()
+    {
+        try {
+            security_filter_(session, message);
+
+            if (connected())
+            {
+                crc_input_filter_(session, message);
+                decryption_filter_(session, message);
+                decompression_filter_(session, message);
+            }
+
+            HandleMessage(message);
+        } catch(const std::exception& e) {
+            BOOST_LOG_TRIVIAL(warning) << "Error handling protocol message " << std::hex << message->peek<uint16_t>(true)
+                << "\n\n" << e.what();
+        }
+    });
+}
+
 
 void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer message) {
     // Get the next sequence number
@@ -206,15 +240,12 @@ void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer mes
     auto data_channel_message = server_->AllocateBuffer();
     data_channel_message->append(header_builder(message_sequence));
     data_channel_message->append(message);
-    
+
     // Send it over the wire
     SendSoePacket_(data_channel_message);
-    
+
     // Store it for resending later if necessary
     sent_messages_.push_back(make_pair(message_sequence, data_channel_message));
-    
-    // If the data channel message is too big
-    uint32_t max_data_channel_size = receive_buffer_size_ - crc_length_ - 5;
 }
 
 void Session::handleSessionRequest_(SessionRequest& packet)
@@ -226,38 +257,32 @@ void Session::handleSessionRequest_(SessionRequest& packet)
     SessionResponse session_response(connection_id_, crc_seed_);
     session_response.server_udp_buffer_size = server_->max_receive_size();
 
-    anh::ByteBuffer session_response_buffer;
-    session_response.serialize(session_response_buffer);
+    auto buffer = server_->AllocateBuffer();
+    session_response.serialize(*buffer);
 
     // Directly put this on the wire, it requires no outgoing processing.
-    server_->socket()->Send(remote_endpoint_, session_response_buffer);
+    server_->SendTo(remote_endpoint_, buffer);
 
-    // Add our Session to the SessionManager and flag ourselves as connected.
-    if (server_->AddSession(shared_from_this())) {
-        connected_ = true;
-        LOG(INFO) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
-    }
+    connected_ = true;
+    BOOST_LOG_TRIVIAL(info) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
 }
 
 void Session::handleMultiPacket_(MultiPacket& packet)
 {
-    VLOG(3) << "Handling MULTIPACKET";
     std::for_each(packet.packets.begin(), packet.packets.end(), [=](anh::ByteBuffer& buffer) {
-        HandleMessage(buffer);
+        HandleMessage(make_shared<ByteBuffer>(buffer));
     });
 }
 
 void Session::handleDisconnect_(Disconnect& packet)
 {
-    VLOG(3) << "Handling DISCONNECT";
     Close();
 }
 
 void Session::handlePing_(Ping& packet)
 {
-    VLOG(3) << "Handling PING";
     Ping pong;
-    
+
     auto buffer = server_->AllocateBuffer();
     pong.serialize(*buffer);
 
@@ -266,7 +291,6 @@ void Session::handlePing_(Ping& packet)
 
 void Session::handleNetStatsClient_(NetStatsClient& packet)
 {
-    VLOG(3) << "Handling NET_STATS_CLIENT";
     server_net_stats_.client_tick_count = packet.client_tick_count;
 
     auto buffer = server_->AllocateBuffer();
@@ -275,32 +299,24 @@ void Session::handleNetStatsClient_(NetStatsClient& packet)
 }
 
 void Session::handleChildDataA_(ChildDataA& packet)
-{	
-    VLOG(3) << "Handling CHILD_DATA_A";
+{
     if(!SequenceIsValid_(packet.sequence)) {
-        DLOG(WARNING) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
+        BOOST_LOG_TRIVIAL(warning) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
         return;
     }
 
     AcknowledgeSequence_(packet.sequence);
 
     std::for_each(packet.messages.begin(), packet.messages.end(), [this] (shared_ptr<ByteBuffer> message) {
-        try {
-            auto packet = make_shared<Packet>(shared_from_this(), message);
-
-            this->server_->HandleMessage(packet);
-        } catch(...) {
-
-        }
+        server_->HandleMessage(this->shared_from_this(), message);
     });
 }
 
 void Session::handleDataFragA_(DataFragA& packet)
 {
-    VLOG(3) << "Handling DATA_FRAG_A";
     if(!SequenceIsValid_(packet.sequence))
         return;
-    
+
     AcknowledgeSequence_(packet.sequence);
 
     // Continuing a frag
@@ -317,9 +333,9 @@ void Session::handleDataFragA_(DataFragA& packet)
 
             ByteBuffer full_packet;
             std::for_each(
-                incoming_fragmented_messages_.cbegin(), 
-                incoming_fragmented_messages_.cend(), 
-                [&full_packet] (const ByteBuffer& buffer) {                
+                incoming_fragmented_messages_.cbegin(),
+                incoming_fragmented_messages_.cend(),
+                [&full_packet] (const ByteBuffer& buffer) {
                     full_packet.append(buffer);
                 }
             );
@@ -337,17 +353,15 @@ void Session::handleDataFragA_(DataFragA& packet)
         incoming_fragmented_curr_len_ += packet.data.size();
         incoming_fragmented_messages_.push_back(anh::ByteBuffer(packet.data.data()+2, packet.data.size()-2));
     }
-    
+
 }
 
 void Session::handleAckA_(AckA& packet)
 {
-    VLOG(3) << "Handle ACK_A";
-
     auto it = find_if(
-        sent_messages_.begin(), 
-        sent_messages_.end(), 
-        [this, &packet] (const SequencedMessageMap::value_type& message) 
+        sent_messages_.begin(),
+        sent_messages_.end(),
+        [this, &packet] (const SequencedMessageMap::value_type& message)
     {
         return (message.first == packet.sequence) ? true : false;
     });
@@ -359,16 +373,22 @@ void Session::handleAckA_(AckA& packet)
 
 void Session::handleOutOfOrderA_(OutOfOrderA& packet)
 {
-    VLOG(3) << "Handle OUT_OF_ORDER_A";
-    
     std::for_each(sent_messages_.begin(), sent_messages_.end(), [=](SequencedMessageMap::value_type& item) {
         SendSoePacket_(item.second);
     });
 }
 
-void Session::SendSoePacket_(std::shared_ptr<anh::ByteBuffer> message)
+void Session::SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message)
 {
-    server_->SendMessage(shared_from_this(), message);
+    auto session = shared_from_this();
+    strand_.post([=] ()
+    {
+        compression_filter_(session, message);
+        encryption_filter_(session, message);
+        crc_output_filter_(session, message);
+
+        server_->SendTo(session->remote_endpoint(), message);
+    });
 }
 
 bool Session::SequenceIsValid_(const uint16_t& sequence)

@@ -27,7 +27,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager.h"
 
@@ -36,7 +36,7 @@ using namespace swganh::galaxy;
 using namespace providers;
 using namespace std;
 
-MysqlGalaxyProvider::MysqlGalaxyProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+MysqlGalaxyProvider::MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager)
     : GalaxyProviderInterface()
     , db_manager_(db_manager) {}
 
@@ -49,14 +49,14 @@ uint32_t MysqlGalaxyProvider::GetPopulation()
         string sql = "call sp_GetPopulation();";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        auto result_set = statement->executeQuery(sql);
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery(sql));
 
 		if (result_set->next())
 			population = result_set->getUInt(1);
 
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return population;

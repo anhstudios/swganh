@@ -31,38 +31,31 @@ namespace anh {
  */
 class HashString {
 public:
+    /// Default constructor.
+    HashString();
+
     /// Takes a regular std::string and stores a hash of it.
     HashString(const std::string& std_string); 
+
     /// Takes a human readable string and stores a hash of it.
     HashString(const char* ident_string);
+
     /// Takes an already hashed value and stores it.
     HashString(uint32_t ident);
-
-    /// Default destructor.
-    ~HashString();
-
-    /// Copy constructor.
-    HashString(const HashString& other);
-
-    /// Move constructor.
-    HashString(HashString&& other);
     
-    /// Swap the contents of two HashStrings.
-    void swap(HashString& other);
-
-    /// Universal assignment operator.
-    HashString& operator=(HashString other);
-
     /// Conversion operator allows a hash string to be cast to a uint32_t
     operator uint32_t () const;
+
+    /// Returns a 32bit hash representation of the string.
+    uint32_t ident() const;
 
     /*! Uses a less-than comparison on two HashStrings.
      *
      * This is a requirement for this data type to be used as a key value in
      * containers like std::map.
      *
-     * \param other The HashString to compare to the current one.
-     * \returns True if the ident is less than that of the other's, false if not.
+     * @param other The HashString to compare to the current one.
+     * @return True if the ident is less than that of the other's, false if not.
      */
     bool operator<(const HashString& other) const;
 
@@ -71,47 +64,26 @@ public:
      * This is a requirement for this data type to be used as a key value in
      * containers like std::map.
      *
-     * \param other The HashString to compare to the current one.
-     * \returns True if the ident is greater than that of the other's, false if not.
+     * @param other The HashString to compare to the current one.
+     * @return True if the ident is greater than that of the other's, false if not.
      */
     bool operator>(const HashString& other) const;
 
     /*! Compares two HashStrings to determine if they are equal.
      *
-     * \param other The HashString to compare to the current one.
-     * \returns True if the two HashStrings are equal, false if not.
+     * @param other The HashString to compare to the current one.
+     * @return True if the two HashStrings are equal, false if not.
      */
     bool operator==(const HashString& other) const;
 
-    /*! Compares a char* and a HashString to determine if they are equal.
-     *
-     * \param other The char* to compare to the current HashString.
-     * \returns True if the HashString and char* are equal, false if not.
-     */
-    bool operator==(const char* other) const;
-
     /*! Compares two HashStrings to determine if they are not equal.
      *
-     * \param other The HashString to compare to the current one.
-     * \returns True if the two HashStrings are not equal, false if they are.
+     * @param other The HashString to compare to the current one.
+     * @return True if the two HashStrings are not equal, false if they are.
      */
     bool operator!=(const HashString& other) const;
 
-    /*! Compares a char* and a HashString to determine if they are not equal.
-     *
-     * \param other The char* to compare to the current HashString.
-     * \returns True if the HashString and char * are not equal, false if they are.
-     */
-    bool operator!=(const char* other) const;
-
-    /// Returns a 32bit hash representation of the string.
-    uint32_t ident() const;
-
-    /// Returns a human readable identifier.
-    const std::string& ident_string() const;
-
 private:
-    HashString();
 
     // \note: ident_ is stored as a void * not an int, so that in
     // the debugger it will show up as hex-values instead of
@@ -119,9 +91,20 @@ private:
     // we're doing here and makes it easy to allow external code
     // to assign event types as desired.
     void * ident_;              ///< A 32bit hash of the ident_string.
-    std::string ident_string_;  ///< A human readable form of the event type.
 };
 
 }  // namespace anh
+
+namespace std {    
+    // specialization of std::hash to make using
+    // with unordered_maps easier by default.
+    template <> struct hash<anh::HashString>
+    {
+        size_t operator()(const anh::HashString & x) const
+        {
+            return x.ident();
+        }
+    };
+}  // namespace std
 
 #endif  // LIBANH_HASH_STRING_H_

@@ -16,9 +16,21 @@ namespace messages {
         static uint16_t opcount() { return 5; }
         static uint32_t opcode() { return 0x80CE5E46; }
 
+        ObjControllerMessage()
+        {}
+
+        template<typename T>
+        ObjControllerMessage(uint32_t unknown, const T& payload)
+        {
+            unknown = unknown;
+            tick_count = 0;
+            header = T::header();
+            payload.Serialize(data);
+        }
+
         uint32_t unknown;
         uint32_t header;
-        uint64_t object_id;
+        uint64_t observable_id;
         uint32_t tick_count;
         anh::ByteBuffer data;
         
@@ -26,7 +38,7 @@ namespace messages {
         {
             buffer.write(unknown);
             buffer.write(header);
-            buffer.write(object_id);
+            buffer.write(observable_id);
             buffer.write(tick_count);
             buffer.write(data.data(), data.size());  
         }
@@ -35,7 +47,7 @@ namespace messages {
         {
             unknown = buffer.read<uint32_t>();
             header = buffer.read<uint32_t>();  
-            object_id = buffer.read<uint64_t>();
+            observable_id = buffer.read<uint64_t>();
             tick_count = buffer.read<uint32_t>();
             data = anh::ByteBuffer(buffer.data() + buffer.read_position(), buffer.size() - buffer.read_position());
         }

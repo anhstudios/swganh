@@ -58,7 +58,7 @@ void ObjectMessageBuilder::BuildServerIDDelta(Object* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6, 1);
-        // TODO: Add server id
+        //@TODO: Add server id
         message.data.write(0);
 
         object->AddDeltasUpdate(message);                

@@ -7,7 +7,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager.h"
 #include "swganh/object/object.h"
@@ -20,7 +20,7 @@ using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
-ObjectFactory::ObjectFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
                              SimulationService* simulation_service)
     : db_manager_(db_manager)
     , simulation_service_(simulation_service)
@@ -34,12 +34,12 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object)
             (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         PersistObject(object, statement);
         // Now execute the update
-        int updated = statement->executeUpdate();
+        statement->executeUpdate();
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared_ptr<sql::PreparedStatement>& prepared_statement)
@@ -75,8 +75,8 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object, const shared_ptr<sql::ResultSet>& result)
@@ -85,8 +85,13 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         result->next();
         object->scene_id_ = result->getUInt("scene_id");
         object->position_ = glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position"));
-        object->orientation_ = glm::quat(result->getDouble("x_orientation"),result->getDouble("y_orientation"), result->getDouble("z_orientation"), result->getDouble("w_orientation"));
-        object->complexity_ = result->getDouble("complexity");
+        object->orientation_ = glm::quat(
+            static_cast<float>(result->getDouble("x_orientation")),
+            static_cast<float>(result->getDouble("y_orientation")),
+            static_cast<float>(result->getDouble("z_orientation")), 
+            static_cast<float>(result->getDouble("w_orientation")));
+
+        object->complexity_ = static_cast<float>(result->getDouble("complexity"));
         object->stf_name_file_ = result->getString("stf_name_file");
         object->stf_name_string_ = result->getString("stf_name_string");
         string custom_string = result->getString("custom_name");
@@ -97,8 +102,8 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
@@ -109,7 +114,7 @@ uint32_t ObjectFactory::LookupType(uint64_t object_id) const
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = conn->prepareStatement("CALL sp_GetType(?);");
         statement->setUInt64(1, object_id);
-        auto result = statement->executeQuery();        
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());        
         while (result->next())
         {
             type = result->getUInt("description");
@@ -118,8 +123,8 @@ uint32_t ObjectFactory::LookupType(uint64_t object_id) const
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
         return type;
     }
 }

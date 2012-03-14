@@ -49,7 +49,7 @@ struct ClientRandomNameResponse : public swganh::messages::BaseSwgMessage<Client
     	player_race_iff = buffer.read<std::string>();
         random_name = buffer.read<std::wstring>();
         stf_file = buffer.read<std::string>();
-        int tmp = buffer.read<int>();
+        buffer.read<int>(); // spacer, unused
         approval_string = buffer.read<std::string>();
     }
 };

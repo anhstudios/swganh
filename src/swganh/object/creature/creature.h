@@ -23,7 +23,7 @@
 
 #include <list>
 
-#include "swganh/object/tangible/base_tangible.h"
+#include "swganh/object/tangible/tangible.h"
 
 #include "swganh/messages/containers/network_array.h"
 #include "swganh/messages/containers/network_sorted_list.h"
@@ -64,74 +64,95 @@ enum CreatureOffSet
 	EQUIPED_OFFSET
 };
 
-/**
- *
- */
 enum Posture : uint8_t
 {
-    STANDING = 1,
-    SNEAKING,
-    WALKING,
-    RUNNING,
-    KNEELING,
-    CROUCH_SNEAKING,
-    CROUCH_WALKING,
-    PRONE,
-    SKILL_ANIMATING,
-    CRAWLING,
-    CLIMBING_STATIONARY,
-    CLIMBING,
-    HOVERING,
-    FLING,
-    LYING_DOWN,
-    SITTING,
-    DRIVING_VEHICLE,
-    RIDING_CREATURE,
-    KNOCKED_DOWN,
-    INCAPACITATED,
-    DEAD,
-    BLOCKING
+	INVALID = 0xFF,
+	UPRIGHT = 0,
+	CROUCHED = 1,
+	PRONE,
+	SNEAKING,
+	BLOCKING,
+	CLIMBING,
+	FLYING,
+	LYING_DOWN,
+	SITTING,
+	SKILL_ANIMATING,
+	DRIVING_VEHICLE,
+	RIDING_CREATURE,
+	KNOCKED_DOWN,
+	INCAPACITATED,
+	DEAD
 };
 
 /**
  *
  */
-enum State
+//enum Locomotion : uint8_t
+//{
+//    STANDING = 1,
+//    SNEAKING,
+//    WALKING,
+//    RUNNING,
+//    KNEELING,
+//    CROUCH_SNEAKING,
+//    CROUCH_WALKING,
+//    PRONE,
+//    SKILL_ANIMATING,
+//    CRAWLING,
+//    CLIMBING_STATIONARY,
+//    CLIMBING,
+//    HOVERING,
+//    FLYING,
+//    LYING_DOWN,
+//    SITTING,
+//    DRIVING_VEHICLE,
+//    RIDING_CREATURE,
+//    KNOCKED_DOWN,
+//    INCAPACITATED,
+//    DEAD,
+//    BLOCKING
+//};
+
+/**
+ *
+ */
+enum State : int64_t
 {
-    COVER = 1,
-    COMBAT,
-    PEACE,
-    AIMING,
-    ALERT,
-    BERSERK,
-    FEIGN_DEATH,
-    COMBAT_ATTITUDE_EVASIVE,
-    COMBAT_ATTITUDE_NORMAL,
-    COMBAT_ATTITUDE_AGGRESSIVE,
-    TUMBLING,
-    RALLIED,
-    STUNNED,
-    BLINDED,
-    DIZZY,
-    INTIMIDATED,
-    IMMOBILIZED,
-    FROZEN,
-    SWIMMING,
-    SITTING_ON_CHAIR,
-    CRAFTING,
-    GLOWING_JEDI,
-    MASK_SCENT,
-    POISONED,
-    BLEEDING,
-    DISEASED,
-    ON_FIRE,
-    RIDING_MOUNT,
-    MOUNTED_CREATURE,
-    PILOTING_SHIP,
-    SHIP_OPERATIONS,
-    SHIP_GUNNER,
-    SHIP_INTERIOR,
-    PILOTING_POB_SHIP
+	NONE = 0x00,
+    COVER = 0x01,
+    COMBAT = 0x02,
+    PEACE = 0x04,
+    AIMING = 0x08,
+    ALERT = 0x10,
+    BERSERK = 0x20,
+    FEIGN_DEATH = 0x40,
+    COMBAT_ATTITUDE_EVASIVE = 0x80,
+    COMBAT_ATTITUDE_NORMAL = 0x100,
+    COMBAT_ATTITUDE_AGGRESSIVE = 0x200,
+    TUMBLING = 0x400,
+    RALLIED = 0x800,
+    STUNNED = 0x1000,
+    BLINDED = 0x2000,
+    DIZZY = 0x4000,
+    INTIMIDATED = 0x8000,
+    IMMOBILIZED = 0x10000,
+    FROZEN = 0x20000,
+    SWIMMING = 0x40000,
+    SITTING_ON_CHAIR = 0x80000,
+    CRAFTING = 0x100000,
+    GLOWING_JEDI = 0x200000,
+    MASK_SCENT = 0x400000,
+    POISONED = 0x800000,
+    BLEEDING = 0x1000000,
+    DISEASED = 0x2000000,
+    ON_FIRE = 0x4000000,
+    RIDING_MOUNT = 0x8000000,
+    MOUNTED_CREATURE = 0x10000000,
+    PILOTING_SHIP = 0x20000000,
+    SHIP_OPERATIONS = 0x40000000,
+    SHIP_GUNNER = 0x80000000,
+    SHIP_INTERIOR = 0x100000000,
+    PILOTING_POB_SHIP = 0x200000000
 };
 
 enum PvpStatus
@@ -197,7 +218,7 @@ struct Stat
         : value(0)
     {}
 
-    Stat(uint32_t value_)
+    Stat(int32_t value_)
         : value(value_)
     {}
 
@@ -206,15 +227,15 @@ struct Stat
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
-        message.data.write<uint32_t>(value);
+        message.data.write<int32_t>(value);
     }
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
-        message.data.write<uint32_t>(value);
+        message.data.write<int32_t>(value);
     }
 
-    uint32_t value;
+    int32_t value;
 };
     
 /**
@@ -227,10 +248,10 @@ struct EquipmentItem
     }
 
     EquipmentItem(uint64_t object_id_, uint32_t template_crc_ = 0, std::string customization_ = std::string(""), uint32_t containment_type_ = 4)
-        : object_id(object_id_)
-        , template_crc(template_crc_)
-        , customization(customization_)
+        : customization(customization_)
         , containment_type(containment_type_)
+        , object_id(object_id_)
+        , template_crc(template_crc_)
     {
     }
 
@@ -334,11 +355,18 @@ struct Skill
         return (name == other.name);
     }
 };
+/**
+ *
+ */
+struct SkillCommands
+{
+
+};
 
 /**
  *
  */
-class Creature : public swganh::object::tangible::BaseTangible
+class Creature : public swganh::object::tangible::Tangible
 {
 public:
     Creature();
@@ -357,11 +385,11 @@ public:
     uint32_t GetCashCredits(void);
 
     // Stat Base
-    void SetStatBase(StatIndex stat_index, uint32_t value);
-    void AddStatBase(StatIndex stat_index, uint32_t value);
-    void DeductStatBase(StatIndex stat_index, uint32_t value);
+    void SetStatBase(StatIndex stat_index, int32_t value);
+    void AddStatBase(StatIndex stat_index, int32_t value);
+    void DeductStatBase(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetBaseStats(void);
-    uint32_t GetStatBase(StatIndex stat_index);
+    int32_t GetStatBase(StatIndex stat_index);
 
     // Skills
     void AddSkill(std::string skill);
@@ -369,10 +397,21 @@ public:
     swganh::messages::containers::NetworkList<Skill> GetSkills(void);
     bool HasSkill(std::string skill);
 
+    // Skill Commands
+    std::map<uint32_t, std::string> GetSkillCommands();
+    bool HasSkillCommand(std::string skill);
+    void AddSkillCommand(std::pair<uint32_t, std::string> skill_command);
+    void RemoveSkillCommand(std::string skill_command);
+
+
     // Posture
     void SetPosture(Posture posture);
     Posture GetPosture(void);
 
+    // IsDead
+    bool IsDead();
+    // IsIncapacitated
+    bool IsIncapacitated();
     // Faction Rank
     void SetFactionRank(uint8_t faction_rank);
     uint8_t GetFactionRank(void);
@@ -386,20 +425,24 @@ public:
     float GetScale(void);
 
     // Battle Fatigue
+    void AddBattleFatigue(uint32_t battle_fatigue);
     void SetBattleFatigue(uint32_t battle_fatigue);
     uint32_t GetBattleFatigue(void);
 
     // State Bitmask
     void SetStateBitmask(uint64_t state_bitmask);
     void ToggleStateBitmask(uint64_t state_bitmask);
+    void ToggleStateOn(uint64_t state);
+    void ToggleStateOff(uint64_t state);
     uint64_t GetStateBitmask(void);
+    bool HasState(uint64_t state);
 
     // Wounds
-    void DeductStatWound(StatIndex stat_index, uint32_t value);
-    void AddStatWound(StatIndex stat_index, uint32_t value);
-    void SetStatWound(StatIndex stat_index, uint32_t value);
+    void DeductStatWound(StatIndex stat_index, int32_t value);
+    void AddStatWound(StatIndex stat_index, int32_t value);
+    void SetStatWound(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetStatWounds(void);
-    uint32_t GetStatWound(StatIndex stat_index);
+    int32_t GetStatWound(StatIndex stat_index);
 
     // Acceleration Multiplier Base
     void SetAccelerationMultiplierBase(float acceleration_multiplier_base);
@@ -410,11 +453,11 @@ public:
     float GetAccelerationMultiplierModifier(void);
 
     // Stat Encumberance
-    void AddStatEncumberance(StatIndex stat_index, uint32_t value);
-    void DeductStatEncumberance(StatIndex stat_index, uint32_t value);
-    void SetStatEncumberance(StatIndex stat_index, uint32_t value);
+    void AddStatEncumberance(StatIndex stat_index, int32_t value);
+    void DeductStatEncumberance(StatIndex stat_index, int32_t value);
+    void SetStatEncumberance(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetStatEncumberances(void);
-    uint32_t GetStatEncumberance(StatIndex stat_index);
+    int32_t GetStatEncumberance(StatIndex stat_index);
 
     // Skill Mods
     void AddSkillMod(SkillMod mod);
@@ -507,18 +550,18 @@ public:
     uint32_t GetPerformanceId(void);
 
     // Current Stats
-    void SetStatCurrent(StatIndex stat_index, uint32_t value);
-    void AddStatCurrent(StatIndex stat_index, uint32_t value);
-    void DeductStatCurrent(StatIndex stat_index, uint32_t value);
+    void SetStatCurrent(StatIndex stat_index, int32_t value);
+    void AddStatCurrent(StatIndex stat_index, int32_t value);
+    void DeductStatCurrent(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetCurrentStats(void);
-    uint32_t GetStatCurrent(StatIndex stat_index);
+    int32_t GetStatCurrent(StatIndex stat_index);
 
     // Max Stats
-    void SetStatMax(StatIndex stat_index, uint32_t value);
-    void AddStatMax(StatIndex stat_index, uint32_t value);
-    void DeductStatMax(StatIndex stat_index, uint32_t value);
+    void SetStatMax(StatIndex stat_index, int32_t value);
+    void AddStatMax(StatIndex stat_index, int32_t value);
+    void DeductStatMax(StatIndex stat_index, int32_t value);
     swganh::messages::containers::NetworkArray<Stat> GetMaxStats(void);
-    uint32_t GetStatMax(StatIndex stat_index);
+    int32_t GetStatMax(StatIndex stat_index);
 
     // Equipment List
     void AddEquipmentItem(EquipmentItem& item);
@@ -541,6 +584,12 @@ public:
     void TogglePvpStateOff(PvpStatus state);
     void TogglePvpState(PvpStatus state);
     bool CheckPvpState(PvpStatus state) const;
+    bool CanAttack(Creature* creature);
+
+    void AddToDuelList(uint64_t id);
+    void RemoveFromDuelList(uint64_t id);
+    bool InDuelList(uint64_t id);
+    std::vector<uint64_t>& GetDuelList();
 
     // Baselines
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1();
@@ -558,6 +607,7 @@ private:
     uint32_t    cash_credits_;                                                              // update 1 variable 1
     swganh::messages::containers::NetworkArray<Stat> stat_base_list_;                       // update 1 variable 2
     swganh::messages::containers::NetworkList<Skill> skills_;                               // update 1 variable 3
+    std::map<uint32_t, std::string> skill_commands_;
     uint32_t    posture_;                                                                   // update 3 variable 11
     uint8_t     faction_rank_;                                                              // update 3 variable 12
     uint64_t    owner_id_;                                                                  // update 3 variable 13
@@ -597,6 +647,7 @@ private:
     std::string disguise_;                                                                  // update 6 variable 16
     bool stationary_;                                                                       // update 6 variable 17
     PvpStatus pvp_status_;
+    std::vector<uint64_t> duel_list_;
 };
 
 }}}  // namespace swganh::object::creature

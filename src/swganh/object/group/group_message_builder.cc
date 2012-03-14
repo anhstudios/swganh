@@ -21,7 +21,7 @@
 #include "group_message_builder.h"
 
 #include <swganh/object/group/group.h>
-#include <swganh/object/tangible/base_tangible.h>
+#include <swganh/object/tangible/tangible.h>
 
 using namespace std;
 using namespace swganh::object::group;

@@ -59,7 +59,7 @@ namespace object {
          * an object is successfully created.
          *
          * @param object_id The id of the object being created.
-         * @returns the created object instance.
+         * @return the created object instance.
          * @throws InvalidObject when no object exists for the specified id.
          */
         std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id);
@@ -69,7 +69,7 @@ namespace object {
          *
          * @param object_type The type of the object being created.
          * @param object_id The id of the object being created.
-         * @returns the created object instance.
+         * @return the created object instance.
          * @throws InvalidObject when no object exists for the specified id.
          */
         std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id, uint32_t object_type);
@@ -78,7 +78,7 @@ namespace object {
          * Creates an instance of a stored object with the specified id.
          *
          * @param object_id The id of the object being created.
-         * @returns the created object instance as the specified type.
+         * @return the created object instance as the specified type.
          * @throws InvalidObject when no object exists for the specified id.
          */
         template<typename T>
@@ -96,7 +96,7 @@ namespace object {
         /**
          * Creates an instance of an object from the specified template.
          *
-         * @returns the created object instance.
+         * @return the created object instance.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name);
@@ -104,7 +104,7 @@ namespace object {
         /**
          * Creates an instance of an object from the specified template.
          *
-         * @returns the created object instance as the specified type.
+         * @return the created object instance as the specified type.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         template<typename T>

@@ -1,7 +1,7 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
  
- Copyright (c) 2006 - 2011 The SWG:ANH Team
+ Copyright (c) 2006 - 2012 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -21,15 +21,18 @@
 #ifndef SWGANH_LOGIN_LOGIN_SERVICE_H_
 #define SWGANH_LOGIN_LOGIN_SERVICE_H_
 
+#include <unordered_map>
+
 #include <boost/asio.hpp>
-#include <glog/logging.h>
-#include <tbb/concurrent_hash_map.h>
+#include <boost/thread/mutex.hpp>
+
+#include <boost/log/trivial.hpp>
 
 #include "anh/network/soe/packet_utilities.h"
 #include "anh/network/soe/server.h"
 
 #include "swganh/base/base_service.h"
-#include "swganh/base/swg_message_router.h"
+#include "swganh/network/base_swg_server.h"
 
 #include "swganh/character/character_service.h"
 #include "swganh/galaxy/galaxy_service.h"
@@ -65,16 +68,10 @@ class AccountProviderInterface;
 }
 
 class LoginService 
-    : public swganh::base::BaseService 
-    , public swganh::base::SwgMessageRouter<LoginClient>
+    : public swganh::base::BaseService
+    , public swganh::network::BaseSwgServer
 {
 public:
-    typedef tbb::concurrent_hash_map<
-        boost::asio::ip::udp::endpoint, 
-        std::shared_ptr<swganh::login::LoginClient>,
-        anh::network::soe::EndpointHashCompare
-    > ClientMap;
-
     LoginService(
         std::string listen_address, 
         uint16_t listen_port, 
@@ -82,12 +79,13 @@ public:
     ~LoginService();
     
     anh::service::ServiceDescription GetServiceDescription();
+    
+    bool RemoveSession(std::shared_ptr<anh::network::soe::Session> session);
+
+    std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
 
     uint32_t GetAccountBySessionKey(const std::string& session_key);
         
-    std::shared_ptr<swganh::login::LoginClient> GetClientFromEndpoint(
-        const boost::asio::ip::udp::endpoint& remote_endpoint);
-
     int galaxy_status_check_duration_secs() const;
     void galaxy_status_check_duration_secs(int new_duration);
 
@@ -99,21 +97,27 @@ public:
 
 private:
     LoginService();
+    
+    std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
 
     void onStart();
     void onStop();
 
     void subscribe();
     
-    void HandleLoginClientId_(std::shared_ptr<swganh::login::LoginClient> login_client, const messages::LoginClientId& message);
-
-    void RemoveClient_(std::shared_ptr<anh::network::soe::Session> session);
-    std::shared_ptr<swganh::login::LoginClient> AddClient_(std::shared_ptr<anh::network::soe::Session> session);
+    void HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const messages::LoginClientId& message);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
     
-    std::unique_ptr<anh::network::soe::Server> soe_server_;
+    typedef std::map<
+        boost::asio::ip::udp::endpoint,
+        std::shared_ptr<LoginClient>
+    > SessionMap;
+    
+    boost::mutex session_map_mutex_;
+    SessionMap session_map_;
+
     std::shared_ptr<swganh::character::CharacterService> character_service_;
 	std::shared_ptr<swganh::galaxy::GalaxyService> galaxy_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
@@ -125,9 +129,7 @@ private:
     int galaxy_status_check_duration_secs_;
     int login_error_timeout_secs_;
     boost::asio::deadline_timer galaxy_status_timer_;
-
-    ClientMap clients_;
-
+    
     std::string listen_address_;
     uint16_t listen_port_;
 };

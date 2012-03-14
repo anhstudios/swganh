@@ -22,26 +22,29 @@
 #define ANH_NETWORK_SOE_COMPRESSION_FILTER_H_
 
 #include <memory>
-#include <tbb/pipeline.h>
 
 #include "anh/byte_buffer.h"
 
 namespace anh {
-namespace network {
-namespace soe {
-class Packet;
-}}}  // namespace anh::network::soe
 
-namespace anh {
+    class ByteBuffer;
+
 namespace network {
 namespace soe {
+
+    class Session;
+
 namespace filters {
 
 class CompressionFilter {
 public:
-	std::shared_ptr<Packet> operator()(std::shared_ptr<Packet> packet) const;
+    
+    void operator()(
+        const std::shared_ptr<Session>& session,
+        const std::shared_ptr<ByteBuffer>& message);
+
 private:
-	void Compress_(anh::ByteBuffer& buffer) const;
+	void Compress_(const std::shared_ptr<ByteBuffer>& message);
 };
 
 }}}} // namespace anh::network::soe::filters

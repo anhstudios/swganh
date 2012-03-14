@@ -13,14 +13,11 @@ CREATE TABLE IF NOT EXISTS  `creation_item` (
   PRIMARY KEY  (`id`),
   CONSTRAINT `FK_98197A65BF469374` FOREIGN KEY (`profession_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE,
   CONSTRAINT `FK_98197A65BF080238` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`) ON DELETE CASCADE
-) ENGINE=MyISAM AUTO_INCREMENT=415 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=415 DEFAULT CHARSET=latin1;
 
 DELETE FROM `creation_item`;
+    
 /*!40000 ALTER TABLE `creation_item` DISABLE KEYS */;
-/*!40000 ALTER TABLE `creation_item` ENABLE KEYS */;
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 INSERT INTO `creation_item` VALUES ('1', 90, 1, 0, 'object/tangible/wearables/shirt/shared_shirt_s14.iff');
 INSERT INTO `creation_item` VALUES ('2', 90, 1, 0, 'object/tangible/wearables/jacket/shared_jacket_s16.iff');
 INSERT INTO `creation_item` VALUES ('3', 90, 1, 0, 'object/tangible/wearables/pants/shared_pants_s14.iff');
@@ -435,3 +432,8 @@ INSERT INTO `creation_item` VALUES ('411', 10, 10, 0, 'object/tangible/wearables
 INSERT INTO `creation_item` VALUES ('412', 10, 10, 1, 'object/tangible/wearables/shirt/shared_shirt_s38.iff');
 INSERT INTO `creation_item` VALUES ('413', 10, 10, 1, 'object/tangible/wearables/pants/shared_pants_s11.iff');
 INSERT INTO `creation_item` VALUES ('414', 10, 10, 1, 'object/tangible/wearables/shoes/shared_shoes_s09.iff');
+/*!40000 ALTER TABLE `creation_item` ENABLE KEYS */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

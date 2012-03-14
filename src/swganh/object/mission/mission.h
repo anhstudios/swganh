@@ -18,7 +18,7 @@ class Mission : public swganh::object::Object
 {
 public:
     /**
-     * @returns The type of this object instance.
+     * @return The type of this object instance.
      */
     virtual uint32_t GetType() const { return Mission::type; }
     const static uint32_t type = 0x4d49534f;
@@ -51,7 +51,7 @@ public:
     void SetStartingPosition(glm::vec3 starting_position);
 
     /**
-     * @returns the crc of the scene where the mission starts.
+     * @return the crc of the scene where the mission starts.
      */
     uint32_t GetStartingSceneCrc() const;
 
@@ -65,7 +65,7 @@ public:
     void SetStartingSceneCrc(uint32_t scene_crc);
     
     /**
-     * @returns the name of the creator of this mission.
+     * @return the name of the creator of this mission.
      */
     std::wstring GetMissionCreator() const;
 
@@ -77,7 +77,7 @@ public:
     void SetMissionCreator(std::wstring mission_creator);
     
     /**
-     * @returns the amount of credits awarded for completing this mission.
+     * @return the amount of credits awarded for completing this mission.
      */
     uint32_t GetMissionReward() const;
 
@@ -89,7 +89,7 @@ public:
     void SetMissionReward(uint32_t mission_reward);
     
     /**
-     * @returns the destination position of the mission.
+     * @return the destination position of the mission.
      */
     glm::vec3 GetDestinationPosition() const;
 
@@ -101,7 +101,7 @@ public:
     void SetDestinationPosition(glm::vec3 destination_position);
     
     /**
-     * @returns the crc of the scene where the destination is located.
+     * @return the crc of the scene where the destination is located.
      */
     uint32_t GetDestinationSceneCrc() const;
     
@@ -115,12 +115,12 @@ public:
     void SetDestinationSceneCrc(uint32_t scene_crc);
     
     /**
-     * @returns the object template used in the mission description.
+     * @return the object template used in the mission description.
      */
     std::string GetTargetObjectTemplate() const;
 
     /**
-     * @returns the object template used in the mission description in crc format.
+     * @return the object template used in the mission description in crc format.
      */
     uint32_t GetTargetObjectTemplateCrc() const;
 
@@ -132,12 +132,12 @@ public:
     void SetTargetObjectTemplate(std::string object_template);
     
     /**
-     * @returns the stf file containing the mission description.
+     * @return the stf file containing the mission description.
      */
     std::string GetMissionDescriptionStfFile() const;
     
     /**
-     * @returns the stf string containing the mission description.
+     * @return the stf string containing the mission description.
      */
     std::string GetMissionDescriptionStfName() const;
 
@@ -150,12 +150,12 @@ public:
     void SetMissionDescription(const std::string& stf_file_name, const std::string& stf_string);
     
     /**
-     * @returns the stf file containing the mission title.
+     * @return the stf file containing the mission title.
      */
     std::string GetMissionTitleStfFile() const;
 
     /**
-     * @returns the stf string containing the mission title.
+     * @return the stf string containing the mission title.
      */
     std::string GetMissionTitleStfName() const;
     
@@ -189,12 +189,12 @@ public:
     void SetRepeatCounter(uint32_t counter);
     
     /**
-     * @returns the type of the mission.
+     * @return the type of the mission.
      */
     std::string GetMissionType();
 
     /**
-     * @returns the type of the mission in crc format.
+     * @return the type of the mission in crc format.
      */
     uint32_t GetMissionTypeCrc();
 

@@ -24,19 +24,21 @@
 #include <memory>
 
 namespace anh {
-namespace network {
-namespace soe {
-class Packet;
-}}}  // namespace anh::network::soe
 
-namespace anh {
+    class ByteBuffer;
+
 namespace network {
 namespace soe {
+
+    class Session;
+
 namespace filters {
 	
 class CrcOutFilter {
-public:
-	std::shared_ptr<Packet> operator()(std::shared_ptr<Packet> packet) const;
+public:    
+    void operator()(
+        const std::shared_ptr<Session>& session,
+        const std::shared_ptr<ByteBuffer>& message);
 };
 
 }}}} // namespace anh::network::soe::filters

@@ -32,7 +32,7 @@ namespace messages {
 namespace swganh {
 namespace object {
 namespace tangible {
-    class BaseTangible;
+    class Tangible;
 }}} // swganh::object::tangible
 
 namespace swganh {

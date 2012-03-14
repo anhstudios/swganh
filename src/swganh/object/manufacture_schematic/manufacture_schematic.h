@@ -406,9 +406,9 @@ public:
     void ClearAllCustomizations();
 
     /**
-     * @returns ready state of the schematic.
+     * @return ready state of the schematic.
      *
-     * @todo what is this?
+     * @TODO what is this?
      */
     bool IsReady() const;
 

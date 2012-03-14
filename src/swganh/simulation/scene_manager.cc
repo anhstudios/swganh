@@ -8,7 +8,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "swganh/object/object.h"
 
@@ -42,23 +42,24 @@ void SceneManager::LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::
     }
     catch(SQLException &e) 
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
-const std::shared_ptr<Scene>& SceneManager::GetScene(const std::string& scene_label) const
+std::shared_ptr<Scene> SceneManager::GetScene(const std::string& scene_label) const
 {
     auto find_iter = scenes_.find(scene_label);
 
     if (find_iter == scenes_.end())
     {
-        throw std::runtime_error("Invalid scene requested");
+        return nullptr;
     }
 
     return find_iter->second;
 }
-const std::shared_ptr<Scene>& SceneManager::GetScene(uint32_t scene_id) const
+
+std::shared_ptr<Scene> SceneManager::GetScene(uint32_t scene_id) const
 {
 	auto find_iter = find_if(begin(scenes_), end(scenes_), [scene_id] (ScenePair scene_pair) {
 		return scene_pair.second->GetSceneId() == scene_id;
@@ -66,10 +67,10 @@ const std::shared_ptr<Scene>& SceneManager::GetScene(uint32_t scene_id) const
 
 	if (find_iter == scenes_.end())
     {
-        throw std::runtime_error("Invalid scene requested");
+        return nullptr;
     }
+    
 	return find_iter->second;
-
 }
 
 void SceneManager::StartScene(const std::string& scene_label)
@@ -88,7 +89,7 @@ void SceneManager::StartScene(const std::string& scene_label)
         throw std::runtime_error("Scene has already been loaded: " + scene_label);
     }
 
-    DLOG(WARNING) << "Starting scene: " << scene_label;
+    BOOST_LOG_TRIVIAL(warning) << "Starting scene: " << scene_label;
 
     auto scene = make_shared<Scene>(description_iter->second);
 

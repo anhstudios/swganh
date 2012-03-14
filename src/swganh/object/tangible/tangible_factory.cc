@@ -8,7 +8,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager.h"
 #include "swganh/object/tangible/tangible.h"
@@ -23,8 +23,9 @@ using namespace swganh::simulation;
 
 uint32_t TangibleFactory::GetType() const { return Tangible::type; }
 
- TangibleFactory::TangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
-                             SimulationService* simulation_service)
+ TangibleFactory::TangibleFactory(
+    DatabaseManagerInterface* db_manager,
+    SimulationService* simulation_service)
     : ObjectFactory(db_manager, simulation_service)
 {
 }
@@ -34,7 +35,7 @@ void TangibleFactory::LoadTemplates()
 
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = conn->prepareStatement("CALL sp_GetTangibleTemplates();");
-        auto result = statement->executeQuery();
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
 
         while (result->next())
         {
@@ -46,8 +47,8 @@ void TangibleFactory::LoadTemplates()
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
@@ -83,8 +84,8 @@ void TangibleFactory::PersistObject(const shared_ptr<Object>& object)
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
@@ -99,11 +100,11 @@ void TangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
     }
         catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
-void TangibleFactory::CreateBaseTangible(const shared_ptr<BaseTangible>& tangible, const std::shared_ptr<sql::Statement>& statement)
+void TangibleFactory::CreateTangible(const shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement)
 {
     try {
         auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
@@ -124,8 +125,8 @@ void TangibleFactory::CreateBaseTangible(const shared_ptr<BaseTangible>& tangibl
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
@@ -140,12 +141,12 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
         ss << "CALL sp_GetTangible(" << object_id << ");";   
 
         statement->execute(ss.str());
-        CreateBaseTangible(tangible, statement);  
+        CreateTangible(tangible, statement);  
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return tangible;
 }

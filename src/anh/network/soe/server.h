@@ -22,51 +22,32 @@
 #define ANH_NETWORK_SOE_SERVER_H_
 
 #include <cstdint>
-#include <list>
-#include <map>
 #include <memory>
 
 #include <boost/asio.hpp>
-#include <boost/thread/thread.hpp>
-#include <tbb/concurrent_queue.h>
-#include <tbb/pipeline.h>
 
 #include "anh/network/soe/server_interface.h"
-#include "anh/network/soe/session_manager.h"
-
-#include "anh/active_object.h"
-
-#ifdef SendMessage
-#undef SendMessage
-#endif
 
 namespace anh {
 
 class ByteBuffer;
 
-namespace event_dispatcher {
-class EventDispatcherInterface;
-}
-
 namespace network {
 namespace soe {
 
 // FORWARD DECLARATION
-class Packet;
 class Session;
-class Socket;
-
-typedef std::function<void (std::shared_ptr<Packet>)> MessageHandler;
 
 /**
  * @brief An SOE Protocol Service.
  *
  * 
  */
-class Server : public std::enable_shared_from_this<Server>, public ServerInterface {
+class Server : public ServerInterface {
 public:
-    Server(boost::asio::io_service& io_service, MessageHandler message_handler);
-    ~Server(void);
+    explicit Server(boost::asio::io_service& io_service);
+
+    ~Server();
 
     /**
      * @brief Starts the SOE Frontend Service.
@@ -80,20 +61,14 @@ public:
      */
     void Shutdown(void);
     
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher();
-    void event_dispatcher(std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher);
+    /**
+     * @brief Sends a message on the wire to the target endpoint.
+     */
+    void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer);
 
-    void SendMessage(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message);
-    
     void HandleMessage(std::shared_ptr<Packet> packet);
-    
-    bool AddSession(std::shared_ptr<Session> session);
 
-    bool RemoveSession(std::shared_ptr<Session> session);
-
-    std::shared_ptr<Session> GetSession(boost::asio::ip::udp::endpoint& endpoint);
-
-    std::shared_ptr<Socket> socket();
+    boost::asio::ip::udp::socket* socket();
     
     uint32_t max_receive_size();
 
@@ -101,29 +76,18 @@ public:
     
 private:
     Server();
-
-    /**
-     * @brief Called when the socket receives a message.
-     */
-    void OnSocketRecv_(boost::asio::ip::udp::endpoint remote_endpoint, std::shared_ptr<anh::ByteBuffer> message);
-
-    std::shared_ptr<Socket>		socket_;
-    boost::asio::io_service&	io_service_;
-
-    SessionManager				session_manager_;
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-    uint32_t					crc_seed_;
     
-    tbb::filter_t<void, void>   incoming_filter_;
-    tbb::filter_t<void, void>   outgoing_filter_;
+    void AsyncReceive();
 
-    tbb::concurrent_queue<std::shared_ptr<Packet>> incoming_messages_;
-    tbb::concurrent_queue<std::shared_ptr<Packet>> outgoing_messages_;
-
-    anh::ActiveObject active_;
-
-    MessageHandler message_handler_;
-
+    boost::asio::io_service& io_service_;
+    boost::asio::strand strand_;
+    
+    boost::asio::ip::udp::socket socket_;
+    boost::asio::ip::udp::endpoint current_remote_endpoint_;
+    std::array<char, 496> recv_buffer_;
+    
+    uint64_t bytes_recv_;
+    uint64_t bytes_sent_;
     uint32_t max_receive_size_;
 };
 

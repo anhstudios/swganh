@@ -25,7 +25,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager.h"
 
@@ -34,7 +34,7 @@ using namespace swganh::login;
 using namespace encoders;
 using namespace std;
 
-Sha512Encoder::Sha512Encoder(shared_ptr<DatabaseManagerInterface> db_manager)
+Sha512Encoder::Sha512Encoder(DatabaseManagerInterface* db_manager)
     : db_manager_(db_manager) {}
 Sha512Encoder::~Sha512Encoder() {}
 
@@ -44,13 +44,13 @@ string Sha512Encoder::EncodePassword(string raw, string salt) {
     string sql = "SELECT SHA1(CONCAT('" + raw + "', '{" + salt + "}'))";
     auto conn = db_manager_->getConnection("galaxy_manager");
     auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-    auto result_set = statement->executeQuery(sql);
+    auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery(sql));
     if (result_set->next())
     {
         result = result_set->getString(1);
     }
     else
-        DLOG(WARNING) << "Sha512Encoder::EncodePassword failed to encode password" << endl;
+        BOOST_LOG_TRIVIAL(warning) << "Sha512Encoder::EncodePassword failed to encode password" << endl;
 
     return result;
 }
