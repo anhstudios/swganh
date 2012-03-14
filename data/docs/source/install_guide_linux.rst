@@ -65,7 +65,7 @@ Next unpack both source packages and copy the Boost-log files into the main Boos
     cp -R boost-log-1.1/boost/log boost_1_49_0/boost/log
     cp -R boost-log-1.1/libs/log boost_1_49_0/libs/log
     
-When configuring its important to specify the version of Python that Boost should compile against. To do that use the following command.
+When configuring its important to specify the version of Python that Boost should compile against. To do that navigate to the boost_1_49_0 directory and run the following command.
 
 ::
 
