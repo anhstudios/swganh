@@ -1,1 +1,1 @@
-actor.posture = bindings.object.POSTURE.SITTING
+actor.posture = bindings.POSTURE.SITTING

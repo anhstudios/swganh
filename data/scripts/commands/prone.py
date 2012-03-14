@@ -1,2 +1,2 @@
-actor.posture = bindings.object.POSTURE.PRONE
+actor.posture = bindings.POSTURE.PRONE
 actor.run_speed = 1.0        
