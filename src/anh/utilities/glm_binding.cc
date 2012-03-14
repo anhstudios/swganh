@@ -24,15 +24,15 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
-#include "utility_python.h"
+#include <anh/utility_python.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 #include <boost/python.hpp>
 using namespace boost::python;
-namespace swganh
+namespace anh
 {
-namespace scripting
+namespace utilities
 {
 void define_class_glm_vec3()
 {
@@ -83,4 +83,4 @@ void define_class_glm_quat()
 		.def(self /= glm::float_t());
 		//.def(self_ns::str(self));
 }
-}} // namespace swganh::scripting
+}} // namespace anh::utilities

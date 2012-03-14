@@ -25,17 +25,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 ---------------------------------------------------------------------------------------
 */
 
-#ifndef SWGANH_SCRIPTING_GLM_BINDINGS_H
-#define SWGANH_SCRIPTING_GLM_BINDINGS_H
+#ifndef ANH_UTILITIES_GLM_BINDINGS_H
+#define ANH_UTILITIES_GLM_BINDINGS_H
 
-namespace swganh
+namespace anh
 {
-namespace scripting
+namespace utilities
 {
 
 void define_class_glm_vec3();
 void define_class_glm_quat();
 
-}} // namespace swganh::scripting
+}} // namespace anh::utilities
 
-#endif // SWGANH_SCRIPTING_GLM_BINDINGS_H
+#endif // ANH_UTILITIES_GLM_BINDINGS_H
