@@ -1,1 +1,1 @@
-actor.posture = swganh.POSTURE.CROUCHED
+actor.posture = bindings.object.POSTURE.CROUCHED

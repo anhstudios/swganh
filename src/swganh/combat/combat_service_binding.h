@@ -1,6 +1,7 @@
 #ifndef SWGANH_COMBAT_COMBAT_SERVICE_BINDING_H_
 #define SWGANH_COMBAT_COMBAT_SERVICE_BINDING_H_
 
+#include "anh/python_shared_ptr.h"
 #include "swganh/combat/combat_service.h"
 
 #include <boost/python.hpp>

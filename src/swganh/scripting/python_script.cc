@@ -31,7 +31,7 @@ PythonScript::PythonScript(const string& filename)
 		)));
 
         globals_ = main.attr("__dict__");
-        globals_["swganh"] = boost::python::import("py_swganh");
+        globals_["bindings"] = boost::python::import("bindings");
 		globals_["context"] = dict();
     }
     catch (error_already_set &)

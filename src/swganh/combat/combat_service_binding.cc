@@ -1,4 +1,3 @@
-#include "anh/python_shared_ptr.h"
 #include "swganh/combat/combat_service_binding.h"
 
 BOOST_PYTHON_MODULE(py_combat) 

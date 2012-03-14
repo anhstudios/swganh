@@ -9,7 +9,7 @@ Services
 	CombatService
 	
 	
-.. currentmodule:: bindings.combat
+.. automodule:: bindings.combat
 .. autoclass:: CombatService
 	:members:
 	:inherited-members:
