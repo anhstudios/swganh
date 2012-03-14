@@ -65,7 +65,7 @@ Next unpack both source packages and copy the Boost-log files into the main Boos
     cp -R boost-log-1.1/boost/log boost_1_49_0/boost/log
     cp -R boost-log-1.1/libs/log boost_1_49_0/libs/log
     
-When configuring its important to specify the version of Python that Boost should compile against. To do that use the following command.
+When configuring its important to specify the version of Python that Boost should compile against. To do that navigate to the boost_1_49_0 directory and run the following command.
 
 ::
 
@@ -118,7 +118,7 @@ Next we'll copy in some files that are needed to run the server.
 Setting up the Database
 -----------------------
 
-A new database installation is needed before the server can be started for the first time. To install the server navigate to the swganh/data/sql folder and execute the following command:
+A new database installation is needed before the server can be started for the first time. To install the server navigate to the *swganh/data/sql* folder and execute the following command:
 
 ::
 
@@ -129,6 +129,12 @@ Replace MYSQL\_USERNAME and MYSQL\_PASSWORD with the authentication data of a my
 .. NOTE::
 
     You can use the root user for simple local installations, however, it is advised that you create a dedicated mysql user for your SWGANH installation in production environments.
+
+.. NOTE::
+
+    You can set a custom host using the -h flag (e.g. -h 192.168.0.100).
+
+    The mysql executable can also be customized via the -m flag (e.g. -m mysql5).
 
 Configuring and Running the Server
 ----------------------------------
