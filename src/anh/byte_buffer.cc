@@ -77,6 +77,10 @@ void ByteBuffer::reserve(size_t length) {
     data_.reserve(length);
 }
 
+void ByteBuffer::resize(size_t length) {
+    data_.resize(length);
+}
+
 size_t ByteBuffer::size() const {
     return data_.size();
 }

@@ -22,7 +22,6 @@
 
 #include "anh/app/kernel_interface.h"
 #include "anh/database/database_manager_interface.h"
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
 
 #include "anh/service/datastore.h"
 #include "anh/service/galaxy.h"

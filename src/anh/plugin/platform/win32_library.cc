@@ -18,7 +18,7 @@ using namespace std;
 shared_ptr<Win32Library> Win32Library::Load(std::string library) {
     path library_path(library);
 
-    HMODULE handle = ::LoadLibrary(library_path.native_file_string().c_str());
+    HMODULE handle = ::LoadLibrary(library_path.string().c_str());
     
     if (handle == NULL) {
       DWORD error_code = ::GetLastError();

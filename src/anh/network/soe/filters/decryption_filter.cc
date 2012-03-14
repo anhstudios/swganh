@@ -20,49 +20,35 @@
 
 #include "anh/network/soe/filters/decryption_filter.h"
 
-#include <iostream>
-#include <glog/logging.h>
-
 #include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
-#include "anh/network/soe/packet.h"
-#include "anh/network/soe/protocol_opcodes.h"
 
+using namespace anh;
 using namespace anh::network::soe;
 using namespace filters;
 using namespace std;
 
-shared_ptr<Packet> DecryptionFilter::operator()(shared_ptr<Packet> packet) const {
-    if (!packet) { return nullptr; }
-
-    auto session = packet->session();
-    
-    // Don't do any processing on messages from non-connected sessions.
-    if (!session->connected()) {
-        return packet;
-    }
-    
-    auto message = packet->message();
-
-    try {
-        if (! (message->size() > 2)) {
-            DLOG(WARNING) << "Invalid message size\n\n" << *message;
-            return nullptr;
-        }
-
-        uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;
-
-        Decrypt_((char*)message->data() + offset, 
-                message->size() - offset, 
-                packet->session()->crc_seed());
-    } catch(...) {
-        DLOG(WARNING) << "Error while decrypting packet\n\n" << *message;
+void DecryptionFilter::operator()(
+    const shared_ptr<Session>& session,
+    const shared_ptr<ByteBuffer>& message) const
+{    
+    if (message->size() <= 2)
+    {
+        throw runtime_error("Invalid message size");
     }
 
-    return packet;
+    uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;
+
+    Decrypt_((char*)message->data() + offset, 
+            message->size() - offset, 
+            session->crc_seed());
 }
 
-int DecryptionFilter::Decrypt_(char* buffer, uint32_t len, uint32_t seed) const {
+int DecryptionFilter::Decrypt_(
+    char* buffer, 
+    uint32_t len, 
+    uint32_t seed) const 
+{
     int retVal = 0;
 
     uint32_t tempSeed = 0;
@@ -76,7 +62,9 @@ int DecryptionFilter::Decrypt_(char* buffer, uint32_t len, uint32_t seed) const 
         seed = tempSeed;
     }
 
-    for(uint32_t count = blockCount * 4; count < blockCount * 4 + byteCount; count++)
+    for(uint32_t count = blockCount * 4; 
+        count < blockCount * 4 + byteCount; 
+        count++)
     {
         buffer[count] ^= seed;
     }

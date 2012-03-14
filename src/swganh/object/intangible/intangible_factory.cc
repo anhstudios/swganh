@@ -9,7 +9,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager.h"
 #include "swganh/object/intangible/intangible.h"
@@ -22,7 +22,7 @@ using namespace swganh::object;
 using namespace swganh::object::intangible;
 using namespace swganh::simulation;
 
-IntangibleFactory::IntangibleFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
                              SimulationService* simulation_service)
     : ObjectFactory(db_manager, simulation_service)
 {
@@ -33,7 +33,7 @@ void IntangibleFactory::LoadTemplates()
 
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = conn->prepareStatement("CALL sp_GetIntangibleTemplates();");
-        auto result = statement->executeQuery();
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
 
         while (result->next())
         {
@@ -46,8 +46,8 @@ void IntangibleFactory::LoadTemplates()
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 unordered_map<string, shared_ptr<Intangible>>::iterator IntangibleFactory::GetTemplateIter_(const string& template_name)
@@ -70,13 +70,13 @@ void IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
         {
             auto conn = db_manager_->getConnection("galaxy");
             auto statement = conn->prepareStatement("CALL sp_PersistIntangible(?,?,?,?,?,?,?,?);");
-            // TODO: Add in values to persist
+            //@TODO: Add in values to persist
             statement->execute();
         }
             catch(sql::SQLException &e)
         {
-            DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-            DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+            BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+            BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
         }
     }
 }
@@ -92,8 +92,8 @@ void IntangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object
     }
         catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
@@ -122,8 +122,8 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return intangible;
 }

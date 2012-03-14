@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
 
 #include "swganh/login/login_service.h"
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -28,18 +28,14 @@
 
 #include "anh/database/database_manager.h"
 
-#include "anh/event_dispatcher/basic_event.h"
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
+#include "anh/event_dispatcher.h"
 
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
 #include "anh/network/soe/server.h"
 
 #include "anh/service/service_directory_interface.h"
 #include "anh/service/service_manager.h"
 #include "anh/plugin/plugin_manager.h"
-
-#include "swganh/base/swg_message_handler.h"
 
 #include "swganh/login/messages/enumerate_character_id.h"
 #include "swganh/login/messages/error_message.h"
@@ -56,6 +52,7 @@ using namespace anh;
 using namespace app;
 using namespace swganh::login;
 using namespace messages;
+using namespace network::soe;
 using namespace swganh::login;
 using namespace swganh::base;
 using namespace swganh::character;
@@ -64,28 +61,17 @@ using namespace database;
 using namespace event_dispatcher;
 using namespace std;
 
-using anh::network::soe::Session;
+using boost::asio::ip::udp;
 
-LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)     
+LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)
     : BaseService(kernel)
-#pragma warning(push)
-#pragma warning(disable: 4355)
-    , SwgMessageRouter([=] (const boost::asio::ip::udp::endpoint& endpoint) {
-        return GetClientFromEndpoint(endpoint);  
-      })
-#pragma warning(pop) 
+    , swganh::network::BaseSwgServer(kernel->GetIoService())
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
-     {
-    
-    soe_server_.reset(new anh::network::soe::Server(
-        kernel->GetIoService(),
-        bind(&LoginService::RouteMessage, this, placeholders::_1)));
-    soe_server_->event_dispatcher(kernel->GetEventDispatcher());
-    
+{
     account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
-    if (!account_provider_) 
+    if (!account_provider_)
     {
         account_provider_ = make_shared<providers::MysqlAccountProvider>(kernel->GetDatabaseManager());
     }
@@ -105,51 +91,93 @@ service::ServiceDescription LoginService::GetServiceDescription() {
         "ANH Login Service",
         "login",
         "0.1",
-        listen_address_, 
-        0, 
-        listen_port_, 
+        listen_address_,
+        0,
+        listen_port_,
         0);
 
     return service_description;
+}
+
+shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
+{
+    shared_ptr<LoginClient> session = nullptr;
+
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        if (session_map_.find(endpoint) == session_map_.end())
+        {
+            session = make_shared<LoginClient>(this, kernel()->GetIoService(), endpoint);
+            session_map_.insert(make_pair(endpoint, session));
+        }
+    }
+
+    return session;
+}
+
+bool LoginService::RemoveSession(std::shared_ptr<Session> session) {
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        session_map_.erase(session->remote_endpoint());
+    }
+
+    return true;
+}
+
+shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
+    {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+
+        auto find_iter = session_map_.find(endpoint);
+        if (find_iter != session_map_.end())
+        {
+            return find_iter->second;
+        }
+    }
+
+    return CreateSession(endpoint);
 }
 
 void LoginService::onStart() {
     character_service_ = static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
 	galaxy_service_  = static_pointer_cast<GalaxyService>(kernel()->GetServiceManager()->GetService("GalaxyService"));
 
-    soe_server_->Start(listen_port_);
-    
+    Server::Start(listen_port_);
+
     UpdateGalaxyStatus_();
+
+    active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        for_each(
+            begin(session_map_),
+            end(session_map_),
+            [=] (SessionMap::value_type& type)
+        {
+            type.second->Update();
+        });
+    });
 }
 
-void LoginService::onStop() {
-    soe_server_->Shutdown();
+void LoginService::onStop()
+{
+    Server::Shutdown();
 }
 
-void LoginService::subscribe() {
+void LoginService::subscribe()
+{
+    RegisterMessageHandler(&LoginService::HandleLoginClientId_, this);
+
     auto event_dispatcher = kernel()->GetEventDispatcher();
-    
-    RegisterMessageHandler<LoginClientId>(
-        bind(&LoginService::HandleLoginClientId_, this, placeholders::_1, placeholders::_2), false);
 
-    event_dispatcher->subscribe("UpdateGalaxyStatus", [this] (shared_ptr<EventInterface> incoming_event) -> bool{
+    event_dispatcher->Subscribe(
+        "UpdateGalaxyStatus",
+        [this] (const shared_ptr<anh::EventInterface>& incoming_event)
+    {
         UpdateGalaxyStatus_();
-        return true;
-    });
-    
-    event_dispatcher->subscribe("NetworkSessionRemoved", [this] (shared_ptr<EventInterface> incoming_event) -> bool {
-        auto session_removed = static_pointer_cast<anh::event_dispatcher::BasicEvent<anh::network::soe::SessionData>>(incoming_event);
-        
-        // Message was triggered from our server so process it.
-        if (session_removed->session->server() == soe_server_.get()) {
-            RemoveClient_(session_removed->session);
-        }
-
-        return true;
     });
 }
 
-int LoginService::galaxy_status_check_duration_secs() const 
+int LoginService::galaxy_status_check_duration_secs() const
 {
     return galaxy_status_check_duration_secs_;
 }
@@ -179,52 +207,28 @@ void LoginService::login_error_timeout_secs(int new_timeout)
     login_error_timeout_secs_ = new_timeout;
 }
 
-std::shared_ptr<LoginClient> LoginService::AddClient_(shared_ptr<Session> session) {
-    std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
-
-    if (!client) {
-        DLOG(WARNING) << "Adding login client";
-
-        client = make_shared<LoginClient>(session);
-        
-        ClientMap::accessor a;
-        clients_.insert(a, client->GetSession()->remote_endpoint());
-        a->second = client;
-    }
-
-    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
-    return client;
-}
-
-void LoginService::RemoveClient_(std::shared_ptr<anh::network::soe::Session> session) {
-    std::shared_ptr<LoginClient> client = GetClientFromEndpoint(session->remote_endpoint());
-    
-    if (client) {
-        DLOG(WARNING) << "Removing disconnected client";
-        clients_.erase(session->remote_endpoint());
-    }
-
-    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
-}
-
-void LoginService::UpdateGalaxyStatus_() {    
-    DLOG(INFO) << "Updating galaxy status";
+void LoginService::UpdateGalaxyStatus_() {
+    BOOST_LOG_TRIVIAL(info) << "Updating galaxy status";
 
     galaxy_status_ = GetGalaxyStatus_();
-        
-    const vector<GalaxyStatus>& status = galaxy_status_;
 
-    std::for_each(clients_.begin(), clients_.end(), [&status] (ClientMap::value_type& client_entry) {
-        if (client_entry.second) {                
-            client_entry.second->Send(
-                BuildLoginClusterStatus(status));
+    auto status_message = BuildLoginClusterStatus(galaxy_status_);
+
+    boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+    std::for_each(
+        begin(session_map_),
+        end(session_map_),
+        [&status_message] (SessionMap::value_type& item)
+    {
+        if (item.second) {
+            item.second->SendTo(status_message);
         }
     });
 }
 
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     std::vector<GalaxyStatus> galaxy_status;
-    
+
     auto service_directory = kernel()->GetServiceDirectory();
 
     auto galaxy_list = service_directory->getGalaxySnapshot();
@@ -240,12 +244,12 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
             GalaxyStatus status;
             status.address = it->address();
             status.connection_port = it->udp_port();
-            // TODO: Add a meaningful value here (ping to client from server?)
+            //@TODO: Add a meaningful value here (ping to client from server?)
             status.distance = 0xffff8f80;
             status.galaxy_id = galaxy.id();
-            // TODO: Add a configurable value here
+            //@TODO: Add a configurable value here
             status.max_characters = 2;
-            // TODO: Add a configurable value here
+            //@TODO: Add a configurable value here
             status.max_population = 0x00000cb2;
             status.name = galaxy.name();
             status.ping_port = it->ping_port();
@@ -259,90 +263,67 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-void LoginService::HandleLoginClientId_(std::shared_ptr<LoginClient> login_client, const LoginClientId& message) {
-
+void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const LoginClientId& message)
+{
     login_client->SetUsername(message.username);
     login_client->SetPassword(message.password);
     login_client->SetVersion(message.client_version);
-    
+
     auto account = account_provider_->FindByUsername(message.username);
 
     if (!account && login_auto_registration_ == true)
     {
         if(account_provider_->AutoRegisterAccount(message.username, message.password))
         {
-            account = account_provider_->FindByUsername(message.username); 
+            account = account_provider_->FindByUsername(message.username);
         }
     }
 
     if (!account || !authentication_manager_->Authenticate(login_client, account)) {
-        DLOG(WARNING) << "Login request for invalid user: " << login_client->GetUsername();
+        BOOST_LOG_TRIVIAL(warning) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
         error.type = "@cpt_login_fail";
         error.message = "@msg_login_fail";
         error.force_fatal = false;
-        
-        login_client->Send(error);
-        
-        auto timer = make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
+
+        login_client->SendTo(error);
+
+        auto timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
         timer->async_wait([login_client] (const boost::system::error_code& e)
         {
 			if (login_client)
 			{
-			    if (login_client->GetSession())
-			    {
-				    login_client->GetSession()->Close();
-			    }
-			    
-				DLOG(WARNING) << "Closing connection";
+                login_client->Close();
+
+				BOOST_LOG_TRIVIAL(warning) << "Closing connection";
 			}
-            return;            
         });
 
         return;
     }
-    
+
     login_client->SetAccount(account);
-    
-    clients_.insert(make_pair(login_client->GetSession()->remote_endpoint(), login_client));
-    DLOG(WARNING) << "Login service currently has ("<< clients_.size() << ") clients";
-    
     // create account session
     string account_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
-        + boost::lexical_cast<string>(login_client->GetSession()->remote_endpoint().address());
+        + boost::lexical_cast<string>(login_client->remote_endpoint().address());
 
     account_provider_->CreateAccountSession(account->account_id(), account_session);
-    login_client->Send(
+    login_client->SendTo(
         messages::BuildLoginClientToken(login_client, account_session));
-    
-    login_client->Send(
+
+    login_client->SendTo(
         messages::BuildLoginEnumCluster(login_client, galaxy_status_));
-    
-    login_client->Send(
+
+    login_client->SendTo(
         messages::BuildLoginClusterStatus(galaxy_status_));
-    
+
     auto characters = character_service_->GetCharactersForAccount(login_client->GetAccount()->account_id());
 
-    login_client->Send(
+    login_client->SendTo(
         messages::BuildEnumerateCharacterId(characters));
 }
 
 uint32_t LoginService::GetAccountBySessionKey(const string& session_key) {
     return account_provider_->FindBySessionKey(session_key);
-}
-
-
-shared_ptr<LoginClient> LoginService::GetClientFromEndpoint(
-        const boost::asio::ip::udp::endpoint& remote_endpoint)
-{
-    shared_ptr<LoginClient> client = nullptr;
-    
-    ClientMap::accessor a;
-
-    if (clients_.find(a, remote_endpoint)) {
-        client = a->second;
-    }
-
-    return client;
 }

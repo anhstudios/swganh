@@ -10,8 +10,8 @@
 #include "swganh/object/object_controller.h"
 
 namespace swganh {
-namespace network {
-    class RemoteClient;
+namespace connection {
+    class ConnectionClient;
 }}  // namespace swganh::network
 
 namespace swganh {
@@ -40,7 +40,7 @@ namespace simulation {
 
         void PersistObject(uint64_t object_id);
 		/*
-		*	@brief this persists the given object and all related objects (ie: everything contained inside this object)
+		*	\brief this persists the given object and all related objects (ie: everything contained inside this object)
 		*/
 		void PersistRelatedObjects(uint64_t parent_object_id);
         
@@ -51,7 +51,7 @@ namespace simulation {
         std::shared_ptr<T> LoadObjectById(uint64_t object_id)
         {
             std::shared_ptr<swganh::object::Object> object = LoadObjectById(object_id, T::type);
-#if _DEBUG
+#ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
 #else
             return std::static_pointer_cast<T>(object);
@@ -65,7 +65,7 @@ namespace simulation {
         {
             std::shared_ptr<swganh::object::Object> object = GetObjectById(object_id);
 
-#if _DEBUG
+#ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(move(object));
 #else
             return std::static_pointer_cast<T>(move(object));
@@ -80,7 +80,7 @@ namespace simulation {
         
         std::shared_ptr<swganh::object::ObjectController> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
-            std::shared_ptr<swganh::network::RemoteClient> client);
+            std::shared_ptr<swganh::connection::ConnectionClient> client);
 
         void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object);
 

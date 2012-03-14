@@ -26,7 +26,7 @@
 namespace anh {
 
     namespace detail {
-        /// @TODO Remove comment when visual studio begins supporting constexpr.
+        //// @TODO Remove comment when visual studio begins supporting constexpr.
         /*constexpr*/ bool inline isBigEndian() {
             uint16_t x = 1;
             return !(*reinterpret_cast<char*>(&x));
@@ -73,8 +73,8 @@ namespace anh {
 
     /*! Swaps the endianness of integral values and returns the results.
     *
-    * \param value An integral value for which to swap the endianness.
-    * \return A copy of the input parameter with its endianness swapped.
+    * @param value An integral value for which to swap the endianness.
+    * @return A copy of the input parameter with its endianness swapped.
     */
     template<typename T>
     T swapEndian(T value) {
@@ -84,8 +84,8 @@ namespace anh {
 
     /*! Converts an integral value from host-byte order to little endian.
     *
-    * \param value An integral value to convert to little endian.
-    * \return The value converted to little endian order.
+    * @param value An integral value to convert to little endian.
+    * @return The value converted to little endian order.
     */
     template<typename T>
     T hostToLittle(T value) {
@@ -95,8 +95,8 @@ namespace anh {
     
     /*! Converts an integral value from host-byte order to big endian.
     *
-    * \param value The value to convert to big endian
-    * \return The value converted to big endian order.
+    * @param value The value to convert to big endian
+    * @return The value converted to big endian order.
     */
     template<typename T>
     T hostToBig(T value) {
@@ -106,8 +106,8 @@ namespace anh {
     
     /*! Converts an integral value from big endian to host-byte order.
     *
-    * \param value The value to convert to host-byte order.
-    * \return The value converted to host-byte order.
+    * @param value The value to convert to host-byte order.
+    * @return The value converted to host-byte order.
     */
     template<typename T>
     T bigToHost(T value) {
@@ -117,8 +117,8 @@ namespace anh {
     
     /*! Converts an integral value from little endian to host-byte order.
     *
-    * \param value The value to convert to host-byte order.
-    * \return The value converted to host-byte order.
+    * @param value The value to convert to host-byte order.
+    * @return The value converted to host-byte order.
     */
     template<typename T>
     T littleToHost(T value) {

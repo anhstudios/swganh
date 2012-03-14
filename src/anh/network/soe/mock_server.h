@@ -22,39 +22,32 @@
 #define ANH_NETWORK_SOE_MOCK_SERVER_H_
 
 #include <gmock/gmock.h>
+
 #include "anh/network/soe/server.h"
-#include "anh/network/soe/session_manager.h"
 
 namespace anh{
 
 class ByteBuffer;
-
-namespace event_dispatcher {
-class EventDispatcherInterface;
-}
-    
+ 
 namespace network {
 namespace soe {
     
 class Session;
-class Socket;
   
 class MockServer : public ServerInterface {
 public:
     MOCK_METHOD1(Start, void(uint16_t port));
-    MOCK_METHOD0(Update, void());
     MOCK_METHOD0(Shutdown, void());
-    MOCK_METHOD2(SendMessage, void(std::shared_ptr<Session> session, std::shared_ptr<anh::ByteBuffer> message));
-    MOCK_METHOD1(HandleMessage, void(std::shared_ptr<Packet> packet));
-    MOCK_METHOD0(event_dispatcher, std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>());
-
-    MOCK_METHOD1(AddSession, bool(std::shared_ptr<Session> session));
-    MOCK_METHOD1(RemoveSession, bool(std::shared_ptr<Session> session));
-    MOCK_METHOD1(GetSession, std::shared_ptr<Session>(boost::asio::ip::udp::endpoint& endpoint));
-
-    MOCK_METHOD0(socket, std::shared_ptr<Socket>());
-    MOCK_METHOD0(max_receive_size, uint32_t());
+    MOCK_METHOD2(SendTo, void(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer));
     MOCK_METHOD0(AllocateBuffer, std::shared_ptr<anh::ByteBuffer>());
+    MOCK_METHOD2(HandleMessage, void(std::shared_ptr<Session> connection, std::shared_ptr<anh::ByteBuffer> message));    
+
+    MOCK_METHOD1(RemoveSession, bool(std::shared_ptr<Session> session));
+    MOCK_METHOD1(CreateSession, std::shared_ptr<Session>(const boost::asio::ip::udp::endpoint& endpoint));
+    MOCK_METHOD1(GetSession, std::shared_ptr<Session>(const boost::asio::ip::udp::endpoint& endpoint));
+
+    MOCK_METHOD0(socket, boost::asio::ip::udp::socket*());
+    MOCK_METHOD0(max_receive_size, uint32_t());
 };
     
 }}}  // namespace anh::network::soe

@@ -42,6 +42,7 @@ public:
     static void BuildStatBaseDelta(Creature* creature);
     static void BuildSkillDelta(Creature* creature);
     static void BuildPostureDelta(Creature* creature);
+	static void BuildPostureUpdate(Creature* creature);
     static void BuildFactionRankDelta(Creature* creature);
     static void BuildOwnerIdDelta(Creature* creature);
     static void BuildScaleDelta(Creature* creature);

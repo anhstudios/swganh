@@ -14,20 +14,29 @@
 
 namespace swganh {
 namespace app {
-    
+
+/*!
+ * @Brief Contains information about the app config"
+ */
 struct AppConfig {
 	std::string server_mode;
     std::vector<std::string> plugins;
     std::string plugin_directory;
     std::string galaxy_name;
 
+    /*!
+    * @Brief Contains information about the database config"
+    */
     struct DatabaseConfig {
         std::string host;
         std::string schema;
         std::string username;
         std::string password;
     } galaxy_manager_db, galaxy_db;
-    
+
+    /*!
+    * @Brief Contains information about the Login config"
+     */
     struct LoginConfig {
         std::string listen_address;
         uint16_t listen_port;
@@ -35,7 +44,9 @@ struct AppConfig {
         int login_error_timeout_secs;
         bool login_auto_registration;
     } login_config;
-
+    /*!
+    * @Brief Contains information about the app config"
+    */
     struct ConnectionConfig {
         std::string listen_address;
         uint16_t listen_port;
@@ -54,15 +65,15 @@ public:
 
     AppConfig& GetAppConfig();
 
-    std::shared_ptr<anh::database::DatabaseManagerInterface> GetDatabaseManager();
-
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> GetEventDispatcher();
-
-    std::shared_ptr<anh::plugin::PluginManager> GetPluginManager();
-
-    std::shared_ptr<anh::service::ServiceManager> GetServiceManager();
+    anh::database::DatabaseManagerInterface* GetDatabaseManager();
     
-    std::shared_ptr<anh::service::ServiceDirectoryInterface> GetServiceDirectory();
+    anh::EventDispatcher* GetEventDispatcher();
+
+    anh::plugin::PluginManager* GetPluginManager();
+
+    anh::service::ServiceManager* GetServiceManager();
+    
+    anh::service::ServiceDirectoryInterface* GetServiceDirectory();
     
     boost::asio::io_service& GetIoService();
 
@@ -70,11 +81,11 @@ private:
     anh::app::Version version_;
     swganh::app::AppConfig app_config_;
     
-    std::shared_ptr<anh::database::DatabaseManagerInterface> database_manager_;
-    std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface> event_dispatcher_;
-    std::shared_ptr<anh::plugin::PluginManager> plugin_manager_;
-    std::shared_ptr<anh::service::ServiceManager> service_manager_;
-    std::shared_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
+    std::unique_ptr<anh::database::DatabaseManagerInterface> database_manager_;
+    std::unique_ptr<anh::EventDispatcher> event_dispatcher_;
+    std::unique_ptr<anh::plugin::PluginManager> plugin_manager_;
+    std::unique_ptr<anh::service::ServiceManager> service_manager_;
+    std::unique_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
 
     boost::asio::io_service io_service_;
 };

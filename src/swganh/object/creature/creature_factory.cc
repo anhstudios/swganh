@@ -9,7 +9,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager.h"
 #include "swganh/object/creature/creature.h"
@@ -23,7 +23,7 @@ using namespace swganh::object::creature;
 using namespace swganh::simulation;
 
 
-CreatureFactory::CreatureFactory(const shared_ptr<DatabaseManagerInterface>& db_manager,
+CreatureFactory::CreatureFactory(DatabaseManagerInterface* db_manager,
                              SimulationService* simulation_service)
     : TangibleFactory(db_manager, simulation_service)
 {
@@ -120,12 +120,12 @@ void CreatureFactory::PersistObject(const shared_ptr<Object>& object)
         statement->setInt(64, creature->stat_max_list_.At(WILLPOWER).value);
 
         int updated = statement->executeUpdate();
-        DLOG(WARNING) << "Updated " << updated << " rows in sp_PersistCreature";
+        BOOST_LOG_TRIVIAL(warning) << "Updated " << updated << " rows in sp_PersistCreature";
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
@@ -139,11 +139,11 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-        shared_ptr<sql::ResultSet> result;
+        unique_ptr<sql::ResultSet> result;
         stringstream ss;
         ss << "CALL sp_GetCreature(" << object_id << ");" ;
         statement->execute(ss.str());
-        CreateBaseTangible(creature, statement);
+        CreateTangible(creature, statement);
         
         if (statement->getMoreResults())
         {
@@ -156,24 +156,24 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
                 creature->cash_credits_ = result->getUInt("cash_credits");
                 creature->posture_ = (Posture)result->getUInt("posture");
                 creature->faction_rank_ = result->getUInt("faction_rank");
-                creature->scale_ = result->getDouble("scale");
+                creature->scale_ = static_cast<float>(result->getDouble("scale"));
                 creature->battle_fatigue_ = result->getUInt("battle_fatigue");
                 creature->state_bitmask_ = result->getUInt("state");
-                creature->acceleration_multiplier_base_ = result->getDouble("acceleration_base");
-                creature->acceleration_multiplier_modifier_ = result->getDouble("acceleration_modifier");
-                creature->speed_multiplier_base_ = result->getDouble("speed_base");
-                creature->speed_multiplier_modifier_ = result->getDouble("speed_modifier");
-                creature->run_speed_ = result->getDouble("run_speed");
-                creature->slope_modifier_angle_ = result->getDouble("slope_modifier_angle");
-                creature->slope_modifier_percent_ = result->getDouble("slope_modifier_percent");
-                creature->walking_speed_ = result->getDouble("walking_speed");
-                creature->turn_radius_ = result->getDouble("turn_radius");
-                creature->water_modifier_percent_ = result->getDouble("water_modifier_percent");
+                creature->acceleration_multiplier_base_ = static_cast<float>(result->getDouble("acceleration_base"));
+                creature->acceleration_multiplier_modifier_ = static_cast<float>(result->getDouble("acceleration_modifier"));
+                creature->speed_multiplier_base_ = static_cast<float>(result->getDouble("speed_base"));
+                creature->speed_multiplier_modifier_ = static_cast<float>(result->getDouble("speed_modifier"));
+                creature->run_speed_ = static_cast<float>(result->getDouble("run_speed"));
+                creature->slope_modifier_angle_ = static_cast<float>(result->getDouble("slope_modifier_angle"));
+                creature->slope_modifier_percent_ = static_cast<float>(result->getDouble("slope_modifier_percent"));
+                creature->walking_speed_ = static_cast<float>(result->getDouble("walking_speed"));
+                creature->turn_radius_ = static_cast<float>(result->getDouble("turn_radius"));
+                creature->water_modifier_percent_ = static_cast<float>(result->getDouble("water_modifier_percent"));
                 creature->combat_level_ = result->getUInt("combat_level");
                 creature->animation_ = result->getString("animation");
                 creature->mood_animation_ = result->getString("mood_animation");
 
-                // @TODO: Find a better place for this.
+                /// @TODO: Find a better place for this.
                 if (creature->mood_animation_.compare("none") == 0)
                 {
                     creature->mood_animation_ = "neutral";
@@ -230,13 +230,14 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
         
         LoadSkills_(creature, statement);
         LoadSkillMods_(creature, statement);
+        LoadSkillCommands_(creature, statement);
 
         LoadContainedObjects(creature, statement);
     }
     catch(sql::SQLException &e)
     {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return creature;
 }
@@ -286,6 +287,21 @@ void CreatureFactory::LoadSkillMods_(
             creature->skill_mod_list_.Insert(
                 skill_mod_name, 
                 SkillMod(skill_mod_name, skill_mod_value, 0));
+        }
+    }
+}
+
+void CreatureFactory::LoadSkillCommands_(
+    const shared_ptr<Creature>& creature, 
+    const shared_ptr<sql::Statement>& statement)
+{
+     // Check for contained objects        
+    if (statement->getMoreResults())
+    {
+        unique_ptr<sql::ResultSet> result(statement->getResultSet());
+        while (result->next())
+        {
+           creature->AddSkillCommand(make_pair(result->getInt("id"), result->getString("name")));
         }
     }
 }

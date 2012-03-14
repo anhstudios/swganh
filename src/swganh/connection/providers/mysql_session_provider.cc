@@ -28,7 +28,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager.h"
 
@@ -37,7 +37,7 @@ using namespace swganh::connection;
 using namespace providers;
 using namespace std;
 
-MysqlSessionProvider::MysqlSessionProvider(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager)
+MysqlSessionProvider::MysqlSessionProvider(anh::database::DatabaseManagerInterface* db_manager)
     : SessionProviderInterface()
     , db_manager_(db_manager) {}
 
@@ -51,18 +51,18 @@ uint64_t MysqlSessionProvider::GetPlayerId(uint32_t account_id) {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt(1, account_id);
-        auto result_set = statement->executeQuery();
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
             player_id = result_set->getUInt64("id");
             
         } else {
-            DLOG(WARNING) << "No Player Id found for account_id: " << account_id << endl;
+            BOOST_LOG_TRIVIAL(warning) << "No Player Id found for account_id: " << account_id << endl;
         }
 
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return player_id;
@@ -86,12 +86,12 @@ bool MysqlSessionProvider::CreateGameSession(uint64_t player_id, uint32_t sessio
            updated = true;
             
         } else {
-            DLOG(WARNING) << "Couldn't create session for player " << player_id << endl;
+            BOOST_LOG_TRIVIAL(warning) << "Couldn't create session for player " << player_id << endl;
         }
 
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return updated;
 }
@@ -105,12 +105,12 @@ void MysqlSessionProvider::EndGameSession(uint64_t player_id)
         auto rows_updated = statement->executeUpdate();
         
         if (rows_updated <= 0) {
-            DLOG(WARNING) << "Couldn't delete session for player " << player_id << endl;
+            BOOST_LOG_TRIVIAL(warning) << "Couldn't delete session for player " << player_id << endl;
         }
 
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 uint32_t MysqlSessionProvider::GetAccountId(uint64_t player_id) {
@@ -120,19 +120,19 @@ uint32_t MysqlSessionProvider::GetAccountId(uint64_t player_id) {
         string sql = "select reference_id from player_account where id = ?";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-        statement->setUInt(1, player_id);
-        auto result_set = statement->executeQuery();
+        statement->setUInt64(1, player_id);
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
         
         if (result_set->next()) {
             account_id = result_set->getUInt("reference_id");
             
         } else {
-            DLOG(WARNING) << "No account Id found for player id : " << player_id << endl;
+            BOOST_LOG_TRIVIAL(warning) << "No account Id found for player id : " << player_id << endl;
         }
 
     } catch(sql::SQLException &e) {
-        DLOG(ERROR) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        DLOG(ERROR) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return account_id;
 }

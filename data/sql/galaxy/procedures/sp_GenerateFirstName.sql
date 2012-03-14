@@ -1,0 +1,26 @@
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+
+DROP PROCEDURE IF EXISTS `sp_GenerateFirstName`;
+
+DELIMITER //
+CREATE PROCEDURE `sp_GenerateFirstName`(
+    IN `start_species` CHAR(16), 
+    IN `start_gender` INT(11),
+    OUT gen_firstname CHAR(16)
+    )
+BEGIN
+    DECLARE raceId INT(8);
+      
+    SELECT id FROM species WHERE name = start_species INTO raceId;
+
+    SELECT firstname FROM namegen_firstname WHERE species = raceId AND gender = start_gender ORDER BY RAND() LIMIT 1 INTO gen_firstname;
+END//
+DELIMITER ;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -42,8 +42,8 @@ public:
     typedef typename std::list<T>::iterator iterator;
     
     NetworkList()
-        : items_(std::list<T>())
-        , update_counter_(0)
+        : update_counter_(0)
+        , items_(std::list<T>())
         , added_items_(std::list<T>())
         , removed_items_(std::list<T>())
         , clear_(false)

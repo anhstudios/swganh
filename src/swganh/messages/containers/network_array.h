@@ -39,11 +39,11 @@ class NetworkArray
 {
 public:
     NetworkArray(uint16_t size)
-        : items_(size)
+        : update_counter_(0)
+        , items_(size)
         , items_added_(std::list<uint16_t>())
         , items_removed_(std::list<uint16_t>())
         , items_changed_(std::list<uint16_t>())
-        , update_counter_(0)
         , clear_(false)
     {
     }

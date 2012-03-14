@@ -21,7 +21,7 @@ class ServiceDirectoryInterface;
 
 class ServiceManager {
 public:
-    explicit ServiceManager(const std::shared_ptr<ServiceDirectoryInterface>& service_directory);
+    explicit ServiceManager(ServiceDirectoryInterface* service_directory);
     
     ~ServiceManager();
 
@@ -83,7 +83,7 @@ private:
     > ServiceMap;
     ServiceMap services_;
 
-    std::shared_ptr<ServiceDirectoryInterface> service_directory_;
+    ServiceDirectoryInterface* service_directory_;
 };
     
 }}  // namespace anh::service

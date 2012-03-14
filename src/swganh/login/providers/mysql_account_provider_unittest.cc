@@ -33,11 +33,10 @@ namespace {
     TEST(MySQLAccountProvider, DISABLED_ProperAccountInformationReturned) {
         auto db_manager = std::make_shared<anh::database::DatabaseManager>(sql::mysql::get_driver_instance());
         db_manager->registerStorageType("account", "symfony", "localhost", "root", "swganh");
-        MysqlAccountProvider account_provider(db_manager);
+        MysqlAccountProvider account_provider(db_manager.get());
         std::shared_ptr<swganh::login::Account> account;
         account = account_provider.FindByUsername("Kronos");
 
-        EXPECT_EQ("Kronos", account->username());
-        
+        EXPECT_EQ("Kronos", account->username());        
     }
 }

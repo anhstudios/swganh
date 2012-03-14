@@ -22,10 +22,8 @@
 
 #include <vector>
 
-#include <glog/logging.h>
 #include <zlib.h>
 
-#include "anh/network/soe/packet.h"
 #include "anh/network/soe/session.h"
 
 using namespace anh;
@@ -33,28 +31,23 @@ using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-shared_ptr<Packet> CompressionFilter::operator()(shared_ptr<Packet> packet) const {
-    auto message = packet->message();
+void CompressionFilter::operator()(
+        const std::shared_ptr<Session>& session,
+        const std::shared_ptr<ByteBuffer>& message)
+{
+    if(message->size() > session->receive_buffer_size() - 20) {
+        Compress_(message);
 
-    try {
-        if(message->size() > packet->session()->receive_buffer_size() - 20) {
-            Compress_(*message);
-
-            message->write<uint8_t>(1); // compressed
-        } else {        
-            message->write<uint8_t>(0); // not compressed
-        }
-    } catch(...) {
-        DLOG(WARNING) << "Unable to compress outgoing message \n\n" << *message;
+        message->write<uint8_t>(1); // compressed
+    } else {        
+        message->write<uint8_t>(0); // not compressed
     }
-
-    return packet;
 }
 
-void CompressionFilter::Compress_(ByteBuffer& buffer) const {
-    vector<uint8_t>& packet_data = buffer.raw();
-    uint32_t packet_size = buffer.size();
-    uint32_t compressed_size = 0;
+void CompressionFilter::Compress_(const shared_ptr<ByteBuffer>& message) 
+{
+    vector<uint8_t>& packet_data = message->raw();
+    uint32_t packet_size = message->size();
 
     // Determine the offset to begin compressing data at
     uint16_t offset = (packet_data[0] == 0x00) ? 2 : 1;
@@ -83,5 +76,5 @@ void CompressionFilter::Compress_(ByteBuffer& buffer) const {
     
     deflateEnd(&zstream_);
 
-    buffer.swap(compressed);
+    message->swap(compressed);
 }

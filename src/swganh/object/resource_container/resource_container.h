@@ -3,13 +3,13 @@
 
 #include <glm/glm.hpp>
 
-#include "swganh/object/tangible/base_tangible.h"
+#include "swganh/object/tangible/tangible.h"
 
 namespace swganh {
 namespace object {
 namespace resource_container {
 
-class ResourceContainer : public swganh::object::tangible::BaseTangible
+class ResourceContainer : public swganh::object::tangible::Tangible
 {
 public:
     // RCNO

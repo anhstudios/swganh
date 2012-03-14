@@ -23,7 +23,7 @@ namespace waypoint {
     class WaypointFactory : public swganh::object::ObjectFactory
     {
     public:
-        WaypointFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+        WaypointFactory(anh::database::DatabaseManagerInterface* db_manager,
             swganh::simulation::SimulationService* simulation_service);
 
         void LoadTemplates();

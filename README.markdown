@@ -7,44 +7,61 @@ This project aims to recreate the Star Wars Galaxies Pre-Combat Upgrade experien
 
 ### Requirements ###
 
-*   Microsoft Visual Studio 10.0 or higher (windows)
+*   Microsoft Visual Studio 11.0 Beta or higher (windows)
 *   GCC 4.6 (*nix)
-*   CMake 2.8.3 or higher
+*   CMake 2.8.7 or higher
 *   Git 1.7 or higher
 *   Python 3.2
 *   MySQL 5.1/MariaDB 5.2 or higher
 
-First, check out the project completely with the following, Windows users should run these commands from the Git Bash utility:
-
-    git clone https://github.com/anhstudios/swganh.git
-    cd swganh
-    git submodule update --init
-    
-After checking out the source you can perform the initial build by running provided bootstrap shell script:
-
-    ./bootstrap.sh
-    
-This process can take anywhere from 15-40 minutes on the first build depending on the hardware used. Generated binaries can be found in the **/build/bin** directory.
-
 ### Visual Studio / Windows Development ###
 
-On windows the platform of choice is Visual Studio 2010 or better. While other compilers such as GCC 4.6 via cygwin is possible it's hard to top the Visual Studio IDE for development. To get started, after you've run the bootstrap script as outlined in the Quick Build Guide, open the **/build/swganh/swganh.sln** solution file.
+Use git to checkout the latest version of the source:
+
+    git clone https://github.com/anhstudios/swganh.git
+
+Next, download the latest dependencies package for Visual Studio 11 here: 
+
+https://github.com/anhstudios/swganh/downloads
+
+Extract this inside of the swganh repository you just cloned:
+
+    ie., C:\swganh\vendor
+
+Shift-right click and choose to "Open command window here" on the swganh directory.
+
+Run the following commands to generate the project and build the source.
+
+    mkdir build
+    cd build
+    cmake -G "Visual Studio 11" ..
+    cmake --build .
+
+This will kick off a full build of the project. The final output can be found at swganh/build/bin/(Configuration).
 
 * **NOTE** Since the project files are located outside the source directory adding new files from within visual studio requires changing the default save location.*
+
+To add a new file, manually create it in the src directory and then run the following from within the build directory.
+    
+    cmake ..
+
 
 ### GCC / Linux Development ###
 
 On linux platforms a minimum of GCC 4.6 is required to build the project. After running the bootstrap script as outlined in the Quick Build Guide change directories to the **build** directory. You can use your favorite text editor to edit source files, the project can be rebuilt using familiar gnu make commands.
 
+    git clone https://github.com/anhstudios/swganh.git
+    cd swganh
+    mkdir build
     cd build
     cmake ..
     make
+    
+A more complete set of instructions that covers building dependencies can be found in the official documentation.
 
 ### Clang and other compilers ###
 
 [Clang][3] does not yet support lambdas, a C++0x feature commonly used in this project. Once lambda support is available we will investigate officially adopting it as a supported compiler. 
-
-Intel's C++ compiler is supported with [Intel Parallel Studio 2011][4] or greater.
 
 ## Quick Links ##
 
@@ -53,5 +70,3 @@ Intel's C++ compiler is supported with [Intel Parallel Studio 2011][4] or greate
 [1]: http://swganh.com
 [2]: http://swganh.com/docs
 [3]: http://clang.llvm.org/
-[4]: http://software.intel.com/en-us/articles/intel-parallel-studio-home/
-

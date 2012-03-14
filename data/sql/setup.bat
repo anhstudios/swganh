@@ -136,30 +136,13 @@ GOTO:MainMenu
 	ECHO.                              Please Wait
 	ECHO.
 
-	:: Create the users
-	
-	cd "%PROJECT_BASE%galaxy"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --defualt-character-set=utf8 < "create_users.sql"
-
 	:: Create the database schemas
 	
 	cd "%PROJECT_BASE%galaxy"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
+		mysql --password=%db_pass% --host=%db_host% --user=%db_user% < "create.sql"
 	cd "%PROJECT_BASE%galaxy_manager"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy_manager --default-character-set=utf8 < "create.sql"
-	cd "%PROJECT_BASE%swganh_astromech"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
-	cd "%PROJECT_BASE%swganh_config"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
-	cd "%PROJECT_BASE%swganh_logs"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
-	cd "%PROJECT_BASE%swganh_static"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
-	cd "%PROJECT_BASE%swganh_user"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
-	cd "%PROJECT_BASE%swganh_utility"
-		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
-	
+		mysql --password=%db_pass% --host=%db_host% --user=%db_user% < "create.sql"
+
 	:: Populate the data
 	
 	:: (galaxy)
@@ -167,19 +150,19 @@ GOTO:MainMenu
 	cd "%PROJECT_BASE%"
 	cd "%PROJECT_BASE%galaxy\scripts"
 		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
+			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy  < "%%A"
 		ECHO. Installing %%A [Done]
 		)
 		
 	cd "%PROJECT_BASE%galaxy\functions"
 		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
+			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy < "%%A"
 		ECHO. Installing %%A [Done]
 		)
 		
 	cd "%PROJECT_BASE%galaxy\procedures"
 		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 --comments < "%%A"
+			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --database=galaxy --comments < "%%A"
 		ECHO. Installing %%A [Done]
 		)
 	
@@ -204,130 +187,6 @@ GOTO:MainMenu
 		ECHO. Installing %%A [Done]
 		)
 	
-	:: (swganh_astromech)
-	
-	cd "%PROJECT_BASE%"
-	cd "%PROJECT_BASE%swganh_astromech\scripts"
-		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-		
-	cd "%PROJECT_BASE%swganh_astromech\functions"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-		
-	cd "%PROJECT_BASE%swganh_astromech\procedures"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-	
-	:: (swganh_config)
-	
-	cd "%PROJECT_BASE%"
-		cd "%PROJECT_BASE%swganh_config\scripts"
-		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-		cd "%PROJECT_BASE%swganh_config\functions"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-		cd "%PROJECT_BASE%swganh_config\procedures"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-	
-	:: (swganh_logs)
-	
-	cd "%PROJECT_BASE%"
-	cd "%PROJECT_BASE%swganh_logs\scripts"
-		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-	
-	cd "%PROJECT_BASE%swganh_logs\functions"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-
-	cd "%PROJECT_BASE%swganh_logs\procedures"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-	
-	:: (swganh_static)
-	
-	cd "%PROJECT_BASE%"
-	cd "%PROJECT_BASE%swganh_static\scripts"
-		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-	
-	cd "%PROJECT_BASE%swganh_static\functions"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-
-	cd "%PROJECT_BASE%swganh_static\procedures"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-	
-	:: (swganh_user)
-	
-	cd "%PROJECT_BASE%"
-	cd "%PROJECT_BASE%swganh_user\scripts"
-		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-	
-	cd "%PROJECT_BASE%swganh_user\functions"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-
-	cd "%PROJECT_BASE%swganh_user\procedures"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-	
-	:: (swganh_utility)
-	
-	cd "%PROJECT_BASE%"
-	cd "%PROJECT_BASE%swganh_utility\scripts"
-		for /F %%A IN ('dir /b "*.sql" ^| sort') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-	
-	cd "%PROJECT_BASE%swganh_utility\functions"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-
-	cd "%PROJECT_BASE%swganh_utility\procedures"
-		for /F %%A IN ('dir /b "*.sql"') do (
-			mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "%%A"
-		ECHO. Installing %%A [Done]
-		)
-
 	GOTO:MainMenu
 	
 :SchemaGalaxy

@@ -8,11 +8,8 @@ using namespace swganh::login;
 using namespace swganh::object;
 
 LoginClient::LoginClient(
-    shared_ptr<Session> session)
-    : RemoteClient(session)
-{}
-
-LoginClient::~LoginClient()
+    ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
+    : Session(server, io_service, remote_endpoint)
 {}
 
 string LoginClient::GetUsername() const

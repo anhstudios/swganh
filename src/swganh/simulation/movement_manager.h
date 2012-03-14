@@ -4,11 +4,21 @@
 
 #include <memory>
 
+#ifdef WIN32
+#include <concurrent_unordered_map.h>
+#else
 #include <tbb/concurrent_unordered_map.h>
+
+namespace Concurrency {
+    using ::tbb::concurrent_unordered_map;
+}
+
+#endif
 
 #include "swganh/messages/obj_controller_message.h"
 
 namespace anh {
+    class EventDispatcher;
 namespace event_dispatcher {
     class EventDispatcherInterface;
 }}  // namespace anh::event_dispatcher
@@ -25,7 +35,7 @@ namespace simulation {
     class MovementManager
     {
     public:
-        explicit MovementManager(const std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>& event_dispatcher);
+        explicit MovementManager(anh::EventDispatcher* event_dispatcher);
 
         void HandleDataTransform(
             const std::shared_ptr<swganh::object::ObjectController>&, 
@@ -43,12 +53,14 @@ namespace simulation {
 
     private:
         void RegisterEvents_(const std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>& event_dispatcher);
+        void RegisterEvents(anh::EventDispatcher* event_dispatcher);
 
         bool ValidateCounter_(uint64_t object_id, uint32_t counter);
 
-        typedef tbb::concurrent_unordered_map<
+        typedef Concurrency::concurrent_unordered_map<
             uint64_t, uint32_t
         > UpdateCounterMap;
+
         UpdateCounterMap counter_map_;
     };
 

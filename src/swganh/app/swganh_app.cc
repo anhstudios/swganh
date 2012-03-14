@@ -1,4 +1,3 @@
-
 #include "swganh/app/swganh_app.h"
 
 #include <algorithm>
@@ -8,21 +7,24 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
-#include <glog/logging.h>
+#include <boost/log/trivial.hpp>
 
 #include "anh/database/database_manager_interface.h"
-#include "anh/event_dispatcher/event_dispatcher_interface.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/datastore.h"
 #include "anh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/chat/chat_service.h"
 #include "swganh/character/character_service.h"
+#include "swganh/command/command_service.h"
+#include "swganh/command/command_filter.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
 #include "swganh/galaxy/galaxy_service.h"
+#include "swganh/combat/combat_service.h"
 
 
 using namespace anh;
@@ -31,9 +33,12 @@ using namespace boost::asio;
 using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
+using namespace swganh::chat;
+using namespace swganh::command;
 using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::connection;
+using namespace swganh::combat;
 using namespace swganh::simulation;
 using namespace swganh::galaxy;
 
@@ -151,7 +156,9 @@ void SwganhApp::Start() {
     boost::asio::io_service::work io_work(kernel_->GetIoService());
 
     // Start up a threadpool for running io_service based tasks/active objects
-    for (uint32_t i = 0; i < boost::thread::hardware_concurrency(); ++i) {
+    // The increment starts at 1 because the main thread of execution already counts
+    // as thread in use.
+    for (uint32_t i = 1; i < boost::thread::hardware_concurrency(); ++i) {
         auto t = make_shared<boost::thread>([this] () {
             kernel_->GetIoService().run();
         });
@@ -166,29 +173,21 @@ void SwganhApp::Start() {
     
     kernel_->GetServiceManager()->Start();
     
-    auto timer = make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
+    auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
 
     timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 10));
+}
 
-    do {
-        kernel_->GetEventDispatcher()->tick();
-
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1));
-    } while(IsRunning());
-        
+void SwganhApp::Stop() {
+    running_ = false;
+      
     kernel_->GetServiceManager()->Stop();
 
     // stop io handling    
     kernel_->GetIoService().stop();
     
     // join the threadpool threads until each one has exited.
-    for_each(io_threads_.begin(), io_threads_.end(), [] (shared_ptr<boost::thread> t) {
-        t->join();
-    });
-}
-
-void SwganhApp::Stop() {
-    running_ = false;
+    for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
 }
 
 bool SwganhApp::IsRunning() {
@@ -227,9 +226,7 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
 }
 
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
-    DLOG(INFO) << "Loading plugins";
-
-    auto plugin_manager = kernel_->GetPluginManager();
+    BOOST_LOG_TRIVIAL(info) << "Loading plugins";
 
     if (!plugins.empty()) {
         auto plugin_manager = kernel_->GetPluginManager();
@@ -250,7 +247,7 @@ void SwganhApp::CleanupServices_() {
         return;
     }
 
-    DLOG(WARNING) << "Services were not shutdown properly";
+    BOOST_LOG_TRIVIAL(warning) << "Services were not shutdown properly";
 
     for_each(services.begin(), services.end(), [this, &service_directory] (anh::service::ServiceDescription& service) {
         service_directory->removeService(service);
@@ -286,13 +283,41 @@ void SwganhApp::LoadCoreServices_()
 	}
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		auto character_service = make_shared<CharacterService>(kernel_.get());
+		auto command_service = make_shared<CommandService>(kernel_.get());
+		// add filters
+		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+        command_service->AddCommandEnqueueFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		command_service->AddCommandProcessFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		command_service->AddCommandProcessFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		command_service->AddCommandProcessFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+		command_service->AddCommandProcessFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+        command_service->AddCommandProcessFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
-		kernel_->GetServiceManager()->AddService("CharacterService", character_service);
+		// These will be loaded in alphabetical order because of how std::map generates its keys
+		kernel_->GetServiceManager()->AddService(
+            "CommandService", 
+            command_service);
+
+		kernel_->GetServiceManager()->AddService(
+			"CombatService",
+			make_shared<CombatService>(kernel_.get()));
+		
+		kernel_->GetServiceManager()->AddService(
+            "CharacterService", 
+            make_shared<CharacterService>(kernel_.get()));
+        
+		kernel_->GetServiceManager()->AddService(
+            "ChatService", 
+            make_shared<ChatService>(kernel_.get()));
 
 		auto simulation_service = make_shared<SimulationService>(kernel_.get());
 		simulation_service->StartScene("corellia");
+
 		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
+
 	}
 	// always need a galaxy service running
 	auto galaxy_service = make_shared<GalaxyService>(kernel_.get());

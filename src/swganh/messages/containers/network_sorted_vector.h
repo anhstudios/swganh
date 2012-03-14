@@ -137,7 +137,7 @@ public:
     iterator Begin() { return items_.begin(); }
     iterator End() { return items_.end(); } 
 
-    void Serialize(swganh::messages::BaselinesMessage& message)
+	void Serialize(swganh::messages::BaselinesMessage& message)
     {
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);

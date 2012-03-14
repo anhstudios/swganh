@@ -1,18 +1,9 @@
-# --------------------------------------------------------
-# Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
-# Server OS:                    Win32
-# HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-11-05 12:08:18
-# --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for table galaxy.creature
-DROP TABLE IF EXISTS `creature`;
 CREATE TABLE IF NOT EXISTS `creature` (
   `id` bigint(20) NOT NULL,
   `owner_id` bigint(20) DEFAULT NULL,
@@ -88,11 +79,14 @@ CREATE TABLE IF NOT EXISTS `creature` (
   CONSTRAINT `FK_A8ADABEC727AC32D` FOREIGN KEY (`disguise_template_id`) REFERENCES `iff_templates` (`id`),
   CONSTRAINT `FK_2A6C6AF4BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 DELETE FROM `creature`;
+    
 /*!40000 ALTER TABLE `creature` DISABLE KEYS */;
 INSERT INTO `creature` (`id`, `owner_id`, `musician_id`, `bank_credits`, `cash_credits`, `posture`, `faction_rank`, `scale`, `battle_fatigue`, `state`, `acceleration_base`, `acceleration_modifier`, `speed_base`, `speed_modifier`, `run_speed`, `slope_modifier_angle`, `slope_modifier_percent`, `walking_speed`, `water_modifier_percent`) VALUES
 (0, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-# Data exporting was unselected.
+/*!40000 ALTER TABLE `creature` ENABLE KEYS */;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

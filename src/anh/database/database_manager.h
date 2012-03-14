@@ -28,30 +28,30 @@ class DatabaseManagerImpl;
 
 /*! Concrete implementation of the DatabaseManagerInterface API.
 *
-* \see DatabaseManagerInterface
+* @see DatabaseManagerInterface
 */
 class DatabaseManager : public DatabaseManagerInterface, private boost::noncopyable {
 public:
     /**
-    * \brief Overloaded constructor taking an sql driver.
+    * @brief Overloaded constructor taking an sql driver.
     *
-    * \param driver An instance of the sql driver used to provide concrete 
+    * @param driver An instance of the sql driver used to provide concrete 
     *      functionality for the database layer.
     */
     explicit DatabaseManager(sql::Driver* driver);
 
     ~DatabaseManager();
 
-    /// \see DatabaseManagerInterface::hasStorageType
+    /// @see DatabaseManagerInterface::hasStorageType
     bool hasStorageType(const StorageType& storage_type) const;
     
-    /// \see DatabaseManagerInterface::registerStorageType
+    /// @see DatabaseManagerInterface::registerStorageType
     bool registerStorageType(const StorageType& storage_type, const std::string& schema, const std::string& host, const std::string& username, const std::string& password);
     
-    /// \see DatabaseManagerInterface::hasConnection
+    /// @see DatabaseManagerInterface::hasConnection
     bool hasConnection(const StorageType& storage_type) const;
     
-    /// \see DatabaseManagerInterface::getConnection
+    /// @see DatabaseManagerInterface::getConnection
     std::shared_ptr<sql::Connection> getConnection(const StorageType& storage_type);
     
 private:

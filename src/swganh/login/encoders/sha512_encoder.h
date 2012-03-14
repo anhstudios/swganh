@@ -33,13 +33,13 @@ namespace encoders {
 
 class Sha512Encoder : public EncoderInterface {
 public:
-    explicit Sha512Encoder(std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager);
+    explicit Sha512Encoder(anh::database::DatabaseManagerInterface* db_manager);
     ~Sha512Encoder();
 
     std::string EncodePassword(std::string raw, std::string salt);
     bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
 private:
-    std::shared_ptr<anh::database::DatabaseManagerInterface> db_manager_;
+    anh::database::DatabaseManagerInterface* db_manager_;
 };
 
 }}}  // namespace swganh::login::encoders

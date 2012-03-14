@@ -1,6 +1,7 @@
 #include "creature_message_builder.h"
 #include "creature.h"
 #include "swganh/messages/update_pvp_status_message.h"
+#include "swganh/messages/update_posture_message.h"
 
 using namespace swganh::object::creature;
 using namespace swganh::messages;
@@ -47,6 +48,17 @@ void CreatureMessageBuilder::BuildSkillDelta(Creature* creature)
     }
     else
         creature->skills_.ClearDeltas();
+}
+
+void CreatureMessageBuilder::BuildPostureUpdate(Creature* creature)
+{
+	if (creature->HasObservers())
+    {
+		// Update the posture message
+		controllers::UpdatePostureMessage upm;
+		upm.posture_id = creature->GetPosture();
+		creature->GetController()->Notify(ObjControllerMessage(0x1B, upm));
+	}
 }
 
 void CreatureMessageBuilder::BuildPostureDelta(Creature* creature)
@@ -451,7 +463,7 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
 boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline3(Creature* creature)
 {
     auto message = creature->CreateBaselinesMessage(Object::VIEW_3, 18);
-    message.data.append(creature->BaseTangible::GetBaseline3().get().data);
+    message.data.append(creature->Tangible::GetBaseline3().get().data);
     message.data.write<uint8_t>(creature->posture_);                        // Posture
     message.data.write<uint8_t>(creature->faction_rank_);                   // Faction Rank
     message.data.write<uint64_t>(creature->owner_id_);                      // Owner Id
@@ -485,7 +497,7 @@ boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::Buil
 boost::optional<swganh::messages::BaselinesMessage> CreatureMessageBuilder::BuildBaseline6(Creature* creature)
 {
     auto message = creature->CreateBaselinesMessage(Object::VIEW_6, 23);
-    message.data.append(creature->BaseTangible::GetBaseline6().get().data);
+    message.data.append(creature->Tangible::GetBaseline6().get().data);
     message.data.write<uint16_t>(creature->combat_level_);                      // Combat Level
     message.data.write<std::string>(creature->animation_);                      // Current Animation
     message.data.write<std::string>(creature->mood_animation_);                 // Mood Animation

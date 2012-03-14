@@ -20,41 +20,38 @@
 
 #include "anh/network/soe/filters/security_filter.h"
 
-#include <glog/logging.h>
-
-#include "anh/network/soe/packet.h"
+#include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
 
-using namespace anh::network::soe;
+using namespace anh;
+using namespace network::soe;
 using namespace filters;
 using namespace std;
 
 SecurityFilter::SecurityFilter(uint32_t max_receive_size)
-    : max_receive_size_(max_receive_size) {}
+    : max_receive_size_(max_receive_size)
+{}
 
-shared_ptr<Packet> SecurityFilter::operator()(shared_ptr<Packet> packet) const {
-    if (!packet) { return nullptr; }
+void SecurityFilter::operator()(
+    const shared_ptr<Session>& session,
+    const shared_ptr<ByteBuffer>& message) const
+{
+    uint32_t message_size = message->size();
 
-    auto message_size = packet->message()->size();
-
-    if (packet->message()->size() > max_receive_size_) {
-        DLOG(WARNING) << "Malformed message received: message larger than allowed size";
-        
-        // @TODO: Track the number of errors for a session and set a threshhold where
+    if (message_size > max_receive_size_)
+    {
+        /// @TODO: Track the number of errors for a session and set a threshhold where
         // their connection is dropped after a certain number of bad packets.
-
-        packet = nullptr;
+        
+        throw runtime_error("Malformed message received: message larger than allowed size");
     }
 
     
-    if (message_size <= sizeof(uint16_t)) { // Size of the message header
-        DLOG(WARNING) << "Malformed message received: message smaller than allowed size";
-        
-        // @TODO: Track the number of errors for a session and set a threshhold where
+    if (message_size < sizeof(uint16_t)) // Size of the message header
+    {
+        /// @TODO: Track the number of errors for a session and set a threshhold where
         // their connection is dropped after a certain number of bad packets.
 
-        packet = nullptr;
+        throw runtime_error("Malformed message received: message smaller than allowed size");
     }
-
-    return packet;
 }

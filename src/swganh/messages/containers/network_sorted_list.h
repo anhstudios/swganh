@@ -46,8 +46,8 @@ public:
     typedef typename std::map<uint16_t, T>::iterator iterator;
     
     NetworkSortedList()
-        : items_(std::map<uint16_t, T>())
-        , update_counter_(0)
+        : update_counter_(0)
+        , items_(std::map<uint16_t, T>())
         , items_added_(std::list<uint16_t>())
         , items_removed_(std::list<uint16_t>())
         , items_changed_(std::list<uint16_t>())

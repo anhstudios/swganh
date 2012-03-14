@@ -27,7 +27,7 @@ namespace creature {
     class CreatureFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
-        CreatureFactory(const std::shared_ptr<anh::database::DatabaseManagerInterface>& db_manager,
+        CreatureFactory(anh::database::DatabaseManagerInterface* db_manager,
             swganh::simulation::SimulationService* simulation_service);
 
         void LoadTemplates();
@@ -47,6 +47,9 @@ namespace creature {
             const std::shared_ptr<sql::Statement>& statement);
 
         void LoadSkillMods_(const std::shared_ptr<Creature>& creature, 
+            const std::shared_ptr<sql::Statement>& statement);
+
+        void LoadSkillCommands_(const std::shared_ptr<Creature>& creature, 
             const std::shared_ptr<sql::Statement>& statement);
 
         std::unordered_map<std::string, std::shared_ptr<Creature>>::iterator GetTemplateIter_(const std::string& template_name);
