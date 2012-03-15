@@ -59,8 +59,9 @@ Sphinx is used to generate the SWGANH developer documentation. To install it on 
 
 ::
 
-    curl -O http://python-distribute.org/distribute_setup.py python distribute_setup.py
-    easy_install Sphinx 
+    curl -O http://python-distribute.org/distribute_setup.py
+    python distribute_setup.py
+    easy_install Sphinx
     
 .. NOTE::
     
