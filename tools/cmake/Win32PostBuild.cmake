@@ -76,7 +76,13 @@ add_custom_command(
 )    
 add_custom_command(
     TARGET DEPS
-    POST_BUILD
-    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\data\\bindings" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\bindings" /D /I /Y /s
+    PRE_BUILD
+    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\tools\\init_modules.py" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\bindings" /Y /C
     VERBATIM
 )    
+add_custom_command(
+    TARGET DEPS
+    PRE_BUILD
+    COMMAND python "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\bindings\\init_modules.py" 
+    VERBATIM
+)   
