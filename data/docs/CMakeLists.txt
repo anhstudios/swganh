@@ -42,6 +42,7 @@ add_custom_target(swganh_docs ALL
 	"${CMAKE_CURRENT_SOURCE_DIR}/source"
 	"${SPHINX_HTML_DIR}"
 	COMMENT "Building HTML documentation with Sphinx"
+	WORKING_DIRECTORY C:/swganh/build/bin/Debug
 )
 
 add_dependencies(swganh_docs anh_lib swganh_lib swganh_binding)

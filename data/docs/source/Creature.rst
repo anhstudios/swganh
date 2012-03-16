@@ -8,6 +8,6 @@ Creature
 .. toctree::
 	CreatureEnums
 		
-.. automodule:: bindings.object
+.. currentmodule:: bindings.object
 .. autoclass:: Creature
 	:members:
