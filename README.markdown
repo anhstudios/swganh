@@ -68,5 +68,5 @@ A more complete set of instructions that covers building dependencies can be fou
 *   **[Online Documentation][2]**
 
 [1]: http://swganh.com
-[2]: http://swganh.com/docs
+[2]: http://swganh.anhstudios.com/docs
 [3]: http://clang.llvm.org/
