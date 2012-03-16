@@ -1,1 +1,1 @@
-actor.posture = bindings.POSTURE.CROUCHED
+actor.posture = swgpy.POSTURE.CROUCHED

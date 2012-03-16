@@ -1,1 +1,1 @@
-actor.posture = bindings.POSTURE.SITTING
+actor.posture = swgpy.POSTURE.SITTING
