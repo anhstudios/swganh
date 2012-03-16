@@ -5,6 +5,6 @@
 
 Tangible
 ==================================================	
-.. automodule:: bindings.object
+.. automodule:: swgpy.object
 .. autoclass:: Tangible
 	:members:

@@ -77,13 +77,13 @@ add_custom_command(
 add_custom_command(
     TARGET DEPS
     PRE_BUILD
-    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\tools\\bindings\\*.py" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\bindings" /Y /I /C
+    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\tools\\swgpy\\*.py" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\swgpy" /Y /I /C
     VERBATIM
 )    
 add_custom_command(
     TARGET DEPS
     PRE_BUILD
-    COMMAND python "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\bindings\\init_modules.py" 
-	WORKING_DIRECTORY "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\bindings\\"
+    COMMAND python "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\swgpy\\init_modules.py" 
+	WORKING_DIRECTORY "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\swgpy\\"
     VERBATIM
 )   

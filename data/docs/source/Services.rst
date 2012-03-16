@@ -6,7 +6,7 @@
 Services
 ==================================================	
 
-.. automodule:: bindings.combat
+.. automodule:: swgpy.combat
 .. autoclass:: CombatService
 	:members:
 	:inherited-members:

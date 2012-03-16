@@ -8,6 +8,6 @@ Creature
 .. toctree::
 	CreatureEnums
 		
-.. currentmodule:: bindings.object
+.. currentmodule:: swgpy.object
 .. autoclass:: Creature
 	:members:

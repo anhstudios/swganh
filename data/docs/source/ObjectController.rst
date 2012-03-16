@@ -5,7 +5,7 @@
 
 ObjectController
 ==================================================	
-.. automodule:: bindings.object
+.. automodule:: swgpy.object
 .. autoclass:: ObjectController
 	:members:
 	:inherited-members:

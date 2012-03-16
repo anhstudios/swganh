@@ -1,5 +1,6 @@
 ''' Kyle Craviotto ANH Studios 2012 '''
 ''' This script is used to generate __init__.py files under each subdirectory '''
+''' Ensure this is run under the expected working directory '''
 
 import os,io
 curr_dir = os.path.basename(os.getcwd())

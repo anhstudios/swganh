@@ -5,7 +5,7 @@
 
 Object
 ==================================================	
-.. automodule:: bindings.object
+.. automodule:: swgpy.object
 .. autoclass:: Object
 	:members:
 	:inherited-members:

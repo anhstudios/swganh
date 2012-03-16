@@ -5,7 +5,7 @@
 
 SWGKernel
 ==================================================	
-.. currentmodule:: bindings.app
+.. currentmodule:: swgpy.app
 .. autoclass:: SWGKernel
 	:members:
 	:inherited-members:

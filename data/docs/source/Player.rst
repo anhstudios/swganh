@@ -8,6 +8,6 @@ Player
 .. toctree::
 	PlayerEnums
 	
-.. automodule:: bindings.object
+.. automodule:: swgpy.object
 .. autoclass:: Player
 	:members:

@@ -31,8 +31,7 @@ PythonScript::PythonScript(const string& filename)
 		)));
 
         globals_ = main.attr("__dict__");
-        globals_["bindings"] = boost::python::import("bindings");
-		globals_["context"] = dict();
+        globals_["context"] = dict();
     }
     catch (error_already_set &)
     {
