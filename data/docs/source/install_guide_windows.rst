@@ -67,6 +67,14 @@ Sphinx is used to generate the SWGANH developer documentation. To install it on 
     
     It is important that Sphinx is installed with support for Python3. The key to this is ensuring you install Sphinx using an easy_install (via the distribute package) that was built against Python 3.
     
+.. WARNING::
+
+    If you get an error stating "Bad file number" it may indicate a confict with UAC. To get around this open a normal windows command prompt and enter the command.
+    
+    ::
+    
+        easy_install Sphinx
+    
 You will also need to add the path to Sphinx to the system PATH. In a default Python 3.2 install this path is *C:/Python32/Scripts*.
     
 Mysql 5.1+
