@@ -1,3 +1,5 @@
+import swgpy.object
+
 Acontroller = actor.Controller()
 Tcontroller = target.Controller()
 if not actor.in_duel_list(target.id):

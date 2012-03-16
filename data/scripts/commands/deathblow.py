@@ -1,3 +1,5 @@
+import swgpy.object
+
 if creature_target:
 	if creature_target.is_incap():
 		creature_target.posture = swgpy.POSTURE.DEAD

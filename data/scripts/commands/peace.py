@@ -1,3 +1,5 @@
+import swgpy.object
+
 if actor.has_state(swgpy.ACTION.COMBAT):
 	actor.toggle_state_off(swgpy.ACTION.COMBAT)
 	actor.toggle_state_on(swgpy.ACTION.PEACE)
