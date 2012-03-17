@@ -25,6 +25,6 @@ for directory in subdirs:
 		f.write('from ' + 'py_' + dir_fixed + ' import *')
 		init_py.write("sys.path.append(os.path.abspath('" + curr_dir + '/' + dir_fixed + "'"  ")) \n")
 		init_py.write('from ' + curr_dir + '.' + dir_fixed + ' import * \n')
+		f.close()
 
 init_py.close()
-f.close()
