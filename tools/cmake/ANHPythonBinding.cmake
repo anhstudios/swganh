@@ -61,7 +61,7 @@ FUNCTION(AddANHPythonBinding name)
     PARSE_ARGUMENTS(ANHPYTHONLIB "ONLY_BINDINGS;DEPENDS;SOURCES;ADDITIONAL_LIBRARY_DIRS;ADDITIONAL_INCLUDE_DIRS;ADDITIONAL_SOURCE_DIRS;DEBUG_LIBRARIES;OPTIMIZED_LIBRARIES" "" ${ARGN})
 
     set(base_name ${name})
-    set(name ${name}_binding)
+    set(name swgpy_${name}_binding)
 
     LIST(LENGTH ANHPYTHONLIB_SOURCES __source_files_list_length)
     LIST(LENGTH ANHPYTHONLIB_DEBUG_LIBRARIES _debug_list_length)
