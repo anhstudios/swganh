@@ -1,7 +1,8 @@
 include(ANHPythonBinding)
 
 AddANHPythonBinding(utility
-	ONLY_BINDINGS ON
+	PREFIX_NAME anhpy
+	POSTFIX_NAME binding
     DEPENDS 
 		anh_lib
     ADDITIONAL_INCLUDE_DIRS

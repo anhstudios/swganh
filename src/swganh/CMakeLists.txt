@@ -5,6 +5,13 @@ add_subdirectory(combat)
 add_subdirectory(social)
 add_subdirectory(simulation)
 
+add_custom_target(
+	swgpy
+	DEPENDS swgpy_app_binding swgpy_object_binding swgpy_combat_binding
+    COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py" 
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
+    VERBATIM
+) 
 include(ANHExecutable)
 
 AddANHExecutable(swganh

@@ -19,12 +19,14 @@ init_py.write( "sys.path.insert(0, os.path.abspath('../')) \n")
 ''' Now Create a __init__.py file in each '''
 for directory in subdirs:
 	if not 'pycache' in directory:
-		f = open(directory + "\__init__.py", "w")
+		f = open(directory + "/__init__.py", "w")
 		dir_fixed = directory.replace('.\\', '')
+		dir_fixed = dir_fixed.replace('./', '')
+		dir_fixed = dir_fixed.replace('../', '')
 		''' write the import statement '''
 		f.write('from ' + 'py_' + dir_fixed + ' import *')
 		init_py.write("sys.path.append(os.path.abspath('" + curr_dir + '/' + dir_fixed + "'"  ")) \n")
 		init_py.write('from ' + curr_dir + '.' + dir_fixed + ' import * \n')
+		f.close()
 
 init_py.close()
-f.close()
