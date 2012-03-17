@@ -89,7 +89,7 @@ void exportPlayer()
 		.def_readwrite("activated_flag", &WaypointData::activated_flag_)
 		;
 
-	class_<PlayerWrapper, bases<Creature>, boost::noncopyable>("Player", "The :class:`.Player` is a child of :class:`.Object` and describes actions specific to a Player Character.")
+	class_<PlayerWrapper, bases<Creature>, std::shared_ptr<Player>, boost::noncopyable>("Player", "The :class:`.Player` is a child of :class:`.Object` and describes actions specific to a Player Character.")
 		.def("add_status_flag", &PlayerWrapper::AddStatusFlag, "adds a status flag to the existing :class:`.STATUS_FLAGS`")
 		.def("remove_status_flag", &PlayerWrapper::RemoveStatusFlag, "remove status flag from existing :class:`.STATUS_FLAGS`")
 		.def("clear_status_flags", &PlayerWrapper::ClearStatusFlags, "clears all status :class:`.STATUS_FLAGS`")
