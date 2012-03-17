@@ -21,6 +21,8 @@
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_manager.h"
 
+#include "swganh/messages/out_of_band.h"
+
 using namespace anh::database;
 using namespace std;
 using namespace swganh::connection;
@@ -57,10 +59,10 @@ bool SocialService::AddFriend(const shared_ptr<Player>& player, const string& fr
     uint64_t friend_id = 0;
     try {
         auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
-        auto statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("SELECT id FROM object where custom_name like '%?%' and type_id = ?;")
+        auto statement = std::unique_ptr<sql::PreparedStatement>(
+            conn->prepareStatement("SELECT id FROM object where custom_name like ? and type_id = ?;")
             );
-        statement->setString(1, friend_name);
+        statement->setString(1, friend_name + '%');
         statement->setUInt(2, player->GetType());
         auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
@@ -79,6 +81,7 @@ bool SocialService::AddFriend(const shared_ptr<Player>& player, const string& fr
         // This persists the player object immediately.
         kernel()->GetServiceManager()->GetService<swganh::simulation::SimulationService>
             ("SimulationService")->PersistObject(player->GetObjectId());
+
         return true;
     }
 
