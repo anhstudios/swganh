@@ -5,7 +5,7 @@
 
 Player Enums
 ==================================================	
-.. currentmodule:: py_swganh
+.. currentmodule:: swgpy.object
 .. autoclass:: GENDER
 
 	* MALE

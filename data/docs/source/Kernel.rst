@@ -5,7 +5,7 @@
 
 SWGKernel
 ==================================================	
-.. automodule:: py_swganh
+.. currentmodule:: swgpy.app
 .. autoclass:: SWGKernel
 	:members:
 	:inherited-members:

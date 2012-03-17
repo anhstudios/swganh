@@ -74,3 +74,16 @@ add_custom_command(
     COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\data\\scripts" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\scripts" /D /I /Y /s
     VERBATIM
 )    
+add_custom_command(
+    TARGET DEPS
+    PRE_BUILD
+    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\tools\\swgpy\\*.py" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\swgpy" /Y /I /C
+    VERBATIM
+)    
+add_custom_command(
+    TARGET DEPS
+    PRE_BUILD
+    COMMAND python "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\swgpy\\init_modules.py" 
+	WORKING_DIRECTORY "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\swgpy\\"
+    VERBATIM
+)   
