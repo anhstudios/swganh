@@ -16,11 +16,8 @@ import sys, os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath(r'@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/@configuration@'))
-sys.path.append(os.path.abspath(r'@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/@configuration@/bindings/app'))
-sys.path.append(os.path.abspath(r'@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/@configuration@/bindings/object'))
-sys.path.append(os.path.abspath(r'@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/@configuration@/bindings/combat'))
-sys.path.append(os.path.abspath(r'@CMAKE_LIBRARY_OUTPUT_DIRECTORY@/@configuration@/bindings/utility'))
+sys.path.insert(0, os.path.abspath(r'@CMAKE_RUNTIME_OUTPUT_DIRECTORY@/@configuration@'))
+
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
