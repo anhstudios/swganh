@@ -58,10 +58,10 @@
 INCLUDE(CMakeMacroParseArguments)
 
 FUNCTION(AddANHPythonBinding name)
-    PARSE_ARGUMENTS(ANHPYTHONLIB "ONLY_BINDINGS;DEPENDS;SOURCES;ADDITIONAL_LIBRARY_DIRS;ADDITIONAL_INCLUDE_DIRS;ADDITIONAL_SOURCE_DIRS;DEBUG_LIBRARIES;OPTIMIZED_LIBRARIES" "" ${ARGN})
+    PARSE_ARGUMENTS(ANHPYTHONLIB "PREFIX_NAME;POSTFIX_NAME;DEPENDS;SOURCES;ADDITIONAL_LIBRARY_DIRS;ADDITIONAL_INCLUDE_DIRS;ADDITIONAL_SOURCE_DIRS;DEBUG_LIBRARIES;OPTIMIZED_LIBRARIES" "" ${ARGN})
 
     set(base_name ${name})
-    set(name swgpy_${name}_binding)
+    set(name ${ANHPYTHONLIB_PREFIX_NAME}_${name}_${ANHPYTHONLIB_POSTFIX_NAME})
 
     LIST(LENGTH ANHPYTHONLIB_SOURCES __source_files_list_length)
     LIST(LENGTH ANHPYTHONLIB_DEBUG_LIBRARIES _debug_list_length)
@@ -74,12 +74,8 @@ FUNCTION(AddANHPythonBinding name)
     # Grab all of the source files and all of the unit test files.
     IF(__source_files_list_length EQUAL 0)
         # load up all of the source and header files for the project
-        FILE(GLOB_RECURSE ANHPYTHONLIB_SOURCES *.cc *.cpp *.h)
-		# if we are building only _binding files then do this
-		IF (${ANHPYTHONLIB_ONLY_BINDINGS})
-			FILE(GLOB_RECURSE ANHPYTHONLIB_SOURCES *_binding.h *_binding.cc *_binding.cpp)
-		ENDIF()
-        FOREACH(__source_file ${ANHPYTHONLIB_SOURCES})
+        FILE(GLOB_RECURSE ANHPYTHONLIB_SOURCES *_binding.h *_binding.cc *_binding.cpp)
+		FOREACH(__source_file ${ANHPYTHONLIB_SOURCES})
             STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/)((.*/)*)(.*)" "\\2" __source_dir "${__source_file}")
             STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/${__source_dir})(.*)" "\\2" __source_filename "${__source_file}")
 
@@ -114,7 +110,7 @@ FUNCTION(AddANHPythonBinding name)
 	
     # Create the Common library
     ADD_LIBRARY(${name} SHARED ${ANHPYTHONLIB_SOURCES})
-    SET_TARGET_PROPERTIES(${name}
+	SET_TARGET_PROPERTIES(${name}
 		PROPERTIES OUTPUT_NAME py_${base_name}
 		RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/swgpy/${base_name}
 		RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/swgpy/${base_name}
