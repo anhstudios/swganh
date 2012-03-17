@@ -197,6 +197,7 @@ void exportCreature()
         .def("in_duel_list", &CreatureWrapper::InDuelList, "Returns a boolean based on if the creature is currently dueling the target")
         .def("add_duel_list", &CreatureWrapper::AddToDuelList, "Adds the creature id to the duel list")
         .def("remove_duel_list", &CreatureWrapper::RemoveFromDuelList, "Removes the creature from the duel list")
+        .def("get_player", &CreatureWrapper::GetPlayer, "Gets the :class:`.Player` object that this creature owns")
         ;
 }
 
