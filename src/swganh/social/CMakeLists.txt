@@ -1,7 +1,8 @@
 include(ANHPythonBinding)
 
 AddANHPythonBinding(social
-	ONLY_BINDINGS ON
+	PREFIX_NAME swgpy
+	POSTFIX_NAME binding
     DEPENDS 
 		anh_lib
         swganh_lib
