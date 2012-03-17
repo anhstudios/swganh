@@ -6,7 +6,7 @@
 Services
 ==================================================	
 
-.. automodule:: py_swganh
+.. automodule:: swgpy.combat
 .. autoclass:: CombatService
 	:members:
 	:inherited-members:

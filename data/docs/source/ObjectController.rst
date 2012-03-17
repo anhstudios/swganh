@@ -5,7 +5,7 @@
 
 ObjectController
 ==================================================	
-.. automodule:: py_swganh
+.. automodule:: swgpy.object
 .. autoclass:: ObjectController
 	:members:
 	:inherited-members:

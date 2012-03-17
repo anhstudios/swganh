@@ -5,7 +5,6 @@
 
 #include "anh/app/kernel_interface.h"
 #include "anh/service/service_manager.h"
-#include "swganh/simulation/simulation_service.h"
 #include "swganh/combat/combat_service.h"
 
 #include <boost/python.hpp>
@@ -25,11 +24,11 @@ void exportSWGANHKernel()
         ;
 
     class_<anh::service::ServiceManager, boost::noncopyable>("ServiceManager", "provides an interface to common services", no_init)
-        .def("combat_service", make_function(
-                bind(&anh::service::ServiceManager::GetService<swganh::combat::CombatService>, std::placeholders::_1, "CombatService"),
-                 default_call_policies(),
-                 boost::mpl::vector<std::shared_ptr<swganh::combat::CombatService>, anh::service::ServiceManager*>()),
-                 "returns an internal refrence of the :class:`.CombatService`")
-        ;
+       .def("combat_service", make_function(
+               bind(&anh::service::ServiceManager::GetService<swganh::combat::CombatService>, std::placeholders::_1, "CombatService"),
+                default_call_policies(),
+                boost::mpl::vector<std::shared_ptr<swganh::combat::CombatService>, anh::service::ServiceManager*>()),
+                "returns an internal refrence of the :class:`.CombatService`")
+       ;
 }
 #endif // SWGANH_APP_SWGANH_KERNEL_BINDING_H_

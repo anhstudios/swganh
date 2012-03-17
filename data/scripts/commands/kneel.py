@@ -1,1 +1,3 @@
-actor.posture = swganh.POSTURE.CROUCHED
+import swgpy.object
+
+actor.posture = swgpy.POSTURE.CROUCHED

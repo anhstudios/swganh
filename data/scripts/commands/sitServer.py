@@ -1,1 +1,3 @@
-actor.posture = swganh.POSTURE.SITTING
+import swgpy.object
+
+actor.posture = swgpy.POSTURE.SITTING

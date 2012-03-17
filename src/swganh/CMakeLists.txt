@@ -1,3 +1,8 @@
+#python directories
+add_subdirectory(app)
+add_subdirectory(object)
+add_subdirectory(combat)
+
 include(ANHExecutable)
 
 AddANHExecutable(swganh
