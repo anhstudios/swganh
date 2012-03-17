@@ -21,6 +21,8 @@ for directory in subdirs:
 	if not 'pycache' in directory:
 		f = open(directory + "/__init__.py", "w")
 		dir_fixed = directory.replace('.\\', '')
+		dir_fixed = directory.replace('./', '')
+		dir_fixed = directory.replace('../', '')
 		''' write the import statement '''
 		f.write('from ' + 'py_' + dir_fixed + ' import *')
 		init_py.write("sys.path.append(os.path.abspath('" + curr_dir + '/' + dir_fixed + "'"  ")) \n")
