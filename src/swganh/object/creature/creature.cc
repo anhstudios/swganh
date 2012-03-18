@@ -1,12 +1,14 @@
 #include "anh/crc.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/creature/creature_message_builder.h"
+#include "swganh/object/player/player.h"
 
 
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::messages::containers;
 using namespace swganh::object::creature;
+using namespace swganh::object::player;
 
 Creature::Creature()
 : Tangible()
@@ -1030,6 +1032,13 @@ std::vector<uint64_t>& Creature::GetDuelList()
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return duel_list_;
+}
+
+shared_ptr<Player> Creature::GetPlayer()
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    return GetContainedObject<Player>(GetObjectId() + PLAYER_OFFSET);
+
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline1()

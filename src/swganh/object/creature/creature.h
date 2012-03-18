@@ -32,6 +32,9 @@
 
 namespace swganh {
 namespace object {
+namespace player {
+    class Player;
+}
 namespace creature {
 
 /**
@@ -596,6 +599,9 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline4();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+
+    // Helpers
+    std::shared_ptr<swganh::object::player::Player> GetPlayer();
 
 private:
     friend class CreatureMessageBuilder;

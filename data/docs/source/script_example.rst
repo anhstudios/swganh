@@ -7,10 +7,11 @@ Scripting Example
 ==================================================
 
 ::
-
-	if not actor.has_state(binding.ACTION.COMBAT):
-		actor.toggle_state_off(binding.ACTION.PEACE);
-		actor.toggle_state_on(binding.ACTION.COMBAT)
+	import swgpy.object
+	
+	if not actor.has_state(swgpy.ACTION.COMBAT):
+		actor.toggle_state_off(swgpy.ACTION.PEACE);
+		actor.toggle_state_on(swgpy.ACTION.COMBAT)
 		actor.activate_auto_attack()
 
 Explanation:
@@ -23,4 +24,3 @@ This is a simple command that gets executed from a message that is sent to the s
 *creature_target* The target Creature Object the command is being performed against. Only valid if the target is a :class:`.Creature`
 
 *kernel* The Kernel is the main object of the SWGANH server, From here you can access game services, retrieve information about the server and more. See :class:`.SWGKernel`
-

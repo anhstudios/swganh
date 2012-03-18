@@ -6,6 +6,8 @@
 #include "anh/app/kernel_interface.h"
 #include "anh/service/service_manager.h"
 #include "swganh/combat/combat_service.h"
+#include "swganh/social/social_service.h"
+#include "swganh/simulation/simulation_service.h"
 
 #include <boost/python.hpp>
 
@@ -29,6 +31,17 @@ void exportSWGANHKernel()
                 default_call_policies(),
                 boost::mpl::vector<std::shared_ptr<swganh::combat::CombatService>, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.CombatService`")
+        .def("simulation_service", make_function(
+               bind(&anh::service::ServiceManager::GetService<swganh::simulation::SimulationService>, std::placeholders::_1, "SimulationService"),
+                default_call_policies(),
+                boost::mpl::vector<std::shared_ptr<swganh::simulation::SimulationService>, anh::service::ServiceManager*>()),
+                "returns an internal refrence of the :class:`.SimulationService`")
+        .def("social_service", make_function(
+               bind(&anh::service::ServiceManager::GetService<swganh::social::SocialService>, std::placeholders::_1, "SocialService"),
+                default_call_policies(),
+                boost::mpl::vector<std::shared_ptr<swganh::social::SocialService>, anh::service::ServiceManager*>()),
+                "returns an internal refrence of the :class:`.SocialService`")
        ;
+       
 }
 #endif // SWGANH_APP_SWGANH_KERNEL_BINDING_H_

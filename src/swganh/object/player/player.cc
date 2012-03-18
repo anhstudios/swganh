@@ -554,7 +554,18 @@ NetworkSortedVector<Name> Player::GetFriends()
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return friends_;
 }
+bool Player::IsFriend(std::string friend_name)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    auto iter = find_if(friends_.Begin(), friends_.End(), [=](const Name& x)->bool {
+        return (x.name == friend_name);
+    });
+    
+    if (iter != friends_.End())
+        return true;
 
+    return false;
+}
 void Player::AddFriend(string  friend_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);

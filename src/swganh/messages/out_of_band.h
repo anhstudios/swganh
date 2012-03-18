@@ -130,6 +130,14 @@ public:
      */
     OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
               ProseType prose_type, uint64_t object_id, bool display_flag = 0);
+
+     /**
+     * Constructor overload for common Prose Packages
+     *
+     *
+     */
+    OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
+              ProseType prose_type, const std::wstring& message, bool display_flag = 0);
     /**
      * Constructor overload for OutOfBand taking a ProsePackage.
      *

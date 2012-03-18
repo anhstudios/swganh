@@ -9,6 +9,8 @@ Contents:
    Installation Guide (Windows) <install_guide_windows>
    Installation Guide (Linux) <install_guide_linux>
    
+   SWGANH Cookbook <Cookbook>
+   
    Scripting in SWGANH <intro>
    Script Example <script_example>
    

@@ -25,7 +25,7 @@
 #include "swganh/simulation/simulation_service.h"
 #include "swganh/galaxy/galaxy_service.h"
 #include "swganh/combat/combat_service.h"
-
+#include "swganh/social/social_service.h"
 
 using namespace anh;
 using namespace anh::app;
@@ -317,6 +317,10 @@ void SwganhApp::LoadCoreServices_()
 		simulation_service->StartScene("corellia");
 
 		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
+
+        kernel_->GetServiceManager()->AddService(
+            "SocialService", 
+            make_shared<social::SocialService>(kernel_.get()));
 
 	}
 	// always need a galaxy service running
