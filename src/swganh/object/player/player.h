@@ -736,7 +736,14 @@ public:
      * @return the list of friends.
      */
     swganh::messages::containers::NetworkSortedVector<Name> GetFriends();
-    
+
+    /**
+     * Checks to see if the name is already a friend
+     *
+     * @param friend_name name of friend to check
+     * @return bool true if the friend is found, false else
+     */
+    bool IsFriend(std::string friend_name);
     /**
      * Adds a player to the friend list.
      *

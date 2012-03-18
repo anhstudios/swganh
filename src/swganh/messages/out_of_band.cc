@@ -5,12 +5,23 @@ using namespace std;
 using namespace anh;
 using namespace swganh::messages;
 
-ProsePackage::ProsePackage() {}
+ProsePackage::ProsePackage()
+    : tu_object_id(0)
+    , tt_object_id(0)
+    , to_object_id(0)
+    , di_integer(0)
+    , df_float(0.0f)
+{}
 
 ProsePackage::ProsePackage(string stf_file, string stf_label)
     : base_stf_file(stf_file)
-    , base_stf_label(stf_label) {
-
+    , base_stf_label(stf_label)
+    , tu_object_id(0)
+    , tt_object_id(0)
+    , to_object_id(0)
+    , di_integer(0)
+    , df_float(0.0f)
+{
 }
 
 ProsePackage::~ProsePackage() {}
@@ -64,6 +75,30 @@ OutOfBand::OutOfBand(const std::string& base_stf_file, const std::string& base_s
             break;
         default:
             AddProsePackage(base_stf_file, base_stf_string, 0, object_id, 0, 0, 0.0f, display_flag);
+            break;
+    }
+    
+}
+
+OutOfBand::OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
+              ProseType prose_type, const std::wstring& message, bool display_flag)
+    : count_(0)
+    , data_(new ByteBuffer())
+{
+    Initialize_();
+    switch (prose_type)
+    {
+        case TU:
+            AddProsePackage(base_stf_file, base_stf_string, message, L"", L"", 0, 0.0f, display_flag);
+            break;
+        case TT:
+            AddProsePackage(base_stf_file, base_stf_string, L"", message, L"", 0, 0.0f, display_flag);
+            break;
+        case TO:
+            AddProsePackage(base_stf_file, base_stf_string, L"", L"", message, 0, 0.0f, display_flag);
+            break;
+        default:
+            AddProsePackage(base_stf_file, base_stf_string, 0, 0, 0, 0, 0.0f, display_flag);
             break;
     }
     

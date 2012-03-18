@@ -1,23 +1,11 @@
-#python directories
-add_subdirectory(app)
-add_subdirectory(object)
-add_subdirectory(combat)
-add_subdirectory(social)
-add_subdirectory(simulation)
+include(ANHPythonBinding)
 
-add_custom_target(
-	swgpy
-	DEPENDS 
-		swgpy_app_binding swgpy_object_binding swgpy_combat_binding swgpy_simulation_binding swgpy_social_binding
-    COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py" 
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
-    VERBATIM
-) 
-include(ANHExecutable)
-
-AddANHExecutable(swganh
+AddANHPythonBinding(social
+	PREFIX_NAME swgpy
+	POSTFIX_NAME binding
     DEPENDS 
-        anh_lib
+		anh_lib
+        swganh_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
