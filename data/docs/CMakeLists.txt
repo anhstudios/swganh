@@ -39,7 +39,6 @@ add_custom_target(swganh_docs ALL
 	-q -b html
 	-c "${BINARY_BUILD_DIR}"
 	-d "${SPHINX_CACHE_DIR}"
-	-P
 	"${CMAKE_CURRENT_SOURCE_DIR}/source"
 	"${SPHINX_HTML_DIR}"
 	COMMENT "Building HTML documentation with Sphinx"
