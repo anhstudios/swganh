@@ -28,6 +28,7 @@ void exportOutOfBand()
         ;
     class_<OutOfBand, boost::noncopyable>("OutOfBand","object that is used in the help with sending system stf messages")
         .def(init<std::string, std::string, ProseType, uint64_t>())
+        .def(init<std::string, std::string, ProseType, std::wstring>())
     ;
 }
 
@@ -52,7 +53,7 @@ void exportObjectController()
     void (ObjectController::*SendFlyText)(const std::string&, controllers::FlyTextColor) = &ObjectController::SendFlyText;
     typedef void (ObjectController::*NotifyFunc)(const anh::ByteBuffer& message);
     class_<ObjectController, std::shared_ptr<ObjectController>, boost::noncopyable>("ObjectController", "Object that describes the Controller of an object", no_init)
-        .def("SendSystemMessage", SendSystemMessageOutOfBand, "Sends the specified system message to the player with an :class:`.OutOfBand` object attached")
+        .def("SendSystemMessage", SendSystemMessageOutOfBand,  "Sends the specified system message to the player with an :class:`.OutOfBand` object attached")
         .def("SendSystemMessage", SendSystemMessageString, "Sends System Message to the player, taking a string as the message and boolean for chatbox only and another boolean to send to in range")
         .def("SendSystemMessage", SendSystemMessageStr, "Sends System Message to the player, taking a string as the message")
         .def("SendFlyText", SendFlyText, "Sends Fly Text to the player, see :class:`.FlyTextColor`")
