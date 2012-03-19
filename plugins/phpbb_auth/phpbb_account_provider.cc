@@ -8,7 +8,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 using namespace anh::database;
 using namespace plugins::phpbb_auth;
@@ -53,14 +53,14 @@ shared_ptr<Account> PhpbbAccountProvider::FindByUsername(string username)
         } 
         else 
         {
-            BOOST_LOG_TRIVIAL(warning) << "No account information found for user: " << username << endl;
+            LOG(warning) << "No account information found for user: " << username << endl;
         }
 
     } 
     catch(sql::SQLException &e) 
     {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return account;

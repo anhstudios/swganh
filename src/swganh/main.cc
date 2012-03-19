@@ -24,7 +24,7 @@
 #include <iostream>
 #include <string>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 #include <boost/thread.hpp>
 
 using namespace boost;
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
             cin >> cmd;
 
             if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
-                BOOST_LOG_TRIVIAL(info) << "Exit command received from command line. Shutting down.";
+                LOG(info) << "Exit command received from command line. Shutting down.";
                 
                 // Stop the application and join the thread until it's finished.
                 app.Stop();
@@ -58,12 +58,12 @@ int main(int argc, char* argv[])
 				
                 break;
             } else {
-                BOOST_LOG_TRIVIAL(warning) << "Invalid command received: " << cmd;
+                LOG(warning) << "Invalid command received: " << cmd;
             }
         }
 
     } catch(std::exception& e) {
-        BOOST_LOG_TRIVIAL(fatal) << "Unhandled application exception occurred: " << e.what();
+        LOG(fatal) << "Unhandled application exception occurred: " << e.what();
     }
 
     return 0;

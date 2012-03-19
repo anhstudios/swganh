@@ -20,7 +20,7 @@
 
 #include "swganh/login/login_service.h"
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -208,7 +208,7 @@ void LoginService::login_error_timeout_secs(int new_timeout)
 }
 
 void LoginService::UpdateGalaxyStatus_() {
-    BOOST_LOG_TRIVIAL(info) << "Updating galaxy status";
+    LOG(info) << "Updating galaxy status";
 
     galaxy_status_ = GetGalaxyStatus_();
 
@@ -280,7 +280,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& logi
     }
 
     if (!account || !authentication_manager_->Authenticate(login_client, account)) {
-        BOOST_LOG_TRIVIAL(warning) << "Login request for invalid user: " << login_client->GetUsername();
+        LOG(warning) << "Login request for invalid user: " << login_client->GetUsername();
 
         ErrorMessage error;
         error.type = "@cpt_login_fail";
@@ -296,7 +296,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& logi
 			{
                 login_client->Close();
 
-				BOOST_LOG_TRIVIAL(warning) << "Closing connection";
+				LOG(warning) << "Closing connection";
 			}
         });
 

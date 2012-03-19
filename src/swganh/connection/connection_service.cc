@@ -3,7 +3,7 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
@@ -153,7 +153,7 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
         deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));
     }
 
-    BOOST_LOG_TRIVIAL(info) << "Removing disconnected client";
+    LOG(info) << "Removing disconnected client";
     session_provider_->EndGameSession(connection_client->GetPlayerId());
 
     return true;
@@ -217,7 +217,7 @@ void ConnectionService::RemoveClientTimerHandler_(
         if (controller->GetRemoteClient() == nullptr || !controller->GetRemoteClient()->connected())
         {
             auto object = controller->GetObject();
-            BOOST_LOG_TRIVIAL(warning) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
+            LOG(warning) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
             auto simulation_service = simulation_service_.lock();
             simulation_service->RemoveObject(object);
 
@@ -228,7 +228,7 @@ void ConnectionService::RemoveClientTimerHandler_(
 }
 
 void ConnectionService::HandleCmdSceneReady_(const std::shared_ptr<ConnectionClient>& client, const CmdSceneReady& message) {
-    BOOST_LOG_TRIVIAL(warning) << "Handling CmdSceneReady";
+    LOG(warning) << "Handling CmdSceneReady";
 
     client->SendTo(CmdSceneReady());
 
@@ -239,14 +239,14 @@ void ConnectionService::HandleCmdSceneReady_(const std::shared_ptr<ConnectionCli
 }
 
 void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClient>& client, const ClientIdMsg& message) {
-    BOOST_LOG_TRIVIAL(warning) << "Handling ClientIdMsg";
+    LOG(warning) << "Handling ClientIdMsg";
 
     // get session key from login service
     uint32_t account_id = login_service()->GetAccountBySessionKey(message.session_hash);
 
     // authorized
     if (! account_id) {
-        BOOST_LOG_TRIVIAL(warning) << "Account_id not found from session key, unauthorized access.";
+        LOG(warning) << "Account_id not found from session key, unauthorized access.";
         return;
     }
 
@@ -255,7 +255,7 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
 
     // authorized
     if (! player_id) {
-        BOOST_LOG_TRIVIAL(warning) << "No player found for the requested account, unauthorized access.";
+        LOG(warning) << "No player found for the requested account, unauthorized access.";
         return;
     }
 
@@ -267,7 +267,7 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
 
     // creates a new session and stores it for later use
     if (!session_provider_->CreateGameSession(player_id, client->connection_id())) {
-        BOOST_LOG_TRIVIAL(warning) << "Player Not Inserted into Session Map because No Game Session Created!";
+        LOG(warning) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
 
     client->Connect(account_id, player_id);

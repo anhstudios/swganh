@@ -26,7 +26,7 @@
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/network/soe/packet_utilities.h"
 #include "anh/network/soe/server.h"

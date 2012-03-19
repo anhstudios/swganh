@@ -20,7 +20,7 @@
 
 #include "anh/network/soe/server.h"
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 #include <boost/pool/pool_alloc.hpp>
 
 #include "anh/byte_buffer.h"
@@ -63,7 +63,7 @@ void Server::SendTo(const udp::endpoint& endpoint, const shared_ptr<ByteBuffer>&
         [this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
     {
         if (bytes_transferred == 0) {
-            BOOST_LOG_TRIVIAL(warning) << "Sent 0 bytes";
+            LOG(warning) << "Sent 0 bytes";
         }
 
         bytes_sent_ += bytes_transferred;

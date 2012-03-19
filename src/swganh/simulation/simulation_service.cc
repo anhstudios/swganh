@@ -93,7 +93,7 @@ public:
 
         if (find_iter == loaded_objects_.end())
         {
-            BOOST_LOG_TRIVIAL(warning) << "Nothing to persist, no object saved";
+            LOG(warning) << "Nothing to persist, no object saved";
             return;
             //throw swganh::object::InvalidObject("Requested object already loaded");
         }
@@ -105,7 +105,7 @@ public:
 
         if (find_iter == loaded_objects_.end())
         {
-            BOOST_LOG_TRIVIAL(warning) << "Nothing to persist, no object saved";
+            LOG(warning) << "Nothing to persist, no object saved";
             return;
             //throw swganh::object::InvalidObject("Requested object already loaded");
         }
@@ -118,12 +118,12 @@ public:
 			auto inner_contained = pair.second->GetContainedObjects();
 			if (inner_contained.size() > 0)
 			{
-				BOOST_LOG_TRIVIAL(warning) << "Persist inner container recursively:" << pair.first;
+				LOG(warning) << "Persist inner container recursively:" << pair.first;
 				PersistRelatedObjects(pair.first);
 			}
 			else
 			{
-				BOOST_LOG_TRIVIAL(warning) << "Persist inner container:" << pair.first;
+				LOG(warning) << "Persist inner container:" << pair.first;
 				PersistObject(pair.first);
 			}
 		});

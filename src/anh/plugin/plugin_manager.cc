@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include <boost/filesystem.hpp>
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 #include <boost/program_options.hpp>
 
 #include "anh/app/kernel_interface.h"
@@ -102,7 +102,7 @@ void PluginManager::LoadAllPlugins(const std::string& directory) {
         });
 
     } catch(const std::exception& e) {
-        BOOST_LOG_TRIVIAL(fatal) << e.what();
+        LOG(fatal) << e.what();
     }
 }
 

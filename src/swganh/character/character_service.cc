@@ -29,7 +29,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include <iomanip>
 
@@ -157,8 +157,8 @@ vector<CharacterData> CharacterService::GetCharactersForAccount(uint64_t account
             } while (statement->getMoreResults());
         }
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return characters;
@@ -180,8 +180,8 @@ bool CharacterService::DeleteCharacter(uint64_t character_id, uint64_t account_i
         }
     }
      catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return rows_updated > 0;
 }
@@ -200,8 +200,8 @@ std::wstring CharacterService::GetRandomNameRequest(const std::string& base_mode
             return wstr;
         }
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return L"";
 }
@@ -219,8 +219,8 @@ uint16_t CharacterService::GetMaxCharacters(uint64_t player_id) {
             max_chars = result_set->getUInt(1);
         }
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
     return max_chars;
 }
@@ -241,7 +241,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         wsmatch m;
 
         if (! regex_match(character_info.character_name, m, p)) {
-            BOOST_LOG_TRIVIAL(warning) << "Invalid character name [" << std::string(character_info.character_name.begin(), character_info.character_name.end()) << "]";
+            LOG(warning) << "Invalid character name [" << std::string(character_info.character_name.begin(), character_info.character_name.end()) << "]";
             return make_tuple(0,"name_declined_syntax");
         }
 
@@ -259,7 +259,7 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
         std::unique_ptr<sql::PreparedStatement> statement(conn->prepareStatement(
             "CALL sp_CharacterCreate(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @output)"));
 
-        BOOST_LOG_TRIVIAL(warning) << "Creating character with location " << account_id;
+        LOG(warning) << "Creating character with location " << account_id;
 
         statement->setUInt(1, account_id);
         statement->setUInt(2, kernel()->GetServiceDirectory()->galaxy().id());
@@ -294,8 +294,8 @@ std::tuple<uint64_t, std::string> CharacterService::CreateCharacter(const Client
     }
     catch(sql::SQLException &e)
     {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return make_tuple(0, "name_declined_internal_error");
@@ -386,7 +386,7 @@ std::string CharacterService::setCharacterCreateErrorCode_(uint32_t error_code)
 }
 
 void CharacterService::HandleClientCreateCharacter_(const std::shared_ptr<ConnectionClient>& client, const ClientCreateCharacter& message) {
-    BOOST_LOG_TRIVIAL(warning) << "Handling ClientCreateCharacter";
+    LOG(warning) << "Handling ClientCreateCharacter";
 
     uint64_t character_id;
     string error_code;

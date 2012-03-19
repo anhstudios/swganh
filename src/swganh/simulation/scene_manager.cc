@@ -8,7 +8,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "swganh/object/object.h"
 
@@ -42,8 +42,8 @@ void SceneManager::LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::
     }
     catch(SQLException &e) 
     {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
@@ -89,7 +89,7 @@ void SceneManager::StartScene(const std::string& scene_label)
         throw std::runtime_error("Scene has already been loaded: " + scene_label);
     }
 
-    BOOST_LOG_TRIVIAL(warning) << "Starting scene: " << scene_label;
+    LOG(info) << "Starting scene: " << scene_label;
 
     auto scene = make_shared<Scene>(description_iter->second);
 

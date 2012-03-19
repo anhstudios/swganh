@@ -6,7 +6,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/database/database_manager_interface.h"
 
@@ -34,7 +34,7 @@ string SmfEncoder::EncodePassword(
         result = result_set->getString(1);
     }
     else
-        BOOST_LOG_TRIVIAL(warning) << "SmfEncoder::EncodePassword failed to encode password" << endl;
+        LOG(warning) << "SmfEncoder::EncodePassword failed to encode password" << endl;
 
     return result;
 }

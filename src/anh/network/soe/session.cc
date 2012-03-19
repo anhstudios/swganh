@@ -22,7 +22,7 @@
 
 #include <algorithm>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/network/soe/server_interface.h"
 
@@ -58,7 +58,7 @@ Session::~Session(void)
 {
     Close();
 
-    BOOST_LOG_TRIVIAL(info) << "Session closed: " << connection_id_;
+    LOG(info) << "Session closed: " << connection_id_;
 }
 
 uint16_t Session::server_sequence() const {
@@ -195,13 +195,13 @@ void Session::HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message)
                     }
                     else
                     {
-                        BOOST_LOG_TRIVIAL(warning) << "Unhandled SOE Opcode: " << std::hex << message->peek<uint16_t>(true)
+                        LOG(warning) << "Unhandled SOE Opcode: " << std::hex << message->peek<uint16_t>(true)
                             << "\n\n" << message;
                     }
             }
             
         } catch(const std::exception& e) {
-            BOOST_LOG_TRIVIAL(warning) << "Error handling protocol message " << std::hex << message->peek<uint16_t>(true)
+            LOG(warning) << "Error handling protocol message " << std::hex << message->peek<uint16_t>(true)
                 << "\n\n" << e.what();
         }
     });
@@ -225,7 +225,7 @@ void Session::HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& mess
 
             HandleMessage(message);
         } catch(const std::exception& e) {
-            BOOST_LOG_TRIVIAL(warning) << "Error handling protocol message " << std::hex << message->peek<uint16_t>(true)
+            LOG(warning) << "Error handling protocol message " << std::hex << message->peek<uint16_t>(true)
                 << "\n\n" << e.what();
         }
     });
@@ -264,7 +264,7 @@ void Session::handleSessionRequest_(SessionRequest& packet)
     server_->SendTo(remote_endpoint_, buffer);
 
     connected_ = true;
-    BOOST_LOG_TRIVIAL(info) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
+    LOG(info) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
 }
 
 void Session::handleMultiPacket_(MultiPacket& packet)
@@ -301,7 +301,7 @@ void Session::handleNetStatsClient_(NetStatsClient& packet)
 void Session::handleChildDataA_(ChildDataA& packet)
 {
     if(!SequenceIsValid_(packet.sequence)) {
-        BOOST_LOG_TRIVIAL(warning) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
+        LOG(warning) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
         return;
     }
 

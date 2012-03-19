@@ -6,7 +6,7 @@
 #include <iostream>
 #include <iterator>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include <boost/python.hpp>
 #include <Python.h>
@@ -47,7 +47,7 @@ void PythonScript::Run()
 #ifdef _DEBUG
         ReadFileContents();
 #endif
-        BOOST_LOG_TRIVIAL(info) << "Executing script: " << filename_;
+        LOG(info) << "Executing script: " << filename_;
 		file_object_ = exec(filecontents_.c_str(), globals_, globals_);
     }
     catch (error_already_set &)
@@ -113,5 +113,5 @@ void PythonScript::GetPythonException()
     }
     PyErr_Clear();
     std::cerr << os.str() << endl;
-    BOOST_LOG_TRIVIAL(warning) << os.str();
+    LOG(warning) << os.str();
 }

@@ -7,8 +7,8 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
-#include <boost/log/trivial.hpp>
 
+#include "anh/logger.h"
 #include "anh/database/database_manager_interface.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/datastore.h"
@@ -114,6 +114,9 @@ SwganhApp::~SwganhApp()
 {}
 
 void SwganhApp::Initialize(int argc, char* argv[]) {
+    // Init Logging
+    SetupLogging_();
+    
     // Load the configuration    
     LoadAppConfig_(argc, argv);
 
@@ -226,7 +229,7 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
 }
 
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
-    BOOST_LOG_TRIVIAL(info) << "Loading plugins";
+    LOG(info) << "Loading plugins";
 
     if (!plugins.empty()) {
         auto plugin_manager = kernel_->GetPluginManager();
@@ -247,7 +250,7 @@ void SwganhApp::CleanupServices_() {
         return;
     }
 
-    BOOST_LOG_TRIVIAL(warning) << "Services were not shutdown properly";
+    LOG(warning) << "Services were not shutdown properly";
 
     for_each(services.begin(), services.end(), [this, &service_directory] (anh::service::ServiceDescription& service) {
         service_directory->removeService(service);
@@ -335,4 +338,9 @@ void SwganhApp::GalaxyStatusTimerHandler_(const boost::system::error_code& e, sh
 
     timer->expires_at(timer->expires_at() + boost::posix_time::seconds(delay_in_secs));    
     timer->async_wait(std::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, std::placeholders::_1, timer, delay_in_secs));
+}
+
+void SwganhApp::SetupLogging_()
+{
+    anh::Logger::getInstance().init("swganh");    
 }
