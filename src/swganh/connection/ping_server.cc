@@ -4,7 +4,7 @@
 
 #include <boost/thread/thread.hpp>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #define RECEIVE_BUFFER 512
 
@@ -56,7 +56,7 @@ void PingServer::HandleReceive(const boost::system::error_code& error, size_t by
 
     // Check if an error occurred.
     if (error && error != boost::asio::error::message_size) {
-        BOOST_LOG_TRIVIAL(warning) << "Error reading from socket: " << error.message().c_str();
+        LOG(warning) << "Error reading from socket: " << error.message().c_str();
 
         // Otherwise return the ping response to the sender.
     } else {

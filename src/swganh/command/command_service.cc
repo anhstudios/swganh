@@ -11,7 +11,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
@@ -87,20 +87,20 @@ void CommandService::EnqueueCommand(
     auto properties_iter = command_properties_map_.find(command.command_crc);
     if (properties_iter == command_properties_map_.end())
     {
-        BOOST_LOG_TRIVIAL(warning) << "Invalid handler requested: " << hex << command.command_crc;
+        LOG(warning) << "Invalid handler requested: " << hex << command.command_crc;
         return;
     }
 
     auto handlers_iter = handlers_.find(command.command_crc);
     if (handlers_iter == handlers_.end())
     {
-        BOOST_LOG_TRIVIAL(warning) << "No handler for command: " << std::hex << command.command_crc;
+        LOG(warning) << "No handler for command: " << std::hex << command.command_crc;
         return;
     }
 
     if (!ValidateCommand(actor, target, command, properties_iter->second, enqueue_filters_))
     {
-        BOOST_LOG_TRIVIAL(warning) << "Command validation failed";
+        LOG(warning) << "Command validation failed";
         return;
     }
 
@@ -169,7 +169,7 @@ void CommandService::ProcessCommand(
             SendCommandQueueRemove(actor, command.action_counter, default_time, 0, 0);
         }
     } catch(const exception& e) {
-        BOOST_LOG_TRIVIAL(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].name << "\n" << e.what();
+        LOG(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].name << "\n" << e.what();
     }
 
 }
@@ -283,12 +283,12 @@ void CommandService::LoadProperties()
             command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
         }
 
-        BOOST_LOG_TRIVIAL(warning) << "Loaded (" << command_properties_map_.size() << ") Commands";
+        LOG(info) << "Loaded (" << command_properties_map_.size() << ") Commands";
     }
     catch(sql::SQLException &e)
     {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 

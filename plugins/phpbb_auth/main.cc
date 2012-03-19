@@ -4,7 +4,7 @@
 #include <boost/program_options/variables_map.hpp>
 #include <boost/thread.hpp>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/app/kernel_interface.h"
 #include "anh/database/database_manager_interface.h"
