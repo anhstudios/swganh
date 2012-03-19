@@ -1,7 +1,7 @@
 
 #include "swganh/simulation/movement_manager.h"
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/event_dispatcher.h"
 

@@ -9,7 +9,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/app/kernel_interface.h"
 #include "anh/crc.h"
@@ -121,7 +121,7 @@ void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command
             RegisterCombatScript(command.second);
 		}
 	});
-    BOOST_LOG_TRIVIAL(warning) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
+    LOG(info) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
 }
 
 bool CombatService::InitiateCombat(
@@ -528,15 +528,15 @@ int CombatService::GetDamagingPool(CombatData& properties)
     {
         int generated = generator_.Rand(1, 100);
         if (generated < properties.health_hit_chance) {
-            BOOST_LOG_TRIVIAL(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << properties.health_hit_chance;
+            LOG(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << properties.health_hit_chance;
             pool = HEALTH;
         }
         else if (generated < properties.action_hit_chance) {
-            BOOST_LOG_TRIVIAL(info)  << "Damaging Pool picked ACTION with " << generated << " number and " << properties.action_hit_chance;
+            LOG(info)  << "Damaging Pool picked ACTION with " << generated << " number and " << properties.action_hit_chance;
             pool = ACTION;
         }
         else {
-            BOOST_LOG_TRIVIAL(info)  << "Damaging Pool picked MIND with " << generated << " number and " << properties.mind_hit_chance;
+            LOG(info)  << "Damaging Pool picked MIND with " << generated << " number and " << properties.mind_hit_chance;
             pool = MIND;
         }
     }

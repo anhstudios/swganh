@@ -25,7 +25,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/database/database_manager.h"
 
@@ -50,7 +50,7 @@ string Sha512Encoder::EncodePassword(string raw, string salt) {
         result = result_set->getString(1);
     }
     else
-        BOOST_LOG_TRIVIAL(warning) << "Sha512Encoder::EncodePassword failed to encode password" << endl;
+        LOG(warning) << "Sha512Encoder::EncodePassword failed to encode password" << endl;
 
     return result;
 }

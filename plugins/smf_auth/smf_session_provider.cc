@@ -10,7 +10,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 using namespace anh::database;
 using namespace plugins::smf_auth;
@@ -54,8 +54,8 @@ bool SmfSessionProvider::CreatePlayerAccount_(uint64_t account_id)
     } 
     catch(sql::SQLException &e) 
     {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return success;
@@ -76,12 +76,12 @@ uint64_t SmfSessionProvider::FindPlayerByReferenceId_(uint64_t account_id)
             player_id = result_set->getUInt64("id");
             
         } else {
-            BOOST_LOG_TRIVIAL(warning) << "No Player Id found for account_id: " << account_id << endl;
+            LOG(warning) << "No Player Id found for account_id: " << account_id << endl;
         }
 
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return player_id;

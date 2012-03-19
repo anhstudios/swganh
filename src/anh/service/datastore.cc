@@ -23,7 +23,7 @@
 #include <sstream>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 #include <boost/thread/mutex.hpp>
 
 #include <cppconn/exception.h>
@@ -69,8 +69,8 @@ std::shared_ptr<Galaxy> Datastore::findGalaxyByName(const std::string& name) con
             result->getString("created_at"),
             result->getString("updated_at"));
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return galaxy;
@@ -113,8 +113,8 @@ std::shared_ptr<Galaxy> Datastore::createGalaxy(
             result->getString("created_at"),
             result->getString("updated_at"));
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return galaxy;
@@ -132,8 +132,8 @@ void Datastore::saveGalaxyStatus(int32_t galaxy_id, int32_t status) const
         statement->executeUpdate();
 
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
@@ -185,8 +185,8 @@ bool Datastore::createService(const Galaxy& galaxy, ServiceDescription& descript
         description.status(result->getInt("status"));
         description.last_pulse(result->getString("last_pulse_timestamp"));
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
         return false;
     }
 
@@ -207,8 +207,8 @@ void Datastore::saveService(const ServiceDescription& service) const {
         statement->setUInt(7, service.id());
         statement->executeUpdate();
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
 
@@ -238,8 +238,8 @@ std::shared_ptr<Galaxy> Datastore::findGalaxyById(uint32_t id) const {
             result->getString("created_at"),
             result->getString("updated_at"));
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return galaxy;
@@ -275,8 +275,8 @@ std::shared_ptr<ServiceDescription> Datastore::findServiceById(uint32_t id) cons
             service->last_pulse(result->getString("last_pulse_timestamp"));
         }
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return service;
@@ -295,8 +295,8 @@ bool Datastore::deleteServiceById(uint32_t id) const {
         deleted = statement->executeUpdate() > 0;
 
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return deleted;
@@ -322,8 +322,8 @@ list<Galaxy> Datastore::getGalaxyList() const {
                 result->getString("updated_at")));
         }
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return galaxy_list;
@@ -359,8 +359,8 @@ list<ServiceDescription> Datastore::getServiceList(uint32_t galaxy_id) const {
             service_list.push_back(move(service));
         }
     } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 
     return service_list;
