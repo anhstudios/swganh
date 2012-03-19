@@ -10,9 +10,9 @@ project(swganh CXX)
 set(swganh_VERSION_MAJOR 0)
 set(swganh_VERSION_MINOR 4)
 set(swganh_VERSION_PATCH 0)
-set(swganh_VERSION 
+set(swganh_VERSION
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
-	
+
 # set the path for custom cmake scripts
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
 
@@ -40,7 +40,7 @@ option(ENABLE_TEST_REPORT
 
 option(USE_SYSTEM_LIBRARIES
     "Uses system libraries instead of downloading them" OFF)
-    
+
 option(BUILD_PLUGINS
     "Build plugins" ON)
 
@@ -84,20 +84,20 @@ endif()
 
 if(MSVC)
     message(STATUS " - MSVC: Version ${MSVC_VERSION}")
-    
+
     if(MSVC_VERSION LESS 1700)
     	message(FATAL_ERROR "Visual Studio 11 or newer is required ")
     endif()
-    
+
     SET(_WIN32_WINNT 0x0601 CACHE INTERNAL "Setting _WIN32_WINNT to 0x0601 for Windows Vista minimum APIs")
     SET(WINVER ${_WIN32_WINNT} CACHE INTERNAL "Setting WINVER to 0x0601 for Windows Vista minimum APIs")
-	
+
     ADD_DEFINITIONS (/D _WIN32_WINNT=${_WIN32_WINNT})
     MESSAGE(STATUS "- MSVC: Set minimum Windows API version")
-    
+
     ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D WIN32_LEAN_AND_MEAN /D NOGDI)
     MESSAGE(STATUS "- MSVC: Disabled NON-SECURE warnings")
-        
+
     ADD_DEFINITIONS (/D _VARIADIC_MAX=10)
     MESSAGE(STATUS "- MSVC: Set variadic max to 10 for compatibility with dependencies")
 
@@ -106,7 +106,7 @@ if(MSVC)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
         message(STATUS "- MSVC: Treating all warnings as errors")
 	endif()
-    
+
     ADD_DEFINITIONS (/D BOOST_ALL_DYN_LINK)
     MESSAGE(STATUS "- BOOST: Enable dynamic linking")
 endif()
@@ -130,7 +130,7 @@ if(DEFINED VENDOR_PREFIX)
     set(GMOCK_ROOT ${VENDOR_PREFIX}/gmock)
     set(ENV{MYSQL_DIR} ${VENDOR_PREFIX}/mysql-connector-c)
     set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX}/mysql-connector-cpp)
-    set(PYTHON_ROOT ${VENDOR_PREFIX}/python)    
+    set(PYTHON_ROOT ${VENDOR_PREFIX}/python)
     set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
 endif()
 
@@ -142,7 +142,7 @@ if (BUILD_DOCS)
     set(IS_REQUIRED REQUIRED)
 endif()
 
-find_package(Boost 1.49.0 COMPONENTS date_time filesystem log program_options python3 regex system thread ${AdditionalBoostLibs} REQUIRED)
+find_package(Boost 1.49.0 COMPONENTS date_time filesystem log log_setup program_options python3 regex system thread ${AdditionalBoostLibs} REQUIRED)
 find_package(Glm REQUIRED)
 find_package(GTest REQUIRED)
 find_package(GMock REQUIRED)
