@@ -75,6 +75,7 @@ Step 4 - Troubleshooting
 Or are you? The great thing about Python is you are able to tweak the script at runtime and see the results immediately during the next script run.
 My first run through for example I got a somewhat cryptic message in the server console output
 ::
+
 	Python error:
 	SyntaxError: (`invalid syntax`, (`<string>`, 12, 6, `\telif:\n`))
 	
@@ -129,6 +130,7 @@ Lets start with social_service.h
 As a header file, this describes what we are going to be doing with our service. Based on our services we can see that this service
 is going to inherit from swganh::base::BaseService. Our code looks little like this *snippet*
 ::
+
 	class SocialService : public swganh::base::BaseService
     {
     public:
@@ -148,6 +150,7 @@ is going to inherit from swganh::base::BaseService. Our code looks little like t
 This sets up a very very basic structure, all we are doing here is just getting the service created, we will flesh it out later.
 Lets just do the same for the .cc file
 ::
+
 	SocialService::SocialService(KernelInterface* kernel)
     : BaseService(kernel)
 	{}
@@ -179,6 +182,7 @@ Let's get enough just to set up our friends list.
 We know we will need to have a function that is called AddFriend takes in a Player object and a string as parameters and returns a true or false, if the player was found or not.
 so lets do that...
 ::
+
 	bool SocialService::AddFriend(const shared_ptr<Player>& player, const string& friend_name)
 	{
 		return true;
@@ -188,6 +192,7 @@ so lets do that...
 Right now our function does nothing and just returns true. Lets flush this out and call the database.
 Our code now looks like the following
 ::
+
 	bool SocialService::AddFriend(const shared_ptr<Player>& player, const string& friend_name)
 	{
 		uint64_t friend_id = 0;
@@ -233,6 +238,7 @@ LoadCoreServices_
 
 Lets add this in under the last service there:
 ::
+
 	kernel_->GetServiceManager()->AddService(
             "SocialService", 
             make_shared<social::SocialService>(kernel_.get()));
@@ -247,6 +253,7 @@ We do this through a process called binding. Fortunately most of the hard work i
 All we need to do is tell Boost.Python about our service and it will automatically create a module for us.
 Lets see what that looks like now. This is social_service_binding.h
 ::
+
 	#include "anh/python_shared_ptr.h"
 	#include "social_service.h"
 
@@ -274,6 +281,7 @@ We will be opening up swganh_kernel_binding.h in app_binding.
 
 This will be used to expose all services out to Python. We will be using the SimulationService as an example to copy from.
 ::
+
 	    class_<anh::service::ServiceManager, boost::noncopyable>("ServiceManager", "provides an interface to common services", no_init)
         .def("simulation_service", make_function(
                bind(&anh::service::ServiceManager::GetService<swganh::simulation::SimulationService>, std::placeholders::_1, "SimulationService"),
@@ -292,13 +300,17 @@ get to services through the :class:`.SWGKernel` service_manager
 So lets add that call in the script after we check to see if the name is already in our friends list.
 Next we need to send the player a message if the command succeeded or not. From the documentation again, we see that in order to send messages to the client
 we need to get the Controller of the object and send a message.
-The syntax is this::
+The syntax is this
+::
+
 	actor.Controller().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_added', swgpy.ProseType.TT, friend_request_name), False, False)
 
 This is telling the code to get the controller object, invoke the SendSystemMessage using it's OutOfBand constructor that we are building right into the command.
 We are telling it that it's a TT ProseType type, which we can see by looking `SWG Strings cmnty <http://strings.anhstudios.com/file/cmnty>`_
 This fits right in with what the Strings message says we want to do.
-Building out our script a little more it now looks like this::
+Building out our script a little more it now looks like this
+::
+
 	import re, swgpy.object
 
 	split = re.split('\W+', command_string)
