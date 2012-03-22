@@ -4,8 +4,8 @@ AddANHPythonBinding(social
 	PREFIX_NAME swgpy
 	POSTFIX_NAME binding
     DEPENDS 
-		anh_lib
         swganh_lib
+		anh_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
