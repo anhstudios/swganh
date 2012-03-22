@@ -3,9 +3,9 @@ include(ANHPythonBinding)
 AddANHPythonBinding(simulation
 	PREFIX_NAME swgpy
 	POSTFIX_NAME binding
-    DEPENDS 
-		anh_lib
+    DEPENDS
         swganh_lib
+		anh_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
