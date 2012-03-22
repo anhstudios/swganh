@@ -34,14 +34,26 @@ else()
 	    @ONLY) 		
 endif()
 
+FILE(GLOB_RECURSE DOCUMENTS *.rst *.in Doxyfile)
+
+# Group the source files based on the directory structure.
+FOREACH(__source_file ${DOCUMENTS})
+    STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/)((.*/)*)(.*)" "\\2" __source_dir "${__source_file}")
+    STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/${__source_dir})(.*)" "\\2" __source_filename "${__source_file}")
+
+    STRING(REPLACE "/" "\\\\" __source_group "${__source_dir}")
+    SOURCE_GROUP("${__source_group}" FILES ${__source_file})
+ENDFOREACH()
+
 add_custom_target(swganh_docs ALL
     ${SPHINX_EXECUTABLE}
 	-q -b html
 	-c "${BINARY_BUILD_DIR}"
 	-d "${SPHINX_CACHE_DIR}"
-	"${CMAKE_CURRENT_SOURCE_DIR}/source"
+	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${SPHINX_HTML_DIR}"
 	COMMENT "Building HTML documentation with Sphinx"
 	DEPENDS anh_lib swganh_lib swgpy
 	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)"
+	SOURCES ${DOCUMENTS}
 )

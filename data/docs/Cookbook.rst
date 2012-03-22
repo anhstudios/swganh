@@ -1,7 +1,6 @@
+========
 Cookbook
-==================================================
-
-
+========
 
 Full Start to Finish Scripting Example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -13,41 +12,46 @@ For this example I will be doing a very simple command, but one that has interac
 `Add Friend <http://wiki.swganh.org/index.php/Addfriend_%282A2357ED%29>`_
 
 Step 1 - Startup
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+
 Add the script reference to the command table in the galaxy database.
 Open up your favorite mysql editor program, edit the 'command' table and look for the script_hook column.
 Here we are going to be putting in the location of our python script that we have yet to create.
 In this case we are going to put 'scripts/commands/add_friend.py' into the script hook for the addFriend row.
 
 Step 2 - Basic Script
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+
 Now that this is done we can create our script. Open up your favorite python editor (I just use notepad++)
 We know based on our documentation located `Here <http://swganh.anhstudios.com/docs/Player.html>` _
 That we want to use the 'add_friend' function in the Player class.
 
 .. NOTE::
+
 	The way the SWG hierarchy works is that `Player <http://swganh.anhstudios.com/docs/Player.html>`_ is a seperate object than `Creature <http://swganh.anhstudios.com/docs/Creature.html>`_ 
 	This means that the normal actor will not work to add a friend, we will need to get the `Player <http://swganh.anhstudios.com/docs/Player.html>`_ somehow.
 	This is done through another function get_player <http://swganh.anhstudios.com/docs/Creature.html#swgpy.object.Creature.get_player>`_, this will return the player object and then we can continue.
 
 our script now looks like this...
-::
-	import swgpy.object
 
-	# Get the player object
-	player = actor.get_player()
-	target_player = creature_target.get_player()
-	# Make sure the player object and the target exists
-	if player and target_player:
-		# Check if the player target is already in our friends list
-		if not player.is_friend(target_player.id):
-			player.add_friend(target_player.id)
-			actor.ObjectController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_added', swgpy.ProseType.TT, target.id), False, False)
-		elif:
-			actor.ObjectController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_duplicate', swgpy.ProseType.TT, target.id), False, False)
-	elif:
-		actor.ObjectController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_not_found', swgpy.ProseType.TT, target.id), False, False)
-	
+.. code-block:: py3
+
+    import swgpy.object
+
+    # Get the player object
+    player = actor.get_player()
+    target_player = creature_target.get_player()
+    # Make sure the player object and the target exists
+    if player and target_player:
+        # Check if the player target is already in our friends list
+        if not player.is_friend(target_player.id):
+            player.add_friend(target_player.id)
+            actor.ObjectController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_added', swgpy.ProseType.TT, target.id), False, False)
+        elif:
+            actor.ObjectController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_duplicate', swgpy.ProseType.TT, target.id), False, False)
+    elif:
+        actor.ObjectController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_not_found', swgpy.ProseType.TT, target.id), False, False)
+
 A couple of things to note here
 
 Number one is that we are getting both the player and the target player objects, and if these don't exist we display a message.
@@ -57,7 +61,8 @@ We used ProseType of TT, as that's what is shown in the `SWG String Search <http
 The two False at the end just tell SendSystemMessage that we want to show it not just in the chatbox (also in the middle of the screen) and to only send it to the current actor.
 
 Step 3 - First Example Finished?
-~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Lets save our script as add_friend.py in the data/scripts/commands folder
 Build our server again (this will copy over the scripts from data/commands to bin/Debug/commands (if on Windows)
 Then, we should be able to run our server and the command should execute as expected.
@@ -65,7 +70,8 @@ Then, we should be able to run our server and the command should execute as expe
 You are done with your first simple example!
 
 Step 4 - Troubleshooting
-~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 Or are you? The great thing about Python is you are able to tweak the script at runtime and see the results immediately during the next script run.
 My first run through for example I got a somewhat cryptic message in the server console output
 ::
@@ -88,6 +94,7 @@ It looks like it just simply uses a name as a parameter.
 
 Step 5 - Down the Rabbit Hole
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Since this is the first social kind of command added to the game we are going to have to do more work than expected.
 We will need to create a new service that is going to allow us to interact with the database, and interact with the player itself.
 
@@ -104,6 +111,7 @@ This will allow our build system to recognize there is another CMakeLists.txt in
 
 Step 6 - Services In Depth
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 We need to take a step back here and really go over what a service is in the context of swganh and why we should be creating one.
 Services are generally available the entire lifetime of the server. They can handle SWG Protocols and expose APIs for controlling/accessing data
 that covers a feature set that is orthogonal to all other services.
@@ -114,6 +122,7 @@ and we want to allow other services access to this data.
 
 Step 7 - Service Integration and Playing with Data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 We have our existing social_service files and social_service_binding files, these are probably empty, so let's get these filled in.
 Lets start with social_service.h
 
@@ -213,6 +222,7 @@ Our code now looks like the following
 
 Step 8 - Registering the Service
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Now that we have a service created and compiling, we can add it to our server startup process.
 Lets open up swganh_app.cc this is quite a large file and really does a lot of the work of starting up the game server.
 first we need to 'include' our file that we created, so the swganh app knows about it.
@@ -231,6 +241,7 @@ Now we'll build the server, all should be good.
 
 Step 9 - Setting up bindings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Now that we've created a very simple service with a very simple API, we want to expose this to Python to use in our script.
 We do this through a process called binding. Fortunately most of the hard work is done for us with Boost.Python
 All we need to do is tell Boost.Python about our service and it will automatically create a module for us.
@@ -275,6 +286,7 @@ service to python as a shared_ptr. We can literally replace simulation with soci
 
 Step 10 - Back to the script!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Ok, so now we know that we need to use the social service that we set up to add a friend. We also know through our documentation that we can
 get to services through the :class:`.SWGKernel` service_manager
 So lets add that call in the script after we check to see if the name is already in our friends list.
