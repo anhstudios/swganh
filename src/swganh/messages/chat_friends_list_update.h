@@ -22,6 +22,7 @@
 #define SWGANH_MESSAGES_CHAT_FRIENDS_LIST_UPDATE_H_
 
 #include <cstdint>
+#include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
