@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
         readers.emplace_back(swg_directory + "/data_music_00.tre");
         readers.emplace_back(swg_directory + "/bottom.tre");
 
-        TreArchive<TreReader> archive(move(readers));
+        TreArchive archive(move(readers));
         
         DatatableReader reader(archive.GetResource(datatable_file));
         
