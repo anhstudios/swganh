@@ -88,7 +88,10 @@ FUNCTION(AddANHExecutable name)
         ENDIF()
     ENDFOREACH()
 	
-	list(REMOVE_ITEM SOURCES ${BINDINGS})
+    list(LENGTH SOURCES _bindings_list_length)
+    if(_bindings_list_length GREATER 1)
+	    list(REMOVE_ITEM SOURCES ${BINDINGS})
+	endif()
 	
     # if unit tests have been specified break out the project into a library to make it testable
     LIST(LENGTH SOURCES _sources_list_length)
