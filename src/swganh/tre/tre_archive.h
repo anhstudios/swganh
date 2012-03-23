@@ -24,6 +24,8 @@ namespace tre {
 
         explicit TreArchive(std::vector<std::string>&& resource_files);
 
+        explicit TreArchive(std::string config_file);
+
         uint32_t GetResourceSize(const std::string& resource_name) const;
 
         std::vector<char> GetResource(const std::string& resource_name);
@@ -35,6 +37,9 @@ namespace tre {
         std::vector<std::string> GetAvailableResources() const;
 
     private:
+
+        void CreateReaders(const std::vector<std::string>& resource_files);
+
         typedef std::vector<TreReader> ReaderList;
         ReaderList readers_;
     };

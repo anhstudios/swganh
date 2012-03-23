@@ -2,6 +2,8 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "tre_archive.h"
+
+#include "config_reader.h"
     
 using namespace swganh::tre;
 
@@ -17,10 +19,14 @@ TreArchive::TreArchive(vector<TreReader>&& readers)
 
 TreArchive::TreArchive(vector<string>&& resource_files)
 {
-    for (auto& filename : resource_files)
-    {
-        readers_.emplace_back(filename);
-    }
+    CreateReaders(resource_files);
+}
+
+TreArchive::TreArchive(string config_file)
+{
+    ConfigReader config_reader(config_file);
+
+    CreateReaders(config_reader.GetTreFilenames());
 }
 
 uint32_t TreArchive::GetResourceSize(const string& resource_name) const
@@ -87,3 +93,11 @@ vector<string> TreArchive::GetAvailableResources() const
     return resource_list;
 }
 
+
+ void TreArchive::CreateReaders(const vector<string>& resource_files)
+ { 
+    for (auto& filename : resource_files)
+    {
+        readers_.emplace_back(filename);
+    }
+ }
