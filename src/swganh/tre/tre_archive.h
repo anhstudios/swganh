@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <algorithm>
+#include <future>
 #include <memory>
 #include <string>
 #include <vector>
@@ -18,15 +19,18 @@ namespace tre {
     class TreArchive
     {
     public:
-        explicit TreArchive(std::vector<std::shared_ptr<T>> readers)
-            : readers_(readers)
-        {        
+        explicit TreArchive(std::vector<T>&& readers)
+            : readers_(std::move(readers))
+        {}
+
+        explicit TreArchive(std::vector<std::string>&& resource_files)
+        {
             std::for_each(
-                begin(readers_),
-                end(readers_),
-                [this] (const shared_ptr<T>& reader)
+                begin(resource_files), 
+                end(resource_files), 
+                [this] (const std::string& filename)
             {
-                reader->Initialize();
+                readers_.emplace_back(filename);
             });
         }
 
@@ -35,9 +39,9 @@ namespace tre {
             auto end = readers_.end();
             for (auto iter = readers_.begin(); iter != end; ++iter)
             {
-                if ((*iter)->ContainsResource(resource_name))
+                if ((*iter).ContainsResource(resource_name))
                 {
-                    return (*iter)->GetResourceSize(resource_name);
+                    return (*iter).GetResourceSize(resource_name);
                 }
             }
 
@@ -49,9 +53,9 @@ namespace tre {
             auto end = readers_.end();
             for (auto iter = readers_.begin(); iter != end; ++iter)
             {
-                if ((*iter)->ContainsResource(resource_name))
+                if ((*iter).ContainsResource(resource_name))
                 {
-                    return (*iter)->GetResource(resource_name);
+                    return (*iter).GetResource(resource_name);
                 }
             }
         
@@ -63,9 +67,9 @@ namespace tre {
             auto end = readers_.end();
             for (auto iter = readers_.begin(); iter != end; ++iter)
             {
-                if ((*iter)->ContainsResource(resource_name))
+                if ((*iter).ContainsResource(resource_name))
                 {
-                    return (*iter)->GetMd5Hash(resource_name);
+                    return (*iter).GetMd5Hash(resource_name);
                 }
             }
         
@@ -81,7 +85,7 @@ namespace tre {
                 end(readers_),
                 [&filenames] (const ReaderList::value_type& reader)
             {
-                filenames.push_back(reader->GetFilename());
+                filenames.push_back(reader.GetFilename());
             });
         
             return filenames;
@@ -96,7 +100,7 @@ namespace tre {
                 end(tre_list_),
                 [&resource_list] (const ReaderList::value_type& reader)
             {
-                auto resources = reader->GetResourceNames();
+                auto resources = reader.GetResourceNames();
                 resource_list.insert(begin(resource_list), begin(resources), end(resources));
             });
         
@@ -104,7 +108,7 @@ namespace tre {
         }
 
     private:
-        typedef std::vector<std::shared_ptr<T>> ReaderList;
+        typedef std::vector<T> ReaderList;
         ReaderList readers_;
     };
 }}  // namespace swganh::tre

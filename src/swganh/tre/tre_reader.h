@@ -16,8 +16,6 @@ namespace tre {
     {
     public:
         explicit TreReader(const std::string& filename);
-
-        void Initialize();
         
         bool ContainsResource(const std::string& resource_name) const;
         
@@ -35,8 +33,6 @@ namespace tre {
     
     private:
         TreReader();
-
-        void VerifyInitialization() const;
 
         class TreReaderImpl;
         std::shared_ptr<TreReaderImpl> impl_;

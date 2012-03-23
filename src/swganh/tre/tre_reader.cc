@@ -92,88 +92,50 @@ TreReader::TreReader(const string& filename)
 : impl_(new TreReaderImpl(filename))
 {}
 
-void TreReader::Initialize()
-{
-    impl_->Initialize();
-}
-
 uint32_t TreReader::GetResourceCount() const
 {
-    VerifyInitialization();
-
     return impl_->GetResourceCount();
 }
 
 vector<string> TreReader::GetResourceNames() const
 {
-    VerifyInitialization();
-
     return impl_->GetResourceNames();
 }
 
 const string& TreReader::GetFilename() const
 {
-    VerifyInitialization();
-
     return impl_->GetFilename();
 }
 
 vector<char> TreReader::GetResource(const string& resource_name)
 {
-    VerifyInitialization();
-
     return impl_->GetResource(
 		impl_->GetResourceInfo(resource_name));
 }
 
 bool TreReader::ContainsResource(const string& resource_name) const
 {
-    VerifyInitialization();
-
     return impl_->ContainsResource(resource_name);
 }
 
 string TreReader::GetMd5Hash(const string& resource_name) const
 {
-    VerifyInitialization();
-
     return impl_->GetMd5Hash(resource_name);
 }
 
 uint32_t TreReader::GetResourceSize(const string& resource_name) const
 {
-    VerifyInitialization();
-
     return impl_->GetResourceSize(resource_name);
-}
-
-void TreReader::VerifyInitialization() const
-{
-    if (!impl_->IsInitialized()) throw std::runtime_error("Attempted to use TreReader without initializing");
 }
 
 TreReader::TreReaderImpl::TreReaderImpl(std::string filename)
 : filename_(filename)
-, initialized_(false)
 {
     input_stream_.exceptions(ifstream::failbit | ifstream::badbit);
     input_stream_.open(filename_.c_str(), ios_base::binary);
 
     ReadHeader();
-}
-
-void TreReader::TreReaderImpl::Initialize()
-{
-    if (!IsInitialized())
-    {
-        ReadIndex();
-        initialized_ = true;
-    }
-}
-
-bool TreReader::TreReaderImpl::IsInitialized() const
-{
-    return initialized_;
+    ReadIndex();
 }
 
 uint32_t TreReader::TreReaderImpl::GetResourceCount() const
