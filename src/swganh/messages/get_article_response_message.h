@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_GAME_SCENE_CHANGED_H_
-#define SWGANH_MESSAGES_GAME_SCENE_CHANGED_H_
+#ifndef SWGANH_MESSAGES_GET_ARTICLE_RESPONSE_MESSAGE_H_
+#define SWGANH_MESSAGES_GET_ARTICLE_RESPONSE_MESSAGE_H_
 
 #include <cstdint>
 #include <string>
@@ -49,4 +49,4 @@ struct GetArticleResponseMessage : public swganh::messages::BaseSwgMessage<GetAr
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_GAME_SCENE_CHANGED_H_
+#endif // SWGANH_MESSAGES_GET_ARTICLE_RESPONSE_MESSAGE_H_
