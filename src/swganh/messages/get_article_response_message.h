@@ -29,7 +29,7 @@
 namespace swganh {
 namespace messages {
 
-struct GameSceneChanged : public swganh::messages::BaseSwgMessage<GameSceneChanged> {
+struct GetArticleResponseMessage : public swganh::messages::BaseSwgMessage<GetArticleResponseMessage> {
 	static uint16_t opcount() { return 3; }
 	static uint32_t opcode() { return 0x934BAEE0; }
 	
