@@ -116,7 +116,6 @@ void PluginManager::ConfigurePlugin(std::string plugin_name, ConfigFunc config_f
     if (!config_file.is_open()) {
         LOG(warning) << "No configuration loaded for plugin: " + plugin_name;
         return;
-        //throw runtime_error("Unable to open the configuration file at: config/plugins/" + plugin_name + ".cfg");
     }
     
     variables_map vm;

@@ -34,10 +34,6 @@ SocialService::SocialService(KernelInterface* kernel)
     : BaseService(kernel)
 {
     character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
-    if (!character_provider_)
-    {
-        throw new std::exception("CharacterService::CharacterProvider plugin does not exist, please check config");
-    }
 }
 
 SocialService::~SocialService()

@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_GALAXY_PROVIDERS_MYSQL_GALAXY_PROVIDER_H_
-#define SWGANH_GALAXY_PROVIDERS_MYSQL_GALAXY_PROVIDER_H_
+#ifndef PLUGINS_MYSQL_GALAXY_PROVIDER_H_
+#define PLUGINS_MYSQL_GALAXY_PROVIDER_H_
 
 #include "swganh/galaxy/providers/galaxy_provider_interface.h"
 #include <memory>
@@ -27,11 +27,10 @@
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
-namespace swganh {
+namespace plugins {
 namespace galaxy {
-namespace providers {
 
-class MysqlGalaxyProvider : public GalaxyProviderInterface {
+class MysqlGalaxyProvider : public swganh::galaxy::providers::GalaxyProviderInterface {
 public:
     explicit MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager);
     ~MysqlGalaxyProvider();
@@ -42,6 +41,6 @@ private:
     anh::database::DatabaseManagerInterface* db_manager_;
 };
 
-}}}  // namespace swganh::galaxy::providers
+}}  // namespace swganh::galaxy::providers
 
-#endif  // SWGANH_GALAXY_PROVIDERS_MYSQL_GALAXY_PROVIDER_H_
+#endif  // PLUGINS_MYSQL_GALAXY_PROVIDER_H_

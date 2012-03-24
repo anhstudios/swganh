@@ -73,21 +73,10 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, KernelIn
     , listen_port_(listen_port)
 {
     account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
-    if (!account_provider_)
-    {
-        throw new std::exception("LoginService::AccountProvider plugin does not exist, please check config");
-    }
-
+    
     shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
-    if (!encoder) {
-        throw new std::exception("LoginService::Encoder plugin does not exist, please check config");
-    }
 
     character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
-    if (!character_provider_)
-    {
-        throw new std::exception("CharacterService::CharacterProvider plugin does not exist, please check config");
-    }
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
 }

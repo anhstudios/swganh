@@ -57,16 +57,8 @@ ConnectionService::ConnectionService(
 {
 
     session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
-    if (!session_provider_)
-    {
-        throw new std::runtime_error("No plugin found for: ConnectionService::SessionProvider, check config");
-    }
 
     character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
-    if (!character_provider_)
-    {
-        throw new std::exception("CharacterService::CharacterProvider plugin does not exist, please check config");
-    }
 }
 
 ServiceDescription ConnectionService::GetServiceDescription() {
