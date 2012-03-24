@@ -42,6 +42,8 @@ public:
     virtual uint16_t GetMaxCharacters(uint64_t player_id);
     virtual std::tuple<uint64_t, std::string> CreateCharacter(const swganh::messages::ClientCreateCharacter& character_info, uint32_t account_id);
 
+    virtual uint64_t GetCharacterIdByName(const std::string& name);
+
 private:
     std::string setCharacterCreateErrorCode_(uint32_t error_code);
 	

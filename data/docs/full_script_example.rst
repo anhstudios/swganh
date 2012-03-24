@@ -186,29 +186,57 @@ so lets do that...
 	}
 
 
-Right now our function does nothing and just returns true. Lets flush this out and call the database.
-Our code now looks like the following
+Right now our function does nothing and just returns true. 
+What we want to do is build out a simple interface as we know that this social service will end up doing a lot more than just adding a friend.
+We know that we need to interact with the database and get some data, we can and should do this using a plugin. More about plugins and how they interact `HERE <>_`
+
+Step 8 - Setting up the Database Provider and Interface
+=======================================================
+The provider interface is a pretty common pattern in our codebase, so lets do what we usually do and take a look at an example. in swganh/character/character_provider_interface.h
+we can see a very similar thing to what we will need to do. In fact actually it looks like what we really want to do is just add to the character_provider_interface a function
+that will perform the required action. What we really want is a way to look up a character name to see if they exist, this sounds just like something the character provider should do for us.
+
+Lets open the character_provider_interface.h and add a few lines.
+::
+	virtual uint64_t GetCharacterIdByName(const std::string& name) = 0;
+
+Ok, now we need to update the existing mysql_character plugin to take into consideration this change.
+
+our mysql_character_provider.h has added this.
+::
+	virtual uint64_t GetCharacterIdByName(const std::string& name);
+
+and our mysql_character_provider.cc has filled in the details for this function.
+::
+	uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
+	{
+		uint64_t character_id = 0;
+		try {
+			auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+			auto statement = std::unique_ptr<sql::PreparedStatement>(
+				conn->prepareStatement("SELECT id FROM object where custom_name like ? and type_id = ?;")
+				);
+			statement->setString(1, name + '%');
+			statement->setUInt(2, swganh::object::player::Player::type);
+			auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+			if (result_set->next())
+			{
+			   character_id = result_set->getUInt64(1);
+			}
+
+		} catch(sql::SQLException &e) {
+			LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+			LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+		}
+		return character_id;
+	}
+
+Now lets set up the interaction with the character provider plugin and see what this looks like.
 ::
 
 	bool SocialService::AddFriend(const shared_ptr<Player>& player, const string& friend_name)
 	{
-		uint64_t friend_id = 0;
-		try {
-			auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
-			auto statement = std::shared_ptr<sql::PreparedStatement>(
-				conn->prepareStatement("SELECT id FROM object where custom_name like '%?%';")
-				);
-			statement->setString(1, friend_name);
-			auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
-			if (result_set->next())
-			{
-			   friend_id = result_set->getUInt64(1);
-			}
-
-		} catch(sql::SQLException &e) {
-			BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-			BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-		}
+		uint64_t friend_id = character_provider_->GetCharacterIdByName(friend_name);
 		/// If we found our friend, lets add them to our friends list (which will get updated by the player)
 		if (friend_id > 0)
 		{
@@ -216,13 +244,17 @@ Our code now looks like the following
 			// This persists the player object immediately.
 			kernel()->GetServiceManager()->GetService<swganh::simulation::SimulationService>
 				("SimulationService")->PersistObject(player->GetObjectId());
+
 			return true;
 		}
 
 		return false;
 	}
 
-Step 8 - Registering the Service
+That is quite easy to follow and very modular, we can change what we are using to actually get the Character Id without having to rework this code.
+This is a huge advantage of interfaces and why you see them in our codebase so frequently. Please check out the full social_service.h and .cc for more details.
+
+Step 9 - Registering the Service
 ================================
 
 Now that we have a service created and compiling, we can add it to our server startup process.
@@ -242,7 +274,7 @@ Lets add this in under the last service there:
 			
 Now we'll build the server, all should be good.
 
-Step 9 - Setting up bindings
+Step 10 - Setting up bindings
 ============================
 
 Now that we've created a very simple service with a very simple API, we want to expose this to Python to use in our script.
@@ -289,7 +321,7 @@ This will be used to expose all services out to Python. We will be using the Sim
 This is actually pretty complicated code and there is a lot of magic going on behind the scenes, but all we need to know is that we are exposing the
 service to python as a shared_ptr. We can literally replace simulation with social and this will work as expected.
 
-Step 10 - Back to the script!
+Step 11 - Back to the script!
 =============================
 
 Ok, so now we know that we need to use the social service that we set up to add a friend. We also know through our documentation that we can

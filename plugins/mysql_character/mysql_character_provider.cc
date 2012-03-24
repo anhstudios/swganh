@@ -49,6 +49,8 @@
 #include "swganh/messages/client_random_name_request.h"
 #include "swganh/messages/client_random_name_response.h"
 
+#include "swganh/object/player/player.h"
+
 
 #include "anh/logger.h"
 
@@ -327,4 +329,27 @@ std::string MysqlCharacterProvider::setCharacterCreateErrorCode_(uint32_t error_
         break;
     }
     return error_string;
+}
+
+uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
+{
+    uint64_t character_id = 0;
+    try {
+        auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
+        auto statement = std::unique_ptr<sql::PreparedStatement>(
+            conn->prepareStatement("SELECT id FROM object where custom_name like ? and type_id = ?;")
+            );
+        statement->setString(1, name + '%');
+        statement->setUInt(2, swganh::object::player::Player::type);
+        auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
+        if (result_set->next())
+        {
+           character_id = result_set->getUInt64(1);
+        }
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+    return character_id;
 }
