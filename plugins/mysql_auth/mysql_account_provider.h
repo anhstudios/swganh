@@ -18,32 +18,32 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_
-#define SWGANH_CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_
+#ifndef MYSQL_AUTH_ACCOUNT_PROVIDER_H_
+#define MYSQL_AUTH_ACCOUNT_PROVIDER_H_
 
-#include "swganh/connection/providers/session_provider_interface.h"
-#include <memory>
+#include "swganh/login/providers/account_provider_interface.h"
 
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
-namespace swganh {
-namespace connection {
-namespace providers {
+namespace plugins {
+namespace mysql_auth {
 
-class MysqlSessionProvider : public SessionProviderInterface {
+class MysqlAccountProvider : public swganh::login::providers::AccountProviderInterface {
 public:
-    explicit MysqlSessionProvider(anh::database::DatabaseManagerInterface* db_manager);
-    ~MysqlSessionProvider();
+    explicit MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager);
+    ~MysqlAccountProvider();
 
-    virtual uint64_t GetPlayerId(uint32_t account_id);
-    virtual uint32_t GetAccountId(uint64_t player_id);
-    virtual bool CreateGameSession(uint64_t player_id, uint32_t session_id);
-	virtual void EndGameSession(uint64_t player_id);
+    virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
+    virtual uint32_t FindBySessionKey(const std::string& session_key);
+    virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
+    virtual bool AutoRegisterAccount(std::string username, std::string password);
+	virtual bool CreatePlayerAccount(uint64_t account_id);
+	
 private:
     anh::database::DatabaseManagerInterface* db_manager_;
 };
 
-}}}  // namespace swganh::connection::providers
+}}  // namespace plugins::mysql_auth
 
-#endif  // SWGANH_CONNECTION_PROVIDERS_MYSQL_SESSION_PROVIDER_H_
+#endif  // MYSQL_AUTH_ACCOUNT_PROVIDER_H_

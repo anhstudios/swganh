@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "swganh/login/providers/mysql_account_provider.h"
+#include "mysql_account_provider.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -36,7 +36,7 @@
 
 using namespace swganh::login;
 using namespace providers;
-using namespace swganh::login;
+using namespace plugins::mysql_auth;
 using namespace std;
 
 MysqlAccountProvider::MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager)

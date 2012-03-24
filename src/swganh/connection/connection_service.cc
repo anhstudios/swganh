@@ -16,7 +16,7 @@
 
 #include "swganh/connection/ping_server.h"
 #include "swganh/connection/connection_client.h"
-#include "swganh/connection/providers/mysql_session_provider.h"
+#include "swganh/connection/providers/session_provider_interface.h"
 
 #include "swganh/object/object.h"
 #include "swganh/object/player/player.h"
@@ -57,7 +57,7 @@ ConnectionService::ConnectionService(
     session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
     if (!session_provider_)
     {
-        session_provider_ = make_shared<providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
+        throw new std::runtime_error("No plugin found for: ConnectionService::SessionProvider, check config");
     }
 }
 

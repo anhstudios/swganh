@@ -45,8 +45,8 @@
 
 #include "swganh/login/authentication_manager.h"
 #include "swganh/login/login_client.h"
-#include "swganh/login/encoders/sha512_encoder.h"
-#include "swganh/login/providers/mysql_account_provider.h"
+#include "swganh/login/providers/account_provider_interface.h"
+#include "swganh/login/encoders/encoder_interface.h"
 
 using namespace anh;
 using namespace app;
@@ -73,12 +73,12 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, KernelIn
     account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
     if (!account_provider_)
     {
-        account_provider_ = make_shared<providers::MysqlAccountProvider>(kernel->GetDatabaseManager());
+        throw new std::exception("LoginService::AccountProvider plugin does not exist, please check config");
     }
 
     shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
     if (!encoder) {
-        encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
+        throw new std::exception("LoginService::Encoder plugin does not exist, please check config");
     }
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
