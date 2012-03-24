@@ -28,7 +28,6 @@ using boost::program_options::variables_map;
 
 extern "C" PLUGIN_API void ExitModule() 
 {
-    cout << "hi";
     return;
 }
 
@@ -40,14 +39,19 @@ extern "C" PLUGIN_API  void ConfigurePlugin(options_description& description)
 
 extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel) 
 {    
-    cout << "Made it to InitializePlugin";
     ObjectRegistration registration;
-    registration.version.major = 1;
-    registration.version.minor = 0;
+    registration.version.major = 0;
+    registration.version.minor = 4;
 
     // Register
     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
         return new Sha512Encoder(kernel->GetDatabaseManager());
+    };
+
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete static_cast<Sha512Encoder*>(object);
+        }
     };
 
     kernel->GetPluginManager()->RegisterObject("LoginService::Encoder", &registration);
