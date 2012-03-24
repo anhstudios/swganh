@@ -112,8 +112,8 @@ Run the following commands to generate the project and build the source.
 
 ::
 
-    mkdir build
-    cd build
+    mkdir swganh/build
+    cd swganh/build
     cmake -G "Visual Studio 11" ..
     cmake --build .
 
@@ -157,8 +157,8 @@ Configuring and Running the Server
 
 You are now entering the home stretch, all that's left is to update the SWGANH configuration and kick off the server.
 
-Open the *C:/workspace/swganh/build/Debug/config/swganh.cfg* file and edit the following items. First update the mysql database connection information with the address and user you used to setup the database in the previous section.
+Open the *C:/workspace/swganh/build/bin/Debug/config/swganh.cfg* file and edit the following items. First update the mysql database connection information with the address and user you used to setup the database in the previous section.
 
 Next, set the address in the *service.connection* section to your public facing IP and then save and close the file.
 
-You can now kick off the server by running the swganh.exe at *C:/workspace/swganh/build/Debug/swganh.exe*.
+You can now kick off the server by running the swganh.exe at *C:/workspace/swganh/build/bin/Debug/swganh.exe*.
