@@ -22,6 +22,7 @@
 #define SWGANH_MESSAGES_GAME_SCENE_CHANGED_H_
 
 #include <cstdint>
+#include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
@@ -32,14 +33,17 @@ struct GameSceneChanged : public swganh::messages::BaseSwgMessage<GameSceneChang
 	static uint16_t opcount() { return 3; }
 	static uint32_t opcode() { return 0x934BAEE0; }
 	
-	uint32_t available_status_flag; // 0 = article available, 1 = article unable to be retrieved
+	uint32_t article_text_flag; // 0 = display the article text, 1 = article unable to be retrieved
+	std::wstring article_text;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(available_status_flag);
+		buffer.write(article_text_flag);
+		buffer.write(article_text);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		available_status_flag = buffer.read<uint32_t>();
+		article_text_flag = buffer.read<uint32_t>();
+		article_text = buffer.read<std::wstring>();
 	}
 };
 
