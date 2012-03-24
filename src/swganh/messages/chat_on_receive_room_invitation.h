@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_CHAT_ON_LEAVE_ROOM_H_
-#define SWGANH_MESSAGES_CHAT_ON_LEAVE_ROOM_H_
+#ifndef SWGANH_MESSAGES_CHAT_ON_RECEIVE_ROOM_INVITATION_H_
+#define SWGANH_MESSAGES_CHAT_ON_RECEIVE_ROOM_INVITATION_H_
 
 #include <cstdint>
 #include <string>
@@ -29,36 +29,30 @@
 namespace swganh {
 namespace messages {
 
-struct ChatOnLeaveRoom : public swganh::messages::BaseSwgMessage<ChatOnLeaveRoom> {
+struct ChatOnReceiveRoomInvitation : public swganh::messages::BaseSwgMessage<ChatOnReceiveRoomInvitation> {
 	static uint16_t opcount() { return 3; }
-	static uint32_t opcode() { return 0x60B5098B; }
+	static uint32_t opcode() { return 0xC17EB06D; }
 
 	std::string game_name; // default: SWG
 	std::string server_name; // galaxy name
-	std::string character_name;
-	uint32_t error;
-	uint32_t channel_id;
-	uint32_t request_id;
+	std::string system_string; // arbitrary: "system"
+	std::string channel_name;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(game_name);
 		buffer.write(server_name);
-		buffer.write(character_name);
-		buffer.write(error);
-		buffer.write(channel_id);
-		buffer.write(request_id);
+		buffer.write(system_string);
+		buffer.write(channel_name);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
 		game_name = buffer.read<std::string>();
 		server_name = buffer.read<std::string>();
-		character_name = buffer.read<std::string>();
-		error = buffer.read<uint32_t>();
-		channel_id = buffer.read<uint32_t>();
-		request_id = buffer.read<uint32_t>();
+		system_string = buffer.read<std::string>();
+		channel_name = buffer.read<std::string>();
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_CHAT_ON_LEAVE_ROOM_H_
+#endif // SWGANH_MESSAGES_CHAT_ON_RECEIVE_ROOM_INVITATION_H_
