@@ -30,8 +30,8 @@ namespace swganh {
 namespace messages {
 
 struct GuildResponseMessage : public swganh::messages::BaseSwgMessage<GuildResponseMessage> {
-	static uint16_t opcount() { return 3; }
-	static uint32_t opcode() { return 0x934BAEE0; }
+	static uint16_t opcount() { return 1; }
+	static uint32_t opcode() { return 0x32263F20; }
 	
 	uint64_t guild_id;
 	std::string guild_name;
