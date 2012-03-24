@@ -13,6 +13,11 @@
 #include "anh/app/kernel_interface.h"
 
 namespace swganh {
+namespace tre {
+    class TreArchive;
+}}  // namespace swganh::tre
+
+namespace swganh {
 namespace app {
 
 /*!
@@ -23,6 +28,7 @@ struct AppConfig {
     std::vector<std::string> plugins;
     std::string plugin_directory;
     std::string galaxy_name;
+    std::string tre_config;
 
     /*!
     * @Brief Contains information about the database config"
@@ -77,6 +83,8 @@ public:
     
     boost::asio::io_service& GetIoService();
 
+    swganh::tre::TreArchive* GetTreArchive();
+
 private:
     anh::app::Version version_;
     swganh::app::AppConfig app_config_;
@@ -86,6 +94,7 @@ private:
     std::unique_ptr<anh::plugin::PluginManager> plugin_manager_;
     std::unique_ptr<anh::service::ServiceManager> service_manager_;
     std::unique_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
+    std::unique_ptr<swganh::tre::TreArchive> tre_archive_;
 
     boost::asio::io_service io_service_;
 };

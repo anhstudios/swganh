@@ -56,6 +56,8 @@ options_description AppConfig::BuildConfigDescription() {
         ("plugin_directory", value<string>(&plugin_directory)->default_value("plugins"),
             "Directory containing the application plugins")
 
+        ("tre_config", "File containing the tre configuration (live.cfg)")
+
         ("galaxy_name", boost::program_options::value<std::string>(&galaxy_name),
             "Name of the galaxy (cluster) to this process should run")
 
@@ -138,6 +140,9 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
         app_config.galaxy_db.password);
     
     CleanupServices_();
+
+    // Load the tre archive and prepare it for use.
+
 
     // Load the plugin configuration.
     LoadPlugins_(app_config.plugins);

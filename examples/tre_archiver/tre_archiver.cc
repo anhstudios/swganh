@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 
     auto stop_time = chrono::high_resolution_clock::now();
 
-    cout << "Duration: " << 
+    cout << "Duration: " <<
         chrono::duration_cast<chrono::milliseconds>
             (stop_time - start_time).count() << "ms" << endl;
 
