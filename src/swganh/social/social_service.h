@@ -23,7 +23,7 @@ namespace social {
     class SocialService : public swganh::base::BaseService
     {
     public:
-        explicit SocialService(anh::app::KernelInterface* kernel);
+        explicit SocialService(swganh::app::SwganhKernel* kernel);
     
         ~SocialService();
 

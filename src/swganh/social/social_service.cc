@@ -32,9 +32,10 @@ using namespace swganh::social;
 
 using anh::app::KernelInterface;
 using anh::service::ServiceDescription;
+using swganh::app::SwganhKernel;
 using swganh::base::BaseService;
 
-SocialService::SocialService(KernelInterface* kernel)
+SocialService::SocialService(SwganhKernel* kernel)
     : BaseService(kernel)
 {}
 

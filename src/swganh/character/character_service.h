@@ -35,11 +35,6 @@
 #include "swganh/messages/client_random_name_request.h"
 #include "swganh/messages/client_random_name_response.h"
 
-namespace anh {
-namespace app {
-class KernelInterface;
-}}  // namespace anh::app
-
 namespace anh { namespace database { class DatabaseManagerInterface; } }
 
 namespace swganh {
@@ -57,7 +52,7 @@ namespace character {
     
 class CharacterService : public swganh::base::BaseService {
 public:
-    explicit CharacterService(anh::app::KernelInterface* kernel);
+    explicit CharacterService(swganh::app::SwganhKernel* kernel);
     ~CharacterService();
     
     anh::service::ServiceDescription GetServiceDescription();

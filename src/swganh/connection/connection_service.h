@@ -49,7 +49,7 @@ public:
         std::string listen_address, 
         uint16_t listen_port, 
         uint16_t ping_port, 
-        anh::app::KernelInterface* kernel);
+        swganh::app::SwganhKernel* kernel);
 
     anh::service::ServiceDescription GetServiceDescription();
     

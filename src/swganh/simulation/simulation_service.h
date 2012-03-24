@@ -27,7 +27,7 @@ namespace simulation {
     class SimulationService : public swganh::base::BaseService
     {
     public:
-        explicit SimulationService(anh::app::KernelInterface* kernel);
+        explicit SimulationService(swganh::app::SwganhKernel* kernel);
     
         ~SimulationService();
 
@@ -36,7 +36,7 @@ namespace simulation {
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
 
-        void RegisterObjectFactories(anh::app::KernelInterface* kernel);
+        void RegisterObjectFactories();
 
         void PersistObject(uint64_t object_id);
 		/*

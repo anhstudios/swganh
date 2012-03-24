@@ -43,8 +43,8 @@ using namespace swganh::network;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
-using anh::app::KernelInterface;
 using anh::service::ServiceDescription;
+using swganh::app::SwganhKernel;
 using swganh::base::BaseService;
 
 namespace swganh {
@@ -52,7 +52,7 @@ namespace simulation {
 
 class SimulationServiceImpl {
 public:
-    SimulationServiceImpl(KernelInterface* kernel)
+    SimulationServiceImpl(swganh::app::SwganhKernel* kernel)
         : kernel_(kernel)
     {
     }
@@ -340,7 +340,7 @@ private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManager> scene_manager_;
     shared_ptr<MovementManager> movement_manager_;
-    KernelInterface* kernel_;
+    SwganhKernel* kernel_;
 
     ObjControllerHandlerMap controller_handlers_;
 
@@ -350,7 +350,7 @@ private:
 
 }}  // namespace swganh::simulation
 
-SimulationService::SimulationService(KernelInterface* kernel)
+SimulationService::SimulationService(SwganhKernel* kernel)
     : BaseService(kernel)
     , impl_(new SimulationServiceImpl(kernel))
 {}
@@ -377,16 +377,16 @@ void SimulationService::StartScene(const std::string& scene_label)
     impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel()->GetDatabaseManager()->getConnection("galaxy"));
     impl_->GetSceneManager()->StartScene(scene_label);
     // load factories
-    RegisterObjectFactories(kernel());
+    RegisterObjectFactories();
 }
 
 void SimulationService::StopScene(const std::string& scene_label)
 {
     impl_->GetSceneManager()->StopScene(scene_label);
 }
-void SimulationService::RegisterObjectFactories(anh::app::KernelInterface* kernel)
+void SimulationService::RegisterObjectFactories()
 {
-        auto db_manager = kernel->GetDatabaseManager();
+        auto db_manager = kernel()->GetDatabaseManager();
         impl_->GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager, this));
         impl_->GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager, this));
         impl_->GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager, this));

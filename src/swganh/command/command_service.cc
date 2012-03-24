@@ -3,8 +3,6 @@
 
 #include <cctype>
 
-#include "anh/app/kernel_interface.h"
-
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -17,6 +15,8 @@
 #include "anh/event_dispatcher.h"
 #include "anh/database/database_manager_interface.h"
 #include "anh/service/service_manager.h"
+
+#include "swganh/app/swganh_kernel.h"
 
 #include "swganh/command/command_filter.h"
 
@@ -45,8 +45,9 @@ using namespace swganh::simulation;
 
 using boost::asio::deadline_timer;
 using boost::posix_time::milliseconds;
+using swganh::app::SwganhKernel;
 
-CommandService::CommandService(KernelInterface* kernel)
+CommandService::CommandService(SwganhKernel* kernel)
 : BaseService(kernel)
 {}
 
@@ -224,22 +225,22 @@ void CommandService::LoadProperties()
 {
     try {
         auto db_manager = kernel()->GetDatabaseManager();
-
+        
         auto conn = db_manager->getConnection("galaxy");
         auto statement =  unique_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_LoadCommandProperties();"));
-
+        
         auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-
+        
         while (result->next())
         {
             CommandProperties properties;
-
+        
             properties.name = result->getString("name");
-
+        
             string tmp = properties.name;
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             properties.name_crc = anh::memcrc(tmp);
-
+        
             properties.ability = result->getString("ability");
             properties.ability_crc = anh::memcrc(properties.ability);
             properties.deny_in_states = result->getUInt64("deny_in_states");
@@ -277,9 +278,9 @@ void CommandService::LoadProperties()
             properties.extended_range = static_cast<float>(result->getDouble("extended_range"));
             properties.cone_angle = static_cast<float>(result->getDouble("cone_angle"));
             properties.deny_in_locomotion = result->getUInt64("deny_in_locomotion");
-
+        
             RegisterCommandScript(properties);
-
+        
             command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
         }
 
