@@ -144,7 +144,7 @@ FUNCTION(AddANHPlugin name)
     ENDIF()
 	    
     # Create the Common library
-    ADD_LIBRARY(${name} SHARED ${SOURCES})    
+    ADD_LIBRARY(${name} MODULE ${SOURCES})    
     
     # If a project library was created link to it
     IF(DEFINED __project_library)
