@@ -37,6 +37,8 @@
 #include "anh/service/service_manager.h"
 #include "anh/plugin/plugin_manager.h"
 
+#include "swganh/character/character_provider_interface.h"
+
 #include "swganh/login/messages/enumerate_character_id.h"
 #include "swganh/login/messages/error_message.h"
 #include "swganh/login/messages/login_client_token.h"
@@ -79,6 +81,12 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, KernelIn
     shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
     if (!encoder) {
         throw new std::exception("LoginService::Encoder plugin does not exist, please check config");
+    }
+
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+    if (!character_provider_)
+    {
+        throw new std::exception("CharacterService::CharacterProvider plugin does not exist, please check config");
     }
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
@@ -318,7 +326,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& logi
     login_client->SendTo(
         messages::BuildLoginClusterStatus(galaxy_status_));
 
-    auto characters = character_service_->GetCharactersForAccount(login_client->GetAccount()->account_id());
+    auto characters = character_provider_->GetCharactersForAccount(login_client->GetAccount()->account_id());
 
     login_client->SendTo(
         messages::BuildEnumerateCharacterId(characters));

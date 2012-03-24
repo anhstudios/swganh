@@ -18,31 +18,31 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
-#define SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
+#ifndef SWGANH_CHARACTER_CHARACTER_PROVIDER_INTERFACE_H_
+#define SWGANH_CHARACTER_CHARACTER_PROVIDER_INTERFACE_H_
 
 #include <cstdint>
 #include <tuple>
 #include <vector>
 
 #include "swganh/character/character_data.h"
-#include "connection/messages/client_create_character.h"
+#include "swganh/messages/client_create_character.h"
 
 namespace swganh {
 namespace character {
     
-class CharacterServiceInterface {
+class CharacterProviderInterface {
 public:
-    virtual ~CharacterServiceInterface() {}
+    virtual ~CharacterProviderInterface() {}
     
     virtual std::vector<CharacterData> GetCharactersForAccount(uint64_t account_id) = 0;
-    virtual CharacterLoginData GetLoginCharacter(uint64_t character_id) = 0;
-    virtual bool DeleteCharacter(uint64_t character_id) = 0;
+    virtual bool DeleteCharacter(uint64_t character_id, uint64_t account_id) = 0;
     virtual std::wstring GetRandomNameRequest(const std::string& base_model) = 0;
-    virtual std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info) = 0;
+    virtual std::tuple<uint64_t, std::string> CreateCharacter(const swganh::messages::ClientCreateCharacter& character_info, uint32_t account_id) = 0;
+    virtual uint16_t GetMaxCharacters(uint64_t player_id) = 0;
 };
 
 }}  // namespace swganh::character
 
-#endif  // SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
+#endif  // SWGANH_CHARACTER_CHARACTER_PROVIDER_INTERFACE_H_
 

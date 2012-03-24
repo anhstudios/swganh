@@ -14,6 +14,8 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/character/character_service.h"
+#include "swganh/character/character_provider_interface.h"
 #include "swganh/connection/ping_server.h"
 #include "swganh/connection/connection_client.h"
 #include "swganh/connection/providers/session_provider_interface.h"
@@ -58,6 +60,12 @@ ConnectionService::ConnectionService(
     if (!session_provider_)
     {
         throw new std::runtime_error("No plugin found for: ConnectionService::SessionProvider, check config");
+    }
+
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+    if (!character_provider_)
+    {
+        throw new std::exception("CharacterService::CharacterProvider plugin does not exist, please check config");
     }
 }
 
@@ -274,7 +282,7 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = kernel()->GetServiceDirectory()->galaxy().status();
-    client_permissions.available_character_slots = static_cast<uint8_t>(character_service()->GetMaxCharacters(account_id));
+    client_permissions.available_character_slots = static_cast<uint8_t>(character_provider_->GetMaxCharacters(account_id));
     /// @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 

@@ -17,7 +17,6 @@
 #include "swganh/base/base_service.h"
 #include "swganh/network/base_swg_server.h"
 
-#include "swganh/character/character_service.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
 #include "swganh/messages/cmd_scene_ready.h"
@@ -33,6 +32,12 @@ namespace network {
 namespace soe {
 class Server;
 }}}  // namespace anh::network::soe
+
+namespace swganh {
+namespace character {
+class CharacterProviderInterface;
+class CharacterService;
+}}
 
 namespace swganh {
 namespace connection {
@@ -100,7 +105,8 @@ private:
     std::shared_ptr<PingServer> ping_server_;
     
     std::shared_ptr<providers::SessionProviderInterface> session_provider_;
-    
+    std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
+
     std::weak_ptr<swganh::character::CharacterService> character_service_;
     std::weak_ptr<swganh::login::LoginService> login_service_;
     std::weak_ptr<swganh::simulation::SimulationService> simulation_service_;
