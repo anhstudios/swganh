@@ -33,7 +33,11 @@ struct NewbieTutorialResponse : public swganh::messages::BaseSwgMessage<NewbieTu
 	static uint16_t opcount() { return 2; }
 	static uint32_t opcode() { return 0xCA88FBAD; }
 	
-	std::string client_ready; // arbitrary string: "ClientReady"
+	std::string client_ready; // arbitrary string: "clientReady" (lowercase c, uppercase R)
+	
+	NewbieTutorialResponse()
+		: client_ready("clientReady")
+	{}
 	
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(client_ready);
