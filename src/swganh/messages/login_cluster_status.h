@@ -34,16 +34,16 @@ namespace swganh {
 namespace messages {
 
 struct ClusterServer {
-	uint32_t server_id;
-	std::string address;
-	uint16_t conn_port;
-	uint16_t ping_port;
-	uint32_t server_pop;
-	uint32_t max_pop;
-	uint32_t max_chars;
-	uint32_t distance;
-	uint32_t status;
-	uint8_t not_recommended_flag;
+    uint32_t server_id;
+    std::string address;
+    uint16_t conn_port;
+    uint16_t ping_port;
+    uint32_t server_pop;
+    uint32_t max_pop;
+    uint32_t max_chars;
+    uint32_t distance;
+    uint32_t status;
+    uint8_t not_recommended_flag;
 };
 
 struct LoginClusterStatus : public swganh::messages::BaseSwgMessage<LoginClusterStatus> {
@@ -53,8 +53,8 @@ struct LoginClusterStatus : public swganh::messages::BaseSwgMessage<LoginCluster
 	std::list<ClusterServer> servers;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write<uint32_t>(servers.size());
-		std::for_each(servers.begin(), servers.end(), [&buffer] (ClusterServer server) {
+        buffer.write<uint32_t>(servers.size());
+        std::for_each(servers.begin(), servers.end(), [&buffer] (ClusterServer server) {
             buffer.write<uint32_t>(server.server_id);
             buffer.write<std::string>(server.address);
             buffer.write<uint16_t>(server.conn_port);
@@ -65,7 +65,7 @@ struct LoginClusterStatus : public swganh::messages::BaseSwgMessage<LoginCluster
             buffer.write<uint32_t>(server.distance);
             buffer.write<uint32_t>(server.status);
             buffer.write<uint8_t>(server.not_recommended_flag);
-		});
+        });
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
@@ -87,7 +87,7 @@ struct LoginClusterStatus : public swganh::messages::BaseSwgMessage<LoginCluster
 	}
 };
 
-LoginClusterStatus BuildLoginClusterStatus(const std::vector<swganh::login::GalaxyStatus>& galaxy_status);
+LoginClusterStatus BuildLoginClusterStatus(const std::vector<login::GalaxyStatus>& galaxy_status);
 
 }} // namespace swganh::messages
 
