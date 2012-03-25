@@ -18,30 +18,27 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_LOGIN_ENCODERS_SHA512_ENCODER_H_
-#define SWGANH_LOGIN_ENCODERS_SHA512_ENCODER_H_
+#ifndef SWGANH_MESSAGES_ACCEPT_TRANSACTION_MESSAGE_H_
+#define SWGANH_MESSAGES_ACCEPT_TRANSACTION_MESSAGE_H_
 
-#include "swganh/login/encoders/encoder_interface.h"
-#include <memory>
-
-namespace anh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
+#include <cstdint>
+#include "anh/byte_buffer.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace login {
-namespace encoders {
+namespace messages {
 
-class Sha512Encoder : public EncoderInterface {
-public:
-    explicit Sha512Encoder(anh::database::DatabaseManagerInterface* db_manager);
-    ~Sha512Encoder();
-
-    std::string EncodePassword(std::string raw, std::string salt);
-    bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
-private:
-    anh::database::DatabaseManagerInterface* db_manager_;
+struct AcceptTransactionMessage : public swganh::messages::BaseSwgMessage<AcceptTransactionMessage> {
+	static uint16_t opcount() { return 1; }
+	static uint32_t opcode() { return 0xB131CA17; }
+	
+	void onSerialize(anh::ByteBuffer& buffer) const {
+	}
+	
+	void onDeserialize(anh::ByteBuffer buffer) {
+	}
 };
 
-}}}  // namespace swganh::login::encoders
+}} // namespace swganh::messages
 
-#endif  // SWGANH_LOGIN_ENCODERS_SHA512_ENCODER_H_
+#endif // SWGANH_MESSAGES_ACCEPT_TRANSACTION_MESSAGE_H_
