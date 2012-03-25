@@ -46,7 +46,6 @@ void * Win32Library::GetSymbol(const string& symbol) {
     if (!handle_) {
         return nullptr;
     }
-
     return ::GetProcAddress(handle_, symbol.c_str());
 }
 

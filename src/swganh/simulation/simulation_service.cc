@@ -3,9 +3,11 @@
 
 #include <boost/algorithm/string.hpp>
 
+#include "anh/byte_buffer.h"
 #include "anh/crc.h"
 #include "anh/service/service_manager.h"
 #include "anh/database/database_manager.h"
+#include "anh/network/soe/server_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -36,6 +38,7 @@
 
 #include "swganh/simulation/movement_manager.h"
 
+using namespace anh;
 using namespace std;
 using namespace swganh::connection;
 using namespace swganh::messages;
@@ -44,6 +47,7 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 using anh::app::KernelInterface;
+using anh::network::soe::ServerInterface;
 using anh::service::ServiceDescription;
 using swganh::base::BaseService;
 
@@ -336,11 +340,23 @@ public:
         scene->AddObject(object);
     }
 
+	void SendToAll(ByteBuffer message)
+	{
+		shared_ptr<Object> object;
+
+		for (Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<Object>>::iterator i = loaded_objects_.begin(); i != loaded_objects_.end(); ++i)
+		{
+			object = i->second;
+			object->GetController()->GetRemoteClient()->SendTo(message);
+		}
+	}
+
 private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManager> scene_manager_;
     shared_ptr<MovementManager> movement_manager_;
     KernelInterface* kernel_;
+	ServerInterface* server_;
 
     ObjControllerHandlerMap controller_handlers_;
 

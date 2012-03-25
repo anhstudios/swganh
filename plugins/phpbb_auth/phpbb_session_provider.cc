@@ -21,8 +21,7 @@ using namespace swganh::connection;
 PhpbbSessionProvider::PhpbbSessionProvider(
     DatabaseManagerInterface* database_manager,
     string table_prefix)
-    : MysqlSessionProvider(database_manager)
-    , database_manager_(database_manager)
+    : database_manager_(database_manager)
     , table_prefix_(table_prefix)
 {}
 
@@ -85,4 +84,74 @@ uint64_t PhpbbSessionProvider::FindPlayerByReferenceId_(uint64_t account_id)
     }
 
     return player_id;
+}
+
+
+bool PhpbbSessionProvider::CreateGameSession(uint64_t player_id, uint32_t session_id) {
+    bool updated = false;
+    // create new game session 
+    std::string game_session = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::local_time())
+        + boost::lexical_cast<std::string>(session_id);
+
+    try {
+        string sql = "INSERT INTO player_session(player,session_key) VALUES (?,?)";
+        auto conn = database_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt64(1, player_id);
+        statement->setString(2, game_session);
+        auto rows_updated = statement->executeUpdate();
+        
+        if (rows_updated > 0) {
+           updated = true;
+            
+        } else {
+            LOG(warning) << "Couldn't create session for player " << player_id << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+    return updated;
+}
+void PhpbbSessionProvider::EndGameSession(uint64_t player_id)
+{
+	try {
+        string sql = "DELETE FROM player_session where player = ?";
+        auto conn = database_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt64(1, player_id);
+        auto rows_updated = statement->executeUpdate();
+        
+        if (rows_updated <= 0) {
+            LOG(warning) << "Couldn't delete session for player " << player_id << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+uint32_t PhpbbSessionProvider::GetAccountId(uint64_t player_id) {
+    uint32_t account_id = 0;
+
+    try {
+        string sql = "select reference_id from player_account where id = ?";
+        auto conn = database_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt64(1, player_id);
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
+        
+        if (result_set->next()) {
+            account_id = result_set->getUInt("reference_id");
+            
+        } else {
+            LOG(warning) << "No account Id found for player id : " << player_id << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+    return account_id;
 }

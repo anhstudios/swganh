@@ -18,30 +18,31 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_GALAXY_PROVIDERS_MYSQL_GALAXY_PROVIDER_H_
-#define SWGANH_GALAXY_PROVIDERS_MYSQL_GALAXY_PROVIDER_H_
+#ifndef SWGANH_MESSAGES_GIVE_MONEY_MESSAGE_H_
+#define SWGANH_MESSAGES_GIVE_MONEY_MESSAGE_H_
 
-#include "swganh/galaxy/providers/galaxy_provider_interface.h"
-#include <memory>
-
-namespace anh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
+#include <cstdint>
+#include "anh/byte_buffer.h"
+#include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
-namespace galaxy {
-namespace providers {
+namespace messages {
 
-class MysqlGalaxyProvider : public GalaxyProviderInterface {
-public:
-    explicit MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager);
-    ~MysqlGalaxyProvider();
-
-	virtual uint32_t GetPopulation();
+struct GiveMoneyMessage : public swganh::messages::BaseSwgMessage<GiveMoneyMessage> {
+	static uint16_t opcount() { return 2; }
+	static uint32_t opcode() { return 0xD1527EE8; }
 	
-private:
-    anh::database::DatabaseManagerInterface* db_manager_;
+	uint32_t credit_amount;
+	
+	void onSerialize(anh::ByteBuffer& buffer) const {
+		buffer.write(credit_amount);
+	}
+	
+	void onDeserialize(anh::ByteBuffer buffer) {
+		credit_amount = buffer.read<uint32_t>();
+	}
 };
 
-}}}  // namespace swganh::galaxy::providers
+}} // namespace swganh::messages
 
-#endif  // SWGANH_GALAXY_PROVIDERS_MYSQL_GALAXY_PROVIDER_H_
+#endif // SWGANH_MESSAGES_GIVE_MONEY_MESSAGE_H_

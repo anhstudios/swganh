@@ -18,33 +18,29 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
-#define SWGANH_LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+#ifndef MYSQL_AUTH_ENCODERS_SHA512_ENCODER_H_
+#define MYSQL_AUTH_ENCODERS_SHA512_ENCODER_H_
 
-#include "swganh/login/providers/account_provider_interface.h"
+#include "swganh/login/encoders/encoder_interface.h"
+#include <memory>
 
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
-namespace swganh {
-namespace login {
-namespace providers {
+namespace plugins {
+namespace mysql_auth {
 
-class MysqlAccountProvider : public AccountProviderInterface {
+class Sha512Encoder : public swganh::login::encoders::EncoderInterface {
 public:
-    explicit MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager);
-    ~MysqlAccountProvider();
+    explicit Sha512Encoder(anh::database::DatabaseManagerInterface* db_manager);
+    ~Sha512Encoder();
 
-    virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
-    virtual uint32_t FindBySessionKey(const std::string& session_key);
-    virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
-    virtual bool AutoRegisterAccount(std::string username, std::string password);
-	virtual bool CreatePlayerAccount(uint64_t account_id);
-	
+    std::string EncodePassword(std::string raw, std::string salt);
+    bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
 private:
     anh::database::DatabaseManagerInterface* db_manager_;
 };
 
-}}}  // namespace swganh::login::providers
+}}  // namespace plugins::mysql_auth
 
-#endif  // SWGANH_LOGIN_PROVIDERS_MYSQL_ACCOUNT_PROVIDER_H_
+#endif  // MYSQL_AUTH_ENCODERS_SHA512_ENCODER_H_

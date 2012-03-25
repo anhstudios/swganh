@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "swganh/galaxy/providers/mysql_galaxy_provider.h"
+#include "mysql_galaxy_provider.h"
 
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
@@ -31,9 +31,7 @@
 
 #include "anh/database/database_manager.h"
 
-
-using namespace swganh::galaxy;
-using namespace providers;
+using namespace plugins::galaxy;
 using namespace std;
 
 MysqlGalaxyProvider::MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager)
