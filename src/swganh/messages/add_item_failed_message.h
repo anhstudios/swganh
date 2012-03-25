@@ -39,6 +39,7 @@ struct AddItemFailedMessage : public swganh::messages::BaseSwgMessage<AddItemFai
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
+		item_id = buffer.read<uint64_t>();
 	}
 };
 
