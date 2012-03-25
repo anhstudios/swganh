@@ -178,13 +178,17 @@ FUNCTION(AddANHLibrary name)
             ENDFOREACH()
         ENDIF()
 
+        if(PTHREAD_LIBRARY)
+            target_link_libraries(${name}_test ${PTHREAD_LIBRARY})
+        endif()
+
         IF(WIN32)
             # Create a custom built user configuration so that the "run in debug mode"
             # works without any issues.
     	    CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/tools/windows/user_project.vcxproj.in
     	        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tests.vcxproj.user @ONLY)
 
-            if(ENABLE_TEST_REPORT)                
+            if(ENABLE_TEST_REPORT)
                 foreach(configuration ${CMAKE_CONFIGURATION_TYPES})
                     add_test(
                         NAME all_${name}_tests_${configuration}
