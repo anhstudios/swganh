@@ -157,6 +157,8 @@ void LoginService::onStart() {
 
 void LoginService::onStop()
 {
+    // Remove all the sessions
+    account_provider_->EndSessions();
     Server::Shutdown();
 }
 
