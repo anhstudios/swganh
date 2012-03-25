@@ -51,6 +51,8 @@ private:
 	std::vector<std::string> reserved_names_;
 	std::vector<std::string> developer_names_;
 	std::vector<std::string> profane_names_;
+	std::vector<std::string> fictionally_reserved_names_;
+	std::vector<std::string> racially_inappropriate_;
 };
 
 }}  // namespace plugins::mysql_character
