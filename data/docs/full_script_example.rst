@@ -25,7 +25,7 @@ That we want to use the 'add_friend' function in the Player class.
 
 .. NOTE::
 
-	The way the SWG hierarchy works is that `Player <http://swganh.anhstudios.com/docs/Player.html>`_ is a seperate object than `Creature <http://swganh.anhstudios.com/docs/Creature.html>`_ 
+	The way the SWG hierarchy works is that `Player <http://swganh.anhstudios.com/docs/Player.html>`_ is a seperate object than `Creature <http://swganh.anhstudios.com/docs/Creature.html>`_
 	This means that the normal actor will not work to add a friend, we will need to get the `Player <http://swganh.anhstudios.com/docs/Player.html>`_ somehow.
 	This is done through another function `get_player <http://swganh.anhstudios.com/docs/Creature.html#swgpy.object.Creature.get_player>`_, this will return the player object and then we can continue.
 
@@ -75,7 +75,7 @@ My first run through for example I got a somewhat cryptic message in the server 
 
 	Python error:
 	SyntaxError: (`invalid syntax`, (`<string>`, 12, 6, `\telif:\n`))
-	
+
 Woah... what does this all mean? Python lets us know that it didn't like our script and something is definitely wrong here.
 Lets break it up piece by piece.
 
@@ -88,7 +88,7 @@ In reality this is me just making a dumb mistake, I realize that I should be usi
 Once i replace the elif with else:
 I get a different error, saying NoneType does not have method get_player
 The problem here is that our creature_target doesn't exist. I need to re-look at how add_friend is supposed to work...
-It looks like it just simply uses a name as a parameter. 
+It looks like it just simply uses a name as a parameter.
 
 Step 5 - Down the Rabbit Hole
 =============================
@@ -132,7 +132,7 @@ is going to inherit from swganh::base::BaseService. Our code looks little like t
     {
     public:
         explicit SocialService(anh::app::KernelInterface* kernel);
-    
+
         ~SocialService();
 
         anh::service::ServiceDescription GetServiceDescription();
@@ -143,7 +143,7 @@ is going to inherit from swganh::base::BaseService. Our code looks little like t
         void onStart();
 
     };
-	
+
 This sets up a very very basic structure, all we are doing here is just getting the service created, we will flesh it out later.
 Lets just do the same for the .cc file
 ::
@@ -171,7 +171,7 @@ Lets just do the same for the .cc file
 
 	void SocialService::onStart()
 	{
-		
+
 	}
 
 Ok, basic structure is in place.
@@ -186,7 +186,7 @@ so lets do that...
 	}
 
 
-Right now our function does nothing and just returns true. 
+Right now our function does nothing and just returns true.
 What we want to do is build out a simple interface as we know that this social service will end up doing a lot more than just adding a friend.
 We know that we need to interact with the database and get some data, we can and should do this using a plugin. More about plugins and how they interact `HERE <>_`
 
@@ -198,16 +198,19 @@ that will perform the required action. What we really want is a way to look up a
 
 Lets open the character_provider_interface.h and add a few lines.
 ::
+
 	virtual uint64_t GetCharacterIdByName(const std::string& name) = 0;
 
 Ok, now we need to update the existing mysql_character plugin to take into consideration this change.
 
 our mysql_character_provider.h has added this.
 ::
+
 	virtual uint64_t GetCharacterIdByName(const std::string& name);
 
 and our mysql_character_provider.cc has filled in the details for this function.
 ::
+
 	uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
 	{
 		uint64_t character_id = 0;
@@ -262,20 +265,19 @@ Lets open up swganh_app.cc this is quite a large file and really does a lot of t
 first we need to 'include' our file that we created, so the swganh app knows about it.
 #include "swganh/social/social_service.h"
 
-Next lets go down to where all the other services are loaded
-LoadCoreServices_
+Next lets go down to where all the other services are loaded: LoadCoreServices.
 
 Lets add this in under the last service there:
 ::
 
 	kernel_->GetServiceManager()->AddService(
-            "SocialService", 
+            "SocialService",
             make_shared<social::SocialService>(kernel_.get()));
-			
+
 Now we'll build the server, all should be good.
 
 Step 10 - Setting up bindings
-============================
+=============================
 
 Now that we've created a very simple service with a very simple API, we want to expose this to Python to use in our script.
 We do this through a process called binding. Fortunately most of the hard work is done for us with Boost.Python
@@ -298,14 +300,14 @@ Lets see what that looks like now. This is social_service_binding.h
 			.def("add_friend", &SocialService::AddFriend, "Checks the database to see if the character name exists and then adds the friend to the player")
 			;
 	}
-	
+
 As you can see this is a very simple example, we are using Boost.Python to basically create a python module which describes this C++ class and methods.
 Most services are going to be very similar to this, so this is a good template to go off.
 As you can see we have added in our 'AddFriend' method, this is to be expose to python as "add_friend"
 
 There is just one more step in order for this binding to work properly...
 We need to now add a way to get to this service. This is done in the ANH Core through a system called the Service Manager.
-Luckily we have an example to pull from on how to expose a service through this. 
+Luckily we have an example to pull from on how to expose a service through this.
 We will be opening up swganh_kernel_binding.h in app_binding.
 
 This will be used to expose all services out to Python. We will be using the SimulationService as an example to copy from.
@@ -356,13 +358,13 @@ Building out our script a little more it now looks like this
 				actor.Controller().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_added', swgpy.ProseType.TT, friend_request_name), False, False)
 			else:
 				print(added)
-				actor.Controller().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_not_found', swgpy.ProseType.TT, friend_request_name), False, False)	
+				actor.Controller().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_not_found', swgpy.ProseType.TT, friend_request_name), False, False)
 		else:
 			print(added)
 			actor.Controller().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_duplicate', swgpy.ProseType.TT, friend_request_name), False, False)
 	else:
 		print('Player object not found for object id' + actor.id)
-		
+
 And we run it in our server and now we get a response, saying that our friend was added (if he exists on the server)!
 
 There are more things to keep in mind such as checking the ignore list, checking to see if the added friend is online and sending a message update.
