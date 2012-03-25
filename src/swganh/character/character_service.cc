@@ -111,9 +111,10 @@ void CharacterService::HandleClientCreateCharacter_(const std::shared_ptr<Connec
     string error_code;
 	bool name_check;
 	string name_check_error_code;
+	string name = std::string(message.character_name.begin(), message.character_name.end());
 	
 	// Profanity/Reserve/Developer/ect... name check.
-	tie(name_check, name_check_error_code) = character_provider_->IsNameAllowed(std::string(message.character_name.begin(), message.character_name.end()));
+	tie(name_check, name_check_error_code) = character_provider_->IsNameAllowed(name);
 	if(!name_check) // Failed Name Check
 	{
 		ClientCreateCharacterFailed failed;
