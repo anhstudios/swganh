@@ -18,41 +18,29 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "swganh/galaxy/galaxy_service.h"
+#ifndef PLUGINS_MYSQL_GALAXY_PROVIDER_H_
+#define PLUGINS_MYSQL_GALAXY_PROVIDER_H_
 
-#include "anh/app/kernel_interface.h"
-#include "anh/plugin/plugin_manager.h"
-
-#include "swganh/app/swganh_kernel.h"
 #include "swganh/galaxy/providers/galaxy_provider_interface.h"
+#include <memory>
 
-using namespace anh;
-using namespace app;
-using namespace service;
-using namespace swganh::app;
-using namespace swganh::galaxy;
-using namespace std;
+namespace anh { namespace database { class DatabaseManagerInterface; 
+}}  // anh::database
 
-GalaxyService::GalaxyService(anh::app::KernelInterface* kernel)
-    : BaseService(kernel)
-{
-	galaxy_provider_ = kernel->GetPluginManager()->CreateObject<providers::GalaxyProviderInterface>("GalaxyService::GalaxyProvider");
-}
+namespace plugins {
+namespace galaxy {
 
-ServiceDescription GalaxyService::GetServiceDescription()
-{
-	ServiceDescription service_description(        
-		"ANH Galaxy Service",
-        "galaxy",
-        "0.1",
-        "127.0.0.1", 
-        0,
-        0, 
-        0);
-	return service_description;
-}
+class MysqlGalaxyProvider : public swganh::galaxy::providers::GalaxyProviderInterface {
+public:
+    explicit MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager);
+    ~MysqlGalaxyProvider();
 
-uint32_t GalaxyService::GetPopulation()
-{
-	return galaxy_provider_->GetPopulation();
-}
+	virtual uint32_t GetPopulation();
+	
+private:
+    anh::database::DatabaseManagerInterface* db_manager_;
+};
+
+}}  // namespace swganh::galaxy::providers
+
+#endif  // PLUGINS_MYSQL_GALAXY_PROVIDER_H_

@@ -13,6 +13,7 @@ Contents:
    
    Scripting in SWGANH <intro>
    Script Example <script_example>
+   Plugins, Managers, and Services <plugins_managers_services>
    
    SWGANH Python Objects <objects>
    SWGANH Python Services <Services>
