@@ -20,11 +20,11 @@
 
 #include "swganh/messages/enumerate_character_id.h"
 
-using namespace swganh::login;
+using namespace swganh::character;
 using namespace swganh::messages;
 using namespace std;
 
-EnumerateCharacterId swganh::messages::BuildEnumerateCharacterId(std::vector<swganh::character::CharacterData> characters) {
+EnumerateCharacterId BuildEnumerateCharacterId(std::vector<CharacterData> characters) {
 	EnumerateCharacterId message;
 	
 	message.characters = move(characters);
