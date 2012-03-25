@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_CHAT_CREATE_ROOM_H_
-#define SWGANH_MESSAGES_CHAT_CREATE_ROOM_H_
+#ifndef SWGANH_MESSAGES_CHAT_REMOVE_AVATAR_FROM_ROOM_H_
+#define SWGANH_MESSAGES_CHAT_REMOVE_AVATAR_FROM_ROOM_H_
 
 #include <cstdint>
 #include <string>
@@ -29,36 +29,30 @@
 namespace swganh {
 namespace messages {
 
-struct ChatCreateRoom : public swganh::messages::BaseSwgMessage<ChatCreateRoom> {
-	static uint16_t opcount() { return 7; }
-	static uint32_t opcode() { return 0x35366BED; }
+struct ChatRemoveAvatarFromRoom : public swganh::messages::BaseSwgMessage<ChatRemoveAvatarFromRoom> {
+	static uint16_t opcount() { return 3; }
+	static uint32_t opcode() { return 0x493E3FFA; }
 
-	uint8_t public_flag; // 0 = private, 1 = public
-	uint8_t moderation_flag; // 0 = not moderated, 1 = moderated
-	uint16_t unknown;
-	std::string channel_path; // path to the channel, e.g. "swg/server/tatooine/<channel_name>"
-	std::string channel_name;
-	uint32_t attempts_counter;
+	std::string game_name; // default: SWG
+	std::string server_name; // galaxy name
+	std::string character_name;
+	std::string channel_path; // path to the channel, e.g. "swg/server/tatooine/<channel_name>" (presumably exclude channel_name)
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(public_flag);
-		buffer.write(moderation_flag);
-		buffer.write(unknown);
+		buffer.write(game_name);
+		buffer.write(server_name);
+		buffer.write(character_name);
 		buffer.write(channel_path);
-		buffer.write(channel_name);
-		buffer.write(attempts_counter);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		public_flag = buffer.read<uint8_t>();
-		moderation_flag = buffer.read<uint8_t>();
-		unknown = buffer.read<uint16_t>();
+		game_name = buffer.read<std::string>();
+		server_name = buffer.read<std::string>();
+		character_name = buffer.read<std::string>();
 		channel_path = buffer.read<std::string>();
-		channel_name = buffer.read<std::string>();
-		attempts_counter = buffer.read<uint32_t>();
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_CHAT_CREATE_ROOM_H_
+#endif // SWGANH_MESSAGES_CHAT_REMOVE_AVATAR_FROM_ROOM_H_
