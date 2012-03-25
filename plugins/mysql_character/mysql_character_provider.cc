@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -62,7 +62,17 @@ using namespace plugins::mysql_character;
 using namespace swganh::character;
 using namespace swganh::messages;
 
-MysqlCharacterProvider::MysqlCharacterProvider(KernelInterface* kernel) 
+#ifdef WIN32
+using std::wregex;
+using std::wsmatch;
+using std::regex_match;
+#else
+using boost::wregex;
+using boost::wsmatch;
+using boost::regex_match;
+#endif
+
+MysqlCharacterProvider::MysqlCharacterProvider(KernelInterface* kernel)
     : CharacterProviderInterface()
     , kernel_(kernel) {}
 
