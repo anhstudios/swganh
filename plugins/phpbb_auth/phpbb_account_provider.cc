@@ -114,3 +114,16 @@ bool PhpbbAccountProvider::CreateAccountSession(uint32_t account_id, const std::
 
     return success;
 }
+void PhpbbAccountProvider::EndSessions()
+{
+    try {
+        string sql = "delete from account_session";
+        auto conn = database_manager_->getConnection("galaxy_manager");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        int rows_updated = statement->executeUpdate();
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
