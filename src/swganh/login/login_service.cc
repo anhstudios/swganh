@@ -37,11 +37,11 @@
 #include "anh/service/service_manager.h"
 #include "anh/plugin/plugin_manager.h"
 
-#include "swganh/login/messages/enumerate_character_id.h"
-#include "swganh/login/messages/error_message.h"
-#include "swganh/login/messages/login_client_token.h"
-#include "swganh/login/messages/login_cluster_status.h"
-#include "swganh/login/messages/login_enum_cluster.h"
+#include "swganh/messages/enumerate_character_id.h"
+#include "swganh/messages/error_message.h"
+#include "swganh/messages/login_client_token.h"
+#include "swganh/messages/login_cluster_status.h"
+#include "swganh/messages/login_enum_cluster.h"
 
 #include "swganh/login/authentication_manager.h"
 #include "swganh/login/login_client.h"
@@ -51,7 +51,7 @@
 using namespace anh;
 using namespace app;
 using namespace swganh::login;
-using namespace messages;
+using namespace swganh::messages;
 using namespace network::soe;
 using namespace swganh::login;
 using namespace swganh::base;
@@ -310,18 +310,18 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& logi
 
     account_provider_->CreateAccountSession(account->account_id(), account_session);
     login_client->SendTo(
-        messages::BuildLoginClientToken(login_client, account_session));
+        BuildLoginClientToken(login_client, account_session));
 
     login_client->SendTo(
-        messages::BuildLoginEnumCluster(login_client, galaxy_status_));
+        BuildLoginEnumCluster(login_client, galaxy_status_));
 
     login_client->SendTo(
-        messages::BuildLoginClusterStatus(galaxy_status_));
+        BuildLoginClusterStatus(galaxy_status_));
 
     auto characters = character_service_->GetCharactersForAccount(login_client->GetAccount()->account_id());
 
     login_client->SendTo(
-        messages::BuildEnumerateCharacterId(characters));
+        BuildEnumerateCharacterId(characters));
 }
 
 uint32_t LoginService::GetAccountBySessionKey(const string& session_key) {

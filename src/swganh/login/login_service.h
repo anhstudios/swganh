@@ -40,7 +40,7 @@
 #include "swganh/login/login_client.h"
 
 #include "swganh/login/galaxy_status.h"
-#include "swganh/login/messages/login_client_id.h"
+#include "swganh/messages/login_client_id.h"
 
 namespace anh {
 namespace network {
@@ -105,7 +105,7 @@ private:
 
     void subscribe();
     
-    void HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const messages::LoginClientId& message);
+    void HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const swganh::messages::LoginClientId& message);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
