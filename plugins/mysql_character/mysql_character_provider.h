@@ -41,7 +41,7 @@ public:
     virtual std::wstring GetRandomNameRequest(const std::string& base_model);
     virtual uint16_t GetMaxCharacters(uint64_t player_id);
     virtual std::tuple<uint64_t, std::string> CreateCharacter(const swganh::messages::ClientCreateCharacter& character_info, uint32_t account_id);
-
+	virtual std::tuple<bool, std::string> IsNameAllowed(const std::string& name);
     virtual uint64_t GetCharacterIdByName(const std::string& name);
 
 private:

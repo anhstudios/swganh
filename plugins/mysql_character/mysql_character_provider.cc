@@ -363,3 +363,8 @@ uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
     }
     return character_id;
 }
+
+std::tuple<bool, std::string> MysqlCharacterProvider::IsNameAllowed(const std::string& name)
+{
+	return std::tuple<bool, std::string>(true, "");
+}

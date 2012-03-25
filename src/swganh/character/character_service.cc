@@ -109,6 +109,20 @@ void CharacterService::HandleClientCreateCharacter_(const std::shared_ptr<Connec
     
     uint64_t character_id;
     string error_code;
+	bool name_check;
+	string name_check_error_code;
+	
+	// Profanity/Reserve/Developer/ect... name check.
+	tie(name_check, name_check_error_code) = character_provider_->IsNameAllowed(std::string(message.character_name.begin(), message.character_name.end()));
+	if(!name_check) // Failed Name Check
+	{
+		ClientCreateCharacterFailed failed;
+		failed.stf_file = "ui";
+		failed.error_string = name_check_error_code;
+		client->SendTo(failed);
+		return; // Bail out of character creation.
+	}
+
     tie(character_id, error_code) = character_provider_->CreateCharacter(message, client->GetAccountId());
 
     // heartbeat to let the client know we're still here
