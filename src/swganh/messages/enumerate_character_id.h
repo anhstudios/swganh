@@ -61,6 +61,8 @@ struct EnumerateCharacterId : public swganh::messages::BaseSwgMessage<EnumerateC
 	}
 };
 
+EnumerateCharacterId BuildEnumerateCharacterId(std::vector<swganh::character::CharacterData> characters);
+
 }} // namespace swganh::messages
 
 #endif // SWGANH_MESSAGES_ENUMERATE_CHARACTER_ID_H_
