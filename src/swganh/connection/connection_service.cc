@@ -42,12 +42,13 @@ using namespace std;
 using anh::ValueEvent;
 
 using boost::asio::ip::udp;
+using swganh::app::SwganhKernel;
 
 ConnectionService::ConnectionService(
         string listen_address,
         uint16_t listen_port,
         uint16_t ping_port,
-        KernelInterface* kernel)
+        SwganhKernel* kernel)
     : BaseService(kernel)
     , swganh::network::BaseSwgServer(kernel->GetIoService())
     , ping_server_(nullptr)

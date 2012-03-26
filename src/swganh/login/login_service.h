@@ -80,7 +80,7 @@ public:
     LoginService(
         std::string listen_address, 
         uint16_t listen_port, 
-        anh::app::KernelInterface* kernel);
+        swganh::app::SwganhKernel* kernel);
     ~LoginService();
     
     anh::service::ServiceDescription GetServiceDescription();

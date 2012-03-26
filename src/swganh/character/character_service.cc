@@ -62,7 +62,9 @@ using namespace swganh::connection;
 using namespace swganh::login;
 using namespace swganh::messages;
 
-CharacterService::CharacterService(KernelInterface* kernel)
+using swganh::app::SwganhKernel;
+
+CharacterService::CharacterService(SwganhKernel* kernel)
     : BaseService(kernel) 
 {
     character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");

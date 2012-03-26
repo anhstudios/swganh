@@ -21,7 +21,7 @@ namespace chat {
     class ChatService: public swganh::base::BaseService
     {
     public:
-        explicit ChatService(anh::app::KernelInterface* kernel);
+        explicit ChatService(swganh::app::SwganhKernel* kernel);
         
         anh::service::ServiceDescription GetServiceDescription();
 

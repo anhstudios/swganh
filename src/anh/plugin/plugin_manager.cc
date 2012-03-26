@@ -108,7 +108,7 @@ void PluginManager::LoadAllPlugins(const std::string& directory) {
 
 void PluginManager::ConfigurePlugin(std::string plugin_name, ConfigFunc config_func) {
     if (!config_func) {
-        throw runtime_error("Unable to open the configuration file at: config/swganh.cfg");
+        throw runtime_error("Missing configuration function.");
     }
 
     ifstream config_file("config/plugins/" + plugin_name + "/" + plugin_name + ".cfg");

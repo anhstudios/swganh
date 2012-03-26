@@ -24,8 +24,6 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "anh/app/kernel_interface.h"
-
 #include "anh/database/database_manager.h"
 
 #include "anh/event_dispatcher.h"
@@ -37,6 +35,7 @@
 #include "anh/service/service_manager.h"
 #include "anh/plugin/plugin_manager.h"
 
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/character/character_provider_interface.h"
 
 #include "swganh/login/messages/enumerate_character_id.h"
@@ -64,8 +63,9 @@ using namespace event_dispatcher;
 using namespace std;
 
 using boost::asio::ip::udp;
+using swganh::app::SwganhKernel;
 
-LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)
+LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKernel* kernel)
     : BaseService(kernel)
     , swganh::network::BaseSwgServer(kernel->GetIoService())
     , galaxy_status_timer_(kernel->GetIoService())
