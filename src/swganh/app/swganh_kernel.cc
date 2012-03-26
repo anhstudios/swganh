@@ -12,6 +12,8 @@
 #include "anh/service/service_directory.h"
 #include "anh/service/service_manager.h"
 
+#include "swganh/tre/tre_archive.h"
+
 #include "version.h"
 
 using namespace anh::service;
@@ -95,5 +97,13 @@ ServiceDirectoryInterface* SwganhKernel::GetServiceDirectory() {
 
 boost::asio::io_service& SwganhKernel::GetIoService() {
     return io_service_;
+}
+
+swganh::tre::TreArchive* SwganhKernel::GetTreArchive() {
+    if (!tre_archive_) {
+        tre_archive_.reset(new swganh::tre::TreArchive(GetAppConfig().tre_config));
+    }
+
+    return tre_archive_.get();
 }
 

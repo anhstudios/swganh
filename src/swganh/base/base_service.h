@@ -32,21 +32,21 @@
 #include "anh/active_object.h"
 
 namespace anh {
-namespace app {
-class KernelInterface;
-}}  // namespace anh::app
-
-namespace anh {
 namespace event_dispatcher {
 class EventDispatcherInterface;
 }}  // namespace anh::event_dispatcher
+
+namespace swganh {
+namespace app {
+    class SwganhKernel;
+}}  // namespace swganh::app
 
 namespace swganh {
 namespace base {
 
 class BaseService : public anh::service::ServiceInterface {
 public:    
-    BaseService(anh::app::KernelInterface* kernel);
+    BaseService(swganh::app::SwganhKernel* kernel);
 
     void Start();
     void Stop();
@@ -54,7 +54,7 @@ public:
     bool IsRunning() const;
         
 protected:
-    anh::app::KernelInterface* kernel();
+    swganh::app::SwganhKernel* kernel();
 
     anh::ActiveObject& active();
 
@@ -74,7 +74,7 @@ protected:
 
 private:
     BaseService();
-    anh::app::KernelInterface* kernel_;
+    swganh::app::SwganhKernel* kernel_;
         
     std::atomic<bool> running_;
 

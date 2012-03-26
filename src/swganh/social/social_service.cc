@@ -27,10 +27,11 @@ using namespace swganh::social;
 
 using anh::app::KernelInterface;
 using anh::service::ServiceDescription;
+using swganh::app::SwganhKernel;
 using swganh::base::BaseService;
 using swganh::character::CharacterProviderInterface;
 
-SocialService::SocialService(KernelInterface* kernel)
+SocialService::SocialService(SwganhKernel* kernel)
     : BaseService(kernel)
 {
     character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");

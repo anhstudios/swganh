@@ -11,11 +11,12 @@
 #include <cppconn/sqlstring.h>
 #include "anh/logger.h"
 
-#include "anh/app/kernel_interface.h"
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
 #include "anh/database/database_manager_interface.h"
 #include "anh/service/service_manager.h"
+
+#include "swganh/app/swganh_kernel.h"
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
@@ -46,7 +47,9 @@ using namespace swganh::simulation;
 using namespace swganh::combat;
 using namespace swganh::command;
 
-CombatService::CombatService(KernelInterface* kernel)
+using swganh::app::SwganhKernel;
+
+CombatService::CombatService(SwganhKernel* kernel)
 : BaseService(kernel)
 , generator_(1, 100)
 , delayed_task_(new anh::SimpleDelayedTaskProcessor(kernel->GetIoService()))
@@ -91,7 +94,7 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
 
 	command_service_->SetCommandHandler(command_crc, 
         [this, command_crc] (
-            anh::app::KernelInterface* kernel,
+            SwganhKernel* kernel,
             const shared_ptr<Creature>& actor,
 			const shared_ptr<Tangible>& target, 
             const CommandQueueEnqueue& command_queue_message)->void {

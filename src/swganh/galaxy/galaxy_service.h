@@ -36,7 +36,7 @@ namespace galaxy {
 
 class GalaxyService : public swganh::base::BaseService{
 public:    
-    explicit GalaxyService(anh::app::KernelInterface* kernel);
+    explicit GalaxyService(swganh::app::SwganhKernel* kernel);
 	uint32_t GetPopulation();
 	anh::service::ServiceDescription GetServiceDescription();
     

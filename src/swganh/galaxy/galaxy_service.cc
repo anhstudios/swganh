@@ -20,7 +20,6 @@
 
 #include "swganh/galaxy/galaxy_service.h"
 
-#include "anh/app/kernel_interface.h"
 #include "anh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
@@ -33,7 +32,7 @@ using namespace swganh::app;
 using namespace swganh::galaxy;
 using namespace std;
 
-GalaxyService::GalaxyService(anh::app::KernelInterface* kernel)
+GalaxyService::GalaxyService(SwganhKernel* kernel)
     : BaseService(kernel)
 {
 	galaxy_provider_ = kernel->GetPluginManager()->CreateObject<providers::GalaxyProviderInterface>("GalaxyService::GalaxyProvider");

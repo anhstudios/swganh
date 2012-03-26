@@ -30,7 +30,7 @@ namespace command {
 class PythonCommand
 {
 public:
-    PythonCommand(const CommandProperties& command_properties);
+    PythonCommand(const CommandProperties& command_properties, const std::string& script_path);
 
     void operator()(anh::app::KernelInterface* kernel, std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
 private:

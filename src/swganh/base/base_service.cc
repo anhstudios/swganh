@@ -35,7 +35,7 @@ using namespace swganh::base;
 using namespace event_dispatcher;
 using namespace std;
 
-BaseService::BaseService(anh::app::KernelInterface* kernel)
+BaseService::BaseService(swganh::app::SwganhKernel* kernel)
     : kernel_(kernel)
     , active_(kernel->GetIoService()) 
 {}
@@ -56,7 +56,7 @@ void BaseService::Stop() {
 
 bool BaseService::IsRunning() const { return running_; }
 
-KernelInterface* BaseService::kernel() {
+SwganhKernel* BaseService::kernel() {
     return kernel_;
 }
 

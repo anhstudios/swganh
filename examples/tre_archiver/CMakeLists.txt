@@ -1,7 +1,9 @@
+
 include(ANHExecutable)
 
-AddANHExecutable(example_app
+AddANHExecutable(example_tre_archiver
     DEPENDS 
+        swganh_lib
         anh_lib
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
@@ -15,7 +17,7 @@ AddANHExecutable(example_app
         ${MYSQL_LIBRARY_DEBUG}
         ${MYSQLCONNECTORCPP_LIBRARY_DEBUG}
 		${PYTHON_LIBRARY}
-	OPTIMIZED_LIBRARIES 
+	OPTIMIZED_LIBRARIES
         ${MYSQL_LIBRARY_RELEASE}
         ${MYSQLCONNECTORCPP_LIBRARY_RELEASE}
 		${PYTHON_LIBRARY}
