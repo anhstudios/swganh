@@ -15,6 +15,30 @@ namespace swganh {
 namespace tre {
 namespace readers {
 
+    namespace detail {
+        /**
+         * Attempts to cast the cell's value to the specified type T.
+         *
+         * \return The cell's value cast as the given type T.
+         */
+        template<typename T>
+        T GetValue(const boost::any& value)
+        {
+            return *boost::any_cast<const T*>(value);
+        }
+
+        /**
+         * An overload of GetValue that can turn char* into string.
+         *
+         * \return The cell's value as a string.
+         */
+        template<>
+        inline std::string GetValue<std::string>(const boost::any& value)
+        {
+            return std::string(boost::any_cast<const char*>(value));
+        }
+    }
+
     /**
      * Represents a single cell value in a datatable row.
      */
@@ -34,7 +58,7 @@ namespace readers {
         template<typename T>
         T GetValue() const
         {
-            return *boost::any_cast<const T*>(value_);
+            return detail::GetValue<T>(value_);
         }
 
         /**
