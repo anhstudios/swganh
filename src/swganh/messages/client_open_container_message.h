@@ -32,18 +32,18 @@ struct ClientOpenContainerMessage : public swganh::messages::BaseSwgMessage<Clie
 	static uint16_t opcount() { return 4; }
 	static uint32_t opcode() { return 0xDCA57409; }
 
-	uint64_t object_id; // object_id of the container to open
+	uint64_t container_object_id; // object_id of the container to open
 	uint32_t unknown1;
 	uint32_t unknown2;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(object_id);
+		buffer.write(container_object_id);
 		buffer.write(unknown1);
 		buffer.write(unknown2);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		object_id = buffer.read<uint64_t>();
+		container_object_id = buffer.read<uint64_t>();
 		unknown1 = buffer.read<uint32_t>();
 		unknown2 = buffer.read<uint32_t>();
 	}
