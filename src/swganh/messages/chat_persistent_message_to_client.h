@@ -22,8 +22,6 @@
 #define SWGANH_MESSAGES_CHAT_PERSISTENT_MESSAGE_TO_CLIENT_H_
 
 #include <cstdint>
-#include <algorithm>
-#include <list>
 #include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
