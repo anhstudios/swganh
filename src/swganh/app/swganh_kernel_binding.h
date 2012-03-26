@@ -28,18 +28,18 @@ void exportSWGANHKernel()
     class_<anh::service::ServiceManager, boost::noncopyable>("ServiceManager", "provides an interface to common services", no_init)
        .def("combat_service", make_function(
                bind(&anh::service::ServiceManager::GetService<swganh::combat::CombatService>, std::placeholders::_1, "CombatService"),
-                default_call_policies(),
-                boost::mpl::vector<std::shared_ptr<swganh::combat::CombatService>, anh::service::ServiceManager*>()),
+               return_value_policy<reference_existing_object>(),
+                boost::mpl::vector<swganh::combat::CombatService*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.CombatService`")
         .def("simulation_service", make_function(
                bind(&anh::service::ServiceManager::GetService<swganh::simulation::SimulationService>, std::placeholders::_1, "SimulationService"),
-                default_call_policies(),
-                boost::mpl::vector<std::shared_ptr<swganh::simulation::SimulationService>, anh::service::ServiceManager*>()),
+                return_value_policy<reference_existing_object>(),
+                boost::mpl::vector<swganh::simulation::SimulationService*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SimulationService`")
         .def("social_service", make_function(
                bind(&anh::service::ServiceManager::GetService<swganh::social::SocialService>, std::placeholders::_1, "SocialService"),
-                default_call_policies(),
-                boost::mpl::vector<std::shared_ptr<swganh::social::SocialService>, anh::service::ServiceManager*>()),
+                return_value_policy<reference_existing_object>(),
+                boost::mpl::vector<swganh::social::SocialService*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SocialService`")
        ;
        

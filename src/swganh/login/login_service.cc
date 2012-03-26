@@ -136,8 +136,8 @@ shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
 }
 
 void LoginService::onStart() {
-    character_service_ = static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
-	galaxy_service_  = static_pointer_cast<GalaxyService>(kernel()->GetServiceManager()->GetService("GalaxyService"));
+    character_service_ = kernel()->GetServiceManager()->GetService<CharacterService>("CharacterService");
+	galaxy_service_  = kernel()->GetServiceManager()->GetService<GalaxyService>("GalaxyService");
 
     Server::Start(listen_port_);
 

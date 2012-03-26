@@ -25,35 +25,33 @@ public:
     
     ~ServiceManager();
 
-    void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
+    void AddService(std::string name, std::unique_ptr<ServiceInterface> service);
 
-    std::shared_ptr<ServiceInterface> GetService(std::string name);
+    ServiceInterface* GetService(std::string name);
 
     template<typename T>
-    std::shared_ptr<T> GetService(std::string name)
+    T* GetService(std::string name)
     {
-        std::shared_ptr<T> service;
+        T* service;
 
         auto tmp = GetService(name);
 
 #ifdef _DEBUG
-        service = std::dynamic_pointer_cast<T>(tmp);
+        service = dynamic_cast<T*>(tmp);
 #else
-        service = std::static_pointer_cast<T>(tmp);
+        service = static_cast<T*>(tmp);
 #endif
 
         return service;
     }
 
     template<typename T>
-    std::vector<std::shared_ptr<T>> GetServicesByType(std::string type_name)
+    std::vector<T*> GetServicesByType(std::string type_name)
     {
-        std::vector<std::shared_ptr<T>> services;
-        std::shared_ptr<T> tmp;
+        std::vector<T*> services;
+        T* tmp;
 
-        std::for_each(services_.begin(),
-            services_.end(),
-            [&services, &type_name, &tmp] (ServiceMap::value_type& entry)
+        for(auto& entry : services_)
         {
             anh::service::ServiceDescription description = entry.second.second->GetServiceDescription();
 
@@ -61,13 +59,13 @@ public:
 
             {
 #ifdef _DEBUG
-                tmp = std::dynamic_pointer_cast<T>(entry.second);
+                tmp = dynamic_cast<T>(entry.second.second.get());
 #else
-                tmp = std::static_pointer_cast<T>(entry.second);
+                tmp = static_cast<T>(entry.second.second.get());
 #endif
                 services.push_back(tmp);
             }
-        });
+        }
 
         return services;
     }
@@ -79,7 +77,7 @@ public:
 private:
     typedef std::map<std::string, std::pair<
         std::shared_ptr<ServiceDescription>, 
-        std::shared_ptr<ServiceInterface>>
+        std::unique_ptr<ServiceInterface>>
     > ServiceMap;
     ServiceMap services_;
 
