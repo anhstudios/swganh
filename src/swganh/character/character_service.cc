@@ -91,7 +91,7 @@ void CharacterService::onStart() {
 void CharacterService::onStop() {}
 
 void CharacterService::subscribe() {
-    auto connection_service = std::static_pointer_cast<ConnectionService>(kernel()->GetServiceManager()->GetService("ConnectionService"));
+    auto connection_service = kernel()->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
 
     connection_service->RegisterMessageHandler(
         &CharacterService::HandleClientCreateCharacter_, this);
@@ -99,7 +99,7 @@ void CharacterService::subscribe() {
     connection_service->RegisterMessageHandler(
         &CharacterService::HandleClientRandomNameRequest_, this);
 
-    auto login_service = std::static_pointer_cast<LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
+    auto login_service = kernel()->GetServiceManager()->GetService<LoginService>("LoginService");
 
     login_service->RegisterMessageHandler(
         &CharacterService::HandleDeleteCharacterMessage_, this);

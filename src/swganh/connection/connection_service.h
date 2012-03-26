@@ -69,10 +69,6 @@ protected:
 
     uint16_t listen_port();
         
-    std::shared_ptr<swganh::character::CharacterService> character_service();
-
-    std::shared_ptr<swganh::login::LoginService> login_service();
-
 private:        
     std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
     
@@ -107,9 +103,9 @@ private:
     std::shared_ptr<providers::SessionProviderInterface> session_provider_;
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
-    std::weak_ptr<swganh::character::CharacterService> character_service_;
-    std::weak_ptr<swganh::login::LoginService> login_service_;
-    std::weak_ptr<swganh::simulation::SimulationService> simulation_service_;
+    swganh::character::CharacterService* character_service_;
+    swganh::login::LoginService* login_service_;
+    swganh::simulation::SimulationService* simulation_service_;
 
     std::string listen_address_;
     uint16_t listen_port_;
