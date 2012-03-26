@@ -3,6 +3,8 @@
 
 #include <cctype>
 
+#include <boost/filesystem.hpp>
+
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -182,6 +184,7 @@ void CommandService::ProcessCommand(
 void CommandService::onStart()
 {
 	LoadProperties();
+    RegisterCommandScripts();
 
     simulation_service_ = kernel()->GetServiceManager()
         ->GetService<SimulationService>("SimulationService");
@@ -244,9 +247,6 @@ void CommandService::LoadProperties()
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             properties.name_crc = anh::memcrc(tmp);
             
-            //properties.default_priority = row["defaultPriority"]->GetValue<int>();
-            //properties.default_time = row["defaultTime"]->GetValue<float>();
-
             properties.ability = row["characterAbility"]->GetValue<string>();
             properties.ability_crc = anh::memcrc(properties.ability);
 
@@ -254,68 +254,8 @@ void CommandService::LoadProperties()
 
             command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
         } while(reader.Next());
-
-        //auto db_manager = kernel()->GetDatabaseManager();
-        //
-        //auto conn = db_manager->getConnection("galaxy");
-        //auto statement =  unique_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_LoadCommandProperties();"));
-        //
-        //auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        //
-        //while (result->next())
-        //{
-        //    CommandProperties properties;
-        //
-        //    properties.name = result->getString("name");
-        //
-        //    string tmp = properties.name;
-        //    transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-        //    properties.name_crc = anh::memcrc(tmp);
-        //
-        //    properties.ability = result->getString("ability");
-        //    properties.ability_crc = anh::memcrc(properties.ability);
-        //    properties.deny_in_states = result->getUInt64("deny_in_states");
-        //    properties.script_hook = result->getString("script_hook");
-        //    properties.fail_script_hook = result->getString("fail_script_hook");
-        //    properties.default_time = result->getUInt64("default_time");
-        //    properties.command_group = result->getUInt("command_group");
-        //    properties.max_range_to_target = static_cast<float>(result->getDouble("max_range_to_target"));
-        //    properties.add_to_combat_queue = result->getUInt("add_to_combat_queue");
-        //    properties.health_cost = result->getUInt("health_cost");
-        //    properties.health_cost_multiplier = result->getUInt("health_cost_multiplier");
-        //    properties.action_cost = result->getUInt("action_cost");
-        //    properties.action_cost_multiplier = result->getUInt("action_cost_multiplier");
-        //    properties.mind_cost = result->getUInt("mind_cost");
-        //    properties.mind_cost_multiplier = result->getUInt("mind_cost");
-        //    properties.damage_multiplier = static_cast<float>(result->getDouble("damage_multiplier"));
-        //    properties.delay_multiplier = static_cast<float>(result->getDouble("delay_multiplier"));
-        //    properties.force_cost = result->getUInt("force_cost");
-        //    properties.force_cost_multiplier = result->getUInt("force_cost_multiplier");
-        //    properties.animation_crc = result->getUInt("animation_crc");
-        //    properties.required_weapon_group = result->getUInt("required_weapon_group");
-        //    properties.combat_spam = result->getString("combat_spam");
-        //    properties.trail1 = result->getUInt("trail1");
-        //    properties.trail2 = result->getUInt("trail2");
-        //    properties.allow_in_posture = result->getUInt("allow_in_posture");
-        //    properties.health_hit_chance = static_cast<float>(result->getDouble("health_hit_chance"));
-        //    properties.action_hit_chance = static_cast<float>(result->getDouble("action_hit_chance"));
-        //    properties.mind_hit_chance = static_cast<float>(result->getDouble("mind_hit_chance"));
-        //    properties.knockdown_hit_chance = static_cast<float>(result->getDouble("knockdown_chance"));
-        //    properties.dizzy_hit_chance = static_cast<float>(result->getDouble("dizzy_chance"));
-        //    properties.blind_chance = static_cast<float>(result->getDouble("blind_chance"));
-        //    properties.stun_chance = static_cast<float>(result->getDouble("stun_chance"));
-        //    properties.intimidate_chance = static_cast<float>(result->getDouble("intimidate_chance"));
-        //    properties.posture_down_chance = static_cast<float>(result->getDouble("posture_down_chance"));
-        //    properties.extended_range = static_cast<float>(result->getDouble("extended_range"));
-        //    properties.cone_angle = static_cast<float>(result->getDouble("cone_angle"));
-        //    properties.deny_in_locomotion = result->getUInt64("deny_in_locomotion");
-        //
-        //    RegisterCommandScript(properties);
-        //
-        //    command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
-        //}
-
-        LOG(info) << "Loaded (" << reader.CountRows() /*command_properties_map_.size()*/ << ") Commands";
+        
+        LOG(info) << "Loaded (" << command_properties_map_.size() << ") Commands";
     }
     catch(sql::SQLException &e)
     {
@@ -324,11 +264,40 @@ void CommandService::LoadProperties()
     }
 }
 
-void CommandService::RegisterCommandScript(const CommandProperties& properties)
-{
-    if (properties.script_hook.length() != 0)
-    {
-        SetCommandHandler(properties.name_crc, PythonCommand(properties));
+void CommandService::RegisterCommandScripts()
+{    
+    boost::filesystem::path command_script_dir("scripts/commands");
+
+    try {
+        if (!boost::filesystem::exists(command_script_dir) ||
+            !boost::filesystem::is_directory(command_script_dir)) {
+            throw runtime_error("Invalid script directory [scripts/commands]");
+        }
+
+        std::for_each(boost::filesystem::directory_iterator(command_script_dir),
+            boost::filesystem::directory_iterator(),
+            [this] (const boost::filesystem::directory_entry& entry) 
+        {            
+            if (entry.path().extension() != ".py") {
+                return;
+            }
+
+            auto native_path = entry.path().native();
+            auto native_name = entry.path().filename().native();
+            
+            string tmp = string(native_name.begin(), native_name.end()-3);
+            transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
+            
+            auto find_iter = command_properties_map_.find(anh::memcrc(tmp));
+            if (find_iter != end(command_properties_map_))
+            {
+                SetCommandHandler(find_iter->second.name_crc, 
+                    PythonCommand(find_iter->second, string(begin(native_path), end(native_path))));
+            }
+        });
+
+    } catch(const std::exception& e) {
+        LOG(fatal) << e.what();
     }
 }
 

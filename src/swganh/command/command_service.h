@@ -99,7 +99,7 @@ namespace command {
 
         void LoadProperties();
 
-        void RegisterCommandScript(const CommandProperties& properties);
+        void RegisterCommandScripts();
         
         void HandleCommandQueueEnqueue(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
