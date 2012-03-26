@@ -22,6 +22,7 @@
 #define SWGANH_MESSAGES_CLIENT_ID_MSG_H_
 
 #include <cstdint>
+#include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
@@ -33,16 +34,16 @@ struct ClientIdMsg : public swganh::messages::BaseSwgMessage<ClientIdMsg> {
     static uint32_t opcode() { return 0xD5899226; }
     
     std::string session_hash;
-
+	std::string client_version; // <year><month><day>-<hour>:<minute> for publish, e.g. Publish 13.0 = 20050125-12:19
 
     void onSerialize(anh::ByteBuffer& buffer) const {
         buffer.write(session_hash);
+		buffer.write(client_version);
     }
 
     void onDeserialize(anh::ByteBuffer buffer) {
-        buffer.read<uint32_t>();  // unknown
-        buffer.read<uint32_t>();  // size @TODO Investigate if this is proper usage.
         session_hash = buffer.read<std::string>();
+		client_version = buffer.read<std::string>();
     }
 };
 

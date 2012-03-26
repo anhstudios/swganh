@@ -35,7 +35,7 @@ struct LoginClientId : public swganh::messages::BaseSwgMessage<LoginClientId> {
 
 	std::string username;
 	std::string password;
-	std::string client_version;
+	std::string client_version; // <year><month><day>-<hour>:<minute> for publish, e.g. Publish 13.0 = 20050125-12:19
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(username);
