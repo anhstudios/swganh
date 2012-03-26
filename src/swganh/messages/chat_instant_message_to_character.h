@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_CHAT_INSTANT_MESSAGE_TO_CLIENT_H_
-#define SWGANH_MESSAGES_CHAT_INSTANT_MESSAGE_TO_CLIENT_H_
+#ifndef SWGANH_MESSAGES_CHAT_INSTANT_MESSAGE_TO_CHARACTER_H_
+#define SWGANH_MESSAGES_CHAT_INSTANT_MESSAGE_TO_CHARACTER_H_
 
 #include <string>
 #include "anh/byte_buffer.h"
@@ -28,30 +28,36 @@
 namespace swganh {
 namespace messages {
 
-struct ChatInstantMessageToClient : public swganh::messages::BaseSwgMessage<ChatInstantMessageToClient> {
-	static uint16_t opcount() { return 4; }
-	static uint32_t opcode() { return 0x3C565CED; }
+struct ChatInstantMessageToCharacter : public swganh::messages::BaseSwgMessage<ChatInstantMessageToCharacter> {
+	static uint16_t opcount() { return 5; }
+	static uint32_t opcode() { return 0x84BB21F7; }
 
 	std::string game_name; // arbitrary: "SWG"
 	std::string server_name; // galaxy name
-	std::string sender_character_name; // sender (the recipient receives this packet)
+	std::string recipient_character_name; // recipient (the server will send ChatInstantMessageToClient to the recipient)
 	std::wstring message;
+	uint32_t unknown;
+	uint32_t sequence_number;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(game_name);
 		buffer.write(server_name);
-		buffer.write(sender_character_name);
+		buffer.write(recipient_character_name);
 		buffer.write(message);
+		buffer.write(unknown);
+		buffer.write(sequence_number);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
 		game_name = buffer.read<std::string>();
 		server_name = buffer.read<std::string>();
-		sender_character_name = buffer.read<std::string>();
+		recipient_character_name = buffer.read<std::string>();
 		message = buffer.read<std::wstring>();
+		unknown = buffer.read<uint32_t>();
+		sequence_number = buffer.read<uint32_t>();
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_CHAT_INSTANT_MESSAGE_TO_CLIENT_H_
+#endif // SWGANH_MESSAGES_CHAT_INSTANT_MESSAGE_TO_CHARACTER_H_
