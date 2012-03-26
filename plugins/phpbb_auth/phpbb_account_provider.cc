@@ -26,15 +26,15 @@ shared_ptr<Account> PhpbbAccountProvider::FindByUsername(string username)
 {
     shared_ptr<Account> account = nullptr;
 
-    try 
+    try
     {
         string sql = "select user_id, username, user_password, user_form_salt, group_id from " + table_prefix_ + "users where username = ?";
         auto conn = database_manager_->getConnection("phpbb");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        
-        if (result_set->next()) 
+
+        if (result_set->next())
         {
             account = make_shared<Account>(true);
 
@@ -49,14 +49,14 @@ shared_ptr<Account> PhpbbAccountProvider::FindByUsername(string username)
             } else {
                 account->Disable();
             }
-        } 
-        else 
+        }
+        else
         {
             LOG(warning) << "No account information found for user: " << username << endl;
         }
 
-    } 
-    catch(sql::SQLException &e) 
+    }
+    catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -66,7 +66,7 @@ shared_ptr<Account> PhpbbAccountProvider::FindByUsername(string username)
 }
 
 bool PhpbbAccountProvider::AutoRegisterAccount(
-    std::string username, 
+    std::string username,
     std::string password)
 {
     throw std::runtime_error("Auto registration is not allowed with the PhpbbAuth plugin");
@@ -81,10 +81,10 @@ uint32_t PhpbbAccountProvider::FindBySessionKey(const string& session_key) {
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, session_key);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        
+
         if (result_set->next()) {
             account_id = result_set->getInt("account");
-            
+
         } else {
             LOG(warning) << "No account found for session_key: " << session_key << endl;
         }
@@ -120,7 +120,7 @@ void PhpbbAccountProvider::EndSessions()
         string sql = "delete from account_session";
         auto conn = database_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-        int rows_updated = statement->executeUpdate();
+        /* int rows_updated = */statement->executeUpdate();
 
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
