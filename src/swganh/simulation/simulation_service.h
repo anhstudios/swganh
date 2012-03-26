@@ -6,8 +6,14 @@
 #include <map>
 #include <memory>
 
+#include "anh/network/soe/server.h"
+
 #include "swganh/base/base_service.h"
 #include "swganh/object/object_controller.h"
+
+namespace anh {
+	class ByteBuffer;
+}
 
 namespace swganh {
 namespace connection {
@@ -93,6 +99,7 @@ namespace simulation {
         void onStart();
 
         std::unique_ptr<SimulationServiceImpl> impl_;
+		anh::network::soe::ServerInterface* server_;
     };
 
 }}  // namespace swganh::simulation

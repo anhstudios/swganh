@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS `name_reserved` (
 DELETE FROM `name_reserved`;
     
 /*!40000 ALTER TABLE `name_reserved` DISABLE KEYS */;
+INSERT INTO `name_reserved` (`id`,`name`) VALUES 
+ (1,'reserved');
 /*!40000 ALTER TABLE `name_reserved` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

@@ -27,13 +27,9 @@
 
 #include "swganh/base/base_service.h"
 
-#include "swganh/character/character_data.h"
 #include "swganh/messages/delete_character_message.h"
 #include "swganh/messages/client_create_character.h"
-#include "swganh/messages/client_create_character_success.h"
-#include "swganh/messages/client_create_character_failed.h"
 #include "swganh/messages/client_random_name_request.h"
-#include "swganh/messages/client_random_name_response.h"
 
 namespace anh { namespace database { class DatabaseManagerInterface; } }
 
@@ -49,6 +45,8 @@ class LoginClient;
 
 namespace swganh {
 namespace character {
+
+class CharacterProviderInterface;
     
 class CharacterService : public swganh::base::BaseService {
 public:
@@ -62,14 +60,6 @@ public:
 
     void subscribe();
 
-    // CharacterService API Methods
-
-    std::vector<swganh::character::CharacterData> GetCharactersForAccount(uint64_t account_id);
-    bool DeleteCharacter(uint64_t character_id, uint64_t account_id);
-    std::wstring GetRandomNameRequest(const std::string& base_model);
-    std::tuple<uint64_t, std::string> CreateCharacter(const swganh::messages::ClientCreateCharacter& character_info, uint32_t account_id);
-    uint16_t GetMaxCharacters(uint64_t player_id);
-
 private:
     void HandleClientRandomNameRequest_(
         const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
@@ -81,10 +71,7 @@ private:
         const std::shared_ptr<swganh::login::LoginClient>& login_client, 
         const swganh::messages::DeleteCharacterMessage& message);
 
-    // helpers
-    std::string parseBio_(const std::string& bio);
-    std::string parseHair_(const std::string& hair_model, const std::string& hair_customization);
-    std::string setCharacterCreateErrorCode_(uint32_t error_id);
+    std::shared_ptr<CharacterProviderInterface> character_provider_;
 };
 
 }}  // namespace swganh::character

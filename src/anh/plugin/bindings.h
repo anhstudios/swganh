@@ -42,18 +42,6 @@ typedef void (*ConfigFunc)(boost::program_options::options_description&);
     #define PLUGIN_API 
 #endif
 
-extern
-#ifdef __cplusplus
-    "C"
-#endif
-PLUGIN_API ExitFunc InitializePlugin(anh::app::KernelInterface* binding);
-
-extern
-#ifdef __cplusplus
-    "C"
-#endif
-PLUGIN_API void ConfigurePlugin(boost::program_options::options_description& description);
-
 }}  // namespace anh::plugin
 
 #endif  // ANH_PLUGIN_BINDINGS_H_

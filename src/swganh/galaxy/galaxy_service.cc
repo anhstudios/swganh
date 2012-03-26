@@ -23,7 +23,7 @@
 #include "anh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/galaxy/providers/mysql_galaxy_provider.h"
+#include "swganh/galaxy/providers/galaxy_provider_interface.h"
 
 using namespace anh;
 using namespace app;
@@ -36,10 +36,6 @@ GalaxyService::GalaxyService(SwganhKernel* kernel)
     : BaseService(kernel)
 {
 	galaxy_provider_ = kernel->GetPluginManager()->CreateObject<providers::GalaxyProviderInterface>("GalaxyService::GalaxyProvider");
-    if (!galaxy_provider_) 
-    {
-        galaxy_provider_ = make_shared<providers::MysqlGalaxyProvider>(kernel->GetDatabaseManager());
-    }
 }
 
 ServiceDescription GalaxyService::GetServiceDescription()

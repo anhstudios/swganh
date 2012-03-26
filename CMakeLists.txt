@@ -83,6 +83,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     endif()
 
     set(AdditionalBoostLibs chrono)
+
+    find_library(PTHREAD_LIBRARY NAMES pthread)
 endif()
 
 if(MSVC)

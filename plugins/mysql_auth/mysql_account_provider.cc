@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "swganh/login/providers/mysql_account_provider.h"
+#include "mysql_account_provider.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -36,7 +36,7 @@
 
 using namespace swganh::login;
 using namespace providers;
-using namespace swganh::login;
+using namespace plugins::mysql_auth;
 using namespace std;
 
 MysqlAccountProvider::MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager)
@@ -54,7 +54,7 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        
+
         if (result_set->next()) {
             account = make_shared<Account>(true);
 
@@ -79,6 +79,19 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
     }
     return account;
 }
+void MysqlAccountProvider::EndSessions()
+{
+    try {
+        string sql = "delete from account_session";
+        auto conn = db_manager_->getConnection("galaxy_manager");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        /* int rows_updated = */statement->executeUpdate();
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
 uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
     uint32_t account_id = 0;
 
@@ -88,10 +101,10 @@ uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, session_key);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        
+
         if (result_set->next()) {
             account_id = result_set->getInt("account");
-            
+
         } else {
             LOG(warning) << "No account found for session_key: " << session_key << endl;
         }

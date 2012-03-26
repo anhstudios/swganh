@@ -12,7 +12,9 @@ public:
     
     template<typename T>
     T GetSymbol(const std::string& symbol) {
-        return *static_cast<T*>(GetSymbol(symbol));
+        T func_ptr;
+        *reinterpret_cast<void**>(&func_ptr) = GetSymbol(symbol);
+        return func_ptr;
     }
 
     virtual void * GetSymbol(const std::string& symbol) = 0;

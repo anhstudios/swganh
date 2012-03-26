@@ -18,8 +18,7 @@ using namespace swganh::login;
 SmfAccountProvider::SmfAccountProvider(
     DatabaseManagerInterface* database_manager,
     string table_prefix)
-    : MysqlAccountProvider(database_manager)
-    , database_manager_(database_manager)
+    : database_manager_(database_manager)
     , table_prefix_(table_prefix)
 {}
 
@@ -27,15 +26,15 @@ shared_ptr<Account> SmfAccountProvider::FindByUsername(string username)
 {
     shared_ptr<Account> account = nullptr;
 
-    try 
+    try
     {
         string sql = "select id_member, member_name, passwd, id_group from " + table_prefix_ + "members where member_name = ?";
         auto conn = database_manager_->getConnection("smf");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        
-        if (result_set->next()) 
+
+        if (result_set->next())
         {
             account = make_shared<Account>(true);
 
@@ -50,14 +49,14 @@ shared_ptr<Account> SmfAccountProvider::FindByUsername(string username)
             } else {
                 account->Disable();
             }
-        } 
-        else 
+        }
+        else
         {
             LOG(warning) << "No account information found for user: " << username << endl;
         }
 
-    } 
-    catch(sql::SQLException &e) 
+    }
+    catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -67,8 +66,63 @@ shared_ptr<Account> SmfAccountProvider::FindByUsername(string username)
 }
 
 bool SmfAccountProvider::AutoRegisterAccount(
-    std::string username, 
+    std::string username,
     std::string password)
 {
     throw std::runtime_error("Auto registration is not allowed with the PhpbbAuth plugin");
+}
+uint32_t SmfAccountProvider::FindBySessionKey(const string& session_key) {
+    uint32_t account_id = 0;
+
+     try {
+        string sql = "select account from account_session where session_key = ?";
+        auto conn = database_manager_->getConnection("galaxy_manager");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setString(1, session_key);
+        auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
+
+        if (result_set->next()) {
+            account_id = result_set->getInt("account");
+
+        } else {
+            LOG(warning) << "No account found for session_key: " << session_key << endl;
+        }
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+     return account_id;
+}
+bool SmfAccountProvider::CreateAccountSession(uint32_t account_id, const std::string& session_key) {
+    bool success = false;
+    try {
+        string sql = "INSERT INTO account_session(account, session_key) VALUES(?,?);";
+        auto conn = database_manager_->getConnection("galaxy_manager");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        statement->setUInt64(1, account_id);
+        statement->setString(2, session_key);
+        auto rows_updated = statement->executeUpdate();
+        if (rows_updated > 0)
+            success = true;
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+
+    return success;
+}
+void SmfAccountProvider::EndSessions()
+{
+    try {
+        string sql = "delete from account_session";
+        auto conn = database_manager_->getConnection("galaxy_manager");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        /* int rows_updated = */statement->executeUpdate();
+
+    } catch(sql::SQLException &e) {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }

@@ -14,9 +14,11 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/character/character_service.h"
+#include "swganh/character/character_provider_interface.h"
 #include "swganh/connection/ping_server.h"
 #include "swganh/connection/connection_client.h"
-#include "swganh/connection/providers/mysql_session_provider.h"
+#include "swganh/connection/providers/session_provider_interface.h"
 
 #include "swganh/object/object.h"
 #include "swganh/object/player/player.h"
@@ -56,10 +58,8 @@ ConnectionService::ConnectionService(
 {
 
     session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
-    if (!session_provider_)
-    {
-        session_provider_ = make_shared<providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
-    }
+
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
 }
 
 ServiceDescription ConnectionService::GetServiceDescription() {
@@ -275,7 +275,7 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = kernel()->GetServiceDirectory()->galaxy().status();
-    client_permissions.available_character_slots = static_cast<uint8_t>(character_service()->GetMaxCharacters(account_id));
+    client_permissions.available_character_slots = static_cast<uint8_t>(character_provider_->GetMaxCharacters(account_id));
     /// @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 
