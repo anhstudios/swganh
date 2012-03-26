@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -54,7 +54,7 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, username);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        
+
         if (result_set->next()) {
             account = make_shared<Account>(true);
 
@@ -85,7 +85,7 @@ void MysqlAccountProvider::EndSessions()
         string sql = "delete from account_session";
         auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
-        int rows_updated = statement->executeUpdate();
+        /* int rows_updated = */statement->executeUpdate();
 
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
@@ -101,10 +101,10 @@ uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setString(1, session_key);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        
+
         if (result_set->next()) {
             account_id = result_set->getInt("account");
-            
+
         } else {
             LOG(warning) << "No account found for session_key: " << session_key << endl;
         }
