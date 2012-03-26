@@ -22,6 +22,7 @@
 #define SWGANH_MESSAGES_FACTION_RESPONSE_MESSAGE_H_
 
 #include <cstdint>
+#include <algorithm>
 #include <list>
 #include <string>
 #include "anh/byte_buffer.h"
