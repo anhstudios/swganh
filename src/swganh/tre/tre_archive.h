@@ -17,23 +17,79 @@
 namespace swganh {
 namespace tre {
     
+    /**
+     * TreArchive is a simple utility for accessing resource files from
+     * a collection of .tre files.
+     */
     class TreArchive
     {
     public:
-        explicit TreArchive(std::vector<TreReader>&& readers);
+        /**
+         * Explicit constructor that accepts a collection of tre files.
+         *
+         * \param tre_files Collection of tre files.
+         */
+        explicit TreArchive(std::vector<TreReader>&& tre_files);
 
-        explicit TreArchive(std::vector<std::string>&& resource_files);
+        /**
+         * Explicit constructor that accepts a list of tre files to load.
+         *
+         * \param tre_filenames A collection of filenames to load.
+         */
+        explicit TreArchive(std::vector<std::string>&& tre_filenames);
 
-        explicit TreArchive(std::string config_file);
+        /**
+         * Explicit constructor that accepts a configuration file listing the
+         * the tre files to load.
+         *
+         * \param config_filename Path to configuration file (usually the live.cfg).
+         */
+        explicit TreArchive(std::string config_filename);
 
+        /**
+         * Returns the size of the requested resource.
+         *
+         * Searches for the most recent version of the file and returns its size.
+         *
+         * \param resource_name The name of the resource.
+         * \return The size of the requested resource.
+         */
         uint32_t GetResourceSize(const std::string& resource_name) const;
 
+        /**
+         * Returns the requested resource in binary format.
+         *
+         * Searches for the most recent version of the requested file and 
+         * returns it in binary format.
+         *
+         * \param resource_name The name of the resource.
+         * \return The file in binary format (move constructable).
+         */
         std::vector<char> GetResource(const std::string& resource_name);
         
+        /**
+         * Returns the md5 hash of the requested resource.
+         *
+         * Searches for the most recent version of the file and returns its 
+         * md5 hash string.
+         *
+         * \param resource_name The name of the resource.
+         * \return The md5 hash of the requseted resource.
+         */
         std::string GetMd5Hash(const std::string& resource_name) const;
         
+        /**
+         * Returns a list of the available tre files.
+         *
+         * \return A list of available tre files.
+         */
         std::vector<std::string> GetTreFilenames() const;
         
+        /**
+         * Returns a list of the of all available resources in the archive.
+         *
+         * \return A list of available resources.
+         */
         std::vector<std::string> GetAvailableResources() const;
 
     private:

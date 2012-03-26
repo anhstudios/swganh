@@ -235,7 +235,7 @@ void CommandService::LoadProperties()
         
         DatatableReader reader(tre_archive->GetResource("datatables/command/command_table.iff"));
 
-        do 
+        while(reader.Next())
         {
             auto row = reader.GetRow();
 
@@ -253,7 +253,7 @@ void CommandService::LoadProperties()
             properties.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
 
             command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
-        } while(reader.Next());
+        }
         
         LOG(info) << "Loaded (" << command_properties_map_.size() << ") Commands";
     }

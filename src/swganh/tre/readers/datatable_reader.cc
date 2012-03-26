@@ -34,7 +34,7 @@ struct IffHeader
 
 DatatableReader::DatatableReader(vector<char>&& input)
     : input_(move(input))
-    , current_row_(0)
+    , current_row_(-1)
 {
     ValidateFile(input_);
 
@@ -71,12 +71,12 @@ bool DatatableReader::Next()
 {
     ++current_row_;
 
-    return current_row_ < row_header_->count;
+    return static_cast<uint32_t>(current_row_) < row_header_->count;
 }
 
 map<string, DatatableCell*> DatatableReader::GetRow()
 {
-    if (current_row_ >= row_header_->count)
+    if (static_cast<uint32_t>(current_row_) >= row_header_->count)
     {
         throw out_of_range("Accessed past the end of the rows");
     }
