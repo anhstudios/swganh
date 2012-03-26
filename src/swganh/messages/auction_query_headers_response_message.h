@@ -127,6 +127,7 @@ struct AuctionQueryHeadersResponseMessage : public swganh::messages::BaseSwgMess
 			item.item_type = buffer.read<uint32_t>();
 			item.unknown2 = buffer.read<uint32_t>();
 			item.vendor_entrance_fee = buffer.read<uint32_t>();
+			item_info_list.push_back(item);
 		}
 		item_list_start_offset = buffer.read<uint16_t>();
 		continuation_flag = buffer.read<uint8_t>();

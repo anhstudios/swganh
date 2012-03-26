@@ -32,7 +32,7 @@ struct ChatInstantMessageToClient : public swganh::messages::BaseSwgMessage<Chat
 	static uint16_t opcount() { return 4; }
 	static uint32_t opcode() { return 0x3C565CED; }
 
-	std::string game_name; // default: SWG
+	std::string game_name; // arbitrary: "SWG"
 	std::string server_name; // galaxy name
 	std::string player_name;
 	std::wstring message;

@@ -34,9 +34,9 @@ struct ChatCreateRoom : public swganh::messages::BaseSwgMessage<ChatCreateRoom> 
 	static uint32_t opcode() { return 0x35366BED; }
 
 	uint8_t public_flag; // 0 = private, 1 = public
-	uint8_t moderation_flag; // 0 = not moderated, 1 = moderated
+	uint8_t moderation_flag; // 0 = unmoderated, 1 = moderated
 	uint16_t unknown;
-	std::string channel_path; // path to the channel, e.g. "swg/server/tatooine/<channel_name>"
+	std::string channel_path; // path to the channel, e.g. "swg/<server>/tatooine/<channel_name>"
 	std::string channel_name;
 	uint32_t attempts_counter;
 
