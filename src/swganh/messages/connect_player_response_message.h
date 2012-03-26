@@ -18,8 +18,8 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_CREATE_TICKET_RESPONSE_MESSAGE_H_
-#define SWGANH_MESSAGES_CREATE_TICKET_RESPONSE_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_CONNECT_PLAYER_RESPONSE_MESSAGE_H_
+#define SWGANH_MESSAGES_CONNECT_PLAYER_RESPONSE_MESSAGE_H_
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
@@ -28,24 +28,24 @@
 namespace swganh {
 namespace messages {
 
-struct CreateTicketResponseMessage : public swganh::messages::BaseSwgMessage<CreateTicketResponseMessage> {
+struct ConnectPlayerResponseMessage : public swganh::messages::BaseSwgMessage<ConnectPlayerResponseMessage> {
 	static uint16_t opcount() { return 3; }
-	static uint32_t opcode() { return 0x550A407A; }
+	static uint32_t opcode() { return 0x6137556F; }
 
-	uint32_t message_flag; // 0 = success, 1 = failure
-	uint32_t ticket_id;
+	uint32_t unknown1 = 5; // always 5
+	uint32_t unknown2;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(message_flag);
-		buffer.write(ticket_id);
+		buffer.write(unknown1);
+		buffer.write(unknown2);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		message_flag = buffer.read<uint32_t>();
-		ticket_id = buffer.read<uint32_t>();
+		unknown1 = buffer.read<uint32_t>();
+		unknown2 = buffer.read<uint32_t>();
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_CREATE_TICKET_RESPONSE_MESSAGE_H_
+#endif // SWGANH_MESSAGES_CONNECT_PLAYER_RESPONSE_MESSAGE_H_
