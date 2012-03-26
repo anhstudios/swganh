@@ -128,7 +128,7 @@ namespace command {
             CommandHandler
         > HandlerMap;        
         
-        std::shared_ptr<swganh::simulation::SimulationService> simulation_service_;
+        swganh::simulation::SimulationService* simulation_service_;
         boost::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;
         HandlerMap handlers_;
