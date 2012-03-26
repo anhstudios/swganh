@@ -23,6 +23,7 @@
 
 #include <cstdint>
 #include <algorithm>
+#include <glm/glm.hpp>
 #include <list>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
