@@ -66,10 +66,14 @@ using namespace swganh::messages;
 using std::wregex;
 using std::wsmatch;
 using std::regex_match;
+using std::regex;
+using std::regex_search;
 #else
 using boost::wregex;
 using boost::wsmatch;
 using boost::regex_match;
+using boost::regex;
+using boost::regex_search;
 #endif
 
 MysqlCharacterProvider::MysqlCharacterProvider(KernelInterface* kernel)
