@@ -94,6 +94,17 @@ namespace simulation {
 
         void UnregisterControllerHandler(uint32_t handler_id);
 
+        void SendToAll(anh::ByteBuffer message);
+
+        template <typename T>
+        void SendToAll(const T& message)
+        {
+            anh::ByteBuffer message_buffer;
+            message.serialize(message_buffer);
+
+            SendToAll(message_buffer);
+        }
+
     private:
 
         void onStart();
