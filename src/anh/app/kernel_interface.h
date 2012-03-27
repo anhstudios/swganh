@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <sstream>
 
 #include <boost/asio/io_service.hpp>
 
@@ -37,9 +36,7 @@ struct Version {
     int32_t minor;
 
     std::string ToString() const {
-        std::stringstream ss;
-        ss << major << '.' << minor;
-        return  ss.str();
+        return  std::to_string(major) + "." + std::to_string(minor);
     }
 };
 
