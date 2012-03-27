@@ -18,39 +18,45 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
-#define SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_CHAT_REMOVE_AVATAR_FROM_ROOM_H_
+#define SWGANH_MESSAGES_CHAT_REMOVE_AVATAR_FROM_ROOM_H_
 
 #include <cstdint>
-#include <glm/glm.hpp>
+#include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
 namespace messages {
 
-struct ServerWeatherMessage : public swganh::messages::BaseSwgMessage<ServerWeatherMessage> {
-	static uint16_t opcount() { return 2; }
-	static uint32_t opcode() { return 0x486356EA; }
+struct ChatRemoveAvatarFromRoom : public swganh::messages::BaseSwgMessage<ChatRemoveAvatarFromRoom> {
+	static uint16_t opcount() { return 3; }
+	static uint32_t opcode() { return 0x493E3FFA; }
 
-	uint32_t weather_id;
-	glm::vec3 cloud_vector;
+	std::string game_name; // default: SWG
+	std::string server_name; // galaxy name
+	std::string character_name;
+	std::string channel_path; // path to the channel, e.g. "swg/server/tatooine/<channel_name>" (presumably exclude channel_name)
+
+	ChatRemoveAvatarFromRoom()
+		: game_name("SWG")
+	{}
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(weather_id);
-		buffer.write(cloud_vector.x);
-		buffer.write(cloud_vector.z);
-		buffer.write(cloud_vector.y);
+		buffer.write(game_name);
+		buffer.write(server_name);
+		buffer.write(character_name);
+		buffer.write(channel_path);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		weather_id = buffer.read<uint32_t>();
-		cloud_vector.x = buffer.read<float>();
-		cloud_vector.z = buffer.read<float>();
-		cloud_vector.y = buffer.read<float>();
+		game_name = buffer.read<std::string>();
+		server_name = buffer.read<std::string>();
+		character_name = buffer.read<std::string>();
+		channel_path = buffer.read<std::string>();
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#endif // SWGANH_MESSAGES_CHAT_REMOVE_AVATAR_FROM_ROOM_H_

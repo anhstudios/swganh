@@ -18,39 +18,52 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
-#define SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_ATTRIBUTE_LIST_MESSAGE_H_
+#define SWGANH_MESSAGES_ATTRIBUTE_LIST_MESSAGE_H_
 
 #include <cstdint>
-#include <glm/glm.hpp>
+#include <algorithm>
+#include <list>
+#include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
 namespace messages {
 
-struct ServerWeatherMessage : public swganh::messages::BaseSwgMessage<ServerWeatherMessage> {
-	static uint16_t opcount() { return 2; }
-	static uint32_t opcode() { return 0x486356EA; }
+struct Attribute {
+	std::string name;
+	std::wstring value;
+};
 
-	uint32_t weather_id;
-	glm::vec3 cloud_vector;
+struct AttributeListMessage : public swganh::messages::BaseSwgMessage<AttributeListMessage> {
+	static uint16_t opcount() { return 3; }
+	static uint32_t opcode() { return 0xF3F12F2A; }
+
+	uint64_t object_id;
+	std::list<Attribute> attributes;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(weather_id);
-		buffer.write(cloud_vector.x);
-		buffer.write(cloud_vector.z);
-		buffer.write(cloud_vector.y);
+		buffer.write(object_id);
+		buffer.write<uint32_t>(attributes.size());
+		std::for_each(attributes.begin(), attributes.end(), [&buffer] (Attribute attribute){
+			buffer.write<std::string>(attribute.name);
+			buffer.write<std::wstring>(attribute.value);
+		});
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		weather_id = buffer.read<uint32_t>();
-		cloud_vector.x = buffer.read<float>();
-		cloud_vector.z = buffer.read<float>();
-		cloud_vector.y = buffer.read<float>();
+        object_id = buffer.read<uint64_t>();
+		uint32_t attribute_count = buffer.read<uint32_t>();
+		for(uint32_t i = 0; i < attribute_count; i++) {
+			Attribute attribute;
+			attribute.name = buffer.read<std::string>();
+			attribute.value = buffer.read<std::wstring>();
+			attributes.push_back(attribute);
+		}
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#endif // SWGANH_MESSAGES_ATTRIBUTE_LIST_MESSAGE_H_

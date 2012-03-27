@@ -18,39 +18,43 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
-#define SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_CLIENT_MFD_STATUS_UPDATE_MESSAGE_H_
+#define SWGANH_MESSAGES_CLIENT_MFD_STATUS_UPDATE_MESSAGE_H_
 
 #include <cstdint>
 #include <glm/glm.hpp>
+#include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
 namespace messages {
 
-struct ServerWeatherMessage : public swganh::messages::BaseSwgMessage<ServerWeatherMessage> {
-	static uint16_t opcount() { return 2; }
-	static uint32_t opcode() { return 0x486356EA; }
+struct ClientMfdStatusUpdateMessage : public swganh::messages::BaseSwgMessage<ClientMfdStatusUpdateMessage> {
+	static uint16_t opcount() { return 6; }
+	static uint32_t opcode() { return 0x2D2D6EE1; }
 
-	uint32_t weather_id;
-	glm::vec3 cloud_vector;
+	std::string planet_name;
+	uint64_t object_id;
+	glm::vec3 object_location;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(weather_id);
-		buffer.write(cloud_vector.x);
-		buffer.write(cloud_vector.z);
-		buffer.write(cloud_vector.y);
+		buffer.write(planet_name);
+		buffer.write(object_id);
+		buffer.write(object_location.x);
+		buffer.write(object_location.y);
+		buffer.write(object_location.z);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		weather_id = buffer.read<uint32_t>();
-		cloud_vector.x = buffer.read<float>();
-		cloud_vector.z = buffer.read<float>();
-		cloud_vector.y = buffer.read<float>();
+		planet_name = buffer.read<std::string>();
+		object_id = buffer.read<uint64_t>();
+		object_location.x = buffer.read<float>();
+		object_location.y = buffer.read<float>();
+		object_location.z = buffer.read<float>();
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#endif // SWGANH_MESSAGES_CLIENT_MFD_STATUS_UPDATE_MESSAGE_H_

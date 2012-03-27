@@ -18,31 +18,25 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_BEGIN_TRADE_MESSAGE_H_
-#define SWGANH_MESSAGES_BEGIN_TRADE_MESSAGE_H_
+#include "swganh/messages/login_enum_cluster.h"
+#include "swganh/login/login_client.h"
 
-#include <cstdint>
-#include "anh/byte_buffer.h"
-#include "swganh/messages/base_swg_message.h"
+using namespace swganh::login;
+using namespace swganh::messages;
+using namespace std;
 
-namespace swganh {
-namespace messages {
-
-struct BeginTradeMessage : public swganh::messages::BaseSwgMessage<BeginTradeMessage> {
-	static uint16_t opcount() { return 1; }
-	static uint32_t opcode() { return 0x325932D8; }
+LoginEnumCluster swganh::messages::BuildLoginEnumCluster(shared_ptr<LoginClient> login_client, const vector<GalaxyStatus>& galaxy_status) {
+	LoginEnumCluster message;
+	message.max_account_chars = 2;
 	
-	uint64_t target_id;
+	std::for_each(galaxy_status.begin(), galaxy_status.end(), [&message] (const GalaxyStatus& status) {
+		Cluster cluster;
+		cluster.server_id = status.galaxy_id;
+		cluster.server_name = status.name;
+		cluster.distance = status.distance;
+		
+		message.servers.push_back(cluster);
+	});
 	
-	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(target_id);
-	}
-	
-	void onDeserialize(anh::ByteBuffer buffer) {
-		target_id = buffer.read<uint64_t>();
-	}
-};
-
-}} // namespace swganh::messages
-
-#endif // SWGANH_MESSAGES_BEGIN_TRADE_MESSAGE_H_
+	return message;
+}

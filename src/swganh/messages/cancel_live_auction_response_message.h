@@ -18,39 +18,37 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
-#define SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_CANCEL_LIVE_AUCTION_RESPONSE_MESSAGE_H_
+#define SWGANH_MESSAGES_CANCEL_LIVE_AUCTION_RESPONSE_MESSAGE_H_
 
 #include <cstdint>
-#include <glm/glm.hpp>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
 namespace messages {
 
-struct ServerWeatherMessage : public swganh::messages::BaseSwgMessage<ServerWeatherMessage> {
-	static uint16_t opcount() { return 2; }
-	static uint32_t opcode() { return 0x486356EA; }
+struct CancelLiveAuctionResponseMessage : public swganh::messages::BaseSwgMessage<CancelLiveAuctionResponseMessage> {
+	static uint16_t opcount() { return 4; }
+	static uint32_t opcode() { return 0x7DA2246C; }
 
-	uint32_t weather_id;
-	glm::vec3 cloud_vector;
+	uint64_t item_id;
+	uint32_t error; // 0 = success, 1 = not allowed, 2 = item invalid, 3 = blank, 8 = must be owner of item to cancel, 15 = too late/auction already completed
+	uint8_t unknown;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(weather_id);
-		buffer.write(cloud_vector.x);
-		buffer.write(cloud_vector.z);
-		buffer.write(cloud_vector.y);
+		buffer.write(item_id);
+		buffer.write(error);
+		buffer.write(unknown);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		weather_id = buffer.read<uint32_t>();
-		cloud_vector.x = buffer.read<float>();
-		cloud_vector.z = buffer.read<float>();
-		cloud_vector.y = buffer.read<float>();
+		item_id = buffer.read<uint64_t>();
+		error = buffer.read<uint32_t>();
+		unknown = buffer.read<uint8_t>();
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#endif // SWGANH_MESSAGES_CANCEL_LIVE_AUCTION_RESPONSE_MESSAGE_H_
