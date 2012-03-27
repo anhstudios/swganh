@@ -18,31 +18,16 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_BEGIN_TRADE_MESSAGE_H_
-#define SWGANH_MESSAGES_BEGIN_TRADE_MESSAGE_H_
+#include "swganh/messages/enumerate_character_id.h"
 
-#include <cstdint>
-#include "anh/byte_buffer.h"
-#include "swganh/messages/base_swg_message.h"
+using namespace swganh::character;
+using namespace swganh::messages;
+using namespace std;
 
-namespace swganh {
-namespace messages {
-
-struct BeginTradeMessage : public swganh::messages::BaseSwgMessage<BeginTradeMessage> {
-	static uint16_t opcount() { return 1; }
-	static uint32_t opcode() { return 0x325932D8; }
+EnumerateCharacterId swganh::messages::BuildEnumerateCharacterId(std::vector<CharacterData> characters) {
+	EnumerateCharacterId message;
 	
-	uint64_t target_id;
+	message.characters = move(characters);
 	
-	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(target_id);
-	}
-	
-	void onDeserialize(anh::ByteBuffer buffer) {
-		target_id = buffer.read<uint64_t>();
-	}
-};
-
-}} // namespace swganh::messages
-
-#endif // SWGANH_MESSAGES_BEGIN_TRADE_MESSAGE_H_
+	return message;
+}

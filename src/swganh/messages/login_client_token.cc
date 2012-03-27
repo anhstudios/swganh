@@ -18,31 +18,25 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_BEGIN_TRADE_MESSAGE_H_
-#define SWGANH_MESSAGES_BEGIN_TRADE_MESSAGE_H_
+#include "swganh/messages/login_client_token.h"
+#include "swganh/login/login_client.h"
+#include "swganh/login/account.h"
 
-#include <cstdint>
-#include "anh/byte_buffer.h"
-#include "swganh/messages/base_swg_message.h"
+using namespace swganh::login;
+using namespace swganh::messages;
+using namespace std;
 
-namespace swganh {
-namespace messages {
+using anh::ByteBuffer;
 
-struct BeginTradeMessage : public swganh::messages::BaseSwgMessage<BeginTradeMessage> {
-	static uint16_t opcount() { return 1; }
-	static uint32_t opcode() { return 0x325932D8; }
+LoginClientToken swganh::messages::BuildLoginClientToken(shared_ptr<LoginClient> login_client, const std::string& session_key) {
+	LoginClientToken message;
 	
-	uint64_t target_id;
+	ByteBuffer session_buffer;
+	session_buffer.write(session_key);
 	
-	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(target_id);
-	}
+	message.session_key = session_buffer;
+	message.station_id = login_client->GetAccount()->account_id();
+	message.station_username = login_client->GetUsername();
 	
-	void onDeserialize(anh::ByteBuffer buffer) {
-		target_id = buffer.read<uint64_t>();
-	}
-};
-
-}} // namespace swganh::messages
-
-#endif // SWGANH_MESSAGES_BEGIN_TRADE_MESSAGE_H_
+	return message;
+}

@@ -18,39 +18,48 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
-#define SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_LOGIN_CLIENT_TOKEN_H_
+#define SWGANH_MESSAGES_LOGIN_CLIENT_TOKEN_H_
 
 #include <cstdint>
-#include <glm/glm.hpp>
+#include <memory>
+#include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
+namespace login {
+	class LoginClient;
+}} // namespace swganh::login
+
+namespace swganh {
 namespace messages {
 
-struct ServerWeatherMessage : public swganh::messages::BaseSwgMessage<ServerWeatherMessage> {
-	static uint16_t opcount() { return 2; }
-	static uint32_t opcode() { return 0x486356EA; }
+struct LoginClientToken : public swganh::messages::BaseSwgMessage<LoginClientToken> {
+	static uint16_t opcount() { return 4; }
+	static uint32_t opcode() { return 0xAAB296C6; }
 
-	uint32_t weather_id;
-	glm::vec3 cloud_vector;
+	anh::ByteBuffer session_key;
+	uint32_t station_id;
+	std::string station_username;
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(weather_id);
-		buffer.write(cloud_vector.x);
-		buffer.write(cloud_vector.z);
-		buffer.write(cloud_vector.y);
+		buffer.write<uint32_t>(session_key.size());
+		buffer.append(session_key);
+		buffer.write(station_id);
+		buffer.write(station_username);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		weather_id = buffer.read<uint32_t>();
-		cloud_vector.x = buffer.read<float>();
-		cloud_vector.z = buffer.read<float>();
-		cloud_vector.y = buffer.read<float>();
+		session_key = anh::ByteBuffer(buffer.data(), buffer.read<uint32_t>());
+		buffer.read_position(buffer.read_position() + session_key.size());
+		station_id = buffer.read<int32_t>();
+		station_username = buffer.read<std::string>();
 	}
 };
 
+LoginClientToken BuildLoginClientToken(std::shared_ptr<swganh::login::LoginClient> login_client, const std::string& session_key);
+
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#endif // SWGANH_MESSAGES_LOGIN_CLIENT_TOKEN_H_

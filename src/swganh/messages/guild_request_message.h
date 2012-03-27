@@ -18,39 +18,31 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
-#define SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_GUILD_REQUEST_MESSAGE_H_
+#define SWGANH_MESSAGES_GUILD_REQUEST_MESSAGE_H_
 
 #include <cstdint>
-#include <glm/glm.hpp>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
 namespace messages {
 
-struct ServerWeatherMessage : public swganh::messages::BaseSwgMessage<ServerWeatherMessage> {
+struct GuildRequestMessage : public swganh::messages::BaseSwgMessage<GuildRequestMessage> {
 	static uint16_t opcount() { return 2; }
-	static uint32_t opcode() { return 0x486356EA; }
-
-	uint32_t weather_id;
-	glm::vec3 cloud_vector;
-
+	static uint32_t opcode() { return 0x81EB4EF7; }
+	
+	uint64_t object_id;
+	
 	void onSerialize(anh::ByteBuffer& buffer) const {
-		buffer.write(weather_id);
-		buffer.write(cloud_vector.x);
-		buffer.write(cloud_vector.z);
-		buffer.write(cloud_vector.y);
+		buffer.write(object_id);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
-		weather_id = buffer.read<uint32_t>();
-		cloud_vector.x = buffer.read<float>();
-		cloud_vector.z = buffer.read<float>();
-		cloud_vector.y = buffer.read<float>();
+		object_id = buffer.read<uint64_t>();
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_SERVER_WEATHER_MESSAGE_H_
+#endif // SWGANH_MESSAGES_GUILD_REQUEST_MESSAGE_H_
