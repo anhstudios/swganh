@@ -60,7 +60,7 @@ void ConfigReader::ParseConfig()
     boost::filesystem::path p(config_filename_);
     boost::filesystem::path dir = p.parent_path();
 
-    regex rx("searchTree_([0-9]{2})_([0-9]{1,2})=(.*)");
+    regex rx("searchTree_([0-9]{2})_([0-9]{1,2})=(\")?(.*)\\3");
     smatch match;
     string line;
 
@@ -71,7 +71,7 @@ void ConfigReader::ParseConfig()
         if (regex_search(line, match, rx))
         {
             boost::filesystem::path tmp = dir;
-            boost::filesystem::path filename = match[3].str();
+            boost::filesystem::path filename = match[4].str();
 
             if (!boost::filesystem::is_regular_file(filename))
             {
