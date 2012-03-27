@@ -59,7 +59,7 @@ namespace combat {
     };
 
     typedef std::function<boost::python::object (
-        anh::app::KernelInterface*,
+        swganh::app::SwganhKernel*,
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
 		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)
@@ -70,7 +70,7 @@ namespace combat {
     class CombatService: public swganh::base::BaseService
     {
     public:
-        explicit CombatService(anh::app::KernelInterface* kernel);
+        explicit CombatService(swganh::app::SwganhKernel* kernel);
         
         anh::service::ServiceDescription GetServiceDescription();
 		void RegisterCombatHandler(uint32_t command_crc, CombatHandler&& handler);
@@ -109,8 +109,8 @@ namespace combat {
         // Message Helpers
         void BroadcastCombatSpam(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible>& target, const CombatData& properties, uint32_t damage, const std::string& string_file);
 
-        std::shared_ptr<swganh::simulation::SimulationService> simulation_service_;
-		std::shared_ptr<swganh::command::CommandService> command_service_;
+        swganh::simulation::SimulationService* simulation_service_;
+		swganh::command::CommandService* command_service_;
         void LoadProperties(swganh::command::CommandPropertiesMap command_properties);
 		void onStart();
 

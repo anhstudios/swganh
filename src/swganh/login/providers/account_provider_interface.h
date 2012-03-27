@@ -37,6 +37,7 @@ public:
 
     virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username) = 0;
     virtual uint32_t FindBySessionKey(const std::string& session_key) = 0;
+    virtual void EndSessions() = 0;
     virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key) = 0;
     virtual bool AutoRegisterAccount(std::string username, std::string password) = 0;
 };

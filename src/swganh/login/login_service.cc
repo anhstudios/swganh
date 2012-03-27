@@ -24,8 +24,6 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "anh/app/kernel_interface.h"
-
 #include "anh/database/database_manager.h"
 
 #include "anh/event_dispatcher.h"
@@ -37,6 +35,9 @@
 #include "anh/service/service_manager.h"
 #include "anh/plugin/plugin_manager.h"
 
+#include "swganh/app/swganh_kernel.h"
+#include "swganh/character/character_provider_interface.h"
+
 #include "swganh/messages/enumerate_character_id.h"
 #include "swganh/messages/error_message.h"
 #include "swganh/messages/login_client_token.h"
@@ -45,8 +46,8 @@
 
 #include "swganh/login/authentication_manager.h"
 #include "swganh/login/login_client.h"
-#include "swganh/login/encoders/sha512_encoder.h"
-#include "swganh/login/providers/mysql_account_provider.h"
+#include "swganh/login/providers/account_provider_interface.h"
+#include "swganh/login/encoders/encoder_interface.h"
 
 using namespace anh;
 using namespace app;
@@ -62,8 +63,9 @@ using namespace event_dispatcher;
 using namespace std;
 
 using boost::asio::ip::udp;
+using swganh::app::SwganhKernel;
 
-LoginService::LoginService(string listen_address, uint16_t listen_port, KernelInterface* kernel)
+LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKernel* kernel)
     : BaseService(kernel)
     , swganh::network::BaseSwgServer(kernel->GetIoService())
     , galaxy_status_timer_(kernel->GetIoService())
@@ -71,15 +73,10 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, KernelIn
     , listen_port_(listen_port)
 {
     account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
-    if (!account_provider_)
-    {
-        account_provider_ = make_shared<providers::MysqlAccountProvider>(kernel->GetDatabaseManager());
-    }
-
+    
     shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
-    if (!encoder) {
-        encoder = make_shared<encoders::Sha512Encoder>(kernel->GetDatabaseManager());
-    }
+
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
 }
@@ -139,8 +136,8 @@ shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
 }
 
 void LoginService::onStart() {
-    character_service_ = static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
-	galaxy_service_  = static_pointer_cast<GalaxyService>(kernel()->GetServiceManager()->GetService("GalaxyService"));
+    character_service_ = kernel()->GetServiceManager()->GetService<CharacterService>("CharacterService");
+	galaxy_service_  = kernel()->GetServiceManager()->GetService<GalaxyService>("GalaxyService");
 
     Server::Start(listen_port_);
 
@@ -160,6 +157,8 @@ void LoginService::onStart() {
 
 void LoginService::onStop()
 {
+    // Remove all the sessions
+    account_provider_->EndSessions();
     Server::Shutdown();
 }
 
@@ -318,7 +317,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& logi
     login_client->SendTo(
         BuildLoginClusterStatus(galaxy_status_));
 
-    auto characters = character_service_->GetCharactersForAccount(login_client->GetAccount()->account_id());
+    auto characters = character_provider_->GetCharactersForAccount(login_client->GetAccount()->account_id());
 
     login_client->SendTo(
         BuildEnumerateCharacterId(characters));

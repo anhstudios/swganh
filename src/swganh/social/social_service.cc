@@ -1,20 +1,14 @@
 #include "swganh/social/social_service.h"
 
-#include <cppconn/connection.h>
-#include <cppconn/exception.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/sqlstring.h>
-
-#include <boost/log/trivial.hpp>
-
+#include "anh/logger.h"
+#include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_manager.h"
 #include "anh/database/database_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
 #include "swganh/connection/connection_service.h"
+#include "swganh/character/character_provider_interface.h"
 
 #include "swganh/object/player/player.h"
 #include "swganh/object/object.h"
@@ -24,6 +18,7 @@
 #include "swganh/messages/out_of_band.h"
 
 using namespace anh::database;
+using namespace anh::plugin;
 using namespace std;
 using namespace swganh::connection;
 using namespace swganh::object;
@@ -32,11 +27,15 @@ using namespace swganh::social;
 
 using anh::app::KernelInterface;
 using anh::service::ServiceDescription;
+using swganh::app::SwganhKernel;
 using swganh::base::BaseService;
+using swganh::character::CharacterProviderInterface;
 
-SocialService::SocialService(KernelInterface* kernel)
+SocialService::SocialService(SwganhKernel* kernel)
     : BaseService(kernel)
-{}
+{
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+}
 
 SocialService::~SocialService()
 {}
@@ -56,24 +55,7 @@ ServiceDescription SocialService::GetServiceDescription()
 }
 bool SocialService::AddFriend(const shared_ptr<Player>& player, const string& friend_name)
 {
-    uint64_t friend_id = 0;
-    try {
-        auto conn = kernel()->GetDatabaseManager()->getConnection("galaxy");
-        auto statement = std::unique_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("SELECT id FROM object where custom_name like ? and type_id = ?;")
-            );
-        statement->setString(1, friend_name + '%');
-        statement->setUInt(2, player->GetType());
-        auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
-        if (result_set->next())
-        {
-           friend_id = result_set->getUInt64(1);
-        }
-
-    } catch(sql::SQLException &e) {
-        BOOST_LOG_TRIVIAL(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        BOOST_LOG_TRIVIAL(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
+    uint64_t friend_id = character_provider_->GetCharacterIdByName(friend_name);
     /// If we found our friend, lets add them to our friends list (which will get updated by the player)
     if (friend_id > 0)
     {

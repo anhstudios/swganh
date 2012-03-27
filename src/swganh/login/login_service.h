@@ -59,6 +59,11 @@ class EventInterface;
 }}  // namespace anh::event_dispatcher
 
 namespace swganh {
+namespace character {
+class CharacterProviderInterface;
+}}
+
+namespace swganh {
 namespace login {
     
 class AuthenticationManager;
@@ -75,7 +80,7 @@ public:
     LoginService(
         std::string listen_address, 
         uint16_t listen_port, 
-        anh::app::KernelInterface* kernel);
+        swganh::app::SwganhKernel* kernel);
     ~LoginService();
     
     anh::service::ServiceDescription GetServiceDescription();
@@ -118,8 +123,10 @@ private:
     boost::mutex session_map_mutex_;
     SessionMap session_map_;
 
-    std::shared_ptr<swganh::character::CharacterService> character_service_;
-	std::shared_ptr<swganh::galaxy::GalaxyService> galaxy_service_;
+    swganh::character::CharacterService* character_service_;
+    std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
+
+	swganh::galaxy::GalaxyService* galaxy_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
     

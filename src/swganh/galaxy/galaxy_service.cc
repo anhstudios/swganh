@@ -20,11 +20,10 @@
 
 #include "swganh/galaxy/galaxy_service.h"
 
-#include "anh/app/kernel_interface.h"
 #include "anh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/galaxy/providers/mysql_galaxy_provider.h"
+#include "swganh/galaxy/providers/galaxy_provider_interface.h"
 
 using namespace anh;
 using namespace app;
@@ -33,14 +32,10 @@ using namespace swganh::app;
 using namespace swganh::galaxy;
 using namespace std;
 
-GalaxyService::GalaxyService(anh::app::KernelInterface* kernel)
+GalaxyService::GalaxyService(SwganhKernel* kernel)
     : BaseService(kernel)
 {
 	galaxy_provider_ = kernel->GetPluginManager()->CreateObject<providers::GalaxyProviderInterface>("GalaxyService::GalaxyProvider");
-    if (!galaxy_provider_) 
-    {
-        galaxy_provider_ = make_shared<providers::MysqlGalaxyProvider>(kernel->GetDatabaseManager());
-    }
 }
 
 ServiceDescription GalaxyService::GetServiceDescription()
