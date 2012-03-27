@@ -14,9 +14,11 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/character/character_service.h"
+#include "swganh/character/character_provider_interface.h"
 #include "swganh/connection/ping_server.h"
 #include "swganh/connection/connection_client.h"
-#include "swganh/connection/providers/mysql_session_provider.h"
+#include "swganh/connection/providers/session_provider_interface.h"
 
 #include "swganh/object/object.h"
 #include "swganh/object/player/player.h"
@@ -40,12 +42,13 @@ using namespace std;
 using anh::ValueEvent;
 
 using boost::asio::ip::udp;
+using swganh::app::SwganhKernel;
 
 ConnectionService::ConnectionService(
         string listen_address,
         uint16_t listen_port,
         uint16_t ping_port,
-        KernelInterface* kernel)
+        SwganhKernel* kernel)
     : BaseService(kernel)
     , swganh::network::BaseSwgServer(kernel->GetIoService())
     , ping_server_(nullptr)
@@ -55,10 +58,8 @@ ConnectionService::ConnectionService(
 {
 
     session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
-    if (!session_provider_)
-    {
-        session_provider_ = make_shared<providers::MysqlSessionProvider>(kernel->GetDatabaseManager());
-    }
+
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
 }
 
 ServiceDescription ConnectionService::GetServiceDescription() {
@@ -82,9 +83,9 @@ void ConnectionService::subscribe() {
 void ConnectionService::onStart() {
     ping_server_ = make_shared<PingServer>(kernel()->GetIoService(), ping_port_);
 
-    character_service_ = std::static_pointer_cast<CharacterService>(kernel()->GetServiceManager()->GetService("CharacterService"));
-    login_service_ = std::static_pointer_cast<swganh::login::LoginService>(kernel()->GetServiceManager()->GetService("LoginService"));
-    simulation_service_ = std::static_pointer_cast<swganh::simulation::SimulationService>(kernel()->GetServiceManager()->GetService("SimulationService"));
+    character_service_ = kernel()->GetServiceManager()->GetService<CharacterService>("CharacterService");
+    login_service_ = kernel()->GetServiceManager()->GetService<LoginService>("LoginService");
+    simulation_service_ = kernel()->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
     Server::Start(listen_port_);
 
@@ -139,14 +140,12 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     auto controller = connection_client->GetController();
     if (controller)
     {
-        auto simulation_service = simulation_service_.lock();
-
         /// @TODO REFACTOR Move this functionality out to a PlayerService
-        auto player = simulation_service->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
+        auto player = simulation_service_->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
 		player->AddStatusFlag(swganh::object::player::LD);
         // END todo
 
-        simulation_service->PersistRelatedObjects(controller->GetObject()->GetObjectId());
+        simulation_service_->PersistRelatedObjects(controller->GetObject()->GetObjectId());
 
         // set a timer to 5 minutes to destroy the object, unless logged back in.
         auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
@@ -197,14 +196,6 @@ std::shared_ptr<ConnectionClient> ConnectionService::FindConnectionByPlayerId(ui
     return connection;
 }
 
-shared_ptr<CharacterService> ConnectionService::character_service() {
-    return character_service_.lock();
-}
-
-shared_ptr<LoginService> ConnectionService::login_service() {
-    return login_service_.lock();
-}
-
 void ConnectionService::RemoveClientTimerHandler_(
     const boost::system::error_code& e,
     shared_ptr<boost::asio::deadline_timer> timer,
@@ -218,8 +209,8 @@ void ConnectionService::RemoveClientTimerHandler_(
         {
             auto object = controller->GetObject();
             LOG(warning) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
-            auto simulation_service = simulation_service_.lock();
-            simulation_service->RemoveObject(object);
+
+            simulation_service_->RemoveObject(object);
 
             kernel()->GetEventDispatcher()->Dispatch(
                 make_shared<ValueEvent<shared_ptr<Object>>>("ObjectRemovedEvent", object));
@@ -242,7 +233,7 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
     LOG(warning) << "Handling ClientIdMsg";
 
     // get session key from login service
-    uint32_t account_id = login_service()->GetAccountBySessionKey(message.session_hash);
+    uint32_t account_id = login_service_->GetAccountBySessionKey(message.session_hash);
 
     // authorized
     if (! account_id) {
@@ -274,7 +265,7 @@ void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClien
 
     ClientPermissionsMessage client_permissions;
     client_permissions.galaxy_available = kernel()->GetServiceDirectory()->galaxy().status();
-    client_permissions.available_character_slots = static_cast<uint8_t>(character_service()->GetMaxCharacters(account_id));
+    client_permissions.available_character_slots = static_cast<uint8_t>(character_provider_->GetMaxCharacters(account_id));
     /// @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;
 

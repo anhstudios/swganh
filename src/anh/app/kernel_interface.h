@@ -36,7 +36,7 @@ struct Version {
     int32_t minor;
 
     std::string ToString() const {
-        return major + "." + minor;
+        return  std::to_string(major) + "." + std::to_string(minor);
     }
 };
 

@@ -18,12 +18,17 @@ namespace player {
 }}  // namespace swganh::object
 
 namespace swganh {
+namespace character {
+class CharacterProviderInterface;
+}} // namespace swganh::character
+
+namespace swganh {
 namespace social {
     
     class SocialService : public swganh::base::BaseService
     {
     public:
-        explicit SocialService(anh::app::KernelInterface* kernel);
+        explicit SocialService(swganh::app::SwganhKernel* kernel);
     
         ~SocialService();
 
@@ -32,6 +37,7 @@ namespace social {
         bool AddFriend(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& friend_name);
     private:
         void onStart();
+        std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
     };
 

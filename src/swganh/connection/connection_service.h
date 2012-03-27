@@ -17,7 +17,6 @@
 #include "swganh/base/base_service.h"
 #include "swganh/network/base_swg_server.h"
 
-#include "swganh/character/character_service.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
 #include "swganh/messages/cmd_scene_ready.h"
@@ -35,6 +34,12 @@ class Server;
 }}}  // namespace anh::network::soe
 
 namespace swganh {
+namespace character {
+class CharacterProviderInterface;
+class CharacterService;
+}}
+
+namespace swganh {
 namespace connection {
     
 class PingServer;
@@ -49,7 +54,7 @@ public:
         std::string listen_address, 
         uint16_t listen_port, 
         uint16_t ping_port, 
-        anh::app::KernelInterface* kernel);
+        swganh::app::SwganhKernel* kernel);
 
     anh::service::ServiceDescription GetServiceDescription();
     
@@ -64,10 +69,6 @@ protected:
 
     uint16_t listen_port();
         
-    std::shared_ptr<swganh::character::CharacterService> character_service();
-
-    std::shared_ptr<swganh::login::LoginService> login_service();
-
 private:        
     std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
     
@@ -100,10 +101,11 @@ private:
     std::shared_ptr<PingServer> ping_server_;
     
     std::shared_ptr<providers::SessionProviderInterface> session_provider_;
-    
-    std::weak_ptr<swganh::character::CharacterService> character_service_;
-    std::weak_ptr<swganh::login::LoginService> login_service_;
-    std::weak_ptr<swganh::simulation::SimulationService> simulation_service_;
+    std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
+
+    swganh::character::CharacterService* character_service_;
+    swganh::login::LoginService* login_service_;
+    swganh::simulation::SimulationService* simulation_service_;
 
     std::string listen_address_;
     uint16_t listen_port_;

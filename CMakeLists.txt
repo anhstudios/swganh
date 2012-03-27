@@ -47,6 +47,9 @@ option(BUILD_PLUGINS
 option(BUILD_DOCS
     "Explicitly force building the documentation" OFF)
 
+option(BUILD_EXAMPLES
+    "Explicitly force building of examples" OFF)
+
 option(TREAT_WARNINGS_AS_ERRORS
     "Treat all warnings as errors" ON)
 
@@ -80,6 +83,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     endif()
 
     set(AdditionalBoostLibs chrono)
+
+    find_library(PTHREAD_LIBRARY NAMES pthread)
 endif()
 
 if(MSVC)
@@ -160,6 +165,10 @@ add_subdirectory(src)
 
 if(BUILD_PLUGINS)
     add_subdirectory(plugins)
+endif()
+
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
 endif()
 
 if(SPHINX_FOUND)

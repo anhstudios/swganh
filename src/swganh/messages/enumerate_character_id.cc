@@ -24,7 +24,7 @@ using namespace swganh::character;
 using namespace swganh::messages;
 using namespace std;
 
-EnumerateCharacterId BuildEnumerateCharacterId(std::vector<CharacterData> characters) {
+EnumerateCharacterId swganh::messages::BuildEnumerateCharacterId(std::vector<CharacterData> characters) {
 	EnumerateCharacterId message;
 	
 	message.characters = move(characters);

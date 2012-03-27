@@ -88,7 +88,10 @@ FUNCTION(AddANHExecutable name)
         ENDIF()
     ENDFOREACH()
 	
-	list(REMOVE_ITEM SOURCES ${BINDINGS})
+    list(LENGTH SOURCES _bindings_list_length)
+    if(_bindings_list_length GREATER 1)
+	    list(REMOVE_ITEM SOURCES ${BINDINGS})
+	endif()
 	
     # if unit tests have been specified break out the project into a library to make it testable
     LIST(LENGTH SOURCES _sources_list_length)
@@ -131,6 +134,10 @@ FUNCTION(AddANHExecutable name)
 
     # Create the executable and link to it's library
     ADD_EXECUTABLE(${name} ${SOURCES})
+	SET_TARGET_PROPERTIES(${name}
+		PROPERTIES
+		ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
 
     IF(_project_deps_list_length GREATER 0)
         TARGET_LINK_LIBRARIES(${name} ${ANHEXE_DEPENDS})

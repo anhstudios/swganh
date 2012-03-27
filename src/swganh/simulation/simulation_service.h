@@ -6,8 +6,14 @@
 #include <map>
 #include <memory>
 
+#include "anh/network/soe/server.h"
+
 #include "swganh/base/base_service.h"
 #include "swganh/object/object_controller.h"
+
+namespace anh {
+	class ByteBuffer;
+}
 
 namespace swganh {
 namespace connection {
@@ -27,7 +33,7 @@ namespace simulation {
     class SimulationService : public swganh::base::BaseService
     {
     public:
-        explicit SimulationService(anh::app::KernelInterface* kernel);
+        explicit SimulationService(swganh::app::SwganhKernel* kernel);
     
         ~SimulationService();
 
@@ -36,7 +42,7 @@ namespace simulation {
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
 
-        void RegisterObjectFactories(anh::app::KernelInterface* kernel);
+        void RegisterObjectFactories();
 
         void PersistObject(uint64_t object_id);
 		/*
@@ -93,6 +99,7 @@ namespace simulation {
         void onStart();
 
         std::unique_ptr<SimulationServiceImpl> impl_;
+		anh::network::soe::ServerInterface* server_;
     };
 
 }}  // namespace swganh::simulation

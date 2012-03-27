@@ -56,6 +56,9 @@ options_description AppConfig::BuildConfigDescription() {
         ("plugin_directory", value<string>(&plugin_directory)->default_value("plugins"),
             "Directory containing the application plugins")
 
+        ("tre_config", boost::program_options::value<std::string>(&tre_config),
+            "File containing the tre configuration (live.cfg)")
+
         ("galaxy_name", boost::program_options::value<std::string>(&galaxy_name),
             "Name of the galaxy (cluster) to this process should run")
 
@@ -138,6 +141,9 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
         app_config.galaxy_db.password);
     
     CleanupServices_();
+
+    // Load the tre archive and prepare it for use.
+
 
     // Load the plugin configuration.
     LoadPlugins_(app_config.plugins);
@@ -263,30 +269,30 @@ void SwganhApp::LoadCoreServices_()
 
 	if(strcmp("login", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		auto login_service = make_shared<LoginService>(
-		app_config.login_config.listen_address, 
-		app_config.login_config.listen_port, 
-		kernel_.get());
+		unique_ptr<LoginService> login_service(new LoginService(
+		    app_config.login_config.listen_address, 
+		    app_config.login_config.listen_port, 
+		    kernel_.get()));
 
 		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
 		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
         login_service->login_auto_registration(app_config.login_config.login_auto_registration);
     
-		kernel_->GetServiceManager()->AddService("LoginService", login_service);
+		kernel_->GetServiceManager()->AddService("LoginService", move(login_service));
 	} 
 	if(strcmp("connection", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		auto connection_service = make_shared<ConnectionService>(
+		unique_ptr<ConnectionService> connection_service(new ConnectionService(
 			app_config.connection_config.listen_address, 
 			app_config.connection_config.listen_port, 
 			app_config.connection_config.ping_port, 
-			kernel_.get());
+			kernel_.get()));
 
-		kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
+		kernel_->GetServiceManager()->AddService("ConnectionService", move(connection_service));
 	}
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		auto command_service = make_shared<CommandService>(kernel_.get());
+		unique_ptr<CommandService> command_service(new CommandService(kernel_.get()));
 		// add filters
 		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
@@ -302,33 +308,34 @@ void SwganhApp::LoadCoreServices_()
 		// These will be loaded in alphabetical order because of how std::map generates its keys
 		kernel_->GetServiceManager()->AddService(
             "CommandService", 
-            command_service);
+            move(command_service));
 
 		kernel_->GetServiceManager()->AddService(
 			"CombatService",
-			make_shared<CombatService>(kernel_.get()));
+			unique_ptr<CombatService>(new CombatService(kernel_.get())));
 		
 		kernel_->GetServiceManager()->AddService(
             "CharacterService", 
-            make_shared<CharacterService>(kernel_.get()));
+            unique_ptr<CharacterService>(new CharacterService(kernel_.get())));
         
 		kernel_->GetServiceManager()->AddService(
             "ChatService", 
-            make_shared<ChatService>(kernel_.get()));
+            unique_ptr<ChatService>(new ChatService(kernel_.get())));
 
-		auto simulation_service = make_shared<SimulationService>(kernel_.get());
+		unique_ptr<SimulationService> simulation_service(new SimulationService(kernel_.get()));
 		simulation_service->StartScene("corellia");
 
-		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
+		kernel_->GetServiceManager()->AddService("SimulationService", move(simulation_service));
 
         kernel_->GetServiceManager()->AddService(
             "SocialService", 
-            make_shared<social::SocialService>(kernel_.get()));
+            unique_ptr<social::SocialService>(new social::SocialService(kernel_.get())));
 
 	}
+
 	// always need a galaxy service running
-	auto galaxy_service = make_shared<GalaxyService>(kernel_.get());
-	kernel_->GetServiceManager()->AddService("GalaxyService", galaxy_service);
+	kernel_->GetServiceManager()->AddService("GalaxyService", 
+        unique_ptr<GalaxyService>(new GalaxyService(kernel_.get())));
 }
 
     

@@ -6,12 +6,12 @@
 #include <string>
 
 #include "anh/database/database_manager_interface.h"
-#include "swganh/login/providers/mysql_account_provider.h"
+#include "swganh/login/providers/account_provider_interface.h"
 
 namespace plugins {
 namespace smf_auth {
 
-class SmfAccountProvider : public swganh::login::providers::MysqlAccountProvider 
+class SmfAccountProvider : public swganh::login::providers::AccountProviderInterface
 {
 public:
     SmfAccountProvider(anh::database::DatabaseManagerInterface* database_manager,
@@ -19,7 +19,9 @@ public:
 
     std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
     bool AutoRegisterAccount(std::string username, std::string password);
-
+    virtual void EndSessions();
+    virtual uint32_t FindBySessionKey(const std::string& session_key);
+    virtual bool CreateAccountSession(uint32_t account_id, const std::string& session_key);
 private:
     anh::database::DatabaseManagerInterface* database_manager_;
     std::string table_prefix_;
