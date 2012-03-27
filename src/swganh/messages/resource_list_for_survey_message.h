@@ -18,54 +18,58 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_MESSAGES_SURVEY_MESSAGE_H_
-#define SWGANH_MESSAGES_SURVEY_MESSAGE_H_
+#ifndef SWGANH_MESSAGES_RESOURCE_LIST_FOR_SURVEY_MESSAGE_H_
+#define SWGANH_MESSAGES_RESOURCE_LIST_FOR_SURVEY_MESSAGE_H_
 
 #include <cstdint>
 #include <algorithm>
 #include <list>
+#include <string>
 #include "anh/byte_buffer.h"
 #include "swganh/messages/base_swg_message.h"
 
 namespace swganh {
 namespace messages {
 
-struct SurveyResource {
-	float x;
-	float z = 0;
-	float y;
-	float percentage;
+struct ResourceInfo {
+	std::string name;
+	uint64_t object_id;
+	std::string type;
 };
 
-struct SurveyMessage : public swganh::messages::BaseSwgMessage<SurveyMessage> {
-	static uint16_t opcount() { return 2; }
-	static uint32_t opcode() { return 0x877F79AC; }
+struct ResourceListForSurveyMessage : public swganh::messages::BaseSwgMessage<ResourceListForSurveyMessage> {
+	static uint16_t opcount() { return 4; }
+	static uint32_t opcode() { return 0x8A64B1D5; }
 	
-	std::list<SurveyResource> resources;
-
+	std::list<ResourceInfo> resources;
+	std::string resources_type; // type of all resources in the list
+	uint64_t surveyor_object_id;
+	
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(resources.size());
-		std::for_each(resources.begin(), resources.end(), [&buffer] (SurveyResource resource) {
-			buffer.write(resource.x);
-			buffer.write(resource.z);
-			buffer.write(resource.y);
-			buffer.write(resource.percentage);
+		std::for_each(resources.begin(), resources.end(), [&buffer] (ResourceInfo resource) {
+			buffer.write(resource.name);
+			buffer.write(resource.object_id);
+			buffer.write(resource.type);
 		});
+		buffer.write(resources_type);
+		buffer.write(surveyor_object_id);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
 		uint32_t resources_count = buffer.read<uint32_t>();
 		for (uint32_t i = 0; i < resources_count; i++) {
-			SurveyResource resource;
-			resource.x = buffer.read<float>();
-			resource.z = buffer.read<float>();
-			resource.y = buffer.read<float>();
-			resource.percentage = buffer.read<float>();
+			ResourceInfo resource;
+			resource.name = buffer.read<std::string>();
+			resource.object_id = buffer.read<uint64_t>();
+			resource.type = buffer.read<std::string>();
 			resources.push_back(resource);
 		}
+		resources_type = buffer.read<std::string>();
+		surveyor_object_id = buffer.read<uint64_t>();
 	}
 };
 
 }} // namespace swganh::messages
 
-#endif // SWGANH_MESSAGES_SURVEY_MESSAGE_H_
+#endif // SWGANH_MESSAGES_RESOURCE_LIST_FOR_SURVEY_MESSAGE_H_
