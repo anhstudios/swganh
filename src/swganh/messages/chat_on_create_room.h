@@ -35,12 +35,20 @@ struct ChannelModerator {
 	std::string game_name;
 	std::string server_name; // galaxy name
 	std::string moderator_name;
+
+	ChannelModerator()
+		: game_name("SWG")
+	{}
 };
 
 struct ChannelUser {
 	std::string game_name;
 	std::string server_name; // galaxy name
 	std::string user_name;
+
+	ChannelUser()
+		: game_name("SWG")
+	{}
 };
 
 struct ChatOnCreateRoom : public swganh::messages::BaseSwgMessage<ChatOnCreateRoom> {
@@ -60,6 +68,10 @@ struct ChatOnCreateRoom : public swganh::messages::BaseSwgMessage<ChatOnCreateRo
 	std::list<ChannelModerator> channel_moderators;
 	std::list<ChannelUser> channel_users;
 	uint32_t request_id;
+
+	ChatOnCreateRoom()
+		: game_name("SWG")
+	{}
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(error);

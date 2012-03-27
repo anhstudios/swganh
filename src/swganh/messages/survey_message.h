@@ -32,9 +32,13 @@ namespace messages {
 
 struct SurveyResource {
 	float x;
-	float z = 0;
+	float z; // should be 0, because the z-axis is irrelevant for resources
 	float y;
 	float percentage;
+
+	SurveyResource()
+		: z(0)
+	{}
 };
 
 struct SurveyMessage : public swganh::messages::BaseSwgMessage<SurveyMessage> {

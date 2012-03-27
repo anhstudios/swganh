@@ -38,7 +38,16 @@ struct ChatRoomMessage : public swganh::messages::BaseSwgMessage<ChatRoomMessage
 	std::string sender_character_name;
 	uint32_t channel_id;
 	std::wstring message;
-	uint32_t unknown; // possibly an OutOfBand package, but apparently not used for chat room messages
+	std::wstring out_of_band; // apparently chat room messages usually don't send OutOfBand packages, but implementing just in case
+
+	ChatRoomMessage()
+		: game_name("SWG")
+	{}
+
+	void AddProsePackage(const anh::ByteBuffer* prose_package)
+    {
+        prose_package_ = prose_package;
+    }
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(game_name);
@@ -46,7 +55,7 @@ struct ChatRoomMessage : public swganh::messages::BaseSwgMessage<ChatRoomMessage
 		buffer.write(sender_character_name);
 		buffer.write(channel_id);
 		buffer.write(message);
-		buffer.write(unknown);
+		buffer.write(out_of_band);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
@@ -55,8 +64,11 @@ struct ChatRoomMessage : public swganh::messages::BaseSwgMessage<ChatRoomMessage
 		sender_character_name = buffer.read<std::string>();
 		channel_id = buffer.read<uint32_t>();
 		message = buffer.read<std::wstring>();
-		unknown = buffer.read<uint32_t>();
+		out_of_band = buffer.read<std::wstring>();
 	}
+
+private:
+	const anh::ByteBuffer* prose_package_;
 };
 
 }} // namespace swganh::messages

@@ -38,6 +38,10 @@ struct ChatFriendsListUpdate : public swganh::messages::BaseSwgMessage<ChatFrien
 	std::string friend_name;
 	uint8_t online_status_flag; // 0 = offline, 1 = online
 
+	ChatFriendsListUpdate()
+		: game_name("SWG")
+	{}
+
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(game_name);
 		buffer.write(server_name);

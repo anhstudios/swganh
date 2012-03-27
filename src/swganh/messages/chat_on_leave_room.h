@@ -40,6 +40,10 @@ struct ChatOnLeaveRoom : public swganh::messages::BaseSwgMessage<ChatOnLeaveRoom
 	uint32_t channel_id;
 	uint32_t request_id;
 
+	ChatOnLeaveRoom()
+		: game_name("SWG")
+	{}
+
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(game_name);
 		buffer.write(server_name);

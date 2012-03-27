@@ -40,6 +40,10 @@ struct ChatInstantMessageToCharacter : public swganh::messages::BaseSwgMessage<C
 	uint32_t unknown;
 	uint32_t sequence_number;
 
+	ChatInstantMessageToCharacter()
+		: game_name("SWG")
+	{}
+
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(game_name);
 		buffer.write(server_name);

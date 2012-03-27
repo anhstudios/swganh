@@ -38,6 +38,10 @@ struct ChatRemoveAvatarFromRoom : public swganh::messages::BaseSwgMessage<ChatRe
 	std::string character_name;
 	std::string channel_path; // path to the channel, e.g. "swg/server/tatooine/<channel_name>" (presumably exclude channel_name)
 
+	ChatRemoveAvatarFromRoom()
+		: game_name("SWG")
+	{}
+
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(game_name);
 		buffer.write(server_name);

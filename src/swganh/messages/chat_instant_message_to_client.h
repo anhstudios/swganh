@@ -38,6 +38,10 @@ struct ChatInstantMessageToClient : public swganh::messages::BaseSwgMessage<Chat
 	std::string sender_character_name; // sender (the recipient receives this packet)
 	std::wstring message;
 
+	ChatInstantMessageToClient()
+		: game_name("SWG")
+	{}
+
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(game_name);
 		buffer.write(server_name);

@@ -38,6 +38,10 @@ struct ChatOnReceiveRoomInvitation : public swganh::messages::BaseSwgMessage<Cha
 	std::string system_string; // arbitrary: "system"
 	std::string channel_name;
 
+	ChatOnReceiveRoomInvitation()
+		: game_name("SWG")
+	{}
+
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(game_name);
 		buffer.write(server_name);

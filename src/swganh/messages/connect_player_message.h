@@ -32,7 +32,11 @@ struct ConnectPlayerMessage : public swganh::messages::BaseSwgMessage<ConnectPla
 	static uint16_t opcount() { return 2; }
 	static uint32_t opcode() { return 0x2E365218; }
 
-	uint32_t unknown = 0; // always 0
+	uint32_t unknown; // always 0
+
+	ConnectPlayerMessage()
+		: unknown(0)
+	{}
 
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(unknown);

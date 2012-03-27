@@ -45,6 +45,10 @@ struct ChatPersistentMessageToClient : public swganh::messages::BaseSwgMessage<C
 	uint32_t timestamp;
 	uint32_t unknown;
 
+	ChatPersistentMessageToClient()
+		: game_name("SWG")
+	{}
+
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(sender_character_name);
 		buffer.write(game_name);
