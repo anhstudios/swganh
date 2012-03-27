@@ -5,6 +5,7 @@
 
 #include <array>
 #include <fstream>
+#include <stdexcept>
 
 #ifdef WIN32
 #include <regex>
@@ -14,12 +15,14 @@
 
 #include <boost/filesystem.hpp>
 
+#include <anh/logger.h>
+
 using namespace swganh::tre;
 
 using std::ifstream;
 using std::ios_base;
 using std::move;
-using std::runtime_error;
+using std::invalid_argument;
 using std::string;
 using std::vector;
 
@@ -46,8 +49,13 @@ const std::vector<std::string>& ConfigReader::GetTreFilenames()
 
 void ConfigReader::ParseConfig()
 {    
-    ifstream input_stream;
-    input_stream.open(config_filename_.c_str());
+    ifstream input_stream(config_filename_.c_str());
+    
+    if (!input_stream.is_open())
+    {
+        LOG(fatal) << "Invalid tre configuration file: " << config_filename_;
+        throw invalid_argument("Invalid tre configuration file: " + config_filename_);
+    }
 
     boost::filesystem::path p(config_filename_);
     boost::filesystem::path dir = p.parent_path();
