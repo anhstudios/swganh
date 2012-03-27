@@ -43,7 +43,7 @@ struct BaseSwgMessage {
         uint32_t opcode = buffer.read<uint32_t>();
 
         if (opcode != T::opcode()) {
-            assert(true && "opcodes don't match, expected:" + opcode );
+            assert(true && "opcodes don't match, expected: " + opcode );
             return;
         }
         

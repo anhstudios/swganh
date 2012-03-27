@@ -39,6 +39,7 @@ struct BeginTradeMessage : public swganh::messages::BaseSwgMessage<BeginTradeMes
 	}
 	
 	void onDeserialize(anh::ByteBuffer buffer) {
+		target_id = buffer.read<uint64_t>();
 	}
 };
 

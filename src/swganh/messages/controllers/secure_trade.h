@@ -28,7 +28,7 @@
 namespace swganh {
 namespace messages {
 namespace controllers {
-	
+
 	class SecureTrade
 	{
 	public:

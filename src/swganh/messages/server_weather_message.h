@@ -39,15 +39,15 @@ struct ServerWeatherMessage : public swganh::messages::BaseSwgMessage<ServerWeat
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(weather_id);
 		buffer.write(cloud_vector.x);
-		buffer.write(cloud_vector.y);
 		buffer.write(cloud_vector.z);
+		buffer.write(cloud_vector.y);
 	}
 
 	void onDeserialize(anh::ByteBuffer buffer) {
 		weather_id = buffer.read<uint32_t>();
 		cloud_vector.x = buffer.read<float>();
-		cloud_vector.y = buffer.read<float>();
 		cloud_vector.z = buffer.read<float>();
+		cloud_vector.y = buffer.read<float>();
 	}
 };
 
