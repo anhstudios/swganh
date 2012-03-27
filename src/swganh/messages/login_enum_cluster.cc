@@ -25,7 +25,7 @@ using namespace swganh::login;
 using namespace swganh::messages;
 using namespace std;
 
-LoginEnumCluster BuildLoginEnumCluster(shared_ptr<LoginClient> login_client, const vector<GalaxyStatus>& galaxy_status) {
+LoginEnumCluster swganh::messages::BuildLoginEnumCluster(shared_ptr<LoginClient> login_client, const vector<GalaxyStatus>& galaxy_status) {
 	LoginEnumCluster message;
 	message.max_account_chars = 2;
 	

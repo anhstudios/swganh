@@ -24,7 +24,7 @@ using namespace swganh::login;
 using namespace swganh::messages;
 using namespace std;
 
-LoginClusterStatus BuildLoginClusterStatus(const vector<GalaxyStatus>& galaxy_status) {
+LoginClusterStatus swganh::messages::BuildLoginClusterStatus(const vector<GalaxyStatus>& galaxy_status) {
 	LoginClusterStatus message;
 	
     std::for_each(galaxy_status.begin(), galaxy_status.end(), [&message] (const GalaxyStatus& status) {  

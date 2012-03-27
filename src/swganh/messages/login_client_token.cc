@@ -28,7 +28,7 @@ using namespace std;
 
 using anh::ByteBuffer;
 
-LoginClientToken BuildLoginClientToken(shared_ptr<LoginClient> login_client, const std::string& session_key) {
+LoginClientToken swganh::messages::BuildLoginClientToken(shared_ptr<LoginClient> login_client, const std::string& session_key) {
 	LoginClientToken message;
 	
 	ByteBuffer session_buffer;
