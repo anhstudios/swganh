@@ -13,7 +13,7 @@ namespace controllers {
     class SpatialChat
     {
     public:
-        static uint32_t header() { return 0x000000F4; }
+        static uint32_t message_type() { return 0x000000F4; }
         
         uint64_t speaker_id;
         uint64_t target_id;
@@ -66,6 +66,5 @@ namespace controllers {
     };
 
 }}}  // namespace swganh::messages::controllers
-
 
 #endif  // SWGANH_MESSAGES_CONTROLLERS_SPATIAL_CHAT_H_

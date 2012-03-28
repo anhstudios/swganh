@@ -6,27 +6,30 @@
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
+#include "base_swg_message.h"
 
 namespace swganh {
 namespace messages {
 namespace controllers {
     
-    class UpdatePostureMessage
+    struct UpdatePostureMessage : public BaseSwgMessage<UpdatePostureMessage>
     {
-    public:
-        static uint32_t header() { return 0x131; }
-        
-        uint8_t posture_id;
-        
-        void Serialize(anh::ByteBuffer& buffer) const
+    	static uint16_t Opcount() { return 3; }
+    	static uint32_t Opcode() { return 0x0BDE6B41; }
+
+        int8_t posture_id;
+        uint64_t object_id;
+    	
+    	void OnSerialize(anh::ByteBuffer& buffer) const 
         {
             buffer.write(posture_id);
-    		buffer.write<uint8_t>(1);
+            buffer.write(object_id);
         }
-    
-        void Deserialize(anh::ByteBuffer buffer)
+    	
+    	void OnDeserialize(anh::ByteBuffer buffer)
         {
-            posture_id = buffer.read<uint8_t>();
+            posture_id = buffer.read<int8_t>();
+            object_id = buffer.read<uint64_t>();
         }
     };
 

@@ -38,7 +38,7 @@ struct CombatDefender{
 class CombatActionMessage
 {
 public:
-	static uint32_t header() { return 0xCC; }
+	static uint32_t message_type() { return 0xCC; }
 
 	CombatActionMessage()
         : action_crc(0)

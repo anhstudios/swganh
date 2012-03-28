@@ -278,7 +278,7 @@ public:
         const shared_ptr<ConnectionClient>& client,
         const ObjControllerMessage& message)
     {
-        auto find_iter = controller_handlers_.find(message.header);
+        auto find_iter = controller_handlers_.find(message.message_type);
 
         if (find_iter == controller_handlers_.end())
         {

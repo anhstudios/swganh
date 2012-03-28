@@ -13,7 +13,7 @@ namespace controllers {
     class CommandQueueRemove
     {
     public:
-        static uint32_t header() { return 0x00000117; }
+        static uint32_t message_type() { return 0x00000117; }
         
         uint32_t action_counter;
         float timer;

@@ -21,7 +21,7 @@ namespace controllers {
     class ShowFlyText
     {
     public:
-        static uint32_t header() { return 0x000001BD; }
+        static uint32_t message_type() { return 0x000001BD; }
         
         uint64_t object_id;
         std::string stf_location; // string file without extention ie: combat_effects

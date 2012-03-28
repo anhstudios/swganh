@@ -22,24 +22,24 @@ namespace messages {
         {}
 
         template<typename T>
-        ObjControllerMessage(uint32_t unknown, const T& payload)
+        ObjControllerMessage(uint32_t controller_type, const T& payload)
         {
-            unknown = unknown;
+            controller_type = controller_type;
             tick_count = 0;
-            header = T::header();
+            message_type = T::message_type();
             payload.Serialize(data);
         }
 
-        uint32_t unknown;
-        uint32_t header;
+        uint32_t controller_type;
+        uint32_t message_type;
         uint64_t observable_id;
         uint32_t tick_count;
         anh::ByteBuffer data;
         
         void OnSerialize(anh::ByteBuffer& buffer) const 
         {
-            buffer.write(unknown);
-            buffer.write(header);
+            buffer.write(controller_type);
+            buffer.write(message_type);
             buffer.write(observable_id);
             buffer.write(tick_count);
             buffer.write(data.data(), data.size());  
@@ -47,8 +47,8 @@ namespace messages {
 
         void OnDeserialize(anh::ByteBuffer buffer) 
         {
-            unknown = buffer.read<uint32_t>();
-            header = buffer.read<uint32_t>();  
+            controller_type = buffer.read<uint32_t>();
+            message_type = buffer.read<uint32_t>();  
             observable_id = buffer.read<uint64_t>();
             tick_count = buffer.read<uint32_t>();
             data = anh::ByteBuffer(buffer.data() + buffer.read_position(), buffer.size() - buffer.read_position());

@@ -13,7 +13,7 @@ namespace controllers {
     class CommandQueueEnqueue
     {
     public:
-        static uint32_t header() { return 0x00000116; }
+        static uint32_t message_type() { return 0x00000116; }
         
         uint32_t action_counter;
         uint32_t command_crc;
