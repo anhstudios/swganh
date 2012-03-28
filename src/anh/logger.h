@@ -11,6 +11,7 @@
 #include <boost/log/utility/init/common_attributes.hpp>
 #include <boost/log/sinks/sync_frontend.hpp>
 #include <boost/log/sinks/event_log_backend.hpp>
+#include <boost/log/attributes/named_scope.hpp>
 #include "anh/logger.h"
 //
 
@@ -26,8 +27,8 @@ namespace keywords = boost::log::keywords;
 
 enum severity_level
 {
+    event,
     trace,
-    debug,
     info,
     warning,
     error,
@@ -40,12 +41,12 @@ std::basic_ostream< CharT, TraitsT >& strm, severity_level lvl)
 {
     static const char* const str[] =
     {
+        "event"
         "trace",
-        "debug",
         "info",
         "warning",
         "error",
-        "critical"
+        "fatal"
     };
     if (static_cast< std::size_t >(lvl) < (sizeof(str) / sizeof(*str)))
         strm << str[lvl];
@@ -55,7 +56,19 @@ std::basic_ostream< CharT, TraitsT >& strm, severity_level lvl)
 }
 
 static src::severity_logger<severity_level> SeverityLogger;
+#ifdef _DEBUG
+#define LOG_NET BOOST_LOG_STREAM_SEV(SeverityLogger, event)
+#else
+#define LOG_NET /##/ BOOST_LOG_STREAM_SEV(SeverityLogger, event) 
+#endif
+
 #define LOG(level) BOOST_LOG_STREAM_SEV(SeverityLogger, level)
+
+#ifdef _DEBUG
+#define DLOG(level) BOOST_LOG_STREAM_SEV(SeverityLogger, level)
+#else
+#define DLOG(level) /##/BOOST_LOG_STREAM_SEV(SeverityLogger, level)
+#endif
 
 namespace anh {
 

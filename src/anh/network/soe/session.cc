@@ -143,7 +143,7 @@ void Session::Update() {
 void Session::SendTo(ByteBuffer message) {
     auto message_buffer = server_->AllocateBuffer();
     message_buffer->swap(message);
-
+    
     outgoing_data_messages_.push(message_buffer);
 }
 
@@ -381,6 +381,7 @@ void Session::handleOutOfOrderA_(OutOfOrderA& packet)
 void Session::SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message)
 {
     auto session = shared_from_this();
+    LOG_NET << "SendSoePacket: Server -> Endpoint: " << remote_endpoint_.address().to_string() << " \n" << *message;
     strand_.post([=] ()
     {
         compression_filter_(session, message);
