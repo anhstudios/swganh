@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under GPL v2.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #ifndef SWGANH_MESSAGES_OBJ_CONTROLLER_MESSAGE_H_
 #define SWGANH_MESSAGES_OBJ_CONTROLLER_MESSAGE_H_
@@ -6,15 +8,15 @@
 
 #include "anh/byte_buffer.h"
 
-#include "swganh/messages/base_swg_message.h"
+#include "base_swg_message.h"
 
 namespace swganh {
 namespace messages {
 
     struct ObjControllerMessage : public BaseSwgMessage<ObjControllerMessage>
     {
-        static uint16_t opcount() { return 5; }
-        static uint32_t opcode() { return 0x80CE5E46; }
+        static uint16_t Opcount() { return 5; }
+        static uint32_t Opcode() { return 0x80CE5E46; }
 
         ObjControllerMessage()
         {}
@@ -34,7 +36,7 @@ namespace messages {
         uint32_t tick_count;
         anh::ByteBuffer data;
         
-        void onSerialize(anh::ByteBuffer& buffer) const 
+        void OnSerialize(anh::ByteBuffer& buffer) const 
         {
             buffer.write(unknown);
             buffer.write(header);
@@ -43,7 +45,7 @@ namespace messages {
             buffer.write(data.data(), data.size());  
         }
 
-        void onDeserialize(anh::ByteBuffer buffer) 
+        void OnDeserialize(anh::ByteBuffer buffer) 
         {
             unknown = buffer.read<uint32_t>();
             header = buffer.read<uint32_t>();  

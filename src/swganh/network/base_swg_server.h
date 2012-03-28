@@ -68,19 +68,19 @@ namespace network {
         void RegisterMessageHandler(
             typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType&& handler)
         {
-            auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType>(move(handler));
+            auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType>(std::move(handler));
 
             auto wrapped_handler = [this, shared_handler] (
                 std::shared_ptr<anh::network::soe::Session> client, 
                 std::shared_ptr<anh::ByteBuffer> message)
             {
                 MessageType tmp;
-                tmp.deserialize(*message);
+                tmp.Deserialize(*message);
 
                 (*shared_handler)(std::static_pointer_cast<ConnectionType>(client), std::move(tmp));
             };
 
-            RegisterMessageHandler(MessageType::opcode(), move(wrapped_handler));
+            RegisterMessageHandler(MessageType::Opcode(), std::move(wrapped_handler));
         }
 
         void RegisterMessageHandler(
