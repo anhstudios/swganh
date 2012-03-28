@@ -43,15 +43,17 @@ namespace simulation {
 class SpatialProviderInterface
 {
 public:
-	SpatialProviderInterface(anh::app::KernelInterface* kernel);
-	~SpatialProviderInterface();
+	SpatialProviderInterface(anh::app::KernelInterface* kernel) { };
+	virtual ~SpatialProviderInterface() { };
 
-	void AddObject(std::shared_ptr<swganh::object::Object> obj);
-	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
-	void UpdateObject(std::shared_ptr<swganh::object::Object> obj);
+	virtual void AddObject(std::shared_ptr<swganh::object::Object> obj) = 0;
+	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> obj) = 0;
+	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj) = 0;
 
-	std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(std::shared_ptr<swganh::object::Object>);
-	std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(std::shared_ptr<swganh::object::Object>, float);
+	virtual std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(std::shared_ptr<swganh::object::Object>) = 0;
+	virtual std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(std::shared_ptr<swganh::object::Object>, float) = 0;
 };
+
+}} // namespace swganh::simulation
 
 #endif // SWGANH_SIMULATION_SPATIAL_INDEX_PROVIDER_H_

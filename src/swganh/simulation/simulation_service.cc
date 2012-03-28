@@ -8,6 +8,7 @@
 #include "anh/service/service_manager.h"
 #include "anh/database/database_manager.h"
 #include "anh/network/soe/server_interface.h"
+#include "anh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -31,6 +32,7 @@
 #include "swganh/object/player/player.h"
 
 #include "swganh/simulation/scene_manager.h"
+#include "swganh/simulation/spatial_provider_interface.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
 #include "swganh/messages/obj_controller_message.h"
@@ -59,6 +61,7 @@ public:
     SimulationServiceImpl(SwganhKernel* kernel)
         : kernel_(kernel)
     {
+		spatial_provider_ = kernel->GetPluginManager()->CreateObject<SpatialProviderInterface>("SimulationService::SpatialProvider");
     }
 
     const shared_ptr<ObjectManager>& GetObjectManager()
@@ -145,7 +148,7 @@ public:
         auto object = object_manager_->CreateObjectFromStorage(object_id);
 
         loaded_objects_.insert(make_pair(object_id, object));
-
+		spatial_provider_->AddObject(object); // Add object to spatial indexing.
         return object;
     }
     shared_ptr<Object> LoadObjectById(uint64_t object_id, uint32_t type)
@@ -161,7 +164,7 @@ public:
         auto object = object_manager_->CreateObjectFromStorage(object_id, type);
 
         loaded_objects_.insert(make_pair(object_id, object));
-
+		spatial_provider_->AddObject(object); // Add object to spatial indexing.
         return object;
     }
 
@@ -196,6 +199,8 @@ public:
         {
             scene->RemoveObject(object);
         }
+
+		spatial_provider_->RemoveObject(object); // Remove the object from spatial indexing.
 
         StopControllingObject(object);
 
@@ -357,6 +362,7 @@ private:
     shared_ptr<MovementManager> movement_manager_;
     SwganhKernel* kernel_;
 	ServerInterface* server_;
+	shared_ptr<SpatialProviderInterface> spatial_provider_;
 
     ObjControllerHandlerMap controller_handlers_;
 
