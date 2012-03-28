@@ -31,14 +31,15 @@ namespace messages {
 struct AddItemFailedMessage : public swganh::messages::BaseSwgMessage<AddItemFailedMessage> {
 	static uint16_t opcount() { return 1; }
 	static uint32_t opcode() { return 0x69D3E1D2; }
-	
+
 	uint64_t item_id;
-	
+
 	void onSerialize(anh::ByteBuffer& buffer) const {
 		buffer.write(item_id);
 	}
-	
+
 	void onDeserialize(anh::ByteBuffer buffer) {
+		item_id = buffer.read<uint64_t>();
 	}
 };
 
