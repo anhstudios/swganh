@@ -56,10 +56,11 @@ std::basic_ostream< CharT, TraitsT >& strm, severity_level lvl)
 }
 
 static src::severity_logger<severity_level> SeverityLogger;
+
 #ifdef _DEBUG
 #define LOG_NET BOOST_LOG_STREAM_SEV(SeverityLogger, event)
 #else
-#define LOG_NET /##/ BOOST_LOG_STREAM_SEV(SeverityLogger, event) 
+#define LOG_NET BOOST_LOG_STREAM_SEV(SeverityLogger, event)
 #endif
 
 #define LOG(level) BOOST_LOG_STREAM_SEV(SeverityLogger, level)
@@ -67,7 +68,7 @@ static src::severity_logger<severity_level> SeverityLogger;
 #ifdef _DEBUG
 #define DLOG(level) BOOST_LOG_STREAM_SEV(SeverityLogger, level)
 #else
-#define DLOG(level) /##/BOOST_LOG_STREAM_SEV(SeverityLogger, level)
+#define DLOG(level) BOOST_LOG_STREAM_SEV(SeverityLogger, level)
 #endif
 
 namespace anh {
