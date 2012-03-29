@@ -1,7 +1,7 @@
 #include "creature_message_builder.h"
 #include "creature.h"
 #include "swganh/messages/update_pvp_status_message.h"
-#include "swganh/messages/update_posture_message.h"
+#include "swganh/messages/controllers/posture.h"
 
 using namespace swganh::object::creature;
 using namespace swganh::messages;
@@ -55,9 +55,9 @@ void CreatureMessageBuilder::BuildPostureUpdate(Creature* creature)
 	if (creature->HasObservers())
     {
 		// Update the posture message
-		controllers::UpdatePostureMessage upm;
-		upm.posture_id = creature->GetPosture();
-		creature->GetController()->Notify(ObjControllerMessage(0x1B, upm));
+		controllers::Posture posture;
+		posture.posture_id = creature->GetPosture();
+		creature->GetController()->Notify(ObjControllerMessage(0x1B, posture));
 	}
 }
 

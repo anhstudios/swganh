@@ -129,7 +129,7 @@ public:
     template<typename T>
     void SendTo(const T& message) {
         auto message_buffer = server_->AllocateBuffer();
-        message.serialize(*message_buffer);
+        message.Serialize(*message_buffer);
 
         outgoing_data_messages_.push(message_buffer);
     }

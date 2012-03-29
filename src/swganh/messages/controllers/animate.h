@@ -17,7 +17,7 @@ namespace controllers {
             : animation(animation_)
             , object_id(object_id_)
         {}
-        static uint32_t header() { return 0x000000F2; }
+        static uint32_t message_type() { return 0x000000F2; }
         
         uint64_t object_id;
         std::string animation;

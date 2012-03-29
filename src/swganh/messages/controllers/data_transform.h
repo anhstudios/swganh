@@ -13,7 +13,7 @@ namespace controllers {
     class DataTransform
     {
     public:
-        static uint32_t header() { return 0x00000071; }
+        static uint32_t message_type() { return 0x00000071; }
         uint32_t counter;
         glm::quat orientation;
         glm::vec3 position;

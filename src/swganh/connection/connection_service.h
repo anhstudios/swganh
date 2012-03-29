@@ -84,11 +84,11 @@ private:
 
     void HandleClientIdMsg_(
         const std::shared_ptr<ConnectionClient>& client, 
-        const swganh::messages::ClientIdMsg& message);
+        swganh::messages::ClientIdMsg message);
 
     void HandleCmdSceneReady_(
         const std::shared_ptr<ConnectionClient>& client, 
-        const swganh::messages::CmdSceneReady& message);
+        swganh::messages::CmdSceneReady message);
    
     typedef std::map<
         boost::asio::ip::udp::endpoint,

@@ -107,8 +107,10 @@ void CharacterService::subscribe() {
 }
 
 
-void CharacterService::HandleClientCreateCharacter_(const std::shared_ptr<ConnectionClient>& client, const ClientCreateCharacter& message) {
-    
+void CharacterService::HandleClientCreateCharacter_(
+    const shared_ptr<ConnectionClient>& client, 
+    ClientCreateCharacter message) 
+{    
     uint64_t character_id;
     string error_code;
 	bool name_check;
@@ -144,7 +146,10 @@ void CharacterService::HandleClientCreateCharacter_(const std::shared_ptr<Connec
     }
 }
 
-void CharacterService::HandleClientRandomNameRequest_(const std::shared_ptr<ConnectionClient>& client, const ClientRandomNameRequest& message) {
+void CharacterService::HandleClientRandomNameRequest_(
+    const shared_ptr<ConnectionClient>& client, 
+    ClientRandomNameRequest message)
+{
     ClientRandomNameResponse response;
     response.player_race_iff = message.player_race_iff;
 
@@ -157,7 +162,10 @@ void CharacterService::HandleClientRandomNameRequest_(const std::shared_ptr<Conn
     client->SendTo(response);
 }
 
-void CharacterService::HandleDeleteCharacterMessage_(const std::shared_ptr<LoginClient>& login_client, const DeleteCharacterMessage& message) {
+void CharacterService::HandleDeleteCharacterMessage_(
+    const shared_ptr<LoginClient>& login_client, 
+    DeleteCharacterMessage message)
+{
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
 

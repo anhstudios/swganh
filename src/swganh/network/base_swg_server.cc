@@ -4,9 +4,7 @@
 #include "base_swg_server.h"
 
 #include "anh/logger.h"
-
 #include "anh/byte_buffer.h"
-
 #include "anh/network/soe/session.h"
 
 using namespace swganh::network;

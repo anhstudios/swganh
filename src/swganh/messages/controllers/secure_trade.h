@@ -32,7 +32,7 @@ namespace controllers {
 	class SecureTrade
 	{
 	public:
-		static uint32_t header() { return 0x00000115; }
+		static uint32_t message_type() { return 0x00000115; }
 		
 		uint32_t error;
 		uint64_t trader_id; // sender
