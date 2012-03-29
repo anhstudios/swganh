@@ -105,6 +105,17 @@ namespace simulation {
             SendToAll(message_buffer);
         }
 
+        void SendToAllInScene(anh::ByteBuffer message, uint32_t scene_id);
+
+        template<typename T>
+        void SendToAllInScene(const T& message, uint32_t scene_id)
+        {
+            anh::ByteBuffer message_buffer;
+            message.serialize(message_buffer);
+
+            SendToAllInScene(message_buffer, scene_id);
+        }
+
     private:
 
         void onStart();
