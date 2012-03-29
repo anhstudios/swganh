@@ -24,11 +24,11 @@ namespace observer {
            template <typename T, T t>  class Helper {};
 
            template <typename U>
-           static no deduce(U*, Helper<uint64_t BaseMixin::*, &U::observable_id>* = 0);
-           static yes deduce(...);
+           static no Deduce(U*, Helper<uint64_t BaseMixin::*, &U::observable_id>* = 0);
+           static yes Deduce(...);
 
         public:
-           static const bool value = sizeof(yes) == sizeof(deduce((Base*)(0)));
+           static const bool value = sizeof(yes) == sizeof(Deduce((Base*)(0)));
         };
 
         template<typename Type>
@@ -37,8 +37,8 @@ namespace observer {
             struct Yes { No no[2]; };
 
             struct BaseMixin {
-                void serialize(anh::ByteBuffer&) const {}
-                void deserialize(anh::ByteBuffer) {}
+                void Serialize(anh::ByteBuffer&) const {}
+                void Deserialize(anh::ByteBuffer) {}
             };
 
             struct Base : public Type, public BaseMixin {};
@@ -46,12 +46,12 @@ namespace observer {
             template<typename T, T t> class Helper{};
 
             template<typename U>
-            static No deduce(U*, Helper<void (BaseMixin::*)(anh::ByteBuffer&) const, &U::serialize>* = 0, 
+            static No Deduce(U*, Helper<void (BaseMixin::*)(anh::ByteBuffer&) const, &U::serialize>* = 0, 
                 Helper<void (BaseMixin::*)(anh::ByteBuffer), &U::deserialize>* = 0);
-            static Yes deduce(...);
+            static Yes Deduce(...);
 
         public:
-            static const bool value = sizeof(Yes) == sizeof(deduce(static_cast<Base*>(0)));
+            static const bool value = sizeof(Yes) == sizeof(Deduce(static_cast<Base*>(0)));
         };
     }
 
@@ -67,14 +67,14 @@ namespace observer {
             T tmp = message;
             tmp.observable_id = GetId();
 
-            tmp.serialize(buffer);
+            tmp.Serialize(buffer);
         }
 
         template<typename T>
         typename std::enable_if<!detail::HasObservableId<T>::value, void>::type
         Serialize(const T& message, anh::ByteBuffer& buffer)
         {
-            message.serialize(buffer);
+            message.Serialize(buffer);
         }
 
         template<typename T>

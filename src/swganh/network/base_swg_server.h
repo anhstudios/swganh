@@ -41,7 +41,7 @@ namespace network {
         struct GenericMessageHandler
         {
             typedef std::function<void (
-                const std::shared_ptr<ConnectionType>&, const MessageType&)
+                const std::shared_ptr<ConnectionType>&, MessageType)
             > HandlerType;
         };
 
@@ -59,7 +59,7 @@ namespace network {
             std::shared_ptr<anh::ByteBuffer> message);
         
         template<typename T, typename ConnectionType, typename MessageType>
-        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, const MessageType&), T* instance)
+        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, MessageType), T* instance)
         {
             RegisterMessageHandler<ConnectionType, MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }
@@ -68,19 +68,19 @@ namespace network {
         void RegisterMessageHandler(
             typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType&& handler)
         {
-            auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType>(move(handler));
+            auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType>(std::move(handler));
 
             auto wrapped_handler = [this, shared_handler] (
                 std::shared_ptr<anh::network::soe::Session> client, 
                 std::shared_ptr<anh::ByteBuffer> message)
             {
                 MessageType tmp;
-                tmp.deserialize(*message);
+                tmp.Deserialize(std::move(*message));
 
                 (*shared_handler)(std::static_pointer_cast<ConnectionType>(client), std::move(tmp));
             };
 
-            RegisterMessageHandler(MessageType::opcode(), move(wrapped_handler));
+            RegisterMessageHandler(MessageType::Opcode(), std::move(wrapped_handler));
         }
 
         void RegisterMessageHandler(

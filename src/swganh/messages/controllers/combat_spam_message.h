@@ -31,7 +31,7 @@ namespace controllers {
 class CombatSpamMessage
 {
 public:
-	static uint32_t header() { return 0x134; }
+	static uint32_t message_type() { return 0x134; }
 
 	CombatSpamMessage()
         : attacker_id(0)

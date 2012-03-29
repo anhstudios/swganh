@@ -262,7 +262,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const LoginClientId& message)
+void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, LoginClientId message)
 {
     login_client->SetUsername(message.username);
     login_client->SetPassword(message.password);
