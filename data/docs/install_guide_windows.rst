@@ -16,6 +16,7 @@ The following is a complete list of the 3rd party dependencies that will need to
 - Sphinx
 - Mysql 5.1+
 - SWGANH Dependencies Package
+- SWGANH Game Client
 
 Visual Studio 11.0 Beta
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -84,8 +85,7 @@ Mysql is used for database storage in the ANH project. This guide only covers th
 
 To start, download and install the latest Mysql Installer. Select the default developer installation which will provide you with all the tools needed to run and manage the SWGANH database. When the installation is complete you will need to add the path to mysql to the system PATH. In a default mysql installation this is **C:/Program Files/MySQL/MySQL Server 5.5/bin**.
 
-http://www.mysql.com/downloads/installer/
-
+    http://www.mysql.com/downloads/installer/
 
 Setting Up the SWGANH Environment
 ---------------------------------
@@ -97,7 +97,18 @@ SWGANH Dependencies Package
 
 The Windows environment gives us the opportunity to prebuild the libraries that you will need to build the SWGANH source. Download the latest Visual Studio 11 dependencies from the official SWGANH downloads page and unpack the contents into the workspace directory you created in the previous step. Afterwards, the directory structure should be as follows: **C:/workspace/vendor**
 
-https://github.com/anhstudios/swganh/downloads
+    https://github.com/anhstudios/swganh/downloads
+
+SWGANH Game Client
+~~~~~~~~~~~~~~~~~~
+
+The SWGANH Game Client can be installed from the unofficial SWGANH client installer.
+
+    https://github.com/downloads/anhstudios/swganh/anhclient_setup.exe
+    
+.. note::
+
+    The installer at this time requires a valid Star Wars Galaxies game client installation. In the future there will be an official installer that forgoes this requirement.
 
 Checkout and Build the Source
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
