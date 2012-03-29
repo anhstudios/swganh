@@ -348,6 +348,15 @@ public:
         });
 	}
 
+    void SendToAllInScene(ByteBuffer message, uint32_t scene_id)
+    {
+        for_each(begin(controlled_objects_), end(controlled_objects_), [=] (const pair<uint64_t, shared_ptr<ObjectController>>& pair) {
+            auto controller = pair.second;
+            if (controller->GetObject()->GetSceneId() == scene_id)
+                controller->GetRemoteClient()->SendTo(message);
+        });
+    }
+
 private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManager> scene_manager_;
@@ -466,6 +475,11 @@ void SimulationService::UnregisterControllerHandler(uint32_t handler_id)
 void SimulationService::SendToAll(ByteBuffer message)
 {
     impl_->SendToAll(message);
+}
+
+void SimulationService::SendToAllInScene(ByteBuffer message, uint32_t scene_id)
+{
+    impl_->SendToAllInScene(message, scene_id);
 }
 
 void SimulationService::onStart()
