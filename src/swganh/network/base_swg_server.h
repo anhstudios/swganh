@@ -41,7 +41,7 @@ namespace network {
         struct GenericMessageHandler
         {
             typedef std::function<void (
-                const std::shared_ptr<ConnectionType>&, const MessageType&)
+                const std::shared_ptr<ConnectionType>&, MessageType)
             > HandlerType;
         };
 
@@ -59,7 +59,7 @@ namespace network {
             std::shared_ptr<anh::ByteBuffer> message);
         
         template<typename T, typename ConnectionType, typename MessageType>
-        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, const MessageType&), T* instance)
+        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, MessageType), T* instance)
         {
             RegisterMessageHandler<ConnectionType, MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }
@@ -75,7 +75,7 @@ namespace network {
                 std::shared_ptr<anh::ByteBuffer> message)
             {
                 MessageType tmp;
-                tmp.Deserialize(*message);
+                tmp.Deserialize(std::move(*message));
 
                 (*shared_handler)(std::static_pointer_cast<ConnectionType>(client), std::move(tmp));
             };

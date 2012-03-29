@@ -276,7 +276,7 @@ public:
 
     void HandleObjControllerMessage(
         const shared_ptr<ConnectionClient>& client,
-        const ObjControllerMessage& message)
+        ObjControllerMessage message)
     {
         auto find_iter = controller_handlers_.find(message.message_type);
 
@@ -290,7 +290,7 @@ public:
 
     void HandleSelectCharacter(
         const shared_ptr<ConnectionClient>& client,
-        const SelectCharacter& message)
+        SelectCharacter message)
     {
         auto object = GetObjectById(message.character_id);
 
@@ -485,7 +485,7 @@ void SimulationService::onStart()
 
     RegisterControllerHandler(0x000000F1, [this] (
         const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::ObjControllerMessage& message)
+        const swganh::messages::ObjControllerMessage message)
     {
         this->impl_->GetMovementManager()->HandleDataTransformWithParent(controller, message);
     });

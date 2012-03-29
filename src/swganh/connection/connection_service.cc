@@ -218,7 +218,10 @@ void ConnectionService::RemoveClientTimerHandler_(
     }
 }
 
-void ConnectionService::HandleCmdSceneReady_(const std::shared_ptr<ConnectionClient>& client, const CmdSceneReady& message) {
+void ConnectionService::HandleCmdSceneReady_(
+    const shared_ptr<ConnectionClient>& client, 
+    CmdSceneReady message)
+{
     LOG(warning) << "Handling CmdSceneReady";
 
     client->SendTo(CmdSceneReady());
@@ -229,7 +232,10 @@ void ConnectionService::HandleCmdSceneReady_(const std::shared_ptr<ConnectionCli
         make_shared<ValueEvent<shared_ptr<Object>>>("ObjectReadyEvent", object));
 }
 
-void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClient>& client, const ClientIdMsg& message) {
+void ConnectionService::HandleClientIdMsg_(
+    const shared_ptr<ConnectionClient>& client, 
+    ClientIdMsg message)
+{
     LOG(warning) << "Handling ClientIdMsg";
 
     // get session key from login service
