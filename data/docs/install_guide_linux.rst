@@ -78,7 +78,7 @@ Now that the environment is ready you can build boost by simply running the b2 c
     ./b2
     sudo ./b2 install
     
-Due to a bug in the bootstrap.sh file the Python root is not detected. For builds using the Ubuntu package version of Python this is not a problem, however, if you have installed Python to a non-standard location then you may get compile errors. In that case open up the *project-config.jam* file and add the path to the Python root as in the example below.
+Due to a bug in the bootstrap.sh file the Python root is not detected. For builds using the Ubuntu package version of Python this is not a problem, however, if you have installed Python to a non-standard location then you may get compile errors. In that case open up the **project-config.jam** file and add the path to the Python root as in the example below.
 
 ::
 
@@ -118,7 +118,7 @@ Next we'll copy in some files that are needed to run the server.
 Setting up the Database
 -----------------------
 
-A new database installation is needed before the server can be started for the first time. To install the server navigate to the *swganh/data/sql* folder and execute the following command:
+A new database installation is needed before the server can be started for the first time. To install the server navigate to the **swganh/data/sql** folder and execute the following command:
 
 ::
 
@@ -141,11 +141,25 @@ Configuring and Running the Server
 
 You are now entering the home stretch, all that's left is to update the SWGANH configuration and kick off the server.
 
-Open the *swganh/build/config/swganh.cfg* file and edit the following items. First update the mysql database connection information with the address and user you used to setup the database in the previous section.
+Open the **swganh/build/config/swganh.cfg** file and edit the following items. First you will need to update the **tre_config** setting with the path to the **live.cfg** file in your SWGANH Game Client directory.
 
-Next, set the address in the *service.connection* section to your public facing IP and then save and close the file.
+.. note::
 
-You can now kick off the server by running this command in the *swganh/build* directory:
+    Some older SWGANH clients have this file named as **swg2uu_live.cfg**.
+    
+.. note::
+
+    The game client does not run on unix environments, in this case the easiest solution is to upload a client directory from an already existing windows installation.
+    
+.. warning::
+
+    Be sure to specify the live.cfg file that is **inside** the SWGANH Game Client directory and **NOT** the one inside the official Star Wars Galaxies directory.
+
+Second, update the mysql database connection information with the address and user you used to setup the database in the previous section.
+
+Finally, set the address in the **service.connection** section to your public facing IP and then save and close the file.
+
+You can now kick off the server by running this command in the **swganh/build** directory:
 
 ::
 
@@ -157,11 +171,10 @@ To start the server in a background process you can use a tool like screen.
 
     screen ./bin/swganh
     
-Hitting *ctrl+a* then *ctrl+d* will disconnect from the screen session but will leave the server running in the background. You can rejoin the server to shut it down with the following command:
+Hitting **ctrl+a** then **ctrl+d** will disconnect from the screen session but will leave the server running in the background. You can rejoin the server to shut it down with the following command:
 
 ::
 
     screen -r
     
-No output is sent to the console, you can view output from the server by viewing the log at *build/swganh.log*.
-
+No output is sent to the console, you can view output from the server by viewing the log at **build/swganh.log**.
