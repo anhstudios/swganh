@@ -8,6 +8,8 @@
 #include "anh/network/soe/session.h"
 
 using namespace swganh::network;
+
+using std::move;
         
 BaseSwgServer::BaseSwgServer(
     boost::asio::io_service& io_service)
@@ -15,10 +17,10 @@ BaseSwgServer::BaseSwgServer(
 {}
 
 void BaseSwgServer::HandleMessage(
-    std::shared_ptr<anh::network::soe::Session> connection, 
-    std::shared_ptr<anh::ByteBuffer> message)
+    const std::shared_ptr<anh::network::soe::Session>& connection, 
+    anh::ByteBuffer message)
 {
-    uint32_t message_type = message->peekAt<uint32_t>(message->read_position() + sizeof(uint16_t));
+    uint32_t message_type = message.peekAt<uint32_t>(message.read_position() + sizeof(uint16_t));
 
     auto find_iter = message_handlers_.find(message_type);
     if (find_iter == message_handlers_.end())
@@ -29,8 +31,8 @@ void BaseSwgServer::HandleMessage(
 
     try 
     {
-        find_iter->second(connection, message);
-        LOG_NET << "HandleMessage: "  << std::hex << message_type << " Client -> Server \n" << *message;
+        LOG_NET << "HandleMessage: "  << std::hex << message_type << " Client -> Server \n" << message;
+        find_iter->second(connection, move(message));
     }
     catch(std::exception& e)
     {

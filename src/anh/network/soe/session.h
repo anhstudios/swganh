@@ -104,7 +104,7 @@ public:
      *
      * @return List of unacknowledged data channel messages.
      */
-    std::vector<std::shared_ptr<anh::ByteBuffer>> GetUnacknowledgedMessages() const;
+    std::vector<anh::ByteBuffer> GetUnacknowledgedMessages() const;
 
     /**
     * Sends a data channel message to the remote client.
@@ -128,15 +128,15 @@ public:
     */
     template<typename T>
     void SendTo(const T& message) {
-        auto message_buffer = server_->AllocateBuffer();
-        message.Serialize(*message_buffer);
+        ByteBuffer message_buffer;
+        message.Serialize(message_buffer);
 
-        outgoing_data_messages_.push(message_buffer);
+        outgoing_data_messages_.push(std::move(message_buffer));
     }
 
-    void HandleMessage(const std::shared_ptr<anh::ByteBuffer>& message);
+    void HandleMessage(anh::ByteBuffer message);
 
-    void HandleProtocolMessage(const std::shared_ptr<anh::ByteBuffer>& message);
+    void HandleProtocolMessage(anh::ByteBuffer message);
 
     /**
      * Clears each message pump.
@@ -157,7 +157,7 @@ public:
     ServerInterface* server();
 
 private:
-    typedef std::list<std::pair<uint16_t, std::shared_ptr<anh::ByteBuffer>>> SequencedMessageMap;
+    typedef std::list<std::pair<uint16_t, anh::ByteBuffer>> SequencedMessageMap;
 
     typedef anh::ByteBuffer(*HeaderBuilder)(uint16_t);
 
@@ -174,7 +174,10 @@ private:
     void handleDataFragA_(DataFragA& packet);
     void handleAckA_(AckA& packet);
     void handleOutOfOrderA_(OutOfOrderA& packet);
-    void SendSoePacket_(const std::shared_ptr<anh::ByteBuffer>& message);
+    void SendSoePacket_(anh::ByteBuffer message);
+    void SendSoePacketInternal(anh::ByteBuffer message);
+    void HandleMessageInternal(anh::ByteBuffer message);
+    void HandleProtocolMessageInternal(anh::ByteBuffer message);
 
     bool SequenceIsValid_(const uint16_t& sequence);
     void AcknowledgeSequence_(const uint16_t& sequence);
@@ -204,7 +207,7 @@ private:
     // Net Stats
     NetStatsServer						server_net_stats_;
 
-    Concurrency::concurrent_queue<std::shared_ptr<anh::ByteBuffer>> outgoing_data_messages_;
+    Concurrency::concurrent_queue<anh::ByteBuffer> outgoing_data_messages_;
 
     std::list<anh::ByteBuffer>			incoming_fragmented_messages_;
     uint16_t							incoming_fragmented_total_len_;

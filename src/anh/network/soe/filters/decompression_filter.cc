@@ -33,9 +33,7 @@ DecompressionFilter::DecompressionFilter(uint32_t max_message_size)
     , decompression_output_(max_message_size_)
 {}
 
-void DecompressionFilter::operator()(
-    const std::shared_ptr<Session>& session,
-    const std::shared_ptr<ByteBuffer>& message)
+void DecompressionFilter::operator()(Session* session, ByteBuffer* message)
 {
     uint32_t size_without_compression_bit = message->size() - 1;
     uint8_t compressed_bit = message->peekAt<uint8_t>(size_without_compression_bit);
@@ -47,7 +45,7 @@ void DecompressionFilter::operator()(
     }
 }
 
-void DecompressionFilter::Decompress_(const shared_ptr<ByteBuffer>& buffer) 
+void DecompressionFilter::Decompress_(ByteBuffer* buffer) 
 {
     auto packet_data = buffer->raw();    
 

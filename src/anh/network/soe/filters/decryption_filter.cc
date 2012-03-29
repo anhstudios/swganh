@@ -28,9 +28,7 @@ using namespace anh::network::soe;
 using namespace filters;
 using namespace std;
 
-void DecryptionFilter::operator()(
-    const shared_ptr<Session>& session,
-    const shared_ptr<ByteBuffer>& message) const
+void DecryptionFilter::operator()(Session* session, ByteBuffer* message) const
 {    
     if (message->size() <= 2)
     {

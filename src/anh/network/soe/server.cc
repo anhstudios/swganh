@@ -57,12 +57,13 @@ void Server::Shutdown(void) {
     socket_.close();
 }
     
-void Server::SendTo(const udp::endpoint& endpoint, const shared_ptr<ByteBuffer>& buffer) {
-    socket_.async_send_to(boost::asio::buffer(buffer->data(), buffer->size()), 
+void Server::SendTo(const udp::endpoint& endpoint, ByteBuffer buffer) {
+    socket_.async_send_to(boost::asio::buffer(buffer.data(), buffer.size()), 
         endpoint, 
-        [this, buffer](const boost::system::error_code& error, std::size_t bytes_transferred)
+        [this] (const boost::system::error_code& error, std::size_t bytes_transferred)
     {
-        if (bytes_transferred == 0) {
+        if (bytes_transferred == 0)
+        {
             LOG(warning) << "Sent 0 bytes";
         }
 
@@ -79,10 +80,10 @@ void Server::AsyncReceive() {
             {
                 bytes_recv_ += bytes_transferred;
 
-                auto message = AllocateBuffer();
-                message->write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
+                ByteBuffer message;
+                message.write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
 
-                GetSession(current_remote_endpoint_)->HandleProtocolMessage(message);
+                GetSession(current_remote_endpoint_)->HandleProtocolMessage(move(message));
             }
 
             AsyncReceive();
