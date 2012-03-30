@@ -69,7 +69,7 @@ void ByteBuffer::swap(ByteBuffer& other) {
     std::swap(write_position_, other.write_position_);
 }
 
-void ByteBuffer::append(const ByteBuffer& other) {
+void ByteBuffer::append(ByteBuffer other) {
     write(other.data(), other.size());
 }
 

@@ -34,12 +34,10 @@ namespace soe {
 
 namespace filters {
 	
-class CrcOutFilter {
-public:    
-    void operator()(
-        const std::shared_ptr<Session>& session,
-        const std::shared_ptr<ByteBuffer>& message);
-};
+    struct CrcOutFilter {
+    public:    
+        void operator()(Session* session, ByteBuffer* message);
+    };
 
 }}}} // namespace anh::network::soe::filters
 

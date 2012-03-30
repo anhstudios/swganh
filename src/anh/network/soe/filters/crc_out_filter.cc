@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "anh/network/soe/filters/crc_out_filter.h"
+#include "crc_out_filter.h"
 
 #include "anh/byte_buffer.h"
 #include "anh/crc.h"
@@ -29,9 +29,7 @@ using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-void CrcOutFilter::operator()(
-    const std::shared_ptr<Session>& session,
-    const std::shared_ptr<ByteBuffer>& message) 
+void CrcOutFilter::operator()(Session* session, ByteBuffer* message) 
 {
     uint32_t packet_crc = memcrc(message->data(), message->size(), session->crc_seed());
     

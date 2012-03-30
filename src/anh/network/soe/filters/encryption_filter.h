@@ -37,9 +37,7 @@ namespace filters {
 
 class EncryptionFilter {
 public:
-    void operator()(
-        const std::shared_ptr<Session>& session,
-        const std::shared_ptr<ByteBuffer>& message);
+    void operator()(Session* session, ByteBuffer* message);
 
 private:
 	void Encrypt_(char* buffer, uint32_t len, uint32_t seed) const;

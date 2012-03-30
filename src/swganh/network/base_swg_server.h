@@ -47,7 +47,7 @@ namespace network {
 
         typedef std::function<void (
             const std::shared_ptr<anh::network::soe::Session>&, 
-            std::shared_ptr<anh::ByteBuffer> message)
+            anh::ByteBuffer message)
         > SwgMessageHandler;
 
         typedef std::runtime_error HandlerAlreadyDefined;
@@ -55,8 +55,8 @@ namespace network {
         typedef std::runtime_error ValidClientRequired;
         
         void HandleMessage(
-            std::shared_ptr<anh::network::soe::Session> connection, 
-            std::shared_ptr<anh::ByteBuffer> message);
+            const std::shared_ptr<anh::network::soe::Session>& connection, 
+            anh::ByteBuffer message);
         
         template<typename T, typename ConnectionType, typename MessageType>
         void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, MessageType), T* instance)
@@ -71,11 +71,11 @@ namespace network {
             auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType>(std::move(handler));
 
             auto wrapped_handler = [this, shared_handler] (
-                std::shared_ptr<anh::network::soe::Session> client, 
-                std::shared_ptr<anh::ByteBuffer> message)
+                const std::shared_ptr<anh::network::soe::Session>& client, 
+                anh::ByteBuffer message)
             {
                 MessageType tmp;
-                tmp.Deserialize(std::move(*message));
+                tmp.Deserialize(std::move(message));
 
                 (*shared_handler)(std::static_pointer_cast<ConnectionType>(client), std::move(tmp));
             };

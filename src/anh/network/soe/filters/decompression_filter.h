@@ -38,30 +38,28 @@ namespace soe {
 
 namespace filters {
 
-/**
- * @brief Decompresses packet data that is flagged as compressed.
- */
-class DecompressionFilter {
-public:
     /**
-     * @param max_receive_size Maximum allowed size of incoming messages.
+     * @brief Decompresses packet data that is flagged as compressed.
      */
-    explicit DecompressionFilter(uint32_t max_message_size);
-
-    void operator()(
-        const std::shared_ptr<Session>& session,
-        const std::shared_ptr<ByteBuffer>& message);
-
-private:
-    DecompressionFilter();
-
-	void Decompress_(const std::shared_ptr<anh::ByteBuffer>& buffer);
+    class DecompressionFilter {
+    public:
+        /**
+         * @param max_receive_size Maximum allowed size of incoming messages.
+         */
+        explicit DecompressionFilter(uint32_t max_message_size);
     
-    uint32_t max_message_size_;
+        void operator()(Session* session, ByteBuffer* message);
     
-    z_stream zstream_;
-    std::vector<uint8_t> decompression_output_;
-};
+    private:
+        DecompressionFilter();
+    
+    	void Decompress_(anh::ByteBuffer* buffer);
+        
+        uint32_t max_message_size_;
+        
+        z_stream zstream_;
+        std::vector<uint8_t> decompression_output_;
+    };
 
 }}}} // namespace anh::network::soe::filters
 
