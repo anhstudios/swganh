@@ -84,11 +84,13 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKe
 LoginService::~LoginService() {}
 
 service::ServiceDescription LoginService::GetServiceDescription() {
+    auto listen_address = Resolve(listen_address_);
+
     service::ServiceDescription service_description(
         "ANH Login Service",
         "login",
         "0.1",
-        listen_address_,
+        listen_address,
         0,
         listen_port_,
         0);
