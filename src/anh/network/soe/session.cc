@@ -140,7 +140,7 @@ void Session::Update() {
     }
 }
 
-void Session::SendTo(ByteBuffer message) 
+void Session::SendTo(ByteBuffer message)
 {
     outgoing_data_messages_.push(move(message));
 }
@@ -198,12 +198,12 @@ void Session::HandleMessageInternal(anh::ByteBuffer message)
                 }
                 else
                 {
-                    LOG(warning) << "Unhandled SOE Opcode: " 
+                    LOG(warning) << "Unhandled SOE Opcode: "
                         << std::hex << soe_opcode << "\n\n" << message;
                 }
-        }        
+        }
     } catch(const std::exception& e) {
-        LOG(warning) << "Error handling protocol message " 
+        LOG(warning) << "Error handling protocol message "
             << std::hex << soe_opcode << "\n\n" << e.what();
     }
 }
@@ -248,7 +248,7 @@ void Session::SendSequencedMessage_(HeaderBuilder header_builder, ByteBuffer mes
     sent_messages_.push_back(make_pair(message_sequence, move(data_channel_message)));
 }
 
-void Session::handleSessionRequest_(SessionRequest& packet)
+void Session::handleSessionRequest_(SessionRequest packet)
 {
     connection_id_ = packet.connection_id;
     crc_length_ = packet.crc_length;
@@ -267,23 +267,23 @@ void Session::handleSessionRequest_(SessionRequest& packet)
     LOG(info) << "Created Session [" << connection_id_ << "] @ " << remote_endpoint_.address().to_string() << ":" << remote_endpoint_.port();
 }
 
-void Session::handleMultiPacket_(MultiPacket& packet)
+void Session::handleMultiPacket_(MultiPacket packet)
 {
     std::for_each(
-        begin(packet.packets), 
-        end(packet.packets), 
-        [=](anh::ByteBuffer& buffer) 
+        begin(packet.packets),
+        end(packet.packets),
+        [=](anh::ByteBuffer& buffer)
     {
         HandleMessage(move(buffer));
     });
 }
 
-void Session::handleDisconnect_(Disconnect& packet)
+void Session::handleDisconnect_(Disconnect packet)
 {
     Close();
 }
 
-void Session::handlePing_(Ping& packet)
+void Session::handlePing_(Ping packet)
 {
     Ping pong;
 
@@ -292,7 +292,7 @@ void Session::handlePing_(Ping& packet)
     SendSoePacket_(std::move(buffer));
 }
 
-void Session::handleNetStatsClient_(NetStatsClient& packet)
+void Session::handleNetStatsClient_(NetStatsClient packet)
 {
     server_net_stats_.client_tick_count = packet.client_tick_count;
 
@@ -301,7 +301,7 @@ void Session::handleNetStatsClient_(NetStatsClient& packet)
     SendSoePacket_(std::move(buffer));
 }
 
-void Session::handleChildDataA_(ChildDataA& packet)
+void Session::handleChildDataA_(ChildDataA packet)
 {
     if(!SequenceIsValid_(packet.sequence)) {
         LOG(warning) << "Invalid sequence: " << packet.sequence << "; Current sequence " << this->next_client_sequence_;
@@ -311,15 +311,15 @@ void Session::handleChildDataA_(ChildDataA& packet)
     AcknowledgeSequence_(packet.sequence);
 
     std::for_each(
-        begin(packet.messages), 
+        begin(packet.messages),
         end(packet.messages),
-        [this] (ByteBuffer& message) 
+        [this] (ByteBuffer& message)
     {
         server_->HandleMessage(this->shared_from_this(), std::move(message));
     });
 }
 
-void Session::handleDataFragA_(DataFragA& packet)
+void Session::handleDataFragA_(DataFragA packet)
 {
     if(!SequenceIsValid_(packet.sequence))
         return;
@@ -363,7 +363,7 @@ void Session::handleDataFragA_(DataFragA& packet)
 
 }
 
-void Session::handleAckA_(AckA& packet)
+void Session::handleAckA_(AckA packet)
 {
     auto it = find_if(
         sent_messages_.begin(),
@@ -378,12 +378,12 @@ void Session::handleAckA_(AckA& packet)
     last_acknowledged_sequence_ = packet.sequence;
 }
 
-void Session::handleOutOfOrderA_(OutOfOrderA& packet)
+void Session::handleOutOfOrderA_(OutOfOrderA packet)
 {
     std::for_each(
-        begin(sent_messages_), 
+        begin(sent_messages_),
         end(sent_messages_),
-        [=](const SequencedMessageMap::value_type& item) 
+        [=](const SequencedMessageMap::value_type& item)
     {
         SendSoePacket_(item.second);
     });
