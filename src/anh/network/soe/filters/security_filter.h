@@ -45,9 +45,7 @@ namespace filters {
          */
         explicit SecurityFilter(uint32_t max_receive_size);
     
-        void operator()(
-            const std::shared_ptr<Session>& session,
-            const std::shared_ptr<ByteBuffer>& message) const;
+        void operator()(Session* session, ByteBuffer* message) const;
     
     private:
         // Disable default construction.

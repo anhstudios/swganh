@@ -32,9 +32,7 @@ SecurityFilter::SecurityFilter(uint32_t max_receive_size)
     : max_receive_size_(max_receive_size)
 {}
 
-void SecurityFilter::operator()(
-    const shared_ptr<Session>& session,
-    const shared_ptr<ByteBuffer>& message) const
+void SecurityFilter::operator()(Session* session, ByteBuffer* message) const
 {
     uint32_t message_size = message->size();
 

@@ -54,7 +54,7 @@ anh::ByteBuffer BuildFragmentedDataChannelHeader(uint16_t sequence);
  * @param data_list A list of game messages to pack.
  * @return A single data channel message containing 1 or more game messages.
  */
-anh::ByteBuffer PackDataChannelMessages(std::list<std::shared_ptr<anh::ByteBuffer>>& data_list);
+anh::ByteBuffer PackDataChannelMessages(std::list<anh::ByteBuffer> data_list);
 
 /**
  * Splits a large data channel message into fragments.

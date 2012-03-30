@@ -21,8 +21,6 @@
 #ifndef ANH_NETWORK_SOE_CRC_IN_FILTER_H_
 #define ANH_NETWORK_SOE_CRC_IN_FILTER_H_
 
-#include <memory>
-
 namespace anh {
 
     class ByteBuffer;
@@ -34,13 +32,10 @@ namespace soe {
 
 namespace filters {
 
-    class CrcInFilter {
+    struct CrcInFilter 
+    {
     public:
-    	CrcInFilter(void);
-    
-        void operator()(
-            const std::shared_ptr<Session>& session,
-            const std::shared_ptr<ByteBuffer>& message) const;
+        void operator()(Session* session, ByteBuffer* message) const;
     };
 
 }}}} // namespace anh::network::soe::filters

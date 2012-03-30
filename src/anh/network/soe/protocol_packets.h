@@ -318,21 +318,21 @@ struct ChildDataA
 
                 // Varify that we have enough bytes left to copy.
                 if((buffer.size()) - buffer.read_position() >= next_chunk_size) {
-                    messages.push_back(std::make_shared<anh::ByteBuffer>(buffer.data() + buffer.read_position(), next_chunk_size));
+                    messages.emplace_back(buffer.data() + buffer.read_position(), next_chunk_size);
                     buffer.read_position(buffer.read_position() + next_chunk_size);
                 } else {
                     break;
                 }
             }
         } else {
-            messages.push_back(std::make_shared<anh::ByteBuffer>((const unsigned char*)buffer.data() + 4, buffer.size() - 4));
+            messages.emplace_back((const unsigned char*)buffer.data() + 4, buffer.size() - 4);
         }
     }
 
     uint16_t							soe_opcode;
     uint16_t							sequence;
     uint16_t							priority;
-    std::list<std::shared_ptr<anh::ByteBuffer>>			messages;
+    std::list<anh::ByteBuffer>			messages;
 };
 
 struct DataFragA

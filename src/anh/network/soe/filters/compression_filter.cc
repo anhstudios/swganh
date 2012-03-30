@@ -18,12 +18,13 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "anh/network/soe/filters/compression_filter.h"
+#include "compression_filter.h"
 
 #include <vector>
 
 #include <zlib.h>
 
+#include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
 
 using namespace anh;
@@ -31,20 +32,21 @@ using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-void CompressionFilter::operator()(
-        const std::shared_ptr<Session>& session,
-        const std::shared_ptr<ByteBuffer>& message)
+void CompressionFilter::operator()(Session* session, ByteBuffer* message)
 {
-    if(message->size() > session->receive_buffer_size() - 20) {
+    if(message->size() > session->receive_buffer_size() - 20)
+    {
         Compress_(message);
 
         message->write<uint8_t>(1); // compressed
-    } else {        
+    } 
+    else 
+    {        
         message->write<uint8_t>(0); // not compressed
     }
 }
 
-void CompressionFilter::Compress_(const shared_ptr<ByteBuffer>& message) 
+void CompressionFilter::Compress_(ByteBuffer* message) 
 {
     vector<uint8_t>& packet_data = message->raw();
     uint32_t packet_size = message->size();

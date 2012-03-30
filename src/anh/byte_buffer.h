@@ -70,7 +70,7 @@ public:
     *
     * @param other ByteBuffer to append to the current instance.
     */
-    void append(const ByteBuffer& other);
+    void append(ByteBuffer other);
 
     /*! Writes the data value to the ByteBuffer.
     *

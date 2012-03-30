@@ -38,9 +38,9 @@ class MockServer : public ServerInterface {
 public:
     MOCK_METHOD1(Start, void(uint16_t port));
     MOCK_METHOD0(Shutdown, void());
-    MOCK_METHOD2(SendTo, void(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer));
+    MOCK_METHOD2(SendTo, void(const boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer buffer));
     MOCK_METHOD0(AllocateBuffer, std::shared_ptr<anh::ByteBuffer>());
-    MOCK_METHOD2(HandleMessage, void(std::shared_ptr<Session> connection, std::shared_ptr<anh::ByteBuffer> message));    
+    MOCK_METHOD2(HandleMessage, void(const std::shared_ptr<Session>& connection, anh::ByteBuffer message));    
 
     MOCK_METHOD1(RemoveSession, bool(std::shared_ptr<Session> session));
     MOCK_METHOD1(CreateSession, std::shared_ptr<Session>(const boost::asio::ip::udp::endpoint& endpoint));

@@ -18,7 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "anh/network/soe/filters/crc_in_filter.h"
+#include "crc_in_filter.h"
 
 #include "anh/byte_buffer.h"
 #include "anh/crc.h"
@@ -29,12 +29,7 @@ using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-CrcInFilter::CrcInFilter(void) 
-{}
-
-void CrcInFilter::operator()(
-    const shared_ptr<Session>& session,
-    const shared_ptr<ByteBuffer>& message) const
+void CrcInFilter::operator()(Session* session, ByteBuffer* message) const
 {
     uint32_t crc_length = session->crc_length();
     

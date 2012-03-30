@@ -64,9 +64,7 @@ public:
     /**
      * @brief Sends a message on the wire to the target endpoint.
      */
-    void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer);
-
-    void HandleMessage(std::shared_ptr<Packet> packet);
+    void SendTo(const boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer buffer);
 
     boost::asio::ip::udp::socket* socket();
     
