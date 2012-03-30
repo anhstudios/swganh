@@ -73,6 +73,14 @@ public:
     uint32_t max_receive_size();
 
     std::shared_ptr<ByteBuffer> AllocateBuffer();
+
+    /**
+     * Resolves a hostname to its ip.
+     *
+     * \param hostname The hostname to resolve.
+     * \return The ip the hostname resolves to.
+     */
+    std::string Resolve(const std::string& hostname);
     
 private:
     Server();
