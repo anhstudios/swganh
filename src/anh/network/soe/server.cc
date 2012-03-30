@@ -70,6 +70,15 @@ void Server::SendTo(const udp::endpoint& endpoint, const shared_ptr<ByteBuffer>&
     });
 }
 
+string Server::Resolve(const string& hostname)
+{
+    udp::resolver resolver(io_service_);
+    udp::resolver::query query(udp::v4(), hostname, "");
+    udp::endpoint resolved_endpoint = *resolver.resolve(query);
+
+    return resolved_endpoint.address().to_string();
+}
+
 void Server::AsyncReceive() {
     socket_.async_receive_from(
         buffer(&recv_buffer_[0], recv_buffer_.size()), 

@@ -63,11 +63,13 @@ ConnectionService::ConnectionService(
 }
 
 ServiceDescription ConnectionService::GetServiceDescription() {
+    auto listen_address = Resolve(listen_address_);
+
     ServiceDescription service_description(
         "ANH Connection Service",
         "connection",
         "0.1",
-        listen_address(),
+        listen_address,
         0,
         listen_port(),
         ping_port_);
