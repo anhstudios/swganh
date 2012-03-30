@@ -165,15 +165,15 @@ private:
 
     virtual void OnClose() {}
 
-    void handleSessionRequest_(SessionRequest& packet);
-    void handleMultiPacket_(MultiPacket& packet);
-    void handleDisconnect_(Disconnect& packet);
-    void handlePing_(Ping& packet);
-    void handleNetStatsClient_(NetStatsClient& packet);
-    void handleChildDataA_(ChildDataA& packet);
-    void handleDataFragA_(DataFragA& packet);
-    void handleAckA_(AckA& packet);
-    void handleOutOfOrderA_(OutOfOrderA& packet);
+    void handleSessionRequest_(SessionRequest packet);
+    void handleMultiPacket_(MultiPacket packet);
+    void handleDisconnect_(Disconnect packet);
+    void handlePing_(Ping packet);
+    void handleNetStatsClient_(NetStatsClient packet);
+    void handleChildDataA_(ChildDataA packet);
+    void handleDataFragA_(DataFragA packet);
+    void handleAckA_(AckA packet);
+    void handleOutOfOrderA_(OutOfOrderA packet);
     void SendSoePacket_(anh::ByteBuffer message);
     void SendSoePacketInternal(anh::ByteBuffer message);
     void HandleMessageInternal(anh::ByteBuffer message);
