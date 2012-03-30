@@ -30,10 +30,10 @@ MovementManager::MovementManager(anh::EventDispatcher* event_dispatcher)
 
 void MovementManager::HandleDataTransform(
     const shared_ptr<ObjectController>& controller, 
-    const ObjControllerMessage& message)
+    ObjControllerMessage message)
 {
     DataTransform transform;
-    transform.Deserialize(message.data);
+    transform.Deserialize(move(message.data));
     
     auto object = controller->GetObject();
     
@@ -52,12 +52,12 @@ void MovementManager::HandleDataTransform(
 
 void MovementManager::HandleDataTransformWithParent(
     const std::shared_ptr<ObjectController>& controller, 
-    const ObjControllerMessage& message)
+    ObjControllerMessage message)
 {
     throw std::runtime_error("Cell movement currently disabled");
 
     DataTransformWithParent transform;
-    transform.Deserialize(message.data);
+    transform.Deserialize(move(message.data));
     
     auto object = controller->GetObject();
         

@@ -47,6 +47,7 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 using anh::network::soe::ServerInterface;
+using anh::network::soe::Session;
 using anh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
 using swganh::base::BaseService;
@@ -494,15 +495,15 @@ void SimulationService::onStart()
 
     RegisterControllerHandler(0x00000071, [this] (
         const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::ObjControllerMessage& message)
+        swganh::messages::ObjControllerMessage message)
     {
-        this->impl_->GetMovementManager()->HandleDataTransform(controller, message);
+        this->impl_->GetMovementManager()->HandleDataTransform(controller, move(message));
     });
 
     RegisterControllerHandler(0x000000F1, [this] (
         const std::shared_ptr<ObjectController>& controller,
         const swganh::messages::ObjControllerMessage message)
     {
-        this->impl_->GetMovementManager()->HandleDataTransformWithParent(controller, message);
+        this->impl_->GetMovementManager()->HandleDataTransformWithParent(controller, move(message));
     });
 }

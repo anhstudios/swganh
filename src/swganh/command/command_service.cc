@@ -142,10 +142,10 @@ void CommandService::EnqueueCommand(
 
 void CommandService::HandleCommandQueueEnqueue(
     const shared_ptr<ObjectController>& controller,
-    const ObjControllerMessage& message)
+    ObjControllerMessage message)
 {
     CommandQueueEnqueue enqueue;
-    enqueue.Deserialize(message.data);
+    enqueue.Deserialize(std::move(message.data));
 
     auto actor = static_pointer_cast<Creature>(controller->GetObject());
 	auto target = simulation_service_->GetObjectById<Tangible>(enqueue.target_id);
@@ -155,7 +155,7 @@ void CommandService::HandleCommandQueueEnqueue(
 
 void CommandService::HandleCommandQueueRemove(
     const shared_ptr<ObjectController>& controller,
-    const ObjControllerMessage& message)
+    ObjControllerMessage message)
 {}
 
 void CommandService::ProcessCommand(
@@ -191,16 +191,16 @@ void CommandService::onStart()
 
     simulation_service_->RegisterControllerHandler(0x00000116, [this] (
         const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::ObjControllerMessage& message)
+        swganh::messages::ObjControllerMessage message)
     {
-        HandleCommandQueueEnqueue(controller, message);
+        HandleCommandQueueEnqueue(controller, move(message));
     });
 
     simulation_service_->RegisterControllerHandler(0x00000117, [this] (
         const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::ObjControllerMessage& message)
+        swganh::messages::ObjControllerMessage message)
     {
-        HandleCommandQueueRemove(controller, message);
+        HandleCommandQueueRemove(controller, move(message));
     });
 
 	auto event_dispatcher = kernel()->GetEventDispatcher();

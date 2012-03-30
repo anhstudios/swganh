@@ -103,11 +103,11 @@ namespace command {
         
         void HandleCommandQueueEnqueue(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
-            const swganh::messages::ObjControllerMessage& message);
+            swganh::messages::ObjControllerMessage message);
 
         void HandleCommandQueueRemove(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
-            const swganh::messages::ObjControllerMessage& message);
+            swganh::messages::ObjControllerMessage message);
         
         void SendCommandQueueRemove(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
