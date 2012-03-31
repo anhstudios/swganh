@@ -1,5 +1,5 @@
 
-#include "swganh/command/command_service.h"
+#include "command_service.h"
 
 #include <cctype>
 
@@ -22,8 +22,6 @@
 
 #include "swganh/command/command_filter.h"
 
-#include "swganh/messages/controllers/command_queue_enqueue.h"
-#include "swganh/messages/controllers/command_queue_remove.h"
 #include "swganh/messages/controllers/combat_action_message.h"
 
 #include "swganh/object/creature/creature.h"
@@ -142,20 +140,17 @@ void CommandService::EnqueueCommand(
 
 void CommandService::HandleCommandQueueEnqueue(
     const shared_ptr<ObjectController>& controller,
-    ObjControllerMessage message)
+    CommandQueueEnqueue message)
 {
-    CommandQueueEnqueue enqueue;
-    enqueue.Deserialize(std::move(message.data));
-
     auto actor = static_pointer_cast<Creature>(controller->GetObject());
-	auto target = simulation_service_->GetObjectById<Tangible>(enqueue.target_id);
+	auto target = simulation_service_->GetObjectById<Tangible>(message.target_id);
 
-    EnqueueCommand(actor, target, move(enqueue));
+    EnqueueCommand(actor, target, move(message));
 }
 
 void CommandService::HandleCommandQueueRemove(
     const shared_ptr<ObjectController>& controller,
-    ObjControllerMessage message)
+    CommandQueueRemove message)
 {}
 
 void CommandService::ProcessCommand(
@@ -186,22 +181,10 @@ void CommandService::onStart()
 	LoadProperties();
     RegisterCommandScripts();
 
-    simulation_service_ = kernel()->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
+    simulation_service_ = kernel()->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
-    simulation_service_->RegisterControllerHandler(0x00000116, [this] (
-        const std::shared_ptr<ObjectController>& controller,
-        swganh::messages::ObjControllerMessage message)
-    {
-        HandleCommandQueueEnqueue(controller, move(message));
-    });
-
-    simulation_service_->RegisterControllerHandler(0x00000117, [this] (
-        const std::shared_ptr<ObjectController>& controller,
-        swganh::messages::ObjControllerMessage message)
-    {
-        HandleCommandQueueRemove(controller, move(message));
-    });
+    simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
+    simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueRemove, this);
 
 	auto event_dispatcher = kernel()->GetEventDispatcher();
 	event_dispatcher->Dispatch(
@@ -340,5 +323,5 @@ void CommandService::SendCommandQueueRemove(
     remove.error = error;
     remove.action = action;
 
-	actor->GetController()->Notify(ObjControllerMessage(0x0000000B, remove));
+	actor->GetController()->Notify(remove);
 }

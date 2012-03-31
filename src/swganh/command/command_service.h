@@ -27,6 +27,7 @@ namespace Concurrency {
 #include "swganh/base/base_service.h"
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
+#include "swganh/messages/controllers/command_queue_remove.h"
 #include "swganh/command/command_properties.h"
 
 
@@ -103,11 +104,11 @@ namespace command {
         
         void HandleCommandQueueEnqueue(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
-            swganh::messages::ObjControllerMessage message);
+            swganh::messages::controllers::CommandQueueEnqueue message);
 
         void HandleCommandQueueRemove(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
-            swganh::messages::ObjControllerMessage message);
+            swganh::messages::controllers::CommandQueueRemove message);
         
         void SendCommandQueueRemove(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
