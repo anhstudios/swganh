@@ -57,7 +57,7 @@ void CreatureMessageBuilder::BuildPostureUpdate(Creature* creature)
 		// Update the posture message
 		controllers::Posture posture;
 		posture.posture_id = creature->GetPosture();
-		creature->GetController()->Notify(ObjControllerMessage(0x1B, posture));
+		creature->GetController()->Notify(posture);
 	}
 }
 

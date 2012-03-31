@@ -27,15 +27,6 @@ namespace messages {
             message_type = message_type_;
         }
 
-        template<typename T>
-        ObjControllerMessage(uint32_t controller_type, const T& payload)
-        {
-            controller_type = controller_type;
-            tick_count = 0;
-            message_type = T::message_type();
-            payload.Serialize(data);
-        }
-
         uint32_t controller_type;
         uint32_t message_type;
         uint64_t observable_id;
