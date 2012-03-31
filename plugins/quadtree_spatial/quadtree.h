@@ -18,22 +18,38 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef QUADTREE_SPATIAL_PROVIDER_H_
-#define QUADTREE_SPATIAL_PROVIDER_H_
+#ifndef QUADTREE_H_
+#define QUADTREE_H_
 
-#include "swganh/simulation/spatial_provider_interface.h"
+#include "node.h"
+#include "rectangle.h"
 
-class QuadtreeSpatialProvider : public swganh::simulation::SpatialProviderInterface
+namespace swganh {
+namespace object {
+	class Object;
+}} // namespace swganh::object
+
+namespace quadtree
+{
+
+class Quadtree
 {
 public:
-	QuadtreeSpatialProvider(anh::app::KernelInterface* kernel);
-	virtual ~QuadtreeSpatialProvider(void);
+	Quadtree(uint32_t max_object_per_node = 1, uint32_t max_level = 6);
+	~Quadtree(void);
 
-	virtual void AddObject(std::shared_ptr<swganh::object::Object> obj);
-	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj);
+	void AddObject(std::shared_ptr<swganh::object::Object> obj);
+	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
+	void UpdateObject(std::shared_ptr<swganh::object::Object> obj);
 
-	virtual std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(glm::vec3 point, float range);
+	std::vector<std::shared_ptr<swganh::object::Object>> Query(glm::vec2, Rectangle);
+private:
+	uint32_t max_objects_per_node_;
+	uint32_t max_level_;
+
+	Node root_node_;
 };
 
-#endif // QUADTREE_SPATIAL_PROVIDER_H_
+} // namespace quadtree
+
+#endif // QUADTREE_H_

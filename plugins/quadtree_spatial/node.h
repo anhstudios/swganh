@@ -18,44 +18,61 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef SWGANH_SIMULATION_SPATIAL_PROVIDER_H_
-#define SWGANH_SIMULATION_SPATIAL_PROVIDER_H_
+#ifndef NODE_H_
+#define NODE_H_
 
 #include <vector>
 #include <memory>
 
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-
-namespace anh {
-namespace app {
-	class KernelInterface;
-}} // namespace anh::service
+#include <boost/array.hpp>
 
 namespace swganh {
 namespace object {
 	class Object;
 }} // namespace swganh::object
 
-namespace swganh {
-namespace simulation {
+namespace quadtree
+{
+
+enum NodeQuadrant
+{
+	NW_QUADRANT,
+	NE_QUADRANT,
+	SW_QUADRANT,
+	SE_QUADRANT,
+	ROOT
+}; // enum LeafNodeQuadrant
 
 /**
- * Provides Spatial Indexing functionality.
+ *
  */
-class SpatialProviderInterface
+class Node
 {
 public:
-	SpatialProviderInterface(anh::app::KernelInterface* kernel) { };
-	virtual ~SpatialProviderInterface() { };
+	enum NodeState
+	{
+		BRANCH,
+		LEAF
+	};
 
-	virtual void AddObject(std::shared_ptr<swganh::object::Object> obj) = 0;
-	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> obj) = 0;
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj) = 0;
+	Node(NodeQuadrant quadrant, std::vector<std::shared_ptr<swganh::object::Object>> objects, uint32_t level);
+	~Node(void);
 
-	virtual std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(glm::vec3 point, float range) = 0;
+	void Split();
+
+	const NodeQuadrant& GetQuadrant(void) { return quadrant_; }
+	const uint32_t& GetLevel(void) { return level_; }
+	const NodeState& GetState(void) { return state_; }
+	const std::vector<std::shared_ptr<swganh::object::Object>>& GetObjects(void) { return objects_; }
+
+private:
+	uint32_t level_;
+	NodeQuadrant quadrant_;
+	NodeState state_;
+	std::vector<std::shared_ptr<swganh::object::Object>> objects_;
+	boost::array<std::shared_ptr<Node>, 4> leaf_nodes_;
 };
 
-}} // namespace swganh::simulation
+} // namespace quadtree
 
-#endif // SWGANH_SIMULATION_SPATIAL_INDEX_PROVIDER_H_
+#endif // NODE_H_

@@ -18,22 +18,28 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef QUADTREE_SPATIAL_PROVIDER_H_
-#define QUADTREE_SPATIAL_PROVIDER_H_
+#ifndef RECTANGLE_H_
+#define RECTANGLE_H_
 
-#include "swganh/simulation/spatial_provider_interface.h"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
-class QuadtreeSpatialProvider : public swganh::simulation::SpatialProviderInterface
+namespace quadtree
 {
-public:
-	QuadtreeSpatialProvider(anh::app::KernelInterface* kernel);
-	virtual ~QuadtreeSpatialProvider(void);
 
-	virtual void AddObject(std::shared_ptr<swganh::object::Object> obj);
-	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj);
+class Rectangle
+{
+	Rectangle(float x, float y, uint32_t width, uint32_t height);
 
-	virtual std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(glm::vec3 point, float range);
+	bool Intersects(const Rectangle& other);
+
+private:
+	float x;
+	float y;
+	uint32_t width;
+	uint32_t height;
 };
 
-#endif // QUADTREE_SPATIAL_PROVIDER_H_
+}
+
+#endif // RECTANGLE_H_

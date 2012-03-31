@@ -18,22 +18,17 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef QUADTREE_SPATIAL_PROVIDER_H_
-#define QUADTREE_SPATIAL_PROVIDER_H_
+#include "node.h"
 
-#include "swganh/simulation/spatial_provider_interface.h"
-
-class QuadtreeSpatialProvider : public swganh::simulation::SpatialProviderInterface
+namespace quadtree
 {
-public:
-	QuadtreeSpatialProvider(anh::app::KernelInterface* kernel);
-	virtual ~QuadtreeSpatialProvider(void);
 
-	virtual void AddObject(std::shared_ptr<swganh::object::Object> obj);
-	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj);
+Node::Node(NodeQuadrant quadtrant, std::vector< std::shared_ptr<swganh::object::Object>>, uint32_t level)
+{
+}
 
-	virtual std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(glm::vec3 point, float range);
-};
+Node::~Node(void)
+{
+}
 
-#endif // QUADTREE_SPATIAL_PROVIDER_H_
+} // namespace quadtree

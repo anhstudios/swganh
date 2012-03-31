@@ -18,22 +18,35 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef QUADTREE_SPATIAL_PROVIDER_H_
-#define QUADTREE_SPATIAL_PROVIDER_H_
+#include "quadtree.h"
 
-#include "swganh/simulation/spatial_provider_interface.h"
+using std::shared_ptr;
+using swganh::object::Object;
 
-class QuadtreeSpatialProvider : public swganh::simulation::SpatialProviderInterface
+namespace quadtree
 {
-public:
-	QuadtreeSpatialProvider(anh::app::KernelInterface* kernel);
-	virtual ~QuadtreeSpatialProvider(void);
 
-	virtual void AddObject(std::shared_ptr<swganh::object::Object> obj);
-	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj);
+Quadtree::Quadtree(uint32_t max_objects_per_node, uint32_t max_level)
+	: max_objects_per_node_(max_objects_per_node)
+	, max_level_(max_level)
+	, root_node_(ROOT, std::vector<std::shared_ptr<swganh::object::Object>>(), 0)
+{
+}
 
-	virtual std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(glm::vec3 point, float range);
-};
+Quadtree::~Quadtree(void)
+{
+}
 
-#endif // QUADTREE_SPATIAL_PROVIDER_H_
+void Quadtree::AddObject(shared_ptr<Object> obj)
+{
+}
+
+void Quadtree::RemoveObject(shared_ptr<Object> obj)
+{
+}
+
+void Quadtree::UpdateObject(shared_ptr<Object> obj)
+{
+}
+
+} // namespace quadtree

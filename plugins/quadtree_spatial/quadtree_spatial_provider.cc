@@ -50,12 +50,7 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj)
 {
 }
 
-std::vector<shared_ptr<swganh::object::Object>> QuadtreeSpatialProvider::GetObjectsInRange(shared_ptr<swganh::object::Object>)
-{
-	return std::vector<shared_ptr<Object>>();
-}
-
-std::vector<shared_ptr<swganh::object::Object>> QuadtreeSpatialProvider::GetObjectsInRange(shared_ptr<swganh::object::Object>, float)
+std::vector<std::shared_ptr<swganh::object::Object>> QuadtreeSpatialProvider::GetObjectsInRange(glm::vec3 point, float range)
 {
 	return std::vector<shared_ptr<Object>>();
 }
