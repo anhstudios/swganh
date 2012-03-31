@@ -98,8 +98,8 @@ namespace simulation {
             > HandlerType;
         };
 
-        template<typename T, typename MessageType>
-        void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::ObjectController>&, MessageType), T* instance)
+        template<typename T, typename U, typename MessageType>
+        void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::ObjectController>&, MessageType), U instance)
         {
             RegisterControllerHandler<MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }

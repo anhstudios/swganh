@@ -59,8 +59,8 @@ namespace network {
             const std::shared_ptr<anh::network::soe::Session>& connection,
             anh::ByteBuffer message);
 
-        template<typename T, typename ConnectionType, typename MessageType>
-        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, MessageType), T* instance)
+        template<typename T, typename U, typename ConnectionType, typename MessageType>
+        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, MessageType), U instance)
         {
             RegisterMessageHandler<ConnectionType, MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }
