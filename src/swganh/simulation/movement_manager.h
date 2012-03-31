@@ -15,7 +15,8 @@ namespace Concurrency {
 
 #endif
 
-#include "swganh/messages/obj_controller_message.h"
+#include "swganh/messages/controllers/data_transform.h"
+#include "swganh/messages/controllers/data_transform_with_parent.h"
 
 namespace anh {
     class EventDispatcher;
@@ -39,11 +40,11 @@ namespace simulation {
 
         void HandleDataTransform(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
-            swganh::messages::ObjControllerMessage message);
+            swganh::messages::controllers::DataTransform message);
 
         void HandleDataTransformWithParent(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
-            swganh::messages::ObjControllerMessage message);
+            swganh::messages::controllers::DataTransformWithParent message);
         
         void SendDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B);
         void SendUpdateDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object);

@@ -21,6 +21,12 @@ namespace messages {
         ObjControllerMessage()
         {}
 
+        ObjControllerMessage(uint32_t controller_type_, uint32_t message_type_)
+        {
+            controller_type = controller_type_;
+            message_type = message_type_;
+        }
+
         template<typename T>
         ObjControllerMessage(uint32_t controller_type, const T& payload)
         {

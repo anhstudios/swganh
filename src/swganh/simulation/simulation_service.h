@@ -90,6 +90,38 @@ namespace simulation {
 
         void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object);
 
+        template<typename MessageType>
+        struct GenericControllerHandler
+        {
+            typedef std::function<void (
+                const std::shared_ptr<swganh::object::ObjectController>&, MessageType)
+            > HandlerType;
+        };
+
+        template<typename T, typename MessageType>
+        void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::ObjectController>&, MessageType), T* instance)
+        {
+            RegisterControllerHandler<MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
+        }
+
+        template<typename MessageType>
+        void RegisterControllerHandler(
+            typename GenericControllerHandler<MessageType>::HandlerType&& handler)
+        {
+            auto shared_handler = std::make_shared<typename GenericControllerHandler<MessageType>::HandlerType>(std::move(handler));
+
+            auto wrapped_handler = [this, shared_handler] (
+                const std::shared_ptr<swganh::object::ObjectController>& controller,
+                swganh::messages::ObjControllerMessage message)
+            {
+                MessageType tmp(std::move(message));
+
+                (*shared_handler)(controller, std::move(tmp));
+            };
+
+            RegisterControllerHandler(MessageType::message_type(), std::move(wrapped_handler));
+        }
+
         void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler);
 
         void UnregisterControllerHandler(uint32_t handler_id);
