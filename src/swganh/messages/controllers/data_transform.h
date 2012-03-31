@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under GPL v2.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #ifndef SWGANH_MESSAGES_CONTROLLERS_DATA_TRANSFORM_H_
 #define SWGANH_MESSAGES_CONTROLLERS_DATA_TRANSFORM_H_
@@ -6,14 +8,27 @@
 #include <glm/gtx/quaternion.hpp>
 #include "anh/byte_buffer.h"
 
+#include "swganh/messages/obj_controller_message.h"
+
 namespace swganh {
 namespace messages {
 namespace controllers {
 
-    class DataTransform
+    class DataTransform : public ObjControllerMessage
     {
     public:
+        explicit DataTransform(uint32_t controller_type = 0x0000000B)
+            : ObjControllerMessage(controller_type, message_type())
+        {}
+
+        explicit DataTransform(ObjControllerMessage controller_message)
+            : ObjControllerMessage(std::move(controller_message))
+        {
+            Deserialize(std::move(data));
+        }
+
         static uint32_t message_type() { return 0x00000071; }
+        
         uint32_t counter;
         glm::quat orientation;
         glm::vec3 position;

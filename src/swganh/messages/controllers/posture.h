@@ -8,14 +8,26 @@
 
 #include "anh/byte_buffer.h"
 
+#include "swganh/messages/obj_controller_message.h"
+
 namespace swganh {
 namespace messages {
 namespace controllers {
 
-    class Posture
+    class Posture : public ObjControllerMessage
     {
     public:
-        static uint32_t message_type() { return 0x131; }
+        explicit Posture(uint32_t controller_type = 0x0000001B)
+            : ObjControllerMessage(controller_type, message_type())
+        {}
+
+        explicit Posture(ObjControllerMessage controller_message)
+            : ObjControllerMessage(std::move(controller_message))
+        {
+            Deserialize(std::move(data));
+        }
+
+        static uint32_t message_type() { return 0x00000131; }
         
         uint8_t posture_id;
         

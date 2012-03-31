@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under GPL v2.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #ifndef SWGANH_MESSAGES_CONTROLLERS_SHOW_FLY_TEXT_H_
 #define SWGANH_MESSAGES_CONTROLLERS_SHOW_FLY_TEXT_H_
@@ -5,6 +7,8 @@
 #include <cstdint>
 #include <string>
 #include "anh/byte_buffer.h"
+
+#include "swganh/messages/obj_controller_message.h"
 
 namespace swganh {
 namespace messages {
@@ -18,9 +22,19 @@ namespace controllers {
         MIX
     };
 
-    class ShowFlyText
+    class ShowFlyText : public ObjControllerMessage
     {
     public:
+        explicit ShowFlyText(uint32_t controller_type = 0x0000000B)
+            : ObjControllerMessage(controller_type, message_type())
+        {}
+
+        explicit ShowFlyText(ObjControllerMessage controller_message)
+            : ObjControllerMessage(std::move(controller_message))
+        {
+            Deserialize(std::move(data));
+        }
+
         static uint32_t message_type() { return 0x000001BD; }
         
         uint64_t object_id;

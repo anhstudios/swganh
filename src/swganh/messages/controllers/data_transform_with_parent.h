@@ -6,13 +6,25 @@
 #include <glm/gtx/quaternion.hpp>
 #include "anh/byte_buffer.h"
 
+#include "swganh/messages/obj_controller_message.h"
+
 namespace swganh {
 namespace messages {
 namespace controllers {
 
-    class DataTransformWithParent
+    class DataTransformWithParent : public ObjControllerMessage
     {
     public:
+        explicit DataTransformWithParent(uint32_t controller_type = 0x0000000B)
+            : ObjControllerMessage(controller_type, message_type())
+        {}
+
+        explicit DataTransformWithParent(ObjControllerMessage controller_message)
+            : ObjControllerMessage(std::move(controller_message))
+        {
+            Deserialize(std::move(data));
+        }
+
         static uint32_t message_type() { return 0x000000F1; }
         uint32_t counter;
         uint64_t cell_id;
