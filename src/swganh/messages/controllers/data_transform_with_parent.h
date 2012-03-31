@@ -6,13 +6,25 @@
 #include <glm/gtx/quaternion.hpp>
 #include "anh/byte_buffer.h"
 
+#include "swganh/messages/obj_controller_message.h"
+
 namespace swganh {
 namespace messages {
 namespace controllers {
 
-    class DataTransformWithParent
+    class DataTransformWithParent : public ObjControllerMessage
     {
     public:
+        explicit DataTransformWithParent(uint32_t controller_type = 0x0000000B)
+            : ObjControllerMessage(controller_type, message_type())
+        {}
+
+        explicit DataTransformWithParent(ObjControllerMessage controller_message)
+            : ObjControllerMessage(std::move(controller_message))
+        {
+            OnControllerDeserialize(std::move(data));
+        }
+
         static uint32_t message_type() { return 0x000000F1; }
         uint32_t counter;
         uint64_t cell_id;
@@ -20,7 +32,7 @@ namespace controllers {
         glm::vec3 position;
         float speed;
 
-        void Serialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(anh::ByteBuffer& buffer) const
         {
             buffer.write(counter);
             buffer.write(cell_id);
@@ -34,7 +46,7 @@ namespace controllers {
             buffer.write(speed);
         }
 
-        void Deserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer buffer)
         {
             counter = buffer.read<uint32_t>();
             cell_id = buffer.read<uint64_t>();

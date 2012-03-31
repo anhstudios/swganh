@@ -42,7 +42,7 @@ namespace object {
 
     typedef std::function<
         void (const std::shared_ptr<ObjectController>&, 
-        const swganh::messages::ObjControllerMessage&)
+        swganh::messages::ObjControllerMessage)
     > ObjControllerHandler;
 
     typedef Concurrency::concurrent_unordered_map<
