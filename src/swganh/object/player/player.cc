@@ -5,7 +5,8 @@
 
 #include "anh/crc.h"
 
-#include "swganh/object/player/player_message_builder.h"
+#include "player_events.h"
+#include "player_message_builder.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/messages/deltas_message.h"
 
@@ -558,7 +559,7 @@ bool Player::IsFriend(std::string friend_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto iter = find_if(friends_.Begin(), friends_.End(), [=](const Name& x)->bool {
-        return (x.name == friend_name);
+        return (x.name.find(friend_name) != string::npos);
     });
     
     if (iter != friends_.End())
@@ -566,10 +567,10 @@ bool Player::IsFriend(std::string friend_name)
 
     return false;
 }
-void Player::AddFriend(string  friend_name)
+void Player::AddFriend(string  friend_name, uint64_t id)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    friends_.Add(friend_name);
+    friends_.Add(Name(friend_name, id));
     PlayerMessageBuilder::BuildFriendsDelta(this);
 }
 
@@ -577,11 +578,12 @@ void Player::RemoveFriend(string friend_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto iter = find_if(friends_.Begin(), friends_.End(), [=](const Name& x)->bool {
-        return (x.name == friend_name);
+        return (x.name.find(friend_name) != string::npos);
     });
     
     if (iter != friends_.End())
     {
+        GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), iter->id));
         friends_.Remove(iter);
         PlayerMessageBuilder::BuildFriendsDelta(this);    
     }

@@ -24,7 +24,8 @@ namespace waypoint {
     {
     public:
         WaypointFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service);
+            swganh::simulation::SimulationService* simulation_service,
+            anh::EventDispatcher* event_dispatcher);
 
         void LoadTemplates();
 
@@ -37,6 +38,8 @@ namespace waypoint {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+
+        virtual void RegisterEventHandlers(){}
     private:
         std::unordered_map<std::string, std::shared_ptr<Waypoint>>::iterator GetTemplateIter_(const std::string& template_name);
         std::unordered_map<std::string, std::shared_ptr<Waypoint>> waypoint_templates_;

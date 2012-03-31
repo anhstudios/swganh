@@ -410,11 +410,12 @@ void SimulationService::StopScene(const std::string& scene_label)
 void SimulationService::RegisterObjectFactories()
 {
         auto db_manager = kernel()->GetDatabaseManager();
-        impl_->GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager, this));
-        impl_->GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager, this));
-        impl_->GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager, this));
-        impl_->GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager, this));
-        impl_->GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager, this));
+        auto event_dispatcher =  kernel()->GetEventDispatcher();
+        impl_->GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager, this, event_dispatcher));
+        impl_->GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager, this, event_dispatcher));
+        impl_->GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager, this, event_dispatcher));
+        impl_->GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager, this, event_dispatcher));
+        impl_->GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager, this, event_dispatcher));
 }
 
 void SimulationService::PersistObject(uint64_t object_id)

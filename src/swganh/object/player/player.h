@@ -90,8 +90,9 @@ struct Name
         : name("")
     {}
 
-    Name(const std::string& value_)
+    Name(const std::string& value_, uint64_t id_ = 0)
         : name(value_)
+        , id(id_)
     {}
 
     ~Name()
@@ -112,6 +113,9 @@ struct Name
     }
 
     std::string name;
+    // id is here just for ease of use in persistence
+    // don't send over network
+    uint64_t id;
 };
 struct XpData
 {
@@ -749,7 +753,7 @@ public:
      *
      * @param friend_name Name of the friend to add.
      */ 
-    void AddFriend(std::string friend_name);
+    void AddFriend(std::string friend_name, uint64_t id);
     
     /**
      * Removes a friend from the friend list.

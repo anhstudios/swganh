@@ -23,10 +23,10 @@ using namespace swganh::simulation;
 
 uint32_t TangibleFactory::GetType() const { return Tangible::type; }
 
- TangibleFactory::TangibleFactory(
-    DatabaseManagerInterface* db_manager,
-    SimulationService* simulation_service)
-    : ObjectFactory(db_manager, simulation_service)
+ TangibleFactory::TangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
+            swganh::simulation::SimulationService* simulation_service,
+            anh::EventDispatcher* event_dispatcher)
+    : ObjectFactory(db_manager, simulation_service, event_dispatcher)
 {
 }
 void TangibleFactory::LoadTemplates()

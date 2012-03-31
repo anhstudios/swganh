@@ -59,7 +59,7 @@ bool SocialService::AddFriend(const shared_ptr<Player>& player, const string& fr
     /// If we found our friend, lets add them to our friends list (which will get updated by the player)
     if (friend_id > 0)
     {
-        player->AddFriend(friend_name);
+        player->AddFriend(friend_name, friend_id);
         // This persists the player object immediately.
         kernel()->GetServiceManager()->GetService<swganh::simulation::SimulationService>
             ("SimulationService")->PersistObject(player->GetObjectId());
@@ -69,7 +69,6 @@ bool SocialService::AddFriend(const shared_ptr<Player>& player, const string& fr
 
     return false;
 }
-
 void SocialService::onStart()
 {
 }
