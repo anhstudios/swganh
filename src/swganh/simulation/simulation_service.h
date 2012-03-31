@@ -100,7 +100,7 @@ namespace simulation {
         void SendToAll(const T& message)
         {
             anh::ByteBuffer message_buffer;
-            message.serialize(message_buffer);
+            message.Serialize(message_buffer);
 
             SendToAll(message_buffer);
         }
@@ -111,7 +111,7 @@ namespace simulation {
         void SendToAllInScene(const T& message, uint32_t scene_id)
         {
             anh::ByteBuffer message_buffer;
-            message.serialize(message_buffer);
+            message.Serialize(message_buffer);
 
             SendToAllInScene(message_buffer, scene_id);
         }
