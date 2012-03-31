@@ -109,7 +109,7 @@ void ChatService::SendSpatialChat(
 
     spatial_chat.language = static_cast<uint8_t>(0);
     
-    actor->NotifyObservers(ObjControllerMessage(0x0000000B, spatial_chat));
+    actor->NotifyObservers(spatial_chat);
 }
 
 void ChatService::onStart()
