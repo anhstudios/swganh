@@ -13,21 +13,19 @@
 namespace swganh {
 namespace messages {
 
-    struct ObjControllerMessage : public BaseSwgMessage<ObjControllerMessage>
+    class ObjControllerMessage : public BaseSwgMessage<ObjControllerMessage>
     {
+    public:
         static uint16_t Opcount() { return 5; }
         static uint32_t Opcode() { return 0x80CE5E46; }
 
         ObjControllerMessage()
         {}
 
-        template<typename T>
-        ObjControllerMessage(uint32_t controller_type, const T& payload)
+        ObjControllerMessage(uint32_t controller_type_, uint32_t message_type_)
         {
-            controller_type = controller_type;
-            tick_count = 0;
-            message_type = T::message_type();
-            payload.Serialize(data);
+            controller_type = controller_type_;
+            message_type = message_type_;
         }
 
         uint32_t controller_type;
@@ -36,22 +34,33 @@ namespace messages {
         uint32_t tick_count;
         anh::ByteBuffer data;
         
-        void OnSerialize(anh::ByteBuffer& buffer) const 
+        virtual void OnControllerSerialize(anh::ByteBuffer& buffer) const 
+        {
+            buffer.write(data.data(), data.size());
+        }
+
+        virtual void OnControllerDeserialize(anh::ByteBuffer buffer)
+        {
+            data = std::move(buffer);
+        }
+
+        virtual void OnSerialize(anh::ByteBuffer& buffer) const 
         {
             buffer.write(controller_type);
             buffer.write(message_type);
             buffer.write(observable_id);
             buffer.write(tick_count);
-            buffer.write(data.data(), data.size());  
+
+            OnControllerSerialize(buffer);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer) 
+        virtual void OnDeserialize(anh::ByteBuffer buffer) 
         {
             controller_type = buffer.read<uint32_t>();
             message_type = buffer.read<uint32_t>();  
             observable_id = buffer.read<uint64_t>();
             tick_count = buffer.read<uint32_t>();
-            data = anh::ByteBuffer(buffer.data() + buffer.read_position(), buffer.size() - buffer.read_position());
+            OnControllerDeserialize(std::move(buffer));
         }
     };
 

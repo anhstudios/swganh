@@ -47,6 +47,7 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 using anh::network::soe::ServerInterface;
+using anh::network::soe::Session;
 using anh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
 using swganh::base::BaseService;
@@ -81,14 +82,14 @@ public:
         return scene_manager_;
     }
 
-    const shared_ptr<MovementManager>& GetMovementManager()
+    MovementManager* GetMovementManager()
     {
         if (!movement_manager_)
         {
             movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher());
         }
 
-        return movement_manager_;
+        return movement_manager_.get();
     }
 
     void PersistObject(uint64_t object_id)
@@ -285,7 +286,7 @@ public:
             throw std::runtime_error("No handler registered to process the given message.");
         }
 
-        find_iter->second(client->GetController(), message);
+        find_iter->second(client->GetController(), move(message));
     }
 
     void HandleSelectCharacter(
@@ -492,17 +493,9 @@ void SimulationService::onStart()
     connection_service->RegisterMessageHandler(
         &SimulationServiceImpl::HandleObjControllerMessage, impl_.get());
 
-    RegisterControllerHandler(0x00000071, [this] (
-        const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::ObjControllerMessage& message)
-    {
-        this->impl_->GetMovementManager()->HandleDataTransform(controller, message);
-    });
+    RegisterControllerHandler(
+        &MovementManager::HandleDataTransform, impl_->GetMovementManager());
 
-    RegisterControllerHandler(0x000000F1, [this] (
-        const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::ObjControllerMessage message)
-    {
-        this->impl_->GetMovementManager()->HandleDataTransformWithParent(controller, message);
-    });
+    RegisterControllerHandler(
+        &MovementManager::HandleDataTransformWithParent, impl_->GetMovementManager());
 }

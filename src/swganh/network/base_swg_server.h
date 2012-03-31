@@ -59,12 +59,33 @@ namespace network {
             const std::shared_ptr<anh::network::soe::Session>& connection,
             anh::ByteBuffer message);
 
-        template<typename T, typename ConnectionType, typename MessageType>
-        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, MessageType), T* instance)
+        /**
+         * Register's a message handler for processing SWG protocol messages.
+         *
+         * This overload accepts a member function and a pointer (either naked or smart)
+         * and converts the request to the proper connection and message types.
+         *
+         * \code{.cpp}
+         *
+         *  RegisterMessageHandler(&MyClass::HandleSomeMessage, this);
+         *
+         * \param memfunc A member function that can process a concrete SWG protocol message.
+         * \param instance An instance of a class that implements memfunc.
+         */
+        template<typename T, typename U, typename ConnectionType, typename MessageType>
+        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, MessageType), U instance)
         {
             RegisterMessageHandler<ConnectionType, MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }
-
+        
+        /**
+         * Register's a message handler for processing SWG protocol messages.
+         *
+         * This handler automatically converts the request to the proper connection 
+         * and message types.
+         *
+         * \param handler A std::function object representing the handler.
+         */
         template<typename ConnectionType, typename MessageType>
         void RegisterMessageHandler(
             typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType&& handler)
@@ -84,6 +105,15 @@ namespace network {
             RegisterMessageHandler(MessageType::Opcode(), std::move(wrapped_handler));
         }
 
+        /**
+         * Register's a message handler for processing SWG protocol messages.
+         *
+         * This is the low level registration and should be used when wanting to bypass
+         * automatic message conversion.
+         *
+         * \param handler_id The SWG protocol id for the handler's message type.
+         * \param handler The SWG protocol handler.
+         */
         void RegisterMessageHandler(
             anh::HashString handler_id,
             SwgMessageHandler&& handler);

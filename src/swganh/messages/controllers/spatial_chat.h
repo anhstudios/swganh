@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under GPL v2.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #ifndef SWGANH_MESSAGES_CONTROLLERS_SPATIAL_CHAT_H_
 #define SWGANH_MESSAGES_CONTROLLERS_SPATIAL_CHAT_H_
@@ -6,13 +8,32 @@
 #include <string>
 #include "anh/byte_buffer.h"
 
+#include "swganh/messages/obj_controller_message.h"
+
 namespace swganh {
 namespace messages {
 namespace controllers {
 
-    class SpatialChat
+    class SpatialChat : public ObjControllerMessage
     {
     public:
+        explicit SpatialChat(uint32_t controller_type = 0x0000000B)
+            : ObjControllerMessage(controller_type, message_type())
+            , target_id(0)
+            , font_size(0x32)
+            , chat_type(0)
+            , mood(0)
+            , whisper_target_animate(0)
+            , prose(0)
+            , unknown1(0)
+        {}
+
+        explicit SpatialChat(ObjControllerMessage controller_message)
+            : ObjControllerMessage(std::move(controller_message))
+        {
+            OnControllerDeserialize(std::move(data));
+        }
+
         static uint32_t message_type() { return 0x000000F4; }
         
         uint64_t speaker_id;
@@ -26,17 +47,7 @@ namespace controllers {
         uint32_t prose;
         uint32_t unknown1;
 
-        SpatialChat()
-            : target_id(0)
-            , font_size(0x32)
-            , chat_type(0)
-            , mood(0)
-            , whisper_target_animate(0)
-            , prose(0)
-            , unknown1(0)
-        {}
-
-        void Serialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(anh::ByteBuffer& buffer) const
         {
             buffer.write(speaker_id);
             buffer.write(target_id);
@@ -50,7 +61,7 @@ namespace controllers {
             buffer.write(unknown1);
         }
 
-        void Deserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer buffer)
         {
             speaker_id = buffer.read<uint64_t>();
             target_id = buffer.read<uint64_t>();

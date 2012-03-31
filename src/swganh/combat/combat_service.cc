@@ -562,7 +562,7 @@ void CombatService::BroadcastCombatSpam(
             spam.file = "cbt_spam";
             spam.text = properties.combat_spam + string_file;
             
-            attacker->NotifyObservers(ObjControllerMessage(0x1B, spam));
+            attacker->NotifyObservers(spam);
         }
 }
 
@@ -600,7 +600,7 @@ void CombatService::SendCombatActionMessage(
         });
         cam.combat_special_move_effect = 0;
         
-        attacker->NotifyObservers(ObjControllerMessage(0x1B, cam));
+        attacker->NotifyObservers(move(cam));
 }
 
 void CombatService::SetIncapacitated(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)

@@ -153,7 +153,7 @@ void ObjectController::SendFlyText(const std::string& fly_text, FlyTextColor col
                 break;
         }
         fly_text.display_flag = (display_flag == true) ? 0 : 1;
-        object_->NotifyObservers(ObjControllerMessage(0x1B, fly_text));
+        object_->NotifyObservers(fly_text);
 
     }
 }
