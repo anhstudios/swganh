@@ -97,13 +97,33 @@ namespace simulation {
                 const std::shared_ptr<swganh::object::ObjectController>&, MessageType)
             > HandlerType;
         };
-
+        
+        /**
+         * Register's a message handler for processing ObjControllerMessage payloads.
+         *
+         * This overload accepts a member function and a pointer (either naked or smart)
+         * and converts the request to the proper message type.
+         *
+         * \code{.cpp}
+         *
+         *  RegisterControllerHandler(&MyClass::HandleSomeControllerMessage, this);
+         *
+         * \param memfunc A member function that can process a concrete ObjControllerMessage type.
+         * \param instance An instance of a class that implements memfunc.
+         */
         template<typename T, typename U, typename MessageType>
         void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::ObjectController>&, MessageType), U instance)
         {
             RegisterControllerHandler<MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }
-
+        
+        /**
+         * Register's a message handler for processing ObjControllerMessage payloads.
+         *
+         * This handler automatically converts the request to the proper message type.
+         *
+         * \param handler A std::function object representing the handler.
+         */
         template<typename MessageType>
         void RegisterControllerHandler(
             typename GenericControllerHandler<MessageType>::HandlerType&& handler)
@@ -121,7 +141,16 @@ namespace simulation {
 
             RegisterControllerHandler(MessageType::message_type(), std::move(wrapped_handler));
         }
-
+        
+        /**
+         * Register's a message handler for processing ObjControllerMessage payloads.
+         *
+         * This is the low level registration and should be used when wanting to bypass
+         * automatic message conversion.
+         *
+         * \param handler_id The object controller message type.
+         * \param handler The object controller handler.
+         */
         void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler);
 
         void UnregisterControllerHandler(uint32_t handler_id);
