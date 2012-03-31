@@ -25,24 +25,21 @@ namespace controllers {
     public:
         explicit CombatActionMessage(uint32_t controller_type = 0x0000001B)
             : ObjControllerMessage(controller_type, message_type())
-        {}
-
-        explicit CombatActionMessage(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            Deserialize(std::move(data));
-        }
-
-    	static uint32_t message_type() { return 0x000000CC; }
-    
-    	CombatActionMessage()
-            : action_crc(0)
+            , action_crc(0)
             , attacker_id(0)
             , attacker_end_posture(0)
             , trails_bit_flag(0xFF)
             , combat_special_move_effect(0xFF)
     		, defender_list(std::vector<CombatDefender>())
-    	{}
+        {}
+
+        explicit CombatActionMessage(ObjControllerMessage controller_message)
+            : ObjControllerMessage(std::move(controller_message))
+        {
+            OnControllerDeserialize(std::move(data));
+        }
+
+    	static uint32_t message_type() { return 0x000000CC; }
         
     	uint32_t action_crc;
     	uint64_t attacker_id;
@@ -53,7 +50,7 @@ namespace controllers {
     
     	std::vector<CombatDefender> defender_list;                         
     
-    	void Serialize(anh::ByteBuffer& buffer) const {
+    	void OnControllerSerialize(anh::ByteBuffer& buffer) const {
     		buffer.write(action_crc);
     		buffer.write(attacker_id);
     		buffer.write(weapon_id);
@@ -70,7 +67,7 @@ namespace controllers {
             });
     	}
     
-    	void Deserialize(anh::ByteBuffer buffer) {
+    	void OnControllerDeserialize(anh::ByteBuffer buffer) {
     		action_crc = buffer.read<uint32_t>();
     		attacker_id = buffer.read<uint64_t>();
     		weapon_id = buffer.read<uint64_t>();

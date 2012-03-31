@@ -24,7 +24,7 @@ namespace controllers {
         explicit CommandQueueEnqueue(ObjControllerMessage controller_message)
             : ObjControllerMessage(std::move(controller_message))
         {
-            Deserialize(std::move(data));
+            OnControllerDeserialize(std::move(data));
         }
 
         static uint32_t message_type() { return 0x00000116; }
@@ -34,7 +34,7 @@ namespace controllers {
         uint64_t target_id;
         std::wstring command_options;
 
-        void Serialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(anh::ByteBuffer& buffer) const
         {
             buffer.write(action_counter);
             buffer.write(command_crc);
@@ -42,7 +42,7 @@ namespace controllers {
             buffer.write(command_options);
         }
 
-        void Deserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer buffer)
         {
             action_counter = buffer.read<uint32_t>();
             command_crc = buffer.read<uint32_t>();

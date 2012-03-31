@@ -13,23 +13,12 @@ namespace swganh {
 namespace messages {
 namespace controllers {
 
-    class CombatSpamMessage : ObjControllerMessage
+    class CombatSpamMessage : public ObjControllerMessage
     {
     public:
-        explicit CombatSpamMessage(uint32_t controller_type = 0x0000000B)
+        explicit CombatSpamMessage(uint32_t controller_type = 0x0000001B)
             : ObjControllerMessage(controller_type, message_type())
-        {}
-
-        explicit CombatSpamMessage(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            Deserialize(std::move(data));
-        }
-
-    	static uint32_t message_type() { return 0x00000134; }
-    
-    	CombatSpamMessage()
-            : attacker_id(0)
+            , attacker_id(0)
             , defender_id(0)
             , weapon_id(0)
             , damage(0)
@@ -37,7 +26,15 @@ namespace controllers {
             , text("cbt_spam")
             , color_flag(1)
             , unicode_string(L"")
-    	{}
+        {}
+
+        explicit CombatSpamMessage(ObjControllerMessage controller_message)
+            : ObjControllerMessage(std::move(controller_message))
+        {
+            OnControllerDeserialize(std::move(data));
+        }
+
+    	static uint32_t message_type() { return 0x00000134; }
         
     	uint64_t attacker_id;
         uint64_t defender_id;
@@ -48,7 +45,7 @@ namespace controllers {
     	uint8_t color_flag;
         std::wstring unicode_string;
     
-    	void Serialize(anh::ByteBuffer& buffer) const {
+    	void OnControllerSerialize(anh::ByteBuffer& buffer) const {
     		buffer.write(attacker_id);
     		buffer.write(defender_id);
     		buffer.write(weapon_id);
@@ -61,7 +58,7 @@ namespace controllers {
     
     	}
     
-    	void Deserialize(anh::ByteBuffer buffer) {
+    	void OnControllerDeserialize(anh::ByteBuffer buffer) {
     		attacker_id = buffer.read<uint64_t>();
     		defender_id = buffer.read<uint64_t>();
     		weapon_id = buffer.read<uint64_t>();

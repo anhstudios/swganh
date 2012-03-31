@@ -24,7 +24,7 @@ namespace controllers {
         explicit DataTransform(ObjControllerMessage controller_message)
             : ObjControllerMessage(std::move(controller_message))
         {
-            Deserialize(std::move(data));
+            OnControllerDeserialize(std::move(data));
         }
 
         static uint32_t message_type() { return 0x00000071; }
@@ -34,7 +34,7 @@ namespace controllers {
         glm::vec3 position;
         float speed;
 
-        void Serialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(anh::ByteBuffer& buffer) const
         {
             buffer.write(counter);
             buffer.write(orientation.x);
@@ -47,7 +47,7 @@ namespace controllers {
             buffer.write(speed);
         }
 
-        void Deserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer buffer)
         {
             counter = buffer.read<uint32_t>();
             orientation.x = buffer.read<float>();
