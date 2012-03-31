@@ -114,6 +114,9 @@ if(MSVC)
 
     ADD_DEFINITIONS (/D BOOST_ALL_DYN_LINK)
     MESSAGE(STATUS "- BOOST: Enable dynamic linking")
+    
+    add_definitions(/D BOOST_ALL_NO_LIB)
+    message(status "- BOOST: Disable automatic linking")
 endif()
 
 # Use the static/multithreaded libraries.
