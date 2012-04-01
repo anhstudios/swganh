@@ -31,33 +31,33 @@ Object::Object()
 
 bool Object::HasController() 
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return controller_ != nullptr;
 }
 
 shared_ptr<ObjectController> Object::GetController()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return controller_;
 }
 
 void Object::SetController(const shared_ptr<ObjectController>& controller)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     controller_ = controller;
     Subscribe(controller_);
 }
 
 void Object::ClearController()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     Unsubscribe(controller_);
     controller_.reset();
 }
 
 void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentType containment_type)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
     {
         /// @TODO consider whether encountering this scenario is an error
@@ -75,13 +75,13 @@ void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentTyp
 
 bool Object::IsContainerForObject(const shared_ptr<Object>& object)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return contained_objects_.find(object->GetObjectId()) != contained_objects_.end();
 }
 
 void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto find_iter = contained_objects_.find(object->GetObjectId());
 
     if (find_iter == contained_objects_.end())
@@ -100,13 +100,13 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 
 Object::ObjectMap Object::GetContainedObjects()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return contained_objects_;
 }
 
 void Object::AddAwareObject(const shared_ptr<Object>& object)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     if (aware_objects_.find(object->GetObjectId()) != aware_objects_.end())
     {
         /// @TODO consider whether encountering this scenario is an error
@@ -127,13 +127,13 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
 
 bool Object::IsAwareOfObject(const shared_ptr<Object>& object)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return aware_objects_.find(object->GetObjectId()) != aware_objects_.end();
 }
 
 void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto find_iter = aware_objects_.find(object->GetObjectId());
 
     if (find_iter == aware_objects_.end())
@@ -151,34 +151,34 @@ void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 }
 const string& Object::GetTemplate()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return template_string_;
 }
 void Object::SetTemplate(const string& template_string)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	template_string_ = template_string;
 }
 void Object::SetObjectId(uint64_t object_id)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	object_id_ = object_id;
 }
 uint64_t Object::GetObjectId()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return object_id_;
 }
 
 const wstring& Object::GetCustomName()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return custom_name_;
 }
 
 void Object::SetCustomName(wstring custom_name)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     custom_name_ = custom_name;
     
     // Only build a message if there are observers.
@@ -193,7 +193,7 @@ void Object::SetCustomName(wstring custom_name)
 
 BaselinesMessage Object::CreateBaselinesMessage(uint8_t view_type, uint16_t opcount)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     BaselinesMessage message;
     message.object_id = GetObjectId();
     message.object_type = GetType();
@@ -205,7 +205,7 @@ BaselinesMessage Object::CreateBaselinesMessage(uint8_t view_type, uint16_t opco
 
 DeltasMessage Object::CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count) 
 {        
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     DeltasMessage message;
     message.object_id = GetObjectId();
     message.object_type = GetType();
@@ -217,13 +217,13 @@ DeltasMessage Object::CreateDeltasMessage(uint8_t view_type, uint16_t update_typ
 
 bool Object::HasObservers()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return !observers_.empty();
 }
 
 void Object::Subscribe(const shared_ptr<ObserverInterface>& observer)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto find_iter = std::find_if(
         observers_.begin(),
         observers_.end(),
@@ -242,7 +242,7 @@ void Object::Subscribe(const shared_ptr<ObserverInterface>& observer)
 
 void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto find_iter = std::find_if(
         observers_.begin(),
         observers_.end(),
@@ -261,19 +261,19 @@ void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
 
 void Object::NotifyObservers(const anh::ByteBuffer& message)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     NotifyObservers<anh::ByteBuffer>(message);
 }
 
 bool Object::IsDirty() 
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return !deltas_.empty();
 }
 
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     baselines_.clear();
     deltas_.clear();
     
@@ -319,26 +319,26 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
 
 const BaselinesCacheContainer& Object::GetBaselines(uint64_t viewer_id) 
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return baselines_;
 }
 
 const DeltasCacheContainer& Object::GetDeltas(uint64_t viewer_id) 
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return deltas_;
 }
 
 void Object::AddDeltasUpdate(DeltasMessage message)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     NotifyObservers(message);
     deltas_.push_back(move(message));
 }
 
 void Object::AddBaselinesBuilders_()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     baselines_builders_.push_back([this] () {
         return GetBaseline1();
     });
@@ -378,12 +378,12 @@ void Object::AddBaselinesBuilders_()
 
 void Object::SetPosition(glm::vec3 position)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     position_ = position;
 }
 glm::vec3 Object::GetPosition()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return position_;
 }
 bool Object::InRange(glm::vec3 target, float range)
@@ -396,18 +396,18 @@ bool Object::InRange(glm::vec3 target, float range)
 }
 void Object::SetOrientation(glm::quat orientation)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     orientation_ = orientation;
 }
 glm::quat Object::GetOrientation()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return orientation_;
 }
 
 uint8_t Object::GetHeading() 
 {  
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     glm::quat tmp = orientation_;
     
     if (tmp.y < 0.0f && tmp.w > 0.0f) {
@@ -419,32 +419,32 @@ uint8_t Object::GetHeading()
 
 void Object::SetContainer(const std::shared_ptr<Object>& container)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     container_ = container;
 }
 
 shared_ptr<Object> Object::GetContainer()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return container_;
 }
 
 void Object::SetComplexity(float complexity)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     complexity_ = complexity;
     ObjectMessageBuilder::BuildComplexityDelta(this);
 }
 
 float Object::GetComplexity()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return complexity_;
 }
 
 void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     stf_name_file_ = stf_file_name;
     stf_name_string_ = stf_string;
     ObjectMessageBuilder::BuildStfNameDelta(this);
@@ -452,49 +452,49 @@ void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 
 const string& Object::GetStfNameFile()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return stf_name_file_;
 }
 
 const string& Object::GetStfNameString()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return stf_name_string_;
 }
 
 void Object::SetVolume(uint32_t volume)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
     volume_ = volume;
     ObjectMessageBuilder::BuildVolumeDelta(this);
 }
 
 uint32_t Object::GetVolume()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return volume_;
 }
 
 void Object::SetSceneId(uint32_t scene_id)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	scene_id_ = scene_id;
 }
 
 uint32_t Object::GetSceneId()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return scene_id_;
 }
 
 optional<BaselinesMessage> Object::GetBaseline3()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return std::move(ObjectMessageBuilder::BuildBaseline3(this));
 }
 
 optional<BaselinesMessage> Object::GetBaseline6()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return std::move(ObjectMessageBuilder::BuildBaseline6(this));
 }

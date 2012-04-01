@@ -33,14 +33,14 @@ Group::~Group()
 
 void Group::AddGroupMember(uint64_t member, std::string name)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     member_list_.Add(Member(member, name));
     GroupMessageBuilder::BuildMemberListDelta(this);
 }
 
 void Group::RemoveGroupMember(uint64_t member)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto iter = std::find_if(member_list_.Begin(), member_list_.End(), [=](const Member& x)->bool {
         return member == x.object_id;
     });
@@ -54,52 +54,52 @@ void Group::RemoveGroupMember(uint64_t member)
 
 void Group::SetLootMode(LootMode loot_mode)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     loot_mode_ = loot_mode;
     GroupMessageBuilder::BuildLootMasterDelta(this);
 }
 
 LootMode Group::GetLootMode(void)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return (LootMode)loot_mode_;
 }
 
 void Group::SetDifficulty(uint16_t difficulty)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     difficulty_ = difficulty;
     GroupMessageBuilder::BuildDifficultyDelta(this);
 }
 
 uint16_t Group::GetDifficulty(void)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return difficulty_;
 }
 
 void Group::SetLootMaster(uint64_t loot_master)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     loot_master_ = loot_master;
     GroupMessageBuilder::BuildLootMasterDelta(this);
 }
 
 uint64_t Group::GetLootMaster(void)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return loot_master_;
 }
 
 uint16_t Group::GetCapacity(void)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return member_list_.Capacity();
 }
 
 uint16_t Group::GetSize(void)
 {
-    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return member_list_.Size();
 }
 

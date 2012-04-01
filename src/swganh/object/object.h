@@ -6,12 +6,11 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
 #include <boost/optional.hpp>
-#include <boost/thread/recursive_mutex.hpp>
-#include <boost/thread/locks.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -138,7 +137,7 @@ public:
     template<typename T>
     std::shared_ptr<T> GetContainedObject(uint64_t object_id)
     {
-        boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
 
         auto find_iter = contained_objects_.find(object_id);
         if (find_iter == end(contained_objects_))
@@ -240,7 +239,7 @@ public:
     template<typename T>
     void NotifyObservers(const T& message)
     {
-	    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	    std::lock_guard<std::recursive_mutex> lock(mutex_);
 
         std::for_each(
             observers_.begin(),
@@ -343,7 +342,7 @@ public:
     template<typename T>
     std::shared_ptr<T> GetContainer()
     {
-        boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(container_);
 #else
@@ -472,7 +471,6 @@ protected:
     
     swganh::messages::DeltasMessage CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
 
-    mutable boost::recursive_mutex mutex_;
 	uint64_t object_id_;             // create
 	uint32_t scene_id_;				 // create
     std::string template_string_;    // create
@@ -485,6 +483,8 @@ protected:
     uint32_t volume_;                // update 3
 
 private:
+    mutable std::recursive_mutex mutex_;
+
 	friend class ObjectMessageBuilder;
     friend class ObjectFactory;
 

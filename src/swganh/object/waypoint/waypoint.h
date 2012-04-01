@@ -1,6 +1,8 @@
 #ifndef SWGANH_OBJECT_WAYPOINT_WAYPOINT_H_
 #define SWGANH_OBJECT_WAYPOINT_WAYPOINT_H_
 
+#include <mutex>
+
 #include <glm/glm.hpp>
 
 #include "swganh/object/object.h"
@@ -128,6 +130,8 @@ protected:
 private:
 	friend class WaypointFactory;
 	friend class WaypointMessageBuilder;
+
+    mutable std::recursive_mutex mutex_;
 
     uint32_t uses_;					//update 3
     glm::vec3 coordinates_;			//update 3

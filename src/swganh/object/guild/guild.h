@@ -21,6 +21,9 @@
 #ifndef SWGANH_OBJECT_GUILD_GUILD_H_
 #define SWGANH_OBJECT_GUILD_GUILD_H_
 
+#include <mutex>
+#include <sstream>
+
 #include "swganh/object/object.h"
 
 #include "swganh/messages/containers/network_list.h"
@@ -84,6 +87,7 @@ private:
     friend class GuildFactory;
     friend class GuildMessageBuilder;
 
+    mutable std::recursive_mutex mutex_;
     swganh::messages::containers::NetworkList<GuildTag>     guild_list_;
 };
 

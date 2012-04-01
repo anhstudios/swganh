@@ -22,6 +22,7 @@
 #define SWGANH_OBJECT_GROUP_GROUP_H_
 
 #include <list>
+#include <mutex>
 #include <vector>
 
 #include "swganh/object/object.h"
@@ -116,6 +117,7 @@ protected:
 private:
     friend class GroupMessageBuilder;
     friend class GroupFactory;
+    mutable std::recursive_mutex mutex_;
 
     swganh::messages::containers::NetworkSortedVector<Member> member_list_;                     // update 6 variable 1
     uint16_t difficulty_;                                                                       // update 6 variable 4

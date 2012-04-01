@@ -22,6 +22,7 @@
 #define SWGANH_OBJECT_CREATURE_H_
 
 #include <list>
+#include <mutex>
 
 #include "swganh/object/tangible/tangible.h"
 
@@ -608,6 +609,8 @@ private:
     friend class CreatureFactory;
 
     void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
+
+    mutable std::recursive_mutex mutex_;
 
     uint32_t    bank_credits_;                                                              // update 1 variable 0
     uint32_t    cash_credits_;                                                              // update 1 variable 1

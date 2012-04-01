@@ -3,6 +3,7 @@
 #define SWGANH_OBJECT_TANGIBLE_TANGIBLE_H_
 
 #include <cstdint>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
@@ -142,6 +143,8 @@ public:
 private:
     friend class TangibleMessageBuilder;
     friend class TangibleFactory;
+
+    mutable std::recursive_mutex mutex_;
 
     std::string customization_;                                                                         // update 3 variable 4
     swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;    // update 3 variable 5
