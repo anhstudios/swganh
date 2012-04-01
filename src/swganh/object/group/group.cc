@@ -51,43 +51,44 @@ void Group::RemoveGroupMember(uint64_t member)
         GroupMessageBuilder::BuildMemberListDelta(this);
     }
 }
+    
+swganh::messages::containers::NetworkSortedVector<Member> Group::GetGroupMembers()
+{
+    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    return member_list_;
+}
 
 void Group::SetLootMode(LootMode loot_mode)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     loot_mode_ = loot_mode;
     GroupMessageBuilder::BuildLootMasterDelta(this);
 }
 
 LootMode Group::GetLootMode(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    return (LootMode)loot_mode_;
+    uint32_t loot_mode = loot_mode_;
+    return (LootMode)loot_mode;
 }
 
 void Group::SetDifficulty(uint16_t difficulty)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     difficulty_ = difficulty;
     GroupMessageBuilder::BuildDifficultyDelta(this);
 }
 
 uint16_t Group::GetDifficulty(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return difficulty_;
 }
 
 void Group::SetLootMaster(uint64_t loot_master)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     loot_master_ = loot_master;
     GroupMessageBuilder::BuildLootMasterDelta(this);
 }
 
 uint64_t Group::GetLootMaster(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return loot_master_;
 }
 
