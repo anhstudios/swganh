@@ -125,8 +125,8 @@ public:
         clear_ = false;
     }
 
-    iterator Begin(void) { return items_.begin(); }
-    iterator End(void) { return items_.end(); }
+    iterator begin(void) { return items_.begin(); }
+    iterator end(void) { return items_.end(); }
 
     uint16_t Size(void) const { return items_.size(); }
 

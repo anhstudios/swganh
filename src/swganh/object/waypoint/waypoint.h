@@ -125,6 +125,7 @@ public:
     *   @param color_byte to set the waypoint
     */
     void SetColorByte(uint8_t color_byte);
+
 protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
 private:

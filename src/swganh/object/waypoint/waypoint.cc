@@ -2,6 +2,7 @@
 #include "swganh/object/waypoint/waypoint.h"
 
 #include "swganh/object/waypoint/waypoint_message_builder.h"
+#include "anh/crc.h"
 
 using namespace std;
 using namespace swganh::messages;
