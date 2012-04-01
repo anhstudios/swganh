@@ -107,6 +107,10 @@ struct Name
     {
         message.data.write<std::string>(name);
     }
+    bool Contains(const std::string& str) const
+    {
+        return name.find(str) != std::string::npos;
+    }
     bool operator==(const Name& other)
     {
         return name == other.name;
@@ -773,11 +777,19 @@ public:
     swganh::messages::containers::NetworkSortedVector<Name> GetIgnoredPlayers();
 
     /**
+     * Checks to see if the name is already being ignored
+     *
+     * @param name name to check
+     * @return bool true if the friend is found, false else
+     */
+    bool IsIgnored(std::string player_name);
+
+    /**
      * Adds a player to the ignored list.
      *
      * @param player_name Name of the player to ignore.
      */ 
-    void IgnorePlayer(std::string player_name);
+    void IgnorePlayer(std::string player_name, uint64_t player_id);
     
     /**
      * Removes a player from the ignored list.

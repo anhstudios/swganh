@@ -5,12 +5,14 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for procedure galaxy.sp_GetIgnoredList
-DROP PROCEDURE IF EXISTS `sp_GetIgnoredList`;
+# Dumping structure for procedure galaxy.sp_UpdateIgnoreList
+DROP PROCEDURE IF EXISTS `sp_UpdateIgnoreList`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetIgnoredList`(IN `object_id` BIGINT)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_UpdateIgnoreList`(IN `player_id_` BIGINT, IN `ignore_id_` BIGINT)
 BEGIN
-    select o.custom_name, o.id from ignore_list i, object o where i.player_id = object_id and i.ignored_player_id = o.id;
+IF NOT EXISTS(SELECT id from ignore_list where player_id = player_id_ and ignored_player_id = ignore_id_)THEN
+	INSERT INTO ignore_list SET player_id = player_id_, ignored_player_id = ignore_id_;
+END IF;
 END//
 DELIMITER ;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

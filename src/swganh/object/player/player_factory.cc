@@ -43,6 +43,12 @@ void PlayerFactory::RegisterEventHandlers()
         auto name_event = static_pointer_cast<NameEvent>(incoming_event);
         RemoveFriend_(name_event->player, name_event->name_id);
     });
+
+    event_dispatcher_->Subscribe("Player::RemoveIgnoredPlayer", [this] (shared_ptr<anh::EventInterface> incoming_event)
+    {
+        auto name_event = static_pointer_cast<NameEvent>(incoming_event);
+        RemoveFromIgnoredList_(name_event->player, name_event->name_id);
+    });
 }
 
 void PlayerFactory::LoadTemplates()
@@ -91,6 +97,12 @@ void PlayerFactory::PersistObject(const shared_ptr<Object>& object)
         statement->executeUpdate();
 
         PersistFriends_(player);
+        PersistIgnoredList_(player);
+        PersistXP_(player);
+        PersistDraftSchematics_(player);
+        PersistForceSensitiveQuests_(player);
+        PersistQuestJournal_(player);
+        PersistWaypoints_(player);
     }
         catch(sql::SQLException &e)
     {
@@ -435,7 +447,6 @@ void PlayerFactory::PersistFriends_(const shared_ptr<Player>& player)
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-
 }
 void PlayerFactory::LoadFriends_(shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)
 {
@@ -467,7 +478,7 @@ void PlayerFactory::LoadIgnoredList_(shared_ptr<Player> player, const std::share
             result.reset(statement->getResultSet());
             while (result->next())
             {
-               player->IgnorePlayer(result->getString("custom_name"));
+               player->IgnorePlayer(result->getString("custom_name"), result->getUInt64("id"));
             }
         }
     }
@@ -479,4 +490,39 @@ void PlayerFactory::LoadIgnoredList_(shared_ptr<Player> player, const std::share
 }
 void PlayerFactory::PersistIgnoredList_(const shared_ptr<Player>& player)
 {
+    try 
+    {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto ignored_players = player->GetIgnoredPlayers();
+        
+        for_each(ignored_players.Begin(), ignored_players.End(), [=] (Name player_name){
+            auto statement = conn->prepareStatement("CALL sp_UpdateIgnoreList(?,?);");
+            statement->setUInt64(1, player->GetObjectId());
+            statement->setUInt64(2, player_name.id);
+            auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+        });
+    }
+        catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+}
+void PlayerFactory::RemoveFromIgnoredList_(const shared_ptr<Player>& player, uint64_t ignore_player_id)
+{
+    try 
+    {
+        auto conn = db_manager_->getConnection("galaxy");
+        
+        auto statement = conn->prepareStatement("CALL sp_RemoveIgnoredPlayer(?,?);");
+        statement->setUInt64(1, player->GetObjectId());
+        statement->setUInt64(2, ignore_player_id);
+
+        bool success = statement->execute();
+        }
+    catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }

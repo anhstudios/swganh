@@ -65,6 +65,7 @@ namespace player {
         void PersistFriends_(const std::shared_ptr<Player>& player);
         void RemoveFriend_(const std::shared_ptr<Player>& player, uint64_t friend_id);
         void LoadIgnoredList_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
+        void RemoveFromIgnoredList_(const std::shared_ptr<Player>& player, uint64_t ignore_player_id);
         void PersistIgnoredList_(const std::shared_ptr<Player>& player);
 
         std::unordered_map<std::string, std::shared_ptr<Player>>::iterator GetTemplateIter_(const std::string& template_name);

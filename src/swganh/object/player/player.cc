@@ -559,7 +559,7 @@ bool Player::IsFriend(std::string friend_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto iter = find_if(friends_.Begin(), friends_.End(), [=](const Name& x)->bool {
-        return (x.name.find(friend_name) != string::npos);
+        return (x.Contains(friend_name));
     });
     
     if (iter != friends_.End())
@@ -578,7 +578,7 @@ void Player::RemoveFriend(string friend_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto iter = find_if(friends_.Begin(), friends_.End(), [=](const Name& x)->bool {
-        return (x.name.find(friend_name) != string::npos);
+        return (x.Contains(friend_name));
     });
     
     if (iter != friends_.End())
@@ -602,10 +602,23 @@ NetworkSortedVector<Name> Player::GetIgnoredPlayers()
     return ignored_players_;
 }
 
-void Player::IgnorePlayer(string player_name)
+bool Player::IsIgnored(string player_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    ignored_players_.Add(player_name);
+    auto iter = find_if(ignored_players_.Begin(), ignored_players_.End(), [=](const Name& x)->bool {
+        return (x.Contains(player_name));
+    });
+    if (iter != ignored_players_.End())
+    {
+        return true;  
+    }
+    return false;
+}
+
+void Player::IgnorePlayer(string player_name, uint64_t player_id)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    ignored_players_.Add(Name(player_name, player_id));
     PlayerMessageBuilder::BuildIgnoredDelta(this);    
 }
 
@@ -613,12 +626,13 @@ void Player::StopIgnoringPlayer(string player_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto iter = find_if(ignored_players_.Begin(), ignored_players_.End(), [=](const Name& x)->bool {
-        return (x.name == player_name);
+        return (x.Contains(player_name));
     });
 
     if (iter != ignored_players_.End())
     {
-        friends_.Remove(iter);
+        GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveIgnoredPlayer", static_pointer_cast<Player>(shared_from_this()), iter->id));
+        ignored_players_.Remove(iter);
         PlayerMessageBuilder::BuildIgnoredDelta(this);    
     }
 }
