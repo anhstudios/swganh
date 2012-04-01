@@ -37,9 +37,10 @@ void WaypointFactory::RegisterEventHandlers()
     {
         auto value_event = static_pointer_cast<ValueEvent<NetworkMap<uint64_t, player::PlayerWaypointSerializer>>>(incoming_event);
         auto waypoints = value_event->Get();
-        for_each(waypoints.Begin(), waypoints.End(), [=] (pair<uint64_t, player::PlayerWaypointSerializer> waypoint_pair){
+        for(auto& waypoint_pair : waypoints)
+        {
             PersistObject(waypoint_pair.second.waypoint);
-        });
+        };
     });
     event_dispatcher_->Subscribe("LoadWaypoints", [this] (shared_ptr<anh::EventInterface> incoming_event)
     {

@@ -271,12 +271,13 @@ void PlayerFactory::PersistXP_(const shared_ptr<Player>& player)
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto xp = player->GetXp();
-        for_each(xp.Begin(), xp.End(), [this,&conn] (pair<string, XpData> xpData){
+        for(auto& xpData : xp)
+        {
             auto statement = conn->prepareStatement("CALL sp_UpdateExperience(?,?);");
             statement->setString(1,xpData.first);
             statement->setUInt(2,xpData.second.value);
             auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        });
+        };
     }
         catch(sql::SQLException &e)
     {
@@ -336,13 +337,14 @@ void PlayerFactory::PersistDraftSchematics_(const shared_ptr<Player>& player)
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto draft_schematics = player->GetDraftSchematics();
-        for_each(draft_schematics.Begin(), draft_schematics.End(), [this, player, &conn] (pair<uint16_t, DraftSchematicData> schematic){
+        for(auto& schematic : draft_schematics)
+        {
             auto statement = conn->prepareStatement("CALL sp_UpdateDraftSchematic(?,?,?);");
             statement->setUInt64(1, player->GetObjectId());
             statement->setUInt(2,schematic.second.schematic_id);
             statement->setUInt(3, schematic.second.schematic_crc);
             auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        });
+        };
     }
         catch(sql::SQLException &e)
     {
@@ -383,7 +385,8 @@ void PlayerFactory::PersistQuestJournal_(const shared_ptr<Player>& player)
         auto conn = db_manager_->getConnection("galaxy");
         auto quests = player->GetQuests();
         
-        for_each(quests.Begin(), quests.End(), [=] (pair<uint64_t, QuestJournalData> quest){
+        for(auto& quest : quests)
+        {
             auto statement = conn->prepareStatement("CALL sp_UpdateQuestJournal(?,?,?,?,?,?);");
             statement->setUInt64(1, player->GetObjectId());
             statement->setUInt64(2, quest.second.owner_id);
@@ -393,7 +396,7 @@ void PlayerFactory::PersistQuestJournal_(const shared_ptr<Player>& player)
             statement->setUInt(6, quest.second.completed_flag);
             
             auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        });
+        };
     }
         catch(sql::SQLException &e)
     {
@@ -471,12 +474,13 @@ void PlayerFactory::PersistFriends_(const shared_ptr<Player>& player)
         auto conn = db_manager_->getConnection("galaxy");
         auto friends = player->GetFriends();
         
-        for_each(friends.Begin(), friends.End(), [=] (Name friend_name){
+        for(auto& friend_name : friends)
+        {
             auto statement = conn->prepareStatement("CALL sp_UpdateFriends(?,?);");
             statement->setUInt64(1, player->GetObjectId());
             statement->setUInt64(2, friend_name.id);
             auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        });
+        };
     }
         catch(sql::SQLException &e)
     {
@@ -531,12 +535,13 @@ void PlayerFactory::PersistIgnoredList_(const shared_ptr<Player>& player)
         auto conn = db_manager_->getConnection("galaxy");
         auto ignored_players = player->GetIgnoredPlayers();
         
-        for_each(ignored_players.Begin(), ignored_players.End(), [=] (Name player_name){
+        for(auto& player_name : ignored_players)
+        {
             auto statement = conn->prepareStatement("CALL sp_UpdateIgnoreList(?,?);");
             statement->setUInt64(1, player->GetObjectId());
             statement->setUInt64(2, player_name.id);
             auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-        });
+        };
     }
         catch(sql::SQLException &e)
     {

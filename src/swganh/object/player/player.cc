@@ -200,10 +200,10 @@ void Player::DeductXp(XpData experience)
 void Player::ClearXpType(string type)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = find_if(experience_.Begin(), experience_.End(), [type](pair<string, XpData> xp) {
+    auto iter = find_if(begin(experience_), end(experience_), [type](pair<string, XpData> xp) {
         return xp.first == type;
     });
-    if (iter != experience_.End())
+    if (iter != end(experience_))
     {
         experience_.Remove(iter);
         PlayerMessageBuilder::BuildXpDelta(this);
@@ -214,9 +214,10 @@ void Player::ResetXp(swganh::messages::containers::NetworkMap<std::string, XpDat
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     experience_.Clear();
-    for_each(experience_.Begin(), experience_.End(), [=] (pair<string, XpData> pair) {
+    for(auto& pair : experience)
+    {
         experience_.Add(pair.first, pair.second);
-    });
+    }
     experience_.Reinstall();
 
     PlayerMessageBuilder::BuildXpDelta(this);
@@ -246,14 +247,14 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto find_iter = find_if(
-        waypoints_.Begin(),
-        waypoints_.End(),
+        begin(waypoints_),
+        end(waypoints_),
         [waypoint_id] (pair<uint64_t, PlayerWaypointSerializer> stored_waypoint)
     {
         return waypoint_id == stored_waypoint.first;
     });
 
-    if (find_iter != waypoints_.End())
+    if (find_iter != end(waypoints_))
     {
         waypoints_.Remove(find_iter);
         PlayerMessageBuilder::BuildWaypointDelta(this);
@@ -383,14 +384,14 @@ void Player::RemoveQuest(QuestJournalData quest)
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     
     auto find_iter = find_if(
-        quest_journal_.Begin(),
-        quest_journal_.End(),
+        begin(quest_journal_),
+        end(quest_journal_),
         [&quest] ( pair<uint32_t, QuestJournalData> stored_quest)
     {
         return quest.quest_crc == stored_quest.first;
     });
 
-    if (find_iter == quest_journal_.End())
+    if (find_iter == end(quest_journal_))
     {
         return;
     }
@@ -493,7 +494,7 @@ void Player::RemoveDraftSchematic(uint32_t schematic_id)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto iter = draft_schematics_.Find(DraftSchematicData(schematic_id));
-    if(iter != draft_schematics_.End())
+    if(iter != end(draft_schematics_))
     {
         draft_schematics_.Remove(iter);
         PlayerMessageBuilder::BuildDraftSchematicDelta(this);
@@ -559,11 +560,11 @@ NetworkSortedVector<Name> Player::GetFriends()
 bool Player::IsFriend(std::string friend_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = find_if(friends_.Begin(), friends_.End(), [=](const Name& x)->bool {
+    auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
         return (x.Contains(friend_name));
     });
     
-    if (iter != friends_.End())
+    if (iter != end(friends_))
         return true;
 
     return false;
@@ -578,11 +579,11 @@ void Player::AddFriend(string  friend_name, uint64_t id)
 void Player::RemoveFriend(string friend_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = find_if(friends_.Begin(), friends_.End(), [=](const Name& x)->bool {
+    auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
         return (x.Contains(friend_name));
     });
     
-    if (iter != friends_.End())
+    if (iter != end(friends_))
     {
         GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), iter->id));
         friends_.Remove(iter);
@@ -606,10 +607,10 @@ NetworkSortedVector<Name> Player::GetIgnoredPlayers()
 bool Player::IsIgnored(string player_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = find_if(ignored_players_.Begin(), ignored_players_.End(), [=](const Name& x)->bool {
+    auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
         return (x.Contains(player_name));
     });
-    if (iter != ignored_players_.End())
+    if (iter != end(ignored_players_))
     {
         return true;  
     }
@@ -626,11 +627,11 @@ void Player::IgnorePlayer(string player_name, uint64_t player_id)
 void Player::StopIgnoringPlayer(string player_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = find_if(ignored_players_.Begin(), ignored_players_.End(), [=](const Name& x)->bool {
+    auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
         return (x.Contains(player_name));
     });
 
-    if (iter != ignored_players_.End())
+    if (iter != end(ignored_players_))
     {
         GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveIgnoredPlayer", static_pointer_cast<Player>(shared_from_this()), iter->id));
         ignored_players_.Remove(iter);

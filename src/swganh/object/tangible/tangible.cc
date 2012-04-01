@@ -65,11 +65,11 @@ void Tangible::SetCustomization(const string& customization)
 void Tangible::RemoveComponentCustomization(uint32_t customization)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(component_customization_list_.Begin(), component_customization_list_.End(), [=](ComponentCustomization component) {
+    auto iter = std::find_if(begin(component_customization_list_), end(component_customization_list_), [=](ComponentCustomization component) {
         return component.component_customization_crc = customization;
     });
 
-    if(iter != component_customization_list_.End())
+    if(iter != end(component_customization_list_))
     {
         component_customization_list_.Remove(iter);
         TangibleMessageBuilder::BuildComponentCustomizationDelta(this);
@@ -170,11 +170,11 @@ bool Tangible::IsStatic(void)
 bool Tangible::IsDefending(uint64_t defender)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(defender_list_.Begin(), defender_list_.End(), [=](const Defender& x)->bool {
+    auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
         return (x.object_id == defender);
     });
 
-    if(iter != defender_list_.End())
+    if(iter != end(defender_list_))
         return true;
     else
         return false;
@@ -188,11 +188,11 @@ void Tangible::AddDefender(uint64_t defender)
 void Tangible::RemoveDefender(uint64_t defender)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(defender_list_.Begin(), defender_list_.End(), [=](const Defender& x)->bool {
+    auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
         return (x.object_id == defender);
     });
 
-    if(iter != defender_list_.End())
+    if(iter != end(defender_list_))
     {
         defender_list_.Remove(iter);
         TangibleMessageBuilder::BuildDefendersDelta(this);
@@ -220,8 +220,8 @@ void Tangible::ClearDefenders()
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     defender_list_.Clear();
     //@TODO: NOT SURE WHY CLEAR DOESN'T WIPE OUT THE LIST
-    /*auto iter = defender_list_.Begin();
-    while (iter != defender_list_.End())
+    /*auto iter = begin(defender_list_)
+    while (iter != end(defender_list_))
     {
         defender_list_.Remove(iter);
         iter++;

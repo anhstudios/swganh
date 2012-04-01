@@ -143,11 +143,11 @@ void Creature::AddSkill(std::string skill)
 void Creature::RemoveSkill(std::string skill)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(skills_.Begin(), skills_.End(), [=](const Skill& other_skill){
+    auto iter = std::find_if(begin(skills_), end(skills_), [=](const Skill& other_skill){
         return (skill == other_skill.name);
     });
 
-    if(iter != skills_.End())
+    if(iter != end(skills_))
     {
         skills_.Remove(iter);
         CreatureMessageBuilder::BuildSkillDelta(this);
@@ -163,11 +163,11 @@ NetworkList<Skill> Creature::GetSkills(void)
 bool Creature::HasSkill(std::string skill)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(skills_.Begin(), skills_.End(), [=](const Skill& other_skill){
+    auto iter = std::find_if(begin(skills_), end(skills_), [=](const Skill& other_skill){
         return (skill == other_skill.name);
     });
 
-    if(iter != skills_.End())
+    if(iter != end(skills_))
         return true;
     else
         return false;
@@ -445,11 +445,11 @@ void Creature::AddSkillMod(SkillMod mod)
 void Creature::RemoveSkillMod(std::string identifier)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(skill_mod_list_.Begin(), skill_mod_list_.End(), [=](std::pair<std::string, SkillMod> pair)->bool {
+    auto iter = std::find_if(begin(skill_mod_list_), end(skill_mod_list_), [=](std::pair<std::string, SkillMod> pair)->bool {
         return (identifier == pair.first);
     });
 
-    if(iter != skill_mod_list_.End())
+    if(iter != end(skill_mod_list_))
     {
         skill_mod_list_.Remove(iter);
         CreatureMessageBuilder::BuildSkillModDelta(this);
@@ -479,11 +479,11 @@ NetworkMap<std::string, SkillMod> Creature::GetSkillMods(void)
 SkillMod Creature::GetSkillMod(std::string identifier)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(skill_mod_list_.Begin(), skill_mod_list_.End(), [=](std::pair<std::string, SkillMod> pair)->bool {
+    auto iter = std::find_if(begin(skill_mod_list_), end(skill_mod_list_), [=](std::pair<std::string, SkillMod> pair)->bool {
         return (pair.second.identifier == identifier);
     });
 
-    if(iter != skill_mod_list_.End())
+    if(iter != end(skill_mod_list_))
         return iter->second;
     else
         return SkillMod();
@@ -616,7 +616,7 @@ void Creature::AddMissionCriticalObject(MissionCriticalObject& object)
 void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(mission_critical_object_list_.Begin(), mission_critical_object_list_.End(), [=](const MissionCriticalObject& obj)->bool {
+    auto iter = std::find_if(begin(mission_critical_object_list_), end(mission_critical_object_list_), [=](const MissionCriticalObject& obj)->bool {
         if(mission_owner != obj.mission_owner_id_)
             return false;
 
@@ -626,7 +626,7 @@ void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t obje
         return true;
     });
 
-    if(iter != mission_critical_object_list_.End())
+    if(iter != end(mission_critical_object_list_))
     {
         mission_critical_object_list_.Remove(iter);
         CreatureMessageBuilder::BuildMissionCriticalObjectDelta(this);
@@ -636,7 +636,7 @@ void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t obje
 MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(mission_critical_object_list_.Begin(), mission_critical_object_list_.End(), [=](const MissionCriticalObject& x)->bool {
+    auto iter = std::find_if(begin(mission_critical_object_list_), end(mission_critical_object_list_), [=](const MissionCriticalObject& x)->bool {
         if(x.mission_owner_id_ != mission_owner)
             return false;
 
@@ -646,7 +646,7 @@ MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uin
         return true;
     });
 
-    if(iter != mission_critical_object_list_.End())
+    if(iter != end(mission_critical_object_list_))
         return *iter;
     else
         return MissionCriticalObject(0, 0);
@@ -881,11 +881,11 @@ void Creature::AddEquipmentItem(EquipmentItem& item)
 void Creature::RemoveEquipmentItem(uint64_t object_id)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(equipment_list_.Begin(), equipment_list_.End(), [=](std::pair<uint16_t, EquipmentItem> item)->bool {
+    auto iter = std::find_if(begin(equipment_list_), end(equipment_list_), [=](std::pair<uint16_t, EquipmentItem> item)->bool {
         return (object_id == item.second.object_id);
     });
 
-    if(iter != equipment_list_.End())
+    if(iter != end(equipment_list_))
     {
         equipment_list_.Remove(iter);
         CreatureMessageBuilder::BuildEquipmentDelta(this);
@@ -896,7 +896,7 @@ void Creature::UpdateEquipmentItem(EquipmentItem& item)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto iter = equipment_list_.Find(item);
-    if(iter != equipment_list_.End())
+    if(iter != end(equipment_list_))
         equipment_list_.Update(iter->first, item);
 }
 
@@ -909,11 +909,11 @@ NetworkSortedList<EquipmentItem> Creature::GetEquipment(void)
 EquipmentItem Creature::GetEquipmentItem(uint64_t object_id)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(equipment_list_.Begin(), equipment_list_.End(), [=](std::pair<uint16_t, EquipmentItem> pair) {
+    auto iter = std::find_if(begin(equipment_list_), end(equipment_list_), [=](std::pair<uint16_t, EquipmentItem> pair) {
         return pair.second.object_id == object_id;
     });
 
-    if(iter != equipment_list_.End())
+    if(iter != end(equipment_list_))
         return iter->second;
     else
         return EquipmentItem();
