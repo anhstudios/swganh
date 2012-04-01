@@ -459,7 +459,7 @@ void PlayerFactory::RemoveFriend_(const std::shared_ptr<Player>& player, uint64_
         statement->setUInt64(1, player->GetObjectId());
         statement->setUInt64(2, friend_id);
 
-        bool success = statement->execute();
+        statement->execute();
         }
     catch(sql::SQLException &e)
     {
@@ -559,7 +559,7 @@ void PlayerFactory::RemoveFromIgnoredList_(const shared_ptr<Player>& player, uin
         statement->setUInt64(1, player->GetObjectId());
         statement->setUInt64(2, ignore_player_id);
 
-        bool success = statement->execute();
+        statement->execute();
         }
     catch(sql::SQLException &e)
     {
