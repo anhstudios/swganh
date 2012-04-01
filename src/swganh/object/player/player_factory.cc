@@ -23,7 +23,6 @@ using namespace std;
 using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::object::player;
-using namespace swganh::object::waypoint;
 using namespace swganh::simulation;
 
 uint32_t PlayerFactory::GetType() const { return Player::type; }
@@ -289,27 +288,10 @@ void PlayerFactory::LoadWaypoints_(shared_ptr<Player> player, const std::shared_
 {
     try 
     {
-        auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
+        auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
-            while (result->next())
-            {
-                // Check to see if the waypoint is already available?
-                WaypointData waypoint;
-                waypoint.object_id_ = result->getUInt64("id");
-                waypoint.coordinates_ = glm::vec3(
-                    result->getDouble("x_position"),
-                    result->getDouble("y_position"), 
-                    result->getDouble("z_position"));
-                waypoint.location_network_id_ = result->getUInt("scene_id");
-                string custom_string = result->getString("custom_name");
-                waypoint.name_ = wstring(begin(custom_string), end(custom_string));
-                waypoint.activated_flag_ = result->getUInt("is_active");
-                waypoint.color_ = result->getUInt("color");
-            
-                player->AddWaypoint(move(waypoint));
-            }
+            event_dispatcher_->Dispatch(make_shared<WaypointEvent>("LoadWaypoints", player, result));
         }
     }
     catch(sql::SQLException &e)
@@ -320,7 +302,9 @@ void PlayerFactory::LoadWaypoints_(shared_ptr<Player> player, const std::shared_
 }
 void PlayerFactory::PersistWaypoints_(const shared_ptr<Player>& player)
 {
-    // Call Waypoint Factory??
+    auto waypoints = player->GetWaypoints();
+    event_dispatcher_->Dispatch(make_shared<anh::ValueEvent<swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer>>>
+                                ("PersistWaypoints", waypoints));
 }
 void PlayerFactory::LoadDraftSchematics_(shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)
 {

@@ -78,15 +78,8 @@ void exportPlayer()
 		.def_readwrite("schematic_id", &DraftSchematicData::schematic_id)
 		.def_readwrite("schematic_crc", &DraftSchematicData::schematic_crc)
 		;
-	class_<WaypointData>("WaypointData", "Describes a single Waypoint", init<uint64_t, uint32_t, glm::vec3, uint64_t, std::string, std::wstring, uint8_t, uint8_t>())
-		.def_readwrite("object_id", &WaypointData::object_id_)
-		.def_readwrite("cell_id", &WaypointData::cell_id_)
-		.def_readwrite("coodinates", &WaypointData::coordinates_)
-		.def_readwrite("location_network_id", &WaypointData::location_network_id_)
-		.def_readwrite("planet_name", &WaypointData::planet_name_)
-		.def_readwrite("name", &WaypointData::name_)
-		.def_readwrite("color", &WaypointData::color_)
-		.def_readwrite("activated_flag", &WaypointData::activated_flag_)
+	class_<PlayerWaypointSerializer>("PlayerWaypointSerializer", "Describes a single Waypoint", init<std::shared_ptr<waypoint::Waypoint>>())
+		.def_readwrite("waypoint", &PlayerWaypointSerializer::waypoint)
 		;
 
 	class_<PlayerWrapper, bases<Creature>, std::shared_ptr<Player>, boost::noncopyable>("Player", "The :class:`.Player` is a child of :class:`.Object` and describes actions specific to a Player Character.")

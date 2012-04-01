@@ -8,6 +8,7 @@
 #include "player_events.h"
 #include "player_message_builder.h"
 #include "swganh/object/creature/creature.h"
+#include "swganh/object/waypoint/waypoint.h"
 #include "swganh/messages/deltas_message.h"
 
 using namespace std;
@@ -26,7 +27,7 @@ Player::Player()
 , admin_tag_(0)
 , region_(0)
 , experience_(NetworkMap<string, XpData>())
-, waypoints_(NetworkMap<uint64_t, WaypointData>())
+, waypoints_(NetworkMap<uint64_t, PlayerWaypointSerializer>())
 , current_force_power_(0)
 , max_force_power_(0)
 , current_force_sensitive_quests_(0)
@@ -228,16 +229,16 @@ void Player::ClearAllXp()
     PlayerMessageBuilder::BuildXpDelta(this);
 }
 
-NetworkMap<uint64_t, WaypointData> Player::GetWaypoints() 
+NetworkMap<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return waypoints_;
 }
 
-void Player::AddWaypoint(WaypointData waypoint)
+void Player::AddWaypoint(PlayerWaypointSerializer waypoint)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    waypoints_.Add(waypoint.object_id_, waypoint);
+    waypoints_.Add(waypoint.waypoint->GetObjectId(), waypoint);
     PlayerMessageBuilder::BuildWaypointDelta(this);
 }
 
@@ -247,7 +248,7 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
     auto find_iter = find_if(
         waypoints_.Begin(),
         waypoints_.End(),
-        [waypoint_id] (pair<uint64_t, WaypointData> stored_waypoint)
+        [waypoint_id] (pair<uint64_t, PlayerWaypointSerializer> stored_waypoint)
     {
         return waypoint_id == stored_waypoint.first;
     });
@@ -260,10 +261,10 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
     
 }
 
-void Player::ModifyWaypoint(WaypointData waypoint)
+void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    waypoints_.Update(waypoint.object_id_, waypoint);
+    waypoints_.Update(waypoint.waypoint->GetObjectId(), waypoint);
     PlayerMessageBuilder::BuildWaypointDelta(this);
 }
 
@@ -783,4 +784,40 @@ boost::optional<BaselinesMessage> Player::GetBaseline8()
 boost::optional<BaselinesMessage> Player::GetBaseline9()
 {
     return PlayerMessageBuilder::BuildBaseline9(this);
+}
+
+void PlayerWaypointSerializer::Serialize(swganh::messages::BaselinesMessage& message)
+{
+    message.data.write<uint64_t>(waypoint->GetObjectId());
+    message.data.write<uint32_t>(0);
+    auto coordinates_ = waypoint->GetCoordinates();
+    message.data.write<float>(coordinates_.x);
+    message.data.write<float>(coordinates_.y);
+    message.data.write<float>(coordinates_.z);
+    message.data.write<uint64_t>(0);
+    message.data.write<uint32_t>(anh::memcrc(waypoint->GetPlanet()));
+    message.data.write<std::wstring>(waypoint->GetName());
+    message.data.write<uint64_t>(waypoint->GetObjectId());
+    message.data.write<uint8_t>(waypoint->GetColorByte());
+    message.data.write<uint8_t>(waypoint->Active() ? 1 : 0);
+}
+
+void PlayerWaypointSerializer::Serialize(swganh::messages::DeltasMessage& message)
+{
+    message.data.write<uint32_t>(0);
+    auto coordinates_ = waypoint->GetCoordinates();
+    message.data.write<float>(coordinates_.x);
+    message.data.write<float>(coordinates_.y);
+    message.data.write<float>(coordinates_.z);
+    message.data.write<uint64_t>(0);
+    message.data.write<uint32_t>(anh::memcrc(waypoint->GetPlanet()));
+    message.data.write<std::wstring>(waypoint->GetName());
+    message.data.write<uint64_t>(waypoint->GetObjectId());
+    message.data.write<uint8_t>(waypoint->GetColorByte());
+    message.data.write<uint8_t>(waypoint->Active() ? 1 : 0);
+}
+
+bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
+{
+    return waypoint->GetObjectId() == other.waypoint->GetObjectId();
 }
