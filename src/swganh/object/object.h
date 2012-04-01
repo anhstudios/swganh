@@ -26,6 +26,8 @@
 
 #include "swganh/object/object_controller.h"
 
+#include "anh/event_dispatcher.h"
+
 namespace swganh {
 namespace object {
 
@@ -454,6 +456,9 @@ public:
      * @return The type of the object.
      */
     virtual uint32_t GetType() const { return 0; }
+
+    anh::EventDispatcher* GetEventDispatcher();
+    void SetEventDispatcher(anh::EventDispatcher* dispatcher);
             
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
@@ -508,6 +513,7 @@ private:
 
     std::shared_ptr<Object> container_;
     std::shared_ptr<ObjectController> controller_;
+    anh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;  
 };

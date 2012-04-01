@@ -590,14 +590,15 @@ void CombatService::SendCombatActionMessage(
         
         auto defenders = attacker->GetDefenders();
         // build up the defenders
-        for_each(defenders.Begin(), defenders.End(), [=, &cam](Defender defender) {
+        for(auto& defender : defenders)
+        {
             CombatDefender def_list;
             def_list.defender_id = defender.object_id;
             def_list.defender_end_posture = simulation_service_->GetObjectById<Creature>(defender.object_id)->GetPosture();
             def_list.hit_type = 0x1;
             def_list.defender_special_move_effect = 0;
             cam.defender_list.push_back(def_list);
-        });
+        }
         cam.combat_special_move_effect = 0;
         
         attacker->NotifyObservers(move(cam));

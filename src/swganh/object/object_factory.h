@@ -3,6 +3,7 @@
 #define SWGANH_OBJECT_OBJECT_FACTORY_H_
 
 #include "swganh/object/object_factory_interface.h"
+#include "anh/event_dispatcher.h"
 
 namespace anh {
 namespace database {
@@ -29,7 +30,8 @@ namespace object {
     {
     public:
         ObjectFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service);
+            swganh::simulation::SimulationService* simulation_service,
+            anh::EventDispatcher* event_dispatcher);
         virtual ~ObjectFactory() {}
         /**
          * Loads in base values from a result set
@@ -54,13 +56,17 @@ namespace object {
         uint32_t LookupType(uint64_t object_id) const;
         virtual uint32_t GetType() const { return 0; }
         const static uint32_t type;
+        virtual void RegisterEventHandlers(){}
+
     protected:
+        
 
         void LoadContainedObjects(const std::shared_ptr<Object>& object,
             const std::shared_ptr<sql::Statement>& statement);
 
         anh::database::DatabaseManagerInterface* db_manager_;   
         swganh::simulation::SimulationService* simulation_service_;
+        anh::EventDispatcher* event_dispatcher_;
     };
 
 }}  // namespace swganh::object

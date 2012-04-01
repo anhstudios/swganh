@@ -5,8 +5,10 @@
 
 #include "anh/crc.h"
 
-#include "swganh/object/player/player_message_builder.h"
+#include "player_events.h"
+#include "player_message_builder.h"
 #include "swganh/object/creature/creature.h"
+#include "swganh/object/waypoint/waypoint.h"
 #include "swganh/messages/deltas_message.h"
 
 using namespace std;
@@ -25,7 +27,7 @@ Player::Player()
 , admin_tag_(0)
 , region_(0)
 , experience_(NetworkMap<string, XpData>())
-, waypoints_(NetworkMap<uint64_t, WaypointData>())
+, waypoints_(NetworkMap<uint64_t, PlayerWaypointSerializer>())
 , current_force_power_(0)
 , max_force_power_(0)
 , current_force_sensitive_quests_(0)
@@ -198,10 +200,10 @@ void Player::DeductXp(XpData experience)
 void Player::ClearXpType(string type)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = find_if(experience_.Begin(), experience_.End(), [type](pair<string, XpData> xp) {
+    auto iter = find_if(begin(experience_), end(experience_), [type](pair<string, XpData> xp) {
         return xp.first == type;
     });
-    if (iter != experience_.End())
+    if (iter != end(experience_))
     {
         experience_.Remove(iter);
         PlayerMessageBuilder::BuildXpDelta(this);
@@ -212,9 +214,10 @@ void Player::ResetXp(swganh::messages::containers::NetworkMap<std::string, XpDat
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     experience_.Clear();
-    for_each(experience_.Begin(), experience_.End(), [=] (pair<string, XpData> pair) {
+    for(auto& pair : experience)
+    {
         experience_.Add(pair.first, pair.second);
-    });
+    }
     experience_.Reinstall();
 
     PlayerMessageBuilder::BuildXpDelta(this);
@@ -227,16 +230,16 @@ void Player::ClearAllXp()
     PlayerMessageBuilder::BuildXpDelta(this);
 }
 
-NetworkMap<uint64_t, WaypointData> Player::GetWaypoints() 
+NetworkMap<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     return waypoints_;
 }
 
-void Player::AddWaypoint(WaypointData waypoint)
+void Player::AddWaypoint(PlayerWaypointSerializer waypoint)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    waypoints_.Add(waypoint.object_id_, waypoint);
+    waypoints_.Add(waypoint.waypoint->GetObjectId(), waypoint);
     PlayerMessageBuilder::BuildWaypointDelta(this);
 }
 
@@ -244,14 +247,14 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto find_iter = find_if(
-        waypoints_.Begin(),
-        waypoints_.End(),
-        [waypoint_id] (pair<uint64_t, WaypointData> stored_waypoint)
+        begin(waypoints_),
+        end(waypoints_),
+        [waypoint_id] (pair<uint64_t, PlayerWaypointSerializer> stored_waypoint)
     {
         return waypoint_id == stored_waypoint.first;
     });
 
-    if (find_iter != waypoints_.End())
+    if (find_iter != end(waypoints_))
     {
         waypoints_.Remove(find_iter);
         PlayerMessageBuilder::BuildWaypointDelta(this);
@@ -259,10 +262,10 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
     
 }
 
-void Player::ModifyWaypoint(WaypointData waypoint)
+void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    waypoints_.Update(waypoint.object_id_, waypoint);
+    waypoints_.Update(waypoint.waypoint->GetObjectId(), waypoint);
     PlayerMessageBuilder::BuildWaypointDelta(this);
 }
 
@@ -381,14 +384,14 @@ void Player::RemoveQuest(QuestJournalData quest)
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     
     auto find_iter = find_if(
-        quest_journal_.Begin(),
-        quest_journal_.End(),
+        begin(quest_journal_),
+        end(quest_journal_),
         [&quest] ( pair<uint32_t, QuestJournalData> stored_quest)
     {
         return quest.quest_crc == stored_quest.first;
     });
 
-    if (find_iter == quest_journal_.End())
+    if (find_iter == end(quest_journal_))
     {
         return;
     }
@@ -491,7 +494,7 @@ void Player::RemoveDraftSchematic(uint32_t schematic_id)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     auto iter = draft_schematics_.Find(DraftSchematicData(schematic_id));
-    if(iter != draft_schematics_.End())
+    if(iter != end(draft_schematics_))
     {
         draft_schematics_.Remove(iter);
         PlayerMessageBuilder::BuildDraftSchematicDelta(this);
@@ -557,31 +560,32 @@ NetworkSortedVector<Name> Player::GetFriends()
 bool Player::IsFriend(std::string friend_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = find_if(friends_.Begin(), friends_.End(), [=](const Name& x)->bool {
-        return (x.name == friend_name);
+    auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
+        return (x.Contains(friend_name));
     });
     
-    if (iter != friends_.End())
+    if (iter != end(friends_))
         return true;
 
     return false;
 }
-void Player::AddFriend(string  friend_name)
+void Player::AddFriend(string  friend_name, uint64_t id)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    friends_.Add(friend_name);
+    friends_.Add(Name(friend_name, id));
     PlayerMessageBuilder::BuildFriendsDelta(this);
 }
 
 void Player::RemoveFriend(string friend_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = find_if(friends_.Begin(), friends_.End(), [=](const Name& x)->bool {
-        return (x.name == friend_name);
+    auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
+        return (x.Contains(friend_name));
     });
     
-    if (iter != friends_.End())
+    if (iter != end(friends_))
     {
+        GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), iter->id));
         friends_.Remove(iter);
         PlayerMessageBuilder::BuildFriendsDelta(this);    
     }
@@ -600,23 +604,37 @@ NetworkSortedVector<Name> Player::GetIgnoredPlayers()
     return ignored_players_;
 }
 
-void Player::IgnorePlayer(string player_name)
+bool Player::IsIgnored(string player_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    ignored_players_.Add(player_name);
+    auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
+        return (x.Contains(player_name));
+    });
+    if (iter != end(ignored_players_))
+    {
+        return true;  
+    }
+    return false;
+}
+
+void Player::IgnorePlayer(string player_name, uint64_t player_id)
+{
+    boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+    ignored_players_.Add(Name(player_name, player_id));
     PlayerMessageBuilder::BuildIgnoredDelta(this);    
 }
 
 void Player::StopIgnoringPlayer(string player_name)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = find_if(ignored_players_.Begin(), ignored_players_.End(), [=](const Name& x)->bool {
-        return (x.name == player_name);
+    auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
+        return (x.Contains(player_name));
     });
 
-    if (iter != ignored_players_.End())
+    if (iter != end(ignored_players_))
     {
-        friends_.Remove(iter);
+        GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveIgnoredPlayer", static_pointer_cast<Player>(shared_from_this()), iter->id));
+        ignored_players_.Remove(iter);
         PlayerMessageBuilder::BuildIgnoredDelta(this);    
     }
 }
@@ -767,4 +785,40 @@ boost::optional<BaselinesMessage> Player::GetBaseline8()
 boost::optional<BaselinesMessage> Player::GetBaseline9()
 {
     return PlayerMessageBuilder::BuildBaseline9(this);
+}
+
+void PlayerWaypointSerializer::Serialize(swganh::messages::BaselinesMessage& message)
+{
+    message.data.write<uint64_t>(waypoint->GetObjectId());
+    message.data.write<uint32_t>(0);
+    auto coordinates_ = waypoint->GetCoordinates();
+    message.data.write<float>(coordinates_.x);
+    message.data.write<float>(coordinates_.y);
+    message.data.write<float>(coordinates_.z);
+    message.data.write<uint64_t>(0);
+    message.data.write<uint32_t>(anh::memcrc(waypoint->GetPlanet()));
+    message.data.write<std::wstring>(waypoint->GetName());
+    message.data.write<uint64_t>(waypoint->GetObjectId());
+    message.data.write<uint8_t>(waypoint->GetColorByte());
+    message.data.write<uint8_t>(waypoint->Active() ? 1 : 0);
+}
+
+void PlayerWaypointSerializer::Serialize(swganh::messages::DeltasMessage& message)
+{
+    message.data.write<uint32_t>(0);
+    auto coordinates_ = waypoint->GetCoordinates();
+    message.data.write<float>(coordinates_.x);
+    message.data.write<float>(coordinates_.y);
+    message.data.write<float>(coordinates_.z);
+    message.data.write<uint64_t>(0);
+    message.data.write<uint32_t>(anh::memcrc(waypoint->GetPlanet()));
+    message.data.write<std::wstring>(waypoint->GetName());
+    message.data.write<uint64_t>(waypoint->GetObjectId());
+    message.data.write<uint8_t>(waypoint->GetColorByte());
+    message.data.write<uint8_t>(waypoint->Active() ? 1 : 0);
+}
+
+bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
+{
+    return waypoint->GetObjectId() == other.waypoint->GetObjectId();
 }

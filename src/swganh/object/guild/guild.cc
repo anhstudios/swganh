@@ -21,11 +21,11 @@ Guild::~Guild()
 
 void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag)
 {
-    auto iter = std::find_if(guild_list_.Begin(), guild_list_.End(), [=](const GuildTag& tag)->bool {
+    auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
         return guild_id == tag.id;
     });
 
-    if(iter == guild_list_.End())
+    if(iter == end(guild_list_))
     {
         guild_list_.Add(GuildTag(guild_id, guild_tag));
         GuildMessageBuilder::BuildGuildTagsDelta(this);
@@ -34,11 +34,11 @@ void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag)
 
 void Guild::RemoveGuildTag(uint32_t guild_id)
 {
-    auto iter = std::find_if(guild_list_.Begin(), guild_list_.End(), [=](const GuildTag& tag)->bool {
+    auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
         return guild_id == tag.id;
     });
 
-    if(iter != guild_list_.End())
+    if(iter != end(guild_list_))
     {
         guild_list_.Remove(iter);
         GuildMessageBuilder::BuildGuildTagsDelta(this);

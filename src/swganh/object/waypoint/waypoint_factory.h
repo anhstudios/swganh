@@ -18,13 +18,17 @@ namespace simulation {
 
 namespace swganh {
 namespace object {
+
+namespace player {class Player; }
+
 namespace waypoint {
     class Waypoint;
     class WaypointFactory : public swganh::object::ObjectFactory
     {
     public:
         WaypointFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service);
+            swganh::simulation::SimulationService* simulation_service,
+            anh::EventDispatcher* event_dispatcher);
 
         void LoadTemplates();
 
@@ -37,6 +41,10 @@ namespace waypoint {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+
+        void LoadWaypoints(const std::shared_ptr<swganh::object::player::Player>& player, const std::shared_ptr<sql::ResultSet> result_set);
+
+        virtual void RegisterEventHandlers();
     private:
         std::unordered_map<std::string, std::shared_ptr<Waypoint>>::iterator GetTemplateIter_(const std::string& template_name);
         std::unordered_map<std::string, std::shared_ptr<Waypoint>> waypoint_templates_;

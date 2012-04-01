@@ -14,6 +14,7 @@ void exportSocialService()
 {
     class_<SocialService, shared_ptr<SocialService>, boost::noncopyable>("SocialService", "The social service handles services that involve social actions", no_init)
         .def("add_friend", &SocialService::AddFriend, "Checks the database to see if the character name exists and then adds the friend to the player")
+        .def("add_ignore", &SocialService::AddIgnore, "Checks the database to see if the character name exists and then adds to the ignore list")
         ;
 }
 

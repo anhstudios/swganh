@@ -487,6 +487,16 @@ uint32_t Object::GetSceneId()
 	return scene_id_;
 }
 
+anh::EventDispatcher* Object::GetEventDispatcher()
+{ 
+    return event_dispatcher_; 
+}
+
+void Object::SetEventDispatcher(anh::EventDispatcher* dispatcher)
+{
+    event_dispatcher_ = dispatcher;
+}
+
 optional<BaselinesMessage> Object::GetBaseline3()
 {
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
@@ -498,3 +508,4 @@ optional<BaselinesMessage> Object::GetBaseline6()
 	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
 	return std::move(ObjectMessageBuilder::BuildBaseline6(this));
 }
+

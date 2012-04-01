@@ -21,9 +21,11 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
-                             SimulationService* simulation_service)
+                             SimulationService* simulation_service,
+                             anh::EventDispatcher* event_dispatcher)
     : db_manager_(db_manager)
     , simulation_service_(simulation_service)
+    , event_dispatcher_(event_dispatcher)
 {
 }
 void ObjectFactory::PersistObject(const shared_ptr<Object>& object)
@@ -98,6 +100,9 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         object->custom_name_ = wstring(begin(custom_string), end(custom_string));
         object->volume_ = result->getUInt("volume");
         object->template_string_ = result->getString("iff_template");
+        
+        // Set Event Dispatcher
+        object->SetEventDispatcher(event_dispatcher_);
         
     }
     catch(sql::SQLException &e)

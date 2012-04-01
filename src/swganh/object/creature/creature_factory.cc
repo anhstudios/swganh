@@ -24,8 +24,9 @@ using namespace swganh::simulation;
 
 
 CreatureFactory::CreatureFactory(DatabaseManagerInterface* db_manager,
-                             SimulationService* simulation_service)
-    : TangibleFactory(db_manager, simulation_service)
+                             SimulationService* simulation_service,
+                             anh::EventDispatcher* event_dispatcher)
+    : TangibleFactory(db_manager, simulation_service, event_dispatcher)
 {
 }
 

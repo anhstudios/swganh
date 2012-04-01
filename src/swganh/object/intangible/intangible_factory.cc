@@ -23,8 +23,9 @@ using namespace swganh::object::intangible;
 using namespace swganh::simulation;
 
 IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
-                             SimulationService* simulation_service)
-    : ObjectFactory(db_manager, simulation_service)
+                             SimulationService* simulation_service,
+                             anh::EventDispatcher* event_dispatcher)
+    : ObjectFactory(db_manager, simulation_service, event_dispatcher)
 {
 }
 void IntangibleFactory::LoadTemplates()
@@ -64,13 +65,16 @@ bool IntangibleFactory::HasTemplate(const string& template_name)
 
 void IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
 {
-    if (object->IsDirty())
+    if (object->IsDirty() && object->GetType() == Intangible::type)
     {
         try 
         {
             auto conn = db_manager_->getConnection("galaxy");
-            auto statement = conn->prepareStatement("CALL sp_PersistIntangible(?,?,?,?,?,?,?,?);");
-            //@TODO: Add in values to persist
+            auto statement = conn->prepareStatement("CALL sp_PersistIntangible(?,?);");
+            
+            auto intangible = make_shared<Intangible>();
+            statement->setString(1, intangible->GetStfDetailFile());
+            statement->setString(2, intangible->GetStfDetailString());
             statement->execute();
         }
             catch(sql::SQLException &e)

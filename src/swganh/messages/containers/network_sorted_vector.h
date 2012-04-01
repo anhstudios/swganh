@@ -134,8 +134,8 @@ public:
 
     uint16_t Capacity() { return items_.capacity(); }
     uint16_t Size() { return items_.size(); }
-    iterator Begin() { return items_.begin(); }
-    iterator End() { return items_.end(); } 
+    iterator begin() { return items_.begin(); }
+    iterator end() { return items_.end(); } 
 
 	void Serialize(swganh::messages::BaselinesMessage& message)
     {
