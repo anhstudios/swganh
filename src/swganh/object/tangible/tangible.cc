@@ -45,53 +45,70 @@ Tangible::Tangible(const std::string& customization, std::vector<uint32_t> compo
 
 void Tangible::AddCustomization(const string& customization)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    customization_.append(customization);
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        customization_.append(customization);
+    }
+
     TangibleMessageBuilder::BuildCustomizationDelta(this);
 }
 
 std::string Tangible::GetCustomization(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(tangible_mutex_);
     return customization_;
 }
 
 void Tangible::SetCustomization(const string& customization)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    customization_ = customization;
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        customization_ = customization;
+    }
+
     TangibleMessageBuilder::BuildCustomizationDelta(this);
 }
 void Tangible::RemoveComponentCustomization(uint32_t customization)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(begin(component_customization_list_), end(component_customization_list_), [=](ComponentCustomization component) {
-        return component.component_customization_crc = customization;
-    });
-
-    if(iter != end(component_customization_list_))
     {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        auto iter = std::find_if(begin(component_customization_list_), end(component_customization_list_), [=](ComponentCustomization component) {
+            return component.component_customization_crc = customization;
+        });
+
+        if(iter == end(component_customization_list_))
+        {
+            return;
+        }
+            
         component_customization_list_.Remove(iter);
-        TangibleMessageBuilder::BuildComponentCustomizationDelta(this);
     }
+            
+    TangibleMessageBuilder::BuildComponentCustomizationDelta(this);
 }
 void Tangible::AddComponentCustomization(uint32_t customization)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    component_customization_list_.Add(ComponentCustomization(customization));
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        component_customization_list_.Add(ComponentCustomization(customization));
+    }
+
     TangibleMessageBuilder::BuildComponentCustomizationDelta(this);
 }
 
 NetworkList<ComponentCustomization> Tangible::GetComponentCustomization(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(tangible_mutex_);
     return component_customization_list_;
 }
 
 void Tangible::ClearComponentCustomization()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    component_customization_list_.Clear();
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        component_customization_list_.Clear();
+    }
+
     TangibleMessageBuilder::BuildComponentCustomizationDelta(this);
 }
 
@@ -158,7 +175,7 @@ bool Tangible::IsStatic(void)
 
 bool Tangible::IsDefending(uint64_t defender)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(tangible_mutex_);
     auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
         return (x.object_id == defender);
     });
@@ -170,51 +187,65 @@ bool Tangible::IsDefending(uint64_t defender)
 }
 void Tangible::AddDefender(uint64_t defender)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    defender_list_.Add(Defender(defender));
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        defender_list_.Add(Defender(defender));
+    }
+
     TangibleMessageBuilder::BuildDefendersDelta(this);
 }
 void Tangible::RemoveDefender(uint64_t defender)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
-        return (x.object_id == defender);
-    });
-
-    if(iter != end(defender_list_))
     {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
+            return (x.object_id == defender);
+        });
+
+        if(iter != end(defender_list_))
+        {
+            return;
+        }
+            
         defender_list_.Remove(iter);
-        TangibleMessageBuilder::BuildDefendersDelta(this);
     }
+
+    TangibleMessageBuilder::BuildDefendersDelta(this);
 }
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    defender_list_.Clear();
-    std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& x) {
-        defender_list_.Insert(Defender(x));
-    });
-    defender_list_.Reinstall();
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        defender_list_.Clear();
+        std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& x) {
+            defender_list_.Insert(Defender(x));
+        });
+        defender_list_.Reinstall();
+    }
+
     TangibleMessageBuilder::BuildDefendersDelta(this);
 }
 
 NetworkSortedVector<Defender> Tangible::GetDefenders()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(tangible_mutex_);
     return defender_list_;
 }
 
 void Tangible::ClearDefenders()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    defender_list_.Clear();
-    //@TODO: NOT SURE WHY CLEAR DOESN'T WIPE OUT THE LIST
-    /*auto iter = begin(defender_list_)
-    while (iter != end(defender_list_))
     {
-        defender_list_.Remove(iter);
-        iter++;
-    }*/
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        defender_list_.Clear();
+        //@TODO: NOT SURE WHY CLEAR DOESN'T WIPE OUT THE LIST
+        /*auto iter = begin(defender_list_)
+        while (iter != end(defender_list_))
+        {
+            defender_list_.Remove(iter);
+            iter++;
+        }*/
+    }
+
     TangibleMessageBuilder::BuildDefendersDelta(this);
 }
 
@@ -233,13 +264,13 @@ bool Tangible::IsAutoAttacking()
 
 boost::optional<BaselinesMessage> Tangible::GetBaseline3()
 {
-    return std::move(TangibleMessageBuilder::BuildBaseline3(this));
+    return TangibleMessageBuilder::BuildBaseline3(this);
 }
 boost::optional<BaselinesMessage> Tangible::GetBaseline6()
 {
-    return std::move(TangibleMessageBuilder::BuildBaseline6(this));
+    return TangibleMessageBuilder::BuildBaseline6(this);
 }
 boost::optional<BaselinesMessage> Tangible::GetBaseline7()
 {
-    return std::move(TangibleMessageBuilder::BuildBaseline7(this));
+    return TangibleMessageBuilder::BuildBaseline7(this);
 }
