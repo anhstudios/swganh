@@ -346,7 +346,7 @@ void PlayerFactory::LoadQuestJournal_(shared_ptr<Player> player, const std::shar
             {
                 QuestJournalData data;
                 data.owner_id = result->getUInt64("quest_owner_id");
-                data.quest_crc = anh::memcrc(result->getString("name"));
+                data.quest_crc = result->getUInt("quest_crc");
                 data.active_step_bitmask = result->getUInt("active_step_bitmask");
                 data.completed_step_bitmask = result->getUInt("completed_step_bitmask");
                 data.completed_flag = result->getUInt("completed") == 1;
@@ -362,7 +362,28 @@ void PlayerFactory::LoadQuestJournal_(shared_ptr<Player> player, const std::shar
 }
 void PlayerFactory::PersistQuestJournal_(const shared_ptr<Player>& player)
 {
-
+    try 
+    {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto quests = player->GetQuests();
+        
+        for_each(quests.Begin(), quests.End(), [=] (pair<uint64_t, QuestJournalData> quest){
+            auto statement = conn->prepareStatement("CALL sp_UpdateQuestJournal(?,?,?,?,?,?);");
+            statement->setUInt64(1, player->GetObjectId());
+            statement->setUInt64(2, quest.second.owner_id);
+            statement->setUInt(3, quest.second.quest_crc);
+            statement->setUInt(4, quest.second.active_step_bitmask);
+            statement->setUInt(5, quest.second.completed_step_bitmask);
+            statement->setUInt(6, quest.second.completed_flag);
+            
+            auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+        });
+    }
+        catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
 void PlayerFactory::LoadForceSensitiveQuests_(shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)
 {
