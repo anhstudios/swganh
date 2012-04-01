@@ -118,7 +118,7 @@ protected:
 
 private:
     friend class GroupFactory;
-    mutable std::recursive_mutex mutex_;
+    mutable std::mutex group_mutex_;
 
     swganh::messages::containers::NetworkSortedVector<Member> member_list_;                     // update 6 variable 1
     std::atomic<uint16_t> difficulty_;                                                                       // update 6 variable 4
