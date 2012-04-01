@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <array>
+#include <atomic>
 #include <list>
 #include <mutex>
 #include <string>
@@ -874,31 +875,31 @@ private:
     std::array<FlagBitmask, 4> status_flags_;
     std::array<FlagBitmask, 4> profile_flags_;
     std::string profession_tag_;
-    uint32_t born_date_;
-    uint32_t total_playtime_;
-    uint8_t admin_tag_;
-    uint32_t region_;
+    std::atomic<uint32_t> born_date_;
+    std::atomic<uint32_t> total_playtime_;
+    std::atomic<uint8_t> admin_tag_;
+    std::atomic<uint32_t> region_;
     swganh::messages::containers::NetworkMap<std::string, XpData> experience_;
     swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer> waypoints_;
-    uint32_t current_force_power_;
-    uint32_t max_force_power_;
-    uint32_t current_force_sensitive_quests_;
-    uint32_t completed_force_sensitive_quests_;
+    std::atomic<uint32_t> current_force_power_;
+    std::atomic<uint32_t> max_force_power_;
+    std::atomic<uint32_t> current_force_sensitive_quests_;
+    std::atomic<uint32_t> completed_force_sensitive_quests_;
     swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> quest_journal_;
-    uint32_t experimentation_flag_;
-    uint32_t crafting_stage_;
-    uint64_t nearest_crafting_station_;
+    std::atomic<uint32_t> experimentation_flag_;
+    std::atomic<uint32_t> crafting_stage_;
+    std::atomic<uint64_t> nearest_crafting_station_;
     swganh::messages::containers::NetworkSortedList<DraftSchematicData> draft_schematics_;
-    uint32_t experimentation_points_;
+    std::atomic<uint32_t> experimentation_points_;
     swganh::messages::containers::NetworkSortedVector<Name> friends_;
     swganh::messages::containers::NetworkSortedVector<Name> ignored_players_;
-    uint32_t accomplishment_counter_;
-    uint32_t language_;
-    uint32_t current_stomach_;
-    uint32_t max_stomach_;
-    uint32_t current_drink_;
-    uint32_t max_drink_;
-    uint32_t jedi_state_;
+    std::atomic<uint32_t> accomplishment_counter_;
+    std::atomic<uint32_t> language_;
+    std::atomic<uint32_t> current_stomach_;
+    std::atomic<uint32_t> max_stomach_;
+    std::atomic<uint32_t> current_drink_;
+    std::atomic<uint32_t> max_drink_;
+    std::atomic<uint32_t> jedi_state_;
     Gender gender_;
 };
 

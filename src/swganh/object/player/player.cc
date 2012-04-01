@@ -133,46 +133,39 @@ void Player::SetProfessionTag(string profession_tag)
 
 uint32_t Player::GetBornDate() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return born_date_;
 }
 
 void Player::SetBornDate(uint32_t born_date)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     born_date_ = born_date;
     PlayerMessageBuilder::BuildBornDateDelta(this);
 }
 
 uint32_t Player::GetTotalPlayTime() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return total_playtime_;
 }
 
 void Player::SetTotalPlayTime(uint32_t play_time)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     total_playtime_ = play_time;
     PlayerMessageBuilder::BuildPlayTimeDelta(this);
 }
 
 void Player::IncrementTotalPlayTime(uint32_t increment)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     total_playtime_ += increment;
     PlayerMessageBuilder::BuildPlayTimeDelta(this);
 }
 
 uint8_t Player::GetAdminTag() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return admin_tag_;
 }
 
 void Player::SetAdminTag(uint8_t tag)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     admin_tag_ = tag;
     PlayerMessageBuilder::BuildAdminTagDelta(this);
 }
@@ -279,20 +272,17 @@ void Player::ClearAllWaypoints()
 
 uint32_t Player::GetCurrentForcePower() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return current_force_power_;
 }
 
 void Player::SetCurrentForcePower(uint32_t force_power)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     current_force_power_ = force_power;
     PlayerMessageBuilder::BuildCurrentForcePowerDelta(this);
 }
 
 void Player::IncrementForcePower(int32_t force_power)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     uint32_t new_force_power = current_force_power_ + force_power;
 
     current_force_power_ = (new_force_power > GetMaxForcePower()) ? GetMaxForcePower() : new_force_power;
@@ -302,13 +292,11 @@ void Player::IncrementForcePower(int32_t force_power)
 
 uint32_t Player::GetMaxForcePower() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return max_force_power_;
 }
 
 void Player::SetMaxForcePower(uint32_t force_power)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     max_force_power_ = force_power;
     PlayerMessageBuilder::BuildMaxForcePowerDelta(this);
 }
@@ -321,48 +309,41 @@ uint32_t Player::GetCurrentForceSensitiveQuests()
 
 void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     current_force_sensitive_quests_ = current_force_sensitive_quests_ | quest_mask;
     PlayerMessageBuilder::BuildForceSensitiveQuestDelta(this);
 }
 
 void Player::RemoveCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     current_force_sensitive_quests_ = current_force_sensitive_quests_ & ~quest_mask;
     PlayerMessageBuilder::BuildForceSensitiveQuestDelta(this);
 }
 
 void Player::ClearCurrentForceSensitiveQuests()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     current_force_sensitive_quests_ = 0;
     PlayerMessageBuilder::BuildForceSensitiveQuestDelta(this);
 }
 
 uint32_t Player::GetCompletedForceSensitiveQuests()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return completed_force_sensitive_quests_;
 }
 
 void Player::AddCompletedForceSensitiveQuest(uint32_t quest_mask)
-{    
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+{
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ | quest_mask;
     PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(this);
 }
 
 void Player::RemoveCompletedForceSensitiveQuest(uint32_t quest_mask)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ & ~quest_mask;
     PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(this);
 }
 
 void Player::ClearCompletedForceSensitiveQuests()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     completed_force_sensitive_quests_ = 0;
     PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(this);
 }
@@ -441,39 +422,33 @@ bool Player::HasAbility(string ability)
 
 uint32_t Player::GetExperimentationFlag() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return experimentation_flag_;
 }
 
 void Player::SetExperimentationFlag(uint32_t experimentation_flag)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     experimentation_flag_ = experimentation_flag;
     PlayerMessageBuilder::BuildExperimentationFlagDelta(this);
 }
 
 uint32_t Player::GetCraftingStage() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return crafting_stage_;
 }
 
 void Player::SetCraftingStage(uint32_t crafting_stage)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     crafting_stage_ = crafting_stage;
     PlayerMessageBuilder::BuildCraftingStageDelta(this);
 }
 
 uint64_t Player::GetNearestCraftingStation() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return nearest_crafting_station_;
 }
 
 void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     nearest_crafting_station_ = crafting_station_id;
     PlayerMessageBuilder::BuildNearestCraftingStationDelta(this);
 }
@@ -511,27 +486,23 @@ void Player::ClearDraftSchematics()
 
 uint32_t Player::GetExperimentationPoints() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return experimentation_points_;
 }
 
 void Player::AddExperimentationPoints(uint32_t points)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     experimentation_points_ += points;
     PlayerMessageBuilder::BuildExperimentationPointsDelta(this);
 }
 
 void Player::RemoveExperimentationPoints(uint32_t points)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     experimentation_points_ -= points;
     PlayerMessageBuilder::BuildExperimentationPointsDelta(this);
 }
 
 void Player::ResetExperimentationPoints(uint32_t points)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     experimentation_points_ = points;
     PlayerMessageBuilder::BuildExperimentationPointsDelta(this);
 }
@@ -649,26 +620,22 @@ void Player::ClearIgnored()
 
 uint32_t Player::GetLanguage() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return language_;
 }
 
 void Player::SetLanguage(uint32_t language_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     language_ = language_id;
     PlayerMessageBuilder::BuildLanguageDelta(this);
 }
 
 uint32_t Player::GetCurrentStomach() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return current_stomach_;
 }
 
 void Player::IncreaseCurrentStomach(uint32_t stomach)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     uint32_t new_stomach = current_stomach_ + stomach;
 
     current_stomach_ = (new_stomach > GetMaxStomach()) ? GetMaxStomach() : new_stomach;
@@ -677,40 +644,34 @@ void Player::IncreaseCurrentStomach(uint32_t stomach)
 
 void Player::DecreaseCurrentStomach(uint32_t stomach)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     current_stomach_ -= stomach;
     PlayerMessageBuilder::BuildCurrentStomachDelta(this);
 }
 
 void Player::ResetCurrentStomach(uint32_t stomach)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     current_stomach_ = stomach;
     PlayerMessageBuilder::BuildCurrentStomachDelta(this);
 }
 
 uint32_t Player::GetMaxStomach() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return max_stomach_;
 }
 
 void Player::ResetMaxStomach(uint32_t stomach)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     max_stomach_ = stomach;
     PlayerMessageBuilder::BuildMaxStomachDelta(this);
 }
 
 uint32_t Player::GetCurrentDrink() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return current_drink_;
 }
 
 void Player::IncreaseCurrentDrink(uint32_t drink)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     uint32_t new_drink = current_drink_ + drink;
 
     current_drink_ = (new_drink > GetMaxDrink()) ? GetMaxDrink() : new_drink;
@@ -719,40 +680,34 @@ void Player::IncreaseCurrentDrink(uint32_t drink)
 
 void Player::DecreaseCurrentDrink(uint32_t drink)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     current_drink_ -= drink;
     PlayerMessageBuilder::BuildCurrentDrinkDelta(this);
 }
 
 void Player::ResetCurrentDrink(uint32_t drink)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     current_drink_ = drink;
     PlayerMessageBuilder::BuildCurrentDrinkDelta(this);
 }
 
 uint32_t Player::GetMaxDrink() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return max_drink_;
 }
 
 void Player::ResetMaxDrink(uint32_t drink)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     max_drink_ = drink;
     PlayerMessageBuilder::BuildMaxDrinkDelta(this);
 }
 
 uint32_t Player::GetJediState() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return jedi_state_;
 }
 
 void Player::SetJediState(uint32_t jedi_state)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     jedi_state_ = jedi_state;
     PlayerMessageBuilder::BuildJediStateDelta(this);
 }
