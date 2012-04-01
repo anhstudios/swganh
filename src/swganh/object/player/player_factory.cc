@@ -336,11 +336,11 @@ void PlayerFactory::PersistDraftSchematics_(const shared_ptr<Player>& player)
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto draft_schematics = player->GetDraftSchematics();
-        for_each(draft_schematics.Begin(), draft_schematics.End(), [this, player, &conn] (DraftSchematicData schematic){
+        for_each(draft_schematics.Begin(), draft_schematics.End(), [this, player, &conn] (pair<uint16_t, DraftSchematicData> schematic){
             auto statement = conn->prepareStatement("CALL sp_UpdateDraftSchematic(?,?,?);");
             statement->setUInt64(1, player->GetObjectId());
-            statement->setUInt(2,schematic.schematic_id);
-            statement->setUInt(3, schematic.schematic_crc);
+            statement->setUInt(2,schematic.second.schematic_id);
+            statement->setUInt(3, schematic.second.schematic_crc);
             auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
         });
     }
