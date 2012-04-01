@@ -37,7 +37,7 @@ void TangibleMessageBuilder::BuildOptionsMaskDelta(Tangible* tangible)
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 6);
-        message.data.write(tangible->options_bitmask_);
+        message.data.write(tangible->GetOptionsMask());
         tangible->AddDeltasUpdate(move(message));
     }
 }
@@ -46,7 +46,7 @@ void TangibleMessageBuilder::BuildIncapTimerDelta(Tangible* tangible)
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 7);
-        message.data.write(tangible->incap_timer_);
+        message.data.write(tangible->GetIncapTimer());
         tangible->AddDeltasUpdate(move(message));
     }
 }
@@ -55,7 +55,7 @@ void TangibleMessageBuilder::BuildConditionDamageDelta(Tangible* tangible)
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 8);
-        message.data.write(tangible->condition_damage_);
+        message.data.write(tangible->GetCondition());
         tangible->AddDeltasUpdate(move(message));
     }
 }
@@ -64,7 +64,7 @@ void TangibleMessageBuilder::BuildMaxConditionDelta(Tangible* tangible)
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 9);
-        message.data.write(tangible->max_condition_);
+        message.data.write(tangible->GetMaxCondition());
         tangible->AddDeltasUpdate(move(message));
     }
 }
@@ -73,7 +73,7 @@ void TangibleMessageBuilder::BuildStaticDelta(Tangible* tangible)
     if (tangible->HasObservers())
     {
         DeltasMessage message = tangible->CreateDeltasMessage(Object::VIEW_3, 10);
-        message.data.write(tangible->is_static_);
+        message.data.write(tangible->IsStatic());
         tangible->AddDeltasUpdate(move(message));
     }
 }

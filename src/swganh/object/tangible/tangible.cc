@@ -97,73 +97,62 @@ void Tangible::ClearComponentCustomization()
 
 void Tangible::SetOptionsMask(uint32_t options_mask)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     options_bitmask_ = options_mask;
     TangibleMessageBuilder::BuildOptionsMaskDelta(this);    
 }
 
 void Tangible::ToggleOption(uint32_t option)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	options_bitmask_ ^= option;
 	TangibleMessageBuilder::BuildOptionsMaskDelta(this);
 }
 
 uint32_t Tangible::GetOptionsMask(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return options_bitmask_;
 }
 
 void Tangible::SetIncapTimer(uint32_t incap_timer)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     incap_timer_ = incap_timer;
     TangibleMessageBuilder::BuildIncapTimerDelta(this);
 }
 
 uint32_t Tangible::GetIncapTimer(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return incap_timer_;
 }
 
 void Tangible::SetConditionDamage(uint32_t damage)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     condition_damage_ = damage;
     TangibleMessageBuilder::BuildConditionDamageDelta(this);
 }
 
 uint32_t Tangible::GetCondition(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return condition_damage_;
 }
 
 void Tangible::SetMaxCondition(uint32_t max_condition)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     max_condition_ = max_condition;
     TangibleMessageBuilder::BuildMaxConditionDelta(this);
 }
 
 uint32_t Tangible::GetMaxCondition(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return max_condition_;
 }
 
 void Tangible::SetStatic(bool is_static)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     is_static_ = is_static;
     TangibleMessageBuilder::BuildStaticDelta(this);
 }
 
 bool Tangible::IsStatic(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return is_static_;
 }
 
@@ -231,17 +220,14 @@ void Tangible::ClearDefenders()
 
 void Tangible::ActivateAutoAttack()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto_attack_ = true;
 }
 void Tangible::ClearAutoAttack()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     auto_attack_ = false;
 }
 bool Tangible::IsAutoAttacking()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return auto_attack_ == true;
 }
 
