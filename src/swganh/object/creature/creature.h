@@ -604,7 +604,7 @@ public:
     void AddToDuelList(uint64_t id);
     void RemoveFromDuelList(uint64_t id);
     bool InDuelList(uint64_t id);
-    std::vector<uint64_t>& GetDuelList();
+    std::vector<uint64_t> GetDuelList();
 
     // Baselines
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1();
@@ -620,7 +620,7 @@ private:
 
     void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
 
-    mutable std::recursive_mutex mutex_;
+    mutable std::mutex creature_mutex_;
 
     std::atomic<uint32_t>    bank_credits_;                                                              // update 1 variable 0
     std::atomic<uint32_t>    cash_credits_;                                                              // update 1 variable 1
