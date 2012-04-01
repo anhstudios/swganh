@@ -272,7 +272,7 @@ void PlayerFactory::PersistXP_(const shared_ptr<Player>& player)
         auto conn = db_manager_->getConnection("galaxy");
         auto xp = player->GetXp();
         for_each(xp.Begin(), xp.End(), [this,&conn] (pair<string, XpData> xpData){
-            auto statement = conn->prepareStatement("CALL sp_SaveExperience(?,?);");
+            auto statement = conn->prepareStatement("CALL sp_UpdateExperience(?,?);");
             statement->setString(1,xpData.first);
             statement->setUInt(2,xpData.second.value);
             auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
@@ -332,7 +332,23 @@ void PlayerFactory::LoadDraftSchematics_(shared_ptr<Player> player, const std::s
 }
 void PlayerFactory::PersistDraftSchematics_(const shared_ptr<Player>& player)
 {
-    // Call Draft Schematics Factory??
+    try 
+    {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto draft_schematics = player->GetDraftSchematics();
+        for_each(draft_schematics.Begin(), draft_schematics.End(), [this, player, &conn] (DraftSchematicData schematic){
+            auto statement = conn->prepareStatement("CALL sp_UpdateDraftSchematic(?,?,?);");
+            statement->setUInt64(1, player->GetObjectId());
+            statement->setUInt(2,schematic.schematic_id);
+            statement->setUInt(3, schematic.schematic_crc);
+            auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+        });
+    }
+        catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
 void PlayerFactory::LoadQuestJournal_(shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)
 {
@@ -414,6 +430,21 @@ void PlayerFactory::LoadForceSensitiveQuests_(shared_ptr<Player> player, const s
 }
 void PlayerFactory::PersistForceSensitiveQuests_(const shared_ptr<Player>& player)
 {
+    try 
+    {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = conn->prepareStatement("CALL sp_UpdateFSQuests(?,?,?);");
+        statement->setUInt64(1, player->GetObjectId());
+        statement->setUInt(2, player->GetCurrentForceSensitiveQuests());
+        statement->setUInt(3, player->GetCompletedForceSensitiveQuests());
+
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
+    }
+        catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
 }
 void PlayerFactory::RemoveFriend_(const std::shared_ptr<Player>& player, uint64_t friend_id)
 {
