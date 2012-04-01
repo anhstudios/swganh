@@ -30,7 +30,8 @@ namespace tangible {
     {
     public:
         TangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service);
+            swganh::simulation::SimulationService* simulation_service,
+            anh::EventDispatcher* event_dispatcher);
         void LoadTemplates();
 
         bool HasTemplate(const std::string& template_name);
@@ -46,6 +47,7 @@ namespace tangible {
         
         virtual uint32_t GetType() const;
         const static uint32_t type;
+        virtual void RegisterEventHandlers(){}
     private:
         std::unordered_map<std::string, std::shared_ptr<swganh::object::tangible::Tangible>>::iterator GetTemplateIter_(const std::string& template_name);
         std::unordered_map<std::string, std::shared_ptr<swganh::object::tangible::Tangible>> tangible_templates_;

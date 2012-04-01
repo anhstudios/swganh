@@ -28,7 +28,8 @@ namespace player {
     {
     public:
         PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service);
+            swganh::simulation::SimulationService* simulation_service,
+            anh::EventDispatcher* event_dispatcher);
 
         void LoadTemplates();
 
@@ -44,6 +45,8 @@ namespace player {
 
 		virtual uint32_t GetType() const;
         const static uint32_t type;
+
+        void RegisterEventHandlers();
     private:
         // Helpers
         void LoadStatusFlags_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
@@ -60,7 +63,9 @@ namespace player {
         void PersistForceSensitiveQuests_(const std::shared_ptr<Player>& player);
         void LoadFriends_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void PersistFriends_(const std::shared_ptr<Player>& player);
+        void RemoveFriend_(const std::shared_ptr<Player>& player, uint64_t friend_id);
         void LoadIgnoredList_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
+        void RemoveFromIgnoredList_(const std::shared_ptr<Player>& player, uint64_t ignore_player_id);
         void PersistIgnoredList_(const std::shared_ptr<Player>& player);
 
         std::unordered_map<std::string, std::shared_ptr<Player>>::iterator GetTemplateIter_(const std::string& template_name);

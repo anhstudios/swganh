@@ -41,11 +41,11 @@ void Group::AddGroupMember(uint64_t member, std::string name)
 void Group::RemoveGroupMember(uint64_t member)
 {
     boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    auto iter = std::find_if(member_list_.Begin(), member_list_.End(), [=](const Member& x)->bool {
+    auto iter = std::find_if(begin(member_list_), end(member_list_), [=](const Member& x)->bool {
         return member == x.object_id;
     });
 
-    if(iter != member_list_.End())
+    if(iter != end(member_list_))
     {
         member_list_.Remove(iter);
         GroupMessageBuilder::BuildMemberListDelta(this);

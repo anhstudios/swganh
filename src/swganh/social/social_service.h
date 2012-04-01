@@ -35,6 +35,7 @@ namespace social {
         anh::service::ServiceDescription GetServiceDescription();
 
         bool AddFriend(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& friend_name);
+        bool AddIgnore(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& player_name);
     private:
         void onStart();
         std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
