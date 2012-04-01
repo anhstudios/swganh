@@ -686,6 +686,21 @@ uint64_t Creature::GetInviteSenderId(void)
     return invite_sender_id_;
 }
 
+void Creature::SetInviteCounter(uint64_t invite_counter)
+{
+    invite_counter_ = invite_counter;
+}
+
+uint64_t Creature::IncrementInviteCounter()
+{
+    return invite_counter_++;
+}
+
+uint64_t Creature::GetInviteCounter(void) const
+{
+    return invite_counter_;
+}
+
 void Creature::SetGuildId(uint32_t guild_id)
 {
     guild_id_ = guild_id;
@@ -728,6 +743,21 @@ void Creature::SetPerformanceId(uint32_t performance_id)
 uint32_t Creature::GetPerformanceId(void)
 {
     return performance_id_;
+}
+    
+void Creature::SetPerformanceCounter(uint32_t performance_counter)
+{
+    performance_counter_ = performance_counter;
+}
+
+uint32_t Creature::IncrementPerformanceCounter()
+{
+    return performance_counter_++;
+}
+
+uint32_t Creature::GetPerformanceCounter(void) const
+{
+    return performance_counter_;
 }
 
 void Creature::SetStatCurrent(StatIndex stat_index, int32_t value)

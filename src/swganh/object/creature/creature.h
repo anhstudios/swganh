@@ -537,6 +537,11 @@ public:
     // Invite Sender Id
     void SetInviteSenderId(uint64_t invite_sender_id);
     uint64_t GetInviteSenderId(void);
+    
+    // Invite Counter
+    void SetInviteCounter(uint64_t invite_counter);
+    uint64_t IncrementInviteCounter();
+    uint64_t GetInviteCounter(void) const;
 
     // Guild Id
     void SetGuildId(uint32_t guild_id);
@@ -553,6 +558,11 @@ public:
     // Performance Id
     void SetPerformanceId(uint32_t performance_id);
     uint32_t GetPerformanceId(void);
+    
+    // Performance Counter
+    void SetPerformanceCounter(uint32_t performance_counter);
+    uint32_t IncrementPerformanceCounter();
+    uint32_t GetPerformanceCounter(void) const;
 
     // Current Stats
     void SetStatCurrent(StatIndex stat_index, int32_t value);
@@ -606,7 +616,6 @@ public:
     std::shared_ptr<swganh::object::player::Player> GetPlayer();
 
 private:
-    friend class CreatureMessageBuilder;
     friend class CreatureFactory;
 
     void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
