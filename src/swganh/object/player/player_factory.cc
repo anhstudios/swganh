@@ -319,7 +319,7 @@ void PlayerFactory::LoadDraftSchematics_(shared_ptr<Player> player, const std::s
             {
                 DraftSchematicData data;
                 data.schematic_id = result->getUInt("id");
-                data.schematic_crc = result->getUInt("schematic");
+                data.schematic_crc = result->getUInt("schematic_id");
                 // didn't move here because you can't get faster than copying 2 ints
                 player->AddDraftSchematic(data);
             }
