@@ -128,6 +128,11 @@ Run the following commands to generate the project and build the source.
     cmake -G "Visual Studio 11" ..
     cmake --build .
 
+.. WARNING::
+    If you get an error about cmake not being able to find your PYTHON_LIBRARY. re-run the cmake -G command above adding in the following:
+    cmake -G "Visual Studio 11" -DPYTHON_LIBRARY="LOCATION_TO_PYTHON_DIR/libs" ..
+    where "LOCATION_TO_PYTHON_DIR" is where your Python32 folder resides. This seems to occur if Python is installed in Program Files x86..
+
 This will kick off a full build of the project. The final output can be found at **C:/workspace/swganh/build/bin/Debug**.
 
 .. note::
