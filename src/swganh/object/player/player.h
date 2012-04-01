@@ -869,7 +869,7 @@ private:
 
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
-    mutable std::mutex data_mutex_;
+    mutable std::mutex player_mutex_;
 
     std::array<FlagBitmask, 4> status_flags_;
     std::array<FlagBitmask, 4> profile_flags_;
