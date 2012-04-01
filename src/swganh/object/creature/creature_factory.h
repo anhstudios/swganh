@@ -28,7 +28,8 @@ namespace creature {
     {
     public:
         CreatureFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service);
+            swganh::simulation::SimulationService* simulation_service,
+            anh::EventDispatcher* event_dispatcher);
 
         void LoadTemplates();
 

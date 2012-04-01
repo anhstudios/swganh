@@ -1,16 +1,19 @@
 
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+# Dumping structure for table galaxy.command
+DROP TABLE IF EXISTS `command`;
 CREATE TABLE IF NOT EXISTS `command` (
   `id` int(10) unsigned NOT NULL,
-  `name` char(255) COLLATE utf8_bin NOT NULL,
-  `ability` char(255) COLLATE utf8_bin NOT NULL,
+  `name` char(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `ability` char(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `deny_in_states` bigint(20) unsigned NOT NULL,
-  `script_hook` char(255) COLLATE utf8_bin NOT NULL,
-  `fail_script_hook` char(255) COLLATE utf8_bin NOT NULL,
+  `script_hook` char(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `fail_script_hook` char(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `default_time` bigint(20) unsigned NOT NULL DEFAULT '0',
   `command_group` tinyint(1) NOT NULL,
   `max_range_to_target` float NOT NULL,
@@ -28,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `command` (
   `force_cost_multiplier` int(11) NOT NULL,
   `animation_crc` int(11) unsigned NOT NULL DEFAULT '0',
   `required_weapon_group` int(10) unsigned NOT NULL DEFAULT '0',
-  `combat_spam` char(255) COLLATE utf8_bin NOT NULL DEFAULT 'melee',
+  `combat_spam` char(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT 'melee',
   `trail1` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `trail2` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `allow_in_posture` int(11) unsigned NOT NULL DEFAULT '4294967295',
@@ -48,8 +51,7 @@ CREATE TABLE IF NOT EXISTS `command` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-DELETE FROM `command`;
-    
+# Dumping data for table galaxy.command: ~781 rows (approximately)
 /*!40000 ALTER TABLE `command` DISABLE KEYS */;
 INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`, `fail_script_hook`, `default_time`, `command_group`, `max_range_to_target`, `add_to_combat_queue`, `health_cost`, `health_cost_multiplier`, `action_cost`, `action_cost_multiplier`, `mind_cost`, `mind_cost_multiplier`, `damage_multiplier`, `delay_multiplier`, `accuracy_bonus`, `force_cost`, `force_cost_multiplier`, `animation_crc`, `required_weapon_group`, `combat_spam`, `trail1`, `trail2`, `allow_in_posture`, `health_hit_chance`, `action_hit_chance`, `mind_hit_chance`, `knockdown_chance`, `dizzy_chance`, `blind_chance`, `stun_chance`, `intimidate_chance`, `posture_down_chance`, `extended_range`, `cone_angle`, `posture_up_chance`, `deny_in_locomotion`) VALUES
 	(1, 'actionShot1', 'actionShot1', 3894805552, '', 'failSpecialAttack', 2000, 1, 64, 1, 0, 2, 0, 1, 0, 1, 2, 2, 25, 0, 0, 3749773518, 64, 'impairingshot', 0, 0, 15, 0, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4193826),
@@ -59,7 +61,7 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 	(5, 'addAllowedPlayer', 'admin', 3760193536, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(6, 'addBannedPlayer', 'admin', 3760193536, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(7, 'addFriend', '', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-	(8, 'addIgnore', '', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+	(8, 'addIgnore', '', 2097152, '', 'scripts/commands/addIgnore.py', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(9, 'addMapLocation', '', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(10, 'addPower', '', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(11, 'adjustLotCount', 'admin', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -558,8 +560,8 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 	(505, 'remote', 'admin', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(506, 'removeAllowedPlayer', 'admin', 3760193536, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(507, 'removeBannedPlayer', 'admin', 3760193536, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-	(508, 'removeFriend', '', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-	(509, 'removeIgnore', '', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+	(508, 'removeFriend', '', 2097152, 'scripts/commands/removeFriend.py', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+	(509, 'removeIgnore', '', 2097152, '', 'scripts/commands/removeIgnore.py', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(510, 'repairBattlefieldStructure', '', 3894934635, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4194298),
 	(511, 'repairShipComponentInSlot', '', 2097152, '', '', 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 8191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1572864),
 	(512, 'report', '', 2097152, '', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -826,7 +828,6 @@ INSERT INTO `command` (`id`, `name`, `ability`, `deny_in_states`, `script_hook`,
 	(2100, 'shutdownGalaxy', 'admin_shutdownGalaxy', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 	(2101, 'cancelShutdownGalaxy', 'admin_cancelShutdownGalaxy', 2097152, '', 'failAdmin', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '', 0, 0, 32767, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 /*!40000 ALTER TABLE `command` ENABLE KEYS */;
-
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

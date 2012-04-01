@@ -24,7 +24,8 @@ namespace intangible {
     {
     public:
         IntangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service);
+            swganh::simulation::SimulationService* simulation_service,
+            anh::EventDispatcher* event_dispatcher);
         void LoadTemplates();
 
         bool HasTemplate(const std::string& template_name);
@@ -36,6 +37,8 @@ namespace intangible {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+
+        virtual void RegisterEventHandlers(){}
     private:
         std::unordered_map<std::string, std::shared_ptr<Intangible>>::iterator GetTemplateIter_(const std::string& template_name);
         std::unordered_map<std::string, std::shared_ptr<Intangible>> intangible_templates_;
