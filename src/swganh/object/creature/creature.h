@@ -21,6 +21,7 @@
 #ifndef SWGANH_OBJECT_CREATURE_H_
 #define SWGANH_OBJECT_CREATURE_H_
 
+#include <atomic>
 #include <list>
 #include <mutex>
 
@@ -612,49 +613,49 @@ private:
 
     mutable std::recursive_mutex mutex_;
 
-    uint32_t    bank_credits_;                                                              // update 1 variable 0
-    uint32_t    cash_credits_;                                                              // update 1 variable 1
+    std::atomic<uint32_t>    bank_credits_;                                                              // update 1 variable 0
+    std::atomic<uint32_t>    cash_credits_;                                                              // update 1 variable 1
     swganh::messages::containers::NetworkArray<Stat> stat_base_list_;                       // update 1 variable 2
     swganh::messages::containers::NetworkList<Skill> skills_;                               // update 1 variable 3
     std::map<uint32_t, std::string> skill_commands_;
-    uint32_t    posture_;                                                                   // update 3 variable 11
-    uint8_t     faction_rank_;                                                              // update 3 variable 12
-    uint64_t    owner_id_;                                                                  // update 3 variable 13
-    float       scale_;                                                                     // update 3 variable 14
-    uint32_t    battle_fatigue_;                                                            // update 3 variable 15
-    uint64_t    state_bitmask_;                                                             // update 3 variable 16
+    std::atomic<uint32_t>    posture_;                                                                   // update 3 variable 11
+    std::atomic<uint8_t>     faction_rank_;                                                              // update 3 variable 12
+    std::atomic<uint64_t>    owner_id_;                                                                  // update 3 variable 13
+    std::atomic<float>       scale_;                                                                     // update 3 variable 14
+    std::atomic<uint32_t>    battle_fatigue_;                                                            // update 3 variable 15
+    std::atomic<uint64_t>    state_bitmask_;                                                             // update 3 variable 16
     swganh::messages::containers::NetworkArray<Stat> stat_wound_list_;                      // update 3 variable 17
-    float       acceleration_multiplier_base_;                                              // update 4 variable 0
-    float       acceleration_multiplier_modifier_;                                          // update 4 variable 1
+    std::atomic<float>       acceleration_multiplier_base_;                                              // update 4 variable 0
+    std::atomic<float>       acceleration_multiplier_modifier_;                                          // update 4 variable 1
     swganh::messages::containers::NetworkArray<Stat> stat_encumberance_list_;               // update 4 variable 2
     swganh::messages::containers::NetworkMap<std::string, SkillMod> skill_mod_list_;        // update 4 variable 3
-    float       speed_multiplier_base_;                                                     // update 4 variable 4
-    float       speed_multiplier_modifier_;                                                 // update 4 variable 5
-    uint64_t    listen_to_id_;                                                              // update 4 variable 6
-    float       run_speed_;                                                                 // update 4 variable 7
-    float       slope_modifier_angle_;                                                      // update 4 variable 8
-    float       slope_modifier_percent_;                                                    // update 4 variable 9
-    float       turn_radius_;                                                               // update 4 variable 10
-    float       walking_speed_;                                                             // update 4 variable 11
-    float       water_modifier_percent_;                                                    // update 4 variable 12
+    std::atomic<float>       speed_multiplier_base_;                                                     // update 4 variable 4
+    std::atomic<float>       speed_multiplier_modifier_;                                                 // update 4 variable 5
+    std::atomic<uint64_t>    listen_to_id_;                                                              // update 4 variable 6
+    std::atomic<float>       run_speed_;                                                                 // update 4 variable 7
+    std::atomic<float>       slope_modifier_angle_;                                                      // update 4 variable 8
+    std::atomic<float>       slope_modifier_percent_;                                                    // update 4 variable 9
+    std::atomic<float>       turn_radius_;                                                               // update 4 variable 10
+    std::atomic<float>       walking_speed_;                                                             // update 4 variable 11
+    std::atomic<float>       water_modifier_percent_;                                                    // update 4 variable 12
     swganh::messages::containers::NetworkList<MissionCriticalObject> mission_critical_object_list_;     // update 4 variable 13
-    uint16_t    combat_level_;                                                              // update 6 variable 2
+    std::atomic<uint16_t>    combat_level_;                                                              // update 6 variable 2
     std::string animation_;                                                                 // update 6 variable 3
     std::string mood_animation_;                                                            // update 6 variable 4
-    uint64_t    weapon_id_;                                                                 // update 6 variable 5
-    uint64_t    group_id_;                                                                  // update 6 variable 6
-    uint64_t    invite_sender_id_;                                                          // update 6 variable 7
-    uint64_t    invite_counter_;                                                            // update 6 variable 7
-    uint32_t    guild_id_;                                                                  // update 6 variable 8
-    uint64_t    target_id_;                                                                 // update 6 variable 9
-    uint8_t     mood_id_;                                                                   // update 6 variable 10
-    uint32_t    performance_counter_;                                                       // update 6 variable 11
-    uint32_t    performance_id_;                                                            // update 6 variable 12
+    std::atomic<uint64_t>    weapon_id_;                                                                 // update 6 variable 5
+    std::atomic<uint64_t>    group_id_;                                                                  // update 6 variable 6
+    std::atomic<uint64_t>    invite_sender_id_;                                                          // update 6 variable 7
+    std::atomic<uint64_t>    invite_counter_;                                                            // update 6 variable 7
+    std::atomic<uint32_t>    guild_id_;                                                                  // update 6 variable 8
+    std::atomic<uint64_t>    target_id_;                                                                 // update 6 variable 9
+    std::atomic<uint8_t>     mood_id_;                                                                   // update 6 variable 10
+    std::atomic<uint32_t>    performance_counter_;                                                       // update 6 variable 11
+    std::atomic<uint32_t>    performance_id_;                                                            // update 6 variable 12
     swganh::messages::containers::NetworkArray<Stat> stat_current_list_;                    // update 6 variable 13
     swganh::messages::containers::NetworkArray<Stat> stat_max_list_;                        // update 6 variable 14
     swganh::messages::containers::NetworkSortedList<EquipmentItem> equipment_list_;         // update 6 variable 15
     std::string disguise_;                                                                  // update 6 variable 16
-    bool stationary_;                                                                       // update 6 variable 17
+    std::atomic<bool> stationary_;                                                                       // update 6 variable 17
     PvpStatus pvp_status_;
     std::vector<uint64_t> duel_list_;
 };

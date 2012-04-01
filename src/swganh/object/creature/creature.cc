@@ -69,27 +69,23 @@ uint32_t Creature::GetType() const
 
 void Creature::SetBankCredits(uint32_t bank_credits)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     bank_credits_ = bank_credits;
     CreatureMessageBuilder::BuildBankCreditsDelta(this);
 }
 
 uint32_t Creature::GetBankCredits(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return bank_credits_; 
 }
 
 void Creature::SetCashCredits(uint32_t cash_credits)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     cash_credits = cash_credits;
     CreatureMessageBuilder::BuildCashCreditsDelta(this);
 }
 
 uint32_t Creature::GetCashCredits(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return cash_credits_;
 }
 
@@ -214,7 +210,6 @@ void  Creature::RemoveSkillCommand(std::string skill_command)
 
 void Creature::SetPosture(Posture posture)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     posture_ = posture;
     CreatureMessageBuilder::BuildPostureDelta(this);
 	CreatureMessageBuilder::BuildPostureUpdate(this);
@@ -222,108 +217,91 @@ void Creature::SetPosture(Posture posture)
 
 Posture Creature::GetPosture(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    return (Posture)posture_;
+    uint32_t posture = posture_;
+    return (Posture)posture;
 }
 
 bool Creature::IsDead()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return posture_ == DEAD;
 }
 bool Creature::IsIncapacitated()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return posture_ == INCAPACITATED;
 }
 
 void Creature::SetFactionRank(uint8_t faction_rank)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     faction_rank_ = faction_rank;
     CreatureMessageBuilder::BuildFactionRankDelta(this);
 }
 
 uint8_t Creature::GetFactionRank(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return faction_rank_;
 }
 
 void Creature::SetOwnerId(uint64_t owner_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     owner_id_ = owner_id;
     CreatureMessageBuilder::BuildOwnerIdDelta(this);
 }
 
 uint64_t Creature::GetOwnerId(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return owner_id_;
 }
 
 void Creature::SetScale(float scale)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     scale_ = scale;
     CreatureMessageBuilder::BuildScaleDelta(this);
 }
 
 float Creature::GetScale(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return scale_;
 }
 
 void Creature::SetBattleFatigue(uint32_t battle_fatigue)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     battle_fatigue_ = battle_fatigue;
     CreatureMessageBuilder::BuildBattleFatigueDelta(this);
 }
 void Creature::AddBattleFatigue(uint32_t battle_fatigue)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     battle_fatigue += battle_fatigue;
     CreatureMessageBuilder::BuildBattleFatigueDelta(this);
 }
 uint32_t Creature::GetBattleFatigue(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return battle_fatigue_;
 }
 
 void Creature::SetStateBitmask(uint64_t state_bitmask)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     state_bitmask_ = state_bitmask;
     CreatureMessageBuilder::BuildStateBitmaskDelta(this);
 }
 
 uint64_t Creature::GetStateBitmask(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return state_bitmask_;
 }
 bool Creature::HasState(uint64_t state)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return state == (state & state_bitmask_);
 }
 void Creature::ToggleStateOn(uint64_t state)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     state_bitmask_ = ( state_bitmask_ | state);
 }
 void Creature::ToggleStateOff(uint64_t state)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     state_bitmask_ = ( state_bitmask_ & ~ state);
 }
 void Creature::ToggleStateBitmask(uint64_t state_bitmask)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     state_bitmask_ = (state_bitmask_ ^ state_bitmask); 
 }
 
@@ -371,27 +349,23 @@ int32_t Creature::GetStatWound(StatIndex stat_index)
 
 void Creature::SetAccelerationMultiplierBase(float acceleration_multiplier_base)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     acceleration_multiplier_base_ = acceleration_multiplier_base;
     CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(this);
 }
 
 float Creature::GetAccelerationMultiplierBase(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return acceleration_multiplier_base_;
 }
 
 void Creature::SetAccelerationMultiplierModifier(float acceleration_multiplier_modifier)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     acceleration_multiplier_modifier_ = acceleration_multiplier_modifier;
     CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(this);
 }
 
 float Creature::GetAccelerationMultiplierModifier(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return acceleration_multiplier_modifier_;
 }
 
@@ -493,118 +467,100 @@ SkillMod Creature::GetSkillMod(std::string identifier)
 
 void Creature::SetSpeedMultiplierBase(float speed_multiplier_base)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     speed_multiplier_base_ = speed_multiplier_base;
     CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(this);
 }
 
 float Creature::GetSpeedMultiplierBase(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return speed_multiplier_base_;
 }
 
 void Creature::SetSpeedMultiplierModifier(float speed_multiplier_modifier)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     speed_multiplier_modifier_ = speed_multiplier_modifier;
     CreatureMessageBuilder::BuildSpeedMultiplierModifierDelta(this);
 }
 
 float Creature::GetSpeedMultiplierModifier(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return speed_multiplier_modifier_;
 }
 
 void Creature::SetListenToId(uint64_t listen_to_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     listen_to_id_ = listen_to_id;
     CreatureMessageBuilder::BuildListenToIdDelta(this);
 }
 
 uint64_t Creature::GetListenToId(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return listen_to_id_;
 }
 
 void Creature::SetRunSpeed(float run_speed)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     run_speed_ = run_speed;
     CreatureMessageBuilder::BuildRunSpeedDelta(this);
 }
 
 float Creature::GetRunSpeed(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return run_speed_;
 }
 
 void Creature::SetSlopeModifierAngle(float slope_modifier_angle)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     slope_modifier_angle_ = slope_modifier_angle;
     CreatureMessageBuilder::BuildSlopeModifierAngleDelta(this);
 }
 
 float Creature::GetSlopeModifierAngle(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return slope_modifier_angle_;
 }
 
 void Creature::SetSlopeModifierPercent(float slope_modifier_percent)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     slope_modifier_percent_ = slope_modifier_percent;
     CreatureMessageBuilder::BuildSlopeModifierPercentDelta(this);
 }
 
 float Creature::GetSlopeModifierPercent(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return slope_modifier_percent_;
 }
 
 void Creature::SetTurnRadius(float turn_radius)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     turn_radius_ = turn_radius;
     CreatureMessageBuilder::BuildTurnRadiusDelta(this);
 }
 
 float Creature::GetTurnRadius(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return turn_radius_;
 }
 
 void Creature::SetWalkingSpeed(float walking_speed)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     walking_speed_ = walking_speed;
     CreatureMessageBuilder::BuildWalkingSpeedDelta(this);
 }
 
 float Creature::GetWalkingSpeed(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return walking_speed_;
 }
 
 void Creature::SetWaterModifierPercent(float water_modifier_percent)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     water_modifier_percent_ = water_modifier_percent;
     CreatureMessageBuilder::BuildWaterModifierPrecentDelta(this);
 }
 
 float Creature::GetWaterModifierPercent(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return water_modifier_percent_;
 }
 
@@ -662,14 +618,12 @@ NetworkList<MissionCriticalObject> Creature::GetMissionCriticalObjects(void)
 
 void Creature::SetCombatLevel(uint16_t combat_level)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     combat_level_ = combat_level;
     CreatureMessageBuilder::BuildCombatLevelDelta(this);
 }
 
 uint16_t Creature::GetCombatLevel(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return combat_level_;
 }
 
@@ -701,92 +655,78 @@ std::string Creature::GetMoodAnimation(void)
 
 void Creature::SetWeaponId(uint64_t weapon_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     weapon_id_ = weapon_id;
     CreatureMessageBuilder::BuildWeaponIdDelta(this);
 }
 
 uint64_t Creature::GetWeaponId(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return weapon_id_;
 }
 
 void Creature::SetGroupId(uint64_t group_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     group_id_ = group_id;
     CreatureMessageBuilder::BuildGroupIdDelta(this);
 }
 
 uint64_t Creature::GetGroupId(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return group_id_;
 }
 
 void Creature::SetInviteSenderId(uint64_t invite_sender_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     invite_sender_id_ = invite_sender_id;
     CreatureMessageBuilder::BuildInviteSenderIdDelta(this);
 }
 
 uint64_t Creature::GetInviteSenderId(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return invite_sender_id_;
 }
 
 void Creature::SetGuildId(uint32_t guild_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     guild_id_ = guild_id;
     CreatureMessageBuilder::BuildGuildIdDelta(this);
 }
 
 uint32_t Creature::GetGuildId(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return guild_id_;
 }
 
 void Creature::SetTargetId(uint64_t target_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     target_id_ = target_id;
     CreatureMessageBuilder::BuildTargetIdDelta(this);
 }
 
 uint64_t Creature::GetTargetId(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return target_id_;
 }
 
 void Creature::SetMoodId(uint8_t mood_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     mood_id_ = mood_id;
     CreatureMessageBuilder::BuildMoodIdDelta(this);
 }
 
 uint8_t Creature::GetMoodId(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return mood_id_;
 }
 
 void Creature::SetPerformanceId(uint32_t performance_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     performance_id_ = performance_id;
     CreatureMessageBuilder::BuildPerformanceIdDelta(this);
 }
 
 uint32_t Creature::GetPerformanceId(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return performance_id_;
 }
 
@@ -936,14 +876,12 @@ std::string Creature::GetDisguise(void)
 
 void Creature::SetStationary(bool stationary)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     stationary_ = stationary;
     CreatureMessageBuilder::BuildStationaryDelta(this);
 }
 
 bool Creature::IsStationary(void)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return stationary_;
 }
 
@@ -1045,22 +983,22 @@ shared_ptr<Player> Creature::GetPlayer()
 
 boost::optional<BaselinesMessage> Creature::GetBaseline1()
 {
-    return std::move(CreatureMessageBuilder::BuildBaseline1(this));
+    return CreatureMessageBuilder::BuildBaseline1(this);
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline3()
 {
-    return std::move(CreatureMessageBuilder::BuildBaseline3(this));
+    return CreatureMessageBuilder::BuildBaseline3(this);
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline4()
 {
-    return std::move(CreatureMessageBuilder::BuildBaseline4(this));
+    return CreatureMessageBuilder::BuildBaseline4(this);
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline6()
 {
-    return std::move(CreatureMessageBuilder::BuildBaseline6(this));
+    return CreatureMessageBuilder::BuildBaseline6(this);
 }
 
 void Creature::OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
