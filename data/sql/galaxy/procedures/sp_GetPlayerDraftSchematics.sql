@@ -9,7 +9,7 @@ DROP PROCEDURE IF EXISTS `sp_GetPlayerDraftSchematics`;
 DELIMITER //
 CREATE PROCEDURE `sp_GetPlayerDraftSchematics`(IN `player_id` BIGINT)
 BEGIN
-    select d.id, d.schematic from draft_schematic_list d where d.player_id = player_id;
+    select d.id, d.schematic_id from draft_schematic_list d where d.player_id = player_id;
 END//
 DELIMITER ;
 
