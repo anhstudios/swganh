@@ -4,11 +4,11 @@
 
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <tuple>
 
 #include <boost/asio/deadline_timer.hpp>
-#include <boost/thread/mutex.hpp>
 #include <boost/python.hpp>
 
 #ifdef WIN32
@@ -130,7 +130,7 @@ namespace command {
         > HandlerMap;        
         
         swganh::simulation::SimulationService* simulation_service_;
-        boost::mutex processor_map_mutex_;
+        std::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;
         HandlerMap handlers_;
         CommandPropertiesMap command_properties_map_;
