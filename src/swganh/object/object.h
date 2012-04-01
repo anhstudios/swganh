@@ -458,9 +458,10 @@ public:
 
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
-            
-protected:
-    virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
+    
+    swganh::messages::BaselinesMessage CreateBaselinesMessage(uint8_t view_type, uint16_t opcount = 0) ;
+    
+    swganh::messages::DeltasMessage CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
     
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
@@ -471,11 +472,10 @@ protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }
+        
+protected:
+    virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
     
-    swganh::messages::BaselinesMessage CreateBaselinesMessage(uint8_t view_type, uint16_t opcount = 0) ;
-    
-    swganh::messages::DeltasMessage CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
-
 	uint64_t object_id_;             // create
 	uint32_t scene_id_;				 // create
     std::string template_string_;    // create

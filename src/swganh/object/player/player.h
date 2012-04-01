@@ -865,12 +865,11 @@ protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9();
 
 private:
-    friend class PlayerMessageBuilder;
 	friend class PlayerFactory;
 
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
-    mutable std::recursive_mutex mutex_;
+    mutable std::mutex data_mutex_;
 
     std::array<FlagBitmask, 4> status_flags_;
     std::array<FlagBitmask, 4> profile_flags_;

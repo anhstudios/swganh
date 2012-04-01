@@ -51,83 +51,102 @@ Player::Player()
 {}
 std::array<FlagBitmask, 4> Player::GetStatusFlags() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return status_flags_;
 }
 void Player::AddStatusFlag(StatusFlags flag, StatusIndex index)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    status_flags_[index] = FlagBitmask(status_flags_[index].bitmask | flag);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        status_flags_[index] = FlagBitmask(status_flags_[index].bitmask | flag);
+    }
+
     PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 
 void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    status_flags_[index] = FlagBitmask(status_flags_[index].bitmask & ~flag);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        status_flags_[index] = FlagBitmask(status_flags_[index].bitmask & ~flag);
+    }
+
     PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 
 void Player::ClearStatusFlags()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-
-    for_each(
-        begin(status_flags_), 
-        end(status_flags_),
-        [] (vector<FlagBitmask>::value_type& value) 
     {
-        value = FlagBitmask(0);
-    });
+        std::lock_guard<std::mutex> lock(data_mutex_);
+
+        for_each(
+            begin(status_flags_), 
+            end(status_flags_),
+            [] (vector<FlagBitmask>::value_type& value) 
+        {
+            value = FlagBitmask(0);
+        });
+    }
 
     PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
 }
 
 std::array<FlagBitmask, 4> Player::GetProfileFlags() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return profile_flags_;
 }
 
 void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask | flag);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask | flag);
+    }
+
     PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 
 void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index)
-{    
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask & ~flag);
+{
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask & ~flag);
+    }
+
     PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 
 void Player::ClearProfileFlags()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    
-    for_each(
-        begin(profile_flags_), 
-        end(profile_flags_),
-        [] (vector<FlagBitmask>::value_type& value) 
     {
-        value = FlagBitmask(0);
-    });
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        
+        for_each(
+            begin(profile_flags_), 
+            end(profile_flags_),
+            [] (vector<FlagBitmask>::value_type& value) 
+        {
+            value = FlagBitmask(0);
+        });
+    }
 
     PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
 }
 
 std::string Player::GetProfessionTag() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return profession_tag_;
 }
 
 void Player::SetProfessionTag(string profession_tag)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    profession_tag_ = profession_tag;
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        profession_tag_ = profession_tag;
+    }
+
     PlayerMessageBuilder::BuildProfessionTagDelta(this);
 }
 
@@ -172,101 +191,129 @@ void Player::SetAdminTag(uint8_t tag)
 
 NetworkMap<string, XpData> Player::GetXp() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return experience_;
 }
 
 void Player::AddExperience(XpData experience)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    experience_.Update(experience.type, experience);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        experience_.Update(experience.type, experience);
+    }
+
     PlayerMessageBuilder::BuildXpDelta(this);
 }
 
 void Player::DeductXp(XpData experience)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    experience_.Update(experience.type, experience);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        experience_.Update(experience.type, experience);
+    }
+
     PlayerMessageBuilder::BuildXpDelta(this);
 }
 
 void Player::ClearXpType(string type)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    auto iter = find_if(begin(experience_), end(experience_), [type](pair<string, XpData> xp) {
-        return xp.first == type;
-    });
-    if (iter != end(experience_))
     {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        auto iter = find_if(begin(experience_), end(experience_), [type](pair<string, XpData> xp) {
+            return xp.first == type;
+        });
+        if (iter == end(experience_))
+        {
+            return;
+        }
+            
         experience_.Remove(iter);
-        PlayerMessageBuilder::BuildXpDelta(this);
     }
+
+    PlayerMessageBuilder::BuildXpDelta(this);
 }
 
 void Player::ResetXp(swganh::messages::containers::NetworkMap<std::string, XpData>& experience)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    experience_.Clear();
-    for(auto& pair : experience)
     {
-        experience_.Add(pair.first, pair.second);
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        experience_.Clear();
+        for(auto& pair : experience)
+        {
+            experience_.Add(pair.first, pair.second);
+        }
+        experience_.Reinstall();
     }
-    experience_.Reinstall();
 
     PlayerMessageBuilder::BuildXpDelta(this);
 }
 
 void Player::ClearAllXp()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    experience_.Clear();
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        experience_.Clear();
+    }
+
     PlayerMessageBuilder::BuildXpDelta(this);
 }
 
 NetworkMap<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return waypoints_;
 }
 
 void Player::AddWaypoint(PlayerWaypointSerializer waypoint)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    waypoints_.Add(waypoint.waypoint->GetObjectId(), waypoint);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        waypoints_.Add(waypoint.waypoint->GetObjectId(), waypoint);
+    }
 
     PlayerMessageBuilder::BuildWaypointDelta(this);
 }
 
 void Player::RemoveWaypoint(uint64_t waypoint_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    auto find_iter = find_if(
-        begin(waypoints_),
-        end(waypoints_),
-        [waypoint_id] (pair<uint64_t, PlayerWaypointSerializer> stored_waypoint)
     {
-        return waypoint_id == stored_waypoint.first;
-    });
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        auto find_iter = find_if(
+            begin(waypoints_),
+            end(waypoints_),
+            [waypoint_id] (pair<uint64_t, PlayerWaypointSerializer> stored_waypoint)
+        {
+            return waypoint_id == stored_waypoint.first;
+        });
 
-    if (find_iter != end(waypoints_))
-    {
+        if (find_iter == end(waypoints_))
+        {
+            return;
+        }
+
         waypoints_.Remove(find_iter);
-        PlayerMessageBuilder::BuildWaypointDelta(this);
     }
-    
+
+    PlayerMessageBuilder::BuildWaypointDelta(this);
 }
 
 void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    waypoints_.Update(waypoint.waypoint->GetObjectId(), waypoint);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        waypoints_.Update(waypoint.waypoint->GetObjectId(), waypoint);
+    }
+
     PlayerMessageBuilder::BuildWaypointDelta(this);
 }
 
 void Player::ClearAllWaypoints()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    waypoints_.Clear();
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        waypoints_.Clear();
+    }
+
     PlayerMessageBuilder::BuildWaypointDelta(this);
 }
 
@@ -303,7 +350,6 @@ void Player::SetMaxForcePower(uint32_t force_power)
 
 uint32_t Player::GetCurrentForceSensitiveQuests()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
     return current_force_sensitive_quests_;
 }
 
@@ -350,54 +396,68 @@ void Player::ClearCompletedForceSensitiveQuests()
 
 swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> Player::GetQuests() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return quest_journal_;
 }
 
 void Player::AddQuest(QuestJournalData quest)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    quest_journal_.Add(quest.quest_crc, quest);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        quest_journal_.Add(quest.quest_crc, quest);
+    }
+
     PlayerMessageBuilder::BuildQuestJournalDelta(this);
 }
 
 void Player::RemoveQuest(QuestJournalData quest)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    
-    auto find_iter = find_if(
-        begin(quest_journal_),
-        end(quest_journal_),
-        [&quest] ( pair<uint32_t, QuestJournalData> stored_quest)
     {
-        return quest.quest_crc == stored_quest.first;
-    });
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        
+        auto find_iter = find_if(
+            begin(quest_journal_),
+            end(quest_journal_),
+            [&quest] ( pair<uint32_t, QuestJournalData> stored_quest)
+        {
+            return quest.quest_crc == stored_quest.first;
+        });
 
-    if (find_iter == end(quest_journal_))
-    {
-        return;
+        if (find_iter == end(quest_journal_))
+        {
+            return;
+        }
+
+        quest_journal_.Remove(find_iter);
     }
 
-    quest_journal_.Remove(find_iter);
     PlayerMessageBuilder::BuildQuestJournalDelta(this);
 }
 
 void Player::UpdateQuest(QuestJournalData quest)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    quest_journal_.Update(quest.quest_crc, quest);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        quest_journal_.Update(quest.quest_crc, quest);
+    }
+
     PlayerMessageBuilder::BuildQuestJournalDelta(this);
 }
 
 void Player::ClearAllQuests()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    quest_journal_.Clear();
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        quest_journal_.Clear();
+    }
+
     PlayerMessageBuilder::BuildQuestJournalDelta(this);
 }
 
 swganh::messages::containers::NetworkSortedList<Ability> Player::GetAbilityList() 
 {
+    std::lock_guard<std::mutex> lock(data_mutex_);
+
     auto creature = GetContainer<creature::Creature>();
     auto skill_commands = creature->GetSkillCommands();
     swganh::messages::containers::NetworkSortedList<Ability> abilities;
@@ -412,6 +472,8 @@ bool Player::HasAbility(string ability)
     auto creature = GetContainer<creature::Creature>();
     auto abilities = creature->GetSkillCommands();
     
+    std::lock_guard<std::mutex> lock(data_mutex_);
+
     auto find_it = find_if(begin(abilities), end(abilities),[=, &abilities](pair<uint32_t, string> skill_command){
         return (ability == skill_command.second);
        });
@@ -455,32 +517,43 @@ void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
 
 swganh::messages::containers::NetworkSortedList<DraftSchematicData> Player::GetDraftSchematics() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return draft_schematics_;
 }
 
 void Player::AddDraftSchematic(DraftSchematicData schematic)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    draft_schematics_.Add(schematic);
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        draft_schematics_.Add(schematic);
+    }
+
     PlayerMessageBuilder::BuildDraftSchematicDelta(this);
 }
 
 void Player::RemoveDraftSchematic(uint32_t schematic_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    auto iter = draft_schematics_.Find(DraftSchematicData(schematic_id));
-    if(iter != end(draft_schematics_))
     {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        auto iter = draft_schematics_.Find(DraftSchematicData(schematic_id));
+        if(iter == end(draft_schematics_))
+        {
+            return;
+        }
+            
         draft_schematics_.Remove(iter);
-        PlayerMessageBuilder::BuildDraftSchematicDelta(this);
     }
+    
+    PlayerMessageBuilder::BuildDraftSchematicDelta(this);
 }
 
 void Player::ClearDraftSchematics()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    draft_schematics_.Clear();
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        draft_schematics_.Clear();
+    }
+
     PlayerMessageBuilder::BuildDraftSchematicDelta(this);
 }
 
@@ -526,12 +599,12 @@ void Player::IncrementAccomplishmentCounter()
 
 NetworkSortedVector<Name> Player::GetFriends()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return friends_;
 }
 bool Player::IsFriend(std::string friend_name)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
         return (x.Contains(friend_name));
     });
@@ -543,42 +616,53 @@ bool Player::IsFriend(std::string friend_name)
 }
 void Player::AddFriend(string  friend_name, uint64_t id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    friends_.Add(Name(friend_name, id));
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        friends_.Add(Name(friend_name, id));
+    }
+
     PlayerMessageBuilder::BuildFriendsDelta(this);
 }
 
 void Player::RemoveFriend(string friend_name)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
-        return (x.Contains(friend_name));
-    });
-    
-    if (iter != end(friends_))
     {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
+            return (x.Contains(friend_name));
+        });
+        
+        if (iter == end(friends_))
+        {
+            return;
+        }
+            
         GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), iter->id));
         friends_.Remove(iter);
-        PlayerMessageBuilder::BuildFriendsDelta(this);    
     }
+
+    PlayerMessageBuilder::BuildFriendsDelta(this);  
 }
 
 void Player::ClearFriends()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    friends_.Clear();
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        friends_.Clear();
+    }
+
     PlayerMessageBuilder::BuildFriendsDelta(this);
 }
 
 NetworkSortedVector<Name> Player::GetIgnoredPlayers()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return ignored_players_;
 }
 
 bool Player::IsIgnored(string player_name)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
         return (x.Contains(player_name));
     });
@@ -591,30 +675,41 @@ bool Player::IsIgnored(string player_name)
 
 void Player::IgnorePlayer(string player_name, uint64_t player_id)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    ignored_players_.Add(Name(player_name, player_id));
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        ignored_players_.Add(Name(player_name, player_id));
+    }
+
     PlayerMessageBuilder::BuildIgnoredDelta(this);    
 }
 
 void Player::StopIgnoringPlayer(string player_name)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
-        return (x.Contains(player_name));
-    });
-
-    if (iter != end(ignored_players_))
     {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
+            return (x.Contains(player_name));
+        });
+
+        if (iter != end(ignored_players_))
+        {
+            return;
+        }
+            
         GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveIgnoredPlayer", static_pointer_cast<Player>(shared_from_this()), iter->id));
-        ignored_players_.Remove(iter);
-        PlayerMessageBuilder::BuildIgnoredDelta(this);    
+        ignored_players_.Remove(iter);  
     }
+            
+    PlayerMessageBuilder::BuildIgnoredDelta(this);    
 }
 
 void Player::ClearIgnored()
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    ignored_players_.Clear();
+    {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        ignored_players_.Clear();
+    }
+
     PlayerMessageBuilder::BuildIgnoredDelta(this);
 }
 
@@ -714,12 +809,12 @@ void Player::SetJediState(uint32_t jedi_state)
 
 Gender Player::GetGender() 
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     return gender_;
 }
 void Player::SetGender(Gender value)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(data_mutex_);
     gender_ = value;
 }
 
