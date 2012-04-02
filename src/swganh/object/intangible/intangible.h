@@ -44,9 +44,8 @@ protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:
-    mutable std::recursive_mutex mutex_;
+    mutable std::mutex intangible_mutex_;
 
-	friend class IntangibleMessageBuilder;
     friend class IntangibleFactory;
     std::string stf_detail_file_;
     std::string stf_detail_string_;

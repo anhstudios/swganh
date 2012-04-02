@@ -13,18 +13,18 @@ void GuildMessageBuilder::BuildGuildTagsDelta(Guild* guild)
     if(guild->HasObservers())
     {
         DeltasMessage message = guild->CreateDeltasMessage(Object::VIEW_3, 4);
-        guild->guild_list_.Serialize(message);
+        guild->GetGuildList().Serialize(message);
         guild->AddDeltasUpdate(std::move(message));
     }
     else
-        guild->guild_list_.ClearDeltas();
+        guild->GetGuildList().ClearDeltas();
 }
 
 boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(Guild* guild)
 {
     auto message = guild->CreateBaselinesMessage(Object::VIEW_3, 5);
     message.data.append(guild->Object::GetBaseline3().get().data);
-    guild->guild_list_.Serialize(message);
+    guild->GetGuildList().Serialize(message);
     return boost::optional<BaselinesMessage>(std::move(message));
 }
 

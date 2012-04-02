@@ -28,9 +28,13 @@ Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, c
     activated ? activated_flag_ = ACTIVATED : activated_flag_ = DEACTIVATED;
 }
 
+uint32_t Waypoint::GetUses()
+{
+    return uses_;
+}
+
 void Waypoint::SetUses(uint32_t uses) 
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     uses_ = uses;
     WaypointMessageBuilder::BuildUsesDelta(this);
 }
@@ -47,15 +51,23 @@ void Waypoint::SetCoordinates(const glm::vec3& coords)
 }
 void Waypoint::Activate()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     activated_flag_ = ACTIVATED;
     WaypointMessageBuilder::BuildActivateDelta(this);
 }
 void Waypoint::DeActivate()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     activated_flag_ = DEACTIVATED;
     WaypointMessageBuilder::BuildActivateDelta(this);
+}
+
+uint64_t Waypoint::GetLocationNetworkId() const
+{
+    return location_network_id_;
+}
+
+void Waypoint::SetLocationNetworkId(uint64_t location_network_id)
+{
+    location_network_id_ = location_network_id;
 }
 
 void Waypoint::SetPlanet(const string& planet_name)

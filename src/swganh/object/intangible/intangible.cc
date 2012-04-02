@@ -10,21 +10,24 @@ using namespace swganh::messages;
 
 string Intangible::GetStfDetailFile()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(intangible_mutex_);
     return stf_detail_file_;
 }
 
 void Intangible::SetStfDetail(const string& stf_file_name, const string& stf_string)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-    stf_detail_file_ = stf_file_name;
-    stf_detail_string_ = stf_string;
+    {
+	    std::lock_guard<std::mutex> lock(intangible_mutex_);
+        stf_detail_file_ = stf_file_name;
+        stf_detail_string_ = stf_string;
+    }
+
 	IntangibleMessageBuilder::BuildStfDetailDelta(this);
 }
 
 string Intangible::GetStfDetailString()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(intangible_mutex_);
     return stf_detail_string_;
 }
 
