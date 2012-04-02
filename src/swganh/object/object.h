@@ -276,7 +276,7 @@ public:
      * @param viewer_id The id of the object viewing this Object instance.
      * @return The most recently generated baselines.
      */
-    const BaselinesCacheContainer& GetBaselines(uint64_t viewer_id) ;
+    BaselinesCacheContainer GetBaselines(uint64_t viewer_id) ;
 
     /**
      * Returns the deltas messages generated since the last time the 
@@ -285,14 +285,14 @@ public:
      * @param viewer_id The id of the object viewing this Object instance.
      * @return The most recently generated deltas.
      */
-    const DeltasCacheContainer& GetDeltas(uint64_t viewer_id) ;
+    DeltasCacheContainer GetDeltas(uint64_t viewer_id) ;
     
     /**
      * Return the client iff template file that describes this Object.
      *
      * @return The object iff template file name.
      */
-    const std::string& GetTemplate();
+    std::string GetTemplate();
 
     /**
      * Sets the client iff template file that describes this Object.
@@ -379,12 +379,12 @@ public:
     /**
      * @return The stf file containing the default name for this object.
      */
-    const std::string& GetStfNameFile();
+    std::string GetStfNameFile();
 
     /**
      * @return The stf string containing the default name for this object.
      */
-    const std::string& GetStfNameString();
+    std::string GetStfNameString();
 
     /** 
      * Sets the stf string that is the default name for this object.
@@ -397,7 +397,7 @@ public:
     /**
      * @return The custom name of the object or an empty string if not set.
      */
-    const std::wstring& GetCustomName();
+    std::wstring GetCustomName();
 
     /**
      * Sets the custom name for the object.

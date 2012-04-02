@@ -156,7 +156,7 @@ void Object::RemoveAwareObject(const shared_ptr<Object>& object)
         object->Unsubscribe(GetController());
     }
 }
-const string& Object::GetTemplate()
+string Object::GetTemplate()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
 	return template_string_;
@@ -175,7 +175,7 @@ uint64_t Object::GetObjectId()
     return object_id_;
 }
 
-const wstring& Object::GetCustomName()
+wstring Object::GetCustomName()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return custom_name_;
@@ -338,13 +338,13 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     OnMakeClean(controller);
 }
 
-const BaselinesCacheContainer& Object::GetBaselines(uint64_t viewer_id) 
+BaselinesCacheContainer Object::GetBaselines(uint64_t viewer_id) 
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return baselines_;
 }
 
-const DeltasCacheContainer& Object::GetDeltas(uint64_t viewer_id) 
+DeltasCacheContainer Object::GetDeltas(uint64_t viewer_id) 
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return deltas_;
@@ -476,13 +476,13 @@ void Object::SetStfName(const string& stf_file_name, const string& stf_string)
     ObjectMessageBuilder::BuildStfNameDelta(this);
 }
 
-const string& Object::GetStfNameFile()
+string Object::GetStfNameFile()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
 	return stf_name_file_;
 }
 
-const string& Object::GetStfNameString()
+string Object::GetStfNameString()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
 	return stf_name_string_;
