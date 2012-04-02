@@ -161,12 +161,10 @@ void Object::SetTemplate(const string& template_string)
 }
 void Object::SetObjectId(uint64_t object_id)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	object_id_ = object_id;
 }
 uint64_t Object::GetObjectId()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     return object_id_;
 }
 
@@ -431,14 +429,12 @@ shared_ptr<Object> Object::GetContainer()
 
 void Object::SetComplexity(float complexity)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     complexity_ = complexity;
     ObjectMessageBuilder::BuildComplexityDelta(this);
 }
 
 float Object::GetComplexity()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return complexity_;
 }
 
@@ -464,26 +460,22 @@ const string& Object::GetStfNameString()
 
 void Object::SetVolume(uint32_t volume)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     volume_ = volume;
     ObjectMessageBuilder::BuildVolumeDelta(this);
 }
 
 uint32_t Object::GetVolume()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return volume_;
 }
 
 void Object::SetSceneId(uint32_t scene_id)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	scene_id_ = scene_id;
 }
 
 uint32_t Object::GetSceneId()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
 	return scene_id_;
 }
 
@@ -499,13 +491,11 @@ void Object::SetEventDispatcher(anh::EventDispatcher* dispatcher)
 
 optional<BaselinesMessage> Object::GetBaseline3()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-	return std::move(ObjectMessageBuilder::BuildBaseline3(this));
+	return ObjectMessageBuilder::BuildBaseline3(this);
 }
 
 optional<BaselinesMessage> Object::GetBaseline6()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-	return std::move(ObjectMessageBuilder::BuildBaseline6(this));
+	return ObjectMessageBuilder::BuildBaseline6(this);
 }
 

@@ -3,6 +3,7 @@
 #define SWGANH_OBJECT_BASE_OBJECT_H_
 
 #include <cstdint>
+#include <atomic>
 #include <functional>
 #include <map>
 #include <memory>
@@ -476,16 +477,16 @@ public:
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
     
-	uint64_t object_id_;             // create
-	uint32_t scene_id_;				 // create
+	std::atomic<uint64_t> object_id_;             // create
+	std::atomic<uint32_t> scene_id_;				 // create
     std::string template_string_;    // create
     glm::vec3 position_;             // create
     glm::quat orientation_;          // create
-    float complexity_;               // update 3
+    std::atomic<float> complexity_;               // update 3
     std::string stf_name_file_;      // update 3
     std::string stf_name_string_;    // update 3
     std::wstring custom_name_;       // update 3
-    uint32_t volume_;                // update 3
+    std::atomic<uint32_t> volume_;                // update 3
 
 private:
     mutable std::recursive_mutex mutex_;
