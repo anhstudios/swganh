@@ -62,8 +62,8 @@ Creature::Creature()
 Creature::~Creature()
 {}
 
-uint32_t Creature::GetType() const 
-{ 
+uint32_t Creature::GetType() const
+{
     return Creature::type;
 }
 
@@ -75,7 +75,7 @@ void Creature::SetBankCredits(uint32_t bank_credits)
 
 uint32_t Creature::GetBankCredits(void)
 {
-    return bank_credits_; 
+    return bank_credits_;
 }
 
 void Creature::SetCashCredits(uint32_t cash_credits)
@@ -162,10 +162,10 @@ void Creature::RemoveSkill(std::string skill)
         {
             return;
         }
-            
+
         skills_.Remove(iter);
     }
-            
+
     CreatureMessageBuilder::BuildSkillDelta(this);
 }
 
@@ -208,7 +208,7 @@ void  Creature::AddSkillCommand(std::pair<uint32_t, std::string> skill_command)
 {
     std::lock_guard<std::mutex> lock(creature_mutex_);
     auto find_it = skill_commands_.find(skill_command.first);
-    
+
     if (find_it == end(skill_commands_))
         skill_commands_.insert(skill_command);
 
@@ -271,12 +271,17 @@ uint64_t Creature::GetOwnerId(void)
 
 void Creature::SetScale(float scale)
 {
-    scale_ = scale;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        scale_ = scale;
+    }
+
     CreatureMessageBuilder::BuildScaleDelta(this);
 }
 
 float Creature::GetScale(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return scale_;
 }
 
@@ -319,7 +324,7 @@ void Creature::ToggleStateOff(uint64_t state)
 }
 void Creature::ToggleStateBitmask(uint64_t state_bitmask)
 {
-    state_bitmask_ = (state_bitmask_ ^ state_bitmask); 
+    state_bitmask_ = (state_bitmask_ ^ state_bitmask);
 }
 
 void Creature::SetStatWound(StatIndex stat_index, int32_t value)
@@ -375,23 +380,33 @@ int32_t Creature::GetStatWound(StatIndex stat_index)
 
 void Creature::SetAccelerationMultiplierBase(float acceleration_multiplier_base)
 {
-    acceleration_multiplier_base_ = acceleration_multiplier_base;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        acceleration_multiplier_base_ = acceleration_multiplier_base;
+    }
+
     CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(this);
 }
 
 float Creature::GetAccelerationMultiplierBase(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return acceleration_multiplier_base_;
 }
 
 void Creature::SetAccelerationMultiplierModifier(float acceleration_multiplier_modifier)
 {
-    acceleration_multiplier_modifier_ = acceleration_multiplier_modifier;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        acceleration_multiplier_modifier_ = acceleration_multiplier_modifier;
+    }
+
     CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(this);
 }
 
 float Creature::GetAccelerationMultiplierModifier(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return acceleration_multiplier_modifier_;
 }
 
@@ -468,10 +483,10 @@ void Creature::RemoveSkillMod(std::string identifier)
         {
             return;
         }
-            
+
         skill_mod_list_.Remove(iter);
     }
-    
+
     CreatureMessageBuilder::BuildSkillModDelta(this);
 }
 
@@ -516,23 +531,33 @@ SkillMod Creature::GetSkillMod(std::string identifier)
 
 void Creature::SetSpeedMultiplierBase(float speed_multiplier_base)
 {
-    speed_multiplier_base_ = speed_multiplier_base;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        speed_multiplier_base_ = speed_multiplier_base;
+    }
+
     CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(this);
 }
 
 float Creature::GetSpeedMultiplierBase(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return speed_multiplier_base_;
 }
 
 void Creature::SetSpeedMultiplierModifier(float speed_multiplier_modifier)
 {
-    speed_multiplier_modifier_ = speed_multiplier_modifier;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        speed_multiplier_modifier_ = speed_multiplier_modifier;
+    }
+
     CreatureMessageBuilder::BuildSpeedMultiplierModifierDelta(this);
 }
 
 float Creature::GetSpeedMultiplierModifier(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return speed_multiplier_modifier_;
 }
 
@@ -549,67 +574,97 @@ uint64_t Creature::GetListenToId(void)
 
 void Creature::SetRunSpeed(float run_speed)
 {
-    run_speed_ = run_speed;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        run_speed_ = run_speed;
+    }
+
     CreatureMessageBuilder::BuildRunSpeedDelta(this);
 }
 
 float Creature::GetRunSpeed(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return run_speed_;
 }
 
 void Creature::SetSlopeModifierAngle(float slope_modifier_angle)
 {
-    slope_modifier_angle_ = slope_modifier_angle;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        slope_modifier_angle_ = slope_modifier_angle;
+    }
+
     CreatureMessageBuilder::BuildSlopeModifierAngleDelta(this);
 }
 
 float Creature::GetSlopeModifierAngle(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return slope_modifier_angle_;
 }
 
 void Creature::SetSlopeModifierPercent(float slope_modifier_percent)
 {
-    slope_modifier_percent_ = slope_modifier_percent;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        slope_modifier_percent_ = slope_modifier_percent;
+    }
+
     CreatureMessageBuilder::BuildSlopeModifierPercentDelta(this);
 }
 
 float Creature::GetSlopeModifierPercent(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return slope_modifier_percent_;
 }
 
 void Creature::SetTurnRadius(float turn_radius)
 {
-    turn_radius_ = turn_radius;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        turn_radius_ = turn_radius;
+    }
+
     CreatureMessageBuilder::BuildTurnRadiusDelta(this);
 }
 
 float Creature::GetTurnRadius(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return turn_radius_;
 }
 
 void Creature::SetWalkingSpeed(float walking_speed)
 {
-    walking_speed_ = walking_speed;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        walking_speed_ = walking_speed;
+    }
+
     CreatureMessageBuilder::BuildWalkingSpeedDelta(this);
 }
 
 float Creature::GetWalkingSpeed(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return walking_speed_;
 }
 
 void Creature::SetWaterModifierPercent(float water_modifier_percent)
 {
-    water_modifier_percent_ = water_modifier_percent;
+    {
+        std::lock_guard<std::mutex> lock(creature_mutex_);
+        water_modifier_percent_ = water_modifier_percent;
+    }
+
     CreatureMessageBuilder::BuildWaterModifierPrecentDelta(this);
 }
 
 float Creature::GetWaterModifierPercent(void)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
     return water_modifier_percent_;
 }
 
@@ -807,7 +862,7 @@ uint32_t Creature::GetPerformanceId(void)
 {
     return performance_id_;
 }
-    
+
 void Creature::SetPerformanceCounter(uint32_t performance_counter)
 {
     performance_counter_ = performance_counter;
@@ -946,10 +1001,10 @@ void Creature::RemoveEquipmentItem(uint64_t object_id)
         {
             return;
         }
-            
+
         equipment_list_.Remove(iter);
     }
-            
+
     CreatureMessageBuilder::BuildEquipmentDelta(this);
 }
 
@@ -1071,7 +1126,7 @@ bool Creature::CanAttack(Creature* creature)
     }
     if (creature->CheckPvpState(PvPStatus_Duel) && InDuelList(creature->GetObjectId()) && creature->InDuelList(GetObjectId()))
         return true;
-    
+
     return false;
 }
 
@@ -1100,7 +1155,7 @@ bool Creature::InDuelList(uint64_t id)
         return id == dueler;
     });
     return found != end(duel_list_);
-    
+
 }
 std::vector<uint64_t> Creature::GetDuelList()
 {

@@ -79,7 +79,7 @@ public:
         UNLINK = 0xFFFFFFFF,
         LINK = 4
     };
-    
+
     typedef std::map<
         uint64_t,
         std::shared_ptr<Object>
@@ -88,7 +88,7 @@ public:
 public:
     Object();
     virtual ~Object() {}
-    
+
     /**
      * @return True if object has a controller, false if not.
      */
@@ -107,7 +107,7 @@ public:
      * @param controller
      */
     void SetController(const std::shared_ptr<ObjectController>& controller);
-    
+
     /**
      * Clears the active current controller, if one exists, for this instance.
      */
@@ -117,7 +117,7 @@ public:
      * Adds an object to be contained by the current instance.
      *
      * All Object instances are composite objects that can serve as containers
-     * for other Objects. For example, storing items in an inventory. 
+     * for other Objects. For example, storing items in an inventory.
      *
      * @param object The object to contain.
      * @param containment_type The type of containment in which to hold the given object.
@@ -176,7 +176,7 @@ public:
     void AddAwareObject(const std::shared_ptr<Object>& object);
 
     /**
-     * @return True if the current Object is aware of the 
+     * @return True if the current Object is aware of the
      *  given instance, false if not.
      */
     bool IsAwareOfObject(const std::shared_ptr<Object>& object);
@@ -185,7 +185,7 @@ public:
      * Removes an object from the awareness list of the existing instance.
      */
     void RemoveAwareObject(const std::shared_ptr<Object>& object);
-        
+
     /**
      * Returns whether or not this observable object has any observers.
      *
@@ -206,7 +206,7 @@ public:
      * @param observer The object that no longer wants state change notifications.
      */
     void Unsubscribe(const std::shared_ptr<anh::observer::ObserverInterface>& observer);
-    
+
     /**
      * Notifies observers that the observable object has changed state.
      *
@@ -224,7 +224,7 @@ public:
 
             return;
         }
-	
+
         std::lock_guard<std::mutex> lock(object_mutex_);
 
         std::for_each(
@@ -235,7 +235,7 @@ public:
             observer->Notify(message);
         });
     }
-    
+
     /**
      * Notifies observers that the observable object has changed state.
      *
@@ -256,7 +256,7 @@ public:
     }
 
     void NotifyObservers(const anh::ByteBuffer& message);
-    
+
     /**
      * Returns whether or not the object has been modified since the last reliable
      * update was sent out.
@@ -279,14 +279,14 @@ public:
     BaselinesCacheContainer GetBaselines(uint64_t viewer_id) ;
 
     /**
-     * Returns the deltas messages generated since the last time the 
+     * Returns the deltas messages generated since the last time the
      * object was made clean.
      *
      * @param viewer_id The id of the object viewing this Object instance.
      * @return The most recently generated deltas.
      */
     DeltasCacheContainer GetDeltas(uint64_t viewer_id) ;
-    
+
     /**
      * Return the client iff template file that describes this Object.
      *
@@ -300,7 +300,7 @@ public:
      * @param template_string The object iff template file name.
      */
     void SetTemplate(const std::string& template_string);
-    
+
     /**
      * @return The object position as a vector.
      */
@@ -386,14 +386,14 @@ public:
      */
     std::string GetStfNameString();
 
-    /** 
+    /**
      * Sets the stf string that is the default name for this object.
      *
      * @param stf_file_name The file name containing the stf string.
      * @param stf_string The stf string containing the default object name.
      */
     void SetStfName(const std::string& stf_file_name, const std::string& stf_string);
-    
+
     /**
      * @return The custom name of the object or an empty string if not set.
      */
@@ -404,8 +404,8 @@ public:
      *
      * @param custom_name The new custom name for the object.
      */
-    void SetCustomName(std::wstring custom_name); 
-    
+    void SetCustomName(std::wstring custom_name);
+
     /**
      * Returns the volume of the object, which is a measure of the "space"
      * an object takes up inside of a container.
@@ -416,11 +416,11 @@ public:
 
     /**
      * Sets the volume of the object.
-     * 
+     *
      * @param volume The new volume for the object.
      */
     void SetVolume(uint32_t volume);
-	
+
     /**
      * @return The ID of the scene this object belongs to.
      *
@@ -441,10 +441,10 @@ public:
      * @param message The deltas message to store.
      */
     void AddDeltasUpdate(swganh::messages::DeltasMessage message);
-    
+
     /**
      * Sets the id of this object instance.
-     * 
+     *
      * @param id The object id.
      */
     void SetObjectId(uint64_t id);
@@ -453,7 +453,7 @@ public:
      * @return The id of this Object instance.
      */
     uint64_t GetObjectId() ;
-    
+
     /**
      * @return The type of the object.
      */
@@ -461,11 +461,11 @@ public:
 
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
-    
+
     swganh::messages::BaselinesMessage CreateBaselinesMessage(uint8_t view_type, uint16_t opcount = 0) ;
-    
+
     swganh::messages::DeltasMessage CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
-    
+
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
@@ -475,16 +475,16 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-        
+
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
-    
+
 	std::atomic<uint64_t> object_id_;             // create
 	std::atomic<uint32_t> scene_id_;				 // create
     std::string template_string_;    // create
     glm::vec3 position_;             // create
     glm::quat orientation_;          // create
-    std::atomic<float> complexity_;               // update 3
+    float complexity_;               // update 3
     std::string stf_name_file_;      // update 3
     std::string stf_name_string_;    // update 3
     std::wstring custom_name_;       // update 3
@@ -496,7 +496,7 @@ private:
     friend class ObjectFactory;
 
     void AddBaselinesBuilders_();
-        
+
     typedef std::vector<
         std::shared_ptr<anh::observer::ObserverInterface>
     > ObserverContainer;
@@ -517,7 +517,7 @@ private:
     std::shared_ptr<ObjectController> controller_;
     anh::EventDispatcher* event_dispatcher_;
 
-    bool is_dirty_;  
+    bool is_dirty_;
 };
 
 }}  // namespace

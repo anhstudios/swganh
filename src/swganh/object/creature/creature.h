@@ -1,6 +1,6 @@
 /*
  This file is part of SWGANH. For more information, visit http://swganh.com
- 
+
  Copyright (c) 2006 - 2011 The SWG:ANH Team
 
  This program is free software; you can redistribute it and/or
@@ -65,7 +65,7 @@ enum CreatureOffSet
 	INVENTORY_OFFSET,
 	BANK_OFFSET,
 	MISSION_OFFSET,
-	HAIR_OFFSET, 
+	HAIR_OFFSET,
 	EQUIPED_OFFSET
 };
 
@@ -242,7 +242,7 @@ struct Stat
 
     int32_t value;
 };
-    
+
 /**
  *
  */
@@ -537,7 +537,7 @@ public:
     // Invite Sender Id
     void SetInviteSenderId(uint64_t invite_sender_id);
     uint64_t GetInviteSenderId(void);
-    
+
     // Invite Counter
     void SetInviteCounter(uint64_t invite_counter);
     uint64_t IncrementInviteCounter();
@@ -548,7 +548,7 @@ public:
     uint32_t GetGuildId(void);
 
     // Target Id
-    void SetTargetId(uint64_t target_id); 
+    void SetTargetId(uint64_t target_id);
     uint64_t GetTargetId(void);
 
     // Mood Id
@@ -558,7 +558,7 @@ public:
     // Performance Id
     void SetPerformanceId(uint32_t performance_id);
     uint32_t GetPerformanceId(void);
-    
+
     // Performance Counter
     void SetPerformanceCounter(uint32_t performance_counter);
     uint32_t IncrementPerformanceCounter();
@@ -630,23 +630,23 @@ private:
     std::atomic<uint32_t>    posture_;                                                                   // update 3 variable 11
     std::atomic<uint8_t>     faction_rank_;                                                              // update 3 variable 12
     std::atomic<uint64_t>    owner_id_;                                                                  // update 3 variable 13
-    std::atomic<float>       scale_;                                                                     // update 3 variable 14
+    float       scale_;                                                                     // update 3 variable 14
     std::atomic<uint32_t>    battle_fatigue_;                                                            // update 3 variable 15
     std::atomic<uint64_t>    state_bitmask_;                                                             // update 3 variable 16
     swganh::messages::containers::NetworkArray<Stat> stat_wound_list_;                      // update 3 variable 17
-    std::atomic<float>       acceleration_multiplier_base_;                                              // update 4 variable 0
-    std::atomic<float>       acceleration_multiplier_modifier_;                                          // update 4 variable 1
+    float       acceleration_multiplier_base_;                                              // update 4 variable 0
+    float       acceleration_multiplier_modifier_;                                          // update 4 variable 1
     swganh::messages::containers::NetworkArray<Stat> stat_encumberance_list_;               // update 4 variable 2
     swganh::messages::containers::NetworkMap<std::string, SkillMod> skill_mod_list_;        // update 4 variable 3
-    std::atomic<float>       speed_multiplier_base_;                                                     // update 4 variable 4
-    std::atomic<float>       speed_multiplier_modifier_;                                                 // update 4 variable 5
+    float       speed_multiplier_base_;                                                     // update 4 variable 4
+    float       speed_multiplier_modifier_;                                                 // update 4 variable 5
     std::atomic<uint64_t>    listen_to_id_;                                                              // update 4 variable 6
-    std::atomic<float>       run_speed_;                                                                 // update 4 variable 7
-    std::atomic<float>       slope_modifier_angle_;                                                      // update 4 variable 8
-    std::atomic<float>       slope_modifier_percent_;                                                    // update 4 variable 9
-    std::atomic<float>       turn_radius_;                                                               // update 4 variable 10
-    std::atomic<float>       walking_speed_;                                                             // update 4 variable 11
-    std::atomic<float>       water_modifier_percent_;                                                    // update 4 variable 12
+    float       run_speed_;                                                                 // update 4 variable 7
+    float       slope_modifier_angle_;                                                      // update 4 variable 8
+    float       slope_modifier_percent_;                                                    // update 4 variable 9
+    float       turn_radius_;                                                               // update 4 variable 10
+    float       walking_speed_;                                                             // update 4 variable 11
+    float       water_modifier_percent_;                                                    // update 4 variable 12
     swganh::messages::containers::NetworkList<MissionCriticalObject> mission_critical_object_list_;     // update 4 variable 13
     std::atomic<uint16_t>    combat_level_;                                                              // update 6 variable 2
     std::string animation_;                                                                 // update 6 variable 3

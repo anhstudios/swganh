@@ -15,7 +15,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using boost::optional;
 
-Object::Object() 
+Object::Object()
     : object_id_(0)
     , template_string_("")
     , position_(glm::vec3(0,0,0))
@@ -29,7 +29,7 @@ Object::Object()
 	AddBaselinesBuilders_();
 }
 
-bool Object::HasController() 
+bool Object::HasController()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return controller_ != nullptr;
@@ -101,7 +101,7 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
         return;
     }
 
-    contained_objects_.erase(find_iter);    
+    contained_objects_.erase(find_iter);
 
     if (HasController())
     {
@@ -122,7 +122,7 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
         if (aware_objects_.find(object->GetObjectId()) == aware_objects_.end())
         {
             aware_objects_.insert(make_pair(object->GetObjectId(), object));
-        }    
+        }
     }
 
     if (object->HasController()) {
@@ -193,8 +193,8 @@ void Object::SetCustomName(wstring custom_name)
     {
         DeltasMessage message = CreateDeltasMessage(Object::VIEW_3, 2);
         message.data.write(custom_name);
-    
-        AddDeltasUpdate(message);    
+
+        AddDeltasUpdate(message);
     }
 }
 
@@ -205,12 +205,12 @@ BaselinesMessage Object::CreateBaselinesMessage(uint8_t view_type, uint16_t opco
     message.object_type = GetType();
     message.view_type = view_type;
     message.object_opcount = opcount;
-    
+
     return message;
 }
 
-DeltasMessage Object::CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count) 
-{        
+DeltasMessage Object::CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count)
+{
     DeltasMessage message;
     message.object_id = GetObjectId();
     message.object_type = GetType();
@@ -255,7 +255,7 @@ void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
     {
         return observer == stored_observer;
     });
-    
+
     if (find_iter == observers_.end())
     {
         return;
@@ -269,7 +269,7 @@ void Object::NotifyObservers(const anh::ByteBuffer& message)
     NotifyObservers<anh::ByteBuffer>(message);
 }
 
-bool Object::IsDirty() 
+bool Object::IsDirty()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return !deltas_.empty();
@@ -282,7 +282,7 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
         baselines_.clear();
         deltas_.clear();
     }
-    
+
     // SceneCreateObjectByCrc
     swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -290,14 +290,14 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     scene_object.position = GetPosition();
 	scene_object.orientation = GetOrientation();
     controller->Notify(scene_object);
-         
+
     if (GetContainer())
     {
         UpdateContainmentMessage containment_message;
         containment_message.container_id = GetContainer()->GetObjectId();
         containment_message.object_id = GetObjectId();
         containment_message.containment_type = 4;
-    
+
         controller->Notify(containment_message);
     }
 
@@ -309,7 +309,7 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
         optional<BaselinesMessage> message;
         for_each(begin(baselines_builders_), end(baselines_builders_),
             [&lock, &message, &cache] (BaselinesBuilder& builder)
-        {   
+        {
             lock.unlock();
             message = builder();
             if (message)
@@ -324,7 +324,7 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     {
         controller->Notify(message);
     });
-    
+
     {
         std::lock_guard<std::mutex> lock(object_mutex_);
         baselines_ = move(cache);
@@ -338,13 +338,13 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     OnMakeClean(controller);
 }
 
-BaselinesCacheContainer Object::GetBaselines(uint64_t viewer_id) 
+BaselinesCacheContainer Object::GetBaselines(uint64_t viewer_id)
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return baselines_;
 }
 
-DeltasCacheContainer Object::GetDeltas(uint64_t viewer_id) 
+DeltasCacheContainer Object::GetDeltas(uint64_t viewer_id)
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return deltas_;
@@ -364,23 +364,23 @@ void Object::AddBaselinesBuilders_()
     baselines_builders_.push_back([this] () {
         return GetBaseline1();
     });
-    
+
     baselines_builders_.push_back([this] () {
         return GetBaseline2();
     });
-    
+
     baselines_builders_.push_back([this] () {
         return GetBaseline3();
     });
-    
+
     baselines_builders_.push_back([this] () {
         return GetBaseline4();
     });
-    
+
     baselines_builders_.push_back([this] () {
         return GetBaseline5();
     });
-    
+
     baselines_builders_.push_back([this] () {
         return GetBaseline6();
     });
@@ -427,8 +427,8 @@ glm::quat Object::GetOrientation()
 	return orientation_;
 }
 
-uint8_t Object::GetHeading() 
-{  
+uint8_t Object::GetHeading()
+{
     glm::quat tmp;
     {
 	    std::lock_guard<std::mutex> lock(object_mutex_);
@@ -438,7 +438,7 @@ uint8_t Object::GetHeading()
     if (tmp.y < 0.0f && tmp.w > 0.0f) {
         tmp.w *= -1;
     }
-    
+
     return static_cast<uint8_t>((glm::angle(tmp) / 6.283f) * 100);
 }
 
@@ -456,12 +456,17 @@ shared_ptr<Object> Object::GetContainer()
 
 void Object::SetComplexity(float complexity)
 {
-    complexity_ = complexity;
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+        complexity_ = complexity;
+    }
+
     ObjectMessageBuilder::BuildComplexityDelta(this);
 }
 
 float Object::GetComplexity()
 {
+    std::lock_guard<std::mutex> lock(object_mutex_);
 	return complexity_;
 }
 
@@ -510,8 +515,8 @@ uint32_t Object::GetSceneId()
 }
 
 anh::EventDispatcher* Object::GetEventDispatcher()
-{ 
-    return event_dispatcher_; 
+{
+    return event_dispatcher_;
 }
 
 void Object::SetEventDispatcher(anh::EventDispatcher* dispatcher)
