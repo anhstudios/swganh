@@ -31,41 +31,52 @@ Object::Object()
 
 bool Object::HasController() 
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return controller_ != nullptr;
 }
 
 shared_ptr<ObjectController> Object::GetController()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return controller_;
 }
 
 void Object::SetController(const shared_ptr<ObjectController>& controller)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-    controller_ = controller;
-    Subscribe(controller_);
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        controller_ = controller;
+    }
+
+    Subscribe(controller);
 }
 
 void Object::ClearController()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-    Unsubscribe(controller_);
-    controller_.reset();
+    shared_ptr<ObjectController> controller;
+
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        controller = controller_;
+        controller_.reset();
+    }
+
+    Unsubscribe(controller);
 }
 
 void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentType containment_type)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-    if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
     {
-        /// @TODO consider whether encountering this scenario is an error
-        return;
-    }
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
+        {
+            /// @TODO consider whether encountering this scenario is an error
+            return;
+        }
 
-    contained_objects_.insert(make_pair(object->GetObjectId(), object));
-    object->SetContainer(shared_from_this());
+        contained_objects_.insert(make_pair(object->GetObjectId(), object));
+        object->SetContainer(shared_from_this());
+    }
 
     if (HasController())
     {
@@ -75,13 +86,13 @@ void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentTyp
 
 bool Object::IsContainerForObject(const shared_ptr<Object>& object)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return contained_objects_.find(object->GetObjectId()) != contained_objects_.end();
 }
 
 void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     auto find_iter = contained_objects_.find(object->GetObjectId());
 
     if (find_iter == contained_objects_.end())
@@ -100,25 +111,20 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 
 Object::ObjectMap Object::GetContainedObjects()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return contained_objects_;
 }
 
 void Object::AddAwareObject(const shared_ptr<Object>& object)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-    if (aware_objects_.find(object->GetObjectId()) != aware_objects_.end())
     {
-        /// @TODO consider whether encountering this scenario is an error
-		// someone could be logging back in and we want to make them aware again, so we'll send clean baselines.
-		if (object->HasController()) {
-			MakeClean(object->GetController());
-		}
-        return;
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        if (aware_objects_.find(object->GetObjectId()) == aware_objects_.end())
+        {
+            aware_objects_.insert(make_pair(object->GetObjectId(), object));
+        }    
     }
 
-    aware_objects_.insert(make_pair(object->GetObjectId(), object));
-    
     if (object->HasController()) {
         Subscribe(object->GetController());
         MakeClean(object->GetController());
@@ -127,22 +133,23 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
 
 bool Object::IsAwareOfObject(const shared_ptr<Object>& object)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return aware_objects_.find(object->GetObjectId()) != aware_objects_.end();
 }
 
 void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-    auto find_iter = aware_objects_.find(object->GetObjectId());
-
-    if (find_iter == aware_objects_.end())
     {
-        /// @TODO consider whether encountering this scenario is an error
-        return;
-    }
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        auto find_iter = aware_objects_.find(object->GetObjectId());
 
-    aware_objects_.erase(find_iter);
+        if (find_iter != aware_objects_.end())
+        {
+            return;
+        }
+
+        aware_objects_.erase(find_iter);
+    }
 
     if (HasController())
     {
@@ -151,12 +158,12 @@ void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 }
 const string& Object::GetTemplate()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
 	return template_string_;
 }
 void Object::SetTemplate(const string& template_string)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
 	template_string_ = template_string;
 }
 void Object::SetObjectId(uint64_t object_id)
@@ -170,15 +177,17 @@ uint64_t Object::GetObjectId()
 
 const wstring& Object::GetCustomName()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return custom_name_;
 }
 
 void Object::SetCustomName(wstring custom_name)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-    custom_name_ = custom_name;
-    
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        custom_name_ = custom_name;
+    }
+
     // Only build a message if there are observers.
     if (HasObservers())
     {
@@ -191,7 +200,6 @@ void Object::SetCustomName(wstring custom_name)
 
 BaselinesMessage Object::CreateBaselinesMessage(uint8_t view_type, uint16_t opcount)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     BaselinesMessage message;
     message.object_id = GetObjectId();
     message.object_type = GetType();
@@ -203,7 +211,6 @@ BaselinesMessage Object::CreateBaselinesMessage(uint8_t view_type, uint16_t opco
 
 DeltasMessage Object::CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count) 
 {        
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     DeltasMessage message;
     message.object_id = GetObjectId();
     message.object_type = GetType();
@@ -215,13 +222,13 @@ DeltasMessage Object::CreateDeltasMessage(uint8_t view_type, uint16_t update_typ
 
 bool Object::HasObservers()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return !observers_.empty();
 }
 
 void Object::Subscribe(const shared_ptr<ObserverInterface>& observer)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     auto find_iter = std::find_if(
         observers_.begin(),
         observers_.end(),
@@ -240,7 +247,7 @@ void Object::Subscribe(const shared_ptr<ObserverInterface>& observer)
 
 void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     auto find_iter = std::find_if(
         observers_.begin(),
         observers_.end(),
@@ -259,21 +266,22 @@ void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
 
 void Object::NotifyObservers(const anh::ByteBuffer& message)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     NotifyObservers<anh::ByteBuffer>(message);
 }
 
 bool Object::IsDirty() 
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return !deltas_.empty();
 }
 
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
-    baselines_.clear();
-    deltas_.clear();
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+        baselines_.clear();
+        deltas_.clear();
+    }
     
     // SceneCreateObjectByCrc
     swganh::messages::SceneCreateObjectByCrc scene_object;
@@ -294,18 +302,33 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     }
 
     // Baselines
-    optional<BaselinesMessage> message;
-    for_each(begin(baselines_builders_), end(baselines_builders_),
-        [this, &message, &controller] (BaselinesBuilder& builder)
-    {   
-        if (!(message = builder()))
-        {
-            return;
-        }
+    BaselinesCacheContainer cache;
+    {
+        std::unique_lock<std::mutex> lock(object_mutex_);
 
-        controller->Notify(*message);
-        baselines_.push_back(*message);
+        optional<BaselinesMessage> message;
+        for_each(begin(baselines_builders_), end(baselines_builders_),
+            [&lock, &message, &cache] (BaselinesBuilder& builder)
+        {   
+            lock.unlock();
+            message = builder();
+            if (message)
+            {
+                cache.push_back(move(*message));
+            }
+            lock.lock();
+        });
+    }
+
+    for_each(begin(cache), end(cache), [&controller] (BaselinesMessage& message)
+    {
+        controller->Notify(message);
     });
+    
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+        baselines_ = move(cache);
+    }
 
     // SceneEndBaselines
     swganh::messages::SceneEndBaselines scene_end_baselines;
@@ -317,26 +340,27 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
 
 const BaselinesCacheContainer& Object::GetBaselines(uint64_t viewer_id) 
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return baselines_;
 }
 
 const DeltasCacheContainer& Object::GetDeltas(uint64_t viewer_id) 
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     return deltas_;
 }
 
 void Object::AddDeltasUpdate(DeltasMessage message)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
     NotifyObservers(message);
+
+	std::lock_guard<std::mutex> lock(object_mutex_);
     deltas_.push_back(move(message));
 }
 
 void Object::AddBaselinesBuilders_()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     baselines_builders_.push_back([this] () {
         return GetBaseline1();
     });
@@ -376,12 +400,12 @@ void Object::AddBaselinesBuilders_()
 
 void Object::SetPosition(glm::vec3 position)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     position_ = position;
 }
 glm::vec3 Object::GetPosition()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
 	return position_;
 }
 bool Object::InRange(glm::vec3 target, float range)
@@ -394,20 +418,23 @@ bool Object::InRange(glm::vec3 target, float range)
 }
 void Object::SetOrientation(glm::quat orientation)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     orientation_ = orientation;
 }
 glm::quat Object::GetOrientation()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
 	return orientation_;
 }
 
 uint8_t Object::GetHeading() 
 {  
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-    glm::quat tmp = orientation_;
-    
+    glm::quat tmp;
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        tmp = orientation_;
+    }
+
     if (tmp.y < 0.0f && tmp.w > 0.0f) {
         tmp.w *= -1;
     }
@@ -417,13 +444,13 @@ uint8_t Object::GetHeading()
 
 void Object::SetContainer(const std::shared_ptr<Object>& container)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
     container_ = container;
 }
 
 shared_ptr<Object> Object::GetContainer()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
 	return container_;
 }
 
@@ -440,21 +467,24 @@ float Object::GetComplexity()
 
 void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
-    stf_name_file_ = stf_file_name;
-    stf_name_string_ = stf_string;
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        stf_name_file_ = stf_file_name;
+        stf_name_string_ = stf_string;
+    }
+
     ObjectMessageBuilder::BuildStfNameDelta(this);
 }
 
 const string& Object::GetStfNameFile()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
 	return stf_name_file_;
 }
 
 const string& Object::GetStfNameString()
 {
-	std::lock_guard<std::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(object_mutex_);
 	return stf_name_string_;
 }
 
