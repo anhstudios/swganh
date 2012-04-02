@@ -136,7 +136,7 @@ protected:
 private:
 	friend class WaypointFactory;
 
-    mutable std::recursive_mutex mutex_;
+    mutable std::mutex waypoint_mutex_;
 
     std::atomic<uint32_t> uses_;					//update 3
     glm::vec3 coordinates_;			//update 3
