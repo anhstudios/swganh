@@ -289,6 +289,7 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     scene_object.object_crc = anh::memcrc(GetTemplate());
     scene_object.position = GetPosition();
 	scene_object.orientation = GetOrientation();
+    scene_object.byte_flag = 0;
     controller->Notify(scene_object);
 
     if (GetContainer())
