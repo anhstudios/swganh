@@ -23,9 +23,9 @@
 #include <exception>
 #include <iostream>
 #include <string>
+#include <thread>
 
 #include "anh/logger.h"
-#include <boost/thread.hpp>
 
 using namespace boost;
 using namespace swganh;
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 
         app.Initialize(argc, argv);
 
-        boost::thread application_thread([&app] () {
+        std::thread application_thread([&app] () {
             app.Start();
         });
 
@@ -53,8 +53,6 @@ int main(int argc, char* argv[])
                 app.Stop();
                 if (application_thread.joinable())
 					application_thread.join();
-				else
-					application_thread.interrupt();
 				
                 break;
             } else {

@@ -7,10 +7,10 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <thread>
 
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/thread/thread.hpp>
 
 #include "anh/app/app_interface.h"
 #include "anh/service/service_directory.h"
@@ -80,7 +80,7 @@ private:
 
     void SetupLogging_();
     
-    std::list<std::shared_ptr<boost::thread>> io_threads_;
+    std::vector<std::thread> io_threads_;
     std::shared_ptr<SwganhKernel> kernel_;
     std::atomic<bool> running_;
     bool initialized_;

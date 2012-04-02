@@ -3,6 +3,7 @@
 #define SWGANH_OBJECT_INTANGIBLE_INTANGIBLE_H_
 
 #include <cstdint>
+#include <mutex>
 #include <string>
 
 #include "swganh/object/object.h"
@@ -43,7 +44,8 @@ protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:
-	friend class IntangibleMessageBuilder;
+    mutable std::mutex intangible_mutex_;
+
     friend class IntangibleFactory;
     std::string stf_detail_file_;
     std::string stf_detail_string_;

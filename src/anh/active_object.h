@@ -3,14 +3,13 @@
 #define ANH_UTILS_ACTIVE_OBJECT_H_
 
 #include <algorithm>
+#include <future>
 #include <list>
 #include <memory>
 
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/strand.hpp>
-
-#include <boost/thread/future.hpp>
 
 #include "anh/timing.h"
 
@@ -38,9 +37,9 @@ public:
      * @param func The function handler to perform and retrieve results of asyncronously.
      */
     template<typename Handler>
-    boost::unique_future<typename std::result_of<Handler()>::type>
-    Async(Handler&& func) {
-        auto task = std::make_shared<boost::packaged_task<typename std::result_of<Handler()>::type>>(move(func));
+    std::future<typename std::result_of<Handler()>::type> Async(Handler&& func)
+    {
+        auto task = std::make_shared<std::packaged_task<typename std::result_of<Handler()>::type()>>(std::move(func));
         
         strand_.post([task] () {
             (*task)();
@@ -57,9 +56,9 @@ public:
      * @param message The message to be handled by the active object.
      */
     template<typename Handler>
-    boost::unique_future<typename std::result_of<Handler()>::type>
+    std::future<typename std::result_of<Handler()>::type>
     AsyncDelayed(boost::posix_time::time_duration period, Handler&& func) {
-        auto task  = std::make_shared<boost::packaged_task<typename std::result_of<Handler()>::type>>(move(func));
+        auto task  = std::make_shared<std::packaged_task<typename std::result_of<Handler()>::type()>>(std::move(func));
         auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
         
         timer->expires_from_now(period);
