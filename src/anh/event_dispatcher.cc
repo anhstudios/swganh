@@ -18,8 +18,8 @@ using namespace std;
 
 namespace ba = boost::asio;
 
-using boost::packaged_task;
-using boost::unique_future;
+using std::packaged_task;
+using std::future;
 
 BaseEvent::BaseEvent(EventType type)
 : type_(type)
@@ -69,9 +69,9 @@ void EventDispatcher::Unsubscribe(EventType type, CallbackId identifier)
     }
 }
 
-unique_future<shared_ptr<EventInterface>> EventDispatcher::Dispatch(const shared_ptr<EventInterface>& dispatch_event)
+future<shared_ptr<EventInterface>> EventDispatcher::Dispatch(const shared_ptr<EventInterface>& dispatch_event)
 {
-    auto task = make_shared<packaged_task<shared_ptr<EventInterface>>>(
+    auto task = make_shared<packaged_task<shared_ptr<EventInterface>()>>(
         [this, dispatch_event] () -> shared_ptr<EventInterface>
     {
         InvokeCallbacks(dispatch_event);

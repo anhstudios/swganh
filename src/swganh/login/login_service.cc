@@ -103,7 +103,7 @@ shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
     shared_ptr<LoginClient> session = nullptr;
 
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
             session = make_shared<LoginClient>(this, kernel()->GetIoService(), endpoint);
@@ -116,7 +116,7 @@ shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
 
 bool LoginService::RemoveSession(std::shared_ptr<Session> session) {
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
         session_map_.erase(session->remote_endpoint());
     }
 
@@ -125,7 +125,7 @@ bool LoginService::RemoveSession(std::shared_ptr<Session> session) {
 
 shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
 
         auto find_iter = session_map_.find(endpoint);
         if (find_iter != session_map_.end())
@@ -146,7 +146,7 @@ void LoginService::onStart() {
     UpdateGalaxyStatus_();
 
     active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_),
             end(session_map_),
@@ -215,7 +215,7 @@ void LoginService::UpdateGalaxyStatus_() {
 
     auto status_message = BuildLoginClusterStatus(galaxy_status_);
 
-    boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+    std::lock_guard<std::mutex> lg(session_map_mutex_);
     std::for_each(
         begin(session_map_),
         end(session_map_),

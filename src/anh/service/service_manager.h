@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under GPL v2.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #ifndef ANH_SERVICE_SERVICE_MANAGER_H_
 #define ANH_SERVICE_SERVICE_MANAGER_H_
@@ -7,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "anh/service/service_interface.h"
+#include "service_interface.h"
 
 namespace anh {
 namespace database {

@@ -36,11 +36,11 @@ void GroupMessageBuilder::BuildMemberListDelta(Group* group)
     if(group->HasObservers())
     {
         DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 1);
-        group->member_list_.Serialize(message);
+        group->GetGroupMembers().Serialize(message);
         group->AddDeltasUpdate(move(message));
     }
     else
-        group->member_list_.ClearDeltas();
+        group->GetGroupMembers().ClearDeltas();
 }
 
 void GroupMessageBuilder::BuildLootModeDelta(Group* group)
@@ -48,7 +48,7 @@ void GroupMessageBuilder::BuildLootModeDelta(Group* group)
     if(group->HasObservers())
     {
         DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 7);
-        message.data.write<uint32_t>(group->loot_mode_);
+        message.data.write<uint32_t>(group->GetLootMode());
         group->AddDeltasUpdate(move(message));
     }
 }
@@ -58,7 +58,7 @@ void GroupMessageBuilder::BuildDifficultyDelta(Group* group)
     if(group->HasObservers())
     {
         DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 4);
-        message.data.write<uint16_t>(group->difficulty_);
+        message.data.write<uint16_t>(group->GetDifficulty());
         group->AddDeltasUpdate(move(message));
     }
 }
@@ -68,7 +68,7 @@ void GroupMessageBuilder::BuildLootMasterDelta(Group* group)
     if(group->HasObservers())
     {
         DeltasMessage message = group->CreateDeltasMessage(Object::VIEW_6, 6);
-        message.data.write<uint64_t>(group->loot_master_);
+        message.data.write<uint64_t>(group->GetLootMaster());
         group->AddDeltasUpdate(move(message));
     }
 }
@@ -84,14 +84,14 @@ boost::optional<BaselinesMessage> GroupMessageBuilder::BuildBaseline6(Group* gro
 {
     auto message = group->CreateBaselinesMessage(Object::VIEW_6, 6);
 	message.data.append(group->Object::GetBaseline6().get().data);
-    group->member_list_.Serialize(message);
+    group->GetGroupMembers().Serialize(message);
 	message.data.write<uint32_t>(0);
 	message.data.write<uint32_t>(0);
 	message.data.write<std::string>("");
-    message.data.write<uint16_t>(group->difficulty_);
+    message.data.write<uint16_t>(group->GetDifficulty());
 	message.data.write<uint32_t>(4);
-    message.data.write<uint64_t>(group->loot_master_);
-    message.data.write<uint32_t>(group->loot_mode_);
+    message.data.write<uint64_t>(group->GetLootMaster());
+    message.data.write<uint32_t>(group->GetLootMode());
 	return boost::optional<BaselinesMessage>(std::move(message));
 }
 

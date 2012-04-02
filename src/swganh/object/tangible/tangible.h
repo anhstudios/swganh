@@ -3,6 +3,8 @@
 #define SWGANH_OBJECT_TANGIBLE_TANGIBLE_H_
 
 #include <cstdint>
+#include <atomic>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
@@ -140,19 +142,20 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7();
 private:
-    friend class TangibleMessageBuilder;
     friend class TangibleFactory;
+
+    mutable std::mutex tangible_mutex_;
 
     std::string customization_;                                                                         // update 3 variable 4
     swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;    // update 3 variable 5
-    uint32_t options_bitmask_;                                                                          // update 3 variable 6
-    uint32_t incap_timer_;                                                                              // update 3 variable 7
-    uint32_t condition_damage_;                                                                         // update 3 variable 8
-    uint32_t max_condition_;                                                                            // update 3 variable 9
-    bool is_static_;                                                                                    // update 3 variable 10
+    std::atomic<uint32_t> options_bitmask_;                                                                          // update 3 variable 6
+    std::atomic<uint32_t> incap_timer_;                                                                              // update 3 variable 7
+    std::atomic<uint32_t> condition_damage_;                                                                         // update 3 variable 8
+    std::atomic<uint32_t> max_condition_;                                                                            // update 3 variable 9
+    std::atomic<bool> is_static_;                                                                                    // update 3 variable 10
     swganh::messages::containers::NetworkSortedVector<Defender> defender_list_;                         // update 6 variable 1
     // Flag to help out in combat situations
-    bool auto_attack_;
+    std::atomic<bool> auto_attack_;
 };
     
 }}}  // namespace swganh::object::tangible

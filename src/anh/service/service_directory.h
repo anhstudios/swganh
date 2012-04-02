@@ -23,10 +23,9 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <string>
-
-#include <boost/thread/recursive_mutex.hpp>
 
 #include "anh/service/galaxy.h"
 #include "anh/service/service_description.h"
@@ -89,7 +88,7 @@ private:
     Galaxy active_galaxy_;
     ServiceDescription active_service_;
 
-    boost::recursive_mutex mutex_;
+    std::mutex mutex_;
 
     anh::EventDispatcher* event_dispatcher_;
 };

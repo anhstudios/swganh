@@ -15,7 +15,7 @@ void ObjectMessageBuilder::BuildComplexityDelta(Object* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 0);
-        message.data.write(object->complexity_);
+        message.data.write(object->GetComplexity());
 
         object->AddDeltasUpdate(message);                
     }
@@ -25,9 +25,9 @@ void ObjectMessageBuilder::BuildStfNameDelta(Object* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 1);
-        message.data.write(object->stf_name_file_);
+        message.data.write(object->GetStfNameFile());
         message.data.write<uint32_t>(0);
-        message.data.write(object->stf_name_string_);
+        message.data.write(object->GetStfNameString());
 
         object->AddDeltasUpdate(message);                
     }
@@ -37,7 +37,7 @@ void ObjectMessageBuilder::BuildCustomNameDelta(Object* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 2);
-        message.data.write(object->custom_name_);
+        message.data.write(object->GetCustomName());
 
         object->AddDeltasUpdate(message);                
     }
@@ -47,7 +47,7 @@ void ObjectMessageBuilder::BuildVolumeDelta(Object* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 3);
-        message.data.write(object->volume_);
+        message.data.write(object->GetVolume());
 
         object->AddDeltasUpdate(message);                
     }
@@ -68,13 +68,13 @@ void ObjectMessageBuilder::BuildServerIDDelta(Object* object)
 optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline3(Object* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_3);
-    message.data.write(object->complexity_);
-    message.data.write(object->stf_name_file_);
+    message.data.write(object->GetComplexity());
+    message.data.write(object->GetStfNameFile());
     // spacer
     message.data.write<uint32_t>(0);
-    message.data.write(object->stf_name_string_);
-    message.data.write(object->custom_name_);
-    message.data.write(object->volume_);
+    message.data.write(object->GetStfNameString());
+    message.data.write(object->GetCustomName());
+    message.data.write(object->GetVolume());
 
     return optional<BaselinesMessage>(move(message));
 }

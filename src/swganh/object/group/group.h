@@ -21,7 +21,9 @@
 #ifndef SWGANH_OBJECT_GROUP_GROUP_H_
 #define SWGANH_OBJECT_GROUP_GROUP_H_
 
+#include <atomic>
 #include <list>
+#include <mutex>
 #include <vector>
 
 #include "swganh/object/object.h"
@@ -90,6 +92,7 @@ public:
     // Group Members
     void AddGroupMember(uint64_t member, std::string name);
     void RemoveGroupMember(uint64_t member);
+    swganh::messages::containers::NetworkSortedVector<Member> GetGroupMembers();
     
     // Loot Mode
     void SetLootMode(LootMode loot_mode);
@@ -114,13 +117,13 @@ protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
 
 private:
-    friend class GroupMessageBuilder;
     friend class GroupFactory;
+    mutable std::mutex group_mutex_;
 
     swganh::messages::containers::NetworkSortedVector<Member> member_list_;                     // update 6 variable 1
-    uint16_t difficulty_;                                                                       // update 6 variable 4
-    uint64_t loot_master_;                                                                      // update 6 variable 6
-    uint32_t loot_mode_;                                                                        // update 6 variable 7 
+    std::atomic<uint16_t> difficulty_;                                                                       // update 6 variable 4
+    std::atomic<uint64_t> loot_master_;                                                                      // update 6 variable 6
+    std::atomic<uint32_t> loot_mode_;                                                                        // update 6 variable 7 
 };
 
 }}} // namespace swganh::object::group

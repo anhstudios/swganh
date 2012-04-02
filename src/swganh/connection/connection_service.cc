@@ -92,7 +92,7 @@ void ConnectionService::onStart() {
     Server::Start(listen_port_);
 
     active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_),
             end(session_map_),
@@ -120,7 +120,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
     shared_ptr<ConnectionClient> session = nullptr;
 
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
             session = make_shared<ConnectionClient>(this, kernel()->GetIoService(), endpoint);
@@ -133,7 +133,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
 
 bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
         session_map_.erase(session->remote_endpoint());
     }
 
@@ -162,7 +162,7 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
 
 shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint) {
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
 
         auto find_iter = session_map_.find(endpoint);
         if (find_iter != session_map_.end())
@@ -179,7 +179,7 @@ std::shared_ptr<ConnectionClient> ConnectionService::FindConnectionByPlayerId(ui
     shared_ptr<ConnectionClient> connection = nullptr;
 
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
 
         auto find_iter = find_if(
             begin(session_map_),

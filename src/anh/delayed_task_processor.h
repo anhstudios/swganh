@@ -3,11 +3,11 @@
 #define ANH_DELAYED_TASK_PROCESSOR_H_
 
 #include <memory>
+#include <mutex>
 #include <queue>
 
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/deadline_timer.hpp>
-#include <boost/thread/mutex.hpp>
 
 namespace anh {
 
@@ -33,7 +33,7 @@ namespace anh {
         void PushTask(boost::posix_time::time_duration delay, Task&& task)
         {
             {
-                boost::lock_guard<boost::mutex> lg(queue_mutex_);
+                std::lock_guard<std::mutex> lg(queue_mutex_);
                 queue_.push(std::make_shared<TaskInfo>(delay, move(task)));
             }
             
@@ -45,10 +45,10 @@ namespace anh {
         
         void Notify()
         {
-            boost::lock_guard<boost::mutex> lg(process_mutex_);
+            std::lock_guard<std::mutex> lg(process_mutex_);
             if (!processing_)
             {
-                boost::lock_guard<boost::mutex> lg(queue_mutex_);
+                std::lock_guard<std::mutex> lg(queue_mutex_);
                 if (!queue_.empty())
                 {
                     auto& task_info = queue_.front();
@@ -61,7 +61,7 @@ namespace anh {
                         }
                         
                         {
-                            boost::lock_guard<boost::mutex> lg(process_mutex_);
+                            std::lock_guard<std::mutex> lg(process_mutex_);
                             processing_ = false;
                         }
 
@@ -77,10 +77,10 @@ namespace anh {
         
         boost::asio::deadline_timer	timer_;
         
-        boost::mutex process_mutex_;
+        std::mutex process_mutex_;
         bool processing_;
         
-        boost::mutex queue_mutex_;	
+        std::mutex queue_mutex_;	
         std::queue<std::shared_ptr<TaskInfo>> queue_;
     };
     

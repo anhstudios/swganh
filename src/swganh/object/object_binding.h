@@ -50,27 +50,12 @@ void exportObject()
 		.add_property("position", &ObjectWrapper::GetPosition, &ObjectWrapper::SetPosition, "Gets and Sets the position of the object, using :class:`.Vec3`")
 		.add_property("heading", &ObjectWrapper::GetHeading, "Gets the heading as an int of the object")
 		.add_property("orientation", &ObjectWrapper::GetOrientation, &ObjectWrapper::SetOrientation, "Property to get or set the orientation of the object")
-		.add_property("template", make_function(
-								&ObjectWrapper::GetTemplate, return_value_policy<copy_const_reference>()
-							)
-							, &ObjectWrapper::SetTemplate, "the .iff file associated with this object"
-					)
-		.add_property("volume", &ObjectWrapper::GetVolume, &ObjectWrapper::SetVolume,
-						"Property to get or set the volume of the object (how much it can store)"
-					)
-		.add_property("stf_name_file", make_function(
-									&ObjectWrapper::GetStfNameFile, return_value_policy<copy_const_reference>()
-								), "gets the stf name file of the object"
-					)
-		.add_property("stf_name_string", make_function(
-									&ObjectWrapper::GetStfNameString, return_value_policy<copy_const_reference>()
-								), "gets the stf name file of the object"
-					)
+		.add_property("template", &ObjectWrapper::GetTemplate, &ObjectWrapper::SetTemplate, "the .iff file associated with this object"					)
+		.add_property("volume", &ObjectWrapper::GetVolume, &ObjectWrapper::SetVolume, "Property to get or set the volume of the object (how much it can store)")
+		.add_property("stf_name_file", &ObjectWrapper::GetStfNameFile, "gets the stf name file of the object")
+		.add_property("stf_name_string", &ObjectWrapper::GetStfNameString, "gets the stf name file of the object")
 		.def("stf_name", &ObjectWrapper::SetStfName, "sets the full stf name, takes stf_name_file and stf_name_string as parameters")
-		.add_property("custom_name", make_function(
-								&ObjectWrapper::GetCustomName, return_value_policy<copy_const_reference>()
-							), &ObjectWrapper::SetCustomName, "Property to get and set the custom name"
-					)
+		.add_property("custom_name", &ObjectWrapper::GetCustomName, &ObjectWrapper::SetCustomName, "Property to get and set the custom name")
 		.def("NotifyObservers", NotifyObserversFunc(&ObjectWrapper::NotifyObservers), "Notifies Observers of the passed in message")
         .def("Controller", &ObjectWrapper::GetController, "Get the :class:`.ObjectController` of the object")
 		;

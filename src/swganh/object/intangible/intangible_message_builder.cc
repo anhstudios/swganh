@@ -16,9 +16,9 @@ void IntangibleMessageBuilder::BuildStfDetailDelta(Intangible* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6, 1);
-        message.data.write(object->stf_detail_file_);
+        message.data.write(object->GetStfDetailFile());
         message.data.write<uint32_t>(0);
-        message.data.write(object->stf_detail_string_);
+        message.data.write(object->GetStfDetailString());
 
         object->AddDeltasUpdate(message);                
     }
@@ -27,8 +27,8 @@ boost::optional<BaselinesMessage> IntangibleMessageBuilder::BuildBaseline6(Intan
 {
     auto message = object->CreateBaselinesMessage(object->Object::VIEW_6, 1);
     message.data.write(0);
-    message.data.write(object->stf_detail_file_);
+    message.data.write(object->GetStfDetailFile());
     message.data.write(0);
-    message.data.write(object->stf_detail_string_);
+    message.data.write(object->GetStfDetailString());
     return boost::optional<BaselinesMessage>(std::move(message));
 }
