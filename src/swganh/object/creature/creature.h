@@ -408,7 +408,6 @@ public:
     void AddSkillCommand(std::pair<uint32_t, std::string> skill_command);
     void RemoveSkillCommand(std::string skill_command);
 
-
     // Posture
     void SetPosture(Posture posture);
     Posture GetPosture(void);
