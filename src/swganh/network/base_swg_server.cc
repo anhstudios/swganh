@@ -4,23 +4,22 @@
 #include "base_swg_server.h"
 
 #include "anh/logger.h"
-
-#include "anh/byte_buffer.h"
-
 #include "anh/network/soe/session.h"
 
 using namespace swganh::network;
-        
+
+using std::move;
+
 BaseSwgServer::BaseSwgServer(
     boost::asio::io_service& io_service)
     : anh::network::soe::Server(io_service)
 {}
 
 void BaseSwgServer::HandleMessage(
-    std::shared_ptr<anh::network::soe::Session> connection, 
-    std::shared_ptr<anh::ByteBuffer> message)
+    const std::shared_ptr<anh::network::soe::Session>& connection,
+    anh::ByteBuffer message)
 {
-    uint32_t message_type = message->peekAt<uint32_t>(message->read_position() + sizeof(uint16_t));
+    uint32_t message_type = message.peekAt<uint32_t>(message.read_position() + sizeof(uint16_t));
 
     auto find_iter = message_handlers_.find(message_type);
     if (find_iter == message_handlers_.end())
@@ -29,9 +28,10 @@ void BaseSwgServer::HandleMessage(
         return;
     }
 
-    try 
+    try
     {
-        find_iter->second(connection, message);
+        LOG_NET << "HandleMessage: "  << std::hex << message_type << " Client -> Server \n" << message;
+        find_iter->second(connection, move(message));
     }
     catch(std::exception& e)
     {
@@ -40,7 +40,7 @@ void BaseSwgServer::HandleMessage(
 }
 
 void BaseSwgServer::RegisterMessageHandler(
-    anh::HashString handler_id, 
+    anh::HashString handler_id,
     SwgMessageHandler&& handler)
 {
     if (HasHandler(handler_id))

@@ -28,9 +28,7 @@ using namespace network::soe;
 using namespace filters;
 using namespace std;
 
-void EncryptionFilter::operator()(
-    const std::shared_ptr<Session>& session,
-    const std::shared_ptr<ByteBuffer>& message)
+void EncryptionFilter::operator()(Session* session, ByteBuffer* message)
 {
     uint16_t offset = (message->peek<uint8_t>() == 0x00) ? 2 : 1;
             
@@ -40,7 +38,8 @@ void EncryptionFilter::operator()(
         session->crc_seed());
 }
 
-void EncryptionFilter::Encrypt_(char* data, uint32_t len, uint32_t seed) const {
+void EncryptionFilter::Encrypt_(char* data, uint32_t len, uint32_t seed) const
+{
     uint32_t blockCount = (len / 4);
     uint32_t byteCount = (len % 4);
 

@@ -54,9 +54,8 @@ ServiceDescription ServiceDirectory::service() const {
     return active_service_;
 }
 
-void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::string& version, bool create_galaxy) {    
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
-
+void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::string& version, bool create_galaxy) 
+{
     auto galaxy = datastore_->findGalaxyByName(galaxy_name);
     
     if (!galaxy) {
@@ -70,11 +69,10 @@ void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::str
         }
     }
 
+    std::lock_guard<std::mutex> lk(mutex_);
     active_galaxy_ = *galaxy;
 }
 void ServiceDirectory::updateGalaxyStatus() {
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
-
     auto services = getServiceSnapshot(active_galaxy_);
 
     if (services.empty()) {
@@ -100,18 +98,27 @@ void ServiceDirectory::updateGalaxyStatus() {
     } else {
         galaxy_status = service::Galaxy::LOADING;
     }
-    
-    active_galaxy_.status((Galaxy::StatusType)galaxy_status);
-    datastore_->saveGalaxyStatus(active_galaxy_.id(), active_galaxy_.status());
+
+    uint32_t galaxy_id;
+
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        active_galaxy_.status((Galaxy::StatusType)galaxy_status);
+        galaxy_id = active_galaxy_.id();
+    }
+
+    datastore_->saveGalaxyStatus(galaxy_id, galaxy_status);
         
     event_dispatcher_->Dispatch(make_shared<BaseEvent>("UpdateGalaxyStatus"));
 }
 
-bool ServiceDirectory::registerService(ServiceDescription& service) {
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
-            
+bool ServiceDirectory::registerService(ServiceDescription& service) {              
     if (datastore_->createService(active_galaxy_, service)) {
-        active_service_ = service;
+        {
+            std::lock_guard<std::mutex> lk(mutex_);
+            active_service_ = service;
+        }
+
         // trigger the event to let any listeners we have added the service
         event_dispatcher_->Dispatch(make_shared<anh::ValueEvent<ServiceDescription>>("RegisterService", service));
         return true;
@@ -121,8 +128,6 @@ bool ServiceDirectory::registerService(ServiceDescription& service) {
 }
 
 bool ServiceDirectory::removeService(const ServiceDescription& service) {
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
-
     if (datastore_->deleteServiceById(service.id())) {
         // trigger the event to let any listeners we have removed the service
         event_dispatcher_->Dispatch(make_shared<anh::ValueEvent<ServiceDescription>>("RemoveService", service));
@@ -133,25 +138,25 @@ bool ServiceDirectory::removeService(const ServiceDescription& service) {
 }
 
 void ServiceDirectory::updateService(const ServiceDescription& service) {    
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+    std::lock_guard<std::mutex> lk(mutex_);
     datastore_->saveService(service);
 }
 
 void ServiceDirectory::updateServiceStatus(int32_t new_status) {    
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+    std::lock_guard<std::mutex> lk(mutex_);
 
     active_service_.status(new_status);
     datastore_->saveService(active_service_);
 }
 
 bool ServiceDirectory::makePrimaryService(const ServiceDescription& service) {
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+    std::lock_guard<std::mutex> lk(mutex_);
     active_galaxy_.primary_id(service.id());
     return true;
 }
 
 void ServiceDirectory::pulse() {
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+    std::lock_guard<std::mutex> lk(mutex_);
 
     if (active_service_.id()) {
         std::string last_pulse = "";
@@ -172,13 +177,13 @@ void ServiceDirectory::pulse() {
 }
 
 GalaxyList ServiceDirectory::getGalaxySnapshot() {
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+    std::lock_guard<std::mutex> lk(mutex_);
 
     return datastore_->getGalaxyList();
 }
 
 ServiceList ServiceDirectory::getServiceSnapshot(const Galaxy& galaxy) {    
-    boost::lock_guard<boost::recursive_mutex> lk(mutex_);
+    std::lock_guard<std::mutex> lk(mutex_);
 
     return datastore_->getServiceList(galaxy.id());
 }

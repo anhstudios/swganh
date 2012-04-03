@@ -4,10 +4,9 @@
 
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
-
-#include <boost/thread/mutex.hpp>
 
 #include "anh/hash_string.h"
 
@@ -84,18 +83,18 @@ private:
 
     void HandleClientIdMsg_(
         const std::shared_ptr<ConnectionClient>& client, 
-        const swganh::messages::ClientIdMsg& message);
+        swganh::messages::ClientIdMsg message);
 
     void HandleCmdSceneReady_(
         const std::shared_ptr<ConnectionClient>& client, 
-        const swganh::messages::CmdSceneReady& message);
+        swganh::messages::CmdSceneReady message);
    
     typedef std::map<
         boost::asio::ip::udp::endpoint,
         std::shared_ptr<ConnectionClient>
     > SessionMap;
     
-    boost::mutex session_map_mutex_;
+    std::mutex session_map_mutex_;
     SessionMap session_map_;
 
     std::shared_ptr<PingServer> ping_server_;

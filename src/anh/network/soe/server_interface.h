@@ -20,7 +20,6 @@ namespace anh {
 namespace network {
 namespace soe {
 
-class Packet;
 class Session;
 class SessionManager;
 class Socket;
@@ -33,13 +32,13 @@ public:
     
     virtual void Shutdown(void) = 0;
 
-    virtual void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer) = 0;
+    virtual void SendTo(const boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer buffer) = 0;
 
     virtual std::shared_ptr<anh::ByteBuffer> AllocateBuffer() = 0;
     
     virtual void HandleMessage(
-        std::shared_ptr<Session> connection, 
-        std::shared_ptr<anh::ByteBuffer> message) = 0;
+        const std::shared_ptr<Session>& connection, 
+        anh::ByteBuffer message) = 0;
     
     virtual bool RemoveSession(std::shared_ptr<Session> session) = 0;
     

@@ -21,10 +21,10 @@
 #ifndef SWGANH_LOGIN_LOGIN_SERVICE_H_
 #define SWGANH_LOGIN_LOGIN_SERVICE_H_
 
+#include <mutex>
 #include <unordered_map>
 
 #include <boost/asio.hpp>
-#include <boost/thread/mutex.hpp>
 
 #include "anh/logger.h"
 
@@ -110,7 +110,7 @@ private:
 
     void subscribe();
     
-    void HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, const swganh::messages::LoginClientId& message);
+    void HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, swganh::messages::LoginClientId message);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
@@ -120,7 +120,7 @@ private:
         std::shared_ptr<LoginClient>
     > SessionMap;
     
-    boost::mutex session_map_mutex_;
+    std::mutex session_map_mutex_;
     SessionMap session_map_;
 
     swganh::character::CharacterService* character_service_;

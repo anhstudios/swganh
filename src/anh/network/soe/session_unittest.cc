@@ -92,7 +92,7 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
 		session->Update();
     }
 
-    vector<shared_ptr<ByteBuffer>> sent_messages = session->GetUnacknowledgedMessages();
+    auto sent_messages = session->GetUnacknowledgedMessages();
 
     // Expect the vector of sent messages to contain 3 elements
     EXPECT_EQ(3, sent_messages.size());

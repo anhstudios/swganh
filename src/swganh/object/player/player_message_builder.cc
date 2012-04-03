@@ -20,10 +20,12 @@ void PlayerMessageBuilder::BuildStatusBitmaskDelta(Player* object)
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 5);
 
-        message.data.write<uint32_t>(object->status_flags_.size());
+        auto status_flags = object->GetStatusFlags();
 
-        for_each(begin(object->status_flags_),
-            end(object->status_flags_),
+        message.data.write<uint32_t>(status_flags.size());
+
+        for_each(begin(status_flags),
+            end(status_flags),
             [&message] (vector<FlagBitmask>::value_type& flag)
         {
             flag.Serialize(message);
@@ -38,10 +40,12 @@ void PlayerMessageBuilder::BuildProfileBitmaskDelta(Player* object)
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 6);
         
-        message.data.write<uint32_t>(object->profile_flags_.size());
+        auto profile_flags = object->GetProfileFlags();
 
-        for_each(begin(object->profile_flags_),
-            end(object->profile_flags_),
+        message.data.write<uint32_t>(profile_flags.size());
+
+        for_each(begin(profile_flags),
+            end(profile_flags),
             [&message] (vector<FlagBitmask>::value_type& flag)
         {
             flag.Serialize(message);
@@ -95,18 +99,18 @@ void PlayerMessageBuilder::BuildXpDelta(Player* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_7, 0);
-        object->experience_.Serialize(message);
+        object->GetXp().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
     else
-        object->experience_.ClearDeltas();
+        object->GetXp().ClearDeltas();
 }
 void PlayerMessageBuilder::BuildWaypointDelta(Player* object)
 {
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_7, 1);
-        object->waypoints_.Serialize(message);
+        object->GetWaypoints().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
 }
@@ -155,11 +159,11 @@ void PlayerMessageBuilder::BuildQuestJournalDelta(Player* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 6);
-        object->quest_journal_.Serialize(message);
+        object->GetQuests().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
     else
-        object->quest_journal_.ClearDeltas();
+        object->GetQuests().ClearDeltas();
 }
 void PlayerMessageBuilder::BuildAbilityDelta(Player* object)
 {
@@ -206,11 +210,11 @@ void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 4);
-        object->draft_schematics_.Serialize(message);
+        object->GetDraftSchematics().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
     else
-        object->draft_schematics_.ClearDeltas();
+        object->GetDraftSchematics().ClearDeltas();
 }
 
 void PlayerMessageBuilder::BuildExperimentationPointsDelta(Player* object)
@@ -238,22 +242,22 @@ void PlayerMessageBuilder::BuildFriendsDelta(Player* object)
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 7);
-        object->friends_.Serialize(message);
+        object->GetFriends().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
     else
-        object->friends_.ClearDeltas();
+        object->GetFriends().ClearDeltas();
 }
 void PlayerMessageBuilder::BuildIgnoredDelta(Player* object)
 {
     if (object->HasObservers())
     {
         DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 8);
-        object->ignored_players_.Serialize(message);
+        object->GetIgnoredPlayers().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
     else
-        object->ignored_players_.ClearDeltas();
+        object->GetIgnoredPlayers().ClearDeltas();
 }
 void PlayerMessageBuilder::BuildLanguageDelta(Player* object)
 {
@@ -322,19 +326,23 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.append(object->Object::GetBaseline3().get().data);
     message.data.write<uint32_t>(0);                                    // Not Used
     
-    message.data.write<uint32_t>(object->status_flags_.size());
+    auto status_flags = object->GetStatusFlags();
 
-    for_each(begin(object->status_flags_),
-        end(object->status_flags_),
+    message.data.write<uint32_t>(status_flags.size());
+
+    for_each(begin(status_flags),
+        end(status_flags),
         [&message] (vector<FlagBitmask>::value_type& flag)
     {
         flag.Serialize(message);
     });
 
-    message.data.write<uint32_t>(object->profile_flags_.size());
+    auto profile_flags = object->GetProfileFlags();
 
-    for_each(begin(object->profile_flags_),
-        end(object->profile_flags_),
+    message.data.write<uint32_t>(profile_flags.size());
+
+    for_each(begin(profile_flags),
+        end(profile_flags),
         [&message] (vector<FlagBitmask>::value_type& flag)
     {
         flag.Serialize(message);
@@ -357,8 +365,8 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
 boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(Player* object)
 {
     auto message = object->CreateBaselinesMessage(Object::VIEW_8, 7);
-    object->experience_.Serialize(message);
-    object->waypoints_.Serialize(message);
+    object->GetXp().Serialize(message);
+    object->GetWaypoints().Serialize(message);
     
     message.data.write<uint32_t>(object->GetCurrentForcePower());
     message.data.write<uint32_t>(object->GetMaxForcePower());
@@ -369,7 +377,7 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Size
     message.data.write<uint32_t>(0); // Completed Force Sensetive Quest List Counter
     
-    object->quest_journal_.Serialize(message);
+    object->GetQuests().Serialize(message);
     
     return boost::optional<BaselinesMessage>(std::move(message));
 }
@@ -383,15 +391,15 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write<uint32_t>(object->GetCraftingStage());
     message.data.write<uint64_t>(object->GetNearestCraftingStation());
     
-    object->draft_schematics_.Serialize(message);
+    object->GetDraftSchematics().Serialize(message);
     
     
     message.data.write<uint32_t>(object->GetExperimentationPoints());
     message.data.write<uint32_t>(object->GetAccomplishmentCounter());
     
-    object->friends_.Serialize(message);
+    object->GetFriends().Serialize(message);
     
-    object->ignored_players_.Serialize(message);
+    object->GetIgnoredPlayers().Serialize(message);
     
     message.data.write<uint32_t>(object->GetLanguage());
     message.data.write<uint32_t>(object->GetCurrentStomach());

@@ -4,10 +4,10 @@
 
 #include <cstdint>
 #include <functional>
+#include <future>
 #include <memory>
 
 #include <boost/asio/strand.hpp>
-#include <boost/thread/future.hpp>
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>
@@ -29,9 +29,6 @@ namespace boost {
     namespace asio {
         class io_service;
     }  // namespace asio
-
-    template<class R>
-    class unique_future;
 }  // namespace boost
 
 namespace anh {
@@ -96,7 +93,7 @@ namespace anh {
         virtual CallbackId Subscribe(EventType type, EventHandlerCallback callback) = 0;
         virtual void Unsubscribe(EventType type, CallbackId identifier) = 0;
 
-        virtual boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event) = 0;
+        virtual std::future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event) = 0;
     };
 
     class EventDispatcher : public EventDispatcherInterface
@@ -107,7 +104,7 @@ namespace anh {
         CallbackId Subscribe(EventType type, EventHandlerCallback callback);
         void Unsubscribe(EventType type, CallbackId identifier);
 
-        boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event);
+        std::future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event);
 
     private:
         struct EventHandler

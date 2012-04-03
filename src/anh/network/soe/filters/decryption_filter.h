@@ -35,11 +35,10 @@ namespace soe {
 
 namespace filters {
 
-    class DecryptionFilter {
+    class DecryptionFilter
+    {
     public:
-        void operator()(
-            const std::shared_ptr<Session>& session,
-            const std::shared_ptr<ByteBuffer>& message) const;
+        void operator()(Session* session, ByteBuffer* message) const;
     
     private:
     	int Decrypt_(char* buffer, uint32_t len, uint32_t seed) const;

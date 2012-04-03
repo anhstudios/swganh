@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under GPL v2.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #ifndef SWGANH_MESSAGES_CONTROLLERS_SHOW_FLY_TEXT_H_
 #define SWGANH_MESSAGES_CONTROLLERS_SHOW_FLY_TEXT_H_
@@ -5,6 +7,8 @@
 #include <cstdint>
 #include <string>
 #include "anh/byte_buffer.h"
+
+#include "swganh/messages/obj_controller_message.h"
 
 namespace swganh {
 namespace messages {
@@ -18,10 +22,20 @@ namespace controllers {
         MIX
     };
 
-    class ShowFlyText
+    class ShowFlyText : public ObjControllerMessage
     {
     public:
-        static uint32_t header() { return 0x000001BD; }
+        explicit ShowFlyText(uint32_t controller_type = 0x0000000B)
+            : ObjControllerMessage(controller_type, message_type())
+        {}
+
+        explicit ShowFlyText(ObjControllerMessage controller_message)
+            : ObjControllerMessage(std::move(controller_message))
+        {
+            OnControllerDeserialize(std::move(data));
+        }
+
+        static uint32_t message_type() { return 0x000001BD; }
         
         uint64_t object_id;
         std::string stf_location; // string file without extention ie: combat_effects
@@ -31,7 +45,7 @@ namespace controllers {
         uint8_t blue;
         uint8_t display_flag; // when true text is displayed in chat history
 
-        void Serialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(anh::ByteBuffer& buffer) const
         {
             buffer.write(object_id);
             buffer.write(stf_location);
@@ -44,7 +58,7 @@ namespace controllers {
             buffer.write(display_flag);
         }
 
-        void Deserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer buffer)
         {
             object_id = buffer.read<uint64_t>();
             //buffer.read<uint16_t>();

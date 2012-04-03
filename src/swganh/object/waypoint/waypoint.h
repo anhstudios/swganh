@@ -1,6 +1,9 @@
 #ifndef SWGANH_OBJECT_WAYPOINT_WAYPOINT_H_
 #define SWGANH_OBJECT_WAYPOINT_WAYPOINT_H_
 
+#include <atomic>
+#include <mutex>
+
 #include <glm/glm.hpp>
 
 #include "swganh/object/object.h"
@@ -72,6 +75,10 @@ public:
     */
     void DeActivate();
 
+    uint64_t GetLocationNetworkId() const;
+
+    void SetLocationNetworkId(uint64_t location_network_id);
+
     /**
     * @brief Gets the string of the planet name as seen in the CRC Tables
     *   @returns string of the planet the waypoint is located
@@ -123,19 +130,21 @@ public:
     *   @param color_byte to set the waypoint
     */
     void SetColorByte(uint8_t color_byte);
+
 protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
 private:
 	friend class WaypointFactory;
-	friend class WaypointMessageBuilder;
 
-    uint32_t uses_;					//update 3
+    mutable std::mutex waypoint_mutex_;
+
+    std::atomic<uint32_t> uses_;					//update 3
     glm::vec3 coordinates_;			//update 3
-    uint8_t activated_flag_;		//update 3
-    uint64_t location_network_id_;	//update 3
+    std::atomic<uint8_t> activated_flag_;		//update 3
+    std::atomic<uint64_t> location_network_id_;	//update 3
     std::string planet_name_;		//update 3
     std::wstring name_;				//update 3
-    uint8_t not_used_;				//update 3
+    std::atomic<uint8_t> not_used_;				//update 3
     std::string color_;				//update 3
 };
 

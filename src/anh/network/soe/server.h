@@ -64,15 +64,21 @@ public:
     /**
      * @brief Sends a message on the wire to the target endpoint.
      */
-    void SendTo(const boost::asio::ip::udp::endpoint& endpoint, const std::shared_ptr<anh::ByteBuffer>& buffer);
-
-    void HandleMessage(std::shared_ptr<Packet> packet);
+    void SendTo(const boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer buffer);
 
     boost::asio::ip::udp::socket* socket();
     
     uint32_t max_receive_size();
 
     std::shared_ptr<ByteBuffer> AllocateBuffer();
+
+    /**
+     * Resolves a hostname to its ip.
+     *
+     * \param hostname The hostname to resolve.
+     * \return The ip the hostname resolves to.
+     */
+    std::string Resolve(const std::string& hostname);
     
 private:
     Server();

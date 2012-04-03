@@ -2,6 +2,7 @@
 #include "swganh/object/waypoint/waypoint.h"
 
 #include "swganh/object/waypoint/waypoint_message_builder.h"
+#include "anh/crc.h"
 
 using namespace std;
 using namespace swganh::messages;
@@ -27,46 +28,64 @@ Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, c
     activated ? activated_flag_ = ACTIVATED : activated_flag_ = DEACTIVATED;
 }
 
+uint32_t Waypoint::GetUses()
+{
+    return uses_;
+}
+
 void Waypoint::SetUses(uint32_t uses) 
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     uses_ = uses;
     WaypointMessageBuilder::BuildUsesDelta(this);
 }
 glm::vec3 Waypoint::GetCoordinates()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(waypoint_mutex_);
 	return coordinates_;
 }
 void Waypoint::SetCoordinates(const glm::vec3& coords)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-	coordinates_ = move(coords);
+    {
+	    std::lock_guard<std::mutex> lock(waypoint_mutex_);
+	    coordinates_ = move(coords);
+    }
+
 	WaypointMessageBuilder::BuildCoordinatesDelta(this);
 }
 void Waypoint::Activate()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     activated_flag_ = ACTIVATED;
     WaypointMessageBuilder::BuildActivateDelta(this);
 }
 void Waypoint::DeActivate()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
     activated_flag_ = DEACTIVATED;
     WaypointMessageBuilder::BuildActivateDelta(this);
 }
 
+uint64_t Waypoint::GetLocationNetworkId() const
+{
+    return location_network_id_;
+}
+
+void Waypoint::SetLocationNetworkId(uint64_t location_network_id)
+{
+    location_network_id_ = location_network_id;
+}
+
 void Waypoint::SetPlanet(const string& planet_name)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    planet_name_ = planet_name;
+    {
+	    std::lock_guard<std::mutex> lock(waypoint_mutex_);
+        planet_name_ = planet_name;
+    }
+
     WaypointMessageBuilder::BuildPlanetDelta(this);
 }
 
 uint8_t Waypoint::GetColorByte()
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
+	std::lock_guard<std::mutex> lock(waypoint_mutex_);
 
     if (color_.compare("blue") != 0)
         return 1;
@@ -89,8 +108,11 @@ uint8_t Waypoint::GetColorByte()
 
 void Waypoint::SetColor(const string& color)
 {
-	boost::lock_guard<boost::recursive_mutex> lock(mutex_);
-    color_ = color;
+    {
+	    std::lock_guard<std::mutex> lock(waypoint_mutex_);
+        color_ = color;
+    }
+
 	WaypointMessageBuilder::BuildColor(this);
 }
 

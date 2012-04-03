@@ -49,6 +49,7 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 using anh::network::soe::ServerInterface;
+using anh::network::soe::Session;
 using anh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
 using swganh::base::BaseService;
@@ -84,14 +85,14 @@ public:
         return scene_manager_;
     }
 
-    const shared_ptr<MovementManager>& GetMovementManager()
+    MovementManager* GetMovementManager()
     {
         if (!movement_manager_)
         {
             movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher());
         }
 
-        return movement_manager_;
+        return movement_manager_.get();
     }
 
     void PersistObject(uint64_t object_id)
@@ -281,21 +282,22 @@ public:
 
     void HandleObjControllerMessage(
         const shared_ptr<ConnectionClient>& client,
-        const ObjControllerMessage& message)
+        ObjControllerMessage message)
     {
-        auto find_iter = controller_handlers_.find(message.header);
+        auto find_iter = controller_handlers_.find(message.message_type);
 
         if (find_iter == controller_handlers_.end())
         {
-            throw std::runtime_error("No handler registered to process the given message.");
+            DLOG(warning) << "No handler registered to process the given message. " << message.data;
+            return;
         }
 
-        find_iter->second(client->GetController(), message);
+        find_iter->second(client->GetController(), move(message));
     }
 
     void HandleSelectCharacter(
         const shared_ptr<ConnectionClient>& client,
-        const SelectCharacter& message)
+        SelectCharacter message)
     {
         auto object = GetObjectById(message.character_id);
 
@@ -347,14 +349,20 @@ public:
 
 	void SendToAll(ByteBuffer message)
 	{
-		shared_ptr<Object> object;
-
-		for (Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<Object>>::iterator i = loaded_objects_.begin(); i != loaded_objects_.end(); ++i)
-		{
-			object = i->second;
-			object->GetController()->GetRemoteClient()->SendTo(message);
-		}
+		for_each(begin(controlled_objects_), end(controlled_objects_), [=] (const pair<uint64_t, shared_ptr<ObjectController>>& pair) {
+            auto controller = pair.second;
+            controller->GetRemoteClient()->SendTo(message);
+        });
 	}
+
+    void SendToAllInScene(ByteBuffer message, uint32_t scene_id)
+    {
+        for_each(begin(controlled_objects_), end(controlled_objects_), [=] (const pair<uint64_t, shared_ptr<ObjectController>>& pair) {
+            auto controller = pair.second;
+            if (controller->GetObject()->GetSceneId() == scene_id)
+                controller->GetRemoteClient()->SendTo(message);
+        });
+    }
 
 private:
     shared_ptr<ObjectManager> object_manager_;
@@ -409,11 +417,12 @@ void SimulationService::StopScene(const std::string& scene_label)
 void SimulationService::RegisterObjectFactories()
 {
         auto db_manager = kernel()->GetDatabaseManager();
-        impl_->GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager, this));
-        impl_->GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager, this));
-        impl_->GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager, this));
-        impl_->GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager, this));
-        impl_->GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager, this));
+        auto event_dispatcher =  kernel()->GetEventDispatcher();
+        impl_->GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager, this, event_dispatcher));
+        impl_->GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager, this, event_dispatcher));
+        impl_->GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager, this, event_dispatcher));
+        impl_->GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager, this, event_dispatcher));
+        impl_->GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager, this, event_dispatcher));
 }
 
 void SimulationService::PersistObject(uint64_t object_id)
@@ -472,6 +481,16 @@ void SimulationService::UnregisterControllerHandler(uint32_t handler_id)
     impl_->UnregisterControllerHandler(handler_id);
 }
 
+void SimulationService::SendToAll(ByteBuffer message)
+{
+    impl_->SendToAll(message);
+}
+
+void SimulationService::SendToAllInScene(ByteBuffer message, uint32_t scene_id)
+{
+    impl_->SendToAllInScene(message, scene_id);
+}
+
 void SimulationService::onStart()
 {
 	auto connection_service = kernel()->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
@@ -482,17 +501,9 @@ void SimulationService::onStart()
     connection_service->RegisterMessageHandler(
         &SimulationServiceImpl::HandleObjControllerMessage, impl_.get());
 
-    RegisterControllerHandler(0x00000071, [this] (
-        const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::ObjControllerMessage& message)
-    {
-        this->impl_->GetMovementManager()->HandleDataTransform(controller, message);
-    });
+    RegisterControllerHandler(
+        &MovementManager::HandleDataTransform, impl_->GetMovementManager());
 
-    RegisterControllerHandler(0x000000F1, [this] (
-        const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::ObjControllerMessage& message)
-    {
-        this->impl_->GetMovementManager()->HandleDataTransformWithParent(controller, message);
-    });
+    RegisterControllerHandler(
+        &MovementManager::HandleDataTransformWithParent, impl_->GetMovementManager());
 }

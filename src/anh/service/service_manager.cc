@@ -1,14 +1,14 @@
+// This file is part of SWGANH which is released under GPL v2.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "anh/service/service_manager.h"
+#include "service_manager.h"
 
 #include <algorithm>
 #include <string>
 #include <stdexcept>
 
-#include <boost/thread.hpp>
-
-#include "anh/service/service_directory_interface.h"
-#include "anh/service/service_description.h"
+#include "service_directory_interface.h"
+#include "service_description.h"
 
 #ifndef WIN32
 #include <boost/regex.hpp>

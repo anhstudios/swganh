@@ -16,11 +16,12 @@ The following is a complete list of the 3rd party dependencies that will need to
 - Sphinx
 - Mysql 5.1+
 - SWGANH Dependencies Package
+- SWGANH Game Client
 
 Visual Studio 11.0 Beta
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-When installing Visual Studio, be sure the version you are installing is at least the Beta version and *NOT* the Developer Preview. The Beta provides an opportunity to use the best tools Microsoft has to offer, so download the Ultimate edition.
+When installing Visual Studio, be sure the version you are installing is at least the Beta version and **NOT** the Developer Preview. The Beta provides an opportunity to use the best tools Microsoft has to offer, so download the Ultimate edition.
 
     http://www.microsoft.com/visualstudio/11/en-us/downloads#vs
 
@@ -44,7 +45,7 @@ While the Git Extensions package be sure to select the "msysgit" option to insta
 Python 3.2+
 ~~~~~~~~~~~
 
-Python is used for scripting as well as for generating the SWGANH documentation. After downloading and installing the latest Python 3.2 x86 binaries you will need to add the path to python to the system PATH. In a default Python 3.2 install this path is *C:/Python32*.
+Python is used for scripting as well as for generating the SWGANH documentation. After downloading and installing the latest Python 3.2 x86 binaries you will need to add the path to python to the system PATH. In a default Python 3.2 install this path is **C:/Python32**.
 
     http://python.org/download/
 
@@ -55,7 +56,7 @@ Python is used for scripting as well as for generating the SWGANH documentation.
 Sphinx
 ~~~~~~
 
-Sphinx is used to generate the SWGANH developer documentation. To install it on windows you need to first download and install the distribute package. Git Bash is recommend over the windows command prompt to run the following as it already comes with the *curl* utility.
+Sphinx is used to generate the SWGANH developer documentation. To install it on windows you need to first download and install the distribute package. Git Bash is recommend over the windows command prompt to run the following as it already comes with the **curl** utility.
 
 ::
 
@@ -75,34 +76,44 @@ Sphinx is used to generate the SWGANH developer documentation. To install it on 
     
         easy_install Sphinx
     
-You will also need to add the path to Sphinx to the system PATH. In a default Python 3.2 install this path is *C:/Python32/Scripts*.
+You will also need to add the path to Sphinx to the system PATH. In a default Python 3.2 install this path is **C:/Python32/Scripts**.
     
 Mysql 5.1+
 ~~~~~~~~~~
     
 Mysql is used for database storage in the ANH project. This guide only covers the simplest of installation instructions, other more in-depth topics on database management may be provided in another document in the future. 
 
-To start, download and install the latest Mysql Installer. Select the default developer installation which will provide you with all the tools needed to run and manage the SWGANH database. When the installation is complete you will need to add the path to mysql to the system PATH. In a default mysql installation this is *C:/Program Files/MySQL/MySQL Server 5.5/bin*.
+To start, download and install the latest Mysql Installer. Select the default developer installation which will provide you with all the tools needed to run and manage the SWGANH database. When the installation is complete you will need to add the path to mysql to the system PATH. In a default mysql installation this is **C:/Program Files/MySQL/MySQL Server 5.5/bin**.
 
-http://www.mysql.com/downloads/installer/
-
+    http://www.mysql.com/downloads/installer/
 
 Setting Up the SWGANH Environment
 ---------------------------------
 
-Now it's time to get the SWGANH environment set up and ready to begin building the source. First create a directory to hold all of your SWGANH related files. In this example we will use *C:/workspace* as our base directory.
+Now it's time to get the SWGANH environment set up and ready to begin building the source. First create a directory to hold all of your SWGANH related files. In this example we will use **C:/workspace** as our base directory.
 
 SWGANH Dependencies Package
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Windows environment gives us the opportunity to prebuild the libraries that you will need to build the SWGANH source. Download the latest Visual Studio 11 dependencies from the official SWGANH downloads page and unpack the contents into the workspace directory you created in the previous step. Afterwards, the directory structure should be as follows: *C:/workspace/vendor*
+The Windows environment gives us the opportunity to prebuild the libraries that you will need to build the SWGANH source. Download the latest Visual Studio 11 dependencies from the official SWGANH downloads page and unpack the contents into the workspace directory you created in the previous step. Afterwards, the directory structure should be as follows: **C:/workspace/vendor**
 
-https://github.com/anhstudios/swganh/downloads
+    https://github.com/anhstudios/swganh/downloads
+
+SWGANH Game Client
+~~~~~~~~~~~~~~~~~~
+
+The SWGANH Game Client can be installed from the unofficial SWGANH client installer.
+
+    https://github.com/downloads/anhstudios/swganh/anhclient_setup.exe
+    
+.. note::
+
+    The installer at this time requires a valid Star Wars Galaxies game client installation. In the future there will be an official installer that forgoes this requirement.
 
 Checkout and Build the Source
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Finally we get to the good stuff! Right click on the swganh workspace directory (e.g. *C:/workspace*) and choose "to open "Git Bash here". Next we'll use git to checkout the latest version of the source.
+Finally we get to the good stuff! Right click on the swganh workspace directory (e.g. **C:/workspace**) and choose "to open "Git Bash here". Next we'll use git to checkout the latest version of the source.
 
 ::
 
@@ -117,11 +128,16 @@ Run the following commands to generate the project and build the source.
     cmake -G "Visual Studio 11" ..
     cmake --build .
 
-This will kick off a full build of the project. The final output can be found at *C:/workspace/swganh/build/bin/Debug*.
+.. WARNING::
+    If you get an error about cmake not being able to find your PYTHON_LIBRARY. re-run the cmake -G command above adding in the following:
+    cmake -G "Visual Studio 11" -DPYTHON_LIBRARY="LOCATION_TO_PYTHON_DIR/libs" ..
+    where "LOCATION_TO_PYTHON_DIR" is where your Python32 folder resides. This seems to occur if Python is installed in Program Files x86..
+
+This will kick off a full build of the project. The final output can be found at **C:/workspace/swganh/build/bin/Debug**.
 
 .. note::
 
-    The Visual Studio solution can be found at *C:/workspace/swganh/build/swganh.sln*. Use this to modify and build changes to existing source files.
+    The Visual Studio solution can be found at **C:/workspace/swganh/build/swganh.sln**. Use this to modify and build changes to existing source files.
 
 .. note::
     
@@ -135,16 +151,16 @@ This will kick off a full build of the project. The final output can be found at
         
 .. note::
 
-    Documentation can be found in the *C:/workspace/swganh/build/docs/html/Debug* directory. Just open the *index.html* file in your favorite browser.
+    Documentation can be found in the **C:/workspace/swganh/build/docs/html/Debug** directory. Just open the **index.html** file in your favorite browser.
         
 Setting up the Database
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-A new database installation is needed before the server can be started for the first time. To install the server navigate to the *C:/workspace/swganh/data/sql* folder and copy the setup.cfg-example file to setup.cfg. Edit this file with the appropriate login information for the Mysql server you intend to use.
+A new database installation is needed before the server can be started for the first time. To install the server navigate to the **C:/workspace/swganh/data/sql** folder and copy the **setup.cfg-example** file to **setup.cfg**. Edit this file with the appropriate login information for the Mysql server you intend to use.
 
 .. NOTE::
 
-    Be sure to copy and *NOT* rename the setup.cfg-example file, lest you accidently try to remove it from the source on your next commit.
+    Be sure to copy and **NOT** rename the setup.cfg-example file, lest you accidently try to remove it from the source on your next commit.
     
 .. NOTE::
 
@@ -157,8 +173,18 @@ Configuring and Running the Server
 
 You are now entering the home stretch, all that's left is to update the SWGANH configuration and kick off the server.
 
-Open the *C:/workspace/swganh/build/bin/Debug/config/swganh.cfg* file and edit the following items. First update the mysql database connection information with the address and user you used to setup the database in the previous section.
+Open the **C:/workspace/swganh/build/bin/Debug/config/swganh.cfg** file and edit the following items. First you will need to update the **tre_config** setting with the path to the **live.cfg** file in your SWGANH Game Client directory.
 
-Next, set the address in the *service.connection* section to your public facing IP and then save and close the file.
+.. note::
 
-You can now kick off the server by running the swganh.exe at *C:/workspace/swganh/build/bin/Debug/swganh.exe*.
+    Some older SWGANH clients have this file named as **swg2uu_live.cfg**.
+    
+.. warning::
+
+    Be sure to specify the live.cfg file that is **inside** the SWGANH Game Client directory and **NOT** the one inside the official Star Wars Galaxies directory.
+
+Second, update the mysql database connection information with the address and user you used to setup the database in the previous section.
+
+Finally, set the address in the **service.connection** section to your public facing IP and then save and close the file.
+
+You can now kick off the server by running the swganh.exe at **C:/workspace/swganh/build/bin/Debug/swganh.exe**.

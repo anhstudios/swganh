@@ -1,5 +1,5 @@
 
-#include "swganh/simulation/movement_manager.h"
+#include "movement_manager.h"
 
 #include "anh/logger.h"
 
@@ -9,8 +9,6 @@
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
 
-#include "swganh/messages/controllers/data_transform.h"
-#include "swganh/messages/controllers/data_transform_with_parent.h"
 #include "swganh/messages/update_containment_message.h"
 #include "swganh/messages/update_transform_message.h"
 #include "swganh/messages/update_transform_with_parent_message.h"
@@ -30,46 +28,40 @@ MovementManager::MovementManager(anh::EventDispatcher* event_dispatcher)
 
 void MovementManager::HandleDataTransform(
     const shared_ptr<ObjectController>& controller, 
-    const ObjControllerMessage& message)
+    DataTransform message)
 {
-    DataTransform transform;
-    transform.Deserialize(message.data);
-    
     auto object = controller->GetObject();
     
-    if (!ValidateCounter_(object->GetObjectId(), transform.counter))
+    if (!ValidateCounter_(object->GetObjectId(), message.counter))
     {
         return;
     }
 
-    counter_map_[object->GetObjectId()] = transform.counter;
+    counter_map_[object->GetObjectId()] = message.counter;
     
-    object->SetPosition(transform.position);
-    object->SetOrientation(transform.orientation);
+    object->SetPosition(message.position);
+    object->SetOrientation(message.orientation);
     
     SendUpdateDataTransformMessage(object);
 }
 
 void MovementManager::HandleDataTransformWithParent(
     const std::shared_ptr<ObjectController>& controller, 
-    const ObjControllerMessage& message)
+    DataTransformWithParent message)
 {
     throw std::runtime_error("Cell movement currently disabled");
 
-    DataTransformWithParent transform;
-    transform.Deserialize(message.data);
-    
     auto object = controller->GetObject();
         
-    if (!ValidateCounter_(object->GetObjectId(), transform.counter))
+    if (!ValidateCounter_(object->GetObjectId(), message.counter))
     {
         return;
     }
 
-    counter_map_[object->GetObjectId()] = transform.counter;
+    counter_map_[object->GetObjectId()] = message.counter;
     
-    object->SetPosition(transform.position);
-    object->SetOrientation(transform.orientation);
+    object->SetPosition(message.position);
+    object->SetOrientation(message.orientation);
         
     SendUpdateDataTransformWithParentMessage(object);
 }
@@ -83,10 +75,8 @@ void MovementManager::SendDataTransformMessage(const shared_ptr<Object>& object,
     transform.orientation = object->GetOrientation();
     transform.position = object->GetPosition();
     transform.speed = creature->GetWalkingSpeed();
-    
-    ObjControllerMessage message(unknown, move(transform));
 
-    object->GetController()->Notify(message);
+    object->GetController()->Notify(transform);
 }
 
 void MovementManager::SendUpdateDataTransformMessage(const shared_ptr<Object>& object)
@@ -110,10 +100,8 @@ void MovementManager::SendDataTransformWithParentMessage(const shared_ptr<Object
     transform.orientation   = object->GetOrientation();
     transform.position      = object->GetPosition();
     transform.speed         = creature->GetWalkingSpeed();
-    
-    ObjControllerMessage message(unknown, move(transform));
 
-    object->GetController()->Notify(message);
+    object->GetController()->Notify(transform);
 }
 
 void MovementManager::SendUpdateDataTransformWithParentMessage(const shared_ptr<Object>& object)

@@ -3,8 +3,10 @@
 
 #include <cstdint>
 #include <array>
-#include <string>
+#include <atomic>
 #include <list>
+#include <mutex>
+#include <string>
 
 #include "anh/crc.h"
 
@@ -90,8 +92,9 @@ struct Name
         : name("")
     {}
 
-    Name(const std::string& value_)
+    Name(const std::string& value_, uint64_t id_ = 0)
         : name(value_)
+        , id(id_)
     {}
 
     ~Name()
@@ -106,12 +109,19 @@ struct Name
     {
         message.data.write<std::string>(name);
     }
+    bool Contains(const std::string& str) const
+    {
+        return name.find(str) != std::string::npos;
+    }
     bool operator==(const Name& other)
     {
         return name == other.name;
     }
 
     std::string name;
+    // id is here just for ease of use in persistence
+    // don't send over network
+    uint64_t id;
 };
 struct XpData
 {
@@ -259,73 +269,19 @@ struct DraftSchematicData
         return schematic_id == other.schematic_id;
     }
 };
-struct WaypointData
-{
-    WaypointData()
-        : object_id_(0)
-        , cell_id_(0)
-        , coordinates_(glm::vec3(0,0,0))
-        , location_network_id_(0)
-        , planet_name_("")
-        , name_(L"")
-        , color_(0)
-        , activated_flag_(0) {}
 
-    WaypointData(uint64_t object_id, uint32_t cell_id, glm::vec3 coords, uint64_t network_id, std::string planet_name,
-        std::wstring name, uint8_t color, uint8_t activated_flag)
-        : object_id_(object_id)
-        , cell_id_(cell_id)
-        , coordinates_(std::move(coords))
-        , location_network_id_(network_id)
-        , planet_name_(planet_name)
-        , name_(name)
-        , color_(color)
-        , activated_flag_(activated_flag) {}
-    
-    void Serialize(swganh::messages::BaselinesMessage& message)
-    {
-        message.data.write<uint64_t>(object_id_);
-        message.data.write<uint32_t>(cell_id_);
-        message.data.write<float>(coordinates_.x);
-        message.data.write<float>(coordinates_.y);
-        message.data.write<float>(coordinates_.z);
-        message.data.write<uint64_t>(location_network_id_);
-        message.data.write<uint32_t>(anh::memcrc(planet_name_));
-        message.data.write<std::wstring>(name_);
-        message.data.write<uint64_t>(object_id_);
-        message.data.write<uint8_t>(color_);
-        message.data.write<uint8_t>(activated_flag_);
-    }
+struct PlayerWaypointSerializer {
+    PlayerWaypointSerializer()
+        : waypoint(nullptr){}
+    PlayerWaypointSerializer(std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint_)
+        : waypoint(waypoint_){}
 
-    void Serialize(swganh::messages::DeltasMessage& message)
-    {
-        message.data.write<uint64_t>(object_id_);
-        message.data.write<uint32_t>(cell_id_);
-        message.data.write<float>(coordinates_.x);
-        message.data.write<float>(coordinates_.y);
-        message.data.write<float>(coordinates_.z);
-        message.data.write<uint64_t>(location_network_id_);
-        message.data.write<uint32_t>(anh::memcrc(planet_name_));
-        message.data.write<std::wstring>(name_);
-        message.data.write<uint64_t>(object_id_);
-        message.data.write<uint8_t>(color_);
-        message.data.write<uint8_t>(activated_flag_);
-    }
+    void Serialize(swganh::messages::BaselinesMessage& message);
 
-    bool operator==(const WaypointData& other)
-    {
-        return object_id_ == other.object_id_;
-    }
+    void Serialize(swganh::messages::DeltasMessage& message);
+    bool operator==(const PlayerWaypointSerializer& other);
 
-    uint64_t object_id_;
-    uint32_t cell_id_;
-    glm::vec3 coordinates_;
-    uint64_t location_network_id_;
-    std::string planet_name_;
-    std::wstring name_;
-    uint8_t not_used_;
-    uint8_t color_;
-    uint8_t activated_flag_;
+    std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint;
 };
 
 class PlayerMessageBuilder;
@@ -513,14 +469,14 @@ public:
     /**
      * @return The waypoints currently held by the player.
      */
-    swganh::messages::containers::NetworkMap<uint64_t, WaypointData> GetWaypoints() ;
+    swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer> GetWaypoints() ;
     
     /**
      * Adds a waypoint to the player.
      *
      * @param waypoint The waypoint to add to the player.
      */
-    void AddWaypoint(WaypointData waypoint);
+    void AddWaypoint(PlayerWaypointSerializer waypoint);
     
     /**
      * Removes a waypoint from the player.
@@ -534,7 +490,7 @@ public:
      *
      * @param waypoint The new waypoint data.
      */
-    void ModifyWaypoint(WaypointData waypoint);
+    void ModifyWaypoint(PlayerWaypointSerializer waypoint);
     
     /** 
      * Clears all waypoints.
@@ -749,7 +705,7 @@ public:
      *
      * @param friend_name Name of the friend to add.
      */ 
-    void AddFriend(std::string friend_name);
+    void AddFriend(std::string friend_name, uint64_t id);
     
     /**
      * Removes a friend from the friend list.
@@ -769,11 +725,19 @@ public:
     swganh::messages::containers::NetworkSortedVector<Name> GetIgnoredPlayers();
 
     /**
+     * Checks to see if the name is already being ignored
+     *
+     * @param name name to check
+     * @return bool true if the friend is found, false else
+     */
+    bool IsIgnored(std::string player_name);
+
+    /**
      * Adds a player to the ignored list.
      *
      * @param player_name Name of the player to ignore.
      */ 
-    void IgnorePlayer(std::string player_name);
+    void IgnorePlayer(std::string player_name, uint64_t player_id);
     
     /**
      * Removes a player from the ignored list.
@@ -901,41 +865,40 @@ protected:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9();
 
 private:
-    friend class PlayerMessageBuilder;
 	friend class PlayerFactory;
 
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
+    mutable std::mutex player_mutex_;
+
     std::array<FlagBitmask, 4> status_flags_;
     std::array<FlagBitmask, 4> profile_flags_;
     std::string profession_tag_;
-    uint32_t born_date_;
-    uint32_t total_playtime_;
-    uint8_t admin_tag_;
-    uint32_t region_;
+    std::atomic<uint32_t> born_date_;
+    std::atomic<uint32_t> total_playtime_;
+    std::atomic<uint8_t> admin_tag_;
+    std::atomic<uint32_t> region_;
     swganh::messages::containers::NetworkMap<std::string, XpData> experience_;
-    uint32_t experience_counter_;
-    swganh::messages::containers::NetworkMap<uint64_t, WaypointData> waypoints_;
-    uint32_t waypoint_counter_;
-    uint32_t current_force_power_;
-    uint32_t max_force_power_;
-    uint32_t current_force_sensitive_quests_;
-    uint32_t completed_force_sensitive_quests_;
+    swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer> waypoints_;
+    std::atomic<uint32_t> current_force_power_;
+    std::atomic<uint32_t> max_force_power_;
+    std::atomic<uint32_t> current_force_sensitive_quests_;
+    std::atomic<uint32_t> completed_force_sensitive_quests_;
     swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> quest_journal_;
-    uint32_t experimentation_flag_;
-    uint32_t crafting_stage_;
-    uint64_t nearest_crafting_station_;
+    std::atomic<uint32_t> experimentation_flag_;
+    std::atomic<uint32_t> crafting_stage_;
+    std::atomic<uint64_t> nearest_crafting_station_;
     swganh::messages::containers::NetworkSortedList<DraftSchematicData> draft_schematics_;
-    uint32_t experimentation_points_;
-    uint32_t accomplishment_counter_;
+    std::atomic<uint32_t> experimentation_points_;
     swganh::messages::containers::NetworkSortedVector<Name> friends_;
     swganh::messages::containers::NetworkSortedVector<Name> ignored_players_;
-    uint32_t language_;
-    uint32_t current_stomach_;
-    uint32_t max_stomach_;
-    uint32_t current_drink_;
-    uint32_t max_drink_;
-    uint32_t jedi_state_;
+    std::atomic<uint32_t> accomplishment_counter_;
+    std::atomic<uint32_t> language_;
+    std::atomic<uint32_t> current_stomach_;
+    std::atomic<uint32_t> max_stomach_;
+    std::atomic<uint32_t> current_drink_;
+    std::atomic<uint32_t> max_drink_;
+    std::atomic<uint32_t> jedi_state_;
     Gender gender_;
 };
 

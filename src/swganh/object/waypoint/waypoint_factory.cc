@@ -11,19 +11,62 @@
 
 #include "anh/database/database_manager.h"
 #include "swganh/object/waypoint/waypoint.h"
+#include "swganh/object/player/player_events.h"
+#include "swganh/object/player/player.h"
 #include "swganh/object/exception.h"
 #include "swganh/simulation/simulation_service.h"
+#include "swganh/messages/containers/network_map.h"
 
 using namespace std;
+using namespace anh;
 using namespace anh::database;
 using namespace swganh::object;
 using namespace swganh::object::waypoint;
 using namespace swganh::simulation;
+using namespace swganh::messages::containers;
 
 WaypointFactory::WaypointFactory(DatabaseManagerInterface* db_manager,
-                             SimulationService* simulation_service)
-    : ObjectFactory(db_manager, simulation_service)
+                             SimulationService* simulation_service, EventDispatcher* event_dispatcher)
+    : ObjectFactory(db_manager, simulation_service, event_dispatcher)
 {
+    RegisterEventHandlers();
+}
+void WaypointFactory::RegisterEventHandlers()
+{
+    event_dispatcher_->Subscribe("PersistWaypoints", [this] (shared_ptr<anh::EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<ValueEvent<NetworkMap<uint64_t, player::PlayerWaypointSerializer>>>(incoming_event);
+        auto waypoints = value_event->Get();
+        for(auto& waypoint_pair : waypoints)
+        {
+            PersistObject(waypoint_pair.second.waypoint);
+        };
+    });
+    event_dispatcher_->Subscribe("LoadWaypoints", [this] (shared_ptr<anh::EventInterface> incoming_event)
+    {
+        auto waypoint_event = static_pointer_cast<player::WaypointEvent>(incoming_event);
+
+    });
+}
+
+void WaypointFactory::LoadWaypoints(const shared_ptr<player::Player>& player, const shared_ptr<sql::ResultSet> result_set)
+{
+    while (result_set->next())
+    {
+        auto waypoint = make_shared<Waypoint>();
+        waypoint->object_id_ = result_set->getUInt64("id");
+        waypoint->coordinates_ = glm::vec3(
+            result_set->getDouble("x_position"),
+            result_set->getDouble("y_position"), 
+            result_set->getDouble("z_position"));
+        waypoint->location_network_id_ = result_set->getUInt("scene_id");
+        string custom_string = result_set->getString("custom_name");
+        waypoint->name_ = wstring(begin(custom_string), end(custom_string));
+        waypoint->activated_flag_ = result_set->getUInt("is_active");
+        waypoint->color_ = result_set->getUInt("color");
+            
+        player->AddWaypoint(move(player::PlayerWaypointSerializer(waypoint)));
+    }
 }
 
 void WaypointFactory::LoadTemplates()
@@ -133,11 +176,14 @@ shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
         ss << "CALL sp_GetWaypoint(" << object_id << ");";
         auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
         CreateBaseObjectFromStorage(waypoint, result);
-        
-        while (result->next())
+        if (statement->getMoreResults())
         {
-			waypoint->activated_flag_ = result->getUInt("is_active");
-            waypoint->color_ = result->getString("color");
+            result.reset(statement->getResultSet());
+            while (result->next())
+            {
+			    waypoint->activated_flag_ = result->getUInt("is_active");
+                waypoint->color_ = result->getString("color");
+            }
         }
     }
     catch(sql::SQLException &e)

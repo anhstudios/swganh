@@ -63,11 +63,13 @@ ConnectionService::ConnectionService(
 }
 
 ServiceDescription ConnectionService::GetServiceDescription() {
+    auto listen_address = Resolve(listen_address_);
+
     ServiceDescription service_description(
         "ANH Connection Service",
         "connection",
         "0.1",
-        listen_address(),
+        listen_address,
         0,
         listen_port(),
         ping_port_);
@@ -90,7 +92,7 @@ void ConnectionService::onStart() {
     Server::Start(listen_port_);
 
     active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_),
             end(session_map_),
@@ -118,7 +120,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
     shared_ptr<ConnectionClient> session = nullptr;
 
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
             session = make_shared<ConnectionClient>(this, kernel()->GetIoService(), endpoint);
@@ -131,7 +133,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
 
 bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
         session_map_.erase(session->remote_endpoint());
     }
 
@@ -160,7 +162,7 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
 
 shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint) {
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
 
         auto find_iter = session_map_.find(endpoint);
         if (find_iter != session_map_.end())
@@ -177,7 +179,7 @@ std::shared_ptr<ConnectionClient> ConnectionService::FindConnectionByPlayerId(ui
     shared_ptr<ConnectionClient> connection = nullptr;
 
     {
-        boost::lock_guard<boost::mutex> lg(session_map_mutex_);
+        std::lock_guard<std::mutex> lg(session_map_mutex_);
 
         auto find_iter = find_if(
             begin(session_map_),
@@ -218,7 +220,10 @@ void ConnectionService::RemoveClientTimerHandler_(
     }
 }
 
-void ConnectionService::HandleCmdSceneReady_(const std::shared_ptr<ConnectionClient>& client, const CmdSceneReady& message) {
+void ConnectionService::HandleCmdSceneReady_(
+    const shared_ptr<ConnectionClient>& client, 
+    CmdSceneReady message)
+{
     LOG(warning) << "Handling CmdSceneReady";
 
     client->SendTo(CmdSceneReady());
@@ -229,7 +234,10 @@ void ConnectionService::HandleCmdSceneReady_(const std::shared_ptr<ConnectionCli
         make_shared<ValueEvent<shared_ptr<Object>>>("ObjectReadyEvent", object));
 }
 
-void ConnectionService::HandleClientIdMsg_(const std::shared_ptr<ConnectionClient>& client, const ClientIdMsg& message) {
+void ConnectionService::HandleClientIdMsg_(
+    const shared_ptr<ConnectionClient>& client, 
+    ClientIdMsg message)
+{
     LOG(warning) << "Handling ClientIdMsg";
 
     // get session key from login service

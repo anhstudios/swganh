@@ -1,8 +1,6 @@
-#include "swganh/connection/ping_server.h"
+#include "ping_server.h"
 
 #include <functional>
-
-#include <boost/thread/thread.hpp>
 
 #include "anh/logger.h"
 

@@ -21,6 +21,9 @@
 #ifndef SWGANH_OBJECT_GUILD_GUILD_H_
 #define SWGANH_OBJECT_GUILD_GUILD_H_
 
+#include <mutex>
+#include <sstream>
+
 #include "swganh/object/object.h"
 
 #include "swganh/messages/containers/network_list.h"
@@ -73,6 +76,7 @@ public:
 
     void AddGuildTag(uint32_t guild_id, std::string abbreviation);
     void RemoveGuildTag(uint32_t guild_id);
+    swganh::messages::containers::NetworkList<GuildTag> GetGuildList();
 
     virtual uint32_t GetType() const { return type; }
     const static uint32_t type = 0x444C4947;
@@ -82,8 +86,8 @@ public:
 
 private:
     friend class GuildFactory;
-    friend class GuildMessageBuilder;
 
+    mutable std::mutex guild_mutex_;
     swganh::messages::containers::NetworkList<GuildTag>     guild_list_;
 };
 

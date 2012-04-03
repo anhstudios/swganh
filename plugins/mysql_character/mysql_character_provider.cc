@@ -111,7 +111,7 @@ MysqlCharacterProvider::MysqlCharacterProvider(KernelInterface* kernel)
 	result_set.reset(statement->executeQuery());
 	while(result_set->next())
 	{
-		racially_inappropriate_.push_back(result_set->getString("name"));
+        racially_inappropriate_.push_back(result_set->getString("name"));
 	}
 
 	statement.reset(conn->prepareStatement("SELECT * FROM `name_developer`;"));	
@@ -234,10 +234,10 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
         // of the ' and - characters may be in the entire name, which must be between
         // 3 and 16 characters long.
         const wregex p(
-            L"(?!['-])" // confirm the first character is not ' or -
-            L"(?!(.*['-]){4,})" // Confirm that no more than 3 instances of ' or - appear
+            L"^(?!['-])" // confirm the first character is not ' or -
+            L"(?=([^'-]*['-]){0,3}[^'-]*$)" // Confirm that no more than 3 instances of ' or - appear
             L"([a-zA-Z][a-z'-]{2,15})"  // Firstname capture group: 3-16 chars must be a-zA-Z or ' or -
-            L"(\\s([a-zA-Z][a-z'-]{2,15}))?"  // Optional sirname group, same restrictions as sirname
+            L"(\\s([a-zA-Z][a-z'-]{2,15}))?$"  // Optional sirname group, same restrictions as sirname
         );
 
         wsmatch m;
@@ -428,12 +428,12 @@ std::tuple<bool, std::string> MysqlCharacterProvider::IsNameAllowed(std::string 
 
 	for(std::string restricted_name : fictionally_reserved_names_) {
 		if(regex_search(name, regex(restricted_name)))
-			return std::tuple<bool, std::string>(false, "name_decline_fictionally_reserved");
+			return std::tuple<bool, std::string>(false, "name_declined_fictionally_reserved");
 	}
 
 	for(std::string restricted_name : racially_inappropriate_) {
 		if(regex_search(name, regex(restricted_name)))
-			return std::tuple<bool, std::string>(false, "name_decline_racially_inappropriate");
+			return std::tuple<bool, std::string>(false, "name_declined_racially_inappropriate");
 	}
 
 	for(std::string restricted_name : developer_names_) {
