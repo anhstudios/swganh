@@ -146,10 +146,6 @@ if (NOT WIN32)
     find_package(TBB REQUIRED)
 endif()
 
-if (BUILD_DOCS)
-    set(IS_REQUIRED REQUIRED)
-endif()
-
 find_package(Boost 1.49.0 COMPONENTS date_time filesystem log log_setup program_options python3 regex system thread ${AdditionalBoostLibs} REQUIRED)
 find_package(Glm REQUIRED)
 find_package(GTest REQUIRED)
@@ -158,7 +154,6 @@ find_package(MysqlConnectorC REQUIRED)
 find_package(MysqlConnectorCpp REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(ZLib REQUIRED)
-find_package(Sphinx ${IS_REQUIRED})
 
 # make sure the source directory and the binary directory (where any generated
 # files will be found) are automatically searched for includes
@@ -174,6 +169,6 @@ if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
-if(SPHINX_FOUND)
-    add_subdirectory(data/docs)
+if(IS_DIRECTORY docs)
+    add_subdirectory(docs)
 endif()
