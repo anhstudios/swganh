@@ -22,7 +22,8 @@
 #define QUADTREE_H_
 
 #include "node.h"
-#include "rectangle.h"
+
+#include <glm/glm.hpp>
 
 namespace swganh {
 namespace object {
@@ -35,14 +36,15 @@ namespace quadtree
 class Quadtree
 {
 public:
-	Quadtree(uint32_t max_object_per_node = 1, uint32_t max_level = 6);
+	Quadtree(uint32_t max_object_per_node = 1, uint32_t max_level = 9);
 	~Quadtree(void);
 
 	void AddObject(std::shared_ptr<swganh::object::Object> obj);
 	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
 	void UpdateObject(std::shared_ptr<swganh::object::Object> obj);
 
-	std::vector<std::shared_ptr<swganh::object::Object>> Query(glm::vec2, Rectangle);
+	std::vector<std::shared_ptr<swganh::object::Object>> Query(glm::vec2 position, QueryBox query_box);
+
 private:
 	uint32_t max_objects_per_node_;
 	uint32_t max_level_;

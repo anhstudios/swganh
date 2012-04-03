@@ -25,6 +25,10 @@
 #include <memory>
 
 #include <boost/array.hpp>
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/box.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
 
 namespace swganh {
 namespace object {
@@ -34,9 +38,13 @@ namespace object {
 namespace quadtree
 {
 
+typedef boost::geometry::model::box< boost::geometry::model::d2::point_xy<double> > Region;
+typedef boost::geometry::model::polygon< boost::geometry::model::d2::point_xy<double> > QueryBox;
+typedef boost::geometry::model::d2::point_xy<double> Point;
+
 enum NodeQuadrant
 {
-	NW_QUADRANT,
+	NW_QUADRANT = 0,
 	NE_QUADRANT,
 	SW_QUADRANT,
 	SE_QUADRANT,
@@ -55,18 +63,29 @@ public:
 		LEAF
 	};
 
-	Node(NodeQuadrant quadrant, std::vector<std::shared_ptr<swganh::object::Object>> objects, uint32_t level);
+	Node(
+		NodeQuadrant quadrant, 
+		Region region,
+		uint32_t level,
+		uint32_t max_level
+		);
+
 	~Node(void);
 
+	void InsertObject(std::shared_ptr<swganh::object::Object> obj);
+	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
 	void Split();
 
 	const NodeQuadrant& GetQuadrant(void) { return quadrant_; }
 	const uint32_t& GetLevel(void) { return level_; }
 	const NodeState& GetState(void) { return state_; }
+	const Region& GetRegion(void) { return region_; }
 	const std::vector<std::shared_ptr<swganh::object::Object>>& GetObjects(void) { return objects_; }
 
 private:
+	Region region_;
 	uint32_t level_;
+	uint32_t max_level_;
 	NodeQuadrant quadrant_;
 	NodeState state_;
 	std::vector<std::shared_ptr<swganh::object::Object>> objects_;

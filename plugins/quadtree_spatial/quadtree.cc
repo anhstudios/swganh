@@ -29,7 +29,7 @@ namespace quadtree
 Quadtree::Quadtree(uint32_t max_objects_per_node, uint32_t max_level)
 	: max_objects_per_node_(max_objects_per_node)
 	, max_level_(max_level)
-	, root_node_(ROOT, std::vector<std::shared_ptr<swganh::object::Object>>(), 0)
+	, root_node_(ROOT, Region(Point(0.0f, 0.0f), Point(3000.0f, 3000.0f)), 0, max_level)
 {
 }
 
@@ -39,10 +39,12 @@ Quadtree::~Quadtree(void)
 
 void Quadtree::AddObject(shared_ptr<Object> obj)
 {
+	root_node_.InsertObject(obj);
 }
 
 void Quadtree::RemoveObject(shared_ptr<Object> obj)
 {
+	root_node_.RemoveObject(obj);
 }
 
 void Quadtree::UpdateObject(shared_ptr<Object> obj)
