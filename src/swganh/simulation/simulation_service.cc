@@ -283,7 +283,8 @@ public:
 
         if (find_iter == controller_handlers_.end())
         {
-            throw std::runtime_error("No handler registered to process the given message.");
+            DLOG(warning) << "No handler registered to process the given message. " << message.data;
+            return;
         }
 
         find_iter->second(client->GetController(), move(message));
