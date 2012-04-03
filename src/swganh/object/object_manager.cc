@@ -29,6 +29,14 @@ void ObjectManager::UnregisterObjectType(uint32_t object_type)
 
     factories_.erase(find_iter);
 }
+void ObjectManager::RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder)
+{
+    auto find_iter = message_builders_.find(object_type);
+    if (find_iter != end(message_builders_))
+        throw InvalidObjectType("A message builder for the specified type already exists.");
+    
+    message_builders_.insert(make_pair(object_type, message_builder));
+}
 
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id)
 {

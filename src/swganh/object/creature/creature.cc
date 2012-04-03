@@ -70,7 +70,8 @@ uint32_t Creature::GetType() const
 void Creature::SetBankCredits(uint32_t bank_credits)
 {
     bank_credits_ = bank_credits;
-    CreatureMessageBuilder::BuildBankCreditsDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Bank",shared_from_this()));
 }
 
 uint32_t Creature::GetBankCredits(void)
@@ -81,7 +82,8 @@ uint32_t Creature::GetBankCredits(void)
 void Creature::SetCashCredits(uint32_t cash_credits)
 {
     cash_credits = cash_credits;
-    CreatureMessageBuilder::BuildCashCreditsDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Cash",shared_from_this()));
 }
 
 uint32_t Creature::GetCashCredits(void)
@@ -91,41 +93,38 @@ uint32_t Creature::GetCashCredits(void)
 
 void Creature::SetStatBase(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        stat_base_list_.Update(stat_index, Stat(value));
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    stat_base_list_.Update(stat_index, Stat(value));
 
-    CreatureMessageBuilder::BuildStatBaseDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatBase",shared_from_this()));
 }
 
 void Creature::AddStatBase(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        uint32_t new_stat = stat_base_list_[stat_index].value + value;
-        stat_base_list_.Update(stat_index, Stat(new_stat));
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    uint32_t new_stat = stat_base_list_[stat_index].value + value;
+    stat_base_list_.Update(stat_index, Stat(new_stat));
 
-    CreatureMessageBuilder::BuildStatBaseDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatBase",shared_from_this()));
 }
 
 void Creature::DeductStatBase(StatIndex stat_index, int32_t value)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    int32_t current = stat_base_list_[stat_index].value;
+    if (current > value)
     {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        int32_t current = stat_base_list_[stat_index].value;
-        if (current > value)
-        {
-            stat_base_list_.Update(stat_index, Stat(current - value));
-        }
-        else
-        {
-            stat_base_list_.Update(stat_index, Stat(0));
-        }
+        stat_base_list_.Update(stat_index, Stat(current - value));
+    }
+    else
+    {
+        stat_base_list_.Update(stat_index, Stat(0));
     }
 
-    CreatureMessageBuilder::BuildStatBaseDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatBase",shared_from_this()));
 }
 
 NetworkArray<Stat> Creature::GetBaseStats(void)
@@ -142,31 +141,29 @@ int32_t Creature::GetStatBase(StatIndex stat_index)
 
 void Creature::AddSkill(std::string skill)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        skills_.Add(Skill(skill));
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    skills_.Add(Skill(skill));
 
-    CreatureMessageBuilder::BuildSkillDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Skill",shared_from_this()));
 }
 
 void Creature::RemoveSkill(std::string skill)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    auto iter = std::find_if(begin(skills_), end(skills_), [=](const Skill& other_skill){
+        return (skill == other_skill.name);
+    });
+
+    if(iter == end(skills_))
     {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        auto iter = std::find_if(begin(skills_), end(skills_), [=](const Skill& other_skill){
-            return (skill == other_skill.name);
-        });
-
-        if(iter == end(skills_))
-        {
-            return;
-        }
-
-        skills_.Remove(iter);
+        return;
     }
 
-    CreatureMessageBuilder::BuildSkillDelta(this);
+    skills_.Remove(iter);
+
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Skill",shared_from_this()));
 }
 
 NetworkList<Skill> Creature::GetSkills(void)
@@ -228,8 +225,8 @@ void  Creature::RemoveSkillCommand(std::string skill_command)
 void Creature::SetPosture(Posture posture)
 {
     posture_ = posture;
-    CreatureMessageBuilder::BuildPostureDelta(this);
-	CreatureMessageBuilder::BuildPostureUpdate(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Posture",shared_from_this()));
 }
 
 Posture Creature::GetPosture(void)
@@ -250,7 +247,8 @@ bool Creature::IsIncapacitated()
 void Creature::SetFactionRank(uint8_t faction_rank)
 {
     faction_rank_ = faction_rank;
-    CreatureMessageBuilder::BuildFactionRankDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::FactionRank",shared_from_this()));
 }
 
 uint8_t Creature::GetFactionRank(void)
@@ -261,7 +259,8 @@ uint8_t Creature::GetFactionRank(void)
 void Creature::SetOwnerId(uint64_t owner_id)
 {
     owner_id_ = owner_id;
-    CreatureMessageBuilder::BuildOwnerIdDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::OwnerId",shared_from_this()));
 }
 
 uint64_t Creature::GetOwnerId(void)
@@ -271,12 +270,11 @@ uint64_t Creature::GetOwnerId(void)
 
 void Creature::SetScale(float scale)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        scale_ = scale;
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    scale_ = scale;
 
-    CreatureMessageBuilder::BuildScaleDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Scale",shared_from_this()));
 }
 
 float Creature::GetScale(void)
@@ -288,12 +286,15 @@ float Creature::GetScale(void)
 void Creature::SetBattleFatigue(uint32_t battle_fatigue)
 {
     battle_fatigue_ = battle_fatigue;
-    CreatureMessageBuilder::BuildBattleFatigueDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::BattleFatigue",shared_from_this()));
 }
 void Creature::AddBattleFatigue(uint32_t battle_fatigue)
 {
     battle_fatigue += battle_fatigue;
-    CreatureMessageBuilder::BuildBattleFatigueDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::BattleFatigue",shared_from_this()));
 }
 uint32_t Creature::GetBattleFatigue(void)
 {
@@ -303,7 +304,8 @@ uint32_t Creature::GetBattleFatigue(void)
 void Creature::SetStateBitmask(uint64_t state_bitmask)
 {
     state_bitmask_ = state_bitmask;
-    CreatureMessageBuilder::BuildStateBitmaskDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StateBitmask",shared_from_this()));
 }
 
 uint64_t Creature::GetStateBitmask(void)
@@ -329,41 +331,38 @@ void Creature::ToggleStateBitmask(uint64_t state_bitmask)
 
 void Creature::SetStatWound(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        stat_wound_list_.Update(stat_index, Stat(value));
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    stat_wound_list_.Update(stat_index, Stat(value));
 
-    CreatureMessageBuilder::BuildStatWoundDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatWound",shared_from_this()));
 }
 
 void Creature::AddStatWound(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        int32_t new_stat = stat_wound_list_[stat_index].value + value;
-        stat_wound_list_.Update(stat_index, Stat(new_stat));
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    int32_t new_stat = stat_wound_list_[stat_index].value + value;
+    stat_wound_list_.Update(stat_index, Stat(new_stat));
 
-    CreatureMessageBuilder::BuildStatWoundDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatWound",shared_from_this()));
 }
 
 void Creature::DeductStatWound(StatIndex stat_index, int32_t value)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    int32_t current = stat_wound_list_[stat_index].value;
+    if (current > value)
     {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        int32_t current = stat_wound_list_[stat_index].value;
-        if (current > value)
-        {
-            stat_wound_list_.Update(stat_index, Stat(current - value));
-        }
-        else
-        {
-            stat_wound_list_.Update(stat_index, Stat(0));
-        }
+        stat_wound_list_.Update(stat_index, Stat(current - value));
+    }
+    else
+    {
+        stat_wound_list_.Update(stat_index, Stat(0));
     }
 
-    CreatureMessageBuilder::BuildStatWoundDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatWound",shared_from_this()));
 }
 
 NetworkArray<Stat> Creature::GetStatWounds(void)
@@ -380,12 +379,11 @@ int32_t Creature::GetStatWound(StatIndex stat_index)
 
 void Creature::SetAccelerationMultiplierBase(float acceleration_multiplier_base)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        acceleration_multiplier_base_ = acceleration_multiplier_base;
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    acceleration_multiplier_base_ = acceleration_multiplier_base;
 
-    CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::AccelerationMultiplierBase",shared_from_this()));
 }
 
 float Creature::GetAccelerationMultiplierBase(void)
@@ -396,12 +394,11 @@ float Creature::GetAccelerationMultiplierBase(void)
 
 void Creature::SetAccelerationMultiplierModifier(float acceleration_multiplier_modifier)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        acceleration_multiplier_modifier_ = acceleration_multiplier_modifier;
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    acceleration_multiplier_modifier_ = acceleration_multiplier_modifier;
 
-    CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::AccelerationMultiplierModifier",shared_from_this()));
 }
 
 float Creature::GetAccelerationMultiplierModifier(void)
@@ -412,41 +409,38 @@ float Creature::GetAccelerationMultiplierModifier(void)
 
 void Creature::SetStatEncumberance(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        stat_encumberance_list_.Update(stat_index, Stat(value));
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    stat_encumberance_list_.Update(stat_index, Stat(value));
 
-    CreatureMessageBuilder::BuildStatEncumberanceDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatEncumberance",shared_from_this()));
 }
 
 void Creature::AddStatEncumberance(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        int32_t new_stat = stat_encumberance_list_[stat_index].value + value;
-        stat_encumberance_list_.Update(stat_index, Stat(new_stat));
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    int32_t new_stat = stat_encumberance_list_[stat_index].value + value;
+    stat_encumberance_list_.Update(stat_index, Stat(new_stat));
 
-    CreatureMessageBuilder::BuildStatEncumberanceDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatEncumberance",shared_from_this()));
 }
 
 void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    int32_t current = stat_encumberance_list_[stat_index].value;
+    if (current > value)
     {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        int32_t current = stat_encumberance_list_[stat_index].value;
-        if (current > value)
-        {
-            stat_encumberance_list_.Update(stat_index, Stat(current - value));
-        }
-        else
-        {
-            stat_encumberance_list_.Update(stat_index, Stat(0));
-        }
+        stat_encumberance_list_.Update(stat_index, Stat(current - value));
+    }
+    else
+    {
+        stat_encumberance_list_.Update(stat_index, Stat(0));
     }
 
-    CreatureMessageBuilder::BuildStatEncumberanceDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatEncumberance",shared_from_this()));
 }
 
 NetworkArray<Stat> Creature::GetStatEncumberances(void)
@@ -463,51 +457,47 @@ int32_t Creature::GetStatEncumberance(StatIndex stat_index)
 
 void Creature::AddSkillMod(SkillMod mod)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        skill_mod_list_.Add(mod.identifier, mod);
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    skill_mod_list_.Add(mod.identifier, mod);
 
-    CreatureMessageBuilder::BuildSkillModDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::SkillMod",shared_from_this()));
 }
 
 void Creature::RemoveSkillMod(std::string identifier)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    auto iter = std::find_if(begin(skill_mod_list_), end(skill_mod_list_), [=](std::pair<std::string, SkillMod> pair)->bool {
+        return (identifier == pair.first);
+    });
+
+    if(iter != end(skill_mod_list_))
     {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        auto iter = std::find_if(begin(skill_mod_list_), end(skill_mod_list_), [=](std::pair<std::string, SkillMod> pair)->bool {
-            return (identifier == pair.first);
-        });
-
-        if(iter != end(skill_mod_list_))
-        {
-            return;
-        }
-
-        skill_mod_list_.Remove(iter);
+        return;
     }
 
-    CreatureMessageBuilder::BuildSkillModDelta(this);
+    skill_mod_list_.Remove(iter);
+
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::SkillMod",shared_from_this()));
 }
 
 void Creature::SetSkillMod(SkillMod mod)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        skill_mod_list_.Update(mod.identifier, mod);
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    skill_mod_list_.Update(mod.identifier, mod);
 
-    CreatureMessageBuilder::BuildSkillModDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::SkillMod",shared_from_this()));
 }
 
 void Creature::ClearSkillMods(void)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        skill_mod_list_.Clear();
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    skill_mod_list_.Clear();
 
-    CreatureMessageBuilder::BuildSkillModDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::SkillMod",shared_from_this()));
 }
 
 NetworkMap<std::string, SkillMod> Creature::GetSkillMods(void)
@@ -531,12 +521,11 @@ SkillMod Creature::GetSkillMod(std::string identifier)
 
 void Creature::SetSpeedMultiplierBase(float speed_multiplier_base)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        speed_multiplier_base_ = speed_multiplier_base;
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    speed_multiplier_base_ = speed_multiplier_base;
 
-    CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::SpeedMultiplierBase",shared_from_this()));
 }
 
 float Creature::GetSpeedMultiplierBase(void)
@@ -547,12 +536,11 @@ float Creature::GetSpeedMultiplierBase(void)
 
 void Creature::SetSpeedMultiplierModifier(float speed_multiplier_modifier)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        speed_multiplier_modifier_ = speed_multiplier_modifier;
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    speed_multiplier_modifier_ = speed_multiplier_modifier;
 
-    CreatureMessageBuilder::BuildSpeedMultiplierModifierDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::SpeedMultiplierModifer",shared_from_this()));
 }
 
 float Creature::GetSpeedMultiplierModifier(void)
@@ -564,7 +552,9 @@ float Creature::GetSpeedMultiplierModifier(void)
 void Creature::SetListenToId(uint64_t listen_to_id)
 {
     listen_to_id_ = listen_to_id;
-    CreatureMessageBuilder::BuildListenToIdDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::ListenToId",shared_from_this()));
 }
 
 uint64_t Creature::GetListenToId(void)
@@ -574,12 +564,11 @@ uint64_t Creature::GetListenToId(void)
 
 void Creature::SetRunSpeed(float run_speed)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        run_speed_ = run_speed;
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    run_speed_ = run_speed;
 
-    CreatureMessageBuilder::BuildRunSpeedDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::RunSpeed",shared_from_this()));
 }
 
 float Creature::GetRunSpeed(void)
@@ -590,12 +579,11 @@ float Creature::GetRunSpeed(void)
 
 void Creature::SetSlopeModifierAngle(float slope_modifier_angle)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        slope_modifier_angle_ = slope_modifier_angle;
-    }
-
-    CreatureMessageBuilder::BuildSlopeModifierAngleDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    slope_modifier_angle_ = slope_modifier_angle;
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::SlopeModifierAngle",shared_from_this()));
 }
 
 float Creature::GetSlopeModifierAngle(void)
@@ -606,12 +594,11 @@ float Creature::GetSlopeModifierAngle(void)
 
 void Creature::SetSlopeModifierPercent(float slope_modifier_percent)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        slope_modifier_percent_ = slope_modifier_percent;
-    }
-
-    CreatureMessageBuilder::BuildSlopeModifierPercentDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    slope_modifier_percent_ = slope_modifier_percent;
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::SlopeModifierPercent",shared_from_this()));
 }
 
 float Creature::GetSlopeModifierPercent(void)
@@ -622,12 +609,11 @@ float Creature::GetSlopeModifierPercent(void)
 
 void Creature::SetTurnRadius(float turn_radius)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        turn_radius_ = turn_radius;
-    }
-
-    CreatureMessageBuilder::BuildTurnRadiusDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    turn_radius_ = turn_radius;
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::TurnRadius",shared_from_this()));
 }
 
 float Creature::GetTurnRadius(void)
@@ -638,12 +624,11 @@ float Creature::GetTurnRadius(void)
 
 void Creature::SetWalkingSpeed(float walking_speed)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        walking_speed_ = walking_speed;
-    }
-
-    CreatureMessageBuilder::BuildWalkingSpeedDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    walking_speed_ = walking_speed;
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::WalkingSpeed",shared_from_this()));
 }
 
 float Creature::GetWalkingSpeed(void)
@@ -654,12 +639,11 @@ float Creature::GetWalkingSpeed(void)
 
 void Creature::SetWaterModifierPercent(float water_modifier_percent)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        water_modifier_percent_ = water_modifier_percent;
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    water_modifier_percent_ = water_modifier_percent;
 
-    CreatureMessageBuilder::BuildWaterModifierPrecentDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::WaterModifierPercent",shared_from_this()));
 }
 
 float Creature::GetWaterModifierPercent(void)
@@ -670,37 +654,35 @@ float Creature::GetWaterModifierPercent(void)
 
 void Creature::AddMissionCriticalObject(MissionCriticalObject& object)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        mission_critical_object_list_.Add(object);
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    mission_critical_object_list_.Add(object);
 
-    CreatureMessageBuilder::BuildMissionCriticalObjectDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::MissionCriticalObject",shared_from_this()));
 }
 
 void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id)
 {
-    {
     std::lock_guard<std::mutex> lock(creature_mutex_);
-        auto iter = std::find_if(begin(mission_critical_object_list_), end(mission_critical_object_list_), [=](const MissionCriticalObject& obj)->bool {
-            if(mission_owner != obj.mission_owner_id_)
-                return false;
+    auto iter = std::find_if(begin(mission_critical_object_list_), end(mission_critical_object_list_), [=](const MissionCriticalObject& obj)->bool {
+        if(mission_owner != obj.mission_owner_id_)
+            return false;
 
-            if(object_id != obj.critical_object_id_)
-                return false;
+        if(object_id != obj.critical_object_id_)
+            return false;
 
-            return true;
-        });
+        return true;
+    });
 
-        if(iter != end(mission_critical_object_list_))
-        {
-            return;
-        }
-
-        mission_critical_object_list_.Remove(iter);
+    if(iter != end(mission_critical_object_list_))
+    {
+        return;
     }
 
-    CreatureMessageBuilder::BuildMissionCriticalObjectDelta(this);
+    mission_critical_object_list_.Remove(iter);
+
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::MissionCriticalObject",shared_from_this()));
 }
 
 MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner)
@@ -731,7 +713,9 @@ NetworkList<MissionCriticalObject> Creature::GetMissionCriticalObjects(void)
 void Creature::SetCombatLevel(uint16_t combat_level)
 {
     combat_level_ = combat_level;
-    CreatureMessageBuilder::BuildCombatLevelDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::CombatLevel",shared_from_this()));
 }
 
 uint16_t Creature::GetCombatLevel(void)
@@ -741,12 +725,11 @@ uint16_t Creature::GetCombatLevel(void)
 
 void Creature::SetAnimation(std::string animation)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        animation_ = animation;
-    }
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    animation_ = animation;
 
-    CreatureMessageBuilder::BuildAnimationDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Animation",shared_from_this()));
 }
 
 std::string Creature::GetAnimation(void)
@@ -757,12 +740,11 @@ std::string Creature::GetAnimation(void)
 
 void Creature::SetMoodAnimation(std::string mood_animation)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        mood_animation_ = mood_animation;
-    }
-
-    CreatureMessageBuilder::BuildMoodAnimationDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    mood_animation_ = mood_animation;
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::MoodAnimation",shared_from_this()));
 }
 
 std::string Creature::GetMoodAnimation(void)
@@ -774,7 +756,9 @@ std::string Creature::GetMoodAnimation(void)
 void Creature::SetWeaponId(uint64_t weapon_id)
 {
     weapon_id_ = weapon_id;
-    CreatureMessageBuilder::BuildWeaponIdDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::WeaponId",shared_from_this()));
 }
 
 uint64_t Creature::GetWeaponId(void)
@@ -785,7 +769,9 @@ uint64_t Creature::GetWeaponId(void)
 void Creature::SetGroupId(uint64_t group_id)
 {
     group_id_ = group_id;
-    CreatureMessageBuilder::BuildGroupIdDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::GroupId",shared_from_this()));
 }
 
 uint64_t Creature::GetGroupId(void)
@@ -796,7 +782,9 @@ uint64_t Creature::GetGroupId(void)
 void Creature::SetInviteSenderId(uint64_t invite_sender_id)
 {
     invite_sender_id_ = invite_sender_id;
-    CreatureMessageBuilder::BuildInviteSenderIdDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::InviteSenderId",shared_from_this()));
 }
 
 uint64_t Creature::GetInviteSenderId(void)
@@ -822,7 +810,9 @@ uint64_t Creature::GetInviteCounter(void) const
 void Creature::SetGuildId(uint32_t guild_id)
 {
     guild_id_ = guild_id;
-    CreatureMessageBuilder::BuildGuildIdDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::GuildId",shared_from_this()));
 }
 
 uint32_t Creature::GetGuildId(void)
@@ -833,7 +823,9 @@ uint32_t Creature::GetGuildId(void)
 void Creature::SetTargetId(uint64_t target_id)
 {
     target_id_ = target_id;
-    CreatureMessageBuilder::BuildTargetIdDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::TargetId",shared_from_this()));
 }
 
 uint64_t Creature::GetTargetId(void)
@@ -844,7 +836,9 @@ uint64_t Creature::GetTargetId(void)
 void Creature::SetMoodId(uint8_t mood_id)
 {
     mood_id_ = mood_id;
-    CreatureMessageBuilder::BuildMoodIdDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::MoodId",shared_from_this()));
 }
 
 uint8_t Creature::GetMoodId(void)
@@ -855,7 +849,9 @@ uint8_t Creature::GetMoodId(void)
 void Creature::SetPerformanceId(uint32_t performance_id)
 {
     performance_id_ = performance_id;
-    CreatureMessageBuilder::BuildPerformanceIdDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::PerformanceId",shared_from_this()));
 }
 
 uint32_t Creature::GetPerformanceId(void)
@@ -880,41 +876,37 @@ uint32_t Creature::GetPerformanceCounter(void) const
 
 void Creature::SetStatCurrent(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        stat_current_list_.Update(stat_index, Stat(value));
-    }
-
-    CreatureMessageBuilder::BuildStatCurrentDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    stat_current_list_.Update(stat_index, Stat(value));
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatCurrent",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::AddStatCurrent(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        int32_t new_value = stat_current_list_[stat_index].value + value;
-        stat_current_list_.Update(stat_index, Stat(new_value));
-    }
-
-    CreatureMessageBuilder::BuildStatCurrentDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    int32_t new_value = stat_current_list_[stat_index].value + value;
+    stat_current_list_.Update(stat_index, Stat(new_value));
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatCurrent",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    int32_t current = stat_current_list_[stat_index].value;
+    if (current > value)
     {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        int32_t current = stat_current_list_[stat_index].value;
-        if (current > value)
-        {
-            stat_current_list_.Update(stat_index, Stat(current - value));
-        }
-        else
-        {
-            stat_current_list_.Update(stat_index, Stat(0));
-        }
+        stat_current_list_.Update(stat_index, Stat(current - value));
     }
-
-    CreatureMessageBuilder::BuildStatCurrentDelta(this);
+    else
+    {
+        stat_current_list_.Update(stat_index, Stat(0));
+    }
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatCurrent",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 NetworkArray<Stat> Creature::GetCurrentStats(void)
@@ -931,40 +923,38 @@ int32_t Creature::GetStatCurrent(StatIndex stat_index)
 
 void Creature::SetStatMax(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        stat_max_list_.Update(stat_index, Stat(value));
-    }
-
-    CreatureMessageBuilder::BuildStatMaxDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    stat_max_list_.Update(stat_index, Stat(value));
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatMax",shared_from_this()));
 }
 
 void Creature::AddStatMax(StatIndex stat_index, int32_t value)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        stat_max_list_.Update(stat_index, Stat(stat_max_list_.At(stat_index).value + value));
-    }
-
-    CreatureMessageBuilder::BuildStatMaxDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    stat_max_list_.Update(stat_index, Stat(stat_max_list_.At(stat_index).value + value));
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatMax",shared_from_this()));
 }
 
 void Creature::DeductStatMax(StatIndex stat_index, int32_t value)
 {
+    
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    int32_t current = stat_max_list_[stat_index].value;
+    if (current > value)
     {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        int32_t current = stat_max_list_[stat_index].value;
-        if (current > value)
-        {
-            stat_max_list_.Update(stat_index, Stat(current - value));
-        }
-        else
-        {
-            stat_max_list_.Update(stat_index, Stat(0));
-        }
+        stat_max_list_.Update(stat_index, Stat(current - value));
     }
-
-    CreatureMessageBuilder::BuildStatMaxDelta(this);
+    else
+    {
+        stat_max_list_.Update(stat_index, Stat(0));
+    }
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::StatMax",shared_from_this()));
 }
 
 NetworkArray<Stat> Creature::GetMaxStats(void)
@@ -986,26 +976,25 @@ void Creature::AddEquipmentItem(EquipmentItem& item)
         equipment_list_.Add(item);
     }
 
-    CreatureMessageBuilder::BuildEquipmentDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::EquipmentItem",shared_from_this()));
 }
 
 void Creature::RemoveEquipmentItem(uint64_t object_id)
 {
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    auto iter = std::find_if(begin(equipment_list_), end(equipment_list_), [=](std::pair<uint16_t, EquipmentItem> item)->bool {
+        return (object_id == item.second.object_id);
+    });
+
+    if(iter != end(equipment_list_))
     {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        auto iter = std::find_if(begin(equipment_list_), end(equipment_list_), [=](std::pair<uint16_t, EquipmentItem> item)->bool {
-            return (object_id == item.second.object_id);
-        });
-
-        if(iter != end(equipment_list_))
-        {
-            return;
-        }
-
-        equipment_list_.Remove(iter);
+        return;
     }
+    equipment_list_.Remove(iter);
 
-    CreatureMessageBuilder::BuildEquipmentDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::EquipmentItem",shared_from_this()));
 }
 
 void Creature::UpdateEquipmentItem(EquipmentItem& item)
@@ -1037,12 +1026,11 @@ EquipmentItem Creature::GetEquipmentItem(uint64_t object_id)
 
 void Creature::SetDisguise(std::string disguise)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        disguise_ = disguise;
-    }
-
-    CreatureMessageBuilder::BuildDisguiseDelta(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    disguise_ = disguise;
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Disguise",shared_from_this()));
 }
 
 std::string Creature::GetDisguise(void)
@@ -1054,7 +1042,9 @@ std::string Creature::GetDisguise(void)
 void Creature::SetStationary(bool stationary)
 {
     stationary_ = stationary;
-    CreatureMessageBuilder::BuildStationaryDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Stationary",shared_from_this()));
 }
 
 bool Creature::IsStationary(void)
@@ -1070,42 +1060,38 @@ PvpStatus Creature::GetPvpStatus() const
 
 void Creature::SetPvPStatus(PvpStatus status)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        pvp_status_ = status;
-    }
-
-    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    pvp_status_ = status;
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::PvPStatus",shared_from_this()));
 }
 
 void Creature::TogglePvpStateOn(PvpStatus state)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        pvp_status_ = static_cast<PvpStatus>(pvp_status_ | state);
-    }
-
-    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    pvp_status_ = static_cast<PvpStatus>(pvp_status_ | state);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::PvPStatus",shared_from_this()));
 }
 
 void Creature::TogglePvpStateOff(PvpStatus state)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        pvp_status_ = static_cast<PvpStatus>(pvp_status_ & ~state);
-    }
-
-    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    pvp_status_ = static_cast<PvpStatus>(pvp_status_ & ~state);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::PvPStatus",shared_from_this()));
 }
 
 void Creature::TogglePvpState(PvpStatus state)
 {
-    {
-        std::lock_guard<std::mutex> lock(creature_mutex_);
-        pvp_status_ = static_cast<PvpStatus>(pvp_status_ ^ state);
-    }
-
-    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
+    std::lock_guard<std::mutex> lock(creature_mutex_);
+    pvp_status_ = static_cast<PvpStatus>(pvp_status_ ^ state);
+    
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::PvPStatus",shared_from_this()));
 }
 
 bool Creature::CheckPvpState(PvpStatus state) const

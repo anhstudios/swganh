@@ -18,6 +18,7 @@ namespace object {
     class ObjectMessageBuilder
     {
     public:
+        virtual void RegisterEventHandlers(){};
         static void BuildComplexityDelta(Object* object);
         static void BuildStfNameDelta(Object* object);
         static void BuildCustomNameDelta(Object* object);
