@@ -110,8 +110,6 @@ FUNCTION(AddANHLibrary name)
 
     # Create the Common library
     ADD_LIBRARY(${name} STATIC ${SOURCES})
-    SET_TARGET_PROPERTIES(${name}
-        PROPERTIES OUTPUT_NAME ${base_name})
 	SET_TARGET_PROPERTIES(${name} PROPERTIES LINKER_LANGUAGE CXX)
 
     IF(_project_deps_list_length GREATER 0)
