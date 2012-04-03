@@ -176,11 +176,14 @@ shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
         ss << "CALL sp_GetWaypoint(" << object_id << ");";
         auto result = shared_ptr<sql::ResultSet>(statement->executeQuery(ss.str()));
         CreateBaseObjectFromStorage(waypoint, result);
-        
-        while (result->next())
+        if (statement->getMoreResults())
         {
-			waypoint->activated_flag_ = result->getUInt("is_active");
-            waypoint->color_ = result->getString("color");
+            result.reset(statement->getResultSet());
+            while (result->next())
+            {
+			    waypoint->activated_flag_ = result->getUInt("is_active");
+                waypoint->color_ = result->getString("color");
+            }
         }
     }
     catch(sql::SQLException &e)

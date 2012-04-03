@@ -164,18 +164,19 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
                 player->ResetCurrentDrink(result->getUInt("current_drink"));
                 player->ResetMaxDrink(result->getUInt("max_drink"));
                 player->SetJediState(result->getUInt("jedi_state"));
-                
-                LoadStatusFlags_(player, statement);
-                LoadProfileFlags_(player, statement);
-                LoadDraftSchematics_(player, statement);
-                LoadFriends_(player, statement);
-                LoadForceSensitiveQuests_(player, statement);
-                LoadIgnoredList_(player, statement);
-                LoadQuestJournal_(player, statement);
-                LoadWaypoints_(player, statement);
-                LoadXP_(player, statement);
             }
+
+            LoadStatusFlags_(player, statement);
+            LoadProfileFlags_(player, statement);
+            LoadDraftSchematics_(player, statement);
+            LoadFriends_(player, statement);
+            LoadForceSensitiveQuests_(player, statement);
+            LoadIgnoredList_(player, statement);
+            LoadQuestJournal_(player, statement);
+            LoadWaypoints_(player, statement);
+            LoadXP_(player, statement);
         }
+
     }
     catch(sql::SQLException &e)
     {
@@ -205,10 +206,9 @@ void PlayerFactory::LoadStatusFlags_(std::shared_ptr<Player> player, const std::
 {    
     try 
     {
-        auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
                player->AddStatusFlag(static_cast<StatusFlags>(result->getUInt("flag")));
@@ -226,10 +226,9 @@ void PlayerFactory::LoadProfileFlags_(std::shared_ptr<Player> player, const std:
 {
     try 
     {
-        auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
                player->AddProfileFlag(static_cast<ProfileFlags>(result->getUInt("flag")));
@@ -248,10 +247,9 @@ void PlayerFactory::LoadXP_(shared_ptr<Player> player, const std::shared_ptr<sql
 {
     try 
     {
-        auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
                 player->AddExperience(XpData(result->getString("name"), result->getUInt("value")));
@@ -289,9 +287,9 @@ void PlayerFactory::LoadWaypoints_(shared_ptr<Player> player, const std::shared_
 {
     try 
     {
-        auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
+            auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
             event_dispatcher_->Dispatch(make_shared<WaypointEvent>("LoadWaypoints", player, result));
         }
     }
@@ -311,10 +309,9 @@ void PlayerFactory::LoadDraftSchematics_(shared_ptr<Player> player, const std::s
 {
     try 
     {
-        auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
                 DraftSchematicData data;
@@ -356,10 +353,9 @@ void PlayerFactory::LoadQuestJournal_(shared_ptr<Player> player, const std::shar
 {
     try 
     {
-        auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
                 QuestJournalData data;
@@ -408,10 +404,9 @@ void PlayerFactory::LoadForceSensitiveQuests_(shared_ptr<Player> player, const s
 {
     try 
     {
-        auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
                 if (result->getUInt("completed") == 1)
@@ -492,10 +487,9 @@ void PlayerFactory::LoadFriends_(shared_ptr<Player> player, const std::shared_pt
 {
     try 
     {
-        auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
                player->AddFriend(result->getString("custom_name"), result->getUInt64("id"));
@@ -512,10 +506,9 @@ void PlayerFactory::LoadIgnoredList_(shared_ptr<Player> player, const std::share
 {
     try 
     {
-        auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
         if (statement->getMoreResults())
         {
-            result.reset(statement->getResultSet());
+            auto result = unique_ptr<sql::ResultSet>(statement->getResultSet());
             while (result->next())
             {
                player->IgnorePlayer(result->getString("custom_name"), result->getUInt64("id"));
