@@ -25,7 +25,7 @@
 #include <string>
 #include <boost/optional.hpp>
 
-#include "swganh/object/object_message_builder.h"
+#include "swganh/object/tangible/tangible_message_builder.h"
 
 #include "creature.h"
 
@@ -33,15 +33,16 @@ namespace swganh {
 namespace object {
 namespace creature {
 
-class CreatureMessageBuilder : public swganh::object::ObjectMessageBuilder
+class CreatureMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
 {
 public:
     CreatureMessageBuilder(anh::EventDispatcher* event_dispatcher_)
-        : event_dispatcher(event_dispatcher_) 
+        : TangibleMessageBuilder(event_dispatcher_) 
     {
         RegisterEventHandlers();
     }
     void RegisterEventHandlers();
+private:
     // deltas
     static void BuildBankCreditsDelta(std::shared_ptr<Creature> creature);
     static void BuildCashCreditsDelta(std::shared_ptr<Creature> creature);
@@ -92,7 +93,6 @@ public:
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline4(std::shared_ptr<Creature> creature);
     static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(std::shared_ptr<Creature> creature);
 
-    anh::EventDispatcher* event_dispatcher;
     typedef anh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 };
 

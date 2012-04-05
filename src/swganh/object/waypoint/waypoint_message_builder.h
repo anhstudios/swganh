@@ -2,8 +2,7 @@
 #ifndef SWGANH_OBJECT_WAYPOINT_WAYPOINT_MESSAGE_BUILDER_H_
 #define SWGANH_OBJECT_WAYPOINT_WAYPOINT_MESSAGE_BUILDER_H_
 
-#include <memory>
-#include <boost/optional.hpp>
+#include "swganh/object/object_message_builder.h"
 
 namespace swganh {
 namespace messages {
@@ -16,15 +15,21 @@ namespace waypoint {
 
     class Waypoint;
 
-    class WaypointMessageBuilder
+    class WaypointMessageBuilder : public ObjectMessageBuilder
     {
     public:
-		static void BuildUsesDelta(Waypoint* object);
-		static void BuildActivateDelta(Waypoint* object);
-		static void BuildPlanetDelta(Waypoint* object);
-		static void BuildCoordinatesDelta(Waypoint* object);
-		static void BuildColor(Waypoint* object);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Waypoint* object);
+        WaypointMessageBuilder(anh::EventDispatcher* dispatcher) : 
+            ObjectMessageBuilder(dispatcher)
+        {
+            RegisterEventHandlers();
+        }
+        virtual void RegisterEventHandlers();
+		static void BuildUsesDelta(std::shared_ptr<Waypoint> object);
+		static void BuildActivateDelta(std::shared_ptr<Waypoint> object);
+		static void BuildPlanetDelta(std::shared_ptr<Waypoint> object);
+		static void BuildCoordinatesDelta(std::shared_ptr<Waypoint> object);
+		static void BuildColor(std::shared_ptr<Waypoint> object);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(std::shared_ptr<Waypoint> object);
     };
 
 }}}  // swganh::object::waypoint

@@ -5,6 +5,8 @@
 #include <memory>
 #include <boost/optional.hpp>
 
+#include "swganh/object/object_message_builder.h"
+
 namespace swganh {
 namespace messages {
     struct BaselinesMessage;
@@ -16,11 +18,17 @@ namespace intangible {
 
     class Intangible;
 
-    class IntangibleMessageBuilder
+    class IntangibleMessageBuilder : public ObjectMessageBuilder
     {
     public:
-        static void BuildStfDetailDelta(Intangible* object);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Intangible* object);
+        IntangibleMessageBuilder(anh::EventDispatcher* dispatcher) :
+            ObjectMessageBuilder(dispatcher)
+        {
+            RegisterEventHandlers();
+        }
+        virtual void RegisterEventHandlers();
+        static void BuildStfDetailDelta(std::shared_ptr<Intangible> intangible);
+        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(std::shared_ptr<Intangible> intangible);
     };
 
 }}}  // swganh::object::intangible
