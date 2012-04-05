@@ -138,10 +138,11 @@ public:
     void ClearAutoAttack();
     bool IsAutoAttacking();
 
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7();
+    virtual void GetBaseline3();
+    virtual void GetBaseline6();
+    virtual void GetBaseline7();
 private:
+    typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
     friend class TangibleFactory;
 
     mutable std::mutex tangible_mutex_;

@@ -25,17 +25,17 @@ void GuildMessageBuilder::BuildGuildTagsDelta(shared_ptr<Guild> guild)
         guild->GetGuildList().ClearDeltas();
 }
 
-boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(Guild* guild)
+boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline3(shared_ptr<Guild> guild)
 {
     auto message = CreateBaselinesMessage(guild, Object::VIEW_3, 5);
-    message.data.append(guild->Object::GetBaseline3().get().data);
+    message.data.append(ObjectMessageBuilder::BuildBaseline3(guild).get().data);
     guild->GetGuildList().Serialize(message);
     return boost::optional<BaselinesMessage>(std::move(message));
 }
 
-boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline6(Guild* guild)
+boost::optional<BaselinesMessage> GuildMessageBuilder::BuildBaseline6(shared_ptr<Guild> guild)
 {
     auto message = CreateBaselinesMessage(guild, Object::VIEW_6, 5);
-    message.data.append(guild->Object::GetBaseline6().get().data);
+    message.data.append(ObjectMessageBuilder::BuildBaseline6(guild).get().data);
     return boost::optional<BaselinesMessage>(std::move(message));
 }

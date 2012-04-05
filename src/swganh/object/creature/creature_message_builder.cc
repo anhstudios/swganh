@@ -12,6 +12,11 @@ using boost::optional;
 
 void CreatureMessageBuilder::RegisterEventHandlers()
 {
+    event_dispatcher->Subscribe("Creature::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<CreatureEvent>(incoming_event);
+        SendBaselines(value_event->Get());
+    });
     event_dispatcher->Subscribe("Creature::Bank", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<CreatureEvent>(incoming_event);
@@ -213,6 +218,14 @@ void CreatureMessageBuilder::RegisterEventHandlers()
         auto value_event = static_pointer_cast<CreatureEvent>(incoming_event);
         BuildUpdatePvpStatusMessage(value_event->Get());
     });
+}
+void CreatureMessageBuilder::SendBaselines(shared_ptr<Creature> creature)
+{
+    auto controller = creature->GetController();
+    controller->Notify(BuildBaseline1(creature).data);
+    controller->Notify(BuildBaseline3(creature).data);
+    controller->Notify(BuildBaseline4(creature).data);
+    controller->Notify(BuildBaseline6(creature).data);
 }
 void CreatureMessageBuilder::BuildBankCreditsDelta(shared_ptr<Creature> creature)
 {
@@ -658,7 +671,7 @@ void CreatureMessageBuilder::BuildUpdatePvpStatusMessage(shared_ptr<Creature> cr
     }
 }
 
-optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline1(shared_ptr<Creature> creature)
+BaselinesMessage CreatureMessageBuilder::BuildBaseline1(shared_ptr<Creature> creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_1, 4);
     message.data.write<uint32_t>(creature->GetBankCredits());                  // Bank Credits
@@ -666,13 +679,13 @@ optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline1(shared_ptr<Cre
     creature->GetBaseStats().Serialize(message);                           // Stats Negative
     creature->GetSkills().Serialize(message);                                   // Skills
     
-    return optional<BaselinesMessage>(move(message));
+    return BaselinesMessage(move(message));
 }
 
-optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline3(shared_ptr<Creature> creature)
+BaselinesMessage CreatureMessageBuilder::BuildBaseline3(shared_ptr<Creature> creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_3, 18);
-    message.data.append(creature->Tangible::GetBaseline3().get().data);
+    message.data.append(TangibleMessageBuilder::BuildBaseline3(creature).get().data);
     message.data.write<uint8_t>(creature->GetPosture());                        // Posture
     message.data.write<uint8_t>(creature->GetFactionRank());                   // Faction Rank
     message.data.write<uint64_t>(creature->GetOwnerId());                      // Owner Id
@@ -681,10 +694,10 @@ optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline3(shared_ptr<Cre
     message.data.write<uint64_t>(creature->GetStateBitmask());                 // States Bitmask
     creature->GetStatWounds().Serialize(message);                          // Stat Wounds
     
-    return optional<BaselinesMessage>(move(message));
+    return BaselinesMessage(move(message));
 }
 
-optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline4(shared_ptr<Creature> creature)
+BaselinesMessage CreatureMessageBuilder::BuildBaseline4(shared_ptr<Creature> creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_4, 20);
     message.data.write<float>(creature->GetAccelerationMultiplierBase());         // Acceleration Multiplier Base
@@ -702,13 +715,13 @@ optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline4(shared_ptr<Cre
     message.data.write<float>(creature->GetWaterModifierPercent());               // Water Modifier Percent
     creature->GetMissionCriticalObjects().Serialize(message);                 // Mission Critical Object
     
-    return optional<BaselinesMessage>(move(message));
+    return BaselinesMessage(move(message));
 }
 
-optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline6(shared_ptr<Creature> creature)
+BaselinesMessage CreatureMessageBuilder::BuildBaseline6(shared_ptr<Creature> creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_6, 23);
-    message.data.append(TangibleMessageBuilder::GetBaseline6().get().data);
+    message.data.append(TangibleMessageBuilder::BuildBaseline6(creature).get().data);
     message.data.write<uint16_t>(creature->GetCombatLevel());                      // Combat Level
     message.data.write<std::string>(creature->GetAnimation());                      // Current Animation
     message.data.write<std::string>(creature->GetMoodAnimation());                 // Mood Animation
@@ -727,5 +740,5 @@ optional<BaselinesMessage> CreatureMessageBuilder::BuildBaseline6(shared_ptr<Cre
     message.data.write<std::string>(creature->GetDisguise());                       // Disguise Template
     message.data.write<uint8_t>(creature->IsStationary());                         // Stationary
     
-    return optional<BaselinesMessage>(move(message));
+    return BaselinesMessage(move(message));
 }

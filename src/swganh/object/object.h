@@ -475,7 +475,7 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }*/
-
+    typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
 
@@ -495,7 +495,7 @@ private:
 
     friend class ObjectFactory;
 
-    void AddBaselinesBuilders_();
+    //void AddBaselinesBuilders_();
 
     typedef std::vector<
         std::shared_ptr<anh::observer::ObserverInterface>

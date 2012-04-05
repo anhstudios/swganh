@@ -32,6 +32,8 @@
 
 // message builders
 #include "swganh/object/creature/creature_message_builder.h"
+#include "swganh/object/tangible/tangible_message_builder.h"
+#include "swganh/object/player/player_message_builder.h"
 
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/messages/cmd_start_scene.h"
@@ -421,7 +423,9 @@ void SimulationService::RegisterObjectFactories()
         impl_->GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager, this, event_dispatcher));
         impl_->GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager, this, event_dispatcher));
         // register message builders
+        impl_->GetObjectManager()->RegisterMessageBuilder(tangible::Tangible::type, make_shared<tangible::TangibleMessageBuilder>(event_dispatcher));
         impl_->GetObjectManager()->RegisterMessageBuilder(creature::Creature::type, make_shared<creature::CreatureMessageBuilder>(event_dispatcher));
+        impl_->GetObjectManager()->RegisterMessageBuilder(player::Player::type, make_shared<player::PlayerMessageBuilder>(event_dispatcher));
 }
 
 void SimulationService::PersistObject(uint64_t object_id)

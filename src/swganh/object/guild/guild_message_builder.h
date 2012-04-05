@@ -33,8 +33,8 @@ public:
     static void BuildGuildTagsDelta(std::shared_ptr<Guild> guild);
 
     // baselines
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Guild* guild);
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Guild* guild);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(std::shared_ptr<Guild> guild);
+    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(std::shared_ptr<Guild> guild);
 };
 
 }}} // swganh::object::guild

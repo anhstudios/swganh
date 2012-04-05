@@ -20,20 +20,20 @@ Weapon::Weapon()
     , ukn8(0)
 {}
 
-boost::optional<BaselinesMessage> Weapon::GetBaseline3()
+void Weapon::GetBaseline3()
 {
-    auto message = CreateBaselinesMessage(Object::VIEW_3, 11);
-    
-    // base data
-    message.data.append(Tangible::GetBaseline3().get().data);
-    // ukns
-    message.data.write(ukn1);
-    message.data.write(ukn2);
-    message.data.write(ukn3);
-    message.data.write(ukn4);
-    message.data.write(ukn5);
-    message.data.write(ukn6);
-    message.data.write(ukn7);
+    //auto message = CreateBaselinesMessage(Object::VIEW_3, 11);
+    //
+    //// base data
+    //message.data.append(Tangible::GetBaseline3().get().data);
+    //// ukns
+    //message.data.write(ukn1);
+    //message.data.write(ukn2);
+    //message.data.write(ukn3);
+    //message.data.write(ukn4);
+    //message.data.write(ukn5);
+    //message.data.write(ukn6);
+    //message.data.write(ukn7);
 
-    return boost::optional<BaselinesMessage>(move(message));
+    //return boost::optional<BaselinesMessage>(move(message));
 }

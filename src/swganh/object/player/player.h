@@ -857,12 +857,10 @@ public:
      */
     void SetGender(Gender gender);
 
+    typedef anh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
 protected:
     // baselines
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9();
+    void CreateBaselines();
 
 private:
 	friend class PlayerFactory;
