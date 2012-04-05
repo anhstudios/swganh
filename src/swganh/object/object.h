@@ -442,6 +442,8 @@ public:
      */
     void AddDeltasUpdate(swganh::messages::DeltasMessage message);
 
+    void AddBaselineToCache(swganh::messages::BaselinesMessage baseline);
+
     /**
      * Sets the id of this object instance.
      *
@@ -462,11 +464,9 @@ public:
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
-    swganh::messages::BaselinesMessage CreateBaselinesMessage(uint8_t view_type, uint16_t opcount = 0) ;
+    virtual void CreateBaselines();
 
-    swganh::messages::DeltasMessage CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
-
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
+    /*virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline4() { return boost::optional<swganh::messages::BaselinesMessage>(); }
@@ -474,7 +474,7 @@ public:
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }
+    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }*/
 
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
@@ -501,17 +501,12 @@ private:
         std::shared_ptr<anh::observer::ObserverInterface>
     > ObserverContainer;
 
-    typedef std::function<boost::optional<swganh::messages::BaselinesMessage>()> BaselinesBuilder;
-    typedef std::vector<BaselinesBuilder> BaselinesBuilderContainer;
-
     ObjectMap aware_objects_;
     ObjectMap contained_objects_;
 
     ObserverContainer observers_;
     BaselinesCacheContainer baselines_;
     DeltasCacheContainer deltas_;
-
-    BaselinesBuilderContainer baselines_builders_;
 
     std::shared_ptr<Object> container_;
     std::shared_ptr<ObjectController> controller_;

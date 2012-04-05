@@ -71,7 +71,7 @@ void Creature::SetBankCredits(uint32_t bank_credits)
 {
     bank_credits_ = bank_credits;
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::Bank",shared_from_this()));
+        ("Creature::Bank", static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint32_t Creature::GetBankCredits(void)
@@ -83,7 +83,7 @@ void Creature::SetCashCredits(uint32_t cash_credits)
 {
     cash_credits = cash_credits;
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::Cash",shared_from_this()));
+        ("Creature::Cash",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint32_t Creature::GetCashCredits(void)
@@ -97,7 +97,7 @@ void Creature::SetStatBase(StatIndex stat_index, int32_t value)
     stat_base_list_.Update(stat_index, Stat(value));
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatBase",shared_from_this()));
+        ("Creature::StatBase",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::AddStatBase(StatIndex stat_index, int32_t value)
@@ -107,7 +107,7 @@ void Creature::AddStatBase(StatIndex stat_index, int32_t value)
     stat_base_list_.Update(stat_index, Stat(new_stat));
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatBase",shared_from_this()));
+        ("Creature::StatBase",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::DeductStatBase(StatIndex stat_index, int32_t value)
@@ -124,7 +124,7 @@ void Creature::DeductStatBase(StatIndex stat_index, int32_t value)
     }
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatBase",shared_from_this()));
+        ("Creature::StatBase",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 NetworkArray<Stat> Creature::GetBaseStats(void)
@@ -145,7 +145,7 @@ void Creature::AddSkill(std::string skill)
     skills_.Add(Skill(skill));
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::Skill",shared_from_this()));
+        ("Creature::Skill",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::RemoveSkill(std::string skill)
@@ -163,7 +163,7 @@ void Creature::RemoveSkill(std::string skill)
     skills_.Remove(iter);
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::Skill",shared_from_this()));
+        ("Creature::Skill",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 NetworkList<Skill> Creature::GetSkills(void)
@@ -226,7 +226,7 @@ void Creature::SetPosture(Posture posture)
 {
     posture_ = posture;
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::Posture",shared_from_this()));
+        ("Creature::Posture",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 Posture Creature::GetPosture(void)
@@ -248,7 +248,7 @@ void Creature::SetFactionRank(uint8_t faction_rank)
 {
     faction_rank_ = faction_rank;
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::FactionRank",shared_from_this()));
+        ("Creature::FactionRank",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint8_t Creature::GetFactionRank(void)
@@ -260,7 +260,7 @@ void Creature::SetOwnerId(uint64_t owner_id)
 {
     owner_id_ = owner_id;
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::OwnerId",shared_from_this()));
+        ("Creature::OwnerId",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint64_t Creature::GetOwnerId(void)
@@ -274,7 +274,7 @@ void Creature::SetScale(float scale)
     scale_ = scale;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::Scale",shared_from_this()));
+        ("Creature::Scale",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetScale(void)
@@ -288,13 +288,13 @@ void Creature::SetBattleFatigue(uint32_t battle_fatigue)
     battle_fatigue_ = battle_fatigue;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::BattleFatigue",shared_from_this()));
+        ("Creature::BattleFatigue",static_pointer_cast<Creature>(shared_from_this())));
 }
 void Creature::AddBattleFatigue(uint32_t battle_fatigue)
 {
     battle_fatigue += battle_fatigue;
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::BattleFatigue",shared_from_this()));
+        ("Creature::BattleFatigue",static_pointer_cast<Creature>(shared_from_this())));
 }
 uint32_t Creature::GetBattleFatigue(void)
 {
@@ -305,7 +305,7 @@ void Creature::SetStateBitmask(uint64_t state_bitmask)
 {
     state_bitmask_ = state_bitmask;
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StateBitmask",shared_from_this()));
+        ("Creature::StateBitmask",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint64_t Creature::GetStateBitmask(void)
@@ -335,7 +335,7 @@ void Creature::SetStatWound(StatIndex stat_index, int32_t value)
     stat_wound_list_.Update(stat_index, Stat(value));
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatWound",shared_from_this()));
+        ("Creature::StatWound",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::AddStatWound(StatIndex stat_index, int32_t value)
@@ -345,7 +345,7 @@ void Creature::AddStatWound(StatIndex stat_index, int32_t value)
     stat_wound_list_.Update(stat_index, Stat(new_stat));
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatWound",shared_from_this()));
+        ("Creature::StatWound",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::DeductStatWound(StatIndex stat_index, int32_t value)
@@ -362,7 +362,7 @@ void Creature::DeductStatWound(StatIndex stat_index, int32_t value)
     }
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatWound",shared_from_this()));
+        ("Creature::StatWound",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 NetworkArray<Stat> Creature::GetStatWounds(void)
@@ -383,7 +383,7 @@ void Creature::SetAccelerationMultiplierBase(float acceleration_multiplier_base)
     acceleration_multiplier_base_ = acceleration_multiplier_base;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::AccelerationMultiplierBase",shared_from_this()));
+        ("Creature::AccelerationMultiplierBase",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetAccelerationMultiplierBase(void)
@@ -398,7 +398,7 @@ void Creature::SetAccelerationMultiplierModifier(float acceleration_multiplier_m
     acceleration_multiplier_modifier_ = acceleration_multiplier_modifier;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::AccelerationMultiplierModifier",shared_from_this()));
+        ("Creature::AccelerationMultiplierModifier",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetAccelerationMultiplierModifier(void)
@@ -413,7 +413,7 @@ void Creature::SetStatEncumberance(StatIndex stat_index, int32_t value)
     stat_encumberance_list_.Update(stat_index, Stat(value));
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatEncumberance",shared_from_this()));
+        ("Creature::StatEncumberance",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::AddStatEncumberance(StatIndex stat_index, int32_t value)
@@ -423,7 +423,7 @@ void Creature::AddStatEncumberance(StatIndex stat_index, int32_t value)
     stat_encumberance_list_.Update(stat_index, Stat(new_stat));
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatEncumberance",shared_from_this()));
+        ("Creature::StatEncumberance",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value)
@@ -440,7 +440,7 @@ void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value)
     }
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatEncumberance",shared_from_this()));
+        ("Creature::StatEncumberance",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 NetworkArray<Stat> Creature::GetStatEncumberances(void)
@@ -461,7 +461,7 @@ void Creature::AddSkillMod(SkillMod mod)
     skill_mod_list_.Add(mod.identifier, mod);
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::SkillMod",shared_from_this()));
+        ("Creature::SkillMod",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::RemoveSkillMod(std::string identifier)
@@ -479,7 +479,7 @@ void Creature::RemoveSkillMod(std::string identifier)
     skill_mod_list_.Remove(iter);
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::SkillMod",shared_from_this()));
+        ("Creature::SkillMod",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::SetSkillMod(SkillMod mod)
@@ -488,7 +488,7 @@ void Creature::SetSkillMod(SkillMod mod)
     skill_mod_list_.Update(mod.identifier, mod);
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::SkillMod",shared_from_this()));
+        ("Creature::SkillMod",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::ClearSkillMods(void)
@@ -497,7 +497,7 @@ void Creature::ClearSkillMods(void)
     skill_mod_list_.Clear();
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::SkillMod",shared_from_this()));
+        ("Creature::SkillMod",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 NetworkMap<std::string, SkillMod> Creature::GetSkillMods(void)
@@ -525,7 +525,7 @@ void Creature::SetSpeedMultiplierBase(float speed_multiplier_base)
     speed_multiplier_base_ = speed_multiplier_base;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::SpeedMultiplierBase",shared_from_this()));
+        ("Creature::SpeedMultiplierBase",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetSpeedMultiplierBase(void)
@@ -540,7 +540,7 @@ void Creature::SetSpeedMultiplierModifier(float speed_multiplier_modifier)
     speed_multiplier_modifier_ = speed_multiplier_modifier;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::SpeedMultiplierModifer",shared_from_this()));
+        ("Creature::SpeedMultiplierModifer",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetSpeedMultiplierModifier(void)
@@ -554,7 +554,7 @@ void Creature::SetListenToId(uint64_t listen_to_id)
     listen_to_id_ = listen_to_id;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::ListenToId",shared_from_this()));
+        ("Creature::ListenToId",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint64_t Creature::GetListenToId(void)
@@ -568,7 +568,7 @@ void Creature::SetRunSpeed(float run_speed)
     run_speed_ = run_speed;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::RunSpeed",shared_from_this()));
+        ("Creature::RunSpeed",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetRunSpeed(void)
@@ -583,7 +583,7 @@ void Creature::SetSlopeModifierAngle(float slope_modifier_angle)
     slope_modifier_angle_ = slope_modifier_angle;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::SlopeModifierAngle",shared_from_this()));
+        ("Creature::SlopeModifierAngle",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetSlopeModifierAngle(void)
@@ -598,7 +598,7 @@ void Creature::SetSlopeModifierPercent(float slope_modifier_percent)
     slope_modifier_percent_ = slope_modifier_percent;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::SlopeModifierPercent",shared_from_this()));
+        ("Creature::SlopeModifierPercent",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetSlopeModifierPercent(void)
@@ -613,7 +613,7 @@ void Creature::SetTurnRadius(float turn_radius)
     turn_radius_ = turn_radius;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::TurnRadius",shared_from_this()));
+        ("Creature::TurnRadius",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetTurnRadius(void)
@@ -628,7 +628,7 @@ void Creature::SetWalkingSpeed(float walking_speed)
     walking_speed_ = walking_speed;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::WalkingSpeed",shared_from_this()));
+        ("Creature::WalkingSpeed",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetWalkingSpeed(void)
@@ -643,7 +643,7 @@ void Creature::SetWaterModifierPercent(float water_modifier_percent)
     water_modifier_percent_ = water_modifier_percent;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::WaterModifierPercent",shared_from_this()));
+        ("Creature::WaterModifierPercent",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 float Creature::GetWaterModifierPercent(void)
@@ -658,7 +658,7 @@ void Creature::AddMissionCriticalObject(MissionCriticalObject& object)
     mission_critical_object_list_.Add(object);
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::MissionCriticalObject",shared_from_this()));
+        ("Creature::MissionCriticalObject",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id)
@@ -682,7 +682,7 @@ void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t obje
     mission_critical_object_list_.Remove(iter);
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::MissionCriticalObject",shared_from_this()));
+        ("Creature::MissionCriticalObject",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner)
@@ -715,7 +715,7 @@ void Creature::SetCombatLevel(uint16_t combat_level)
     combat_level_ = combat_level;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::CombatLevel",shared_from_this()));
+        ("Creature::CombatLevel",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint16_t Creature::GetCombatLevel(void)
@@ -729,7 +729,7 @@ void Creature::SetAnimation(std::string animation)
     animation_ = animation;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::Animation",shared_from_this()));
+        ("Creature::Animation",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 std::string Creature::GetAnimation(void)
@@ -744,7 +744,7 @@ void Creature::SetMoodAnimation(std::string mood_animation)
     mood_animation_ = mood_animation;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::MoodAnimation",shared_from_this()));
+        ("Creature::MoodAnimation",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 std::string Creature::GetMoodAnimation(void)
@@ -758,7 +758,7 @@ void Creature::SetWeaponId(uint64_t weapon_id)
     weapon_id_ = weapon_id;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::WeaponId",shared_from_this()));
+        ("Creature::WeaponId",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint64_t Creature::GetWeaponId(void)
@@ -771,7 +771,7 @@ void Creature::SetGroupId(uint64_t group_id)
     group_id_ = group_id;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::GroupId",shared_from_this()));
+        ("Creature::GroupId",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint64_t Creature::GetGroupId(void)
@@ -784,7 +784,7 @@ void Creature::SetInviteSenderId(uint64_t invite_sender_id)
     invite_sender_id_ = invite_sender_id;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::InviteSenderId",shared_from_this()));
+        ("Creature::InviteSenderId",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint64_t Creature::GetInviteSenderId(void)
@@ -812,7 +812,7 @@ void Creature::SetGuildId(uint32_t guild_id)
     guild_id_ = guild_id;
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::GuildId",shared_from_this()));
+        ("Creature::GuildId",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint32_t Creature::GetGuildId(void)
@@ -825,7 +825,7 @@ void Creature::SetTargetId(uint64_t target_id)
     target_id_ = target_id;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::TargetId",shared_from_this()));
+        ("Creature::TargetId",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint64_t Creature::GetTargetId(void)
@@ -838,7 +838,7 @@ void Creature::SetMoodId(uint8_t mood_id)
     mood_id_ = mood_id;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::MoodId",shared_from_this()));
+        ("Creature::MoodId",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint8_t Creature::GetMoodId(void)
@@ -851,7 +851,7 @@ void Creature::SetPerformanceId(uint32_t performance_id)
     performance_id_ = performance_id;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::PerformanceId",shared_from_this()));
+        ("Creature::PerformanceId",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 uint32_t Creature::GetPerformanceId(void)
@@ -880,7 +880,7 @@ void Creature::SetStatCurrent(StatIndex stat_index, int32_t value)
     stat_current_list_.Update(stat_index, Stat(value));
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatCurrent",static_pointer_cast<Creature>(shared_from_this())));
+        ("Creature::StatCurrent",static_pointer_cast<Creature>(static_pointer_cast<Creature>(shared_from_this()))));
 }
 
 void Creature::AddStatCurrent(StatIndex stat_index, int32_t value)
@@ -890,7 +890,7 @@ void Creature::AddStatCurrent(StatIndex stat_index, int32_t value)
     stat_current_list_.Update(stat_index, Stat(new_value));
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatCurrent",static_pointer_cast<Creature>(shared_from_this())));
+        ("Creature::StatCurrent",static_pointer_cast<Creature>(static_pointer_cast<Creature>(shared_from_this()))));
 }
 
 void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value)
@@ -906,7 +906,7 @@ void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value)
         stat_current_list_.Update(stat_index, Stat(0));
     }
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatCurrent",static_pointer_cast<Creature>(shared_from_this())));
+        ("Creature::StatCurrent",static_pointer_cast<Creature>(static_pointer_cast<Creature>(shared_from_this()))));
 }
 
 NetworkArray<Stat> Creature::GetCurrentStats(void)
@@ -927,7 +927,7 @@ void Creature::SetStatMax(StatIndex stat_index, int32_t value)
     stat_max_list_.Update(stat_index, Stat(value));
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatMax",shared_from_this()));
+        ("Creature::StatMax",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::AddStatMax(StatIndex stat_index, int32_t value)
@@ -936,7 +936,7 @@ void Creature::AddStatMax(StatIndex stat_index, int32_t value)
     stat_max_list_.Update(stat_index, Stat(stat_max_list_.At(stat_index).value + value));
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatMax",shared_from_this()));
+        ("Creature::StatMax",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::DeductStatMax(StatIndex stat_index, int32_t value)
@@ -954,7 +954,7 @@ void Creature::DeductStatMax(StatIndex stat_index, int32_t value)
     }
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::StatMax",shared_from_this()));
+        ("Creature::StatMax",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 NetworkArray<Stat> Creature::GetMaxStats(void)
@@ -977,7 +977,7 @@ void Creature::AddEquipmentItem(EquipmentItem& item)
     }
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::EquipmentItem",shared_from_this()));
+        ("Creature::EquipmentItem",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::RemoveEquipmentItem(uint64_t object_id)
@@ -994,7 +994,7 @@ void Creature::RemoveEquipmentItem(uint64_t object_id)
     equipment_list_.Remove(iter);
 
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::EquipmentItem",shared_from_this()));
+        ("Creature::EquipmentItem",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::UpdateEquipmentItem(EquipmentItem& item)
@@ -1030,7 +1030,7 @@ void Creature::SetDisguise(std::string disguise)
     disguise_ = disguise;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::Disguise",shared_from_this()));
+        ("Creature::Disguise",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 std::string Creature::GetDisguise(void)
@@ -1044,7 +1044,7 @@ void Creature::SetStationary(bool stationary)
     stationary_ = stationary;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::Stationary",shared_from_this()));
+        ("Creature::Stationary",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 bool Creature::IsStationary(void)
@@ -1064,7 +1064,7 @@ void Creature::SetPvPStatus(PvpStatus status)
     pvp_status_ = status;
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::PvPStatus",shared_from_this()));
+        ("Creature::PvPStatus",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::TogglePvpStateOn(PvpStatus state)
@@ -1073,7 +1073,7 @@ void Creature::TogglePvpStateOn(PvpStatus state)
     pvp_status_ = static_cast<PvpStatus>(pvp_status_ | state);
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::PvPStatus",shared_from_this()));
+        ("Creature::PvPStatus",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::TogglePvpStateOff(PvpStatus state)
@@ -1082,7 +1082,7 @@ void Creature::TogglePvpStateOff(PvpStatus state)
     pvp_status_ = static_cast<PvpStatus>(pvp_status_ & ~state);
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::PvPStatus",shared_from_this()));
+        ("Creature::PvPStatus",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::TogglePvpState(PvpStatus state)
@@ -1091,7 +1091,7 @@ void Creature::TogglePvpState(PvpStatus state)
     pvp_status_ = static_cast<PvpStatus>(pvp_status_ ^ state);
     
     GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
-        ("Creature::PvPStatus",shared_from_this()));
+        ("Creature::PvPStatus",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 bool Creature::CheckPvpState(PvpStatus state) const
@@ -1156,25 +1156,30 @@ shared_ptr<Player> Creature::GetPlayer()
 
 boost::optional<BaselinesMessage> Creature::GetBaseline1()
 {
-    return CreatureMessageBuilder::BuildBaseline1(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Baseline1",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline3()
 {
-    return CreatureMessageBuilder::BuildBaseline3(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Baseline3",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline4()
 {
-    return CreatureMessageBuilder::BuildBaseline4(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Baseline4",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 boost::optional<BaselinesMessage> Creature::GetBaseline6()
 {
-    return CreatureMessageBuilder::BuildBaseline6(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::Baseline6",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
-    CreatureMessageBuilder::BuildUpdatePvpStatusMessage(this);
+    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Creature>>>
+        ("Creature::PvPStatus",static_pointer_cast<Creature>(shared_from_this())));
 }
