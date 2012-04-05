@@ -25,7 +25,7 @@ Object::Object()
     , custom_name_(L"")
     , volume_(0)
 {
-	AddBaselinesBuilders_();
+	//AddBaselinesBuilders_();
 }
 
 bool Object::HasController()
@@ -117,16 +117,15 @@ Object::ObjectMap Object::GetContainedObjects()
 void Object::AddAwareObject(const shared_ptr<Object>& object)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+        std::lock_guard<std::mutex> lock(object_mutex_);
         if (aware_objects_.find(object->GetObjectId()) == aware_objects_.end())
         {
             aware_objects_.insert(make_pair(object->GetObjectId(), object));
         }
     }
-
     if (object->HasController()) {
         Subscribe(object->GetController());
-
+        CreateBaselines();
         MakeClean(object->GetController());
     }
 }
@@ -158,15 +157,15 @@ void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 }
 string Object::GetTemplate()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
 	return template_string_;
 }
 void Object::SetTemplate(const string& template_string)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
-	template_string_ = template_string;
-
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+	    template_string_ = template_string;
+    }
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::Template",shared_from_this()));
 }
 void Object::SetObjectId(uint64_t object_id)
@@ -187,10 +186,12 @@ wstring Object::GetCustomName()
 
 void Object::SetCustomName(wstring custom_name)
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
-    custom_name_ = custom_name;
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+        custom_name_ = custom_name;
+    }
     
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::CustomName",shared_from_this()));
 }
 
@@ -251,15 +252,14 @@ bool Object::IsDirty()
 // TODO: Refactor
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
-    // SceneCreateObjectByCrc
-    swganh::messages::SceneCreateObjectByCrc scene_object;
-    scene_object.object_id = GetObjectId();
-    scene_object.object_crc = anh::memcrc(GetTemplate());
-    scene_object.position = GetPosition();
-	scene_object.orientation = GetOrientation();
-    scene_object.byte_flag = 0;
-    controller->Notify(scene_object);
+        // SceneCreateObjectByCrc
+        swganh::messages::SceneCreateObjectByCrc scene_object;
+        scene_object.object_id = GetObjectId();
+        scene_object.object_crc = anh::memcrc(GetTemplate());
+        scene_object.position = GetPosition();
+	    scene_object.orientation = GetOrientation();
+        scene_object.byte_flag = 0;
+        controller->Notify(scene_object);
 
     if (GetContainer())
     {
@@ -301,8 +301,12 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     controller->Notify(scene_end_baselines);
 
     OnMakeClean(controller);
-    baselines_.clear();
-    deltas_.clear();
+
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+        baselines_.clear();
+        deltas_.clear();
+    }
 }
 
 BaselinesCacheContainer Object::GetBaselines(uint64_t viewer_id)
@@ -367,10 +371,12 @@ void Object::AddDeltasUpdate(DeltasMessage message)
 
 void Object::SetPosition(glm::vec3 position)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
-    position_ = position;
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        position_ = position;
+    }
 
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::Position",shared_from_this()));
 }
 glm::vec3 Object::GetPosition()
@@ -388,10 +394,12 @@ bool Object::InRange(glm::vec3 target, float range)
 }
 void Object::SetOrientation(glm::quat orientation)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
-    orientation_ = orientation;
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        orientation_ = orientation;
+    }
 
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::Orientation",shared_from_this()));
 }
 glm::quat Object::GetOrientation()
@@ -417,10 +425,12 @@ uint8_t Object::GetHeading()
 
 void Object::SetContainer(const std::shared_ptr<Object>& container)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
-    container_ = container;
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        container_ = container;
+    }
 
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::Container",shared_from_this()));
 }
 
@@ -432,10 +442,12 @@ shared_ptr<Object> Object::GetContainer()
 
 void Object::SetComplexity(float complexity)
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
-    complexity_ = complexity;
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+        complexity_ = complexity;
+    }
     
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::Complexity",shared_from_this()));
 }
 
@@ -447,11 +459,13 @@ float Object::GetComplexity()
 
 void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
-    stf_name_file_ = stf_file_name;
-    stf_name_string_ = stf_string;
-    
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+        stf_name_file_ = stf_file_name;
+        stf_name_string_ = stf_string;
+    }
+
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::StfName",shared_from_this()));
 }
 
@@ -469,10 +483,9 @@ string Object::GetStfNameString()
 
 void Object::SetVolume(uint32_t volume)
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
     volume_ = volume;
 
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::Volume",shared_from_this()));
 }
 
@@ -483,10 +496,9 @@ uint32_t Object::GetVolume()
 
 void Object::SetSceneId(uint32_t scene_id)
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
-	scene_id_ = scene_id;
+    scene_id_ = scene_id;
         
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::SceneId",shared_from_this()));
 }
 
@@ -507,6 +519,6 @@ void Object::SetEventDispatcher(anh::EventDispatcher* dispatcher)
 
 void Object::CreateBaselines()
 {
-    GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<Object>>>
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::Baselines",shared_from_this()));
 }

@@ -14,7 +14,11 @@ using namespace swganh::messages;
 
 void TangibleMessageBuilder::RegisterEventHandlers()
 {
-    // TODO: Register Handlers for Tangible
+    event_dispatcher->Subscribe("Tangible::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<TangibleEvent>(incoming_event);
+        SendBaselines(value_event->Get());
+    });
     event_dispatcher->Subscribe("Tangible::Customization", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<TangibleEvent>(incoming_event);
@@ -60,6 +64,10 @@ void TangibleMessageBuilder::RegisterEventHandlers()
         auto value_event = static_pointer_cast<TangibleEvent>(incoming_event);
         BuildDefendersDelta(value_event->Get());
     });
+}
+void TangibleMessageBuilder::SendBaselines(std::shared_ptr<Tangible> tangible)
+{
+
 }
 void TangibleMessageBuilder::BuildCustomizationDelta(shared_ptr<Tangible> tangible)
 {
@@ -142,7 +150,7 @@ void TangibleMessageBuilder::BuildDefendersDelta(shared_ptr<Tangible> tangible)
 boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(shared_ptr<Tangible> tangible)
 {
     auto message = CreateBaselinesMessage(tangible, tangible->Object::VIEW_3, 11);
-    message.data.append(ObjectMessageBuilder::GetBaseline3().get().data);
+    message.data.append(ObjectMessageBuilder::BuildBaseline3(tangible).get().data);
     message.data.write<std::string>(tangible->GetCustomization());
     tangible->GetComponentCustomization().Serialize(message);
     message.data.write<uint32_t>(tangible->GetOptionsMask());
@@ -155,7 +163,7 @@ boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(shared_
 boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(shared_ptr<Tangible> tangible)
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_6, 2);
-    message.data.append(ObjectMessageBuilder::GetBaseline6().get().data);
+    message.data.append(ObjectMessageBuilder::BuildBaseline6(tangible).get().data);
     tangible->GetDefenders().Serialize(message);
     return boost::optional<BaselinesMessage>(std::move(message));
 }

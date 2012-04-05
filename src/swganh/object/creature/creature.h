@@ -606,10 +606,7 @@ public:
     std::vector<uint64_t> GetDuelList();
 
     // Baselines
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline4();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+    virtual void CreateBaselines();
 
     // Helpers
     std::shared_ptr<swganh::object::player::Player> GetPlayer();
@@ -617,7 +614,7 @@ public:
 private:
     friend class CreatureFactory;
 
-    void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
+    //void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
 
     mutable std::mutex creature_mutex_;
 

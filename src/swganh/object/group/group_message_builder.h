@@ -57,8 +57,8 @@ public:
     static void BuildLootMasterDelta(std::shared_ptr<Group> group);
 
     // baselines
-    static void BuildBaseline3(Group* group);
-    static void BuildBaseline6(Group* group);
+    static void BuildBaseline3(std::shared_ptr<Group> group);
+    static void BuildBaseline6(std::shared_ptr<Group> group);
 };
 
 }}} // swganh::object::group

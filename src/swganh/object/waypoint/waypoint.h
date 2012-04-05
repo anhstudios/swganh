@@ -132,8 +132,9 @@ public:
     void SetColorByte(uint8_t color_byte);
 
 protected:
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    virtual void GetBaseline3();
 private:
+    typedef anh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
 	friend class WaypointFactory;
 
     mutable std::mutex waypoint_mutex_;

@@ -87,7 +87,7 @@ void GroupMessageBuilder::BuildBaseline3(shared_ptr<Group> group)
 void GroupMessageBuilder::BuildBaseline6(shared_ptr<Group> group)
 {
     auto message = CreateBaselinesMessage(group, Object::VIEW_6, 6);
-	message.data.append(ObjectMessageBuilder::BuildBaseline6(group);
+	message.data.append(ObjectMessageBuilder::BuildBaseline6(group).get().data);
     group->GetGroupMembers().Serialize(message);
 	message.data.write<uint32_t>(0);
 	message.data.write<uint32_t>(0);

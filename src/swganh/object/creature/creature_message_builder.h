@@ -41,7 +41,8 @@ public:
     {
         RegisterEventHandlers();
     }
-    void RegisterEventHandlers();
+    virtual void RegisterEventHandlers();
+    virtual void SendBaselines(std::shared_ptr<Creature> creature);
 private:
     // deltas
     static void BuildBankCreditsDelta(std::shared_ptr<Creature> creature);
@@ -88,10 +89,10 @@ private:
     static void BuildUpdatePvpStatusMessage(std::shared_ptr<Creature> object);
 
     // baselines
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline1(std::shared_ptr<Creature> creature);
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(std::shared_ptr<Creature> creature);
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline4(std::shared_ptr<Creature> creature);
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(std::shared_ptr<Creature> creature);
+    static swganh::messages::BaselinesMessage BuildBaseline1(std::shared_ptr<Creature> creature);
+    static swganh::messages::BaselinesMessage BuildBaseline3(std::shared_ptr<Creature> creature);
+    static swganh::messages::BaselinesMessage BuildBaseline4(std::shared_ptr<Creature> creature);
+    static swganh::messages::BaselinesMessage BuildBaseline6(std::shared_ptr<Creature> creature);
 
     typedef anh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 };

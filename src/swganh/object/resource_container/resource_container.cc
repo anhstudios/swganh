@@ -1,7 +1,5 @@
 #include "resource_container.h"
 
-#include "swganh/messages/deltas_message.h"
-
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::resource_container;
@@ -30,68 +28,68 @@ ResourceContainer::ResourceContainer(const std::string& customization, std::vect
 void ResourceContainer::SetCurrentQuantity(uint32_t current_quantity)
 {
     current_quantity_ = current_quantity;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(Object::VIEW_3, 11);
         message.data.write(current_quantity_);
 
         AddDeltasUpdate(move(message));
-    }
+    }*/
 }
 
 void ResourceContainer::SetMaxQuantity(uint32_t max_quantity)
 {
     max_quantity_ = max_quantity;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(Object::VIEW_6, 2);
         message.data.write(max_quantity_);
 
         AddDeltasUpdate(move(message));
-    }
+    }*/
 }
 void ResourceContainer::SetResourceType(const string& resource_type)
 {
     resource_type_ = resource_type;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(Object::VIEW_6, 3);
         message.data.write(resource_type_);
 
         AddDeltasUpdate(move(message));
-    }
+    }*/
 }
 void ResourceContainer::SetResourceName(const wstring& name)
 {
     variation_name_ = name;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(Object::VIEW_6, 4);
         message.data.write(max_quantity_);
 
         AddDeltasUpdate(move(message));
-    }
+    }*/
 }
-boost::optional<BaselinesMessage> ResourceContainer::GetBaseline3()
+void ResourceContainer::GetBaseline3()
 {
-    auto message = CreateBaselinesMessage(Object::VIEW_3, 13);
-    
-    // base data
-    message.data.append(Tangible::GetBaseline3().get().data);
-    message.data.write(GetCurrentQuantity());
-    message.data.write(GetGlobalResource());
+    //auto message = CreateBaselinesMessage(Object::VIEW_3, 13);
+    //
+    //// base data
+    //message.data.append(Tangible::GetBaseline3().get().data);
+    //message.data.write(GetCurrentQuantity());
+    //message.data.write(GetGlobalResource());
 
-    return boost::optional<BaselinesMessage>(std::move(message));
+    //return boost::optional<BaselinesMessage>(std::move(message));
 }
-boost::optional<BaselinesMessage> ResourceContainer::GetBaseline6()
+void ResourceContainer::GetBaseline6()
 {
-    auto message = CreateBaselinesMessage(Object::VIEW_6, 5);
-    
-    // base data
-    message.data.append(Tangible::GetBaseline6().get().data);
-    message.data.write(GetMaxQuantity());
-    message.data.write(GetResourceType());
-    message.data.write(GetResourceName());
+    //auto message = CreateBaselinesMessage(Object::VIEW_6, 5);
+    //
+    //// base data
+    //message.data.append(Tangible::GetBaseline6().get().data);
+    //message.data.write(GetMaxQuantity());
+    //message.data.write(GetResourceType());
+    //message.data.write(GetResourceName());
 
-    return boost::optional<BaselinesMessage>(std::move(message));
+    //return boost::optional<BaselinesMessage>(std::move(message));
 }
