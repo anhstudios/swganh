@@ -41,9 +41,10 @@ Tangible::Tangible(const std::string& customization, std::vector<uint32_t> compo
 
 void Tangible::AddCustomization(const string& customization)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
-    customization_.append(customization);
-    
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        customization_.append(customization);
+    }
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::Customization",static_pointer_cast<Tangible>(shared_from_this())));
 }
@@ -56,33 +57,38 @@ std::string Tangible::GetCustomization(void)
 
 void Tangible::SetCustomization(const string& customization)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
-    customization_ = customization;
-    
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        customization_ = customization;
+    }
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::Customization",static_pointer_cast<Tangible>(shared_from_this())));
 }
 void Tangible::RemoveComponentCustomization(uint32_t customization)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
-    auto iter = std::find_if(begin(component_customization_list_), end(component_customization_list_), [=](ComponentCustomization component) {
-        return component.component_customization_crc = customization;
-    });
-
-    if(iter == end(component_customization_list_))
     {
-        return;
-    }
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        auto iter = std::find_if(begin(component_customization_list_), end(component_customization_list_), [=](ComponentCustomization component) {
+            return component.component_customization_crc = customization;
+        });
+
+        if(iter == end(component_customization_list_))
+        {
+            return;
+        }
             
-    component_customization_list_.Remove(iter);
+        component_customization_list_.Remove(iter);
+    }
     
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
 }
 void Tangible::AddComponentCustomization(uint32_t customization)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
-    component_customization_list_.Add(ComponentCustomization(customization));
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        component_customization_list_.Add(ComponentCustomization(customization));
+    }
     
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
@@ -96,9 +102,10 @@ NetworkList<ComponentCustomization> Tangible::GetComponentCustomization(void)
 
 void Tangible::ClearComponentCustomization()
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
-    component_customization_list_.Clear();
-    
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        component_customization_list_.Clear();
+    }
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::ComponentCustomization",static_pointer_cast<Tangible>(shared_from_this())));
 }
@@ -193,30 +200,33 @@ void Tangible::AddDefender(uint64_t defender)
 }
 void Tangible::RemoveDefender(uint64_t defender)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
-    auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
-        return (x.object_id == defender);
-    });
-
-    if(iter != end(defender_list_))
     {
-        return;
-    }
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
+            return (x.object_id == defender);
+        });
+
+        if(iter != end(defender_list_))
+        {
+            return;
+        }
             
-    defender_list_.Remove(iter);
+        defender_list_.Remove(iter);
+    }
     
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::Defender",static_pointer_cast<Tangible>(shared_from_this())));
 }
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
-    defender_list_.Clear();
-    std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& x) {
-        defender_list_.Insert(Defender(x));
-    });
-    defender_list_.Reinstall();
-
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        defender_list_.Clear();
+        std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& x) {
+            defender_list_.Insert(Defender(x));
+        });
+        defender_list_.Reinstall();
+    }
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::Defender",static_pointer_cast<Tangible>(shared_from_this())));
 }
@@ -229,16 +239,10 @@ NetworkSortedVector<Defender> Tangible::GetDefenders()
 
 void Tangible::ClearDefenders()
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
-    defender_list_.Clear();
-    //@TODO: NOT SURE WHY CLEAR DOESN'T WIPE OUT THE LIST
-    /*auto iter = begin(defender_list_)
-    while (iter != end(defender_list_))
     {
-        defender_list_.Remove(iter);
-        iter++;
-    }*/
-    
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        defender_list_.Clear();
+    }   
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::Defender",static_pointer_cast<Tangible>(shared_from_this())));
 }
@@ -255,14 +259,8 @@ bool Tangible::IsAutoAttacking()
 {
     return auto_attack_ == true;
 }
-
-void Tangible::GetBaseline3()
+void Tangible::CreateBaselines(std::shared_ptr<Object> object)
 {
-    
-}
-void Tangible::GetBaseline6()
-{
-}
-void Tangible::GetBaseline7()
-{
+    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
+        ("Tangible::Baselines",static_pointer_cast<Tangible>(object)));
 }

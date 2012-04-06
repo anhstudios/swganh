@@ -667,18 +667,21 @@ void Player::AddFriend(string friend_name, uint64_t id)
 
 void Player::RemoveFriend(string friend_name)
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
-    auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
-        return (x.Contains(friend_name));
-    });
-        
-    if (iter == end(friends_))
+    uint64_t friend_id = 0;
     {
-        return;
+        std::lock_guard<std::mutex> lock(player_mutex_);
+        auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
+            return (x.Contains(friend_name));
+        });
+        
+        if (iter == end(friends_))
+        {
+            return;
+        }
+        friend_id = iter->id;
+        friends_.Remove(iter);
     }
-            
-    GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), iter->id));
-    friends_.Remove(iter);
+    GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), friend_id));
 }
 
 void Player::ClearFriends()
@@ -912,8 +915,8 @@ bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
     return waypoint->GetObjectId() == other.waypoint->GetObjectId();
 }
 
-void Player::CreateBaselines()
+void Player::CreateBaselines(shared_ptr<Object> object)
 {
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Baselines",static_pointer_cast<Player>(shared_from_this())));
+        ("Player::Baselines", static_pointer_cast<Player>(object)));
 }

@@ -5,22 +5,15 @@
 #include "swganh/object/object.h"
 #include "swganh/messages/baselines_message.h"
 #include "swganh/messages/deltas_message.h"
+#include "swganh/messages/scene_end_baselines.h"
 
 using namespace anh;
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object;
 
-using boost::optional;
-
 void ObjectMessageBuilder::RegisterEventHandlers()
 {
-    event_dispatcher->Subscribe("Object::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
-    {
-        auto value_event = static_pointer_cast<ObjectEvent>(incoming_event);
-        //CreateBaselinesMessage(value_event->Get());
-        // loop through all baselines and send out...
-    });
     event_dispatcher->Subscribe("Object::CustomName", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<ObjectEvent>(incoming_event);
@@ -41,6 +34,20 @@ void ObjectMessageBuilder::RegisterEventHandlers()
         auto value_event = static_pointer_cast<ObjectEvent>(incoming_event);
         BuildVolumeDelta(value_event->Get());
     });
+}
+
+void ObjectMessageBuilder::SendEndBaselines(shared_ptr<Object> object, bool send_to_observer)
+{
+    swganh::messages::SceneEndBaselines scene_end_baselines;
+    scene_end_baselines.object_id = object->GetObjectId();
+    if (send_to_observer && object->HasObservers())
+    {
+        object->NotifyObservers(scene_end_baselines);
+    }
+    else
+    {
+        object->GetController()->Notify(scene_end_baselines);
+    }
 }
 
 void ObjectMessageBuilder::BuildComplexityDelta(shared_ptr<Object> object)
@@ -98,7 +105,7 @@ void ObjectMessageBuilder::BuildServerIDDelta(shared_ptr<Object> object)
     }
 }
 
-optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline3(shared_ptr<Object> object)
+BaselinesMessage ObjectMessageBuilder::BuildBaseline3(shared_ptr<Object> object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3);
     message.data.write(object->GetComplexity());
@@ -109,16 +116,16 @@ optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline3(shared_ptr<Objec
     message.data.write(object->GetCustomName());
     message.data.write(object->GetVolume());
 
-    return optional<BaselinesMessage>(move(message));
+    return BaselinesMessage(move(message));
 }
 
-optional<BaselinesMessage> ObjectMessageBuilder::BuildBaseline6(shared_ptr<Object> object)
+BaselinesMessage ObjectMessageBuilder::BuildBaseline6(shared_ptr<Object> object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_6);
     // server ID
     message.data.write(0);
 
-    return optional<BaselinesMessage>(move(message));
+    return BaselinesMessage(move(message));
 }
 
 BaselinesMessage ObjectMessageBuilder::CreateBaselinesMessage(shared_ptr<Object> object, uint8_t view_type, uint16_t opcount)

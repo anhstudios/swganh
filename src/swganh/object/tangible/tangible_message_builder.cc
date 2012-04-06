@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "tangible.h"
+#include "swganh/messages/scene_end_baselines.h"
 #include "swganh/messages/deltas_message.h"
 #include "swganh/messages/baselines_message.h"
 
@@ -67,7 +68,29 @@ void TangibleMessageBuilder::RegisterEventHandlers()
 }
 void TangibleMessageBuilder::SendBaselines(std::shared_ptr<Tangible> tangible)
 {
+    auto controller = tangible->GetController();
+    tangible->AddBaselineToCache(BuildBaseline3(tangible));
+    tangible->AddBaselineToCache(BuildBaseline6(tangible));
+    tangible->AddBaselineToCache(BuildBaseline7(tangible));
 
+    if (tangible->HasController())
+    {
+        for (auto& baseline : tangible->GetBaselines())
+        {
+            controller->Notify(baseline);
+        }
+        
+        SendEndBaselines(tangible);
+    }
+    else if (tangible->HasObservers())
+    {
+        for (auto& baseline : tangible->GetBaselines())
+        {
+            tangible->NotifyObservers(baseline);
+        }
+        
+        SendEndBaselines(tangible, true);     
+    }
 }
 void TangibleMessageBuilder::BuildCustomizationDelta(shared_ptr<Tangible> tangible)
 {
@@ -147,10 +170,10 @@ void TangibleMessageBuilder::BuildDefendersDelta(shared_ptr<Tangible> tangible)
 }
 
 // baselines
-boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(shared_ptr<Tangible> tangible)
+BaselinesMessage TangibleMessageBuilder::BuildBaseline3(shared_ptr<Tangible> tangible)
 {
-    auto message = CreateBaselinesMessage(tangible, tangible->Object::VIEW_3, 11);
-    message.data.append(ObjectMessageBuilder::BuildBaseline3(tangible).get().data);
+    auto message = CreateBaselinesMessage(tangible, Object::VIEW_3, 11);
+    message.data.append(ObjectMessageBuilder::BuildBaseline3(tangible).data);
     message.data.write<std::string>(tangible->GetCustomization());
     tangible->GetComponentCustomization().Serialize(message);
     message.data.write<uint32_t>(tangible->GetOptionsMask());
@@ -158,19 +181,19 @@ boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline3(shared_
     message.data.write<uint32_t>(tangible->GetCondition());
     message.data.write<uint32_t>(tangible->GetMaxCondition());
     message.data.write<uint8_t>(tangible->IsStatic() ? 1 : 0);
-    return boost::optional<BaselinesMessage>(std::move(message));
+    return BaselinesMessage(std::move(message));
 }
-boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline6(shared_ptr<Tangible> tangible)
+BaselinesMessage TangibleMessageBuilder::BuildBaseline6(shared_ptr<Tangible> tangible)
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_6, 2);
-    message.data.append(ObjectMessageBuilder::BuildBaseline6(tangible).get().data);
+    message.data.append(ObjectMessageBuilder::BuildBaseline6(tangible).data);
     tangible->GetDefenders().Serialize(message);
-    return boost::optional<BaselinesMessage>(std::move(message));
+    return BaselinesMessage(std::move(message));
 }
-boost::optional<BaselinesMessage> TangibleMessageBuilder::BuildBaseline7(shared_ptr<Tangible> tangible)
+BaselinesMessage TangibleMessageBuilder::BuildBaseline7(shared_ptr<Tangible> tangible)
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_7, 2);
     message.data.write<uint64_t>(0);
     message.data.write<uint64_t>(0);
-    return boost::optional<BaselinesMessage>(std::move(message));
+    return BaselinesMessage(std::move(message));
 }

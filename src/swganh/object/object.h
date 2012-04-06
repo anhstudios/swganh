@@ -273,10 +273,9 @@ public:
     /**
      * Returns the most recently generated baselines.
      *
-     * @param viewer_id The id of the object viewing this Object instance.
      * @return The most recently generated baselines.
      */
-    BaselinesCacheContainer GetBaselines(uint64_t viewer_id) ;
+    BaselinesCacheContainer GetBaselines() ;
 
     /**
      * Returns the deltas messages generated since the last time the
@@ -464,7 +463,7 @@ public:
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
-    virtual void CreateBaselines();
+    virtual void CreateBaselines(std::shared_ptr<Object> object);
 
     /*virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
