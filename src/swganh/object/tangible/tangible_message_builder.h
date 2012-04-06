@@ -30,9 +30,9 @@ namespace tangible {
         static void BuildDefendersDelta(std::shared_ptr<Tangible> tangible);
         
         // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(std::shared_ptr<Tangible> tangible);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(std::shared_ptr<Tangible> tangible);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(std::shared_ptr<Tangible> tangible);
+        static swganh::messages::BaselinesMessage BuildBaseline3(std::shared_ptr<Tangible> tangible);
+        static swganh::messages::BaselinesMessage BuildBaseline6(std::shared_ptr<Tangible> tangible);
+        static swganh::messages::BaselinesMessage BuildBaseline7(std::shared_ptr<Tangible> tangible);
     private:
         typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
     };

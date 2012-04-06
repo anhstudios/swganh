@@ -6,7 +6,6 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::cell;
 using namespace swganh::messages;
-using boost::optional;
 
 void Cell::SetCell(uint32_t cell_number) {
     cell_number_ = cell_number;

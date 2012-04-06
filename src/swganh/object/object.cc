@@ -12,7 +12,6 @@ using namespace anh::observer;
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;
-using boost::optional;
 
 Object::Object()
     : object_id_(0)
@@ -25,7 +24,6 @@ Object::Object()
     , custom_name_(L"")
     , volume_(0)
 {
-	//AddBaselinesBuilders_();
 }
 
 bool Object::HasController()
@@ -125,7 +123,7 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
     }
     if (object->HasController()) {
         Subscribe(object->GetController());
-        CreateBaselines();
+        CreateBaselines(object);
         MakeClean(object->GetController());
     }
 }
@@ -157,6 +155,7 @@ void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 }
 string Object::GetTemplate()
 {
+    std::lock_guard<std::mutex> lock(object_mutex_);
 	return template_string_;
 }
 void Object::SetTemplate(const string& template_string)
@@ -252,14 +251,14 @@ bool Object::IsDirty()
 // TODO: Refactor
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
-        // SceneCreateObjectByCrc
-        swganh::messages::SceneCreateObjectByCrc scene_object;
-        scene_object.object_id = GetObjectId();
-        scene_object.object_crc = anh::memcrc(GetTemplate());
-        scene_object.position = GetPosition();
-	    scene_object.orientation = GetOrientation();
-        scene_object.byte_flag = 0;
-        controller->Notify(scene_object);
+    // SceneCreateObjectByCrc
+    swganh::messages::SceneCreateObjectByCrc scene_object;
+    scene_object.object_id = GetObjectId();
+    scene_object.object_crc = anh::memcrc(GetTemplate());
+    scene_object.position = GetPosition();
+	scene_object.orientation = GetOrientation();
+    scene_object.byte_flag = 0;
+    controller->Notify(scene_object);
 
     if (GetContainer())
     {
@@ -290,16 +289,12 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
         });
     }*/
 
-    for_each(begin(baselines_), end(baselines_), [&controller] (BaselinesMessage& message)
+    /*for_each(begin(baselines_), end(baselines_), [&controller] (BaselinesMessage& message)
     {
         controller->Notify(message);
-    });
-    
+    });*/
     // SceneEndBaselines
-    swganh::messages::SceneEndBaselines scene_end_baselines;
-    scene_end_baselines.object_id = GetObjectId();
-    controller->Notify(scene_end_baselines);
-
+    
     OnMakeClean(controller);
 
     {
@@ -309,7 +304,7 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     }
 }
 
-BaselinesCacheContainer Object::GetBaselines(uint64_t viewer_id)
+BaselinesCacheContainer Object::GetBaselines()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return baselines_;
@@ -327,6 +322,10 @@ void Object::AddDeltasUpdate(DeltasMessage message)
 
 	std::lock_guard<std::mutex> lock(object_mutex_);
     deltas_.push_back(move(message));
+}
+void Object::AddBaselineToCache(swganh::messages::BaselinesMessage baseline)
+{
+    baselines_.push_back(move(baseline));
 }
 //
 //void Object::AddBaselinesBuilders_()
@@ -517,8 +516,8 @@ void Object::SetEventDispatcher(anh::EventDispatcher* dispatcher)
     event_dispatcher_ = dispatcher;
 }
 
-void Object::CreateBaselines()
+void Object::CreateBaselines(std::shared_ptr<Object> object)
 {
     GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Baselines",shared_from_this()));
+        ("Object::Baselines", object));
 }

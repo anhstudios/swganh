@@ -8,8 +8,6 @@ using namespace anh;
 using namespace swganh::object::creature;
 using namespace swganh::messages;
 
-using boost::optional;
-
 void CreatureMessageBuilder::RegisterEventHandlers()
 {
     event_dispatcher->Subscribe("Creature::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
@@ -221,11 +219,30 @@ void CreatureMessageBuilder::RegisterEventHandlers()
 }
 void CreatureMessageBuilder::SendBaselines(shared_ptr<Creature> creature)
 {
+    creature->AddBaselineToCache(BuildBaseline1(creature));
+    creature->AddBaselineToCache(BuildBaseline3(creature));
+    creature->AddBaselineToCache(BuildBaseline4(creature));
+    creature->AddBaselineToCache(BuildBaseline6(creature));
     auto controller = creature->GetController();
-    controller->Notify(BuildBaseline1(creature).data);
-    controller->Notify(BuildBaseline3(creature).data);
-    controller->Notify(BuildBaseline4(creature).data);
-    controller->Notify(BuildBaseline6(creature).data);
+    
+    if (creature->HasController())
+    {
+        for (auto& baseline : creature->GetBaselines())
+        {
+            controller->Notify(baseline);
+        }
+        
+        SendEndBaselines(creature);
+    }
+    else if (creature->HasObservers())
+    {
+        for (auto& baseline : creature->GetBaselines())
+        {
+            creature->NotifyObservers(baseline);
+        }
+        
+        SendEndBaselines(creature, true);     
+    }
 }
 void CreatureMessageBuilder::BuildBankCreditsDelta(shared_ptr<Creature> creature)
 {
@@ -685,7 +702,7 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline1(shared_ptr<Creature> cre
 BaselinesMessage CreatureMessageBuilder::BuildBaseline3(shared_ptr<Creature> creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_3, 18);
-    message.data.append(TangibleMessageBuilder::BuildBaseline3(creature).get().data);
+    message.data.append(TangibleMessageBuilder::BuildBaseline3(creature).data);
     message.data.write<uint8_t>(creature->GetPosture());                        // Posture
     message.data.write<uint8_t>(creature->GetFactionRank());                   // Faction Rank
     message.data.write<uint64_t>(creature->GetOwnerId());                      // Owner Id
@@ -721,7 +738,7 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline4(shared_ptr<Creature> cre
 BaselinesMessage CreatureMessageBuilder::BuildBaseline6(shared_ptr<Creature> creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_6, 23);
-    message.data.append(TangibleMessageBuilder::BuildBaseline6(creature).get().data);
+    message.data.append(TangibleMessageBuilder::BuildBaseline6(creature).data);
     message.data.write<uint16_t>(creature->GetCombatLevel());                      // Combat Level
     message.data.write<std::string>(creature->GetAnimation());                      // Current Animation
     message.data.write<std::string>(creature->GetMoodAnimation());                 // Mood Animation

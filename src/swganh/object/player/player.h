@@ -857,10 +857,10 @@ public:
      */
     void SetGender(Gender gender);
 
-    typedef anh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
-protected:
     // baselines
-    void CreateBaselines();
+    virtual void CreateBaselines(std::shared_ptr<Object> object);
+
+    typedef anh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
 
 private:
 	friend class PlayerFactory;

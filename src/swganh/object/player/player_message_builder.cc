@@ -2,9 +2,11 @@
 
 #include <algorithm>
 
+#include "anh/logger.h"
 #include "anh/crc.h"
 #include "swganh/messages/deltas_message.h"
 #include "swganh/messages/baselines_message.h"
+#include "swganh/messages/scene_end_baselines.h"
 #include "swganh/object/waypoint/waypoint.h"
 
 using namespace anh;
@@ -26,11 +28,30 @@ void PlayerMessageBuilder::RegisterEventHandlers()
 
 void PlayerMessageBuilder::SendBaselines(shared_ptr<Player> player)
 {
-    auto controller = player->GetController();
-    controller->Notify(BuildBaseline3(player));
-    controller->Notify(BuildBaseline6(player));
-    controller->Notify(BuildBaseline8(player));
-    controller->Notify(BuildBaseline9(player));
+    player->AddBaselineToCache(BuildBaseline3(player));
+    player->AddBaselineToCache(BuildBaseline6(player));
+    player->AddBaselineToCache(BuildBaseline8(player));
+    player->AddBaselineToCache(BuildBaseline9(player));
+    
+    if (player->HasController())
+    {
+        auto controller = player->GetController();
+        for (auto& baseline : player->GetBaselines())
+        {
+            controller->Notify(baseline);
+        }
+        
+        SendEndBaselines(player);
+    }
+    else if (player->HasObservers())
+    {
+        for (auto& baseline : player->GetBaselines())
+        {
+            player->NotifyObservers(baseline);
+        }
+        
+        SendEndBaselines(player, true);     
+    }
 }
 
 // deltas
@@ -340,10 +361,10 @@ void PlayerMessageBuilder::BuildJediStateDelta(shared_ptr<Player> object)
     }
 }
 // baselines
-swganh::messages::BaselinesMessage PlayerMessageBuilder::BuildBaseline3(shared_ptr<Player> object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline3(shared_ptr<Player> object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3, 10);
-    message.data.append(ObjectMessageBuilder::BuildBaseline3(object).get().data);
+    message.data.append(ObjectMessageBuilder::BuildBaseline3(object).data);
     message.data.write<uint32_t>(0);                                    // Not Used
     
     auto status_flags = object->GetStatusFlags();
@@ -374,7 +395,7 @@ swganh::messages::BaselinesMessage PlayerMessageBuilder::BuildBaseline3(shared_p
     return BaselinesMessage(move(message));
 }
 
-swganh::messages::BaselinesMessage PlayerMessageBuilder::BuildBaseline6(shared_ptr<Player> object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline6(shared_ptr<Player> object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_6, 2);
     message.data.write<uint32_t>(object->GetSceneId());    // Region Id
@@ -382,7 +403,7 @@ swganh::messages::BaselinesMessage PlayerMessageBuilder::BuildBaseline6(shared_p
     return BaselinesMessage(move(message));
 }
 
-swganh::messages::BaselinesMessage PlayerMessageBuilder::BuildBaseline8(shared_ptr<Player> object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline8(shared_ptr<Player> object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_8, 7);
     object->GetXp().Serialize(message);
@@ -399,10 +420,10 @@ swganh::messages::BaselinesMessage PlayerMessageBuilder::BuildBaseline8(shared_p
     
     object->GetQuests().Serialize(message);
     
-    return BaselinesMessage(std::move(message));
+    return BaselinesMessage(move(message));
 }
 
-swganh::messages::BaselinesMessage PlayerMessageBuilder::BuildBaseline9(shared_ptr<Player> object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline9(shared_ptr<Player> object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_9, 17);
     
@@ -412,7 +433,6 @@ swganh::messages::BaselinesMessage PlayerMessageBuilder::BuildBaseline9(shared_p
     message.data.write<uint64_t>(object->GetNearestCraftingStation());
     
     object->GetDraftSchematics().Serialize(message);
-    
     
     message.data.write<uint32_t>(object->GetExperimentationPoints());
     message.data.write<uint32_t>(object->GetAccomplishmentCounter());
@@ -432,5 +452,5 @@ swganh::messages::BaselinesMessage PlayerMessageBuilder::BuildBaseline9(shared_p
     message.data.write<uint32_t>(0); // Unused
     message.data.write<uint32_t>(object->GetJediState()); // Jedi State
     
-    return BaselinesMessage(std::move(message));
+    return BaselinesMessage(message);
 }
