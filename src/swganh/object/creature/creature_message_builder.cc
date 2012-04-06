@@ -2,18 +2,20 @@
 #include "creature.h"
 #include "swganh/messages/update_pvp_status_message.h"
 #include "swganh/messages/controllers/posture.h"
+#include "swganh/object/object_events.h"
 
 using namespace std;
 using namespace anh;
 using namespace swganh::object::creature;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 void CreatureMessageBuilder::RegisterEventHandlers()
 {
     event_dispatcher->Subscribe("Creature::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
-        auto value_event = static_pointer_cast<CreatureEvent>(incoming_event);
-        SendBaselines(value_event->Get());
+        auto controller_event = static_pointer_cast<ControllerEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Creature>(controller_event->object), controller_event->controller);
     });
     event_dispatcher->Subscribe("Creature::Bank", [this] (shared_ptr<EventInterface> incoming_event)
     {
@@ -217,32 +219,18 @@ void CreatureMessageBuilder::RegisterEventHandlers()
         BuildUpdatePvpStatusMessage(value_event->Get());
     });
 }
-void CreatureMessageBuilder::SendBaselines(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::SendBaselines(shared_ptr<Creature> creature, shared_ptr<ObjectController> controller)
 {
     creature->AddBaselineToCache(BuildBaseline1(creature));
     creature->AddBaselineToCache(BuildBaseline3(creature));
     creature->AddBaselineToCache(BuildBaseline4(creature));
     creature->AddBaselineToCache(BuildBaseline6(creature));
-    auto controller = creature->GetController();
-    
-    if (creature->HasController())
+    for (auto& baseline : creature->GetBaselines())
     {
-        for (auto& baseline : creature->GetBaselines())
-        {
-            controller->Notify(baseline);
-        }
-        
-        SendEndBaselines(creature);
+        controller->Notify(baseline);
     }
-    else if (creature->HasObservers())
-    {
-        for (auto& baseline : creature->GetBaselines())
-        {
-            creature->NotifyObservers(baseline);
-        }
         
-        SendEndBaselines(creature, true);     
-    }
+    SendEndBaselines(creature, controller);
 }
 void CreatureMessageBuilder::BuildBankCreditsDelta(shared_ptr<Creature> creature)
 {

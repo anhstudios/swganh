@@ -6,6 +6,7 @@
 #include "anh/crc.h"
 
 #include "player_events.h"
+#include "swganh/object/object_events.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/waypoint/waypoint.h"
 
@@ -915,8 +916,8 @@ bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
     return waypoint->GetObjectId() == other.waypoint->GetObjectId();
 }
 
-void Player::CreateBaselines(shared_ptr<Object> object)
+void Player::CreateBaselines(shared_ptr<ObjectController> controller)
 {
-    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
-        ("Player::Baselines", static_pointer_cast<Player>(object)));
+    GetEventDispatcher()->Dispatch(make_shared<ControllerEvent>
+        ("Player::Baselines", shared_from_this(), controller));
 }

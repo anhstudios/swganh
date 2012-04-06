@@ -42,7 +42,7 @@ public:
         RegisterEventHandlers();
     }
     virtual void RegisterEventHandlers();
-    virtual void SendBaselines(std::shared_ptr<Creature> creature);
+    virtual void SendBaselines(std::shared_ptr<Creature> creature, std::shared_ptr<ObjectController> controller);
 private:
     // deltas
     static void BuildBankCreditsDelta(std::shared_ptr<Creature> creature);

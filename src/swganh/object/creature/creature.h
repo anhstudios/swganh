@@ -606,7 +606,7 @@ public:
     std::vector<uint64_t> GetDuelList();
 
     // Baselines
-    virtual void CreateBaselines(std::shared_ptr<Object> object);
+    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
 
     // Helpers
     std::shared_ptr<swganh::object::player::Player> GetPlayer();

@@ -138,7 +138,7 @@ public:
     void ClearAutoAttack();
     bool IsAutoAttacking();
 
-    virtual void CreateBaselines(std::shared_ptr<Object> object);
+    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
 private:
     typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
     friend class TangibleFactory;

@@ -79,7 +79,7 @@ public:
         UNLINK = 0xFFFFFFFF,
         LINK = 4
     };
-
+    
     typedef std::map<
         uint64_t,
         std::shared_ptr<Object>
@@ -463,7 +463,7 @@ public:
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
-    virtual void CreateBaselines(std::shared_ptr<Object> object);
+    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
 
     /*virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
     virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
