@@ -6,7 +6,7 @@ add_subdirectory(social)
 add_subdirectory(simulation)
 
 add_custom_target(
-	swgpy
+	swgpy ALL
 	DEPENDS
 		swgpy_app_binding swgpy_object_binding swgpy_combat_binding swgpy_simulation_binding swgpy_social_binding
     COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
