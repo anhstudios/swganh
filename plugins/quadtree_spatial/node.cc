@@ -115,4 +115,63 @@ void Node::Split()
 	}
 }
 
+std::vector<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_box)
+{
+	std::vector<std::shared_ptr<swganh::object::Object>> return_list;
+
+	std::for_each(objects_.begin(), objects_.end(), [=,& return_list](std::shared_ptr<swganh::object::Object> obj) {
+		if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().y), query_box))
+			return_list.push_back(obj);
+	});
+
+	if(state_ == BRANCH)
+	{
+		for(std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			// Node is within Query Box.
+			if(boost::geometry::within(node->GetRegion(), query_box))
+			{
+				auto contained_objects = node->GetContainedObjects();
+				return_list.insert( return_list.end(), contained_objects.begin(), contained_objects.end() );
+				continue;
+			}
+			
+			// Query Box is within node.
+			if(boost::geometry::within(query_box, node->GetRegion()))
+			{
+				std::vector<std::shared_ptr<swganh::object::Object>> list = node->Query(query_box);
+				return_list.insert( return_list.end(), list.begin(), list.end() );
+				break;
+			}
+
+			// Query Box intersects with node.
+			if(boost::geometry::intersects(query_box, node->GetRegion()))
+			{
+				std::vector<std::shared_ptr<swganh::object::Object>> list = node->Query(query_box);
+				return_list.insert( return_list.end(), list.begin(), list.end() );
+			}
+		}
+	}
+
+	return return_list;
+}
+
+const std::vector<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(void)
+{
+	std::vector<std::shared_ptr<swganh::object::Object>> objs;
+
+	objs.insert(objs.end(), objects_.begin(), objects_.end());
+
+	if(state_ == BRANCH)
+	{
+		for(const std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			std::vector<std::shared_ptr<swganh::object::Object>> objs2 = node->GetContainedObjects();
+			objs.insert(objs.end(), objs2.begin(), objs2.end());
+		}
+	}
+
+	return objs;
+}
+
 } // namespace quadtree

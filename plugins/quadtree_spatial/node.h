@@ -39,7 +39,7 @@ namespace quadtree
 {
 
 typedef boost::geometry::model::box< boost::geometry::model::d2::point_xy<double> > Region;
-typedef boost::geometry::model::polygon< boost::geometry::model::d2::point_xy<double> > QueryBox;
+typedef boost::geometry::model::box< boost::geometry::model::d2::point_xy<double> > QueryBox;
 typedef boost::geometry::model::d2::point_xy<double> Point;
 
 enum NodeQuadrant
@@ -75,6 +75,7 @@ public:
 	void InsertObject(std::shared_ptr<swganh::object::Object> obj);
 	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
 	void Split();
+	std::vector<std::shared_ptr<swganh::object::Object>> Query(QueryBox query_box);
 
 	const NodeQuadrant& GetQuadrant(void) { return quadrant_; }
 	const uint32_t& GetLevel(void) { return level_; }
@@ -82,6 +83,7 @@ public:
 	const Region& GetRegion(void) { return region_; }
 	const boost::array<std::shared_ptr<Node>, 4>& GetLeafNodes(void) { return leaf_nodes_; }
 	const std::vector<std::shared_ptr<swganh::object::Object>>& GetObjects(void) { return objects_; }
+	const std::vector<std::shared_ptr<swganh::object::Object>> GetContainedObjects(void);
 
 private:
 	Region region_;

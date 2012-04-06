@@ -73,7 +73,9 @@ TEST(QuadtreeTest, CanInsertNode)
 		std::shared_ptr<swganh::object::Object> obj = std::make_shared<swganh::object::Object>();
 		obj->SetObjectId(x);
 		obj->SetPosition(glm::vec3(random(gen), random(gen), random(gen)));
-		std::cout << "Position: " << obj->GetPosition().x << "," << obj->GetPosition().y << std::endl;
 		root_node.InsertObject(obj);
 	}
+
+	QueryBox query_box(Point(-3000, -3000), Point(100, 100));
+	std::cout << "Query result: " << root_node.Query(query_box).size() << std::endl;
 }
