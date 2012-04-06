@@ -80,6 +80,7 @@ public:
 	const uint32_t& GetLevel(void) { return level_; }
 	const NodeState& GetState(void) { return state_; }
 	const Region& GetRegion(void) { return region_; }
+	const boost::array<std::shared_ptr<Node>, 4>& GetLeafNodes(void) { return leaf_nodes_; }
 	const std::vector<std::shared_ptr<swganh::object::Object>>& GetObjects(void) { return objects_; }
 
 private:

@@ -32,6 +32,9 @@ Node::Node(NodeQuadrant quadrant, Region region, uint32_t level, uint32_t max_le
 	, max_level_(max_level)
 	, state_(LEAF)
 {
+	// If this is the root node, we need to do a manual split.
+	if(quadrant_ == ROOT)
+		Split();
 }
 
 Node::~Node(void)
@@ -40,17 +43,27 @@ Node::~Node(void)
 
 void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 {
-	if(objects_.size() >= 1 && level_ < max_level_)
+	if(objects_.size() >= 1 && level_ < max_level_ && state_ == LEAF)
 	{
 		Split();
 	}
 
-	std::for_each(leaf_nodes_.begin(), leaf_nodes_.end(), [=, &obj](std::shared_ptr<Node> node){
-		if(boost::geometry::within(node->GetRegion(), Region(Point(obj->GetPosition().x, obj->GetPosition().y),Point(obj->GetPosition().x, obj->GetPosition().y))))
-		{
-			node->InsertObject(obj);
-		}
-	});
+	bool success = false;
+
+	if(state_ == BRANCH)
+	{
+		std::for_each(leaf_nodes_.begin(), leaf_nodes_.end(), [=, &obj, &success](std::shared_ptr<Node> node){
+			if(boost::geometry::within( Point(obj->GetPosition().x, obj->GetPosition().y) , node->GetRegion()))
+			{
+				node->InsertObject(obj);
+				success = true;
+				return;
+			}
+		});
+	}
+
+	if(success)
+		return;
 
 	objects_.push_back(obj);
 }
@@ -61,17 +74,45 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 
 void Node::Split()
 {
+	if(state_ == BRANCH)
+		return;
+
 	state_ = BRANCH;
 
-	double half_width = boost::geometry::get<0>(region_.max_corner()) / 2.0f;
-	double half_height = boost::geometry::get<1>(region_.max_corner()) / 2.0f;
-	double max_width = boost::geometry::get<0>(region_.max_corner());
-	double max_height = boost::geometry::get<1>(region_.max_corner());
+	Point center((region_.min_corner().x() + region_.max_corner().x()) / 2, (region_.min_corner().y() + region_.max_corner().y()) / 2);
+	Point upper_center((region_.min_corner().x() + region_.max_corner().x()) / 2, region_.min_corner().y());
+	Point left_center(region_.min_corner().x(), (region_.min_corner().y() + region_.max_corner().y()) / 2);
+	Point right_center(region_.max_corner().x(), (region_.min_corner().y() + region_.max_corner().y()) / 2);
+	Point bottom_center((region_.min_corner().x() + region_.max_corner().x()) / 2, region_.max_corner().y());
 
-	leaf_nodes_[NW_QUADRANT] = std::make_shared<Node>(NW_QUADRANT, Region(Point(0, 0), Point(half_width, half_height)), level_++, max_level_);
-	leaf_nodes_[NE_QUADRANT] = std::make_shared<Node>(NE_QUADRANT, Region(Point(half_width, 0), Point(max_width, half_height)), level_++, max_level_);
-	leaf_nodes_[SW_QUADRANT] = std::make_shared<Node>(SW_QUADRANT, Region(Point(0, half_height), Point(half_width, max_height)), level_++, max_level_);
-	leaf_nodes_[SE_QUADRANT] = std::make_shared<Node>(NW_QUADRANT, Region(Point(half_width, half_height), Point(max_width, max_height)), level_++, max_level_);
+	leaf_nodes_[NW_QUADRANT] = std::make_shared<Node>(NW_QUADRANT, Region(region_.min_corner(), center), level_ + 1, max_level_);
+	leaf_nodes_[NE_QUADRANT] = std::make_shared<Node>(NE_QUADRANT, Region(upper_center, right_center), level_ + 1, max_level_);
+	leaf_nodes_[SW_QUADRANT] = std::make_shared<Node>(SW_QUADRANT, Region(left_center, bottom_center), level_ + 1, max_level_);
+	leaf_nodes_[SE_QUADRANT] = std::make_shared<Node>(SE_QUADRANT, Region(center, region_.max_corner()), level_ + 1, max_level_);
+
+	for(auto i = objects_.begin(); i != objects_.end();)
+	{
+		auto obj = (*i);
+		bool success = false;
+		for(std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			//std::cout << "Trying to move!" << std::endl;
+			//std::cout << "Node Level: " << node->GetLevel() << std::endl;
+			//std::cout << "Object " << obj->GetObjectId() << " @ " << obj->GetPosition().x << "," << obj->GetPosition().y << std::endl;
+			//std::cout << "Region: (" << node->GetRegion().min_corner().x() << "," << node->GetRegion().min_corner().y() << ") (" << node->GetRegion().max_corner().x() << "," << node->GetRegion().max_corner().y() << ")" << std::endl;
+			//std::cout << "Within: " << boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().y) , node->GetRegion()) << std::endl;
+			if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().y) , node->GetRegion()))
+			{
+				i = objects_.erase(i);
+				node->InsertObject(std::move(obj));
+				success = true;
+				break;
+			}
+		}
+
+		if(!success)
+			i++;
+	}
 }
 
 } // namespace quadtree
