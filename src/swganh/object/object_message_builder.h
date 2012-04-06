@@ -17,7 +17,7 @@ namespace swganh {
 namespace object {
 
     class Object;
-
+    class ObjectController;
     class ObjectMessageBuilder
     {
     public:
@@ -27,7 +27,7 @@ namespace object {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendEndBaselines(std::shared_ptr<Object> object, bool send_to_observer = false);
+        virtual void SendEndBaselines(std::shared_ptr<Object> object, std::shared_ptr<ObjectController> controller);
         static void BuildComplexityDelta(std::shared_ptr<Object> object);
         static void BuildStfNameDelta(std::shared_ptr<Object> object);
         static void BuildCustomNameDelta(std::shared_ptr<Object> object);

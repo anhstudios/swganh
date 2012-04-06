@@ -3,12 +3,14 @@
 #include <algorithm>
 
 #include "tangible.h"
+#include "swganh/object/object_events.h"
 #include "swganh/messages/scene_end_baselines.h"
 #include "swganh/messages/deltas_message.h"
 #include "swganh/messages/baselines_message.h"
 
 using namespace anh;
 using namespace std;
+using namespace swganh::object;
 using namespace swganh::object::tangible;
 using namespace swganh::messages;
 
@@ -17,8 +19,8 @@ void TangibleMessageBuilder::RegisterEventHandlers()
 {
     event_dispatcher->Subscribe("Tangible::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
-        auto value_event = static_pointer_cast<TangibleEvent>(incoming_event);
-        SendBaselines(value_event->Get());
+        auto controller_event = static_pointer_cast<ControllerEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Tangible>(controller_event->object), controller_event->controller);
     });
     event_dispatcher->Subscribe("Tangible::Customization", [this] (shared_ptr<EventInterface> incoming_event)
     {
@@ -66,31 +68,18 @@ void TangibleMessageBuilder::RegisterEventHandlers()
         BuildDefendersDelta(value_event->Get());
     });
 }
-void TangibleMessageBuilder::SendBaselines(std::shared_ptr<Tangible> tangible)
+void TangibleMessageBuilder::SendBaselines(std::shared_ptr<Tangible> tangible, std::shared_ptr<ObjectController> controller)
 {
-    auto controller = tangible->GetController();
     tangible->AddBaselineToCache(BuildBaseline3(tangible));
     tangible->AddBaselineToCache(BuildBaseline6(tangible));
     tangible->AddBaselineToCache(BuildBaseline7(tangible));
 
-    if (tangible->HasController())
+    for (auto& baseline : tangible->GetBaselines())
     {
-        for (auto& baseline : tangible->GetBaselines())
-        {
-            controller->Notify(baseline);
-        }
-        
-        SendEndBaselines(tangible);
+        controller->Notify(baseline);
     }
-    else if (tangible->HasObservers())
-    {
-        for (auto& baseline : tangible->GetBaselines())
-        {
-            tangible->NotifyObservers(baseline);
-        }
         
-        SendEndBaselines(tangible, true);     
-    }
+    SendEndBaselines(tangible, controller);
 }
 void TangibleMessageBuilder::BuildCustomizationDelta(shared_ptr<Tangible> tangible)
 {

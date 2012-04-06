@@ -7,6 +7,7 @@
 #include "swganh/messages/deltas_message.h"
 #include "swganh/messages/baselines_message.h"
 #include "swganh/messages/scene_end_baselines.h"
+#include "swganh/object/object_events.h"
 #include "swganh/object/waypoint/waypoint.h"
 
 using namespace anh;
@@ -21,39 +22,32 @@ void PlayerMessageBuilder::RegisterEventHandlers()
     // TODO: Register event handlers for player
     event_dispatcher->Subscribe("Player::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
-        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
-        SendBaselines(value_event->Get());
+        auto controller_event = static_pointer_cast<ControllerEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Player>(controller_event->object), controller_event->controller);
     });
 }
 
-void PlayerMessageBuilder::SendBaselines(shared_ptr<Player> player)
+void PlayerMessageBuilder::SendBaselines(shared_ptr<Player> player, shared_ptr<ObjectController> controller)
 {
     player->AddBaselineToCache(BuildBaseline3(player));
     player->AddBaselineToCache(BuildBaseline6(player));
     player->AddBaselineToCache(BuildBaseline8(player));
     player->AddBaselineToCache(BuildBaseline9(player));
     
-    if (player->HasController())
+   
+    for (auto& baseline : player->GetBaselines())
     {
-        auto controller = player->GetController();
-        for (auto& baseline : player->GetBaselines())
-        {
-            controller->Notify(baseline);
-        }
-        
-        SendEndBaselines(player);
+        controller->Notify(baseline);
     }
-    else if (player->HasObservers())
-    {
-        for (auto& baseline : player->GetBaselines())
-        {
-            player->NotifyObservers(baseline);
-        }
         
-        SendEndBaselines(player, true);     
-    }
+    SendEndBaselines(player, controller);
 }
-
+void PlayerMessageBuilder::SendEndBaselines(shared_ptr<Player> player, shared_ptr<ObjectController> controller)
+{
+    swganh::messages::SceneEndBaselines scene_end_baselines;
+    scene_end_baselines.object_id = player->GetObjectId();
+    controller->Notify(scene_end_baselines);
+}
 // deltas
 void PlayerMessageBuilder::BuildStatusBitmaskDelta(shared_ptr<Player> object)
 {

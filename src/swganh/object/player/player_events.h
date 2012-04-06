@@ -30,7 +30,7 @@ namespace player {
             , result_set(result_set_){}
         
         std::shared_ptr<Player> player;
-            std::shared_ptr<sql::ResultSet> result_set;
+        std::shared_ptr<sql::ResultSet> result_set;
     };
 
 

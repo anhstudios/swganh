@@ -1,5 +1,6 @@
 
-#include "swganh/object/object.h"
+#include "object.h"
+#include "object_events.h"
 
 #include "anh/crc.h"
 #include "anh/observer/observer_interface.h"
@@ -123,7 +124,7 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
     }
     if (object->HasController()) {
         Subscribe(object->GetController());
-        CreateBaselines(object);
+        CreateBaselines(object->GetController());
         MakeClean(object->GetController());
     }
 }
@@ -251,6 +252,11 @@ bool Object::IsDirty()
 // TODO: Refactor
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+        baselines_.clear();
+        deltas_.clear();
+    }
     // SceneCreateObjectByCrc
     swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -296,12 +302,6 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     // SceneEndBaselines
     
     OnMakeClean(controller);
-
-    {
-        std::lock_guard<std::mutex> lock(object_mutex_);
-        baselines_.clear();
-        deltas_.clear();
-    }
 }
 
 BaselinesCacheContainer Object::GetBaselines()
@@ -516,8 +516,8 @@ void Object::SetEventDispatcher(anh::EventDispatcher* dispatcher)
     event_dispatcher_ = dispatcher;
 }
 
-void Object::CreateBaselines(std::shared_ptr<Object> object)
+void Object::CreateBaselines( std::shared_ptr<ObjectController> controller)
 {
-    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::Baselines", object));
+    GetEventDispatcher()->Dispatch(make_shared<ControllerEvent>
+        ("Object::Baselines", shared_from_this(), controller));
 }

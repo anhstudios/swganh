@@ -1,5 +1,6 @@
 #include "tangible.h"
 
+#include "swganh/object/object_events.h"
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::tangible;
@@ -259,8 +260,8 @@ bool Tangible::IsAutoAttacking()
 {
     return auto_attack_ == true;
 }
-void Tangible::CreateBaselines(std::shared_ptr<Object> object)
+void Tangible::CreateBaselines(std::shared_ptr<ObjectController> controller)
 {
-    GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Baselines",static_pointer_cast<Tangible>(object)));
+    GetEventDispatcher()->Dispatch(make_shared<ControllerEvent>
+        ("Tangible::Baselines",shared_from_this(), controller));
 }

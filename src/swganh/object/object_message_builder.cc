@@ -36,18 +36,11 @@ void ObjectMessageBuilder::RegisterEventHandlers()
     });
 }
 
-void ObjectMessageBuilder::SendEndBaselines(shared_ptr<Object> object, bool send_to_observer)
+void ObjectMessageBuilder::SendEndBaselines(shared_ptr<Object> object, shared_ptr<ObjectController> controller)
 {
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = object->GetObjectId();
-    if (send_to_observer && object->HasObservers())
-    {
-        object->NotifyObservers(scene_end_baselines);
-    }
-    else
-    {
-        object->GetController()->Notify(scene_end_baselines);
-    }
+    controller->Notify(scene_end_baselines);
 }
 
 void ObjectMessageBuilder::BuildComplexityDelta(shared_ptr<Object> object)

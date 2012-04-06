@@ -2,6 +2,7 @@
 
 #include "anh/crc.h"
 
+#include "swganh/object/object_events.h"
 #include "swganh/object/player/player.h"
 #include "creature_message_builder.h"
 
@@ -9,6 +10,7 @@
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::messages::containers;
+using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::object::player;
 
@@ -1210,8 +1212,8 @@ shared_ptr<Player> Creature::GetPlayer()
     return GetContainedObject<Player>(GetObjectId() + PLAYER_OFFSET);
 }
 
-void Creature::CreateBaselines(std::shared_ptr<Object> object)
+void Creature::CreateBaselines(std::shared_ptr<ObjectController> controller)
 {
-    GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
-        ("Creature::Baselines",static_pointer_cast<Creature>(object)));
+    GetEventDispatcher()->Dispatch(make_shared<swganh::object::ControllerEvent>
+        ("Creature::Baselines", shared_from_this(), controller));
 }
