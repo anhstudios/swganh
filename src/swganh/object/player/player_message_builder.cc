@@ -25,6 +25,141 @@ void PlayerMessageBuilder::RegisterEventHandlers()
         auto controller_event = static_pointer_cast<ControllerEvent>(incoming_event);
         SendBaselines(static_pointer_cast<Player>(controller_event->object), controller_event->controller);
     });
+    event_dispatcher->Subscribe("Player::StatusBitmask", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildStatusBitmaskDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ProfileFlag", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildProfileBitmaskDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ProfessionTag", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildProfessionTagDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::BornDate", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildBornDateDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::TotalPlayTime", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildPlayTimeDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::AdminTag", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildAdminTagDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::Experience", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildXpDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::Waypoint", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildWaypointDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ForcePower", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCurrentForcePowerDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::MaxForcePower", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildMaxForcePowerDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ForceSensitiveQuests", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildForceSensitiveQuestDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::CompletedForceSensitiveQuests", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCompletedForceSensitiveQuestDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::QuestJournal", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildQuestJournalDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ExperimentationFlag", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildExperimentationFlagDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::CraftingStage", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCraftingStageDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::NearestCraftingStation", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildNearestCraftingStationDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::DraftSchematic", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildDraftSchematicDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ExperimentationPoints", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildExperimentationPointsDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::AccomplishmentCounter", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildAccomplishmentCounterDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::Friend", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildFriendsDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::IgnorePlayer", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildIgnoredDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::Language", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildLanguageDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::CurrentStomach", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCurrentStomachDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::MaxStomach", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildMaxStomachDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::CurrentDrink", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCurrentDrinkDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::MaxDrink", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildMaxDrinkDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::JediState", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildJediStateDelta(value_event->Get());
+    });
 }
 
 void PlayerMessageBuilder::SendBaselines(shared_ptr<Player> player, shared_ptr<ObjectController> controller)
