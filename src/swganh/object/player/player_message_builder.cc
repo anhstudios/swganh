@@ -7,6 +7,7 @@
 #include "swganh/messages/deltas_message.h"
 #include "swganh/messages/baselines_message.h"
 #include "swganh/messages/scene_end_baselines.h"
+#include "swganh/object/player/player_events.h"
 #include "swganh/object/object_events.h"
 #include "swganh/object/waypoint/waypoint.h"
 
@@ -19,7 +20,6 @@ using namespace swganh::messages;
 
 void PlayerMessageBuilder::RegisterEventHandlers()
 {
-    // TODO: Register event handlers for player
     event_dispatcher->Subscribe("Player::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
         auto controller_event = static_pointer_cast<ControllerEvent>(incoming_event);
@@ -119,6 +119,16 @@ void PlayerMessageBuilder::RegisterEventHandlers()
     {
         auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
         BuildAccomplishmentCounterDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::RemoveFriend", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto name_event = static_pointer_cast<NameEvent>(incoming_event);
+        BuildFriendsDelta(name_event->player);
+    });
+    event_dispatcher->Subscribe("Player::RemoveIgnoredPlayer", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto name_event = static_pointer_cast<NameEvent>(incoming_event);
+        BuildIgnoredDelta(name_event->player);
     });
     event_dispatcher->Subscribe("Player::Friend", [this] (shared_ptr<EventInterface> incoming_event)
     {

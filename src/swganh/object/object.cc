@@ -275,31 +275,6 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
 
         controller->Notify(containment_message);
     }
-
-    // Baselines
-    /*BaselinesCacheContainer cache;
-    {
-        std::unique_lock<std::mutex> lock(object_mutex_);
-
-        optional<BaselinesMessage> message;
-        for_each(begin(baselines_builders_), end(baselines_builders_),
-            [&lock, &message, &cache] (BaselinesBuilder& builder)
-        {
-            lock.unlock();
-            message = builder();
-            if (message)
-            {
-                cache.push_back(move(*message));
-            }
-            lock.lock();
-        });
-    }*/
-
-    /*for_each(begin(baselines_), end(baselines_), [&controller] (BaselinesMessage& message)
-    {
-        controller->Notify(message);
-    });*/
-    // SceneEndBaselines
     
     OnMakeClean(controller);
 }
