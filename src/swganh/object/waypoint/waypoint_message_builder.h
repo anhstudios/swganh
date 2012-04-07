@@ -29,7 +29,7 @@ namespace waypoint {
 		static void BuildPlanetDelta(std::shared_ptr<Waypoint> object);
 		static void BuildCoordinatesDelta(std::shared_ptr<Waypoint> object);
 		static void BuildColor(std::shared_ptr<Waypoint> object);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(std::shared_ptr<Waypoint> object);
+        static swganh::messages::BaselinesMessage BuildBaseline3(std::shared_ptr<Waypoint> object);
     };
 
 }}}  // swganh::object::waypoint

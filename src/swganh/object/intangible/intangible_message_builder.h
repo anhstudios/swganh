@@ -28,7 +28,7 @@ namespace intangible {
         }
         virtual void RegisterEventHandlers();
         static void BuildStfDetailDelta(std::shared_ptr<Intangible> intangible);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(std::shared_ptr<Intangible> intangible);
+        static swganh::messages::BaselinesMessage BuildBaseline6(std::shared_ptr<Intangible> intangible);
     };
 
 }}}  // swganh::object::intangible

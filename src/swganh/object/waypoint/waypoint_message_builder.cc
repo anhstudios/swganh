@@ -69,7 +69,7 @@ void WaypointMessageBuilder::BuildColor(shared_ptr<Waypoint> object)
         object->AddDeltasUpdate(message);    
     }
 }
-boost::optional<BaselinesMessage> WaypointMessageBuilder::BuildBaseline3(shared_ptr<Waypoint> object)
+BaselinesMessage WaypointMessageBuilder::BuildBaseline3(shared_ptr<Waypoint> object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3, 12);
     auto coords = object->GetCoordinates();
@@ -82,5 +82,5 @@ boost::optional<BaselinesMessage> WaypointMessageBuilder::BuildBaseline3(shared_
     message.data.write(object->GetName());
     message.data.write<uint8_t>(0);
     message.data.write(object->GetColor());
-    return boost::optional<BaselinesMessage>(std::move(message));
+    return BaselinesMessage(std::move(message));
 }

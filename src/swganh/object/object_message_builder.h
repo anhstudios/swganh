@@ -43,11 +43,7 @@ namespace object {
         static swganh::messages::BaselinesMessage BuildBaseline6(std::shared_ptr<Object> object);
         typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
     protected:
-        anh::EventDispatcher* event_dispatcher;
-    private:
-        typedef std::function<boost::optional<swganh::messages::BaselinesMessage>()> BaselinesBuilder;
-        typedef std::vector<BaselinesBuilder> BaselinesBuilderContainer;
-        BaselinesBuilderContainer baselines_builders_;
+        anh::EventDispatcher* event_dispatcher;        
 	};
 
 }}  // swganh::object

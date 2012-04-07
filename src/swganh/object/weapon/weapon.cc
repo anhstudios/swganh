@@ -35,5 +35,5 @@ void Weapon::GetBaseline3()
     //message.data.write(ukn6);
     //message.data.write(ukn7);
 
-    //return boost::optional<BaselinesMessage>(move(message));
+    //return BaselinesMessage(move(message));
 }
