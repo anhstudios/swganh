@@ -53,7 +53,7 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 	if(state_ == BRANCH)
 	{
 		std::for_each(leaf_nodes_.begin(), leaf_nodes_.end(), [=, &obj, &success](std::shared_ptr<Node> node){
-			if(boost::geometry::within( Point(obj->GetPosition().x, obj->GetPosition().y) , node->GetRegion()))
+			if(boost::geometry::within( Point(obj->GetPosition().x, obj->GetPosition().z) , node->GetRegion()))
 			{
 				node->InsertObject(obj);
 				success = true;
@@ -82,7 +82,7 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 
 	if(state_ == BRANCH)
 	{
-		Point obj_point(obj->GetPosition().x, obj->GetPosition().y);
+		Point obj_point(obj->GetPosition().x, obj->GetPosition().z);
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
 			if(boost::geometry::within(obj_point, node->GetRegion()))
@@ -119,12 +119,7 @@ void Node::Split()
 		bool success = false;
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
-			//std::cout << "Trying to move!" << std::endl;
-			//std::cout << "Node Level: " << node->GetLevel() << std::endl;
-			//std::cout << "Object " << obj->GetObjectId() << " @ " << obj->GetPosition().x << "," << obj->GetPosition().y << std::endl;
-			//std::cout << "Region: (" << node->GetRegion().min_corner().x() << "," << node->GetRegion().min_corner().y() << ") (" << node->GetRegion().max_corner().x() << "," << node->GetRegion().max_corner().y() << ")" << std::endl;
-			//std::cout << "Within: " << boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().y) , node->GetRegion()) << std::endl;
-			if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().y) , node->GetRegion()))
+			if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().z) , node->GetRegion()))
 			{
 				i = objects_.erase(i);
 				node->InsertObject(std::move(obj));
@@ -143,7 +138,7 @@ std::vector<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_
 	std::vector<std::shared_ptr<swganh::object::Object>> return_list;
 
 	std::for_each(objects_.begin(), objects_.end(), [=,& return_list](std::shared_ptr<swganh::object::Object> obj) {
-		if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().y), query_box))
+		if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().z), query_box))
 			return_list.push_back(obj);
 	});
 
