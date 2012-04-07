@@ -31,7 +31,7 @@ EventType BaseEvent::Type() const
 }
 
 EventDispatcher::EventDispatcher(ba::io_service& io_service)
-: strand_(io_service)
+: io_service_(io_service)
 {}
 
 CallbackId EventDispatcher::Subscribe(EventType type, EventHandlerCallback callback)
@@ -79,7 +79,7 @@ future<shared_ptr<EventInterface>> EventDispatcher::Dispatch(const shared_ptr<Ev
         return dispatch_event;
     });
 
-    strand_.post([task] () {
+    io_service_.post([task] () {
         (*task)();
     });
 
