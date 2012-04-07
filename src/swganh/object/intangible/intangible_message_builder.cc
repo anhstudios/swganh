@@ -28,12 +28,12 @@ void IntangibleMessageBuilder::BuildStfDetailDelta(shared_ptr<Intangible> object
         object->AddDeltasUpdate(message);                
     }
 }
-boost::optional<BaselinesMessage> IntangibleMessageBuilder::BuildBaseline6(shared_ptr<Intangible> object)
+BaselinesMessage IntangibleMessageBuilder::BuildBaseline6(shared_ptr<Intangible> object)
 {
     auto message = CreateBaselinesMessage(object, object->Object::VIEW_6, 1);
     message.data.write(0);
     message.data.write(object->GetStfDetailFile());
     message.data.write(0);
     message.data.write(object->GetStfDetailString());
-    return boost::optional<BaselinesMessage>(std::move(message));
+    return BaselinesMessage(std::move(message));
 }

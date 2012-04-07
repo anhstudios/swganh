@@ -249,14 +249,18 @@ bool Object::IsDirty()
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return !deltas_.empty();
 }
-// TODO: Refactor
+void Object::ClearBaselines()
+{
+    std::lock_guard<std::mutex> lock(object_mutex_);
+    baselines_.clear();
+}
+void Object::ClearDeltas()
+{
+    std::lock_guard<std::mutex> lock(object_mutex_);
+    deltas_.clear();
+}
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
-    {
-        std::lock_guard<std::mutex> lock(object_mutex_);
-        baselines_.clear();
-        deltas_.clear();
-    }
     // SceneCreateObjectByCrc
     swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -300,48 +304,9 @@ void Object::AddDeltasUpdate(DeltasMessage message)
 }
 void Object::AddBaselineToCache(swganh::messages::BaselinesMessage baseline)
 {
+    std::lock_guard<std::mutex> lock(object_mutex_);
     baselines_.push_back(move(baseline));
 }
-//
-//void Object::AddBaselinesBuilders_()
-//{
-//	std::lock_guard<std::mutex> lock(object_mutex_);
-//    baselines_builders_.push_back([this] () {
-//        return GetBaseline1();
-//    });
-//
-//    baselines_builders_.push_back([this] () {
-//        return GetBaseline2();
-//    });
-//
-//    baselines_builders_.push_back([this] () {
-//        return GetBaseline3();
-//    });
-//
-//    baselines_builders_.push_back([this] () {
-//        return GetBaseline4();
-//    });
-//
-//    baselines_builders_.push_back([this] () {
-//        return GetBaseline5();
-//    });
-//
-//    baselines_builders_.push_back([this] () {
-//        return GetBaseline6();
-//    });
-//
-//    baselines_builders_.push_back([this] () {
-//        return GetBaseline7();
-//    });
-//
-//    baselines_builders_.push_back([this] () {
-//        return GetBaseline8();
-//    });
-//
-//    baselines_builders_.push_back([this] () {
-//        return GetBaseline9();
-//    });
-//}
 
 void Object::SetPosition(glm::vec3 position)
 {

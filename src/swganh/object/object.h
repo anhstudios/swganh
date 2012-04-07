@@ -464,16 +464,8 @@ public:
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
     virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
-
-    /*virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline4() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline5() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }*/
+    void ClearBaselines();
+    void ClearDeltas();
     typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
