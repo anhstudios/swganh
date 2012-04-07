@@ -863,8 +863,6 @@ public:
     typedef anh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
 
 private:
-	friend class PlayerFactory;
-
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
     mutable std::mutex player_mutex_;

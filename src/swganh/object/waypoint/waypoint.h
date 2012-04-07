@@ -131,22 +131,20 @@ public:
     */
     void SetColorByte(uint8_t color_byte);
 
-protected:
-    virtual void GetBaseline3();
-private:
     typedef anh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
-	friend class WaypointFactory;
-
+private:
+    
+	
     mutable std::mutex waypoint_mutex_;
 
-    std::atomic<uint32_t> uses_;					//update 3
-    glm::vec3 coordinates_;			//update 3
-    std::atomic<uint8_t> activated_flag_;		//update 3
-    std::atomic<uint64_t> location_network_id_;	//update 3
-    std::string planet_name_;		//update 3
-    std::wstring name_;				//update 3
-    std::atomic<uint8_t> not_used_;				//update 3
-    std::string color_;				//update 3
+    std::atomic<uint32_t> uses_;				        //update 3
+    glm::vec3 coordinates_;			                    //update 3
+    std::atomic<uint8_t> activated_flag_;		        //update 3
+    std::atomic<uint64_t> location_network_id_;	        //update 3
+    std::string planet_name_;		                    //update 3
+    std::wstring name_;				                    //update 3
+    std::atomic<uint8_t> not_used_;				        //update 3
+    std::string color_;				                    //update 3
 };
 
 }}} // swganh::object::waypoint

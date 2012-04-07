@@ -231,6 +231,8 @@ void CreatureMessageBuilder::SendBaselines(shared_ptr<Creature> creature, shared
     }
         
     SendEndBaselines(creature, controller);
+
+    BuildUpdatePvpStatusMessage(creature);
 }
 void CreatureMessageBuilder::BuildBankCreditsDelta(shared_ptr<Creature> creature)
 {

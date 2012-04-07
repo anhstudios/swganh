@@ -85,8 +85,6 @@ public:
     static void GetBaseline6();
     typedef anh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
 private:
-    friend class GuildFactory;
-
     mutable std::mutex guild_mutex_;
     swganh::messages::containers::NetworkList<GuildTag>     guild_list_;
 };
