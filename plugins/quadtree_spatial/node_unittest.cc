@@ -66,6 +66,8 @@ TEST(QuadtreeTest, CanInsertNode)
 	root_node.InsertObject(obj6);
 	*/
 
+	std::vector<std::shared_ptr<swganh::object::Object>> objects;
+	
 	boost::random::mt19937 gen;
 	boost::random::uniform_real_distribution<> random(-3000.0f, 3000.0f);
 	for(int x = 0; x < 3000; x++)
@@ -73,9 +75,28 @@ TEST(QuadtreeTest, CanInsertNode)
 		std::shared_ptr<swganh::object::Object> obj = std::make_shared<swganh::object::Object>();
 		obj->SetObjectId(x);
 		obj->SetPosition(glm::vec3(random(gen), random(gen), random(gen)));
-		root_node.InsertObject(obj);
+		objects.push_back(obj);
+	}
+
+	for(auto i = objects.begin(); i != objects.end(); i++)
+	{
+		root_node.InsertObject((*i));
 	}
 
 	QueryBox query_box(Point(-3000, -3000), Point(100, 100));
 	std::cout << "Query result: " << root_node.Query(query_box).size() << std::endl;
+
+	QueryBox query_box2(Point(-3000, -3000), Point(3000, 3000));
+	std::cout << "Query 2 result: " << root_node.Query(query_box2).size() << std::endl;
+
+	for(auto i = objects.begin(); i != objects.end(); i++)
+	{
+		root_node.RemoveObject((*i));
+	}
+
+	QueryBox query_box3(Point(-3000, -3000), Point(100, 100));
+	std::cout << "Query 3 result: " << root_node.Query(query_box3).size() << std::endl;
+
+	QueryBox query_box4(Point(-3000, -3000), Point(3000, 3000));
+	std::cout << "Query 4 result: " << root_node.Query(query_box4).size() << std::endl;
 }

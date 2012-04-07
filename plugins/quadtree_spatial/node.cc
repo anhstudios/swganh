@@ -70,6 +70,29 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 
 void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 {
+	for(auto i = objects_.begin(); i != objects_.end(); )
+	{
+		if(obj->GetObjectId() == (*i)->GetObjectId())
+		{
+			i = objects_.erase(i);
+			return;
+		}
+		i++;
+	}
+
+	if(state_ == BRANCH)
+	{
+		Point obj_point(obj->GetPosition().x, obj->GetPosition().y);
+		for(std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			if(boost::geometry::within(obj_point, node->GetRegion()))
+			{
+				node->RemoveObject(obj);
+				return;
+			}
+		}
+	}
+
 }
 
 void Node::Split()
