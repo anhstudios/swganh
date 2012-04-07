@@ -141,8 +141,7 @@ public:
     virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
 private:
     typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
-    friend class TangibleFactory;
-
+    
     mutable std::mutex tangible_mutex_;
 
     std::string customization_;                                                                                      // update 3 variable 4

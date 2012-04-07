@@ -77,21 +77,21 @@ void PlayerFactory::PersistObject(const shared_ptr<Object>& object)
         ObjectFactory::PersistObject(object, statement);
 
 		auto player = static_pointer_cast<Player>(object);
-		statement->setString(17, player->profession_tag_);
-		statement->setUInt64(18, player->total_playtime_);
-		statement->setUInt(19, player->admin_tag_);
-		statement->setUInt(20, player->max_force_power_);
-		statement->setUInt(21, player->experimentation_flag_);
-		statement->setUInt(22, player->crafting_stage_);
-		statement->setUInt64(23, player->nearest_crafting_station_);
-		statement->setUInt(24, player->experimentation_points_);
-		statement->setUInt(25, player->accomplishment_counter_);
-		statement->setUInt(26, player->language_);
-		statement->setUInt(27, player->current_stomach_);
-		statement->setUInt(28, player->max_stomach_);
-		statement->setUInt(29, player->current_drink_);
-		statement->setUInt(30, player->max_drink_);
-		statement->setUInt(31, player->jedi_state_);
+		statement->setString(17, player->GetProfessionTag());
+		statement->setUInt64(18, player->GetTotalPlayTime());
+		statement->setUInt(19, player->GetAdminTag());
+		statement->setUInt(20, player->GetMaxForcePower());
+		statement->setUInt(21, player->GetExperimentationFlag());
+		statement->setUInt(22, player->GetCraftingStage());
+		statement->setUInt64(23, player->GetNearestCraftingStation());
+		statement->setUInt(24, player->GetExperimentationPoints());
+		statement->setUInt(25, player->GetAccomplishmentCounter());
+		statement->setUInt(26, player->GetLanguage());
+		statement->setUInt(27, player->GetCurrentStomach());
+		statement->setUInt(28, player->GetMaxStomach());
+		statement->setUInt(29, player->GetCurrentDrink());
+		statement->setUInt(30, player->GetMaxDrink());
+		statement->setUInt(31, player->GetJediState());
 
         statement->executeUpdate();
 

@@ -118,7 +118,6 @@ protected:
     virtual void GetBaseline6();
 
 private:
-    friend class GroupFactory;
     mutable std::mutex group_mutex_;
 
     swganh::messages::containers::NetworkSortedVector<Member> member_list_;                     // update 6 variable 1

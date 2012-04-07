@@ -613,10 +613,6 @@ public:
 
     typedef anh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 private:
-    friend class CreatureFactory;
-
-    //void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
-
     mutable std::mutex creature_mutex_;
 
     std::atomic<uint32_t>    bank_credits_;                                                             // update 1 variable 0
