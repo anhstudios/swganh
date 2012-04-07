@@ -80,7 +80,9 @@ void ConfigReader::ParseConfig()
             }
 
             auto native_path = boost::filesystem::system_complete(filename).native();
-            tre_filenames_.push_back(string(begin(native_path), end(native_path)));
+            auto tre_file_path = string(begin(native_path), end(native_path));
+            std::cout << tre_file_path << std::endl;
+            tre_filenames_.emplace_back(move(tre_file_path));
         }
     }
 }
