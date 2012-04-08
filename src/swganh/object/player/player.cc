@@ -680,9 +680,11 @@ void Player::RemoveFriend(string friend_name)
             return;
         }
         friend_id = iter->id;
+        friends_.ClearDeltas();
         friends_.Remove(iter);
     }
-    GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), friend_id));
+    GetEventDispatcher()->Dispatch(make_shared<NameEvent>
+        ("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), friend_id));
 }
 
 void Player::ClearFriends()
