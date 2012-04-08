@@ -14,29 +14,29 @@ using namespace swganh::object;
 
 void ObjectMessageBuilder::RegisterEventHandlers()
 {
-    event_dispatcher->Subscribe("Object::CustomName", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Object::CustomName", [this] (const shared_ptr<EventInterface>& incoming_event)
     {
         auto value_event = static_pointer_cast<ObjectEvent>(incoming_event);
         BuildCustomNameDelta(value_event->Get());
     });
-    event_dispatcher->Subscribe("Object::StfName", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Object::StfName", [this] (const shared_ptr<EventInterface>& incoming_event)
     {
         auto value_event = static_pointer_cast<ObjectEvent>(incoming_event);
         BuildStfNameDelta(value_event->Get());
     });
-    event_dispatcher->Subscribe("Object::Complexity", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Object::Complexity", [this] (const shared_ptr<EventInterface>& incoming_event)
     {
         auto value_event = static_pointer_cast<ObjectEvent>(incoming_event);
         BuildComplexityDelta(value_event->Get());
     });
-    event_dispatcher->Subscribe("Object::Volume", [this] (shared_ptr<EventInterface> incoming_event)
+    event_dispatcher->Subscribe("Object::Volume", [this] (const shared_ptr<EventInterface>& incoming_event)
     {
         auto value_event = static_pointer_cast<ObjectEvent>(incoming_event);
         BuildVolumeDelta(value_event->Get());
     });
 }
 
-void ObjectMessageBuilder::SendEndBaselines(shared_ptr<Object> object, shared_ptr<ObjectController> controller)
+void ObjectMessageBuilder::SendEndBaselines(const shared_ptr<Object>& object, const shared_ptr<ObjectController>& controller)
 {
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = object->GetObjectId();
@@ -46,7 +46,7 @@ void ObjectMessageBuilder::SendEndBaselines(shared_ptr<Object> object, shared_pt
     object->ClearDeltas();
 }
 
-void ObjectMessageBuilder::BuildComplexityDelta(shared_ptr<Object> object)
+void ObjectMessageBuilder::BuildComplexityDelta(const shared_ptr<Object>& object)
 {
     if (object->HasObservers())
     {
@@ -56,7 +56,7 @@ void ObjectMessageBuilder::BuildComplexityDelta(shared_ptr<Object> object)
         object->AddDeltasUpdate(message);                
     }
 }
-void ObjectMessageBuilder::BuildStfNameDelta(shared_ptr<Object> object)
+void ObjectMessageBuilder::BuildStfNameDelta(const shared_ptr<Object>& object)
 {
     if (object->HasObservers())
     {
@@ -68,7 +68,7 @@ void ObjectMessageBuilder::BuildStfNameDelta(shared_ptr<Object> object)
         object->AddDeltasUpdate(message);                
     }
 }
-void ObjectMessageBuilder::BuildCustomNameDelta(shared_ptr<Object> object)
+void ObjectMessageBuilder::BuildCustomNameDelta(const shared_ptr<Object>& object)
 {
     if (object->HasObservers())
     {
@@ -78,7 +78,7 @@ void ObjectMessageBuilder::BuildCustomNameDelta(shared_ptr<Object> object)
         object->AddDeltasUpdate(message);                
     }
 }
-void ObjectMessageBuilder::BuildVolumeDelta(shared_ptr<Object> object)
+void ObjectMessageBuilder::BuildVolumeDelta(const shared_ptr<Object>& object)
 {
     if (object->HasObservers())
     {
@@ -89,7 +89,7 @@ void ObjectMessageBuilder::BuildVolumeDelta(shared_ptr<Object> object)
     }
 }
 
-void ObjectMessageBuilder::BuildServerIDDelta(shared_ptr<Object> object)
+void ObjectMessageBuilder::BuildServerIDDelta(const shared_ptr<Object>& object)
 {
     if (object->HasObservers())
     {
@@ -101,7 +101,7 @@ void ObjectMessageBuilder::BuildServerIDDelta(shared_ptr<Object> object)
     }
 }
 
-BaselinesMessage ObjectMessageBuilder::BuildBaseline3(shared_ptr<Object> object)
+BaselinesMessage ObjectMessageBuilder::BuildBaseline3(const shared_ptr<Object>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3);
     message.data.write(object->GetComplexity());
@@ -115,7 +115,7 @@ BaselinesMessage ObjectMessageBuilder::BuildBaseline3(shared_ptr<Object> object)
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage ObjectMessageBuilder::BuildBaseline6(shared_ptr<Object> object)
+BaselinesMessage ObjectMessageBuilder::BuildBaseline6(const shared_ptr<Object>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_6);
     // server ID
@@ -124,7 +124,7 @@ BaselinesMessage ObjectMessageBuilder::BuildBaseline6(shared_ptr<Object> object)
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage ObjectMessageBuilder::CreateBaselinesMessage(shared_ptr<Object> object, uint8_t view_type, uint16_t opcount)
+BaselinesMessage ObjectMessageBuilder::CreateBaselinesMessage(const shared_ptr<Object>& object, uint8_t view_type, uint16_t opcount)
 {
     BaselinesMessage message;
     message.object_id = object->GetObjectId();
@@ -135,7 +135,7 @@ BaselinesMessage ObjectMessageBuilder::CreateBaselinesMessage(shared_ptr<Object>
     return message;
 }
 
-DeltasMessage ObjectMessageBuilder::CreateDeltasMessage(shared_ptr<Object> object, uint8_t view_type, uint16_t update_type, uint16_t update_count)
+DeltasMessage ObjectMessageBuilder::CreateDeltasMessage(const shared_ptr<Object>& object, uint8_t view_type, uint16_t update_type, uint16_t update_count)
 {
     DeltasMessage message;
     message.object_id = object->GetObjectId();

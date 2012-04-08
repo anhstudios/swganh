@@ -13,7 +13,7 @@ void GuildMessageBuilder::RegisterEventHandlers()
     // TODO: Register guild event handlers
 }
 
-void GuildMessageBuilder::BuildGuildTagsDelta(shared_ptr<Guild> guild)
+void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
 {
     if(guild->HasObservers())
     {
@@ -25,7 +25,7 @@ void GuildMessageBuilder::BuildGuildTagsDelta(shared_ptr<Guild> guild)
         guild->GetGuildList().ClearDeltas();
 }
 
-BaselinesMessage GuildMessageBuilder::BuildBaseline3(shared_ptr<Guild> guild)
+BaselinesMessage GuildMessageBuilder::BuildBaseline3(const shared_ptr<Guild>& guild)
 {
     auto message = CreateBaselinesMessage(guild, Object::VIEW_3, 5);
     message.data.append(ObjectMessageBuilder::BuildBaseline3(guild).data);
@@ -33,7 +33,7 @@ BaselinesMessage GuildMessageBuilder::BuildBaseline3(shared_ptr<Guild> guild)
     return BaselinesMessage(std::move(message));
 }
 
-BaselinesMessage GuildMessageBuilder::BuildBaseline6(shared_ptr<Guild> guild)
+BaselinesMessage GuildMessageBuilder::BuildBaseline6(const shared_ptr<Guild>& guild)
 {
     auto message = CreateBaselinesMessage(guild, Object::VIEW_6, 5);
     message.data.append(ObjectMessageBuilder::BuildBaseline6(guild).data);

@@ -16,7 +16,7 @@ void WaypointMessageBuilder::RegisterEventHandlers()
     // TODO: Register Event Handlers Here For Waypoints
 }
 
-void WaypointMessageBuilder::BuildUsesDelta(shared_ptr<Waypoint> object)
+void WaypointMessageBuilder::BuildUsesDelta(const shared_ptr<Waypoint>& object)
 {
     if (object->HasObservers())
     {
@@ -26,7 +26,7 @@ void WaypointMessageBuilder::BuildUsesDelta(shared_ptr<Waypoint> object)
         object->AddDeltasUpdate(message);    
     }
 }
-void WaypointMessageBuilder::BuildActivateDelta(shared_ptr<Waypoint> object)
+void WaypointMessageBuilder::BuildActivateDelta(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
     {
@@ -36,7 +36,7 @@ void WaypointMessageBuilder::BuildActivateDelta(shared_ptr<Waypoint> object)
         object->AddDeltasUpdate(message);    
     }
 }
-void WaypointMessageBuilder::BuildPlanetDelta(shared_ptr<Waypoint> object)
+void WaypointMessageBuilder::BuildPlanetDelta(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
     {
@@ -46,7 +46,7 @@ void WaypointMessageBuilder::BuildPlanetDelta(shared_ptr<Waypoint> object)
         object->AddDeltasUpdate(message);    
     }
 }
-void WaypointMessageBuilder::BuildCoordinatesDelta(shared_ptr<Waypoint> object)
+void WaypointMessageBuilder::BuildCoordinatesDelta(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
     {
@@ -59,7 +59,7 @@ void WaypointMessageBuilder::BuildCoordinatesDelta(shared_ptr<Waypoint> object)
         object->AddDeltasUpdate(message);    
     }
 }
-void WaypointMessageBuilder::BuildColor(shared_ptr<Waypoint> object)
+void WaypointMessageBuilder::BuildColor(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
     {
@@ -69,7 +69,7 @@ void WaypointMessageBuilder::BuildColor(shared_ptr<Waypoint> object)
         object->AddDeltasUpdate(message);    
     }
 }
-BaselinesMessage WaypointMessageBuilder::BuildBaseline3(shared_ptr<Waypoint> object)
+BaselinesMessage WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoint>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3, 12);
     auto coords = object->GetCoordinates();

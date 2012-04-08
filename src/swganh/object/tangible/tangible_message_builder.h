@@ -18,21 +18,21 @@ namespace tangible {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendBaselines(std::shared_ptr<Tangible> tangible, std::shared_ptr<ObjectController> controller);
+        virtual void SendBaselines(const std::shared_ptr<Tangible>& tangible, const std::shared_ptr<ObjectController>& controller);
         // deltas
-        static void BuildCustomizationDelta(std::shared_ptr<Tangible> tangible);
-        static void BuildComponentCustomizationDelta(std::shared_ptr<Tangible> tangible);
-        static void BuildOptionsMaskDelta(std::shared_ptr<Tangible> tangible);
-        static void BuildIncapTimerDelta(std::shared_ptr<Tangible> tangible);
-        static void BuildConditionDamageDelta(std::shared_ptr<Tangible> tangible);
-        static void BuildMaxConditionDelta(std::shared_ptr<Tangible> tangible);
-        static void BuildStaticDelta(std::shared_ptr<Tangible> tangible);
-        static void BuildDefendersDelta(std::shared_ptr<Tangible> tangible);
+        static void BuildCustomizationDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildComponentCustomizationDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildOptionsMaskDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildIncapTimerDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildConditionDamageDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildMaxConditionDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildStaticDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildDefendersDelta(const std::shared_ptr<Tangible>& tangible);
         
         // baselines
-        static swganh::messages::BaselinesMessage BuildBaseline3(std::shared_ptr<Tangible> tangible);
-        static swganh::messages::BaselinesMessage BuildBaseline6(std::shared_ptr<Tangible> tangible);
-        static swganh::messages::BaselinesMessage BuildBaseline7(std::shared_ptr<Tangible> tangible);
+        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Tangible>& tangible);
+        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Tangible>& tangible);
+        static swganh::messages::BaselinesMessage BuildBaseline7(const std::shared_ptr<Tangible>& tangible);
     private:
         typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
     };

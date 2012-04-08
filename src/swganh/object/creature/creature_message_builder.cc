@@ -219,7 +219,7 @@ void CreatureMessageBuilder::RegisterEventHandlers()
         BuildUpdatePvpStatusMessage(value_event->Get());
     });
 }
-void CreatureMessageBuilder::SendBaselines(shared_ptr<Creature> creature, shared_ptr<ObjectController> controller)
+void CreatureMessageBuilder::SendBaselines(const shared_ptr<Creature>& creature, const shared_ptr<ObjectController>& controller)
 {
     creature->AddBaselineToCache(BuildBaseline1(creature));
     creature->AddBaselineToCache(BuildBaseline3(creature));
@@ -234,7 +234,7 @@ void CreatureMessageBuilder::SendBaselines(shared_ptr<Creature> creature, shared
 
     BuildUpdatePvpStatusMessage(creature);
 }
-void CreatureMessageBuilder::BuildBankCreditsDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildBankCreditsDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -244,7 +244,7 @@ void CreatureMessageBuilder::BuildBankCreditsDelta(shared_ptr<Creature> creature
     }
 }
 
-void CreatureMessageBuilder::BuildCashCreditsDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildCashCreditsDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -254,7 +254,7 @@ void CreatureMessageBuilder::BuildCashCreditsDelta(shared_ptr<Creature> creature
     }
 }
 
-void CreatureMessageBuilder::BuildStatBaseDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildStatBaseDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -266,7 +266,7 @@ void CreatureMessageBuilder::BuildStatBaseDelta(shared_ptr<Creature> creature)
         creature->GetBaseStats().ClearDeltas();
 }
 
-void CreatureMessageBuilder::BuildSkillDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildSkillDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -278,7 +278,7 @@ void CreatureMessageBuilder::BuildSkillDelta(shared_ptr<Creature> creature)
         creature->GetSkills().ClearDeltas();
 }
 
-void CreatureMessageBuilder::BuildPostureUpdate(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildPostureUpdate(const shared_ptr<Creature>& creature)
 {
 	if (creature->HasObservers())
     {
@@ -289,7 +289,7 @@ void CreatureMessageBuilder::BuildPostureUpdate(shared_ptr<Creature> creature)
 	}
 }
 
-void CreatureMessageBuilder::BuildPostureDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildPostureDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -299,7 +299,7 @@ void CreatureMessageBuilder::BuildPostureDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildFactionRankDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildFactionRankDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -309,7 +309,7 @@ void CreatureMessageBuilder::BuildFactionRankDelta(shared_ptr<Creature> creature
     }
 }
 
-void CreatureMessageBuilder::BuildOwnerIdDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildOwnerIdDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -319,7 +319,7 @@ void CreatureMessageBuilder::BuildOwnerIdDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildScaleDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildScaleDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -329,7 +329,7 @@ void CreatureMessageBuilder::BuildScaleDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildBattleFatigueDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildBattleFatigueDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -339,7 +339,7 @@ void CreatureMessageBuilder::BuildBattleFatigueDelta(shared_ptr<Creature> creatu
     }
 }
 
-void CreatureMessageBuilder::BuildStateBitmaskDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildStateBitmaskDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -349,7 +349,7 @@ void CreatureMessageBuilder::BuildStateBitmaskDelta(shared_ptr<Creature> creatur
     }
 }
 
-void CreatureMessageBuilder::BuildStatWoundDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildStatWoundDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -361,7 +361,7 @@ void CreatureMessageBuilder::BuildStatWoundDelta(shared_ptr<Creature> creature)
         creature->GetStatWounds().ClearDeltas();
 }
 
-void CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -371,7 +371,7 @@ void CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(shared_ptr<Cre
     }
 }
 
-void CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -381,7 +381,7 @@ void CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(shared_ptr
     }
 }
 
-void CreatureMessageBuilder::BuildStatEncumberanceDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildStatEncumberanceDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -393,7 +393,7 @@ void CreatureMessageBuilder::BuildStatEncumberanceDelta(shared_ptr<Creature> cre
         creature->GetStatEncumberances().ClearDeltas();
 }
 
-void CreatureMessageBuilder::BuildSkillModDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildSkillModDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -405,7 +405,7 @@ void CreatureMessageBuilder::BuildSkillModDelta(shared_ptr<Creature> creature)
         creature->GetSkillMods().ClearDeltas();
 }
 
-void CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -415,7 +415,7 @@ void CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(shared_ptr<Creature> 
     }
 }
 
-void CreatureMessageBuilder::BuildSpeedMultiplierModifierDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildSpeedMultiplierModifierDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -425,7 +425,7 @@ void CreatureMessageBuilder::BuildSpeedMultiplierModifierDelta(shared_ptr<Creatu
     }
 }
 
-void CreatureMessageBuilder::BuildListenToIdDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildListenToIdDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -435,7 +435,7 @@ void CreatureMessageBuilder::BuildListenToIdDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildRunSpeedDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildRunSpeedDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -445,7 +445,7 @@ void CreatureMessageBuilder::BuildRunSpeedDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildSlopeModifierAngleDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildSlopeModifierAngleDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -455,7 +455,7 @@ void CreatureMessageBuilder::BuildSlopeModifierAngleDelta(shared_ptr<Creature> c
     }
 }
 
-void CreatureMessageBuilder::BuildSlopeModifierPercentDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildSlopeModifierPercentDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -465,7 +465,7 @@ void CreatureMessageBuilder::BuildSlopeModifierPercentDelta(shared_ptr<Creature>
     }
 }
 
-void CreatureMessageBuilder::BuildTurnRadiusDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildTurnRadiusDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -475,7 +475,7 @@ void CreatureMessageBuilder::BuildTurnRadiusDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildWalkingSpeedDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildWalkingSpeedDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -485,7 +485,7 @@ void CreatureMessageBuilder::BuildWalkingSpeedDelta(shared_ptr<Creature> creatur
     }
 }
 
-void CreatureMessageBuilder::BuildWaterModifierPrecentDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildWaterModifierPrecentDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -495,7 +495,7 @@ void CreatureMessageBuilder::BuildWaterModifierPrecentDelta(shared_ptr<Creature>
     }
 }
 
-void CreatureMessageBuilder::BuildMissionCriticalObjectDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildMissionCriticalObjectDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -507,7 +507,7 @@ void CreatureMessageBuilder::BuildMissionCriticalObjectDelta(shared_ptr<Creature
         creature->GetMissionCriticalObjects().ClearDeltas();
 }
 
-void CreatureMessageBuilder::BuildCombatLevelDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildCombatLevelDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -517,7 +517,7 @@ void CreatureMessageBuilder::BuildCombatLevelDelta(shared_ptr<Creature> creature
     }
 }
 
-void CreatureMessageBuilder::BuildAnimationDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildAnimationDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -527,7 +527,7 @@ void CreatureMessageBuilder::BuildAnimationDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildMoodAnimationDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildMoodAnimationDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -537,7 +537,7 @@ void CreatureMessageBuilder::BuildMoodAnimationDelta(shared_ptr<Creature> creatu
     }
 }
 
-void CreatureMessageBuilder::BuildWeaponIdDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildWeaponIdDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -547,7 +547,7 @@ void CreatureMessageBuilder::BuildWeaponIdDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildGroupIdDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildGroupIdDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -557,7 +557,7 @@ void CreatureMessageBuilder::BuildGroupIdDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildInviteSenderIdDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildInviteSenderIdDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -568,7 +568,7 @@ void CreatureMessageBuilder::BuildInviteSenderIdDelta(shared_ptr<Creature> creat
     }
 }
 
-void CreatureMessageBuilder::BuildGuildIdDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildGuildIdDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -578,7 +578,7 @@ void CreatureMessageBuilder::BuildGuildIdDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildTargetIdDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildTargetIdDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -588,7 +588,7 @@ void CreatureMessageBuilder::BuildTargetIdDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildMoodIdDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildMoodIdDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -598,7 +598,7 @@ void CreatureMessageBuilder::BuildMoodIdDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildPerformanceIdDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildPerformanceIdDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -608,7 +608,7 @@ void CreatureMessageBuilder::BuildPerformanceIdDelta(shared_ptr<Creature> creatu
     }
 }
 
-void CreatureMessageBuilder::BuildStatCurrentDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildStatCurrentDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -620,7 +620,7 @@ void CreatureMessageBuilder::BuildStatCurrentDelta(shared_ptr<Creature> creature
         creature->GetCurrentStats().ClearDeltas();
 }
 
-void CreatureMessageBuilder::BuildStatMaxDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildStatMaxDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -632,7 +632,7 @@ void CreatureMessageBuilder::BuildStatMaxDelta(shared_ptr<Creature> creature)
         creature->GetMaxStats().ClearDeltas();
 }
 
-void CreatureMessageBuilder::BuildEquipmentDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildEquipmentDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -644,7 +644,7 @@ void CreatureMessageBuilder::BuildEquipmentDelta(shared_ptr<Creature> creature)
         creature->GetEquipment().ClearDeltas();
 }
 
-void CreatureMessageBuilder::BuildDisguiseDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildDisguiseDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -654,7 +654,7 @@ void CreatureMessageBuilder::BuildDisguiseDelta(shared_ptr<Creature> creature)
     }
 }
 
-void CreatureMessageBuilder::BuildStationaryDelta(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildStationaryDelta(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -665,7 +665,7 @@ void CreatureMessageBuilder::BuildStationaryDelta(shared_ptr<Creature> creature)
 }
 
 
-void CreatureMessageBuilder::BuildUpdatePvpStatusMessage(shared_ptr<Creature> creature)
+void CreatureMessageBuilder::BuildUpdatePvpStatusMessage(const shared_ptr<Creature>& creature)
 {
     if (creature->HasObservers())
     {
@@ -678,7 +678,7 @@ void CreatureMessageBuilder::BuildUpdatePvpStatusMessage(shared_ptr<Creature> cr
     }
 }
 
-BaselinesMessage CreatureMessageBuilder::BuildBaseline1(shared_ptr<Creature> creature)
+BaselinesMessage CreatureMessageBuilder::BuildBaseline1(const shared_ptr<Creature>& creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_1, 4);
     message.data.write<uint32_t>(creature->GetBankCredits());                  // Bank Credits
@@ -689,7 +689,7 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline1(shared_ptr<Creature> cre
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage CreatureMessageBuilder::BuildBaseline3(shared_ptr<Creature> creature)
+BaselinesMessage CreatureMessageBuilder::BuildBaseline3(const shared_ptr<Creature>& creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_3, 18);
     message.data.append(TangibleMessageBuilder::BuildBaseline3(creature).data);
@@ -704,7 +704,7 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline3(shared_ptr<Creature> cre
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage CreatureMessageBuilder::BuildBaseline4(shared_ptr<Creature> creature)
+BaselinesMessage CreatureMessageBuilder::BuildBaseline4(const shared_ptr<Creature>& creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_4, 20);
     message.data.write<float>(creature->GetAccelerationMultiplierBase());         // Acceleration Multiplier Base
@@ -725,7 +725,7 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline4(shared_ptr<Creature> cre
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage CreatureMessageBuilder::BuildBaseline6(shared_ptr<Creature> creature)
+BaselinesMessage CreatureMessageBuilder::BuildBaseline6(const shared_ptr<Creature>& creature)
 {
     auto message = CreateBaselinesMessage(creature, Object::VIEW_6, 23);
     message.data.append(TangibleMessageBuilder::BuildBaseline6(creature).data);

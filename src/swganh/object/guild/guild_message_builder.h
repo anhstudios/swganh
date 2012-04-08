@@ -30,11 +30,11 @@ public:
     }
     virtual void RegisterEventHandlers();
     // deltas
-    static void BuildGuildTagsDelta(std::shared_ptr<Guild> guild);
+    static void BuildGuildTagsDelta(const std::shared_ptr<Guild>& guild);
 
     // baselines
-    static swganh::messages::BaselinesMessage BuildBaseline3(std::shared_ptr<Guild> guild);
-    static swganh::messages::BaselinesMessage BuildBaseline6(std::shared_ptr<Guild> guild);
+    static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Guild>& guild);
+    static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Guild>& guild);
 };
 
 }}} // swganh::object::guild

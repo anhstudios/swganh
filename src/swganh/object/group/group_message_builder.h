@@ -51,14 +51,14 @@ public:
     }
     // deltas
     virtual void RegisterEventHandlers();
-    static void BuildMemberListDelta(std::shared_ptr<Group> group);
-    static void BuildLootModeDelta(std::shared_ptr<Group> group);
-    static void BuildDifficultyDelta(std::shared_ptr<Group> group);
-    static void BuildLootMasterDelta(std::shared_ptr<Group> group);
+    static void BuildMemberListDelta(const std::shared_ptr<Group>& group);
+    static void BuildLootModeDelta(const std::shared_ptr<Group>& group);
+    static void BuildDifficultyDelta(const std::shared_ptr<Group>& group);
+    static void BuildLootMasterDelta(const std::shared_ptr<Group>& group);
 
     // baselines
-    static void BuildBaseline3(std::shared_ptr<Group> group);
-    static void BuildBaseline6(std::shared_ptr<Group> group);
+    static void BuildBaseline3(const std::shared_ptr<Group>& group);
+    static void BuildBaseline6(const std::shared_ptr<Group>& group);
 };
 
 }}} // swganh::object::group

@@ -36,7 +36,7 @@ void GroupMessageBuilder::RegisterEventHandlers()
     // TODO: Register Handlers for Group
 }
 
-void GroupMessageBuilder::BuildMemberListDelta(shared_ptr<Group> group)
+void GroupMessageBuilder::BuildMemberListDelta(const shared_ptr<Group>& group)
 {
     if(group->HasObservers())
     {
@@ -48,7 +48,7 @@ void GroupMessageBuilder::BuildMemberListDelta(shared_ptr<Group> group)
         group->GetGroupMembers().ClearDeltas();
 }
 
-void GroupMessageBuilder::BuildLootModeDelta(shared_ptr<Group> group)
+void GroupMessageBuilder::BuildLootModeDelta(const shared_ptr<Group>& group)
 {
     if(group->HasObservers())
     {
@@ -58,7 +58,7 @@ void GroupMessageBuilder::BuildLootModeDelta(shared_ptr<Group> group)
     }
 }
 
-void GroupMessageBuilder::BuildDifficultyDelta(shared_ptr<Group> group)
+void GroupMessageBuilder::BuildDifficultyDelta(const shared_ptr<Group>& group)
 {
     if(group->HasObservers())
     {
@@ -68,7 +68,7 @@ void GroupMessageBuilder::BuildDifficultyDelta(shared_ptr<Group> group)
     }
 }
 
-void GroupMessageBuilder::BuildLootMasterDelta(shared_ptr<Group> group)
+void GroupMessageBuilder::BuildLootMasterDelta(const shared_ptr<Group>& group)
 {
     if(group->HasObservers())
     {
@@ -78,13 +78,13 @@ void GroupMessageBuilder::BuildLootMasterDelta(shared_ptr<Group> group)
     }
 }
 
-void GroupMessageBuilder::BuildBaseline3(shared_ptr<Group> group)
+void GroupMessageBuilder::BuildBaseline3(const shared_ptr<Group>& group)
 {
     auto message = CreateBaselinesMessage(group, Object::VIEW_3, 8);
 	ObjectMessageBuilder::BuildBaseline3(group);
 }
 
-void GroupMessageBuilder::BuildBaseline6(shared_ptr<Group> group)
+void GroupMessageBuilder::BuildBaseline6(const shared_ptr<Group>& group)
 {
     auto message = CreateBaselinesMessage(group, Object::VIEW_6, 6);
 	message.data.append(ObjectMessageBuilder::BuildBaseline6(group).data);

@@ -68,7 +68,7 @@ void TangibleMessageBuilder::RegisterEventHandlers()
         BuildDefendersDelta(value_event->Get());
     });
 }
-void TangibleMessageBuilder::SendBaselines(std::shared_ptr<Tangible> tangible, std::shared_ptr<ObjectController> controller)
+void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible, const shared_ptr<ObjectController>& controller)
 {
     tangible->AddBaselineToCache(BuildBaseline3(tangible));
     tangible->AddBaselineToCache(BuildBaseline6(tangible));
@@ -81,7 +81,7 @@ void TangibleMessageBuilder::SendBaselines(std::shared_ptr<Tangible> tangible, s
         
     SendEndBaselines(tangible, controller);
 }
-void TangibleMessageBuilder::BuildCustomizationDelta(shared_ptr<Tangible> tangible)
+void TangibleMessageBuilder::BuildCustomizationDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
     {
@@ -91,7 +91,7 @@ void TangibleMessageBuilder::BuildCustomizationDelta(shared_ptr<Tangible> tangib
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildComponentCustomizationDelta(shared_ptr<Tangible> tangible)
+void TangibleMessageBuilder::BuildComponentCustomizationDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
     {
@@ -102,7 +102,7 @@ void TangibleMessageBuilder::BuildComponentCustomizationDelta(shared_ptr<Tangibl
     else
         tangible->GetComponentCustomization().ClearDeltas();
 }
-void TangibleMessageBuilder::BuildOptionsMaskDelta(shared_ptr<Tangible> tangible)
+void TangibleMessageBuilder::BuildOptionsMaskDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
     {
@@ -111,7 +111,7 @@ void TangibleMessageBuilder::BuildOptionsMaskDelta(shared_ptr<Tangible> tangible
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildIncapTimerDelta(shared_ptr<Tangible> tangible)
+void TangibleMessageBuilder::BuildIncapTimerDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
     {
@@ -120,7 +120,7 @@ void TangibleMessageBuilder::BuildIncapTimerDelta(shared_ptr<Tangible> tangible)
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildConditionDamageDelta(shared_ptr<Tangible> tangible)
+void TangibleMessageBuilder::BuildConditionDamageDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
     {
@@ -129,7 +129,7 @@ void TangibleMessageBuilder::BuildConditionDamageDelta(shared_ptr<Tangible> tang
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildMaxConditionDelta(shared_ptr<Tangible> tangible)
+void TangibleMessageBuilder::BuildMaxConditionDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
     {
@@ -138,7 +138,7 @@ void TangibleMessageBuilder::BuildMaxConditionDelta(shared_ptr<Tangible> tangibl
         tangible->AddDeltasUpdate(move(message));
     }
 }
-void TangibleMessageBuilder::BuildStaticDelta(shared_ptr<Tangible> tangible)
+void TangibleMessageBuilder::BuildStaticDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
     {
@@ -148,7 +148,7 @@ void TangibleMessageBuilder::BuildStaticDelta(shared_ptr<Tangible> tangible)
     }
 }
 
-void TangibleMessageBuilder::BuildDefendersDelta(shared_ptr<Tangible> tangible)
+void TangibleMessageBuilder::BuildDefendersDelta(const shared_ptr<Tangible>& tangible)
 {
     if (tangible->HasObservers())
     {
@@ -159,7 +159,7 @@ void TangibleMessageBuilder::BuildDefendersDelta(shared_ptr<Tangible> tangible)
 }
 
 // baselines
-BaselinesMessage TangibleMessageBuilder::BuildBaseline3(shared_ptr<Tangible> tangible)
+BaselinesMessage TangibleMessageBuilder::BuildBaseline3(const shared_ptr<Tangible>& tangible)
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_3, 11);
     message.data.append(ObjectMessageBuilder::BuildBaseline3(tangible).data);
@@ -172,14 +172,14 @@ BaselinesMessage TangibleMessageBuilder::BuildBaseline3(shared_ptr<Tangible> tan
     message.data.write<uint8_t>(tangible->IsStatic() ? 1 : 0);
     return BaselinesMessage(std::move(message));
 }
-BaselinesMessage TangibleMessageBuilder::BuildBaseline6(shared_ptr<Tangible> tangible)
+BaselinesMessage TangibleMessageBuilder::BuildBaseline6(const shared_ptr<Tangible>& tangible)
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_6, 2);
     message.data.append(ObjectMessageBuilder::BuildBaseline6(tangible).data);
     tangible->GetDefenders().Serialize(message);
     return BaselinesMessage(std::move(message));
 }
-BaselinesMessage TangibleMessageBuilder::BuildBaseline7(shared_ptr<Tangible> tangible)
+BaselinesMessage TangibleMessageBuilder::BuildBaseline7(const shared_ptr<Tangible>& tangible)
 {
     auto message = CreateBaselinesMessage(tangible, Object::VIEW_7, 2);
     message.data.write<uint64_t>(0);

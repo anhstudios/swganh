@@ -15,7 +15,7 @@ void IntangibleMessageBuilder::RegisterEventHandlers()
     // TODO: Register Event Handlers for Intangible
 }
 
-void IntangibleMessageBuilder::BuildStfDetailDelta(shared_ptr<Intangible> object)
+void IntangibleMessageBuilder::BuildStfDetailDelta(const shared_ptr<Intangible>& object)
 {
     // Only build a message if there are observers.
     if (object->HasObservers())
@@ -28,7 +28,7 @@ void IntangibleMessageBuilder::BuildStfDetailDelta(shared_ptr<Intangible> object
         object->AddDeltasUpdate(message);                
     }
 }
-BaselinesMessage IntangibleMessageBuilder::BuildBaseline6(shared_ptr<Intangible> object)
+BaselinesMessage IntangibleMessageBuilder::BuildBaseline6(const shared_ptr<Intangible>& object)
 {
     auto message = CreateBaselinesMessage(object, object->Object::VIEW_6, 1);
     message.data.write(0);

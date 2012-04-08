@@ -172,7 +172,7 @@ void PlayerMessageBuilder::RegisterEventHandlers()
     });
 }
 
-void PlayerMessageBuilder::SendBaselines(shared_ptr<Player> player, shared_ptr<ObjectController> controller)
+void PlayerMessageBuilder::SendBaselines(const shared_ptr<Player>& player, const shared_ptr<ObjectController>& controller)
 {
     player->AddBaselineToCache(BuildBaseline3(player));
     player->AddBaselineToCache(BuildBaseline6(player));
@@ -187,14 +187,7 @@ void PlayerMessageBuilder::SendBaselines(shared_ptr<Player> player, shared_ptr<O
         
     SendEndBaselines(player, controller);
 }
-void PlayerMessageBuilder::SendEndBaselines(shared_ptr<Player> player, shared_ptr<ObjectController> controller)
-{
-    swganh::messages::SceneEndBaselines scene_end_baselines;
-    scene_end_baselines.object_id = player->GetObjectId();
-    controller->Notify(scene_end_baselines);
-}
-// deltas
-void PlayerMessageBuilder::BuildStatusBitmaskDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildStatusBitmaskDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -214,7 +207,7 @@ void PlayerMessageBuilder::BuildStatusBitmaskDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildProfileBitmaskDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildProfileBitmaskDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -234,7 +227,7 @@ void PlayerMessageBuilder::BuildProfileBitmaskDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildProfessionTagDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildProfessionTagDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -244,7 +237,7 @@ void PlayerMessageBuilder::BuildProfessionTagDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildBornDateDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildBornDateDelta(const shared_ptr<Player>& object)
 {
      if (object->HasObservers())
     {
@@ -254,7 +247,7 @@ void PlayerMessageBuilder::BuildBornDateDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildPlayTimeDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildPlayTimeDelta(const shared_ptr<Player>& object)
 {
      if (object->HasObservers())
     {
@@ -265,7 +258,7 @@ void PlayerMessageBuilder::BuildPlayTimeDelta(shared_ptr<Player> object)
     }
 }
 
-void PlayerMessageBuilder::BuildAdminTagDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildAdminTagDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -274,7 +267,7 @@ void PlayerMessageBuilder::BuildAdminTagDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(std::move(message));
     }
 }
-void PlayerMessageBuilder::BuildXpDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildXpDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -285,7 +278,7 @@ void PlayerMessageBuilder::BuildXpDelta(shared_ptr<Player> object)
     else
         object->GetXp().ClearDeltas();
 }
-void PlayerMessageBuilder::BuildWaypointDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildWaypointDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -294,7 +287,7 @@ void PlayerMessageBuilder::BuildWaypointDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCurrentForcePowerDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildCurrentForcePowerDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -304,7 +297,7 @@ void PlayerMessageBuilder::BuildCurrentForcePowerDelta(shared_ptr<Player> object
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildMaxForcePowerDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildMaxForcePowerDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -314,7 +307,7 @@ void PlayerMessageBuilder::BuildMaxForcePowerDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildForceSensitiveQuestDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildForceSensitiveQuestDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -324,7 +317,7 @@ void PlayerMessageBuilder::BuildForceSensitiveQuestDelta(shared_ptr<Player> obje
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -334,7 +327,7 @@ void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(shared_ptr<Pla
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildQuestJournalDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildQuestJournalDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -345,7 +338,7 @@ void PlayerMessageBuilder::BuildQuestJournalDelta(shared_ptr<Player> object)
     else
         object->GetQuests().ClearDeltas();
 }
-void PlayerMessageBuilder::BuildAbilityDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildAbilityDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -355,7 +348,7 @@ void PlayerMessageBuilder::BuildAbilityDelta(shared_ptr<Player> object)
     }
 }
 
-void PlayerMessageBuilder::BuildExperimentationFlagDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildExperimentationFlagDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -365,7 +358,7 @@ void PlayerMessageBuilder::BuildExperimentationFlagDelta(shared_ptr<Player> obje
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCraftingStageDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildCraftingStageDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -375,7 +368,7 @@ void PlayerMessageBuilder::BuildCraftingStageDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildNearestCraftingStationDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildNearestCraftingStationDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -385,7 +378,7 @@ void PlayerMessageBuilder::BuildNearestCraftingStationDelta(shared_ptr<Player> o
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildDraftSchematicDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildDraftSchematicDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -397,7 +390,7 @@ void PlayerMessageBuilder::BuildDraftSchematicDelta(shared_ptr<Player> object)
         object->GetDraftSchematics().ClearDeltas();
 }
 
-void PlayerMessageBuilder::BuildExperimentationPointsDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildExperimentationPointsDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -407,7 +400,7 @@ void PlayerMessageBuilder::BuildExperimentationPointsDelta(shared_ptr<Player> ob
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -417,7 +410,7 @@ void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(shared_ptr<Player> ob
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildFriendsDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildFriendsDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -428,7 +421,7 @@ void PlayerMessageBuilder::BuildFriendsDelta(shared_ptr<Player> object)
     else
         object->GetFriends().ClearDeltas();
 }
-void PlayerMessageBuilder::BuildIgnoredDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildIgnoredDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -439,7 +432,7 @@ void PlayerMessageBuilder::BuildIgnoredDelta(shared_ptr<Player> object)
     else
         object->GetIgnoredPlayers().ClearDeltas();
 }
-void PlayerMessageBuilder::BuildLanguageDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildLanguageDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -449,7 +442,7 @@ void PlayerMessageBuilder::BuildLanguageDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCurrentStomachDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildCurrentStomachDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -459,7 +452,7 @@ void PlayerMessageBuilder::BuildCurrentStomachDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildMaxStomachDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildMaxStomachDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -469,7 +462,7 @@ void PlayerMessageBuilder::BuildMaxStomachDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCurrentDrinkDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildCurrentDrinkDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -479,7 +472,7 @@ void PlayerMessageBuilder::BuildCurrentDrinkDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildMaxDrinkDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildMaxDrinkDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -489,7 +482,7 @@ void PlayerMessageBuilder::BuildMaxDrinkDelta(shared_ptr<Player> object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildJediStateDelta(shared_ptr<Player> object)
+void PlayerMessageBuilder::BuildJediStateDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
@@ -500,7 +493,7 @@ void PlayerMessageBuilder::BuildJediStateDelta(shared_ptr<Player> object)
     }
 }
 // baselines
-BaselinesMessage PlayerMessageBuilder::BuildBaseline3(shared_ptr<Player> object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline3(const shared_ptr<Player>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3, 10);
     message.data.append(ObjectMessageBuilder::BuildBaseline3(object).data);
@@ -534,7 +527,7 @@ BaselinesMessage PlayerMessageBuilder::BuildBaseline3(shared_ptr<Player> object)
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage PlayerMessageBuilder::BuildBaseline6(shared_ptr<Player> object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline6(const shared_ptr<Player>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_6, 2);
     message.data.write<uint32_t>(object->GetSceneId());    // Region Id
@@ -542,7 +535,7 @@ BaselinesMessage PlayerMessageBuilder::BuildBaseline6(shared_ptr<Player> object)
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage PlayerMessageBuilder::BuildBaseline8(shared_ptr<Player> object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline8(const shared_ptr<Player>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_8, 7);
     object->GetXp().Serialize(message);
@@ -562,7 +555,7 @@ BaselinesMessage PlayerMessageBuilder::BuildBaseline8(shared_ptr<Player> object)
     return BaselinesMessage(move(message));
 }
 
-BaselinesMessage PlayerMessageBuilder::BuildBaseline9(shared_ptr<Player> object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline9(const shared_ptr<Player>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_9, 17);
     

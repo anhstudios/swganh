@@ -27,20 +27,20 @@ namespace object {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendEndBaselines(std::shared_ptr<Object> object, std::shared_ptr<ObjectController> controller);
-        static void BuildComplexityDelta(std::shared_ptr<Object> object);
-        static void BuildStfNameDelta(std::shared_ptr<Object> object);
-        static void BuildCustomNameDelta(std::shared_ptr<Object> object);
-        static void BuildVolumeDelta(std::shared_ptr<Object> object);
+        virtual void SendEndBaselines(const std::shared_ptr<Object>& object, const std::shared_ptr<ObjectController>& controller);
+        static void BuildComplexityDelta(const std::shared_ptr<Object>& object);
+        static void BuildStfNameDelta(const std::shared_ptr<Object>& object);
+        static void BuildCustomNameDelta(const std::shared_ptr<Object>& object);
+        static void BuildVolumeDelta(const std::shared_ptr<Object>& object);
         // delta 6
-        static void BuildServerIDDelta(std::shared_ptr<Object> object);
+        static void BuildServerIDDelta(const std::shared_ptr<Object>& object);
 
-        static swganh::messages::BaselinesMessage CreateBaselinesMessage(std::shared_ptr<Object> object, uint8_t view_type, uint16_t opcount = 0) ;
+        static swganh::messages::BaselinesMessage CreateBaselinesMessage(const std::shared_ptr<Object>& object, uint8_t view_type, uint16_t opcount = 0) ;
 
-        static swganh::messages::DeltasMessage CreateDeltasMessage(std::shared_ptr<Object> object, uint8_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
+        static swganh::messages::DeltasMessage CreateDeltasMessage(const std::shared_ptr<Object>& object, uint8_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
 
-        static swganh::messages::BaselinesMessage BuildBaseline3(std::shared_ptr<Object> object);
-        static swganh::messages::BaselinesMessage BuildBaseline6(std::shared_ptr<Object> object);
+        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Object>& object);
+        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Object>& object);
         typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
     protected:
         anh::EventDispatcher* event_dispatcher;        

@@ -24,12 +24,12 @@ namespace waypoint {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-		static void BuildUsesDelta(std::shared_ptr<Waypoint> object);
-		static void BuildActivateDelta(std::shared_ptr<Waypoint> object);
-		static void BuildPlanetDelta(std::shared_ptr<Waypoint> object);
-		static void BuildCoordinatesDelta(std::shared_ptr<Waypoint> object);
-		static void BuildColor(std::shared_ptr<Waypoint> object);
-        static swganh::messages::BaselinesMessage BuildBaseline3(std::shared_ptr<Waypoint> object);
+		static void BuildUsesDelta(const std::shared_ptr<Waypoint>& object);
+		static void BuildActivateDelta(const std::shared_ptr<Waypoint>& object);
+		static void BuildPlanetDelta(const std::shared_ptr<Waypoint>& object);
+		static void BuildCoordinatesDelta(const std::shared_ptr<Waypoint>& object);
+		static void BuildColor(const std::shared_ptr<Waypoint>& object);
+        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Waypoint>& object);
     };
 
 }}}  // swganh::object::waypoint
