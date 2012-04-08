@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <string>
 #include <map>
+#include <vector>
 
 namespace swganh {
 namespace command {
@@ -15,7 +16,7 @@ namespace command {
         uint32_t name_crc;
         std::string ability;
         uint32_t ability_crc;
-        uint64_t deny_in_states;
+        uint64_t allow_in_states;
         std::string script_hook;
         std::string fail_script_hook;
         uint64_t default_time;
@@ -59,6 +60,20 @@ namespace command {
             states.insert(std::make_pair(intimidate_chance, "intimidate"));
             states.insert(std::make_pair(posture_down_chance, "posture_down"));
             return states;
+        }
+        /*
+         * Builds a bitmask from a set of numbers and returns the result
+         *
+         */
+        static uint64_t BuildBitmask(std::vector<int> bits)
+        {
+            uint64_t bitmask = 0;
+            int counter = 0;
+            for (auto& bit : bits)
+            {
+                bitmask += bit << counter++;
+            }
+            return bitmask;
         }
     };
 
