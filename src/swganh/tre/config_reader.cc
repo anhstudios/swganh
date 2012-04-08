@@ -66,7 +66,7 @@ void ConfigReader::ParseConfig()
 
     while(!input_stream.eof())
     {
-        getline(input_stream, line);
+        Getline(input_stream, line);
 
         if (regex_search(line, match, rx))
         {
@@ -80,9 +80,22 @@ void ConfigReader::ParseConfig()
             }
 
             auto native_path = boost::filesystem::system_complete(filename).native();
-            auto tre_file_path = string(begin(native_path), end(native_path));
-            std::cout << tre_file_path << std::endl;
-            tre_filenames_.emplace_back(move(tre_file_path));
+            tre_filenames_.emplace_back(string(begin(native_path), end(native_path)));
         }
     }
+}
+
+
+std::istream& ConfigReader::Getline(std::istream& input, std::string& output)
+{
+    char c;
+
+    output.clear();
+
+    while(input.get(c) && c != '\n' && c != '\r')
+    {
+        output += c;
+    }
+
+    return input;
 }
