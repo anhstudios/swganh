@@ -1,9 +1,8 @@
 # ignore directories created for the build process
-bin/*
+bin/
 build*/
-vendor/*
-swgtk/
-docs/*
+vendor/
+docs/
 nbproject/
 
 # ignore configuration files

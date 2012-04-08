@@ -48,9 +48,9 @@ const std::vector<std::string>& ConfigReader::GetTreFilenames()
 }
 
 void ConfigReader::ParseConfig()
-{    
+{
     ifstream input_stream(config_filename_.c_str());
-    
+
     if (!input_stream.is_open())
     {
         LOG(fatal) << "Invalid tre configuration file: " << config_filename_;
@@ -60,14 +60,14 @@ void ConfigReader::ParseConfig()
     boost::filesystem::path p(config_filename_);
     boost::filesystem::path dir = p.parent_path();
 
-    regex rx("searchTree_([0-9]{2})_([0-9]{1,2})=(\")?(.*)\\3");
+    regex rx("searchTree_([0-9]{2})_([0-9]{1,2})=(\")?(.*)(\")?");
     smatch match;
     string line;
 
-    while(!input_stream.eof()) 
+    while(!input_stream.eof())
     {
-        getline(input_stream, line);
-        
+        Getline(input_stream, line);
+
         if (regex_search(line, match, rx))
         {
             boost::filesystem::path tmp = dir;
@@ -80,7 +80,22 @@ void ConfigReader::ParseConfig()
             }
 
             auto native_path = boost::filesystem::system_complete(filename).native();
-            tre_filenames_.push_back(string(begin(native_path), end(native_path)));
+            tre_filenames_.emplace_back(string(begin(native_path), end(native_path)));
         }
     }
+}
+
+
+std::istream& ConfigReader::Getline(std::istream& input, std::string& output)
+{
+    char c;
+
+    output.clear();
+
+    while(input.get(c) && c != '\n' && c != '\r')
+    {
+        output += c;
+    }
+
+    return input;
 }
