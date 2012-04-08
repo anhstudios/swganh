@@ -21,26 +21,26 @@ uint32_t ManufactureSchematic::GetSchematicQuantity() const
 void ManufactureSchematic::SetSchematicQuantity(uint32_t quantity)
 {
     schematic_quantity_ = (quantity > 1000) ? 1000 : quantity;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 4);
         message.data.write(schematic_quantity_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 void ManufactureSchematic::IncrementSchematicQuantity(int32_t increment_by)
 {
     uint32_t tmp = schematic_quantity_ + increment_by;
     schematic_quantity_ = (tmp > 1000) ? 1000 : tmp;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 4);
         message.data.write(schematic_quantity_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 std::vector<ManufactureSchematic::Property> ManufactureSchematic::GetProperties() const
@@ -66,7 +66,7 @@ void ManufactureSchematic::AddProperty(
         // Already in the list.
         return;
     }
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 0);
         message.data.write(properties_.size());
@@ -77,7 +77,7 @@ void ManufactureSchematic::AddProperty(
         message.data.write(value);
         
         AddDeltasUpdate(message);
-    }
+    }*/
     // now push it back
     Property new_property;
     new_property.property_stf_file = move(property_stf_file);
@@ -105,7 +105,7 @@ void ManufactureSchematic::RemoveProperty(
         // Not in the list.
         return;
     }
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 5);
         message.data.write(properties_.size());
@@ -117,7 +117,7 @@ void ManufactureSchematic::RemoveProperty(
         message.data.write(value);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 
     properties_.erase(find_iter);
 }
@@ -140,7 +140,7 @@ void ManufactureSchematic::UpdateProperty(
         // Not in the list.
         return;
     }
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 2);
         message.data.write(properties_.size());
@@ -151,7 +151,7 @@ void ManufactureSchematic::UpdateProperty(
         message.data.write(value);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 
     find_iter->property_stf_file = move(property_stf_file);
     find_iter->property_stf_name = move(property_stf_name);
@@ -167,13 +167,13 @@ void ManufactureSchematic::SetCreatorName(std::wstring creator)
 {
     creator_ = move(creator);
 
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 6);
         message.data.write(creator_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 uint32_t ManufactureSchematic::GetSchematicComplexity() const
@@ -184,13 +184,13 @@ uint32_t ManufactureSchematic::GetSchematicComplexity() const
 void ManufactureSchematic::SetSchematicComplexity(uint32_t complexity)
 {
     complexity_ = complexity;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 7);
         message.data.write(creator_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 float ManufactureSchematic::GetSchematicDataSize() const
@@ -202,13 +202,13 @@ void ManufactureSchematic::SetSchematicDataSize(float schematic_data_size)
 {
     schematic_data_size_ = schematic_data_size;
 
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 8);
         message.data.write(schematic_data_size_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 std::vector<uint8_t> ManufactureSchematic::GetCustomizationString() const
@@ -219,13 +219,13 @@ std::vector<uint8_t> ManufactureSchematic::GetCustomizationString() const
 void ManufactureSchematic::SetCustomizationString(std::vector<uint8_t> customization_string)
 {
     customization_ = move(customization_string);
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 1);
         message.data.write(customization_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 std::string ManufactureSchematic::GetCustomizationModel() const
@@ -236,13 +236,13 @@ std::string ManufactureSchematic::GetCustomizationModel() const
 void ManufactureSchematic::SetCustomizationModel(std::string customization_model)
 {
     customization_model_ = customization_model;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 2);
         message.data.write(customization_model_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 std::string ManufactureSchematic::GetPrototypeModel() const
@@ -259,13 +259,13 @@ void ManufactureSchematic::SetPrototypeModel(std::string prototype_model)
 {
     prototype_model_ = move(prototype_model);
 
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 3);
         message.data.write(GetPrototypeCrc());
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 bool ManufactureSchematic::IsActive() const
@@ -291,16 +291,16 @@ void ManufactureSchematic::Deactive()
 
 void ManufactureSchematic::ToggleActive()
 {
-    is_active_ = !is_active_;
-    uint8_t flag = is_active_ ? 1 : 0;
+    //is_active_ = !is_active_;
+    //uint8_t flag = is_active_ ? 1 : 0;
 
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 4);
         message.data.write(flag);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 uint8_t ManufactureSchematic::GetSlotCount() const
@@ -311,37 +311,37 @@ uint8_t ManufactureSchematic::GetSlotCount() const
 void ManufactureSchematic::IncreaseSlotCount()
 {
     ++slot_count_;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 5);
         message.data.write(slot_count_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 void ManufactureSchematic::DecreaseSlotCount()
 {
     --slot_count_;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 5);
         message.data.write(slot_count_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 void ManufactureSchematic::ResetSlotCount(uint8_t slot_count)
 {
     slot_count_ = slot_count;
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 5);
         message.data.write(slot_count_);
         
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 std::vector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots() const
@@ -353,56 +353,56 @@ void ManufactureSchematic::BuildSlotDelta_(
     uint8_t update_type, uint8_t sub_type, 
     std::vector<Slot>::iterator slot_iterator)
 {
-    // no observers, don't bother
-    if (!HasObservers())
-    {
-        return;
-    }
-    // don't handle reset all here
-    if (sub_type == 3)
-        return;
-    
-    DeltasMessage message = CreateDeltasMessage(VIEW_7, 0);
-    message.data.write(slots_.size());
-    message.data.write(slot_counter_);
-    message.data.write<uint8_t>(sub_type);
-    // clear
-    if (sub_type == 4)
-    {
-        return;
-    }
-    // everything needs the index, but 3,4
-    message.data.write(slot_iterator - slots_.begin());
-    // remove just needs index so return here
-    if (sub_type == 0)
-    {
-        return;
-    }    
+    //// no observers, don't bother
+    //if (!HasObservers())
+    //{
+    //    return;
+    //}
+    //// don't handle reset all here
+    //if (sub_type == 3)
+    //    return;
+    //
+    //DeltasMessage message = CreateDeltasMessage(VIEW_7, 0);
+    //message.data.write(slots_.size());
+    //message.data.write(slot_counter_);
+    //message.data.write<uint8_t>(sub_type);
+    //// clear
+    //if (sub_type == 4)
+    //{
+    //    return;
+    //}
+    //// everything needs the index, but 3,4
+    //message.data.write(slot_iterator - slots_.begin());
+    //// remove just needs index so return here
+    //if (sub_type == 0)
+    //{
+    //    return;
+    //}    
 
-    switch (update_type)
-    {
-        case 0:
-            message.data.write(slot_iterator->slot_stf_file);
-            message.data.write(0);
-            message.data.write(slot_iterator->slot_stf_name);
-            break;
-        case 1:
-            message.data.write(slot_iterator->type);
-            break;
-        case 2:
-            message.data.write(slot_iterator->ingredient);
-            break;
-        case 3:
-            message.data.write(slot_iterator->ingredient_quantity);
-            break;
-        case 5:
-            message.data.write(slot_iterator->clean);
-            break;
-        case 6:
-            message.data.write(slot_iterator->index);
-            break;
-    }
-    AddDeltasUpdate(message);
+    //switch (update_type)
+    //{
+    //    case 0:
+    //        message.data.write(slot_iterator->slot_stf_file);
+    //        message.data.write(0);
+    //        message.data.write(slot_iterator->slot_stf_name);
+    //        break;
+    //    case 1:
+    //        message.data.write(slot_iterator->type);
+    //        break;
+    //    case 2:
+    //        message.data.write(slot_iterator->ingredient);
+    //        break;
+    //    case 3:
+    //        message.data.write(slot_iterator->ingredient_quantity);
+    //        break;
+    //    case 5:
+    //        message.data.write(slot_iterator->clean);
+    //        break;
+    //    case 6:
+    //        message.data.write(slot_iterator->index);
+    //        break;
+    //}
+    //AddDeltasUpdate(message);
 }
 
 void ManufactureSchematic::RemoveSlot(uint16_t index)
@@ -513,7 +513,7 @@ void ManufactureSchematic::UpdateSlot(
 void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> slots)
 {
     slots_ = move(slots);
-    if (HasObservers())
+    /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_7, 3);;
         message.data.write(slots_.size());
@@ -524,7 +524,7 @@ void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> sl
             message.data.write(slot.slot_stf_name);
         });
         AddDeltasUpdate(message);
-    }
+    }*/
 }
 
 void ManufactureSchematic::ClearAllSlots()

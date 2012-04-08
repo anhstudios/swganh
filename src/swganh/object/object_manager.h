@@ -11,10 +11,11 @@
 #include "swganh/object/object.h"
 #include "swganh/object/exception.h"
 #include "swganh/object/object_factory_interface.h"
+#include "swganh/object/object_message_builder.h"
 
 namespace swganh {
 namespace object {
-
+    
     /**
      * ObjectManager is a general interface for managing the object lifecycles for
      * general user defined types. In order to manage an object type an implementation
@@ -23,6 +24,8 @@ namespace object {
     class ObjectManager
     {
     public:
+        ObjectManager(anh::EventDispatcher* event_dispatcher)
+            : event_dispatcher_(event_dispatcher){}
         /**
          * Registers an object type for management.
          *
@@ -50,6 +53,19 @@ namespace object {
          * @param object_type the type of object to stop managing.
          */
         void UnregisterObjectType(uint32_t object_type);
+
+        /**
+         * Registers message builders
+         *
+         * @param object_type the type of the object to register a builder to.
+         */
+        template<typename T>
+        void RegisterMessageBuilder(std::shared_ptr<T>& message_builder)
+        {
+            RegisterMessageBuilder(T::type, message_builder);
+        }
+
+        void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
                 
         /**
          * Creates an instance of a stored object with the specified id.
@@ -134,12 +150,21 @@ namespace object {
         void PersistObject(const std::shared_ptr<Object>& object);
 
     private:
+        anh::EventDispatcher* event_dispatcher_;
         typedef std::map<
             uint32_t, 
             std::shared_ptr<ObjectFactoryInterface>
         > ObjectFactoryMap;
 
         ObjectFactoryMap factories_;
+
+        typedef std::map<
+            uint32_t,
+            std::shared_ptr<ObjectMessageBuilder>
+        > ObjectMessageBuilderMap;
+
+        ObjectMessageBuilderMap message_builders_;
+        
     };
 
 }}  // namespace swganh::object

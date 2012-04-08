@@ -74,12 +74,12 @@ void TangibleFactory::PersistObject(const shared_ptr<Object>& object)
         ObjectFactory::PersistObject(object, statement);
         // cast to tangible
         auto tangible = static_pointer_cast<Tangible>(object);
-        statement->setString(17, tangible->customization_);
-        statement->setInt(18, tangible->options_bitmask_);
-        statement->setInt(19, tangible->incap_timer_);
-        statement->setInt(20, tangible->condition_damage_);
-        statement->setInt(21, tangible->max_condition_);
-        statement->setBoolean(22, tangible->is_static_);
+        statement->setString(17, tangible->GetCustomization());
+        statement->setInt(18, tangible->GetOptionsMask());
+        statement->setInt(19, tangible->GetIncapTimer());
+        statement->setInt(20, tangible->GetCondition());
+        statement->setInt(21, tangible->GetMaxCondition());
+        statement->setBoolean(22, tangible->IsStatic());
         statement->executeUpdate();
     }
     catch(sql::SQLException &e)

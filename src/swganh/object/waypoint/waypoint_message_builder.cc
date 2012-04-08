@@ -6,45 +6,51 @@
 #include "swganh/object/object.h"
 #include "swganh/object/waypoint/waypoint.h"
 
+using namespace anh;
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object::waypoint;
 
-void WaypointMessageBuilder::BuildUsesDelta(Waypoint* object)
+void WaypointMessageBuilder::RegisterEventHandlers()
+{
+    // TODO: Register Event Handlers Here For Waypoints
+}
+
+void WaypointMessageBuilder::BuildUsesDelta(const shared_ptr<Waypoint>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 4);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 4);
         message.data.write(object->GetUses());
     
         object->AddDeltasUpdate(message);    
     }
 }
-void WaypointMessageBuilder::BuildActivateDelta(Waypoint* object)
+void WaypointMessageBuilder::BuildActivateDelta(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 6);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 6);
         message.data.write<uint8_t>(object->GetActiveFlag());
     
         object->AddDeltasUpdate(message);    
     }
 }
-void WaypointMessageBuilder::BuildPlanetDelta(Waypoint* object)
+void WaypointMessageBuilder::BuildPlanetDelta(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 8);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 8);
         message.data.write(object->GetPlanet());
     
         object->AddDeltasUpdate(message);    
     }
 }
-void WaypointMessageBuilder::BuildCoordinatesDelta(Waypoint* object)
+void WaypointMessageBuilder::BuildCoordinatesDelta(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 5);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 5);
         auto coords = object->GetCoordinates();
         message.data.write(coords.x);
 		message.data.write(coords.y);
@@ -53,19 +59,19 @@ void WaypointMessageBuilder::BuildCoordinatesDelta(Waypoint* object)
         object->AddDeltasUpdate(message);    
     }
 }
-void WaypointMessageBuilder::BuildColor(Waypoint* object)
+void WaypointMessageBuilder::BuildColor(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 11);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 11);
         message.data.write<uint8_t>(object->GetColorByte());
     
         object->AddDeltasUpdate(message);    
     }
 }
-boost::optional<BaselinesMessage> WaypointMessageBuilder::BuildBaseline3(Waypoint* object)
+BaselinesMessage WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoint>& object)
 {
-    auto message = object->CreateBaselinesMessage(Object::VIEW_3, 12);
+    auto message = CreateBaselinesMessage(object, Object::VIEW_3, 12);
     auto coords = object->GetCoordinates();
     message.data.write(coords.x);
     message.data.write(coords.z);
@@ -76,5 +82,5 @@ boost::optional<BaselinesMessage> WaypointMessageBuilder::BuildBaseline3(Waypoin
     message.data.write(object->GetName());
     message.data.write<uint8_t>(0);
     message.data.write(object->GetColor());
-    return boost::optional<BaselinesMessage>(std::move(message));
+    return BaselinesMessage(std::move(message));
 }

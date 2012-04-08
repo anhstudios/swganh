@@ -104,7 +104,7 @@ void IntangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object
 shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 {
     auto intangible = make_shared<Intangible>();
-    intangible->object_id_ = object_id;
+    intangible->SetObjectId(object_id);
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::Statement>(conn->createStatement());
@@ -119,8 +119,8 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
             result.reset(statement->getResultSet());
             while (result->next())
             {
-                intangible->stf_detail_file_ = result->getString("stf_detail_file");
-                intangible->stf_detail_string_ = result->getString("stf_detail_string");
+                intangible->SetStfDetail(result->getString("stf_detail_file"),
+                                         result->getString("stf_detail_string"));
             }
         }
     }

@@ -27,7 +27,7 @@ public:
     */
     void SetCell(uint32_t cell_number);
 
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    virtual void GetBaseline3();
 
 private:
     uint32_t cell_number_;			//update 3

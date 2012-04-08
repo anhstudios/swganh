@@ -113,11 +113,11 @@ public:
     const static uint32_t type = 0x47525550;
 
 protected:
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+    typedef anh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
+    virtual void GetBaseline3();
+    virtual void GetBaseline6();
 
 private:
-    friend class GroupFactory;
     mutable std::mutex group_mutex_;
 
     swganh::messages::containers::NetworkSortedVector<Member> member_list_;                     // update 6 variable 1

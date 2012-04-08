@@ -14,7 +14,8 @@ void Logger::init(const std::string& app_name)
     logging::init_log_to_console(
         std::clog,
         keywords::filter = flt::attr<severity_level>("Severity", std::nothrow) >= info,
-        keywords::format = "%TimeStamp%: %_%"
+        keywords::format = "%TimeStamp%: %_%",
+        keywords::auto_flush = true
         );
 // If we're in debug mode compile debug and above
 #ifdef _DEBUG
@@ -27,7 +28,8 @@ void Logger::init(const std::string& app_name)
             % fmt::date_time("TimeStamp", std::nothrow)
             % fmt::attr<severity_level>("Severity", std::nothrow)
             % fmt::attr<attrs::current_thread_id::held_type>("ThreadID")
-            % fmt::message()
+            % fmt::message(),
+        keywords::auto_flush = true
     );
 
 #else
@@ -52,7 +54,8 @@ void Logger::init(const std::string& app_name)
             % fmt::date_time("TimeStamp", std::nothrow)
             % fmt::attr<severity_level>("Severity", std::nothrow)
             % fmt::attr<attrs::current_thread_id::held_type>("ThreadID")
-            % fmt::message()
+            % fmt::message(),
+        keywords::auto_flush = true
     );
     
     // Log Client/Server messages
@@ -63,7 +66,8 @@ void Logger::init(const std::string& app_name)
         keywords::format = fmt::format("%1% <%2%> %3%")
             % fmt::date_time("TimeStamp", std::nothrow)
             % fmt::attr<attrs::current_thread_id::held_type>("ThreadID")
-            % fmt::message()
+            % fmt::message(),
+        keywords::auto_flush = true
     );
     
     logging::add_common_attributes();

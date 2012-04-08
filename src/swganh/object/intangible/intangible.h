@@ -41,12 +41,11 @@ public:
     void SetStfDetail(const std::string& stf_file_name, const std::string& stf_string);
     
 protected:
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+    virtual void GetBaseline6();
 
 private:
     mutable std::mutex intangible_mutex_;
 
-    friend class IntangibleFactory;
     std::string stf_detail_file_;
     std::string stf_detail_string_;
 };

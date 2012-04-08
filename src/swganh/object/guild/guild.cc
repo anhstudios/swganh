@@ -21,40 +21,38 @@ Guild::~Guild()
 
 void Guild::AddGuildTag(uint32_t guild_id, std::string guild_tag)
 {
+    std::lock_guard<std::mutex> lk(guild_mutex_);
+    auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
+        return guild_id == tag.id;
+    });
+
+    if(iter != end(guild_list_))
     {
-        std::lock_guard<std::mutex> lk(guild_mutex_);
-        auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
-            return guild_id == tag.id;
-        });
-
-        if(iter != end(guild_list_))
-        {
-            return;
-        }
-
-        guild_list_.Add(GuildTag(guild_id, guild_tag));
+        return;
     }
+
+    guild_list_.Add(GuildTag(guild_id, guild_tag));
         
-    GuildMessageBuilder::BuildGuildTagsDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<GuildEvent>
+        ("Guild::Orientation",static_pointer_cast<Guild>(shared_from_this())));
 }
 
 void Guild::RemoveGuildTag(uint32_t guild_id)
 {
+    std::lock_guard<std::mutex> lk(guild_mutex_);
+    auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
+        return guild_id == tag.id;
+    });
+
+    if(iter != end(guild_list_))
     {
-        std::lock_guard<std::mutex> lk(guild_mutex_);
-        auto iter = std::find_if(begin(guild_list_), end(guild_list_), [=](const GuildTag& tag)->bool {
-            return guild_id == tag.id;
-        });
-
-        if(iter != end(guild_list_))
-        {
-            return;
-        }
-
-        guild_list_.Remove(iter);
+        return;
     }
 
-    GuildMessageBuilder::BuildGuildTagsDelta(this);
+    guild_list_.Remove(iter);
+    
+    GetEventDispatcher()->Dispatch(make_shared<GuildEvent>
+        ("Guild::Orientation",static_pointer_cast<Guild>(shared_from_this())));
 }
     
 swganh::messages::containers::NetworkList<GuildTag> Guild::GetGuildList()
@@ -63,12 +61,10 @@ swganh::messages::containers::NetworkList<GuildTag> Guild::GetGuildList()
     return guild_list_;
 }
 
-boost::optional<BaselinesMessage> Guild::GetBaseline3()
+void Guild::GetBaseline3()
 {
-    return GuildMessageBuilder::BuildBaseline3(this);
 }
 
-boost::optional<BaselinesMessage> Guild::GetBaseline6()
+void Guild::GetBaseline6()
 {
-    return GuildMessageBuilder::BuildBaseline6(this);
 }

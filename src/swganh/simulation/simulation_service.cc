@@ -30,6 +30,11 @@
 #include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player.h"
 
+// message builders
+#include "swganh/object/creature/creature_message_builder.h"
+#include "swganh/object/tangible/tangible_message_builder.h"
+#include "swganh/object/player/player_message_builder.h"
+
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
@@ -66,7 +71,7 @@ public:
     {
         if (!object_manager_)
         {
-            object_manager_ = make_shared<ObjectManager>();
+            object_manager_ = make_shared<ObjectManager>(kernel_->GetEventDispatcher());
         }
 
         return object_manager_;
@@ -140,7 +145,7 @@ public:
         if (find_iter != loaded_objects_.end())
         {
             return find_iter->second;
-            //throw swganh::object::InvalidObject("Requested object already loaded");
+            LOG(warning) << "Requested object already loaded";
         }
 
         auto object = object_manager_->CreateObjectFromStorage(object_id);
@@ -156,7 +161,7 @@ public:
         if (find_iter != loaded_objects_.end())
         {
             return find_iter->second;
-            //throw swganh::object::InvalidObject("Requested object already loaded");
+            LOG(warning) << "Requested object already loaded";
         }
 
         auto object = object_manager_->CreateObjectFromStorage(object_id, type);
@@ -184,7 +189,7 @@ public:
 
         if (find_iter == loaded_objects_.end())
         {
-            throw swganh::object::InvalidObject("Requested an invalid object");
+            LOG(warning) << "Requested an invalid object";
         }
 
         RemoveObject(find_iter->second);
@@ -417,6 +422,10 @@ void SimulationService::RegisterObjectFactories()
         impl_->GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager, this, event_dispatcher));
         impl_->GetObjectManager()->RegisterObjectType(creature::Creature::type, make_shared<creature::CreatureFactory>(db_manager, this, event_dispatcher));
         impl_->GetObjectManager()->RegisterObjectType(player::Player::type, make_shared<player::PlayerFactory>(db_manager, this, event_dispatcher));
+        // register message builders
+        impl_->GetObjectManager()->RegisterMessageBuilder(tangible::Tangible::type, make_shared<tangible::TangibleMessageBuilder>(event_dispatcher));
+        impl_->GetObjectManager()->RegisterMessageBuilder(creature::Creature::type, make_shared<creature::CreatureMessageBuilder>(event_dispatcher));
+        impl_->GetObjectManager()->RegisterMessageBuilder(player::Player::type, make_shared<player::PlayerMessageBuilder>(event_dispatcher));
 }
 
 void SimulationService::PersistObject(uint64_t object_id)

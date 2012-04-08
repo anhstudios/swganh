@@ -185,6 +185,7 @@ public:
         if(clear_)
         {
             message.data.write<uint8_t>(4);
+            items_.clear();
         }
 
         ClearDeltas();

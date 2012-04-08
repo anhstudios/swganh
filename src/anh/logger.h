@@ -62,7 +62,7 @@ static src::severity_logger<severity_level> SeverityLogger;
 #ifdef _DEBUG
 #define LOG_NET BOOST_LOG_STREAM_SEV(SeverityLogger, event)
 #else
-#define LOG_NET if (false);else LOG(event)
+#define LOG_NET if (true);else LOG(event)
 #endif
 
 #ifdef _DEBUG

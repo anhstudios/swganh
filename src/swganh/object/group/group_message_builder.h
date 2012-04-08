@@ -23,6 +23,7 @@
 
 #include <boost/optional.hpp>
 #include <cstdint>
+#include "swganh/object/object_message_builder.h"
 
 namespace swganh {
 namespace messages {
@@ -40,19 +41,24 @@ namespace object {
 namespace group {
 
 class Group;
-class GroupMessageBuilder
+class GroupMessageBuilder : public ObjectMessageBuilder
 {
 public:
-
+    GroupMessageBuilder(anh::EventDispatcher* event_dispatcher)
+        : ObjectMessageBuilder(event_dispatcher)
+    {
+        RegisterEventHandlers();
+    }
     // deltas
-    static void BuildMemberListDelta(Group* group);
-    static void BuildLootModeDelta(Group* group);
-    static void BuildDifficultyDelta(Group* group);
-    static void BuildLootMasterDelta(Group* group);
+    virtual void RegisterEventHandlers();
+    static void BuildMemberListDelta(const std::shared_ptr<Group>& group);
+    static void BuildLootModeDelta(const std::shared_ptr<Group>& group);
+    static void BuildDifficultyDelta(const std::shared_ptr<Group>& group);
+    static void BuildLootMasterDelta(const std::shared_ptr<Group>& group);
 
     // baselines
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Group* group);
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Group* group);
+    static void BuildBaseline3(const std::shared_ptr<Group>& group);
+    static void BuildBaseline6(const std::shared_ptr<Group>& group);
 };
 
 }}} // swganh::object::group

@@ -51,74 +51,74 @@ void CreatureFactory::PersistObject(const shared_ptr<Object>& object)
             "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
         auto statement = unique_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         auto creature = static_pointer_cast<Creature>(object);
-        statement->setUInt64(1, creature->object_id_);
-        statement->setUInt64(2, creature->owner_id_);
-        statement->setUInt64(3, creature->listen_to_id_);
-        statement->setUInt64(4, creature->bank_credits_);
-        statement->setUInt64(5, creature->cash_credits_);
-        statement->setUInt64(6, creature->posture_);
-        statement->setUInt(7, creature->faction_rank_);
-        statement->setDouble(8, creature->scale_);
-        statement->setUInt64(9, creature->battle_fatigue_);
-        statement->setUInt64(10, creature->state_bitmask_);
-        statement->setDouble(11, creature->acceleration_multiplier_base_);
-        statement->setDouble(12, creature->acceleration_multiplier_modifier_);
-        statement->setDouble(13, creature->speed_multiplier_base_);
-        statement->setDouble(14, creature->speed_multiplier_modifier_);
-        statement->setDouble(15, creature->run_speed_);
-        statement->setDouble(16, creature->slope_modifier_angle_);
-        statement->setDouble(17, creature->slope_modifier_percent_);
-        statement->setDouble(18, creature->turn_radius_);
-        statement->setDouble(19, creature->walking_speed_);
-        statement->setDouble(20, creature->water_modifier_percent_);
-        statement->setInt(21, creature->combat_level_);
-        statement->setString(22, creature->animation_);
-        statement->setUInt64(23, creature->group_id_);
-        statement->setUInt(24, creature->guild_id_);
-        statement->setUInt64(25, creature->weapon_id_);
-        statement->setUInt(26, creature->mood_id_);
-        statement->setUInt(27, creature->performance_id_);
-        statement->setString(28, creature->disguise_);
+        statement->setUInt64(1, creature->GetObjectId());
+        statement->setUInt64(2, creature->GetOwnerId());
+        statement->setUInt64(3, creature->GetListenToId());
+        statement->setUInt64(4, creature->GetBankCredits());
+        statement->setUInt64(5, creature->GetCashCredits());
+        statement->setUInt64(6, creature->GetPosture());
+        statement->setUInt(7, creature->GetFactionRank());
+        statement->setDouble(8, creature->GetScale());
+        statement->setUInt64(9, creature->GetBattleFatigue());
+        statement->setUInt64(10, creature->GetStateBitmask());
+        statement->setDouble(11, creature->GetAccelerationMultiplierBase());
+        statement->setDouble(12, creature->GetAccelerationMultiplierModifier());
+        statement->setDouble(13, creature->GetSpeedMultiplierBase());
+        statement->setDouble(14, creature->GetSpeedMultiplierModifier());
+        statement->setDouble(15, creature->GetRunSpeed());
+        statement->setDouble(16, creature->GetSlopeModifierAngle());
+        statement->setDouble(17, creature->GetSlopeModifierPercent());
+        statement->setDouble(18, creature->GetTurnRadius());
+        statement->setDouble(19, creature->GetWalkingSpeed());
+        statement->setDouble(20, creature->GetWaterModifierPercent());
+        statement->setInt(21, creature->GetCombatLevel());
+        statement->setString(22, creature->GetAnimation());
+        statement->setUInt64(23, creature->GetGroupId());
+        statement->setUInt(24, creature->GetGuildId());
+        statement->setUInt64(25, creature->GetWeaponId());
+        statement->setUInt(26, creature->GetMoodId());
+        statement->setUInt(27, creature->GetPerformanceId());
+        statement->setString(28, creature->GetDisguise());
         // WOUNDS
-        statement->setInt(29, creature->stat_wound_list_.At(HEALTH).value);
-        statement->setInt(30, creature->stat_wound_list_.At(STRENGTH).value);
-        statement->setInt(31, creature->stat_wound_list_.At(CONSTITUTION).value);
-        statement->setInt(32, creature->stat_wound_list_.At(ACTION).value);
-        statement->setInt(33, creature->stat_wound_list_.At(QUICKNESS).value);
-        statement->setInt(34, creature->stat_wound_list_.At(STAMINA).value);
-        statement->setInt(35, creature->stat_wound_list_.At(MIND).value);
-        statement->setInt(36, creature->stat_wound_list_.At(FOCUS).value);
-        statement->setInt(37, creature->stat_wound_list_.At(WILLPOWER).value);
+        statement->setInt(29, creature->GetStatWound(HEALTH));
+        statement->setInt(30, creature->GetStatWound(STRENGTH));
+        statement->setInt(31, creature->GetStatWound(CONSTITUTION));
+        statement->setInt(32, creature->GetStatWound(ACTION));
+        statement->setInt(33, creature->GetStatWound(QUICKNESS));
+        statement->setInt(34, creature->GetStatWound(STAMINA));
+        statement->setInt(35, creature->GetStatWound(MIND));
+        statement->setInt(36, creature->GetStatWound(FOCUS));
+        statement->setInt(37, creature->GetStatWound(WILLPOWER));
         // ENCUMBERANCE
-        statement->setInt(38, creature->stat_encumberance_list_.At(HEALTH).value);
-        statement->setInt(39, creature->stat_encumberance_list_.At(STRENGTH).value);
-        statement->setInt(40, creature->stat_encumberance_list_.At(CONSTITUTION).value);
-        statement->setInt(41, creature->stat_encumberance_list_.At(ACTION).value);
-        statement->setInt(42, creature->stat_encumberance_list_.At(QUICKNESS).value);
-        statement->setInt(43, creature->stat_encumberance_list_.At(STAMINA).value);
-        statement->setInt(44, creature->stat_encumberance_list_.At(MIND).value);
-        statement->setInt(45, creature->stat_encumberance_list_.At(FOCUS).value);
-        statement->setInt(46, creature->stat_encumberance_list_.At(WILLPOWER).value);
+        statement->setInt(38, creature->GetStatEncumberance(HEALTH));
+        statement->setInt(39, creature->GetStatEncumberance(STRENGTH));
+        statement->setInt(40, creature->GetStatEncumberance(CONSTITUTION));
+        statement->setInt(41, creature->GetStatEncumberance(ACTION));
+        statement->setInt(42, creature->GetStatEncumberance(QUICKNESS));
+        statement->setInt(43, creature->GetStatEncumberance(STAMINA));
+        statement->setInt(44, creature->GetStatEncumberance(MIND));
+        statement->setInt(45, creature->GetStatEncumberance(FOCUS));
+        statement->setInt(46, creature->GetStatEncumberance(WILLPOWER));
         // CURRENT
-        statement->setInt(47, creature->stat_current_list_.At(HEALTH).value);
-        statement->setInt(48, creature->stat_current_list_.At(STRENGTH).value);
-        statement->setInt(49, creature->stat_current_list_.At(CONSTITUTION).value);
-        statement->setInt(50, creature->stat_current_list_.At(ACTION).value);
-        statement->setInt(51, creature->stat_current_list_.At(QUICKNESS).value);
-        statement->setInt(52, creature->stat_current_list_.At(STAMINA).value);
-        statement->setInt(53, creature->stat_current_list_.At(MIND).value);
-        statement->setInt(54, creature->stat_current_list_.At(FOCUS).value);
-        statement->setInt(55, creature->stat_current_list_.At(WILLPOWER).value);
+        statement->setInt(47, creature->GetStatCurrent(HEALTH));
+        statement->setInt(48, creature->GetStatCurrent(STRENGTH));
+        statement->setInt(49, creature->GetStatCurrent(CONSTITUTION));
+        statement->setInt(50, creature->GetStatCurrent(ACTION));
+        statement->setInt(51, creature->GetStatCurrent(QUICKNESS));
+        statement->setInt(52, creature->GetStatCurrent(STAMINA));
+        statement->setInt(53, creature->GetStatCurrent(MIND));
+        statement->setInt(54, creature->GetStatCurrent(FOCUS));
+        statement->setInt(55, creature->GetStatCurrent(WILLPOWER));
         // MAX
-        statement->setInt(56, creature->stat_max_list_.At(HEALTH).value);
-        statement->setInt(57, creature->stat_max_list_.At(STRENGTH).value);
-        statement->setInt(58, creature->stat_max_list_.At(CONSTITUTION).value);
-        statement->setInt(59, creature->stat_max_list_.At(ACTION).value);
-        statement->setInt(60, creature->stat_max_list_.At(QUICKNESS).value);
-        statement->setInt(61, creature->stat_max_list_.At(STAMINA).value);
-        statement->setInt(62, creature->stat_max_list_.At(MIND).value);
-        statement->setInt(63, creature->stat_max_list_.At(FOCUS).value);
-        statement->setInt(64, creature->stat_max_list_.At(WILLPOWER).value);
+        statement->setInt(56, creature->GetStatMax(HEALTH));
+        statement->setInt(57, creature->GetStatMax(STRENGTH));
+        statement->setInt(58, creature->GetStatMax(CONSTITUTION));
+        statement->setInt(59, creature->GetStatMax(ACTION));
+        statement->setInt(60, creature->GetStatMax(QUICKNESS));
+        statement->setInt(61, creature->GetStatMax(STAMINA));
+        statement->setInt(62, creature->GetStatMax(MIND));
+        statement->setInt(63, creature->GetStatMax(FOCUS));
+        statement->setInt(64, creature->GetStatMax(WILLPOWER));
 
         int updated = statement->executeUpdate();
         LOG(warning) << "Updated " << updated << " rows in sp_PersistCreature";
@@ -151,81 +151,81 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
             result.reset(statement->getResultSet());
             while (result->next())
             {
-                creature->owner_id_ = result->getUInt64("owner_id");
-                creature->listen_to_id_ = result->getUInt64("musician_id");
-                creature->bank_credits_ = result->getUInt("bank_credits");
-                creature->cash_credits_ = result->getUInt("cash_credits");
-                creature->posture_ = (Posture)result->getUInt("posture");
-                creature->faction_rank_ = result->getUInt("faction_rank");
-                creature->scale_ = static_cast<float>(result->getDouble("scale"));
-                creature->battle_fatigue_ = result->getUInt("battle_fatigue");
-                creature->state_bitmask_ = result->getUInt("state");
-                creature->acceleration_multiplier_base_ = static_cast<float>(result->getDouble("acceleration_base"));
-                creature->acceleration_multiplier_modifier_ = static_cast<float>(result->getDouble("acceleration_modifier"));
-                creature->speed_multiplier_base_ = static_cast<float>(result->getDouble("speed_base"));
-                creature->speed_multiplier_modifier_ = static_cast<float>(result->getDouble("speed_modifier"));
-                creature->run_speed_ = static_cast<float>(result->getDouble("run_speed"));
-                creature->slope_modifier_angle_ = static_cast<float>(result->getDouble("slope_modifier_angle"));
-                creature->slope_modifier_percent_ = static_cast<float>(result->getDouble("slope_modifier_percent"));
-                creature->walking_speed_ = static_cast<float>(result->getDouble("walking_speed"));
-                creature->turn_radius_ = static_cast<float>(result->getDouble("turn_radius"));
-                creature->water_modifier_percent_ = static_cast<float>(result->getDouble("water_modifier_percent"));
-                creature->combat_level_ = result->getUInt("combat_level");
-                creature->animation_ = result->getString("animation");
-                creature->mood_animation_ = result->getString("mood_animation");
+                creature->SetOwnerId(result->getUInt64("owner_id"));
+                creature->SetListenToId(result->getUInt64("musician_id"));
+                creature->SetBankCredits(result->getUInt("bank_credits"));
+                creature->SetCashCredits(result->getUInt("cash_credits"));
+                creature->SetPosture((Posture)result->getUInt("posture"));
+                creature->SetFactionRank(result->getUInt("faction_rank"));
+                creature->SetScale(static_cast<float>(result->getDouble("scale")));
+                creature->SetBattleFatigue(result->getUInt("battle_fatigue"));
+                creature->SetStateBitmask(result->getUInt("state"));
+                creature->SetAccelerationMultiplierBase(static_cast<float>(result->getDouble("acceleration_base")));
+                creature->SetAccelerationMultiplierModifier(static_cast<float>(result->getDouble("acceleration_modifier")));
+                creature->SetSpeedMultiplierBase(static_cast<float>(result->getDouble("speed_base")));
+                creature->SetSpeedMultiplierModifier(static_cast<float>(result->getDouble("speed_modifier")));
+                creature->SetRunSpeed(static_cast<float>(result->getDouble("run_speed")));
+                creature->SetSlopeModifierAngle(static_cast<float>(result->getDouble("slope_modifier_angle")));
+                creature->SetSlopeModifierPercent(static_cast<float>(result->getDouble("slope_modifier_percent")));
+                creature->SetWalkingSpeed(static_cast<float>(result->getDouble("walking_speed")));
+                creature->SetTurnRadius(static_cast<float>(result->getDouble("turn_radius")));
+                creature->SetWaterModifierPercent(static_cast<float>(result->getDouble("water_modifier_percent")));
+                creature->SetCombatLevel(result->getUInt("combat_level"));
+                creature->SetAnimation(result->getString("animation"));
+                creature->SetMoodAnimation(result->getString("mood_animation"));
 
                 /// @TODO: Find a better place for this.
-                if (creature->mood_animation_.compare("none") == 0)
+                if (creature->GetMoodAnimation().compare("none") == 0)
                 {
-                    creature->mood_animation_ = "neutral";
+                    creature->SetMoodAnimation("neutral");
                 }
 
-                creature->group_id_ = result->getUInt64("group_id");
-                creature->guild_id_ = result->getUInt("guild_id");
-                creature->weapon_id_ = result->getUInt64("weapon_id");
-                creature->mood_id_ = result->getUInt("mood_id");
-                creature->performance_id_ = result->getUInt("performance_id");
-                creature->disguise_ = result->getString("disguise_template");
+                creature->SetGroupId(result->getUInt64("group_id"));
+                creature->SetGuildId(result->getUInt("guild_id"));
+                creature->SetWeaponId(result->getUInt64("weapon_id"));
+                creature->SetMoodId(result->getUInt("mood_id"));
+                creature->SetPerformanceId(result->getUInt("performance_id"));
+                creature->SetDisguise(result->getString("disguise_template"));
 
-                creature->stat_current_list_.Set(creature::HEALTH, Stat(result->getUInt("current_health")));
-                creature->stat_current_list_.Set(creature::STRENGTH, Stat(result->getUInt("current_strength")));
-                creature->stat_current_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("current_constitution")));
-                creature->stat_current_list_.Set(creature::ACTION, Stat(result->getUInt("current_action")));
-                creature->stat_current_list_.Set(creature::QUICKNESS, Stat(result->getUInt("current_quickness")));
-                creature->stat_current_list_.Set(creature::STAMINA, Stat(result->getUInt("current_stamina")));
-                creature->stat_current_list_.Set(creature::MIND, Stat(result->getUInt("current_mind")));
-                creature->stat_current_list_.Set(creature::FOCUS, Stat(result->getUInt("current_focus")));
-                creature->stat_current_list_.Set(creature::WILLPOWER, Stat(result->getUInt("current_willpower")));
+                creature->SetStatCurrent(HEALTH, result->getUInt("current_health"));
+                creature->SetStatCurrent(STRENGTH, result->getUInt("current_strength"));
+                creature->SetStatCurrent(CONSTITUTION, result->getUInt("current_constitution"));
+                creature->SetStatCurrent(ACTION, result->getUInt("current_action"));
+                creature->SetStatCurrent(QUICKNESS, result->getUInt("current_quickness"));
+                creature->SetStatCurrent(STAMINA, result->getUInt("current_stamina"));
+                creature->SetStatCurrent(MIND, result->getUInt("current_mind"));
+                creature->SetStatCurrent(FOCUS, result->getUInt("current_focus"));
+                creature->SetStatCurrent(WILLPOWER, result->getUInt("current_willpower"));
 
-                creature->stat_max_list_.Set(creature::HEALTH, Stat(result->getUInt("max_health")));
-                creature->stat_max_list_.Set(creature::STRENGTH, Stat(result->getUInt("max_strength")));
-                creature->stat_max_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("max_constitution")));
-                creature->stat_max_list_.Set(creature::ACTION, Stat(result->getUInt("max_action")));
-                creature->stat_max_list_.Set(creature::QUICKNESS, Stat(result->getUInt("max_quickness")));
-                creature->stat_max_list_.Set(creature::STAMINA, Stat(result->getUInt("max_stamina")));
-                creature->stat_max_list_.Set(creature::MIND, Stat(result->getUInt("max_mind")));
-                creature->stat_max_list_.Set(creature::FOCUS, Stat(result->getUInt("max_focus")));
-                creature->stat_max_list_.Set(creature::WILLPOWER, Stat(result->getUInt("max_willpower")));
+                creature->SetStatMax(HEALTH, result->getUInt("max_health"));
+                creature->SetStatMax(STRENGTH, result->getUInt("max_strength"));
+                creature->SetStatMax(CONSTITUTION, result->getUInt("max_constitution"));
+                creature->SetStatMax(ACTION, result->getUInt("max_action"));
+                creature->SetStatMax(QUICKNESS, result->getUInt("max_quickness"));
+                creature->SetStatMax(STAMINA, result->getUInt("max_stamina"));
+                creature->SetStatMax(MIND, result->getUInt("max_mind"));
+                creature->SetStatMax(FOCUS, result->getUInt("max_focus"));
+                creature->SetStatMax(WILLPOWER, result->getUInt("max_willpower"));
 
-                creature->stat_wound_list_.Set(creature::HEALTH, Stat(result->getUInt("health_wounds")));
-                creature->stat_wound_list_.Set(creature::STRENGTH, Stat(result->getUInt("strength_wounds")));
-                creature->stat_wound_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("constitution_wounds")));
-                creature->stat_wound_list_.Set(creature::ACTION, Stat(result->getUInt("action_wounds")));
-                creature->stat_wound_list_.Set(creature::QUICKNESS, Stat(result->getUInt("quickness_wounds")));
-                creature->stat_wound_list_.Set(creature::STAMINA, Stat(result->getUInt("stamina_wounds")));
-                creature->stat_wound_list_.Set(creature::MIND, Stat(result->getUInt("mind_wounds")));
-                creature->stat_wound_list_.Set(creature::FOCUS, Stat(result->getUInt("focus_wounds")));
-                creature->stat_wound_list_.Set(creature::WILLPOWER, Stat(result->getUInt("willpower_wounds")));
+                creature->SetStatWound(HEALTH, result->getUInt("health_wounds"));
+                creature->SetStatWound(STRENGTH, result->getUInt("strength_wounds"));
+                creature->SetStatWound(CONSTITUTION, result->getUInt("constitution_wounds"));
+                creature->SetStatWound(ACTION, result->getUInt("action_wounds"));
+                creature->SetStatWound(QUICKNESS, result->getUInt("quickness_wounds"));
+                creature->SetStatWound(STAMINA, result->getUInt("stamina_wounds"));
+                creature->SetStatWound(MIND, result->getUInt("mind_wounds"));
+                creature->SetStatWound(FOCUS, result->getUInt("focus_wounds"));
+                creature->SetStatWound(WILLPOWER, result->getUInt("willpower_wounds"));
 
-                creature->stat_base_list_.Set(creature::HEALTH, Stat(result->getUInt("health_wounds")));
-                creature->stat_base_list_.Set(creature::STRENGTH, Stat(result->getUInt("strength_wounds")));
-                creature->stat_base_list_.Set(creature::CONSTITUTION, Stat(result->getUInt("constitution_wounds")));
-                creature->stat_base_list_.Set(creature::ACTION, Stat(result->getUInt("action_wounds")));
-                creature->stat_base_list_.Set(creature::QUICKNESS, Stat(result->getUInt("quickness_wounds")));
-                creature->stat_base_list_.Set(creature::STAMINA, Stat(result->getUInt("stamina_wounds")));
-                creature->stat_base_list_.Set(creature::MIND, Stat(result->getUInt("mind_wounds")));
-                creature->stat_base_list_.Set(creature::FOCUS, Stat(result->getUInt("focus_wounds")));
-                creature->stat_base_list_.Set(creature::WILLPOWER, Stat(result->getUInt("willpower_wounds")));
+                creature->SetStatBase(HEALTH, result->getUInt("health_wounds"));
+                creature->SetStatBase(STRENGTH, result->getUInt("strength_wounds"));
+                creature->SetStatBase(CONSTITUTION, result->getUInt("constitution_wounds"));
+                creature->SetStatBase(ACTION, result->getUInt("action_wounds"));
+                creature->SetStatBase(QUICKNESS, result->getUInt("quickness_wounds"));
+                creature->SetStatBase(STAMINA, result->getUInt("stamina_wounds"));
+                creature->SetStatBase(MIND, result->getUInt("mind_wounds"));
+                creature->SetStatBase(FOCUS, result->getUInt("focus_wounds"));
+                creature->SetStatBase(WILLPOWER, result->getUInt("willpower_wounds"));
             }
         }
         
@@ -263,7 +263,7 @@ void CreatureFactory::LoadSkills_(
         {
             skill_name = result->getString("name");
 
-            creature->skills_.Insert(Skill(skill_name));
+            creature->AddSkill(skill_name);
         }
     }
 }
@@ -285,9 +285,9 @@ void CreatureFactory::LoadSkillMods_(
             skill_mod_name = result->getString("name");
             skill_mod_value = result->getUInt("value");
 
-            creature->skill_mod_list_.Insert(
-                skill_mod_name, 
-                SkillMod(skill_mod_name, skill_mod_value, 0));
+            creature->AddSkillMod( 
+                SkillMod(skill_mod_name, skill_mod_value, 0)
+                );
         }
     }
 }
