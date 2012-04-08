@@ -291,8 +291,8 @@ void ManufactureSchematic::Deactive()
 
 void ManufactureSchematic::ToggleActive()
 {
-    is_active_ = !is_active_;
-    uint8_t flag = is_active_ ? 1 : 0;
+    //is_active_ = !is_active_;
+    //uint8_t flag = is_active_ ? 1 : 0;
 
     /*if (HasObservers())
     {
