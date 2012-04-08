@@ -1,7 +1,6 @@
 
 #include "swganh/object/waypoint/waypoint.h"
 
-#include "swganh/object/waypoint/waypoint_message_builder.h"
 #include "anh/crc.h"
 
 using namespace std;
@@ -36,7 +35,9 @@ uint32_t Waypoint::GetUses()
 void Waypoint::SetUses(uint32_t uses) 
 {
     uses_ = uses;
-    WaypointMessageBuilder::BuildUsesDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
+        ("Waypoint::Uses", static_pointer_cast<Waypoint>(shared_from_this())));
 }
 glm::vec3 Waypoint::GetCoordinates()
 {
@@ -45,22 +46,25 @@ glm::vec3 Waypoint::GetCoordinates()
 }
 void Waypoint::SetCoordinates(const glm::vec3& coords)
 {
-    {
-	    std::lock_guard<std::mutex> lock(waypoint_mutex_);
-	    coordinates_ = move(coords);
-    }
-
-	WaypointMessageBuilder::BuildCoordinatesDelta(this);
+    std::lock_guard<std::mutex> lock(waypoint_mutex_);
+	coordinates_ = move(coords);
+    
+	GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
+        ("Waypoint::Coordinates", static_pointer_cast<Waypoint>(shared_from_this())));
 }
 void Waypoint::Activate()
 {
     activated_flag_ = ACTIVATED;
-    WaypointMessageBuilder::BuildActivateDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
+        ("Waypoint::Activated", static_pointer_cast<Waypoint>(shared_from_this())));
 }
 void Waypoint::DeActivate()
 {
     activated_flag_ = DEACTIVATED;
-    WaypointMessageBuilder::BuildActivateDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
+        ("Waypoint::Activated", static_pointer_cast<Waypoint>(shared_from_this())));
 }
 
 uint64_t Waypoint::GetLocationNetworkId() const
@@ -80,7 +84,8 @@ void Waypoint::SetPlanet(const string& planet_name)
         planet_name_ = planet_name;
     }
 
-    WaypointMessageBuilder::BuildPlanetDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
+        ("Waypoint::Planet", static_pointer_cast<Waypoint>(shared_from_this())));
 }
 
 uint8_t Waypoint::GetColorByte()
@@ -113,7 +118,8 @@ void Waypoint::SetColor(const string& color)
         color_ = color;
     }
 
-	WaypointMessageBuilder::BuildColor(this);
+	GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
+        ("Waypoint::Color", static_pointer_cast<Waypoint>(shared_from_this())));
 }
 
 void Waypoint::SetColorByte(uint8_t color_byte)
@@ -142,8 +148,4 @@ void Waypoint::SetColorByte(uint8_t color_byte)
         SetColor("blue");
         break;
     }
-}
-boost::optional<BaselinesMessage> Waypoint::GetBaseline3()
-{
-    return WaypointMessageBuilder::BuildBaseline3(this);
 }

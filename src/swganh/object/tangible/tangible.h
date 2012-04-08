@@ -138,22 +138,20 @@ public:
     void ClearAutoAttack();
     bool IsAutoAttacking();
 
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7();
+    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
 private:
-    friend class TangibleFactory;
-
+    typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
+    
     mutable std::mutex tangible_mutex_;
 
-    std::string customization_;                                                                         // update 3 variable 4
-    swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;    // update 3 variable 5
+    std::string customization_;                                                                                      // update 3 variable 4
+    swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;                 // update 3 variable 5
     std::atomic<uint32_t> options_bitmask_;                                                                          // update 3 variable 6
     std::atomic<uint32_t> incap_timer_;                                                                              // update 3 variable 7
     std::atomic<uint32_t> condition_damage_;                                                                         // update 3 variable 8
     std::atomic<uint32_t> max_condition_;                                                                            // update 3 variable 9
     std::atomic<bool> is_static_;                                                                                    // update 3 variable 10
-    swganh::messages::containers::NetworkSortedVector<Defender> defender_list_;                         // update 6 variable 1
+    swganh::messages::containers::NetworkSortedVector<Defender> defender_list_;                                      // update 6 variable 1
     // Flag to help out in combat situations
     std::atomic<bool> auto_attack_;
 };

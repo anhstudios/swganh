@@ -35,8 +35,8 @@ public:
     std::wstring GetResourceName() { return variation_name_; }
     void SetResourceName(const std::wstring& name);
 
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
+    virtual void GetBaseline3();
+    virtual void GetBaseline6();
 
 private:
     uint32_t current_quantity_;			                    // update 3

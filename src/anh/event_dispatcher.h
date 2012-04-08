@@ -129,7 +129,7 @@ namespace anh {
         void InvokeCallbacks(const std::shared_ptr<EventInterface>& dispatch_event);
                 
         EventHandlerMap event_handlers_;
-        boost::asio::strand strand_;
+        boost::asio::io_service& io_service_;
     };
 
 }  // namespace anh

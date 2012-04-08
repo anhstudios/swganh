@@ -6,10 +6,9 @@
 #include "anh/crc.h"
 
 #include "player_events.h"
-#include "player_message_builder.h"
+#include "swganh/object/object_events.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/waypoint/waypoint.h"
-#include "swganh/messages/deltas_message.h"
 
 using namespace std;
 using namespace swganh::object;
@@ -60,8 +59,8 @@ void Player::AddStatusFlag(StatusFlags flag, StatusIndex index)
         std::lock_guard<std::mutex> lock(player_mutex_);
         status_flags_[index] = FlagBitmask(status_flags_[index].bitmask | flag);
     }
-
-    PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::StatusBitmask", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index)
@@ -70,25 +69,25 @@ void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index)
         std::lock_guard<std::mutex> lock(player_mutex_);
         status_flags_[index] = FlagBitmask(status_flags_[index].bitmask & ~flag);
     }
-
-    PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::StatusBitmask", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ClearStatusFlags()
 {
     {
         std::lock_guard<std::mutex> lock(player_mutex_);
-
+    
         for_each(
             begin(status_flags_), 
             end(status_flags_),
             [] (vector<FlagBitmask>::value_type& value) 
-        {
-            value = FlagBitmask(0);
-        });
+            {
+                value = FlagBitmask(0);
+            });
     }
-
-    PlayerMessageBuilder::BuildStatusBitmaskDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::StatusBitmask", static_pointer_cast<Player>(shared_from_this())));
 }
 
 std::array<FlagBitmask, 4> Player::GetProfileFlags() 
@@ -103,8 +102,8 @@ void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index)
         std::lock_guard<std::mutex> lock(player_mutex_);
         profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask | flag);
     }
-
-    PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ProfileFlag", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index)
@@ -113,8 +112,8 @@ void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index)
         std::lock_guard<std::mutex> lock(player_mutex_);
         profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask & ~flag);
     }
-
-    PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ProfileFlag", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ClearProfileFlags()
@@ -130,8 +129,8 @@ void Player::ClearProfileFlags()
             value = FlagBitmask(0);
         });
     }
-
-    PlayerMessageBuilder::BuildProfileBitmaskDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ProfileFlag", static_pointer_cast<Player>(shared_from_this())));
 }
 
 std::string Player::GetProfessionTag() 
@@ -146,8 +145,8 @@ void Player::SetProfessionTag(string profession_tag)
         std::lock_guard<std::mutex> lock(player_mutex_);
         profession_tag_ = profession_tag;
     }
-
-    PlayerMessageBuilder::BuildProfessionTagDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ProfessionTag", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetBornDate() 
@@ -158,7 +157,9 @@ uint32_t Player::GetBornDate()
 void Player::SetBornDate(uint32_t born_date)
 {
     born_date_ = born_date;
-    PlayerMessageBuilder::BuildBornDateDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::BornDate", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetTotalPlayTime() 
@@ -169,13 +170,17 @@ uint32_t Player::GetTotalPlayTime()
 void Player::SetTotalPlayTime(uint32_t play_time)
 {
     total_playtime_ = play_time;
-    PlayerMessageBuilder::BuildPlayTimeDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::TotalPlayTime", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::IncrementTotalPlayTime(uint32_t increment)
 {
     total_playtime_ += increment;
-    PlayerMessageBuilder::BuildPlayTimeDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::TotalPlayTime", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint8_t Player::GetAdminTag() 
@@ -186,7 +191,9 @@ uint8_t Player::GetAdminTag()
 void Player::SetAdminTag(uint8_t tag)
 {
     admin_tag_ = tag;
-    PlayerMessageBuilder::BuildAdminTagDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::AdminTag", static_pointer_cast<Player>(shared_from_this())));
 }
 
 NetworkMap<string, XpData> Player::GetXp() 
@@ -201,8 +208,8 @@ void Player::AddExperience(XpData experience)
         std::lock_guard<std::mutex> lock(player_mutex_);
         experience_.Update(experience.type, experience);
     }
-
-    PlayerMessageBuilder::BuildXpDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::DeductXp(XpData experience)
@@ -211,8 +218,8 @@ void Player::DeductXp(XpData experience)
         std::lock_guard<std::mutex> lock(player_mutex_);
         experience_.Update(experience.type, experience);
     }
-
-    PlayerMessageBuilder::BuildXpDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ClearXpType(string type)
@@ -230,7 +237,8 @@ void Player::ClearXpType(string type)
         experience_.Remove(iter);
     }
 
-    PlayerMessageBuilder::BuildXpDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ResetXp(swganh::messages::containers::NetworkMap<std::string, XpData>& experience)
@@ -244,8 +252,8 @@ void Player::ResetXp(swganh::messages::containers::NetworkMap<std::string, XpDat
         }
         experience_.Reinstall();
     }
-
-    PlayerMessageBuilder::BuildXpDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ClearAllXp()
@@ -254,8 +262,8 @@ void Player::ClearAllXp()
         std::lock_guard<std::mutex> lock(player_mutex_);
         experience_.Clear();
     }
-
-    PlayerMessageBuilder::BuildXpDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
 }
 
 NetworkMap<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
@@ -270,8 +278,8 @@ void Player::AddWaypoint(PlayerWaypointSerializer waypoint)
         std::lock_guard<std::mutex> lock(player_mutex_);
         waypoints_.Add(waypoint.waypoint->GetObjectId(), waypoint);
     }
-
-    PlayerMessageBuilder::BuildWaypointDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::RemoveWaypoint(uint64_t waypoint_id)
@@ -293,8 +301,8 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
 
         waypoints_.Remove(find_iter);
     }
-
-    PlayerMessageBuilder::BuildWaypointDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
@@ -303,8 +311,8 @@ void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
         std::lock_guard<std::mutex> lock(player_mutex_);
         waypoints_.Update(waypoint.waypoint->GetObjectId(), waypoint);
     }
-
-    PlayerMessageBuilder::BuildWaypointDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));;
 }
 
 void Player::ClearAllWaypoints()
@@ -313,8 +321,8 @@ void Player::ClearAllWaypoints()
         std::lock_guard<std::mutex> lock(player_mutex_);
         waypoints_.Clear();
     }
-
-    PlayerMessageBuilder::BuildWaypointDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Waypoint", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetCurrentForcePower() 
@@ -325,7 +333,9 @@ uint32_t Player::GetCurrentForcePower()
 void Player::SetCurrentForcePower(uint32_t force_power)
 {
     current_force_power_ = force_power;
-    PlayerMessageBuilder::BuildCurrentForcePowerDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ForcePower", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::IncrementForcePower(int32_t force_power)
@@ -334,7 +344,8 @@ void Player::IncrementForcePower(int32_t force_power)
 
     current_force_power_ = (new_force_power > GetMaxForcePower()) ? GetMaxForcePower() : new_force_power;
     
-    PlayerMessageBuilder::BuildCurrentForcePowerDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ForcePower", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetMaxForcePower() 
@@ -345,7 +356,9 @@ uint32_t Player::GetMaxForcePower()
 void Player::SetMaxForcePower(uint32_t force_power)
 {
     max_force_power_ = force_power;
-    PlayerMessageBuilder::BuildMaxForcePowerDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::MaxForcePower", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetCurrentForceSensitiveQuests()
@@ -356,19 +369,25 @@ uint32_t Player::GetCurrentForceSensitiveQuests()
 void Player::AddCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
     current_force_sensitive_quests_ = current_force_sensitive_quests_ | quest_mask;
-    PlayerMessageBuilder::BuildForceSensitiveQuestDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::RemoveCurrentForceSensitiveQuest(uint32_t quest_mask)
 {
     current_force_sensitive_quests_ = current_force_sensitive_quests_ & ~quest_mask;
-    PlayerMessageBuilder::BuildForceSensitiveQuestDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ClearCurrentForceSensitiveQuests()
 {
     current_force_sensitive_quests_ = 0;
-    PlayerMessageBuilder::BuildForceSensitiveQuestDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetCompletedForceSensitiveQuests()
@@ -379,19 +398,25 @@ uint32_t Player::GetCompletedForceSensitiveQuests()
 void Player::AddCompletedForceSensitiveQuest(uint32_t quest_mask)
 {
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ | quest_mask;
-    PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CompletedForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::RemoveCompletedForceSensitiveQuest(uint32_t quest_mask)
 {
     completed_force_sensitive_quests_ = completed_force_sensitive_quests_ & ~quest_mask;
-    PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CompletedForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ClearCompletedForceSensitiveQuests()
 {
     completed_force_sensitive_quests_ = 0;
-    PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CompletedForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
 }
 
 swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> Player::GetQuests() 
@@ -406,8 +431,8 @@ void Player::AddQuest(QuestJournalData quest)
         std::lock_guard<std::mutex> lock(player_mutex_);
         quest_journal_.Add(quest.quest_crc, quest);
     }
-
-    PlayerMessageBuilder::BuildQuestJournalDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::QuestJournal", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::RemoveQuest(QuestJournalData quest)
@@ -430,8 +455,8 @@ void Player::RemoveQuest(QuestJournalData quest)
 
         quest_journal_.Remove(find_iter);
     }
-
-    PlayerMessageBuilder::BuildQuestJournalDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::QuestJournal", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::UpdateQuest(QuestJournalData quest)
@@ -440,8 +465,8 @@ void Player::UpdateQuest(QuestJournalData quest)
         std::lock_guard<std::mutex> lock(player_mutex_);
         quest_journal_.Update(quest.quest_crc, quest);
     }
-
-    PlayerMessageBuilder::BuildQuestJournalDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::QuestJournal", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ClearAllQuests()
@@ -450,8 +475,8 @@ void Player::ClearAllQuests()
         std::lock_guard<std::mutex> lock(player_mutex_);
         quest_journal_.Clear();
     }
-
-    PlayerMessageBuilder::BuildQuestJournalDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::QuestJournal", static_pointer_cast<Player>(shared_from_this())));
 }
 
 swganh::messages::containers::NetworkSortedList<Ability> Player::GetAbilityList() 
@@ -490,7 +515,9 @@ uint32_t Player::GetExperimentationFlag()
 void Player::SetExperimentationFlag(uint32_t experimentation_flag)
 {
     experimentation_flag_ = experimentation_flag;
-    PlayerMessageBuilder::BuildExperimentationFlagDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ExperimentationFlag", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetCraftingStage() 
@@ -501,7 +528,9 @@ uint32_t Player::GetCraftingStage()
 void Player::SetCraftingStage(uint32_t crafting_stage)
 {
     crafting_stage_ = crafting_stage;
-    PlayerMessageBuilder::BuildCraftingStageDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CraftingStage", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint64_t Player::GetNearestCraftingStation() 
@@ -512,7 +541,9 @@ uint64_t Player::GetNearestCraftingStation()
 void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
 {
     nearest_crafting_station_ = crafting_station_id;
-    PlayerMessageBuilder::BuildNearestCraftingStationDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::NearestCraftingStation", static_pointer_cast<Player>(shared_from_this())));
 }
 
 swganh::messages::containers::NetworkSortedList<DraftSchematicData> Player::GetDraftSchematics() 
@@ -527,8 +558,8 @@ void Player::AddDraftSchematic(DraftSchematicData schematic)
         std::lock_guard<std::mutex> lock(player_mutex_);
         draft_schematics_.Add(schematic);
     }
-
-    PlayerMessageBuilder::BuildDraftSchematicDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::DraftSchematic", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::RemoveDraftSchematic(uint32_t schematic_id)
@@ -543,8 +574,8 @@ void Player::RemoveDraftSchematic(uint32_t schematic_id)
             
         draft_schematics_.Remove(iter);
     }
-    
-    PlayerMessageBuilder::BuildDraftSchematicDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::DraftSchematic", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ClearDraftSchematics()
@@ -553,8 +584,8 @@ void Player::ClearDraftSchematics()
         std::lock_guard<std::mutex> lock(player_mutex_);
         draft_schematics_.Clear();
     }
-
-    PlayerMessageBuilder::BuildDraftSchematicDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::DraftSchematic", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetExperimentationPoints() 
@@ -565,19 +596,25 @@ uint32_t Player::GetExperimentationPoints()
 void Player::AddExperimentationPoints(uint32_t points)
 {
     experimentation_points_ += points;
-    PlayerMessageBuilder::BuildExperimentationPointsDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ExperimentationPoints", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::RemoveExperimentationPoints(uint32_t points)
 {
     experimentation_points_ -= points;
-    PlayerMessageBuilder::BuildExperimentationPointsDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ExperimentationPoints", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ResetExperimentationPoints(uint32_t points)
 {
     experimentation_points_ = points;
-    PlayerMessageBuilder::BuildExperimentationPointsDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::ExperimentationPoints", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetAccomplishmentCounter() 
@@ -588,13 +625,17 @@ uint32_t Player::GetAccomplishmentCounter()
 void Player::ResetAccomplishmentCounter(uint32_t counter)
 {
     accomplishment_counter_ = counter;
-    PlayerMessageBuilder::BuildAccomplishmentCounterDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::AccomplishmentCounter", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::IncrementAccomplishmentCounter()
 {
     ++accomplishment_counter_;
-    PlayerMessageBuilder::BuildAccomplishmentCounterDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::AccomplishmentCounter", static_pointer_cast<Player>(shared_from_this())));
 }
 
 NetworkSortedVector<Name> Player::GetFriends()
@@ -614,18 +655,20 @@ bool Player::IsFriend(std::string friend_name)
 
     return false;
 }
-void Player::AddFriend(string  friend_name, uint64_t id)
+void Player::AddFriend(string friend_name, uint64_t id)
 {
     {
         std::lock_guard<std::mutex> lock(player_mutex_);
         friends_.Add(Name(friend_name, id));
     }
 
-    PlayerMessageBuilder::BuildFriendsDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Friend", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::RemoveFriend(string friend_name)
 {
+    uint64_t friend_id = 0;
     {
         std::lock_guard<std::mutex> lock(player_mutex_);
         auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
@@ -636,12 +679,10 @@ void Player::RemoveFriend(string friend_name)
         {
             return;
         }
-            
-        GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), iter->id));
+        friend_id = iter->id;
         friends_.Remove(iter);
     }
-
-    PlayerMessageBuilder::BuildFriendsDelta(this);  
+    GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveFriend", static_pointer_cast<Player>(shared_from_this()), friend_id));
 }
 
 void Player::ClearFriends()
@@ -650,8 +691,8 @@ void Player::ClearFriends()
         std::lock_guard<std::mutex> lock(player_mutex_);
         friends_.Clear();
     }
-
-    PlayerMessageBuilder::BuildFriendsDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Friend", static_pointer_cast<Player>(shared_from_this())));
 }
 
 NetworkSortedVector<Name> Player::GetIgnoredPlayers()
@@ -679,12 +720,13 @@ void Player::IgnorePlayer(string player_name, uint64_t player_id)
         std::lock_guard<std::mutex> lock(player_mutex_);
         ignored_players_.Add(Name(player_name, player_id));
     }
-
-    PlayerMessageBuilder::BuildIgnoredDelta(this);    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::IgnorePlayer", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::StopIgnoringPlayer(string player_name)
 {
+    uint64_t remove_id = 0;
     {
         std::lock_guard<std::mutex> lock(player_mutex_);
         auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
@@ -695,12 +737,11 @@ void Player::StopIgnoringPlayer(string player_name)
         {
             return;
         }
-            
-        GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveIgnoredPlayer", static_pointer_cast<Player>(shared_from_this()), iter->id));
-        ignored_players_.Remove(iter);  
-    }
-            
-    PlayerMessageBuilder::BuildIgnoredDelta(this);    
+        remove_id = iter->id;
+        ignored_players_.Remove(iter); 
+    } 
+    GetEventDispatcher()->Dispatch(make_shared<NameEvent>("Player::RemoveIgnoredPlayer", static_pointer_cast<Player>(shared_from_this()), remove_id));
+ 
 }
 
 void Player::ClearIgnored()
@@ -709,8 +750,9 @@ void Player::ClearIgnored()
         std::lock_guard<std::mutex> lock(player_mutex_);
         ignored_players_.Clear();
     }
-
-    PlayerMessageBuilder::BuildIgnoredDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::IgnorePlayer", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetLanguage() 
@@ -721,7 +763,9 @@ uint32_t Player::GetLanguage()
 void Player::SetLanguage(uint32_t language_id)
 {
     language_ = language_id;
-    PlayerMessageBuilder::BuildLanguageDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::Language", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetCurrentStomach() 
@@ -734,19 +778,25 @@ void Player::IncreaseCurrentStomach(uint32_t stomach)
     uint32_t new_stomach = current_stomach_ + stomach;
 
     current_stomach_ = (new_stomach > GetMaxStomach()) ? GetMaxStomach() : new_stomach;
-    PlayerMessageBuilder::BuildCurrentStomachDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CurrentStomach", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::DecreaseCurrentStomach(uint32_t stomach)
 {
     current_stomach_ -= stomach;
-    PlayerMessageBuilder::BuildCurrentStomachDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CurrentStomach", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ResetCurrentStomach(uint32_t stomach)
 {
     current_stomach_ = stomach;
-    PlayerMessageBuilder::BuildCurrentStomachDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CurrentStomach", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetMaxStomach() 
@@ -757,7 +807,9 @@ uint32_t Player::GetMaxStomach()
 void Player::ResetMaxStomach(uint32_t stomach)
 {
     max_stomach_ = stomach;
-    PlayerMessageBuilder::BuildMaxStomachDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::MaxStomach", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetCurrentDrink() 
@@ -770,19 +822,25 @@ void Player::IncreaseCurrentDrink(uint32_t drink)
     uint32_t new_drink = current_drink_ + drink;
 
     current_drink_ = (new_drink > GetMaxDrink()) ? GetMaxDrink() : new_drink;
-    PlayerMessageBuilder::BuildCurrentDrinkDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CurrentDrink", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::DecreaseCurrentDrink(uint32_t drink)
 {
     current_drink_ -= drink;
-    PlayerMessageBuilder::BuildCurrentDrinkDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CurrentDrink", static_pointer_cast<Player>(shared_from_this())));
 }
 
 void Player::ResetCurrentDrink(uint32_t drink)
 {
     current_drink_ = drink;
-    PlayerMessageBuilder::BuildCurrentDrinkDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::CurrentDrink", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetMaxDrink() 
@@ -793,7 +851,9 @@ uint32_t Player::GetMaxDrink()
 void Player::ResetMaxDrink(uint32_t drink)
 {
     max_drink_ = drink;
-    PlayerMessageBuilder::BuildMaxDrinkDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::MaxDrink", static_pointer_cast<Player>(shared_from_this())));
 }
 
 uint32_t Player::GetJediState() 
@@ -804,7 +864,9 @@ uint32_t Player::GetJediState()
 void Player::SetJediState(uint32_t jedi_state)
 {
     jedi_state_ = jedi_state;
-    PlayerMessageBuilder::BuildJediStateDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
+        ("Player::JediState", static_pointer_cast<Player>(shared_from_this())));
 }
 
 Gender Player::GetGender() 
@@ -816,26 +878,6 @@ void Player::SetGender(Gender value)
 {
     std::lock_guard<std::mutex> lock(player_mutex_);
     gender_ = value;
-}
-
-boost::optional<BaselinesMessage> Player::GetBaseline3()
-{
-    return PlayerMessageBuilder::BuildBaseline3(this);
-}
-
-boost::optional<BaselinesMessage> Player::GetBaseline6()
-{
-    return PlayerMessageBuilder::BuildBaseline6(this);
-}
-
-boost::optional<BaselinesMessage> Player::GetBaseline8()
-{
-    return PlayerMessageBuilder::BuildBaseline8(this);
-}
-
-boost::optional<BaselinesMessage> Player::GetBaseline9()
-{
-    return PlayerMessageBuilder::BuildBaseline9(this);
 }
 
 void PlayerWaypointSerializer::Serialize(swganh::messages::BaselinesMessage& message)
@@ -872,4 +914,10 @@ void PlayerWaypointSerializer::Serialize(swganh::messages::DeltasMessage& messag
 bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
 {
     return waypoint->GetObjectId() == other.waypoint->GetObjectId();
+}
+
+void Player::CreateBaselines(shared_ptr<ObjectController> controller)
+{
+    GetEventDispatcher()->Dispatch(make_shared<ControllerEvent>
+        ("Player::Baselines", shared_from_this(), controller));
 }
