@@ -153,6 +153,7 @@ FUNCTION(AddANHPlugin name)
 	    
     # Create the Common library
     ADD_LIBRARY(${name} MODULE ${SOURCES})    
+    SET_TARGET_PROPERTIES(${name} PROPERTIES PREFIX "")
     
     # If a project library was created link to it
     IF(DEFINED __project_library)
