@@ -30,15 +30,29 @@
 using namespace quadtree;
 
 ///
-TEST(QuadtreeTest, CanInsertNode)
+class NodeTest : public testing::Test {
+public:
+	NodeTest()
+		: root_node(ROOT, Region(Point(-3000.0f, -3000.0f), Point(3000.0f, 3000.0f)), 0, 9, nullptr)
+	{}
+
+	~NodeTest()
+	{}
+
+protected:
+	virtual void SetUp() { }
+
+	Node root_node;
+};
+
+///
+TEST_F(NodeTest, CanInsertObject)
 {
-	
-	Node root_node(ROOT, Region(Point(-3000.0f, -3000.0f), Point(3000.0f, 3000.0f)), 0, 9, nullptr);
 	std::vector<std::shared_ptr<swganh::object::Object>> objects;
 	
 	boost::random::mt19937 gen;
 	boost::random::uniform_real_distribution<> random(-3000.0f, 3000.0f);
-	for(int x = 0; x < 3000; x++)
+	for(int x = 0; x < 10000; x++)
 	{
 		std::shared_ptr<swganh::object::Object> obj = std::make_shared<swganh::object::Object>();
 		obj->SetObjectId(x);
@@ -57,7 +71,7 @@ TEST(QuadtreeTest, CanInsertNode)
 	QueryBox query_box2(Point(-3000, -3000), Point(3000, 3000));
 	std::cout << "Query 2 result: " << root_node.Query(query_box2).size() << std::endl;
 
-	boost::random::uniform_int_distribution<> rand2(1, 3000);
+	boost::random::uniform_int_distribution<> rand2(0, 9999);
 	auto object_selected = objects[rand2(gen)];
 	root_node.UpdateObject(object_selected, object_selected->GetPosition(), glm::vec3(10.0f, 10.0f, 10.0f));
 
@@ -72,3 +86,16 @@ TEST(QuadtreeTest, CanInsertNode)
 	QueryBox query_box4(Point(-3000, -3000), Point(3000, 3000));
 	std::cout << "Query 4 result: " << root_node.Query(query_box4).size() << std::endl;
 }
+
+///
+TEST_F(NodeTest, CanRemoveObject)
+{
+}
+
+///
+TEST_F(NodeTest, CanQuery)
+{
+}
+
+/*****************************************************************************/
+// Implementation for the test fixture //
