@@ -20,17 +20,16 @@ struct ObjectParams {
 };
 
 typedef std::function<void * (ObjectParams*)> ObjectCreator;
-typedef std::function<void (void *)> ObjectDestroyer;
+typedef void (*ObjectDestroyer)(void *);
+typedef void (*ExitFunc)();
+typedef ExitFunc (*InitFunc)(anh::app::KernelInterface*);
+typedef void (*ConfigFunc)(boost::program_options::options_description&);
 
 struct ObjectRegistration {
     anh::app::Version version;
     ObjectCreator CreateObject;
     ObjectDestroyer DestroyObject;
 };
-
-typedef void (*ExitFunc)();
-typedef ExitFunc (*InitFunc)(anh::app::KernelInterface*);
-typedef void (*ConfigFunc)(boost::program_options::options_description&);
 
 #ifdef WIN32
     #ifdef DLL_EXPORTS
