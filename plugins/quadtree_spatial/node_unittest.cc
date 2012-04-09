@@ -33,8 +33,7 @@ using namespace quadtree;
 TEST(QuadtreeTest, CanInsertNode)
 {
 	
-	Node root_node(ROOT, Region(Point(-3000.0f, -3000.0f), Point(3000.0f, 3000.0f)), 0, 9);
-
+	Node root_node(ROOT, Region(Point(-3000.0f, -3000.0f), Point(3000.0f, 3000.0f)), 0, 9, nullptr);
 	std::vector<std::shared_ptr<swganh::object::Object>> objects;
 	
 	boost::random::mt19937 gen;
@@ -57,6 +56,10 @@ TEST(QuadtreeTest, CanInsertNode)
 
 	QueryBox query_box2(Point(-3000, -3000), Point(3000, 3000));
 	std::cout << "Query 2 result: " << root_node.Query(query_box2).size() << std::endl;
+
+	boost::random::uniform_int_distribution<> rand2(1, 3000);
+	auto object_selected = objects[rand2(gen)];
+	root_node.UpdateObject(object_selected, object_selected->GetPosition(), glm::vec3(10.0f, 10.0f, 10.0f));
 
 	for(auto i = objects.begin(); i != objects.end(); i++)
 	{

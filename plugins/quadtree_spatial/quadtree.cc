@@ -29,7 +29,7 @@ namespace quadtree
 Quadtree::Quadtree(uint32_t max_objects_per_node, uint32_t max_level)
 	: max_objects_per_node_(max_objects_per_node)
 	, max_level_(max_level)
-	, root_node_(ROOT, Region(Point(0.0f, 0.0f), Point(3000.0f, 3000.0f)), 0, max_level)
+	, root_node_(ROOT, Region(Point(0.0f, 0.0f), Point(3000.0f, 3000.0f)), 0, max_level, nullptr)
 {
 }
 

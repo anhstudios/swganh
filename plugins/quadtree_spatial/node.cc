@@ -25,12 +25,13 @@
 namespace quadtree
 {
 
-Node::Node(NodeQuadrant quadrant, Region region, uint32_t level, uint32_t max_level)
+Node::Node(NodeQuadrant quadrant, Region region, uint32_t level, uint32_t max_level, Node* parent)
 	: quadrant_(quadrant)
 	, region_(region)
 	, level_(level)
 	, max_level_(max_level)
 	, state_(LEAF)
+	, parent_(parent)
 {
 	// If this is the root node, we need to do a manual split.
 	if(quadrant_ == ROOT)
@@ -108,10 +109,10 @@ void Node::Split()
 	Point right_center(region_.max_corner().x(), (region_.min_corner().y() + region_.max_corner().y()) / 2);
 	Point bottom_center((region_.min_corner().x() + region_.max_corner().x()) / 2, region_.max_corner().y());
 
-	leaf_nodes_[NW_QUADRANT] = std::make_shared<Node>(NW_QUADRANT, Region(region_.min_corner(), center), level_ + 1, max_level_);
-	leaf_nodes_[NE_QUADRANT] = std::make_shared<Node>(NE_QUADRANT, Region(upper_center, right_center), level_ + 1, max_level_);
-	leaf_nodes_[SW_QUADRANT] = std::make_shared<Node>(SW_QUADRANT, Region(left_center, bottom_center), level_ + 1, max_level_);
-	leaf_nodes_[SE_QUADRANT] = std::make_shared<Node>(SE_QUADRANT, Region(center, region_.max_corner()), level_ + 1, max_level_);
+	leaf_nodes_[NW_QUADRANT] = std::make_shared<Node>(NW_QUADRANT, Region(region_.min_corner(), center), level_ + 1, max_level_, this);
+	leaf_nodes_[NE_QUADRANT] = std::make_shared<Node>(NE_QUADRANT, Region(upper_center, right_center), level_ + 1, max_level_, this);
+	leaf_nodes_[SW_QUADRANT] = std::make_shared<Node>(SW_QUADRANT, Region(left_center, bottom_center), level_ + 1, max_level_, this);
+	leaf_nodes_[SE_QUADRANT] = std::make_shared<Node>(SE_QUADRANT, Region(center, region_.max_corner()), level_ + 1, max_level_, this);
 
 	for(auto i = objects_.begin(); i != objects_.end();)
 	{
@@ -190,6 +191,70 @@ const std::vector<std::shared_ptr<swganh::object::Object>> Node::GetContainedObj
 	}
 
 	return objs;
+}
+
+void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::vec3& old_position, const glm::vec3& new_position)
+{
+	Point old_position_point(old_position.x, old_position.z);
+	Point new_position_point(new_position.x, new_position.z);
+
+	// Check the objects of this node.
+	for(auto i = objects_.begin(); i != objects_.end(); i++) {
+		auto node_obj = (*i);
+		if(node_obj->GetObjectId() == obj->GetObjectId())
+		{
+			std::shared_ptr<Node> node = GetRootNode_()->GetNodeWithinPoint_(new_position_point);
+
+			std::cout << "Node 1- " << std::endl;
+			std::cout << "Region: " << region_.min_corner().x() << "," << region_.min_corner().y() << " " << region_.max_corner().x() << "," << region_.max_corner().y() << std::endl;
+			std::cout << "Level: " << level_ << std::endl;
+
+			std::cout << "Node 2- " << std::endl;
+			std::cout << "Region: " << node->GetRegion().min_corner().x() << "," << node->GetRegion().min_corner().y() << " " << node->GetRegion().max_corner().x() << "," << node->GetRegion().max_corner().y() << std::endl;
+			std::cout << "Level: " << node->GetLevel() << std::endl;
+
+			std::cout << "Obj 1: " << node_obj->GetObjectId() << " , Obj 2: " << obj->GetObjectId() << std::endl;
+			
+			objects_.erase(i);
+			node->InsertObject(obj);
+			return;
+		}
+	};
+
+	if(state_ == BRANCH)
+	{
+		for(std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			// Go further into the tree if our point is within our child node.
+			if(boost::geometry::within(old_position_point, node->GetRegion()))
+			{
+				node->UpdateObject(obj, old_position, new_position);
+				return;
+			}
+		}
+	}
+}
+
+std::shared_ptr<Node> Node::GetNodeWithinPoint_(Point point)
+{
+	// If we don't within the actual Spatial Indexing area, bail.
+	if(!boost::geometry::within(point, region_))
+		throw new std::exception("Quadtree: Object out of bounds.");
+
+	if(state_ == BRANCH)
+	{
+		// See if we can fit inside leaf_nodes_
+		for(std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			if(boost::geometry::within(point, node->GetRegion()))
+			{
+				return node->GetNodeWithinPoint_(point);
+			}
+		}
+	}
+
+	// If not, we are between or in this node.
+	return std::shared_ptr<Node>(shared_from_this());
 }
 
 } // namespace quadtree

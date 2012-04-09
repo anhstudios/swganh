@@ -30,6 +30,8 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
 
+#include <glm/glm.hpp>
+
 namespace swganh {
 namespace object {
 	class Object;
@@ -52,9 +54,30 @@ enum NodeQuadrant
 }; // enum LeafNodeQuadrant
 
 /**
+template<class T> class QuadtreePositionItem
+{
+public:
+	QuadtreePositionItem(const std::shared_ptr<T> obj, glm::vec3 position)
+		: obj_(obj)
+		, position_(position)
+	{
+	}
+
+	std::shared_ptr<T> GetObject() { return obj_; }
+	glm::vec3 GetLastPosition() { return last_position_; }
+	void SetLastPosition(glm::vec3 position) { last_position_ = position; }
+
+private:
+	std::shared_ptr<T> obj_;
+	glm::vec3 last_position_;
+
+};
+*/
+
+/**
  *
  */
-class Node
+class Node : public std::enable_shared_from_this<Node>
 {
 public:
 	enum NodeState
@@ -67,13 +90,15 @@ public:
 		NodeQuadrant quadrant, 
 		Region region,
 		uint32_t level,
-		uint32_t max_level
+		uint32_t max_level,
+		Node* parent = NULL
 		);
 
 	~Node(void);
 
 	void InsertObject(std::shared_ptr<swganh::object::Object> obj);
 	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
+	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::vec3& old_position, const glm::vec3& new_position);
 	void Split();
 	std::vector<std::shared_ptr<swganh::object::Object>> Query(QueryBox query_box);
 
@@ -85,14 +110,29 @@ public:
 	const std::vector<std::shared_ptr<swganh::object::Object>>& GetObjects(void) { return objects_; }
 	const std::vector<std::shared_ptr<swganh::object::Object>> GetContainedObjects(void);
 
+protected:
+	void InsertObject_(std::shared_ptr<swganh::object::Object> obj);
+	void RemoveObject_(std::shared_ptr<swganh::object::Object> obj);
+	std::shared_ptr<Node> GetNodeWithinPoint_(Point point);
+	
+	Node* GetRootNode_(void) { 	
+		// Go to the root.
+		if(parent_ != NULL)
+			return parent_->GetRootNode_();
+		else
+			return this;
+	}
+
 private:
 	Region region_;
 	uint32_t level_;
 	uint32_t max_level_;
 	NodeQuadrant quadrant_;
 	NodeState state_;
+	//std::vector<QuadtreePositionItem<swganh::object::Object>> objects_;
 	std::vector<std::shared_ptr<swganh::object::Object>> objects_;
 	boost::array<std::shared_ptr<Node>, 4> leaf_nodes_;
+	Node* parent_;
 };
 
 } // namespace quadtree
