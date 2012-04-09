@@ -152,9 +152,6 @@ udp::endpoint SessionTests::buildTestEndpoint() const {
 shared_ptr<NiceMock<MockServer>> SessionTests::buildMockServer() const {
     auto server = make_shared<NiceMock<MockServer>>();
 
-    ON_CALL(*server, AllocateBuffer())
-        .WillByDefault(Return(make_shared<ByteBuffer>()));
-
     ON_CALL(*server, max_receive_size())
         .WillByDefault(Return(496));
 

@@ -70,8 +70,6 @@ public:
     
     uint32_t max_receive_size();
 
-    std::shared_ptr<ByteBuffer> AllocateBuffer();
-
     /**
      * Resolves a hostname to its ip.
      *
