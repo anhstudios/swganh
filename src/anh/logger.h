@@ -12,7 +12,6 @@
 #include <boost/log/sinks/sync_frontend.hpp>
 #include <boost/log/sinks/event_log_backend.hpp>
 #include <boost/log/attributes/named_scope.hpp>
-#include "anh/logger.h"
 //
 
 
