@@ -84,13 +84,18 @@ TEST_F(NodeTest, VerifyQuadrantSplit)
 }
 
 ///
-TEST_F(NodeTest, CanInsertRemoveOneThousand)
+TEST_F(NodeTest, CanQuery)
 {
-}
+	std::shared_ptr<swganh::object::Object> obj(new swganh::object::Object());
+	obj->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
 
-///
-TEST_F(NodeTest, CanInsertRemoveTenThousand)
-{
+	root_node_.InsertObject(obj);
+
+	EXPECT_EQ(1, root_node_.Query(QueryBox( Point(0.0f, 0.0f), Point(15.0f, 15.0f) )).size());
+
+	root_node_.RemoveObject(obj);
+
+	EXPECT_EQ(0, root_node_.Query(QueryBox( Point(0.0f, 0.0f), Point(15.0f, 15.0f) )).size());
 }
 
 ///
@@ -99,7 +104,12 @@ TEST_F(NodeTest, CanUpdateObject)
 }
 
 ///
-TEST_F(NodeTest, CanQuery)
+TEST_F(NodeTest, CanInsertRemoveQueryOneThousand)
+{
+}
+
+///
+TEST_F(NodeTest, CanInsertRemoveQueryTenThousand)
 {
 }
 
