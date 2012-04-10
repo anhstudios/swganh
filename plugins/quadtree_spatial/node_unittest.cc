@@ -25,15 +25,13 @@
 #include "node.h"
 #include <swganh/object/object.h>
 
-#include <fstream>
-
 using namespace quadtree;
 
 ///
 class NodeTest : public testing::Test {
 public:
 	NodeTest()
-		: root_node(ROOT, Region(Point(-3000.0f, -3000.0f), Point(3000.0f, 3000.0f)), 0, 9, nullptr)
+		: root_node_(ROOT, Region(Point(-3000.0f, -3000.0f), Point(3000.0f, 3000.0f)), 0, 9, nullptr)
 	{}
 
 	~NodeTest()
@@ -42,53 +40,61 @@ public:
 protected:
 	virtual void SetUp() { }
 
-	Node root_node;
+	Node root_node_;
 };
 
 ///
-TEST_F(NodeTest, CanInsertObject)
+TEST_F(NodeTest, CanInsertRemoveObject)
 {
-	std::vector<std::shared_ptr<swganh::object::Object>> objects;
-	
-	boost::random::mt19937 gen;
-	boost::random::uniform_real_distribution<> random(-3000.0f, 3000.0f);
-	for(int x = 0; x < 10000; x++)
-	{
-		std::shared_ptr<swganh::object::Object> obj = std::make_shared<swganh::object::Object>();
-		obj->SetObjectId(x);
-		obj->SetPosition(glm::vec3(random(gen), random(gen), random(gen)));
-		objects.push_back(obj);
-	}
+	std::shared_ptr<swganh::object::Object> obj(new swganh::object::Object());
+	obj->SetPosition(glm::vec3(10.0f, 10.0f, 10.0f));
 
-	for(auto i = objects.begin(); i != objects.end(); i++)
-	{
-		root_node.InsertObject((*i));
-	}
+	root_node_.InsertObject(obj);
+	EXPECT_EQ(1, root_node_.GetContainedObjects().size());
 
-	QueryBox query_box(Point(-3000, -3000), Point(100, 100));
-	std::cout << "Query result: " << root_node.Query(query_box).size() << std::endl;
-
-	QueryBox query_box2(Point(-3000, -3000), Point(3000, 3000));
-	std::cout << "Query 2 result: " << root_node.Query(query_box2).size() << std::endl;
-
-	boost::random::uniform_int_distribution<> rand2(0, 9999);
-	auto object_selected = objects[rand2(gen)];
-	root_node.UpdateObject(object_selected, object_selected->GetPosition(), glm::vec3(10.0f, 10.0f, 10.0f));
-
-	for(auto i = objects.begin(); i != objects.end(); i++)
-	{
-		root_node.RemoveObject((*i));
-	}
-
-	QueryBox query_box3(Point(-3000, -3000), Point(100, 100));
-	std::cout << "Query 3 result: " << root_node.Query(query_box3).size() << std::endl;
-
-	QueryBox query_box4(Point(-3000, -3000), Point(3000, 3000));
-	std::cout << "Query 4 result: " << root_node.Query(query_box4).size() << std::endl;
+	root_node_.RemoveObject(obj);
+	EXPECT_EQ(0, root_node_.GetContainedObjects().size());
 }
 
 ///
-TEST_F(NodeTest, CanRemoveObject)
+TEST_F(NodeTest, VerifyQuadrantSplit)
+{
+	std::shared_ptr<swganh::object::Object> obj1(new swganh::object::Object()), obj2(new swganh::object::Object()), obj3(new swganh::object::Object()), obj4(new swganh::object::Object());
+	obj1->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
+	obj2->SetPosition(glm::vec3(-10.0f, 0.0f, 10.0f));
+	obj3->SetPosition(glm::vec3(10.0f, 0.0f, -10.0f));
+	obj4->SetPosition(glm::vec3(-10.0f, 0.0f, -10.0f));
+
+	root_node_.InsertObject(obj1);
+	root_node_.InsertObject(obj2);
+	root_node_.InsertObject(obj3);
+	root_node_.InsertObject(obj4);
+
+	EXPECT_EQ(1, root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects().size());
+	EXPECT_EQ(1, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
+	EXPECT_EQ(1, root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().size());
+	EXPECT_EQ(1, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
+
+	root_node_.RemoveObject(obj1);
+	root_node_.RemoveObject(obj2);
+	root_node_.RemoveObject(obj3);
+	root_node_.RemoveObject(obj4);
+
+	// TODO: Check that all LeafNodes have been disposed of.
+}
+
+///
+TEST_F(NodeTest, CanInsertRemoveOneThousand)
+{
+}
+
+///
+TEST_F(NodeTest, CanInsertRemoveTenThousand)
+{
+}
+
+///
+TEST_F(NodeTest, CanUpdateObject)
 {
 }
 

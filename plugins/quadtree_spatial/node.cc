@@ -204,17 +204,6 @@ void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::
 		if(node_obj->GetObjectId() == obj->GetObjectId())
 		{
 			std::shared_ptr<Node> node = GetRootNode_()->GetNodeWithinPoint_(new_position_point);
-
-			std::cout << "Node 1- " << std::endl;
-			std::cout << "Region: " << region_.min_corner().x() << "," << region_.min_corner().y() << " " << region_.max_corner().x() << "," << region_.max_corner().y() << std::endl;
-			std::cout << "Level: " << level_ << std::endl;
-
-			std::cout << "Node 2- " << std::endl;
-			std::cout << "Region: " << node->GetRegion().min_corner().x() << "," << node->GetRegion().min_corner().y() << " " << node->GetRegion().max_corner().x() << "," << node->GetRegion().max_corner().y() << std::endl;
-			std::cout << "Level: " << node->GetLevel() << std::endl;
-
-			std::cout << "Obj 1: " << node_obj->GetObjectId() << " , Obj 2: " << obj->GetObjectId() << std::endl;
-			
 			objects_.erase(i);
 			node->InsertObject(obj);
 			return;
@@ -239,7 +228,7 @@ std::shared_ptr<Node> Node::GetNodeWithinPoint_(Point point)
 {
 	// If we don't within the actual Spatial Indexing area, bail.
 	if(!boost::geometry::within(point, region_))
-		throw new std::exception("Quadtree: Object out of bounds.");
+		throw new std::exception("Quadtree: Object position out of bounds.");
 
 	if(state_ == BRANCH)
 	{
