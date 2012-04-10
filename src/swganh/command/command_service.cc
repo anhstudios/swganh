@@ -116,8 +116,12 @@ void CommandService::EnqueueCommand(
         auto find_iter = processor_map_.find(actor->GetObjectId());
         if (find_iter != processor_map_.end() )
         {
+            // for combat actions set a default time of 2 seconds if none exist
+            uint64_t default_time = 2000;
+            if (properties_iter->second.default_time > 0)
+                default_time = static_cast<uint64_t>(properties_iter->second.default_time * 1000);
             find_iter->second->PushTask(
-                milliseconds(properties_iter->second.default_time),
+                milliseconds(default_time),
                 bind(&CommandService::ProcessCommand,
                     this,
                     actor,
@@ -165,10 +169,8 @@ void CommandService::ProcessCommand(
         if (ValidateCommand(actor, target, command, properties, process_filters_))
         {
 		    handler(kernel(), actor, target, command);
-            // Convert the default time to a float of seconds.
-            float default_time = command_properties_map_[command.command_crc].default_time / 1000.0f;
-
-            SendCommandQueueRemove(actor, command.action_counter, default_time, 0, 0);
+            
+            SendCommandQueueRemove(actor, command.action_counter, command_properties_map_[command.command_crc].default_time, 0, 0);
         }
     } catch(const exception& e) {
         LOG(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].name << "\n" << e.what();
@@ -223,9 +225,11 @@ void CommandService::LoadProperties()
             auto row = reader.GetRow();
 
             CommandProperties properties;
-
+            // Set a default script hook
+            
             properties.name = row["commandName"]->GetValue<string>();
-
+            // @TODO: Make this a config value
+            properties.script_hook = "scripts/commands/" + properties.name + ".py";
             string tmp = properties.name;
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             properties.name_crc = anh::memcrc(tmp);
@@ -234,8 +238,9 @@ void CommandService::LoadProperties()
             properties.ability_crc = anh::memcrc(properties.ability);
 
             properties.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
-            properties.default_time = static_cast<uint64_t>(1000 * row["defaultTime"]->GetValue<float>());
+            properties.default_time = row["defaultTime"]->GetValue<float>();
             properties.command_group = row["commandGroup"]->GetValue<int>();
+            properties.target_type = row["targetType"]->GetValue<int>();
             properties.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
             // Load Bitmasks
             std::vector<int> bits;

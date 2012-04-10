@@ -75,17 +75,15 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(
 	uint32_t error = 0;
 	uint32_t action = 0;
 
-    /// @TODO This is not the correct way to get a state out of the bitmask, revisit later.
-	uint32_t current_state = static_cast<uint32_t>(actor->GetStateBitmask());
-	if (command_properties.allow_in_states == 0 ||
-        (current_state & command_properties.allow_in_states) == command_properties.allow_in_states)
+    uint64_t current_state = actor->GetStateBitmask();
+    if (!actor->HasState(command_properties.allow_in_states))
 	{
 		check_passed = true;
 	}
 	else
 	{
 		error = CANNOT_WHILE_IN_STATE;
-		action = current_state;
+		action = GetLowestCommonBit(current_state, command_properties.allow_in_states);
 	}
 	return tie (check_passed, error, action);
 }
@@ -99,7 +97,6 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
-	//uint32_t current_state = static_cast<uint32_t>(actor->GetStateBitmask());
 	// check to see if this command requires an ability
 	if (command_properties.ability.length() > 0)
 	{
@@ -127,19 +124,24 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
-    // Command groups 1 and 2 are combat commands
+    
     if (command_properties.command_group != 0 && target != nullptr) 
     {
         if (target->GetType() == Creature::type)
         {
             auto creature = static_pointer_cast<Creature>(target);
-	        if (actor->CanAttack(creature.get()))
-	        {
-	            check_passed = true;
-	        }
-            else
-	        {
-		        error = INVALID_TARGET;
+            // @TODO: Fix this, we need more checking in here
+            // target type of 2 seems to suggest the action NEEDs a target and 1 that it CAN have a target
+            switch(command_properties.target_type)
+            {
+                case 0:
+                case 1:
+                    check_passed = true;
+                    break;
+                case 2:
+                    if (creature->CanAttack(creature.get()))
+                        check_passed = true;
+                    break;
             }
         }
     }
@@ -148,5 +150,21 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(
         // Action Check?
         check_passed = true;
     }
+    if (!check_passed) error = INVALID_TARGET;
+
     return tie (check_passed, error, action);
+}
+
+uint32_t CommandFilters::GetLowestCommonBit(uint64_t creature_mask, uint64_t command_properties_mask)
+{
+    // checks each bit and returns the value
+    bool found = false;
+    uint32_t i = 0;
+    for (; i < 64 && !found; ++i) {
+        found = (creature_mask & (command_properties_mask << i)) != 0;
+    }
+    if (found) {
+        return i;
+    }
+    return 0;
 }

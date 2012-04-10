@@ -19,10 +19,11 @@ namespace command {
         uint64_t allow_in_states;
         std::string script_hook;
         std::string fail_script_hook;
-        uint64_t default_time;
-        uint8_t command_group;
+        float default_time;
+        int32_t command_group;
         float max_range_to_target;
         uint8_t add_to_combat_queue;
+        uint8_t target_type;
         uint32_t health_cost;
         uint32_t health_cost_multiplier;
         uint32_t action_cost;

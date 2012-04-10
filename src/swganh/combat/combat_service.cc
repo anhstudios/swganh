@@ -105,25 +105,22 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
 }
 
 void CombatService::RegisterCombatScript(const CommandProperties& properties)
-{
-    if (properties.script_hook.length() == 0)
-    {
-        return;
-    }
-    
+{    
     RegisterCombatHandler(properties.name_crc, PythonCombatCommand(properties));
 }
 
 void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command_properties)
 {    
-	for_each(begin(command_properties), end(command_properties), [=] (pair<uint32_t, CommandProperties> command){
+	for(auto& command : command_properties)
+    {
 		// load up all the combat commands into their own map
-		if (command.second.add_to_combat_queue || command.second.command_group == 1 || command.second.command_group == 2)
+        // @TODO: Temporary check for now, figure out what command_group bitmask is..
+		if (command.second.add_to_combat_queue > 0)
 		{
 			combat_properties_map_.insert(command);
             RegisterCombatScript(command.second);
 		}
-	});
+	}
     LOG(info) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
 }
 
@@ -190,6 +187,7 @@ void CombatService::SendCombatAction(
     CombatData combat_data(p_object, command_property);
     if (InitiateCombat(attacker, target, command_message))
     {
+        attacker->FaceObject(target);
         string string_hit = "";
         // Check For Hit
         // Combat Spam
@@ -300,7 +298,6 @@ int CombatService::SingleTargetCombatAction(
     ApplyStates(attacker, defender, properties);
     
     // Apply Dots
-    //int pool = GetDamagingPoolDots(
     // Attack Delay?
     return total_damage;
 }
@@ -525,7 +522,16 @@ int CombatService::GetDamagingPool(CombatData& properties)
     int pool = 0;
     if (properties.IsRandomPool())
     {
-        return (generator_.Rand(0, 2));
+        int randPool = generator_.Rand(0, 2);
+        switch (randPool)
+        {
+            case 0:
+                return HEALTH;
+            case 1:
+                return ACTION;
+            case 2:
+                return MIND;
+        }
     }
     else // Get specific hit chance
     {
@@ -552,18 +558,15 @@ void CombatService::BroadcastCombatSpam(
     const CombatData& properties,
     uint32_t damage, const string& string_file)
 {
+    CombatSpamMessage spam;
+    spam.attacker_id = attacker->GetObjectId();
+    spam.defender_id = target->GetObjectId();
+    spam.weapon_id = attacker->GetWeaponId();
+    spam.damage = damage;
+    spam.file = "cbt_spam";
     if (properties.combat_spam.length() > 0)
-        {
-            CombatSpamMessage spam;
-            spam.attacker_id = attacker->GetObjectId();
-            spam.defender_id = target->GetObjectId();
-            spam.weapon_id = attacker->GetWeaponId();
-            spam.damage = damage;
-            spam.file = "cbt_spam";
-            spam.text = properties.combat_spam + string_file;
-            
-            attacker->NotifyObservers(spam);
-        }
+        spam.text = properties.combat_spam + string_file;
+    attacker->NotifyObservers(spam);
 }
 
 void CombatService::SendCombatActionMessage(
