@@ -133,11 +133,53 @@ TEST_F(NodeTest, CanUpdateObject)
 ///
 TEST_F(NodeTest, CanInsertRemoveQueryOneThousand)
 {
+	std::vector<std::shared_ptr<swganh::object::Object>> objects;
+	boost::random::mt19937 gen;
+	boost::random::uniform_real_distribution<> random_generator(-3000.0f, 3000.0f);
+
+	for(int i = 0; i < 1000; i++)
+	{
+		objects.push_back(std::make_shared<swganh::object::Object>());
+		objects[i]->SetPosition(glm::vec3(random_generator(gen), 0.0f, random_generator(gen)));
+		root_node_.InsertObject(objects[i]);
+	}
+
+	EXPECT_EQ(1000, root_node_.GetContainedObjects().size());
+	EXPECT_EQ(1000, root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
+
+	for(int i = 0; i < 1000; i++)
+	{
+		root_node_.RemoveObject(objects[i]);
+	}
+
+	EXPECT_EQ(0, root_node_.GetContainedObjects().size());
+	EXPECT_EQ(0, root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
 }
 
 ///
 TEST_F(NodeTest, CanInsertRemoveQueryTenThousand)
 {
+	std::vector<std::shared_ptr<swganh::object::Object>> objects;
+	boost::random::mt19937 gen;
+	boost::random::uniform_real_distribution<> random_generator(-3000.0f, 3000.0f);
+
+	for(int i = 0; i < 10000; i++)
+	{
+		objects.push_back(std::make_shared<swganh::object::Object>());
+		objects[i]->SetPosition(glm::vec3(random_generator(gen), 0.0f, random_generator(gen)));
+		root_node_.InsertObject(objects[i]);
+	}
+
+	EXPECT_EQ(10000, root_node_.GetContainedObjects().size());
+	EXPECT_EQ(10000, root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
+
+	for(int i = 0; i < 10000; i++)
+	{
+		root_node_.RemoveObject(objects[i]);
+	}
+
+	EXPECT_EQ(0, root_node_.GetContainedObjects().size());
+	EXPECT_EQ(0, root_node_.Query(QueryBox(Point(-3000, -3000), Point(3000, 3000))).size());
 }
 
 /*****************************************************************************/
