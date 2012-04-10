@@ -16,6 +16,23 @@ struct CombatData : swganh::command::CommandProperties
     class DotEffect;
     CombatData(swganh::command::CommandProperties&& properties) 
         : swganh::command::CommandProperties(properties)
+        , min_damage(0)
+        , max_damage(0)
+        , damage_multiplier(0)
+        , accuracy_bonus(0)
+        , speed_multiplier(0)
+        , pool(0)
+        , attack_delay_chance(0)
+        , state_duration(0)
+        , dot_duration(0)
+        , dot_type(0)
+        , dot_pool(0)
+        , dot_strength(0)
+        , dot_potency(0)
+        , range (0)
+        , cone_angle(0)
+        , area_range(0)
+        , animation_crc(anh::HashString(""))
     {
     }
     CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties );

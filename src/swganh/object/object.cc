@@ -1,5 +1,7 @@
-
 #include "object.h"
+
+#include <glm/gtx/transform2.hpp>
+
 #include "object_events.h"
 
 #include "anh/crc.h"
@@ -345,6 +347,30 @@ glm::quat Object::GetOrientation()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
 	return orientation_;
+}
+void Object::FaceObject(const std::shared_ptr<Object>& object)
+{
+    auto target_position = object->GetPosition();
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        
+        // Create a mirror direction vector for the direction we want to face.
+        glm::vec3 direction_vector = glm::normalize(target_position - position_);
+        direction_vector.x = -direction_vector.x;
+
+        // Create a lookat matrix from the direction vector and convert it to a quaternion.
+        orientation_ = glm::toQuat(glm::lookAt(
+                                     direction_vector, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));                        
+
+        // If in the 3rd quadrant the signs need to be flipped.
+        if (orientation_.y <= 0.0f && orientation_.w >= 0.0f) {
+            orientation_.y = -orientation_.y;
+            orientation_.w = -orientation_.w;
+ 
+        }
+    }
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::Orientation",shared_from_this()));
 }
 
 uint8_t Object::GetHeading()

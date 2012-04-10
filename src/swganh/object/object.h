@@ -323,6 +323,12 @@ public:
     glm::quat GetOrientation();
 
     /**
+     * Faces an object by adjusting the orientation
+     *
+     */
+    void FaceObject(const std::shared_ptr<Object>& object);
+
+    /**
      * Updates the object's orientation.
      *
      * @param orientation The updated orientation.
