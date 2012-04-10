@@ -182,7 +182,7 @@ namespace simulation {
         void onStart();
 
         std::unique_ptr<SimulationServiceImpl> impl_;
-		anh::network::soe::ServerInterface* server_;
+		std::shared_ptr<anh::network::soe::ServerInterface> server_;
     };
 
 }}  // namespace swganh::simulation

@@ -203,6 +203,11 @@ void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::
 		auto node_obj = (*i);
 		if(node_obj->GetObjectId() == obj->GetObjectId())
 		{
+			if(boost::geometry::within(new_position_point, region_))
+			{
+				return;
+			}
+
 			std::shared_ptr<Node> node = GetRootNode_()->GetNodeWithinPoint_(new_position_point);
 			objects_.erase(i);
 			node->InsertObject(obj);

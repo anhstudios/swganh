@@ -24,6 +24,10 @@
 #include <vector>
 #include <memory>
 
+#include <boost/geometry/geometries/box.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
@@ -51,7 +55,7 @@ public:
 
 	virtual void AddObject(std::shared_ptr<swganh::object::Object> obj) = 0;
 	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> obj) = 0;
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj) = 0;
+	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position) = 0;
 
 	virtual std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(glm::vec3 point, float range) = 0;
 };

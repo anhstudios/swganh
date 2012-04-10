@@ -89,7 +89,7 @@ public:
     {
         if (!movement_manager_)
         {
-            movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher());
+			movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher(), spatial_provider_);
         }
 
         return movement_manager_.get();

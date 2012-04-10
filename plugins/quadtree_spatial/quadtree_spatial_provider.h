@@ -22,6 +22,7 @@
 #define QUADTREE_SPATIAL_PROVIDER_H_
 
 #include "swganh/simulation/spatial_provider_interface.h"
+#include "node.h"
 
 class QuadtreeSpatialProvider : public swganh::simulation::SpatialProviderInterface
 {
@@ -31,9 +32,12 @@ public:
 
 	virtual void AddObject(std::shared_ptr<swganh::object::Object> obj);
 	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj);
+	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position);
 
 	virtual std::vector<std::shared_ptr<swganh::object::Object>> GetObjectsInRange(glm::vec3 point, float range);
+
+private:
+	quadtree::Node root_node_;
 };
 
 #endif // QUADTREE_SPATIAL_PROVIDER_H_

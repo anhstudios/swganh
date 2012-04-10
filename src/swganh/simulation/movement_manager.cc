@@ -13,6 +13,8 @@
 #include "swganh/messages/update_transform_message.h"
 #include "swganh/messages/update_transform_with_parent_message.h"
 
+#include "swganh/simulation/spatial_provider_interface.h"
+
 using namespace anh::event_dispatcher;
 using namespace std;
 using namespace swganh::messages;
@@ -21,7 +23,8 @@ using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::simulation;
 
-MovementManager::MovementManager(anh::EventDispatcher* event_dispatcher)
+MovementManager::MovementManager(anh::EventDispatcher* event_dispatcher, std::shared_ptr<SpatialProviderInterface> spatial_provider)
+	: spatial_provider_(spatial_provider)
 {
     RegisterEvents(event_dispatcher);
 }
@@ -39,6 +42,9 @@ void MovementManager::HandleDataTransform(
 
     counter_map_[object->GetObjectId()] = message.counter;
     
+	glm::vec3 old_position = object->GetPosition();
+	spatial_provider_->UpdateObject(controller->GetObject(), old_position, message.position);
+
     object->SetPosition(message.position);
     object->SetOrientation(message.orientation);
     
