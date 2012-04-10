@@ -97,7 +97,6 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
-	//uint32_t current_state = static_cast<uint32_t>(actor->GetStateBitmask());
 	// check to see if this command requires an ability
 	if (command_properties.ability.length() > 0)
 	{
@@ -125,19 +124,24 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
-    // Command groups 1 and 2 are combat commands
+    
     if (command_properties.command_group != 0 && target != nullptr) 
     {
         if (target->GetType() == Creature::type)
         {
             auto creature = static_pointer_cast<Creature>(target);
-	        if (actor->CanAttack(creature.get()))
-	        {
-	            check_passed = true;
-	        }
-            else
-	        {
-		        error = INVALID_TARGET;
+            // @TODO: Fix this, we need more checking in here
+            // target type of 2 seems to suggest the action NEEDs a target and 1 that it CAN have a target
+            switch(command_properties.target_type)
+            {
+                case 0:
+                case 1:
+                    check_passed = true;
+                    break;
+                case 2:
+                    if (creature->CanAttack(creature.get()))
+                        check_passed = true;
+                    break;
             }
         }
     }
@@ -146,6 +150,8 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(
         // Action Check?
         check_passed = true;
     }
+    if (!check_passed) error = INVALID_TARGET;
+
     return tie (check_passed, error, action);
 }
 
