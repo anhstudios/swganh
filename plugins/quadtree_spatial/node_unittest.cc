@@ -101,6 +101,22 @@ TEST_F(NodeTest, CanQuery)
 ///
 TEST_F(NodeTest, CanUpdateObject)
 {
+	std::shared_ptr<swganh::object::Object> obj(new swganh::object::Object());
+	obj->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
+
+	root_node_.InsertObject(obj);
+
+	EXPECT_EQ(1, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
+	EXPECT_EQ(0, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
+
+	glm::vec3 new_position(10.0f, 0.0f, -10.0f);
+	root_node_.UpdateObject(obj, obj->GetPosition(), new_position);
+	obj->SetPosition(new_position);
+
+	EXPECT_EQ(0, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
+	EXPECT_EQ(1, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
+
+	root_node_.RemoveObject(obj);
 }
 
 ///

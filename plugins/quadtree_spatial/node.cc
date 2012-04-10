@@ -104,15 +104,15 @@ void Node::Split()
 	state_ = BRANCH;
 
 	Point center((region_.min_corner().x() + region_.max_corner().x()) / 2, (region_.min_corner().y() + region_.max_corner().y()) / 2);
-	Point upper_center((region_.min_corner().x() + region_.max_corner().x()) / 2, region_.min_corner().y());
+	Point upper_center((region_.min_corner().x() + region_.max_corner().x()) / 2, region_.max_corner().y());
 	Point left_center(region_.min_corner().x(), (region_.min_corner().y() + region_.max_corner().y()) / 2);
 	Point right_center(region_.max_corner().x(), (region_.min_corner().y() + region_.max_corner().y()) / 2);
-	Point bottom_center((region_.min_corner().x() + region_.max_corner().x()) / 2, region_.max_corner().y());
+	Point bottom_center((region_.min_corner().x() + region_.max_corner().x()) / 2, region_.min_corner().y());
 
-	leaf_nodes_[NW_QUADRANT] = std::make_shared<Node>(NW_QUADRANT, Region(region_.min_corner(), center), level_ + 1, max_level_, this);
-	leaf_nodes_[NE_QUADRANT] = std::make_shared<Node>(NE_QUADRANT, Region(upper_center, right_center), level_ + 1, max_level_, this);
-	leaf_nodes_[SW_QUADRANT] = std::make_shared<Node>(SW_QUADRANT, Region(left_center, bottom_center), level_ + 1, max_level_, this);
-	leaf_nodes_[SE_QUADRANT] = std::make_shared<Node>(SE_QUADRANT, Region(center, region_.max_corner()), level_ + 1, max_level_, this);
+	leaf_nodes_[NW_QUADRANT] = std::make_shared<Node>(NW_QUADRANT, Region(left_center, upper_center), level_ + 1, max_level_, this);
+	leaf_nodes_[NE_QUADRANT] = std::make_shared<Node>(NE_QUADRANT, Region(center, region_.max_corner()), level_ + 1, max_level_, this);
+	leaf_nodes_[SW_QUADRANT] = std::make_shared<Node>(SW_QUADRANT, Region(region_.min_corner(), center), level_ + 1, max_level_, this);
+	leaf_nodes_[SE_QUADRANT] = std::make_shared<Node>(SE_QUADRANT, Region(bottom_center, right_center), level_ + 1, max_level_, this);
 
 	for(auto i = objects_.begin(); i != objects_.end();)
 	{
