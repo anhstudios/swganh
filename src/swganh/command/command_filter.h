@@ -64,6 +64,24 @@ static std::tuple<bool, uint32_t, uint32_t> CombatTargetCheckFilter(
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties);
+
+    /**
+    * gets the lowest common bit from two bit masks.
+    *
+    * it does this by checking if each bit from the playerMask to see if it
+    * matches the cmdPropertiesMask. The cmdPropertiesMask is generally imported
+    * from the database, but it could be any mask you want to use. It then
+    * returns the first bit that was matched.
+    *
+    * @param creature_mask
+    *   creature_mask is the first mask, which is to be checked against the second.
+    * @param cmd_properties_mask
+    *   cmdPropertiesMask is the mask the first mask checks against.
+    *
+    * @return first_common_bit
+    *   This returns the the first common bit in between the two masks.
+    */
+    static uint32_t  GetLowestCommonBit(uint64_t creature_mask, uint64_t cmd_properties_mask);
 };
 
 }} // swganh::command

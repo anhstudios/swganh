@@ -75,17 +75,15 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(
 	uint32_t error = 0;
 	uint32_t action = 0;
 
-    /// @TODO This is not the correct way to get a state out of the bitmask, revisit later.
-	uint32_t current_state = static_cast<uint32_t>(actor->GetStateBitmask());
-	if (command_properties.allow_in_states == 0 ||
-        (current_state & command_properties.allow_in_states) == command_properties.allow_in_states)
+    uint64_t current_state = actor->GetStateBitmask();
+    if (!actor->HasState(command_properties.allow_in_states))
 	{
 		check_passed = true;
 	}
 	else
 	{
 		error = CANNOT_WHILE_IN_STATE;
-		action = current_state;
+		action = GetLowestCommonBit(current_state, command_properties.allow_in_states);
 	}
 	return tie (check_passed, error, action);
 }
@@ -149,4 +147,18 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(
         check_passed = true;
     }
     return tie (check_passed, error, action);
+}
+
+uint32_t CommandFilters::GetLowestCommonBit(uint64_t creature_mask, uint64_t command_properties_mask)
+{
+    // checks each bit and returns the value
+    bool found = false;
+    uint32_t i = 0;
+    for (; i < 64 && !found; ++i) {
+        found = (creature_mask & (command_properties_mask << i)) != 0;
+    }
+    if (found) {
+        return i;
+    }
+    return 0;
 }
