@@ -298,7 +298,6 @@ int CombatService::SingleTargetCombatAction(
     ApplyStates(attacker, defender, properties);
     
     // Apply Dots
-    //int pool = GetDamagingPoolDots(
     // Attack Delay?
     return total_damage;
 }
