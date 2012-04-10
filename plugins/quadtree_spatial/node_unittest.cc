@@ -60,20 +60,31 @@ TEST_F(NodeTest, CanInsertRemoveObject)
 TEST_F(NodeTest, VerifyQuadrantSplit)
 {
 	std::shared_ptr<swganh::object::Object> obj1(new swganh::object::Object()), obj2(new swganh::object::Object()), obj3(new swganh::object::Object()), obj4(new swganh::object::Object());
-	obj1->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
-	obj2->SetPosition(glm::vec3(-10.0f, 0.0f, 10.0f));
-	obj3->SetPosition(glm::vec3(10.0f, 0.0f, -10.0f));
-	obj4->SetPosition(glm::vec3(-10.0f, 0.0f, -10.0f));
+	
+	obj1->SetObjectId(1);
+	obj2->SetObjectId(2);
+	obj3->SetObjectId(3);
+	obj4->SetObjectId(4);
+	
+	obj1->SetPosition(glm::vec3(-10.0f, 0.0f, 10.0f));
+	obj2->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
+	obj3->SetPosition(glm::vec3(-10.0f, 0.0f, -10.0f));
+	obj4->SetPosition(glm::vec3(10.0f, 0.0f, -10.0f));
 
 	root_node_.InsertObject(obj1);
 	root_node_.InsertObject(obj2);
 	root_node_.InsertObject(obj3);
 	root_node_.InsertObject(obj4);
-
+	
 	EXPECT_EQ(1, root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects().size());
 	EXPECT_EQ(1, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
 	EXPECT_EQ(1, root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().size());
 	EXPECT_EQ(1, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
+
+	EXPECT_EQ(1, root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects()[0]->GetObjectId());
+	EXPECT_EQ(2, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects()[0]->GetObjectId());
+	EXPECT_EQ(3, root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects()[0]->GetObjectId());
+	EXPECT_EQ(4, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects()[0]->GetObjectId());
 
 	root_node_.RemoveObject(obj1);
 	root_node_.RemoveObject(obj2);
