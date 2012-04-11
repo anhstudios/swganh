@@ -33,7 +33,7 @@ Node::Node(NodeQuadrant quadrant, Region region, uint32_t level, uint32_t max_le
 	, state_(LEAF)
 	, parent_(parent)
 {
-	// If this is the root node, we need to do a manual split.
+	// If this is the root node, we need to do an initial split.
 	if(quadrant_ == ROOT)
 		Split();
 }
@@ -44,16 +44,23 @@ Node::~Node(void)
 
 void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 {
+	// If the amount of objects contained is equal to or exceeds (in the case of objects not fitting
+	// completely into one node), and we havn't reached the "maximum level" count, and we are a LEAF
+	// node, Split().
 	if(objects_.size() >= 1 && level_ < max_level_ && state_ == LEAF)
 	{
 		Split();
 	}
 
+	// Flipped to true if a child node of proper side was found to
+	// contain the object. Otherwise, the object will be added to 
+	// this node.
 	bool success = false;
 
 	if(state_ == BRANCH)
 	{
 		std::for_each(leaf_nodes_.begin(), leaf_nodes_.end(), [=, &obj, &success](std::shared_ptr<Node> node){
+			// If we can fit within the node, traverse.
 			if(boost::geometry::within( Point(obj->GetPosition().x, obj->GetPosition().z) , node->GetRegion()))
 			{
 				node->InsertObject(obj);
@@ -71,6 +78,8 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 
 void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 {
+	// Search this node for the object by id, if it it found
+	// we can return;
 	for(auto i = objects_.begin(); i != objects_.end(); )
 	{
 		if(obj->GetObjectId() == (*i)->GetObjectId())
@@ -81,11 +90,14 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 		i++;
 	}
 
+	// We didn't find the object in this branch, traverse through
+	// each leaf node if we are a BRANCH.
 	if(state_ == BRANCH)
 	{
 		Point obj_point(obj->GetPosition().x, obj->GetPosition().z);
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
+			// If we can actually fit inside the node, traverse farther.
 			if(boost::geometry::within(obj_point, node->GetRegion()))
 			{
 				node->RemoveObject(obj);
@@ -203,11 +215,13 @@ void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::
 		auto node_obj = (*i);
 		if(node_obj->GetObjectId() == obj->GetObjectId())
 		{
+			// If we are in the same node, we don't need to do anything.
 			if(boost::geometry::within(new_position_point, region_))
 			{
 				return;
 			}
 
+			// Move our object from this node to a new node.
 			std::shared_ptr<Node> node = GetRootNode_()->GetNodeWithinPoint_(new_position_point);
 			objects_.erase(i);
 			node->InsertObject(obj);

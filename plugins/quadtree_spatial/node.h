@@ -54,28 +54,7 @@ enum NodeQuadrant
 }; // enum LeafNodeQuadrant
 
 /**
-template<class T> class QuadtreePositionItem
-{
-public:
-	QuadtreePositionItem(const std::shared_ptr<T> obj, glm::vec3 position)
-		: obj_(obj)
-		, position_(position)
-	{
-	}
-
-	std::shared_ptr<T> GetObject() { return obj_; }
-	glm::vec3 GetLastPosition() { return last_position_; }
-	void SetLastPosition(glm::vec3 position) { last_position_ = position; }
-
-private:
-	std::shared_ptr<T> obj_;
-	glm::vec3 last_position_;
-
-};
-*/
-
-/**
- *
+ * \brief A Quadtree node.
  */
 class Node : public std::enable_shared_from_this<Node>
 {
@@ -129,7 +108,6 @@ private:
 	uint32_t max_level_;
 	NodeQuadrant quadrant_;
 	NodeState state_;
-	//std::vector<QuadtreePositionItem<swganh::object::Object>> objects_;
 	std::vector<std::shared_ptr<swganh::object::Object>> objects_;
 	boost::array<std::shared_ptr<Node>, 4> leaf_nodes_;
 	Node* parent_;
