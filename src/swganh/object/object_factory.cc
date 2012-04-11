@@ -47,32 +47,33 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object)
 void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared_ptr<sql::PreparedStatement>& prepared_statement)
 {
     try {
-        prepared_statement->setUInt64(1, object->object_id_);
-		if (object->container_ != nullptr)
+        prepared_statement->setUInt64(1, object->GetObjectId());
+		if (object->GetContainer() != nullptr)
 		{
-			prepared_statement->setUInt(2, object->container_->scene_id_);
-			prepared_statement->setUInt64(3, object->container_->object_id_);
+			prepared_statement->setUInt(2, object->GetContainer()->GetSceneId());
+			prepared_statement->setUInt64(3, object->GetContainer()->GetObjectId());
 		}
         else
 		{
-			prepared_statement->setUInt(2, object->scene_id_);
+			prepared_statement->setUInt(2, object->GetSceneId());
             prepared_statement->setUInt64(3, 0);
 		}
-        prepared_statement->setString(4, object->template_string_);
-        auto position = object->position_;
+        prepared_statement->setString(4, object->GetTemplate());
+        auto position = object->GetPosition();
         prepared_statement->setDouble(5, position.x);
         prepared_statement->setDouble(6, position.y);
         prepared_statement->setDouble(7, position.z);
-        auto orientation = object->orientation_;
+        auto orientation = object->GetOrientation();
         prepared_statement->setDouble(8, orientation.x);
         prepared_statement->setDouble(9, orientation.y);
         prepared_statement->setDouble(10, orientation.z);
         prepared_statement->setDouble(11, orientation.w);
-        prepared_statement->setDouble(12, object->complexity_);
-        prepared_statement->setString(13, object->stf_name_file_);
-        prepared_statement->setString(14, object->stf_name_string_);
-        prepared_statement->setString(15, string(begin(object->custom_name_), end(object->custom_name_)));
-        prepared_statement->setUInt(16, object->volume_);
+        prepared_statement->setDouble(12, object->GetComplexity());
+        prepared_statement->setString(13, object->GetStfNameFile());
+        prepared_statement->setString(14, object->GetStfNameString());
+        auto custom_name = object->GetCustomName();
+        prepared_statement->setString(15, string(begin(custom_name), end(custom_name)));
+        prepared_statement->setUInt(16, object->GetVolume());
 
     }
     catch(sql::SQLException &e)
@@ -85,24 +86,24 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 {
     try {
         result->next();
-        object->scene_id_ = result->getUInt("scene_id");
-        object->position_ = glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position"));
-        object->orientation_ = glm::quat(
+        // Set Event Dispatcher
+        object->SetEventDispatcher(event_dispatcher_);
+        object->SetSceneId(result->getUInt("scene_id"));
+        object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
+        object->SetOrientation(glm::quat(
             static_cast<float>(result->getDouble("x_orientation")),
             static_cast<float>(result->getDouble("y_orientation")),
             static_cast<float>(result->getDouble("z_orientation")), 
-            static_cast<float>(result->getDouble("w_orientation")));
+            static_cast<float>(result->getDouble("w_orientation")))
+            );
 
-        object->complexity_ = static_cast<float>(result->getDouble("complexity"));
-        object->stf_name_file_ = result->getString("stf_name_file");
-        object->stf_name_string_ = result->getString("stf_name_string");
+        object->SetComplexity(static_cast<float>(result->getDouble("complexity")));
+        object->SetStfName(result->getString("stf_name_file"),
+                           result->getString("stf_name_string"));
         string custom_string = result->getString("custom_name");
-        object->custom_name_ = wstring(begin(custom_string), end(custom_string));
-        object->volume_ = result->getUInt("volume");
-        object->template_string_ = result->getString("iff_template");
-        
-        // Set Event Dispatcher
-        object->SetEventDispatcher(event_dispatcher_);
+        object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
+        object->SetVolume(result->getUInt("volume"));
+        object->SetTemplate(result->getString("iff_template"));
         
     }
     catch(sql::SQLException &e)

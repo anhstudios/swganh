@@ -79,7 +79,7 @@ public:
         UNLINK = 0xFFFFFFFF,
         LINK = 4
     };
-
+    
     typedef std::map<
         uint64_t,
         std::shared_ptr<Object>
@@ -273,10 +273,9 @@ public:
     /**
      * Returns the most recently generated baselines.
      *
-     * @param viewer_id The id of the object viewing this Object instance.
      * @return The most recently generated baselines.
      */
-    BaselinesCacheContainer GetBaselines(uint64_t viewer_id) ;
+    BaselinesCacheContainer GetBaselines() ;
 
     /**
      * Returns the deltas messages generated since the last time the
@@ -322,6 +321,12 @@ public:
      * @return The object orientation as a quaternion.
      */
     glm::quat GetOrientation();
+
+    /**
+     * Faces an object by adjusting the orientation
+     *
+     */
+    void FaceObject(const std::shared_ptr<Object>& object);
 
     /**
      * Updates the object's orientation.
@@ -442,6 +447,8 @@ public:
      */
     void AddDeltasUpdate(swganh::messages::DeltasMessage message);
 
+    void AddBaselineToCache(swganh::messages::BaselinesMessage baseline);
+
     /**
      * Sets the id of this object instance.
      *
@@ -462,47 +469,30 @@ public:
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
-    swganh::messages::BaselinesMessage CreateBaselinesMessage(uint8_t view_type, uint16_t opcount = 0) ;
-
-    swganh::messages::DeltasMessage CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count = 1) ;
-
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline1() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline2() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline4() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline5() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline7() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9() { return boost::optional<swganh::messages::BaselinesMessage>(); }
-
+    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
+    void ClearBaselines();
+    void ClearDeltas();
+    typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
 
-	std::atomic<uint64_t> object_id_;             // create
+	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
-    std::string template_string_;    // create
-    glm::vec3 position_;             // create
-    glm::quat orientation_;          // create
-    float complexity_;               // update 3
-    std::string stf_name_file_;      // update 3
-    std::string stf_name_string_;    // update 3
-    std::wstring custom_name_;       // update 3
-    std::atomic<uint32_t> volume_;                // update 3
+    std::string template_string_;                    // create
+    glm::vec3 position_;                             // create
+    glm::quat orientation_;                          // create
+    float complexity_;                               // update 3
+    std::string stf_name_file_;                      // update 3
+    std::string stf_name_string_;                    // update 3
+    std::wstring custom_name_;                       // update 3
+    std::atomic<uint32_t> volume_;                   // update 3
 
 private:
     mutable std::mutex object_mutex_;
 
-    friend class ObjectFactory;
-
-    void AddBaselinesBuilders_();
-
     typedef std::vector<
         std::shared_ptr<anh::observer::ObserverInterface>
     > ObserverContainer;
-
-    typedef std::function<boost::optional<swganh::messages::BaselinesMessage>()> BaselinesBuilder;
-    typedef std::vector<BaselinesBuilder> BaselinesBuilderContainer;
 
     ObjectMap aware_objects_;
     ObjectMap contained_objects_;
@@ -510,8 +500,6 @@ private:
     ObserverContainer observers_;
     BaselinesCacheContainer baselines_;
     DeltasCacheContainer deltas_;
-
-    BaselinesBuilderContainer baselines_builders_;
 
     std::shared_ptr<Object> container_;
     std::shared_ptr<ObjectController> controller_;

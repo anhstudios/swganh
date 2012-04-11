@@ -4,6 +4,7 @@
 
 #include <boost/optional.hpp>
 #include <cstdint>
+#include "swganh/object/object_message_builder.h"
 
 namespace swganh {
 namespace messages {
@@ -19,16 +20,21 @@ namespace object {
 namespace guild {
 
 class Guild;
-class GuildMessageBuilder
+class GuildMessageBuilder : public ObjectMessageBuilder
 {
 public:
-
+    GuildMessageBuilder(anh::EventDispatcher* dispatcher)
+        : ObjectMessageBuilder(dispatcher)
+    {
+        RegisterEventHandlers();
+    }
+    virtual void RegisterEventHandlers();
     // deltas
-    static void BuildGuildTagsDelta(Guild* guild);
+    static void BuildGuildTagsDelta(const std::shared_ptr<Guild>& guild);
 
     // baselines
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Guild* guild);
-    static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Guild* guild);
+    static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Guild>& guild);
+    static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Guild>& guild);
 };
 
 }}} // swganh::object::guild

@@ -2,23 +2,196 @@
 
 #include <algorithm>
 
+#include "anh/logger.h"
 #include "anh/crc.h"
 #include "swganh/messages/deltas_message.h"
 #include "swganh/messages/baselines_message.h"
+#include "swganh/messages/scene_end_baselines.h"
+#include "swganh/object/player/player_events.h"
+#include "swganh/object/object_events.h"
 #include "swganh/object/waypoint/waypoint.h"
 
+using namespace anh;
 using namespace std;
 using namespace swganh::object;
 using namespace player;
 using namespace waypoint;
 using namespace swganh::messages;
 
-// deltas
-void PlayerMessageBuilder::BuildStatusBitmaskDelta(Player* object)
+void PlayerMessageBuilder::RegisterEventHandlers()
+{
+    event_dispatcher->Subscribe("Player::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto controller_event = static_pointer_cast<ControllerEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Player>(controller_event->object), controller_event->controller);
+    });
+    event_dispatcher->Subscribe("Player::StatusBitmask", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildStatusBitmaskDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ProfileFlag", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildProfileBitmaskDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ProfessionTag", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildProfessionTagDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::BornDate", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildBornDateDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::TotalPlayTime", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildPlayTimeDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::AdminTag", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildAdminTagDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::Experience", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildXpDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::Waypoint", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildWaypointDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ForcePower", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCurrentForcePowerDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::MaxForcePower", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildMaxForcePowerDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ForceSensitiveQuests", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildForceSensitiveQuestDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::CompletedForceSensitiveQuests", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCompletedForceSensitiveQuestDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::QuestJournal", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildQuestJournalDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ExperimentationFlag", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildExperimentationFlagDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::CraftingStage", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCraftingStageDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::NearestCraftingStation", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildNearestCraftingStationDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::DraftSchematic", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildDraftSchematicDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::ExperimentationPoints", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildExperimentationPointsDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::AccomplishmentCounter", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildAccomplishmentCounterDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::RemoveFriend", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto name_event = static_pointer_cast<NameEvent>(incoming_event);
+        BuildFriendsDelta(name_event->player);
+    });
+    event_dispatcher->Subscribe("Player::RemoveIgnoredPlayer", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto name_event = static_pointer_cast<NameEvent>(incoming_event);
+        BuildIgnoredDelta(name_event->player);
+    });
+    event_dispatcher->Subscribe("Player::Friend", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildFriendsDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::IgnorePlayer", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildIgnoredDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::Language", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildLanguageDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::CurrentStomach", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCurrentStomachDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::MaxStomach", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildMaxStomachDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::CurrentDrink", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildCurrentDrinkDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::MaxDrink", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildMaxDrinkDelta(value_event->Get());
+    });
+    event_dispatcher->Subscribe("Player::JediState", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<PlayerEvent>(incoming_event);
+        BuildJediStateDelta(value_event->Get());
+    });
+}
+
+void PlayerMessageBuilder::SendBaselines(const shared_ptr<Player>& player, const shared_ptr<ObjectController>& controller)
+{
+    player->AddBaselineToCache(BuildBaseline3(player));
+    player->AddBaselineToCache(BuildBaseline6(player));
+    player->AddBaselineToCache(BuildBaseline8(player));
+    player->AddBaselineToCache(BuildBaseline9(player));
+    
+   
+    for (auto& baseline : player->GetBaselines())
+    {
+        controller->Notify(baseline);
+    }
+        
+    SendEndBaselines(player, controller);
+}
+void PlayerMessageBuilder::BuildStatusBitmaskDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 5);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 5);
 
         auto status_flags = object->GetStatusFlags();
 
@@ -34,11 +207,11 @@ void PlayerMessageBuilder::BuildStatusBitmaskDelta(Player* object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildProfileBitmaskDelta(Player* object)
+void PlayerMessageBuilder::BuildProfileBitmaskDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 6);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 6);
         
         auto profile_flags = object->GetProfileFlags();
 
@@ -54,162 +227,162 @@ void PlayerMessageBuilder::BuildProfileBitmaskDelta(Player* object)
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildProfessionTagDelta(Player* object)
+void PlayerMessageBuilder::BuildProfessionTagDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 7);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 7);
         message.data.write(object->GetProfessionTag());
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildBornDateDelta(Player* object)
+void PlayerMessageBuilder::BuildBornDateDelta(const shared_ptr<Player>& object)
 {
      if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 8);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 8);
         message.data.write(object->GetBornDate());
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildPlayTimeDelta(Player* object)
+void PlayerMessageBuilder::BuildPlayTimeDelta(const shared_ptr<Player>& object)
 {
      if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_3, 9);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 9);
         message.data.write(object->GetTotalPlayTime());
 
         object->AddDeltasUpdate(move(message));
     }
 }
 
-void PlayerMessageBuilder::BuildAdminTagDelta(Player* object)
+void PlayerMessageBuilder::BuildAdminTagDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6, 1);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_6, 1);
         message.data.write<uint8_t>(object->GetAdminTag());
         object->AddDeltasUpdate(std::move(message));
     }
 }
-void PlayerMessageBuilder::BuildXpDelta(Player* object)
+void PlayerMessageBuilder::BuildXpDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_7, 0);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 0);
         object->GetXp().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
     else
         object->GetXp().ClearDeltas();
 }
-void PlayerMessageBuilder::BuildWaypointDelta(Player* object)
+void PlayerMessageBuilder::BuildWaypointDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_7, 1);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 1);
         object->GetWaypoints().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCurrentForcePowerDelta(Player* object)
+void PlayerMessageBuilder::BuildCurrentForcePowerDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 2);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 2);
         message.data.write(object->GetCurrentForcePower());
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildMaxForcePowerDelta(Player* object)
+void PlayerMessageBuilder::BuildMaxForcePowerDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 3);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 3);
         message.data.write(object->GetMaxForcePower());
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildForceSensitiveQuestDelta(Player* object)
+void PlayerMessageBuilder::BuildForceSensitiveQuestDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 4);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 4);
         message.data.write(object->GetCurrentForceSensitiveQuests());
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(Player* object)
+void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 5);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 5);
         message.data.write(object->GetCompletedForceSensitiveQuests());
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildQuestJournalDelta(Player* object)
+void PlayerMessageBuilder::BuildQuestJournalDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_8, 6);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 6);
         object->GetQuests().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
     else
         object->GetQuests().ClearDeltas();
 }
-void PlayerMessageBuilder::BuildAbilityDelta(Player* object)
+void PlayerMessageBuilder::BuildAbilityDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 0);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
         object->GetAbilityList().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
 }
 
-void PlayerMessageBuilder::BuildExperimentationFlagDelta(Player* object)
+void PlayerMessageBuilder::BuildExperimentationFlagDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 1);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 1);
         message.data.write(object->GetExperimentationFlag());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCraftingStageDelta(Player* object)
+void PlayerMessageBuilder::BuildCraftingStageDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 2);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 2);
         message.data.write(object->GetCraftingStage());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildNearestCraftingStationDelta(Player* object)
+void PlayerMessageBuilder::BuildNearestCraftingStationDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 3);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 3);
         message.data.write(object->GetNearestCraftingStation());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object)
+void PlayerMessageBuilder::BuildDraftSchematicDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 4);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 4);
         object->GetDraftSchematics().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
@@ -217,113 +390,113 @@ void PlayerMessageBuilder::BuildDraftSchematicDelta(Player* object)
         object->GetDraftSchematics().ClearDeltas();
 }
 
-void PlayerMessageBuilder::BuildExperimentationPointsDelta(Player* object)
+void PlayerMessageBuilder::BuildExperimentationPointsDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 5);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 5);
         message.data.write(object->GetExperimentationPoints());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(Player* object)
+void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 6);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 6);
         message.data.write(object->GetAccomplishmentCounter());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildFriendsDelta(Player* object)
+void PlayerMessageBuilder::BuildFriendsDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 7);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 7);
         object->GetFriends().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
     else
         object->GetFriends().ClearDeltas();
 }
-void PlayerMessageBuilder::BuildIgnoredDelta(Player* object)
+void PlayerMessageBuilder::BuildIgnoredDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 8);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 8);
         object->GetIgnoredPlayers().Serialize(message);
         object->AddDeltasUpdate(move(message));
     }
     else
         object->GetIgnoredPlayers().ClearDeltas();
 }
-void PlayerMessageBuilder::BuildLanguageDelta(Player* object)
+void PlayerMessageBuilder::BuildLanguageDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 9);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 9);
         message.data.write(object->GetLanguage());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCurrentStomachDelta(Player* object)
+void PlayerMessageBuilder::BuildCurrentStomachDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 10);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 10);
         message.data.write(object->GetCurrentStomach());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildMaxStomachDelta(Player* object)
+void PlayerMessageBuilder::BuildMaxStomachDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 11);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 11);
         message.data.write(object->GetMaxStomach());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildCurrentDrinkDelta(Player* object)
+void PlayerMessageBuilder::BuildCurrentDrinkDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 12);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 12);
         message.data.write(object->GetCurrentDrink());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildMaxDrinkDelta(Player* object)
+void PlayerMessageBuilder::BuildMaxDrinkDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 13);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 13);
         message.data.write(object->GetMaxDrink());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
-void PlayerMessageBuilder::BuildJediStateDelta(Player* object)
+void PlayerMessageBuilder::BuildJediStateDelta(const shared_ptr<Player>& object)
 {
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_9, 17);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 17);
         message.data.write(object->GetExperimentationPoints());            
 
         object->AddDeltasUpdate(move(message));
     }
 }
 // baselines
-boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline3(Player* object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline3(const shared_ptr<Player>& object)
 {
-    auto message = object->CreateBaselinesMessage(Object::VIEW_3, 10);
-    message.data.append(object->Object::GetBaseline3().get().data);
+    auto message = CreateBaselinesMessage(object, Object::VIEW_3, 10);
+    message.data.append(ObjectMessageBuilder::BuildBaseline3(object).data);
     message.data.write<uint32_t>(0);                                    // Not Used
     
     auto status_flags = object->GetStatusFlags();
@@ -351,20 +524,20 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write<std::string>(object->GetProfessionTag());        // Profession Tag
     message.data.write<uint32_t>(object->GetBornDate());                // Born Date
     message.data.write<uint32_t>(object->GetTotalPlayTime());           // Total Play Time
-    return boost::optional<BaselinesMessage>(move(message));
+    return BaselinesMessage(move(message));
 }
 
-boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline6(Player* object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline6(const shared_ptr<Player>& object)
 {
-    auto message = object->CreateBaselinesMessage(Object::VIEW_6, 2);
+    auto message = CreateBaselinesMessage(object, Object::VIEW_6, 2);
     message.data.write<uint32_t>(object->GetSceneId());    // Region Id
     message.data.write<uint8_t>(object->GetAdminTag());     // Admin Tag
-    return boost::optional<BaselinesMessage>(move(message));
+    return BaselinesMessage(move(message));
 }
 
-boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline8(Player* object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline8(const shared_ptr<Player>& object)
 {
-    auto message = object->CreateBaselinesMessage(Object::VIEW_8, 7);
+    auto message = CreateBaselinesMessage(object, Object::VIEW_8, 7);
     object->GetXp().Serialize(message);
     object->GetWaypoints().Serialize(message);
     
@@ -379,12 +552,12 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     
     object->GetQuests().Serialize(message);
     
-    return boost::optional<BaselinesMessage>(std::move(message));
+    return BaselinesMessage(move(message));
 }
 
-boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildBaseline9(Player* object)
+BaselinesMessage PlayerMessageBuilder::BuildBaseline9(const shared_ptr<Player>& object)
 {
-    auto message = object->CreateBaselinesMessage(Object::VIEW_9, 17);
+    auto message = CreateBaselinesMessage(object, Object::VIEW_9, 17);
     
     object->GetAbilityList().Serialize(message);
     message.data.write<uint32_t>(object->GetExperimentationFlag());
@@ -392,7 +565,6 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write<uint64_t>(object->GetNearestCraftingStation());
     
     object->GetDraftSchematics().Serialize(message);
-    
     
     message.data.write<uint32_t>(object->GetExperimentationPoints());
     message.data.write<uint32_t>(object->GetAccomplishmentCounter());
@@ -412,5 +584,5 @@ boost::optional<swganh::messages::BaselinesMessage> PlayerMessageBuilder::BuildB
     message.data.write<uint32_t>(0); // Unused
     message.data.write<uint32_t>(object->GetJediState()); // Jedi State
     
-    return boost::optional<BaselinesMessage>(std::move(message));
+    return BaselinesMessage(message);
 }

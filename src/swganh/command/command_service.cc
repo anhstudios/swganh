@@ -116,8 +116,12 @@ void CommandService::EnqueueCommand(
         auto find_iter = processor_map_.find(actor->GetObjectId());
         if (find_iter != processor_map_.end() )
         {
+            // for combat actions set a default time of 2 seconds if none exist
+            uint64_t default_time = 2000;
+            if (properties_iter->second.default_time > 0)
+                default_time = static_cast<uint64_t>(properties_iter->second.default_time * 1000);
             find_iter->second->PushTask(
-                milliseconds(properties_iter->second.default_time),
+                milliseconds(default_time),
                 bind(&CommandService::ProcessCommand,
                     this,
                     actor,
@@ -165,10 +169,8 @@ void CommandService::ProcessCommand(
         if (ValidateCommand(actor, target, command, properties, process_filters_))
         {
 		    handler(kernel(), actor, target, command);
-            // Convert the default time to a float of seconds.
-            float default_time = command_properties_map_[command.command_crc].default_time / 1000.0f;
-
-            SendCommandQueueRemove(actor, command.action_counter, default_time, 0, 0);
+            
+            SendCommandQueueRemove(actor, command.action_counter, command_properties_map_[command.command_crc].default_time, 0, 0);
         }
     } catch(const exception& e) {
         LOG(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].name << "\n" << e.what();
@@ -223,9 +225,11 @@ void CommandService::LoadProperties()
             auto row = reader.GetRow();
 
             CommandProperties properties;
-
+            // Set a default script hook
+            
             properties.name = row["commandName"]->GetValue<string>();
-
+            // @TODO: Make this a config value
+            properties.script_hook = "scripts/commands/" + properties.name + ".py";
             string tmp = properties.name;
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             properties.name_crc = anh::memcrc(tmp);
@@ -234,6 +238,72 @@ void CommandService::LoadProperties()
             properties.ability_crc = anh::memcrc(properties.ability);
 
             properties.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
+            properties.default_time = row["defaultTime"]->GetValue<float>();
+            properties.command_group = row["commandGroup"]->GetValue<int>();
+            properties.target_type = row["targetType"]->GetValue<int>();
+            properties.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
+            // Load Bitmasks
+            std::vector<int> bits;
+            bits.push_back(row["L:standing"]->GetValue<int>());
+            bits.push_back(row["L:sneaking"]->GetValue<int>());
+            bits.push_back(row["L:sneaking"]->GetValue<int>());
+            bits.push_back(row["L:walking"]->GetValue<int>());
+            bits.push_back(row["L:running"]->GetValue<int>());
+            bits.push_back(row["L:kneeling"]->GetValue<int>());
+            bits.push_back(row["L:crouchSneaking"]->GetValue<int>());
+            bits.push_back(row["L:crouchWalking"]->GetValue<int>());
+            bits.push_back(row["L:prone"]->GetValue<int>());
+            bits.push_back(row["L:crawling"]->GetValue<int>());
+            bits.push_back(row["L:climbingStationary"]->GetValue<int>());
+            bits.push_back(row["L:climbing"]->GetValue<int>());
+            bits.push_back(row["L:hovering"]->GetValue<int>());
+            bits.push_back(row["L:flying"]->GetValue<int>());
+            bits.push_back(row["L:sitting"]->GetValue<int>());
+            bits.push_back(row["L:skillAnimating"]->GetValue<int>());
+            bits.push_back(row["L:drivingVehicle"]->GetValue<int>());
+            bits.push_back(row["L:ridingCreature"]->GetValue<int>());
+            bits.push_back(row["L:knockedDown"]->GetValue<int>());
+            bits.push_back(row["L:incapacitated"]->GetValue<int>());
+            bits.push_back(row["L:dead"]->GetValue<int>());
+            bits.push_back(row["L:blocking"]->GetValue<int>());
+            properties.allow_in_posture = properties.BuildBitmask(bits);
+
+            std::vector<int> state_bits;
+            state_bits.push_back(row["S:cover"]->GetValue<int>());
+            state_bits.push_back(row["S:combat"]->GetValue<int>());
+            state_bits.push_back(row["S:peace"]->GetValue<int>());
+            state_bits.push_back(row["S:aiming"]->GetValue<int>());
+            state_bits.push_back(row["S:alert"]->GetValue<int>());
+            state_bits.push_back(row["S:berserk"]->GetValue<int>());
+            state_bits.push_back(row["S:feignDeath"]->GetValue<int>());
+            state_bits.push_back(row["S:combatAttitudeEvasive"]->GetValue<int>());
+            state_bits.push_back(row["S:combatAttitudeNormal"]->GetValue<int>());
+            state_bits.push_back(row["S:combatAttitudeAggressive"]->GetValue<int>());
+            state_bits.push_back(row["S:tumbling"]->GetValue<int>());
+            state_bits.push_back(row["S:rallied"]->GetValue<int>());
+            state_bits.push_back(row["S:stunned"]->GetValue<int>());
+            state_bits.push_back(row["S:blinded"]->GetValue<int>());
+            state_bits.push_back(row["S:dizzy"]->GetValue<int>());
+            state_bits.push_back(row["S:intimidated"]->GetValue<int>());
+            state_bits.push_back(row["S:immobilized"]->GetValue<int>());
+            state_bits.push_back(row["S:frozen"]->GetValue<int>());
+            state_bits.push_back(row["S:swimming"]->GetValue<int>());
+            state_bits.push_back(row["S:sittingOnChair"]->GetValue<int>());
+            state_bits.push_back(row["S:crafting"]->GetValue<int>());
+            state_bits.push_back(row["S:glowingJedi"]->GetValue<int>());
+            state_bits.push_back(row["S:maskScent"]->GetValue<int>());
+            state_bits.push_back(row["S:poisoned"]->GetValue<int>());
+            state_bits.push_back(row["S:bleeding"]->GetValue<int>());
+            state_bits.push_back(row["S:diseased"]->GetValue<int>());
+            state_bits.push_back(row["S:onFire"]->GetValue<int>());
+            state_bits.push_back(row["S:ridingMount"]->GetValue<int>());
+            state_bits.push_back(row["S:mountedCreature"]->GetValue<int>());
+            state_bits.push_back(row["S:pilotingShip"]->GetValue<int>());
+            state_bits.push_back(row["S:pilotingPobShip"]->GetValue<int>());
+            state_bits.push_back(row["S:shipOperations"]->GetValue<int>());
+            state_bits.push_back(row["S:shipGunner"]->GetValue<int>());
+            state_bits.push_back(row["S:shipInterior"]->GetValue<int>());
+            properties.allow_in_states = properties.BuildBitmask(state_bits);
 
             command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
         }

@@ -2,37 +2,39 @@
 #ifndef SWGANH_OBJECT_TANGIBLE_TANGIBLE_MESSAGE_BUILDER_H_
 #define SWGANH_OBJECT_TANGIBLE_TANGIBLE_MESSAGE_BUILDER_H_
 
-#include <cstdint>
-#include <memory>
-#include <boost/optional.hpp>
-
-namespace swganh {
-namespace messages {
-    struct BaselinesMessage;
-}} // swganh::messages
+#include "swganh/object/object_message_builder.h"
 
 namespace swganh {
 namespace object {
 namespace tangible {
 
     class Tangible;
-    class TangibleMessageBuilder
+    class TangibleMessageBuilder : public ObjectMessageBuilder
     {
     public:
+        TangibleMessageBuilder(anh::EventDispatcher* dispatcher) :
+            ObjectMessageBuilder(dispatcher)
+        {
+            RegisterEventHandlers();
+        }
+        virtual void RegisterEventHandlers();
+        virtual void SendBaselines(const std::shared_ptr<Tangible>& tangible, const std::shared_ptr<ObjectController>& controller);
         // deltas
-        static void BuildCustomizationDelta(Tangible* tangible);
-        static void BuildComponentCustomizationDelta(Tangible* tangible);
-        static void BuildOptionsMaskDelta(Tangible* tangible);
-        static void BuildIncapTimerDelta(Tangible* tangible);
-        static void BuildConditionDamageDelta(Tangible* tangible);
-        static void BuildMaxConditionDelta(Tangible* tangible);
-        static void BuildStaticDelta(Tangible* tangible);
-        static void BuildDefendersDelta(Tangible* tangible);
+        static void BuildCustomizationDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildComponentCustomizationDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildOptionsMaskDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildIncapTimerDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildConditionDamageDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildMaxConditionDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildStaticDelta(const std::shared_ptr<Tangible>& tangible);
+        static void BuildDefendersDelta(const std::shared_ptr<Tangible>& tangible);
         
         // baselines
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline3(Tangible* tangible);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline6(Tangible* tangible);
-        static boost::optional<swganh::messages::BaselinesMessage> BuildBaseline7(Tangible* tangible);
+        static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Tangible>& tangible);
+        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Tangible>& tangible);
+        static swganh::messages::BaselinesMessage BuildBaseline7(const std::shared_ptr<Tangible>& tangible);
+    private:
+        typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
     };
 
 }}}  // swganh::object::tangible

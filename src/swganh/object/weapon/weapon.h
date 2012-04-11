@@ -2,8 +2,6 @@
 #ifndef SWGANH_OBJECT_WEAPON_WEAPON_H_
 #define SWGANH_OBJECT_WEAPON_WEAPON_H_
 
-#include <set>
-#include "swganh/object/object.h"
 #include "swganh/object/tangible/tangible.h"
 
 namespace swganh {
@@ -20,7 +18,7 @@ public:
     const static uint32_t type = 0x6AAC0CFE;    
 protected:
     // baselines
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
+    virtual void GetBaseline3();
 private:
     int attack_type;
     std::string weapon_effect;

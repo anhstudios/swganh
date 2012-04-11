@@ -10,12 +10,17 @@ using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object::intangible;
 
-void IntangibleMessageBuilder::BuildStfDetailDelta(Intangible* object)
+void IntangibleMessageBuilder::RegisterEventHandlers()
+{
+    // TODO: Register Event Handlers for Intangible
+}
+
+void IntangibleMessageBuilder::BuildStfDetailDelta(const shared_ptr<Intangible>& object)
 {
     // Only build a message if there are observers.
     if (object->HasObservers())
     {
-        DeltasMessage message = object->CreateDeltasMessage(Object::VIEW_6, 1);
+        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_6, 1);
         message.data.write(object->GetStfDetailFile());
         message.data.write<uint32_t>(0);
         message.data.write(object->GetStfDetailString());
@@ -23,12 +28,12 @@ void IntangibleMessageBuilder::BuildStfDetailDelta(Intangible* object)
         object->AddDeltasUpdate(message);                
     }
 }
-boost::optional<BaselinesMessage> IntangibleMessageBuilder::BuildBaseline6(Intangible* object)
+BaselinesMessage IntangibleMessageBuilder::BuildBaseline6(const shared_ptr<Intangible>& object)
 {
-    auto message = object->CreateBaselinesMessage(object->Object::VIEW_6, 1);
+    auto message = CreateBaselinesMessage(object, object->Object::VIEW_6, 1);
     message.data.write(0);
     message.data.write(object->GetStfDetailFile());
     message.data.write(0);
     message.data.write(object->GetStfDetailString());
-    return boost::optional<BaselinesMessage>(std::move(message));
+    return BaselinesMessage(std::move(message));
 }

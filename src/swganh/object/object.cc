@@ -1,5 +1,8 @@
+#include "object.h"
 
-#include "swganh/object/object.h"
+#include <glm/gtx/transform2.hpp>
+
+#include "object_events.h"
 
 #include "anh/crc.h"
 #include "anh/observer/observer_interface.h"
@@ -7,13 +10,11 @@
 #include "swganh/messages/scene_create_object_by_crc.h"
 #include "swganh/messages/scene_end_baselines.h"
 #include "swganh/messages/update_containment_message.h"
-#include "swganh/object/object_message_builder.h"
 
 using namespace anh::observer;
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;
-using boost::optional;
 
 Object::Object()
     : object_id_(0)
@@ -26,7 +27,6 @@ Object::Object()
     , custom_name_(L"")
     , volume_(0)
 {
-	AddBaselinesBuilders_();
 }
 
 bool Object::HasController()
@@ -118,15 +118,15 @@ Object::ObjectMap Object::GetContainedObjects()
 void Object::AddAwareObject(const shared_ptr<Object>& object)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+        std::lock_guard<std::mutex> lock(object_mutex_);
         if (aware_objects_.find(object->GetObjectId()) == aware_objects_.end())
         {
             aware_objects_.insert(make_pair(object->GetObjectId(), object));
         }
     }
-
     if (object->HasController()) {
         Subscribe(object->GetController());
+        CreateBaselines(object->GetController());
         MakeClean(object->GetController());
     }
 }
@@ -158,16 +158,21 @@ void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 }
 string Object::GetTemplate()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+    std::lock_guard<std::mutex> lock(object_mutex_);
 	return template_string_;
 }
 void Object::SetTemplate(const string& template_string)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
-	template_string_ = template_string;
+    {
+        std::lock_guard<std::mutex> lock(object_mutex_);
+	    template_string_ = template_string;
+    }
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::Template",shared_from_this()));
 }
 void Object::SetObjectId(uint64_t object_id)
 {
+    std::lock_guard<std::mutex> lock(object_mutex_);
 	object_id_ = object_id;
 }
 uint64_t Object::GetObjectId()
@@ -184,40 +189,12 @@ wstring Object::GetCustomName()
 void Object::SetCustomName(wstring custom_name)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+        std::lock_guard<std::mutex> lock(object_mutex_);
         custom_name_ = custom_name;
     }
-
-    // Only build a message if there are observers.
-    if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3, 2);
-        message.data.write(custom_name);
-
-        AddDeltasUpdate(message);
-    }
-}
-
-BaselinesMessage Object::CreateBaselinesMessage(uint8_t view_type, uint16_t opcount)
-{
-    BaselinesMessage message;
-    message.object_id = GetObjectId();
-    message.object_type = GetType();
-    message.view_type = view_type;
-    message.object_opcount = opcount;
-
-    return message;
-}
-
-DeltasMessage Object::CreateDeltasMessage(uint8_t view_type, uint16_t update_type, uint16_t update_count)
-{
-    DeltasMessage message;
-    message.object_id = GetObjectId();
-    message.object_type = GetType();
-    message.view_type = view_type;
-    message.update_count = update_count;
-    message.update_type = update_type;
-    return message;
+    
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::CustomName",shared_from_this()));
 }
 
 bool Object::HasObservers()
@@ -274,15 +251,18 @@ bool Object::IsDirty()
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return !deltas_.empty();
 }
-
+void Object::ClearBaselines()
+{
+    std::lock_guard<std::mutex> lock(object_mutex_);
+    baselines_.clear();
+}
+void Object::ClearDeltas()
+{
+    std::lock_guard<std::mutex> lock(object_mutex_);
+    deltas_.clear();
+}
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
-    {
-        std::lock_guard<std::mutex> lock(object_mutex_);
-        baselines_.clear();
-        deltas_.clear();
-    }
-
     // SceneCreateObjectByCrc
     swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -301,45 +281,11 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
 
         controller->Notify(containment_message);
     }
-
-    // Baselines
-    BaselinesCacheContainer cache;
-    {
-        std::unique_lock<std::mutex> lock(object_mutex_);
-
-        optional<BaselinesMessage> message;
-        for_each(begin(baselines_builders_), end(baselines_builders_),
-            [&lock, &message, &cache] (BaselinesBuilder& builder)
-        {
-            lock.unlock();
-            message = builder();
-            if (message)
-            {
-                cache.push_back(move(*message));
-            }
-            lock.lock();
-        });
-    }
-
-    for_each(begin(cache), end(cache), [&controller] (BaselinesMessage& message)
-    {
-        controller->Notify(message);
-    });
-
-    {
-        std::lock_guard<std::mutex> lock(object_mutex_);
-        baselines_ = move(cache);
-    }
-
-    // SceneEndBaselines
-    swganh::messages::SceneEndBaselines scene_end_baselines;
-    scene_end_baselines.object_id = GetObjectId();
-    controller->Notify(scene_end_baselines);
-
+    
     OnMakeClean(controller);
 }
 
-BaselinesCacheContainer Object::GetBaselines(uint64_t viewer_id)
+BaselinesCacheContainer Object::GetBaselines()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
     return baselines_;
@@ -358,51 +304,21 @@ void Object::AddDeltasUpdate(DeltasMessage message)
 	std::lock_guard<std::mutex> lock(object_mutex_);
     deltas_.push_back(move(message));
 }
-
-void Object::AddBaselinesBuilders_()
+void Object::AddBaselineToCache(swganh::messages::BaselinesMessage baseline)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
-    baselines_builders_.push_back([this] () {
-        return GetBaseline1();
-    });
-
-    baselines_builders_.push_back([this] () {
-        return GetBaseline2();
-    });
-
-    baselines_builders_.push_back([this] () {
-        return GetBaseline3();
-    });
-
-    baselines_builders_.push_back([this] () {
-        return GetBaseline4();
-    });
-
-    baselines_builders_.push_back([this] () {
-        return GetBaseline5();
-    });
-
-    baselines_builders_.push_back([this] () {
-        return GetBaseline6();
-    });
-
-    baselines_builders_.push_back([this] () {
-        return GetBaseline7();
-    });
-
-    baselines_builders_.push_back([this] () {
-        return GetBaseline8();
-    });
-
-    baselines_builders_.push_back([this] () {
-        return GetBaseline9();
-    });
+    std::lock_guard<std::mutex> lock(object_mutex_);
+    baselines_.push_back(move(baseline));
 }
 
 void Object::SetPosition(glm::vec3 position)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
-    position_ = position;
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        position_ = position;
+    }
+
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::Position",shared_from_this()));
 }
 glm::vec3 Object::GetPosition()
 {
@@ -419,13 +335,42 @@ bool Object::InRange(glm::vec3 target, float range)
 }
 void Object::SetOrientation(glm::quat orientation)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
-    orientation_ = orientation;
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        orientation_ = orientation;
+    }
+
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::Orientation",shared_from_this()));
 }
 glm::quat Object::GetOrientation()
 {
 	std::lock_guard<std::mutex> lock(object_mutex_);
 	return orientation_;
+}
+void Object::FaceObject(const std::shared_ptr<Object>& object)
+{
+    auto target_position = object->GetPosition();
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        
+        // Create a mirror direction vector for the direction we want to face.
+        glm::vec3 direction_vector = glm::normalize(target_position - position_);
+        direction_vector.x = -direction_vector.x;
+
+        // Create a lookat matrix from the direction vector and convert it to a quaternion.
+        orientation_ = glm::toQuat(glm::lookAt(
+                                     direction_vector, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));                        
+
+        // If in the 3rd quadrant the signs need to be flipped.
+        if (orientation_.y <= 0.0f && orientation_.w >= 0.0f) {
+            orientation_.y = -orientation_.y;
+            orientation_.w = -orientation_.w;
+ 
+        }
+    }
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::Orientation",shared_from_this()));
 }
 
 uint8_t Object::GetHeading()
@@ -445,8 +390,13 @@ uint8_t Object::GetHeading()
 
 void Object::SetContainer(const std::shared_ptr<Object>& container)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
-    container_ = container;
+    {
+	    std::lock_guard<std::mutex> lock(object_mutex_);
+        container_ = container;
+    }
+
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::Container",shared_from_this()));
 }
 
 shared_ptr<Object> Object::GetContainer()
@@ -461,8 +411,9 @@ void Object::SetComplexity(float complexity)
         std::lock_guard<std::mutex> lock(object_mutex_);
         complexity_ = complexity;
     }
-
-    ObjectMessageBuilder::BuildComplexityDelta(this);
+    
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::Complexity",shared_from_this()));
 }
 
 float Object::GetComplexity()
@@ -474,12 +425,13 @@ float Object::GetComplexity()
 void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+        std::lock_guard<std::mutex> lock(object_mutex_);
         stf_name_file_ = stf_file_name;
         stf_name_string_ = stf_string;
     }
 
-    ObjectMessageBuilder::BuildStfNameDelta(this);
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::StfName",shared_from_this()));
 }
 
 string Object::GetStfNameFile()
@@ -497,7 +449,9 @@ string Object::GetStfNameString()
 void Object::SetVolume(uint32_t volume)
 {
     volume_ = volume;
-    ObjectMessageBuilder::BuildVolumeDelta(this);
+
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::Volume",shared_from_this()));
 }
 
 uint32_t Object::GetVolume()
@@ -507,7 +461,10 @@ uint32_t Object::GetVolume()
 
 void Object::SetSceneId(uint32_t scene_id)
 {
-	scene_id_ = scene_id;
+    scene_id_ = scene_id;
+        
+    GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::SceneId",shared_from_this()));
 }
 
 uint32_t Object::GetSceneId()
@@ -525,13 +482,8 @@ void Object::SetEventDispatcher(anh::EventDispatcher* dispatcher)
     event_dispatcher_ = dispatcher;
 }
 
-optional<BaselinesMessage> Object::GetBaseline3()
+void Object::CreateBaselines( std::shared_ptr<ObjectController> controller)
 {
-	return ObjectMessageBuilder::BuildBaseline3(this);
+    GetEventDispatcher()->Dispatch(make_shared<ControllerEvent>
+        ("Object::Baselines", shared_from_this(), controller));
 }
-
-optional<BaselinesMessage> Object::GetBaseline6()
-{
-	return ObjectMessageBuilder::BuildBaseline6(this);
-}
-

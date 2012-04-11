@@ -366,15 +366,30 @@ void TreReader::TreReaderImpl::ReadDataBlock(
             input_stream_.read(&compressed_data[0], compressed_size);
         }
 
-        int result = uncompress(
-            reinterpret_cast<Bytef*>(buffer),
-            reinterpret_cast<uLongf*>(&uncompressed_size),
-            reinterpret_cast<Bytef*>(&compressed_data[0]),
-            compressed_size);
+        int result;
+        z_stream stream;
+        stream.zalloc = Z_NULL;
+        stream.zfree = Z_NULL;
+        stream.opaque = Z_NULL;
+        stream.avail_in = Z_NULL;
+        stream.next_in = Z_NULL;
+        result = inflateInit(&stream);
 
         if (result != Z_OK)
         {
-            throw std::runtime_error("ZLib error: " + result);
+            throw std::runtime_error("Zlib error: " + std::to_string(result));
+        }
+
+        stream.next_in = reinterpret_cast<Bytef*>(&compressed_data[0]);
+        stream.avail_in = compressed_size;
+        stream.next_out = reinterpret_cast<Bytef*>(buffer);
+        stream.avail_out = uncompressed_size;
+
+        inflate(&stream, Z_FINISH);
+
+        if(stream.total_out > 0)
+        {
+            inflateEnd(&stream);
         }
     }
     else

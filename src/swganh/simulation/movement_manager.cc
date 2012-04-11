@@ -144,6 +144,28 @@ void MovementManager::RegisterEvents(anh::EventDispatcher* event_dispatcher)
             SendDataTransformMessage(object);
         }
     });
+
+    event_dispatcher->Subscribe(
+        "Object::Orientation",
+        [this] (shared_ptr<anh::EventInterface> incoming_event)
+    {
+        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
+        if (counter_map_.find(object->GetObjectId()) == counter_map_.end())
+        {
+            counter_map_[object->GetObjectId()] = 0;
+        }
+
+        if (object->GetContainer() && object->HasObservers())
+        {
+            SendDataTransformWithParentMessage(object);
+            SendUpdateDataTransformWithParentMessage(object);
+        }
+        else if (object->HasController())
+        {
+            SendDataTransformMessage(object);
+            SendUpdateDataTransformMessage(object);
+        }
+    });
 }
 
 bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)

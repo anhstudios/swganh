@@ -857,16 +857,12 @@ public:
      */
     void SetGender(Gender gender);
 
-protected:
     // baselines
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline3();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline6();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline8();
-    virtual boost::optional<swganh::messages::BaselinesMessage> GetBaseline9();
+    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
+
+    typedef anh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
 
 private:
-	friend class PlayerFactory;
-
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
     mutable std::mutex player_mutex_;
