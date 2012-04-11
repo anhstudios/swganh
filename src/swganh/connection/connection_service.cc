@@ -1,6 +1,7 @@
 
 #include "swganh/connection/connection_service.h"
 
+#include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
 #include "anh/logger.h"
