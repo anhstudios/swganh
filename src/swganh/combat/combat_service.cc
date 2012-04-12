@@ -187,7 +187,6 @@ void CombatService::SendCombatAction(
     CombatData combat_data(p_object, command_property);
     if (InitiateCombat(attacker, target, command_message))
     {
-        attacker->FaceObject(target);
         string string_hit = "";
         // Check For Hit
         // Combat Spam
@@ -651,7 +650,7 @@ void CombatService::EndDuel(const shared_ptr<Creature>& attacker, const shared_p
     {
         attacker->ClearAutoAttack();
         attacker->RemoveFromDuelList(target->GetObjectId());
-        //attacker->RemoveDefender(target->GetObjectId());
+        attacker->RemoveDefender(target->GetObjectId());
         attacker->SetPvPStatus(PvPStatus_Player);
         attacker->ToggleStateOff(COMBAT);
         attacker->SetTargetId(0);
@@ -660,7 +659,7 @@ void CombatService::EndDuel(const shared_ptr<Creature>& attacker, const shared_p
         // End the Duel for the target as well
         target->ClearAutoAttack();
         target->RemoveFromDuelList(attacker->GetObjectId());
-        //target->RemoveDefender(target->GetObjectId());
+        target->RemoveDefender(target->GetObjectId());
         target->SetPvPStatus(PvPStatus_Player);
         target->ToggleStateOff(COMBAT);
         target->SetTargetId(0);
@@ -671,7 +670,7 @@ void CombatService::EndCombat(const shared_ptr<Creature>& attacker, const shared
     attacker->ClearAutoAttack();
     attacker->ToggleStateOff(COMBAT);
     // For Some Reason This Crashes...
-    //attacker->RemoveDefender(target->GetObjectId());
+    attacker->RemoveDefender(target->GetObjectId());
     target->RemoveDefender(attacker->GetObjectId());
     attacker->SetTargetId(0);
     // End Duel
