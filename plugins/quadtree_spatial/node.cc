@@ -247,7 +247,7 @@ std::shared_ptr<Node> Node::GetNodeWithinPoint_(Point point)
 {
 	// If we don't within the actual Spatial Indexing area, bail.
 	if(!boost::geometry::within(point, region_))
-		throw new std::exception("Quadtree: Object position out of bounds.");
+		throw new std::runtime_error("Quadtree: Object position out of bounds.");
 
 	if(state_ == BRANCH)
 	{

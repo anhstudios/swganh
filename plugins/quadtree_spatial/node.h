@@ -103,10 +103,10 @@ protected:
 	}
 
 private:
+	NodeQuadrant quadrant_;
 	Region region_;
 	uint32_t level_;
 	uint32_t max_level_;
-	NodeQuadrant quadrant_;
 	NodeState state_;
 	std::vector<std::shared_ptr<swganh::object::Object>> objects_;
 	boost::array<std::shared_ptr<Node>, 4> leaf_nodes_;

@@ -32,6 +32,7 @@ class NodeTest : public testing::Test {
 public:
 	NodeTest()
 		: root_node_(ROOT, Region(Point(-3000.0f, -3000.0f), Point(3000.0f, 3000.0f)), 0, 9, nullptr)
+		, event_dispatcher_(io_service_)
 	{}
 
 	~NodeTest()
@@ -41,12 +42,15 @@ protected:
 	virtual void SetUp() { }
 
 	Node root_node_;
+	anh::EventDispatcher event_dispatcher_;
+	boost::asio::io_service io_service_;
 };
 
 ///
 TEST_F(NodeTest, CanInsertRemoveObject)
 {
 	std::shared_ptr<swganh::object::Object> obj(new swganh::object::Object());
+	obj->SetEventDispatcher(&event_dispatcher_);
 	obj->SetPosition(glm::vec3(10.0f, 10.0f, 10.0f));
 
 	root_node_.InsertObject(obj);
@@ -61,6 +65,11 @@ TEST_F(NodeTest, VerifyQuadrantSplit)
 {
 	std::shared_ptr<swganh::object::Object> obj1(new swganh::object::Object()), obj2(new swganh::object::Object()), obj3(new swganh::object::Object()), obj4(new swganh::object::Object());
 	
+	obj1->SetEventDispatcher(&event_dispatcher_);
+	obj2->SetEventDispatcher(&event_dispatcher_);
+	obj3->SetEventDispatcher(&event_dispatcher_);
+	obj4->SetEventDispatcher(&event_dispatcher_);
+
 	obj1->SetObjectId(1);
 	obj2->SetObjectId(2);
 	obj3->SetObjectId(3);
@@ -98,6 +107,7 @@ TEST_F(NodeTest, VerifyQuadrantSplit)
 TEST_F(NodeTest, CanQuery)
 {
 	std::shared_ptr<swganh::object::Object> obj(new swganh::object::Object());
+	obj->SetEventDispatcher(&event_dispatcher_);
 	obj->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
 
 	root_node_.InsertObject(obj);
@@ -113,6 +123,7 @@ TEST_F(NodeTest, CanQuery)
 TEST_F(NodeTest, CanUpdateObject)
 {
 	std::shared_ptr<swganh::object::Object> obj(new swganh::object::Object());
+	obj->SetEventDispatcher(&event_dispatcher_);
 	obj->SetPosition(glm::vec3(10.0f, 0.0f, 10.0f));
 
 	root_node_.InsertObject(obj);
@@ -140,6 +151,7 @@ TEST_F(NodeTest, CanInsertRemoveQueryOneThousand)
 	for(int i = 0; i < 1000; i++)
 	{
 		objects.push_back(std::make_shared<swganh::object::Object>());
+		objects[i]->SetEventDispatcher(&event_dispatcher_);
 		objects[i]->SetPosition(glm::vec3(random_generator(gen), 0.0f, random_generator(gen)));
 		root_node_.InsertObject(objects[i]);
 	}
@@ -166,6 +178,7 @@ TEST_F(NodeTest, CanInsertRemoveQueryTenThousand)
 	for(int i = 0; i < 10000; i++)
 	{
 		objects.push_back(std::make_shared<swganh::object::Object>());
+		objects[i]->SetEventDispatcher(&event_dispatcher_);
 		objects[i]->SetPosition(glm::vec3(random_generator(gen), 0.0f, random_generator(gen)));
 		root_node_.InsertObject(objects[i]);
 	}
