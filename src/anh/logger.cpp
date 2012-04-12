@@ -27,7 +27,7 @@ void Logger::init(const std::string& app_name)
         keywords::format = fmt::format("%1% [%2%] <%3%> %4%")
             % fmt::date_time("TimeStamp", std::nothrow)
             % fmt::attr<severity_level>("Severity", std::nothrow)
-            % fmt::attr<attrs::current_thread_id::held_type>("ThreadID")
+            % fmt::attr<attrs::current_thread_id::value_type>("ThreadID")
             % fmt::message(),
         keywords::auto_flush = true
     );
@@ -41,7 +41,7 @@ void Logger::init(const std::string& app_name)
         keywords::format = fmt::format("%1% [%2%] <%3%> %4%")
             % fmt::date_time("TimeStamp", std::nothrow)
             % fmt::attr<severity_level>("Severity", std::nothrow)
-            % fmt::attr<attrs::current_thread_id::held_type>("ThreadID")
+            % fmt::attr<attrs::current_thread_id::value_type>("ThreadID")
             % fmt::message()
     );
 #endif
@@ -53,7 +53,7 @@ void Logger::init(const std::string& app_name)
         keywords::format = fmt::format("%1% [%2%] <%3%> %4%")
             % fmt::date_time("TimeStamp", std::nothrow)
             % fmt::attr<severity_level>("Severity", std::nothrow)
-            % fmt::attr<attrs::current_thread_id::held_type>("ThreadID")
+            % fmt::attr<attrs::current_thread_id::value_type>("ThreadID")
             % fmt::message(),
         keywords::auto_flush = true
     );
@@ -65,7 +65,7 @@ void Logger::init(const std::string& app_name)
         keywords::filter = flt::attr<severity_level>("Severity", std::nothrow) == event,
         keywords::format = fmt::format("%1% <%2%> %3%")
             % fmt::date_time("TimeStamp", std::nothrow)
-            % fmt::attr<attrs::current_thread_id::held_type>("ThreadID")
+            % fmt::attr<attrs::current_thread_id::value_type>("ThreadID")
             % fmt::message(),
         keywords::auto_flush = true
     );
