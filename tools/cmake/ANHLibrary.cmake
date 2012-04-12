@@ -150,15 +150,16 @@ FUNCTION(AddANHLibrary name)
             )
         endif()
 
+        IF(_project_deps_list_length GREATER 0)
+            list(REVERSE ANHLIB_DEPENDS)
+            ADD_DEPENDENCIES(${name}_test ${ANHLIB_DEPENDS})
+        ENDIF()
+
         TARGET_LINK_LIBRARIES(${name}_test
             ${ANHLIB_DEPENDS}
             ${GTEST_BOTH_LIBRARIES}
             ${GMOCK_LIBRARIES})
         add_dependencies(${name}_test DEPS)
-
-        IF(_project_deps_list_length GREATER 0)
-            ADD_DEPENDENCIES(${name}_test ${ANHLIB_DEPENDS})
-        ENDIF()
 
         IF(_debug_list_length GREATER 0)
             FOREACH(debug_library ${ANHLIB_DEBUG_LIBRARIES})
