@@ -60,14 +60,17 @@ void ConfigReader::ParseConfig()
     boost::filesystem::path p(config_filename_);
     boost::filesystem::path dir = p.parent_path();
 
+#ifdef WIN32
     regex rx("searchTree_([0-9]{2})_([0-9]{1,2})=(\")?(.*)\\3");
+#else
+    regex rx("searchTree_([0-9]{2})_([0-9]{1,2})=(\")?(.*)(?(3)\\3|)");
+#endif
     smatch match;
     string line;
 
     while(!input_stream.eof())
     {
         Getline(input_stream, line);
-
         if (regex_search(line, match, rx))
         {
             boost::filesystem::path tmp = dir;

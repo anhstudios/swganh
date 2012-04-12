@@ -68,7 +68,7 @@ namespace anh {
 
         ValueEvent(EventType type, T data)
             : BaseEvent(type)
-            , data_(move(data))
+            , data_(std::move(data))
         {}
 
         const T& Get() const

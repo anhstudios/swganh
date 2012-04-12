@@ -106,10 +106,3 @@ boost::asio::ip::udp::socket* Server::socket() {
 uint32_t Server::max_receive_size() {
     return max_receive_size_;
 }
-
-shared_ptr<ByteBuffer> Server::AllocateBuffer() {    
-    auto allocated_buffer = std::allocate_shared<ByteBuffer, boost::pool_allocator<ByteBuffer>>(
-        boost::pool_allocator<ByteBuffer>());
-
-    return allocated_buffer;
-}
