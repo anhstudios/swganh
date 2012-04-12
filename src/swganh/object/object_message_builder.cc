@@ -41,9 +41,6 @@ void ObjectMessageBuilder::SendEndBaselines(const shared_ptr<Object>& object, co
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = object->GetObjectId();
     controller->Notify(scene_end_baselines);
-
-    object->ClearBaselines();
-    object->ClearDeltas();
 }
 
 void ObjectMessageBuilder::BuildComplexityDelta(const shared_ptr<Object>& object)

@@ -126,8 +126,8 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
     }
     if (object->HasController()) {
         Subscribe(object->GetController());
-        CreateBaselines(object->GetController());
         MakeClean(object->GetController());
+        CreateBaselines(object->GetController());
     }
 }
 
@@ -263,6 +263,8 @@ void Object::ClearDeltas()
 }
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
 {
+    ClearBaselines();
+    ClearDeltas();
     // SceneCreateObjectByCrc
     swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
