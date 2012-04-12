@@ -29,7 +29,6 @@
 #include <boost/geometry/geometries/polygon.hpp>
 
 #include <glm/glm.hpp>
-#include <glm/ext.hpp>
 
 namespace anh {
 namespace app {

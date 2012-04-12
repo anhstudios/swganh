@@ -38,6 +38,7 @@ AddANHExecutable(swganh
         ${Boost_PYTHON3_LIBRARY_DEBUG}
         ${Boost_REGEX_LIBRARY_DEBUG}
         ${Boost_SYSTEM_LIBRARY_DEBUG}
+        ${Boost_THREAD_LIBRARY_DEBUG}
         ${MYSQL_LIBRARY_DEBUG}
         ${MYSQLCONNECTORCPP_LIBRARY_DEBUG}
         ${PYTHON_LIBRARY}
@@ -53,6 +54,7 @@ AddANHExecutable(swganh
         ${Boost_PYTHON3_LIBRARY_RELEASE}
         ${Boost_REGEX_LIBRARY_RELEASE}
         ${Boost_SYSTEM_LIBRARY_RELEASE}
+        ${Boost_THREAD_LIBRARY_RELEASE}
         ${MYSQL_LIBRARY_RELEASE}
         ${MYSQLCONNECTORCPP_LIBRARY_RELEASE}
         ${PYTHON_LIBRARY}
