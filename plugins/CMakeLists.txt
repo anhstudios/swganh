@@ -9,3 +9,6 @@ add_subdirectory(mysql_character)
 
 # Galaxy
 add_subdirectory(mysql_galaxy)
+
+# Spatial Indexing
+add_subdirectory(quadtree_spatial)

@@ -32,11 +32,12 @@ namespace object {
 
 namespace swganh {
 namespace simulation {
+	class SpatialProviderInterface;
 
     class MovementManager
     {
     public:
-        explicit MovementManager(anh::EventDispatcher* event_dispatcher);
+		explicit MovementManager(anh::EventDispatcher* event_dispatcher, std::shared_ptr<SpatialProviderInterface> spatial_provider);
 
         void HandleDataTransform(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
@@ -63,6 +64,7 @@ namespace simulation {
         > UpdateCounterMap;
 
         UpdateCounterMap counter_map_;
+		std::shared_ptr<SpatialProviderInterface> spatial_provider_;
     };
 
 }}  // namespace swganh::simulation
