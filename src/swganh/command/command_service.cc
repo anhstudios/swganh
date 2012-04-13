@@ -342,7 +342,8 @@ void CommandService::RegisterCommandScripts()
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             
             auto find_iter = command_properties_map_.find(anh::memcrc(tmp));
-            if (find_iter != end(command_properties_map_))
+            if (find_iter != end(command_properties_map_)
+                && find_iter->second.add_to_combat_queue == 0)
             {
                 SetCommandHandler(find_iter->second.name_crc, 
                     PythonCommand(find_iter->second, string(begin(native_path), end(native_path))));
