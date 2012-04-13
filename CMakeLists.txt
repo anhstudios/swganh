@@ -125,10 +125,12 @@ set(Boost_USE_MULTITHREADED ON)
 
 # Check for a vendor directory in the source directory and in
 # the directory above.
-if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
-    set(VENDOR_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
-elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../vendor)
-    set(VENDOR_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/../vendor)
+if(NOT DEFINED VENDOR_PREFIX)
+    if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
+        set(VENDOR_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
+    elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../vendor)
+        set(VENDOR_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/../vendor)
+    endif()
 endif()
 
 if(DEFINED VENDOR_PREFIX)
