@@ -331,14 +331,23 @@ bool Creature::HasState(uint64_t state)
 void Creature::ToggleStateOn(uint64_t state)
 {
     state_bitmask_ = ( state_bitmask_ | state);
+
+    GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
+        ("Creature::StateBitmask",static_pointer_cast<Creature>(shared_from_this())));
 }
 void Creature::ToggleStateOff(uint64_t state)
 {
     state_bitmask_ = ( state_bitmask_ & ~ state);
+
+    GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
+        ("Creature::StateBitmask",static_pointer_cast<Creature>(shared_from_this())));
 }
 void Creature::ToggleStateBitmask(uint64_t state_bitmask)
 {
     state_bitmask_ = (state_bitmask_ ^ state_bitmask);
+
+    GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
+        ("Creature::StateBitmask",static_pointer_cast<Creature>(shared_from_this())));
 }
 
 void Creature::SetStatWound(StatIndex stat_index, int32_t value)

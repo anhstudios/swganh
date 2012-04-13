@@ -659,7 +659,7 @@ void CombatService::EndDuel(const shared_ptr<Creature>& attacker, const shared_p
         // End the Duel for the target as well
         target->ClearAutoAttack();
         target->RemoveFromDuelList(attacker->GetObjectId());
-        target->RemoveDefender(target->GetObjectId());
+        target->RemoveDefender(attacker->GetObjectId());
         target->SetPvPStatus(PvPStatus_Player);
         target->ToggleStateOff(COMBAT);
         target->SetTargetId(0);
