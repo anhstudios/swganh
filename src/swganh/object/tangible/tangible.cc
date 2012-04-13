@@ -193,11 +193,13 @@ bool Tangible::IsDefending(uint64_t defender)
 }
 void Tangible::AddDefender(uint64_t defender)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
-    defender_list_.Add(Defender(defender));
-    
+    {
+        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        defender_list_.Add(Defender(defender));
+    }
+
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defender",static_pointer_cast<Tangible>(shared_from_this())));
+        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
 }
 void Tangible::RemoveDefender(uint64_t defender)
 {
@@ -216,7 +218,7 @@ void Tangible::RemoveDefender(uint64_t defender)
     }
     
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defender",static_pointer_cast<Tangible>(shared_from_this())));
+        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
 }
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
@@ -229,7 +231,7 @@ void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
         defender_list_.Reinstall();
     }
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defender",static_pointer_cast<Tangible>(shared_from_this())));
+        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
 }
 
 NetworkSortedVector<Defender> Tangible::GetDefenders()
@@ -245,7 +247,7 @@ void Tangible::ClearDefenders()
         defender_list_.Clear();
     }   
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
-        ("Tangible::Defender",static_pointer_cast<Tangible>(shared_from_this())));
+        ("Tangible::Defenders",static_pointer_cast<Tangible>(shared_from_this())));
 }
 
 void Tangible::ActivateAutoAttack()

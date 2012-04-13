@@ -127,7 +127,6 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
     if (object->HasController()) {
         Subscribe(object->GetController());
         MakeClean(object->GetController());
-        CreateBaselines(object->GetController());
     }
 }
 
@@ -273,6 +272,8 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
 	scene_object.orientation = GetOrientation();
     scene_object.byte_flag = 0;
     controller->Notify(scene_object);
+
+    CreateBaselines(controller);
 
     if (GetContainer())
     {
