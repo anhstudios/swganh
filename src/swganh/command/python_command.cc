@@ -16,7 +16,7 @@ PythonCommand::PythonCommand(const CommandProperties& properties, const std::str
 {
 }
 
-void PythonCommand::operator()(anh::app::KernelInterface* kernel, shared_ptr<Creature> actor, shared_ptr<Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)
+void PythonCommand::operator()(swganh::app::SwganhKernel* kernel, shared_ptr<Creature> actor, shared_ptr<Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)
 {
     shared_ptr<Creature> creature = nullptr;
     if (target && target->GetType() == Creature::type)
