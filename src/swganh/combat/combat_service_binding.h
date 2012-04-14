@@ -1,6 +1,10 @@
 #ifndef SWGANH_COMBAT_COMBAT_SERVICE_BINDING_H_
 #define SWGANH_COMBAT_COMBAT_SERVICE_BINDING_H_
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "anh/python_shared_ptr.h"
 #include "swganh/combat/combat_service.h"
 

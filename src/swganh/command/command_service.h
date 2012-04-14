@@ -9,7 +9,6 @@
 #include <tuple>
 
 #include <boost/asio/deadline_timer.hpp>
-#include <boost/python.hpp>
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>

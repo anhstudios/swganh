@@ -21,6 +21,10 @@
 #ifndef  SWGANH_OBJECT_OBJECT_BINDING_H_
 #define  SWGANH_OBJECT_OBJECT_BINDING_H_
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller_binding.h"
 

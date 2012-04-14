@@ -1,3 +1,8 @@
+
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "command_filter.h"
 #include "command_properties.h"
 #include "command_service.h"

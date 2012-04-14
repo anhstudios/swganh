@@ -1,3 +1,8 @@
+
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "swganh/app/swganh_app.h"
 
 #include <algorithm>

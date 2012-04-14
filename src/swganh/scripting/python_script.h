@@ -2,6 +2,10 @@
 #ifndef SWGANH_SCRIPTING_PYTHON_SCRIPT_H_
 #define SWGANH_SCRIPTING_PYTHON_SCRIPT_H_
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include <string>
 #include <memory>
 

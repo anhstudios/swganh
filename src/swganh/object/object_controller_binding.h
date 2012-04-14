@@ -1,6 +1,10 @@
 #ifndef SWGANH_OBJECT_OBJECT_CONTROLLER_H_
 #define SWGANH_OBJECT_OBJECT_CONTROLLER_H_
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "swganh/object/object_controller.h"
 #include "swganh/messages/controllers/show_fly_text.h"
 #include "swganh/messages/out_of_band.h"

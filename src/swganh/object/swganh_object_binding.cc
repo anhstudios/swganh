@@ -1,4 +1,8 @@
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "anh/python_shared_ptr.h"
 #include "swganh/object/object_binding.h"
 #include "swganh/object/creature/creature_binding.h"
