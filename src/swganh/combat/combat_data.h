@@ -1,3 +1,10 @@
+#ifndef SWGANH_COMBAT_COMBAT_DATA_H_
+#define SWGANH_COMBAT_COMBAT_DATA_H_
+
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include <cstdint>
 #include <unordered_map>
 
@@ -87,3 +94,5 @@ struct CombatData : swganh::command::CommandProperties
 };
 
 }} // swganh::combat
+
+#endif  // SWGANH_COMBAT_COMBAT_DATA_H_

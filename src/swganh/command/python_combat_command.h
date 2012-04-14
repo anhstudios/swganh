@@ -2,6 +2,10 @@
 #ifndef SWGANH_COMBAT_PYTHON_COMBAT_COMMAND_H_
 #define SWGANH_COMBAT_PYTHON_COMBAT_COMMAND_H_
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include <cstdint>
 #include <memory>
 #include <string>

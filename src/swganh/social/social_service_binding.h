@@ -1,6 +1,10 @@
 #ifndef SWGANH_SOCIAL_SOCIAL_SERVICE_BINDING_H_
 #define SWGANH_SOCIAL_SOCIAL_SERVICE_BINDING_H_
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "anh/python_shared_ptr.h"
 #include "social_service.h"
 

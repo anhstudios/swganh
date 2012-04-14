@@ -1,6 +1,10 @@
 #ifndef SWGANH_APP_SWGANH_KERNEL_BINDING_H_
 #define SWGANH_APP_SWGANH_KERNEL_BINDING_H_
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "swganh_kernel.h"
 
 #include "anh/app/kernel_interface.h"
