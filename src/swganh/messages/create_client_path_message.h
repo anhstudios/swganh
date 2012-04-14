@@ -23,7 +23,7 @@ namespace messages {
     
     	void OnSerialize(anh::ByteBuffer& buffer) const
     	{
-    		buffer.write(path_coordinates.size());
+    		buffer.write<uint32_t>(path_coordinates.size());
     		std::for_each(path_coordinates.begin(), path_coordinates.end(), [&buffer] (glm::vec3 coordinate){
     			buffer.write(coordinate.x);
     			buffer.write(coordinate.z);
