@@ -24,7 +24,7 @@ namespace messages {
 
     	void OnSerialize(anh::ByteBuffer& buffer) const
     	{
-    		buffer.write(characters.size());
+    		buffer.write<uint32_t>(characters.size());
     		std::for_each(
     		    characters.begin(),
     		    characters.end(),

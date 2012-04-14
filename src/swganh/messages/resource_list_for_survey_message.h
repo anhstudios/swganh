@@ -32,7 +32,7 @@ namespace messages {
     	
     	void OnSerialize(anh::ByteBuffer& buffer) const
     	{
-    		buffer.write(resources.size());
+    		buffer.write<uint32_t>(resources.size());
     		std::for_each(resources.begin(), resources.end(), [&buffer] (ResourceInfo resource) {
     			buffer.write(resource.name);
     			buffer.write(resource.object_id);

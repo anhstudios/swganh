@@ -32,11 +32,11 @@ namespace messages {
     		buffer.write(faction_points_rebel);
     		buffer.write(faction_points_imperial);
     		buffer.write(faction_points_hutt);
-    		buffer.write(faction_names.size());
+    		buffer.write<uint32_t>(faction_names.size());
     		std::for_each(faction_names.begin(), faction_names.end(), [&buffer] (std::string faction_name) {
     			buffer.write(faction_name);
     		});
-    		buffer.write(faction_points_list.size());
+    		buffer.write<uint32_t>(faction_points_list.size());
     		std::for_each(faction_points_list.begin(), faction_points_list.end(), [&buffer] (float faction_points) {
     			buffer.write(faction_points);
     		});

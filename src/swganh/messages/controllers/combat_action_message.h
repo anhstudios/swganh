@@ -57,6 +57,7 @@ namespace controllers {
     		buffer.write(attacker_end_posture);
     		buffer.write(trails_bit_flag);
     		buffer.write(combat_special_move_effect);
+                buffer.write<uint16_t>(defender_list.size());
     
             std::for_each(begin(defender_list), end(defender_list),[&buffer](CombatDefender defender){
                 buffer.write<uint32_t>(0);

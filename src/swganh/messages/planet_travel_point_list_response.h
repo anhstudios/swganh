@@ -29,21 +29,21 @@ namespace messages {
     	void OnSerialize(anh::ByteBuffer& buffer) const
     	{
     		buffer.write(planet_name);
-    		buffer.write(location_names.size());
+    		buffer.write<uint32_t>(location_names.size());
     		std::for_each(location_names.begin(), location_names.end(), [&buffer] (std::string name) {
     			buffer.write(name);
     		});
-    		buffer.write(location_coordinates.size());
+    		buffer.write<uint32_t>(location_coordinates.size());
     		std::for_each(location_coordinates.begin(), location_coordinates.end(), [&buffer] (glm::vec3 coordinate) {
     			buffer.write(coordinate.x);
     			buffer.write(coordinate.z);
     			buffer.write(coordinate.y);
     		});
-    		buffer.write(location_tax_rates.size());
+    		buffer.write<uint32_t>(location_tax_rates.size());
     		std::for_each(location_tax_rates.begin(), location_tax_rates.end(), [&buffer] (uint32_t tax_rate) {
     			buffer.write(tax_rate);
     		});
-    		buffer.write(location_starport_flags.size());
+    		buffer.write<uint32_t>(location_starport_flags.size());
     		std::for_each(location_starport_flags.begin(), location_starport_flags.end(), [&buffer] (uint8_t starport_flag) {
     			buffer.write(starport_flag);
     		});
