@@ -31,7 +31,7 @@ namespace messages {
     	void OnSerialize(anh::ByteBuffer& buffer) const
     	{
     		buffer.write(item_id);
-    		buffer.write(auction_details.size());
+    		buffer.write<uint32_t>(auction_details.size());
     		std::for_each(auction_details.begin(), auction_details.end(), [&buffer] (ItemDetail detail) {
     			buffer.write(detail.descriptor);
     			buffer.write(detail.description);
