@@ -1,27 +1,25 @@
 #ifndef SWGANH_SCRIPTING_PYTHON_EVENT_H_
 #define SWGANH_SCRIPTING_PYTHON_EVENT_H_
 
+#include <boost/python/object.hpp>
+
 #include "anh/event_dispatcher.h"
-#include <boost/python.hpp>
 
 namespace swganh {
 namespace scripting {
 
-struct PythonEvent : anh::BaseEvent, public std::enable_shared_from_this<PythonEvent>
+    struct PythonEvent : anh::BaseEvent
     {
-        PythonEvent() : BaseEvent("PythonEvent") {}
-        PythonEvent(anh::EventDispatcher* dispatcher_, boost::python::object callback_, float timer_)
-            : BaseEvent("PythonEvent")
-            , dispatcher(dispatcher_)
+        PythonEvent()
+            : anh::BaseEvent("PythonEvent")
+        {}
+
+        PythonEvent(boost::python::object callback_, float timer_)
+            : anh::BaseEvent("PythonEvent")
             , callback(callback_)
             , timer(timer_)
-        {
-        }
-        void Trigger()
-        {
-            dispatcher->Dispatch(shared_from_this());
-        }
-        anh::EventDispatcher* dispatcher;
+        {}
+
         boost::python::object callback;
         boost::python::object globals;
         float timer;

@@ -55,7 +55,12 @@ void exportSWGANHKernel()
 void exportEventDispatcher()
 {
     class_<anh::EventDispatcher, boost::noncopyable>("EventDispatcher", no_init)
-        .def("dispatch", &anh::EventDispatcher::Dispatch, "dispatches an event to be processed later")
+        .def("dispatch",
+            make_function(
+                bind(&anh::EventDispatcher::Dispatch, std::placeholders::_1, std::placeholders::_2),
+                default_call_policies(),
+                boost::mpl::vector<void, anh::EventDispatcher*, std::shared_ptr<anh::EventInterface>>()), 
+            "dispatches an event to be processed later")
         .def("subscribe", &anh::EventDispatcher::Subscribe, "subscribes to an event and attaches a callback") 
         ;
 }
