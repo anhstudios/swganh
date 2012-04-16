@@ -128,6 +128,7 @@ namespace command {
             CommandHandler
         > HandlerMap;        
         
+        std::unique_ptr<anh::SimpleDelayedTaskProcessor> delayed_task_;
         swganh::simulation::SimulationService* simulation_service_;
         std::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;

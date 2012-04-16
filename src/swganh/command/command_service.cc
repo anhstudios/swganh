@@ -38,6 +38,7 @@
 
 #include "python_command.h"
 #include "swganh/simulation/simulation_service.h"
+#include "swganh/scripting/python_event.h"
 
 #include "swganh/tre/tre_archive.h"
 #include "swganh/tre/readers/datatable_reader.h"
@@ -61,7 +62,8 @@ using swganh::tre::readers::DatatableReader;
 
 CommandService::CommandService(SwganhKernel* kernel)
 : BaseService(kernel)
-{}
+{
+}
 
 ServiceDescription CommandService::GetServiceDescription()
 {
@@ -196,6 +198,8 @@ void CommandService::onStart()
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueRemove, this);
 
+    delayed_task_.reset(new anh::SimpleDelayedTaskProcessor(kernel()->GetIoService()));
+
 	auto event_dispatcher = kernel()->GetEventDispatcher();
 	event_dispatcher->Dispatch(
         make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
@@ -218,6 +222,34 @@ void CommandService::onStart()
 
         std::lock_guard<std::mutex> lg(processor_map_mutex_);
         processor_map_.erase(object->GetObjectId());
+    });
+
+    event_dispatcher->Subscribe(
+        "PythonEvent",
+        [this] (shared_ptr<anh::EventInterface> incoming_event)
+    {
+        const auto& python_event = static_pointer_cast<PythonEvent>(incoming_event);
+        try {
+        // Do we have a timer?
+        if (python_event->timer > 0.0f)
+        {
+            LOG(info) << "triggering Python callback";
+            // If so trigger it on another thread as a delayed task processor
+            delayed_task_->PushTask(boost::posix_time::milliseconds(static_cast<uint64_t>(python_event->timer * 1000)), [=]() {
+                python_event->callback();
+            });
+        }
+        else
+        {
+            LOG(info) << "triggering Python callback";
+            python_event->callback();
+        }
+        // We can trigger it now
+        }
+        catch (...)
+        {
+           LOG(warning) << "exception in handling Python Event";
+        }
     });
 }
 
