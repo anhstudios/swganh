@@ -3,6 +3,8 @@
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
 
+#include "swganh/scripting/python_event.h"
+
 using namespace boost::python;
 using namespace std;
 using namespace swganh::command;
@@ -21,12 +23,17 @@ void PythonCommand::operator()(swganh::app::SwganhKernel* kernel, shared_ptr<Cre
     shared_ptr<Creature> creature = nullptr;
     if (target && target->GetType() == Creature::type)
         creature = static_pointer_cast<Creature>(target);
+
+    // Setup Python Event
+    auto python_event = make_shared<PythonEvent>();
+    python_event->globals = script_.GetGlobals();
     
     script_.SetContext("kernel", boost::python::ptr(kernel));
 	script_.SetContext("actor", actor);
     script_.SetContext("target", target);
     script_.SetContext("creature_target", creature);
     script_.SetContext("command_string", command_queue_message.command_options);
+    script_.SetContext("event", python_event);
 	
 	script_.Run();
 }

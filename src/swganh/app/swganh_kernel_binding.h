@@ -7,6 +7,9 @@
 
 #include "swganh_kernel.h"
 
+#include "anh/python_shared_ptr.h"
+
+#include "anh/event_dispatcher.h"
 #include "anh/app/kernel_interface.h"
 #include "anh/service/service_manager.h"
 #include "swganh/combat/combat_service.h"
@@ -27,6 +30,7 @@ void exportSWGANHKernel()
     class_<SwganhKernel, bases<KernelInterface>, boost::noncopyable>("SWGKernel", "Provides an interface to access the Service Manager and App Configuration")
         .def("app_config", &swganh::app::SwganhKernel::GetAppConfig, return_value_policy<copy_non_const_reference>(), "gets the app configuration")
         .def("service_manager", &swganh::app::SwganhKernel::GetServiceManager,return_internal_reference<>(), "Gets the application's :class:`.ServiceManager`")
+        .def("event_dispatcher", &swganh::app::SwganhKernel::GetEventDispatcher, return_internal_reference<>(), "gets the applications :class:`.EventDispatcher'")
         ;
 
     class_<anh::service::ServiceManager, boost::noncopyable>("ServiceManager", "provides an interface to common services", no_init)
@@ -47,5 +51,17 @@ void exportSWGANHKernel()
                 "returns an internal refrence of the :class:`.SocialService`")
        ;
        
+}
+void exportEventDispatcher()
+{
+    class_<anh::EventDispatcher, boost::noncopyable>("EventDispatcher", no_init)
+        .def("dispatch",
+            make_function(
+                bind(&anh::EventDispatcher::Dispatch, std::placeholders::_1, std::placeholders::_2),
+                default_call_policies(),
+                boost::mpl::vector<void, anh::EventDispatcher*, std::shared_ptr<anh::EventInterface>>()), 
+            "dispatches an event to be processed later")
+        .def("subscribe", &anh::EventDispatcher::Subscribe, "subscribes to an event and attaches a callback") 
+        ;
 }
 #endif // SWGANH_APP_SWGANH_KERNEL_BINDING_H_
