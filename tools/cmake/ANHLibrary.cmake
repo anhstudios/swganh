@@ -157,7 +157,6 @@ FUNCTION(AddANHLibrary name)
 
         TARGET_LINK_LIBRARIES(${name}_test
             ${ANHLIB_DEPENDS}
-            ${GTEST_BOTH_LIBRARIES}
             ${GMOCK_LIBRARIES})
         add_dependencies(${name}_test DEPS)
 
@@ -186,25 +185,13 @@ FUNCTION(AddANHLibrary name)
             # works without any issues.
     	    CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/tools/windows/user_project.vcxproj.in
     	        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tests.vcxproj.user @ONLY)
-
-            if(ENABLE_TEST_REPORT)
-                foreach(configuration ${CMAKE_CONFIGURATION_TYPES})
-                    add_test(
-                        NAME all_${name}_tests_${configuration}
-                        CONFIGURATIONS ${configuration}
-                        COMMAND ${name}_test "--catch_system_error=yes  --log_level=test_suite --output_format=XML > ${PROJECT_BINARY_DIR}/reports/$<CONFIGURATION>/"
-                        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${configuration}
-                    )
-                endforeach()
-            endif()
-        ELSE()
-            IF(ENABLE_TEST_REPORT)
-                add_test(
-                    NAME all_${name}_tests
-                    COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${name}_test "--catch_system_error=yes  --log_level=test_suite --output_format=XML > ${PROJECT_BINARY_DIR}/reports/$<CONFIGURATION>/"
-                )
-            ENDIF()
         ENDIF()
+
+        add_test(
+            NAME all_${name}_tests
+            CONFIGURATIONS ${configuration}
+            COMMAND ${name}_test --catch_system_error=yes --log_level=test_suite --output_format=XML --log_sink=${PROJECT_BINARY_DIR}/all_${name}_tests_$<CONFIGURATION>.xml
+            WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${configuration})
     ENDIF()
 ENDFUNCTION()
 
