@@ -157,8 +157,8 @@ FUNCTION(AddANHLibrary name)
 
         TARGET_LINK_LIBRARIES(${name}_test
             ${ANHLIB_DEPENDS}
-            ${GTEST_LIBRARIES}
-            ${GMOCK_LIBRARIES})
+            ${GMOCK_LIBRARIES}
+            ${GTEST_LIBRARIES})
         add_dependencies(${name}_test DEPS)
 
         IF(_debug_list_length GREATER 0)
