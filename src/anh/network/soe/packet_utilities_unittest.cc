@@ -20,7 +20,7 @@
 #include <list>
 #include <stdexcept>
 #include <tuple>
-#include <gtest/gtest.h>
+#include <boost/test/unit_test.hpp>
 #include "anh/network/soe/packet_utilities.h"
 #include "anh/byte_buffer.h"
 #include "anh/utilities.h"
@@ -31,10 +31,8 @@ using namespace std;
 
 namespace {
 
-class PacketUtilitiesTests : public testing::Test {
+class PacketUtilitiesTests{
 protected:
-    void SetUp() {}
-    void TearDown() {}
 
     // Returns a tuple containing a list of swg message buffers that are all under
     // 255 bytes long and the expected multi data channel message when packed.
@@ -49,19 +47,21 @@ protected:
 
 typedef PacketUtilitiesTests PacketUtilitiesDeathTests;
 
+BOOST_FIXTURE_TEST_SUITE(PacketUtilitties, PacketUtilitiesTests);
+
 /// This test verifies that a proper data channel header can be constructed from a sequence id.
-TEST_F(PacketUtilitiesTests, CanBuildDataChannelHeader) {
+BOOST_AUTO_TEST_CASE(CanBuildDataChannelHeader) {
     ByteBuffer reference_header;
     reference_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x09));
     reference_header.write<uint16_t>(anh::hostToBig<uint16_t>(0x01));
 
     ByteBuffer built_header = BuildDataChannelHeader(1);
 
-    EXPECT_EQ(reference_header, built_header);
+    BOOST_CHECK(reference_header == built_header);
 }
 
 /// This test ensures that when packing only a single swg message no modifications are made
-TEST_F(PacketUtilitiesTests, PackingSingleMessageDoesNotModifyIt) {
+BOOST_AUTO_TEST_CASE(PackingSingleMessageDoesNotModifyIt) {
     ByteBuffer small_buffer;
     small_buffer.write<uint32_t>(500);
     
@@ -70,12 +70,12 @@ TEST_F(PacketUtilitiesTests, PackingSingleMessageDoesNotModifyIt) {
     ByteBuffer out_buffer = PackDataChannelMessages(move(buffer_list));
 
     // Expect that the output buffer has the same value in it as the input.
-    EXPECT_EQ(500, out_buffer.read<int>());
+    BOOST_CHECK_EQUAL(500, out_buffer.read<int>());
 }
 
 /// This test ensures that when packing multiple swg messages together that they produce a
 /// single buffer with a 0x0019 header.
-TEST_F(PacketUtilitiesTests, PackingMultipleMessagesAddsMultiMessageHeader) {
+BOOST_AUTO_TEST_CASE(PackingMultipleMessagesAddsMultiMessageHeader) {
     ByteBuffer small_buffer;
     small_buffer.write<uint32_t>(500);
     
@@ -83,13 +83,13 @@ TEST_F(PacketUtilitiesTests, PackingMultipleMessagesAddsMultiMessageHeader) {
 
     ByteBuffer out_buffer = PackDataChannelMessages(move(buffer_list));
 
-    EXPECT_EQ(anh::bigToHost<uint16_t>(0x19), out_buffer.read<uint16_t>());
+    BOOST_CHECK_EQUAL(anh::bigToHost<uint16_t>(0x19), out_buffer.read<uint16_t>());
 }
 
 
 /// This test ensures that when packing multiple swg messages that any of the messages with
 /// a length smaller than 255 has an uint8_t size prefixed to them.
-TEST_F(PacketUtilitiesTests, SmallSwgMessagesHave8ByteSizePrefix) {
+BOOST_AUTO_TEST_CASE(SmallSwgMessagesHave8ByteSizePrefix) {
     list<ByteBuffer> buffer_list;
     ByteBuffer expected_buffer;
 
@@ -97,17 +97,17 @@ TEST_F(PacketUtilitiesTests, SmallSwgMessagesHave8ByteSizePrefix) {
 
     ByteBuffer out_buffer = PackDataChannelMessages(move(buffer_list));
     
-    EXPECT_EQ(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>());
+    BOOST_CHECK_EQUAL(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>());
 
     for (int i = 0; i < 3; ++i) {
-        EXPECT_EQ(expected_buffer.read<uint8_t>(), out_buffer.read<uint8_t>()); // size
-        EXPECT_EQ(expected_buffer.read<uint32_t>(), out_buffer.read<uint32_t>()); // data
+        BOOST_CHECK_EQUAL(expected_buffer.read<uint8_t>(), out_buffer.read<uint8_t>()); // size
+        BOOST_CHECK_EQUAL(expected_buffer.read<uint32_t>(), out_buffer.read<uint32_t>()); // data
     }
 }
 
 /// This test ensures that when packing multiple swg messages that any of the messages exceeding
 /// a 255 length have a uint16_t size prefixed to them.
-TEST_F(PacketUtilitiesTests, LargeSwgMessagesHaveBytePlus16ByteSizePrefix) {
+BOOST_AUTO_TEST_CASE(LargeSwgMessagesHaveBytePlus16ByteSizePrefix) {
     list<ByteBuffer> buffer_list;
     ByteBuffer expected_buffer;
 
@@ -115,16 +115,16 @@ TEST_F(PacketUtilitiesTests, LargeSwgMessagesHaveBytePlus16ByteSizePrefix) {
 
     ByteBuffer out_buffer = PackDataChannelMessages(move(buffer_list));
     
-    EXPECT_EQ(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>());
+    BOOST_CHECK_EQUAL(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>());
 
     for (int i = 0; i < 3; ++i) {
-        EXPECT_EQ(expected_buffer.read<uint8_t>(), out_buffer.read<uint8_t>()); // size
-        EXPECT_EQ(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>()); // size
-        EXPECT_EQ(expected_buffer.read<string>(), out_buffer.read<string>()); // data
+        BOOST_CHECK_EQUAL(expected_buffer.read<uint8_t>(), out_buffer.read<uint8_t>()); // size
+        BOOST_CHECK_EQUAL(expected_buffer.read<uint16_t>(), out_buffer.read<uint16_t>()); // size
+        BOOST_CHECK_EQUAL(expected_buffer.read<string>(), out_buffer.read<string>()); // data
     }
 }
 
-TEST_F(PacketUtilitiesTests, CanSplitDataChannelMessages) {
+BOOST_AUTO_TEST_CASE(CanSplitDataChannelMessages) {
     ByteBuffer large_message;
     large_message.write(PacketUtilitiesTests::long_string);
 
@@ -132,21 +132,21 @@ TEST_F(PacketUtilitiesTests, CanSplitDataChannelMessages) {
     list<ByteBuffer> split_message = SplitDataChannelMessage(large_message, 200);
 
     // The original message size is 302 so this should result in 2 fragments.
-    EXPECT_EQ(2, split_message.size());
+    BOOST_CHECK_EQUAL(2, split_message.size());
 }
 
 
-TEST_F(PacketUtilitiesTests, AttemptingToSplitSmallMessageThrows) {
+BOOST_AUTO_TEST_CASE(AttemptingToSplitSmallMessageThrows) {
     ByteBuffer small_message;
     small_message.write<uint32_t>(500);
 
     // Split the message along a 200 byte divide
-    ASSERT_THROW(
+    BOOST_CHECK_THROW(
         { list<ByteBuffer> split_message = SplitDataChannelMessage(small_message, 200); },
         invalid_argument);
 }
 
-TEST_F(PacketUtilitiesTests, SplittingDataChannelMessagePrefixesTotalSizeToFirstMessage) {    
+BOOST_AUTO_TEST_CASE(SplittingDataChannelMessagePrefixesTotalSizeToFirstMessage) {    
     ByteBuffer large_message;
     large_message.write(PacketUtilitiesTests::long_string);
 
@@ -154,9 +154,10 @@ TEST_F(PacketUtilitiesTests, SplittingDataChannelMessagePrefixesTotalSizeToFirst
     list<ByteBuffer> split_message = SplitDataChannelMessage(large_message, 200);
 
     // The original message size is 302 so this should result in 2 fragments.
-    EXPECT_EQ(302, split_message.front().read<uint32_t>(true));
+    BOOST_CHECK_EQUAL(302, split_message.front().read<uint32_t>(true));
 }
 
+BOOST_AUTO_TEST_SUITE_END()
 // Implementation of the PacketUtilitiesTests's helper members
 
 const string PacketUtilitiesTests::long_string = // This string is 300 bytes long
