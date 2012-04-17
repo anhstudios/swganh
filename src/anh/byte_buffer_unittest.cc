@@ -5,98 +5,99 @@
  * @author      Eric Barr <apathy@swganh.org>
 **/
 
-#include <gtest/gtest.h>
-
+#include <boost/test/unit_test.hpp>
 #include "anh/byte_buffer.h"
 
 using namespace anh;
 
 namespace {
 
-TEST(ByteBufferTests, ByteBufferIsEmptyWhenCreated)
+BOOST_AUTO_TEST_SUITE(ANHByteBuffer)
+
+BOOST_AUTO_TEST_CASE(ByteBufferIsEmptyWhenCreated)
 {
     ByteBuffer buffer;
-    EXPECT_EQ(uint32_t(0), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.size());
 }
 
-TEST(ByteBufferTests, ByteBufferDefaultCapacityIsZero)
+BOOST_AUTO_TEST_CASE(ByteBufferDefaultCapacityIsZero)
 {
     ByteBuffer buffer;
-    EXPECT_EQ(uint32_t(0), buffer.capacity());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.capacity());
 }
 
-TEST(ByteBufferTests, WritingIntReportsCorrectSizeAndCapacity)
+BOOST_AUTO_TEST_CASE(WritingIntReportsCorrectSizeAndCapacity)
 {
     ByteBuffer buffer;
     buffer.write<int>(10);
 
-    EXPECT_EQ(uint32_t(4), buffer.size());
-    EXPECT_EQ(uint32_t(4), buffer.capacity());
+    BOOST_CHECK_EQUAL(uint32_t(4), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(4), buffer.capacity());
 }
 
-TEST(ByteBufferTests, WritingTwoIntsReportsCorrectSizeAndCapacity)
+BOOST_AUTO_TEST_CASE(WritingTwoIntsReportsCorrectSizeAndCapacity)
 {
     ByteBuffer buffer;
 
     buffer.write<int>(10);
-    EXPECT_EQ(uint32_t(4), buffer.size());
-    EXPECT_EQ(uint32_t(4), buffer.capacity());
+    BOOST_CHECK_EQUAL(uint32_t(4), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(4), buffer.capacity());
 
     buffer.write<int>(20);
-    EXPECT_EQ(uint32_t(8), buffer.size());
-    EXPECT_EQ(uint32_t(8), buffer.capacity());
+    BOOST_CHECK_EQUAL(uint32_t(8), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(8), buffer.capacity());
 }
 
-TEST(ByteBufferTests, CanReadIntWrittenToTheBuffer)
+BOOST_AUTO_TEST_CASE(CanReadIntWrittenToTheBuffer)
 {
     ByteBuffer buffer;
 
     buffer.write<int>(10);
-    EXPECT_EQ(10, buffer.read<int>());
+    BOOST_CHECK_EQUAL(10, buffer.read<int>());
 }
 
-TEST(ByteBufferTests, CanReadTwoIntsWrittenToTheBuffer)
+BOOST_AUTO_TEST_CASE(CanReadTwoIntsWrittenToTheBuffer)
 {
     ByteBuffer buffer;
 
     buffer.write<int>(10);
     buffer.write<int>(20);
 
-    EXPECT_EQ(10, buffer.read<int>());
-    EXPECT_EQ(20, buffer.read<int>());
+    BOOST_CHECK_EQUAL(10, buffer.read<int>());
+    BOOST_CHECK_EQUAL(20, buffer.read<int>());
 }
 
-TEST(ByteBufferTests, ReadingPastBufferEndThrowsException)
+BOOST_AUTO_TEST_CASE(ReadingPastBufferEndThrowsException)
 {
     ByteBuffer buffer;
-    EXPECT_EQ(uint32_t(0), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.size());
 
-    EXPECT_THROW(buffer.read<int>(), std::out_of_range);
+    BOOST_CHECK_THROW(buffer.read<int>(), std::out_of_range);
 }
 
-TEST(ByteBufferTests, WritingStringReportsCorrectSizeAndCapacity)
+BOOST_AUTO_TEST_CASE(WritingStringReportsCorrectSizeAndCapacity)
 {
     ByteBuffer buffer;
-    EXPECT_EQ(uint32_t(0), buffer.size());
-    EXPECT_EQ(uint32_t(0), buffer.capacity());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.capacity());
 
     buffer.write<std::string>(std::string("test string"));
 
-    EXPECT_EQ(uint32_t(13), buffer.size());
-    EXPECT_EQ(uint32_t(13), buffer.capacity());
+    BOOST_CHECK_EQUAL(uint32_t(13), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(13), buffer.capacity());
 }
 
-TEST(ByteBufferTests, CanReadStringWrittenToTheBuffer)
+BOOST_AUTO_TEST_CASE(CanReadStringWrittenToTheBuffer)
 {
     ByteBuffer buffer;
     std::string test_string("test string data");
 
     buffer.write<std::string>(test_string);
 
-    EXPECT_EQ(test_string, buffer.read<std::string>());
+    BOOST_CHECK_EQUAL(test_string, buffer.read<std::string>());
 }
 
-TEST(ByteBufferTests, CanReadTwoStringsWrittenToTheBuffer)
+BOOST_AUTO_TEST_CASE(CanReadTwoStringsWrittenToTheBuffer)
 {
     ByteBuffer buffer;
     std::string test_string1("first test string");
@@ -105,105 +106,105 @@ TEST(ByteBufferTests, CanReadTwoStringsWrittenToTheBuffer)
     buffer.write<std::string>(test_string1);
     buffer.write<std::string>(test_string2);
 
-    EXPECT_EQ(test_string1, buffer.read<std::string>());
-    EXPECT_EQ(test_string2, buffer.read<std::string>());
+    BOOST_CHECK_EQUAL(test_string1, buffer.read<std::string>());
+    BOOST_CHECK_EQUAL(test_string2, buffer.read<std::string>());
 }
 
-TEST(ByteBufferTests, WritingUnicodeStringReportsCorrectSizeAndCapacity)
+BOOST_AUTO_TEST_CASE(WritingUnicodeStringReportsCorrectSizeAndCapacity)
 {
     ByteBuffer buffer;
-    EXPECT_EQ(uint32_t(0), buffer.size());
-    EXPECT_EQ(uint32_t(0), buffer.capacity());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.capacity());
 
     buffer.write<std::wstring>(std::wstring(L"test string"));
 
     // Length and Capacity should be size of int + size of string * size of wchar_t.
-    EXPECT_EQ(sizeof(uint32_t) + (11 * 2), buffer.size());
-    EXPECT_EQ(sizeof(uint32_t) + (11 * 2), buffer.capacity());
+    BOOST_CHECK_EQUAL(sizeof(uint32_t) + (11 * 2), buffer.size());
+    BOOST_CHECK_EQUAL(sizeof(uint32_t) + (11 * 2), buffer.capacity());
 }
 
-TEST(ByteBufferTests, CanReadUnicodeStringWrittenToTheBuffer)
+BOOST_AUTO_TEST_CASE(CanReadUnicodeStringWrittenToTheBuffer)
 {
     ByteBuffer buffer;
     std::wstring test_string(L"test string data");
 
     buffer.write<std::wstring>(test_string);
-    EXPECT_STREQ(test_string.c_str(), buffer.read<std::wstring>().c_str());
+    BOOST_CHECK_EQUAL(test_string.c_str(), buffer.read<std::wstring>().c_str());
 }
 
-TEST(ByteBufferTests, UnicodeStringStoredAs16Bit)
+BOOST_AUTO_TEST_CASE(UnicodeStringStoredAs16Bit)
 {
     ByteBuffer buffer;
     std::wstring test_string(L"testdata");
 
-    EXPECT_EQ(uint32_t(8), test_string.length());
+    BOOST_CHECK_EQUAL(uint32_t(8), test_string.length());
     
     buffer.write<std::wstring>(test_string);
 
-    EXPECT_EQ(uint32_t(8), buffer.read<uint32_t>());
+    BOOST_CHECK_EQUAL(uint32_t(8), buffer.read<uint32_t>());
 
-    EXPECT_EQ('t', buffer.read<uint8_t>());
-    EXPECT_EQ(0, buffer.read<uint8_t>());
-    EXPECT_EQ('e', buffer.read<uint8_t>());
-    EXPECT_EQ(0, buffer.read<uint8_t>());
-    EXPECT_EQ('s', buffer.read<uint8_t>());
-    EXPECT_EQ(0, buffer.read<uint8_t>());
-    EXPECT_EQ('t', buffer.read<uint8_t>());
-    EXPECT_EQ(0, buffer.read<uint8_t>());
-    EXPECT_EQ('d', buffer.read<uint8_t>());
-    EXPECT_EQ(0, buffer.read<uint8_t>());
-    EXPECT_EQ('a', buffer.read<uint8_t>());
-    EXPECT_EQ(0, buffer.read<uint8_t>());
-    EXPECT_EQ('t', buffer.read<uint8_t>());
-    EXPECT_EQ(0, buffer.read<uint8_t>());
-    EXPECT_EQ('a', buffer.read<uint8_t>());
-    EXPECT_EQ(0, buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL('t', buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL(0, buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL('e', buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL(0, buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL('s', buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL(0, buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL('t', buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL(0, buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL('d', buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL(0, buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL('a', buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL(0, buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL('t', buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL(0, buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL('a', buffer.read<uint8_t>());
+    BOOST_CHECK_EQUAL(0, buffer.read<uint8_t>());
 }
 
-TEST(ByteBufferTests, CanClearBufferData)
+BOOST_AUTO_TEST_CASE(CanClearBufferData)
 {
     ByteBuffer buffer;
-    EXPECT_EQ(uint32_t(0), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.size());
 
     buffer.write<int>(3);
-    EXPECT_EQ(uint32_t(4), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(4), buffer.size());
 
     buffer.clear();
-    EXPECT_EQ(uint32_t(0), buffer.size());
-    EXPECT_EQ(uint32_t(0), buffer.read_position());
-    EXPECT_EQ(uint32_t(0), buffer.write_position());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.size());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.read_position());
+    BOOST_CHECK_EQUAL(uint32_t(0), buffer.write_position());
 }
 
-TEST(ByteBufferTests, CanStreamData)
+BOOST_AUTO_TEST_CASE(CanStreamData)
 {
     ByteBuffer buffer;
     int testInt = 3;
 
     buffer << testInt;
-    EXPECT_EQ(3, buffer.read<int>());
+    BOOST_CHECK_EQUAL(3, buffer.read<int>());
 }
 
-TEST(ByteBufferTests, PeekingDataDoesNotMoveReadPosition)
+BOOST_AUTO_TEST_CASE(PeekingDataDoesNotMoveReadPosition)
 {
     ByteBuffer buffer;
     buffer.write<int>(3);
     buffer.write<int>(10);
 
     // Peek the data twice, this should return the same integer value (3) both times.
-    EXPECT_EQ(3, buffer.peek<int>());
-    EXPECT_EQ(3, buffer.peek<int>());
+    BOOST_CHECK_EQUAL(3, buffer.peek<int>());
+    BOOST_CHECK_EQUAL(3, buffer.peek<int>());
 }
 
-TEST(ByteBufferTests, CanReadAndWriteUnsignedData)
+BOOST_AUTO_TEST_CASE(CanReadAndWriteUnsignedData)
 {
     ByteBuffer buffer;
     buffer.write<uint16_t>(3);
 
-    EXPECT_EQ(uint32_t(2), buffer.size()); // First check that the right datasize was written.
-    EXPECT_EQ(3, buffer.read<uint16_t>()); // Check that the value is correct.
+    BOOST_CHECK_EQUAL(uint32_t(2), buffer.size()); // First check that the right datasize was written.
+    BOOST_CHECK_EQUAL(3, buffer.read<uint16_t>()); // Check that the value is correct.
 }
 
-TEST(ByteBufferTests, CanPeekAtOffset)
+BOOST_AUTO_TEST_CASE(CanPeekAtOffset)
 {
     ByteBuffer buffer;
     buffer.write<int>(3);
@@ -211,11 +212,11 @@ TEST(ByteBufferTests, CanPeekAtOffset)
     buffer.write<int>(979);
     buffer.write<int>(5467);
 
-    EXPECT_EQ(979, buffer.peekAt<int>(8));
-    EXPECT_EQ(32, buffer.peekAt<int>(4));
+    BOOST_CHECK_EQUAL(979, buffer.peekAt<int>(8));
+    BOOST_CHECK_EQUAL(32, buffer.peekAt<int>(4));
 }
 
-TEST(ByteBufferTests, CanWriteAtOffset)
+BOOST_AUTO_TEST_CASE(CanWriteAtOffset)
 {
     ByteBuffer buffer;
     buffer.write<int>(3);
@@ -226,11 +227,11 @@ TEST(ByteBufferTests, CanWriteAtOffset)
     buffer.writeAt<int>(8, 52);
     buffer.writeAt<int>(4, 3532);
 
-    EXPECT_EQ(52, buffer.peekAt<int>(8));
-    EXPECT_EQ(3532, buffer.peekAt<int>(4));
+    BOOST_CHECK_EQUAL(52, buffer.peekAt<int>(8));
+    BOOST_CHECK_EQUAL(3532, buffer.peekAt<int>(4));
 }
 
-TEST(ByteBufferTests, CanAppendBuffers)
+BOOST_AUTO_TEST_CASE(CanAppendBuffers)
 {
     ByteBuffer buffer1;
     buffer1.write<int>(0);
@@ -244,11 +245,11 @@ TEST(ByteBufferTests, CanAppendBuffers)
 
     buffer1.append(buffer2);
 
-    EXPECT_EQ(6 * sizeof(int), buffer1.size());
-    EXPECT_EQ(5, buffer1.peekAt<int>(5 * sizeof(int)));
+    BOOST_CHECK_EQUAL(6 * sizeof(int), buffer1.size());
+    BOOST_CHECK_EQUAL(5, buffer1.peekAt<int>(5 * sizeof(int)));
 }
 
-TEST(ByteBufferTests, CanSwapEndian)
+BOOST_AUTO_TEST_CASE(CanSwapEndian)
 {
     ByteBuffer buffer;
     
@@ -257,7 +258,7 @@ TEST(ByteBufferTests, CanSwapEndian)
     buffer.write<char>(0);
     buffer.write<char>(2);
     
-    EXPECT_EQ(uint32_t(2), buffer.peek<uint32_t>(true));
+    BOOST_CHECK_EQUAL(uint32_t(2), buffer.peek<uint32_t>(true));
 
     // Start a new check with a 64bit value
     buffer.clear();
@@ -270,10 +271,10 @@ TEST(ByteBufferTests, CanSwapEndian)
     buffer.write<char>(0);
     buffer.write<char>(2);
 
-    EXPECT_EQ(uint64_t(2), buffer.peek<uint64_t>(true));
+    BOOST_CHECK_EQUAL(uint64_t(2), buffer.peek<uint64_t>(true));
 }
 
-TEST(ByteBufferTests, CanCompareByteBuffers) {    
+BOOST_AUTO_TEST_CASE(CanCompareByteBuffers) {    
     ByteBuffer buffer1;
     buffer1.write<int>(0);
     buffer1.write<int>(1);
@@ -284,16 +285,17 @@ TEST(ByteBufferTests, CanCompareByteBuffers) {
     buffer2.write<int>(4);
     buffer2.write<int>(5);
 
-    EXPECT_EQ(buffer1, buffer1);
-    EXPECT_NE(buffer1, buffer2);
+    BOOST_CHECK(buffer1 == buffer1);
+    BOOST_CHECK(buffer1 != buffer2);
 }
-TEST(ByteBufferTests, CanWriteVectors)
+BOOST_AUTO_TEST_CASE(CanWriteVectors)
 {
     ByteBuffer buffer;
     std::vector<uint32_t> int_vects;
     int_vects.push_back(12345);
     int_vects.push_back(67890);
     buffer.write(int_vects);
-    EXPECT_EQ(2 * sizeof(int), buffer.size());
+    BOOST_CHECK_EQUAL(2 * sizeof(int), buffer.size());
 }
 }
+BOOST_AUTO_TEST_SUITE_END()
