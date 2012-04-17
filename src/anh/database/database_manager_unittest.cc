@@ -17,7 +17,7 @@
  along with MMOServer.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <gtest/gtest.h>
+#include <boost/test/unit_test.hpp>
 #include <gmock/gmock.h>
 
 #include "anh/database/mock_cppconn.h"
@@ -29,10 +29,9 @@ using namespace testing;
 
 
 /// Test fixture for testing the DatabaseManager, provides setup/teardown
-class DatabaseManagerTest : public testing::Test {
+class DatabaseManagerTest {
 protected:
-    virtual void SetUp();
- 
+    void SetUp();
     // Generates expectations for a driver that will return N connections.
     void generateExpectations(NiceMock<MockDriver>& mock_driver, int connections);
     void generateDefaultConnectionExpectations(NiceMock<MockDriver>& mock_driver, MockConnection* mock_connection);
@@ -42,9 +41,11 @@ protected:
     sql::SQLString password_;
 };
 
+BOOST_FIXTURE_TEST_SUITE(DBManager, DatabaseManagerTest)
+
 /// This test shows that a newly created DatabaseManager has no storage types
 /// registered by default.
-TEST_F(DatabaseManagerTest, NoStorageTypesRegisteredByDefault) {
+BOOST_AUTO_TEST_CASE(NoStorageTypesRegisteredByDefault) {
     MockDriver mock_driver;
     DatabaseManager manager(&mock_driver);
     
@@ -53,7 +54,7 @@ TEST_F(DatabaseManagerTest, NoStorageTypesRegisteredByDefault) {
 
 /// This test shows that a newly created DatabaseManager has no connections
 /// registered by default.
-TEST_F(DatabaseManagerTest, NoConnectionsByDefault) {
+BOOST_AUTO_TEST_CASE(NoConnectionsByDefault) {
     MockDriver mock_driver;
     DatabaseManager manager(&mock_driver);
     
@@ -61,7 +62,7 @@ TEST_F(DatabaseManagerTest, NoConnectionsByDefault) {
 }
 
 /// This test shows how to register connection data for a storage type.
-TEST_F(DatabaseManagerTest, CanRegisterConnectionDataForStorageType) {
+BOOST_AUTO_TEST_CASE(CanRegisterConnectionDataForStorageType) {
     // Create a mock driver and set it up to expect a simple successful connection creation.
     NiceMock<MockDriver> mock_driver;
     generateExpectations(mock_driver, 1);
@@ -80,7 +81,7 @@ TEST_F(DatabaseManagerTest, CanRegisterConnectionDataForStorageType) {
 }
 
 /// This test shows how to register connection data for a storage type.
-TEST_F(DatabaseManagerTest, RegisterConnectionDataCreatesConnectionPool) {
+BOOST_AUTO_TEST_CASE(RegisterConnectionDataCreatesConnectionPool) {
     // Create a mock driver and set it up to expect a simple successful connection creation.
     NiceMock<MockDriver> mock_driver;
     generateExpectations(mock_driver, 1);
@@ -100,7 +101,7 @@ TEST_F(DatabaseManagerTest, RegisterConnectionDataCreatesConnectionPool) {
 
 /// Requesting a connection will pull one from the connection pool before
 /// resorting to creating a new one
-TEST_F(DatabaseManagerTest, CanRequestConnectionAfterRegistering) {
+BOOST_AUTO_TEST_CASE(CanRequestConnectionAfterRegistering) {
     // Create a mock driver and set it up to expect a simple successful connection creation.
     NiceMock<MockDriver> mock_driver;
     generateExpectations(mock_driver, 1);
@@ -125,7 +126,7 @@ TEST_F(DatabaseManagerTest, CanRequestConnectionAfterRegistering) {
 }
 
 /// Can request multiple connections
-TEST_F(DatabaseManagerTest, CanRequestMultipleConnections) {    
+BOOST_AUTO_TEST_CASE(CanRequestMultipleConnections) {    
     // Create a mock driver and set it up to expect a simple successful connection creation.
     NiceMock<MockDriver> mock_driver;
     generateExpectations(mock_driver, 2);
@@ -147,7 +148,7 @@ TEST_F(DatabaseManagerTest, CanRequestMultipleConnections) {
 }
 
 /// Connections return to the pool when they go out of scope
-TEST_F(DatabaseManagerTest, DeletingConnectionReturnsItToThePool) {
+BOOST_AUTO_TEST_CASE(DeletingConnectionReturnsItToThePool) {
     // Create a mock driver and set it up to expect a simple successful connection creation.
     NiceMock<MockDriver> mock_driver;
     generateExpectations(mock_driver, 1);
@@ -177,7 +178,7 @@ TEST_F(DatabaseManagerTest, DeletingConnectionReturnsItToThePool) {
     EXPECT_TRUE(manager.hasConnection("my_storage_type"));
 }
 
-
+BOOST_AUTO_TEST_SUITE_END()
 /*****************************************************************************/
 // Implementation for the test fixture //
 

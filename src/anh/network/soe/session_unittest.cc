@@ -20,7 +20,7 @@
 #include <memory>
 #include <vector>
 #include <boost/asio.hpp>
-#include <gtest/gtest.h>
+#include <boost/test/unit_test.hpp>
 
 #include "anh/byte_buffer.h"
 #include "anh/network/soe/session.h"
@@ -40,7 +40,7 @@ namespace anh {
 namespace network {
 namespace soe {
 
-class SessionTests : public ::testing::Test {
+class SessionTests {
 protected:
     // builds a simple swg message
     ByteBuffer buildSimpleMessage() const;
@@ -57,17 +57,19 @@ protected:
     shared_ptr<NiceMock<MockServer>> buildMockServer() const;
 };
 
+BOOST_FIXTURE_TEST_SUITE(SessionTest, SessionTests)
+
 /// This test verifies that new sessions have a send sequence of 0
-TEST_F(SessionTests, NewSessionHasZeroSendSequence) {
+BOOST_AUTO_TEST_CASE(NewSessionHasZeroSendSequence) {
     auto service = buildMockServer();
     boost::asio::io_service io_service;
     shared_ptr<Session> session = make_shared<Session>(service.get(), io_service, buildTestEndpoint());
 
-    EXPECT_EQ(0, session->server_sequence());
+    BOOST_CHECK_EQUAL(0, session->server_sequence());
 }
 
 /// This test verifies that data packets sent out on the data channel are sequenced.
-TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
+BOOST_AUTO_TEST_CASE(SendingDataChannelMessageIncreasesServerSequence) {
     auto service = buildMockServer();
     boost::asio::io_service io_service;
     shared_ptr<Session> session = make_shared<Session>(service.get(), io_service, buildTestEndpoint());
@@ -76,12 +78,12 @@ TEST_F(SessionTests, SendingDataChannelMessageIncreasesServerSequence) {
     for (int i = 1; i <= 3; ++i ) {
         session->SendTo(buildSimpleMessage());
 		session->Update();
-        EXPECT_EQ(i, session->server_sequence());
+        BOOST_CHECK_EQUAL(i, session->server_sequence());
     }
 }
 
 /// This test verifies that data channel messages are stored in case they need to be re-sent.
-TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
+BOOST_AUTO_TEST_CASE(DataChannelMessagesAreStoredForResending) {
     auto service = buildMockServer();
     boost::asio::io_service io_service;
     shared_ptr<Session> session = make_shared<Session>(service.get(), io_service, buildTestEndpoint());
@@ -95,8 +97,9 @@ TEST_F(SessionTests, DataChannelMessagesAreStoredForResending) {
     auto sent_messages = session->GetUnacknowledgedMessages();
 
     // Expect the vector of sent messages to contain 3 elements
-    EXPECT_EQ(3, sent_messages.size());
+    BOOST_CHECK_EQUAL(3, sent_messages.size());
 }
+BOOST_AUTO_TEST_SUITE_END()
 
 // SessionTest member implementations
 
