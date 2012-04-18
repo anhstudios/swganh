@@ -31,11 +31,6 @@ using namespace anh::network;
 using namespace boost::asio::ip;
 using namespace std;
 
-using testing::_;
-using testing::NiceMock;
-using testing::Pointee;
-using testing::Return;
-
 namespace anh {
 namespace network {
 namespace soe {
@@ -54,7 +49,7 @@ protected:
 
     udp::endpoint buildTestEndpoint() const;
 
-    shared_ptr<NiceMock<MockServer>> buildMockServer() const;
+    shared_ptr<MockServer> buildMockServer() const;
 };
 
 BOOST_FIXTURE_TEST_SUITE(SessionTest, SessionTests)
@@ -152,12 +147,13 @@ udp::endpoint SessionTests::buildTestEndpoint() const {
 }
 
 
-shared_ptr<NiceMock<MockServer>> SessionTests::buildMockServer() const {
-    auto server = make_shared<NiceMock<MockServer>>();
+shared_ptr<MockServer> SessionTests::buildMockServer() const {
+    auto server = make_shared<MockServer>();
 
-    ON_CALL(*server, max_receive_size())
-        .WillByDefault(Return(496));
-
+    MOCK_EXPECT(*server, max_receive_size)
+        .at_least(1)
+        .returns(496);
+        
     return server;
 }
 

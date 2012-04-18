@@ -21,7 +21,7 @@
 #ifndef ANH_NETWORK_SOE_MOCK_SERVER_H_
 #define ANH_NETWORK_SOE_MOCK_SERVER_H_
 
-#include <gmock/gmock.h>
+#include <turtle/mock.hpp>
 
 #include "anh/network/soe/server.h"
 
@@ -34,19 +34,19 @@ namespace soe {
     
 class Session;
   
-class MockServer : public ServerInterface {
-public:
-    MOCK_METHOD1(Start, void(uint16_t port));
-    MOCK_METHOD0(Shutdown, void());
-    MOCK_METHOD2(SendTo, void(const boost::asio::ip::udp::endpoint& endpoint, anh::ByteBuffer buffer));
-    MOCK_METHOD2(HandleMessage, void(const std::shared_ptr<Session>& connection, anh::ByteBuffer message));    
+MOCK_BASE_CLASS(MockServer, ServerInterface )
+{
+    MOCK_METHOD(Start, 1);
+    MOCK_METHOD(Shutdown, 0);
+    MOCK_METHOD(SendTo, 2);
+    MOCK_METHOD(HandleMessage, 2);    
 
-    MOCK_METHOD1(RemoveSession, bool(std::shared_ptr<Session> session));
-    MOCK_METHOD1(CreateSession, std::shared_ptr<Session>(const boost::asio::ip::udp::endpoint& endpoint));
-    MOCK_METHOD1(GetSession, std::shared_ptr<Session>(const boost::asio::ip::udp::endpoint& endpoint));
+    MOCK_METHOD(RemoveSession, 1);
+    MOCK_METHOD(CreateSession, 1);
+    MOCK_METHOD(GetSession, 1);
 
-    MOCK_METHOD0(socket, boost::asio::ip::udp::socket*());
-    MOCK_METHOD0(max_receive_size, uint32_t());
+    MOCK_METHOD(socket, 0);
+    MOCK_METHOD(max_receive_size, 0);
 };
     
 }}}  // namespace anh::network::soe
