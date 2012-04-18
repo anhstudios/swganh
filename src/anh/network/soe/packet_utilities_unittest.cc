@@ -47,7 +47,7 @@ protected:
 
 typedef PacketUtilitiesTests PacketUtilitiesDeathTests;
 
-BOOST_FIXTURE_TEST_SUITE(PacketUtilitties, PacketUtilitiesTests);
+BOOST_FIXTURE_TEST_SUITE(PacketUtilitties, PacketUtilitiesTests)
 
 /// This test verifies that a proper data channel header can be constructed from a sequence id.
 BOOST_AUTO_TEST_CASE(CanBuildDataChannelHeader) {

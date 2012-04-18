@@ -20,7 +20,7 @@
 #ifndef ANH_DATABASE_MOCK_CPPCONN_H_
 #define ANH_DATABASE_MOCK_CPPCONN_H_
 
-#include <boost/turtle/mock.hpp>
+#include <turtle/mock.hpp>
 #include <cppconn/driver.h>
 #include <cppconn/connection.h>
 #include <cppconn/metadata.h>
@@ -36,8 +36,8 @@ namespace database {
 
 MOCK_BASE_CLASS( MockDriver, sql::Driver )
 {
-    MOCK_METHOD_EXT(connect, 3, sql::Connection*(const sql::SQLString&, const sql::SQLString&, const sql::SQLString&), tag1)
-    MOCK_METHOD_EXT(connect, 1, sql::Connection*(sql::ConnectOptionsMap& options), tag2)
+    MOCK_METHOD_EXT(connect, 3, sql::Connection*(const sql::SQLString&, const sql::SQLString&, const sql::SQLString&), connect3)
+    MOCK_METHOD_EXT(connect, 1, sql::Connection*(sql::ConnectOptionsMap& options), connect1)
     MOCK_METHOD(getMajorVersion, 0)
     MOCK_METHOD(getMinorVersion, 0)
     MOCK_METHOD(getPatchVersion, 0)

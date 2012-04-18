@@ -137,8 +137,9 @@ FUNCTION(AddANHLibrary name)
     ENDIF()
 
     IF(_tests_list_length GREATER 0)
-        # Create an executable for the test and link it to gtest and anh
-        INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIR})
+        # Create an executable for the test and link it to turtle and anh
+        message(turtle,${TURTLE_INCLUDE_DIR})
+        INCLUDE_DIRECTORIES(${TURTLE_INCLUDE_DIR})
 
         ADD_EXECUTABLE(${name}_test ${TEST_SOURCES})
 
@@ -156,9 +157,7 @@ FUNCTION(AddANHLibrary name)
         ENDIF()
 
         TARGET_LINK_LIBRARIES(${name}_test
-            ${ANHLIB_DEPENDS}
-            ${GTEST_BOTH_LIBRARIES}
-            ${GMOCK_LIBRARIES})
+            ${ANHLIB_DEPENDS})
         add_dependencies(${name}_test DEPS)
 
         IF(_debug_list_length GREATER 0)
