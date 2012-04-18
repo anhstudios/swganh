@@ -1,4 +1,4 @@
-find_path(TURTLE_INCLUDE_DIR mock.hpp
+find_path(TURTLE_INCLUDE_DIR turtle/mock.hpp
     HINTS
         $ENV{TURTLE_ROOT}
     PATH_SUFFIXES include
