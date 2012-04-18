@@ -43,7 +43,7 @@ Tangible::Tangible(const std::string& customization, std::vector<uint32_t> compo
 void Tangible::AddCustomization(const string& customization)
 {
     {
-        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        boost::lock_guard<boost::mutex> lock(tangible_mutex_);
         customization_.append(customization);
     }
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
@@ -52,14 +52,14 @@ void Tangible::AddCustomization(const string& customization)
 
 std::string Tangible::GetCustomization(void)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
+    boost::lock_guard<boost::mutex> lock(tangible_mutex_);
     return customization_;
 }
 
 void Tangible::SetCustomization(const string& customization)
 {
     {
-        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        boost::lock_guard<boost::mutex> lock(tangible_mutex_);
         customization_ = customization;
     }
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
@@ -68,7 +68,7 @@ void Tangible::SetCustomization(const string& customization)
 void Tangible::RemoveComponentCustomization(uint32_t customization)
 {
     {
-        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        boost::lock_guard<boost::mutex> lock(tangible_mutex_);
         auto iter = std::find_if(begin(component_customization_list_), end(component_customization_list_), [=](ComponentCustomization component) {
             return component.component_customization_crc = customization;
         });
@@ -87,7 +87,7 @@ void Tangible::RemoveComponentCustomization(uint32_t customization)
 void Tangible::AddComponentCustomization(uint32_t customization)
 {
     {
-        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        boost::lock_guard<boost::mutex> lock(tangible_mutex_);
         component_customization_list_.Add(ComponentCustomization(customization));
     }
     
@@ -97,14 +97,14 @@ void Tangible::AddComponentCustomization(uint32_t customization)
 
 NetworkList<ComponentCustomization> Tangible::GetComponentCustomization(void)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
+    boost::lock_guard<boost::mutex> lock(tangible_mutex_);
     return component_customization_list_;
 }
 
 void Tangible::ClearComponentCustomization()
 {
     {
-        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        boost::lock_guard<boost::mutex> lock(tangible_mutex_);
         component_customization_list_.Clear();
     }
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
@@ -181,7 +181,7 @@ bool Tangible::IsStatic(void)
 
 bool Tangible::IsDefending(uint64_t defender)
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
+    boost::lock_guard<boost::mutex> lock(tangible_mutex_);
     auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
         return (x.object_id == defender);
     });
@@ -194,7 +194,7 @@ bool Tangible::IsDefending(uint64_t defender)
 void Tangible::AddDefender(uint64_t defender)
 {
     {
-        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        boost::lock_guard<boost::mutex> lock(tangible_mutex_);
         defender_list_.Add(Defender(defender));
     }
 
@@ -204,7 +204,7 @@ void Tangible::AddDefender(uint64_t defender)
 void Tangible::RemoveDefender(uint64_t defender)
 {
     {
-        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        boost::lock_guard<boost::mutex> lock(tangible_mutex_);
         auto iter = std::find_if(begin(defender_list_), end(defender_list_), [=](const Defender& x)->bool {
             return (x.object_id == defender);
         });
@@ -223,7 +223,7 @@ void Tangible::RemoveDefender(uint64_t defender)
 void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
 {
     {
-        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        boost::lock_guard<boost::mutex> lock(tangible_mutex_);
         defender_list_.Clear();
         std::for_each(defenders.begin(), defenders.end(), [=](const uint64_t& x) {
             defender_list_.Insert(Defender(x));
@@ -236,14 +236,14 @@ void Tangible::ResetDefenders(std::vector<uint64_t> defenders)
 
 NetworkSortedVector<Defender> Tangible::GetDefenders()
 {
-    std::lock_guard<std::mutex> lock(tangible_mutex_);
+    boost::lock_guard<boost::mutex> lock(tangible_mutex_);
     return defender_list_;
 }
 
 void Tangible::ClearDefenders()
 {
     {
-        std::lock_guard<std::mutex> lock(tangible_mutex_);
+        boost::lock_guard<boost::mutex> lock(tangible_mutex_);
         defender_list_.Clear();
     }   
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>

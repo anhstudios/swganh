@@ -4,11 +4,11 @@
 
 #include <cstdint>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <tuple>
 
 #include <boost/asio/deadline_timer.hpp>
+#include <boost/thread/mutex.hpp>
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>
@@ -130,7 +130,7 @@ namespace command {
         
         std::unique_ptr<anh::SimpleDelayedTaskProcessor> delayed_task_;
         swganh::simulation::SimulationService* simulation_service_;
-        std::mutex processor_map_mutex_;
+        boost::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;
         HandlerMap handlers_;
         CommandPropertiesMap command_properties_map_;

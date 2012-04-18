@@ -121,7 +121,7 @@ void CommandService::EnqueueCommand(
 
     if (properties_iter->second.add_to_combat_queue && actor->HasState(COMBAT))
     {
-        std::lock_guard<std::mutex> lg(processor_map_mutex_);
+        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
 
         auto find_iter = processor_map_.find(actor->GetObjectId());
         if (find_iter != processor_map_.end() )
@@ -210,7 +210,7 @@ void CommandService::onStart()
     {
         const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
 
-        std::lock_guard<std::mutex> lg(processor_map_mutex_);
+        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
         processor_map_[object->GetObjectId()].reset(new anh::SimpleDelayedTaskProcessor(kernel()->GetIoService()));
     });
 
@@ -220,7 +220,7 @@ void CommandService::onStart()
     {
         const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
 
-        std::lock_guard<std::mutex> lg(processor_map_mutex_);
+        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
         processor_map_.erase(object->GetObjectId());
     });
 

@@ -9,7 +9,6 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
-#include <thread>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
@@ -173,8 +172,8 @@ void SwganhApp::Start() {
     // Start up a threadpool for running io_service based tasks/active objects
     // The increment starts at 2 because the main thread of execution already counts
     // as thread in use as does the console thread.
-    for (uint32_t i = 1; i < std::thread::hardware_concurrency(); ++i) {
-        std::thread t([this] () {
+    for (uint32_t i = 1; i < boost::thread::hardware_concurrency(); ++i) {
+        boost::thread t([this] () {
             kernel_->GetIoService().run();
         });
         
@@ -201,7 +200,7 @@ void SwganhApp::Stop() {
     kernel_->GetIoService().stop();
     
     // join the threadpool threads until each one has exited.
-    for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&std::thread::join));
+    for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
 }
 
 bool SwganhApp::IsRunning() {

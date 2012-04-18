@@ -31,20 +31,20 @@ Object::Object()
 
 bool Object::HasController()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return controller_ != nullptr;
 }
 
 shared_ptr<ObjectController> Object::GetController()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return controller_;
 }
 
 void Object::SetController(const shared_ptr<ObjectController>& controller)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         controller_ = controller;
     }
 
@@ -56,7 +56,7 @@ void Object::ClearController()
     shared_ptr<ObjectController> controller;
 
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         controller = controller_;
         controller_.reset();
     }
@@ -67,7 +67,7 @@ void Object::ClearController()
 void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentType containment_type)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
         {
             /// @TODO consider whether encountering this scenario is an error
@@ -86,13 +86,13 @@ void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentTyp
 
 bool Object::IsContainerForObject(const shared_ptr<Object>& object)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return contained_objects_.find(object->GetObjectId()) != contained_objects_.end();
 }
 
 void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto find_iter = contained_objects_.find(object->GetObjectId());
 
     if (find_iter == contained_objects_.end())
@@ -111,14 +111,14 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 
 Object::ObjectMap Object::GetContainedObjects()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return contained_objects_;
 }
 
 void Object::AddAwareObject(const shared_ptr<Object>& object)
 {
     {
-        std::lock_guard<std::mutex> lock(object_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         if (aware_objects_.find(object->GetObjectId()) == aware_objects_.end())
         {
             aware_objects_.insert(make_pair(object->GetObjectId(), object));
@@ -132,14 +132,14 @@ void Object::AddAwareObject(const shared_ptr<Object>& object)
 
 bool Object::IsAwareOfObject(const shared_ptr<Object>& object)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return aware_objects_.find(object->GetObjectId()) != aware_objects_.end();
 }
 
 void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         auto find_iter = aware_objects_.find(object->GetObjectId());
 
         if (find_iter != aware_objects_.end())
@@ -157,13 +157,13 @@ void Object::RemoveAwareObject(const shared_ptr<Object>& object)
 }
 string Object::GetTemplate()
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return template_string_;
 }
 void Object::SetTemplate(const string& template_string)
 {
     {
-        std::lock_guard<std::mutex> lock(object_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
 	    template_string_ = template_string;
     }
     GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
@@ -171,7 +171,7 @@ void Object::SetTemplate(const string& template_string)
 }
 void Object::SetObjectId(uint64_t object_id)
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
 	object_id_ = object_id;
 }
 uint64_t Object::GetObjectId()
@@ -181,14 +181,14 @@ uint64_t Object::GetObjectId()
 
 wstring Object::GetCustomName()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return custom_name_;
 }
 
 void Object::SetCustomName(wstring custom_name)
 {
     {
-        std::lock_guard<std::mutex> lock(object_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         custom_name_ = custom_name;
     }
     
@@ -198,13 +198,13 @@ void Object::SetCustomName(wstring custom_name)
 
 bool Object::HasObservers()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return !observers_.empty();
 }
 
 void Object::Subscribe(const shared_ptr<ObserverInterface>& observer)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto find_iter = std::find_if(
         observers_.begin(),
         observers_.end(),
@@ -223,7 +223,7 @@ void Object::Subscribe(const shared_ptr<ObserverInterface>& observer)
 
 void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto find_iter = std::find_if(
         observers_.begin(),
         observers_.end(),
@@ -247,17 +247,17 @@ void Object::NotifyObservers(const anh::ByteBuffer& message)
 
 bool Object::IsDirty()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return !deltas_.empty();
 }
 void Object::ClearBaselines()
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     baselines_.clear();
 }
 void Object::ClearDeltas()
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     deltas_.clear();
 }
 void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
@@ -290,13 +290,13 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
 
 BaselinesCacheContainer Object::GetBaselines()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return baselines_;
 }
 
 DeltasCacheContainer Object::GetDeltas(uint64_t viewer_id)
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return deltas_;
 }
 
@@ -304,19 +304,19 @@ void Object::AddDeltasUpdate(DeltasMessage message)
 {
     NotifyObservers(message);
 
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     deltas_.push_back(move(message));
 }
 void Object::AddBaselineToCache(swganh::messages::BaselinesMessage baseline)
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     baselines_.push_back(move(baseline));
 }
 
 void Object::SetPosition(glm::vec3 position)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         position_ = position;
     }
 
@@ -325,7 +325,7 @@ void Object::SetPosition(glm::vec3 position)
 }
 glm::vec3 Object::GetPosition()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return position_;
 }
 bool Object::InRange(glm::vec3 target, float range)
@@ -339,7 +339,7 @@ bool Object::InRange(glm::vec3 target, float range)
 void Object::SetOrientation(glm::quat orientation)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         orientation_ = orientation;
     }
 
@@ -348,14 +348,14 @@ void Object::SetOrientation(glm::quat orientation)
 }
 glm::quat Object::GetOrientation()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return orientation_;
 }
 void Object::FaceObject(const std::shared_ptr<Object>& object)
 {
     auto target_position = object->GetPosition();
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         
         // Create a mirror direction vector for the direction we want to face.
         glm::vec3 direction_vector = glm::normalize(target_position - position_);
@@ -380,7 +380,7 @@ uint8_t Object::GetHeading()
 {
     glm::quat tmp;
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         tmp = orientation_;
     }
 
@@ -394,7 +394,7 @@ uint8_t Object::GetHeading()
 void Object::SetContainer(const std::shared_ptr<Object>& container)
 {
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         container_ = container;
     }
 
@@ -404,14 +404,14 @@ void Object::SetContainer(const std::shared_ptr<Object>& container)
 
 shared_ptr<Object> Object::GetContainer()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return container_;
 }
 
 void Object::SetComplexity(float complexity)
 {
     {
-        std::lock_guard<std::mutex> lock(object_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         complexity_ = complexity;
     }
     
@@ -421,14 +421,14 @@ void Object::SetComplexity(float complexity)
 
 float Object::GetComplexity()
 {
-    std::lock_guard<std::mutex> lock(object_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return complexity_;
 }
 
 void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 {
     {
-        std::lock_guard<std::mutex> lock(object_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         stf_name_file_ = stf_file_name;
         stf_name_string_ = stf_string;
     }
@@ -439,13 +439,13 @@ void Object::SetStfName(const string& stf_file_name, const string& stf_string)
 
 string Object::GetStfNameFile()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return stf_name_file_;
 }
 
 string Object::GetStfNameString()
 {
-	std::lock_guard<std::mutex> lock(object_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return stf_name_string_;
 }
 

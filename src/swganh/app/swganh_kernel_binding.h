@@ -35,17 +35,17 @@ void exportSWGANHKernel()
 
     class_<anh::service::ServiceManager, boost::noncopyable>("ServiceManager", "provides an interface to common services", no_init)
        .def("combat_service", make_function(
-               bind(&anh::service::ServiceManager::GetService<swganh::combat::CombatService>, std::placeholders::_1, "CombatService"),
+               std::bind(&anh::service::ServiceManager::GetService<swganh::combat::CombatService>, std::placeholders::_1, "CombatService"),
                return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::combat::CombatService*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.CombatService`")
         .def("simulation_service", make_function(
-               bind(&anh::service::ServiceManager::GetService<swganh::simulation::SimulationService>, std::placeholders::_1, "SimulationService"),
+               std::bind(&anh::service::ServiceManager::GetService<swganh::simulation::SimulationService>, std::placeholders::_1, "SimulationService"),
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::simulation::SimulationService*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SimulationService`")
         .def("social_service", make_function(
-               bind(&anh::service::ServiceManager::GetService<swganh::social::SocialService>, std::placeholders::_1, "SocialService"),
+               std::bind(&anh::service::ServiceManager::GetService<swganh::social::SocialService>, std::placeholders::_1, "SocialService"),
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::social::SocialService*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SocialService`")
@@ -57,7 +57,7 @@ void exportEventDispatcher()
     class_<anh::EventDispatcher, boost::noncopyable>("EventDispatcher", no_init)
         .def("dispatch",
             make_function(
-                bind(&anh::EventDispatcher::Dispatch, std::placeholders::_1, std::placeholders::_2),
+                std::bind(&anh::EventDispatcher::Dispatch, std::placeholders::_1, std::placeholders::_2),
                 default_call_policies(),
                 boost::mpl::vector<void, anh::EventDispatcher*, std::shared_ptr<anh::EventInterface>>()), 
             "dispatches an event to be processed later")

@@ -23,7 +23,8 @@
 
 #include <atomic>
 #include <list>
-#include <mutex>
+
+#include <boost/thread/mutex.hpp>
 
 #include "swganh/object/tangible/tangible.h"
 
@@ -613,7 +614,7 @@ public:
 
     typedef anh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 private:
-    mutable std::mutex creature_mutex_;
+    mutable boost::mutex creature_mutex_;
 
     std::atomic<uint32_t>    bank_credits_;                                                             // update 1 variable 0
     std::atomic<uint32_t>    cash_credits_;                                                             // update 1 variable 1

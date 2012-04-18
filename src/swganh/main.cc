@@ -18,14 +18,15 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "swganh/app/swganh_app.h"
-
 #include <exception>
 #include <iostream>
 #include <string>
-#include <thread>
+
+#include <boost/thread.hpp>
 
 #include "anh/logger.h"
+
+#include "swganh/app/swganh_app.h"
 
 using namespace boost;
 using namespace swganh;
@@ -38,7 +39,7 @@ int main(int argc, char* argv[])
 
         app.Initialize(argc, argv);
 
-        std::thread application_thread([&app] () {
+        boost::thread application_thread([&app] () {
             app.Start();
         });
 
@@ -52,7 +53,7 @@ int main(int argc, char* argv[])
                 // Stop the application and join the thread until it's finished.
                 app.Stop();
                 if (application_thread.joinable())
-					application_thread.join();
+                    application_thread.join();
 				
                 break;
             } else {

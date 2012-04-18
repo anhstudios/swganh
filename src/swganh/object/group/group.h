@@ -23,8 +23,9 @@
 
 #include <atomic>
 #include <list>
-#include <mutex>
 #include <vector>
+
+#include <boost/thread/mutex.hpp>
 
 #include "swganh/object/object.h"
 #include "swganh/messages/containers/network_sorted_vector.h"
@@ -118,7 +119,7 @@ protected:
     virtual void GetBaseline6();
 
 private:
-    mutable std::mutex group_mutex_;
+    mutable boost::mutex group_mutex_;
 
     swganh::messages::containers::NetworkSortedVector<Member> member_list_;                     // update 6 variable 1
     std::atomic<uint16_t> difficulty_;                                                                       // update 6 variable 4
