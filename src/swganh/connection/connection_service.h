@@ -4,9 +4,10 @@
 
 #include <cstdint>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <unordered_map>
+
+#include <boost/thread/mutex.hpp>
 
 #include "anh/hash_string.h"
 
@@ -94,7 +95,7 @@ private:
         std::shared_ptr<ConnectionClient>
     > SessionMap;
     
-    std::mutex session_map_mutex_;
+    boost::mutex session_map_mutex_;
     SessionMap session_map_;
 
     std::shared_ptr<PingServer> ping_server_;

@@ -41,12 +41,12 @@ void Waypoint::SetUses(uint32_t uses)
 }
 glm::vec3 Waypoint::GetCoordinates()
 {
-	std::lock_guard<std::mutex> lock(waypoint_mutex_);
+	boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
 	return coordinates_;
 }
 void Waypoint::SetCoordinates(const glm::vec3& coords)
 {
-    std::lock_guard<std::mutex> lock(waypoint_mutex_);
+    boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
 	coordinates_ = move(coords);
     
 	GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
@@ -80,7 +80,7 @@ void Waypoint::SetLocationNetworkId(uint64_t location_network_id)
 void Waypoint::SetPlanet(const string& planet_name)
 {
     {
-	    std::lock_guard<std::mutex> lock(waypoint_mutex_);
+	    boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
         planet_name_ = planet_name;
     }
 
@@ -90,7 +90,7 @@ void Waypoint::SetPlanet(const string& planet_name)
 
 uint8_t Waypoint::GetColorByte()
 {
-	std::lock_guard<std::mutex> lock(waypoint_mutex_);
+	boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
 
     if (color_.compare("blue") != 0)
         return 1;
@@ -114,7 +114,7 @@ uint8_t Waypoint::GetColorByte()
 void Waypoint::SetColor(const string& color)
 {
     {
-	    std::lock_guard<std::mutex> lock(waypoint_mutex_);
+	    boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
         color_ = color;
     }
 

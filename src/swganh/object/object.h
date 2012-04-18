@@ -7,11 +7,11 @@
 #include <functional>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <vector>
 
 #include <boost/optional.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -140,7 +140,7 @@ public:
     template<typename T>
     std::shared_ptr<T> GetContainedObject(uint64_t object_id)
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
 
         auto find_iter = contained_objects_.find(object_id);
         if (find_iter == end(contained_objects_))
@@ -225,7 +225,7 @@ public:
             return;
         }
 
-        std::lock_guard<std::mutex> lock(object_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
 
         std::for_each(
             observers_.begin(),
@@ -244,7 +244,7 @@ public:
     template<typename T>
     void NotifyObservers(const T& message)
     {
-	    std::lock_guard<std::mutex> lock(object_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
 
         std::for_each(
             observers_.begin(),
@@ -352,7 +352,7 @@ public:
     template<typename T>
     std::shared_ptr<T> GetContainer()
     {
-        std::lock_guard<std::mutex> lock(object_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(container_);
 #else
@@ -488,7 +488,7 @@ protected:
     std::atomic<uint32_t> volume_;                   // update 3
 
 private:
-    mutable std::mutex object_mutex_;
+    mutable boost::mutex object_mutex_;
 
     typedef std::vector<
         std::shared_ptr<anh::observer::ObserverInterface>

@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
-#include <mutex>
 #include <sstream>
+#include <stdexcept>
+
+#include <boost/thread/mutex.hpp>
 
 #include <zlib.h>
 
@@ -20,8 +22,6 @@ using std::find_if;
 using std::for_each;
 using std::ifstream;
 using std::ios_base;
-using std::lock_guard;
-using std::mutex;
 using std::runtime_error;
 using std::string;
 using std::stringstream;
@@ -77,7 +77,7 @@ private:
     string filename_;
     TreHeader header_;
 
-    mutex mutex_;
+    boost::mutex mutex_;
 
     vector<TreResourceInfo> resource_block_;
     vector<char> name_block_;
@@ -261,7 +261,7 @@ const TreResourceInfo& TreReader::TreReaderImpl::GetResourceInfo(const string& r
 void TreReader::TreReaderImpl::ReadHeader()
 {
     {
-        lock_guard<mutex> lg(mutex_);
+        boost::lock_guard<boost::mutex> lg(mutex_);
         input_stream_.read(reinterpret_cast<char*>(&header_), sizeof(header_));
     }
 
@@ -317,7 +317,7 @@ vector<TreReader::TreReaderImpl::Md5Sum> TreReader::TreReaderImpl::ReadMd5SumBlo
     vector<Md5Sum> data(size);
     
     {
-        lock_guard<mutex> lg(mutex_);
+        boost::lock_guard<boost::mutex> lg(mutex_);
         input_stream_.seekg(offset, ios_base::beg);
         input_stream_.read(reinterpret_cast<char*>(&data[0]), size);
     }
@@ -351,7 +351,7 @@ void TreReader::TreReaderImpl::ReadDataBlock(
     if (compression == 0)
     {
         {
-            lock_guard<mutex> lg(mutex_);
+            boost::lock_guard<boost::mutex> lg(mutex_);
             input_stream_.seekg(offset, ios_base::beg);
             input_stream_.read(buffer, uncompressed_size);
         }
@@ -361,7 +361,7 @@ void TreReader::TreReaderImpl::ReadDataBlock(
         vector<char> compressed_data(compressed_size);
         
         {
-            lock_guard<mutex> lg(mutex_);
+            boost::lock_guard<boost::mutex> lg(mutex_);
             input_stream_.seekg(offset, ios_base::beg);
             input_stream_.read(&compressed_data[0], compressed_size);
         }

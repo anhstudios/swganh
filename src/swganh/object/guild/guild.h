@@ -21,8 +21,9 @@
 #ifndef SWGANH_OBJECT_GUILD_GUILD_H_
 #define SWGANH_OBJECT_GUILD_GUILD_H_
 
-#include <mutex>
 #include <sstream>
+
+#include <boost/thread/mutex.hpp>
 
 #include "swganh/object/object.h"
 
@@ -85,7 +86,7 @@ public:
     static void GetBaseline6();
     typedef anh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
 private:
-    mutable std::mutex guild_mutex_;
+    mutable boost::mutex guild_mutex_;
     swganh::messages::containers::NetworkList<GuildTag>     guild_list_;
 };
 

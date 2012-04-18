@@ -3,8 +3,9 @@
 #define SWGANH_OBJECT_INTANGIBLE_INTANGIBLE_H_
 
 #include <cstdint>
-#include <mutex>
 #include <string>
+
+#include <boost/thread/mutex.hpp>
 
 #include "swganh/object/object.h"
 
@@ -44,7 +45,7 @@ protected:
     virtual void GetBaseline6();
 
 private:
-    mutable std::mutex intangible_mutex_;
+    mutable boost::mutex intangible_mutex_;
 
     std::string stf_detail_file_;
     std::string stf_detail_string_;

@@ -69,7 +69,7 @@ void ServiceDirectory::joinGalaxy(const std::string& galaxy_name, const std::str
         }
     }
 
-    std::lock_guard<std::mutex> lk(mutex_);
+    boost::lock_guard<boost::mutex> lk(mutex_);
     active_galaxy_ = *galaxy;
 }
 void ServiceDirectory::updateGalaxyStatus() {
@@ -102,7 +102,7 @@ void ServiceDirectory::updateGalaxyStatus() {
     uint32_t galaxy_id;
 
     {
-        std::lock_guard<std::mutex> lk(mutex_);
+        boost::lock_guard<boost::mutex> lk(mutex_);
         active_galaxy_.status((Galaxy::StatusType)galaxy_status);
         galaxy_id = active_galaxy_.id();
     }
@@ -115,7 +115,7 @@ void ServiceDirectory::updateGalaxyStatus() {
 bool ServiceDirectory::registerService(ServiceDescription& service) {              
     if (datastore_->createService(active_galaxy_, service)) {
         {
-            std::lock_guard<std::mutex> lk(mutex_);
+            boost::lock_guard<boost::mutex> lk(mutex_);
             active_service_ = service;
         }
 
@@ -138,25 +138,25 @@ bool ServiceDirectory::removeService(const ServiceDescription& service) {
 }
 
 void ServiceDirectory::updateService(const ServiceDescription& service) {    
-    std::lock_guard<std::mutex> lk(mutex_);
+    boost::lock_guard<boost::mutex> lk(mutex_);
     datastore_->saveService(service);
 }
 
 void ServiceDirectory::updateServiceStatus(int32_t new_status) {    
-    std::lock_guard<std::mutex> lk(mutex_);
+    boost::lock_guard<boost::mutex> lk(mutex_);
 
     active_service_.status(new_status);
     datastore_->saveService(active_service_);
 }
 
 bool ServiceDirectory::makePrimaryService(const ServiceDescription& service) {
-    std::lock_guard<std::mutex> lk(mutex_);
+    boost::lock_guard<boost::mutex> lk(mutex_);
     active_galaxy_.primary_id(service.id());
     return true;
 }
 
 void ServiceDirectory::pulse() {
-    std::lock_guard<std::mutex> lk(mutex_);
+    boost::lock_guard<boost::mutex> lk(mutex_);
 
     if (active_service_.id()) {
         std::string last_pulse = "";
@@ -177,13 +177,13 @@ void ServiceDirectory::pulse() {
 }
 
 GalaxyList ServiceDirectory::getGalaxySnapshot() {
-    std::lock_guard<std::mutex> lk(mutex_);
+    boost::lock_guard<boost::mutex> lk(mutex_);
 
     return datastore_->getGalaxyList();
 }
 
 ServiceList ServiceDirectory::getServiceSnapshot(const Galaxy& galaxy) {    
-    std::lock_guard<std::mutex> lk(mutex_);
+    boost::lock_guard<boost::mutex> lk(mutex_);
 
     return datastore_->getServiceList(galaxy.id());
 }
