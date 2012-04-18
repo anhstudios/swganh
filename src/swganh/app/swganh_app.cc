@@ -178,7 +178,7 @@ void SwganhApp::Start() {
         });
         
 #ifdef _WIN32
-        SetPriorityClass(t.native_handle()._Hnd, REALTIME_PRIORITY_CLASS);
+        SetPriorityClass(t.native_handle(), REALTIME_PRIORITY_CLASS);
 #endif
 
         io_threads_.push_back(move(t));
