@@ -50,13 +50,13 @@ Player::Player()
 {}
 std::array<FlagBitmask, 4> Player::GetStatusFlags() 
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return status_flags_;
 }
 void Player::AddStatusFlag(StatusFlags flag, StatusIndex index)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         status_flags_[index] = FlagBitmask(status_flags_[index].bitmask | flag);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -66,7 +66,7 @@ void Player::AddStatusFlag(StatusFlags flag, StatusIndex index)
 void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         status_flags_[index] = FlagBitmask(status_flags_[index].bitmask & ~flag);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -76,7 +76,7 @@ void Player::RemoveStatusFlag(StatusFlags flag, StatusIndex index)
 void Player::ClearStatusFlags()
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
     
         for_each(
             begin(status_flags_), 
@@ -92,14 +92,14 @@ void Player::ClearStatusFlags()
 
 std::array<FlagBitmask, 4> Player::GetProfileFlags() 
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return profile_flags_;
 }
 
 void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask | flag);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -109,7 +109,7 @@ void Player::AddProfileFlag(ProfileFlags flag, StatusIndex index)
 void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         profile_flags_[index] = FlagBitmask(profile_flags_[index].bitmask & ~flag);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -119,7 +119,7 @@ void Player::RemoveProfileFlag(ProfileFlags flag, StatusIndex index)
 void Player::ClearProfileFlags()
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         
         for_each(
             begin(profile_flags_), 
@@ -135,14 +135,14 @@ void Player::ClearProfileFlags()
 
 std::string Player::GetProfessionTag() 
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return profession_tag_;
 }
 
 void Player::SetProfessionTag(string profession_tag)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         profession_tag_ = profession_tag;
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -198,14 +198,14 @@ void Player::SetAdminTag(uint8_t tag)
 
 NetworkMap<string, XpData> Player::GetXp() 
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return experience_;
 }
 
 void Player::AddExperience(XpData experience)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         experience_.Update(experience.type, experience);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -215,7 +215,7 @@ void Player::AddExperience(XpData experience)
 void Player::DeductXp(XpData experience)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         experience_.Update(experience.type, experience);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -225,7 +225,7 @@ void Player::DeductXp(XpData experience)
 void Player::ClearXpType(string type)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         auto iter = find_if(begin(experience_), end(experience_), [type](pair<string, XpData> xp) {
             return xp.first == type;
         });
@@ -244,7 +244,7 @@ void Player::ClearXpType(string type)
 void Player::ResetXp(swganh::messages::containers::NetworkMap<std::string, XpData>& experience)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         experience_.Clear();
         for(auto& pair : experience)
         {
@@ -259,7 +259,7 @@ void Player::ResetXp(swganh::messages::containers::NetworkMap<std::string, XpDat
 void Player::ClearAllXp()
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         experience_.Clear();
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -268,14 +268,14 @@ void Player::ClearAllXp()
 
 NetworkMap<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return waypoints_;
 }
 
 void Player::AddWaypoint(PlayerWaypointSerializer waypoint)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         waypoints_.Add(waypoint.waypoint->GetObjectId(), waypoint);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -285,7 +285,7 @@ void Player::AddWaypoint(PlayerWaypointSerializer waypoint)
 void Player::RemoveWaypoint(uint64_t waypoint_id)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         auto find_iter = find_if(
             begin(waypoints_),
             end(waypoints_),
@@ -308,7 +308,7 @@ void Player::RemoveWaypoint(uint64_t waypoint_id)
 void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         waypoints_.Update(waypoint.waypoint->GetObjectId(), waypoint);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -318,7 +318,7 @@ void Player::ModifyWaypoint(PlayerWaypointSerializer waypoint)
 void Player::ClearAllWaypoints()
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         waypoints_.Clear();
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -421,14 +421,14 @@ void Player::ClearCompletedForceSensitiveQuests()
 
 swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> Player::GetQuests() 
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return quest_journal_;
 }
 
 void Player::AddQuest(QuestJournalData quest)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         quest_journal_.Add(quest.quest_crc, quest);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -438,7 +438,7 @@ void Player::AddQuest(QuestJournalData quest)
 void Player::RemoveQuest(QuestJournalData quest)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         
         auto find_iter = find_if(
             begin(quest_journal_),
@@ -462,7 +462,7 @@ void Player::RemoveQuest(QuestJournalData quest)
 void Player::UpdateQuest(QuestJournalData quest)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         quest_journal_.Update(quest.quest_crc, quest);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -472,7 +472,7 @@ void Player::UpdateQuest(QuestJournalData quest)
 void Player::ClearAllQuests()
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         quest_journal_.Clear();
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -481,7 +481,7 @@ void Player::ClearAllQuests()
 
 swganh::messages::containers::NetworkSortedList<Ability> Player::GetAbilityList() 
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
 
     auto creature = GetContainer<creature::Creature>();
     auto skill_commands = creature->GetSkillCommands();
@@ -497,7 +497,7 @@ bool Player::HasAbility(string ability)
     auto creature = GetContainer<creature::Creature>();
     auto abilities = creature->GetSkillCommands();
     
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
 
     auto find_it = find_if(begin(abilities), end(abilities),[=, &abilities](pair<uint32_t, string> skill_command){
         return (ability == skill_command.second);
@@ -548,14 +548,14 @@ void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
 
 swganh::messages::containers::NetworkSortedList<DraftSchematicData> Player::GetDraftSchematics() 
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return draft_schematics_;
 }
 
 void Player::AddDraftSchematic(DraftSchematicData schematic)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         draft_schematics_.Add(schematic);
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -565,7 +565,7 @@ void Player::AddDraftSchematic(DraftSchematicData schematic)
 void Player::RemoveDraftSchematic(uint32_t schematic_id)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         auto iter = draft_schematics_.Find(DraftSchematicData(schematic_id));
         if(iter == end(draft_schematics_))
         {
@@ -581,7 +581,7 @@ void Player::RemoveDraftSchematic(uint32_t schematic_id)
 void Player::ClearDraftSchematics()
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         draft_schematics_.Clear();
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -640,12 +640,12 @@ void Player::IncrementAccomplishmentCounter()
 
 NetworkSortedVector<Name> Player::GetFriends()
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return friends_;
 }
 bool Player::IsFriend(std::string friend_name)
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
         return (x.Contains(friend_name));
     });
@@ -658,7 +658,7 @@ bool Player::IsFriend(std::string friend_name)
 void Player::AddFriend(string friend_name, uint64_t id)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         friends_.Add(Name(friend_name, id));
     }
 
@@ -670,7 +670,7 @@ void Player::RemoveFriend(string friend_name)
 {
     uint64_t friend_id = 0;
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         auto iter = find_if(begin(friends_), end(friends_), [=](const Name& x)->bool {
             return (x.Contains(friend_name));
         });
@@ -690,7 +690,7 @@ void Player::RemoveFriend(string friend_name)
 void Player::ClearFriends()
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         friends_.Clear();
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -699,13 +699,13 @@ void Player::ClearFriends()
 
 NetworkSortedVector<Name> Player::GetIgnoredPlayers()
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return ignored_players_;
 }
 
 bool Player::IsIgnored(string player_name)
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
         return (x.Contains(player_name));
     });
@@ -719,7 +719,7 @@ bool Player::IsIgnored(string player_name)
 void Player::IgnorePlayer(string player_name, uint64_t player_id)
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         ignored_players_.Add(Name(player_name, player_id));
     }
     GetEventDispatcher()->Dispatch(make_shared<PlayerEvent>
@@ -730,7 +730,7 @@ void Player::StopIgnoringPlayer(string player_name)
 {
     uint64_t remove_id = 0;
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         auto iter = find_if(begin(ignored_players_), end(ignored_players_), [=](const Name& x)->bool {
             return (x.Contains(player_name));
         });
@@ -749,7 +749,7 @@ void Player::StopIgnoringPlayer(string player_name)
 void Player::ClearIgnored()
 {
     {
-        std::lock_guard<std::mutex> lock(player_mutex_);
+        boost::lock_guard<boost::mutex> lock(player_mutex_);
         ignored_players_.Clear();
     }
     
@@ -873,12 +873,12 @@ void Player::SetJediState(uint32_t jedi_state)
 
 Gender Player::GetGender() 
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     return gender_;
 }
 void Player::SetGender(Gender value)
 {
-    std::lock_guard<std::mutex> lock(player_mutex_);
+    boost::lock_guard<boost::mutex> lock(player_mutex_);
     gender_ = value;
 }
 

@@ -23,8 +23,7 @@
 #include <sstream>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include "anh/logger.h"
-#include <mutex>
+#include <boost/thread/mutex.hpp>
 
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
@@ -32,6 +31,7 @@
 #include <cppconn/resultset.h>
 
 #include "anh/service/service_description.h"
+#include "anh/logger.h"
 
 using namespace anh::service;
 using namespace boost::posix_time;
@@ -371,9 +371,9 @@ std::string Datastore::prepareTimestampForStorage(const std::string& timestamp) 
     
     ss.imbue(std::locale(ss.getloc(), new boost::posix_time::time_facet("%Y%m%d%H%M%S%F")));
     
-    static std::mutex mutex;
+    static boost::mutex mutex;
 
-    std::lock_guard<std::mutex> lk(mutex);
+    boost::lock_guard<boost::mutex> lk(mutex);
 
     ss << boost::posix_time::time_from_string(timestamp);
     

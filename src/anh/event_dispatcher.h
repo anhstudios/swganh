@@ -8,6 +8,7 @@
 #include <memory>
 
 #include <boost/asio/strand.hpp>
+#include <boost/thread/future.hpp>
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>
@@ -26,10 +27,9 @@ namespace Concurrency {
 #include "hash_string.h"
 
 namespace boost {
-    namespace asio {
-        class io_service;
-    }  // namespace asio
-}  // namespace boost
+namespace asio {
+    class io_service;
+}}  // namespace boost::asio
 
 namespace anh {
 
@@ -93,7 +93,7 @@ namespace anh {
         virtual CallbackId Subscribe(EventType type, EventHandlerCallback callback) = 0;
         virtual void Unsubscribe(EventType type, CallbackId identifier) = 0;
 
-        virtual std::future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event) = 0;
+        virtual boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event) = 0;
     };
 
     class EventDispatcher : public EventDispatcherInterface
@@ -104,7 +104,7 @@ namespace anh {
         CallbackId Subscribe(EventType type, EventHandlerCallback callback);
         void Unsubscribe(EventType type, CallbackId identifier);
 
-        std::future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event);
+        boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event);
 
     private:
         struct EventHandler

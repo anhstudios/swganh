@@ -4,11 +4,12 @@
 
 #include <cstdint>
 #include <atomic>
-#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
 #include <list>
+
+#include <boost/thread/mutex.hpp>
 
 #include "swganh/object/object.h"
 #include "swganh/messages/containers/network_sorted_vector.h"
@@ -142,7 +143,7 @@ public:
 private:
     typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
     
-    mutable std::mutex tangible_mutex_;
+    mutable boost::mutex tangible_mutex_;
 
     std::string customization_;                                                                                      // update 3 variable 4
     swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;                 // update 3 variable 5

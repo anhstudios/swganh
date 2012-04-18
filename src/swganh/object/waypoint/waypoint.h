@@ -2,7 +2,8 @@
 #define SWGANH_OBJECT_WAYPOINT_WAYPOINT_H_
 
 #include <atomic>
-#include <mutex>
+
+#include <boost/thread/mutex.hpp>
 
 #include <glm/glm.hpp>
 
@@ -133,9 +134,8 @@ public:
 
     typedef anh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
 private:
-    
-	
-    mutable std::mutex waypoint_mutex_;
+
+    mutable boost::mutex waypoint_mutex_;
 
     std::atomic<uint32_t> uses_;				        //update 3
     glm::vec3 coordinates_;			                    //update 3
