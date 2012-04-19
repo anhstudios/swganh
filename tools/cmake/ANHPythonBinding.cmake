@@ -61,7 +61,17 @@ FUNCTION(AddANHPythonBinding name)
     PARSE_ARGUMENTS(ANHPYTHONLIB "PREFIX_NAME;POSTFIX_NAME;DEPENDS;SOURCES;ADDITIONAL_LIBRARY_DIRS;ADDITIONAL_INCLUDE_DIRS;ADDITIONAL_SOURCE_DIRS;DEBUG_LIBRARIES;OPTIMIZED_LIBRARIES" "" ${ARGN})
 
     set(base_name ${name})
-    set(name ${ANHPYTHONLIB_PREFIX_NAME}_${name}_${ANHPYTHONLIB_POSTFIX_NAME})
+    
+    string(COMPARE NOTEQUAL "${ANHPYTHONLIB_PREFIX_NAME}" "" _has_prefix_name)
+    if(${_has_prefix_name})
+        set(PREFIX_NAME ${ANHPYTHONLIB_PREFIX_NAME}_)
+    endif()
+    
+    string(COMPARE NOTEQUAL "${ANHPYTHONLIB_POSTFIX_NAME}" "" _has_postfix_name)
+    if(${_has_postfix_name})
+        set(POSTFIX_NAME _${ANHPYTHONLIB_POSTFIX_NAME})
+    endif()
+    set(name ${PREFIX_NAME}${name}${POSTFIX_NAME})
 
     LIST(LENGTH ANHPYTHONLIB_SOURCES __source_files_list_length)
     LIST(LENGTH ANHPYTHONLIB_DEBUG_LIBRARIES _debug_list_length)
