@@ -190,6 +190,8 @@ void CommandService::ProcessCommand(
 
 void CommandService::onStart()
 {
+    script_prefix_ = kernel()->GetAppConfig().script_directory;
+
 	LoadProperties();
     RegisterCommandScripts();
 
@@ -269,7 +271,7 @@ void CommandService::LoadProperties()
             
             properties.name = row["commandName"]->GetValue<string>();
             // @TODO: Make this a config value
-            properties.script_hook = "scripts/commands/" + properties.name + ".py";
+            properties.script_hook = script_prefix_ + "/commands/" + properties.name + ".py";
             string tmp = properties.name;
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             properties.name_crc = anh::memcrc(tmp);
@@ -359,12 +361,12 @@ void CommandService::LoadProperties()
 
 void CommandService::RegisterCommandScripts()
 {    
-    boost::filesystem::path command_script_dir("scripts/commands");
+    boost::filesystem::path command_script_dir(script_prefix_ + "/commands");
 
     try {
         if (!boost::filesystem::exists(command_script_dir) ||
             !boost::filesystem::is_directory(command_script_dir)) {
-            throw runtime_error("Invalid script directory [scripts/commands]");
+            throw runtime_error("Invalid script directory [" + script_prefix_ + "/commands]");
         }
 
         std::for_each(boost::filesystem::directory_iterator(command_script_dir),
