@@ -57,12 +57,12 @@ PluginManager::~PluginManager() {
     });
 }
 
-void PluginManager::LoadPlugin(const std::string& path) {
+void PluginManager::LoadPlugin(const std::string& path, std::string plugin_directory) {
     if (library_map_.find(path) != library_map_.end()) {
         throw PluginLoadingError("Plugin has already been loaded ["+ path + "]");
     }
 
-    auto library = LoadLibrary_(path + library_extension);
+    auto library = LoadLibrary_(plugin_directory + path + library_extension);
     if (!library) {
         throw PluginLoadingError("Plugin failed to load ["+ path + "]");
     }
@@ -111,7 +111,7 @@ void PluginManager::ConfigurePlugin(std::string plugin_name, ConfigFunc config_f
         throw runtime_error("Missing configuration function.");
     }
 
-    ifstream config_file("config/plugins/" + plugin_name + "/" + plugin_name + ".cfg");
+    ifstream config_file("config/plugins/" + plugin_name + ".cfg");
     
     if (!config_file.is_open()) {
         LOG(warning) << "No configuration loaded for plugin: " + plugin_name;

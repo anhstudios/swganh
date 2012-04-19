@@ -58,7 +58,7 @@ options_description AppConfig::BuildConfigDescription() {
 
         ("plugin,p", boost::program_options::value<std::vector<std::string>>(&plugins),
             "Only used when single_server_mode is disabled, loads a module of the specified name")
-        ("plugin_directory", value<string>(&plugin_directory)->default_value("plugins"),
+        ("plugin_directory", value<string>(&plugin_directory)->default_value("plugins/"),
             "Directory containing the application plugins")
 
         ("script_directory", value<string>(&script_directory)->default_value("scripts"),
@@ -246,9 +246,10 @@ void SwganhApp::LoadPlugins_(vector<string> plugins) {
 
     if (!plugins.empty()) {
         auto plugin_manager = kernel_->GetPluginManager();
+        auto plugin_directory = kernel_->GetAppConfig().plugin_directory;
 
-        for_each(plugins.begin(), plugins.end(), [plugin_manager] (const string& plugin) {
-            plugin_manager->LoadPlugin(plugin);
+        for_each(plugins.begin(), plugins.end(), [plugin_manager, plugin_directory] (const string& plugin) {
+            plugin_manager->LoadPlugin(plugin, plugin_directory);
         });
     }
 }

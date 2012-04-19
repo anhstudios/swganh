@@ -153,7 +153,11 @@ FUNCTION(AddANHPlugin name)
 	    
     # Create the Common library
     ADD_LIBRARY(${name} MODULE ${SOURCES})    
-    SET_TARGET_PROPERTIES(${name} PROPERTIES PREFIX "")
+    SET_TARGET_PROPERTIES(${name} PROPERTIES 
+        PREFIX ""
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins/
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/plugins
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/plugins)
     
     # If a project library was created link to it
     IF(DEFINED __project_library)

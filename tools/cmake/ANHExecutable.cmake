@@ -141,8 +141,9 @@ FUNCTION(AddANHExecutable name)
 
     IF(_project_deps_list_length GREATER 0)
         TARGET_LINK_LIBRARIES(${name} ${ANHEXE_DEPENDS})
-        ADD_DEPENDENCIES(${name} DEPS)
     ENDIF()
+        
+    ADD_DEPENDENCIES(${name} DEPS)
 
     IF(_debug_list_length GREATER 0)
         FOREACH(__library ${ANHEXE_DEBUG_LIBRARIES})
