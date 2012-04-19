@@ -9,6 +9,8 @@ galaxy_name = A New Hope
 
 tre_config = C:/Star Wars Galaxies/live.cfg
 
+script_directory = @PROJECT_SOURCE_DIR@/data/scripts
+
 [db.galaxy_manager]
 host = localhost
 schema = galaxy_manager

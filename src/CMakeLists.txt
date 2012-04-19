@@ -6,6 +6,8 @@ configure_file (
 
 if(WIN32)
     include(Win32PostBuild)
+else()
+    include(PosixPostBuild)
 endif()
 
 ## project libraries

@@ -27,6 +27,7 @@ struct AppConfig {
 	std::string server_mode;
     std::vector<std::string> plugins;
     std::string plugin_directory;
+    std::string script_directory;
     std::string galaxy_name;
     std::string tre_config;
 

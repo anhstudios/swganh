@@ -25,7 +25,6 @@ add_custom_command(
     VERBATIM
 )
 
-
 get_filename_component(MYSQL_CONNECTOR_CPP_DLL_PATH ${MYSQLCONNECTORCPP_LIBRARY_DEBUG} PATH)
 string(REPLACE "/" "\\" MYSQL_CONNECTOR_CPP_DLL_PATH "${MYSQL_CONNECTOR_CPP_DLL_PATH}\\..")
 add_custom_command(
@@ -34,7 +33,6 @@ add_custom_command(
     COMMAND xcopy "${MYSQL_CONNECTOR_CPP_DLL_PATH}\\$\(Configuration\)\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
     VERBATIM
 )
-
 
 get_filename_component(PYTHON_DLL_PATH ${PYTHON_LIBRARY} PATH)
 string(REPLACE "/" "\\" PYTHON_DLL_PATH "${PYTHON_DLL_PATH}")
@@ -54,23 +52,17 @@ add_custom_command(
     VERBATIM
 )    
 
-add_custom_command(
-    TARGET DEPS
-    POST_BUILD
-    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\data\\config" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config" /D /I /Y /s
-    VERBATIM
-)  
+foreach(configuration ${CMAKE_CONFIGURATION_TYPES})    
+    if(NOT EXISTS "${PROJECT_BINARY_DIR}/bin/${configuration}/config/swganh.cfg")
+    configure_file(
+        "${PROJECT_SOURCE_DIR}/data/config/swganh.cfg.in"
+        "${PROJECT_BINARY_DIR}/bin/${configuration}/config/swganh.cfg"
+        @ONLY)
+    endif()
+endforeach()
 
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND for /d %a in ("${WIN_PROJECT_SOURCE_DIR}\\plugins") do xcopy "%a\\*.cfg" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config\\plugins" /D /I /Y /s
-    VERBATIM
-)  
-
-add_custom_command(
-    TARGET DEPS
-    POST_BUILD
-    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\data\\scripts" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\scripts" /D /I /Y /s
-    VERBATIM
-)      
+    COMMAND for /R \"${PROJECT_SOURCE_DIR}/plugins\" %%a IN \(*.cfg\) do xcopy %%a \"${PROJECT_BINARY_DIR}/bin/$\(Configuration\)/config/plugins\" /D /I /Y
+)

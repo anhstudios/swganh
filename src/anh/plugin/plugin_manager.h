@@ -33,7 +33,7 @@ public:
     explicit PluginManager(anh::app::KernelInterface* kernel);
     ~PluginManager();
 
-    void LoadPlugin(const std::string& path);
+    void LoadPlugin(const std::string& path, std::string plugin_directory = "");
     void LoadAllPlugins(const std::string& directory);
     
     void ConfigurePlugin(std::string plugin_name, ConfigFunc config_func);
