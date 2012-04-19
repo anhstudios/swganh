@@ -136,6 +136,7 @@ namespace command {
         CommandPropertiesMap command_properties_map_;
         std::vector<CommandFilter> enqueue_filters_;
         std::vector<CommandFilter> process_filters_;
+        std::string script_prefix_;
     };
 
 }}  // namespace swganh::command
