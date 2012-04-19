@@ -54,23 +54,25 @@ add_custom_command(
     VERBATIM
 )    
 
-add_custom_command(
-    TARGET DEPS
-    POST_BUILD
-    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\data\\config" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config" /D /I /Y /s
-    VERBATIM
-)  
+foreach(configuration ${CMAKE_CONFIGURATION_TYPES})    
+    if(NOT EXISTS "${PROJECT_BINARY_DIR}/bin/${configuration}/config/swganh.cfg")
+    configure_file(
+        "${PROJECT_SOURCE_DIR}/data/config/swganh.cfg.in"
+        "${PROJECT_BINARY_DIR}/bin/${configuration}/config/swganh.cfg"
+        @ONLY)
+    endif()
+endforeach()
 
 add_custom_command(
     TARGET DEPS
     POST_BUILD
     COMMAND for /d %a in ("${WIN_PROJECT_SOURCE_DIR}\\plugins") do xcopy "%a\\*.cfg" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config\\plugins" /D /I /Y /s
     VERBATIM
-)  
+)
 
 add_custom_command(
     TARGET DEPS
     POST_BUILD
     COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\data\\scripts" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\scripts" /D /I /Y /s
     VERBATIM
-)      
+)

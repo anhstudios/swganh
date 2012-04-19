@@ -366,7 +366,7 @@ void CommandService::RegisterCommandScripts()
     try {
         if (!boost::filesystem::exists(command_script_dir) ||
             !boost::filesystem::is_directory(command_script_dir)) {
-            throw runtime_error("Invalid script directory [scripts/commands]");
+            throw runtime_error("Invalid script directory [" + script_prefix_ + "/commands]");
         }
 
         std::for_each(boost::filesystem::directory_iterator(command_script_dir),
