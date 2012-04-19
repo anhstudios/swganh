@@ -2,7 +2,6 @@ include(ANHPythonBinding)
 
 AddANHPythonBinding(combat
 	PREFIX_NAME swgpy
-	POSTFIX_NAME binding
     DEPENDS
         swganh_lib
 		anh_lib
