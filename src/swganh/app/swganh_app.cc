@@ -61,6 +61,9 @@ options_description AppConfig::BuildConfigDescription() {
         ("plugin_directory", value<string>(&plugin_directory)->default_value("plugins"),
             "Directory containing the application plugins")
 
+        ("script_directory", value<string>(&script_directory)->default_value("scripts"),
+            "Directory containing the application scripts")
+
         ("tre_config", boost::program_options::value<std::string>(&tre_config),
             "File containing the tre configuration (live.cfg)")
 
