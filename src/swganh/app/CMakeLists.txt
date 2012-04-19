@@ -1,10 +1,7 @@
 include(ANHPythonBinding)
 
 AddANHPythonBinding(app
-	PREFIX_NAME
-		swgpy
-	POSTFIX_NAME
-		binding
+	PREFIX_NAME	swgpy
     DEPENDS
         swganh_lib
 		anh_lib
