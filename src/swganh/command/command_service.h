@@ -27,7 +27,7 @@ namespace Concurrency {
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 #include "swganh/messages/controllers/command_queue_remove.h"
-#include "swganh/command/command_properties.h"
+#include "swganh/command/command.h"
 
 
 namespace swganh {
@@ -60,8 +60,13 @@ namespace command {
         const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
 		const std::shared_ptr<swganh::object::tangible::Tangible>&, // target object
         const swganh::messages::controllers::CommandQueueEnqueue&,
-        const CommandProperties&)	// action
+        const Command&)	// action
     > CommandFilter;
+
+    typedef std::map<
+		uint32_t,
+		Command
+	> CommandMap;
     
     class CommandService: public swganh::base::BaseService
     {
@@ -80,21 +85,21 @@ namespace command {
 			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
 			swganh::messages::controllers::CommandQueueEnqueue command);
 
-		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
+		CommandMap GetCommands() { return command_map_; }
         
     private:
         bool ValidateCommand(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
 			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command, 
-            const CommandProperties& command_properties,
+            const swganh::messages::controllers::CommandQueueEnqueue& command_queue, 
+            const Command& command,
             const std::vector<CommandFilter>& filters);
         
         void ProcessCommand(
 			const std::shared_ptr<swganh::object::creature::Creature>& actor,
 			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-			const swganh::messages::controllers::CommandQueueEnqueue& command,
-            const CommandProperties& properties,
+			const swganh::messages::controllers::CommandQueueEnqueue& command_queue,
+            const Command& command,
             const CommandHandler& handler);
 
         void LoadProperties();
@@ -133,7 +138,7 @@ namespace command {
         boost::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;
         HandlerMap handlers_;
-        CommandPropertiesMap command_properties_map_;
+        CommandMap command_map_;
         std::vector<CommandFilter> enqueue_filters_;
         std::vector<CommandFilter> process_filters_;
         std::string script_prefix_;

@@ -12,7 +12,7 @@
 
 #include "swganh/scripting/python_script.h"
 
-#include "command_properties.h"
+#include "swganh/combat/combat_data.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 namespace swganh {
@@ -35,7 +35,7 @@ namespace command {
 class PythonCombatCommand
 {
 public:
-    PythonCombatCommand(const CommandProperties& command_properties);
+    PythonCombatCommand(const swganh::combat::CombatData& command_properties);
 
     boost::python::object operator()(swganh::app::SwganhKernel* kernel, std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
 private:

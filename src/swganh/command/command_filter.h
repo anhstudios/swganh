@@ -21,7 +21,7 @@ class Creature;
 }} // object::creature
 namespace command {
 
-struct CommandProperties;
+class Command;
 
 enum ERROR
 {
@@ -39,31 +39,31 @@ static std::tuple<bool, uint32_t, uint32_t> TargetCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties);
+        const Command& command_data);
 
 static std::tuple<bool, uint32_t, uint32_t> PostureCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties);
+        const Command& command_data);
 
 static std::tuple<bool, uint32_t, uint32_t> StateCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties);
+        const Command& command_data);
 
 static std::tuple<bool, uint32_t, uint32_t> AbilityCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties);
+        const Command& command_data);
 
 static std::tuple<bool, uint32_t, uint32_t> CombatTargetCheckFilter(
         const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties);
+        const Command& command_data);
 
     /**
     * gets the lowest common bit from two bit masks.

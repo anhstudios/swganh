@@ -82,7 +82,7 @@ void CombatService::onStart()
         "CommandServiceReady", 
         [this] (const shared_ptr<anh::EventInterface>& incoming_event)
     {
-        const auto& commandProperties = static_pointer_cast<anh::ValueEvent<swganh::command::CommandPropertiesMap>>(incoming_event)->Get();
+        const auto& commandProperties = static_pointer_cast<anh::ValueEvent<swganh::command::CommandMap>>(incoming_event)->Get();
         LoadProperties(commandProperties);
         
     });
@@ -104,12 +104,12 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
     });
 }
 
-void CombatService::RegisterCombatScript(const CommandProperties& properties)
+void CombatService::RegisterCombatScript(const swganh::command::CommandMap& properties)
 {    
-    RegisterCombatHandler(properties.name_crc, PythonCombatCommand(properties));
+    //RegisterCombatHandler(properties.name_crc, PythonCombatCommand(properties));
 }
 
-void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command_properties)
+void CombatService::LoadProperties(swganh::command::CommandMap command_properties)
 {    
 	for(auto& command : command_properties)
     {
@@ -118,7 +118,7 @@ void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command
 		if (command.second.add_to_combat_queue > 0)
 		{
 			combat_properties_map_.insert(command);
-            RegisterCombatScript(command.second);
+            //RegisterCombatScript(command.second);
 		}
 	}
     LOG(info) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
@@ -403,28 +403,28 @@ uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::c
     return 0; 
 }
 void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target, CombatData& properties) {
-    auto states = move(properties.getStates());
-    for_each(begin(states), end(states),[=](pair<float, string> state){
-        int generated = generator_.Rand(1, 100);
-        // Didn't trigger this time
-        if (generated > state.first)
-        {
-            return;
-        }
-        // Check recovery timers
+    //auto states = move(properties.getStates());
+    //for_each(begin(states), end(states),[=](pair<float, string> state){
+    //    int generated = generator_.Rand(1, 100);
+    //    // Didn't trigger this time
+    //    if (generated > state.first)
+    //    {
+    //        return;
+    //    }
+    //    // Check recovery timers
 
-        // Defender State Modifiers
+    //    // Defender State Modifiers
 
-        // Strength of Modifier
+    //    // Strength of Modifier
 
-        // GetHitChance(strength, 0.0f, target_defence);
+    //    // GetHitChance(strength, 0.0f, target_defence);
 
-        // Jedi Defences
+    //    // Jedi Defences
 
-        // Send Message
+    //    // Send Message
 
-        // Check Equilibrium
-    });
+    //    // Check Equilibrium
+    //});
 }
 float CombatService::GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence) 
 {
@@ -534,7 +534,7 @@ int CombatService::GetDamagingPool(CombatData& properties)
     }
     else // Get specific hit chance
     {
-        int generated = generator_.Rand(1, 100);
+        /*int generated = generator_.Rand(1, 100);
         if (generated < properties.health_hit_chance) {
             LOG(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << properties.health_hit_chance;
             pool = HEALTH;
@@ -546,7 +546,7 @@ int CombatService::GetDamagingPool(CombatData& properties)
         else {
             LOG(info)  << "Damaging Pool picked MIND with " << generated << " number and " << properties.mind_hit_chance;
             pool = MIND;
-        }
+        }*/
     }
     return pool;
 }
@@ -563,8 +563,8 @@ void CombatService::BroadcastCombatSpam(
     spam.weapon_id = attacker->GetWeaponId();
     spam.damage = damage;
     spam.file = "cbt_spam";
-    if (properties.combat_spam.length() > 0)
-        spam.text = properties.combat_spam + string_file;
+    /*if (properties.combat_spam.length() > 0)
+        spam.text = properties.combat_spam + string_file;*/
     attacker->NotifyObservers(spam);
 }
 

@@ -29,7 +29,7 @@ namespace Concurrency {
 #include "anh/random_generator.h"
 
 #include "swganh/base/base_service.h"
-#include "swganh/command/command_properties.h"
+#include "swganh/command/command_service.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 
@@ -92,7 +92,7 @@ namespace combat {
             CombatHandler
         > HandlerMap;
 
-        void RegisterCombatScript(const swganh::command::CommandProperties& properties);
+        void RegisterCombatScript(const swganh::command::CommandMap& properties);
 
         bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
         void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message, boost::python::object p_object);
@@ -115,12 +115,12 @@ namespace combat {
 
         swganh::simulation::SimulationService* simulation_service_;
 		swganh::command::CommandService* command_service_;
-        void LoadProperties(swganh::command::CommandPropertiesMap command_properties);
+        void LoadProperties(swganh::command::CommandMap command_properties);
 		void onStart();
 
         HandlerMap	combat_handlers_;
 
-		swganh::command::CommandPropertiesMap combat_properties_map_;
+		swganh::command::CommandMap combat_properties_map_;
 
         anh::RandomGenerator generator_;
 

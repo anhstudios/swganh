@@ -9,20 +9,20 @@
 #include <unordered_map>
 
 #include <anh/hash_string.h>
-#include "swganh/command/command_properties.h"
+#include "swganh/command/command.h"
 
 #include <boost/python.hpp>
 
 namespace swganh {
 namespace combat {
 
-struct CombatData : swganh::command::CommandProperties
+struct CombatData : swganh::command::Command
 {
     // TEMP
     class StateEffect;
     class DotEffect;
-    CombatData(swganh::command::CommandProperties&& properties) 
-        : swganh::command::CommandProperties(properties)
+    CombatData(swganh::command::Command&& properties) 
+        : swganh::command::Command(properties)
         , min_damage(0)
         , max_damage(0)
         , damage_multiplier(0)
@@ -42,7 +42,7 @@ struct CombatData : swganh::command::CommandProperties
         , animation_crc(anh::HashString(""))
     {
     }
-    CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties );
+    CombatData(boost::python::object p_object, swganh::command::Command& properties );
 
     int min_damage;
     int max_damage;

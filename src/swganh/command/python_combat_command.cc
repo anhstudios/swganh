@@ -13,7 +13,7 @@ using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::object::tangible;
 
-PythonCombatCommand::PythonCombatCommand(const CommandProperties& properties)
+PythonCombatCommand::PythonCombatCommand(const swganh::combat::CombatData& properties)
 : script_(properties.script_hook)
 {
 }

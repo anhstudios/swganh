@@ -13,7 +13,7 @@ using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::object::tangible;
 
-PythonCommand::PythonCommand(const CommandProperties& properties, const std::string& script_path)
+PythonCommand::PythonCommand(const Command& properties, const std::string& script_path)
 : script_(PythonScript(script_path))
 {
 }

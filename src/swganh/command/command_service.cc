@@ -1,8 +1,3 @@
-
-#ifndef WIN32
-#include <Python.h>
-#endif
-
 #ifndef WIN32
 #include <Python.h>
 #endif
@@ -99,8 +94,8 @@ void CommandService::EnqueueCommand(
 	const shared_ptr<Tangible>& target,
     CommandQueueEnqueue command)
 {
-    auto properties_iter = command_properties_map_.find(command.command_crc);
-    if (properties_iter == command_properties_map_.end())
+    auto properties_iter = command_map_.find(command.command_crc);
+    if (properties_iter == command_map_.end())
     {
         LOG(warning) << "Invalid handler requested: " << hex << command.command_crc;
         return;
@@ -170,20 +165,20 @@ void CommandService::HandleCommandQueueRemove(
 void CommandService::ProcessCommand(
     const shared_ptr<Creature>& actor,
     const shared_ptr<Tangible>& target,
-    const swganh::messages::controllers::CommandQueueEnqueue& command,
-    const CommandProperties& properties,
+    const swganh::messages::controllers::CommandQueueEnqueue& command_queue,
+    const Command& command,
     const CommandHandler& handler
     )
 {
     try {
-        if (ValidateCommand(actor, target, command, properties, process_filters_))
+        if (ValidateCommand(actor, target, command_queue, command, process_filters_))
         {
-		    handler(kernel(), actor, target, command);
+		    handler(kernel(), actor, target, command_queue);
             
-            SendCommandQueueRemove(actor, command.action_counter, command_properties_map_[command.command_crc].default_time, 0, 0);
+            SendCommandQueueRemove(actor, command_queue.action_counter, command_map_[command_queue.command_crc].default_time, 0, 0);
         }
     } catch(const exception& e) {
-        LOG(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].name << "\n" << e.what();
+        LOG(warning) << "Error Processing Command: " <<  command_map_[command_queue.command_crc].name << "\n" << e.what();
     }
 
 }
@@ -204,7 +199,7 @@ void CommandService::onStart()
 
 	auto event_dispatcher = kernel()->GetEventDispatcher();
 	event_dispatcher->Dispatch(
-        make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
+        make_shared<anh::ValueEvent<CommandMap>>("CommandServiceReady", GetCommands()));
 
     event_dispatcher->Subscribe(
         "ObjectReadyEvent",
@@ -265,25 +260,24 @@ void CommandService::LoadProperties()
         while(reader.Next())
         {
             auto row = reader.GetRow();
-
-            CommandProperties properties;
+            Command command;
             // Set a default script hook
             
-            properties.name = row["commandName"]->GetValue<string>();
+            command.name = row["commandName"]->GetValue<string>();
             // @TODO: Make this a config value
-            properties.script_hook = script_prefix_ + "/commands/" + properties.name + ".py";
-            string tmp = properties.name;
+            command.script_hook = script_prefix_ + "/commands/" + command.name + ".py";
+            string tmp = command.name;
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-            properties.name_crc = anh::memcrc(tmp);
+            command.name_crc = anh::memcrc(tmp);
             
-            properties.ability = row["characterAbility"]->GetValue<string>();
-            properties.ability_crc = anh::memcrc(properties.ability);
+            command.ability = row["characterAbility"]->GetValue<string>();
+            command.ability_crc = anh::memcrc(command.ability);
 
-            properties.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
-            properties.default_time = row["defaultTime"]->GetValue<float>();
-            properties.command_group = row["commandGroup"]->GetValue<int>();
-            properties.target_type = row["targetType"]->GetValue<int>();
-            properties.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
+            command.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
+            command.default_time = row["defaultTime"]->GetValue<float>();
+            command.command_group = row["commandGroup"]->GetValue<int>();
+            command.target_type = row["targetType"]->GetValue<int>();
+            command.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
             // Load Bitmasks
             std::vector<int> bits;
             bits.push_back(row["L:standing"]->GetValue<int>());
@@ -308,7 +302,7 @@ void CommandService::LoadProperties()
             bits.push_back(row["L:incapacitated"]->GetValue<int>());
             bits.push_back(row["L:dead"]->GetValue<int>());
             bits.push_back(row["L:blocking"]->GetValue<int>());
-            properties.allow_in_posture = properties.BuildBitmask(bits);
+            command.allow_in_posture = command.BuildBitmask(bits);
 
             std::vector<int> state_bits;
             state_bits.push_back(row["S:cover"]->GetValue<int>());
@@ -345,12 +339,12 @@ void CommandService::LoadProperties()
             state_bits.push_back(row["S:shipOperations"]->GetValue<int>());
             state_bits.push_back(row["S:shipGunner"]->GetValue<int>());
             state_bits.push_back(row["S:shipInterior"]->GetValue<int>());
-            properties.allow_in_states = properties.BuildBitmask(state_bits);
+            command.allow_in_states = command.BuildBitmask(state_bits);
 
-            command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
+            command_map_.insert(make_pair(command.name_crc, move(command)));
         }
         
-        LOG(info) << "Loaded (" << command_properties_map_.size() << ") Commands";
+        LOG(info) << "Loaded (" << command_map_.size() << ") Commands";
     }
     catch(sql::SQLException &e)
     {
@@ -383,8 +377,8 @@ void CommandService::RegisterCommandScripts()
             string tmp = string(native_name.begin(), native_name.end()-3);
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             
-            auto find_iter = command_properties_map_.find(anh::memcrc(tmp));
-            if (find_iter != end(command_properties_map_)
+            auto find_iter = command_map_.find(anh::memcrc(tmp));
+            if (find_iter != end(command_map_)
                 && find_iter->second.add_to_combat_queue == 0)
             {
                 SetCommandHandler(find_iter->second.name_crc, 
@@ -400,8 +394,8 @@ void CommandService::RegisterCommandScripts()
 bool CommandService::ValidateCommand(
     const shared_ptr<Creature>& actor,
 	const shared_ptr<Tangible>& target,
-    const swganh::messages::controllers::CommandQueueEnqueue& command,
-    const CommandProperties& command_properties,
+    const swganh::messages::controllers::CommandQueueEnqueue& command_queue,
+    const Command& command,
     const std::vector<CommandFilter>& filters)
 {
 	tuple<bool, uint32_t, uint32_t> result;
@@ -409,15 +403,15 @@ bool CommandService::ValidateCommand(
     bool all_run = all_of(
         begin(filters),
         end(filters),
-        [&result, actor, target, &command, &command_properties] (const CommandFilter& filter)->bool
+        [&result, actor, target, &command_queue, &command] (const CommandFilter& filter)->bool
     {
-        result = filter(actor, target, command, command_properties);
+        result = filter(actor, target, command_queue, command);
 		return get<0>(result);
     });
 
     if (!all_run)
     {
-        SendCommandQueueRemove(actor, command.action_counter, 0.0f, get<1>(result), get<2>(result));
+        SendCommandQueueRemove(actor, command_queue.action_counter, 0.0f, get<1>(result), get<2>(result));
     }
 
     return all_run;

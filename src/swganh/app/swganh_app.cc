@@ -23,6 +23,7 @@
 
 #include "swganh/chat/chat_service.h"
 #include "swganh/character/character_service.h"
+#include "swganh/command/command.h"
 #include "swganh/command/command_service.h"
 #include "swganh/command/command_filter.h"
 #include "swganh/connection/connection_service.h"
