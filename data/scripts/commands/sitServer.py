@@ -1,4 +1,3 @@
-import swgpy.object
 import swgpy.command,swgpy.object, swgpy.app
 
 class sitServerCommand(swgpy.command.Command):

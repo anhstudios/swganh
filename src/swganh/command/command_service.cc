@@ -173,7 +173,27 @@ void CommandService::ProcessCommand(
     try {
         if (ValidateCommand(actor, target, command_queue, command, process_filters_))
         {
+            // Reload the command in debug
+            // @TODO this is not pretty
+#ifdef _DEBUG
+            auto py_command = PythonCommand::LoadCommand(command->name, command->script_hook, true);
+            if (py_command != nullptr)
+            {
+                py_command->MergeCommand(*command);
+                auto py_handler = [=](
+                                    swganh::app::SwganhKernel* kernel,
+		                            const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+		                            const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+                                    const swganh::messages::controllers::CommandQueueEnqueue& cqe){
+                                        py_command->Run(kernel, actor, target, std::string(cqe.command_options.begin(), cqe.command_options.end()));
+                                    };
+                // overwrite existing handler
+                SetCommandHandler(py_command->name_crc, move(py_handler));
+                py_handler(kernel(), actor, target, command_queue);
+            }
+#else
             handler(kernel(), actor, target, command_queue);
+#endif
             SendCommandQueueRemove(actor, command_queue.action_counter, command_map_[command_queue.command_crc]->default_time, 0, 0);
         }
     } catch(const exception& e) {

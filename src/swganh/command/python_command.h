@@ -32,7 +32,7 @@ namespace command {
 class PythonCommand
 {
 public:
-    static std::shared_ptr<Command> LoadCommand(const std::string& name, const std::string& full_path);
+    static std::shared_ptr<Command> LoadCommand(const std::string& name, const std::string& full_path, bool reload = false);
 };
 
 

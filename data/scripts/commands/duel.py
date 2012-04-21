@@ -13,7 +13,6 @@ class duelCommand(swgpy.command.Command):
             # Start The Duel
             Tcontroller.SendSystemMessage(swgpy.OutOfBand("duel", "accept_self", swgpy.ProseType.TT, actor.id), False, False)
             Acontroller.SendSystemMessage(swgpy.OutOfBand("duel", "accept_target", swgpy.ProseType.TT, target.id), False, False)
-            # 
             actor.pvp_status = swgpy.PVPSTATUS.PvPStatus_Attackable
             target.pvp_status = swgpy.PVPSTATUS.PvPStatus_Attackable
             actor.activate_auto_attack();
