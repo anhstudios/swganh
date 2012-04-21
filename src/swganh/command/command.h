@@ -89,39 +89,39 @@ public:
         return bitmask;
     }
     template <typename T, typename Q>
-    void MergeValue(bool condition, T& out_value, Q& in_value)
+    void MergeValue(bool condition, T& local_value, Q& in_value)
     {
         if (condition)
         {
-            out_value = in_value;
+            local_value = in_value;
         }
     }
-
+    // Merging from Client Data
     void MergeCommand(Command& command)
     {
-        // Only some things make sense to merge
-        MergeValue(command.ability.length() > 0, ability, command.ability);
-        MergeValue(command.skill_mods.size() > 0, skill_mods, command.skill_mods);
-        MergeValue(command.allow_in_states > 0, allow_in_states, command.allow_in_states);
-        MergeValue(command.allow_in_posture > 0, allow_in_posture, command.allow_in_posture);
-        MergeValue(command.deny_in_locomotion > 0, deny_in_locomotion, command.deny_in_locomotion);
-        MergeValue(command.admin_level > 0, admin_level, command.admin_level);
-        MergeValue(command.default_time > 0.0f, default_time, command.default_time);
-        MergeValue(command.default_priority > 0, default_priority, command.default_priority);
-        MergeValue(command.command_group > 0, command_group, command.command_group);
-        MergeValue(command.max_range_to_target > 0.0f, max_range_to_target, command.max_range_to_target);
-        MergeValue(command.target_type > 0, target_type, command.target_type);
-        MergeValue(command.health_cost > 0, health_cost, command.health_cost);
-        MergeValue(command.health_cost_multiplier > 0, health_cost_multiplier, command.health_cost_multiplier);
-        MergeValue(command.action_cost > 0, action_cost, command.action_cost);
-        MergeValue(command.action_cost_multiplier > 0, action_cost_multiplier, command.action_cost_multiplier);
-        MergeValue(command.mind_cost > 0, mind_cost, command.mind_cost);
-        MergeValue(command.mind_cost_multiplier > 0, mind_cost_multiplier, command.mind_cost_multiplier);
-        MergeValue(command.delay_multiplier > 0.0f, delay_multiplier, command.delay_multiplier);
-        MergeValue(command.force_cost > 0, force_cost, command.force_cost);
-        MergeValue(command.force_cost_multiplier > 0, force_cost_multiplier, command.force_cost_multiplier);
-        MergeValue(command.animation_crc > 0, animation_crc, command.animation_crc);
-        MergeValue(command.required_weapon_group > 0, required_weapon_group, command.required_weapon_group);
+        // Only overrwrite default values
+        MergeValue(ability.length() == 0, ability, command.ability);
+        MergeValue(skill_mods.size() == 0, skill_mods, command.skill_mods);
+        MergeValue(allow_in_states == 0, allow_in_states, command.allow_in_states);
+        MergeValue(allow_in_posture == 0, allow_in_posture, command.allow_in_posture);
+        MergeValue(deny_in_locomotion == 0, deny_in_locomotion, command.deny_in_locomotion);
+        MergeValue(admin_level == 0, admin_level, command.admin_level);
+        MergeValue(default_time == 0.0f, default_time, command.default_time);
+        MergeValue(default_priority == 0, default_priority, command.default_priority);
+        MergeValue(command_group == 0, command_group, command.command_group);
+        MergeValue(max_range_to_target == 0.0f, max_range_to_target, command.max_range_to_target);
+        MergeValue(target_type == 0, target_type, command.target_type);
+        MergeValue(health_cost == 0, health_cost, command.health_cost);
+        MergeValue(health_cost_multiplier == 0, health_cost_multiplier, command.health_cost_multiplier);
+        MergeValue(action_cost == 0, action_cost, command.action_cost);
+        MergeValue(action_cost_multiplier == 0, action_cost_multiplier, command.action_cost_multiplier);
+        MergeValue(mind_cost == 0, mind_cost, command.mind_cost);
+        MergeValue(mind_cost_multiplier == 0, mind_cost_multiplier, command.mind_cost_multiplier);
+        MergeValue(delay_multiplier == 0.0f, delay_multiplier, command.delay_multiplier);
+        MergeValue(force_cost == 0, force_cost, command.force_cost);
+        MergeValue(force_cost_multiplier == 0, force_cost_multiplier, command.force_cost_multiplier);
+        MergeValue(animation_crc == 0, animation_crc, command.animation_crc);
+        MergeValue(required_weapon_group == 0, required_weapon_group, command.required_weapon_group);
     }
 
 };

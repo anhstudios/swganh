@@ -266,7 +266,9 @@ void CommandService::LoadCommands()
             auto command = PythonCommand::LoadCommand(name, script_hook);
             if (command == nullptr)
                 command = make_shared<Command>();
-
+            else
+                command->Setup();
+            
             command->script_hook = script_hook;
             string tmp = command->name;
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
@@ -275,11 +277,12 @@ void CommandService::LoadCommands()
             command->ability = row["characterAbility"]->GetValue<string>();
             command->ability_crc = anh::memcrc(command->ability);
 
-            command->add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
-            command->default_time = row["defaultTime"]->GetValue<float>();
-            command->command_group = row["commandGroup"]->GetValue<int>();
-            command->target_type = row["targetType"]->GetValue<int>();
-            command->max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
+            Command client_data;
+            client_data.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
+            client_data.default_time = row["defaultTime"]->GetValue<float>();
+            client_data.command_group = row["commandGroup"]->GetValue<int>();
+            client_data.target_type = row["targetType"]->GetValue<int>();
+            client_data.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
             // Load Bitmasks
             std::vector<int> bits;
             bits.push_back(row["L:standing"]->GetValue<int>());
@@ -304,7 +307,7 @@ void CommandService::LoadCommands()
             bits.push_back(row["L:incapacitated"]->GetValue<int>());
             bits.push_back(row["L:dead"]->GetValue<int>());
             bits.push_back(row["L:blocking"]->GetValue<int>());
-            command->allow_in_posture = command->BuildBitmask(bits);
+            client_data.allow_in_posture = client_data.BuildBitmask(bits);
 
             std::vector<int> state_bits;
             state_bits.push_back(row["S:cover"]->GetValue<int>());
@@ -341,9 +344,11 @@ void CommandService::LoadCommands()
             state_bits.push_back(row["S:shipOperations"]->GetValue<int>());
             state_bits.push_back(row["S:shipGunner"]->GetValue<int>());
             state_bits.push_back(row["S:shipInterior"]->GetValue<int>());
-            command->allow_in_states = command->BuildBitmask(state_bits);
+            client_data.allow_in_states = client_data.BuildBitmask(state_bits);
 
-            command_map_.insert(make_pair(command->name_crc, move(command)));
+            command->MergeCommand(client_data);            
+
+            command_map_.insert(make_pair(command->name_crc, command));
         }
         LOG(info) << "Loaded (" << command_map_.size() << ") Commands";
     }

@@ -32,18 +32,13 @@ std::shared_ptr<Command> PythonCommand::LoadCommand(const std::string& name, con
         string py_path = "import sys; sys.path.append('.');sys.path.append('" + path + "');";
         Py_Initialize();
         PyRun_SimpleString(py_path.c_str());
-        boost::python::object mm = boost::python::import("__main__");
-        boost::python::object mn = mm.attr("__dict__");
 
-        boost::python::exec(("import " + name).c_str(), mn);
-
-        boost::python::object py_object = boost::python::eval((name + "." + name + "Command()").c_str(), mn);
-        
-        extract<Command*> comm(py_object);
-        if (comm.check())
+        ::object py_command = boost::python::import(name.c_str());
+        ::object command_class = py_command.attr((name + "Command").c_str())();
+        if (command_class != NULL)
         {
-            command = std::shared_ptr<Command>(comm());
-            command->Setup();
+            boost::shared_ptr<Command> command_ptr = extract<boost::shared_ptr<Command>>(command_class);
+            command = std::shared_ptr<Command>(command_ptr.get(), [command_class](Command*){});
         }
     }
     catch(...)

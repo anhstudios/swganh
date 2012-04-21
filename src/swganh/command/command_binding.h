@@ -32,7 +32,7 @@ void exportCommand()
     class_<std::vector<std::string>>("SkillMods")
         .def(vector_indexing_suite<std::vector<std::string>>())
         ;
-    class_<CommandWrap, boost::noncopyable>("Command")
+    class_<CommandWrap, std::shared_ptr<CommandWrap>, boost::noncopyable>("Command")
         .def("SetUp", pure_virtual(&CommandWrap::Setup))
         .def("Run", pure_virtual(&CommandWrap::Run))
         .def_readwrite("name", &CommandWrap::name)
