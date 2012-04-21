@@ -1,13 +1,6 @@
-import swgpy.object, swgpy.app
-from swgpy.command import *
+import swgpy.command,swgpy.object, swgpy.app
      
-class standCommand(Command):
-    # Setup Value
-    def SetUp(self):
-        print('setup')
-        self.name = "stand"
-        self.health_cost = 10
+class standCommand(swgpy.command.Command):
     def Run(self, kernel, actor, target, command_string):
-        print('run')
         actor.posture = swgpy.POSTURE.UPRIGHT
         actor.run_speed = 5.75      

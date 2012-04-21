@@ -173,8 +173,10 @@ void CommandService::ProcessCommand(
     try {
         if (ValidateCommand(actor, target, command_queue, command, process_filters_))
         {
-		    handler(kernel(), actor, target, command_queue);
-            
+#ifdef _DEBUG
+            auto py_command = PythonCommand::LoadCommand(command->name, command->script_hook);		    
+#endif
+            handler(kernel(), actor, target, command_queue);
             SendCommandQueueRemove(actor, command_queue.action_counter, command_map_[command_queue.command_crc]->default_time, 0, 0);
         }
     } catch(const exception& e) {
