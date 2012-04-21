@@ -179,7 +179,10 @@ void CommandService::ProcessCommand(
         }
     } catch(const exception& e) {
         LOG(warning) << "Error Processing Command: " <<  command_map_[command_queue.command_crc]->name << "\n" << e.what();
+    } catch(const boost::python::error_already_set&){
+        PyErr_Print();
     }
+
 
 }
 
@@ -188,7 +191,7 @@ void CommandService::onStart()
     script_prefix_ = kernel()->GetAppConfig().script_directory;
 
 	LoadCommands();
-    RegisterCommandScripts();
+    //RegisterCommandScripts();
 
     simulation_service_ = kernel()->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
@@ -349,6 +352,13 @@ void CommandService::LoadCommands()
             command->MergeCommand(client_data);            
 
             command_map_.insert(make_pair(command->name_crc, command));
+            SetCommandHandler(command->name_crc, [=](
+                            swganh::app::SwganhKernel* kernel,
+		                    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+		                    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+                            const swganh::messages::controllers::CommandQueueEnqueue& cqe){
+                                command->Run(kernel, actor, target, std::string(cqe.command_options.begin(), cqe.command_options.end()));
+                            });
         }
         LOG(info) << "Loaded (" << command_map_.size() << ") Commands";
     }

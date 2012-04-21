@@ -6,7 +6,10 @@
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "command.h"
-#include "command_properties.h"
+
+#include "swganh/app/swganh_kernel.h"
+#include "swganh/object/creature/creature.h"
+#include "swganh/messages/controllers/command_queue_enqueue.h"
 
 using namespace swganh::command;
 using namespace boost::python;
@@ -21,11 +24,14 @@ void exportCommand()
         {
             return (void)this->get_override("SetUp")();
         }
-        void Run()
+        void Run(swganh::app::SwganhKernel* kernel,
+		const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+        const std::string& command_string)
         {
             if (override Run = this->get_override("Run"))
-                return (void)Run();
-            return Command::Run();
+                return (void)Run(boost::python::ptr(kernel), actor, target, command_string);
+            return Command::Run(kernel, actor, target, command_string);
         }
     };
     
@@ -33,8 +39,8 @@ void exportCommand()
         .def(vector_indexing_suite<std::vector<std::string>>())
         ;
     class_<CommandWrap, std::shared_ptr<CommandWrap>, boost::noncopyable>("Command")
-        .def("SetUp", pure_virtual(&CommandWrap::Setup))
-        .def("Run", pure_virtual(&CommandWrap::Run))
+        .def("SetUp", &CommandWrap::Setup)
+        .def("Run", &CommandWrap::Run)
         .def_readwrite("name", &CommandWrap::name)
         .def_readwrite("ability", &CommandWrap::ability)
         .def_readwrite("skill_mods", &CommandWrap::skill_mods)
