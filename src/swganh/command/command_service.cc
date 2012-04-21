@@ -187,7 +187,7 @@ void CommandService::onStart()
 {
     script_prefix_ = kernel()->GetAppConfig().script_directory;
 
-	LoadProperties();
+	LoadCommands();
     RegisterCommandScripts();
 
     simulation_service_ = kernel()->GetServiceManager()->GetService<SimulationService>("SimulationService");
@@ -250,7 +250,7 @@ void CommandService::onStart()
     });
 }
 
-void CommandService::LoadProperties()
+void CommandService::LoadCommands()
 {
     try {
         auto tre_archive = kernel()->GetTreArchive();
@@ -343,13 +343,24 @@ void CommandService::LoadProperties()
 
             command_map_.insert(make_pair(command.name_crc, move(command)));
         }
-        
+        LoadScripts();
         LOG(info) << "Loaded (" << command_map_.size() << ") Commands";
     }
-    catch(sql::SQLException &e)
+    catch(...)
     {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "Error loading commands from Client Command Table " << __FILE__ << ":" << __LINE__;        
+    }
+}
+
+void CommandService::LoadScripts()
+{
+    // Loop through each command from the client file table and try and find it in the command map
+    for (auto& com : command_map_)
+    {
+        PythonCommand p_command(com.second, com.second.script_hook);
+        Command command = p_command.LoadCommandValues(com.second.script_hook);
+        com.second.MergeCommand(command);
+
     }
 }
 

@@ -102,7 +102,9 @@ namespace command {
             const Command& command,
             const CommandHandler& handler);
 
-        void LoadProperties();
+        void LoadCommands();
+
+        void LoadScripts();
 
         void RegisterCommandScripts();
         

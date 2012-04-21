@@ -5,6 +5,9 @@
 
 #include "swganh/scripting/python_event.h"
 
+#include <boost/algorithm/string.hpp>
+#include "swganh/command/command_binding.h"
+
 using namespace boost::python;
 using namespace std;
 using namespace swganh::command;
@@ -16,6 +19,25 @@ using namespace swganh::object::tangible;
 PythonCommand::PythonCommand(const Command& properties, const std::string& script_path)
 : script_(PythonScript(script_path))
 {
+}
+Command PythonCommand::LoadCommandValues(const std::string& name)
+{
+    Command command;
+    try {
+
+        script_.Run();
+
+        extract<Command> comm(script_.GetGlobals()["command"]);
+        if (comm.check())
+            command = comm();
+    }
+    catch(...)
+    {
+        // mute errors
+        PyErr_Clear();
+    }
+
+    return command;
 }
 
 void PythonCommand::operator()(swganh::app::SwganhKernel* kernel, shared_ptr<Creature> actor, shared_ptr<Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)

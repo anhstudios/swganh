@@ -35,7 +35,7 @@ class PythonCommand
 {
 public:
     PythonCommand(const Command& command_properties, const std::string& script_path);
-
+    Command LoadCommandValues(const std::string& name);
     void operator()(swganh::app::SwganhKernel* kernel, std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
 private:
     swganh::scripting::PythonScript script_;
