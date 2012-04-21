@@ -173,9 +173,6 @@ void CommandService::ProcessCommand(
     try {
         if (ValidateCommand(actor, target, command_queue, command, process_filters_))
         {
-#ifdef _DEBUG
-            auto py_command = PythonCommand::LoadCommand(command->name, command->script_hook);		    
-#endif
             handler(kernel(), actor, target, command_queue);
             SendCommandQueueRemove(actor, command_queue.action_counter, command_map_[command_queue.command_crc]->default_time, 0, 0);
         }
@@ -274,6 +271,7 @@ void CommandService::LoadCommands()
             else
                 command->Setup();
             
+            command->name = name;
             command->script_hook = script_hook;
             string tmp = command->name;
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
@@ -364,9 +362,9 @@ void CommandService::LoadCommands()
         }
         LOG(info) << "Loaded (" << command_map_.size() << ") Commands";
     }
-    catch(...)
+    catch(const std::exception& ex)
     {
-        LOG(error) << "Error loading commands from Client Command Table " << __FILE__ << ":" << __LINE__;        
+        LOG(error) << "Error loading commands from Client Command Table " << ex.what() << __FILE__ << ":" << __LINE__;        
     }
 }
 
@@ -395,12 +393,12 @@ void CommandService::RegisterCommandScripts()
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             
             auto find_iter = command_map_.find(anh::memcrc(tmp));
-            if (find_iter != end(command_map_)
-                && find_iter->second->add_to_combat_queue == 0)
-            {
-                SetCommandHandler(find_iter->second->name_crc, 
-                    PythonCommand(find_iter->second, string(begin(native_path), end(native_path))));
-            }
+            //if (find_iter != end(command_map_)
+            //    && find_iter->second->add_to_combat_queue == 0)
+            //{
+            //    SetCommandHandler(find_iter->second->name_crc, 
+            //        PythonCommand(find_iter->second, string(begin(native_path), end(native_path))));
+            //}
         });
 
     } catch(const std::exception& e) {

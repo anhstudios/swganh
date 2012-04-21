@@ -22,7 +22,9 @@ void exportCommand()
     {
         void Setup()
         {
-            return (void)this->get_override("SetUp")();
+            if (override Run = this->get_override("SetUp"))
+                return (void)this->get_override("SetUp")();
+            return Command::Setup();
         }
         void Run(swganh::app::SwganhKernel* kernel,
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
