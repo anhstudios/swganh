@@ -6,7 +6,7 @@
 #include "swganh/scripting/python_event.h"
 
 #include <boost/algorithm/string.hpp>
-#include "swganh/command/command_binding.h"
+#include <boost/filesystem.hpp>
 
 using namespace boost::python;
 using namespace std;
@@ -16,25 +16,40 @@ using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::object::tangible;
 
-PythonCommand::PythonCommand(const Command& properties, const std::string& script_path)
+PythonCommand::PythonCommand(const shared_ptr<Command>& properties, const std::string& script_path)
 : script_(PythonScript(script_path))
 {
 }
-Command PythonCommand::LoadCommandValues(const std::string& name)
+std::shared_ptr<Command> PythonCommand::LoadCommand(const std::string& name, const std::string& full_path)
 {
-    Command command;
+    std::shared_ptr<Command> command;
     try {
+        // Don't try if the file doesn't exist
+        if (!boost::filesystem::exists(full_path))
+            return command;
+        // append command dir
+        string path = full_path.substr(0, full_path.find_last_of("/"));
+        string py_path = "import sys; sys.path.append('.');sys.path.append('" + path + "');";
+        Py_Initialize();
+        PyRun_SimpleString(py_path.c_str());
+        boost::python::object mm = boost::python::import("__main__");
+        boost::python::object mn = mm.attr("__dict__");
 
-        script_.Run();
+        boost::python::exec(("import " + name).c_str(), mn);
 
-        extract<Command> comm(script_.GetGlobals()["command"]);
+        boost::python::object py_object = boost::python::eval((name + "." + name + "Command()").c_str(), mn);
+        
+        extract<Command*> comm(py_object);
         if (comm.check())
-            command = comm();
+        {
+            command = std::shared_ptr<Command>(comm());
+            command->Setup();
+        }
     }
     catch(...)
     {
         // mute errors
-        PyErr_Clear();
+        //PyErr_Clear();
     }
 
     return command;

@@ -34,8 +34,8 @@ namespace command {
 class PythonCommand
 {
 public:
-    PythonCommand(const Command& command_properties, const std::string& script_path);
-    Command LoadCommandValues(const std::string& name);
+    PythonCommand(const std::shared_ptr<Command>& command_properties, const std::string& script_path);
+    static std::shared_ptr<Command> LoadCommand(const std::string& name, const std::string& full_path);
     void operator()(swganh::app::SwganhKernel* kernel, std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
 private:
     swganh::scripting::PythonScript script_;

@@ -60,12 +60,12 @@ namespace command {
         const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
 		const std::shared_ptr<swganh::object::tangible::Tangible>&, // target object
         const swganh::messages::controllers::CommandQueueEnqueue&,
-        const Command&)	// action
+        const std::shared_ptr<Command>&)	// action
     > CommandFilter;
 
     typedef std::map<
 		uint32_t,
-		Command
+		std::shared_ptr<Command>
 	> CommandMap;
     
     class CommandService: public swganh::base::BaseService
@@ -92,19 +92,17 @@ namespace command {
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
 			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
             const swganh::messages::controllers::CommandQueueEnqueue& command_queue, 
-            const Command& command,
+            const std::shared_ptr<Command>& command,
             const std::vector<CommandFilter>& filters);
         
         void ProcessCommand(
 			const std::shared_ptr<swganh::object::creature::Creature>& actor,
 			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
 			const swganh::messages::controllers::CommandQueueEnqueue& command_queue,
-            const Command& command,
+            const std::shared_ptr<Command>& command,
             const CommandHandler& handler);
 
         void LoadCommands();
-
-        void LoadScripts();
 
         void RegisterCommandScripts();
         

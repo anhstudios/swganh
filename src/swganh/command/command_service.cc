@@ -114,7 +114,7 @@ void CommandService::EnqueueCommand(
         return;
     }
 
-    if (properties_iter->second.add_to_combat_queue && actor->HasState(COMBAT))
+    if (properties_iter->second->add_to_combat_queue && actor->HasState(COMBAT))
     {
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
 
@@ -123,8 +123,8 @@ void CommandService::EnqueueCommand(
         {
             // for combat actions set a default time of 2 seconds if none exist
             uint64_t default_time = 2000;
-            if (properties_iter->second.default_time > 0)
-                default_time = static_cast<uint64_t>(properties_iter->second.default_time * 1000);
+            if (properties_iter->second->default_time > 0)
+                default_time = static_cast<uint64_t>(properties_iter->second->default_time * 1000);
             find_iter->second->PushTask(
                 milliseconds(default_time),
                 bind(&CommandService::ProcessCommand,
@@ -166,7 +166,7 @@ void CommandService::ProcessCommand(
     const shared_ptr<Creature>& actor,
     const shared_ptr<Tangible>& target,
     const swganh::messages::controllers::CommandQueueEnqueue& command_queue,
-    const Command& command,
+    const shared_ptr<Command>& command,
     const CommandHandler& handler
     )
 {
@@ -175,10 +175,10 @@ void CommandService::ProcessCommand(
         {
 		    handler(kernel(), actor, target, command_queue);
             
-            SendCommandQueueRemove(actor, command_queue.action_counter, command_map_[command_queue.command_crc].default_time, 0, 0);
+            SendCommandQueueRemove(actor, command_queue.action_counter, command_map_[command_queue.command_crc]->default_time, 0, 0);
         }
     } catch(const exception& e) {
-        LOG(warning) << "Error Processing Command: " <<  command_map_[command_queue.command_crc].name << "\n" << e.what();
+        LOG(warning) << "Error Processing Command: " <<  command_map_[command_queue.command_crc]->name << "\n" << e.what();
     }
 
 }
@@ -260,24 +260,26 @@ void CommandService::LoadCommands()
         while(reader.Next())
         {
             auto row = reader.GetRow();
-            Command command;
             // Set a default script hook
-            
-            command.name = row["commandName"]->GetValue<string>();
-            // @TODO: Make this a config value
-            command.script_hook = script_prefix_ + "/commands/" + command.name + ".py";
-            string tmp = command.name;
-            transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-            command.name_crc = anh::memcrc(tmp);
-            
-            command.ability = row["characterAbility"]->GetValue<string>();
-            command.ability_crc = anh::memcrc(command.ability);
+            string name = row["commandName"]->GetValue<string>();
+            string script_hook = script_prefix_ + "/commands/" + name + ".py";
+            auto command = PythonCommand::LoadCommand(name, script_hook);
+            if (command == nullptr)
+                command = make_shared<Command>();
 
-            command.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
-            command.default_time = row["defaultTime"]->GetValue<float>();
-            command.command_group = row["commandGroup"]->GetValue<int>();
-            command.target_type = row["targetType"]->GetValue<int>();
-            command.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
+            command->script_hook = script_hook;
+            string tmp = command->name;
+            transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
+            command->name_crc = anh::memcrc(tmp);
+            
+            command->ability = row["characterAbility"]->GetValue<string>();
+            command->ability_crc = anh::memcrc(command->ability);
+
+            command->add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
+            command->default_time = row["defaultTime"]->GetValue<float>();
+            command->command_group = row["commandGroup"]->GetValue<int>();
+            command->target_type = row["targetType"]->GetValue<int>();
+            command->max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
             // Load Bitmasks
             std::vector<int> bits;
             bits.push_back(row["L:standing"]->GetValue<int>());
@@ -302,7 +304,7 @@ void CommandService::LoadCommands()
             bits.push_back(row["L:incapacitated"]->GetValue<int>());
             bits.push_back(row["L:dead"]->GetValue<int>());
             bits.push_back(row["L:blocking"]->GetValue<int>());
-            command.allow_in_posture = command.BuildBitmask(bits);
+            command->allow_in_posture = command->BuildBitmask(bits);
 
             std::vector<int> state_bits;
             state_bits.push_back(row["S:cover"]->GetValue<int>());
@@ -339,28 +341,15 @@ void CommandService::LoadCommands()
             state_bits.push_back(row["S:shipOperations"]->GetValue<int>());
             state_bits.push_back(row["S:shipGunner"]->GetValue<int>());
             state_bits.push_back(row["S:shipInterior"]->GetValue<int>());
-            command.allow_in_states = command.BuildBitmask(state_bits);
+            command->allow_in_states = command->BuildBitmask(state_bits);
 
-            command_map_.insert(make_pair(command.name_crc, move(command)));
+            command_map_.insert(make_pair(command->name_crc, move(command)));
         }
-        LoadScripts();
         LOG(info) << "Loaded (" << command_map_.size() << ") Commands";
     }
     catch(...)
     {
         LOG(error) << "Error loading commands from Client Command Table " << __FILE__ << ":" << __LINE__;        
-    }
-}
-
-void CommandService::LoadScripts()
-{
-    // Loop through each command from the client file table and try and find it in the command map
-    for (auto& com : command_map_)
-    {
-        PythonCommand p_command(com.second, com.second.script_hook);
-        Command command = p_command.LoadCommandValues(com.second.script_hook);
-        com.second.MergeCommand(command);
-
     }
 }
 
@@ -390,9 +379,9 @@ void CommandService::RegisterCommandScripts()
             
             auto find_iter = command_map_.find(anh::memcrc(tmp));
             if (find_iter != end(command_map_)
-                && find_iter->second.add_to_combat_queue == 0)
+                && find_iter->second->add_to_combat_queue == 0)
             {
-                SetCommandHandler(find_iter->second.name_crc, 
+                SetCommandHandler(find_iter->second->name_crc, 
                     PythonCommand(find_iter->second, string(begin(native_path), end(native_path))));
             }
         });
@@ -406,7 +395,7 @@ bool CommandService::ValidateCommand(
     const shared_ptr<Creature>& actor,
 	const shared_ptr<Tangible>& target,
     const swganh::messages::controllers::CommandQueueEnqueue& command_queue,
-    const Command& command,
+    const shared_ptr<Command>& command,
     const std::vector<CommandFilter>& filters)
 {
 	tuple<bool, uint32_t, uint32_t> result;

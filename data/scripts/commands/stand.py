@@ -1,7 +1,7 @@
 import swgpy.object
 from swgpy.command import *
      
-class StandCommand(Command):
+class standCommand(Command):
     # Setup Value
     def SetUp(self):
         print('setup')
@@ -10,6 +10,3 @@ class StandCommand(Command):
     def Run(actor):
         actor.posture = swgpy.POSTURE.UPRIGHT
         actor.run_speed = 5.75      
-
-command = StandCommand()
-command.SetUp()

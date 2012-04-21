@@ -39,31 +39,31 @@ static std::tuple<bool, uint32_t, uint32_t> TargetCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const Command& command_data);
+        const std::shared_ptr<Command>& command_data);
 
 static std::tuple<bool, uint32_t, uint32_t> PostureCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const Command& command_data);
+        const std::shared_ptr<Command>& command_data);
 
 static std::tuple<bool, uint32_t, uint32_t> StateCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const Command& command_data);
+        const std::shared_ptr<Command>& command_data);
 
 static std::tuple<bool, uint32_t, uint32_t> AbilityCheckFilter(
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const Command& command_data);
+        const std::shared_ptr<Command>& command_data);
 
 static std::tuple<bool, uint32_t, uint32_t> CombatTargetCheckFilter(
         const std::shared_ptr<swganh::object::creature::Creature>& actor, 
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target, 
 		const swganh::messages::controllers::CommandQueueEnqueue& command_queue_enqueue,
-        const Command& command_data);
+        const std::shared_ptr<Command>& command_data);
 
     /**
     * gets the lowest common bit from two bit masks.

@@ -115,7 +115,7 @@ void CombatService::LoadProperties(swganh::command::CommandMap command_propertie
     {
 		// load up all the combat commands into their own map
         // @TODO: Temporary check for now, figure out what command_group bitmask is..
-		if (command.second.add_to_combat_queue > 0)
+		if (command.second->add_to_combat_queue > 0)
 		{
 			combat_properties_map_.insert(command);
             //RegisterCombatScript(command.second);
@@ -184,7 +184,7 @@ void CombatService::SendCombatAction(
         if (find_iter == end(combat_properties_map_))
             return;
     auto command_property = find_iter->second;
-    CombatData combat_data(p_object, command_property);
+    CombatData combat_data(p_object, *command_property);
     if (InitiateCombat(attacker, target, command_message))
     {
         string string_hit = "";
@@ -206,7 +206,7 @@ void CombatService::SendCombatAction(
             creature_target = static_pointer_cast<Creature>(target);
         // Apply Damage
         //ApplyDamage(attacker, creature_target, combat_data, damage, GetDamagingPool(combat_data));
-        if (command_property.name == "attack" && attacker->IsAutoAttacking()) {
+        if (command_property->name == "attack" && attacker->IsAutoAttacking()) {
             command_service_->EnqueueCommand(attacker, target, command_message);
             //command_service_->EnqueueCommand(creature_target, attacker, command_message);
         }
