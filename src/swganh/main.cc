@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 
 #ifdef WIN32
                 std::system("cls");
-#elseif
+#else
                 std::system("clear");
 #endif
                 std::cout << "swgpy console " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << std::endl;
