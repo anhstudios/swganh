@@ -66,7 +66,11 @@ int main(int argc, char* argv[])
                 swganh::scripting::ScopedGilLock lock;
                 anh::Logger::getInstance().DisableConsoleLogging();
 
+#ifdef WIN32
                 std::system("cls");
+#elseif
+                std::system("clear");
+#endif
                 std::cout << "swgpy console " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << std::endl;
 
                 boost::python::object main = boost::python::object (boost::python::handle<>(boost::python::borrowed(
