@@ -62,12 +62,18 @@ int main(int argc, char* argv[])
 				
                 break;
             } else if(cmd.compare("console") == 0) {
+                anh::Logger::getInstance().DisableConsoleLogging();
+
+                std::system("cls");
                 std::cout << "swgpy console " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << std::endl;
-                
+
                 swganh::scripting::ScopedGilLock lock;
                 PyRun_InteractiveLoop(stdin, "<stdin>");
+
+                anh::Logger::getInstance().EnableConsoleLogging();
             } else {
                 LOG(warning) << "Invalid command received: " << cmd;
+                std::cout << "Type exit or (q)uit to quit" << std::endl;
             }
         }
 
