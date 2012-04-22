@@ -39,9 +39,7 @@ int main(int argc, char* argv[])
 
         app.Initialize(argc, argv);
 
-        boost::thread application_thread([&app] () {
-            app.Start();
-        });
+        app.Start();
 
         for (;;) {
             string cmd;
@@ -52,8 +50,6 @@ int main(int argc, char* argv[])
                 
                 // Stop the application and join the thread until it's finished.
                 app.Stop();
-                if (application_thread.joinable())
-                    application_thread.join();
 				
                 break;
             } else {
