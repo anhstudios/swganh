@@ -25,7 +25,7 @@ public:
 
     virtual bool IsRunning() = 0;
 
-    virtual std::shared_ptr<KernelInterface> GetAppKernel() = 0;
+    virtual KernelInterface* GetAppKernel() const = 0;
 };
 
 }}  // namespace anh::app
