@@ -15,28 +15,27 @@ using namespace swganh::command;
 using namespace boost::python;
 using namespace std;
 
+struct CommandWrap : Command, wrapper<Command>
+{
+    void Setup()
+    {
+        if (override Run = this->get_override("SetUp"))
+            return (void)this->get_override("SetUp")();
+        return Command::Setup();
+    }
+    void Run(swganh::app::SwganhKernel* kernel,
+	const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+	const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+    const std::string& command_string)
+    {
+        if (override Run = this->get_override("Run"))
+            return (void)Run(boost::python::ptr(kernel), actor, target, command_string);
+        return Command::Run(kernel, actor, target, command_string);
+    }
+};
+
 void exportCommand()
 {
-
-    struct CommandWrap : Command, wrapper<Command>
-    {
-        void Setup()
-        {
-            if (override Run = this->get_override("SetUp"))
-                return (void)this->get_override("SetUp")();
-            return Command::Setup();
-        }
-        void Run(swganh::app::SwganhKernel* kernel,
-		const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
-        const std::string& command_string)
-        {
-            if (override Run = this->get_override("Run"))
-                return (void)Run(boost::python::ptr(kernel), actor, target, command_string);
-            return Command::Run(kernel, actor, target, command_string);
-        }
-    };
-    
     class_<std::vector<std::string>>("SkillMods")
         .def(vector_indexing_suite<std::vector<std::string>>())
         ;
@@ -60,7 +59,7 @@ void exportCommand()
         .def_readwrite("mind_cost_multiplier", &CommandWrap::mind_cost_multiplier)
         .def_readwrite("force_cost", &CommandWrap::force_cost)
         .def_readwrite("force_cost_multiplier", &CommandWrap::force_cost_multiplier)
-        .def_readwrite("animation_crc", &CommandWrap::animation_crc)
+        .def_readwrite("animation", &CommandWrap::animation)
         .def_readwrite("required_weapon_group", &CommandWrap::required_weapon_group)
         .def_readwrite("deny_in_locomotion", &CommandWrap::deny_in_locomotion)
         .def_readwrite("allow_in_state", &CommandWrap::allow_in_states)

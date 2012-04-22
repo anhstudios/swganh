@@ -573,7 +573,7 @@ void CombatService::SendCombatActionMessage(
     string animation)
 {
         CombatActionMessage cam;
-        if ((uint32_t)combat_command.animation_crc == 0 && animation.length() == 0)
+        if ((uint32_t)combat_command.animation.ident() == 0 && animation.length() == 0)
             cam.action_crc = CombatCommand::DefaultAttacks[generator_.Rand(0, 9)];
         else
         {
@@ -582,7 +582,7 @@ void CombatService::SendCombatActionMessage(
                 cam.action_crc = anh::HashString(animation);
             }
             else
-                cam.action_crc = combat_command.animation_crc;
+                cam.action_crc = combat_command.animation.ident();
         }
         cam.attacker_id = attacker->GetObjectId();
         cam.weapon_id = attacker->GetWeaponId();

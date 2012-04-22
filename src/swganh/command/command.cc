@@ -32,7 +32,7 @@ Command::Command(void)
     , delay_multiplier(0)
     , force_cost(0)
     , force_cost_multiplier(0)
-    , animation_crc(0)
+    , animation("")
     , required_weapon_group(0)
     , deny_in_locomotion(0)
     , allow_in_posture(0)
@@ -69,7 +69,7 @@ void Command::MergeCommand(Command& command)
     MergeValue(delay_multiplier == 0.0f, delay_multiplier, command.delay_multiplier);
     MergeValue(force_cost == 0, force_cost, command.force_cost);
     MergeValue(force_cost_multiplier == 0, force_cost_multiplier, command.force_cost_multiplier);
-    MergeValue(animation_crc == 0, animation_crc, command.animation_crc);
+    MergeValue(animation.ident() == 0, animation, command.animation);
     MergeValue(required_weapon_group == 0, required_weapon_group, command.required_weapon_group);
 }
 

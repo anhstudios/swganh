@@ -8,6 +8,8 @@
 #include <memory>
 #include <functional>
 
+#include "anh/hash_string.h"
+
 namespace swganh {
 
 //forward declare
@@ -63,7 +65,7 @@ public:
     float delay_multiplier;
     uint32_t force_cost;
     uint32_t force_cost_multiplier;
-    uint32_t animation_crc;
+    anh::HashString animation;
     uint32_t required_weapon_group;
     uint64_t deny_in_locomotion;
     uint64_t allow_in_posture;

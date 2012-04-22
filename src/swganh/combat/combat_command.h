@@ -21,18 +21,36 @@ struct CombatCommand : swganh::command::Command
     // TEMP
     class StateEffect;
     class DotEffect;
+
     CombatCommand(swganh::command::Command& command) ;
 
-    int min_damage;
-    int max_damage;
+    uint32_t min_damage;
+    uint32_t max_damage;
 
     float damage_multiplier;
-    int accuracy_bonus;
+    uint32_t accuracy_bonus;
     float speed_multiplier;
-    int pool;
-    
-    int attack_delay_chance;
-    int state_duration;
+    int8_t pool;
+
+    std::string combat_spam;
+    uint8_t trail1;
+    uint8_t trail2;
+    float health_hit_chance;
+    float action_hit_chance;
+    float mind_hit_chance;
+    float knockdown_hit_chance;
+    float dizzy_hit_chance;
+    float blind_chance;
+    float stun_chance;
+    float intimidate_chance;
+    float posture_down_chance;
+    float extended_range;
+    float cone_angle;
+    float range;
+    float area_range;
+
+    uint32_t attack_delay_chance;
+    uint32_t state_duration;
 
     // DoTs
     uint32_t dot_duration;
@@ -41,28 +59,9 @@ struct CombatCommand : swganh::command::Command
     uint32_t dot_strength;
     float dot_potency;
 
-    int range;
-    int cone_angle;
-    int area_range;
-
-    anh::HashString animation_crc;
-
-    void GetPythonData(boost::python::object global);
-
     bool IsRandomPool();
     int GetDamagingPool();
-    
-    template <typename T>
-    void ExtractData(boost::python::object& p_object, std::string key, T& extract_value)
-    {
-        if (p_object.contains(key))
-        {
-            boost::python::extract<T> tmp_x(p_object[key]);
-            if (tmp_x.check())
-                extract_value = tmp_x();
-        }
-    }
-    
+
     static std::string HIT_spam() { return "_hit"; }
     static std::string BLOCK_spam() { return "_block"; }
     static std::string DODGE_spam() { return "_evade"; }
