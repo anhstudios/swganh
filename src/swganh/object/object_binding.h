@@ -34,34 +34,27 @@ using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
 
-namespace swganh {
-namespace object {
-struct ObjectWrapper : Object, wrapper<Object>
-{
-};
-}}
-
 void exportObject()
 {
     //std::shared_ptr<ObjectController> (ObjectWrapper::*GetControllerPtr)() = &ObjectWrapper::GetController;
 
-    typedef void (ObjectWrapper::*NotifyObserversFunc)(const anh::ByteBuffer& message);
+    typedef void (Object::*NotifyObserversFunc)(const anh::ByteBuffer& message);
 
-    class_<ObjectWrapper, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from", no_init)
-		.add_property("id", &ObjectWrapper::GetObjectId, "Gets The id of the object")
-		.add_property("scene_id", &ObjectWrapper::GetSceneId, "Gets the scene id the object is in")
-		.add_property("type", &ObjectWrapper::GetType, "Gets the type of the object")
-		.add_property("position", &ObjectWrapper::GetPosition, &ObjectWrapper::SetPosition, "Gets and Sets the position of the object, using :class:`.Vec3`")
-		.add_property("heading", &ObjectWrapper::GetHeading, "Gets the heading as an int of the object")
-		.add_property("orientation", &ObjectWrapper::GetOrientation, &ObjectWrapper::SetOrientation, "Property to get or set the orientation of the object")
-		.add_property("template", &ObjectWrapper::GetTemplate, &ObjectWrapper::SetTemplate, "the .iff file associated with this object"					)
-		.add_property("volume", &ObjectWrapper::GetVolume, &ObjectWrapper::SetVolume, "Property to get or set the volume of the object (how much it can store)")
-		.add_property("stf_name_file", &ObjectWrapper::GetStfNameFile, "gets the stf name file of the object")
-		.add_property("stf_name_string", &ObjectWrapper::GetStfNameString, "gets the stf name file of the object")
-		.def("stf_name", &ObjectWrapper::SetStfName, "sets the full stf name, takes stf_name_file and stf_name_string as parameters")
-		.add_property("custom_name", &ObjectWrapper::GetCustomName, &ObjectWrapper::SetCustomName, "Property to get and set the custom name")
-		.def("NotifyObservers", NotifyObserversFunc(&ObjectWrapper::NotifyObservers), "Notifies Observers of the passed in message")
-        .def("Controller", &ObjectWrapper::GetController, "Get the :class:`.ObjectController` of the object")
+    class_<Object, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from", no_init)
+		.add_property("id", &Object::GetObjectId, "Gets The id of the object")
+		.add_property("scene_id", &Object::GetSceneId, "Gets the scene id the object is in")
+		.add_property("type", &Object::GetType, "Gets the type of the object")
+		.add_property("position", &Object::GetPosition, &Object::SetPosition, "Gets and Sets the position of the object, using :class:`.Vec3`")
+		.add_property("heading", &Object::GetHeading, "Gets the heading as an int of the object")
+		.add_property("orientation", &Object::GetOrientation, &Object::SetOrientation, "Property to get or set the orientation of the object")
+		.add_property("template", &Object::GetTemplate, &Object::SetTemplate, "the .iff file associated with this object"					)
+		.add_property("volume", &Object::GetVolume, &Object::SetVolume, "Property to get or set the volume of the object (how much it can store)")
+		.add_property("stf_name_file", &Object::GetStfNameFile, "gets the stf name file of the object")
+		.add_property("stf_name_string", &Object::GetStfNameString, "gets the stf name file of the object")
+		.def("stf_name", &Object::SetStfName, "sets the full stf name, takes stf_name_file and stf_name_string as parameters")
+		.add_property("custom_name", &Object::GetCustomName, &Object::SetCustomName, "Property to get and set the custom name")
+		.def("NotifyObservers", NotifyObserversFunc(&Object::NotifyObservers), "Notifies Observers of the passed in message")
+        .def("Controller", &Object::GetController, "Get the :class:`.ObjectController` of the object")
 		;
 }
 

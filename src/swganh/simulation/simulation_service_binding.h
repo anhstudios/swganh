@@ -16,9 +16,9 @@ using namespace std;
 
 void exportSimulationService()
 {
-    class_<SimulationService, shared_ptr<SimulationService>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
+    class_<SimulationService, std::shared_ptr<SimulationService>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
         .def("persist", &SimulationService::PersistObject, "persists the specified object and it's containing objects")
-
+        .def("findObjectById", &SimulationService::GetObjectById, "Finds an object by its id")
         ;
 }
 
