@@ -210,8 +210,8 @@ bool SwganhApp::IsRunning() {
     return running_;
 }
 
-std::shared_ptr<KernelInterface> SwganhApp::GetAppKernel() {
-    return kernel_;
+SwganhKernel* SwganhApp::GetAppKernel() const {
+    return kernel_.get();
 }
 
 void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
