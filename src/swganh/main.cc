@@ -69,7 +69,11 @@ int main(int argc, char* argv[])
 #ifdef WIN32
                 std::system("cls");
 #else
-                std::system("clear");
+                if (std::system("clear") != 0)
+                {
+                    LOG(error) << "Error clearing screen, ignoring console mode";
+                    continue;
+                }
 #endif
                 std::cout << "swgpy console " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << std::endl;
 
