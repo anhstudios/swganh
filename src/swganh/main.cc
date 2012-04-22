@@ -23,6 +23,7 @@
 #include <string>
 
 #include <boost/thread.hpp>
+#include <boost/python.hpp>
 
 #include "anh/logger.h"
 
@@ -62,12 +63,18 @@ int main(int argc, char* argv[])
 				
                 break;
             } else if(cmd.compare("console") == 0) {
+                swganh::scripting::ScopedGilLock lock;
                 anh::Logger::getInstance().DisableConsoleLogging();
 
                 std::system("cls");
                 std::cout << "swgpy console " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << std::endl;
 
-                swganh::scripting::ScopedGilLock lock;
+                boost::python::object main = boost::python::object (boost::python::handle<>(boost::python::borrowed(
+                    PyImport_AddModule("__main__")
+                )));
+                auto global_dict = main.attr("__dict__");
+                global_dict["kernel"] = boost::python::ptr(app.GetAppKernel());
+
                 PyRun_InteractiveLoop(stdin, "<stdin>");
 
                 anh::Logger::getInstance().EnableConsoleLogging();
