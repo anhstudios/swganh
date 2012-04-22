@@ -10,7 +10,7 @@
 
 #include <anh/hash_string.h>
 #include "swganh/command/command_properties.h"
-
+#include "swganh/scripting/utilities.h"
 #include <boost/python.hpp>
 
 namespace swganh {
@@ -76,6 +76,7 @@ struct CombatData : swganh::command::CommandProperties
     template <typename T>
     void ExtractData(boost::python::object& p_object, std::string key, T& extract_value)
     {
+        swganh::scripting::ScopedGilLock lock;
         if (p_object.contains(key))
         {
             boost::python::extract<T> tmp_x(p_object[key]);
