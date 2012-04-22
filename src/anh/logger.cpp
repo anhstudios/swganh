@@ -11,7 +11,7 @@ Logger& Logger::getInstance()
 void Logger::init(const std::string& app_name) 
 {
     // Console Logs info and above
-    logging::init_log_to_console(
+    console_sink_ = logging::init_log_to_console(
         std::clog,
         keywords::filter = flt::attr<severity_level>("Severity", std::nothrow) >= info,
         keywords::format = "%TimeStamp%: %_%",
@@ -71,4 +71,14 @@ void Logger::init(const std::string& app_name)
     );
     
     logging::add_common_attributes();
+}
+
+void Logger::EnableConsoleLogging()
+{
+    logging::core::get()->add_sink(console_sink_);
+}
+
+void Logger::DisableConsoleLogging()
+{
+    logging::core::get()->remove_sink(console_sink_);
 }

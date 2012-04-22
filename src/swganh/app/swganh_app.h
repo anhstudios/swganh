@@ -14,17 +14,11 @@
 
 #include "anh/app/app_interface.h"
 #include "anh/service/service_directory.h"
-
-namespace anh {
-namespace app {
-class KernelInterface;
-}}  // namespace anh::app
+#include "swganh/app/swganh_kernel.h"
 
 namespace swganh {
 namespace app {
-
-class SwganhKernel;
-
+    
 /*!
  * @Brief Base SWGANH Application that starts up serverices, initializes resources and handles the lifetime of objects"
  * @see anh::app::AppInterface
@@ -66,7 +60,7 @@ public:
      * @return std::shared_ptr of the anh::app::KernelInterface
      * @see anh::app::KernelInterface
      */
-    std::shared_ptr<anh::app::KernelInterface> GetAppKernel();
+    SwganhKernel* GetAppKernel() const;
 
 private:
     void LoadAppConfig_(int argc, char* argv[]);

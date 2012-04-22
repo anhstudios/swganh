@@ -11,6 +11,8 @@
 #include <boost/python.hpp>
 #include <Python.h>
 
+#include "swganh/scripting/utilities.h"
+
 using namespace boost::python;
 using namespace std;
 using namespace swganh::scripting;
@@ -19,8 +21,7 @@ PythonScript::PythonScript(const string& filename)
         : filename_(filename)
 {
     ReadFileContents();
-
-    Py_Initialize();
+    swganh::scripting::ScopedGilLock lock;
 
 	try
     {
@@ -48,6 +49,7 @@ void PythonScript::Run()
         ReadFileContents();
 #endif
         LOG(info) << "Executing script: " << filename_;
+        swganh::scripting::ScopedGilLock lock;
 		file_object_ = exec(filecontents_.c_str(), globals_, globals_);
     }
     catch (error_already_set &)
@@ -68,6 +70,8 @@ void PythonScript::ReadFileContents()
 
 void PythonScript::GetPythonException()
 {
+    swganh::scripting::ScopedGilLock lock;
+
     std::ostringstream os;
     os << "Python error:\n  " << std::flush;
 
