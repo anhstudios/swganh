@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
                 app.Stop();
 				
                 break;
-            } else if(cmd.compare("console") == 0) {
+            } else if(cmd.compare("console") == 0 || cmd.compare("~") == 0) {
                 swganh::scripting::ScopedGilLock lock;
                 anh::Logger::getInstance().DisableConsoleLogging();
 
