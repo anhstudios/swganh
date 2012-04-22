@@ -27,6 +27,9 @@
 #include "anh/logger.h"
 
 #include "swganh/app/swganh_app.h"
+#include "swganh/scripting/utilities.h"
+
+#include "version.h"
 
 using namespace boost;
 using namespace swganh;
@@ -34,6 +37,12 @@ using namespace std;
 
 int main(int argc, char* argv[]) 
 {
+    Py_Initialize();
+	PyEval_InitThreads();
+    
+    // Step 2: Release the GIL from the main thread so that other threads can use it
+    PyEval_ReleaseThread(PyGILState_GetThisThreadState());
+    
     try {
         app::SwganhApp app;
 
@@ -52,6 +61,11 @@ int main(int argc, char* argv[])
                 app.Stop();
 				
                 break;
+            } else if(cmd.compare("console") == 0) {
+                std::cout << "swgpy console " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << std::endl;
+                
+                swganh::scripting::ScopedGilLock lock;
+                PyRun_InteractiveLoop(stdin, "<stdin>");
             } else {
                 LOG(warning) << "Invalid command received: " << cmd;
             }
@@ -60,6 +74,10 @@ int main(int argc, char* argv[])
     } catch(std::exception& e) {
         LOG(fatal) << "Unhandled application exception occurred: " << e.what();
     }
+
+    // Step 4: Lock the GIL before calling finalize
+    PyGILState_Ensure();
+    Py_Finalize();
 
     return 0;
 }
