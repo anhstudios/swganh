@@ -34,6 +34,7 @@
 #include "python_command.h"
 #include "swganh/simulation/simulation_service.h"
 #include "swganh/scripting/python_event.h"
+#include "swganh/scripting/utilities.h"
 
 #include "swganh/tre/tre_archive.h"
 #include "swganh/tre/readers/datatable_reader.h"
@@ -185,6 +186,7 @@ void CommandService::ProcessCommand(
 		                            const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
 		                            const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
                                     const swganh::messages::controllers::CommandQueueEnqueue& cqe){
+                                        swganh::scripting::ScopedGilLock lock;
                                         py_command->Run(kernel, actor, target, std::string(cqe.command_options.begin(), cqe.command_options.end()));
                                     };
                 // overwrite existing handler
@@ -192,6 +194,7 @@ void CommandService::ProcessCommand(
                 py_handler(kernel(), actor, target, command_queue);
             }
 #else
+            swganh::scripting::ScopedGilLock lock;
             handler(kernel(), actor, target, command_queue);
 #endif
             SendCommandQueueRemove(actor, command_queue.action_counter, command_map_[command_queue.command_crc]->default_time, 0, 0);
@@ -284,13 +287,21 @@ void CommandService::LoadCommands()
             // Set a default script hook
             string name = row["commandName"]->GetValue<string>();
             string script_hook = script_prefix_ + "/commands/" + name + ".py";
-            // We only want to process non combat commands here, lets still pull the client data from them
             bool is_combat_command = row["addToCombatQueue"]->GetValue<int>() == 1;
-            auto command = PythonCommand::LoadCommand(name, script_hook);
-            if (command == nullptr || is_combat_command)
+            auto command_group = row["commandGroup"]->GetValue<int>();
+            swganh::scripting::ScopedGilLock lock;
+            shared_ptr<Command> command;
+            // We only want to process non combat commands here, lets still pull the client data from them
+            if (is_combat_command && command_group != 0)
                 command = make_shared<Command>();
             else
-                command->Setup();
+            {
+                command = PythonCommand::LoadCommand(name, script_hook);
+                if (command != nullptr)
+                    command->Setup();
+                else
+                    command = make_shared<Command>();
+            }
             
             command->name = name;
             command->script_hook = script_hook;
@@ -300,7 +311,7 @@ void CommandService::LoadCommands()
             Command client_data;
             client_data.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
             client_data.default_time = row["defaultTime"]->GetValue<float>();
-            client_data.command_group = row["commandGroup"]->GetValue<int>();
+            client_data.command_group = command_group;
             client_data.target_type = row["targetType"]->GetValue<int>();
             client_data.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
             // Load Bitmasks

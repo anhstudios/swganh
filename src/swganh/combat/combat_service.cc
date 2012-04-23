@@ -27,6 +27,7 @@
 
 #include "swganh/command/command_service.h"
 #include "swganh/simulation/simulation_service.h"
+#include "swganh/scripting/utilities.h"
 
 #include "swganh/messages/controllers/combat_action_message.h"
 #include "swganh/messages/controllers/combat_spam_message.h"
@@ -122,12 +123,14 @@ void CombatService::LoadCombatCommands(swganh::command::CommandMap combat_comman
     {
 		// load up all the combat commands into their own map
         // @TODO: Temporary check for now, figure out what command_group bitmask is..
-		if (command.second->add_to_combat_queue > 0)
+		if (command.second->add_to_combat_queue > 0 && command.second->command_group != 0)
 		{
             auto combat_command = CombatCommand(command.second);
             auto py_combat_command = PythonCommand::LoadCombatCommand(combat_command.name.string(), combat_command.script_hook);
             if (py_combat_command != nullptr)
             {
+                swganh::scripting::ScopedGilLock lock;
+                py_combat_command->Setup();
                 py_combat_command->MergeCommand(combat_command);
 			    combat_properties_map_.insert(make_pair(py_combat_command->name, py_combat_command));
                 RegisterCombatScript(py_combat_command);
@@ -203,7 +206,7 @@ void CombatService::SendCombatAction(
         // Combat Spam
         // Check for AOE 
         // if ! AOE
-        /*int damage = */SingleTargetCombatAction(attacker, target, combat_command);
+        SingleTargetCombatAction(attacker, target, combat_command);
         // Apply Special Attack Cost
 
         // Send Message
@@ -215,8 +218,7 @@ void CombatService::SendCombatAction(
         shared_ptr<Creature> creature_target = nullptr;
         if (target->GetType() == Creature::type)
             creature_target = static_pointer_cast<Creature>(target);
-        // Apply Damage
-        //ApplyDamage(attacker, creature_target, combat_data, damage, GetDamagingPool(combat_data));
+                
         if (combat_command->name == "attack" && attacker->IsAutoAttacking()) {
             command_service_->EnqueueCommand(attacker, target, command_message);
             //command_service_->EnqueueCommand(creature_target, attacker, command_message);

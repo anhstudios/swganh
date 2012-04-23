@@ -4,6 +4,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
+#include "swganh/scripting/utilities.h"
+
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
@@ -28,7 +30,7 @@ std::shared_ptr<Command> PythonCommand::LoadCommand(const std::string& name, con
         // append command dir
         string path = full_path.substr(0, full_path.find_last_of("/"));
         string py_path = "import sys; sys.path.append('.');sys.path.append('" + path + "');";
-        Py_Initialize();
+        swganh::scripting::ScopedGilLock lock;
         PyRun_SimpleString(py_path.c_str());
         ::object py_command = boost::python::import(name.c_str());
         // Reload
@@ -42,9 +44,9 @@ std::shared_ptr<Command> PythonCommand::LoadCommand(const std::string& name, con
             command = std::shared_ptr<Command>(command_ptr.get(), [command_class](Command*){});
         }
     }
-    catch(...)
+    catch(error_already_set&)
     {
-        PyErr_Print();        
+        PyErr_Print();   
     }
 
     return command;
@@ -60,7 +62,7 @@ std::shared_ptr<CombatCommand> PythonCommand::LoadCombatCommand(const std::strin
         // append command dir
         string path = full_path.substr(0, full_path.find_last_of("/"));
         string py_path = "import sys; sys.path.append('.');sys.path.append('" + path + "');";
-        Py_Initialize();
+        swganh::scripting::ScopedGilLock lock;
         PyRun_SimpleString(py_path.c_str());
         ::object py_command = boost::python::import(name.c_str());
         // Reload
@@ -70,13 +72,17 @@ std::shared_ptr<CombatCommand> PythonCommand::LoadCombatCommand(const std::strin
         ::object command_class = py_command.attr((name + "Command").c_str())();
         if (command_class != NULL)
         {
-            boost::shared_ptr<CombatCommand> command_ptr = extract<boost::shared_ptr<CombatCommand>>(command_class);
-            command = std::shared_ptr<CombatCommand>(command_ptr.get(), [command_class](CombatCommand*){});
+            extract<boost::shared_ptr<CombatCommand>> command_extract(command_class);
+            if (command_extract.check())
+            {
+                boost::shared_ptr<CombatCommand> command_ptr = command_extract();
+                command = std::shared_ptr<CombatCommand>(command_ptr.get(), [command_class](CombatCommand*){});
+            }
         }
     }
-    catch(...)
+    catch(error_already_set&)
     {
-        PyErr_Print();        
+        PyErr_Print();   
     }
 
     return command;

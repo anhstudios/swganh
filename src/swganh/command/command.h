@@ -79,7 +79,7 @@ public:
         return bitmask;
     }
     template <typename T, typename Q>
-    void MergeValue(bool condition, T& local_value, Q& in_value)
+    void MergeValue(bool condition,  T& local_value, Q& in_value)
     {
         if (condition)
         {
