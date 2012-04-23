@@ -18,6 +18,8 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/command/python_command.h"
+
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/object/tangible/tangible.h"
@@ -81,8 +83,8 @@ void CombatService::onStart()
         "CommandServiceReady", 
         [this] (const shared_ptr<anh::EventInterface>& incoming_event)
     {
-        const auto& commandProperties = static_pointer_cast<anh::ValueEvent<swganh::command::CommandMap>>(incoming_event)->Get();
-        LoadProperties(commandProperties);
+        const auto& commands = static_pointer_cast<anh::ValueEvent<swganh::command::CommandMap>>(incoming_event)->Get();
+        LoadCombatCommands(commands);
         
     });
 }
@@ -103,12 +105,18 @@ void CombatService::RegisterCommandHandler(uint32_t command_crc, CommandHandler&
     });
 }
 
-void CombatService::RegisterCombatScript(const swganh::command::CommandMap& combat_command)
+void CombatService::RegisterCombatScript(const shared_ptr<CombatCommand>& combat_command)
 {    
-    //RegisterCommandHandler(properties.name_crc, PythonCombatCommand(properties));
+    RegisterCommandHandler(combat_command->name, [=](
+        swganh::app::SwganhKernel* kernel,
+		const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+        const swganh::messages::controllers::CommandQueueEnqueue& cqe){
+            combat_command->Run(kernel, actor, target, std::string(cqe.command_options.begin(), cqe.command_options.end()));
+        });
 }
 
-void CombatService::LoadProperties(swganh::command::CommandMap combat_commands)
+void CombatService::LoadCombatCommands(swganh::command::CommandMap combat_commands)
 {    
 	for(auto& command : combat_commands)
     {
@@ -116,8 +124,14 @@ void CombatService::LoadProperties(swganh::command::CommandMap combat_commands)
         // @TODO: Temporary check for now, figure out what command_group bitmask is..
 		if (command.second->add_to_combat_queue > 0)
 		{
-			combat_properties_map_.insert(command);
-            //RegisterCombatScript(command.second);
+            auto combat_command = CombatCommand(command.second);
+            auto py_combat_command = PythonCommand::LoadCombatCommand(combat_command.name.string(), combat_command.script_hook);
+            if (py_combat_command != nullptr)
+            {
+                py_combat_command->MergeCommand(combat_command);
+			    combat_properties_map_.insert(make_pair(py_combat_command->name, py_combat_command));
+                RegisterCombatScript(py_combat_command);
+            }
 		}
 	}
     LOG(info) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
@@ -181,8 +195,7 @@ void CombatService::SendCombatAction(
     auto find_iter = combat_properties_map_.find(command_message.command_crc);
         if (find_iter == end(combat_properties_map_))
             return;
-    auto command_property = find_iter->second;
-    CombatCommand combat_data(*command_property);
+    auto combat_command = find_iter->second;
     if (InitiateCombat(attacker, target, command_message))
     {
         string string_hit = "";
@@ -190,11 +203,11 @@ void CombatService::SendCombatAction(
         // Combat Spam
         // Check for AOE 
         // if ! AOE
-        /*int damage = */SingleTargetCombatAction(attacker, target, combat_data);
+        /*int damage = */SingleTargetCombatAction(attacker, target, combat_command);
         // Apply Special Attack Cost
 
         // Send Message
-        SendCombatActionMessage(attacker, target, combat_data);
+        SendCombatActionMessage(attacker, target, combat_command);
         
         // If we ended in combat, re-queue this back into the command queue
         // is AutoAttack
@@ -204,7 +217,7 @@ void CombatService::SendCombatAction(
             creature_target = static_pointer_cast<Creature>(target);
         // Apply Damage
         //ApplyDamage(attacker, creature_target, combat_data, damage, GetDamagingPool(combat_data));
-        if (command_property->name == "attack" && attacker->IsAutoAttacking()) {
+        if (combat_command->name == "attack" && attacker->IsAutoAttacking()) {
             command_service_->EnqueueCommand(attacker, target, command_message);
             //command_service_->EnqueueCommand(creature_target, attacker, command_message);
         }
@@ -213,7 +226,7 @@ void CombatService::SendCombatAction(
 int CombatService::SingleTargetCombatAction(
     const shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible>& target, 
-    CombatCommand& combat_command)
+    const shared_ptr<CombatCommand>& combat_command)
 {
     int damage = 0;
     if (target->GetType() == Creature::type)
@@ -233,12 +246,12 @@ int CombatService::SingleTargetCombatAction(
 int CombatService::SingleTargetCombatAction(
     const shared_ptr<Creature>& attacker, 
     const shared_ptr<Creature>& defender, 
-    CombatCommand& combat_command)
+    const shared_ptr<CombatCommand>& combat_command)
 {
     // Entertaining?
 
     int hit = 0;
-    float damage_multiplier = combat_command.damage_multiplier;
+    float damage_multiplier = combat_command->damage_multiplier;
     int total_damage = 0;
     int damage = 0;
 
@@ -251,7 +264,7 @@ int CombatService::SingleTargetCombatAction(
     if (damage_multiplier < 1.0f)
         damage_multiplier = 1.0f;
 
-    hit = GetHitResult(attacker, defender, damage, combat_command.accuracy_bonus + GetAccuracyModifier(attacker)); 
+    hit = GetHitResult(attacker, defender, damage, combat_command->accuracy_bonus + GetAccuracyModifier(attacker)); 
         
     switch (hit)
     {
@@ -400,8 +413,8 @@ uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::c
     // give additional mods based on Posture and weapon type
     return 0; 
 }
-void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target, CombatCommand& combat_command) {
-    //auto states = move(combat_command.getStates());
+void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target, const shared_ptr<CombatCommand>& combat_command) {
+    //auto states = move(combat_command->getStates());
     //for_each(begin(states), end(states),[=](pair<float, string> state){
     //    int generated = generator_.Rand(1, 100);
     //    // Didn't trigger this time
@@ -432,7 +445,7 @@ float CombatService::GetHitChance(float attacker_accuracy, float attacker_bonus,
 int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Tangible>& target, 
-    CombatCommand& properties,
+    const shared_ptr<CombatCommand>& properties,
     int damage, int pool)
 {
     // Sanity Check
@@ -446,7 +459,7 @@ int CombatService::ApplyDamage(
 int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Creature>& defender,
-    CombatCommand& combat_command,
+    const shared_ptr<CombatCommand>& combat_command,
     int damage, int pool)
 {
     // Sanity Check
@@ -466,7 +479,7 @@ int CombatService::ApplyDamage(
 
     if (pool == HEALTH) {
         //health_damage = GetArmorReduction(attacker, defender, damage, HEALTH) * damage_multiplier;
-        health_damage = damage * combat_command.damage_multiplier;
+        health_damage = damage * combat_command->damage_multiplier;
         if (defender->GetStatCurrent(HEALTH) - health_damage <= 0)
         {
             SetIncapacitated(attacker, defender);
@@ -481,7 +494,7 @@ int CombatService::ApplyDamage(
     }
     if (pool == ACTION) {
         //action_damage = GetArmorReduction(attacker, defender, damage, ACTION) * damage_multiplier;
-        action_damage = damage * combat_command.damage_multiplier;
+        action_damage = damage * combat_command->damage_multiplier;
         if (defender->GetStatCurrent(ACTION) - action_damage <= 0)
         {
             SetIncapacitated(attacker, defender);
@@ -495,7 +508,7 @@ int CombatService::ApplyDamage(
     }
     if (pool == MIND) {
         //mind_damage = GetArmorReduction(attacker, defender, damage, MIND) * damage_multiplier;
-        mind_damage = damage * combat_command.damage_multiplier;
+        mind_damage = damage * combat_command->damage_multiplier;
         if (defender->GetStatCurrent(MIND) - mind_damage <= 0)
         {
             SetIncapacitated(attacker, defender);
@@ -514,10 +527,10 @@ int CombatService::ApplyDamage(
     return damage;
 
 }
-int CombatService::GetDamagingPool(CombatCommand& combat_command)
+int CombatService::GetDamagingPool(const shared_ptr<CombatCommand>& combat_command)
 {
     int pool = 0;
-    if (combat_command.IsRandomPool())
+    if (combat_command->IsRandomPool())
     {
         int randPool = generator_.Rand(0, 2);
         switch (randPool)
@@ -532,19 +545,19 @@ int CombatService::GetDamagingPool(CombatCommand& combat_command)
     }
     else // Get specific hit chance
     {
-        /*int generated = generator_.Rand(1, 100);
-        if (generated < properties.health_hit_chance) {
-            LOG(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << properties.health_hit_chance;
+        int generated = generator_.Rand(1, 100);
+        if (generated < combat_command->health_hit_chance) {
+            LOG(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << combat_command->health_hit_chance;
             pool = HEALTH;
         }
-        else if (generated < properties.action_hit_chance) {
-            LOG(info)  << "Damaging Pool picked ACTION with " << generated << " number and " << properties.action_hit_chance;
+        else if (generated < combat_command->action_hit_chance) {
+            LOG(info)  << "Damaging Pool picked ACTION with " << generated << " number and " << combat_command->action_hit_chance;
             pool = ACTION;
         }
         else {
-            LOG(info)  << "Damaging Pool picked MIND with " << generated << " number and " << properties.mind_hit_chance;
+            LOG(info)  << "Damaging Pool picked MIND with " << generated << " number and " << combat_command->mind_hit_chance;
             pool = MIND;
-        }*/
+        }
     }
     return pool;
 }
@@ -552,7 +565,7 @@ int CombatService::GetDamagingPool(CombatCommand& combat_command)
 void CombatService::BroadcastCombatSpam(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Tangible>& target, 
-    const CombatCommand& combat_command,
+    const shared_ptr<CombatCommand>& combat_command,
     uint32_t damage, const string& string_file)
 {
     CombatSpamMessage spam;
@@ -561,19 +574,19 @@ void CombatService::BroadcastCombatSpam(
     spam.weapon_id = attacker->GetWeaponId();
     spam.damage = damage;
     spam.file = "cbt_spam";
-    /*if (combat_command.combat_spam.length() > 0)
-        spam.text = properties.combat_spam + string_file;*/
+    if (combat_command->combat_spam.length() > 0)
+        spam.text = combat_command->combat_spam + string_file;
     attacker->NotifyObservers(spam);
 }
 
 void CombatService::SendCombatActionMessage(
     const shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible> & target, 
-    CombatCommand& combat_command,
+    const shared_ptr<CombatCommand>& combat_command,
     string animation)
 {
         CombatActionMessage cam;
-        if ((uint32_t)combat_command.animation.ident() == 0 && animation.length() == 0)
+        if ((uint32_t)combat_command->animation.ident() == 0 && animation.length() == 0)
             cam.action_crc = CombatCommand::DefaultAttacks[generator_.Rand(0, 9)];
         else
         {
@@ -582,7 +595,7 @@ void CombatService::SendCombatActionMessage(
                 cam.action_crc = anh::HashString(animation);
             }
             else
-                cam.action_crc = combat_command.animation.ident();
+                cam.action_crc = combat_command->animation.ident();
         }
         cam.attacker_id = attacker->GetObjectId();
         cam.weapon_id = attacker->GetWeaponId();

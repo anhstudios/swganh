@@ -21,8 +21,8 @@ struct CombatCommand : swganh::command::Command
     // TEMP
     class StateEffect;
     class DotEffect;
-
-    explicit CombatCommand(swganh::command::Command& command) ;
+    explicit CombatCommand(std::shared_ptr<swganh::command::Command>& command);
+    CombatCommand(swganh::command::Command& command);
     CombatCommand();
 
     uint32_t min_damage;

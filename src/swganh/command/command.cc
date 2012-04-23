@@ -49,6 +49,7 @@ void Command::MergeCommand(Command& command)
     // Only overrwrite default values
     MergeValue(ability.ident() == 0, ability, command.ability);
     MergeValue(skill_mods.size() == 0, skill_mods, command.skill_mods);
+    MergeValue(add_to_combat_queue == 0, add_to_combat_queue, command.add_to_combat_queue);
     MergeValue(allow_in_states == 0, allow_in_states, command.allow_in_states);
     MergeValue(allow_in_posture == 0, allow_in_posture, command.allow_in_posture);
     MergeValue(deny_in_locomotion == 0, deny_in_locomotion, command.deny_in_locomotion);

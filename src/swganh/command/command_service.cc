@@ -210,8 +210,7 @@ void CommandService::onStart()
     script_prefix_ = kernel()->GetAppConfig().script_directory;
 
 	LoadCommands();
-    //RegisterCommandScripts();
-
+    
     simulation_service_ = kernel()->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
