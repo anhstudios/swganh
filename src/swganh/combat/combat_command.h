@@ -22,7 +22,8 @@ struct CombatCommand : swganh::command::Command
     class StateEffect;
     class DotEffect;
 
-    CombatCommand(swganh::command::Command& command) ;
+    explicit CombatCommand(swganh::command::Command& command) ;
+    CombatCommand();
 
     uint32_t min_damage;
     uint32_t max_damage;

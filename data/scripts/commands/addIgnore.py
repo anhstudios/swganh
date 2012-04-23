@@ -1,6 +1,6 @@
 import re, swgpy.command,swgpy.object, swgpy.app
      
-class ignorePlayerCommand(swgpy.command.Command):
+class addIgnoreCommand(swgpy.command.Command):
     def Run(self, kernel, actor, target, command_string):
         split = re.split('\W+', command_string)
         player_name = split[0]

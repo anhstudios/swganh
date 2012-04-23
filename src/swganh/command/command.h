@@ -41,10 +41,8 @@ public:
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
         const std::string& command_string);
 
-    std::string name;
-    uint32_t name_crc;
-    std::string ability;
-    uint32_t ability_crc;
+    anh::HashString name;
+    anh::HashString ability;
     uint64_t allow_in_states;
     std::vector<std::string> skill_mods;
     std::string script_hook;

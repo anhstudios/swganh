@@ -1,4 +1,4 @@
-import re, swgpy.command,swgpy.object, swgpy.app
+import re, swgpy.command, swgpy.object, swgpy.app
      
 class addFriendCommand(swgpy.command.Command):
     def Run(self, kernel, actor, target, command_string):

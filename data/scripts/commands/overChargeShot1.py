@@ -1,6 +1,6 @@
-import swgpy.combat, swgpy.object, swgpy.app
+import swgpy.command, swgpy.object, swgpy.app
      
-class overChargeShot1Command(swgpy.combat.CombatCommand):
+class overChargeShot1Command(swgpy.command.CombatCommand):
     def SetUp(self):
         combat_spam = 'overchargeshot'
         health_cost_multiplier = 0.5

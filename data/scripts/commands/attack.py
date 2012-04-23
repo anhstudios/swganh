@@ -1,6 +1,6 @@
-import swgpy.combat, swgpy.object, swgpy.app
+import swgpy.command, swgpy.object, swgpy.app
      
-class attackCommand(swgpy.combat.CombatCommand):
+class attackCommand(swgpy.command.CombatCommand):
     def Run(self, kernel, actor, target, command_string):
         if not actor.has_state(swgpy.ACTION.COMBAT):
             actor.toggle_state_off(swgpy.ACTION.PEACE);

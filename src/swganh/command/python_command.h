@@ -11,6 +11,7 @@
 #include <string>
 
 #include "command.h"
+#include "swganh/combat/combat_command.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 namespace swganh {
@@ -33,6 +34,7 @@ class PythonCommand
 {
 public:
     static std::shared_ptr<Command> LoadCommand(const std::string& name, const std::string& full_path, bool reload = false);
+    static std::shared_ptr<swganh::combat::CombatCommand> LoadCombatCommand(const std::string& name, const std::string& full_path, bool reload = false);
 };
 
 

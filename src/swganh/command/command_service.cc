@@ -176,7 +176,7 @@ void CommandService::ProcessCommand(
             // Reload the command in debug
             // @TODO this is not pretty
 #ifdef _DEBUG
-            auto py_command = PythonCommand::LoadCommand(command->name, command->script_hook, true);
+            auto py_command = PythonCommand::LoadCommand(command->name.string(), command->script_hook, true);
             if (py_command != nullptr)
             {
                 py_command->MergeCommand(*command);
@@ -188,7 +188,7 @@ void CommandService::ProcessCommand(
                                         py_command->Run(kernel, actor, target, std::string(cqe.command_options.begin(), cqe.command_options.end()));
                                     };
                 // overwrite existing handler
-                SetCommandHandler(py_command->name_crc, move(py_handler));
+                SetCommandHandler(py_command->name, move(py_handler));
                 py_handler(kernel(), actor, target, command_queue);
             }
 #else
@@ -285,21 +285,19 @@ void CommandService::LoadCommands()
             // Set a default script hook
             string name = row["commandName"]->GetValue<string>();
             string script_hook = script_prefix_ + "/commands/" + name + ".py";
+            // We only want to process non combat commands here, lets still pull the client data from them
+            bool is_combat_command = row["addToCombatQueue"]->GetValue<int>() == 1;
             auto command = PythonCommand::LoadCommand(name, script_hook);
-            if (command == nullptr)
+            if (command == nullptr || is_combat_command)
                 command = make_shared<Command>();
             else
                 command->Setup();
             
             command->name = name;
             command->script_hook = script_hook;
-            string tmp = command->name;
-            transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-            command->name_crc = anh::memcrc(tmp);
             
             command->ability = row["characterAbility"]->GetValue<string>();
-            command->ability_crc = anh::memcrc(command->ability);
-
+            
             Command client_data;
             client_data.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
             client_data.default_time = row["defaultTime"]->GetValue<float>();
@@ -371,8 +369,8 @@ void CommandService::LoadCommands()
 
             command->MergeCommand(client_data);            
 
-            command_map_.insert(make_pair(command->name_crc, command));
-            SetCommandHandler(command->name_crc, [=](
+            command_map_.insert(make_pair(command->name, command));
+            SetCommandHandler(command->name, [=](
                             swganh::app::SwganhKernel* kernel,
 		                    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
 		                    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
@@ -413,12 +411,6 @@ void CommandService::RegisterCommandScripts()
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             
             auto find_iter = command_map_.find(anh::memcrc(tmp));
-            //if (find_iter != end(command_map_)
-            //    && find_iter->second->add_to_combat_queue == 0)
-            //{
-            //    SetCommandHandler(find_iter->second->name_crc, 
-            //        PythonCommand(find_iter->second, string(begin(native_path), end(native_path))));
-            //}
         });
 
     } catch(const std::exception& e) {

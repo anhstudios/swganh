@@ -9,9 +9,7 @@ using namespace swganh::command;
 
 Command::Command(void)
     : name("")
-    , name_crc(0)
     , ability("")
-    , ability_crc(0)
     , allow_in_states(0)
     , skill_mods(std::vector<std::string>())
     , script_hook("")
@@ -49,7 +47,7 @@ void Command::Run(swganh::app::SwganhKernel* kernel,
 void Command::MergeCommand(Command& command)
 {
     // Only overrwrite default values
-    MergeValue(ability.length() == 0, ability, command.ability);
+    MergeValue(ability.ident() == 0, ability, command.ability);
     MergeValue(skill_mods.size() == 0, skill_mods, command.skill_mods);
     MergeValue(allow_in_states == 0, allow_in_states, command.allow_in_states);
     MergeValue(allow_in_posture == 0, allow_in_posture, command.allow_in_posture);
@@ -71,15 +69,4 @@ void Command::MergeCommand(Command& command)
     MergeValue(force_cost_multiplier == 0, force_cost_multiplier, command.force_cost_multiplier);
     MergeValue(animation.ident() == 0, animation, command.animation);
     MergeValue(required_weapon_group == 0, required_weapon_group, command.required_weapon_group);
-}
-
-CommandHandler Command::GetHandler()
-{
-    return [=](
-            swganh::app::SwganhKernel* kernel,
-		    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
-		    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
-            const swganh::messages::controllers::CommandQueueEnqueue& cqe){
-                Run(kernel, actor, target, std::string(cqe.command_options.begin(), cqe.command_options.end()));
-            };
 }

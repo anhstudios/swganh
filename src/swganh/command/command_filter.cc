@@ -103,9 +103,9 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
 	uint32_t error = 0;
 	uint32_t action = 0;
 	// check to see if this command requires an ability
-	if (command_data->ability.length() > 0)
+	if (command_data->ability > 0)
 	{
-        if (actor->HasSkillCommand(command_data->ability))
+        if (actor->HasSkillCommand(command_data->ability.string()))
 		{
 			check_passed = true;
 		}
