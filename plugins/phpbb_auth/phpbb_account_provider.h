@@ -1,3 +1,6 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #ifndef PLUGINS_PHPBB_AUTH_PHPBB_ACCOUNT_PROVIDER_H_
 #define PLUGINS_PHPBB_AUTH_PHPBB_ACCOUNT_PROVIDER_H_
 
