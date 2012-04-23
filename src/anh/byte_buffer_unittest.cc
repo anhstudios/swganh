@@ -1,9 +1,5 @@
-/*
- * SWG:ANH Combat Upgrade Sandbox
- *
- * @copyright   Copyright (c) 2010 The SWG:ANH Team
- * @author      Eric Barr <apathy@swganh.org>
-**/
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #include <boost/test/unit_test.hpp>
 #include "anh/byte_buffer.h"
