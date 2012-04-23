@@ -63,10 +63,10 @@ struct AppConfig {
     boost::program_options::options_description BuildConfigDescription();
 };
     
-class SwganhKernel : public anh::app::KernelInterface, public std::enable_shared_from_this<SwganhKernel> {
+class SwganhKernel : public anh::app::KernelInterface {
 public:
     SwganhKernel();
-    ~SwganhKernel();
+    virtual ~SwganhKernel();
 
     const anh::app::Version& GetVersion();
 

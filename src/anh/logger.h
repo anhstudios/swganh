@@ -91,11 +91,22 @@ public:
      */
     void init(const std::string& app_name);
 
+    void EnableConsoleLogging();
+
+    void DisableConsoleLogging();
+
 private:
     Logger() {}
     ~Logger() {}
     Logger(const Logger&);
     Logger &operator=(const Logger &);
+
+    typedef boost::shared_ptr<
+        boost::log::sinks::synchronous_sink<
+            boost::log::sinks::text_ostream_backend
+    >> console_sink_t;
+
+    console_sink_t console_sink_;
 };
 
 } // anh
