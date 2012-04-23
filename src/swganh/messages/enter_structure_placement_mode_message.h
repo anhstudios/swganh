@@ -1,4 +1,4 @@
-// This file is part of SWGANH which is released under GPL v2.
+// This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #ifndef SWGANH_MESSAGES_ENTER_STRUCTURE_PLACEMENT_MODE_MESSAGE_H_
