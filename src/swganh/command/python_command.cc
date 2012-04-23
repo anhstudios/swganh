@@ -1,4 +1,11 @@
 #include "python_command.h"
+
+#include <boost/python.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+
+#include "swganh/scripting/utilities.h"
+
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
@@ -8,32 +15,75 @@
 using namespace boost::python;
 using namespace std;
 using namespace swganh::command;
-using namespace swganh::scripting;
+using namespace swganh::combat;
 using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::object::tangible;
 
-PythonCommand::PythonCommand(const CommandProperties& properties, const std::string& script_path)
-: script_(PythonScript(script_path))
+std::shared_ptr<Command> PythonCommand::LoadCommand(const std::string& name, const std::string& full_path, bool reload)
 {
+    std::shared_ptr<Command> command;
+    try {
+        // Don't try if the file doesn't exist
+        if (!boost::filesystem::exists(full_path))
+            return command;
+        // append command dir
+        string path = full_path.substr(0, full_path.find_last_of("/"));
+        string py_path = "import sys; sys.path.append('.');sys.path.append('" + path + "');";
+        swganh::scripting::ScopedGilLock lock;
+        PyRun_SimpleString(py_path.c_str());
+        ::object py_command = boost::python::import(name.c_str());
+        // Reload
+        if (reload)
+            py_command = ::object(::handle<>((PyImport_ReloadModule(py_command.ptr()))));
+
+        ::object command_class = py_command.attr((name + "Command").c_str())();
+        if (command_class != NULL)
+        {
+            boost::shared_ptr<Command> command_ptr = extract<boost::shared_ptr<Command>>(command_class);
+            command = std::shared_ptr<Command>(command_ptr.get(), [command_class](Command*){});
+        }
+    }
+    catch(error_already_set&)
+    {
+        PyErr_Print();   
+    }
+
+    return command;
 }
 
-void PythonCommand::operator()(swganh::app::SwganhKernel* kernel, shared_ptr<Creature> actor, shared_ptr<Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message)
+std::shared_ptr<CombatCommand> PythonCommand::LoadCombatCommand(const std::string& name, const std::string& full_path, bool reload)
 {
-    shared_ptr<Creature> creature = nullptr;
-    if (target && target->GetType() == Creature::type)
-        creature = static_pointer_cast<Creature>(target);
+    std::shared_ptr<CombatCommand> command;
+    try {
+        // Don't try if the file doesn't exist
+        if (!boost::filesystem::exists(full_path))
+            return command;
+        // append command dir
+        string path = full_path.substr(0, full_path.find_last_of("/"));
+        string py_path = "import sys; sys.path.append('.');sys.path.append('" + path + "');";
+        swganh::scripting::ScopedGilLock lock;
+        PyRun_SimpleString(py_path.c_str());
+        ::object py_command = boost::python::import(name.c_str());
+        // Reload
+        if (reload)
+            py_command = ::object(::handle<>((PyImport_ReloadModule(py_command.ptr()))));
 
-    // Setup Python Event
-    auto python_event = make_shared<PythonEvent>();
-    python_event->globals = script_.GetGlobals();
-    
-    script_.SetContext("kernel", boost::python::ptr(kernel));
-	script_.SetContext("actor", actor);
-    script_.SetContext("target", target);
-    script_.SetContext("creature_target", creature);
-    script_.SetContext("command_string", command_queue_message.command_options);
-    script_.SetContext("event", python_event);
-	
-	script_.Run();
+        ::object command_class = py_command.attr((name + "Command").c_str())();
+        if (command_class != NULL)
+        {
+            extract<boost::shared_ptr<CombatCommand>> command_extract(command_class);
+            if (command_extract.check())
+            {
+                boost::shared_ptr<CombatCommand> command_ptr = command_extract();
+                command = std::shared_ptr<CombatCommand>(command_ptr.get(), [command_class](CombatCommand*){});
+            }
+        }
+    }
+    catch(error_already_set&)
+    {
+        PyErr_Print();   
+    }
+
+    return command;
 }

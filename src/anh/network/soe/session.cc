@@ -176,6 +176,8 @@ void Session::HandleMessage(anh::ByteBuffer message)
 
 void Session::HandleMessageInternal(anh::ByteBuffer message)
 {
+    if (message.size() <= 0)
+        return;
     uint16_t soe_opcode = message.peek<uint16_t>(true);
 
     try {

@@ -19,7 +19,7 @@ namespace scripting {
     public:
         PythonScript(const std::string& filename);
 
-        void Run();
+        boost::python::object Run();
 
         template<typename T>
         void SetContext(const std::string& key, T value)
@@ -38,6 +38,7 @@ namespace scripting {
 		}
 
         boost::python::object GetGlobals() { return globals_; }
+        boost::python::object GetMain() { return main_; }
     private:
         PythonScript();
 
@@ -50,6 +51,7 @@ namespace scripting {
 		std::string imports_;
         boost::python::object file_object_;
         boost::python::object globals_;
+        boost::python::object main_;
     };
 
 }}  // namespace swganh::scripting

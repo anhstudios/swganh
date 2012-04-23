@@ -4,7 +4,7 @@
 #endif
 
 #include "command_filter.h"
-#include "command_properties.h"
+#include "command.h"
 #include "command_service.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
@@ -22,7 +22,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(
 		const shared_ptr<Creature>& actor, 
 		const shared_ptr<Tangible>& target, 
 		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+        const shared_ptr<Command>& command_data)
 {
 	bool check_passed = false;
 	uint32_t error = 0;
@@ -31,7 +31,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(
 	if (target != nullptr)
     {
         // range check
-		if (command_properties.max_range_to_target <= 0.0f || actor->InRange(target->GetPosition(), command_properties.max_range_to_target))
+		if (command_data->max_range_to_target <= 0.0f || actor->InRange(target->GetPosition(), command_data->max_range_to_target))
 		{
 			check_passed = true;
 		}
@@ -52,13 +52,13 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(
 		const shared_ptr<Creature>& actor, 
 		const shared_ptr<Tangible>& target, 
 		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+        const shared_ptr<Command>& command_data)
 {
 	bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
 	uint32_t current_posture = actor->GetPosture();
-	if ((current_posture & command_properties.allow_in_posture) == current_posture)
+	if ((current_posture & command_data->allow_in_posture) == current_posture)
 	{
 		check_passed = true;
 	}
@@ -74,21 +74,21 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(
 		const shared_ptr<Creature>& actor, 
 		const shared_ptr<Tangible>& target, 
 		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+        const shared_ptr<Command>& command_data)
 {
 	bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
 
     uint64_t current_state = actor->GetStateBitmask();
-    if (!actor->HasState(command_properties.allow_in_states))
+    if (!actor->HasState(command_data->allow_in_states))
 	{
 		check_passed = true;
 	}
 	else
 	{
 		error = CANNOT_WHILE_IN_STATE;
-		action = GetLowestCommonBit(current_state, command_properties.allow_in_states);
+		action = GetLowestCommonBit(current_state, command_data->allow_in_states);
 	}
 	return tie (check_passed, error, action);
 }
@@ -97,15 +97,15 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
 		const shared_ptr<Creature>& actor, 
 		const shared_ptr<Tangible>& target, 
 		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+        const shared_ptr<Command>& command_data)
 {
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
 	// check to see if this command requires an ability
-	if (command_properties.ability.length() > 0)
+	if (command_data->ability > 0)
 	{
-        if (actor->HasSkillCommand(command_properties.ability))
+        if (actor->HasSkillCommand(command_data->ability.string()))
 		{
 			check_passed = true;
 		}
@@ -124,20 +124,20 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(
 		const shared_ptr<Creature>& actor, 
 		const shared_ptr<Tangible>& target, 
 		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+        const shared_ptr<Command>& command_data)
 {
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
     
-    if (command_properties.command_group != 0 && target != nullptr) 
+    if (command_data->command_group != 0 && target != nullptr) 
     {
         if (target->GetType() == Creature::type)
         {
             auto creature = static_pointer_cast<Creature>(target);
             // @TODO: Fix this, we need more checking in here
             // target type of 2 seems to suggest the action NEEDs a target and 1 that it CAN have a target
-            switch(command_properties.target_type)
+            switch(command_data->target_type)
             {
                 case 0:
                 case 1:

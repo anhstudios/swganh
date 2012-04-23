@@ -10,10 +10,12 @@ HashString::HashString()
 
 HashString::HashString(const std::string &std_string)
     : ident_(reinterpret_cast<void*>(memcrc(std_string)))
+    , string_(std_string)
 {}
 
 HashString::HashString(const char* ident_string)
     : ident_(reinterpret_cast<void*>(memcrc(std::string(ident_string))))
+    , string_(std::string(ident_string))
 {}
 
 HashString::HashString(uint32_t ident)
@@ -22,6 +24,10 @@ HashString::HashString(uint32_t ident)
 
 HashString::operator uint32_t () const {
     return ident();
+}
+
+const std::string& HashString::string() const {
+    return string_;
 }
 
 uint32_t HashString::ident() const {

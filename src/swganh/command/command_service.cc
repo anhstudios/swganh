@@ -1,8 +1,3 @@
-
-#ifndef WIN32
-#include <Python.h>
-#endif
-
 #ifndef WIN32
 #include <Python.h>
 #endif
@@ -39,6 +34,7 @@
 #include "python_command.h"
 #include "swganh/simulation/simulation_service.h"
 #include "swganh/scripting/python_event.h"
+#include "swganh/scripting/utilities.h"
 
 #include "swganh/tre/tre_archive.h"
 #include "swganh/tre/readers/datatable_reader.h"
@@ -99,8 +95,8 @@ void CommandService::EnqueueCommand(
 	const shared_ptr<Tangible>& target,
     CommandQueueEnqueue command)
 {
-    auto properties_iter = command_properties_map_.find(command.command_crc);
-    if (properties_iter == command_properties_map_.end())
+    auto properties_iter = command_map_.find(command.command_crc);
+    if (properties_iter == command_map_.end())
     {
         LOG(warning) << "Invalid handler requested: " << hex << command.command_crc;
         return;
@@ -119,7 +115,7 @@ void CommandService::EnqueueCommand(
         return;
     }
 
-    if (properties_iter->second.add_to_combat_queue && actor->HasState(COMBAT))
+    if (properties_iter->second->add_to_combat_queue && actor->HasState(COMBAT))
     {
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
 
@@ -128,8 +124,8 @@ void CommandService::EnqueueCommand(
         {
             // for combat actions set a default time of 2 seconds if none exist
             uint64_t default_time = 2000;
-            if (properties_iter->second.default_time > 0)
-                default_time = static_cast<uint64_t>(properties_iter->second.default_time * 1000);
+            if (properties_iter->second->default_time > 0)
+                default_time = static_cast<uint64_t>(properties_iter->second->default_time * 1000);
             find_iter->second->PushTask(
                 milliseconds(default_time),
                 bind(&CommandService::ProcessCommand,
@@ -170,21 +166,45 @@ void CommandService::HandleCommandQueueRemove(
 void CommandService::ProcessCommand(
     const shared_ptr<Creature>& actor,
     const shared_ptr<Tangible>& target,
-    const swganh::messages::controllers::CommandQueueEnqueue& command,
-    const CommandProperties& properties,
+    const swganh::messages::controllers::CommandQueueEnqueue& command_queue,
+    const shared_ptr<Command>& command,
     const CommandHandler& handler
     )
 {
     try {
-        if (ValidateCommand(actor, target, command, properties, process_filters_))
+        if (ValidateCommand(actor, target, command_queue, command, process_filters_))
         {
-		    handler(kernel(), actor, target, command);
-            
-            SendCommandQueueRemove(actor, command.action_counter, command_properties_map_[command.command_crc].default_time, 0, 0);
+            // Reload the command in debug
+            // @TODO this is not pretty
+#ifdef _DEBUG
+            auto py_command = PythonCommand::LoadCommand(command->name.string(), command->script_hook, true);
+            if (py_command != nullptr)
+            {
+                py_command->MergeCommand(*command);
+                auto py_handler = [=](
+                                    swganh::app::SwganhKernel* kernel,
+		                            const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+		                            const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+                                    const swganh::messages::controllers::CommandQueueEnqueue& cqe){
+                                        swganh::scripting::ScopedGilLock lock;
+                                        py_command->Run(kernel, actor, target, std::string(cqe.command_options.begin(), cqe.command_options.end()));
+                                    };
+                // overwrite existing handler
+                SetCommandHandler(py_command->name, move(py_handler));
+                py_handler(kernel(), actor, target, command_queue);
+            }
+#else
+            swganh::scripting::ScopedGilLock lock;
+            handler(kernel(), actor, target, command_queue);
+#endif
+            SendCommandQueueRemove(actor, command_queue.action_counter, command_map_[command_queue.command_crc]->default_time, 0, 0);
         }
     } catch(const exception& e) {
-        LOG(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].name << "\n" << e.what();
+        LOG(warning) << "Error Processing Command: " <<  command_map_[command_queue.command_crc]->name << "\n" << e.what();
+    } catch(const boost::python::error_already_set&){
+        PyErr_Print();
     }
+
 
 }
 
@@ -192,9 +212,8 @@ void CommandService::onStart()
 {
     script_prefix_ = kernel()->GetAppConfig().script_directory;
 
-	LoadProperties();
-    RegisterCommandScripts();
-
+	LoadCommands();
+    
     simulation_service_ = kernel()->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
@@ -204,7 +223,7 @@ void CommandService::onStart()
 
 	auto event_dispatcher = kernel()->GetEventDispatcher();
 	event_dispatcher->Dispatch(
-        make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
+        make_shared<anh::ValueEvent<CommandMap>>("CommandServiceReady", GetCommands()));
 
     event_dispatcher->Subscribe(
         "ObjectReadyEvent",
@@ -255,7 +274,7 @@ void CommandService::onStart()
     });
 }
 
-void CommandService::LoadProperties()
+void CommandService::LoadCommands()
 {
     try {
         auto tre_archive = kernel()->GetTreArchive();
@@ -265,25 +284,36 @@ void CommandService::LoadProperties()
         while(reader.Next())
         {
             auto row = reader.GetRow();
-
-            CommandProperties properties;
             // Set a default script hook
+            string name = row["commandName"]->GetValue<string>();
+            string script_hook = script_prefix_ + "/commands/" + name + ".py";
+            bool is_combat_command = row["addToCombatQueue"]->GetValue<int>() == 1;
+            auto command_group = row["commandGroup"]->GetValue<int>();
+            swganh::scripting::ScopedGilLock lock;
+            shared_ptr<Command> command;
+            // We only want to process non combat commands here, lets still pull the client data from them
+            if (is_combat_command && command_group != 0)
+                command = make_shared<Command>();
+            else
+            {
+                command = PythonCommand::LoadCommand(name, script_hook);
+                if (command != nullptr)
+                    command->Setup();
+                else
+                    command = make_shared<Command>();
+            }
             
-            properties.name = row["commandName"]->GetValue<string>();
-            // @TODO: Make this a config value
-            properties.script_hook = script_prefix_ + "/commands/" + properties.name + ".py";
-            string tmp = properties.name;
-            transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-            properties.name_crc = anh::memcrc(tmp);
+            command->name = name;
+            command->script_hook = script_hook;
             
-            properties.ability = row["characterAbility"]->GetValue<string>();
-            properties.ability_crc = anh::memcrc(properties.ability);
-
-            properties.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
-            properties.default_time = row["defaultTime"]->GetValue<float>();
-            properties.command_group = row["commandGroup"]->GetValue<int>();
-            properties.target_type = row["targetType"]->GetValue<int>();
-            properties.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
+            command->ability = row["characterAbility"]->GetValue<string>();
+            
+            Command client_data;
+            client_data.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
+            client_data.default_time = row["defaultTime"]->GetValue<float>();
+            client_data.command_group = command_group;
+            client_data.target_type = row["targetType"]->GetValue<int>();
+            client_data.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
             // Load Bitmasks
             std::vector<int> bits;
             bits.push_back(row["L:standing"]->GetValue<int>());
@@ -308,7 +338,7 @@ void CommandService::LoadProperties()
             bits.push_back(row["L:incapacitated"]->GetValue<int>());
             bits.push_back(row["L:dead"]->GetValue<int>());
             bits.push_back(row["L:blocking"]->GetValue<int>());
-            properties.allow_in_posture = properties.BuildBitmask(bits);
+            client_data.allow_in_posture = client_data.BuildBitmask(bits);
 
             std::vector<int> state_bits;
             state_bits.push_back(row["S:cover"]->GetValue<int>());
@@ -345,17 +375,24 @@ void CommandService::LoadProperties()
             state_bits.push_back(row["S:shipOperations"]->GetValue<int>());
             state_bits.push_back(row["S:shipGunner"]->GetValue<int>());
             state_bits.push_back(row["S:shipInterior"]->GetValue<int>());
-            properties.allow_in_states = properties.BuildBitmask(state_bits);
+            client_data.allow_in_states = client_data.BuildBitmask(state_bits);
 
-            command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
+            command->MergeCommand(client_data);            
+
+            command_map_.insert(make_pair(command->name, command));
+            SetCommandHandler(command->name, [=](
+                            swganh::app::SwganhKernel* kernel,
+		                    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
+		                    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+                            const swganh::messages::controllers::CommandQueueEnqueue& cqe){
+                                command->Run(kernel, actor, target, std::string(cqe.command_options.begin(), cqe.command_options.end()));
+                            });
         }
-        
-        LOG(info) << "Loaded (" << command_properties_map_.size() << ") Commands";
+        LOG(info) << "Loaded (" << command_map_.size() << ") Commands";
     }
-    catch(sql::SQLException &e)
+    catch(const std::exception& ex)
     {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+        LOG(error) << "Error loading commands from Client Command Table " << ex.what() << __FILE__ << ":" << __LINE__;        
     }
 }
 
@@ -383,13 +420,7 @@ void CommandService::RegisterCommandScripts()
             string tmp = string(native_name.begin(), native_name.end()-3);
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             
-            auto find_iter = command_properties_map_.find(anh::memcrc(tmp));
-            if (find_iter != end(command_properties_map_)
-                && find_iter->second.add_to_combat_queue == 0)
-            {
-                SetCommandHandler(find_iter->second.name_crc, 
-                    PythonCommand(find_iter->second, string(begin(native_path), end(native_path))));
-            }
+            auto find_iter = command_map_.find(anh::memcrc(tmp));
         });
 
     } catch(const std::exception& e) {
@@ -400,8 +431,8 @@ void CommandService::RegisterCommandScripts()
 bool CommandService::ValidateCommand(
     const shared_ptr<Creature>& actor,
 	const shared_ptr<Tangible>& target,
-    const swganh::messages::controllers::CommandQueueEnqueue& command,
-    const CommandProperties& command_properties,
+    const swganh::messages::controllers::CommandQueueEnqueue& command_queue,
+    const shared_ptr<Command>& command,
     const std::vector<CommandFilter>& filters)
 {
 	tuple<bool, uint32_t, uint32_t> result;
@@ -409,15 +440,15 @@ bool CommandService::ValidateCommand(
     bool all_run = all_of(
         begin(filters),
         end(filters),
-        [&result, actor, target, &command, &command_properties] (const CommandFilter& filter)->bool
+        [&result, actor, target, &command_queue, &command] (const CommandFilter& filter)->bool
     {
-        result = filter(actor, target, command, command_properties);
+        result = filter(actor, target, command_queue, command);
 		return get<0>(result);
     });
 
     if (!all_run)
     {
-        SendCommandQueueRemove(actor, command.action_counter, 0.0f, get<1>(result), get<2>(result));
+        SendCommandQueueRemove(actor, command_queue.action_counter, 0.0f, get<1>(result), get<2>(result));
     }
 
     return all_run;

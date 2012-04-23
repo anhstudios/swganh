@@ -10,9 +10,8 @@
 #include <memory>
 #include <string>
 
-#include "swganh/scripting/python_script.h"
-
-#include "command_properties.h"
+#include "command.h"
+#include "swganh/combat/combat_command.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 namespace swganh {
@@ -34,11 +33,8 @@ namespace command {
 class PythonCommand
 {
 public:
-    PythonCommand(const CommandProperties& command_properties, const std::string& script_path);
-
-    void operator()(swganh::app::SwganhKernel* kernel, std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
-private:
-    swganh::scripting::PythonScript script_;
+    static std::shared_ptr<Command> LoadCommand(const std::string& name, const std::string& full_path, bool reload = false);
+    static std::shared_ptr<swganh::combat::CombatCommand> LoadCombatCommand(const std::string& name, const std::string& full_path, bool reload = false);
 };
 
 

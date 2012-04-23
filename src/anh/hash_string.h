@@ -38,7 +38,7 @@ public:
     HashString(const std::string& std_string); 
 
     /// Takes a human readable string and stores a hash of it.
-    HashString(const char* ident_string);
+    HashString(const char* std_string);
 
     /// Takes an already hashed value and stores it.
     HashString(uint32_t ident);
@@ -48,6 +48,9 @@ public:
 
     /// Returns a 32bit hash representation of the string.
     uint32_t ident() const;
+
+     /// @returns a string (only use this if you know it was constructed from a string itself)
+    const std::string& string() const;
 
     /*! Uses a less-than comparison on two HashStrings.
      *
@@ -82,15 +85,18 @@ public:
      * @return True if the two HashStrings are not equal, false if they are.
      */
     bool operator!=(const HashString& other) const;
-
 private:
 
-    // \note: ident_ is stored as a void * not an int, so that in
+    // @note: ident_ is stored as a void * not an int, so that in
     // the debugger it will show up as hex-values instead of
     // integer values. This is a bit more representative of what
     // we're doing here and makes it easy to allow external code
     // to assign event types as desired.
     void * ident_;              ///< A 32bit hash of the ident_string.
+    
+    // @note: this is only valid if the hash string is contstructed from a string not a hash
+    // Human readable string...
+    std::string string_;  
 };
 
 }  // namespace anh

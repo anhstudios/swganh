@@ -19,3 +19,5 @@ data/docs/generated
 /nbproject/private/
 
 data/docs/doxygen
+
+data/scripts/commands/__pycache__/

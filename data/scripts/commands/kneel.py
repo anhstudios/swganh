@@ -1,3 +1,6 @@
-import swgpy.object
+import swgpy.command,swgpy.object, swgpy.app
 
-actor.posture = swgpy.POSTURE.CROUCHED
+class kneelCommand(swgpy.command.Command):
+    def Run(self, kernel, actor, target, command_string):
+        print('hi')
+        actor.posture = swgpy.POSTURE.CROUCHED
