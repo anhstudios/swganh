@@ -34,8 +34,6 @@ public:
     void Start();
     void Stop();
 
-    bool IsRunning() const;
-        
 protected:
     swganh::app::SwganhKernel* kernel();
 
@@ -59,8 +57,6 @@ private:
     BaseService();
     swganh::app::SwganhKernel* kernel_;
         
-    std::atomic<bool> running_;
-
     anh::ActiveObject active_;
 };
 

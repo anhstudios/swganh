@@ -25,10 +25,6 @@ public:
     */
     virtual void Stop() = 0;
 
-    /*
-    * @brief returns true if running is set to true
-    */
-    virtual bool IsRunning() const = 0;
 };
 
 }}  // namespace anh::service

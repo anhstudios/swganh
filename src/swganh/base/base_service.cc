@@ -23,21 +23,15 @@ BaseService::BaseService(swganh::app::SwganhKernel* kernel)
     , active_(kernel->GetIoService()) 
 {}
 
-void BaseService::Start() {
-        running_ = true;
-        
+void BaseService::Start() {        
         subscribe();
         
         onStart();
 }
 
 void BaseService::Stop() {
-        running_ = false;
-        
         onStop();
 }
-
-bool BaseService::IsRunning() const { return running_; }
 
 SwganhKernel* BaseService::kernel() {
     return kernel_;
