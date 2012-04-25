@@ -63,7 +63,7 @@ using swganh::app::SwganhKernel;
 using swganh::tre::readers::DatatableReader;
 
 CommandService::CommandService(SwganhKernel* kernel)
-: BaseService(kernel)
+: kernel_(kernel)
 {
 }
 
@@ -180,7 +180,7 @@ void CommandService::ProcessCommand(
     try {
         if (ValidateCommand(actor, target, command, properties, process_filters_))
         {
-		    handler(kernel(), actor, target, command);
+		    handler(kernel_, actor, target, command);
             
             SendCommandQueueRemove(actor, command.action_counter, command_properties_map_[command.command_crc].default_time, 0, 0);
         }
@@ -190,21 +190,21 @@ void CommandService::ProcessCommand(
 
 }
 
-void CommandService::onStart()
+void CommandService::Start()
 {
-    script_prefix_ = kernel()->GetAppConfig().script_directory;
+    script_prefix_ = kernel_->GetAppConfig().script_directory;
 
 	LoadProperties();
     RegisterCommandScripts();
 
-    simulation_service_ = kernel()->GetServiceManager()->GetService<SimulationService>("SimulationService");
+    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueRemove, this);
 
-    delayed_task_.reset(new anh::SimpleDelayedTaskProcessor(kernel()->GetIoService()));
+    delayed_task_.reset(new anh::SimpleDelayedTaskProcessor(kernel_->GetIoService()));
 
-	auto event_dispatcher = kernel()->GetEventDispatcher();
+	auto event_dispatcher = kernel_->GetEventDispatcher();
 	event_dispatcher->Dispatch(
         make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
 
@@ -215,7 +215,7 @@ void CommandService::onStart()
         const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
 
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
-        processor_map_[object->GetObjectId()].reset(new anh::SimpleDelayedTaskProcessor(kernel()->GetIoService()));
+        processor_map_[object->GetObjectId()].reset(new anh::SimpleDelayedTaskProcessor(kernel_->GetIoService()));
     });
 
     event_dispatcher->Subscribe(
@@ -260,7 +260,7 @@ void CommandService::onStart()
 void CommandService::LoadProperties()
 {
     try {
-        auto tre_archive = kernel()->GetTreArchive();
+        auto tre_archive = kernel_->GetTreArchive();
         
         DatatableReader reader(tre_archive->GetResource("datatables/command/command_table.iff"));
 

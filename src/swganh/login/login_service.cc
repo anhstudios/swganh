@@ -38,7 +38,6 @@ using namespace swganh::login;
 using namespace swganh::messages;
 using namespace network::soe;
 using namespace swganh::login;
-using namespace swganh::base;
 using namespace swganh::character;
 using namespace swganh::galaxy;
 using namespace database;
@@ -49,11 +48,12 @@ using boost::asio::ip::udp;
 using swganh::app::SwganhKernel;
 
 LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKernel* kernel)
-    : BaseService(kernel)
-    , swganh::network::BaseSwgServer(kernel->GetIoService())
+    : swganh::network::BaseSwgServer(kernel->GetIoService())
+    , kernel_(kernel)
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
+    , active_(kernel->GetIoService())
 {
     account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
     
@@ -89,7 +89,7 @@ shared_ptr<Session> LoginService::CreateSession(const udp::endpoint& endpoint)
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
-            session = make_shared<LoginClient>(this, kernel()->GetIoService(), endpoint);
+            session = make_shared<LoginClient>(this, kernel_->GetIoService(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
         }
     }
@@ -120,15 +120,26 @@ shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
     return CreateSession(endpoint);
 }
 
-void LoginService::onStart() {
-    character_service_ = kernel()->GetServiceManager()->GetService<CharacterService>("CharacterService");
-	galaxy_service_  = kernel()->GetServiceManager()->GetService<GalaxyService>("GalaxyService");
+void LoginService::Start() {
+    character_service_ = kernel_->GetServiceManager()->GetService<CharacterService>("CharacterService");
+	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyService>("GalaxyService");
+    
+    RegisterMessageHandler(&LoginService::HandleLoginClientId_, this);
+
+    auto event_dispatcher = kernel_->GetEventDispatcher();
+
+    event_dispatcher->Subscribe(
+        "UpdateGalaxyStatus",
+        [this] (const shared_ptr<anh::EventInterface>& incoming_event)
+    {
+        UpdateGalaxyStatus_();
+    });
 
     Server::Start(listen_port_);
 
     UpdateGalaxyStatus_();
 
-    active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+    active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_),
@@ -140,25 +151,11 @@ void LoginService::onStart() {
     });
 }
 
-void LoginService::onStop()
+void LoginService::Stop()
 {
     // Remove all the sessions
     account_provider_->EndSessions();
     Server::Shutdown();
-}
-
-void LoginService::subscribe()
-{
-    RegisterMessageHandler(&LoginService::HandleLoginClientId_, this);
-
-    auto event_dispatcher = kernel()->GetEventDispatcher();
-
-    event_dispatcher->Subscribe(
-        "UpdateGalaxyStatus",
-        [this] (const shared_ptr<anh::EventInterface>& incoming_event)
-    {
-        UpdateGalaxyStatus_();
-    });
 }
 
 int LoginService::galaxy_status_check_duration_secs() const
@@ -213,7 +210,7 @@ void LoginService::UpdateGalaxyStatus_() {
 std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     std::vector<GalaxyStatus> galaxy_status;
 
-    auto service_directory = kernel()->GetServiceDirectory();
+    auto service_directory = kernel_->GetServiceDirectory();
 
     auto galaxy_list = service_directory->getGalaxySnapshot();
 
@@ -273,7 +270,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& logi
 
         login_client->SendTo(error);
 
-        auto timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
+        auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(login_error_timeout_secs_));
         timer->async_wait([login_client] (const boost::system::error_code& e)
         {
 			if (login_client)

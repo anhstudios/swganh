@@ -8,7 +8,9 @@
 #include <map>
 #include <memory>
 
-#include "swganh/base/base_service.h"
+#include "anh/service/service_interface.h"
+
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/object/object_controller.h"
 
 namespace swganh {
@@ -27,7 +29,7 @@ class CharacterProviderInterface;
 namespace swganh {
 namespace social {
     
-    class SocialService : public swganh::base::BaseService
+    class SocialService : public anh::service::ServiceInterface
     {
     public:
         explicit SocialService(swganh::app::SwganhKernel* kernel);
@@ -38,10 +40,10 @@ namespace social {
 
         bool AddFriend(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& friend_name);
         bool AddIgnore(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& player_name);
+        
     private:
-        void onStart();
         std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
-
+        swganh::app::SwganhKernel* kernel_;
     };
 
 }}  // namespace swganh::social

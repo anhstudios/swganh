@@ -32,7 +32,6 @@ using namespace anh::app;
 using namespace anh::event_dispatcher;
 using namespace anh::network::soe;
 using namespace anh::service;
-using namespace swganh::base;
 using namespace swganh::character;
 using namespace swganh::connection;
 using namespace swganh::login;
@@ -52,17 +51,18 @@ ConnectionService::ConnectionService(
         uint16_t listen_port,
         uint16_t ping_port,
         SwganhKernel* kernel)
-    : BaseService(kernel)
-    , swganh::network::BaseSwgServer(kernel->GetIoService())
+    : swganh::network::BaseSwgServer(kernel->GetIoService())
+    , kernel_(kernel)
     , ping_server_(nullptr)
     , listen_address_(listen_address)
     , listen_port_(listen_port)
     , ping_port_(ping_port)
+    , active_(kernel->GetIoService())
 {
 
-    session_provider_ = kernel->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
+    session_provider_ = kernel_->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
 
-    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
 }
 
 ServiceDescription ConnectionService::GetServiceDescription() {
@@ -80,21 +80,19 @@ ServiceDescription ConnectionService::GetServiceDescription() {
     return service_description;
 }
 
-void ConnectionService::subscribe() {
+void ConnectionService::Start() {
+    ping_server_ = make_shared<PingServer>(kernel_->GetIoService(), ping_port_);
+
+    character_service_ = kernel_->GetServiceManager()->GetService<CharacterService>("CharacterService");
+    login_service_ = kernel_->GetServiceManager()->GetService<LoginService>("LoginService");
+    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+    
     RegisterMessageHandler(&ConnectionService::HandleClientIdMsg_, this);
     RegisterMessageHandler(&ConnectionService::HandleCmdSceneReady_, this);
-}
-
-void ConnectionService::onStart() {
-    ping_server_ = make_shared<PingServer>(kernel()->GetIoService(), ping_port_);
-
-    character_service_ = kernel()->GetServiceManager()->GetService<CharacterService>("CharacterService");
-    login_service_ = kernel()->GetServiceManager()->GetService<LoginService>("LoginService");
-    simulation_service_ = kernel()->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
     Server::Start(listen_port_);
 
-    active().AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+    active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_),
@@ -106,8 +104,8 @@ void ConnectionService::onStart() {
     });
 }
 
-void ConnectionService::onStop() {
-    Server::Shutdown();
+void ConnectionService::Stop() {
+    Shutdown();
 }
 
 const string& ConnectionService::listen_address() {
@@ -126,7 +124,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         if (session_map_.find(endpoint) == session_map_.end())
         {
-            session = make_shared<ConnectionClient>(this, kernel()->GetIoService(), endpoint);
+            session = make_shared<ConnectionClient>(this, kernel_->GetIoService(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
         }
     }
@@ -153,7 +151,7 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
         simulation_service_->PersistRelatedObjects(controller->GetObject()->GetObjectId());
 
         // set a timer to 5 minutes to destroy the object, unless logged back in.
-        auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel()->GetIoService(), boost::posix_time::seconds(30));
+        auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(30));
         deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));
     }
 
@@ -217,7 +215,7 @@ void ConnectionService::RemoveClientTimerHandler_(
 
             simulation_service_->RemoveObject(object);
 
-            kernel()->GetEventDispatcher()->Dispatch(
+            kernel_->GetEventDispatcher()->Dispatch(
                 make_shared<ValueEvent<shared_ptr<Object>>>("ObjectRemovedEvent", object));
         }
     }
@@ -233,7 +231,7 @@ void ConnectionService::HandleCmdSceneReady_(
 
     auto object = client->GetController()->GetObject();
 
-    kernel()->GetEventDispatcher()->Dispatch(
+    kernel_->GetEventDispatcher()->Dispatch(
         make_shared<ValueEvent<shared_ptr<Object>>>("ObjectReadyEvent", object));
 }
 
@@ -275,7 +273,7 @@ void ConnectionService::HandleClientIdMsg_(
     client->Connect(account_id, player_id);
 
     ClientPermissionsMessage client_permissions;
-    client_permissions.galaxy_available = kernel()->GetServiceDirectory()->galaxy().status();
+    client_permissions.galaxy_available = kernel_->GetServiceDirectory()->galaxy().status();
     client_permissions.available_character_slots = static_cast<uint8_t>(character_provider_->GetMaxCharacters(account_id));
     /// @TODO: Replace with configurable value
     client_permissions.unlimited_characters = 0;

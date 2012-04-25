@@ -48,7 +48,7 @@ using namespace swganh::messages;
 using swganh::app::SwganhKernel;
 
 CharacterService::CharacterService(SwganhKernel* kernel)
-    : BaseService(kernel) 
+    : kernel_(kernel)
 {
     character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
 }
@@ -68,13 +68,8 @@ service::ServiceDescription CharacterService::GetServiceDescription() {
     return service_description;
 }
 
-void CharacterService::onStart() {
-}
-
-void CharacterService::onStop() {}
-
-void CharacterService::subscribe() {
-    auto connection_service = kernel()->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
+void CharacterService::Start() {
+    auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
 
     connection_service->RegisterMessageHandler(
         &CharacterService::HandleClientCreateCharacter_, this);
@@ -82,13 +77,11 @@ void CharacterService::subscribe() {
     connection_service->RegisterMessageHandler(
         &CharacterService::HandleClientRandomNameRequest_, this);
 
-    auto login_service = kernel()->GetServiceManager()->GetService<LoginService>("LoginService");
+    auto login_service = kernel_->GetServiceManager()->GetService<LoginService>("LoginService");
 
     login_service->RegisterMessageHandler(
         &CharacterService::HandleDeleteCharacterMessage_, this);
-
 }
-
 
 void CharacterService::HandleClientCreateCharacter_(
     const shared_ptr<ConnectionClient>& client, 
