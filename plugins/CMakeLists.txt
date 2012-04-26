@@ -1,4 +1,7 @@
 
+#Swganh Base Plugin
+add_subdirectory(swganh_base)
+
 #Authentication
 add_subdirectory(mysql_auth)
 add_subdirectory(phpbb_auth)
