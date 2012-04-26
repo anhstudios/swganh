@@ -11,6 +11,7 @@
 
 using namespace swganh::command::v2;
 using anh::observer::ObserverInterface;
+using anh::service::ServiceDescription;
 using swganh::messages::controllers::CommandQueueRemove;
 using swganh::simulation::SimulationService;
 using swganh::object::ObjectController;
@@ -19,14 +20,31 @@ using swganh::object::tangible::Tangible;
 
 CommandService::CommandService(swganh::app::SwganhKernel* kernel)
     : kernel_(kernel)
-{}
+{
+    // Acquire handles to resources, these resources are not guaranteed
+    // to be ready until Start() is invoked.
+    command_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandManagerInterface>("CommandService::CommandManager");
+    command_properties_loader_impl_ = kernel_->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("CommandService::CommandPropertiesLoader");
+    
+    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+}
+
+ServiceDescription CommandService::GetServiceDescription()
+{
+    ServiceDescription service_description(
+        "CommandService",
+        "command",
+        "0.1",
+        "127.0.0.1",
+        0,
+        0,
+        0);
+
+    return service_description;
+}
 
 void CommandService::Start()
 {
-    command_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandManagerInterface>("CommandService::CommandManager");
-    
-    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
-
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
 }
 
@@ -64,6 +82,11 @@ void CommandService::SendCommandQueueRemove(
     remove_message.action = action;
     
     observer->Notify(remove_message);
+}
+
+CommandPropertiesMap CommandService::LoadCommandPropertiesMap()
+{
+    return command_properties_loader_impl_->LoadCommandPropertiesMap();
 }
 
 void CommandService::HandleCommandQueueEnqueue(

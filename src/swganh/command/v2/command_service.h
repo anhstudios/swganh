@@ -16,6 +16,7 @@
 
 #include "command_interface.h"
 #include "command_manager_interface.h"
+#include "command_properties_loader_interface.h"
 
 namespace swganh {
 namespace command {
@@ -30,6 +31,8 @@ namespace v2 {
     {
     public:
         CommandService(swganh::app::SwganhKernel* kernel);
+
+        anh::service::ServiceDescription GetServiceDescription();
 
         void Start();
         
@@ -48,6 +51,8 @@ namespace v2 {
             uint32_t error,
             uint32_t action);
 
+        CommandPropertiesMap LoadCommandPropertiesMap();
+
     private:
         
         void HandleCommandQueueEnqueue(
@@ -55,6 +60,7 @@ namespace v2 {
             CommandQueueEnqueue message);
 
         std::shared_ptr<CommandManagerInterface> command_manager_impl_;
+        std::shared_ptr<CommandPropertiesLoaderInterface> command_properties_loader_impl_;
         swganh::app::SwganhKernel* kernel_;
         swganh::simulation::SimulationService* simulation_service_;
     };
