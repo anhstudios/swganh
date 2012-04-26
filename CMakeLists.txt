@@ -8,7 +8,7 @@ project(swganh CXX)
 
 # current version
 set(swganh_VERSION_MAJOR 0)
-set(swganh_VERSION_MINOR 4)
+set(swganh_VERSION_MINOR 5)
 set(swganh_VERSION_PATCH 0)
 set(swganh_VERSION
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
@@ -42,14 +42,14 @@ option(USE_SYSTEM_LIBRARIES
     "Uses system libraries instead of downloading them" OFF)
 
 option(BUILD_PLUGINS
-    "Build plugins" ON)
+    "Build additional plugins" OFF)
 
 option(BUILD_DOCS
     "Explicitly force building the documentation" OFF)
 
 option(BUILD_EXAMPLES
     "Explicitly force building of examples" OFF)
-
+    
 option(TREAT_WARNINGS_AS_ERRORS
     "Treat all warnings as errors" ON)
 
