@@ -4,6 +4,10 @@
 #ifndef SWGANH_COMMAND_V2_COMMAND_PROCESSOR_INTERFACE_H_
 #define SWGANH_COMMAND_V2_COMMAND_PROCESSOR_INTERFACE_H_
 
+#include <memory>
+
+#include "swganh/object/object_controller.h"
+
 #include "command_interface.h"
 
 namespace swganh {

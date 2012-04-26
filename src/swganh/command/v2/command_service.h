@@ -15,7 +15,7 @@
 #include "swganh/simulation/simulation_service.h"
 
 #include "command_interface.h"
-#include "command_manager_interface.h"
+#include "command_queue_manager_interface.h"
 #include "command_properties_loader_interface.h"
 
 namespace swganh {
@@ -59,7 +59,7 @@ namespace v2 {
             const std::shared_ptr<swganh::object::ObjectController>& controller,
             CommandQueueEnqueue message);
 
-        std::shared_ptr<CommandManagerInterface> command_manager_impl_;
+        std::shared_ptr<CommandQueueManagerInterface> command_queue_manager_impl_;
         std::shared_ptr<CommandPropertiesLoaderInterface> command_properties_loader_impl_;
         swganh::app::SwganhKernel* kernel_;
         swganh::simulation::SimulationService* simulation_service_;

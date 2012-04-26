@@ -23,7 +23,7 @@ CommandService::CommandService(swganh::app::SwganhKernel* kernel)
 {
     // Acquire handles to resources, these resources are not guaranteed
     // to be ready until Start() is invoked.
-    command_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandManagerInterface>("CommandService::CommandManager");
+    command_queue_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("CommandService::CommandQueueManager");
     command_properties_loader_impl_ = kernel_->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("CommandService::CommandPropertiesLoader");
     
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
@@ -50,22 +50,22 @@ void CommandService::Start()
 
 void CommandService::AddEnqueueFilter(CommandFilter&& filter)
 {
-    command_manager_impl_->AddEnqueueFilter(std::move(filter));
+    command_queue_manager_impl_->AddEnqueueFilter(std::move(filter));
 }
         
 void CommandService::AddProcessFilter(CommandFilter&& filter)
 {
-    command_manager_impl_->AddProcessFilter(std::move(filter));
+    command_queue_manager_impl_->AddProcessFilter(std::move(filter));
 }
         
 void CommandService::AddAutoCommand(uint64_t object_id, std::unique_ptr<CommandInterface> command)
 {
-    command_manager_impl_->AddAutoCommand(object_id, std::move(command));
+    command_queue_manager_impl_->AddAutoCommand(object_id, std::move(command));
 }
         
 void CommandService::RemoveAutoCommand(uint64_t object_id)
 {
-    command_manager_impl_->RemoveAutoCommand(object_id);
+    command_queue_manager_impl_->RemoveAutoCommand(object_id);
 }
         
 void CommandService::SendCommandQueueRemove(
@@ -96,5 +96,5 @@ void CommandService::HandleCommandQueueEnqueue(
     auto actor = simulation_service_->GetObjectById<Creature>(message.observable_id);
 	auto target = simulation_service_->GetObjectById<Tangible>(message.target_id);
 
-    command_manager_impl_->EnqueueCommand(actor, target, std::move(message));
+    command_queue_manager_impl_->EnqueueCommand(actor, target, std::move(message));
 }
