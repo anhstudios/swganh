@@ -1,7 +1,7 @@
 include(ANHPythonBinding)
 
 AddANHPythonBinding(utility
-	PREFIX_NAME anhpy
+	PREFIX_NAME swgpy
     DEPENDS 
 		anh_lib
     ADDITIONAL_INCLUDE_DIRS
