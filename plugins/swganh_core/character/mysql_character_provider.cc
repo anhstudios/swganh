@@ -34,15 +34,14 @@
 
 #include "swganh/object/player/player.h"
 
-
 #include "anh/logger.h"
 
 using namespace std;
 using namespace anh;
 using namespace anh::app;
 using namespace anh::database;
-using namespace plugins::mysql_character;
 using namespace swganh::character;
+using namespace swganh_core::character;
 using namespace swganh::messages;
 
 #ifdef WIN32

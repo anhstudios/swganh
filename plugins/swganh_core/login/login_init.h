@@ -1,52 +1,34 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include <iostream>
+#ifndef SWGANH_CORE_LOGIN_INITIALIZATION_H_
+#define SWGANH_CORE_LOGIN_INITIALIZATION_H_
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
 #include "anh/logger.h"
 
-#include "anh/app/kernel_interface.h"
-#include "anh/database/database_manager_interface.h"
 #include "anh/plugin/bindings.h"
 #include "anh/plugin/plugin_manager.h"
+
+#include "swganh/app/swganh_kernel.h"
 
 #include "mysql_account_provider.h"
 #include "mysql_session_provider.h"
 #include "sha512_encoder.h"
 
+namespace swganh_core {
+namespace login {
 
-using namespace anh::app;
-using namespace anh::plugin;
-using namespace plugins::mysql_auth;
-using namespace std;
-
-using boost::any_cast;
-using boost::program_options::options_description;
-using boost::program_options::variables_map;
-
-
-extern "C" PLUGIN_API void ExitModule() 
-{
-    return;
-}
-
-
-extern "C" PLUGIN_API  void ConfigurePlugin(options_description& description)
-{
-    return;
-}
-
-extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel) 
+inline void Initialize(swganh::app::SwganhKernel* kernel) 
 {    
-    ObjectRegistration registration;
+    anh::plugin::ObjectRegistration registration;
     registration.version.major = 0;
     registration.version.minor = 4;
 
     // Register
-    registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
+    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
         return new Sha512Encoder(kernel->GetDatabaseManager());
     };
 
@@ -58,7 +40,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 
     kernel->GetPluginManager()->RegisterObject("LoginService::Encoder", &registration);
     
-    registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
+    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
         return new MysqlAccountProvider(kernel->GetDatabaseManager());
     };
 
@@ -70,7 +52,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     
     kernel->GetPluginManager()->RegisterObject("LoginService::AccountProvider", &registration);
         
-     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
+     registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
          return new MysqlSessionProvider(kernel->GetDatabaseManager());
      };
     
@@ -81,6 +63,8 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
      };
     
     kernel->GetPluginManager()->RegisterObject("ConnectionService::SessionProvider", &registration);
-
-    return ExitModule;
 }
+
+}}  // namespace swganh::login
+
+#endif  // SWGANH_CORE_LOGIN_LOGIN_INITIALIZATION_H_

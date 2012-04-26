@@ -19,7 +19,7 @@
 
 using namespace swganh::login;
 using namespace providers;
-using namespace plugins::mysql_auth;
+using namespace swganh_core::login;
 using namespace std;
 
 MysqlAccountProvider::MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager)

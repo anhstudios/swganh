@@ -13,7 +13,7 @@
 #include "anh/database/database_manager.h"
 
 using namespace anh::database;
-using namespace plugins::mysql_auth;
+using namespace swganh_core::login;
 using namespace std;
 
 Sha512Encoder::Sha512Encoder(DatabaseManagerInterface* db_manager)

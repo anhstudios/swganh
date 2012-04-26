@@ -10,8 +10,8 @@
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
-namespace plugins {
-namespace mysql_auth {
+namespace swganh_core {
+namespace login {
 
 class MysqlSessionProvider : public swganh::connection::providers::SessionProviderInterface {
 public:
@@ -26,6 +26,6 @@ private:
     anh::database::DatabaseManagerInterface* db_manager_;
 };
 
-}}  // namespace plugins::mysql_auth
+}}  // namespace swganh::login
 
 #endif  // MYSQL_AUTH_MYSQL_SESSION_PROVIDER_H_

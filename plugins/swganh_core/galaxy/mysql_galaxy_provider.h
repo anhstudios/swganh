@@ -10,7 +10,7 @@
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
-namespace plugins {
+namespace swganh_core {
 namespace galaxy {
 
 class MysqlGalaxyProvider : public swganh::galaxy::providers::GalaxyProviderInterface {

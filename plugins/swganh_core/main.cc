@@ -5,23 +5,26 @@
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include <boost/thread.hpp>
 
 #include "anh/logger.h"
-#include "anh/app/kernel_interface.h"
+
 #include "anh/plugin/bindings.h"
 #include "anh/plugin/plugin_manager.h"
 
-#include "quadtree_spatial_provider.h"
+#include "swganh/app/swganh_kernel.h"
 
-using namespace anh::app;
-using namespace anh::plugin;
-using namespace std;
+#include "character/character_init.h"
+#include "command/command_init.h"
+#include "login/login_init.h"
+#include "galaxy/galaxy_init.h"
+#include "simulation/simulation_init.h"
 
+using anh::app::KernelInterface;
+using anh::plugin::ExitFunc;
 using boost::any_cast;
 using boost::program_options::options_description;
 using boost::program_options::variables_map;
-
+using swganh::app::SwganhKernel;
 
 extern "C" PLUGIN_API void ExitModule() 
 {
@@ -35,23 +38,14 @@ extern "C" PLUGIN_API  void ConfigurePlugin(options_description& description)
 }
 
 extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel) 
-{    
-    ObjectRegistration registration;
-    registration.version.major = 0;
-    registration.version.minor = 4;
-
-    // Register
-    registration.CreateObject = [kernel] (ObjectParams* params) -> void * {
-        return new QuadtreeSpatialProvider(kernel);
-    };
-
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
-            delete static_cast<QuadtreeSpatialProvider*>(object);
-        }
-    };
-
-    kernel->GetPluginManager()->RegisterObject("SimulationService::SpatialProvider", &registration);
+{
+    auto swganh_kernel = static_cast<SwganhKernel*>(kernel);    
     
+    swganh_core::character::Initialize(swganh_kernel);
+    swganh_core::command::Initialize(swganh_kernel);
+    swganh_core::login::Initialize(swganh_kernel);
+    swganh_core::galaxy::Initialize(swganh_kernel);
+    swganh_core::simulation::Initialize(swganh_kernel);
+        
     return ExitModule;
 }

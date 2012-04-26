@@ -1,12 +1,15 @@
 include(ANHPlugin)
 
-AddANHPlugin(swganh_base
+AddANHPlugin(swganh_core
     DEPENDS
         anh_lib
         swganh_lib
     ADDITIONAL_INCLUDE_DIRS
-        ${Boost_INCLUDE_DIR}
+	    ${Boost_INCLUDE_DIR}
+	    ${MYSQL_INCLUDE_DIR}
+        ${MYSQLCONNECTORCPP_INCLUDE_DIRS}
         ${GLM_INCLUDE_DIR}
+		${PYTHON_INCLUDE_DIR}
     ADDITIONAL_LIBRARY_DIRS
         ${Boost_LIBRARY_DIRS}  
     DEBUG_LIBRARIES

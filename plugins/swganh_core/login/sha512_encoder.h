@@ -10,8 +10,8 @@
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
-namespace plugins {
-namespace mysql_auth {
+namespace swganh_core {
+namespace login {
 
 class Sha512Encoder : public swganh::login::encoders::EncoderInterface {
 public:
@@ -24,6 +24,6 @@ private:
     anh::database::DatabaseManagerInterface* db_manager_;
 };
 
-}}  // namespace plugins::mysql_auth
+}}  // namespace swganh_core::login
 
 #endif  // MYSQL_AUTH_ENCODERS_SHA512_ENCODER_H_

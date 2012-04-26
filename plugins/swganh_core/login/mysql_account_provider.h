@@ -9,8 +9,8 @@
 namespace anh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
-namespace plugins {
-namespace mysql_auth {
+namespace swganh_core {
+namespace login {
 
 class MysqlAccountProvider : public swganh::login::providers::AccountProviderInterface {
 public:
@@ -28,6 +28,6 @@ private:
     anh::database::DatabaseManagerInterface* db_manager_;
 };
 
-}}  // namespace plugins::mysql_auth
+}}  // namespace swganh::login
 
 #endif  // MYSQL_AUTH_ACCOUNT_PROVIDER_H_

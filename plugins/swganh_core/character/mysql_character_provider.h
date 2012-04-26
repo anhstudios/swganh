@@ -11,8 +11,8 @@ namespace app {
 class KernelInterface;
 }}  // namespace anh::app
 
-namespace plugins {
-namespace mysql_character {
+namespace swganh_core {
+namespace character {
 
 class MysqlCharacterProvider : public swganh::character::CharacterProviderInterface{
 public:
@@ -38,6 +38,6 @@ private:
 	std::vector<std::string> racially_inappropriate_;
 };
 
-}}  // namespace plugins::mysql_character
+}}  // namespace swganh_core::character
 
 #endif  // MYSQL_CHARACTER_PROVIDER_H_

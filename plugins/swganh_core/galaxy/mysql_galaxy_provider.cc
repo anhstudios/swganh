@@ -14,7 +14,7 @@
 
 #include "anh/database/database_manager.h"
 
-using namespace plugins::galaxy;
+using namespace swganh_core::galaxy;
 using namespace std;
 
 MysqlGalaxyProvider::MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager)
