@@ -5,13 +5,13 @@
 #define SWGANH_COMMAND_COMMAND_PROPERTIES_H_
 
 #include <cstdint>
-#include <string>
 #include <map>
 
 #include "anh/hash_string.h"
 
 namespace swganh {
 namespace command {
+namespace v2 {
 
 	struct CommandProperties
     {
@@ -34,6 +34,6 @@ namespace command {
 		CommandProperties
 	> CommandPropertiesMap;
 
-}}  // namespace swganh::command::v2
+}}}  // namespace swganh::command::v2
 
 #endif  // SWGANH_COMMAND_COMMAND_PROPERTIES_H_
