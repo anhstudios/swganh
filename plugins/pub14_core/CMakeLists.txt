@@ -1,6 +1,6 @@
 include(ANHPlugin)
 
-AddANHPlugin(swganh_core
+AddANHPlugin(pub14_core
     DEPENDS
         anh_lib
         swganh_lib

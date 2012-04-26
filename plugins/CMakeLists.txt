@@ -1,6 +1,6 @@
 
 #Swganh Core Functionality
-add_subdirectory(swganh_core)
+add_subdirectory(pub14_core)
 
 #Authentication
 add_subdirectory(phpbb_auth)
