@@ -18,11 +18,30 @@ namespace tre {
 namespace pub14_core {
 namespace command {
 
+    /**
+     * Utility class used to load command properties from a SWG .tre archive.
+     */
     class CommandPropertiesTreLoader : public swganh::command::v2::CommandPropertiesLoaderInterface
     {
     public:
+        /**
+         * Creates a loader with a valid TreArchive instance.
+         *
+         * This loader finds the command_table.iff in the client files managed by
+         * the given archive and loads all the relevant command properties from it. 
+         
+         * The caller is responsible for ensuring the TreArchive instance is properly
+         * initialized before passing it in.
+         *
+         * @param archive Valid TreArchive instance.
+         */
         explicit CommandPropertiesTreLoader(swganh::tre::TreArchive* archive);
 
+        /**
+         * Loads a map of all of the commands listed in the client files.
+         *
+         * @return A map of command properties.
+         */
         swganh::command::v2::CommandPropertiesMap LoadCommandPropertiesMap();
 
     private:
