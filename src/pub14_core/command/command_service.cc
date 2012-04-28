@@ -9,14 +9,16 @@
 #include "swganh/messages/controllers/command_queue_remove.h"
 #include "swganh/simulation/simulation_service.h"
 
-using namespace swganh::command::v2;
 using anh::observer::ObserverInterface;
 using anh::service::ServiceDescription;
+using pub14_core::command::CommandService;
+using swganh::command::v2::CommandFactoryInterface;
+using swganh::command::v2::CommandInterface;
+using swganh::command::v2::CommandQueueManagerInterface;
+using swganh::command::v2::CommandPropertiesLoaderInterface;
 using swganh::messages::controllers::CommandQueueRemove;
 using swganh::simulation::SimulationService;
 using swganh::object::ObjectController;
-using swganh::object::creature::Creature;
-using swganh::object::tangible::Tangible;
 
 CommandService::CommandService(swganh::app::SwganhKernel* kernel)
     : kernel_(kernel)
@@ -25,6 +27,7 @@ CommandService::CommandService(swganh::app::SwganhKernel* kernel)
     // to be ready until Start() is invoked.
     command_queue_manager_impl_ = kernel_->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("CommandService::CommandQueueManager");
     command_properties_loader_impl_ = kernel_->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("CommandService::CommandPropertiesLoader");
+    command_factory_impl_ = kernel_->GetPluginManager()->CreateObject<CommandFactoryInterface>("CommandService::CommandFactory");
     
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
 }
@@ -45,28 +48,15 @@ ServiceDescription CommandService::GetServiceDescription()
 
 void CommandService::Start()
 {
-    simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
+    simulation_service_->RegisterControllerHandler(
+        &CommandQueueManagerInterface::EnqueueCommand, command_queue_manager_impl_.get());
 }
 
-void CommandService::AddEnqueueFilter(CommandFilter&& filter)
-{
-    command_queue_manager_impl_->AddEnqueueFilter(std::move(filter));
-}
-        
-void CommandService::AddProcessFilter(CommandFilter&& filter)
-{
-    command_queue_manager_impl_->AddProcessFilter(std::move(filter));
-}
-        
 void CommandService::AddAutoCommand(uint64_t object_id, std::unique_ptr<CommandInterface> command)
-{
-    command_queue_manager_impl_->AddAutoCommand(object_id, std::move(command));
-}
+{}
         
 void CommandService::RemoveAutoCommand(uint64_t object_id)
-{
-    command_queue_manager_impl_->RemoveAutoCommand(object_id);
-}
+{}
         
 void CommandService::SendCommandQueueRemove(
     std::unique_ptr<ObserverInterface> observer,
@@ -82,19 +72,4 @@ void CommandService::SendCommandQueueRemove(
     remove_message.action = action;
     
     observer->Notify(remove_message);
-}
-
-CommandPropertiesMap CommandService::LoadCommandPropertiesMap()
-{
-    return command_properties_loader_impl_->LoadCommandPropertiesMap();
-}
-
-void CommandService::HandleCommandQueueEnqueue(
-    const std::shared_ptr<ObjectController>& controller,
-    CommandQueueEnqueue message)
-{
-    auto actor = simulation_service_->GetObjectById<Creature>(message.observable_id);
-	auto target = simulation_service_->GetObjectById<Tangible>(message.target_id);
-
-    command_queue_manager_impl_->EnqueueCommand(actor, target, std::move(message));
 }
