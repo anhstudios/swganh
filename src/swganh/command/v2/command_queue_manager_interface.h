@@ -18,25 +18,13 @@
 namespace swganh {
 namespace command {
 namespace v2 {
-    
-    using messages::controllers::CommandQueueRemove;
-    using messages::controllers::CommandQueueEnqueue;
-    
-    typedef std::function<void (
-        swganh::app::SwganhKernel*,
-		const std::shared_ptr<object::creature::Creature>&, // creature object
-		const std::shared_ptr<object::tangible::Tangible>&,	// target object
-        const CommandQueueEnqueue&,
-        const CommandProperties&)
-    > CommandHandler;
 
-    typedef std::function<std::tuple<bool, uint32_t, uint32_t> (
-        const std::shared_ptr<object::creature::Creature>&, // creature object
-		const std::shared_ptr<object::tangible::Tangible>&, // target object
-        const CommandQueueEnqueue&,
-        const CommandProperties&)	// action
-    > CommandFilter;
-    
+    class CommandQueueInterface;
+
+    typedef std::function<std::unique_ptr<swganh::command::v2::CommandInterface>(
+        swganh::command::v2::CommandProperties* properties)
+    > CommandCreator;
+
     /**
      */
     class CommandQueueManagerInterface
@@ -44,18 +32,18 @@ namespace v2 {
     public:
         virtual ~CommandQueueManagerInterface() {}
         
-        virtual void AddEnqueueFilter(CommandFilter filter) = 0;
-        
-        virtual void AddProcessFilter(CommandFilter filter) = 0;
-        
-        virtual void AddAutoCommand(uint64_t object_id, std::unique_ptr<CommandInterface> command) = 0;
-        
-        virtual void RemoveAutoCommand(uint64_t object_id) = 0;
-        
         virtual void EnqueueCommand(
-            const std::shared_ptr<object::creature::Creature>&,
-            const std::shared_ptr<object::tangible::Tangible>&,
-            CommandQueueEnqueue message) = 0;
+            const std::shared_ptr<object::ObjectController>& controller,
+            messages::controllers::CommandQueueEnqueue message) = 0;
+
+        CommandQueueInterface* FindCommandQueue(uint64_t object_id);
+
+        std::unique_ptr<CommandInterface> CreateCommand(
+            anh::HashString command);
+        
+        void AddCommandCreator(anh::HashString command, CommandCreator&& creator);
+        
+        void RemoveCommandCreator(anh::HashString command);
     };
     
 }}}  // namespace swganh::command::v2
