@@ -25,7 +25,9 @@ namespace v2 {
         virtual const std::shared_ptr<swganh::object::ObjectController>& GetQueueOwner() const = 0;
         
         virtual void EnqueueCommand(std::unique_ptr<CommandInterface> command) = 0;
-        virtual void ProcessCommand(std::unique_ptr<CommandInterface> command) = 0;
+
+        virtual void SetAutoCommand(std::unique_ptr<CommandInterface> command) = 0;
+        virtual void RemoveAutoCommand() = 0;
     };
     
 }}}  // namespace swganh::command::v2

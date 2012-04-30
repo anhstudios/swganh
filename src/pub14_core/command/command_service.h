@@ -40,7 +40,7 @@ namespace command {
         void RemoveAutoCommand(uint64_t object_id);
         
         void SendCommandQueueRemove(
-            std::unique_ptr<anh::observer::ObserverInterface> observer,
+            std::shared_ptr<anh::observer::ObserverInterface> observer,
             uint32_t action_counter,
             float timer,
             uint32_t error,
@@ -50,6 +50,10 @@ namespace command {
         std::shared_ptr<swganh::command::v2::CommandQueueManagerInterface> command_queue_manager_impl_;     
         std::shared_ptr<swganh::command::v2::CommandPropertiesLoaderInterface> command_properties_loader_impl_;
         std::shared_ptr<swganh::command::v2::CommandFactoryInterface> command_factory_impl_;
+        
+        void HandleCommandQueueEnqueue(
+            const std::shared_ptr<swganh::object::ObjectController>& controller,
+            swganh::messages::controllers::CommandQueueEnqueue message);
 
         swganh::app::SwganhKernel* kernel_;
         swganh::simulation::SimulationService* simulation_service_;

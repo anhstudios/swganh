@@ -4,7 +4,13 @@
 #ifndef SWGANH_COMMAND_V2_COMMAND_INTERFACE_H_
 #define SWGANH_COMMAND_V2_COMMAND_INTERFACE_H_
 
+#include <memory>
+
 namespace swganh {
+namespace object {
+    class ObjectController;
+}  // namespace object
+
 namespace command {
 namespace v2 {
     
@@ -14,6 +20,8 @@ namespace v2 {
     {
     public:
         virtual ~CommandInterface() {}
+
+        virtual const std::shared_ptr<object::ObjectController>& GetController() const;
     };
     
 }}}  // namespace swganh::command::v2

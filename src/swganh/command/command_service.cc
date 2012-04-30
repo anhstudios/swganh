@@ -5,10 +5,6 @@
 #include <Python.h>
 #endif
 
-#ifndef WIN32
-#include <Python.h>
-#endif
-
 #include "command_service.h"
 
 #include <cctype>

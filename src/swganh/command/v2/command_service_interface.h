@@ -30,7 +30,7 @@ namespace v2 {
         void RemoveAutoCommand(uint64_t object_id);
                 
         void SendCommandQueueRemove(
-            std::unique_ptr<anh::observer::ObserverInterface> observer,
+            std::shared_ptr<anh::observer::ObserverInterface> observer,
             uint32_t action_counter,
             float timer,
             uint32_t error,

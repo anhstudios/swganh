@@ -5,49 +5,41 @@
 
 #include "swganh/simulation/simulation_service.h"
 
+using pub14_core::command::CommandQueue;
 using pub14_core::command::CommandQueueManager;
-using swganh::command::v2::CommandFactoryInterface;
 using swganh::command::v2::CommandInterface;
-using swganh::command::v2::CommandProperties;
-using swganh::command::v2::CommandPropertiesLoaderInterface;
 using swganh::command::v2::CommandQueueInterface;
-using swganh::command::v2::CommandServiceInterface;
-using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::ObjectController;
-using swganh::object::creature::Creature;
-using swganh::object::tangible::Tangible;
-using swganh::simulation::SimulationService;
 
-CommandQueueManager::CommandQueueManager(
-    CommandServiceInterface* command_service,
-    SimulationService* simulation_service,
-    CommandPropertiesLoaderInterface* command_properties_loader,
-    CommandFactoryInterface* command_factory)
-    : command_service_(command_service)
-    , simulation_service_(simulation_service)
-    , command_properties_map_(command_properties_loader->LoadCommandPropertiesMap())
-    , command_factory_(command_factory)
+CommandQueueManager::CommandQueueManager()
 {}
 
-void CommandQueueManager::EnqueueCommand(
-    const std::shared_ptr<ObjectController>& controller,
-    CommandQueueEnqueue message)
-{
-    auto actor = simulation_service_->GetObjectById<Creature>(message.observable_id);
-	auto target = simulation_service_->GetObjectById<Tangible>(message.target_id);
+CommandQueueManager::~CommandQueueManager()
+{}
 
-    if (!ValidateCommandRequest(actor, target, message))
+CommandQueue* CommandQueueManager::CreateCommandQueue(uint64_t object_id)
+{
+    auto command_queue = FindCommandQueue(object_id);
+
+    if (!command_queue)
     {
-        return;
+        std::unique_ptr<CommandQueue> new_queue(new CommandQueue);
+        command_queue = new_queue.get();
+
+        command_queue_map_.insert(std::make_pair(object_id, std::move(new_queue)));
     }
-    
-    FindCommandQueue(actor->GetObjectId())->EnqueueCommand(
-        command_factory_->CreateCommand(actor, target, message));
+
+    return command_queue;
 }
 
-CommandQueueInterface* CommandQueueManager::FindCommandQueue(uint64_t object_id)
+void CommandQueueManager::DestroyCommandQueue(uint64_t object_id)
 {
-    CommandQueueInterface* command_queue = nullptr;
+    command_queue_map_.erase(object_id);
+}
+
+CommandQueue* CommandQueueManager::FindCommandQueue(uint64_t object_id)
+{
+    CommandQueue* command_queue = nullptr;
 
     auto find_iter = command_queue_map_.find(object_id);
     if (find_iter != command_queue_map_.end())
@@ -58,23 +50,12 @@ CommandQueueInterface* CommandQueueManager::FindCommandQueue(uint64_t object_id)
     return command_queue;
 }
 
-boost::optional<const CommandProperties&> CommandQueueManager::FindCommandProperties(uint32_t command_crc)
+void CommandQueueManager::EnqueueCommand(std::unique_ptr<swganh::command::v2::CommandInterface> command)
 {
-    boost::optional<const CommandProperties&> command_properties;
+    auto command_queue = FindCommandQueue(command->GetController()->GetId());
 
-    auto find_iter = command_properties_map_.find(command_crc);
-    if (find_iter != command_properties_map_.end())
+    if (command_queue)
     {
-        command_properties = find_iter->second;
+        command_queue->EnqueueCommand(std::move(command));
     }
-
-    return command_properties;
-}
-        
-bool ValidateCommandRequest(
-    const std::shared_ptr<swganh::object::creature::Creature>& actor,
-    const std::shared_ptr<swganh::object::tangible::Tangible>& target,
-    const swganh::messages::controllers::CommandQueueEnqueue& message)
-{
-
 }

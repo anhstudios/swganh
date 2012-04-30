@@ -12,6 +12,9 @@
 
 namespace swganh {
 namespace object {
+
+    class ObjectController;
+
 namespace creature {
     class Creature;
 }  // namespace creature
@@ -27,7 +30,12 @@ namespace v2 {
     struct CommandProperties;
     
     typedef std::function<
-        std::unique_ptr<CommandInterface> (CommandProperties* properties)
+        std::unique_ptr<CommandInterface> (
+            const std::shared_ptr<swganh::object::ObjectController>&,
+            uint32_t, // command_crc
+            uint64_t, // target_id
+            uint32_t, // action_counter
+            std::wstring) // command options
     > CommandCreator;
 
     /**
@@ -38,15 +46,12 @@ namespace v2 {
         virtual ~CommandFactoryInterface() {}
         
         std::unique_ptr<swganh::command::v2::CommandInterface> CreateCommand(
-            const std::shared_ptr<object::creature::Creature>& actor,
-            const std::shared_ptr<object::tangible::Tangible>& target,
-            messages::controllers::CommandQueueEnqueue message);
+            const std::shared_ptr<object::ObjectController>& controller,
+            uint32_t command_crc,
+            uint64_t target_id,
+            uint32_t action_counter,
+            std::wstring command_options);
         
-        std::unique_ptr<swganh::command::v2::CommandInterface> CreateCommand(
-            const std::shared_ptr<object::creature::Creature>& actor,
-            const std::shared_ptr<object::tangible::Tangible>& target,
-            anh::HashString command);
-
         void AddCommandCreator(anh::HashString command, CommandCreator&& creator);
         
         void RemoveCommandCreator(anh::HashString command);
