@@ -4,6 +4,7 @@ build*/
 vendor/
 docs/
 nbproject/
+__pycache__/
 
 # ignore configuration files
 data/sql/setup.cfg

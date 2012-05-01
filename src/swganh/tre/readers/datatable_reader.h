@@ -76,6 +76,8 @@ namespace readers {
         boost::any value_;
     };
 
+    typedef std::map<std::string, DatatableCell*> DatatableRow;
+
     /**
      * A utility class for parsing files in the datatable format.
      */
@@ -120,7 +122,7 @@ namespace readers {
          *
          * \return The current row.
          */
-        std::map<std::string, DatatableCell*> GetRow();
+        DatatableRow GetRow();
 
     private:
         void ValidateFile(const std::vector<char>& input) const;

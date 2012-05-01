@@ -9,12 +9,13 @@
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
 
+#include "anh/active_object.h"
 #include "anh/logger.h"
 
 #include "anh/network/soe/packet_utilities.h"
 #include "anh/network/soe/server.h"
+#include "anh/service/service_interface.h"
 
-#include "swganh/base/base_service.h"
 #include "swganh/network/base_swg_server.h"
 
 #include "swganh/character/character_service.h"
@@ -56,7 +57,7 @@ class AccountProviderInterface;
 }
 
 class LoginService 
-    : public swganh::base::BaseService
+    : public anh::service::ServiceInterface
     , public swganh::network::BaseSwgServer
 {
 public:
@@ -82,17 +83,15 @@ public:
     
     int login_error_timeout_secs() const;
     void login_error_timeout_secs(int new_timeout);
+    
+    void Start();
+    void Stop();
 
 private:
     LoginService();
     
     std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
-
-    void onStart();
-    void onStop();
-
-    void subscribe();
-    
+        
     void HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, swganh::messages::LoginClientId message);
 
     std::vector<GalaxyStatus> GetGalaxyStatus_();
@@ -106,6 +105,7 @@ private:
     boost::mutex session_map_mutex_;
     SessionMap session_map_;
 
+    swganh::app::SwganhKernel* kernel_;
     swganh::character::CharacterService* character_service_;
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
@@ -122,6 +122,7 @@ private:
     
     std::string listen_address_;
     uint16_t listen_port_;
+    anh::ActiveObject active_;
 };
 
 }} // namespace swganh::login

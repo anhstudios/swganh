@@ -8,8 +8,9 @@
 #include <tuple>
 #include <vector>
 
-#include "swganh/base/base_service.h"
+#include "anh/service/service_interface.h"
 
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/messages/delete_character_message.h"
 #include "swganh/messages/client_create_character.h"
 #include "swganh/messages/client_random_name_request.h"
@@ -31,17 +32,14 @@ namespace character {
 
 class CharacterProviderInterface;
     
-class CharacterService : public swganh::base::BaseService {
+class CharacterService : public anh::service::ServiceInterface {
 public:
     explicit CharacterService(swganh::app::SwganhKernel* kernel);
     ~CharacterService();
     
     anh::service::ServiceDescription GetServiceDescription();
 
-    void onStart();
-    void onStop();
-
-    void subscribe();
+    void Start();
 
 private:
     void HandleClientRandomNameRequest_(
@@ -57,6 +55,7 @@ private:
         swganh::messages::DeleteCharacterMessage message);
 
     std::shared_ptr<CharacterProviderInterface> character_provider_;
+    swganh::app::SwganhKernel* kernel_;
 };
 
 }}  // namespace swganh::character

@@ -15,3 +15,6 @@ add_subdirectory(anh)
 
 ## project executables
 add_subdirectory(swganh)
+
+## publish 14 core implementation
+add_subdirectory(pub14_core)

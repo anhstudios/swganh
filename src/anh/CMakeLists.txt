@@ -1,6 +1,3 @@
-#python bindings
-add_subdirectory(utilities)
-
 include(ANHLibrary)
 
 AddANHLibrary(anh

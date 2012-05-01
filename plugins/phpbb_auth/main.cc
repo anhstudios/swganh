@@ -17,6 +17,8 @@
 #include "phpbb_encoder.h"
 #include "phpbb_session_provider.h"
 
+#include "version.h"
+
 using namespace anh::app;
 using namespace anh::plugin;
 using namespace plugins::phpbb_auth;
@@ -69,8 +71,8 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
         config.password);
 
     ObjectRegistration registration;
-    registration.version.major = 1;
-    registration.version.minor = 0;
+    registration.version.major = VERSION_MAJOR;
+    registration.version.minor = VERSION_MINOR;
 
     // Register TestObj
     registration.CreateObject = [] (ObjectParams* params) -> void * {

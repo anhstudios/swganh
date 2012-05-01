@@ -129,6 +129,7 @@ FUNCTION(AddANHPythonBinding name)
 		RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/swgpy/${base_name}
 		PREFIX "${BINDING_PREFIX}"
 		SUFFIX "${BINDING_POSTFIX}"
+		FOLDER "python_bindings"
     )
 	
     IF(_project_deps_list_length GREATER 0)

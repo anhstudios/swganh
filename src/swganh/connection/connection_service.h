@@ -11,12 +11,13 @@
 
 #include <boost/thread/mutex.hpp>
 
+#include "anh/active_object.h"
 #include "anh/hash_string.h"
 
 #include "anh/network/soe/packet_utilities.h"
 #include "anh/network/soe/session.h"
+#include "anh/service/service_interface.h"
 
-#include "swganh/base/base_service.h"
 #include "swganh/network/base_swg_server.h"
 
 #include "swganh/login/login_service.h"
@@ -48,7 +49,7 @@ class PingServer;
 class ConnectionClient;
     
 class ConnectionService 
-    : public swganh::base::BaseService
+    : public anh::service::ServiceInterface
     , public swganh::network::BaseSwgServer
 {
 public:
@@ -65,8 +66,10 @@ public:
     std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
     
     std::shared_ptr<ConnectionClient> FindConnectionByPlayerId(uint64_t player_id);
+    
+    void Start();
+    void Stop();
 
-protected:
     const std::string& listen_address();
 
     uint16_t listen_port();
@@ -74,10 +77,6 @@ protected:
 private:        
     std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
     
-    void onStart();
-    void onStop();
-    
-    void subscribe();
     void RemoveClientTimerHandler_(
         const boost::system::error_code& e, 
         std::shared_ptr<boost::asio::deadline_timer> timer, 
@@ -100,6 +99,7 @@ private:
     boost::mutex session_map_mutex_;
     SessionMap session_map_;
 
+    swganh::app::SwganhKernel* kernel_;
     std::shared_ptr<PingServer> ping_server_;
     
     std::shared_ptr<providers::SessionProviderInterface> session_provider_;
@@ -109,6 +109,7 @@ private:
     swganh::login::LoginService* login_service_;
     swganh::simulation::SimulationService* simulation_service_;
 
+    anh::ActiveObject active_;
     std::string listen_address_;
     uint16_t listen_port_;
     uint16_t ping_port_;

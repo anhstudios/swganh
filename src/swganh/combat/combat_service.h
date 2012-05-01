@@ -29,8 +29,9 @@ namespace Concurrency {
 
 #include "anh/delayed_task_processor.h"
 #include "anh/random_generator.h"
+#include "anh/service/service_interface.h"
 
-#include "swganh/base/base_service.h"
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/command/command_properties.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
@@ -73,7 +74,7 @@ namespace combat {
 
     struct CombatData;
 
-    class CombatService: public swganh::base::BaseService
+    class CombatService: public anh::service::ServiceInterface
     {
     public:
         explicit CombatService(swganh::app::SwganhKernel* kernel);
@@ -88,6 +89,8 @@ namespace combat {
         void EndDuel(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         void EndCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         
+		void Start();
+
     private:
 		typedef Concurrency::concurrent_unordered_map<
             uint32_t, 
@@ -118,7 +121,6 @@ namespace combat {
         swganh::simulation::SimulationService* simulation_service_;
 		swganh::command::CommandService* command_service_;
         void LoadProperties(swganh::command::CommandPropertiesMap command_properties);
-		void onStart();
 
         HandlerMap	combat_handlers_;
 
@@ -127,6 +129,7 @@ namespace combat {
         anh::RandomGenerator generator_;
 
         std::unique_ptr<anh::SimpleDelayedTaskProcessor> delayed_task_;
+        swganh::app::SwganhKernel* kernel_;
     };
 
 }}  // namespace swganh::combat

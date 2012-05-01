@@ -24,8 +24,9 @@ namespace Concurrency {
 #endif
 
 #include "anh/delayed_task_processor.h"
+#include "anh/service/service_interface.h"
 
-#include "swganh/base/base_service.h"
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 #include "swganh/messages/controllers/command_queue_remove.h"
@@ -65,7 +66,7 @@ namespace command {
         const CommandProperties&)	// action
     > CommandFilter;
     
-    class CommandService: public swganh::base::BaseService
+    class CommandService: public anh::service::ServiceInterface
     {
     public:
         explicit CommandService(swganh::app::SwganhKernel* kernel);
@@ -84,6 +85,8 @@ namespace command {
 
 		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
         
+        void Start();
+
     private:
         bool ValidateCommand(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
@@ -118,8 +121,6 @@ namespace command {
             uint32_t error,
             uint32_t action);
 
-        void onStart();
-
         typedef std::map<
             uint64_t,
             std::unique_ptr<anh::SimpleDelayedTaskProcessor>
@@ -131,6 +132,7 @@ namespace command {
         > HandlerMap;        
         
         std::unique_ptr<anh::SimpleDelayedTaskProcessor> delayed_task_;
+        swganh::app::SwganhKernel* kernel_;
         swganh::simulation::SimulationService* simulation_service_;
         boost::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;

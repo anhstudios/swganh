@@ -19,19 +19,25 @@ public:
     HashString();
 
     /// Takes a regular std::string and stores a hash of it.
-    HashString(const std::string& std_string); 
+    HashString(std::string ident_string);
 
-    /// Takes a human readable string and stores a hash of it.
+    /// Takes a regular std::string and stores a hash of it.
     HashString(const char* ident_string);
 
-    /// Takes an already hashed value and stores it.
+    /// Takes an pre-hashed value and stores it.
     HashString(uint32_t ident);
     
     /// Conversion operator allows a hash string to be cast to a uint32_t
     operator uint32_t () const;
 
+    /// Conversion operator allows a hash string to be cast to a std::string
+    operator std::string () const;
+
     /// Returns a 32bit hash representation of the string.
     uint32_t ident() const;
+
+    /// Returns a human readable identifier. Is empty if created from a pre-hashed value.
+    const std::string& ident_string() const;
 
     /*! Uses a less-than comparison on two HashStrings.
      *
@@ -75,6 +81,7 @@ private:
     // we're doing here and makes it easy to allow external code
     // to assign event types as desired.
     void * ident_;              ///< A 32bit hash of the ident_string.
+    std::string ident_string_;
 };
 
 }  // namespace anh

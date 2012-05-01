@@ -9,8 +9,9 @@
 #include <memory>
 
 #include "anh/network/soe/server.h"
+#include "anh/service/service_interface.h"
 
-#include "swganh/base/base_service.h"
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/object/object_controller.h"
 
 namespace anh {
@@ -32,7 +33,7 @@ namespace simulation {
     
     class SimulationServiceImpl;
 
-    class SimulationService : public swganh::base::BaseService
+    class SimulationService : public anh::service::ServiceInterface
     {
     public:
         explicit SimulationService(swganh::app::SwganhKernel* kernel);
@@ -179,12 +180,13 @@ namespace simulation {
             SendToAllInScene(message_buffer, scene_id);
         }
 
-    private:
+        void Start();
 
-        void onStart();
+    private:
 
         std::unique_ptr<SimulationServiceImpl> impl_;
 		std::shared_ptr<anh::network::soe::ServerInterface> server_;
+        swganh::app::SwganhKernel* kernel_;
     };
 
 }}  // namespace swganh::simulation

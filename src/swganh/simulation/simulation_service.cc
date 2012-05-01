@@ -59,7 +59,6 @@ using anh::network::soe::ServerInterface;
 using anh::network::soe::Session;
 using anh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
-using swganh::base::BaseService;
 
 namespace swganh {
 namespace simulation {
@@ -388,8 +387,8 @@ private:
 }}  // namespace swganh::simulation
 
 SimulationService::SimulationService(SwganhKernel* kernel)
-    : BaseService(kernel)
-    , impl_(new SimulationServiceImpl(kernel))
+    : impl_(new SimulationServiceImpl(kernel))
+    , kernel_(kernel)
 {}
 
 SimulationService::~SimulationService()
@@ -411,7 +410,7 @@ ServiceDescription SimulationService::GetServiceDescription()
 
 void SimulationService::StartScene(const std::string& scene_label)
 {
-    impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel()->GetDatabaseManager()->getConnection("galaxy"));
+    impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel_->GetDatabaseManager()->getConnection("galaxy"));
     impl_->GetSceneManager()->StartScene(scene_label);
     // load factories
     RegisterObjectFactories();
@@ -423,8 +422,8 @@ void SimulationService::StopScene(const std::string& scene_label)
 }
 void SimulationService::RegisterObjectFactories()
 {
-        auto db_manager = kernel()->GetDatabaseManager();
-        auto event_dispatcher =  kernel()->GetEventDispatcher();
+        auto db_manager = kernel_->GetDatabaseManager();
+        auto event_dispatcher =  kernel_->GetEventDispatcher();
         impl_->GetObjectManager()->RegisterObjectType(0, make_shared<ObjectFactory>(db_manager, this, event_dispatcher));
         impl_->GetObjectManager()->RegisterObjectType(tangible::Tangible::type, make_shared<tangible::TangibleFactory>(db_manager, this, event_dispatcher));
         impl_->GetObjectManager()->RegisterObjectType(intangible::Intangible::type, make_shared<intangible::IntangibleFactory>(db_manager, this, event_dispatcher));
@@ -502,9 +501,9 @@ void SimulationService::SendToAllInScene(ByteBuffer message, uint32_t scene_id)
     impl_->SendToAllInScene(message, scene_id);
 }
 
-void SimulationService::onStart()
+void SimulationService::Start()
 {
-	auto connection_service = kernel()->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
+	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
 
     connection_service->RegisterMessageHandler(
         &SimulationServiceImpl::HandleSelectCharacter, impl_.get());
