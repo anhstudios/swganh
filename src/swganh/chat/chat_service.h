@@ -8,7 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "swganh/base/base_service.h"
+#include "anh/service/service_interface.h"
+
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 namespace swganh {
@@ -20,12 +22,14 @@ namespace object {
 namespace swganh {
 namespace chat {
 
-    class ChatService: public swganh::base::BaseService
+    class ChatService: public anh::service::ServiceInterface
     {
     public:
         explicit ChatService(swganh::app::SwganhKernel* kernel);
         
         anh::service::ServiceDescription GetServiceDescription();
+
+        void Start();
 
     private:        
         void HandleSpatialChatInternal(
@@ -40,7 +44,7 @@ namespace chat {
             uint16_t chat_type,
             uint16_t mood);
 
-        void onStart();
+        swganh::app::SwganhKernel* kernel_;
     };
 
 }}  // namespace swganh::chat

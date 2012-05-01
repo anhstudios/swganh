@@ -6,6 +6,11 @@ string(REPLACE "/" "\\" WIN_PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 ## dependencies and places them in the runtime directory for this project
 add_custom_target(DEPS)
 
+set_target_properties(DEPS
+	PROPERTIES
+	FOLDER "cmake_targets"
+)
+
 get_filename_component(BOOST_PYTHON_DLL_PATH ${Boost_PYTHON3_LIBRARY_DEBUG} PATH)
 string(REPLACE "/" "\\" BOOST_PYTHON_DLL_PATH "${BOOST_PYTHON_DLL_PATH}")
 add_custom_command(

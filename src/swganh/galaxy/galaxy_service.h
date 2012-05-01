@@ -4,8 +4,9 @@
 #ifndef SWGANH_GALAXY_GALAXY_SERVICE_H_
 #define SWGANH_GALAXY_GALAXY_SERVICE_H_
 
-#include "swganh/base/base_service.h"
+#include "anh/service/service_interface.h"
 
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/galaxy/providers/galaxy_provider_interface.h"
 
 namespace anh {
@@ -17,16 +18,19 @@ class KernelInterface;
 namespace swganh {
 namespace galaxy {
 
-class GalaxyService : public swganh::base::BaseService{
-public:    
-    explicit GalaxyService(swganh::app::SwganhKernel* kernel);
-	uint32_t GetPopulation();
-	anh::service::ServiceDescription GetServiceDescription();
-    
-private:
-    GalaxyService();
-	std::shared_ptr<providers::GalaxyProviderInterface> galaxy_provider_;
-};
+    class GalaxyService : public anh::service::ServiceInterface
+    {
+    public:    
+        explicit GalaxyService(swganh::app::SwganhKernel* kernel);
+    	uint32_t GetPopulation();
+    	anh::service::ServiceDescription GetServiceDescription();
+        
+    private:
+        GalaxyService();
+    	std::shared_ptr<providers::GalaxyProviderInterface> galaxy_provider_;
+        swganh::app::SwganhKernel* kernel_;
+    };
 
 }}  // swganh::galaxy
+
 #endif // SWGANH_GALAXY_GALAXY_SERVICE_H_

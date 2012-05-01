@@ -50,7 +50,7 @@ using boost::regex_match;
 #endif
 
 ChatService::ChatService(SwganhKernel* kernel)
-: BaseService(kernel)
+    : kernel_(kernel)
 {}
 
 ServiceDescription ChatService::GetServiceDescription()
@@ -114,9 +114,9 @@ void ChatService::SendSpatialChat(
     actor->NotifyObservers(spatial_chat);
 }
 
-void ChatService::onStart()
+void ChatService::Start()
 {
-	auto command_service = kernel()->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
+	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
     
     command_service->SetCommandHandler(0x7C8D63D4,
         [this] (

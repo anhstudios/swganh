@@ -1,9 +1,7 @@
 server_mode = all
 
-plugin = mysql_auth
-plugin = mysql_character
-plugin = mysql_galaxy
-plugin = quadtree_spatial
+# Provides the core swganh functionality
+plugin = pub14_core
 
 galaxy_name = A New Hope
 

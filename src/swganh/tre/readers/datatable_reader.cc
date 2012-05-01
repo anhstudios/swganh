@@ -75,14 +75,14 @@ bool DatatableReader::Next()
     return static_cast<uint32_t>(current_row_) < row_header_->count;
 }
 
-map<string, DatatableCell*> DatatableReader::GetRow()
+DatatableRow DatatableReader::GetRow()
 {
     if (static_cast<uint32_t>(current_row_) >= row_header_->count)
     {
         throw out_of_range("Accessed past the end of the rows");
     }
 
-    map<string, DatatableCell*> row;
+    DatatableRow row;
 
     transform(
         begin(column_names_), end(column_names_),

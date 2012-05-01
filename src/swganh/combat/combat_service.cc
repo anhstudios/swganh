@@ -52,9 +52,9 @@ using namespace swganh::command;
 using swganh::app::SwganhKernel;
 
 CombatService::CombatService(SwganhKernel* kernel)
-: BaseService(kernel)
-, generator_(1, 100)
+: generator_(1, 100)
 , delayed_task_(new anh::SimpleDelayedTaskProcessor(kernel->GetIoService()))
+, kernel_(kernel)
 {
 }
 
@@ -72,15 +72,15 @@ ServiceDescription CombatService::GetServiceDescription()
     return service_description;
 }
 
-void CombatService::onStart()
+void CombatService::Start()
 {
-	simulation_service_ = kernel()->GetServiceManager()
+	simulation_service_ = kernel_->GetServiceManager()
         ->GetService<SimulationService>("SimulationService");
 
-	command_service_ = kernel()->GetServiceManager()
+	command_service_ = kernel_->GetServiceManager()
 		->GetService<CommandService>("CommandService");
     
-	kernel()->GetEventDispatcher()->Subscribe(
+	kernel_->GetEventDispatcher()->Subscribe(
         "CommandServiceReady", 
         [this] (const shared_ptr<anh::EventInterface>& incoming_event)
     {
