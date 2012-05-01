@@ -8,7 +8,7 @@ endif()
 
 add_custom_target(DEPS)
 
-set_target_properties(DEPSs
+set_target_properties(DEPS
 	PROPERTIES
 	FOLDER "cmake_targets"
 )
