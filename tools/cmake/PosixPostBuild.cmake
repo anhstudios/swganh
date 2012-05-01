@@ -20,3 +20,8 @@ add_custom_command(
     COMMAND find "${PROJECT_SOURCE_DIR}/plugins" -name "*.cfg" -exec cp {} "${PROJECT_BINARY_DIR}/bin/config/plugins" \;
     VERBATIM
 )
+
+set_target_properties(DEPS
+	PROPERTIES
+	FOLDER "cmake_targets"
+)
