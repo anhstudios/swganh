@@ -20,15 +20,18 @@ namespace command {
         ~CommandQueue();
         
         void SetQueueOwner(const std::shared_ptr<swganh::object::ObjectController>& queue_owner);
+        
         const std::shared_ptr<swganh::object::ObjectController>& GetQueueOwner() const;
         
         void EnqueueCommand(std::unique_ptr<swganh::command::v2::CommandInterface> command);
 
         void SetAutoCommand(std::unique_ptr<swganh::command::v2::CommandInterface> command);
+
         void RemoveAutoCommand();
 
     private:
         std::shared_ptr<swganh::object::ObjectController> queue_owner_;
+        std::unique_ptr<swganh::command::v2::CommandInterface> auto_command_;
     };
 
 }}  // namespace swganh_core::command

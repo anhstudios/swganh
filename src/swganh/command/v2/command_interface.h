@@ -21,7 +21,9 @@ namespace v2 {
     public:
         virtual ~CommandInterface() {}
 
-        virtual const std::shared_ptr<object::ObjectController>& GetController() const;
+        virtual const std::shared_ptr<object::ObjectController>& GetController() const = 0;
+
+        virtual bool ValidateCommand() = 0;
     };
     
 }}}  // namespace swganh::command::v2

@@ -15,6 +15,7 @@ add_custom_target(
 	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
     VERBATIM
 )
+
 include(ANHExecutable)
 
 AddANHExecutable(swganh

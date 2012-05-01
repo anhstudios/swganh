@@ -23,10 +23,16 @@ const std::shared_ptr<swganh::object::ObjectController>& CommandQueue::GetQueueO
 }
 
 void CommandQueue::EnqueueCommand(std::unique_ptr<CommandInterface> command)
-{}
+{
+    
+}
 
 void CommandQueue::SetAutoCommand(std::unique_ptr<CommandInterface> command)
-{}
+{
+    auto_command_ = std::move(command);
+}
 
 void CommandQueue::RemoveAutoCommand()
-{}
+{
+    auto_command_.release();
+}

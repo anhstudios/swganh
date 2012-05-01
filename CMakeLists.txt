@@ -57,6 +57,8 @@ if(ENABLE_TEST_REPORT)
     enable_testing()
 endif()
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 ## compiler checks
 include(CheckCXXCompilerFlag)
 
