@@ -8,11 +8,11 @@ add_subdirectory(utilities)
 
 
 add_custom_target(
-	swgpy ALL
-	DEPENDS
-		swgpy_app swgpy_object swgpy_combat swgpy_simulation swgpy_social swgpy_utilities
+    swgpy ALL
+    DEPENDS
+        swgpy_app swgpy_object swgpy_combat swgpy_simulation swgpy_social swgpy_utility
     COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
     VERBATIM
 )
 

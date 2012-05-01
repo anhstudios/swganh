@@ -99,12 +99,12 @@ private:
     boost::mutex session_map_mutex_;
     SessionMap session_map_;
 
+    swganh::app::SwganhKernel* kernel_;
     std::shared_ptr<PingServer> ping_server_;
     
     std::shared_ptr<providers::SessionProviderInterface> session_provider_;
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
-    swganh::app::SwganhKernel* kernel_;
     swganh::character::CharacterService* character_service_;
     swganh::login::LoginService* login_service_;
     swganh::simulation::SimulationService* simulation_service_;

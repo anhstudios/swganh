@@ -54,10 +54,10 @@ ConnectionService::ConnectionService(
     : swganh::network::BaseSwgServer(kernel->GetIoService())
     , kernel_(kernel)
     , ping_server_(nullptr)
+    , active_(kernel->GetIoService())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
     , ping_port_(ping_port)
-    , active_(kernel->GetIoService())
 {
 
     session_provider_ = kernel_->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");

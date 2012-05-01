@@ -1,9 +1,10 @@
 include(ANHPythonBinding)
 
 AddANHPythonBinding(utility
-	PREFIX_NAME swgpy
-    DEPENDS 
-		anh_lib
+    PREFIX_NAME swgpy
+    DEPENDS
+        swganh_lib
+	anh_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
