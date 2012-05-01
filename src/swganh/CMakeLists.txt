@@ -16,6 +16,11 @@ add_custom_target(
     VERBATIM
 )
 
+set_target_properties(swgpy
+	PROPERTIES
+	FOLDER "cmake_targets"
+)
+
 include(ANHExecutable)
 
 AddANHExecutable(swganh

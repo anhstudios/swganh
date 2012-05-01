@@ -8,6 +8,11 @@ endif()
 
 add_custom_target(DEPS)
 
+set_target_properties(DEPSs
+	PROPERTIES
+	FOLDER "cmake_targets"
+)
+
 add_custom_command(
     TARGET DEPS
     POST_BUILD

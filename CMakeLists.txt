@@ -58,7 +58,7 @@ if(ENABLE_TEST_REPORT)
 endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake_targets")
 ## compiler checks
 include(CheckCXXCompilerFlag)
 
