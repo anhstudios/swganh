@@ -87,7 +87,7 @@ void CommandQueue::Notify()
         boost::lock_guard<boost::mutex> lg(queue_mutex_);
         if (!queue_.empty())
         {
-            auto& task_info = queue_.front();
+            auto& task_info = queue_.top();
             queue_.pop();
 
             task_info->task();

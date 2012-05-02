@@ -56,6 +56,22 @@ namespace command {
             TaskFunc task;
         };
 
+        template<typename T>
+        struct CommandComparator
+        {
+            bool operator() (const T& t1, const T& t2)
+            {
+                return (t1->properties->default_priority < t2->properties->default_priority)
+                    ? true : false;
+            }
+        };
+
+        typedef std::priority_queue<
+            std::shared_ptr<TaskInfo>, 
+            std::vector<std::shared_ptr<TaskInfo>>, 
+            CommandComparator<std::shared_ptr<TaskInfo>>
+        > TaskQueue;
+
         swganh::app::SwganhKernel* kernel_;
         swganh::command::CommandService* command_service_;
 
@@ -64,8 +80,9 @@ namespace command {
         boost::mutex process_mutex_;
         bool processing_;
         
-        boost::mutex queue_mutex_;	
-        std::queue<std::shared_ptr<TaskInfo>> queue_;
+        boost::mutex queue_mutex_;
+        
+        TaskQueue queue_;
     };
 
 }}  // namespace pub14_core::command
