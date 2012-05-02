@@ -164,11 +164,6 @@ void CommandService::HandleCommandQueueEnqueue(
     EnqueueCommand(actor, target, move(message));
 }
 
-void CommandService::HandleCommandQueueRemove(
-    const shared_ptr<ObjectController>& controller,
-    CommandQueueRemove message)
-{}
-
 void CommandService::ProcessCommand(
     const shared_ptr<Creature>& actor,
     const shared_ptr<Tangible>& target,
@@ -201,7 +196,6 @@ void CommandService::Start()
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
-    simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueRemove, this);
 
     delayed_task_.reset(new anh::SimpleDelayedTaskProcessor(kernel_->GetIoService()));
 

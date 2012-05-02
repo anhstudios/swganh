@@ -103,19 +103,13 @@ namespace command {
 			const swganh::messages::controllers::CommandQueueEnqueue& command,
             const CommandProperties& properties,
             const CommandHandler& handler);
-
-        void LoadProperties();
-
+        
         void RegisterCommandScripts();
         
         void HandleCommandQueueEnqueue(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
             swganh::messages::controllers::CommandQueueEnqueue message);
 
-        void HandleCommandQueueRemove(
-            const std::shared_ptr<swganh::object::ObjectController>& controller, 
-            swganh::messages::controllers::CommandQueueRemove message);
-        
         void SendCommandQueueRemove(
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
             uint32_t action_counter,
