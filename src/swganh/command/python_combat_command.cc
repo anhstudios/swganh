@@ -15,8 +15,8 @@ using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::object::tangible;
 
-PythonCombatCommand::PythonCombatCommand(const CommandProperties& properties)
-: script_(properties.script_hook)
+PythonCombatCommand::PythonCombatCommand(std::string script)
+: script_(script)
 {
 }
 

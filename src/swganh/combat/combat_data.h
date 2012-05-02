@@ -70,6 +70,12 @@ struct CombatData : swganh::command::CommandProperties
     int area_range;
 
     anh::HashString animation_crc;
+    
+    std::string combat_spam;
+
+    float health_hit_chance;
+    float action_hit_chance;
+    float mind_hit_chance;
 
     void GetPythonData(boost::python::object global);
 

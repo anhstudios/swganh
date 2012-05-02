@@ -97,7 +97,7 @@ namespace combat {
             CombatHandler
         > HandlerMap;
 
-        void RegisterCombatScript(const swganh::command::CommandProperties& properties);
+        void RegisterCombatScript(anh::HashString command);
 
         bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
         void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message, boost::python::object p_object);

@@ -37,7 +37,7 @@ namespace command {
 class PythonCombatCommand
 {
 public:
-    PythonCombatCommand(const CommandProperties& command_properties);
+    PythonCombatCommand(std::string script);
 
     boost::python::object operator()(swganh::app::SwganhKernel* kernel, std::shared_ptr<swganh::object::creature::Creature> actor, std::shared_ptr<swganh::object::tangible::Tangible> target, const swganh::messages::controllers::CommandQueueEnqueue& command_queue_message);
 private:

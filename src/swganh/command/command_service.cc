@@ -22,6 +22,7 @@
 #include "anh/crc.h"
 #include "anh/event_dispatcher.h"
 #include "anh/database/database_manager_interface.h"
+#include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
@@ -40,6 +41,8 @@
 
 #include "swganh/tre/tre_archive.h"
 #include "swganh/tre/readers/datatable_reader.h"
+
+#include "command_properties_loader_interface.h"
 
 using namespace anh::app;
 using namespace anh::service;
@@ -61,6 +64,7 @@ using swganh::tre::readers::DatatableReader;
 CommandService::CommandService(SwganhKernel* kernel)
 : kernel_(kernel)
 {
+    command_properties_loader_impl_ = kernel->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("Command::PropertiesLoader");
 }
 
 ServiceDescription CommandService::GetServiceDescription()
@@ -181,7 +185,7 @@ void CommandService::ProcessCommand(
             SendCommandQueueRemove(actor, command.action_counter, command_properties_map_[command.command_crc].default_time, 0, 0);
         }
     } catch(const exception& e) {
-        LOG(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].name << "\n" << e.what();
+        LOG(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].command_name.ident_string() << "\n" << e.what();
     }
 
 }
@@ -189,8 +193,9 @@ void CommandService::ProcessCommand(
 void CommandService::Start()
 {
     script_prefix_ = kernel_->GetAppConfig().script_directory;
+    
+    command_properties_map_ = command_properties_loader_impl_->LoadCommandPropertiesMap();
 
-	LoadProperties();
     RegisterCommandScripts();
 
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
@@ -253,110 +258,6 @@ void CommandService::Start()
     });
 }
 
-void CommandService::LoadProperties()
-{
-    try {
-        auto tre_archive = kernel_->GetTreArchive();
-        
-        DatatableReader reader(tre_archive->GetResource("datatables/command/command_table.iff"));
-
-        while(reader.Next())
-        {
-            auto row = reader.GetRow();
-
-            CommandProperties properties;
-            // Set a default script hook
-            
-            properties.name = row["commandName"]->GetValue<string>();
-            // @TODO: Make this a config value
-            properties.script_hook = script_prefix_ + "/commands/" + properties.name + ".py";
-            string tmp = properties.name;
-            transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-            properties.name_crc = anh::memcrc(tmp);
-            
-            properties.ability = row["characterAbility"]->GetValue<string>();
-            properties.ability_crc = anh::memcrc(properties.ability);
-
-            properties.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
-            properties.default_time = row["defaultTime"]->GetValue<float>();
-            properties.command_group = row["commandGroup"]->GetValue<int>();
-            properties.target_type = row["targetType"]->GetValue<int>();
-            properties.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
-            // Load Bitmasks
-            std::vector<int> bits;
-            bits.push_back(row["L:standing"]->GetValue<int>());
-            bits.push_back(row["L:sneaking"]->GetValue<int>());
-            bits.push_back(row["L:sneaking"]->GetValue<int>());
-            bits.push_back(row["L:walking"]->GetValue<int>());
-            bits.push_back(row["L:running"]->GetValue<int>());
-            bits.push_back(row["L:kneeling"]->GetValue<int>());
-            bits.push_back(row["L:crouchSneaking"]->GetValue<int>());
-            bits.push_back(row["L:crouchWalking"]->GetValue<int>());
-            bits.push_back(row["L:prone"]->GetValue<int>());
-            bits.push_back(row["L:crawling"]->GetValue<int>());
-            bits.push_back(row["L:climbingStationary"]->GetValue<int>());
-            bits.push_back(row["L:climbing"]->GetValue<int>());
-            bits.push_back(row["L:hovering"]->GetValue<int>());
-            bits.push_back(row["L:flying"]->GetValue<int>());
-            bits.push_back(row["L:sitting"]->GetValue<int>());
-            bits.push_back(row["L:skillAnimating"]->GetValue<int>());
-            bits.push_back(row["L:drivingVehicle"]->GetValue<int>());
-            bits.push_back(row["L:ridingCreature"]->GetValue<int>());
-            bits.push_back(row["L:knockedDown"]->GetValue<int>());
-            bits.push_back(row["L:incapacitated"]->GetValue<int>());
-            bits.push_back(row["L:dead"]->GetValue<int>());
-            bits.push_back(row["L:blocking"]->GetValue<int>());
-            properties.allow_in_posture = properties.BuildBitmask(bits);
-
-            std::vector<int> state_bits;
-            state_bits.push_back(row["S:cover"]->GetValue<int>());
-            state_bits.push_back(row["S:combat"]->GetValue<int>());
-            state_bits.push_back(row["S:peace"]->GetValue<int>());
-            state_bits.push_back(row["S:aiming"]->GetValue<int>());
-            state_bits.push_back(row["S:alert"]->GetValue<int>());
-            state_bits.push_back(row["S:berserk"]->GetValue<int>());
-            state_bits.push_back(row["S:feignDeath"]->GetValue<int>());
-            state_bits.push_back(row["S:combatAttitudeEvasive"]->GetValue<int>());
-            state_bits.push_back(row["S:combatAttitudeNormal"]->GetValue<int>());
-            state_bits.push_back(row["S:combatAttitudeAggressive"]->GetValue<int>());
-            state_bits.push_back(row["S:tumbling"]->GetValue<int>());
-            state_bits.push_back(row["S:rallied"]->GetValue<int>());
-            state_bits.push_back(row["S:stunned"]->GetValue<int>());
-            state_bits.push_back(row["S:blinded"]->GetValue<int>());
-            state_bits.push_back(row["S:dizzy"]->GetValue<int>());
-            state_bits.push_back(row["S:intimidated"]->GetValue<int>());
-            state_bits.push_back(row["S:immobilized"]->GetValue<int>());
-            state_bits.push_back(row["S:frozen"]->GetValue<int>());
-            state_bits.push_back(row["S:swimming"]->GetValue<int>());
-            state_bits.push_back(row["S:sittingOnChair"]->GetValue<int>());
-            state_bits.push_back(row["S:crafting"]->GetValue<int>());
-            state_bits.push_back(row["S:glowingJedi"]->GetValue<int>());
-            state_bits.push_back(row["S:maskScent"]->GetValue<int>());
-            state_bits.push_back(row["S:poisoned"]->GetValue<int>());
-            state_bits.push_back(row["S:bleeding"]->GetValue<int>());
-            state_bits.push_back(row["S:diseased"]->GetValue<int>());
-            state_bits.push_back(row["S:onFire"]->GetValue<int>());
-            state_bits.push_back(row["S:ridingMount"]->GetValue<int>());
-            state_bits.push_back(row["S:mountedCreature"]->GetValue<int>());
-            state_bits.push_back(row["S:pilotingShip"]->GetValue<int>());
-            state_bits.push_back(row["S:pilotingPobShip"]->GetValue<int>());
-            state_bits.push_back(row["S:shipOperations"]->GetValue<int>());
-            state_bits.push_back(row["S:shipGunner"]->GetValue<int>());
-            state_bits.push_back(row["S:shipInterior"]->GetValue<int>());
-            properties.allow_in_states = properties.BuildBitmask(state_bits);
-
-            command_properties_map_.insert(make_pair(properties.name_crc, move(properties)));
-        }
-        
-        LOG(info) << "Loaded (" << command_properties_map_.size() << ") Commands";
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-
 void CommandService::RegisterCommandScripts()
 {    
     boost::filesystem::path command_script_dir(script_prefix_ + "/commands");
@@ -381,11 +282,11 @@ void CommandService::RegisterCommandScripts()
             string tmp = string(native_name.begin(), native_name.end()-3);
             transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
             
-            auto find_iter = command_properties_map_.find(anh::memcrc(tmp));
+            auto find_iter = command_properties_map_.find(anh::HashString(tmp));
             if (find_iter != end(command_properties_map_)
                 && find_iter->second.add_to_combat_queue == 0)
             {
-                SetCommandHandler(find_iter->second.name_crc, 
+                SetCommandHandler(find_iter->second.command_name.ident(), 
                     PythonCommand(find_iter->second, string(begin(native_path), end(native_path))));
             }
         });

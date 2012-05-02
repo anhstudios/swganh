@@ -52,6 +52,8 @@ namespace simulation {
 namespace swganh {
 namespace command {
 
+    class CommandPropertiesLoaderInterface;
+
     typedef std::function<void (
         swganh::app::SwganhKernel*,
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
@@ -131,8 +133,9 @@ namespace command {
             CommandHandler
         > HandlerMap;        
         
-        std::unique_ptr<anh::SimpleDelayedTaskProcessor> delayed_task_;
         swganh::app::SwganhKernel* kernel_;
+        std::unique_ptr<anh::SimpleDelayedTaskProcessor> delayed_task_;
+        std::shared_ptr<CommandPropertiesLoaderInterface> command_properties_loader_impl_;
         swganh::simulation::SimulationService* simulation_service_;
         boost::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;

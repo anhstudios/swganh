@@ -56,19 +56,19 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(
 		const CommandQueueEnqueue& command_queue_enqueue,
         const CommandProperties& command_properties)
 {
-	bool check_passed = false;
+	bool check_passed = true;
 	uint32_t error = 0;
 	uint32_t action = 0;
-	uint32_t current_posture = actor->GetPosture();
-	if ((current_posture & command_properties.allow_in_posture) == current_posture)
-	{
-		check_passed = true;
-	}
-	else
-	{
-		error = CANNOT_WHILE_IN_POSTURE;
-		action = current_posture;
-	}
+	//uint32_t current_posture = actor->GetPosture();
+	//if ((current_posture & command_properties.allow_in_posture) == current_posture)
+	//{
+	//	check_passed = true;
+	//}
+	//else
+	//{
+	//	error = CANNOT_WHILE_IN_POSTURE;
+	//	action = current_posture;
+	//}
 	return tie (check_passed, error, action);
 }
 
@@ -83,14 +83,14 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(
 	uint32_t action = 0;
 
     uint64_t current_state = actor->GetStateBitmask();
-    if (!actor->HasState(command_properties.allow_in_states))
+    if (!actor->HasState(command_properties.allow_in_state))
 	{
 		check_passed = true;
 	}
 	else
 	{
 		error = CANNOT_WHILE_IN_STATE;
-		action = GetLowestCommonBit(current_state, command_properties.allow_in_states);
+		action = GetLowestCommonBit(current_state, command_properties.allow_in_state);
 	}
 	return tie (check_passed, error, action);
 }
@@ -105,9 +105,9 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
 	uint32_t error = 0;
 	uint32_t action = 0;
 	// check to see if this command requires an ability
-	if (command_properties.ability.length() > 0)
+    if (command_properties.character_ability.ident_string().length() > 0)
 	{
-        if (actor->HasSkillCommand(command_properties.ability))
+        if (actor->HasSkillCommand(command_properties.character_ability.ident_string()))
 		{
 			check_passed = true;
 		}

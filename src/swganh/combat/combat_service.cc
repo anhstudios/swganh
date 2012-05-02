@@ -106,9 +106,10 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
     });
 }
 
-void CombatService::RegisterCombatScript(const CommandProperties& properties)
-{    
-    RegisterCombatHandler(properties.name_crc, PythonCombatCommand(properties));
+void CombatService::RegisterCombatScript(anh::HashString command)
+{
+    std::string script = "commands/" + command.ident_string() + ".py";
+    RegisterCombatHandler(command.ident(), PythonCombatCommand(script));
 }
 
 void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command_properties)
@@ -120,7 +121,7 @@ void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command
 		if (command.second.add_to_combat_queue > 0)
 		{
 			combat_properties_map_.insert(command);
-            RegisterCombatScript(command.second);
+            RegisterCombatScript(command.second.command_name);
 		}
 	}
     LOG(info) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
@@ -208,7 +209,7 @@ void CombatService::SendCombatAction(
             creature_target = static_pointer_cast<Creature>(target);
         // Apply Damage
         //ApplyDamage(attacker, creature_target, combat_data, damage, GetDamagingPool(combat_data));
-        if (command_property.name == "attack" && attacker->IsAutoAttacking()) {
+        if (command_property.command_name.ident_string() == "attack" && attacker->IsAutoAttacking()) {
             command_service_->EnqueueCommand(attacker, target, command_message);
             //command_service_->EnqueueCommand(creature_target, attacker, command_message);
         }
@@ -405,28 +406,28 @@ uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::c
     return 0; 
 }
 void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target, CombatData& properties) {
-    auto states = move(properties.getStates());
-    for_each(begin(states), end(states),[=](pair<float, string> state){
-        int generated = generator_.Rand(1, 100);
-        // Didn't trigger this time
-        if (generated > state.first)
-        {
-            return;
-        }
-        // Check recovery timers
-
-        // Defender State Modifiers
-
-        // Strength of Modifier
-
-        // GetHitChance(strength, 0.0f, target_defence);
-
-        // Jedi Defences
-
-        // Send Message
-
-        // Check Equilibrium
-    });
+    //auto states = move(properties.getStates());
+    //for_each(begin(states), end(states),[=](pair<float, string> state){
+    //    int generated = generator_.Rand(1, 100);
+    //    // Didn't trigger this time
+    //    if (generated > state.first)
+    //    {
+    //        return;
+    //    }
+    //    // Check recovery timers
+    //
+    //    // Defender State Modifiers
+    //
+    //    // Strength of Modifier
+    //
+    //    // GetHitChance(strength, 0.0f, target_defence);
+    //
+    //    // Jedi Defences
+    //
+    //    // Send Message
+    //
+    //    // Check Equilibrium
+    //});
 }
 float CombatService::GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence) 
 {
