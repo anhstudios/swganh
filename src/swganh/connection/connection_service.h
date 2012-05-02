@@ -22,13 +22,13 @@
 
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
-#include "swganh/messages/cmd_scene_ready.h"
+#include "pub14_core/messages/cmd_scene_ready.h"
 
 #include "swganh/connection/providers/session_provider_interface.h"
 
-#include "swganh/messages/client_permissions_message.h"
-#include "swganh/messages/client_id_msg.h"
-#include "swganh/messages/heart_beat.h"
+#include "pub14_core/messages/client_permissions_message.h"
+#include "pub14_core/messages/client_id_msg.h"
+#include "pub14_core/messages/heart_beat.h"
 
 namespace anh {
 namespace network {

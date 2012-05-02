@@ -21,11 +21,11 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/character/character_provider_interface.h"
 
-#include "swganh/messages/enumerate_character_id.h"
-#include "swganh/messages/error_message.h"
-#include "swganh/messages/login_client_token.h"
-#include "swganh/messages/login_cluster_status.h"
-#include "swganh/messages/login_enum_cluster.h"
+#include "pub14_core/messages/enumerate_character_id.h"
+#include "pub14_core/messages/error_message.h"
+#include "pub14_core/messages/login_client_token.h"
+#include "pub14_core/messages/login_cluster_status.h"
+#include "pub14_core/messages/login_enum_cluster.h"
 
 #include "swganh/login/authentication_manager.h"
 #include "swganh/login/login_client.h"

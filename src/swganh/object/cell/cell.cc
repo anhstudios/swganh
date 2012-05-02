@@ -3,7 +3,7 @@
 
 #include "swganh/object/cell/cell.h"
 
-#include "swganh/messages/deltas_message.h"
+#include "pub14_core/messages/deltas_message.h"
 
 using namespace std;
 using namespace swganh::object;

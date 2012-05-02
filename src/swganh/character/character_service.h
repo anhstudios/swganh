@@ -11,9 +11,9 @@
 #include "anh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/messages/delete_character_message.h"
-#include "swganh/messages/client_create_character.h"
-#include "swganh/messages/client_random_name_request.h"
+#include "pub14_core/messages/delete_character_message.h"
+#include "pub14_core/messages/client_create_character.h"
+#include "pub14_core/messages/client_random_name_request.h"
 
 namespace anh { namespace database { class DatabaseManagerInterface; } }
 

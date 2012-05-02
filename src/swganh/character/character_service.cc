@@ -26,13 +26,13 @@
 
 #include "swganh/connection/connection_service.h"
 #include "swganh/connection/connection_client.h"
-#include "swganh/messages/heart_beat.h"
+#include "pub14_core/messages/heart_beat.h"
 
-#include "swganh/messages/delete_character_reply_message.h"
+#include "pub14_core/messages/delete_character_reply_message.h"
 #include "swganh/character/character_data.h"
-#include "swganh/messages/client_create_character_success.h"
-#include "swganh/messages/client_create_character_failed.h"
-#include "swganh/messages/client_random_name_response.h"
+#include "pub14_core/messages/client_create_character_success.h"
+#include "pub14_core/messages/client_create_character_failed.h"
+#include "pub14_core/messages/client_random_name_response.h"
 
 #include "swganh/app/swganh_kernel.h"
 

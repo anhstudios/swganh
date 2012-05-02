@@ -11,7 +11,7 @@
 #include "anh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/messages/controllers/command_queue_enqueue.h"
+#include "pub14_core/messages/controllers/command_queue_enqueue.h"
 
 namespace swganh {
 namespace object {

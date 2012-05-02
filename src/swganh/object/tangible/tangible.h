@@ -14,8 +14,8 @@
 #include <boost/thread/mutex.hpp>
 
 #include "swganh/object/object.h"
-#include "swganh/messages/containers/network_sorted_vector.h"
-#include "swganh/messages/containers/network_list.h"
+#include "pub14_core/messages/containers/network_sorted_vector.h"
+#include "pub14_core/messages/containers/network_list.h"
 
 namespace swganh {
 namespace object {

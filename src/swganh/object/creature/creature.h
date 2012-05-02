@@ -11,10 +11,10 @@
 
 #include "swganh/object/tangible/tangible.h"
 
-#include "swganh/messages/containers/network_array.h"
-#include "swganh/messages/containers/network_sorted_list.h"
-#include "swganh/messages/containers/network_list.h"
-#include "swganh/messages/containers/network_map.h"
+#include "pub14_core/messages/containers/network_array.h"
+#include "pub14_core/messages/containers/network_sorted_list.h"
+#include "pub14_core/messages/containers/network_list.h"
+#include "pub14_core/messages/containers/network_map.h"
 
 namespace swganh {
 namespace object {
