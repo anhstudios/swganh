@@ -15,6 +15,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include "command_properties_tre_loader.h"
+#include "command_queue.h"
 #include "version.h"
 
 namespace pub14_core {
@@ -38,6 +39,18 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     };
 
     kernel->GetPluginManager()->RegisterObject("Command::PropertiesLoader", &registration);
+
+    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        return new CommandQueue(kernel);
+    };
+
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete static_cast<CommandQueue*>(object);
+        }
+    };
+
+    kernel->GetPluginManager()->RegisterObject("Command::Queue", &registration);
 }
 
 }}  // namespace pub14_core::command

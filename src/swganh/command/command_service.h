@@ -52,6 +52,7 @@ namespace simulation {
 namespace swganh {
 namespace command {
 
+    class CommandQueueInterface;
     class CommandPropertiesLoaderInterface;
 
     typedef std::function<void (
@@ -87,6 +88,25 @@ namespace command {
 
 		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
         
+        void SendCommandQueueRemove(
+            const std::shared_ptr<swganh::object::creature::Creature>& actor,
+            uint32_t action_counter,
+            float default_time_sec,
+            uint32_t error,
+            uint32_t action);
+        
+        bool ValidateCommandForEnqueue(
+            const std::shared_ptr<swganh::object::creature::Creature>& actor,
+			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
+            const swganh::messages::controllers::CommandQueueEnqueue& command, 
+            const CommandProperties& command_properties);
+        
+        bool ValidateCommandForProcessing(
+            const std::shared_ptr<swganh::object::creature::Creature>& actor,
+			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
+            const swganh::messages::controllers::CommandQueueEnqueue& command, 
+            const CommandProperties& command_properties);
+
         void Start();
 
     private:
@@ -97,29 +117,15 @@ namespace command {
             const CommandProperties& command_properties,
             const std::vector<CommandFilter>& filters);
         
-        void ProcessCommand(
-			const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-			const swganh::messages::controllers::CommandQueueEnqueue& command,
-            const CommandProperties& properties,
-            const CommandHandler& handler);
-        
         void RegisterCommandScripts();
         
         void HandleCommandQueueEnqueue(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
             swganh::messages::controllers::CommandQueueEnqueue message);
-
-        void SendCommandQueueRemove(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-            uint32_t action_counter,
-            float default_time_sec,
-            uint32_t error,
-            uint32_t action);
-
+        
         typedef std::map<
             uint64_t,
-            std::unique_ptr<anh::SimpleDelayedTaskProcessor>
+            std::shared_ptr<CommandQueueInterface>
         > CommandProcessorMap;
 
         typedef Concurrency::concurrent_unordered_map<
@@ -128,7 +134,6 @@ namespace command {
         > HandlerMap;        
         
         swganh::app::SwganhKernel* kernel_;
-        std::unique_ptr<anh::SimpleDelayedTaskProcessor> delayed_task_;
         std::shared_ptr<CommandPropertiesLoaderInterface> command_properties_loader_impl_;
         swganh::simulation::SimulationService* simulation_service_;
         boost::mutex processor_map_mutex_;

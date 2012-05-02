@@ -43,6 +43,7 @@
 #include "swganh/tre/readers/datatable_reader.h"
 
 #include "command_properties_loader_interface.h"
+#include "command_queue_interface.h"
 
 using namespace anh::app;
 using namespace anh::service;
@@ -121,35 +122,16 @@ void CommandService::EnqueueCommand(
         return;
     }
 
-    if (properties_iter->second.add_to_combat_queue && actor->HasState(COMBAT))
-    {
-        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
+    boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
 
-        auto find_iter = processor_map_.find(actor->GetObjectId());
-        if (find_iter != processor_map_.end() )
-        {
-            // for combat actions set a default time of 2 seconds if none exist
-            uint64_t default_time = 2000;
-            if (properties_iter->second.default_time > 0)
-                default_time = static_cast<uint64_t>(properties_iter->second.default_time * 1000);
-            find_iter->second->PushTask(
-                milliseconds(default_time),
-                bind(&CommandService::ProcessCommand,
-                    this,
-                    actor,
-                    target,
-                    command,
-                    properties_iter->second,
-                    handlers_iter->second));
-        }
-    }
-    else
+    auto find_iter = processor_map_.find(actor->GetObjectId());
+    if (find_iter != processor_map_.end() )
     {
-        ProcessCommand(
-            actor,
-            target,
-            command,
-            properties_iter->second,
+        find_iter->second->EnqueueCommand(
+            actor, 
+            target, 
+            command, 
+            properties_iter->second, 
             handlers_iter->second);
     }
 }
@@ -163,26 +145,23 @@ void CommandService::HandleCommandQueueEnqueue(
 
     EnqueueCommand(actor, target, move(message));
 }
-
-void CommandService::ProcessCommand(
-    const shared_ptr<Creature>& actor,
-    const shared_ptr<Tangible>& target,
-    const swganh::messages::controllers::CommandQueueEnqueue& command,
-    const CommandProperties& properties,
-    const CommandHandler& handler
-    )
+        
+bool CommandService::ValidateCommandForEnqueue(
+    const std::shared_ptr<swganh::object::creature::Creature>& actor,
+	const std::shared_ptr<swganh::object::tangible::Tangible> & target,
+    const swganh::messages::controllers::CommandQueueEnqueue& command, 
+    const CommandProperties& command_properties)
 {
-    try {
-        if (ValidateCommand(actor, target, command, properties, process_filters_))
-        {
-		    handler(kernel_, actor, target, command);
-            
-            SendCommandQueueRemove(actor, command.action_counter, command_properties_map_[command.command_crc].default_time, 0, 0);
-        }
-    } catch(const exception& e) {
-        LOG(warning) << "Error Processing Command: " <<  command_properties_map_[command.command_crc].command_name.ident_string() << "\n" << e.what();
-    }
+    return ValidateCommand(actor, target, command, command_properties, enqueue_filters_);
+}
 
+bool CommandService::ValidateCommandForProcessing(
+    const std::shared_ptr<swganh::object::creature::Creature>& actor,
+	const std::shared_ptr<swganh::object::tangible::Tangible> & target,
+    const swganh::messages::controllers::CommandQueueEnqueue& command, 
+    const CommandProperties& command_properties)
+{
+    return ValidateCommand(actor, target, command, command_properties, process_filters_);
 }
 
 void CommandService::Start()
@@ -197,8 +176,6 @@ void CommandService::Start()
 
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
 
-    delayed_task_.reset(new anh::SimpleDelayedTaskProcessor(kernel_->GetIoService()));
-
 	auto event_dispatcher = kernel_->GetEventDispatcher();
 	event_dispatcher->Dispatch(
         make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
@@ -210,7 +187,7 @@ void CommandService::Start()
         const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
 
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
-        processor_map_[object->GetObjectId()].reset(new anh::SimpleDelayedTaskProcessor(kernel_->GetIoService()));
+        processor_map_[object->GetObjectId()] = kernel_->GetPluginManager()->CreateObject<CommandQueueInterface>("Command::Queue");
     });
 
     event_dispatcher->Subscribe(
@@ -221,34 +198,6 @@ void CommandService::Start()
 
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
         processor_map_.erase(object->GetObjectId());
-    });
-
-    event_dispatcher->Subscribe(
-        "PythonEvent",
-        [this] (shared_ptr<anh::EventInterface> incoming_event)
-    {
-        const auto& python_event = static_pointer_cast<PythonEvent>(incoming_event);
-        try {
-        // Do we have a timer?
-        if (python_event->timer > 0.0f)
-        {
-            LOG(info) << "triggering Python callback";
-            // If so trigger it on another thread as a delayed task processor
-            delayed_task_->PushTask(boost::posix_time::milliseconds(static_cast<uint64_t>(python_event->timer * 1000)), [=]() {
-                python_event->callback();
-            });
-        }
-        else
-        {
-            LOG(info) << "triggering Python callback";
-            python_event->callback();
-        }
-        // We can trigger it now
-        }
-        catch (...)
-        {
-           LOG(warning) << "exception in handling Python Event";
-        }
     });
 }
 
