@@ -17,7 +17,7 @@
 #include "swganh/connection/connection_client.h"
 #include "swganh/connection/connection_service.h"
 
-#include "swganh/messages/select_character.h"
+#include "pub14_core/messages/select_character.h"
 
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"
@@ -40,10 +40,10 @@
 
 #include "swganh/simulation/scene_manager.h"
 #include "swganh/simulation/spatial_provider_interface.h"
-#include "swganh/messages/cmd_start_scene.h"
-#include "swganh/messages/cmd_scene_ready.h"
-#include "swganh/messages/obj_controller_message.h"
-#include "swganh/messages/update_containment_message.h"
+#include "pub14_core/messages/cmd_start_scene.h"
+#include "pub14_core/messages/cmd_scene_ready.h"
+#include "pub14_core/messages/obj_controller_message.h"
+#include "pub14_core/messages/update_containment_message.h"
 
 #include "swganh/simulation/movement_manager.h"
 

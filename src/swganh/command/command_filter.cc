@@ -11,7 +11,7 @@
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/player/player.h"
-#include "swganh/messages/controllers/command_queue_enqueue.h"
+#include "pub14_core/messages/controllers/command_queue_enqueue.h"
 
 using namespace swganh::command;
 using namespace swganh::object;

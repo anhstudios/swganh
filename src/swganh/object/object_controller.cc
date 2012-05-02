@@ -3,10 +3,10 @@
 
 #include "swganh/object/object_controller.h"
 
-#include "swganh/messages/obj_controller_message.h"
-#include "swganh/messages/out_of_band.h"
-#include "swganh/messages/chat_system_message.h"
-#include "swganh/messages/controllers/show_fly_text.h"
+#include "pub14_core/messages/obj_controller_message.h"
+#include "pub14_core/messages/out_of_band.h"
+#include "pub14_core/messages/chat_system_message.h"
+#include "pub14_core/messages/controllers/show_fly_text.h"
 #include "swganh/connection/connection_client.h"
 #include "swganh/object/object.h"
 

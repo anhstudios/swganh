@@ -6,9 +6,9 @@
 #include <cstdint>
 
 #include "swganh/object/object.h"
-#include "swganh/messages/baselines_message.h"
-#include "swganh/messages/deltas_message.h"
-#include "swganh/messages/scene_end_baselines.h"
+#include "pub14_core/messages/baselines_message.h"
+#include "pub14_core/messages/deltas_message.h"
+#include "pub14_core/messages/scene_end_baselines.h"
 
 using namespace anh;
 using namespace std;

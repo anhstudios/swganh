@@ -26,7 +26,7 @@
 #include "swganh/object/object.h"
 #include "swganh/object/player/player.h"
 
-#include "swganh/messages/logout_message.h"
+#include "pub14_core/messages/logout_message.h"
 
 using namespace anh::app;
 using namespace anh::event_dispatcher;

@@ -11,9 +11,9 @@
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
 
-#include "swganh/messages/update_containment_message.h"
-#include "swganh/messages/update_transform_message.h"
-#include "swganh/messages/update_transform_with_parent_message.h"
+#include "pub14_core/messages/update_containment_message.h"
+#include "pub14_core/messages/update_transform_message.h"
+#include "pub14_core/messages/update_transform_with_parent_message.h"
 
 #include "swganh/simulation/spatial_provider_interface.h"
 
