@@ -44,16 +44,16 @@ namespace command {
             const swganh::command::CommandHandler& handler);
         
         void Notify();
-                   
-        typedef std::function<void ()> Task;
+
+        typedef std::function<void ()> TaskFunc;
         struct TaskInfo
         {
-            TaskInfo(boost::posix_time::time_duration delay, Task&& task)
-                : delay(delay), task(std::move(task))
+            TaskInfo(const swganh::command::CommandProperties* properties, TaskFunc&& task)
+                : properties(properties), task(std::move(task))
             {}
                 
-            boost::posix_time::time_duration delay;
-            Task task;
+            const swganh::command::CommandProperties* properties;
+            TaskFunc task;
         };
 
         swganh::app::SwganhKernel* kernel_;

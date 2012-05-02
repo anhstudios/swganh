@@ -38,26 +38,22 @@ void CommandQueue::EnqueueCommand(
             const swganh::command::CommandProperties& properties,
             const swganh::command::CommandHandler& handler)
 {
+    if (!command_service_->ValidateCommandForEnqueue(actor, target, command, properties))
+    {
+        return;
+    }
+
     if (properties.add_to_combat_queue)
     {
-        queue_.push(std::make_shared<TaskInfo>(boost::posix_time::milliseconds(
-            static_cast<uint64_t>(properties.default_time * 1000)), 
-            bind(&CommandQueue::ProcessCommand,
-                    this,
-                    actor,
-                    target,
-                    command,
-                    properties,
-                    handler)));
+        queue_.push(std::make_shared<TaskInfo>(
+            &properties, 
+            bind(&CommandQueue::ProcessCommand, this, actor, target, command, properties, handler)));
+
+        Notify();
     }
     else
     {
-        ProcessCommand(
-            actor,
-            target,
-            command,
-            properties,
-            handler);
+        ProcessCommand(actor, target, command, properties, handler);
     }
 
 }
@@ -95,8 +91,7 @@ void CommandQueue::Notify()
             queue_.pop();
 
             task_info->task();
-
-            timer_.expires_from_now(task_info->delay);
+            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(task_info->properties->default_time * 1000)));
             timer_.async_wait([this, task_info] (const boost::system::error_code& ec) 
             {
                 {

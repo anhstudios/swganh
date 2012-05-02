@@ -116,12 +116,6 @@ void CommandService::EnqueueCommand(
         return;
     }
 
-    if (!ValidateCommand(actor, target, command, properties_iter->second, enqueue_filters_))
-    {
-        LOG(warning) << "Command validation failed";
-        return;
-    }
-
     boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
 
     auto find_iter = processor_map_.find(actor->GetObjectId());
