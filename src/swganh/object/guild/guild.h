@@ -10,7 +10,7 @@
 
 #include "swganh/object/object.h"
 
-#include "pub14_core/messages/containers/network_list.h"
+#include "swganh/messages/containers/network_list.h"
 
 namespace swganh {
 namespace object {

@@ -7,9 +7,9 @@
 
 #include "anh/logger.h"
 #include "anh/crc.h"
-#include "pub14_core/messages/deltas_message.h"
-#include "pub14_core/messages/baselines_message.h"
-#include "pub14_core/messages/scene_end_baselines.h"
+#include "swganh/messages/deltas_message.h"
+#include "swganh/messages/baselines_message.h"
+#include "swganh/messages/scene_end_baselines.h"
 #include "swganh/object/player/player_events.h"
 #include "swganh/object/object_events.h"
 #include "swganh/object/waypoint/waypoint.h"

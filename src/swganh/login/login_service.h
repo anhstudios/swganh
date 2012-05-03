@@ -24,7 +24,7 @@
 #include "swganh/login/login_client.h"
 
 #include "swganh/login/galaxy_status.h"
-#include "pub14_core/messages/login_client_id.h"
+#include "swganh/messages/login_client_id.h"
 
 namespace anh {
 namespace network {

@@ -15,7 +15,7 @@
 #include "swganh/scripting/python_script.h"
 
 #include "command_properties.h"
-#include "pub14_core/messages/controllers/command_queue_enqueue.h"
+#include "swganh/messages/controllers/command_queue_enqueue.h"
 
 namespace swganh {
 namespace app {

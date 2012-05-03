@@ -7,7 +7,7 @@
 
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"
-#include "pub14_core/messages/scene_destroy_object.h"
+#include "swganh/messages/scene_destroy_object.h"
 
 using namespace std;
 using namespace swganh::messages;

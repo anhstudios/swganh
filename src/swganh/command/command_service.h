@@ -27,9 +27,9 @@ namespace Concurrency {
 #include "anh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "pub14_core/messages/obj_controller_message.h"
-#include "pub14_core/messages/controllers/command_queue_enqueue.h"
-#include "pub14_core/messages/controllers/command_queue_remove.h"
+#include "swganh/messages/obj_controller_message.h"
+#include "swganh/messages/controllers/command_queue_enqueue.h"
+#include "swganh/messages/controllers/command_queue_remove.h"
 #include "swganh/command/command_properties.h"
 
 

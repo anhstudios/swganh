@@ -15,8 +15,8 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "pub14_core/messages/controllers/spatial_chat.h"
-#include "pub14_core/messages/obj_controller_message.h"
+#include "swganh/messages/controllers/spatial_chat.h"
+#include "swganh/messages/obj_controller_message.h"
 
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"

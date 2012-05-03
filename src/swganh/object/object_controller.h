@@ -23,8 +23,8 @@ namespace Concurrency {
 #endif
 
 #include "anh/observer/observer_interface.h"
-#include "pub14_core/messages/obj_controller_message.h"
-#include "pub14_core/messages/controllers/show_fly_text.h"
+#include "swganh/messages/obj_controller_message.h"
+#include "swganh/messages/controllers/show_fly_text.h"
 
 namespace swganh {
 namespace connection {

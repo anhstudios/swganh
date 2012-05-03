@@ -3,7 +3,7 @@
 
 #include "swganh/object/manufacture_schematic/manufacture_schematic.h"
 
-#include "pub14_core/messages/deltas_message.h"
+#include "swganh/messages/deltas_message.h"
 #include "anh/crc.h"
 
 using namespace std;

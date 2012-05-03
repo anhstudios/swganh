@@ -28,7 +28,7 @@
 
 #include "swganh/command/command_filter.h"
 
-#include "pub14_core/messages/controllers/combat_action_message.h"
+#include "swganh/messages/controllers/combat_action_message.h"
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
