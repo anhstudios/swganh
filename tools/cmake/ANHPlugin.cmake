@@ -75,7 +75,7 @@ FUNCTION(AddANHPlugin name)
     list(APPEND HEADERS ${ANHPLUGIN_HEADERS}) 
     FILE(GLOB_RECURSE TEST_SOURCES *_unittest.cc *_unittest.cpp mock_*.h)
     list(APPEND TEST_SOURCES ${ANHPLUGIN_TEST_SOURCES}) 
-    FILE(GLOB_RECURSE BINDINGS *_binding.cc *_binding.cpp)
+    FILE(GLOB_RECURSE BINDINGS *_binding.cc *_binding.cpp py_*.h py_*.cc)
     list(APPEND BINDINGS ${ANHPLUGIN_BINDINGS})
         
     FOREACH(__source_file ${SOURCES})

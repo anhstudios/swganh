@@ -84,7 +84,7 @@ FUNCTION(AddANHPythonBinding name)
     # Grab all of the source files and all of the unit test files.
     IF(__source_files_list_length EQUAL 0)
         # load up all of the source and header files for the project
-        FILE(GLOB_RECURSE ANHPYTHONLIB_SOURCES *_binding.h *_binding.cc *_binding.cpp)
+        FILE(GLOB_RECURSE ANHPYTHONLIB_SOURCES *_binding.h *_binding.cc *_binding.cpp py_*.h py_*.cc)
 		FOREACH(__source_file ${ANHPYTHONLIB_SOURCES})
             STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/)((.*/)*)(.*)" "\\2" __source_dir "${__source_file}")
             STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/${__source_dir})(.*)" "\\2" __source_filename "${__source_file}")
