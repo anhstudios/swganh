@@ -33,11 +33,6 @@ swganh::app::SwganhKernel* BaseSwgCommand::GetKernel() const
 {
     return kernel_;
 }
-
-const CommandProperties& BaseSwgCommand::GetProperties() const
-{
-    return properties_;
-}
         
 std::string BaseSwgCommand::GetCommandName() const
 {
@@ -102,9 +97,4 @@ const std::shared_ptr<Tangible>& BaseSwgCommand::GetTarget() const
 const std::wstring& BaseSwgCommand::GetCommandString() const
 {
     return command_request_.command_options;
-}
-
-const CommandQueueEnqueue& BaseSwgCommand::GetCommandRequest() const
-{
-    return command_request_;
 }

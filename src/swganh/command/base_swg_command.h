@@ -45,8 +45,6 @@ namespace command {
         
         swganh::app::SwganhKernel* GetKernel() const;
 
-        const CommandProperties& GetProperties() const;
-
         std::string GetCommandName() const;
 
         uint32_t GetActionCounter() const;
@@ -72,8 +70,6 @@ namespace command {
         const std::shared_ptr<object::tangible::Tangible>& GetTarget() const;
 
         const std::wstring& GetCommandString() const;
-
-        const swganh::messages::controllers::CommandQueueEnqueue& GetCommandRequest() const;
 
     private:    
         swganh::app::SwganhKernel* kernel_;
