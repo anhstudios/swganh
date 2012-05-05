@@ -6,33 +6,24 @@
 
 #include <memory>
 
-#include "swganh/command/command_interface.h"
-#include "swganh/messages/controllers/command_queue_enqueue.h"
+#include "swganh/command/base_swg_command.h"
 
 namespace swganh {
-namespace object {
-namespace creature {
-    class Creature;
-}  // namespace creature
-namespace tangible {
-    class Tangible;
-}}  // namespace object::tangible
-
 namespace chat {
 
     class ChatService;
 
-    class SpatialChatInternalCommand : public command::CommandInterface
+    class SpatialChatInternalCommand : public command::BaseSwgCommand
     {
     public:
         SpatialChatInternalCommand(
-            ChatService* chat_service,
+            swganh::app::SwganhKernel* kernel,
             const std::shared_ptr<swganh::object::creature::Creature>& actor,
             const std::shared_ptr<swganh::object::tangible::Tangible>& target,
             const swganh::messages::controllers::CommandQueueEnqueue& command);
 
         virtual ~SpatialChatInternalCommand();
-
+        
         virtual void Setup();
 
         virtual bool Validate();
@@ -41,9 +32,6 @@ namespace chat {
 
     private:
         ChatService* chat_service_;
-        std::shared_ptr<swganh::object::creature::Creature> actor_;
-        std::shared_ptr<swganh::object::tangible::Tangible> target_;
-        swganh::messages::controllers::CommandQueueEnqueue command_;
     };
 
 }}

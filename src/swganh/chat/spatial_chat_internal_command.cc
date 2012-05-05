@@ -10,6 +10,7 @@
 #endif
 
 #include "anh/logger.h"
+#include "anh/service/service_manager.h"
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
@@ -18,6 +19,7 @@
 
 using swganh::chat::ChatService;
 using swganh::chat::SpatialChatInternalCommand;
+using swganh::command::BaseSwgCommand;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::creature::Creature;
 using swganh::object::tangible::Tangible;
@@ -33,15 +35,14 @@ using boost::regex_match;
 #endif
 
 SpatialChatInternalCommand::SpatialChatInternalCommand(
-    ChatService* chat_service,
-    const std::shared_ptr<Creature>& actor,
-    const std::shared_ptr<Tangible>& target,
-    const CommandQueueEnqueue& command)
-    : chat_service_(chat_service)
-    , actor_(actor)
-    , target_(target)
-    , command_(command)
-{}
+    swganh::app::SwganhKernel* kernel,
+    const std::shared_ptr<swganh::object::creature::Creature>& actor,
+    const std::shared_ptr<swganh::object::tangible::Tangible>& target,
+    const swganh::messages::controllers::CommandQueueEnqueue& command)
+    : BaseSwgCommand(kernel, actor, target, command)
+{
+    chat_service_ = kernel->GetServiceManager()->GetService<ChatService>("ChatService");
+}
 
 SpatialChatInternalCommand::~SpatialChatInternalCommand()
 {}
@@ -61,15 +62,15 @@ void SpatialChatInternalCommand::Run()
     const wregex p(L"(\\d+) (\\d+) (\\d+) (\\d+) (\\d+) (.*)");
     wsmatch m;
 
-    if (! regex_match(command_.command_options, m, p)) {
+    if (! regex_match(GetCommandString(), m, p)) {
         LOG(error) << "Invalid spatial chat message format";
         return; // We suffered an unrecoverable error, bail out now.
     }
     
     chat_service_->SendSpatialChat(
-        actor_, 
-        target_, 
-        m[6].str().substr(0, 256),
-        std::stoi(m[2].str()),
+        GetActor(), 
+        GetTarget(), 
+        m[6].str().substr(0, 256), // Use a max of 255 characters and discard the rest.
+        std::stoi(m[2].str()), // Convert the string to an integer 
         std::stoi(m[3].str()));
 }

@@ -27,6 +27,8 @@
 #include "swganh/command/command_service.h"
 #include "swganh/simulation/simulation_service.h"
 
+#include "spatial_chat_internal_command.h"
+
 using namespace anh::app;
 using namespace anh::service;
 using namespace std;
@@ -120,11 +122,12 @@ void ChatService::Start()
     
     command_service->SetCommandHandler(0x7C8D63D4,
         [this] (
-        anh::app::KernelInterface* kernel,
+        swganh::app::SwganhKernel* kernel,
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
 		const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue& command)
     {
-        HandleSpatialChatInternal(actor, target, command);
+        SpatialChatInternalCommand executor(kernel, actor, target, command);
+        executor.Run();
     });
 }
