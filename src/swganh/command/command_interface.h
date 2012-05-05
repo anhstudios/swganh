@@ -4,13 +4,21 @@
 #ifndef SWGANH_COMMAND_COMMAND_INTERFACE_H_
 #define SWGANH_COMMAND_COMMAND_INTERFACE_H_
 
+#include <memory>
+
 namespace swganh {
+namespace object {
+    class ObjectController;
+}
+
 namespace command {
 
     class CommandInterface
     {
     public:
         virtual ~CommandInterface() {}
+
+        virtual const std::shared_ptr<object::ObjectController>& GetController() const = 0;
 
         virtual void Setup() = 0;
 

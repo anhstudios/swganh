@@ -17,6 +17,7 @@ namespace app {
 }
 
 namespace object {
+    class ObjectController;
 namespace creature {
     class Creature;
 }  // namespace creature
@@ -37,11 +38,12 @@ namespace command {
         BaseSwgCommand(
             swganh::app::SwganhKernel* kernel,
             const CommandProperties& properties,
-            const std::shared_ptr<object::creature::Creature>& actor,
-            const std::shared_ptr<object::tangible::Tangible>& target,
+            const std::shared_ptr<object::ObjectController>& controller,
             const swganh::messages::controllers::CommandQueueEnqueue& command_request);
 
         ~BaseSwgCommand();
+
+        virtual const std::shared_ptr<object::ObjectController>& GetController() const;
         
         swganh::app::SwganhKernel* GetKernel() const;
 
@@ -74,6 +76,7 @@ namespace command {
     private:    
         swganh::app::SwganhKernel* kernel_;
         const CommandProperties& properties_;
+        std::shared_ptr<object::ObjectController> controller_;
         std::shared_ptr<object::creature::Creature> actor_;
         std::shared_ptr<object::tangible::Tangible> target_;
         swganh::messages::controllers::CommandQueueEnqueue command_request_;

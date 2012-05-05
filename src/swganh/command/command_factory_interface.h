@@ -19,6 +19,10 @@ namespace controllers {
     class CommandQueueEnqueue;
 }}
 
+namespace object {
+    class ObjectController;
+}
+
 namespace command {
     
     class CommandInterface;
@@ -27,6 +31,7 @@ namespace command {
     typedef std::function<std::unique_ptr<CommandInterface> (
         swganh::app::SwganhKernel*,
         const CommandProperties&,
+        const std::shared_ptr<object::ObjectController>&,
         const swganh::messages::controllers::CommandQueueEnqueue&)
     > CommandCreator;
 
@@ -42,6 +47,7 @@ namespace command {
         virtual std::unique_ptr<CommandInterface> CreateCommand(
             swganh::app::SwganhKernel* kernel,
             const CommandProperties& properties,
+            const std::shared_ptr<object::ObjectController>& controller,
             const swganh::messages::controllers::CommandQueueEnqueue& command_request) = 0;
     };
 

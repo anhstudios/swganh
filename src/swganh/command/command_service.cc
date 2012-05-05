@@ -67,6 +67,7 @@ using swganh::tre::readers::DatatableReader;
 CommandService::CommandService(SwganhKernel* kernel)
 : kernel_(kernel)
 {
+    command_factory_impl_ = kernel->GetPluginManager()->CreateObject<CommandFactoryInterface>("Command::CommandFactory");
     command_properties_loader_impl_ = kernel->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("Command::PropertiesLoader");
 }
 
@@ -96,39 +97,14 @@ void CommandService::AddCommandProcessFilter(CommandFilter&& filter)
 
 void CommandService::SetCommandCreator(anh::HashString command, CommandCreator&& creator)
 {
-    creators_[command] = std::move(creator);
+    command_factory_impl_->AddCommandCreator(command, std::move(creator));
 }
 
-void CommandService::EnqueueCommand(
-    const shared_ptr<Creature>& actor,
-	const shared_ptr<Tangible>& target,
-    CommandQueueEnqueue command_request)
+void CommandService::EnqueueCommand(std::unique_ptr<CommandInterface> command)
 {
-    auto properties_iter = command_properties_map_.find(command_request.command_crc);
-    if (properties_iter == command_properties_map_.end())
-    {
-        LOG(warning) << "Invalid handler requested: " << hex << command_request.command_crc;
-        return;
-    }
-
-    // @todo move command creation code out to factory class
-    std::unique_ptr<CommandInterface> command = nullptr;
-
-    auto creators_iter = creators_.find(command_request.command_crc);
-    if (creators_iter != creators_.end())
-    {
-        command = creators_iter->second(kernel_, properties_iter->second, actor, target, command_request);
-    }
-    else
-    {
-        // Consider using a default command here
-        LOG(warning) << "No command for request: " << std::hex << command_request.command_crc;
-        return;
-    }
-    
     boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
     
-    auto find_iter = processor_map_.find(actor->GetObjectId());
+    auto find_iter = processor_map_.find(command->GetController()->GetId());
     if (find_iter != processor_map_.end() )
     {
         find_iter->second->EnqueueCommand(std::move(command));
@@ -139,10 +115,18 @@ void CommandService::HandleCommandQueueEnqueue(
     const shared_ptr<ObjectController>& controller,
     CommandQueueEnqueue command_request)
 {
-    auto actor = static_pointer_cast<Creature>(controller->GetObject());
-	auto target = simulation_service_->GetObjectById<Tangible>(command_request.target_id);
+    auto properties_iter = command_properties_map_.find(command_request.command_crc);
+    if (properties_iter == command_properties_map_.end())
+    {
+        LOG(warning) << "Invalid handler requested: " << hex << command_request.command_crc;
+        return;
+    }
 
-    EnqueueCommand(actor, target, move(command_request));
+    auto command = command_factory_impl_->CreateCommand(kernel_, properties_iter->second, controller, command_request);
+    if (command)
+    {
+        EnqueueCommand(std::move(command));
+    }
 }
         
 bool CommandService::ValidateCommandForEnqueue(CommandInterface* command)

@@ -17,7 +17,7 @@ namespace app {
 namespace pub14_core {
 namespace command {
     
-    class CommandFactory
+    class CommandFactory : public swganh::command::CommandFactoryInterface
     {
     public:
         ~CommandFactory();
@@ -29,6 +29,7 @@ namespace command {
         virtual std::unique_ptr<swganh::command::CommandInterface> CreateCommand(
             swganh::app::SwganhKernel* kernel,
             const swganh::command::CommandProperties& properties,
+            const std::shared_ptr<swganh::object::ObjectController>& controller,
             const swganh::messages::controllers::CommandQueueEnqueue& command_request);
 
     private:        

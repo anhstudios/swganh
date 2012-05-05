@@ -209,10 +209,10 @@ void CombatService::SendCombatAction(
             creature_target = static_pointer_cast<Creature>(target);
         // Apply Damage
         //ApplyDamage(attacker, creature_target, combat_data, damage, GetDamagingPool(combat_data));
-        if (command_property.command_name.ident_string() == "attack" && attacker->IsAutoAttacking()) {
-            command_service_->EnqueueCommand(attacker, target, command_message);
-            //command_service_->EnqueueCommand(creature_target, attacker, command_message);
-        }
+        //if (command_property.command_name.ident_string() == "attack" && attacker->IsAutoAttacking()) {
+        //    command_service_->EnqueueCommand(attacker, target, command_message);
+        //    //command_service_->EnqueueCommand(creature_target, attacker, command_message);
+        //}
     }
 }
 int CombatService::SingleTargetCombatAction(

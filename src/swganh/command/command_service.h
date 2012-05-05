@@ -32,6 +32,7 @@ namespace Concurrency {
 #include "swganh/messages/controllers/command_queue_remove.h"
 #include "swganh/command/command_properties.h"
 
+#include "command_factory_interface.h"
 
 namespace swganh {
 namespace object {
@@ -57,14 +58,6 @@ namespace command {
     class CommandQueueInterface;
     class CommandPropertiesLoaderInterface;
     
-    typedef std::function<std::unique_ptr<CommandInterface> (
-        swganh::app::SwganhKernel*,
-        const CommandProperties&,
-		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
-        const swganh::messages::controllers::CommandQueueEnqueue&)
-    > CommandCreator;
-
     typedef std::function<
         std::tuple<bool, uint32_t, uint32_t> (CommandInterface*)
     > CommandFilter;
@@ -82,9 +75,7 @@ namespace command {
         
         void SetCommandCreator(anh::HashString command, CommandCreator&& creator);
 
-        void EnqueueCommand(const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-			swganh::messages::controllers::CommandQueueEnqueue command_request);
+        void EnqueueCommand(std::unique_ptr<CommandInterface> command);
 
 		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
         
@@ -119,6 +110,7 @@ namespace command {
         > CreatorMap;
         
         swganh::app::SwganhKernel* kernel_;
+        std::shared_ptr<CommandFactoryInterface> command_factory_impl_;
         std::shared_ptr<CommandPropertiesLoaderInterface> command_properties_loader_impl_;
         swganh::simulation::SimulationService* simulation_service_;
         boost::mutex processor_map_mutex_;

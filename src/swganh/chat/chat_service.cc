@@ -124,10 +124,9 @@ void ChatService::Start()
         [] (
         swganh::app::SwganhKernel* kernel,
         const CommandProperties& properties,
-		const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible>& target, // target object
+        const std::shared_ptr<swganh::object::ObjectController>& controller,
         const swganh::messages::controllers::CommandQueueEnqueue& command_request)
     {
-        return std::unique_ptr<SpatialChatInternalCommand>(new SpatialChatInternalCommand(kernel, properties, actor, target, command_request));
+        return std::unique_ptr<SpatialChatInternalCommand>(new SpatialChatInternalCommand(kernel, properties, controller, command_request));
     });
 }
