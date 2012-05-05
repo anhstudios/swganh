@@ -28,6 +28,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include "swganh/command/command_filter.h"
+#include "swganh/command/command_interface.h"
 
 #include "swganh/messages/controllers/combat_action_message.h"
 
@@ -44,6 +45,7 @@
 
 #include "command_properties_loader_interface.h"
 #include "command_queue_interface.h"
+#include "base_swg_command.h"
 
 using namespace anh::app;
 using namespace anh::service;
@@ -92,70 +94,65 @@ void CommandService::AddCommandProcessFilter(CommandFilter&& filter)
     process_filters_.push_back(move(filter));
 }
 
-void CommandService::SetCommandHandler(uint32_t command_crc, CommandHandler&& handler)
+void CommandService::SetCommandCreator(anh::HashString command, CommandCreator&& creator)
 {
-    handlers_[command_crc] = move(handler);
+    creators_[command] = std::move(creator);
 }
 
 void CommandService::EnqueueCommand(
     const shared_ptr<Creature>& actor,
 	const shared_ptr<Tangible>& target,
-    CommandQueueEnqueue command)
+    CommandQueueEnqueue command_request)
 {
-    auto properties_iter = command_properties_map_.find(command.command_crc);
+    auto properties_iter = command_properties_map_.find(command_request.command_crc);
     if (properties_iter == command_properties_map_.end())
     {
-        LOG(warning) << "Invalid handler requested: " << hex << command.command_crc;
+        LOG(warning) << "Invalid handler requested: " << hex << command_request.command_crc;
         return;
     }
 
-    auto handlers_iter = handlers_.find(command.command_crc);
-    if (handlers_iter == handlers_.end())
+    // @todo move command creation code out to factory class
+    std::unique_ptr<CommandInterface> command = nullptr;
+
+    auto creators_iter = creators_.find(command_request.command_crc);
+    if (creators_iter != creators_.end())
     {
-        LOG(warning) << "No handler for command: " << std::hex << command.command_crc;
+        command = creators_iter->second(kernel_, properties_iter->second, actor, target, command_request);
+    }
+    else
+    {
+        // Consider using a default command here
+        LOG(warning) << "No command for request: " << std::hex << command_request.command_crc;
         return;
     }
-
+    
     boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
-
+    
     auto find_iter = processor_map_.find(actor->GetObjectId());
     if (find_iter != processor_map_.end() )
     {
-        find_iter->second->EnqueueCommand(
-            actor, 
-            target, 
-            command, 
-            properties_iter->second, 
-            handlers_iter->second);
+        find_iter->second->EnqueueCommand(std::move(command));
     }
 }
 
 void CommandService::HandleCommandQueueEnqueue(
     const shared_ptr<ObjectController>& controller,
-    CommandQueueEnqueue message)
+    CommandQueueEnqueue command_request)
 {
     auto actor = static_pointer_cast<Creature>(controller->GetObject());
-	auto target = simulation_service_->GetObjectById<Tangible>(message.target_id);
+	auto target = simulation_service_->GetObjectById<Tangible>(command_request.target_id);
 
-    EnqueueCommand(actor, target, move(message));
+    EnqueueCommand(actor, target, move(command_request));
 }
         
-bool CommandService::ValidateCommandForEnqueue(
-    const std::shared_ptr<swganh::object::creature::Creature>& actor,
-	const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-    const swganh::messages::controllers::CommandQueueEnqueue& command, 
-    const CommandProperties& command_properties)
+bool CommandService::ValidateCommandForEnqueue(CommandInterface* command)
 {
-    return ValidateCommand(actor, target, command, command_properties, enqueue_filters_);
+    return ValidateCommand(static_cast<BaseSwgCommand*>(command), enqueue_filters_);
 }
 
-bool CommandService::ValidateCommandForProcessing(
-    const std::shared_ptr<swganh::object::creature::Creature>& actor,
-	const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-    const swganh::messages::controllers::CommandQueueEnqueue& command, 
-    const CommandProperties& command_properties)
+bool CommandService::ValidateCommandForProcessing(CommandInterface* command)
 {
-    return ValidateCommand(actor, target, command, command_properties, process_filters_);
+    return ValidateCommand(static_cast<BaseSwgCommand*>(command), process_filters_);
 }
 
 void CommandService::Start()
@@ -163,9 +160,7 @@ void CommandService::Start()
     script_prefix_ = kernel_->GetAppConfig().script_directory;
     
     command_properties_map_ = command_properties_loader_impl_->LoadCommandPropertiesMap();
-
-    RegisterCommandScripts();
-
+    
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
 
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
@@ -195,49 +190,8 @@ void CommandService::Start()
     });
 }
 
-void CommandService::RegisterCommandScripts()
-{    
-    boost::filesystem::path command_script_dir(script_prefix_ + "/commands");
-
-    try {
-        if (!boost::filesystem::exists(command_script_dir) ||
-            !boost::filesystem::is_directory(command_script_dir)) {
-            throw runtime_error("Invalid script directory [" + script_prefix_ + "/commands]");
-        }
-
-        std::for_each(boost::filesystem::directory_iterator(command_script_dir),
-            boost::filesystem::directory_iterator(),
-            [this] (const boost::filesystem::directory_entry& entry) 
-        {            
-            if (entry.path().extension() != ".py") {
-                return;
-            }
-
-            auto native_path = entry.path().native();
-            auto native_name = entry.path().filename().native();
-            
-            string tmp = string(native_name.begin(), native_name.end()-3);
-            transform(tmp.begin(), tmp.end(), tmp.begin(), ::tolower);
-            
-            auto find_iter = command_properties_map_.find(anh::HashString(tmp));
-            if (find_iter != end(command_properties_map_)
-                && find_iter->second.add_to_combat_queue == 0)
-            {
-                SetCommandHandler(find_iter->second.command_name.ident(), 
-                    PythonCommand(find_iter->second, string(begin(native_path), end(native_path))));
-            }
-        });
-
-    } catch(const std::exception& e) {
-        LOG(fatal) << e.what();
-    }
-}
-
 bool CommandService::ValidateCommand(
-    const shared_ptr<Creature>& actor,
-	const shared_ptr<Tangible>& target,
-    const swganh::messages::controllers::CommandQueueEnqueue& command,
-    const CommandProperties& command_properties,
+    BaseSwgCommand* command,
     const std::vector<CommandFilter>& filters)
 {
 	tuple<bool, uint32_t, uint32_t> result;
@@ -245,15 +199,15 @@ bool CommandService::ValidateCommand(
     bool all_run = all_of(
         begin(filters),
         end(filters),
-        [&result, actor, target, &command, &command_properties] (const CommandFilter& filter)->bool
+        [&result, command] (const CommandFilter& filter)->bool
     {
-        result = filter(actor, target, command, command_properties);
+        result = filter(command);
 		return get<0>(result);
     });
 
     if (!all_run)
     {
-        SendCommandQueueRemove(actor, command.action_counter, 0.0f, get<1>(result), get<2>(result));
+        SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), 0.0f, get<1>(result), get<2>(result));
     }
 
     return all_run;

@@ -9,6 +9,7 @@
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 #include "command_interface.h"
+#include "command_properties.h"
 
 namespace swganh {
 namespace app {
@@ -35,6 +36,7 @@ namespace command {
     public:
         BaseSwgCommand(
             swganh::app::SwganhKernel* kernel,
+            const CommandProperties& properties,
             const std::shared_ptr<object::creature::Creature>& actor,
             const std::shared_ptr<object::tangible::Tangible>& target,
             const swganh::messages::controllers::CommandQueueEnqueue& command_request);
@@ -42,6 +44,28 @@ namespace command {
         ~BaseSwgCommand();
         
         swganh::app::SwganhKernel* GetKernel() const;
+
+        const CommandProperties& GetProperties() const;
+
+        std::string GetCommandName() const;
+
+        uint32_t GetActionCounter() const;
+
+        uint32_t GetPriority() const;
+
+        uint32_t GetCommandGroup() const;
+        
+        uint32_t GetTargetRequiredType() const;
+
+        uint64_t GetAllowedStateBitmask() const;
+        
+        float GetMaxRangeToTarget() const;
+        
+        float GetDefaultTime() const;
+
+        std::string GetRequiredAbility() const;
+
+        bool IsQueuedCommand() const;
 
         const std::shared_ptr<object::creature::Creature>& GetActor() const;
 
@@ -53,6 +77,7 @@ namespace command {
 
     private:    
         swganh::app::SwganhKernel* kernel_;
+        const CommandProperties& properties_;
         std::shared_ptr<object::creature::Creature> actor_;
         std::shared_ptr<object::tangible::Tangible> target_;
         swganh::messages::controllers::CommandQueueEnqueue command_request_;

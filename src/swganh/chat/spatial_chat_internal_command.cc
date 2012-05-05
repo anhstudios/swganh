@@ -20,6 +20,7 @@
 using swganh::chat::ChatService;
 using swganh::chat::SpatialChatInternalCommand;
 using swganh::command::BaseSwgCommand;
+using swganh::command::CommandProperties;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::creature::Creature;
 using swganh::object::tangible::Tangible;
@@ -36,10 +37,11 @@ using boost::regex_match;
 
 SpatialChatInternalCommand::SpatialChatInternalCommand(
     swganh::app::SwganhKernel* kernel,
+    const CommandProperties& properties,
     const std::shared_ptr<swganh::object::creature::Creature>& actor,
     const std::shared_ptr<swganh::object::tangible::Tangible>& target,
     const swganh::messages::controllers::CommandQueueEnqueue& command)
-    : BaseSwgCommand(kernel, actor, target, command)
+    : BaseSwgCommand(kernel, properties, actor, target, command)
 {
     chat_service_ = kernel->GetServiceManager()->GetService<ChatService>("ChatService");
 }

@@ -5,7 +5,9 @@
 #include <Python.h>
 #endif
 
+#include "base_swg_command.h"
 #include "command_filter.h"
+#include "command_interface.h"
 #include "command_properties.h"
 #include "command_service.h"
 #include "swganh/object/creature/creature.h"
@@ -20,20 +22,18 @@ using namespace swganh::object::tangible;
 using namespace swganh::messages::controllers;
 using namespace std;
 
-tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(
-		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Tangible>& target, 
-		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(CommandInterface* command)
 {
+    BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
+
 	bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
 	// does command require target?
-	if (target != nullptr)
+    if (swg_command->GetTarget() != nullptr)
     {
         // range check
-		if (command_properties.max_range_to_target <= 0.0f || actor->InRange(target->GetPosition(), command_properties.max_range_to_target))
+        if (swg_command->GetMaxRangeToTarget() <= 0.0f || swg_command->GetActor()->InRange(swg_command->GetTarget()->GetPosition(), swg_command->GetMaxRangeToTarget()))
 		{
 			check_passed = true;
 		}
@@ -50,12 +50,10 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(
 	return tie(check_passed, error, action);
 }
 
-tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(
-		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Tangible>& target, 
-		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(CommandInterface* command)
 {
+    BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
+
 	bool check_passed = true;
 	uint32_t error = 0;
 	uint32_t action = 0;
@@ -72,42 +70,43 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(
 	return tie (check_passed, error, action);
 }
 
-tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(
-		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Tangible>& target, 
-		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(CommandInterface* command)
 {
+    BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
+
 	bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
 
+    auto actor = swg_command->GetActor();
+
     uint64_t current_state = actor->GetStateBitmask();
-    if (!actor->HasState(command_properties.allow_in_state))
+    if (!actor->HasState(swg_command->GetAllowedStateBitmask()))
 	{
 		check_passed = true;
 	}
 	else
 	{
 		error = CANNOT_WHILE_IN_STATE;
-		action = GetLowestCommonBit(current_state, command_properties.allow_in_state);
+		action = GetLowestCommonBit(current_state, swg_command->GetAllowedStateBitmask());
 	}
 	return tie (check_passed, error, action);
 }
 
-tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
-		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Tangible>& target, 
-		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(CommandInterface* command)
 {
+    BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
+
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
 	// check to see if this command requires an ability
-    if (command_properties.character_ability.ident_string().length() > 0)
+
+    auto required_ability = swg_command->GetRequiredAbility();
+
+    if (required_ability.length() > 0)
 	{
-        if (actor->HasSkillCommand(command_properties.character_ability.ident_string()))
+        if (swg_command->GetActor()->HasSkillCommand(required_ability))
 		{
 			check_passed = true;
 		}
@@ -122,24 +121,25 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(
 
 	return tie (check_passed, error, action);
 }
-std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(
-		const shared_ptr<Creature>& actor, 
-		const shared_ptr<Tangible>& target, 
-		const CommandQueueEnqueue& command_queue_enqueue,
-        const CommandProperties& command_properties)
+
+std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(CommandInterface* command)
 {
+    BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
+
     bool check_passed = false;
 	uint32_t error = 0;
 	uint32_t action = 0;
+
+    auto target = swg_command->GetTarget();
     
-    if (command_properties.command_group != 0 && target != nullptr) 
+    if (swg_command->GetCommandGroup() != 0 && target != nullptr) 
     {
         if (target->GetType() == Creature::type)
         {
             auto creature = static_pointer_cast<Creature>(target);
             // @TODO: Fix this, we need more checking in here
             // target type of 2 seems to suggest the action NEEDs a target and 1 that it CAN have a target
-            switch(command_properties.target_type)
+            switch(swg_command->GetTargetRequiredType())
             {
                 case 0:
                 case 1:

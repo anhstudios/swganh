@@ -17,10 +17,11 @@ namespace chat {
     {
     public:
         SpatialChatInternalCommand(
-            swganh::app::SwganhKernel* kernel,
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-            const std::shared_ptr<swganh::object::tangible::Tangible>& target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command);
+            app::SwganhKernel* kernel,
+            const command::CommandProperties& properties,
+            const std::shared_ptr<object::creature::Creature>& actor,
+            const std::shared_ptr<object::tangible::Tangible>& target,
+            const messages::controllers::CommandQueueEnqueue& command);
 
         virtual ~SpatialChatInternalCommand();
         

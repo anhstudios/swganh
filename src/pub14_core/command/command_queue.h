@@ -17,7 +17,10 @@
 namespace swganh {
 namespace app {
     class SwganhKernel;
-}}  // namespace swganh::app
+}
+namespace command {
+    class BaseSwgCommand;
+}}
 
 namespace pub14_core {
 namespace command {
@@ -28,49 +31,28 @@ namespace command {
         CommandQueue(swganh::app::SwganhKernel* kernel);
         ~CommandQueue();
         
-        void EnqueueCommand(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-            const std::shared_ptr<swganh::object::tangible::Tangible>& target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command,
-            const swganh::command::CommandProperties& properties,
-            const swganh::command::CommandHandler& handler);
+        virtual void EnqueueCommand(std::unique_ptr<swganh::command::CommandInterface> command);
 
     private:
-        void ProcessCommand(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-            const std::shared_ptr<swganh::object::tangible::Tangible>& target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command,
-            const swganh::command::CommandProperties& properties,
-            const swganh::command::CommandHandler& handler);
+        void ProcessCommand(std::unique_ptr<swganh::command::BaseSwgCommand> command);
         
         void Notify();
-
-        typedef std::function<void ()> TaskFunc;
-        struct TaskInfo
-        {
-            TaskInfo(const swganh::command::CommandProperties* properties, TaskFunc&& task)
-                : properties(properties), task(std::move(task))
-            {}
-                
-            const swganh::command::CommandProperties* properties;
-            TaskFunc task;
-        };
 
         template<typename T>
         struct CommandComparator
         {
             bool operator() (const T& t1, const T& t2)
             {
-                return (t1->properties->default_priority < t2->properties->default_priority)
+                return (t1->GetPriority() < t2->GetPriority())
                     ? true : false;
             }
         };
 
         typedef std::priority_queue<
-            std::shared_ptr<TaskInfo>, 
-            std::vector<std::shared_ptr<TaskInfo>>, 
-            CommandComparator<std::shared_ptr<TaskInfo>>
-        > TaskQueue;
+            std::unique_ptr<swganh::command::BaseSwgCommand>, 
+            std::vector<std::unique_ptr<swganh::command::BaseSwgCommand>>, 
+            CommandComparator<std::unique_ptr<swganh::command::BaseSwgCommand>>
+        > ProcessQueue;
 
         swganh::app::SwganhKernel* kernel_;
         swganh::command::CommandService* command_service_;
@@ -80,9 +62,8 @@ namespace command {
         boost::mutex process_mutex_;
         bool processing_;
         
-        boost::mutex queue_mutex_;
-        
-        TaskQueue queue_;
+        boost::mutex queue_mutex_;        
+        ProcessQueue queue_;
     };
 
 }}  // namespace pub14_core::command

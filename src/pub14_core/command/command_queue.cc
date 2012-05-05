@@ -9,6 +9,8 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/command/base_swg_command.h"
+#include "swganh/command/command_interface.h"
 #include "swganh/command/command_service.h"
 
 #include "swganh/object/creature/creature.h"
@@ -16,9 +18,11 @@
 #include "swganh/object/object_controller.h"
 
 using pub14_core::command::CommandQueue;
+using swganh::command::BaseSwgCommand;
+using swganh::command::CommandInterface;
 using swganh::command::CommandService;
-using namespace swganh::object::creature;
-using namespace swganh::object::tangible;
+using swganh::object::creature::Creature;
+using swganh::object::tangible::Tangible;
 
 CommandQueue::CommandQueue(
     swganh::app::SwganhKernel* kernel)
@@ -31,49 +35,38 @@ CommandQueue::CommandQueue(
 CommandQueue::~CommandQueue()
 {}
 
-void CommandQueue::EnqueueCommand(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-            const std::shared_ptr<swganh::object::tangible::Tangible>& target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command,
-            const swganh::command::CommandProperties& properties,
-            const swganh::command::CommandHandler& handler)
-{
-    if (!command_service_->ValidateCommandForEnqueue(actor, target, command, properties))
+void CommandQueue::EnqueueCommand(std::unique_ptr<CommandInterface> command)
+{    
+    if (!command_service_->ValidateCommandForEnqueue(command.get()))
     {
         return;
     }
 
-    if (properties.add_to_combat_queue)
+    std::unique_ptr<BaseSwgCommand> swg_command(static_cast<BaseSwgCommand*>(command.release()));
+
+    if (swg_command->IsQueuedCommand())
     {
-        queue_.push(std::make_shared<TaskInfo>(
-            &properties, 
-            bind(&CommandQueue::ProcessCommand, this, actor, target, command, properties, handler)));
+        queue_.push(std::move(swg_command));
 
         Notify();
     }
     else
     {
-        ProcessCommand(actor, target, command, properties, handler);
+        ProcessCommand(std::move(swg_command));
     }
-
 }
 
-void CommandQueue::ProcessCommand(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-            const std::shared_ptr<swganh::object::tangible::Tangible>& target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command,
-            const swganh::command::CommandProperties& properties,
-            const swganh::command::CommandHandler& handler)
+void CommandQueue::ProcessCommand(std::unique_ptr<swganh::command::BaseSwgCommand> command)
 {
     try {
-        if (command_service_->ValidateCommandForProcessing(actor, target, command, properties))
+        if (command_service_->ValidateCommandForProcessing(command.get()))
         {
-		    handler(kernel_, actor, target, command);
+		    command->Run();
             
-            command_service_->SendCommandQueueRemove(actor, command.action_counter, properties.default_time, 0, 0);
+            command_service_->SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), command->GetDefaultTime(), 0, 0);
         }
     } catch(const std::exception& e) {
-        LOG(warning) << "Error Processing Command: " <<  properties.command_name.ident_string() << "\n" << e.what();
+        LOG(warning) << "Error Processing Command: " <<  command->GetCommandName() << "\n" << e.what();
     }
 }
 
@@ -87,12 +80,11 @@ void CommandQueue::Notify()
         boost::lock_guard<boost::mutex> lg(queue_mutex_);
         if (!queue_.empty())
         {
-            auto& task_info = queue_.top();
+            std::unique_ptr<BaseSwgCommand> command(queue_.top().release());
             queue_.pop();
-
-            task_info->task();
-            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(task_info->properties->default_time * 1000)));
-            timer_.async_wait([this, task_info] (const boost::system::error_code& ec) 
+            
+            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(command->GetDefaultTime() * 1000)));
+            timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
                 {
                     boost::lock_guard<boost::mutex> lg(process_mutex_);
@@ -101,6 +93,9 @@ void CommandQueue::Notify()
 
                 this->Notify();
             });
+
+            
+            ProcessCommand(std::move(command));
         }
     }		
 }

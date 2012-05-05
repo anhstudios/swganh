@@ -120,14 +120,14 @@ void ChatService::Start()
 {
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
     
-    command_service->SetCommandHandler(0x7C8D63D4,
-        [this] (
+    command_service->SetCommandCreator("spatialchatinternal",
+        [] (
         swganh::app::SwganhKernel* kernel,
+        const CommandProperties& properties,
 		const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
-        const swganh::messages::controllers::CommandQueueEnqueue& command)
+		const std::shared_ptr<swganh::object::tangible::Tangible>& target, // target object
+        const swganh::messages::controllers::CommandQueueEnqueue& command_request)
     {
-        SpatialChatInternalCommand executor(kernel, actor, target, command);
-        executor.Run();
+        return std::unique_ptr<SpatialChatInternalCommand>(new SpatialChatInternalCommand(kernel, properties, actor, target, command_request));
     });
 }

@@ -52,21 +52,21 @@ namespace simulation {
 namespace swganh {
 namespace command {
 
+    class BaseSwgCommand;
+    class CommandInterface;
     class CommandQueueInterface;
     class CommandPropertiesLoaderInterface;
-
-    typedef std::function<void (
+    
+    typedef std::function<std::unique_ptr<CommandInterface> (
         swganh::app::SwganhKernel*,
+        const CommandProperties&,
 		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
 		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)
-    > CommandHandler;
+    > CommandCreator;
 
-    typedef std::function<std::tuple<bool, uint32_t, uint32_t> (
-        const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible>&, // target object
-        const swganh::messages::controllers::CommandQueueEnqueue&,
-        const CommandProperties&)	// action
+    typedef std::function<
+        std::tuple<bool, uint32_t, uint32_t> (CommandInterface*)
     > CommandFilter;
     
     class CommandService: public anh::service::ServiceInterface
@@ -79,12 +79,12 @@ namespace command {
         void AddCommandEnqueueFilter(CommandFilter&& filter);
         
         void AddCommandProcessFilter(CommandFilter&& filter);
-
-        void SetCommandHandler(uint32_t command_crc, CommandHandler&& handler);
+        
+        void SetCommandCreator(anh::HashString command, CommandCreator&& creator);
 
         void EnqueueCommand(const std::shared_ptr<swganh::object::creature::Creature>& actor,
 			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-			swganh::messages::controllers::CommandQueueEnqueue command);
+			swganh::messages::controllers::CommandQueueEnqueue command_request);
 
 		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
         
@@ -95,29 +95,14 @@ namespace command {
             uint32_t error,
             uint32_t action);
         
-        bool ValidateCommandForEnqueue(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command, 
-            const CommandProperties& command_properties);
+        bool ValidateCommandForEnqueue(CommandInterface* command);
         
-        bool ValidateCommandForProcessing(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command, 
-            const CommandProperties& command_properties);
+        bool ValidateCommandForProcessing(CommandInterface* command);
 
         void Start();
 
     private:
-        bool ValidateCommand(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
-			const std::shared_ptr<swganh::object::tangible::Tangible> & target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command, 
-            const CommandProperties& command_properties,
-            const std::vector<CommandFilter>& filters);
-        
-        void RegisterCommandScripts();
+        bool ValidateCommand(BaseSwgCommand* command, const std::vector<CommandFilter>& filters);
         
         void HandleCommandQueueEnqueue(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
@@ -129,16 +114,16 @@ namespace command {
         > CommandProcessorMap;
 
         typedef Concurrency::concurrent_unordered_map<
-            uint32_t, 
-            CommandHandler
-        > HandlerMap;        
+            anh::HashString, 
+            CommandCreator
+        > CreatorMap;
         
         swganh::app::SwganhKernel* kernel_;
         std::shared_ptr<CommandPropertiesLoaderInterface> command_properties_loader_impl_;
         swganh::simulation::SimulationService* simulation_service_;
         boost::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;
-        HandlerMap handlers_;
+        CreatorMap creators_;
         CommandPropertiesMap command_properties_map_;
         std::vector<CommandFilter> enqueue_filters_;
         std::vector<CommandFilter> process_filters_;

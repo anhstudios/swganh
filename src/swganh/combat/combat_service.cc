@@ -94,16 +94,16 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
 {
     combat_handlers_[command_crc] = move(handler);
 
-	command_service_->SetCommandHandler(command_crc, 
-        [this, command_crc] (
-            SwganhKernel* kernel,
-            const shared_ptr<Creature>& actor,
-			const shared_ptr<Tangible>& target, 
-            const CommandQueueEnqueue& command_queue_message)->void {
-
-        auto global = combat_handlers_[command_crc](kernel, actor, target, command_queue_message);
-        SendCombatAction(actor, target, command_queue_message, global);
-    });
+	//command_service_->SetCommandHandler(command_crc, 
+    //    [this, command_crc] (
+    //        SwganhKernel* kernel,
+    //        const shared_ptr<Creature>& actor,
+	//		const shared_ptr<Tangible>& target, 
+    //        const CommandQueueEnqueue& command_queue_message)->void {
+    //
+    //    auto global = combat_handlers_[command_crc](kernel, actor, target, command_queue_message);
+    //    SendCombatAction(actor, target, command_queue_message, global);
+    //});
 }
 
 void CombatService::RegisterCombatScript(anh::HashString command)

@@ -25,19 +25,15 @@ namespace controllers {
 
 namespace command {
 
+    class CommandInterface;
     struct CommandProperties;
 
     class CommandQueueInterface
     {
     public:
         virtual ~CommandQueueInterface() {}
-
-        virtual void EnqueueCommand(
-            const std::shared_ptr<object::creature::Creature>& actor,
-            const std::shared_ptr<object::tangible::Tangible>& target,
-            const swganh::messages::controllers::CommandQueueEnqueue& command,
-            const CommandProperties& properties,
-            const CommandHandler& handler) = 0;
+        
+        virtual void EnqueueCommand(std::unique_ptr<CommandInterface> command) = 0;
     };
 
 }}  // namespace swganh::command
