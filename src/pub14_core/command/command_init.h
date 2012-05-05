@@ -14,6 +14,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "command_factory.h"
 #include "command_properties_tre_loader.h"
 #include "command_queue.h"
 #include "version.h"
@@ -27,30 +28,47 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
     
-    // Register
-    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-        return new CommandPropertiesTreLoader(kernel->GetTreArchive());
-    };
+    { // Command::CommandFactory
+        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+            return new CommandFactory();
+        };
 
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
-            delete static_cast<CommandPropertiesTreLoader*>(object);
-        }
-    };
+        registration.DestroyObject = [] (void * object) {
+            if (object) {
+                delete static_cast<CommandFactory*>(object);
+            }
+        };
 
-    kernel->GetPluginManager()->RegisterObject("Command::PropertiesLoader", &registration);
+        kernel->GetPluginManager()->RegisterObject("Command::CommandFactory", &registration);
+    }
 
-    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-        return new CommandQueue(kernel);
-    };
+    { // Command::PropertiesLoader
+        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+            return new CommandPropertiesTreLoader(kernel->GetTreArchive());
+        };
 
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
-            delete static_cast<CommandQueue*>(object);
-        }
-    };
+        registration.DestroyObject = [] (void * object) {
+            if (object) {
+                delete static_cast<CommandPropertiesTreLoader*>(object);
+            }
+        };
 
-    kernel->GetPluginManager()->RegisterObject("Command::Queue", &registration);
+        kernel->GetPluginManager()->RegisterObject("Command::PropertiesLoader", &registration);
+    }
+
+    { // Command::Queue
+        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+            return new CommandQueue(kernel);
+        };
+
+        registration.DestroyObject = [] (void * object) {
+            if (object) {
+                delete static_cast<CommandQueue*>(object);
+            }
+        };
+
+        kernel->GetPluginManager()->RegisterObject("Command::Queue", &registration);
+    }
 }
 
 }}  // namespace pub14_core::command

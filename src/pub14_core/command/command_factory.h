@@ -4,7 +4,15 @@
 #ifndef PUB14_CORE_COMMAND_COMMAND_FACTORY_H_
 #define PUB14_CORE_COMMAND_COMMAND_FACTORY_H_
 
+#include <map>
+#include <boost/thread/mutex.hpp>
+
 #include "swganh/command/command_factory_interface.h"
+
+namespace swganh {
+namespace app {
+    class SwganhKernel;
+}}
 
 namespace pub14_core {
 namespace command {
@@ -22,6 +30,15 @@ namespace command {
             swganh::app::SwganhKernel* kernel,
             const swganh::command::CommandProperties& properties,
             const swganh::messages::controllers::CommandQueueEnqueue& command_request);
+
+    private:        
+        typedef std::map<
+            anh::HashString, 
+            swganh::command::CommandCreator
+        > CreatorMap;
+
+        boost::mutex creators_mutex_;
+        CreatorMap command_creators_;        
     };
 
 }}
