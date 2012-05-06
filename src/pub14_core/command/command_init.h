@@ -17,6 +17,8 @@
 #include "command_factory.h"
 #include "command_properties_tre_loader.h"
 #include "command_queue.h"
+#include "command_validator.h"
+
 #include "version.h"
 
 namespace pub14_core {
@@ -68,6 +70,20 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         };
 
         kernel->GetPluginManager()->RegisterObject("Command::Queue", &registration);
+    }
+
+    { // Command::Validator
+        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+            return new CommandValidator();
+        };
+
+        registration.DestroyObject = [] (void * object) {
+            if (object) {
+                delete static_cast<CommandValidator*>(object);
+            }
+        };
+
+        kernel->GetPluginManager()->RegisterObject("Command::Validator", &registration);
     }
 }
 
