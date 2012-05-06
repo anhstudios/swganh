@@ -3,7 +3,52 @@
 
 #include "command_validator.h"
 
+#include <algorithm>
+
+#include "swganh/command/base_swg_command.h"
+
 using pub14_core::command::CommandValidator;
+using swganh::command::BaseSwgCommand;
+using swganh::command::CommandFilter;
+using swganh::command::CommandInterface;
 
 CommandValidator::~CommandValidator()
 {}
+
+void CommandValidator::AddCommandEnqueueFilter(swganh::command::CommandFilter&& filter)
+{
+	enqueue_filters_.push_back(std::move(filter));
+}
+
+void CommandValidator::AddCommandProcessFilter(swganh::command::CommandFilter&& filter)
+{
+    process_filters_.push_back(std::move(filter));
+}
+
+std::tuple<bool, uint32_t, uint32_t> CommandValidator::ValidateForEnqueue(swganh::command::CommandInterface* command)
+{
+    return ValidateCommand(static_cast<BaseSwgCommand*>(command), enqueue_filters_);
+}
+
+std::tuple<bool, uint32_t, uint32_t> CommandValidator::ValidateForProcessing(swganh::command::CommandInterface* command)
+{
+    return ValidateCommand(static_cast<BaseSwgCommand*>(command), process_filters_);
+}
+
+std::tuple<bool, uint32_t, uint32_t> CommandValidator::ValidateCommand(
+    BaseSwgCommand* command,
+    const std::vector<CommandFilter>& filters)
+{
+	std::tuple<bool, uint32_t, uint32_t> result;
+
+    std::all_of(
+        begin(filters),
+        end(filters),
+        [&result, command] (const CommandFilter& filter)->bool
+    {
+        result = filter(command);
+		return std::get<0>(result);
+    });
+
+    return result;
+}

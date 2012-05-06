@@ -4,7 +4,14 @@
 #ifndef PUB14_CORE_COMMAND_COMMAND_VALIDATOR_H_
 #define PUB14_CORE_COMMAND_COMMAND_VALIDATOR_H_
 
+#include <vector>
+
 #include "swganh/command/command_validator_interface.h"
+
+namespace swganh {
+namespace command {
+    class BaseSwgCommand;
+}}
 
 namespace pub14_core {
 namespace command {
@@ -13,6 +20,20 @@ namespace command {
     {
     public:
         virtual ~CommandValidator();
+
+        virtual void AddCommandEnqueueFilter(swganh::command::CommandFilter&& filter);
+        
+        virtual void AddCommandProcessFilter(swganh::command::CommandFilter&& filter);
+
+        virtual std::tuple<bool, uint32_t, uint32_t> ValidateForEnqueue(swganh::command::CommandInterface* command);
+        
+        virtual std::tuple<bool, uint32_t, uint32_t> ValidateForProcessing(swganh::command::CommandInterface* command);
+        
+    private:
+        std::tuple<bool, uint32_t, uint32_t> ValidateCommand(swganh::command::BaseSwgCommand* command, const std::vector<swganh::command::CommandFilter>& filters);
+
+        std::vector<swganh::command::CommandFilter> enqueue_filters_;
+        std::vector<swganh::command::CommandFilter> process_filters_;
     };
 
 }}
