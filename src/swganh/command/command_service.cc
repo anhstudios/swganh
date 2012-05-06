@@ -1,68 +1,45 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef WIN32
-#include <Python.h>
-#endif
-
 #include "command_service.h"
 
-#include <cctype>
-
-#include <boost/filesystem.hpp>
-
-#include <cppconn/exception.h>
-#include <cppconn/connection.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
-#include <cppconn/sqlstring.h>
 #include "anh/logger.h"
 
-#include "anh/crc.h"
 #include "anh/event_dispatcher.h"
-#include "anh/database/database_manager_interface.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/command/command_filter.h"
-#include "swganh/command/command_interface.h"
-
-#include "swganh/messages/controllers/combat_action_message.h"
+#include "swganh/messages/controllers/command_queue_remove.h"
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/object_controller.h"
 
-#include "python_command.h"
 #include "swganh/simulation/simulation_service.h"
-#include "swganh/scripting/python_event.h"
 
-#include "swganh/tre/tre_archive.h"
-#include "swganh/tre/readers/datatable_reader.h"
-
+#include "base_swg_command.h"
 #include "command_properties_loader_interface.h"
 #include "command_queue_interface.h"
-#include "base_swg_command.h"
 
-using namespace anh::app;
-using namespace anh::service;
-using namespace std;
-using namespace swganh::command;
-using namespace swganh::messages;
-using namespace swganh::messages::controllers;
-using namespace swganh::object;
-using namespace swganh::object::creature;
-using namespace swganh::object::tangible;
-using namespace swganh::scripting;
-using namespace swganh::simulation;
-
+using anh::service::ServiceDescription;
 using boost::asio::deadline_timer;
 using boost::posix_time::milliseconds;
 using swganh::app::SwganhKernel;
-using swganh::tre::readers::DatatableReader;
+using swganh::command::BaseSwgCommand;
+using swganh::command::CommandCreator;
+using swganh::command::CommandFactoryInterface;
+using swganh::command::CommandFilter;
+using swganh::command::CommandInterface;
+using swganh::command::CommandPropertiesLoaderInterface;
+using swganh::command::CommandService;
+using swganh::command::CommandValidatorInterface;
+using swganh::messages::controllers::CommandQueueEnqueue;
+using swganh::messages::controllers::CommandQueueRemove;
+using swganh::object::Object;
+using swganh::object::ObjectController;
+using swganh::simulation::SimulationService;
 
 CommandService::CommandService(SwganhKernel* kernel)
 : kernel_(kernel)
@@ -115,13 +92,13 @@ void CommandService::EnqueueCommand(std::unique_ptr<CommandInterface> command)
 }
 
 void CommandService::HandleCommandQueueEnqueue(
-    const shared_ptr<ObjectController>& controller,
+    const std::shared_ptr<ObjectController>& controller,
     CommandQueueEnqueue command_request)
 {
     auto properties_iter = command_properties_map_.find(command_request.command_crc);
     if (properties_iter == command_properties_map_.end())
     {
-        LOG(warning) << "Invalid handler requested: " << hex << command_request.command_crc;
+        LOG(warning) << "Invalid handler requested: " << std::hex << command_request.command_crc;
         return;
     }
 
@@ -156,7 +133,7 @@ void CommandService::Start()
 }
 
 void CommandService::SendCommandQueueRemove(
-    const shared_ptr<Creature>& actor,
+    const std::shared_ptr<ObjectController>& controller,
     uint32_t action_counter,
     float default_time_sec,
     uint32_t error,
@@ -168,16 +145,16 @@ void CommandService::SendCommandQueueRemove(
     remove.error = error;
     remove.action = action;
 
-	actor->GetController()->Notify(remove);
+	controller->Notify(remove);
 }
 
 void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)
 {
     dispatcher->Subscribe(
         "ObjectReadyEvent",
-        [this] (shared_ptr<anh::EventInterface> incoming_event)
+        [this] (std::shared_ptr<anh::EventInterface> incoming_event)
     {
-        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
+        const auto& object = std::static_pointer_cast<anh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
 
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
         processor_map_[object->GetObjectId()] = kernel_->GetPluginManager()->CreateObject<CommandQueueInterface>("Command::Queue");
@@ -188,9 +165,9 @@ void CommandService::SubscribeObjectRemovedEvent(anh::EventDispatcher* dispatche
 {
     dispatcher->Subscribe(
         "ObjectRemovedEvent",
-        [this] (shared_ptr<anh::EventInterface> incoming_event)
+        [this] (std::shared_ptr<anh::EventInterface> incoming_event)
     {
-        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
+        const auto& object = std::static_pointer_cast<anh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
 
         boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
         processor_map_.erase(object->GetObjectId());

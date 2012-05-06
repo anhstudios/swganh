@@ -59,7 +59,7 @@ void CommandQueue::EnqueueCommand(std::unique_ptr<CommandInterface> command)
     }
     else
     {
-        command_service_->SendCommandQueueRemove(swg_command->GetActor(), swg_command->GetActionCounter(), swg_command->GetDefaultTime(), error, action);
+        command_service_->SendCommandQueueRemove(swg_command->GetController(), swg_command->GetActionCounter(), swg_command->GetDefaultTime(), error, action);
     }
 }
 
@@ -77,7 +77,7 @@ void CommandQueue::ProcessCommand(std::unique_ptr<swganh::command::BaseSwgComman
 		    command->Run();
         }
 
-        command_service_->SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), command->GetDefaultTime(), error, action);
+        command_service_->SendCommandQueueRemove(command->GetController(), command->GetActionCounter(), command->GetDefaultTime(), error, action);
     } catch(const std::exception& e) {
         LOG(warning) << "Error Processing Command: " <<  command->GetCommandName() << "\n" << e.what();
     }

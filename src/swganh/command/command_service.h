@@ -16,7 +16,6 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
-#include "swganh/messages/controllers/command_queue_remove.h"
 #include "swganh/command/command_properties.h"
 
 #include "command_factory_interface.h"
@@ -64,7 +63,7 @@ namespace command {
 		CommandPropertiesMap GetCommandProperties() { return command_properties_map_; }
         
         void SendCommandQueueRemove(
-            const std::shared_ptr<swganh::object::creature::Creature>& actor,
+            const std::shared_ptr<swganh::object::ObjectController>& controller,
             uint32_t action_counter,
             float default_time_sec,
             uint32_t error,
