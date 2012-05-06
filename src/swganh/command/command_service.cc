@@ -69,6 +69,9 @@ CommandService::CommandService(SwganhKernel* kernel)
 {
     command_factory_impl_ = kernel->GetPluginManager()->CreateObject<CommandFactoryInterface>("Command::CommandFactory");
     command_properties_loader_impl_ = kernel->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("Command::PropertiesLoader");
+    simulation_service_ = kernel->GetServiceManager()->GetService<SimulationService>("SimulationService");
+
+    command_properties_map_ = command_properties_loader_impl_->LoadCommandPropertiesMap();
 }
 
 ServiceDescription CommandService::GetServiceDescription()
@@ -143,35 +146,12 @@ void CommandService::Start()
 {
     script_prefix_ = kernel_->GetAppConfig().script_directory;
     
-    command_properties_map_ = command_properties_loader_impl_->LoadCommandPropertiesMap();
-    
-    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
-
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
 
 	auto event_dispatcher = kernel_->GetEventDispatcher();
-	event_dispatcher->Dispatch(
-        make_shared<anh::ValueEvent<CommandPropertiesMap>>("CommandServiceReady", GetCommandProperties()));
 
-    event_dispatcher->Subscribe(
-        "ObjectReadyEvent",
-        [this] (shared_ptr<anh::EventInterface> incoming_event)
-    {
-        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
-
-        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
-        processor_map_[object->GetObjectId()] = kernel_->GetPluginManager()->CreateObject<CommandQueueInterface>("Command::Queue");
-    });
-
-    event_dispatcher->Subscribe(
-        "ObjectRemovedEvent",
-        [this] (shared_ptr<anh::EventInterface> incoming_event)
-    {
-        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
-
-        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
-        processor_map_.erase(object->GetObjectId());
-    });
+    SubscribeObjectReadyEvent(event_dispatcher);
+    SubscribeObjectRemovedEvent(event_dispatcher);
 }
 
 bool CommandService::ValidateCommand(
@@ -211,4 +191,30 @@ void CommandService::SendCommandQueueRemove(
     remove.action = action;
 
 	actor->GetController()->Notify(remove);
+}
+
+void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)
+{
+    dispatcher->Subscribe(
+        "ObjectReadyEvent",
+        [this] (shared_ptr<anh::EventInterface> incoming_event)
+    {
+        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
+
+        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
+        processor_map_[object->GetObjectId()] = kernel_->GetPluginManager()->CreateObject<CommandQueueInterface>("Command::Queue");
+    });
+}
+
+void CommandService::SubscribeObjectRemovedEvent(anh::EventDispatcher* dispatcher)
+{
+    dispatcher->Subscribe(
+        "ObjectRemovedEvent",
+        [this] (shared_ptr<anh::EventInterface> incoming_event)
+    {
+        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
+
+        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
+        processor_map_.erase(object->GetObjectId());
+    });
 }

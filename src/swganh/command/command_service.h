@@ -95,6 +95,10 @@ namespace command {
     private:
         bool ValidateCommand(BaseSwgCommand* command, const std::vector<CommandFilter>& filters);
         
+        void SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher);
+
+        void SubscribeObjectRemovedEvent(anh::EventDispatcher* dispatcher);
+
         void HandleCommandQueueEnqueue(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
             swganh::messages::controllers::CommandQueueEnqueue message);
