@@ -107,11 +107,6 @@ namespace command {
             uint64_t,
             std::shared_ptr<CommandQueueInterface>
         > CommandProcessorMap;
-
-        typedef Concurrency::concurrent_unordered_map<
-            anh::HashString, 
-            CommandCreator
-        > CreatorMap;
         
         swganh::app::SwganhKernel* kernel_;
         std::shared_ptr<CommandFactoryInterface> command_factory_impl_;
@@ -119,7 +114,6 @@ namespace command {
         swganh::simulation::SimulationService* simulation_service_;
         boost::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;
-        CreatorMap creators_;
         CommandPropertiesMap command_properties_map_;
         std::vector<CommandFilter> enqueue_filters_;
         std::vector<CommandFilter> process_filters_;
