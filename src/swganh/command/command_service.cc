@@ -22,6 +22,7 @@
 #include "base_swg_command.h"
 #include "command_properties_loader_interface.h"
 #include "command_queue_interface.h"
+#include "command_queue_manager_interface.h"
 
 using anh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
@@ -31,6 +32,7 @@ using swganh::command::CommandFactoryInterface;
 using swganh::command::CommandFilter;
 using swganh::command::CommandInterface;
 using swganh::command::CommandPropertiesLoaderInterface;
+using swganh::command::CommandQueueManagerInterface;
 using swganh::command::CommandService;
 using swganh::command::CommandValidatorInterface;
 using swganh::messages::controllers::CommandQueueEnqueue;
@@ -44,6 +46,7 @@ CommandService::CommandService(SwganhKernel* kernel)
 {
     command_factory_impl_ = kernel->GetPluginManager()->CreateObject<CommandFactoryInterface>("Command::CommandFactory");
     command_properties_loader_impl_ = kernel->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("Command::PropertiesLoader");
+    command_queue_manager_impl_ = kernel->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("Command::CommandQueueManager");
     command_validator_impl_ = kernel->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::Validator");
  
     command_properties_map_ = command_properties_loader_impl_->LoadCommandPropertiesMap();    
@@ -73,20 +76,14 @@ void CommandService::AddCommandProcessFilter(CommandFilter&& filter)
     command_validator_impl_->AddCommandProcessFilter(std::move(filter));
 }
 
-void CommandService::SetCommandCreator(anh::HashString command, CommandCreator&& creator)
+void CommandService::AddCommandCreator(anh::HashString command, CommandCreator&& creator)
 {
     command_factory_impl_->AddCommandCreator(command, std::move(creator));
 }
 
-void CommandService::EnqueueCommand(std::unique_ptr<CommandInterface> command)
+void CommandService::RemoveCommandCreator(anh::HashString command)
 {
-    boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
-    
-    auto find_iter = processor_map_.find(command->GetController()->GetId());
-    if (find_iter != processor_map_.end() )
-    {
-        find_iter->second->EnqueueCommand(std::move(command));
-    }
+    command_factory_impl_->RemoveCommandCreator(command);
 }
 
 void CommandService::HandleCommandQueueEnqueue(
@@ -103,7 +100,7 @@ void CommandService::HandleCommandQueueEnqueue(
     auto command = command_factory_impl_->CreateCommand(kernel_, properties_iter->second, controller, command_request);
     if (command)
     {
-        EnqueueCommand(std::move(command));
+        command_queue_manager_impl_->EnqueueCommand(std::move(command));
     }
 }
         
@@ -124,7 +121,7 @@ void CommandService::Start()
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
 
-	auto event_dispatcher = kernel_->GetEventDispatcher();
+    auto event_dispatcher = kernel_->GetEventDispatcher();
 
     SubscribeObjectReadyEvent(event_dispatcher);
     SubscribeObjectRemovedEvent(event_dispatcher);
@@ -143,7 +140,7 @@ void CommandService::SendCommandQueueRemove(
     remove.error = error;
     remove.action = action;
 
-	controller->Notify(remove);
+    controller->Notify(remove);
 }
 
 void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)
@@ -154,8 +151,9 @@ void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)
     {
         const auto& object = std::static_pointer_cast<anh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
 
-        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
-        processor_map_[object->GetObjectId()] = kernel_->GetPluginManager()->CreateObject<CommandQueueInterface>("Command::Queue");
+        command_queue_manager_impl_->AddQueue(
+            object->GetObjectId(), 
+            kernel_->GetPluginManager()->CreateObject<CommandQueueInterface>("Command::CommandQueue"));
     });
 }
 
@@ -166,8 +164,6 @@ void CommandService::SubscribeObjectRemovedEvent(anh::EventDispatcher* dispatche
         [this] (std::shared_ptr<anh::EventInterface> incoming_event)
     {
         const auto& object = std::static_pointer_cast<anh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
-
-        boost::lock_guard<boost::mutex> lg(processor_map_mutex_);
-        processor_map_.erase(object->GetObjectId());
+        command_queue_manager_impl_->RemoveQueue(object->GetObjectId());
     });
 }

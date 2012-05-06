@@ -17,6 +17,7 @@
 #include "command_factory.h"
 #include "command_properties_tre_loader.h"
 #include "command_queue.h"
+#include "command_queue_manager.h"
 #include "command_validator.h"
 
 #include "version.h"
@@ -44,6 +45,34 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         kernel->GetPluginManager()->RegisterObject("Command::CommandFactory", &registration);
     }
 
+    { // Command::CommandQueue
+        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+            return new CommandQueue(kernel);
+        };
+
+        registration.DestroyObject = [] (void * object) {
+            if (object) {
+                delete static_cast<CommandQueue*>(object);
+            }
+        };
+
+        kernel->GetPluginManager()->RegisterObject("Command::CommandQueue", &registration);
+    }
+
+    { // Command::CommandQueueManager
+        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+            return new CommandQueueManager();
+        };
+
+        registration.DestroyObject = [] (void * object) {
+            if (object) {
+                delete static_cast<CommandQueueManager*>(object);
+            }
+        };
+
+        kernel->GetPluginManager()->RegisterObject("Command::CommandQueueManager", &registration);
+    }
+
     { // Command::PropertiesLoader
         registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
             return new CommandPropertiesTreLoader(kernel->GetTreArchive());
@@ -56,20 +85,6 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         };
 
         kernel->GetPluginManager()->RegisterObject("Command::PropertiesLoader", &registration);
-    }
-
-    { // Command::Queue
-        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-            return new CommandQueue(kernel);
-        };
-
-        registration.DestroyObject = [] (void * object) {
-            if (object) {
-                delete static_cast<CommandQueue*>(object);
-            }
-        };
-
-        kernel->GetPluginManager()->RegisterObject("Command::Queue", &registration);
     }
 
     { // Command::Validator

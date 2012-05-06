@@ -38,12 +38,7 @@ namespace chat {
 
         void Start();
 
-    private:        
-        void HandleSpatialChatInternal(
-		    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
-		    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
-            const swganh::messages::controllers::CommandQueueEnqueue& command);
-
+    private:
         swganh::app::SwganhKernel* kernel_;
     };
 

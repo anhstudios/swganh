@@ -69,29 +69,6 @@ ServiceDescription ChatService::GetServiceDescription()
     return service_description;
 }
 
-void ChatService::HandleSpatialChatInternal(
-	const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
-	const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
-    const swganh::messages::controllers::CommandQueueEnqueue& command)
-{
-    // This regular expression searches for 5 numbers separated by spaces
-    // followed by a string text message.
-    const wregex p(L"(\\d+) (\\d+) (\\d+) (\\d+) (\\d+) (.*)");
-    wsmatch m;
-
-    if (! regex_match(command.command_options, m, p)) {
-        LOG(error) << "Invalid spatial chat message format";
-        return; // We suffered an unrecoverable error, bail out now.
-    }
-    
-    SendSpatialChat(
-        actor, 
-        target, 
-        m[6].str().substr(0, 256),
-        std::stoi(m[2].str()),
-        std::stoi(m[3].str()));
-}
-
 void ChatService::SendSpatialChat(
 	const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
 	const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
@@ -120,7 +97,7 @@ void ChatService::Start()
 {
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
     
-    command_service->SetCommandCreator("spatialchatinternal",
+    command_service->AddCommandCreator("spatialchatinternal",
         [] (
         swganh::app::SwganhKernel* kernel,
         const CommandProperties& properties,
