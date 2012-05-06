@@ -69,9 +69,9 @@ CommandService::CommandService(SwganhKernel* kernel)
 {
     command_factory_impl_ = kernel->GetPluginManager()->CreateObject<CommandFactoryInterface>("Command::CommandFactory");
     command_properties_loader_impl_ = kernel->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("Command::PropertiesLoader");
-    simulation_service_ = kernel->GetServiceManager()->GetService<SimulationService>("SimulationService");
-
-    command_properties_map_ = command_properties_loader_impl_->LoadCommandPropertiesMap();
+    command_validator_impl_ = kernel->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::Validator");
+ 
+    command_properties_map_ = command_properties_loader_impl_->LoadCommandPropertiesMap();    
 }
 
 ServiceDescription CommandService::GetServiceDescription()
@@ -90,12 +90,12 @@ ServiceDescription CommandService::GetServiceDescription()
 
 void CommandService::AddCommandEnqueueFilter(CommandFilter&& filter)
 {
-	enqueue_filters_.push_back(move(filter));
+    command_validator_impl_->AddCommandEnqueueFilter(std::move(filter));
 }
 
 void CommandService::AddCommandProcessFilter(CommandFilter&& filter)
 {
-    process_filters_.push_back(move(filter));
+    command_validator_impl_->AddCommandProcessFilter(std::move(filter));
 }
 
 void CommandService::SetCommandCreator(anh::HashString command, CommandCreator&& creator)
@@ -132,49 +132,27 @@ void CommandService::HandleCommandQueueEnqueue(
     }
 }
         
-bool CommandService::ValidateCommandForEnqueue(CommandInterface* command)
+std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForEnqueue(CommandInterface* command)
 {
-    return ValidateCommand(static_cast<BaseSwgCommand*>(command), enqueue_filters_);
+    return command_validator_impl_->ValidateForEnqueue(command);
 }
 
-bool CommandService::ValidateCommandForProcessing(CommandInterface* command)
+std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForProcessing(CommandInterface* command)
 {
-    return ValidateCommand(static_cast<BaseSwgCommand*>(command), process_filters_);
+    return command_validator_impl_->ValidateForProcessing(command);
 }
 
 void CommandService::Start()
 {
     script_prefix_ = kernel_->GetAppConfig().script_directory;
     
+    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
     simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
 
 	auto event_dispatcher = kernel_->GetEventDispatcher();
 
     SubscribeObjectReadyEvent(event_dispatcher);
     SubscribeObjectRemovedEvent(event_dispatcher);
-}
-
-bool CommandService::ValidateCommand(
-    BaseSwgCommand* command,
-    const std::vector<CommandFilter>& filters)
-{
-	tuple<bool, uint32_t, uint32_t> result;
-
-    bool all_run = all_of(
-        begin(filters),
-        end(filters),
-        [&result, command] (const CommandFilter& filter)->bool
-    {
-        result = filter(command);
-		return get<0>(result);
-    });
-
-    if (!all_run)
-    {
-        SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), 0.0f, get<1>(result), get<2>(result));
-    }
-
-    return all_run;
 }
 
 void CommandService::SendCommandQueueRemove(

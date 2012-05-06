@@ -36,35 +36,48 @@ CommandQueue::~CommandQueue()
 {}
 
 void CommandQueue::EnqueueCommand(std::unique_ptr<CommandInterface> command)
-{    
-    if (!command_service_->ValidateCommandForEnqueue(command.get()))
-    {
-        return;
-    }
-
+{   
     std::unique_ptr<BaseSwgCommand> swg_command(static_cast<BaseSwgCommand*>(command.release()));
+ 
+    bool is_valid;
+    uint32_t error;
+    uint32_t action;
 
-    if (swg_command->IsQueuedCommand())
+    std::tie(is_valid, error, action) = command_service_->ValidateForEnqueue(swg_command.get());
+
+    if (is_valid)
     {
-        queue_.push(std::move(swg_command));
-
-        Notify();
+        if (swg_command->IsQueuedCommand())
+        {
+            queue_.push(std::move(swg_command));
+            Notify();
+        }
+        else
+        {
+            ProcessCommand(std::move(swg_command));
+        }
     }
     else
     {
-        ProcessCommand(std::move(swg_command));
+        command_service_->SendCommandQueueRemove(swg_command->GetActor(), swg_command->GetActionCounter(), swg_command->GetDefaultTime(), error, action);
     }
 }
 
 void CommandQueue::ProcessCommand(std::unique_ptr<swganh::command::BaseSwgCommand> command)
 {
     try {
-        if (command_service_->ValidateCommandForProcessing(command.get()))
+        bool is_valid;
+        uint32_t error;
+        uint32_t action;
+
+        std::tie(is_valid, error, action) = command_service_->ValidateForProcessing(command.get());
+
+        if (is_valid)
         {
 		    command->Run();
-            
-            command_service_->SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), command->GetDefaultTime(), 0, 0);
         }
+
+        command_service_->SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), command->GetDefaultTime(), error, action);
     } catch(const std::exception& e) {
         LOG(warning) << "Error Processing Command: " <<  command->GetCommandName() << "\n" << e.what();
     }

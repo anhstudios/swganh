@@ -20,6 +20,7 @@
 #include "swganh/command/command_properties.h"
 
 #include "command_factory_interface.h"
+#include "command_validator_interface.h"
 
 namespace swganh {
 namespace object {
@@ -44,11 +45,7 @@ namespace command {
     class CommandInterface;
     class CommandQueueInterface;
     class CommandPropertiesLoaderInterface;
-    
-    typedef std::function<
-        std::tuple<bool, uint32_t, uint32_t> (CommandInterface*)
-    > CommandFilter;
-    
+        
     class CommandService: public anh::service::ServiceInterface
     {
     public:
@@ -73,15 +70,13 @@ namespace command {
             uint32_t error,
             uint32_t action);
         
-        bool ValidateCommandForEnqueue(CommandInterface* command);
+        std::tuple<bool, uint32_t, uint32_t> ValidateForEnqueue(CommandInterface* command);
         
-        bool ValidateCommandForProcessing(CommandInterface* command);
+        std::tuple<bool, uint32_t, uint32_t> ValidateForProcessing(CommandInterface* command);
 
         void Start();
 
     private:
-        bool ValidateCommand(BaseSwgCommand* command, const std::vector<CommandFilter>& filters);
-        
         void SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher);
 
         void SubscribeObjectRemovedEvent(anh::EventDispatcher* dispatcher);
@@ -98,12 +93,11 @@ namespace command {
         swganh::app::SwganhKernel* kernel_;
         std::shared_ptr<CommandFactoryInterface> command_factory_impl_;
         std::shared_ptr<CommandPropertiesLoaderInterface> command_properties_loader_impl_;
+        std::shared_ptr<CommandValidatorInterface> command_validator_impl_;
         swganh::simulation::SimulationService* simulation_service_;
         boost::mutex processor_map_mutex_;
         CommandProcessorMap processor_map_;
         CommandPropertiesMap command_properties_map_;
-        std::vector<CommandFilter> enqueue_filters_;
-        std::vector<CommandFilter> process_filters_;
         std::string script_prefix_;
     };
 

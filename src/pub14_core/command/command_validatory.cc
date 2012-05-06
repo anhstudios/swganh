@@ -27,16 +27,16 @@ void CommandValidator::AddCommandProcessFilter(swganh::command::CommandFilter&& 
 
 std::tuple<bool, uint32_t, uint32_t> CommandValidator::ValidateForEnqueue(swganh::command::CommandInterface* command)
 {
-    return ValidateCommand(static_cast<BaseSwgCommand*>(command), enqueue_filters_);
+    return ValidateCommand(command, enqueue_filters_);
 }
 
 std::tuple<bool, uint32_t, uint32_t> CommandValidator::ValidateForProcessing(swganh::command::CommandInterface* command)
 {
-    return ValidateCommand(static_cast<BaseSwgCommand*>(command), process_filters_);
+    return ValidateCommand(command, process_filters_);
 }
 
 std::tuple<bool, uint32_t, uint32_t> CommandValidator::ValidateCommand(
-    BaseSwgCommand* command,
+    swganh::command::CommandInterface* command,
     const std::vector<CommandFilter>& filters)
 {
 	std::tuple<bool, uint32_t, uint32_t> result;

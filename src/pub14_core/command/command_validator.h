@@ -30,7 +30,7 @@ namespace command {
         virtual std::tuple<bool, uint32_t, uint32_t> ValidateForProcessing(swganh::command::CommandInterface* command);
         
     private:
-        std::tuple<bool, uint32_t, uint32_t> ValidateCommand(swganh::command::BaseSwgCommand* command, const std::vector<swganh::command::CommandFilter>& filters);
+        std::tuple<bool, uint32_t, uint32_t> ValidateCommand(swganh::command::CommandInterface* command, const std::vector<swganh::command::CommandFilter>& filters);
 
         std::vector<swganh::command::CommandFilter> enqueue_filters_;
         std::vector<swganh::command::CommandFilter> process_filters_;
