@@ -24,8 +24,6 @@
 #include "command_queue_interface.h"
 
 using anh::service::ServiceDescription;
-using boost::asio::deadline_timer;
-using boost::posix_time::milliseconds;
 using swganh::app::SwganhKernel;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCreator;
