@@ -21,7 +21,22 @@ using std::vector;
 
 CommandPropertiesTreLoader::CommandPropertiesTreLoader(swganh::tre::TreArchive* archive)
     : archive_(archive)
-{}
+{
+    command_properties_map_ = LoadCommandPropertiesMap();
+}
+
+boost::optional<const CommandProperties&> CommandPropertiesTreLoader::FindPropertiesForCommand(HashString command)
+{
+    boost::optional<const CommandProperties&> command_properties;
+    
+    auto find_iter = command_properties_map_.find(command);
+    if (find_iter != command_properties_map_.end())
+    {
+        command_properties = find_iter->second;
+    }
+
+    return command_properties;
+}
 
 CommandPropertiesMap CommandPropertiesTreLoader::LoadCommandPropertiesMap()
 {

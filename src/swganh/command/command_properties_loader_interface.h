@@ -4,6 +4,7 @@
 #ifndef SWGANH_COMMAND_COMMAND_PROPERTIES_LOADER_INTERFACE_H_
 #define SWGANH_COMMAND_COMMAND_PROPERTIES_LOADER_INTERFACE_H_
 
+#include <boost/optional.hpp>
 #include "command_properties.h"
 
 namespace swganh {
@@ -25,6 +26,8 @@ namespace command {
          * @return A map of command properties
          */
         virtual CommandPropertiesMap LoadCommandPropertiesMap() = 0;
+        
+        virtual boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command) = 0;
 };
     
 }}  // namespace swganh::command

@@ -49,8 +49,6 @@ CommandService::CommandService(SwganhKernel* kernel)
     command_properties_loader_impl_ = kernel->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("Command::PropertiesLoader");
     command_queue_manager_impl_ = kernel->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("Command::CommandQueueManager");
     command_validator_impl_ = kernel->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::Validator");
- 
-    command_properties_map_ = command_properties_loader_impl_->LoadCommandPropertiesMap();    
 }
 
 ServiceDescription CommandService::GetServiceDescription()
@@ -110,15 +108,7 @@ std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForProcessing(Comma
         
 boost::optional<const CommandProperties&> CommandService::FindPropertiesForCommand(anh::HashString command)
 {
-    boost::optional<const CommandProperties&> command_properties;
-    
-    auto find_iter = command_properties_map_.find(command);
-    if (find_iter != command_properties_map_.end())
-    {
-        command_properties = find_iter->second;
-    }
-
-    return command_properties;
+    return command_properties_loader_impl_->FindPropertiesForCommand(command);
 }
 
 void CommandService::Start()

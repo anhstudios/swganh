@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <vector>
 
+#include <boost/optional.hpp>
+
 #include "swganh/command/command_properties_loader_interface.h"
 #include "swganh/tre/readers/datatable_reader.h"
 
@@ -36,6 +38,8 @@ namespace command {
          * @param archive Valid TreArchive instance.
          */
         explicit CommandPropertiesTreLoader(swganh::tre::TreArchive* archive);
+                
+        boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
 
         /**
          * Loads a map of all of the commands listed in the client files.
@@ -50,6 +54,7 @@ namespace command {
         uint64_t BuildBitmask(const std::vector<int>& bits);
 
         swganh::tre::TreArchive* archive_;
+        swganh::command::CommandPropertiesMap command_properties_map_;
     };
 
 }}  // namespace pub14_core::command

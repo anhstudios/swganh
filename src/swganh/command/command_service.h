@@ -10,12 +10,10 @@
 #include <tuple>
 
 #include <boost/optional.hpp>
-#include <boost/thread/mutex.hpp>
 
 #include "anh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 #include "swganh/command/command_properties.h"
 
@@ -86,21 +84,13 @@ namespace command {
         void HandleCommandQueueEnqueue(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
             swganh::messages::controllers::CommandQueueEnqueue message);
-        
-        typedef std::map<
-            uint64_t,
-            std::shared_ptr<CommandQueueInterface>
-        > CommandProcessorMap;
-        
+                
         swganh::app::SwganhKernel* kernel_;
         std::shared_ptr<CommandFactoryInterface> command_factory_impl_;
         std::shared_ptr<CommandPropertiesLoaderInterface> command_properties_loader_impl_;
         std::shared_ptr<CommandQueueManagerInterface> command_queue_manager_impl_;
         std::shared_ptr<CommandValidatorInterface> command_validator_impl_;
         swganh::simulation::SimulationService* simulation_service_;
-        boost::mutex processor_map_mutex_;
-        CommandProcessorMap processor_map_;
-        CommandPropertiesMap command_properties_map_;
         std::string script_prefix_;
     };
 
