@@ -1,15 +1,15 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef PUB14_CORE_COMMAND_COMMAND_PROPERTIES_TRE_LOADER_H_
-#define PUB14_CORE_COMMAND_COMMAND_PROPERTIES_TRE_LOADER_H_
+#ifndef PUB14_CORE_COMMAND_COMMAND_PROPERTIES_MANAGER_H_
+#define PUB14_CORE_COMMAND_COMMAND_PROPERTIES_MANAGER_H_
 
 #include <cstdint>
 #include <vector>
 
 #include <boost/optional.hpp>
 
-#include "swganh/command/command_properties_loader_interface.h"
+#include "swganh/command/command_properties_manager_interface.h"
 #include "swganh/tre/readers/datatable_reader.h"
 
 namespace swganh {
@@ -23,7 +23,7 @@ namespace command {
     /**
      * Utility class used to load command properties from a SWG .tre archive.
      */
-    class CommandPropertiesTreLoader : public swganh::command::CommandPropertiesLoaderInterface
+    class CommandPropertiesManager : public swganh::command::CommandPropertiesManagerInterface
     {
     public:
         /**
@@ -37,7 +37,7 @@ namespace command {
          *
          * @param archive Valid TreArchive instance.
          */
-        explicit CommandPropertiesTreLoader(swganh::tre::TreArchive* archive);
+        explicit CommandPropertiesManager(swganh::tre::TreArchive* archive);
                 
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
 
@@ -47,7 +47,7 @@ namespace command {
         swganh::command::CommandPropertiesMap LoadCommandPropertiesMap();
 
     private:
-        CommandPropertiesTreLoader();
+        CommandPropertiesManager();
 
         uint64_t BuildAllowInLocomotion(swganh::tre::readers::DatatableRow* row);
         uint64_t BuildAllowInState(swganh::tre::readers::DatatableRow* row);
@@ -59,4 +59,4 @@ namespace command {
 
 }}  // namespace pub14_core::command
 
-#endif  // PUB14_CORE_COMMAND_COMMAND_PROPERTIES_TRE_LOADER_H_
+#endif  // PUB14_CORE_COMMAND_COMMAND_PROPERTIES_MANAGER_H_

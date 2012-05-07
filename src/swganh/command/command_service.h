@@ -43,7 +43,7 @@ namespace command {
     class CommandInterface;
     class CommandQueueInterface;
     class CommandQueueManagerInterface;
-    class CommandPropertiesLoaderInterface;
+    class CommandPropertiesManagerInterface;
     struct CommandProperties;
 
     class CommandService: public anh::service::ServiceInterface
@@ -87,7 +87,7 @@ namespace command {
                 
         swganh::app::SwganhKernel* kernel_;
         std::shared_ptr<CommandFactoryInterface> command_factory_impl_;
-        std::shared_ptr<CommandPropertiesLoaderInterface> command_properties_loader_impl_;
+        std::shared_ptr<CommandPropertiesManagerInterface> command_properties_manager_impl_;
         std::shared_ptr<CommandQueueManagerInterface> command_queue_manager_impl_;
         std::shared_ptr<CommandValidatorInterface> command_validator_impl_;
         swganh::simulation::SimulationService* simulation_service_;

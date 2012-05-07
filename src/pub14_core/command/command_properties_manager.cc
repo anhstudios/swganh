@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "command_properties_tre_loader.h"
+#include "command_properties_manager.h"
 
 #include <exception>
 
@@ -10,7 +10,7 @@
 #include "swganh/tre/tre_archive.h"
 
 using anh::HashString;
-using pub14_core::command::CommandPropertiesTreLoader;
+using pub14_core::command::CommandPropertiesManager;
 using swganh::command::CommandProperties;
 using swganh::command::CommandPropertiesMap;
 using swganh::tre::readers::DatatableReader;
@@ -19,13 +19,13 @@ using std::make_pair;
 using std::string;
 using std::vector;
 
-CommandPropertiesTreLoader::CommandPropertiesTreLoader(swganh::tre::TreArchive* archive)
+CommandPropertiesManager::CommandPropertiesManager(swganh::tre::TreArchive* archive)
     : archive_(archive)
 {
     command_properties_map_ = LoadCommandPropertiesMap();
 }
 
-boost::optional<const CommandProperties&> CommandPropertiesTreLoader::FindPropertiesForCommand(HashString command)
+boost::optional<const CommandProperties&> CommandPropertiesManager::FindPropertiesForCommand(HashString command)
 {
     boost::optional<const CommandProperties&> command_properties;
     
@@ -38,7 +38,7 @@ boost::optional<const CommandProperties&> CommandPropertiesTreLoader::FindProper
     return command_properties;
 }
 
-CommandPropertiesMap CommandPropertiesTreLoader::LoadCommandPropertiesMap()
+CommandPropertiesMap CommandPropertiesManager::LoadCommandPropertiesMap()
 {
     CommandPropertiesMap properties_map;
     
@@ -80,7 +80,7 @@ CommandPropertiesMap CommandPropertiesTreLoader::LoadCommandPropertiesMap()
     return properties_map;
 }
 
-uint64_t CommandPropertiesTreLoader::BuildAllowInLocomotion(swganh::tre::readers::DatatableRow* row)
+uint64_t CommandPropertiesManager::BuildAllowInLocomotion(swganh::tre::readers::DatatableRow* row)
 {    
     vector<int> bits;
 
@@ -110,7 +110,7 @@ uint64_t CommandPropertiesTreLoader::BuildAllowInLocomotion(swganh::tre::readers
     return BuildBitmask(bits);
 }
 
-uint64_t CommandPropertiesTreLoader::BuildAllowInState(swganh::tre::readers::DatatableRow* row)
+uint64_t CommandPropertiesManager::BuildAllowInState(swganh::tre::readers::DatatableRow* row)
 {
     vector<int> bits;
 
@@ -152,7 +152,7 @@ uint64_t CommandPropertiesTreLoader::BuildAllowInState(swganh::tre::readers::Dat
     return BuildBitmask(bits);
 }
 
-uint64_t CommandPropertiesTreLoader::BuildBitmask(const vector<int>& bits)
+uint64_t CommandPropertiesManager::BuildBitmask(const vector<int>& bits)
 {
     uint64_t bitmask = 0;
     int counter = 0;

@@ -15,7 +15,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include "command_factory.h"
-#include "command_properties_tre_loader.h"
+#include "command_properties_manager.h"
 #include "command_queue.h"
 #include "command_queue_manager.h"
 #include "command_validator.h"
@@ -73,21 +73,21 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         kernel->GetPluginManager()->RegisterObject("Command::CommandQueueManager", &registration);
     }
 
-    { // Command::PropertiesLoader
+    { // Command::CommandPropertiesManager
         registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-            return new CommandPropertiesTreLoader(kernel->GetTreArchive());
+            return new CommandPropertiesManager(kernel->GetTreArchive());
         };
 
         registration.DestroyObject = [] (void * object) {
             if (object) {
-                delete static_cast<CommandPropertiesTreLoader*>(object);
+                delete static_cast<CommandPropertiesManager*>(object);
             }
         };
 
-        kernel->GetPluginManager()->RegisterObject("Command::PropertiesLoader", &registration);
+        kernel->GetPluginManager()->RegisterObject("Command::CommandPropertiesManager", &registration);
     }
 
-    { // Command::Validator
+    { // Command::CommandValidator
         registration.CreateObject = [] (anh::plugin::ObjectParams* params) -> void * {
             return new CommandValidator();
         };
@@ -98,7 +98,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
             }
         };
 
-        kernel->GetPluginManager()->RegisterObject("Command::Validator", &registration);
+        kernel->GetPluginManager()->RegisterObject("Command::CommandValidator", &registration);
     }
 }
 

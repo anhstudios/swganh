@@ -20,7 +20,7 @@
 #include "swganh/simulation/simulation_service.h"
 
 #include "base_swg_command.h"
-#include "command_properties_loader_interface.h"
+#include "command_properties_manager_interface.h"
 #include "command_queue_interface.h"
 #include "command_queue_manager_interface.h"
 
@@ -32,7 +32,7 @@ using swganh::command::CommandFactoryInterface;
 using swganh::command::CommandFilter;
 using swganh::command::CommandInterface;
 using swganh::command::CommandProperties;
-using swganh::command::CommandPropertiesLoaderInterface;
+using swganh::command::CommandPropertiesManagerInterface;
 using swganh::command::CommandQueueManagerInterface;
 using swganh::command::CommandService;
 using swganh::command::CommandValidatorInterface;
@@ -46,9 +46,9 @@ CommandService::CommandService(SwganhKernel* kernel)
 : kernel_(kernel)
 {
     command_factory_impl_ = kernel->GetPluginManager()->CreateObject<CommandFactoryInterface>("Command::CommandFactory");
-    command_properties_loader_impl_ = kernel->GetPluginManager()->CreateObject<CommandPropertiesLoaderInterface>("Command::PropertiesLoader");
+    command_properties_manager_impl_ = kernel->GetPluginManager()->CreateObject<CommandPropertiesManagerInterface>("Command::CommandPropertiesManager");
     command_queue_manager_impl_ = kernel->GetPluginManager()->CreateObject<CommandQueueManagerInterface>("Command::CommandQueueManager");
-    command_validator_impl_ = kernel->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::Validator");
+    command_validator_impl_ = kernel->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::CommandValidator");
 }
 
 ServiceDescription CommandService::GetServiceDescription()
@@ -108,7 +108,7 @@ std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForProcessing(Comma
         
 boost::optional<const CommandProperties&> CommandService::FindPropertiesForCommand(anh::HashString command)
 {
-    return command_properties_loader_impl_->FindPropertiesForCommand(command);
+    return command_properties_manager_impl_->FindPropertiesForCommand(command);
 }
 
 void CommandService::Start()

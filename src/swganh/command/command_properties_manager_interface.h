@@ -1,8 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_COMMAND_COMMAND_PROPERTIES_LOADER_INTERFACE_H_
-#define SWGANH_COMMAND_COMMAND_PROPERTIES_LOADER_INTERFACE_H_
+#ifndef SWGANH_COMMAND_COMMAND_PROPERTIES_MANAGER_INTERFACE_H_
+#define SWGANH_COMMAND_COMMAND_PROPERTIES_MANAGER_INTERFACE_H_
 
 #include <boost/optional.hpp>
 #include "command_properties.h"
@@ -14,10 +14,10 @@ namespace command {
      * Defines an interface for retrieving command properties from an
      * implementation specific resource.
      */
-    class CommandPropertiesLoaderInterface
+    class CommandPropertiesManagerInterface
     {
     public:
-        virtual ~CommandPropertiesLoaderInterface() {}
+        virtual ~CommandPropertiesManagerInterface() {}
         
         /**
          * Load a map of command properties from an implementation
@@ -32,4 +32,4 @@ namespace command {
     
 }}  // namespace swganh::command
 
-#endif  // SWGANH_COMMAND_COMMAND_PROPERTIES_LOADER_INTERFACE_H_
+#endif  // SWGANH_COMMAND_COMMAND_PROPERTIES_MANAGER_INTERFACE_H_
