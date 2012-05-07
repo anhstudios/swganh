@@ -4,8 +4,10 @@
 #include <boost/python/module.hpp>
 
 #include "command_binding.h"
+#include "command_properties_binding.h"
 
 BOOST_PYTHON_MODULE(py_command)
 {
     swganh::command::ExportCommand();
+    swganh::command::ExportCommandProperties();
 }

@@ -26,7 +26,6 @@
 #include "swganh/object/weapon/weapon.h"
 
 #include "swganh/command/command_service.h"
-#include "swganh/command/python_combat_command.h"
 #include "swganh/simulation/simulation_service.h"
 
 #include "swganh/messages/controllers/combat_action_message.h"
@@ -108,8 +107,8 @@ void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& 
 
 void CombatService::RegisterCombatScript(anh::HashString command)
 {
-    std::string script = "commands/" + command.ident_string() + ".py";
-    RegisterCombatHandler(command.ident(), PythonCombatCommand(script));
+//    std::string script = "commands/" + command.ident_string() + ".py";
+//    RegisterCombatHandler(command.ident(), PythonCombatCommand(script));
 }
 
 void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command_properties)
