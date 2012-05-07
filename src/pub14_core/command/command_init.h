@@ -33,7 +33,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     
     { // Command::CommandFactory
         registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-            return new CommandFactory();
+            return new CommandFactory(kernel);
         };
 
         registration.DestroyObject = [] (void * object) {
@@ -60,7 +60,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     }
 
     { // Command::CommandQueueManager
-        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [] (anh::plugin::ObjectParams* params) -> void * {
             return new CommandQueueManager();
         };
 
@@ -88,7 +88,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     }
 
     { // Command::Validator
-        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [] (anh::plugin::ObjectParams* params) -> void * {
             return new CommandValidator();
         };
 

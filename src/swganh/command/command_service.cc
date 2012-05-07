@@ -31,6 +31,7 @@ using swganh::command::CommandCreator;
 using swganh::command::CommandFactoryInterface;
 using swganh::command::CommandFilter;
 using swganh::command::CommandInterface;
+using swganh::command::CommandProperties;
 using swganh::command::CommandPropertiesLoaderInterface;
 using swganh::command::CommandQueueManagerInterface;
 using swganh::command::CommandService;
@@ -90,14 +91,7 @@ void CommandService::HandleCommandQueueEnqueue(
     const std::shared_ptr<ObjectController>& controller,
     CommandQueueEnqueue command_request)
 {
-    auto properties_iter = command_properties_map_.find(command_request.command_crc);
-    if (properties_iter == command_properties_map_.end())
-    {
-        LOG(warning) << "Invalid handler requested: " << std::hex << command_request.command_crc;
-        return;
-    }
-
-    auto command = command_factory_impl_->CreateCommand(kernel_, properties_iter->second, controller, command_request);
+    auto command = command_factory_impl_->CreateCommand(controller, command_request);
     if (command)
     {
         command_queue_manager_impl_->EnqueueCommand(std::move(command));
@@ -112,6 +106,19 @@ std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForEnqueue(CommandI
 std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForProcessing(CommandInterface* command)
 {
     return command_validator_impl_->ValidateForProcessing(command);
+}
+        
+boost::optional<const CommandProperties&> CommandService::FindPropertiesForCommand(anh::HashString command)
+{
+    boost::optional<const CommandProperties&> command_properties;
+    
+    auto find_iter = command_properties_map_.find(command);
+    if (find_iter != command_properties_map_.end())
+    {
+        command_properties = find_iter->second;
+    }
+
+    return command_properties;
 }
 
 void CommandService::Start()

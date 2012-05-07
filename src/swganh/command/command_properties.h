@@ -93,7 +93,7 @@ namespace command {
         //}
     };
 
-	typedef std::map<uint32_t, CommandProperties> CommandPropertiesMap;
+    typedef std::map<anh::HashString, CommandProperties> CommandPropertiesMap;
 
 }}  // namespace swganh::command
 

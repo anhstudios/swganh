@@ -96,7 +96,7 @@ void ChatService::SendSpatialChat(
 void ChatService::Start()
 {
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
-    
+
     command_service->AddCommandCreator("spatialchatinternal",
         [] (
         swganh::app::SwganhKernel* kernel,

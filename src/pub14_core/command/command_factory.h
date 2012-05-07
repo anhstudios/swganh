@@ -5,6 +5,7 @@
 #define PUB14_CORE_COMMAND_COMMAND_FACTORY_H_
 
 #include <map>
+#include <tuple>
 #include <boost/thread/mutex.hpp>
 
 #include "swganh/command/command_factory_interface.h"
@@ -12,6 +13,9 @@
 namespace swganh {
 namespace app {
     class SwganhKernel;
+}
+namespace command {
+    class CommandService;
 }}
 
 namespace pub14_core {
@@ -20,6 +24,7 @@ namespace command {
     class CommandFactory : public swganh::command::CommandFactoryInterface
     {
     public:
+        explicit CommandFactory(swganh::app::SwganhKernel* kernel);
         ~CommandFactory();
 
         virtual void AddCommandCreator(anh::HashString command, swganh::command::CommandCreator&& creator);
@@ -27,16 +32,30 @@ namespace command {
         virtual void RemoveCommandCreator(anh::HashString command);
 
         virtual std::unique_ptr<swganh::command::CommandInterface> CreateCommand(
-            swganh::app::SwganhKernel* kernel,
-            const swganh::command::CommandProperties& properties,
             const std::shared_ptr<swganh::object::ObjectController>& controller,
             const swganh::messages::controllers::CommandQueueEnqueue& command_request);
 
-    private:        
+    private:
+        swganh::command::CommandService* GetCommandService();
+
+        struct CreatorData
+        {
+            CreatorData(swganh::command::CommandCreator&& creator_func,
+                const swganh::command::CommandProperties&  properties)
+                : creator_func(std::move(creator_func))
+                , properties(properties)
+            {}
+
+            swganh::command::CommandCreator creator_func;
+            const swganh::command::CommandProperties& properties;
+        };
+
         typedef std::map<
-            anh::HashString, 
-            swganh::command::CommandCreator
+            anh::HashString, CreatorData
         > CreatorMap;
+
+        swganh::app::SwganhKernel* kernel_;
+        swganh::command::CommandService* command_service_;
 
         boost::mutex creators_mutex_;
         CreatorMap command_creators_;        

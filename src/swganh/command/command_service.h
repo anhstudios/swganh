@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 
+#include <boost/optional.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include "anh/service/service_interface.h"
@@ -45,7 +46,8 @@ namespace command {
     class CommandQueueInterface;
     class CommandQueueManagerInterface;
     class CommandPropertiesLoaderInterface;
-        
+    struct CommandProperties;
+
     class CommandService: public anh::service::ServiceInterface
     {
     public:
@@ -71,6 +73,8 @@ namespace command {
         std::tuple<bool, uint32_t, uint32_t> ValidateForEnqueue(CommandInterface* command);
         
         std::tuple<bool, uint32_t, uint32_t> ValidateForProcessing(CommandInterface* command);
+
+        boost::optional<const CommandProperties&> FindPropertiesForCommand(anh::HashString command);
 
         void Start();
 

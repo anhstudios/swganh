@@ -54,7 +54,7 @@ CommandPropertiesMap CommandPropertiesTreLoader::LoadCommandPropertiesMap()
             properties.allow_in_locomotion = BuildAllowInLocomotion(&row);
             properties.allow_in_locomotion = BuildAllowInState(&row);
 
-            properties_map.insert(make_pair(properties.command_name.ident(), properties));
+            properties_map.insert(make_pair(properties.command_name, properties));
         }
     }
     catch(exception& e)
