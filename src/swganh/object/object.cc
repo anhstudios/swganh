@@ -493,3 +493,22 @@ void Object::CreateBaselines( std::shared_ptr<ObjectController> controller)
     GetEventDispatcher()->Dispatch(make_shared<ControllerEvent>
         ("Object::Baselines", shared_from_this(), controller));
 }
+
+void Object::SetFlag(std::string flag)
+{
+    boost::lock_guard<boost::mutex> lg(flags_mutex_);
+    flags_.insert(flag);
+}
+
+void Object::RemoveFlag(std::string flag)
+{
+    boost::lock_guard<boost::mutex> lg(flags_mutex_);
+    flags_.erase(flag);
+}
+
+bool Object::HasFlag(std::string flag)
+{
+    boost::lock_guard<boost::mutex> lg(flags_mutex_);
+
+    return flags_.find(flag) != flags_.end();
+}
