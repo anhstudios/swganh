@@ -6,8 +6,9 @@ class BurstRunCommand(swgpy.command.BaseSwgCommand):
     base_run_duration = 15.0
     base_cooldate_timer = 60.0
 
-    def __init__(self, kernel, actor, target, command_string):
-        super().__init__(self, kernel, properties, controller, command_string)
+    def __init__(self, kernel, properties, controller, command_request):
+        super(BurstRunCommand, self).__init__(kernel, properties, controller, command_request)
+        print('Intializing BurstRun')
 
     def Validate(self):
         #if actor.has_flag("BurstRunning"):
@@ -22,7 +23,7 @@ class BurstRunCommand(swgpy.command.BaseSwgCommand):
 
         #    # function to call, duration from now to call it
         #    return PythonCallback(EndBurstRun, self, base_run_duration)
-        print('BurstRunning')
+        print('Executing BurstRunning')
 
     def EndBurstRun(self):
         actor.Controller().SendSystemMessage(swgpy.OutOfBand('cbt_spam', 'burstrun_stop_single', swgpy.ProseType.TT, actor.id), False, False)
