@@ -104,7 +104,7 @@ namespace object {
         {
             std::shared_ptr<Object> object = CreateObjectFromStorage(T::type, object_id);
 
-#if _DEBUG
+#ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
 #else
             return std::static_pointer_cast<T>(object);
@@ -130,7 +130,7 @@ namespace object {
         {
             std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name);
 
-#if _DEBUG
+#ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
 #else
             return std::static_pointer_cast<T>(object);

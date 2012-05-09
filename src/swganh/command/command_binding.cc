@@ -73,14 +73,14 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
 
 void swganh::command::ExportCommand()
 {
-    bp::class_<CommandInterface, std::shared_ptr<CommandWrapper>, boost::noncopyable>("CommandInterface", bp::no_init)
+    bp::class_<CommandInterface, std::unique_ptr<CommandWrapper>, boost::noncopyable>("CommandInterface", bp::no_init)
         .def("GetController", bp::pure_virtual(&CommandWrapper::GetController), bp::return_internal_reference<>())
         .def("Setup", bp::pure_virtual(&CommandWrapper::Setup))
         .def("Validate", bp::pure_virtual(&CommandWrapper::Validate))
         .def("Run", bp::pure_virtual(&CommandWrapper::Run))
     ;
     
-    bp::class_<BaseSwgCommand, std::shared_ptr<BaseSwgCommandWrapper>, bp::bases<CommandInterface>, boost::noncopyable>
+    bp::class_<BaseSwgCommand, std::unique_ptr<BaseSwgCommandWrapper>, bp::bases<CommandInterface>, boost::noncopyable>
         ("BaseSwgCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&, const std::shared_ptr<object::ObjectController>&, const swganh::messages::controllers::CommandQueueEnqueue&>())
     ;
 }
