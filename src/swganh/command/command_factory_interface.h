@@ -28,7 +28,7 @@ namespace command {
     class CommandInterface;
     struct CommandProperties;
 
-    typedef std::function<std::unique_ptr<CommandInterface> (
+    typedef std::function<std::shared_ptr<CommandInterface> (
         swganh::app::SwganhKernel*,
         const CommandProperties&,
         const std::shared_ptr<object::ObjectController>&,
@@ -44,7 +44,7 @@ namespace command {
 
         virtual void RemoveCommandCreator(anh::HashString command) = 0;
 
-        virtual std::unique_ptr<CommandInterface> CreateCommand(
+        virtual std::shared_ptr<CommandInterface> CreateCommand(
             const std::shared_ptr<object::ObjectController>& controller,
             const swganh::messages::controllers::CommandQueueEnqueue& command_request) = 0;
     };

@@ -131,6 +131,7 @@ FUNCTION(AddANHPythonBinding name)
 		SUFFIX "${BINDING_POSTFIX}"
 		FOLDER "python_bindings"
     )
+    list(APPEND ANH_PYTHON_BINDINGS ${name})
 	
     IF(_project_deps_list_length GREATER 0)
         ADD_DEPENDENCIES(${name} ${ANHPYTHONLIB_DEPENDS})

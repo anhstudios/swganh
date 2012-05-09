@@ -104,6 +104,6 @@ void ChatService::Start()
         const std::shared_ptr<swganh::object::ObjectController>& controller,
         const swganh::messages::controllers::CommandQueueEnqueue& command_request)
     {
-        return std::unique_ptr<SpatialChatInternalCommand>(new SpatialChatInternalCommand(kernel, properties, controller, command_request));
+        return std::make_shared<SpatialChatInternalCommand>(kernel, properties, controller, command_request);
     });
 }

@@ -20,7 +20,7 @@ namespace command {
     public:
         virtual ~CommandQueueManager();
 
-        virtual void EnqueueCommand(std::unique_ptr<swganh::command::CommandInterface> command);
+        virtual void EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
 
         virtual void AddQueue(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandQueueInterface>& command_queue);
 

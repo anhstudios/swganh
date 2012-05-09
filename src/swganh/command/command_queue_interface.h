@@ -33,7 +33,7 @@ namespace command {
     public:
         virtual ~CommandQueueInterface() {}
         
-        virtual void EnqueueCommand(std::unique_ptr<CommandInterface> command) = 0;
+        virtual void EnqueueCommand(const std::shared_ptr<CommandInterface>& command) = 0;
     };
 
 }}  // namespace swganh::command

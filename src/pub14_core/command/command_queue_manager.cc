@@ -15,14 +15,14 @@ using swganh::command::CommandQueueInterface;
 CommandQueueManager::~CommandQueueManager()
 {}
 
-void CommandQueueManager::EnqueueCommand(std::unique_ptr<swganh::command::CommandInterface> command)
+void CommandQueueManager::EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command)
 {
     boost::lock_guard<boost::mutex> lg(queue_map_mutex_);
     
     auto find_iter = queue_map_.find(command->GetController()->GetId());
     if (find_iter != queue_map_.end() )
     {
-        find_iter->second->EnqueueCommand(std::move(command));
+        find_iter->second->EnqueueCommand(command);
     }
 }
 

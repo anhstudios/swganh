@@ -1,8 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_COMMAND_PY_COMMAND_CREATOR_H_
-#define SWGANH_COMMAND_PY_COMMAND_CREATOR_H_
+#ifndef SWGANH_COMMAND_PYTHON_COMMAND_CREATOR_H_
+#define SWGANH_COMMAND_PYTHON_COMMAND_CREATOR_H_
 
 #include <memory>
 #include <string>
@@ -28,12 +28,12 @@ namespace command {
     class CommandInterface;
     struct CommandProperties;
 
-    class PyCommandCreator
+    class PythonCommandCreator
     {
     public:
-        PyCommandCreator(std::string module_name, std::string class_name);
+        PythonCommandCreator(std::string module_name, std::string class_name);
 
-        std::unique_ptr<CommandInterface> operator() (
+        std::shared_ptr<CommandInterface> operator() (
             swganh::app::SwganhKernel* kernel,
             const CommandProperties& properties,
             const std::shared_ptr<object::ObjectController>& controller,
@@ -48,4 +48,4 @@ namespace command {
 
 }}
 
-#endif  // SWGANH_COMMAND_PY_COMMAND_CREATOR_H_
+#endif  // SWGANH_COMMAND_PYTHON_COMMAND_CREATOR_H_

@@ -17,7 +17,7 @@ namespace command {
     public:
         virtual ~CommandQueueManagerInterface() {}
 
-        virtual void EnqueueCommand(std::unique_ptr<CommandInterface> command) = 0;
+        virtual void EnqueueCommand(const std::shared_ptr<CommandInterface>& command) = 0;
 
         virtual void AddQueue(uint64_t queue_owner_id, const std::shared_ptr<CommandQueueInterface>& command_queue) = 0;
 

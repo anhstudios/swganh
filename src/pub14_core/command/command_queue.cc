@@ -35,9 +35,9 @@ CommandQueue::CommandQueue(
 CommandQueue::~CommandQueue()
 {}
 
-void CommandQueue::EnqueueCommand(std::unique_ptr<CommandInterface> command)
+void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& command)
 {   
-    std::unique_ptr<BaseSwgCommand> swg_command(static_cast<BaseSwgCommand*>(command.release()));
+    auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
  
     bool is_valid;
     uint32_t error;
@@ -49,12 +49,12 @@ void CommandQueue::EnqueueCommand(std::unique_ptr<CommandInterface> command)
     {
         if (swg_command->IsQueuedCommand())
         {
-            queue_.push(std::move(swg_command));
+            queue_.push(swg_command);
             Notify();
         }
         else
         {
-            ProcessCommand(std::move(swg_command));
+            ProcessCommand(swg_command);
         }
     }
     else
@@ -63,7 +63,7 @@ void CommandQueue::EnqueueCommand(std::unique_ptr<CommandInterface> command)
     }
 }
 
-void CommandQueue::ProcessCommand(std::unique_ptr<swganh::command::BaseSwgCommand> command)
+void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwgCommand>& command)
 {
     try {
         bool is_valid;
@@ -93,7 +93,7 @@ void CommandQueue::Notify()
         boost::lock_guard<boost::mutex> lg(queue_mutex_);
         if (!queue_.empty())
         {
-            std::unique_ptr<BaseSwgCommand> command(queue_.top().release());
+            std::shared_ptr<BaseSwgCommand> command(queue_.top());
             queue_.pop();
             
             timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(command->GetDefaultTime() * 1000)));
@@ -108,7 +108,7 @@ void CommandQueue::Notify()
             });
 
             
-            ProcessCommand(std::move(command));
+            ProcessCommand(command);
         }
     }		
 }

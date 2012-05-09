@@ -46,11 +46,11 @@ void CommandFactory::RemoveCommandCreator(anh::HashString command)
     command_creators_.erase(command);
 }
 
-std::unique_ptr<CommandInterface> CommandFactory::CreateCommand(
+std::shared_ptr<CommandInterface> CommandFactory::CreateCommand(
     const std::shared_ptr<ObjectController>& controller,
     const CommandQueueEnqueue& command_request)
 {
-    std::unique_ptr<CommandInterface> command = nullptr;
+    std::shared_ptr<CommandInterface> command = nullptr;
 
     boost::lock_guard<boost::mutex> lg(creators_mutex_);
 

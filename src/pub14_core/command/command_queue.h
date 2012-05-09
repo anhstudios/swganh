@@ -31,10 +31,10 @@ namespace command {
         CommandQueue(swganh::app::SwganhKernel* kernel);
         ~CommandQueue();
         
-        virtual void EnqueueCommand(std::unique_ptr<swganh::command::CommandInterface> command);
+        virtual void EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
 
     private:
-        void ProcessCommand(std::unique_ptr<swganh::command::BaseSwgCommand> command);
+        void ProcessCommand(const std::shared_ptr<swganh::command::BaseSwgCommand>& command);
         
         void Notify();
 
@@ -49,9 +49,9 @@ namespace command {
         };
 
         typedef std::priority_queue<
-            std::unique_ptr<swganh::command::BaseSwgCommand>, 
-            std::vector<std::unique_ptr<swganh::command::BaseSwgCommand>>, 
-            CommandComparator<std::unique_ptr<swganh::command::BaseSwgCommand>>
+            std::shared_ptr<swganh::command::BaseSwgCommand>, 
+            std::vector<std::shared_ptr<swganh::command::BaseSwgCommand>>, 
+            CommandComparator<std::shared_ptr<swganh::command::BaseSwgCommand>>
         > ProcessQueue;
 
         swganh::app::SwganhKernel* kernel_;

@@ -92,7 +92,7 @@ void CommandService::HandleCommandQueueEnqueue(
     auto command = command_factory_impl_->CreateCommand(controller, command_request);
     if (command)
     {
-        command_queue_manager_impl_->EnqueueCommand(std::move(command));
+        command_queue_manager_impl_->EnqueueCommand(command);
     }
 }
         

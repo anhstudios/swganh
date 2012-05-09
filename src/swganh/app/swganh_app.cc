@@ -33,6 +33,7 @@
 #include "swganh/galaxy/galaxy_service.h"
 #include "swganh/combat/combat_service.h"
 #include "swganh/social/social_service.h"
+#include "swganh/scripting/utilities.h"
 
 using namespace anh;
 using namespace anh::app;
@@ -151,9 +152,13 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
         app_config.galaxy_db.password);
     
     CleanupServices_();
-
-    // Load the tre archive and prepare it for use.
-
+    
+    // append command dir
+    std::string py_path = "import sys; sys.path.append('.'); sys.path.append('" + app_config.script_directory + "');";
+    {
+        swganh::scripting::ScopedGilLock lock;
+        PyRun_SimpleString(py_path.c_str());
+    }
 
     // Load the plugin configuration.
     LoadPlugins_(app_config.plugins);
