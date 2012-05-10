@@ -25,12 +25,11 @@ class BurstRunCommand(swgpy.command.BaseSwgCommand):
         return True
 
     def Run(self):
-        if self.Validate():
-            actor = self.GetActor()            
-            actor.SetFlag("BurstRunning")
-            actor.run_speed *= self.base_run_multiplier
+        actor = self.GetActor()            
+        actor.SetFlag("BurstRunning")
+        actor.run_speed *= self.base_run_multiplier
 
-            self.GetController().SendSystemMessage('cbt_spam', 'burstrun_start_single')
+        self.GetController().SendSystemMessage('cbt_spam', 'burstrun_start_single')
    
         #    # function to call, duration from now to call it
         #    return PythonCallback(EndBurstRun, self, base_run_duration)

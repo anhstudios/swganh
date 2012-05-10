@@ -74,7 +74,14 @@ void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwg
 
         if (is_valid)
         {
-		    command->Run();
+            if (command->Validate())
+            {
+		        command->Run();
+            }
+            else
+            {
+                action = 1; // indicates a general error
+            }
         }
 
         command_service_->SendCommandQueueRemove(command->GetController(), command->GetActionCounter(), command->GetDefaultTime(), error, action);
