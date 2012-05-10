@@ -104,6 +104,8 @@ namespace object {
         bool SendSystemMessage(const std::string& custom_message) { return SendSystemMessage(std::wstring(custom_message.begin(), custom_message.end())); }
         bool SendSystemMessage(const std::wstring& custom_message, bool chatbox_only = false, bool send_to_inrange = false);
 
+        bool SendSystemMessage(std::string filename, std::string label);
+
         bool SendSystemMessage(const swganh::messages::OutOfBand& prose, bool chatbox_only = false, bool send_to_inrange = false);
 
         /**
