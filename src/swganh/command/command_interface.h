@@ -13,6 +13,13 @@ namespace object {
 
 namespace command {
 
+    class CommandCallbackInterface
+    {
+        virtual float GetDelayTimeInMs() = 0;
+
+        virtual void operator()() = 0;
+    };
+
     class CommandInterface
     {
     public:
