@@ -41,7 +41,7 @@ namespace command {
         
         void Notify();
         
-        void HandleCallback(const std::shared_ptr<swganh::command::CommandCallback>& callback);
+        void HandleCallback(std::shared_ptr<swganh::command::CommandCallback> callback);
 
         template<typename T>
         struct CommandComparator

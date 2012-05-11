@@ -126,7 +126,7 @@ void CommandQueue::Notify()
     }		
 }
 
-void CommandQueue::HandleCallback(const std::shared_ptr<CommandCallback>& callback)
+void CommandQueue::HandleCallback(std::shared_ptr<CommandCallback> callback)
 {    
     active_.AsyncDelayed(boost::posix_time::milliseconds(callback->GetDelayTimeInMs()),
         [this, callback] ()
