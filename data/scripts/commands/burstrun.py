@@ -2,9 +2,9 @@ import swgpy
 
 class BurstRunCommand(swgpy.command.BaseSwgCommand):
     #this data exists in all instances of burst run.
-    base_run_multiplier = 1.7
-    base_run_duration = 1500
-    base_cooldate_timer = 6000
+    base_run_multiplier = 2.0
+    base_run_duration = 15000
+    base_cooldate_timer = 60000
 
     def Validate(self):
         actor = self.GetActor()
