@@ -4,6 +4,7 @@
 #ifndef SWGANH_COMMAND_COMMAND_INTERFACE_H_
 #define SWGANH_COMMAND_COMMAND_INTERFACE_H_
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 
@@ -21,12 +22,12 @@ namespace command {
     public:
         typedef std::function<boost::optional<std::shared_ptr<CommandCallback>> ()> CallbackFunc;
 
-        CommandCallback(CallbackFunc&& callback_func, float delay_time_ms)
+        CommandCallback(CallbackFunc&& callback_func, uint64_t delay_time_ms)
             : callback_func_(std::move(callback_func))
             , delay_time_ms_(delay_time_ms)
         {}
 
-        float GetDelayTimeInMs()
+        uint64_t GetDelayTimeInMs()
         {
             return delay_time_ms_;
         }
@@ -40,7 +41,7 @@ namespace command {
         CommandCallback();
 
         CallbackFunc callback_func_;
-        float delay_time_ms_;
+        uint64_t delay_time_ms_;
     };
 
     class CommandInterface

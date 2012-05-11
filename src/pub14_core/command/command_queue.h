@@ -12,6 +12,9 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/thread/mutex.hpp>
 
+#include "anh/active_object.h"
+
+#include "swganh/command/command_interface.h"
 #include "swganh/command/command_queue_interface.h"
 
 namespace swganh {
@@ -37,6 +40,8 @@ namespace command {
         void ProcessCommand(const std::shared_ptr<swganh::command::BaseSwgCommand>& command);
         
         void Notify();
+        
+        void HandleCallback(const std::shared_ptr<swganh::command::CommandCallback>& callback);
 
         template<typename T>
         struct CommandComparator
@@ -64,6 +69,8 @@ namespace command {
         
         boost::mutex queue_mutex_;        
         ProcessQueue queue_;
+
+        anh::ActiveObject active_;
     };
 
 }}  // namespace pub14_core::command

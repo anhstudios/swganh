@@ -114,14 +114,24 @@ public:
     CommandCallbackWrapper(
         PyObject* obj,
         boost::python::object function,
-        float delay_timer)
+        uint64_t delay_timer)
         : CommandCallback([function] () -> boost::optional<std::shared_ptr<CommandCallback>>
     {
         ScopedGilLock lock;
-
+        
         boost::optional<std::shared_ptr<CommandCallback>> callback;
-        bp::object result = function();
-        callback = bp::extract<std::shared_ptr<CommandCallback>>(result);
+
+        try 
+        {
+            bp::object result = function();
+            
+            CommandCallback* obj_pointer = bp::extract<CommandCallback*>(result);
+            callback.reset(std::shared_ptr<CommandCallback>(obj_pointer, [result] (CommandCallback*) {}));
+        }
+        catch(bp::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }
 
         return callback;
     }, delay_timer)
@@ -134,14 +144,22 @@ public:
         PyObject* obj,
         boost::python::object function,
         boost::python::object instance,
-        float delay_timer)
+        uint64_t delay_timer)
         : CommandCallback([function, instance] () -> boost::optional<std::shared_ptr<CommandCallback>>
     {
         ScopedGilLock lock;
-
         boost::optional<std::shared_ptr<CommandCallback>> callback;
-        bp::object result = function(instance);
-        callback = bp::extract<std::shared_ptr<CommandCallback>>(result);
+        
+        try 
+        {
+            bp::object result = function();
+            CommandCallback* obj_pointer = bp::extract<CommandCallback*>(result);
+            callback.reset(std::shared_ptr<CommandCallback>(obj_pointer, [result] (CommandCallback*) {}));
+        }
+        catch(bp::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }
 
         return callback;
     }, delay_timer)
@@ -154,8 +172,8 @@ public:
 void swganh::command::ExportCommand()
 {
     bp::class_<CommandCallback, std::shared_ptr<CommandCallbackWrapper>, boost::noncopyable>
-        ("Callback", bp::init<bp::object, float>())
-        .def(bp::init<bp::object, bp::object, float>())
+        ("Callback", bp::init<bp::object, uint64_t>())
+        .def(bp::init<bp::object, bp::object, uint64_t>())
         .def("GetDelayTimeInMs", &CommandCallbackWrapper::GetDelayTimeInMs)
         .def("Execute", &CommandCallbackWrapper::operator())
     ;

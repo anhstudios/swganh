@@ -19,6 +19,7 @@
 
 using pub14_core::command::CommandQueue;
 using swganh::command::BaseSwgCommand;
+using swganh::command::CommandCallback;
 using swganh::command::CommandInterface;
 using swganh::command::CommandService;
 using swganh::object::creature::Creature;
@@ -28,6 +29,7 @@ CommandQueue::CommandQueue(
     swganh::app::SwganhKernel* kernel)
     : kernel_(kernel)
     , timer_(kernel->GetIoService())
+    , active_(kernel->GetIoService())
 {
     command_service_ = kernel->GetServiceManager()->GetService<CommandService>("CommandService");
 }
@@ -76,7 +78,11 @@ void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwg
         {
             if (command->Validate())
             {
-		        command->Run();
+		        auto callback = command->Run();
+                if (callback)
+                {
+                    HandleCallback(*callback);
+                }
             }
             else
             {
@@ -118,4 +124,17 @@ void CommandQueue::Notify()
             ProcessCommand(command);
         }
     }		
+}
+
+void CommandQueue::HandleCallback(const std::shared_ptr<CommandCallback>& callback)
+{    
+    active_.AsyncDelayed(boost::posix_time::milliseconds(callback->GetDelayTimeInMs()),
+        [this, callback] ()
+    {
+        auto new_callback = (*callback)();
+        if (new_callback)
+        {
+            HandleCallback(*new_callback);
+        }
+    });
 }
