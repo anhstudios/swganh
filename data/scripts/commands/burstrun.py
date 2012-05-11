@@ -31,8 +31,7 @@ class BurstRunCommand(swgpy.command.BaseSwgCommand):
 
         self.GetController().SendSystemMessage('cbt_spam', 'burstrun_start_single')
    
-        #    # function to call, duration from now to call it
-        #    return PythonCallback(EndBurstRun, self, base_run_duration)
+        return swgpy.command.Callback(self.EndBurstRun, self, self.base_run_duration)
 
     def EndBurstRun(self):
         actor = self.GetActor()
@@ -43,7 +42,7 @@ class BurstRunCommand(swgpy.command.BaseSwgCommand):
         self.GetController().SendSystemMessage('cbt_spam', 'burstrun_stop_single')
         self.GetController().SendSystemMessage('combat_spam', 'burst_run_tired')
  
-        #return PythonCallback(EndBurstRunCooldown, self, base_cooldate_timer)
+        return swgpy.command.Callback(self.EndBurstRunCooldown, self, self.base_cooldate_timer)
 
     def EndBurstRunCooldown(self):
         actor = self.GetActor()

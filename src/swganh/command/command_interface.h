@@ -4,7 +4,10 @@
 #ifndef SWGANH_COMMAND_COMMAND_INTERFACE_H_
 #define SWGANH_COMMAND_COMMAND_INTERFACE_H_
 
+#include <functional>
 #include <memory>
+
+#include <boost/optional.hpp>
 
 namespace swganh {
 namespace object {
@@ -13,11 +16,31 @@ namespace object {
 
 namespace command {
 
-    class CommandCallbackInterface
+    class CommandCallback
     {
-        virtual float GetDelayTimeInMs() = 0;
+    public:
+        typedef std::function<boost::optional<std::shared_ptr<CommandCallback>> ()> CallbackFunc;
 
-        virtual void operator()() = 0;
+        CommandCallback(CallbackFunc&& callback_func, float delay_time_ms)
+            : callback_func_(std::move(callback_func))
+            , delay_time_ms_(delay_time_ms)
+        {}
+
+        float GetDelayTimeInMs()
+        {
+            return delay_time_ms_;
+        }
+
+        boost::optional<std::shared_ptr<CommandCallback>> operator()() 
+        {
+            return callback_func_();
+        }
+
+    private:
+        CommandCallback();
+
+        CallbackFunc callback_func_;
+        float delay_time_ms_;
     };
 
     class CommandInterface
@@ -31,7 +54,7 @@ namespace command {
 
         virtual bool Validate() = 0;
 
-        virtual void Run() = 0;
+        virtual boost::optional<std::shared_ptr<CommandCallback>> Run() = 0;
     };
 
 }}

@@ -28,7 +28,7 @@ namespace chat {
 
         virtual bool Validate();
 
-        virtual void Run();
+        virtual boost::optional<std::shared_ptr<command::CommandCallback>> Run();
 
     private:
         ChatService* chat_service_;

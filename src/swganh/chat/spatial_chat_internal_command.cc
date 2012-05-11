@@ -21,6 +21,7 @@ using swganh::app::SwganhKernel;
 using swganh::chat::ChatService;
 using swganh::chat::SpatialChatInternalCommand;
 using swganh::command::BaseSwgCommand;
+using swganh::command::CommandCallback;
 using swganh::command::CommandProperties;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::ObjectController;
@@ -58,22 +59,21 @@ bool SpatialChatInternalCommand::Validate()
     return true;
 }
 
-void SpatialChatInternalCommand::Run()
+boost::optional<std::shared_ptr<CommandCallback>> SpatialChatInternalCommand::Run()
 {
     // This regular expression searches for 5 numbers separated by spaces
     // followed by a string text message.
     const wregex p(L"(\\d+) (\\d+) (\\d+) (\\d+) (\\d+) (.*)");
     wsmatch m;
 
-    if (! regex_match(GetCommandString(), m, p)) {
-        LOG(error) << "Invalid spatial chat message format";
-        return; // We suffered an unrecoverable error, bail out now.
+    if (regex_match(GetCommandString(), m, p)) {
+        chat_service_->SendSpatialChat(
+            GetActor(), 
+            GetTarget(), 
+            m[6].str().substr(0, 256), // Use a max of 255 characters and discard the rest.
+            std::stoi(m[2].str()), // Convert the string to an integer 
+            std::stoi(m[3].str()));
     }
-    
-    chat_service_->SendSpatialChat(
-        GetActor(), 
-        GetTarget(), 
-        m[6].str().substr(0, 256), // Use a max of 255 characters and discard the rest.
-        std::stoi(m[2].str()), // Convert the string to an integer 
-        std::stoi(m[3].str()));
+
+    return boost::optional<std::shared_ptr<CommandCallback>>();
 }
