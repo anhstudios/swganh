@@ -1,10 +1,9 @@
 from swgpy.command import BaseSwgCommand, Callback
 
 class BurstRunCommand(BaseSwgCommand):
-    #this data exists in all instances of burst run.
     base_run_multiplier = 2.0
-    base_run_duration = 15000
-    base_cooldate_timer = 60000
+    base_run_duration_ms = 15000
+    base_cooldate_timer_ms = 60000
 
     def Validate(self):
         actor = self.GetActor()
@@ -26,25 +25,33 @@ class BurstRunCommand(BaseSwgCommand):
 
     def Run(self):
         actor = self.GetActor()            
+        
         actor.SetFlag("BurstRunning")
+        actor.SetFlag("BurstRunCooldown")
+        
+        # increase the actor's run speed
         actor.run_speed *= self.base_run_multiplier
 
         self.GetController().SendSystemMessage('cbt_spam', 'burstrun_start_single')
    
-        return Callback(self.EndBurstRun, self.base_run_duration)
+        return Callback(self.EndBurstRun, self.base_run_duration_ms)
 
-    def EndBurstRun(self):
+    def EndBurstRun(self):        
         actor = self.GetActor()
-        actor.SetFlag("BurstRunCooldown")
+        
         actor.RemoveFlag("BurstRunning")
+        
+        # decrease the actor's run speed by the increased amount
         actor.run_speed /= self.base_run_multiplier
 
         self.GetController().SendSystemMessage('cbt_spam', 'burstrun_stop_single')
         self.GetController().SendSystemMessage('combat_effects', 'burst_run_tired')
  
-        return Callback(self.EndBurstRunCooldown, self.base_cooldate_timer)
+        return Callback(self.EndBurstRunCooldown, self.base_cooldate_timer_ms - self.base_run_duration_ms)
 
     def EndBurstRunCooldown(self):
         actor = self.GetActor()
-        self.GetController().SendSystemMessage('combat_effects', 'burst_run_not_tired')
+        
         actor.RemoveFlag("BurstRunCooldown")
+        
+        self.GetController().SendSystemMessage('combat_effects', 'burst_run_not_tired')
