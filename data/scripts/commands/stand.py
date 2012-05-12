@@ -1,4 +1,11 @@
-import swgpy.object
+from swgpy.command import BaseSwgCommand
+from swgpy import POSTURE
 
-actor.posture = swgpy.POSTURE.UPRIGHT
-actor.run_speed = 5.75        
+class StandCommand(BaseSwgCommand):    
+    base_run_speed = 5.75
+    
+    def Run(self):
+        actor = self.GetActor()
+        
+        actor.posture = POSTURE.UPRIGHT
+        actor.run_speed = base_run_speed
