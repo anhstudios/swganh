@@ -9,7 +9,6 @@
 #include "command_filter.h"
 #include "command_interface.h"
 #include "command_properties.h"
-#include "command_service.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/player/player.h"

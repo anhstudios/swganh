@@ -25,7 +25,7 @@
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/weapon/weapon.h"
 
-#include "swganh/command/command_service.h"
+#include "swganh/command/command_service_interface.h"
 #include "swganh/simulation/simulation_service.h"
 
 #include "swganh/messages/controllers/combat_action_message.h"
@@ -77,7 +77,7 @@ void CombatService::Start()
         ->GetService<SimulationService>("SimulationService");
 
 	command_service_ = kernel_->GetServiceManager()
-		->GetService<CommandService>("CommandService");
+		->GetService<CommandServiceInterface>("CommandService");
     
 	kernel_->GetEventDispatcher()->Subscribe(
         "CommandServiceReady", 

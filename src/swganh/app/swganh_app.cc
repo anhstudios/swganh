@@ -25,7 +25,7 @@
 
 #include "swganh/chat/chat_service.h"
 #include "swganh/character/character_service.h"
-#include "swganh/command/command_service.h"
+#include "swganh/command/command_service_interface.h"
 #include "swganh/command/command_filter.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
@@ -284,30 +284,33 @@ void SwganhApp::LoadCoreServices_()
 
 	if(strcmp("login", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		unique_ptr<LoginService> login_service(new LoginService(
+        auto login_service = std::make_shared<LoginService>(
 		    app_config.login_config.listen_address, 
 		    app_config.login_config.listen_port, 
-		    kernel_.get()));
+		    kernel_.get());
 
 		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
 		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
         login_service->login_auto_registration(app_config.login_config.login_auto_registration);
     
-		kernel_->GetServiceManager()->AddService("LoginService", move(login_service));
-	} 
+		kernel_->GetServiceManager()->AddService("LoginService", login_service);
+	}
+
 	if(strcmp("connection", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		unique_ptr<ConnectionService> connection_service(new ConnectionService(
+		auto connection_service = std::make_shared<ConnectionService>(
 			app_config.connection_config.listen_address, 
 			app_config.connection_config.listen_port, 
 			app_config.connection_config.ping_port, 
-			kernel_.get()));
+			kernel_.get());
 
-		kernel_->GetServiceManager()->AddService("ConnectionService", move(connection_service));
+		kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
 	}
+
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		unique_ptr<CommandService> command_service(new CommandService(kernel_.get()));
+        auto command_service = kernel_->GetPluginManager()->CreateObject<swganh::command::CommandServiceInterface>("Command::CommandService");
+
 		// add filters
 		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
 		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
@@ -323,34 +326,34 @@ void SwganhApp::LoadCoreServices_()
 		// These will be loaded in alphabetical order because of how std::map generates its keys
 		kernel_->GetServiceManager()->AddService(
             "CommandService", 
-            move(command_service));
+            command_service);
 
 		kernel_->GetServiceManager()->AddService(
 			"CombatService",
-			unique_ptr<CombatService>(new CombatService(kernel_.get())));
+			std::make_shared<CombatService>(kernel_.get()));
 		
 		kernel_->GetServiceManager()->AddService(
             "CharacterService", 
-            unique_ptr<CharacterService>(new CharacterService(kernel_.get())));
+            std::make_shared<CharacterService>(kernel_.get()));
         
 		kernel_->GetServiceManager()->AddService(
             "ChatService", 
-            unique_ptr<ChatService>(new ChatService(kernel_.get())));
+            std::make_shared<ChatService>(kernel_.get()));
 
-		unique_ptr<SimulationService> simulation_service(new SimulationService(kernel_.get()));
+		auto simulation_service = std::make_shared<SimulationService>(kernel_.get());
 		simulation_service->StartScene("corellia");
 
-		kernel_->GetServiceManager()->AddService("SimulationService", move(simulation_service));
+		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
 
         kernel_->GetServiceManager()->AddService(
             "SocialService", 
-            unique_ptr<social::SocialService>(new social::SocialService(kernel_.get())));
+            std::make_shared<social::SocialService>(kernel_.get()));
 
 	}
 
 	// always need a galaxy service running
 	kernel_->GetServiceManager()->AddService("GalaxyService", 
-        unique_ptr<GalaxyService>(new GalaxyService(kernel_.get())));
+        std::make_shared<GalaxyService>(kernel_.get()));
 }
 
     

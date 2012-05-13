@@ -19,12 +19,13 @@
 
 #include "swganh/simulation/simulation_service.h"
 
-#include "base_swg_command.h"
-#include "command_properties_manager_interface.h"
-#include "command_queue_interface.h"
-#include "command_queue_manager_interface.h"
+#include "swganh/command/base_swg_command.h"
+#include "swganh/command/command_properties_manager_interface.h"
+#include "swganh/command/command_queue_interface.h"
+#include "swganh/command/command_queue_manager_interface.h"
 
 using anh::service::ServiceDescription;
+using pub14_core::command::CommandService;
 using swganh::app::SwganhKernel;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCreator;
@@ -33,8 +34,8 @@ using swganh::command::CommandFilter;
 using swganh::command::CommandInterface;
 using swganh::command::CommandProperties;
 using swganh::command::CommandPropertiesManagerInterface;
+using swganh::command::CommandQueueInterface;
 using swganh::command::CommandQueueManagerInterface;
-using swganh::command::CommandService;
 using swganh::command::CommandValidatorInterface;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::messages::controllers::CommandQueueRemove;

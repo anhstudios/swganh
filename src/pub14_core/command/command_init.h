@@ -18,6 +18,7 @@
 #include "command_properties_manager.h"
 #include "command_queue.h"
 #include "command_queue_manager.h"
+#include "command_service.h"
 #include "command_validator.h"
 
 #include "version.h"
@@ -85,6 +86,20 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         };
 
         kernel->GetPluginManager()->RegisterObject("Command::CommandPropertiesManager", &registration);
+    }
+
+    { // Command::CommandService
+        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+            return new CommandService(kernel);
+        };
+
+        registration.DestroyObject = [] (void * object) {
+            if (object) {
+                delete static_cast<CommandService*>(object);
+            }
+        };
+
+        kernel->GetPluginManager()->RegisterObject("Command::CommandService", &registration);
     }
 
     { // Command::CommandValidator

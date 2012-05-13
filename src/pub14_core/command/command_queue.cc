@@ -11,17 +11,17 @@
 
 #include "swganh/command/base_swg_command.h"
 #include "swganh/command/command_interface.h"
-#include "swganh/command/command_service.h"
+#include "swganh/command/command_service_interface.h"
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/object_controller.h"
 
 using pub14_core::command::CommandQueue;
+using pub14_core::command::CommandService;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCallback;
 using swganh::command::CommandInterface;
-using swganh::command::CommandService;
 using swganh::object::creature::Creature;
 using swganh::object::tangible::Tangible;
 

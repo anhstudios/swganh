@@ -23,6 +23,7 @@ namespace app {
 }
 namespace command {
     class BaseSwgCommand;
+    class CommandServiceInterface;
 }}
 
 namespace pub14_core {
@@ -60,7 +61,7 @@ namespace command {
         > ProcessQueue;
 
         swganh::app::SwganhKernel* kernel_;
-        swganh::command::CommandService* command_service_;
+        swganh::command::CommandServiceInterface* command_service_;
 
         boost::asio::deadline_timer	timer_;
         

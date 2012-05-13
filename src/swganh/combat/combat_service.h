@@ -41,7 +41,7 @@ namespace simulation {
 class SimulationService;
 }
 namespace command {
-class CommandService; 
+class CommandServiceInterface; 
 }
 namespace object {
     class Object;
@@ -119,7 +119,7 @@ namespace combat {
         void BroadcastCombatSpam(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible>& target, const CombatData& properties, uint32_t damage, const std::string& string_file);
 
         swganh::simulation::SimulationService* simulation_service_;
-		swganh::command::CommandService* command_service_;
+		swganh::command::CommandServiceInterface* command_service_;
         void LoadProperties(swganh::command::CommandPropertiesMap command_properties);
 
         HandlerMap	combat_handlers_;

@@ -24,7 +24,7 @@
 #include "swganh/object/player/player.h"
 #include "swganh/object/tangible/tangible.h"
 
-#include "swganh/command/command_service.h"
+#include "swganh/command/command_service_interface.h"
 #include "swganh/simulation/simulation_service.h"
 
 #include "spatial_chat_internal_command.h"
@@ -95,7 +95,7 @@ void ChatService::SendSpatialChat(
 
 void ChatService::Start()
 {
-	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandService>("CommandService");
+	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
     command_service->AddCommandCreator("spatialchatinternal",
         [] (

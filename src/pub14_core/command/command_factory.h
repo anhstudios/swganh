@@ -15,7 +15,7 @@ namespace app {
     class SwganhKernel;
 }
 namespace command {
-    class CommandService;
+    class CommandServiceInterface;
 }}
 
 namespace pub14_core {
@@ -36,7 +36,7 @@ namespace command {
             const swganh::messages::controllers::CommandQueueEnqueue& command_request);
 
     private:
-        swganh::command::CommandService* GetCommandService();
+        swganh::command::CommandServiceInterface* GetCommandService();
 
         struct CreatorData
         {
@@ -55,7 +55,7 @@ namespace command {
         > CreatorMap;
 
         swganh::app::SwganhKernel* kernel_;
-        swganh::command::CommandService* command_service_;
+        swganh::command::CommandServiceInterface* command_service_;
 
         boost::mutex creators_mutex_;
         CreatorMap command_creators_;        

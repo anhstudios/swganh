@@ -8,7 +8,7 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/command/command_interface.h"
 #include "swganh/command/command_properties.h"
-#include "swganh/command/command_service.h"
+#include "swganh/command/command_service_interface.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 #include "swganh/object/object_controller.h"
 
@@ -17,7 +17,7 @@ using swganh::app::SwganhKernel;
 using swganh::command::CommandCreator;
 using swganh::command::CommandInterface;
 using swganh::command::CommandProperties;
-using swganh::command::CommandService;
+using swganh::command::CommandServiceInterface;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::ObjectController;
 
@@ -64,11 +64,11 @@ std::shared_ptr<CommandInterface> CommandFactory::CreateCommand(
     return command;
 }
 
-swganh::command::CommandService* CommandFactory::GetCommandService()
+swganh::command::CommandServiceInterface* CommandFactory::GetCommandService()
 {
     if (!command_service_)
     {
-        command_service_ = kernel_->GetServiceManager()->GetService<CommandService>("CommandService");
+        command_service_ = kernel_->GetServiceManager()->GetService<CommandServiceInterface>("CommandService");
     }
 
     return command_service_;
