@@ -17,6 +17,9 @@ namespace object {
 
 namespace command {
 
+    /**
+     * A general delayed callback implementation.
+     */
     class CommandCallback
     {
     public:
@@ -44,17 +47,31 @@ namespace command {
         uint64_t delay_time_ms_;
     };
 
+    /**
+     * A stateful handler that processes a command request.
+     */
     class CommandInterface
     {
     public:
         virtual ~CommandInterface() {}
 
+        /**
+         * @return The controller associated with this command invocation.
+         */
         virtual const std::shared_ptr<object::ObjectController>& GetController() const = 0;
 
-        virtual void Setup() = 0;
-
+        /**
+         * Validates the command.
+         *
+         * @return True if the command request is valid, false if not.
+         */
         virtual bool Validate() = 0;
 
+        /**
+         * Executes the command handler for the given request.
+         *
+         * @return Optional callback to be invoked after a given amount of time.
+         */
         virtual boost::optional<std::shared_ptr<CommandCallback>> Run() = 0;
     };
 

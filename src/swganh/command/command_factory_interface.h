@@ -35,15 +35,36 @@ namespace command {
         const swganh::messages::controllers::CommandQueueEnqueue&)
     > CommandCreator;
 
+    /**
+     * Used by the CommandService to create command instances for incoming requests.
+     */
     class CommandFactoryInterface
     {
     public:
         virtual ~CommandFactoryInterface() {}
 
+        /**
+         * Adds a creator for a given command type. Only the most recently added creator for
+         * a type is used.
+         *
+         * @param command The name/crc of the command.
+         * @param creator The creator associated with the specified command.
+         */
         virtual void AddCommandCreator(anh::HashString command, CommandCreator&& creator) = 0;
 
+        /**
+         * Removes the creator for a given command type if one is set.
+         *
+         * @param command The name/crc of the command.
+         */
         virtual void RemoveCommandCreator(anh::HashString command) = 0;
 
+        /**
+         * Creates a new instance of a command.
+         *
+         * @param controller The controller that initiated the command request.
+         * @param command_request Message data regarding the specific request.
+         */
         virtual std::shared_ptr<CommandInterface> CreateCommand(
             const std::shared_ptr<object::ObjectController>& controller,
             const swganh::messages::controllers::CommandQueueEnqueue& command_request) = 0;

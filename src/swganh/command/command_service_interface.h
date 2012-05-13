@@ -41,19 +41,50 @@ namespace command {
     class CommandPropertiesManagerInterface;
     struct CommandProperties;
 
+    /**
+     * The command service is responsible for the handling of incoming command
+     * requests for game objects.
+     */
     class CommandServiceInterface: public anh::service::ServiceInterface
     {
     public:
         virtual ~CommandServiceInterface() {}
 
+        /**
+         * Adds a filter to use while validating a command prior to enqueuing.
+         */
         virtual void AddCommandEnqueueFilter(CommandFilter&& filter) = 0;
         
+        /**
+         * Adds a filter to use while validating a command prior to processing.
+         */
         virtual void AddCommandProcessFilter(CommandFilter&& filter) = 0;
         
+        /**
+         * Adds a creator for a given command type. Only the most recently added creator for
+         * a type is used.
+         *
+         * @param command The name/crc of the command.
+         * @param creator The creator associated with the specified command.
+         */
         virtual void AddCommandCreator(anh::HashString command, CommandCreator&& creator) = 0;
-
+        
+        /**
+         * Removes the creator for a given command type if one is set.
+         *
+         * @param command The name/crc of the command.
+         */
         virtual void RemoveCommandCreator(anh::HashString command) = 0;
 
+        /**
+         * Sends a command queue removal message to the specified controller client.
+         *
+         * @param controller The controller to send the message to.
+         * @param action_counter The counter associated with the command being removed.
+         * @Param default_time_sec The default time the command took to process in seconds.
+         * @param error An error status flag.
+         * @param action An action flag associated with the error.
+         */
         virtual void SendCommandQueueRemove(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
             uint32_t action_counter,
@@ -61,10 +92,30 @@ namespace command {
             uint32_t error,
             uint32_t action) = 0;
         
+        /**
+         * Validates a command prior to enqueuing.
+         *
+         * @param command The command to validate.
+         * @return A tuple containing a bool indicator if the command is valid and additional error
+         *  information if it is not.
+         */
         virtual std::tuple<bool, uint32_t, uint32_t> ValidateForEnqueue(CommandInterface* command) = 0;
         
+        /**
+         * Validates a command prior to processing.
+         *
+         * @param command The command to validate.
+         * @return A tuple containing a bool indicator if the command is valid and additional error
+         *  information if it is not.
+         */
         virtual std::tuple<bool, uint32_t, uint32_t> ValidateForProcessing(CommandInterface* command) = 0;
-
+        
+        /**
+         * Finds and returns the properties for a given command type.
+         *
+         * @param command A command name/crc to find.
+         * @return An optional value containing a reference to the properties requested.
+         */
         virtual boost::optional<const CommandProperties&> FindPropertiesForCommand(anh::HashString command) = 0;
     };
 

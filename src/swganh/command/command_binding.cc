@@ -57,19 +57,6 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
         return this->BaseSwgCommand::GetController();
     }
 
-    void Setup()
-    {
-        ScopedGilLock lock;
-        try 
-        {
-            this->get_override("Setup")();
-        }
-        catch(bp::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }
-    }
-
     bool Validate()
     {
         bool validated = false;
@@ -160,7 +147,6 @@ void swganh::command::ExportCommand()
 
     bp::class_<CommandInterface, boost::noncopyable>("CommandInterface", bp::no_init)
         .def("GetController", bp::pure_virtual(&CommandInterface::GetController), bp::return_internal_reference<>())
-        .def("Setup", bp::pure_virtual(&CommandInterface::Setup))
         .def("Validate", bp::pure_virtual(&CommandInterface::Validate))
         .def("Run", bp::pure_virtual(&CommandInterface::Run))
     ;

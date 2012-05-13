@@ -11,8 +11,8 @@ namespace swganh {
 namespace command {
     
     /**
-     * Defines an interface for retrieving command properties from an
-     * implementation specific resource.
+     * Defines an interface for retrieving command properties from an implementation
+     * specific resource.
      */
     class CommandPropertiesManagerInterface
     {
@@ -27,6 +27,12 @@ namespace command {
          */
         virtual CommandPropertiesMap LoadCommandPropertiesMap() = 0;
         
+        /**
+         * Finds and returns the properties for a given command type.
+         *
+         * @param command A command name/crc to find.
+         * @return An optional value containing a reference to the properties requested.
+         */
         virtual boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command) = 0;
 };
     

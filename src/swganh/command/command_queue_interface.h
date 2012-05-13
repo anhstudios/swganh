@@ -28,11 +28,19 @@ namespace command {
     class CommandInterface;
     struct CommandProperties;
 
+    /**
+     * A queue for managing the flow of command processing for a single controlled object.
+     */
     class CommandQueueInterface
     {
     public:
         virtual ~CommandQueueInterface() {}
         
+        /**
+         * Enqueues a command for processing.
+         *
+         * @param A command to process.
+         */
         virtual void EnqueueCommand(const std::shared_ptr<CommandInterface>& command) = 0;
     };
 
