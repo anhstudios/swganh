@@ -52,6 +52,14 @@ CommandService::CommandService(SwganhKernel* kernel)
     command_validator_impl_ = kernel->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::CommandValidator");
 }
 
+CommandService::~CommandService()
+{    
+    auto event_dispatcher = kernel_->GetEventDispatcher();
+
+    event_dispatcher->Unsubscribe("ObjectReadyEvent", obj_ready_id_);
+    event_dispatcher->Unsubscribe("ObjectRemovedEvent", obj_removed_id_);
+}
+
 ServiceDescription CommandService::GetServiceDescription()
 {
     ServiceDescription service_description(
@@ -106,7 +114,12 @@ std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForProcessing(Comma
 {
     return command_validator_impl_->ValidateForProcessing(command);
 }
-        
+
+swganh::command::CommandPropertiesMap CommandService::LoadCommandPropertiesMap()
+{
+    return command_properties_manager_impl_->LoadCommandPropertiesMap();
+}
+ 
 boost::optional<const CommandProperties&> CommandService::FindPropertiesForCommand(anh::HashString command)
 {
     return command_properties_manager_impl_->FindPropertiesForCommand(command);
@@ -143,7 +156,7 @@ void CommandService::SendCommandQueueRemove(
 
 void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)
 {
-    dispatcher->Subscribe(
+    obj_ready_id_ = dispatcher->Subscribe(
         "ObjectReadyEvent",
         [this] (std::shared_ptr<anh::EventInterface> incoming_event)
     {
@@ -157,7 +170,7 @@ void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)
 
 void CommandService::SubscribeObjectRemovedEvent(anh::EventDispatcher* dispatcher)
 {
-    dispatcher->Subscribe(
+    obj_removed_id_ = dispatcher->Subscribe(
         "ObjectRemovedEvent",
         [this] (std::shared_ptr<anh::EventInterface> incoming_event)
     {

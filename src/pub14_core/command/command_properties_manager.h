@@ -38,7 +38,8 @@ namespace command {
          * @param archive Valid TreArchive instance.
          */
         explicit CommandPropertiesManager(swganh::tre::TreArchive* archive);
-                
+        ~CommandPropertiesManager();
+
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
 
         /**

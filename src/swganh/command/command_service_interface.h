@@ -15,6 +15,7 @@
 
 #include "command_factory_interface.h"
 #include "command_validator_interface.h"
+#include "command_properties_manager_interface.h"
 
 namespace swganh {
 namespace object {
@@ -38,8 +39,6 @@ namespace command {
     class CommandInterface;
     class CommandQueueInterface;
     class CommandQueueManagerInterface;
-    class CommandPropertiesManagerInterface;
-    struct CommandProperties;
 
     /**
      * The command service is responsible for the handling of incoming command
@@ -110,6 +109,14 @@ namespace command {
          */
         virtual std::tuple<bool, uint32_t, uint32_t> ValidateForProcessing(CommandInterface* command) = 0;
         
+        /**
+         * Load a map of command properties from an implementation
+         * specific resource.
+         *
+         * @return A map of command properties
+         */
+        virtual CommandPropertiesMap LoadCommandPropertiesMap() = 0;
+
         /**
          * Finds and returns the properties for a given command type.
          *

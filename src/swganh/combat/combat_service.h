@@ -80,7 +80,6 @@ namespace combat {
         explicit CombatService(swganh::app::SwganhKernel* kernel);
         
         anh::service::ServiceDescription GetServiceDescription();
-		void RegisterCombatHandler(uint32_t command_crc, CombatHandler&& handler);
 
         void SetIncapacitated(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         
@@ -96,9 +95,7 @@ namespace combat {
             uint32_t, 
             CombatHandler
         > HandlerMap;
-
-        void RegisterCombatScript(anh::HashString command);
-
+        
         bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
         void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message, boost::python::object p_object);
         void SendCombatActionMessage(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, CombatData& properties, std::string animation = std::string(""));
@@ -120,7 +117,6 @@ namespace combat {
 
         swganh::simulation::SimulationService* simulation_service_;
 		swganh::command::CommandServiceInterface* command_service_;
-        void LoadProperties(swganh::command::CommandPropertiesMap command_properties);
 
         HandlerMap	combat_handlers_;
 

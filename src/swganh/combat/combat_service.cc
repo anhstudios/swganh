@@ -26,6 +26,7 @@
 #include "swganh/object/weapon/weapon.h"
 
 #include "swganh/command/command_service_interface.h"
+#include "swganh/command/python_command_creator.h"
 #include "swganh/simulation/simulation_service.h"
 
 #include "swganh/messages/controllers/combat_action_message.h"
@@ -79,51 +80,16 @@ void CombatService::Start()
 	command_service_ = kernel_->GetServiceManager()
 		->GetService<CommandServiceInterface>("CommandService");
     
-	kernel_->GetEventDispatcher()->Subscribe(
-        "CommandServiceReady", 
-        [this] (const shared_ptr<anh::EventInterface>& incoming_event)
-    {
-        const auto& commandProperties = static_pointer_cast<anh::ValueEvent<swganh::command::CommandPropertiesMap>>(incoming_event)->Get();
-        LoadProperties(commandProperties);
-        
-    });
-}
-
-void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& handler)
-{
-    combat_handlers_[command_crc] = move(handler);
-
-	//command_service_->SetCommandHandler(command_crc, 
-    //    [this, command_crc] (
-    //        SwganhKernel* kernel,
-    //        const shared_ptr<Creature>& actor,
-	//		const shared_ptr<Tangible>& target, 
-    //        const CommandQueueEnqueue& command_queue_message)->void {
-    //
-    //    auto global = combat_handlers_[command_crc](kernel, actor, target, command_queue_message);
-    //    SendCombatAction(actor, target, command_queue_message, global);
-    //});
-}
-
-void CombatService::RegisterCombatScript(anh::HashString command)
-{
-//    std::string script = "commands/" + command.ident_string() + ".py";
-//    RegisterCombatHandler(command.ident(), PythonCombatCommand(script));
-}
-
-void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command_properties)
-{    
-	for(auto& command : command_properties)
-    {
-		// load up all the combat commands into their own map
-        // @TODO: Temporary check for now, figure out what command_group bitmask is..
-		if (command.second.add_to_combat_queue > 0)
-		{
-			combat_properties_map_.insert(command);
-            RegisterCombatScript(command.second.command_name);
-		}
-	}
-    LOG(info) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
+    command_service_->AddCommandCreator("attack", swganh::command::PythonCommandCreator("commands.attack", "AttackCommand"));
+    command_service_->AddCommandCreator("deathblow", swganh::command::PythonCommandCreator("commands.deathblow", "DeathBlowCommand")); 
+    command_service_->AddCommandCreator("duel", swganh::command::PythonCommandCreator("commands.duel", "DuelCommand"));
+    command_service_->AddCommandCreator("endduel", swganh::command::PythonCommandCreator("commands.endduel", "EndDuelCommand"));
+    command_service_->AddCommandCreator("kneel", swganh::command::PythonCommandCreator("commands.kneel", "KneelCommand"));
+    command_service_->AddCommandCreator("overchargeshot1", swganh::command::PythonCommandCreator("commands.overchargeshot1", "OverchargeShot1Command"));
+    command_service_->AddCommandCreator("peace", swganh::command::PythonCommandCreator("commands.peace", "PeaceCommand"));
+    command_service_->AddCommandCreator("prone", swganh::command::PythonCommandCreator("commands.prone", "ProneCommand"));
+    command_service_->AddCommandCreator("sitserver", swganh::command::PythonCommandCreator("commands.sitserver", "SitServerCommand"));
+    command_service_->AddCommandCreator("stand", swganh::command::PythonCommandCreator("commands.stand", "StandCommand"));
 }
 
 bool CombatService::InitiateCombat(

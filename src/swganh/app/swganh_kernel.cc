@@ -40,7 +40,11 @@ SwganhKernel::SwganhKernel() {
 
 SwganhKernel::~SwganhKernel()
 {
+    tre_archive_.reset();
+    event_dispatcher_.reset();
     service_manager_.reset();
+    service_directory_.reset();
+    plugin_manager_.reset();
 }
 
 const Version& SwganhKernel::GetVersion() {

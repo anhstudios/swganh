@@ -17,6 +17,7 @@
 
 #include "anh/logger.h"
 #include "anh/database/database_manager_interface.h"
+#include "anh/event_dispatcher.h"
 #include "anh/plugin/plugin_manager.h"
 #include "anh/service/datastore.h"
 #include "anh/service/service_manager.h"
@@ -360,6 +361,8 @@ void SwganhApp::LoadCoreServices_()
 void SwganhApp::GalaxyStatusTimerHandler_(const boost::system::error_code& e, shared_ptr<deadline_timer> timer, int delay_in_secs)
 {
     kernel_->GetServiceDirectory()->updateGalaxyStatus();
+        
+    kernel_->GetEventDispatcher()->Dispatch(make_shared<BaseEvent>("UpdateGalaxyStatus"));
 
     timer->expires_at(timer->expires_at() + boost::posix_time::seconds(delay_in_secs));    
     timer->async_wait(std::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, std::placeholders::_1, timer, delay_in_secs));

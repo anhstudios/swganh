@@ -22,7 +22,8 @@ namespace command {
     {
     public:
         explicit CommandService(swganh::app::SwganhKernel* kernel);
-        
+        ~CommandService();
+
         anh::service::ServiceDescription GetServiceDescription();
 
         void AddCommandEnqueueFilter(swganh::command::CommandFilter&& filter);
@@ -43,6 +44,8 @@ namespace command {
         std::tuple<bool, uint32_t, uint32_t> ValidateForEnqueue(swganh::command::CommandInterface* command);
         
         std::tuple<bool, uint32_t, uint32_t> ValidateForProcessing(swganh::command::CommandInterface* command);
+        
+        swganh::command::CommandPropertiesMap LoadCommandPropertiesMap();
 
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
 
@@ -64,6 +67,8 @@ namespace command {
         std::shared_ptr<swganh::command::CommandValidatorInterface> command_validator_impl_;
         swganh::simulation::SimulationService* simulation_service_;
         std::string script_prefix_;
+        anh::CallbackId obj_ready_id_;
+        anh::CallbackId obj_removed_id_;
     };
 
 }}  // namespace pub14_core::command
