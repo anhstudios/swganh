@@ -43,6 +43,11 @@ const std::shared_ptr<ObjectController>& BaseSwgCommand::GetController() const
     return controller_;
 }
 
+bool BaseSwgCommand::Validate()
+{
+    return true;
+}
+
 swganh::app::SwganhKernel* BaseSwgCommand::GetKernel() const
 {
     return kernel_;

@@ -49,33 +49,33 @@ CommandPropertiesMap CommandPropertiesManager::LoadCommandPropertiesMap()
     
     try 
     {
-    //    DatatableReader reader(archive_->GetResource("datatables/command/command_table.iff"));
-    //    
-    //    while(reader.Next())
-    //    {
-    //        auto row = reader.GetRow();
-    //
-    //        CommandProperties properties;
-    //
-    //        auto tmp_command_name = row["commandName"]->GetValue<string>();            
-    //        std::transform(tmp_command_name.begin(), tmp_command_name.end(), tmp_command_name.begin(), ::tolower);
-    //
-    //        properties.command_name = HashString(tmp_command_name);
-    //        properties.default_priority = row["defaultPriority"]->GetValue<int>();
-    //        properties.default_time = row["defaultTime"]->GetValue<float>();
-    //        properties.character_ability = HashString(row["characterAbility"]->GetValue<string>());
-    //        properties.target_type = row["targetType"]->GetValue<int>();
-    //        properties.call_on_target = row["callOnTarget"]->GetValue<int>();
-    //        properties.command_group = row["commandGroup"]->GetValue<int>();
-    //        properties.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
-    //        properties.god_level = row["godLevel"]->GetValue<int>();
-    //        properties.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
-    //        
-    //        properties.allow_in_locomotion = BuildAllowInLocomotion(&row);
-    //        properties.allow_in_locomotion = BuildAllowInState(&row);
-    //
-    //        properties_map.insert(make_pair(properties.command_name, properties));
-    //    }
+        DatatableReader reader(archive_->GetResource("datatables/command/command_table.iff"));
+        
+        while(reader.Next())
+        {
+            auto row = reader.GetRow();
+
+            CommandProperties properties;
+
+            auto tmp_command_name = row["commandName"]->GetValue<string>();            
+            std::transform(tmp_command_name.begin(), tmp_command_name.end(), tmp_command_name.begin(), ::tolower);
+
+            properties.command_name = HashString(tmp_command_name);
+            properties.default_priority = row["defaultPriority"]->GetValue<int>();
+            properties.default_time = row["defaultTime"]->GetValue<float>();
+            properties.character_ability = HashString(row["characterAbility"]->GetValue<string>());
+            properties.target_type = row["targetType"]->GetValue<int>();
+            properties.call_on_target = row["callOnTarget"]->GetValue<int>();
+            properties.command_group = row["commandGroup"]->GetValue<int>();
+            properties.max_range_to_target = row["maxRangeToTarget"]->GetValue<float>();
+            properties.god_level = row["godLevel"]->GetValue<int>();
+            properties.add_to_combat_queue = row["addToCombatQueue"]->GetValue<int>();
+            
+            properties.allow_in_locomotion = BuildAllowInLocomotion(&row);
+            properties.allow_in_locomotion = BuildAllowInState(&row);
+
+            properties_map.insert(make_pair(properties.command_name, properties));
+        }
     }
     catch(exception& e)
     {

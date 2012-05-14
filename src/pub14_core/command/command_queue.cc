@@ -30,6 +30,7 @@ CommandQueue::CommandQueue(
     : kernel_(kernel)
     , timer_(kernel->GetIoService())
     , active_(kernel->GetIoService())
+    , processing_(false)
 {
     command_service_ = kernel->GetServiceManager()->GetService<CommandService>("CommandService");
 }
@@ -98,30 +99,38 @@ void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwg
 
 void CommandQueue::Notify()
 {
-    boost::lock_guard<boost::mutex> lg(process_mutex_);
+    boost::unique_lock<boost::mutex> process_lg(process_mutex_);
     if (!processing_)
     {
         processing_ = true;
+        process_lg.unlock();
 
-        boost::lock_guard<boost::mutex> lg(queue_mutex_);
+
+        boost::unique_lock<boost::mutex> queue_lg(queue_mutex_);
         if (!queue_.empty())
         {
-            std::shared_ptr<BaseSwgCommand> command(queue_.top());
+            std::shared_ptr<BaseSwgCommand> command = queue_.top();
             queue_.pop();
+            queue_lg.unlock();
             
-            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(command->GetDefaultTime() * 1000)));
+            timer_.expires_from_now(boost::posix_time::seconds(static_cast<uint64_t>(command->GetDefaultTime())));
             timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
                 {
                     boost::lock_guard<boost::mutex> lg(process_mutex_);
                     processing_ = false;
                 }
-
+            
                 this->Notify();
             });
 
             
             ProcessCommand(command);
+        }
+        else
+        {
+            process_lg.lock();
+            processing_ = false;
         }
     }		
 }

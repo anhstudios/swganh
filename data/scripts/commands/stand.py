@@ -8,4 +8,4 @@ class StandCommand(BaseSwgCommand):
         actor = self.GetActor()
         
         actor.posture = POSTURE.UPRIGHT
-        actor.run_speed = base_run_speed
+        actor.run_speed = self.base_run_speed

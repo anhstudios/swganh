@@ -44,6 +44,8 @@ namespace command {
         ~BaseSwgCommand();
 
         virtual const std::shared_ptr<object::ObjectController>& GetController() const;
+
+        virtual bool Validate();
         
         swganh::app::SwganhKernel* GetKernel() const;
 

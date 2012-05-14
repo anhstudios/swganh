@@ -64,7 +64,15 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
         ScopedGilLock lock;
         try 
         {
-            validated = this->get_override("Validate")();
+            auto validate = this->get_override("Validate");
+            if (validate)
+            {
+                validated = validate();
+            }
+            else
+            {
+                validated = this->BaseSwgCommand::Validate();
+            }
         }
         catch(bp::error_already_set& /*e*/)
         {
@@ -154,6 +162,7 @@ void swganh::command::ExportCommand()
     bp::class_<BaseSwgCommand, BaseSwgCommandWrapper, bp::bases<CommandInterface>, boost::noncopyable>
         ("BaseSwgCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&, const std::shared_ptr<object::ObjectController>&, const swganh::messages::controllers::CommandQueueEnqueue&>())
         .def("GetController", &BaseSwgCommandWrapper::GetController, bp::return_value_policy<bp::copy_const_reference>())
+        .def("Validate", &BaseSwgCommandWrapper::Validate)
         .def("GetKernel", &BaseSwgCommandWrapper::GetKernel, bp::return_internal_reference<>())
         .def("GetCommandName", &BaseSwgCommandWrapper::GetCommandName)
         .def("GetActionCounter", &BaseSwgCommandWrapper::GetActionCounter)
