@@ -38,6 +38,9 @@ void exportObject()
 		.add_property("custom_name", &Object::GetCustomName, &Object::SetCustomName, "Property to get and set the custom name")
 		.def("NotifyObservers", NotifyObserversFunc(&Object::NotifyObservers), "Notifies Observers of the passed in message")
         .def("Controller", &Object::GetController, "Get the :class:`.ObjectController` of the object")
+        .def("HasFlag", &Object::HasFlag, "Checks if the object has a specific flag set on it")
+        .def("SetFlag", &Object::SetFlag, "Sets a flag on the object")
+        .def("RemoveFlag", &Object::RemoveFlag, "Removes a flag from the object")
 		;
 }
 

@@ -64,7 +64,7 @@ public:
         auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);
         
         timer->expires_from_now(period);
-        timer->async_wait([=] (const boost::system::error_code& error) {
+        timer->async_wait([task, timer] (const boost::system::error_code& error) {
             if (!error) {
                 (*task)();
             }

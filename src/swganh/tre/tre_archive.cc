@@ -13,13 +13,18 @@ using std::runtime_error;
 using std::string;
 using std::vector;
 
-TreArchive::TreArchive(vector<TreReader>&& readers)
+TreArchive::TreArchive(vector<std::unique_ptr<TreReader>>&& readers)
     : readers_(move(readers))
 {}
 
 TreArchive::TreArchive(vector<string>&& resource_files)
 {
     CreateReaders(resource_files);
+}
+
+TreArchive::~TreArchive()
+{
+    readers_.clear();
 }
 
 TreArchive::TreArchive(string config_file)
@@ -33,9 +38,9 @@ uint32_t TreArchive::GetResourceSize(const string& resource_name) const
 {
     for (auto& reader : readers_)
     {
-        if (reader.ContainsResource(resource_name))
+        if (reader->ContainsResource(resource_name))
         {
-            return reader.GetResourceSize(resource_name);
+            return reader->GetResourceSize(resource_name);
         }
     }
 
@@ -46,9 +51,9 @@ vector<char> TreArchive::GetResource(const string& resource_name)
 {
     for (auto& reader : readers_)
     {
-        if (reader.ContainsResource(resource_name))
+        if (reader->ContainsResource(resource_name))
         {
-            return reader.GetResource(resource_name);
+            return reader->GetResource(resource_name);
         }
     }
 
@@ -59,9 +64,9 @@ string TreArchive::GetMd5Hash(const string& resource_name) const
 {
     for (auto& reader : readers_)
     {
-        if (reader.ContainsResource(resource_name))
+        if (reader->ContainsResource(resource_name))
         {
-            return reader.GetMd5Hash(resource_name);
+            return reader->GetMd5Hash(resource_name);
         }
     }
 
@@ -74,7 +79,7 @@ vector<string> TreArchive::GetTreFilenames() const
     
     for (auto& reader : readers_)
     {
-        filenames.push_back(reader.GetFilename());
+        filenames.push_back(reader->GetFilename());
     }
 
     return filenames;
@@ -86,7 +91,7 @@ vector<string> TreArchive::GetAvailableResources() const
 
     for (auto& reader : readers_)
     {
-        auto resources = reader.GetResourceNames();
+        auto resources = reader->GetResourceNames();
         resource_list.insert(begin(resource_list), begin(resources), end(resources));
     }
 
@@ -98,6 +103,6 @@ vector<string> TreArchive::GetAvailableResources() const
  { 
     for (auto& filename : resource_files)
     {
-        readers_.emplace_back(filename);
+        readers_.push_back(std::unique_ptr<TreReader>(new TreReader(filename)));
     }
  }

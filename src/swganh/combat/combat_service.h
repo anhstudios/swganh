@@ -41,7 +41,7 @@ namespace simulation {
 class SimulationService;
 }
 namespace command {
-class CommandService; 
+class CommandServiceInterface; 
 }
 namespace object {
     class Object;
@@ -55,6 +55,10 @@ namespace creature {
 
 
 namespace swganh {
+namespace command {    
+    class BaseCombatCommand;
+}
+    
 namespace combat {
 
     enum HIT_TYPE {
@@ -71,7 +75,7 @@ namespace combat {
 		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)
     > CombatHandler;
-
+    
     struct CombatData;
 
     class CombatService: public anh::service::ServiceInterface
@@ -80,7 +84,6 @@ namespace combat {
         explicit CombatService(swganh::app::SwganhKernel* kernel);
         
         anh::service::ServiceDescription GetServiceDescription();
-		void RegisterCombatHandler(uint32_t command_crc, CombatHandler&& handler);
 
         void SetIncapacitated(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         
@@ -91,14 +94,16 @@ namespace combat {
         
 		void Start();
 
+        void SendCombatAction(swganh::command::BaseCombatCommand* command);
+
     private:
 		typedef Concurrency::concurrent_unordered_map<
             uint32_t, 
             CombatHandler
         > HandlerMap;
-
-        void RegisterCombatScript(const swganh::command::CommandProperties& properties);
-
+        
+        bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const anh::HashString& command);
+        
         bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
         void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message, boost::python::object p_object);
         void SendCombatActionMessage(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, CombatData& properties, std::string animation = std::string(""));
@@ -119,8 +124,7 @@ namespace combat {
         void BroadcastCombatSpam(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible>& target, const CombatData& properties, uint32_t damage, const std::string& string_file);
 
         swganh::simulation::SimulationService* simulation_service_;
-		swganh::command::CommandService* command_service_;
-        void LoadProperties(swganh::command::CommandPropertiesMap command_properties);
+		swganh::command::CommandServiceInterface* command_service_;
 
         HandlerMap	combat_handlers_;
 

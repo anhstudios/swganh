@@ -71,7 +71,7 @@ FUNCTION(AddANHExecutable name)
     FILE(GLOB_RECURSE SOURCES *.cc *.cpp *.h)
     FILE(GLOB_RECURSE HEADERS *.h)
     FILE(GLOB_RECURSE TEST_SOURCES *_unittest.h *_unittest.cc *_unittest.cpp mock_*.h)
-	FILE(GLOB_RECURSE BINDINGS *_binding.h *_binding.cc *_binding.cpp)
+	FILE(GLOB_RECURSE BINDINGS *_binding.h *_binding.cc *_binding.cpp py_*.h py_*.cc)
     
     FOREACH(__source_file ${SOURCES})
         STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/)((.*/)*)(.*)" "\\2" __source_dir "${__source_file}")

@@ -75,7 +75,7 @@ FUNCTION(AddANHLibrary name)
         FILE(GLOB_RECURSE SOURCES *.cc *.cpp *.h)
         FILE(GLOB_RECURSE HEADERS *.h)
         FILE(GLOB_RECURSE TEST_SOURCES *_unittest.cc *_unittest.cpp mock_*.h)
-        FILE(GLOB_RECURSE BINDINGS *_binding.h *_binding.cc *_binding.cpp)
+        FILE(GLOB_RECURSE BINDINGS *_binding.h *_binding.cc *_binding.cpp py_*.h py_*.cc)
         
         LIST(LENGTH BINDINGS _bindings_list_length)
         IF(_bindings_list_length GREATER 0)

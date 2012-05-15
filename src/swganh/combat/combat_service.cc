@@ -25,8 +25,9 @@
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/weapon/weapon.h"
 
-#include "swganh/command/command_service.h"
-#include "swganh/command/python_combat_command.h"
+#include "swganh/command/command_service_interface.h"
+#include "swganh/command/python_command_creator.h"
+#include "swganh/command/base_combat_command.h"
 #include "swganh/simulation/simulation_service.h"
 
 #include "swganh/messages/controllers/combat_action_message.h"
@@ -78,61 +79,46 @@ void CombatService::Start()
         ->GetService<SimulationService>("SimulationService");
 
 	command_service_ = kernel_->GetServiceManager()
-		->GetService<CommandService>("CommandService");
+		->GetService<CommandServiceInterface>("CommandService");
     
-	kernel_->GetEventDispatcher()->Subscribe(
-        "CommandServiceReady", 
-        [this] (const shared_ptr<anh::EventInterface>& incoming_event)
+    command_service_->AddCommandCreator("attack", swganh::command::PythonCommandCreator("commands.attack", "AttackCommand"));
+    command_service_->AddCommandCreator("deathblow", swganh::command::PythonCommandCreator("commands.deathblow", "DeathBlowCommand")); 
+    command_service_->AddCommandCreator("duel", swganh::command::PythonCommandCreator("commands.duel", "DuelCommand"));
+    command_service_->AddCommandCreator("endduel", swganh::command::PythonCommandCreator("commands.endduel", "EndDuelCommand"));
+    command_service_->AddCommandCreator("kneel", swganh::command::PythonCommandCreator("commands.kneel", "KneelCommand"));
+    command_service_->AddCommandCreator("berserk1", swganh::command::PythonCommandCreator("commands.berserk1", "Berserk1Command"));
+    command_service_->AddCommandCreator("overchargeshot1", swganh::command::PythonCommandCreator("commands.overchargeshot1", "OverchargeShot1Command"));
+    command_service_->AddCommandCreator("peace", swganh::command::PythonCommandCreator("commands.peace", "PeaceCommand"));
+    command_service_->AddCommandCreator("prone", swganh::command::PythonCommandCreator("commands.prone", "ProneCommand"));
+    command_service_->AddCommandCreator("sitserver", swganh::command::PythonCommandCreator("commands.sitserver", "SitServerCommand"));
+    command_service_->AddCommandCreator("stand", swganh::command::PythonCommandCreator("commands.stand", "StandCommand"));
+}
+
+void CombatService::SendCombatAction(BaseCombatCommand* command)
+{    
+    CombatData combat_data(command);
+    auto actor = command->GetActor();
+    auto target = command->GetTarget();
+
+    if (InitiateCombat(actor, target, command->GetCommandName()))
     {
-        const auto& commandProperties = static_pointer_cast<anh::ValueEvent<swganh::command::CommandPropertiesMap>>(incoming_event)->Get();
-        LoadProperties(commandProperties);
+        SingleTargetCombatAction(actor, target, combat_data);
+        SendCombatActionMessage(actor, target, combat_data);
         
-    });
-}
-
-void CombatService::RegisterCombatHandler(uint32_t command_crc, CombatHandler&& handler)
-{
-    combat_handlers_[command_crc] = move(handler);
-
-	command_service_->SetCommandHandler(command_crc, 
-        [this, command_crc] (
-            SwganhKernel* kernel,
-            const shared_ptr<Creature>& actor,
-			const shared_ptr<Tangible>& target, 
-            const CommandQueueEnqueue& command_queue_message)->void {
-
-        auto global = combat_handlers_[command_crc](kernel, actor, target, command_queue_message);
-        SendCombatAction(actor, target, command_queue_message, global);
-    });
-}
-
-void CombatService::RegisterCombatScript(const CommandProperties& properties)
-{    
-    RegisterCombatHandler(properties.name_crc, PythonCombatCommand(properties));
-}
-
-void CombatService::LoadProperties(swganh::command::CommandPropertiesMap command_properties)
-{    
-	for(auto& command : command_properties)
-    {
-		// load up all the combat commands into their own map
-        // @TODO: Temporary check for now, figure out what command_group bitmask is..
-		if (command.second.add_to_combat_queue > 0)
-		{
-			combat_properties_map_.insert(command);
-            RegisterCombatScript(command.second);
-		}
-	}
-    LOG(info) << "Loaded (" << combat_properties_map_.size() << ") Combat Commands";
+        //if (command->GetCommandName().compare("attack") == 0 && actor->IsAutoAttacking())
+        //{
+        //    command_service_->EnqueueCommandRequest(command->GetController(), command->GetCommandRequest());
+        //}
+    }
 }
 
 bool CombatService::InitiateCombat(
     const std::shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible>& target, 
-    const CommandQueueEnqueue& command_message)
+    const anh::HashString& command)
 {
     // check to see if we are able to start combat ( are we in peace? )
-    if (command_message.command_crc == anh::HashString("peace")) {
+    if (command == anh::HashString("peace")) {
         return false;
     }
 
@@ -175,6 +161,14 @@ bool CombatService::InitiateCombat(
     return true;
 }
 
+bool CombatService::InitiateCombat(
+    const std::shared_ptr<Creature>& attacker, 
+    const shared_ptr<Tangible>& target, 
+    const CommandQueueEnqueue& command_message)
+{
+    return InitiateCombat(attacker, target, command_message.command_crc);
+}
+
 void CombatService::SendCombatAction(
     const shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible>& target, 
@@ -208,10 +202,10 @@ void CombatService::SendCombatAction(
             creature_target = static_pointer_cast<Creature>(target);
         // Apply Damage
         //ApplyDamage(attacker, creature_target, combat_data, damage, GetDamagingPool(combat_data));
-        if (command_property.name == "attack" && attacker->IsAutoAttacking()) {
-            command_service_->EnqueueCommand(attacker, target, command_message);
-            //command_service_->EnqueueCommand(creature_target, attacker, command_message);
-        }
+        //if (command_property.command_name.ident_string() == "attack" && attacker->IsAutoAttacking()) {
+        //    command_service_->EnqueueCommand(attacker, target, command_message);
+        //    //command_service_->EnqueueCommand(creature_target, attacker, command_message);
+        //}
     }
 }
 int CombatService::SingleTargetCombatAction(
@@ -405,28 +399,28 @@ uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::c
     return 0; 
 }
 void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target, CombatData& properties) {
-    auto states = move(properties.getStates());
-    for_each(begin(states), end(states),[=](pair<float, string> state){
-        int generated = generator_.Rand(1, 100);
-        // Didn't trigger this time
-        if (generated > state.first)
-        {
-            return;
-        }
-        // Check recovery timers
-
-        // Defender State Modifiers
-
-        // Strength of Modifier
-
-        // GetHitChance(strength, 0.0f, target_defence);
-
-        // Jedi Defences
-
-        // Send Message
-
-        // Check Equilibrium
-    });
+    //auto states = move(properties.getStates());
+    //for_each(begin(states), end(states),[=](pair<float, string> state){
+    //    int generated = generator_.Rand(1, 100);
+    //    // Didn't trigger this time
+    //    if (generated > state.first)
+    //    {
+    //        return;
+    //    }
+    //    // Check recovery timers
+    //
+    //    // Defender State Modifiers
+    //
+    //    // Strength of Modifier
+    //
+    //    // GetHitChance(strength, 0.0f, target_defence);
+    //
+    //    // Jedi Defences
+    //
+    //    // Send Message
+    //
+    //    // Check Equilibrium
+    //});
 }
 float CombatService::GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence) 
 {

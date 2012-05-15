@@ -14,6 +14,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include "character/character_init.h"
+#include "command/command_init.h"
 #include "login/login_init.h"
 #include "galaxy/galaxy_init.h"
 #include "simulation/simulation_init.h"
@@ -41,6 +42,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     auto swganh_kernel = static_cast<SwganhKernel*>(kernel);    
     
     swganh_core::character::Initialize(swganh_kernel);
+    pub14_core::command::Initialize(swganh_kernel);
     swganh_core::login::Initialize(swganh_kernel);
     swganh_core::galaxy::Initialize(swganh_kernel);
     swganh_core::simulation::Initialize(swganh_kernel);

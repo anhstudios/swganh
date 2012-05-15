@@ -27,7 +27,7 @@ public:
     
     ~ServiceManager();
 
-    void AddService(std::string name, std::unique_ptr<ServiceInterface> service);
+    void AddService(std::string name, std::shared_ptr<ServiceInterface> service);
 
     ServiceInterface* GetService(std::string name);
 
@@ -79,7 +79,7 @@ public:
 private:
     typedef std::map<std::string, std::pair<
         std::shared_ptr<ServiceDescription>, 
-        std::unique_ptr<ServiceInterface>>
+        std::shared_ptr<ServiceInterface>>
     > ServiceMap;
     ServiceMap services_;
 
