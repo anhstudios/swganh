@@ -27,6 +27,7 @@
 
 #include "swganh/command/command_service_interface.h"
 #include "swganh/command/python_command_creator.h"
+#include "swganh/command/base_combat_command.h"
 #include "swganh/simulation/simulation_service.h"
 
 #include "swganh/messages/controllers/combat_action_message.h"
@@ -85,6 +86,7 @@ void CombatService::Start()
     command_service_->AddCommandCreator("duel", swganh::command::PythonCommandCreator("commands.duel", "DuelCommand"));
     command_service_->AddCommandCreator("endduel", swganh::command::PythonCommandCreator("commands.endduel", "EndDuelCommand"));
     command_service_->AddCommandCreator("kneel", swganh::command::PythonCommandCreator("commands.kneel", "KneelCommand"));
+    command_service_->AddCommandCreator("berserk1", swganh::command::PythonCommandCreator("commands.berserk1", "Berserk1Command"));
     command_service_->AddCommandCreator("overchargeshot1", swganh::command::PythonCommandCreator("commands.overchargeshot1", "OverchargeShot1Command"));
     command_service_->AddCommandCreator("peace", swganh::command::PythonCommandCreator("commands.peace", "PeaceCommand"));
     command_service_->AddCommandCreator("prone", swganh::command::PythonCommandCreator("commands.prone", "ProneCommand"));
@@ -92,13 +94,26 @@ void CombatService::Start()
     command_service_->AddCommandCreator("stand", swganh::command::PythonCommandCreator("commands.stand", "StandCommand"));
 }
 
+void CombatService::SendCombatAction(BaseCombatCommand* command)
+{    
+    CombatData combat_data(command);
+    auto actor = command->GetActor();
+    auto target = command->GetTarget();
+
+    if (InitiateCombat(actor, target, command->GetCommandName()))
+    {
+        SingleTargetCombatAction(actor, target, combat_data);
+        SendCombatActionMessage(actor, target, combat_data);
+    }
+}
+
 bool CombatService::InitiateCombat(
     const std::shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible>& target, 
-    const CommandQueueEnqueue& command_message)
+    const anh::HashString& command)
 {
     // check to see if we are able to start combat ( are we in peace? )
-    if (command_message.command_crc == anh::HashString("peace")) {
+    if (command == anh::HashString("peace")) {
         return false;
     }
 
@@ -139,6 +154,14 @@ bool CombatService::InitiateCombat(
     }
     
     return true;
+}
+
+bool CombatService::InitiateCombat(
+    const std::shared_ptr<Creature>& attacker, 
+    const shared_ptr<Tangible>& target, 
+    const CommandQueueEnqueue& command_message)
+{
+    return InitiateCombat(attacker, target, command_message.command_crc);
 }
 
 void CombatService::SendCombatAction(

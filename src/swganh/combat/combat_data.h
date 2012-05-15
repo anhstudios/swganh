@@ -17,8 +17,12 @@
 #include <boost/python.hpp>
 
 namespace swganh {
-namespace combat {
+namespace command {
+    class BaseCombatCommand;
+}
 
+namespace combat {
+    
 struct CombatData : swganh::command::CommandProperties
 {
     // TEMP
@@ -45,6 +49,8 @@ struct CombatData : swganh::command::CommandProperties
         , animation_crc(anh::HashString(""))
     {
     }
+
+    explicit CombatData(swganh::command::BaseCombatCommand* command);
     CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties );
 
     int min_damage;

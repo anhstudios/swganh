@@ -55,6 +55,10 @@ namespace creature {
 
 
 namespace swganh {
+namespace command {    
+    class BaseCombatCommand;
+}
+    
 namespace combat {
 
     enum HIT_TYPE {
@@ -71,7 +75,7 @@ namespace combat {
 		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
         const swganh::messages::controllers::CommandQueueEnqueue&)
     > CombatHandler;
-
+    
     struct CombatData;
 
     class CombatService: public anh::service::ServiceInterface
@@ -90,11 +94,15 @@ namespace combat {
         
 		void Start();
 
+        void SendCombatAction(swganh::command::BaseCombatCommand* command);
+
     private:
 		typedef Concurrency::concurrent_unordered_map<
             uint32_t, 
             CombatHandler
         > HandlerMap;
+        
+        bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const anh::HashString& command);
         
         bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
         void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message, boost::python::object p_object);
