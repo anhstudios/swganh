@@ -68,6 +68,13 @@ void ObjectController::Notify(const anh::ByteBuffer& message)
     client_->SendTo(message);
 }
 
+bool ObjectController::SendSystemMessage(std::string filename, std::string label)
+{
+    swganh::messages::OutOfBand prose(filename, label);
+    return SendSystemMessage_(L"", prose, false, false);
+}
+
+
 bool ObjectController::SendSystemMessage(const wstring& custom_message, bool chatbox_only, bool send_to_inrange)
 {
     // Use regex to check if the chat string matches the stf string format.

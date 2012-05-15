@@ -9,6 +9,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -154,7 +155,7 @@ public:
             return std::static_pointer_cast<T>(object);
 #endif
     }
-
+    
     /**
      * Removes an object from containment.
      *
@@ -475,6 +476,12 @@ public:
     void ClearBaselines();
     void ClearDeltas();
     typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
+
+    
+    void SetFlag(std::string flag);
+    void RemoveFlag(std::string flag);
+    bool HasFlag(std::string flag);
+
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
 
@@ -508,6 +515,9 @@ private:
     anh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;
+
+    boost::mutex flags_mutex_;
+    std::set<std::string> flags_;
 };
 
 }}  // namespace

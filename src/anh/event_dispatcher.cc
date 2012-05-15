@@ -33,38 +33,45 @@ EventDispatcher::EventDispatcher(ba::io_service& io_service)
 : io_service_(io_service)
 {}
 
+EventDispatcher::~EventDispatcher()
+{
+    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+    for (auto& item : event_handlers_)
+    {
+        item.second.clear();
+    }
+    event_handlers_.clear();
+}
+
 CallbackId EventDispatcher::Subscribe(EventType type, EventHandlerCallback callback)
 {
+    auto handler_id = GenerateCallbackId();
+
+    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+
     auto find_iter = event_handlers_.find(type);
 
     if (find_iter == end(event_handlers_))
     {
         find_iter = event_handlers_.insert(make_pair(type, EventHandlerList())).first;
     }
-
-    auto handler_id = GenerateCallbackId();
-
-    find_iter->second.push_back(EventHandler(handler_id, move(callback)));
+    
+    find_iter->second.insert(std::make_pair(handler_id, move(callback)));
 
     return handler_id;
 }
 
 void EventDispatcher::Unsubscribe(EventType type, CallbackId identifier)
 {
+    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+
     auto event_type_iter = event_handlers_.find(type);
     
     if (event_type_iter != end(event_handlers_))
     {
-        EventHandlerList tmp_list;
-
-        copy_if(
-            begin(event_type_iter->second), 
-            end(event_type_iter->second), 
-            begin(tmp_list),
-            [identifier] (const EventHandler& handler) 
-        {
-            return handler.id != identifier;
-        });
+        auto type_handlers = event_type_iter->second;
+        type_handlers.erase(identifier);
+        type_handlers.clear();
     }
 }
 
@@ -92,6 +99,8 @@ CallbackId EventDispatcher::GenerateCallbackId()
 
 void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch_event)
 {
+    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+
     auto event_type_iter = event_handlers_.find(dispatch_event->Type());
     
     if (event_type_iter != end(event_handlers_))
@@ -99,9 +108,9 @@ void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch
         for_each(
             begin(event_type_iter->second), 
             end(event_type_iter->second), 
-            [&dispatch_event] (const EventHandler& handler) 
+            [&dispatch_event] (const EventHandlerList::value_type& handler) 
         {
-            handler.callback(dispatch_event);
+            handler.second(dispatch_event);
         });
     }
 }

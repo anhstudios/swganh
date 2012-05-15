@@ -14,6 +14,10 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/command/command_interface.h"
+#include "swganh/command/command_service_interface.h"
+#include "swganh/command/python_command_creator.h"
+
 #include "swganh/connection/connection_client.h"
 #include "swganh/connection/connection_service.h"
 
@@ -516,4 +520,9 @@ void SimulationService::Start()
 
     RegisterControllerHandler(
         &MovementManager::HandleDataTransformWithParent, impl_->GetMovementManager());
+
+    
+	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
+
+    command_service->AddCommandCreator("burstrun", swganh::command::PythonCommandCreator("commands.burstrun", "BurstRunCommand"));
 }

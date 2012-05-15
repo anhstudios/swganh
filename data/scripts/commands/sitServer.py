@@ -1,3 +1,9 @@
-import swgpy.object
+from swgpy.command import BaseSwgCommand
+from swgpy import POSTURE
 
-actor.posture = swgpy.POSTURE.SITTING
+class SitServerCommand(BaseSwgCommand):
+    def Run(self):
+        actor = self.GetActor()
+        
+        actor.posture = POSTURE.SITTING
+        actor.run_speed = 0

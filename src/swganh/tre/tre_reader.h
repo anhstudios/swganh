@@ -5,9 +5,15 @@
 #define SWGANH_TRE_TRE_READER_H_
 
 #include <cstdint>
+#include <array>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <boost/thread/mutex.hpp>
+
+#include "tre_data.h"
 
 namespace swganh {
 namespace tre {
@@ -26,7 +32,8 @@ namespace tre {
          * \param filename The filename of the archive file to be loaded.
          */
         explicit TreReader(const std::string& filename);
-        
+        ~TreReader();
+
         /**
          * Checks whether a specified resource is contained within the archive.
          *
@@ -64,6 +71,8 @@ namespace tre {
          */
         uint32_t GetResourceSize(const std::string& resource_name) const;
 
+        const TreResourceInfo& GetResourceInfo(const std::string& resource_name) const;
+
         /**
          * Returns the requested resource in binary format.
          *
@@ -83,8 +92,36 @@ namespace tre {
     private:
         TreReader();
 
-        class TreReaderImpl;
-        std::shared_ptr<TreReaderImpl> impl_;
+        void ReadHeader();
+        void ReadIndex();
+                
+        std::vector<TreResourceInfo> ReadResourceBlock();
+        std::vector<char> ReadNameBlock();
+
+        typedef std::array<char, 16> Md5Sum;
+        std::vector<Md5Sum> ReadMd5SumBlock();
+        
+        void ValidateFileType(std::string file_type) const;
+        void ValidateFileVersion(std::string file_version) const;
+
+        void ReadDataBlock(
+	    	uint32_t offset,
+	    	uint32_t compression,
+	    	uint32_t compressed_size, 
+	    	uint32_t uncompressed_size, 
+	    	char* buffer);
+
+        bool initialized_;
+
+        std::ifstream input_stream_;
+        std::string filename_;
+        TreHeader header_;
+
+        boost::mutex mutex_;
+
+        std::vector<TreResourceInfo> resource_block_;
+        std::vector<char> name_block_;
+        std::vector<Md5Sum> md5sum_block_;
     };
 
 }}  // namespace swganh::tre

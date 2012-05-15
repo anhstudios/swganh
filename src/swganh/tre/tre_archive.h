@@ -29,7 +29,7 @@ namespace tre {
          *
          * \param tre_files Collection of tre files.
          */
-        explicit TreArchive(std::vector<TreReader>&& tre_files);
+        explicit TreArchive(std::vector<std::unique_ptr<TreReader>>&& tre_files);
 
         /**
          * Explicit constructor that accepts a list of tre files to load.
@@ -45,6 +45,8 @@ namespace tre {
          * \param config_filename Path to configuration file (usually the live.cfg).
          */
         explicit TreArchive(std::string config_filename);
+
+        ~TreArchive();
 
         /**
          * Returns the size of the requested resource.
@@ -96,7 +98,7 @@ namespace tre {
 
         void CreateReaders(const std::vector<std::string>& resource_files);
 
-        typedef std::vector<TreReader> ReaderList;
+        typedef std::vector<std::unique_ptr<TreReader>> ReaderList;
         ReaderList readers_;
     };
 }}  // namespace swganh::tre

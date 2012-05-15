@@ -1,3 +1,9 @@
-import swgpy.object
+from swgpy.command import BaseSwgCommand
+from swgpy import POSTURE
 
-actor.posture = swgpy.POSTURE.CROUCHED
+class KneelCommand(BaseSwgCommand):
+    def Run(self):
+        actor = self.GetActor()
+        
+        actor.posture = POSTURE.CROUCHED
+        actor.run_speed = 0

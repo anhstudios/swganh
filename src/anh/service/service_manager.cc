@@ -46,7 +46,7 @@ ServiceInterface* ServiceManager::GetService(string name) {
     return it->second.second.get();
 }
 
-void ServiceManager::AddService(string name, unique_ptr<ServiceInterface> service) {
+void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> service) {
     auto current_service = GetService(name);
 
     if (current_service) {
@@ -65,7 +65,7 @@ void ServiceManager::AddService(string name, unique_ptr<ServiceInterface> servic
     service_description.status(anh::service::Galaxy::LOADING);
     service_directory_->updateService(service_description);
 
-    services_[name] = make_pair(make_shared<ServiceDescription>(service_description), move(service));
+    services_[name] = make_pair(make_shared<ServiceDescription>(service_description), service);
 }
 
 void ServiceManager::Start() {

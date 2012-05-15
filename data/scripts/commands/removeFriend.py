@@ -1,13 +1,17 @@
-import re, swgpy.object
+import re
+from swgpy.command import BaseSwgCommand
 
-split = re.split('\W+', command_string)
-friend_name = split[0]
+class RemoveFriendCommand(BaseSwgCommand):
+    def Run(self):
+        split = re.split('\W+', self.GetCommandString())
+        friend_name = split[0]
 
-player = actor.get_player()
-if player:
-	# Check if the name is already our friend
-	if player.is_friend(friend_name):
-		player.remove_friend(friend_name)
-		actor.Controller().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_removed', swgpy.ProseType.TT, friend_name), False, False)
-	else:
-		actor.Controller().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_not_found', swgpy.ProseType.TT, friend_name), False, False)
+        player = self.GetActor().get_player()
+        if player:
+            # Check if the name is already our friend
+            if player.is_friend(friend_name):
+                player.remove_friend(friend_name)
+                self.GetController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_removed', swgpy.ProseType.TT, friend_name), False, False)
+            else:
+                self.GetController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_not_found', swgpy.ProseType.TT, friend_name), False, False)
+                

@@ -1,6 +1,11 @@
-import swgpy.object
+from swgpy.command import BaseCombatCommand
+from swgpy import ACTION
 
-if not actor.has_state(swgpy.ACTION.COMBAT):
-	actor.toggle_state_off(swgpy.ACTION.PEACE);
-	actor.toggle_state_on(swgpy.ACTION.COMBAT)
-	actor.activate_auto_attack()
+class AttackCommand(BaseCombatCommand):
+    def Run(self):
+        actor = self.GetActor()
+        
+        if not actor.has_state(ACTION.COMBAT):
+            actor.toggle_state_off(ACTION.PEACE);
+            actor.toggle_state_on(ACTION.COMBAT)
+            actor.activate_auto_attack()

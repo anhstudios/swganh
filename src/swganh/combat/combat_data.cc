@@ -3,6 +3,8 @@
 
 #include "combat_data.h"
 
+#include "swganh/command/base_combat_command.h"
+
 using namespace swganh::combat;
 using namespace boost::python;
 
@@ -28,6 +30,18 @@ CombatData::CombatData(boost::python::object p_object, swganh::command::CommandP
 {
     GetPythonData(p_object);
 }
+
+CombatData::CombatData(swganh::command::BaseCombatCommand* command)
+    : min_damage(command->GetMinDamage())
+    , max_damage(command->GetMaxDamage())
+    , damage_multiplier(command->GetDamageMultiplier())
+    , accuracy_bonus(command->GetAccuracyBonus())
+    , speed_multiplier(command->GetSpeedMultiplier())
+    , health_hit_chance(command->GetHealthHitChance())
+    , action_hit_chance(command->GetActionHitChance())
+    , mind_hit_chance(command->GetMindHitChance())
+{}
+
 void CombatData::GetPythonData(boost::python::object global)
 {
     try {

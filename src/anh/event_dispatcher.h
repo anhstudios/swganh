@@ -8,23 +8,12 @@
 #include <functional>
 #include <future>
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
 #include <boost/asio/strand.hpp>
 #include <boost/thread/future.hpp>
-
-#ifdef WIN32
-#include <concurrent_unordered_map.h>
-#include <concurrent_vector.h>
-#else
-#include <tbb/concurrent_unordered_map.h>
-#include <tbb/concurrent_vector.h>
-
-namespace Concurrency {
-    using ::tbb::concurrent_unordered_map;
-    using ::tbb::concurrent_vector;
-}
-
-#endif
+#include <boost/thread/shared_mutex.hpp>
 
 #include "hash_string.h"
 
@@ -101,7 +90,8 @@ namespace anh {
     class EventDispatcher : public EventDispatcherInterface
     {
     public:
-        EventDispatcher(boost::asio::io_service& io_service);
+        explicit EventDispatcher(boost::asio::io_service& io_service);
+        ~EventDispatcher();
 
         CallbackId Subscribe(EventType type, EventHandlerCallback callback);
         void Unsubscribe(EventType type, CallbackId identifier);
@@ -109,27 +99,17 @@ namespace anh {
         boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event);
 
     private:
-        struct EventHandler
-        {
-            EventHandler(CallbackId id, EventHandlerCallback callback)
-                : id(id)
-                , callback(callback)
-            {}
-
-            CallbackId id;
-            EventHandlerCallback callback;
-        };
+        typedef std::unordered_map<CallbackId, EventHandlerCallback> EventHandlerList;
         
-        typedef Concurrency::concurrent_vector<EventHandler> EventHandlerList;
-        
-        typedef Concurrency::concurrent_unordered_map<
+        typedef std::unordered_map<
             EventType, 
             EventHandlerList
         > EventHandlerMap;
 
         CallbackId GenerateCallbackId();
         void InvokeCallbacks(const std::shared_ptr<EventInterface>& dispatch_event);
-                
+
+        boost::shared_mutex event_handlers_mutex_;
         EventHandlerMap event_handlers_;
         boost::asio::io_service& io_service_;
     };

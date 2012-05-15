@@ -50,18 +50,19 @@ namespace anh {
             boost::lock_guard<boost::mutex> lg(process_mutex_);
             if (!processing_)
             {
+                processing_ = true;
+
                 boost::lock_guard<boost::mutex> lg(queue_mutex_);
                 if (!queue_.empty())
                 {
                     auto& task_info = queue_.front();
-                    
+                    queue_.pop();
+
+                    task_info->task();
+
                     timer_.expires_from_now(task_info->delay);
-                    timer_.async_wait([this, task_info] (const boost::system::error_code& ec) {
-                        if (!ec)
-                        {
-                            task_info->task();
-                        }
-                        
+                    timer_.async_wait([this, task_info] (const boost::system::error_code& ec) 
+                    {
                         {
                             boost::lock_guard<boost::mutex> lg(process_mutex_);
                             processing_ = false;
@@ -69,10 +70,6 @@ namespace anh {
 
                         this->Notify();
                     });
-
-                    queue_.pop();
-                    
-                    processing_ = true;				
                 }
             }		
         }

@@ -16,6 +16,16 @@ namespace boost {
     {
         return ptr.get();
     }
+
+    template<class T> const T* get_pointer(const std::unique_ptr<T>& ptr)
+    {
+        return ptr.get();
+    }
+
+    template<class T> T* get_pointer(std::unique_ptr<T>& ptr)
+    {
+        return ptr.get();
+    }
 }
 
 //#include <boost/python.hpp>

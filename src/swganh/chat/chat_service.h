@@ -29,14 +29,6 @@ namespace chat {
         
         anh::service::ServiceDescription GetServiceDescription();
 
-        void Start();
-
-    private:        
-        void HandleSpatialChatInternal(
-		    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
-		    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
-            const swganh::messages::controllers::CommandQueueEnqueue& command);
-
         void SendSpatialChat(
 		    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
 		    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
@@ -44,6 +36,9 @@ namespace chat {
             uint16_t chat_type,
             uint16_t mood);
 
+        void Start();
+
+    private:
         swganh::app::SwganhKernel* kernel_;
     };
 

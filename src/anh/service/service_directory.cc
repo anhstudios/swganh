@@ -92,8 +92,6 @@ void ServiceDirectory::updateGalaxyStatus() {
     }
 
     datastore_->saveGalaxyStatus(galaxy_id, galaxy_status);
-        
-    event_dispatcher_->Dispatch(make_shared<BaseEvent>("UpdateGalaxyStatus"));
 }
 
 bool ServiceDirectory::registerService(ServiceDescription& service) {              
@@ -102,9 +100,6 @@ bool ServiceDirectory::registerService(ServiceDescription& service) {
             boost::lock_guard<boost::mutex> lk(mutex_);
             active_service_ = service;
         }
-
-        // trigger the event to let any listeners we have added the service
-        event_dispatcher_->Dispatch(make_shared<anh::ValueEvent<ServiceDescription>>("RegisterService", service));
         return true;
     }
 
@@ -113,8 +108,6 @@ bool ServiceDirectory::registerService(ServiceDescription& service) {
 
 bool ServiceDirectory::removeService(const ServiceDescription& service) {
     if (datastore_->deleteServiceById(service.id())) {
-        // trigger the event to let any listeners we have removed the service
-        event_dispatcher_->Dispatch(make_shared<anh::ValueEvent<ServiceDescription>>("RemoveService", service));
         return true;
     }
 

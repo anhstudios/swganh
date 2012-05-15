@@ -27,108 +27,7 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-class TreReader::TreReaderImpl
-{
-public:
-    TreReaderImpl(std::string filename);
-    
-    void Initialize();
-
-    bool IsInitialized() const;
-
-    bool ContainsResource(const std::string& resource_name) const;
-    
-    uint32_t GetResourceCount() const;
-
-    const string& GetFilename() const;
-    vector<string> GetResourceNames() const;
-
-    vector<char> GetResource(const TreResourceInfo& resource_info);
-    string GetMd5Hash(const string& resource_name) const;
-    uint32_t GetResourceSize(const string& resource_name) const;
-
-    const TreResourceInfo& GetResourceInfo(const string& resource_name) const;
-
-private:
-    TreReaderImpl();
-
-    void ReadHeader();
-    void ReadIndex();
-            
-    vector<TreResourceInfo> ReadResourceBlock();
-    vector<char> ReadNameBlock();
-
-    typedef std::array<char, 16> Md5Sum;
-    vector<Md5Sum> ReadMd5SumBlock();
-    
-    void ValidateFileType(string file_type) const;
-    void ValidateFileVersion(string file_version) const;
-
-    void ReadDataBlock(
-		uint32_t offset,
-		uint32_t compression,
-		uint32_t compressed_size, 
-		uint32_t uncompressed_size, 
-		char* buffer);
-
-    bool initialized_;
-
-    ifstream input_stream_;
-    string filename_;
-    TreHeader header_;
-
-    boost::mutex mutex_;
-
-    vector<TreResourceInfo> resource_block_;
-    vector<char> name_block_;
-    vector<Md5Sum> md5sum_block_;
-};
-
-TreReader::TreReader()
-: impl_(nullptr)
-{}
-
 TreReader::TreReader(const string& filename)
-: impl_(new TreReaderImpl(filename))
-{}
-
-uint32_t TreReader::GetResourceCount() const
-{
-    return impl_->GetResourceCount();
-}
-
-vector<string> TreReader::GetResourceNames() const
-{
-    return impl_->GetResourceNames();
-}
-
-const string& TreReader::GetFilename() const
-{
-    return impl_->GetFilename();
-}
-
-vector<char> TreReader::GetResource(const string& resource_name)
-{
-    return impl_->GetResource(
-		impl_->GetResourceInfo(resource_name));
-}
-
-bool TreReader::ContainsResource(const string& resource_name) const
-{
-    return impl_->ContainsResource(resource_name);
-}
-
-string TreReader::GetMd5Hash(const string& resource_name) const
-{
-    return impl_->GetMd5Hash(resource_name);
-}
-
-uint32_t TreReader::GetResourceSize(const string& resource_name) const
-{
-    return impl_->GetResourceSize(resource_name);
-}
-
-TreReader::TreReaderImpl::TreReaderImpl(std::string filename)
 : filename_(filename)
 {
     input_stream_.exceptions(ifstream::failbit | ifstream::badbit);
@@ -138,17 +37,25 @@ TreReader::TreReaderImpl::TreReaderImpl(std::string filename)
     ReadIndex();
 }
 
-uint32_t TreReader::TreReaderImpl::GetResourceCount() const
+TreReader::~TreReader()
+{
+    {
+        boost::lock_guard<boost::mutex> lg(mutex_);
+        input_stream_.close();
+    }
+}
+
+uint32_t TreReader::GetResourceCount() const
 {
     return header_.resource_count;
 }
 
-const string& TreReader::TreReaderImpl::GetFilename() const
+const string& TreReader::GetFilename() const
 {
     return filename_;
 }
 
-vector<string> TreReader::TreReaderImpl::GetResourceNames() const
+vector<string> TreReader::GetResourceNames() const
 {
     vector<string> resource_names;
 
@@ -163,8 +70,10 @@ vector<string> TreReader::TreReaderImpl::GetResourceNames() const
     return resource_names;
 }
 
-vector<char> TreReader::TreReaderImpl::GetResource(const TreResourceInfo& file_info)
+vector<char> TreReader::GetResource(const std::string& resource_name)
 {
+    auto file_info = GetResourceInfo(resource_name);
+
     vector<char> data(file_info.data_size); 
     
     ReadDataBlock(
@@ -177,7 +86,7 @@ vector<char> TreReader::TreReaderImpl::GetResource(const TreResourceInfo& file_i
     return data;
 }
 
-bool TreReader::TreReaderImpl::ContainsResource(const string& resource_name) const
+bool TreReader::ContainsResource(const string& resource_name) const
 {
     auto find_iter = find_if(
         begin(resource_block_),
@@ -190,7 +99,7 @@ bool TreReader::TreReaderImpl::ContainsResource(const string& resource_name) con
     return find_iter != end(resource_block_);
 }
 
-string TreReader::TreReaderImpl::GetMd5Hash(const string& resource_name) const
+string TreReader::GetMd5Hash(const string& resource_name) const
 {
     auto find_iter = find_if(
         begin(resource_block_),
@@ -222,7 +131,7 @@ string TreReader::TreReaderImpl::GetMd5Hash(const string& resource_name) const
     return ss.str();
 }
 
-uint32_t TreReader::TreReaderImpl::GetResourceSize(const string& resource_name) const
+uint32_t TreReader::GetResourceSize(const string& resource_name) const
 {
     auto find_iter = find_if(
         begin(resource_block_),
@@ -240,7 +149,7 @@ uint32_t TreReader::TreReaderImpl::GetResourceSize(const string& resource_name) 
     return find_iter->data_size;
 }
 
-const TreResourceInfo& TreReader::TreReaderImpl::GetResourceInfo(const string& resource_name) const
+const TreResourceInfo& TreReader::GetResourceInfo(const string& resource_name) const
 {
     auto find_iter = find_if(
         begin(resource_block_),
@@ -258,7 +167,7 @@ const TreResourceInfo& TreReader::TreReaderImpl::GetResourceInfo(const string& r
     return *find_iter;
 }
 
-void TreReader::TreReaderImpl::ReadHeader()
+void TreReader::ReadHeader()
 {
     {
         boost::lock_guard<boost::mutex> lg(mutex_);
@@ -269,14 +178,14 @@ void TreReader::TreReaderImpl::ReadHeader()
     ValidateFileVersion(string(header_.file_version, 4));        
 }
 
-void TreReader::TreReaderImpl::ReadIndex()
+void TreReader::ReadIndex()
 {
     resource_block_ = ReadResourceBlock();
     name_block_ = ReadNameBlock();
     md5sum_block_ = ReadMd5SumBlock();
 }
 
-vector<TreResourceInfo> TreReader::TreReaderImpl::ReadResourceBlock()
+vector<TreResourceInfo> TreReader::ReadResourceBlock()
 {
     uint32_t uncompressed_size = header_.resource_count * sizeof(TreResourceInfo);
     
@@ -291,7 +200,7 @@ vector<TreResourceInfo> TreReader::TreReaderImpl::ReadResourceBlock()
     return files;
 }
         
-vector<char> TreReader::TreReaderImpl::ReadNameBlock()
+vector<char> TreReader::ReadNameBlock()
 {
     vector<char> data(header_.name_uncompressed_size); 
     
@@ -307,7 +216,7 @@ vector<char> TreReader::TreReaderImpl::ReadNameBlock()
     return data;
 }
         
-vector<TreReader::TreReaderImpl::Md5Sum> TreReader::TreReaderImpl::ReadMd5SumBlock()
+vector<TreReader::Md5Sum> TreReader::ReadMd5SumBlock()
 {    
     uint32_t offset = header_.info_offset
         + header_.info_compressed_size
@@ -325,7 +234,7 @@ vector<TreReader::TreReaderImpl::Md5Sum> TreReader::TreReaderImpl::ReadMd5SumBlo
     return data;
 }
 
-void TreReader::TreReaderImpl::ValidateFileType(string file_type) const
+void TreReader::ValidateFileType(string file_type) const
 {
     if (file_type.compare("EERT") != 0)
     {
@@ -333,7 +242,7 @@ void TreReader::TreReaderImpl::ValidateFileType(string file_type) const
     }
 }
 
-void TreReader::TreReaderImpl::ValidateFileVersion(string file_version) const
+void TreReader::ValidateFileVersion(string file_version) const
 {
     if (file_version.compare("5000") != 0)
     {
@@ -341,7 +250,7 @@ void TreReader::TreReaderImpl::ValidateFileVersion(string file_version) const
     }
 }
 
-void TreReader::TreReaderImpl::ReadDataBlock(
+void TreReader::ReadDataBlock(
     uint32_t offset,
     uint32_t compression,
     uint32_t compressed_size, 
