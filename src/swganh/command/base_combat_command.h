@@ -9,7 +9,7 @@
 namespace swganh {
 namespace command {
 
-    class BaseCombatCommand : public BaseSwgCommand
+    class BaseCombatCommand : public BaseSwgCommand, public std::enable_shared_from_this<BaseCombatCommand>
     {
     public:
         BaseCombatCommand(

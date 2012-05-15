@@ -32,8 +32,37 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
         : BaseCombatCommand(kernel, properties, controller, command_request)
         , self_(bp::handle<>(bp::borrowed(obj)))
     {
-        //ScopedGilLock lock;
-        //bp::detail::initialize_wrapper(obj, this);
+        ScopedGilLock lock;
+        bp::detail::initialize_wrapper(obj, this);
+    }
+
+    boost::optional<std::shared_ptr<CommandCallback>> Run()
+    {
+        boost::optional<std::shared_ptr<CommandCallback>> callback;
+
+
+        ScopedGilLock lock;
+        try 
+        {
+            if (bp::override run = this->get_override("Run"))
+            {
+                bp::object result = run();
+
+                if (!result.is_none())
+                {
+                    CommandCallback* obj_pointer = bp::extract<CommandCallback*>(result);
+                    callback.reset(std::shared_ptr<CommandCallback>(obj_pointer, [result] (CommandCallback*) {}));
+                }
+            }
+            
+            this->BaseCombatCommand::Run();
+        }
+        catch(bp::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }
+
+        return callback;
     }
 
     template <typename T>

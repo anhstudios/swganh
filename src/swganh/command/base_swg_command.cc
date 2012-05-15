@@ -117,3 +117,8 @@ const std::wstring& BaseSwgCommand::GetCommandString() const
 {
     return command_request_.command_options;
 }
+        
+const CommandQueueEnqueue& BaseSwgCommand::GetCommandRequest() const
+{
+    return command_request_;
+}

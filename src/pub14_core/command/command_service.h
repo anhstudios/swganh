@@ -33,6 +33,8 @@ namespace command {
         void AddCommandCreator(anh::HashString command, swganh::command::CommandCreator&& creator);
 
         void RemoveCommandCreator(anh::HashString command);
+        
+        void EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
 
         void SendCommandQueueRemove(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
@@ -50,16 +52,16 @@ namespace command {
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
 
         void Start();
+        
+        void EnqueueCommandRequest(
+            const std::shared_ptr<swganh::object::ObjectController>& controller,
+            swganh::messages::controllers::CommandQueueEnqueue message);
 
     private:
         void SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher);
 
         void SubscribeObjectRemovedEvent(anh::EventDispatcher* dispatcher);
-
-        void HandleCommandQueueEnqueue(
-            const std::shared_ptr<swganh::object::ObjectController>& controller,
-            swganh::messages::controllers::CommandQueueEnqueue message);
-                
+                        
         swganh::app::SwganhKernel* kernel_;
         std::shared_ptr<swganh::command::CommandFactoryInterface> command_factory_impl_;
         std::shared_ptr<swganh::command::CommandPropertiesManagerInterface> command_properties_manager_impl_;

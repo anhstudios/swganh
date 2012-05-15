@@ -1,7 +1,7 @@
-from swgpy.command import BaseSwgCommand
+from swgpy.command import BaseCombatCommand
 from swgpy import ACTION
 
-class AttackCommand(BaseSwgCommand):
+class AttackCommand(BaseCombatCommand):
     def Run(self):
         actor = self.GetActor()
         

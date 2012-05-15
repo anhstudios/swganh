@@ -74,6 +74,11 @@ namespace command {
          * @param command The name/crc of the command.
          */
         virtual void RemoveCommandCreator(anh::HashString command) = 0;
+        
+        
+        virtual void EnqueueCommandRequest(
+            const std::shared_ptr<swganh::object::ObjectController>& controller,
+            swganh::messages::controllers::CommandQueueEnqueue message) = 0;
 
         /**
          * Sends a command queue removal message to the specified controller client.

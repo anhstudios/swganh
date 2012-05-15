@@ -94,7 +94,7 @@ void CommandService::RemoveCommandCreator(anh::HashString command)
     command_factory_impl_->RemoveCommandCreator(command);
 }
 
-void CommandService::HandleCommandQueueEnqueue(
+void CommandService::EnqueueCommandRequest(
     const std::shared_ptr<ObjectController>& controller,
     CommandQueueEnqueue command_request)
 {
@@ -130,7 +130,7 @@ void CommandService::Start()
     script_prefix_ = kernel_->GetAppConfig().script_directory;
     
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
-    simulation_service_->RegisterControllerHandler(&CommandService::HandleCommandQueueEnqueue, this);
+    simulation_service_->RegisterControllerHandler(&CommandService::EnqueueCommandRequest, this);
 
     auto event_dispatcher = kernel_->GetEventDispatcher();
 
