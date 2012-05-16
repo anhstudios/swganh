@@ -71,7 +71,7 @@ void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& comma
 
 void CommandQueue::SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command)
 {
-    default_command_ = command;
+    default_command_ = std::static_pointer_cast<BaseSwgCommand>(command);
 }
 
 void CommandQueue::ClearDefaultCommand()
@@ -117,15 +117,9 @@ void CommandQueue::Notify()
     {
         processing_ = true;
         process_lg.unlock();
-
-
-        boost::unique_lock<boost::mutex> queue_lg(queue_mutex_);
-        if (!queue_.empty())
-        {
-            std::shared_ptr<BaseSwgCommand> command = queue_.top();
-            queue_.pop();
-            queue_lg.unlock();
-            
+        
+        if (auto command = GetNextCommand())
+        {            
             timer_.expires_from_now(boost::posix_time::seconds(static_cast<uint64_t>(command->GetDefaultTime())));
             timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
@@ -136,7 +130,6 @@ void CommandQueue::Notify()
             
                 this->Notify();
             });
-
             
             ProcessCommand(command);
         }
@@ -159,4 +152,24 @@ void CommandQueue::HandleCallback(std::shared_ptr<CommandCallback> callback)
             HandleCallback(*new_callback);
         }
     });
+}
+
+std::shared_ptr<swganh::command::BaseSwgCommand> CommandQueue::GetNextCommand()
+{
+    std::shared_ptr<BaseSwgCommand> command = nullptr;
+
+    {
+        boost::lock_guard<boost::mutex> queue_lg(queue_mutex_);
+        if (!queue_.empty())
+        {
+            command = queue_.top();
+            queue_.pop();
+        }
+        else
+        {
+            command = default_command_;
+        }
+    }
+
+    return command;
 }

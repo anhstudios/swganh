@@ -46,6 +46,8 @@ namespace command {
         
         void HandleCallback(std::shared_ptr<swganh::command::CommandCallback> callback);
 
+        std::shared_ptr<swganh::command::BaseSwgCommand> GetNextCommand();
+
         template<typename T>
         struct CommandComparator
         {
@@ -73,7 +75,7 @@ namespace command {
         boost::mutex queue_mutex_;        
         ProcessQueue queue_;
 
-        std::shared_ptr<swganh::command::CommandInterface> default_command_;
+        std::shared_ptr<swganh::command::BaseSwgCommand> default_command_;
 
         anh::ActiveObject active_;
     };
