@@ -17,6 +17,8 @@
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/object_controller.h"
 
+#include "command_service.h"
+
 using pub14_core::command::CommandQueue;
 using pub14_core::command::CommandService;
 using swganh::command::BaseSwgCommand;
@@ -29,8 +31,8 @@ CommandQueue::CommandQueue(
     swganh::app::SwganhKernel* kernel)
     : kernel_(kernel)
     , timer_(kernel->GetIoService())
-    , active_(kernel->GetIoService())
     , processing_(false)
+    , active_(kernel->GetIoService())
 {
     command_service_ = kernel->GetServiceManager()->GetService<CommandService>("CommandService");
 }

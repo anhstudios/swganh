@@ -51,7 +51,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(CommandInterfa
 
 tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(CommandInterface* command)
 {
-    BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
+    //BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
 
 	bool check_passed = true;
 	uint32_t error = 0;
