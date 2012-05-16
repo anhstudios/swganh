@@ -56,6 +56,11 @@ namespace command {
         void EnqueueCommandRequest(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
             swganh::messages::controllers::CommandQueueEnqueue message);
+        
+        
+        void SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command);
+
+        void ClearDefaultCommand(uint64_t queue_owner_id);
 
     private:
         void SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher);

@@ -36,6 +36,8 @@ namespace command {
         ~CommandQueue();
         
         virtual void EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
+        virtual void SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
+        virtual void ClearDefaultCommand();
 
     private:
         void ProcessCommand(const std::shared_ptr<swganh::command::BaseSwgCommand>& command);
@@ -70,6 +72,8 @@ namespace command {
         
         boost::mutex queue_mutex_;        
         ProcessQueue queue_;
+
+        std::shared_ptr<swganh::command::CommandInterface> default_command_;
 
         anh::ActiveObject active_;
     };

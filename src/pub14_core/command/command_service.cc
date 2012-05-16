@@ -112,6 +112,16 @@ void CommandService::EnqueueCommandRequest(
         }
     });
 }
+
+void CommandService::SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command)
+{
+    command_queue_manager_impl_->SetDefaultCommand(queue_owner_id, command);
+}
+
+void CommandService::ClearDefaultCommand(uint64_t queue_owner_id)
+{
+    command_queue_manager_impl_->ClearDefaultCommand(queue_owner_id);
+}
         
 std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForEnqueue(CommandInterface* command)
 {

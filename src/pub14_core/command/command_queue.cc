@@ -32,6 +32,7 @@ CommandQueue::CommandQueue(
     : kernel_(kernel)
     , timer_(kernel->GetIoService())
     , processing_(false)
+    , default_command_(nullptr)
     , active_(kernel->GetIoService())
 {
     command_service_ = kernel->GetServiceManager()->GetService<CommandService>("CommandService");
@@ -66,6 +67,16 @@ void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& comma
     {
         command_service_->SendCommandQueueRemove(swg_command->GetController(), swg_command->GetActionCounter(), swg_command->GetDefaultTime(), error, action);
     }
+}
+
+void CommandQueue::SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command)
+{
+    default_command_ = command;
+}
+
+void CommandQueue::ClearDefaultCommand()
+{
+    default_command_ = nullptr;
 }
 
 void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwgCommand>& command)

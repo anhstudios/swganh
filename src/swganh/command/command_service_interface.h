@@ -129,6 +129,10 @@ namespace command {
          * @return An optional value containing a reference to the properties requested.
          */
         virtual boost::optional<const CommandProperties&> FindPropertiesForCommand(anh::HashString command) = 0;
+        
+        virtual void SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command) = 0;
+
+        virtual void ClearDefaultCommand(uint64_t queue_owner_id) = 0;
     };
 
 }}  // namespace swganh::command
