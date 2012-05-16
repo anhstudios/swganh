@@ -6,8 +6,6 @@
 
 #include <memory>
 
-#include "command_service.h"
-
 namespace swganh {
 
 namespace object {
