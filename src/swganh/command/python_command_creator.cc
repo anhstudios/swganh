@@ -37,9 +37,7 @@ PythonCommandCreator::PythonCommandCreator(std::string module_name, std::string 
 
 std::shared_ptr<CommandInterface> PythonCommandCreator::operator() (
     swganh::app::SwganhKernel* kernel,
-    const CommandProperties& properties,
-    const std::shared_ptr<ObjectController>& controller,
-    const CommandQueueEnqueue& command_request)
+    const CommandProperties& properties)
 {
     std::shared_ptr<CommandInterface> command = nullptr;
     
@@ -52,7 +50,7 @@ std::shared_ptr<CommandInterface> PythonCommandCreator::operator() (
         command_module_ = bp::object(bp::handle<>(PyImport_ReloadModule(command_module_.ptr())));
 #endif
         
-        auto new_instance = command_module_.attr(class_name_.c_str())(bp::ptr(kernel), boost::ref(properties), boost::ref(controller), boost::ref(command_request));
+        auto new_instance = command_module_.attr(class_name_.c_str())(bp::ptr(kernel), boost::ref(properties));
 
         if (!new_instance.is_none())
         {

@@ -98,11 +98,19 @@ void CommandService::EnqueueCommandRequest(
     const std::shared_ptr<ObjectController>& controller,
     CommandQueueEnqueue command_request)
 {
-    auto command = command_factory_impl_->CreateCommand(controller, command_request);
-    if (command)
+    kernel_->GetIoService().post([this, controller, command_request] ()
     {
-        command_queue_manager_impl_->EnqueueCommand(command);
-    }
+        auto command = command_factory_impl_->CreateCommand(command_request.command_crc);
+        if (command)
+        {
+            auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
+
+            swg_command->SetController(controller);
+            swg_command->SetCommandRequest(command_request);
+
+            command_queue_manager_impl_->EnqueueCommand(swg_command);
+        }
+    });
 }
         
 std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForEnqueue(CommandInterface* command)

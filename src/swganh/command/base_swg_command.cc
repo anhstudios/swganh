@@ -21,19 +21,12 @@ using swganh::simulation::SimulationService;
 
 BaseSwgCommand::BaseSwgCommand(
     swganh::app::SwganhKernel* kernel,
-    const CommandProperties& properties,
-    const std::shared_ptr<ObjectController>& controller,
-    const CommandQueueEnqueue& command_request)
+    const CommandProperties& properties)
     : kernel_(kernel)
-    , properties_(properties)
-    , controller_(controller)
-    , command_request_(command_request)
-{
-    auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
-    
-    actor_ = simulation_service->GetObjectById<Creature>(command_request.observable_id);
-    target_ = simulation_service->GetObjectById<Tangible>(command_request.target_id);
-}
+    , properties_(&properties)
+    , actor_(nullptr)
+    , target_(nullptr)
+{}
 
 BaseSwgCommand::~BaseSwgCommand()
 {}
@@ -41,6 +34,11 @@ BaseSwgCommand::~BaseSwgCommand()
 const std::shared_ptr<ObjectController>& BaseSwgCommand::GetController() const
 {
     return controller_;
+}
+
+void BaseSwgCommand::SetController(const std::shared_ptr<ObjectController>& controller)
+{
+    controller_ = controller;
 }
 
 bool BaseSwgCommand::Validate()
@@ -55,7 +53,7 @@ swganh::app::SwganhKernel* BaseSwgCommand::GetKernel() const
         
 std::string BaseSwgCommand::GetCommandName() const
 {
-    return properties_.command_name.ident_string();
+    return properties_->command_name.ident_string();
 }
 
 uint32_t BaseSwgCommand::GetActionCounter() const
@@ -65,52 +63,69 @@ uint32_t BaseSwgCommand::GetActionCounter() const
 
 uint32_t BaseSwgCommand::GetPriority() const
 {
-    return properties_.default_priority;
+    return properties_->default_priority;
 }
 
 uint32_t BaseSwgCommand::GetCommandGroup() const
 {
-    return properties_.command_group;
+    return properties_->command_group;
 }
 
 uint32_t BaseSwgCommand::GetTargetRequiredType() const
 {
-    return properties_.target_type;
+    return properties_->target_type;
 }
 
 uint64_t BaseSwgCommand::GetAllowedStateBitmask() const
 {
-    return properties_.allow_in_state;
+    return properties_->allow_in_state;
 }
 
 float BaseSwgCommand::GetMaxRangeToTarget() const
 {
-    return properties_.max_range_to_target;
+    return properties_->max_range_to_target;
 }
 
 float BaseSwgCommand::GetDefaultTime() const
 {
-    return properties_.default_time;
+    return properties_->default_time;
 }
         
 std::string BaseSwgCommand::GetRequiredAbility() const
 {
-    return properties_.character_ability.ident_string();
+    return properties_->character_ability.ident_string();
 }
 
 bool BaseSwgCommand::IsQueuedCommand() const
 {
-    return properties_.add_to_combat_queue != 0;
+    return properties_->add_to_combat_queue != 0;
 }
 
 const std::shared_ptr<Creature>& BaseSwgCommand::GetActor() const
 {
+    if (!actor_)
+    {
+        auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+        actor_ = simulation_service->GetObjectById<Creature>(command_request_.observable_id);
+    }
+
     return actor_;
 }
 
 const std::shared_ptr<Tangible>& BaseSwgCommand::GetTarget() const
 {
+    if (!actor_)
+    {
+        auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+        target_ = simulation_service->GetObjectById<Tangible>(command_request_.target_id);
+    }
+
     return target_;
+}
+
+void BaseSwgCommand::SetCommandProperties(const CommandProperties& properties)
+{
+    properties_ = &properties;
 }
         
 const std::wstring& BaseSwgCommand::GetCommandString() const
@@ -121,4 +136,9 @@ const std::wstring& BaseSwgCommand::GetCommandString() const
 const CommandQueueEnqueue& BaseSwgCommand::GetCommandRequest() const
 {
     return command_request_;
+}
+
+void BaseSwgCommand::SetCommandRequest(const swganh::messages::controllers::CommandQueueEnqueue& command_request)
+{
+    command_request_ = command_request;
 }

@@ -37,13 +37,13 @@ namespace command {
     public:
         BaseSwgCommand(
             swganh::app::SwganhKernel* kernel,
-            const CommandProperties& properties,
-            const std::shared_ptr<object::ObjectController>& controller,
-            const swganh::messages::controllers::CommandQueueEnqueue& command_request);
+            const CommandProperties& properties);
 
         ~BaseSwgCommand();
 
         virtual const std::shared_ptr<object::ObjectController>& GetController() const;
+
+        virtual void SetController(const std::shared_ptr<object::ObjectController>& controller);
 
         virtual bool Validate();
         
@@ -75,13 +75,17 @@ namespace command {
 
         const std::wstring& GetCommandString() const;
 
+        void SetCommandProperties(const CommandProperties& properties);
+        
         const swganh::messages::controllers::CommandQueueEnqueue& GetCommandRequest() const;
+
+        void SetCommandRequest(const swganh::messages::controllers::CommandQueueEnqueue& command_request);
     private:    
         swganh::app::SwganhKernel* kernel_;
-        const CommandProperties& properties_;
+        const CommandProperties* properties_;
         std::shared_ptr<object::ObjectController> controller_;
-        std::shared_ptr<object::creature::Creature> actor_;
-        std::shared_ptr<object::tangible::Tangible> target_;
+        mutable std::shared_ptr<object::creature::Creature> actor_;
+        mutable std::shared_ptr<object::tangible::Tangible> target_;
         swganh::messages::controllers::CommandQueueEnqueue command_request_;
     };
 

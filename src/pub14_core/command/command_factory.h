@@ -31,9 +31,7 @@ namespace command {
 
         virtual void RemoveCommandCreator(anh::HashString command);
 
-        virtual std::shared_ptr<swganh::command::CommandInterface> CreateCommand(
-            const std::shared_ptr<swganh::object::ObjectController>& controller,
-            const swganh::messages::controllers::CommandQueueEnqueue& command_request);
+        virtual std::shared_ptr<swganh::command::CommandInterface> CreateCommand(anh::HashString command);
 
     private:
         swganh::command::CommandServiceInterface* GetCommandService();

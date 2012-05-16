@@ -27,10 +27,8 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
     BaseSwgCommandWrapper(
         PyObject* obj,
         swganh::app::SwganhKernel* kernel,
-        const CommandProperties& properties,
-        const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::controllers::CommandQueueEnqueue& command_request)
-        : BaseSwgCommand(kernel, properties, controller, command_request)
+        const CommandProperties& properties)
+        : BaseSwgCommand(kernel, properties)
     {
         ScopedGilLock lock;
         bp::detail::initialize_wrapper(obj, this);
@@ -160,7 +158,7 @@ void swganh::command::ExportCommand()
     ;
     
     bp::class_<BaseSwgCommand, BaseSwgCommandWrapper, bp::bases<CommandInterface>, boost::noncopyable>
-        ("BaseSwgCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&, const std::shared_ptr<object::ObjectController>&, const swganh::messages::controllers::CommandQueueEnqueue&>())
+        ("BaseSwgCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&>())
         .def("GetController", &BaseSwgCommandWrapper::GetController, bp::return_value_policy<bp::copy_const_reference>())
         .def("Validate", &BaseSwgCommandWrapper::Validate)
         .def("GetKernel", &BaseSwgCommandWrapper::GetKernel, bp::return_internal_reference<>())

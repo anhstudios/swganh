@@ -40,24 +40,14 @@ using boost::regex_match;
 
 SpatialChatInternalCommand::SpatialChatInternalCommand(
     SwganhKernel* kernel,
-    const CommandProperties& properties,
-    const std::shared_ptr<ObjectController>& controller,
-    const CommandQueueEnqueue& command)
-    : BaseSwgCommand(kernel, properties, controller, command)
+    const CommandProperties& properties)
+    : BaseSwgCommand(kernel, properties)
 {
     chat_service_ = kernel->GetServiceManager()->GetService<ChatService>("ChatService");
 }
 
 SpatialChatInternalCommand::~SpatialChatInternalCommand()
 {}
-
-void SpatialChatInternalCommand::Setup()
-{}
-
-bool SpatialChatInternalCommand::Validate()
-{
-    return true;
-}
 
 boost::optional<std::shared_ptr<CommandCallback>> SpatialChatInternalCommand::Run()
 {

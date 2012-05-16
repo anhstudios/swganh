@@ -104,11 +104,6 @@ void CombatService::SendCombatAction(BaseCombatCommand* command)
     {
         SingleTargetCombatAction(actor, target, combat_data);
         SendCombatActionMessage(actor, target, combat_data);
-        
-        //if (command->GetCommandName().compare("attack") == 0 && actor->IsAutoAttacking())
-        //{
-        //    command_service_->EnqueueCommandRequest(command->GetController(), command->GetCommandRequest());
-        //}
     }
 }
 
