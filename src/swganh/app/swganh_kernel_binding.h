@@ -16,6 +16,7 @@
 #include "anh/app/kernel_interface.h"
 #include "anh/service/service_manager.h"
 #include "swganh/combat/combat_service.h"
+#include "swganh/command/command_service_interface.h"
 #include "swganh/social/social_service.h"
 #include "swganh/simulation/simulation_service.h"
 
@@ -42,6 +43,11 @@ void exportSWGANHKernel()
                return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::combat::CombatService*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.CombatService`")
+       .def("command_service", make_function(
+               std::bind(&anh::service::ServiceManager::GetService<swganh::command::CommandServiceInterface>, std::placeholders::_1, "CommandService"),
+               return_value_policy<reference_existing_object>(),
+                boost::mpl::vector<swganh::command::CommandServiceInterface*, anh::service::ServiceManager*>()),
+                "returns an internal refrence of the :class:`.CommandService`")
         .def("simulation_service", make_function(
                std::bind(&anh::service::ServiceManager::GetService<swganh::simulation::SimulationService>, std::placeholders::_1, "SimulationService"),
                 return_value_policy<reference_existing_object>(),

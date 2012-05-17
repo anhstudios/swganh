@@ -26,10 +26,8 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
     BaseCombatCommandWrapper(
         PyObject* obj,
         swganh::app::SwganhKernel* kernel,
-        const CommandProperties& properties,
-        const std::shared_ptr<ObjectController>& controller,
-        const swganh::messages::controllers::CommandQueueEnqueue& command_request)
-        : BaseCombatCommand(kernel, properties, controller, command_request)
+        const CommandProperties& properties)
+        : BaseCombatCommand(kernel, properties)
         , self_(bp::handle<>(bp::borrowed(obj)))
     {
         ScopedGilLock lock;
@@ -148,7 +146,7 @@ private:
 void swganh::command::ExportBaseCombatCommand()
 {
     bp::class_<BaseCombatCommand, BaseCombatCommandWrapper, bp::bases<BaseSwgCommand>, boost::noncopyable>
-        ("BaseCombatCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&, const std::shared_ptr<object::ObjectController>&, const swganh::messages::controllers::CommandQueueEnqueue&>())
+        ("BaseCombatCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&>())
         .def("Run", &BaseCombatCommandWrapper::Run)
     ;
 }

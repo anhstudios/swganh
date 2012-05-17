@@ -46,22 +46,20 @@ void CommandFactory::RemoveCommandCreator(anh::HashString command)
     command_creators_.erase(command);
 }
 
-std::shared_ptr<CommandInterface> CommandFactory::CreateCommand(
-    const std::shared_ptr<ObjectController>& controller,
-    const CommandQueueEnqueue& command_request)
+std::shared_ptr<CommandInterface> CommandFactory::CreateCommand(anh::HashString command)
 {
-    std::shared_ptr<CommandInterface> command = nullptr;
+    std::shared_ptr<CommandInterface> new_command = nullptr;
 
     boost::lock_guard<boost::mutex> lg(creators_mutex_);
 
-    auto creators_iter = command_creators_.find(command_request.command_crc);
+    auto creators_iter = command_creators_.find(command);
     if (creators_iter != command_creators_.end())
     {
         auto& creator = creators_iter->second;
-        command = creator.creator_func(kernel_, creator.properties, controller, command_request);
+        new_command = creator.creator_func(kernel_, creator.properties);
     }
 
-    return command;
+    return new_command;
 }
 
 swganh::command::CommandServiceInterface* CommandFactory::GetCommandService()

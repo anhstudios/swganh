@@ -20,10 +20,8 @@ using swganh::object::ObjectController;
 
 BaseCombatCommand::BaseCombatCommand(
     swganh::app::SwganhKernel* kernel,
-    const CommandProperties& properties,
-    const std::shared_ptr<ObjectController>& controller,
-    const swganh::messages::controllers::CommandQueueEnqueue& command_request)
-    : BaseSwgCommand(kernel, properties, controller, command_request)
+    const CommandProperties& properties)
+    : BaseSwgCommand(kernel, properties)
 {}
 
 BaseCombatCommand::~BaseCombatCommand()

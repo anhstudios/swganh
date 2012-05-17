@@ -17,6 +17,8 @@ namespace object {
 
 namespace command {
 
+    struct CommandProperties;
+
     /**
      * A general delayed callback implementation.
      */
@@ -59,6 +61,13 @@ namespace command {
          * @return The controller associated with this command invocation.
          */
         virtual const std::shared_ptr<object::ObjectController>& GetController() const = 0;
+
+        /**
+         * @return The controller associated with this command invocation.
+         */
+        virtual void SetController(const std::shared_ptr<object::ObjectController>&) = 0;
+        
+        virtual void SetCommandProperties(const CommandProperties& properties) = 0;
 
         /**
          * Validates the command.

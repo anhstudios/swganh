@@ -28,11 +28,10 @@ namespace command {
     class CommandInterface;
     struct CommandProperties;
 
-    typedef std::function<std::shared_ptr<CommandInterface> (
-        swganh::app::SwganhKernel*,
-        const CommandProperties&,
-        const std::shared_ptr<object::ObjectController>&,
-        const swganh::messages::controllers::CommandQueueEnqueue&)
+    typedef std::function<
+        std::shared_ptr<CommandInterface> (
+            swganh::app::SwganhKernel* kernel,
+            const CommandProperties& properties)
     > CommandCreator;
 
     /**
@@ -62,12 +61,10 @@ namespace command {
         /**
          * Creates a new instance of a command.
          *
-         * @param controller The controller that initiated the command request.
-         * @param command_request Message data regarding the specific request.
+         * @param command The name/crc of the command.
+         * @return New instance of the specified command.
          */
-        virtual std::shared_ptr<CommandInterface> CreateCommand(
-            const std::shared_ptr<object::ObjectController>& controller,
-            const swganh::messages::controllers::CommandQueueEnqueue& command_request) = 0;
+        virtual std::shared_ptr<CommandInterface> CreateCommand(anh::HashString command) = 0;
     };
 
 }}

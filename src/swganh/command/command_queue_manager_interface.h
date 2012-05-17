@@ -39,6 +39,14 @@ namespace command {
          * @param queue_owner_id The id of the object that owns the queue to be removed.
          */
         virtual void RemoveQueue(uint64_t queue_owner_id) = 0;
+
+        virtual void ClearQueues() = 0;
+        
+        virtual void SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command) = 0;
+
+        virtual void ClearDefaultCommand(uint64_t queue_owner_id) = 0;
+        
+        virtual bool HasDefaultCommand(uint64_t queue_owner_id) = 0;
     };
 
 }}
