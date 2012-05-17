@@ -94,15 +94,45 @@ void CommandService::RemoveCommandCreator(anh::HashString command)
     command_factory_impl_->RemoveCommandCreator(command);
 }
 
+std::shared_ptr<CommandInterface> CommandService::CreateCommand(anh::HashString command)
+{
+    return command_factory_impl_->CreateCommand(command);
+}
+
+void CommandService::EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command)
+{
+    command_queue_manager_impl_->EnqueueCommand(command);
+}
+
 void CommandService::EnqueueCommandRequest(
     const std::shared_ptr<ObjectController>& controller,
     CommandQueueEnqueue command_request)
 {
-    auto command = command_factory_impl_->CreateCommand(controller, command_request);
+    auto command = command_factory_impl_->CreateCommand(command_request.command_crc);
     if (command)
     {
-        command_queue_manager_impl_->EnqueueCommand(command);
+        auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
+
+        swg_command->SetController(controller);
+        swg_command->SetCommandRequest(command_request);
+
+        EnqueueCommand(swg_command);
     }
+}
+
+void CommandService::SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command)
+{
+    command_queue_manager_impl_->SetDefaultCommand(queue_owner_id, command);
+}
+
+void CommandService::ClearDefaultCommand(uint64_t queue_owner_id)
+{
+    command_queue_manager_impl_->ClearDefaultCommand(queue_owner_id);
+}
+
+bool CommandService::HasDefaultCommand(uint64_t queue_owner_id)
+{
+    return command_queue_manager_impl_->HasDefaultCommand(queue_owner_id);
 }
         
 std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForEnqueue(CommandInterface* command)
@@ -136,6 +166,11 @@ void CommandService::Start()
 
     SubscribeObjectReadyEvent(event_dispatcher);
     SubscribeObjectRemovedEvent(event_dispatcher);
+}
+
+void CommandService::Stop()
+{
+    command_queue_manager_impl_->ClearQueues();
 }
 
 void CommandService::SendCommandQueueRemove(

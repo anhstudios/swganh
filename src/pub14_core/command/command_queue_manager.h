@@ -25,6 +25,14 @@ namespace command {
         virtual void AddQueue(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandQueueInterface>& command_queue);
 
         virtual void RemoveQueue(uint64_t queue_owner_id);
+        
+        virtual void ClearQueues();
+
+        virtual void SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command);
+
+        virtual void ClearDefaultCommand(uint64_t queue_owner_id);
+
+        virtual bool HasDefaultCommand(uint64_t queue_owner_id);
 
     private:        
         typedef std::map<

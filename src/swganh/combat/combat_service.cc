@@ -104,11 +104,6 @@ void CombatService::SendCombatAction(BaseCombatCommand* command)
     {
         SingleTargetCombatAction(actor, target, combat_data);
         SendCombatActionMessage(actor, target, combat_data);
-        
-        //if (command->GetCommandName().compare("attack") == 0 && actor->IsAutoAttacking())
-        //{
-        //    command_service_->EnqueueCommandRequest(command->GetController(), command->GetCommandRequest());
-        //}
     }
 }
 
@@ -148,14 +143,48 @@ bool CombatService::InitiateCombat(
 
     // Add Combat
     attacker->ToggleStateOn(COMBAT);
+    attacker->ToggleStateOff(PEACE);
     creature_target->ToggleStateOn(COMBAT);
+    creature_target->ToggleStateOff(PEACE);
     if (!creature_target->IsDefending(attacker->GetObjectId()))
     {
         creature_target->AddDefender(attacker->GetObjectId());
+        
+        auto auto_command = command_service_->CreateCommand("attack");
+        auto swg_command = std::static_pointer_cast<BaseSwgCommand>(auto_command);
+
+        if (creature_target->HasController())
+        {
+            swg_command->SetController(creature_target->GetController());
+        }
+        
+        CommandQueueEnqueue request;
+        request.observable_id = creature_target->GetObjectId();
+        request.target_id = attacker->GetObjectId();
+
+        swg_command->SetCommandRequest(request);
+
+        command_service_->SetDefaultCommand(creature_target->GetObjectId(), swg_command);
     }
     if (!attacker->IsDefending(creature_target->GetObjectId()))
     {
         attacker->AddDefender(creature_target->GetObjectId());
+        
+        auto auto_command = command_service_->CreateCommand("attack");
+        auto swg_command = std::static_pointer_cast<BaseSwgCommand>(auto_command);
+        
+        if (attacker->HasController())
+        {
+            auto_command->SetController(attacker->GetController());
+        }
+
+        CommandQueueEnqueue request;
+        request.observable_id = attacker->GetObjectId();
+        request.target_id = creature_target->GetObjectId();
+
+        swg_command->SetCommandRequest(request);
+        
+        command_service_->SetDefaultCommand(attacker->GetObjectId(), swg_command);
     }
     
     return true;
@@ -666,8 +695,11 @@ void CombatService::EndCombat(const shared_ptr<Creature>& attacker, const shared
     attacker->ClearAutoAttack();
     attacker->ToggleStateOff(COMBAT);
     // For Some Reason This Crashes...
-    attacker->RemoveDefender(target->GetObjectId());
+    attacker->RemoveDefender(target->GetObjectId());    
+    command_service_->ClearDefaultCommand(attacker->GetObjectId());
+
     target->RemoveDefender(attacker->GetObjectId());
+    command_service_->ClearDefaultCommand(target->GetObjectId());
     attacker->SetTargetId(0);
     // End Duel
     EndDuel(attacker, target);

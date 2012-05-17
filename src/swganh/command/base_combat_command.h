@@ -14,9 +14,7 @@ namespace command {
     public:
         BaseCombatCommand(
             swganh::app::SwganhKernel* kernel,
-            const CommandProperties& properties,
-            const std::shared_ptr<object::ObjectController>& controller,
-            const swganh::messages::controllers::CommandQueueEnqueue& command_request);
+            const CommandProperties& properties);
 
         virtual ~BaseCombatCommand();
         

@@ -18,15 +18,9 @@ namespace chat {
     public:
         SpatialChatInternalCommand(
             app::SwganhKernel* kernel,
-            const command::CommandProperties& properties,
-            const std::shared_ptr<object::ObjectController>& controller,
-            const messages::controllers::CommandQueueEnqueue& command);
+            const command::CommandProperties& properties);
 
         virtual ~SpatialChatInternalCommand();
-        
-        virtual void Setup();
-
-        virtual bool Validate();
 
         virtual boost::optional<std::shared_ptr<command::CommandCallback>> Run();
 

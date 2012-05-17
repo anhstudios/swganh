@@ -32,13 +32,16 @@ CommandQueue::CommandQueue(
     : kernel_(kernel)
     , timer_(kernel->GetIoService())
     , processing_(false)
+    , default_command_(nullptr)
     , active_(kernel->GetIoService())
 {
     command_service_ = kernel->GetServiceManager()->GetService<CommandService>("CommandService");
 }
 
 CommandQueue::~CommandQueue()
-{}
+{
+    timer_.cancel();
+}
 
 void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& command)
 {   
@@ -54,7 +57,11 @@ void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& comma
     {
         if (swg_command->IsQueuedCommand())
         {
-            queue_.push(swg_command);
+            {
+                boost::lock_guard<boost::mutex> queue_lg(queue_mutex_);
+                queue_.push(swg_command);
+            }
+
             Notify();
         }
         else
@@ -66,6 +73,23 @@ void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& comma
     {
         command_service_->SendCommandQueueRemove(swg_command->GetController(), swg_command->GetActionCounter(), swg_command->GetDefaultTime(), error, action);
     }
+}
+
+void CommandQueue::SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command)
+{
+    default_command_ = std::static_pointer_cast<BaseSwgCommand>(command);
+
+    Notify();
+}
+
+void CommandQueue::ClearDefaultCommand()
+{
+    default_command_ = nullptr;
+}
+
+bool CommandQueue::HasDefaultCommand()
+{
+    return default_command_ != nullptr;
 }
 
 void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwgCommand>& command)
@@ -106,28 +130,24 @@ void CommandQueue::Notify()
     {
         processing_ = true;
         process_lg.unlock();
+        
+        if (auto command = GetNextCommand())
+        {           
+            ProcessCommand(command);
 
-
-        boost::unique_lock<boost::mutex> queue_lg(queue_mutex_);
-        if (!queue_.empty())
-        {
-            std::shared_ptr<BaseSwgCommand> command = queue_.top();
-            queue_.pop();
-            queue_lg.unlock();
-            
-            timer_.expires_from_now(boost::posix_time::seconds(static_cast<uint64_t>(command->GetDefaultTime())));
+            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(2000)));
             timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
+                if (!ec && this)
                 {
-                    boost::lock_guard<boost::mutex> lg(process_mutex_);
-                    processing_ = false;
+                    {
+                        boost::lock_guard<boost::mutex> lg(process_mutex_);
+                        processing_ = false;
+                    }
+            
+                    this->Notify();
                 }
-            
-                this->Notify();
             });
-
-            
-            ProcessCommand(command);
         }
         else
         {
@@ -148,4 +168,24 @@ void CommandQueue::HandleCallback(std::shared_ptr<CommandCallback> callback)
             HandleCallback(*new_callback);
         }
     });
+}
+
+std::shared_ptr<swganh::command::BaseSwgCommand> CommandQueue::GetNextCommand()
+{
+    std::shared_ptr<BaseSwgCommand> command = nullptr;
+
+    {
+        boost::lock_guard<boost::mutex> queue_lg(queue_mutex_);
+        if (!queue_.empty())
+        {
+            command = queue_.top();
+            queue_.pop();
+        }
+        else
+        {
+            command = default_command_;
+        }
+    }
+
+    return command;
 }
