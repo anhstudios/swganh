@@ -63,3 +63,15 @@ void CommandQueueManager::ClearDefaultCommand(uint64_t queue_owner_id)
         find_iter->second->ClearDefaultCommand();
     }
 }
+
+bool CommandQueueManager::HasDefaultCommand(uint64_t queue_owner_id)
+{
+    boost::lock_guard<boost::mutex> lg(queue_map_mutex_);
+    auto find_iter = queue_map_.find(queue_owner_id);
+    if (find_iter != queue_map_.end())
+    {
+        return find_iter->second->HasDefaultCommand();
+    }
+
+    return false;
+}

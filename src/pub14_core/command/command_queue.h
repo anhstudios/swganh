@@ -38,6 +38,7 @@ namespace command {
         virtual void EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
         virtual void SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
         virtual void ClearDefaultCommand();
+        virtual bool HasDefaultCommand();
 
     private:
         void ProcessCommand(const std::shared_ptr<swganh::command::BaseSwgCommand>& command);

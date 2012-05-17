@@ -34,6 +34,8 @@ namespace command {
 
         void RemoveCommandCreator(anh::HashString command);
         
+        std::shared_ptr<swganh::command::CommandInterface> CreateCommand(anh::HashString command);
+
         void EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
 
         void SendCommandQueueRemove(
@@ -61,6 +63,8 @@ namespace command {
         void SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command);
 
         void ClearDefaultCommand(uint64_t queue_owner_id);
+
+        bool HasDefaultCommand(uint64_t queue_owner_id);
 
     private:
         void SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher);

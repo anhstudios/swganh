@@ -42,6 +42,7 @@ namespace command {
         virtual void EnqueueCommand(const std::shared_ptr<CommandInterface>& command) = 0;
         virtual void SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command) = 0;
         virtual void ClearDefaultCommand() = 0;
+        virtual bool HasDefaultCommand() = 0;
     };
 
 }}  // namespace swganh::command

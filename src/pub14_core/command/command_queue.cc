@@ -79,6 +79,11 @@ void CommandQueue::ClearDefaultCommand()
     default_command_ = nullptr;
 }
 
+bool CommandQueue::HasDefaultCommand()
+{
+    return default_command_ != nullptr;
+}
+
 void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwgCommand>& command)
 {
     try {

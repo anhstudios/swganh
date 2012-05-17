@@ -94,23 +94,30 @@ void CommandService::RemoveCommandCreator(anh::HashString command)
     command_factory_impl_->RemoveCommandCreator(command);
 }
 
+std::shared_ptr<CommandInterface> CommandService::CreateCommand(anh::HashString command)
+{
+    return command_factory_impl_->CreateCommand(command);
+}
+
+void CommandService::EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command)
+{
+    command_queue_manager_impl_->EnqueueCommand(command);
+}
+
 void CommandService::EnqueueCommandRequest(
     const std::shared_ptr<ObjectController>& controller,
     CommandQueueEnqueue command_request)
 {
-    kernel_->GetIoService().post([this, controller, command_request] ()
+    auto command = command_factory_impl_->CreateCommand(command_request.command_crc);
+    if (command)
     {
-        auto command = command_factory_impl_->CreateCommand(command_request.command_crc);
-        if (command)
-        {
-            auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
+        auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
 
-            swg_command->SetController(controller);
-            swg_command->SetCommandRequest(command_request);
+        swg_command->SetController(controller);
+        swg_command->SetCommandRequest(command_request);
 
-            command_queue_manager_impl_->EnqueueCommand(swg_command);
-        }
-    });
+        EnqueueCommand(swg_command);
+    }
 }
 
 void CommandService::SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command)
@@ -121,6 +128,11 @@ void CommandService::SetDefaultCommand(uint64_t queue_owner_id, const std::share
 void CommandService::ClearDefaultCommand(uint64_t queue_owner_id)
 {
     command_queue_manager_impl_->ClearDefaultCommand(queue_owner_id);
+}
+
+bool CommandService::HasDefaultCommand(uint64_t queue_owner_id)
+{
+    return command_queue_manager_impl_->HasDefaultCommand(queue_owner_id);
 }
         
 std::tuple<bool, uint32_t, uint32_t> CommandService::ValidateForEnqueue(CommandInterface* command)

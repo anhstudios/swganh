@@ -30,6 +30,8 @@ namespace command {
 
         virtual void ClearDefaultCommand(uint64_t queue_owner_id);
 
+        virtual bool HasDefaultCommand(uint64_t queue_owner_id);
+
     private:        
         typedef std::map<
             uint64_t,
