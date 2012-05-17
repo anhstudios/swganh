@@ -1,4 +1,6 @@
 #python directories
+set(ANH_PYTHON_BINDINGS "")
+
 add_subdirectory(app)
 add_subdirectory(command)
 add_subdirectory(combat)
@@ -8,12 +10,10 @@ add_subdirectory(social)
 add_subdirectory(simulation)
 add_subdirectory(utilities)
 
-
-message(${ANH_PYTHON_BINDINGS})
 add_custom_target(
     swgpy ALL
     DEPENDS
-        ${ANH_PYTHON_BINDINGS}
+        swgpy_app swgpy_command swgpy_combat swgpy_messages swgpy_object swgpy_social swgpy_simulation swgpy_utilities
     COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
     VERBATIM
