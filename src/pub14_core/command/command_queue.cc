@@ -39,7 +39,9 @@ CommandQueue::CommandQueue(
 }
 
 CommandQueue::~CommandQueue()
-{}
+{
+    timer_.cancel();
+}
 
 void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& command)
 {   
@@ -55,7 +57,11 @@ void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& comma
     {
         if (swg_command->IsQueuedCommand())
         {
-            queue_.push(swg_command);
+            {
+                boost::lock_guard<boost::mutex> queue_lg(queue_mutex_);
+                queue_.push(swg_command);
+            }
+
             Notify();
         }
         else
@@ -72,6 +78,8 @@ void CommandQueue::EnqueueCommand(const std::shared_ptr<CommandInterface>& comma
 void CommandQueue::SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command)
 {
     default_command_ = std::static_pointer_cast<BaseSwgCommand>(command);
+
+    Notify();
 }
 
 void CommandQueue::ClearDefaultCommand()
@@ -130,7 +138,7 @@ void CommandQueue::Notify()
             timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(2000)));
             timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
-                if (!ec)
+                if (!ec && this)
                 {
                     {
                         boost::lock_guard<boost::mutex> lg(process_mutex_);

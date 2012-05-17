@@ -50,6 +50,12 @@ void CommandQueueManager::RemoveQueue(uint64_t queue_owner_id)
     queue_map_.erase(queue_owner_id);
 }
         
+void CommandQueueManager::ClearQueues()
+{
+    boost::lock_guard<boost::mutex> lg(queue_map_mutex_);
+    queue_map_.clear();
+}
+        
 void CommandQueueManager::SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command)
 {
     CommandQueueInterface* queue = nullptr;

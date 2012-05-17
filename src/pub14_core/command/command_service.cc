@@ -168,6 +168,11 @@ void CommandService::Start()
     SubscribeObjectRemovedEvent(event_dispatcher);
 }
 
+void CommandService::Stop()
+{
+    command_queue_manager_impl_->ClearQueues();
+}
+
 void CommandService::SendCommandQueueRemove(
     const std::shared_ptr<ObjectController>& controller,
     uint32_t action_counter,
