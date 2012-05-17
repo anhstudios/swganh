@@ -124,19 +124,22 @@ void CommandQueue::Notify()
         process_lg.unlock();
         
         if (auto command = GetNextCommand())
-        {            
-            timer_.expires_from_now(boost::posix_time::seconds(static_cast<uint64_t>(command->GetDefaultTime())));
+        {           
+            ProcessCommand(command);
+
+            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(2000)));
             timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
+                if (!ec)
                 {
-                    boost::lock_guard<boost::mutex> lg(process_mutex_);
-                    processing_ = false;
+                    {
+                        boost::lock_guard<boost::mutex> lg(process_mutex_);
+                        processing_ = false;
+                    }
+            
+                    this->Notify();
                 }
-            
-                this->Notify();
             });
-            
-            ProcessCommand(command);
         }
         else
         {

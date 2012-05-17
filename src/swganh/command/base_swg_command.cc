@@ -114,7 +114,7 @@ const std::shared_ptr<Creature>& BaseSwgCommand::GetActor() const
 
 const std::shared_ptr<Tangible>& BaseSwgCommand::GetTarget() const
 {
-    if (!actor_)
+    if (!target_)
     {
         auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
         target_ = simulation_service->GetObjectById<Tangible>(command_request_.target_id);
