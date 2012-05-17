@@ -8,6 +8,8 @@ add_subdirectory(social)
 add_subdirectory(simulation)
 add_subdirectory(utilities)
 
+
+message(${ANH_PYTHON_BINDINGS})
 add_custom_target(
     swgpy ALL
     DEPENDS
