@@ -81,10 +81,12 @@ public:
      * @param message The message to be handled by the active object.
      */
     template<typename Handler>
-    void AsyncRepeated(boost::posix_time::time_duration period, Handler&& func) {
+    std::shared_ptr<boost::asio::deadline_timer> AsyncRepeated(boost::posix_time::time_duration period, Handler&& func) {
         auto shared_func = std::make_shared<Handler>(std::move(func));
+        
+        auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);   
 
-        Async([this, period, shared_func] () {
+        Async([this, timer, period, shared_func] () {
             (*shared_func)();
             
             auto wrapped_func = [shared_func] (const boost::system::error_code& error) {
@@ -92,12 +94,12 @@ public:
                     (*shared_func)();
                 }
             };
-
-            auto timer = std::make_shared<boost::asio::deadline_timer>(io_service_);    
             
             timer->expires_from_now(period);
             timer->async_wait(RepeatHandler<decltype(wrapped_func)>(timer, period, wrapped_func));              
         });
+
+        return timer;
     }
 private:
     ActiveObject();
