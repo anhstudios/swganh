@@ -58,6 +58,8 @@ public:
         uint16_t listen_port, 
         uint16_t ping_port, 
         swganh::app::SwganhKernel* kernel);
+    
+    ~ConnectionService();
 
     anh::service::ServiceDescription GetServiceDescription();
     
@@ -113,6 +115,7 @@ private:
     std::string listen_address_;
     uint16_t listen_port_;
     uint16_t ping_port_;
+    std::shared_ptr<boost::asio::deadline_timer> session_timer_;
 };
     
 }}  // namespace swganh::connection

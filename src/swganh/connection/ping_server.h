@@ -5,6 +5,7 @@
 #define SWGANH_CONNECTION_PING_SERVER_H_
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include <boost/asio.hpp>
@@ -36,8 +37,9 @@ private:
     PingServer();
     PingServer(const PingServer&);
     PingServer& operator=(const PingServer&);
-
+    
     void AsyncReceive();
+
     void HandleReceive(const boost::system::error_code& error, size_t bytesReceived);
     void HandleSend(const boost::system::error_code& error, size_t bytesSent);
 

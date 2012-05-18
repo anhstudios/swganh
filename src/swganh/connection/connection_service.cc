@@ -65,6 +65,11 @@ ConnectionService::ConnectionService(
     character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
 }
 
+ConnectionService::~ConnectionService()
+{
+    session_timer_->cancel();
+}
+
 ServiceDescription ConnectionService::GetServiceDescription() {
     auto listen_address = Resolve(listen_address_);
 
@@ -92,7 +97,7 @@ void ConnectionService::Start() {
 
     Server::Start(listen_port_);
 
-    active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+    session_timer_ = active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_),

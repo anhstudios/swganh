@@ -64,7 +64,10 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKe
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
 }
 
-LoginService::~LoginService() {}
+LoginService::~LoginService() {
+    session_timer_->cancel();
+    session_timer_.reset();
+}
 
 service::ServiceDescription LoginService::GetServiceDescription() {
     auto listen_address = Resolve(listen_address_);
@@ -139,7 +142,7 @@ void LoginService::Start() {
 
     UpdateGalaxyStatus_();
 
-    active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+    session_timer_ = active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_),
