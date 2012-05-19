@@ -28,7 +28,6 @@ namespace Concurrency {
 #endif
 
 #include "anh/active_object.h"
-#include "anh/delayed_task_processor.h"
 #include "anh/random_generator.h"
 #include "anh/service/service_interface.h"
 
