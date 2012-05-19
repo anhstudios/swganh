@@ -39,7 +39,7 @@ public:
     
     anh::service::ServiceDescription GetServiceDescription();
 
-    void Start();
+    void Startup();
 
 private:
     void HandleClientRandomNameRequest_(

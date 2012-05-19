@@ -180,7 +180,7 @@ namespace simulation {
             SendToAllInScene(message_buffer, scene_id);
         }
 
-        void Start();
+        void Startup();
 
     private:
 

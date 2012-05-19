@@ -93,7 +93,7 @@ void ChatService::SendSpatialChat(
     actor->NotifyObservers(spatial_chat);
 }
 
-void ChatService::Start()
+void ChatService::Startup()
 {
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 

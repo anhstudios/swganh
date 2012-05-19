@@ -123,7 +123,7 @@ shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
     return CreateSession(endpoint);
 }
 
-void LoginService::Start() {
+void LoginService::Startup() {
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterService>("CharacterService");
 	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyService>("GalaxyService");
     
@@ -138,7 +138,7 @@ void LoginService::Start() {
         UpdateGalaxyStatus_();
     });
 
-    Server::Start(listen_port_);
+    Server::Startup(listen_port_);
 
     UpdateGalaxyStatus_();
 
@@ -154,7 +154,7 @@ void LoginService::Start() {
     });
 }
 
-void LoginService::Stop()
+void LoginService::Shutdown()
 {
     // Remove all the sessions
     account_provider_->EndSessions();

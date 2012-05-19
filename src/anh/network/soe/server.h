@@ -37,7 +37,7 @@ public:
      * 
      * @parama port The port to listen for messages on.
      */
-    void Start(uint16_t port);
+    void Startup(uint16_t port);
     
     /**
      * @brief

@@ -69,8 +69,8 @@ public:
     
     std::shared_ptr<ConnectionClient> FindConnectionByPlayerId(uint64_t player_id);
     
-    void Start();
-    void Stop();
+    void Startup();
+    void Shutdown();
 
     const std::string& listen_address();
 

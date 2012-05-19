@@ -68,7 +68,7 @@ service::ServiceDescription CharacterService::GetServiceDescription() {
     return service_description;
 }
 
-void CharacterService::Start() {
+void CharacterService::Startup() {
     auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
 
     connection_service->RegisterMessageHandler(

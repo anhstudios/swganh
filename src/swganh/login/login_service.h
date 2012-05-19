@@ -84,8 +84,9 @@ public:
     int login_error_timeout_secs() const;
     void login_error_timeout_secs(int new_timeout);
     
-    void Start();
-    void Stop();
+    void Startup();
+
+    void Shutdown();
 
 private:
     LoginService();

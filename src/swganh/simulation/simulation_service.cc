@@ -505,7 +505,7 @@ void SimulationService::SendToAllInScene(ByteBuffer message, uint32_t scene_id)
     impl_->SendToAllInScene(message, scene_id);
 }
 
-void SimulationService::Start()
+void SimulationService::Startup()
 {
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
 

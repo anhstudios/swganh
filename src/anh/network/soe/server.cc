@@ -26,7 +26,7 @@ Server::~Server(void)
 {	
 }
 
-void Server::Start(uint16_t port)
+void Server::Startup(uint16_t port)
 {
     socket_.open(udp::v4());
     socket_.bind(udp::endpoint(udp::v4(), port));
