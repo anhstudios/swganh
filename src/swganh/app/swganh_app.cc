@@ -135,7 +135,6 @@ SwganhApp::~SwganhApp()
 {
     Stop();
 
-    galaxy_timer_.reset();
     kernel_.reset();
 
     io_work_.~work();
@@ -209,10 +208,6 @@ void SwganhApp::Start() {
     }
     
     kernel_->GetServiceManager()->Start();
-    
-    galaxy_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
-
-    galaxy_timer_->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, 10));
 }
 
 void SwganhApp::Stop() {
@@ -360,23 +355,6 @@ void SwganhApp::LoadCoreServices_()
 	// always need a galaxy service running
 	kernel_->GetServiceManager()->AddService("GalaxyService", 
         std::make_shared<GalaxyService>(kernel_.get()));
-}
-
-    
-void SwganhApp::GalaxyStatusTimerHandler_(const boost::system::error_code& e, int delay_in_secs)
-{
-    if (!e)
-    {
-        kernel_->GetServiceDirectory()->updateGalaxyStatus();
-        
-        kernel_->GetEventDispatcher()->Dispatch(make_shared<BaseEvent>("UpdateGalaxyStatus"));
-    }
-
-    if (galaxy_timer_)
-    {
-        galaxy_timer_->expires_from_now(boost::posix_time::seconds(delay_in_secs));    
-        galaxy_timer_->async_wait(std::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, std::placeholders::_1, delay_in_secs));
-    }
 }
 
 void SwganhApp::SetupLogging_()
