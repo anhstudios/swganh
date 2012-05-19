@@ -55,11 +55,11 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKe
     , listen_port_(listen_port)
     , active_(kernel->GetIoService())
 {
-    account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
+    account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("Login::AccountProvider");
     
-    shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
+    shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("Login::Encoder");
 
-    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
 }

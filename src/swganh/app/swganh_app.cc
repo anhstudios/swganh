@@ -12,6 +12,12 @@
 #include <fstream>
 #include <iostream>
 
+#ifdef WIN32
+#include <regex>
+#else
+#include <boost/regex.hpp>
+#endif
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
 
@@ -26,8 +32,6 @@
 
 #include "swganh/chat/chat_service.h"
 #include "swganh/character/character_service.h"
-#include "swganh/command/command_service_interface.h"
-#include "swganh/command/command_filter.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
@@ -50,6 +54,19 @@ using namespace swganh::connection;
 using namespace swganh::combat;
 using namespace swganh::simulation;
 using namespace swganh::galaxy;
+
+using anh::plugin::RegistrationMap;
+
+#ifdef WIN32
+using std::wregex;
+using std::wsmatch;
+using std::regex_match;
+#else
+using boost::wregex;
+using boost::wsmatch;
+using boost::regex_match;
+#endif
+
 
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
@@ -281,6 +298,26 @@ void SwganhApp::CleanupServices_() {
 
 void SwganhApp::LoadCoreServices_() 
 {
+    
+    auto plugin_manager = kernel_->GetPluginManager();
+
+    auto registration_map = plugin_manager->registration_map();
+
+    regex rx("(?:.*\\:\\:)(.*Service)");
+    smatch m;
+    
+    for_each(registration_map.begin(), registration_map.end(), [this, &rx, &m] (RegistrationMap::value_type& entry) {
+        std::string name = entry.first;
+
+        if (entry.first.length() > 7 && regex_match(name, m, rx)) {
+            auto service_name = m[1].str();
+
+            auto service = kernel_->GetPluginManager()->CreateObject<anh::service::ServiceInterface>(name);
+
+            kernel_->GetServiceManager()->AddService(service_name, service);
+        }
+    });
+
     auto app_config = kernel_->GetAppConfig();
 
 	if(strcmp("login", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
@@ -310,25 +347,7 @@ void SwganhApp::LoadCoreServices_()
 
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-        auto command_service = kernel_->GetPluginManager()->CreateObject<swganh::command::CommandServiceInterface>("Command::CommandService");
-    
-		// add filters
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
-        command_service->AddCommandEnqueueFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
-        command_service->AddCommandProcessFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
-    
 		// These will be loaded in alphabetical order because of how std::map generates its keys
-		kernel_->GetServiceManager()->AddService(
-            "CommandService", 
-            command_service);
-    
 		kernel_->GetServiceManager()->AddService(
 			"CombatService",
 			std::make_shared<CombatService>(kernel_.get()));

@@ -1,27 +1,25 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef WIN32
-#include <Python.h>
-#endif
-
-#include "base_swg_command.h"
 #include "command_filter.h"
-#include "command_interface.h"
-#include "command_properties.h"
+
+#include "swganh/command/base_swg_command.h"
+#include "swganh/command/command_interface.h"
+#include "swganh/command/command_properties.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/player/player.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
-using namespace swganh::command;
-using namespace swganh::object;
-using namespace swganh::object::creature;
-using namespace swganh::object::tangible;
-using namespace swganh::messages::controllers;
-using namespace std;
+using pub14_core::command::CommandFilters;
+using swganh::command::BaseSwgCommand;
+using swganh::command::CommandInterface;
+using swganh::object::creature::Creature;
+using swganh::object::player::Player;
+using swganh::object::tangible::Tangible;
 
-tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(CommandInterface* command)
+
+std::tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(CommandInterface* command)
 {
     BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
 
@@ -46,10 +44,10 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(CommandInterfa
 	{
 		check_passed = true;
 	}
-	return tie(check_passed, error, action);
+	return std::tie(check_passed, error, action);
 }
 
-tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(CommandInterface* command)
+std::tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(CommandInterface* command)
 {
     //BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
 
@@ -66,10 +64,10 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::PostureCheckFilter(CommandInterf
 	//	error = CANNOT_WHILE_IN_POSTURE;
 	//	action = current_posture;
 	//}
-	return tie (check_passed, error, action);
+	return std::tie (check_passed, error, action);
 }
 
-tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(CommandInterface* command)
+std::tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(CommandInterface* command)
 {
     BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
 
@@ -89,10 +87,10 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(CommandInterfac
 		error = CANNOT_WHILE_IN_STATE;
 		action = GetLowestCommonBit(current_state, swg_command->GetAllowedStateBitmask());
 	}
-	return tie (check_passed, error, action);
+	return std::tie (check_passed, error, action);
 }
 
-tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(CommandInterface* command)
+std::tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(CommandInterface* command)
 {
     BaseSwgCommand* swg_command = static_cast<BaseSwgCommand*>(command);
 
@@ -118,7 +116,7 @@ tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(CommandInterf
 	else
 		check_passed = true;
 
-	return tie (check_passed, error, action);
+	return std::tie (check_passed, error, action);
 }
 
 std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(CommandInterface* command)
@@ -135,7 +133,7 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(Com
     {
         if (target->GetType() == Creature::type)
         {
-            auto creature = static_pointer_cast<Creature>(target);
+            auto creature = std::static_pointer_cast<Creature>(target);
             // @TODO: Fix this, we need more checking in here
             // target type of 2 seems to suggest the action NEEDs a target and 1 that it CAN have a target
             switch(swg_command->GetTargetRequiredType())
@@ -158,7 +156,7 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::CombatTargetCheckFilter(Com
     }
     if (!check_passed) error = INVALID_TARGET;
 
-    return tie (check_passed, error, action);
+    return std::tie (check_passed, error, action);
 }
 
 uint32_t CommandFilters::GetLowestCommonBit(uint64_t creature_mask, uint64_t command_properties_mask)

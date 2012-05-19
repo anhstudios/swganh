@@ -15,6 +15,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include "command_factory.h"
+#include "command_filter.h"
 #include "command_properties_manager.h"
 #include "command_queue.h"
 #include "command_queue_manager.h"
@@ -90,7 +91,21 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 
     { // Command::CommandService
         registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-            return new CommandService(kernel);
+            auto command_service = new CommandService(kernel);
+            
+            // add filters
+            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
+            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
+            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
+            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
+            command_service->AddCommandEnqueueFilter(std::bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
+            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
+            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
+            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
+            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
+            command_service->AddCommandProcessFilter(std::bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
+
+            return command_service;
         };
 
         registration.DestroyObject = [] (void * object) {

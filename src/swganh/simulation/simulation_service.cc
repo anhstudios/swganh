@@ -72,7 +72,7 @@ public:
     SimulationServiceImpl(SwganhKernel* kernel)
         : kernel_(kernel)
     {
-		spatial_provider_ = kernel->GetPluginManager()->CreateObject<SpatialProviderInterface>("SimulationService::SpatialProvider");
+		spatial_provider_ = kernel->GetPluginManager()->CreateObject<SpatialProviderInterface>("Simulation::SpatialProvider");
     }
 
     const shared_ptr<ObjectManager>& GetObjectManager()

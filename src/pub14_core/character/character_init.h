@@ -37,7 +37,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         }
     };
 
-    kernel->GetPluginManager()->RegisterObject("CharacterService::CharacterProvider", &registration);    
+    kernel->GetPluginManager()->RegisterObject("Character::CharacterProvider", &registration);    
 }
 
 }}  // namespace swganh_core::mysql_auth

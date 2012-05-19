@@ -36,7 +36,7 @@ using swganh::character::CharacterProviderInterface;
 SocialService::SocialService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
-    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 }
 
 SocialService::~SocialService()

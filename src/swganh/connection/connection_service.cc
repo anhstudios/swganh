@@ -60,9 +60,9 @@ ConnectionService::ConnectionService(
     , ping_port_(ping_port)
 {
 
-    session_provider_ = kernel_->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
+    session_provider_ = kernel_->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("Login::SessionProvider");
 
-    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 }
 
 ConnectionService::~ConnectionService()

@@ -23,7 +23,7 @@ using namespace std;
 GalaxyService::GalaxyService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
-	galaxy_provider_ = kernel->GetPluginManager()->CreateObject<providers::GalaxyProviderInterface>("GalaxyService::GalaxyProvider");
+	galaxy_provider_ = kernel->GetPluginManager()->CreateObject<providers::GalaxyProviderInterface>("Galaxy::GalaxyProvider");
 }
 
 GalaxyService::~GalaxyService()
