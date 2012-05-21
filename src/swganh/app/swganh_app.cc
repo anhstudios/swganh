@@ -58,12 +58,12 @@ using namespace swganh::galaxy;
 using anh::plugin::RegistrationMap;
 
 #ifdef WIN32
-using std::wregex;
-using std::wsmatch;
+using std::regex;
+using std::smatch;
 using std::regex_match;
 #else
-using boost::wregex;
-using boost::wsmatch;
+using boost::regex;
+using boost::smatch;
 using boost::regex_match;
 #endif
 
