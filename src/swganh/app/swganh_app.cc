@@ -138,7 +138,7 @@ options_description AppConfig::BuildConfigDescription() {
 
 SwganhApp::SwganhApp(int argc, char* argv[])
     : io_service_()
-    , io_work_(io_service_)
+    , io_work_(new boost::asio::io_service::work(io_service_))
 {
     kernel_ = make_shared<SwganhKernel>(io_service_);
     running_ = false;
@@ -153,8 +153,7 @@ SwganhApp::~SwganhApp()
     Stop();
 
     kernel_.reset();
-
-    io_work_.~work();
+    io_work_.reset();
     
     // join the threadpool threads until each one has exited.
     for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
@@ -300,7 +299,6 @@ void SwganhApp::LoadCoreServices_()
 {
     
     auto plugin_manager = kernel_->GetPluginManager();
-
     auto registration_map = plugin_manager->registration_map();
 
     regex rx("(?:.*\\:\\:)(.*Service)");

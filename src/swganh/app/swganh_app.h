@@ -77,7 +77,7 @@ private:
     void SetupLogging_();
     
     boost::asio::io_service io_service_;
-    boost::asio::io_service::work io_work_;
+    std::unique_ptr<boost::asio::io_service::work> io_work_;
     std::vector<boost::thread> io_threads_;
     std::shared_ptr<SwganhKernel> kernel_;
     std::atomic<bool> running_;
