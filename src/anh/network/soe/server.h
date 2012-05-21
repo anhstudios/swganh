@@ -37,7 +37,7 @@ public:
      * 
      * @parama port The port to listen for messages on.
      */
-    void Start(uint16_t port);
+    void Startup(uint16_t port);
     
     /**
      * @brief
@@ -65,9 +65,6 @@ private:
     Server();
     
     void AsyncReceive();
-
-    boost::asio::io_service& io_service_;
-    boost::asio::strand strand_;
     
     boost::asio::ip::udp::socket socket_;
     boost::asio::ip::udp::endpoint current_remote_endpoint_;

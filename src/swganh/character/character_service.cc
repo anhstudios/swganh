@@ -50,7 +50,7 @@ using swganh::app::SwganhKernel;
 CharacterService::CharacterService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
-    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 }
 
 CharacterService::~CharacterService() {}
@@ -68,7 +68,7 @@ service::ServiceDescription CharacterService::GetServiceDescription() {
     return service_description;
 }
 
-void CharacterService::Start() {
+void CharacterService::Startup() {
     auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
 
     connection_service->RegisterMessageHandler(

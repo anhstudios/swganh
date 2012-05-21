@@ -27,7 +27,7 @@ namespace Concurrency {
 
 #endif
 
-#include "anh/delayed_task_processor.h"
+#include "anh/active_object.h"
 #include "anh/random_generator.h"
 #include "anh/service/service_interface.h"
 
@@ -92,7 +92,7 @@ namespace combat {
         void EndDuel(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         void EndCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         
-		void Start();
+		void Startup();
 
         void SendCombatAction(swganh::command::BaseCombatCommand* command);
 
@@ -132,7 +132,7 @@ namespace combat {
 
         anh::RandomGenerator generator_;
 
-        std::unique_ptr<anh::SimpleDelayedTaskProcessor> delayed_task_;
+        anh::ActiveObject active_;
         swganh::app::SwganhKernel* kernel_;
     };
 

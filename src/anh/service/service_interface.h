@@ -19,11 +19,11 @@ public:
     /*
     * @brief Starts up the service, sets running_ to true
     */
-    virtual void Start() {}
+    virtual void Startup() {}
     /*
     * @brief Stops the service, sets running_ to false
     */
-    virtual void Stop() {}
+    virtual void Shutdown() {}
 
 };
 

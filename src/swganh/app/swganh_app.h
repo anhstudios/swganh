@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include <boost/asio/io_service.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/thread/thread.hpp>
@@ -30,7 +31,7 @@ public:
     /*!
      * @Brief Default constructor
      */
-    SwganhApp();
+    SwganhApp(int argc, char* argv[]);
     ~SwganhApp();
 
     /*!
@@ -65,17 +66,18 @@ public:
     SwganhKernel* GetAppKernel() const;
 
 private:
+    SwganhApp();
+
     void LoadAppConfig_(int argc, char* argv[]);
     void LoadPlugins_(std::vector<std::string> plugins);
     void LoadCoreServices_();
 
     void CleanupServices_();
-
-    void GalaxyStatusTimerHandler_(const boost::system::error_code& e,
-        std::shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs);
-
+    
     void SetupLogging_();
     
+    boost::asio::io_service io_service_;
+    std::unique_ptr<boost::asio::io_service::work> io_work_;
     std::vector<boost::thread> io_threads_;
     std::shared_ptr<SwganhKernel> kernel_;
     std::atomic<bool> running_;

@@ -67,7 +67,7 @@ struct AppConfig {
     
 class SwganhKernel : public anh::app::KernelInterface {
 public:
-    SwganhKernel();
+    explicit SwganhKernel(boost::asio::io_service& io_service);
     virtual ~SwganhKernel();
 
     const anh::app::Version& GetVersion();
@@ -89,6 +89,7 @@ public:
     swganh::tre::TreArchive* GetTreArchive();
 
 private:
+    SwganhKernel();
     anh::app::Version version_;
     swganh::app::AppConfig app_config_;
     
@@ -99,7 +100,7 @@ private:
     std::unique_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
     std::unique_ptr<swganh::tre::TreArchive> tre_archive_;
 
-    boost::asio::io_service io_service_;
+    boost::asio::io_service& io_service_;
 };
 
 }}  // namespace anh::app

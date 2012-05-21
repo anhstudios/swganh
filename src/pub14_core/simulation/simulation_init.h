@@ -38,7 +38,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         }
     };
 
-    kernel->GetPluginManager()->RegisterObject("SimulationService::SpatialProvider", &registration);  
+    kernel->GetPluginManager()->RegisterObject("Simulation::SpatialProvider", &registration);  
 }
 
 }}  // namespace swganh_core::galaxy

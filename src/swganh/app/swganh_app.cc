@@ -12,6 +12,12 @@
 #include <fstream>
 #include <iostream>
 
+#ifdef WIN32
+#include <regex>
+#else
+#include <boost/regex.hpp>
+#endif
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
 
@@ -26,8 +32,6 @@
 
 #include "swganh/chat/chat_service.h"
 #include "swganh/character/character_service.h"
-#include "swganh/command/command_service_interface.h"
-#include "swganh/command/command_filter.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service.h"
@@ -50,6 +54,19 @@ using namespace swganh::connection;
 using namespace swganh::combat;
 using namespace swganh::simulation;
 using namespace swganh::galaxy;
+
+using anh::plugin::RegistrationMap;
+
+#ifdef WIN32
+using std::regex;
+using std::smatch;
+using std::regex_match;
+#else
+using boost::regex;
+using boost::smatch;
+using boost::regex_match;
+#endif
+
 
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
@@ -119,14 +136,28 @@ options_description AppConfig::BuildConfigDescription() {
     return desc;
 }
 
-SwganhApp::SwganhApp() {
-    kernel_ = make_shared<SwganhKernel>();
+SwganhApp::SwganhApp(int argc, char* argv[])
+    : io_service_()
+    , io_work_(new boost::asio::io_service::work(io_service_))
+{
+    kernel_ = make_shared<SwganhKernel>(io_service_);
     running_ = false;
     initialized_ = false;
+
+    Initialize(argc, argv);
+    Start();
 }
 
 SwganhApp::~SwganhApp() 
-{}
+{
+    Stop();
+
+    kernel_.reset();
+    io_work_.reset();
+    
+    // join the threadpool threads until each one has exited.
+    for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
+}
 
 void SwganhApp::Initialize(int argc, char* argv[]) {
     // Init Logging
@@ -176,16 +207,13 @@ void SwganhApp::Start() {
     }
 
     running_ = true;
-    
-    // Create a work object so that io_service doesn't prematurely exit.
-    boost::asio::io_service::work io_work(kernel_->GetIoService());
 
     // Start up a threadpool for running io_service based tasks/active objects
     // The increment starts at 2 because the main thread of execution already counts
     // as thread in use as does the console thread.
     for (uint32_t i = 1; i < boost::thread::hardware_concurrency(); ++i) {
         boost::thread t([this] () {
-            kernel_->GetIoService().run();
+            io_service_.run();
         });
         
 #ifdef _WIN32
@@ -196,22 +224,10 @@ void SwganhApp::Start() {
     }
     
     kernel_->GetServiceManager()->Start();
-    
-    auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
-
-    timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 10));
 }
 
 void SwganhApp::Stop() {
     running_ = false;
-      
-    kernel_->GetServiceManager()->Stop();
-
-    // stop io handling    
-    kernel_->GetIoService().stop();
-    
-    // join the threadpool threads until each one has exited.
-    for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
 }
 
 bool SwganhApp::IsRunning() {
@@ -281,6 +297,25 @@ void SwganhApp::CleanupServices_() {
 
 void SwganhApp::LoadCoreServices_() 
 {
+    
+    auto plugin_manager = kernel_->GetPluginManager();
+    auto registration_map = plugin_manager->registration_map();
+
+    regex rx("(?:.*\\:\\:)(.*Service)");
+    smatch m;
+    
+    for_each(registration_map.begin(), registration_map.end(), [this, &rx, &m] (RegistrationMap::value_type& entry) {
+        std::string name = entry.first;
+
+        if (entry.first.length() > 7 && regex_match(name, m, rx)) {
+            auto service_name = m[1].str();
+
+            auto service = kernel_->GetPluginManager()->CreateObject<anh::service::ServiceInterface>(name);
+
+            kernel_->GetServiceManager()->AddService(service_name, service);
+        }
+    });
+
     auto app_config = kernel_->GetAppConfig();
 
 	if(strcmp("login", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
@@ -304,31 +339,13 @@ void SwganhApp::LoadCoreServices_()
 			app_config.connection_config.listen_port, 
 			app_config.connection_config.ping_port, 
 			kernel_.get());
-
+    
 		kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
 	}
 
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-        auto command_service = kernel_->GetPluginManager()->CreateObject<swganh::command::CommandServiceInterface>("Command::CommandService");
-
-		// add filters
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
-        command_service->AddCommandEnqueueFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1));
-        command_service->AddCommandProcessFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1));
-
 		// These will be loaded in alphabetical order because of how std::map generates its keys
-		kernel_->GetServiceManager()->AddService(
-            "CommandService", 
-            command_service);
-
 		kernel_->GetServiceManager()->AddService(
 			"CombatService",
 			std::make_shared<CombatService>(kernel_.get()));
@@ -340,32 +357,21 @@ void SwganhApp::LoadCoreServices_()
 		kernel_->GetServiceManager()->AddService(
             "ChatService", 
             std::make_shared<ChatService>(kernel_.get()));
-
+    
 		auto simulation_service = std::make_shared<SimulationService>(kernel_.get());
 		simulation_service->StartScene("corellia");
-
+    
 		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
-
+    
         kernel_->GetServiceManager()->AddService(
             "SocialService", 
             std::make_shared<social::SocialService>(kernel_.get()));
-
+    
 	}
 
 	// always need a galaxy service running
 	kernel_->GetServiceManager()->AddService("GalaxyService", 
         std::make_shared<GalaxyService>(kernel_.get()));
-}
-
-    
-void SwganhApp::GalaxyStatusTimerHandler_(const boost::system::error_code& e, shared_ptr<deadline_timer> timer, int delay_in_secs)
-{
-    kernel_->GetServiceDirectory()->updateGalaxyStatus();
-        
-    kernel_->GetEventDispatcher()->Dispatch(make_shared<BaseEvent>("UpdateGalaxyStatus"));
-
-    timer->expires_at(timer->expires_at() + boost::posix_time::seconds(delay_in_secs));    
-    timer->async_wait(std::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, std::placeholders::_1, timer, delay_in_secs));
 }
 
 void SwganhApp::SetupLogging_()

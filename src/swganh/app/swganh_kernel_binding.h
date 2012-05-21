@@ -31,7 +31,7 @@ void exportSWGANHKernel()
 {
     class_<KernelInterface, boost::noncopyable>("Kernel", no_init)
         ;
-    class_<SwganhKernel, bases<KernelInterface>, boost::noncopyable>("SWGKernel", "Provides an interface to access the Service Manager and App Configuration")
+    class_<SwganhKernel, bases<KernelInterface>, boost::noncopyable>("SWGKernel", "Provides an interface to access the Service Manager and App Configuration", no_init)
         .def("app_config", &swganh::app::SwganhKernel::GetAppConfig, return_value_policy<copy_non_const_reference>(), "gets the app configuration")
         .def("service_manager", &swganh::app::SwganhKernel::GetServiceManager,return_internal_reference<>(), "Gets the application's :class:`.ServiceManager`")
         .def("event_dispatcher", &swganh::app::SwganhKernel::GetEventDispatcher, return_internal_reference<>(), "gets the applications :class:`.EventDispatcher`")

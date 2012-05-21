@@ -31,7 +31,7 @@ class ServerInterface {
 public:
     virtual ~ServerInterface() {}
     
-    virtual void Start(uint16_t port) = 0;
+    virtual void Startup(uint16_t port) = 0;
     
     virtual void Shutdown(void) = 0;
 

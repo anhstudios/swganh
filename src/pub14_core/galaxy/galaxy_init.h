@@ -38,7 +38,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         }
     };
 
-    kernel->GetPluginManager()->RegisterObject("GalaxyService::GalaxyProvider", &registration);    
+    kernel->GetPluginManager()->RegisterObject("Galaxy::GalaxyProvider", &registration);    
 }
 
 }}  // namespace swganh_core::galaxy

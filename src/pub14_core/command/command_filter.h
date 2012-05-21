@@ -1,29 +1,21 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_COMMAND_COMMAND_FILTER_H_
-#define SWGANH_COMMAND_COMMAND_FILTER_H_
+#ifndef PUB14_CORE_COMMAND_COMMAND_FILTER_H_
+#define PUB14_CORE_COMMAND_COMMAND_FILTER_H_
 
 #include <tuple>
-#include <memory>
 #include <cstdint>
 
 namespace swganh {
-namespace messages {
-namespace controllers {
-class CommandQueueEnqueue;
-}} // messages::controllers
-namespace object {
-class Object;
-namespace tangible {
-    class Tangible;
-}
-namespace creature {
-class Creature;
-}} // object::creature
 namespace command {
 
-struct CommandProperties;
+class CommandInterface;
+
+}}
+
+namespace pub14_core {
+namespace command {
 
 enum ERROR
 {
@@ -37,15 +29,15 @@ enum ERROR
 
 struct CommandFilters {
 
-    static std::tuple<bool, uint32_t, uint32_t> TargetCheckFilter(CommandInterface* command);
+    static std::tuple<bool, uint32_t, uint32_t> TargetCheckFilter(swganh::command::CommandInterface* command);
     
-    static std::tuple<bool, uint32_t, uint32_t> PostureCheckFilter(CommandInterface* command);
+    static std::tuple<bool, uint32_t, uint32_t> PostureCheckFilter(swganh::command::CommandInterface* command);
     
-    static std::tuple<bool, uint32_t, uint32_t> StateCheckFilter(CommandInterface* command);
+    static std::tuple<bool, uint32_t, uint32_t> StateCheckFilter(swganh::command::CommandInterface* command);
     
-    static std::tuple<bool, uint32_t, uint32_t> AbilityCheckFilter(CommandInterface* command);
+    static std::tuple<bool, uint32_t, uint32_t> AbilityCheckFilter(swganh::command::CommandInterface* command);
     
-    static std::tuple<bool, uint32_t, uint32_t> CombatTargetCheckFilter(CommandInterface* command);
+    static std::tuple<bool, uint32_t, uint32_t> CombatTargetCheckFilter(swganh::command::CommandInterface* command);
 
     /**
     * gets the lowest common bit from two bit masks.
@@ -66,6 +58,6 @@ struct CommandFilters {
     static uint32_t  GetLowestCommonBit(uint64_t creature_mask, uint64_t cmd_properties_mask);
 };
 
-}} // swganh::command
+}} // pub14_core::command
 
-#endif // SWGANH_COMMAND_COMMAND_FILTER_H_
+#endif // PUB14_CORE_COMMAND_COMMAND_FILTER_H_

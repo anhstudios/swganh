@@ -24,7 +24,9 @@ PingServer::PingServer(boost::asio::io_service& io_service, uint16_t port)
 }
 
 PingServer::~PingServer()
-{}
+{
+    socket_.close();
+}
 
 uint64_t PingServer::BytesReceived() const
 {
@@ -53,14 +55,10 @@ void PingServer::AsyncReceive()
 
 void PingServer::HandleReceive(const boost::system::error_code& error, size_t bytesReceived)
 {
-    bytes_received_ += bytesReceived;
-
     // Check if an error occurred.
-    if (error && error != boost::asio::error::message_size) {
-        LOG(warning) << "Error reading from socket: " << error.message().c_str();
+    if (!error || error == boost::asio::error::message_size) {
+        bytes_received_ += bytesReceived;
 
-        // Otherwise return the ping response to the sender.
-    } else {
         // Send the message that was just received back to the sender.
         socket_.async_send_to(
             boost::asio::buffer(&receive_buffer_[0], bytesReceived),
@@ -72,10 +70,10 @@ void PingServer::HandleReceive(const boost::system::error_code& error, size_t by
                 std::placeholders::_2
             )
         );
-    }
 
-    // Now that the message has been handled start listening for new requests.
-    AsyncReceive();
+        // Now that the message has been handled start listening for new requests.
+        AsyncReceive();
+    }
 }
 
 void PingServer::HandleSend(const boost::system::error_code& error, size_t bytesSent)

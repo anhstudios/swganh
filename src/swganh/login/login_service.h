@@ -84,8 +84,9 @@ public:
     int login_error_timeout_secs() const;
     void login_error_timeout_secs(int new_timeout);
     
-    void Start();
-    void Stop();
+    void Startup();
+
+    void Shutdown();
 
 private:
     LoginService();
@@ -119,6 +120,7 @@ private:
     int galaxy_status_check_duration_secs_;
     int login_error_timeout_secs_;
     boost::asio::deadline_timer galaxy_status_timer_;
+    std::shared_ptr<boost::asio::deadline_timer> session_timer_;
     
     std::string listen_address_;
     uint16_t listen_port_;

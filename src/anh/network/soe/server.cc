@@ -18,9 +18,7 @@ using boost::asio::ip::udp;
 using boost::asio::buffer;
 
 Server::Server(boost::asio::io_service& io_service)
-    : io_service_(io_service)
-    , strand_(io_service)
-    , socket_(io_service)
+    : socket_(io_service)
     , max_receive_size_(496)
 {}
 
@@ -28,7 +26,7 @@ Server::~Server(void)
 {	
 }
 
-void Server::Start(uint16_t port)
+void Server::Startup(uint16_t port)
 {
     socket_.open(udp::v4());
     socket_.bind(udp::endpoint(udp::v4(), port));
@@ -56,7 +54,7 @@ void Server::SendTo(const udp::endpoint& endpoint, ByteBuffer buffer) {
 
 string Server::Resolve(const string& hostname)
 {
-    udp::resolver resolver(io_service_);
+    udp::resolver resolver(socket_.get_io_service());
     udp::resolver::query query(udp::v4(), hostname, "");
     udp::endpoint resolved_endpoint = *resolver.resolve(query);
 
@@ -68,7 +66,7 @@ void Server::AsyncReceive() {
         buffer(&recv_buffer_[0], recv_buffer_.size()), 
         current_remote_endpoint_,
         [this] (const boost::system::error_code& error, std::size_t bytes_transferred) {
-            if(bytes_transferred > 2 || !error || error == boost::asio::error::message_size)
+            if(!error || error == boost::asio::error::message_size)
             {
                 bytes_recv_ += bytes_transferred;
 
@@ -76,9 +74,9 @@ void Server::AsyncReceive() {
                 message.write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
 
                 GetSession(current_remote_endpoint_)->HandleProtocolMessage(move(message));
-            }
 
-            AsyncReceive();
+                AsyncReceive();
+            }
     });
 }
 

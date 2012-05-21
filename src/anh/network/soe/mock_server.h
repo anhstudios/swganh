@@ -19,7 +19,7 @@ class Session;
   
 MOCK_BASE_CLASS(MockServer, ServerInterface )
 {
-    MOCK_METHOD(Start, 1);
+    MOCK_METHOD(Startup, 1);
     MOCK_METHOD(Shutdown, 0);
     MOCK_METHOD(SendTo, 2);
     MOCK_METHOD(HandleMessage, 2);    

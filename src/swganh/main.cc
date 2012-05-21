@@ -28,11 +28,7 @@ int main(int argc, char* argv[])
     PyEval_ReleaseThread(PyGILState_GetThisThreadState());
     
     try {
-        app::SwganhApp app;
-
-        app.Initialize(argc, argv);
-
-        app.Start();
+        app::SwganhApp app(argc, argv);
 
         for (;;) {
             string cmd;
@@ -40,9 +36,6 @@ int main(int argc, char* argv[])
 
             if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
                 LOG(info) << "Exit command received from command line. Shutting down.";
-                
-                // Stop the application and join the thread until it's finished.
-                app.Stop();
 				
                 break;
             } else if(cmd.compare("console") == 0 || cmd.compare("~") == 0) {

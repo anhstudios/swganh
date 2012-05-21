@@ -30,7 +30,9 @@ using anh::service::ServiceManager;
 using std::make_shared;
 using std::shared_ptr;
 
-SwganhKernel::SwganhKernel() {
+SwganhKernel::SwganhKernel(boost::asio::io_service& io_service)
+    : io_service_(io_service)
+{
     version_.major = VERSION_MAJOR;
     version_.minor = VERSION_MINOR;
 
@@ -40,6 +42,8 @@ SwganhKernel::SwganhKernel() {
 
 SwganhKernel::~SwganhKernel()
 {
+    service_manager_->Stop();
+
     tre_archive_.reset();
     event_dispatcher_.reset();
     service_manager_.reset();

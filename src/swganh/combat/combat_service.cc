@@ -54,7 +54,7 @@ using swganh::app::SwganhKernel;
 
 CombatService::CombatService(SwganhKernel* kernel)
 : generator_(1, 100)
-, delayed_task_(new anh::SimpleDelayedTaskProcessor(kernel->GetIoService()))
+, active_(kernel->GetIoService())
 , kernel_(kernel)
 {
 }
@@ -73,7 +73,7 @@ ServiceDescription CombatService::GetServiceDescription()
     return service_description;
 }
 
-void CombatService::Start()
+void CombatService::Startup()
 {
 	simulation_service_ = kernel_->GetServiceManager()
         ->GetService<SimulationService>("SimulationService");
@@ -83,6 +83,7 @@ void CombatService::Start()
     
     command_service_->AddCommandCreator("attack", swganh::command::PythonCommandCreator("commands.attack", "AttackCommand"));
     command_service_->AddCommandCreator("deathblow", swganh::command::PythonCommandCreator("commands.deathblow", "DeathBlowCommand")); 
+    command_service_->AddCommandCreator("defaultattack", swganh::command::PythonCommandCreator("commands.defaultattack", "DefaultAttackCommand"));
     command_service_->AddCommandCreator("duel", swganh::command::PythonCommandCreator("commands.duel", "DuelCommand"));
     command_service_->AddCommandCreator("endduel", swganh::command::PythonCommandCreator("commands.endduel", "EndDuelCommand"));
     command_service_->AddCommandCreator("kneel", swganh::command::PythonCommandCreator("commands.kneel", "KneelCommand"));
@@ -146,31 +147,12 @@ bool CombatService::InitiateCombat(
     attacker->ToggleStateOff(PEACE);
     creature_target->ToggleStateOn(COMBAT);
     creature_target->ToggleStateOff(PEACE);
-    if (!creature_target->IsDefending(attacker->GetObjectId()))
-    {
-        creature_target->AddDefender(attacker->GetObjectId());
-        
-        auto auto_command = command_service_->CreateCommand("attack");
-        auto swg_command = std::static_pointer_cast<BaseSwgCommand>(auto_command);
 
-        if (creature_target->HasController())
-        {
-            swg_command->SetController(creature_target->GetController());
-        }
-        
-        CommandQueueEnqueue request;
-        request.observable_id = creature_target->GetObjectId();
-        request.target_id = attacker->GetObjectId();
-
-        swg_command->SetCommandRequest(request);
-
-        command_service_->SetDefaultCommand(creature_target->GetObjectId(), swg_command);
-    }
     if (!attacker->IsDefending(creature_target->GetObjectId()))
     {
         attacker->AddDefender(creature_target->GetObjectId());
         
-        auto auto_command = command_service_->CreateCommand("attack");
+        auto auto_command = command_service_->CreateCommand("defaultattack");
         auto swg_command = std::static_pointer_cast<BaseSwgCommand>(auto_command);
         
         if (attacker->HasController())
@@ -187,6 +169,27 @@ bool CombatService::InitiateCombat(
         command_service_->SetDefaultCommand(attacker->GetObjectId(), swg_command);
     }
     
+    if (!creature_target->IsDefending(attacker->GetObjectId()))
+    {
+        creature_target->AddDefender(attacker->GetObjectId());
+        
+        auto auto_command = command_service_->CreateCommand("defaultattack");
+        auto swg_command = std::static_pointer_cast<BaseSwgCommand>(auto_command);
+
+        if (creature_target->HasController())
+        {
+            swg_command->SetController(creature_target->GetController());
+        }
+        
+        CommandQueueEnqueue request;
+        request.observable_id = creature_target->GetObjectId();
+        request.target_id = attacker->GetObjectId();
+
+        swg_command->SetCommandRequest(request);
+
+        command_service_->SetDefaultCommand(creature_target->GetObjectId(), swg_command);
+    }
+
     return true;
 }
 
@@ -633,6 +636,7 @@ void CombatService::SendCombatActionMessage(
 
 void CombatService::SetIncapacitated(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)
 {
+    command_service_->ClearDefaultCommand(target->GetObjectId());
     target->SetPosture(INCAPACITATED);
     //@TODO: Get this from config Default Incap Timer 
     target->SetIncapTimer(15);
@@ -646,7 +650,7 @@ void CombatService::SetIncapacitated(const shared_ptr<Creature>& attacker, const
     else
         target->GetController()->SendSystemMessage(OutOfBand("base_player", "victim_incapacitated"));
 
-    delayed_task_->PushTask(boost::posix_time::seconds(15), [=](){
+    active_.AsyncDelayed(boost::posix_time::seconds(15), [target](){
         // Incap Recovery
         if (!target || target->IsDead())
             return;

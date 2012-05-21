@@ -53,8 +53,7 @@ namespace command {
 
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
 
-        void Start();
-        void Stop();
+        void Startup();
         
         void EnqueueCommandRequest(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
