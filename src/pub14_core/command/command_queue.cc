@@ -135,7 +135,7 @@ void CommandQueue::Notify()
         {           
             ProcessCommand(command);
 
-            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(2000)));
+            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(command->GetDefaultTime() * 1000)));
             timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
                 if (!ec && this)

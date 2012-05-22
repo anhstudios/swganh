@@ -155,7 +155,7 @@ boost::optional<const CommandProperties&> CommandService::FindPropertiesForComma
     return command_properties_manager_impl_->FindPropertiesForCommand(command);
 }
 
-void CommandService::Start()
+void CommandService::Startup()
 {
     script_prefix_ = kernel_->GetAppConfig().script_directory;
     
@@ -166,11 +166,6 @@ void CommandService::Start()
 
     SubscribeObjectReadyEvent(event_dispatcher);
     SubscribeObjectRemovedEvent(event_dispatcher);
-}
-
-void CommandService::Stop()
-{
-    command_queue_manager_impl_->ClearQueues();
 }
 
 void CommandService::SendCommandQueueRemove(

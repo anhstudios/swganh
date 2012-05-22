@@ -38,7 +38,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         }
     };
 
-    kernel->GetPluginManager()->RegisterObject("LoginService::Encoder", &registration);
+    kernel->GetPluginManager()->RegisterObject("Login::Encoder", &registration);
     
     registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
         return new MysqlAccountProvider(kernel->GetDatabaseManager());
@@ -50,7 +50,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         }
     };
     
-    kernel->GetPluginManager()->RegisterObject("LoginService::AccountProvider", &registration);
+    kernel->GetPluginManager()->RegisterObject("Login::AccountProvider", &registration);
         
      registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
          return new MysqlSessionProvider(kernel->GetDatabaseManager());
@@ -62,7 +62,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
          }
      };
     
-    kernel->GetPluginManager()->RegisterObject("ConnectionService::SessionProvider", &registration);
+    kernel->GetPluginManager()->RegisterObject("Login::SessionProvider", &registration);
 }
 
 }}  // namespace swganh::login

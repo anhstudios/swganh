@@ -72,7 +72,7 @@ public:
     SimulationServiceImpl(SwganhKernel* kernel)
         : kernel_(kernel)
     {
-		spatial_provider_ = kernel->GetPluginManager()->CreateObject<SpatialProviderInterface>("SimulationService::SpatialProvider");
+		spatial_provider_ = kernel->GetPluginManager()->CreateObject<SpatialProviderInterface>("Simulation::SpatialProvider");
     }
 
     const shared_ptr<ObjectManager>& GetObjectManager()
@@ -505,7 +505,7 @@ void SimulationService::SendToAllInScene(ByteBuffer message, uint32_t scene_id)
     impl_->SendToAllInScene(message, scene_id);
 }
 
-void SimulationService::Start()
+void SimulationService::Startup()
 {
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
 

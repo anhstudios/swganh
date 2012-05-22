@@ -71,7 +71,7 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
 void ServiceManager::Start() {
     for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
         if (entry.second.second) {
-            entry.second.second->Start();
+            entry.second.second->Startup();
             entry.second.first->status(anh::service::Galaxy::ONLINE);
             service_directory_->updateService(*entry.second.first);
         } 
@@ -81,7 +81,7 @@ void ServiceManager::Start() {
 void ServiceManager::Stop() {
     for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
         if (entry.second.second) {
-            entry.second.second->Stop();
+            entry.second.second->Shutdown();
             entry.second.first->status(anh::service::Galaxy::OFFLINE);
             service_directory_->updateService(*entry.second.first);
         } 

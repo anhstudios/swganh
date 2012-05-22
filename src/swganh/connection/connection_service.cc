@@ -60,9 +60,14 @@ ConnectionService::ConnectionService(
     , ping_port_(ping_port)
 {
 
-    session_provider_ = kernel_->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("ConnectionService::SessionProvider");
+    session_provider_ = kernel_->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("Login::SessionProvider");
 
-    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+    character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
+}
+
+ConnectionService::~ConnectionService()
+{
+    session_timer_->cancel();
 }
 
 ServiceDescription ConnectionService::GetServiceDescription() {
@@ -80,7 +85,7 @@ ServiceDescription ConnectionService::GetServiceDescription() {
     return service_description;
 }
 
-void ConnectionService::Start() {
+void ConnectionService::Startup() {
     ping_server_ = make_shared<PingServer>(kernel_->GetIoService(), ping_port_);
 
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterService>("CharacterService");
@@ -90,9 +95,9 @@ void ConnectionService::Start() {
     RegisterMessageHandler(&ConnectionService::HandleClientIdMsg_, this);
     RegisterMessageHandler(&ConnectionService::HandleCmdSceneReady_, this);
 
-    Server::Start(listen_port_);
+    Server::Startup(listen_port_);
 
-    active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+    session_timer_ = active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_),
@@ -104,8 +109,8 @@ void ConnectionService::Start() {
     });
 }
 
-void ConnectionService::Stop() {
-    Shutdown();
+void ConnectionService::Shutdown() {
+    BaseSwgServer::Shutdown();
 }
 
 const string& ConnectionService::listen_address() {

@@ -55,16 +55,19 @@ LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKe
     , listen_port_(listen_port)
     , active_(kernel->GetIoService())
 {
-    account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("LoginService::AccountProvider");
+    account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("Login::AccountProvider");
     
-    shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("LoginService::Encoder");
+    shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("Login::Encoder");
 
-    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("CharacterService::CharacterProvider");
+    character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 
     authentication_manager_ = make_shared<AuthenticationManager>(encoder);
 }
 
-LoginService::~LoginService() {}
+LoginService::~LoginService() {
+    session_timer_->cancel();
+    session_timer_.reset();
+}
 
 service::ServiceDescription LoginService::GetServiceDescription() {
     auto listen_address = Resolve(listen_address_);
@@ -120,7 +123,7 @@ shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
     return CreateSession(endpoint);
 }
 
-void LoginService::Start() {
+void LoginService::Startup() {
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterService>("CharacterService");
 	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyService>("GalaxyService");
     
@@ -135,11 +138,11 @@ void LoginService::Start() {
         UpdateGalaxyStatus_();
     });
 
-    Server::Start(listen_port_);
+    Server::Startup(listen_port_);
 
     UpdateGalaxyStatus_();
 
-    active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
+    session_timer_ = active_.AsyncRepeated(boost::posix_time::milliseconds(5), [this] () {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         for_each(
             begin(session_map_),
@@ -151,7 +154,7 @@ void LoginService::Start() {
     });
 }
 
-void LoginService::Stop()
+void LoginService::Shutdown()
 {
     // Remove all the sessions
     account_provider_->EndSessions();

@@ -36,7 +36,7 @@ namespace chat {
             uint16_t chat_type,
             uint16_t mood);
 
-        void Start();
+        void Startup();
 
     private:
         swganh::app::SwganhKernel* kernel_;
