@@ -110,6 +110,8 @@ namespace anh {
         return detail::isBigEndian() ? swapEndian(value) : value;
     }
         
+    int KeyboardHit();
+
 }  // namespace anh
 
 #endif  // ANH_UTILITIES_H_
