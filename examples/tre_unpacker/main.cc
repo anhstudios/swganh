@@ -9,10 +9,13 @@
 #include <tuple>
 
 #include <boost/filesystem.hpp>
+#include <boost/thread/thread.hpp>
 
+#include "anh/utilities.h"
 #include "swganh/tre/tre_archive.h"
 
 namespace bfs = boost::filesystem;
+using boost::this_thread::sleep;
 using Concurrency::make_task;
 using Concurrency::task;
 using swganh::tre::TreArchive;
@@ -77,6 +80,9 @@ int main(int argc, char *argv[])
 #ifdef _DEBUG
     StopTimer(start_time);
 #endif
+
+    std::cout << "Press any key to exit..." << std::endl;
+    while (anh::KeyboardHit() == 0) sleep(boost::posix_time::milliseconds(1));
 
     return 0;
 }
