@@ -1,10 +1,12 @@
 
 include(ANHExecutable)
 
-AddANHExecutable(example_datatable_reader
+AddANHExecutable(datatable_reader
     DEPENDS 
         swganh_lib
         anh_lib
+    FOLDER
+        "examples"
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}
