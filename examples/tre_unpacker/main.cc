@@ -125,7 +125,7 @@ void ValidateSwgLiveConfig(const std::string& path_to_config)
 
 void ValidateTargetOutputDirectory(const std::string& target_output_directory)
 {
-    if (!bfs::is_empty(target_output_directory))
+    if (bfs::exists(target_output_directory) && !bfs::is_empty(target_output_directory))
     {
         char should_empty;
         do
