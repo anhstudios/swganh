@@ -1,10 +1,12 @@
 
 include(ANHExecutable)
 
-AddANHExecutable(example_tre_reader
+AddANHExecutable(tre_reader
     DEPENDS 
         swganh_lib
         anh_lib
+    FOLDER
+        "examples"
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
 	    ${MYSQL_INCLUDE_DIR}

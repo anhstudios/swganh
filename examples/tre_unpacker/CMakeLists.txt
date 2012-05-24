@@ -1,7 +1,7 @@
 
 include(ANHExecutable)
 
-AddANHExecutable(datatable_reader
+AddANHExecutable(tre_unpacker
     DEPENDS 
         swganh_lib
         anh_lib

@@ -76,12 +76,15 @@ vector<char> TreReader::GetResource(const std::string& resource_name)
 
     vector<char> data(file_info.data_size); 
     
-    ReadDataBlock(
-        file_info.data_offset, 
-        file_info.data_compression, 
-        file_info.data_compressed_size, 
-        file_info.data_size, 
-        &data[0]);
+    if (file_info.data_size != 0)
+    {
+        ReadDataBlock(
+            file_info.data_offset,
+            file_info.data_compression,
+            file_info.data_compressed_size,
+            file_info.data_size,
+            &data[0]);
+    }
 
     return data;
 }
