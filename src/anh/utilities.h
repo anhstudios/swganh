@@ -5,6 +5,7 @@
 #define ANH_UTILITIES_H_
 
 #include <cstdint>
+#include <cstring>
 #include <type_traits>
 
 namespace anh {
