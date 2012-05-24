@@ -6,6 +6,7 @@
 #ifdef WIN32
 #include <conio.h>
 #else
+#include <cstdio>
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
