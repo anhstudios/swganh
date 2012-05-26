@@ -216,7 +216,7 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "&About SWGEd...",   ID_APP_ABOUT
+        MENUITEM "&About SWGEd...",             ID_APP_ABOUT
     END
 END
 
@@ -610,6 +610,11 @@ BEGIN
     IDS_BUILD_TAB           "Build"
     IDS_DEBUG_TAB           "Debug"
     IDS_FIND_TAB            "Find"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EXPORT               "Export file"
 END
 
 #endif    // English (United States) resources

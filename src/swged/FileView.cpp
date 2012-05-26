@@ -14,6 +14,9 @@
 #include "FileView.h"
 #include "Resource.h"
 #include "MFCApplication4.h"
+#include <cstdint>
+#include <map>
+#include <boost/algorithm/string.hpp>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -27,7 +30,7 @@ static char THIS_FILE[]=__FILE__;
 CFileView::CFileView()
     : archive_("d:/workspace/swgdata/base/live.cfg")
 {
-    available_resources_ = archive_.GetAvailableResources();
+    //available_resources_ = archive_.GetAvailableResources();
 }
 
 CFileView::~CFileView()
@@ -40,11 +43,7 @@ BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_PROPERTIES, OnProperties)
 	ON_COMMAND(ID_OPEN, OnFileOpen)
-	ON_COMMAND(ID_OPEN_WITH, OnFileOpenWith)
-	ON_COMMAND(ID_DUMMY_COMPILE, OnDummyCompile)
-	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
-	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
-	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
+    ON_COMMAND(ID_EXPORT, OnFileExport)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
@@ -102,42 +101,50 @@ void CFileView::OnSize(UINT nType, int cx, int cy)
 
 void CFileView::FillFileView()
 {
-	HTREEITEM hRoot = m_wndFileView.InsertItem(_T("SWG Tre Data"), 0, 0);
-	m_wndFileView.SetItemState(hRoot, TVIS_BOLD, TVIS_BOLD);
+    std::vector<std::string> file_listing = archive_.GetAvailableResources();
 
-    for (int i = 0; i < 30; ++i)
+    std::sort(std::begin(file_listing), std::end(file_listing));
+
+    std::map<int, std::map<std::string, HTREEITEM>> directory_map;
+
+    for(auto& file : file_listing)
     {
-        m_wndFileView.InsertItem(_T(available_resources_[i].c_str()), 1, 1, hRoot);
-    }
+        std::vector<std::string> path_data;
+        boost::split(path_data, file, boost::is_any_of("/"));
 
-	//HTREEITEM hSrc = m_wndFileView.InsertItem(_T("FakeApp Source Files"), 0, 0, hRoot);
-    //
-	//m_wndFileView.InsertItem(_T("FakeApp.cpp"), 1, 1, hSrc);
-	//m_wndFileView.InsertItem(_T("FakeApp.rc"), 1, 1, hSrc);
-	//m_wndFileView.InsertItem(_T("FakeAppDoc.cpp"), 1, 1, hSrc);
-	//m_wndFileView.InsertItem(_T("FakeAppView.cpp"), 1, 1, hSrc);
-	//m_wndFileView.InsertItem(_T("MainFrm.cpp"), 1, 1, hSrc);
-	//m_wndFileView.InsertItem(_T("StdAfx.cpp"), 1, 1, hSrc);
-    //
-	//HTREEITEM hInc = m_wndFileView.InsertItem(_T("FakeApp Header Files"), 0, 0, hRoot);
-    //
-	//m_wndFileView.InsertItem(_T("FakeApp.h"), 2, 2, hInc);
-	//m_wndFileView.InsertItem(_T("FakeAppDoc.h"), 2, 2, hInc);
-	//m_wndFileView.InsertItem(_T("FakeAppView.h"), 2, 2, hInc);
-	//m_wndFileView.InsertItem(_T("Resource.h"), 2, 2, hInc);
-	//m_wndFileView.InsertItem(_T("MainFrm.h"), 2, 2, hInc);
-	//m_wndFileView.InsertItem(_T("StdAfx.h"), 2, 2, hInc);
-    //
-	//HTREEITEM hRes = m_wndFileView.InsertItem(_T("FakeApp Resource Files"), 0, 0, hRoot);
-    //
-	//m_wndFileView.InsertItem(_T("FakeApp.ico"), 2, 2, hRes);
-	//m_wndFileView.InsertItem(_T("FakeApp.rc2"), 2, 2, hRes);
-	//m_wndFileView.InsertItem(_T("FakeAppDoc.ico"), 2, 2, hRes);
-	//m_wndFileView.InsertItem(_T("FakeToolbar.bmp"), 2, 2, hRes);
-    //
-	//m_wndFileView.Expand(hRoot, TVE_EXPAND);
-	//m_wndFileView.Expand(hSrc, TVE_EXPAND);
-	//m_wndFileView.Expand(hInc, TVE_EXPAND);
+        HTREEITEM previous = NULL;
+        for (uint32_t i = 0; i < path_data.size(); ++i)
+        {
+            if (i + 1 != path_data.size())
+            {
+                auto find_iter = directory_map[i].find(path_data[i]);
+                if (find_iter == directory_map[i].end())
+                {
+                    if (previous)
+                    {
+                        previous = m_wndFileView.InsertItem(_T(path_data[i].c_str()), 0, 0, previous);
+                    } else {
+                        previous = m_wndFileView.InsertItem(_T(path_data[i].c_str()), 0, 0);
+                    }
+
+                    directory_map[i].insert(std::make_pair(path_data[i], previous));
+                }
+                else
+                {
+                    previous = find_iter->second;
+                }
+            } else {                
+                if (previous)
+                {
+                    m_wndFileView.InsertItem(_T(path_data[i].c_str()), 2, 2, previous);
+                } else {
+                    m_wndFileView.InsertItem(_T(path_data[i].c_str()), 2, 2);
+                }
+
+                previous = NULL;
+            }
+        }
+    }
 }
 
 void CFileView::OnContextMenu(CWnd* pWnd, CPoint point)
@@ -196,27 +203,7 @@ void CFileView::OnFileOpen()
 	// TODO: Add your command handler code here
 }
 
-void CFileView::OnFileOpenWith()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnDummyCompile()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditCut()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditCopy()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditClear()
+void CFileView::OnFileExport()
 {
 	// TODO: Add your command handler code here
 }
