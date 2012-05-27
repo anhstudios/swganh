@@ -223,7 +223,7 @@ BEGIN
         MENUITEM "&Open",                       ID_OPEN
         MENUITEM "Open &With....",              ID_OPEN_WITH
         MENUITEM SEPARATOR
-        MENUITEM "Export",                      ID_EXPORT
+        MENUITEM "Export",                      ID_FILE_EXPORT
         MENUITEM SEPARATOR
         MENUITEM "&Properties...",              ID_PROPERTIES
     END

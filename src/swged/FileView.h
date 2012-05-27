@@ -58,5 +58,8 @@ protected:
 
 private:
     swganh::tre::TreArchive* archive_;
+    std::vector<std::string> file_listing_;
+
+    void BuildPath(CString& path, HTREEITEM node);
 };
 

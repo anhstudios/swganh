@@ -6,6 +6,7 @@
 #include "SWGEd.h"
 
 #include <map>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -41,7 +42,6 @@ BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
 	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
 	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
-	ON_COMMAND(ID_FILE_OPENENVIRONMENT, OnOpenEnvironment)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
@@ -99,18 +99,9 @@ void CFileView::OnSize(UINT nType, int cx, int cy)
 
 void CFileView::FillFileView()
 {
-    if (!archive_)
-    {
-        return;
-    }
-
-    std::vector<std::string> file_listing = archive_->GetAvailableResources();
-    
-    std::sort(std::begin(file_listing), std::end(file_listing));
-    
     std::map<int, std::map<std::string, HTREEITEM>> directory_map;
     
-    for(auto& file : file_listing)
+    for(auto& file : file_listing_)
     {
         std::vector<std::string> path_data;
         boost::split(path_data, file, boost::is_any_of("/"));
@@ -215,9 +206,13 @@ void CFileView::OnFileOpenWith()
 void CFileView::OnFileExport()
 {    
 	CTreeCtrl* pWndTree = (CTreeCtrl*) &m_wndFileView;
-    auto selected_item = pWndTree->GetItemText(pWndTree->GetSelectedItem());
+    HTREEITEM selected_item = pWndTree->GetSelectedItem();
+    auto selected_item_text = pWndTree->GetItemText(selected_item);
+    auto selected_item_path = selected_item_text;
+    
+    BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
 
-    CFileDialog file_dialog(TRUE, NULL, selected_item, OFN_HIDEREADONLY, _T("All files (*.*)|*.*||"));
+    CFileDialog file_dialog(FALSE, NULL, selected_item_text, OFN_HIDEREADONLY, _T("All files (*.*)|*.*||"));
     
     file_dialog.m_ofn.Flags |= OFN_ENABLETEMPLATE;  
     file_dialog.m_ofn.hInstance = AfxGetInstanceHandle();  
@@ -226,13 +221,15 @@ void CFileView::OnFileExport()
   
     if (file_dialog.DoModal() == IDOK)
     {
-        CFile f(file_dialog.GetFileName(), CFile::modeCreate | CFile::modeWrite);
-        CArchive ar(&f, CArchive::store);
+        auto resource = archive_->GetResource(selected_item_path.GetString());
+        auto filename = file_dialog.GetPathName();
 
-        // ar << &tre_archive->GetResource();
+        std::ofstream ofs(filename, std::ios::out | std::ios::binary);
 
-        ar.Close();
-        f.Close();
+        if (resource.size() > 0)
+        {
+            ofs.write(&resource[0], resource.size());
+        }
     }
 }
 
@@ -314,6 +311,28 @@ void CFileView::OnChangeVisualStyle()
 void CFileView::SetTreArchive(swganh::tre::TreArchive* archive)
 {
     archive_ = archive;
-    FillFileView();
+
+    std::async(std::launch::async, [=] () {
+        file_listing_ = archive_->GetAvailableResources();
+        std::sort(std::begin(file_listing_), std::end(file_listing_));
+        FillFileView();    
+    });
 }
 
+void CFileView::BuildPath(CString& path, HTREEITEM node)
+{    
+	CTreeCtrl* tree_control = (CTreeCtrl*) &m_wndFileView;
+    
+    HTREEITEM parent = tree_control->GetParentItem(node);
+    CString buffer = tree_control->GetItemText(node);
+
+    buffer += "/";
+
+    buffer += path;
+    path = buffer;
+
+    if (parent)
+    {
+        BuildPath(path, parent);
+    }
+}
