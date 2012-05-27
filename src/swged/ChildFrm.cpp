@@ -1,19 +1,9 @@
-// This MFC Samples source code demonstrates using MFC Microsoft Office Fluent User Interface 
-// (the "Fluent UI") and is provided only as referential material to supplement the 
-// Microsoft Foundation Classes Reference and related electronic documentation 
-// included with the MFC C++ library software.  
-// License terms to copy, use or distribute the Fluent UI are available separately.  
-// To learn more about our Fluent UI licensing program, please visit 
-// http://msdn.microsoft.com/officeui.
-//
-// Copyright (C) Microsoft Corporation
-// All rights reserved.
 
 // ChildFrm.cpp : implementation of the CChildFrame class
 //
 
 #include "stdafx.h"
-#include "MFCApplication4.h"
+#include "SWGEd.h"
 
 #include "ChildFrm.h"
 
@@ -26,10 +16,9 @@
 IMPLEMENT_DYNCREATE(CChildFrame, CMDIChildWndEx)
 
 BEGIN_MESSAGE_MAP(CChildFrame, CMDIChildWndEx)
-	ON_COMMAND(ID_FILE_PRINT, &CChildFrame::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CChildFrame::OnFilePrint)
-	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CChildFrame::OnFilePrintPreview)
-	ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_PREVIEW, &CChildFrame::OnUpdateFilePrintPreview)
+	ON_COMMAND(ID_FILE_CLOSE, &CChildFrame::OnFileClose)
+	ON_WM_SETFOCUS()
+	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 // CChildFrame construction/destruction
@@ -50,6 +39,8 @@ BOOL CChildFrame::PreCreateWindow(CREATESTRUCT& cs)
 	if( !CMDIChildWndEx::PreCreateWindow(cs) )
 		return FALSE;
 
+	cs.dwExStyle &= ~WS_EX_CLIENTEDGE;
+	cs.lpszClass = AfxRegisterWndClass(0);
 	return TRUE;
 }
 
@@ -68,24 +59,42 @@ void CChildFrame::Dump(CDumpContext& dc) const
 #endif //_DEBUG
 
 // CChildFrame message handlers
-
-void CChildFrame::OnFilePrint()
+void CChildFrame::OnFileClose() 
 {
-	if (m_dockManager.IsPrintPreviewValid())
-	{
-		PostMessage(WM_COMMAND, AFX_ID_PREVIEW_PRINT);
-	}
+	// To close the frame, just send a WM_CLOSE, which is the equivalent
+	// choosing close from the system menu.
+	SendMessage(WM_CLOSE);
 }
 
-void CChildFrame::OnFilePrintPreview()
+int CChildFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-	if (m_dockManager.IsPrintPreviewValid())
+	if (CMDIChildWndEx::OnCreate(lpCreateStruct) == -1)
+		return -1;
+	
+	// create a view to occupy the client area of the frame
+	if (!m_wndView.Create(NULL, NULL, AFX_WS_DEFAULT_VIEW, 
+		CRect(0, 0, 0, 0), this, AFX_IDW_PANE_FIRST, NULL))
 	{
-		PostMessage(WM_COMMAND, AFX_ID_PREVIEW_CLOSE);  // force Print Preview mode closed
+		TRACE0("Failed to create view window\n");
+		return -1;
 	}
+
+	return 0;
 }
 
-void CChildFrame::OnUpdateFilePrintPreview(CCmdUI* pCmdUI)
+void CChildFrame::OnSetFocus(CWnd* pOldWnd) 
 {
-	pCmdUI->SetCheck(m_dockManager.IsPrintPreviewValid());
+	CMDIChildWndEx::OnSetFocus(pOldWnd);
+
+	m_wndView.SetFocus();
+}
+
+BOOL CChildFrame::OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo) 
+{
+	// let the view have first crack at the command
+	if (m_wndView.OnCmdMsg(nID, nCode, pExtra, pHandlerInfo))
+		return TRUE;
+	
+	// otherwise, do default handling
+	return CMDIChildWndEx::OnCmdMsg(nID, nCode, pExtra, pHandlerInfo);
 }

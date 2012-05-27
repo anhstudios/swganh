@@ -1,21 +1,14 @@
-// This MFC Samples source code demonstrates using MFC Microsoft Office Fluent User Interface 
-// (the "Fluent UI") and is provided only as referential material to supplement the 
-// Microsoft Foundation Classes Reference and related electronic documentation 
-// included with the MFC C++ library software.  
-// License terms to copy, use or distribute the Fluent UI are available separately.  
-// To learn more about our Fluent UI licensing program, please visit 
-// http://msdn.microsoft.com/officeui.
-//
-// Copyright (C) Microsoft Corporation
-// All rights reserved.
 
 #include "stdafx.h"
 #include "mainfrm.h"
 #include "FileView.h"
 #include "Resource.h"
-#include "MFCApplication4.h"
-#include <cstdint>
+#include "SWGEd.h"
+
 #include <map>
+#include <string>
+#include <vector>
+
 #include <boost/algorithm/string.hpp>
 
 #ifdef _DEBUG
@@ -28,9 +21,8 @@ static char THIS_FILE[]=__FILE__;
 // CFileView
 
 CFileView::CFileView()
-    : archive_("d:/workspace/swgdata/base/live.cfg")
+    : archive_(nullptr)
 {
-    //available_resources_ = archive_.GetAvailableResources();
 }
 
 CFileView::~CFileView()
@@ -43,7 +35,13 @@ BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_PROPERTIES, OnProperties)
 	ON_COMMAND(ID_OPEN, OnFileOpen)
-    ON_COMMAND(ID_EXPORT, OnFileExport)
+	ON_COMMAND(ID_OPEN_WITH, OnFileOpenWith)
+	ON_COMMAND(ID_FILE_EXPORT, OnFileExport)
+	ON_COMMAND(ID_DUMMY_COMPILE, OnDummyCompile)
+	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
+	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
+	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
+	ON_COMMAND(ID_FILE_OPENENVIRONMENT, OnOpenEnvironment)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
@@ -101,17 +99,22 @@ void CFileView::OnSize(UINT nType, int cx, int cy)
 
 void CFileView::FillFileView()
 {
-    std::vector<std::string> file_listing = archive_.GetAvailableResources();
+    if (!archive_)
+    {
+        return;
+    }
 
+    std::vector<std::string> file_listing = archive_->GetAvailableResources();
+    
     std::sort(std::begin(file_listing), std::end(file_listing));
-
+    
     std::map<int, std::map<std::string, HTREEITEM>> directory_map;
-
+    
     for(auto& file : file_listing)
     {
         std::vector<std::string> path_data;
         boost::split(path_data, file, boost::is_any_of("/"));
-
+    
         HTREEITEM previous = NULL;
         for (uint32_t i = 0; i < path_data.size(); ++i)
         {
@@ -126,7 +129,7 @@ void CFileView::FillFileView()
                     } else {
                         previous = m_wndFileView.InsertItem(_T(path_data[i].c_str()), 0, 0);
                     }
-
+    
                     directory_map[i].insert(std::make_pair(path_data[i], previous));
                 }
                 else
@@ -140,7 +143,7 @@ void CFileView::FillFileView()
                 } else {
                     m_wndFileView.InsertItem(_T(path_data[i].c_str()), 2, 2);
                 }
-
+    
                 previous = NULL;
             }
         }
@@ -203,7 +206,58 @@ void CFileView::OnFileOpen()
 	// TODO: Add your command handler code here
 }
 
+void CFileView::OnFileOpenWith()
+{    
+	// TODO: Add your command handler code here
+}
+
+
 void CFileView::OnFileExport()
+{    
+	CTreeCtrl* pWndTree = (CTreeCtrl*) &m_wndFileView;
+    auto selected_item = pWndTree->GetItemText(pWndTree->GetSelectedItem());
+
+    CFileDialog file_dialog(TRUE, NULL, selected_item, OFN_HIDEREADONLY, _T("All files (*.*)|*.*||"));
+    
+    file_dialog.m_ofn.Flags |= OFN_ENABLETEMPLATE;  
+    file_dialog.m_ofn.hInstance = AfxGetInstanceHandle();  
+    file_dialog.m_ofn.lpTemplateName = _T("DIALOG_PREVIEW");  
+    file_dialog.m_ofn.lpstrTitle = "Export file";
+  
+    if (file_dialog.DoModal() == IDOK)
+    {
+        CFile f(file_dialog.GetFileName(), CFile::modeCreate | CFile::modeWrite);
+        CArchive ar(&f, CArchive::store);
+
+        // ar << &tre_archive->GetResource();
+
+        ar.Close();
+        f.Close();
+    }
+}
+
+void CFileView::OnOpenEnvironment()
+{
+	AfxMessageBox(_T("Open Environment...."));
+
+}
+
+void CFileView::OnDummyCompile()
+{
+	// TODO: Add your command handler code here
+}
+
+void CFileView::OnEditCut()
+{
+	// TODO: Add your command handler code here
+}
+
+void CFileView::OnEditCopy()
+{
+	// TODO: Add your command handler code here
+}
+
+void CFileView::OnEditClear()
 {
 	// TODO: Add your command handler code here
 }
@@ -257,4 +311,9 @@ void CFileView::OnChangeVisualStyle()
 	m_wndFileView.SetImageList(&m_FileViewImages, TVSIL_NORMAL);
 }
 
+void CFileView::SetTreArchive(swganh::tre::TreArchive* archive)
+{
+    archive_ = archive;
+    FillFileView();
+}
 

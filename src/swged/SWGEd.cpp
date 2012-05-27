@@ -1,52 +1,36 @@
-// This MFC Samples source code demonstrates using MFC Microsoft Office Fluent User Interface 
-// (the "Fluent UI") and is provided only as referential material to supplement the 
-// Microsoft Foundation Classes Reference and related electronic documentation 
-// included with the MFC C++ library software.  
-// License terms to copy, use or distribute the Fluent UI are available separately.  
-// To learn more about our Fluent UI licensing program, please visit 
-// http://msdn.microsoft.com/officeui.
-//
-// Copyright (C) Microsoft Corporation
-// All rights reserved.
 
-// MFCApplication4.cpp : Defines the class behaviors for the application.
+// SWGEd.cpp : Defines the class behaviors for the application.
 //
 
 #include "stdafx.h"
 #include "afxwinappex.h"
 #include "afxdialogex.h"
-#include "MFCApplication4.h"
+#include "SWGEd.h"
 #include "MainFrm.h"
 
 #include "ChildFrm.h"
-#include "MFCApplication4Doc.h"
-#include "MFCApplication4View.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// CMFCApplication4App
+// CSWGEdApp
 
-BEGIN_MESSAGE_MAP(CMFCApplication4App, CWinAppEx)
-	ON_COMMAND(ID_APP_ABOUT, &CMFCApplication4App::OnAppAbout)
-	// Standard file based document commands
-	ON_COMMAND(ID_FILE_NEW, &CWinAppEx::OnFileNew)
-	ON_COMMAND(ID_FILE_OPEN, &CWinAppEx::OnFileOpen)
-	// Standard print setup command
-	ON_COMMAND(ID_FILE_PRINT_SETUP, &CWinAppEx::OnFilePrintSetup)
+BEGIN_MESSAGE_MAP(CSWGEdApp, CWinAppEx)
+	ON_COMMAND(ID_APP_ABOUT, &CSWGEdApp::OnAppAbout)
+	ON_COMMAND(ID_FILE_NEW, &CSWGEdApp::OnFileNew)
 END_MESSAGE_MAP()
 
 
-// CMFCApplication4App construction
+// CSWGEdApp construction
 
-CMFCApplication4App::CMFCApplication4App()
+CSWGEdApp::CSWGEdApp()
 {
 	m_bHiColorIcons = TRUE;
 
 	// support Restart Manager
-	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_ALL_ASPECTS;
+	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 #ifdef _MANAGED
 	// If the application is built using Common Language Runtime support (/clr):
 	//     1) This additional setting is needed for Restart Manager support to work properly.
@@ -56,20 +40,20 @@ CMFCApplication4App::CMFCApplication4App()
 
 	// TODO: replace application ID string below with unique ID string; recommended
 	// format for string is CompanyName.ProductName.SubProduct.VersionInformation
-	SetAppID(_T("MFCApplication4.AppID.NoVersion"));
+	SetAppID(_T("SWGEd.AppID.NoVersion"));
 
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
 }
 
-// The one and only CMFCApplication4App object
+// The one and only CSWGEdApp object
 
-CMFCApplication4App theApp;
+CSWGEdApp theApp;
 
 
-// CMFCApplication4App initialization
+// CSWGEdApp initialization
 
-BOOL CMFCApplication4App::InitInstance()
+BOOL CSWGEdApp::InitInstance()
 {
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
@@ -106,7 +90,6 @@ BOOL CMFCApplication4App::InitInstance()
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
-	LoadStdProfileSettings(4);  // Load standard INI file options (including MRU)
 
 
 	InitContextMenuManager();
@@ -119,54 +102,56 @@ BOOL CMFCApplication4App::InitInstance()
 	theApp.GetTooltipManager()->SetTooltipParams(AFX_TOOLTIP_TYPE_ALL,
 		RUNTIME_CLASS(CMFCToolTipCtrl), &ttParams);
 
-	// Register the application's document templates.  Document templates
-	//  serve as the connection between documents, frame windows and views
-	CMultiDocTemplate* pDocTemplate;
-	pDocTemplate = new CMultiDocTemplate(IDR_MFCApplication4TYPE,
-		RUNTIME_CLASS(CMFCApplication4Doc),
-		RUNTIME_CLASS(CChildFrame), // custom MDI child frame
-		RUNTIME_CLASS(CMFCApplication4View));
-	if (!pDocTemplate)
+	// To create the main window, this code creates a new frame window
+	// object and then sets it as the application's main window object
+	CMDIFrameWnd* pFrame = new CMainFrame;
+	if (!pFrame)
 		return FALSE;
-	AddDocTemplate(pDocTemplate);
-
-	// create main MDI Frame window
-	CMainFrame* pMainFrame = new CMainFrame;
-	if (!pMainFrame || !pMainFrame->LoadFrame(IDR_MAINFRAME))
-	{
-		delete pMainFrame;
+	m_pMainWnd = pFrame;
+	// create main MDI frame window
+	if (!pFrame->LoadFrame(IDR_MAINFRAME))
 		return FALSE;
-	}
-	m_pMainWnd = pMainFrame;
+	// try to load shared MDI menus and accelerator table
+	//TODO: add additional member variables and load calls for
+	//	additional menu types your application may need
+	HINSTANCE hInst = AfxGetResourceHandle();
+	m_hMDIMenu  = ::LoadMenu(hInst, MAKEINTRESOURCE(IDR_SWGEdTYPE));
+	m_hMDIAccel = ::LoadAccelerators(hInst, MAKEINTRESOURCE(IDR_SWGEdTYPE));
 
 
-	// Parse command line for standard shell commands, DDE, file open
-	CCommandLineInfo cmdInfo;
-	ParseCommandLine(cmdInfo);
 
 
-
-	// Dispatch commands specified on the command line.  Will return FALSE if
-	// app was launched with /RegServer, /Register, /Unregserver or /Unregister.
-	if (!ProcessShellCommand(cmdInfo))
-		return FALSE;
 	// The main window has been initialized, so show and update it
-	pMainFrame->ShowWindow(m_nCmdShow);
-	pMainFrame->UpdateWindow();
+	pFrame->ShowWindow(m_nCmdShow);
+	pFrame->UpdateWindow();
 
 	return TRUE;
 }
 
-int CMFCApplication4App::ExitInstance()
+int CSWGEdApp::ExitInstance()
 {
 	//TODO: handle additional resources you may have added
+	if (m_hMDIMenu != NULL)
+		FreeResource(m_hMDIMenu);
+	if (m_hMDIAccel != NULL)
+		FreeResource(m_hMDIAccel);
+
 	AfxOleTerm(FALSE);
 
 	return CWinAppEx::ExitInstance();
 }
 
-// CMFCApplication4App message handlers
+// CSWGEdApp message handlers
 
+void CSWGEdApp::OnFileNew() 
+{
+	CMainFrame* pFrame = STATIC_DOWNCAST(CMainFrame, m_pMainWnd);
+	pFrame->LockWindowUpdate();
+	// create a new MDI child window
+	pFrame->CreateNewChild(
+		RUNTIME_CLASS(CChildFrame), IDR_SWGEdTYPE, m_hMDIMenu, m_hMDIAccel);
+	pFrame->UnlockWindowUpdate();
+}
 
 // CAboutDlg dialog used for App About
 
@@ -199,15 +184,15 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 // App command to run the dialog
-void CMFCApplication4App::OnAppAbout()
+void CSWGEdApp::OnAppAbout()
 {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
 }
 
-// CMFCApplication4App customization load/save methods
+// CSWGEdApp customization load/save methods
 
-void CMFCApplication4App::PreLoadState()
+void CSWGEdApp::PreLoadState()
 {
 	BOOL bNameValid;
 	CString strName;
@@ -219,15 +204,15 @@ void CMFCApplication4App::PreLoadState()
 	GetContextMenuManager()->AddMenu(strName, IDR_POPUP_EXPLORER);
 }
 
-void CMFCApplication4App::LoadCustomState()
+void CSWGEdApp::LoadCustomState()
 {
 }
 
-void CMFCApplication4App::SaveCustomState()
+void CSWGEdApp::SaveCustomState()
 {
 }
 
-// CMFCApplication4App message handlers
+// CSWGEdApp message handlers
 
 
 
