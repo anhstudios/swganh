@@ -53,7 +53,6 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
     afx_msg void OnOpenEnvironment();
-
 	DECLARE_MESSAGE_MAP()
 
 private:

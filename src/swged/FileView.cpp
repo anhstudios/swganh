@@ -5,7 +5,6 @@
 #include "Resource.h"
 #include "SWGEd.h"
 
-#include <map>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -99,43 +98,46 @@ void CFileView::OnSize(UINT nType, int cx, int cy)
 
 void CFileView::FillFileView()
 {
-    std::map<int, std::map<std::string, HTREEITEM>> directory_map;
-    
-    for(auto& file : file_listing_)
+    std::vector<std::pair<std::string, HTREEITEM>> directory_cache;
+
+    for (auto& file : file_listing_)
     {
         std::vector<std::string> path_data;
         boost::split(path_data, file, boost::is_any_of("/"));
-    
+
+        if (directory_cache.size() > 0 && directory_cache[0].first.compare(path_data[0]) != 0)
+        {
+            directory_cache.clear();
+        }
+
         HTREEITEM previous = NULL;
         for (uint32_t i = 0; i < path_data.size(); ++i)
         {
-            if (i + 1 != path_data.size())
+            auto& current_item = path_data[i];
+
+            if (directory_cache.size() > i && directory_cache[i].first.compare(current_item) == 0)
             {
-                auto find_iter = directory_map[i].find(path_data[i]);
-                if (find_iter == directory_map[i].end())
+                previous = directory_cache[i].second;
+            }
+            else
+            {
+                if (i + 1 != path_data.size())
                 {
-                    if (previous)
+                    previous = m_wndFileView.InsertItem(_T(current_item.c_str()), 0, 0, previous);
+                    if (directory_cache.size() > i)
                     {
-                        previous = m_wndFileView.InsertItem(_T(path_data[i].c_str()), 0, 0, previous);
-                    } else {
-                        previous = m_wndFileView.InsertItem(_T(path_data[i].c_str()), 0, 0);
+                        directory_cache[i] = std::make_pair(current_item, previous);
                     }
-    
-                    directory_map[i].insert(std::make_pair(path_data[i], previous));
+                    else
+                    {
+                        directory_cache.push_back(std::make_pair(current_item, previous));
+                    }
                 }
                 else
                 {
-                    previous = find_iter->second;
-                }
-            } else {                
-                if (previous)
-                {
                     m_wndFileView.InsertItem(_T(path_data[i].c_str()), 2, 2, previous);
-                } else {
-                    m_wndFileView.InsertItem(_T(path_data[i].c_str()), 2, 2);
+                    previous = NULL;
                 }
-    
-                previous = NULL;
             }
         }
     }
@@ -314,7 +316,6 @@ void CFileView::SetTreArchive(swganh::tre::TreArchive* archive)
 
     std::async(std::launch::async, [=] () {
         file_listing_ = archive_->GetAvailableResources();
-        std::sort(std::begin(file_listing_), std::end(file_listing_));
         FillFileView();    
     });
 }
