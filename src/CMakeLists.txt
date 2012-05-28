@@ -19,5 +19,7 @@ add_subdirectory(swganh)
 ## publish 14 core implementation
 add_subdirectory(pub14_core)
 
-## game editor
-add_subdirectory(swged)
+## game editor - win32 only
+if(WIN32)
+    add_subdirectory(swged)
+endif()
