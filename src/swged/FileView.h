@@ -2,6 +2,7 @@
 #pragma once
 
 #include "ViewTree.h"
+#include <thread>
 #include "swganh/tre/tre_archive.h"
 
 class CFileViewToolBar : public CMFCToolBar
@@ -58,6 +59,8 @@ protected:
 private:
     swganh::tre::TreArchive* archive_;
     std::vector<std::string> file_listing_;
+
+    std::unique_ptr<std::thread> file_listing_loader_;
 
     void BuildPath(CString& path, HTREEITEM node);
 };

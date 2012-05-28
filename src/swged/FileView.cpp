@@ -27,6 +27,8 @@ CFileView::CFileView()
 
 CFileView::~CFileView()
 {
+    if (file_listing_loader_ && file_listing_loader_->joinable())
+        file_listing_loader_->join();
 }
 
 BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
@@ -100,45 +102,42 @@ void CFileView::FillFileView()
 {
     std::vector<std::pair<std::string, HTREEITEM>> directory_cache;
 
+    // Loop through all the files in the listing
     for (auto& file : file_listing_)
     {
         std::vector<std::string> path_data;
         boost::split(path_data, file, boost::is_any_of("/"));
 
-        if (directory_cache.size() > 0 && directory_cache[0].first.compare(path_data[0]) != 0)
-        {
-            directory_cache.clear();
-        }
-
         HTREEITEM previous = NULL;
+        
+        // Loop through all the items in the file string (ie., the directories and filename)
         for (uint32_t i = 0; i < path_data.size(); ++i)
         {
             auto& current_item = path_data[i];
+            
+            // Is this the file element (the last iteration of the loop)
+            if (i + 1 == path_data.size())
+            {
+                m_wndFileView.InsertItem(_T(current_item.c_str()), 2, 2, previous);
+                break;
+            }
 
+            // If a tree item has already been created for this directory pull it from the cache and continue
             if (directory_cache.size() > i && directory_cache[i].first.compare(current_item) == 0)
             {
                 previous = directory_cache[i].second;
+                continue;
             }
+            
+            // Otherwise insert a directory node and cache the item.
+            previous = m_wndFileView.InsertItem(_T(current_item.c_str()), 0, 0, previous);
+
+            // If the directory cache is not big enough push the item back, otherwise
+            // overwrite the cache entry for this nested level.
+            if (directory_cache.size() <= i)
+                directory_cache.push_back(std::make_pair(current_item, previous));
             else
-            {
-                if (i + 1 != path_data.size())
-                {
-                    previous = m_wndFileView.InsertItem(_T(current_item.c_str()), 0, 0, previous);
-                    if (directory_cache.size() > i)
-                    {
-                        directory_cache[i] = std::make_pair(current_item, previous);
-                    }
-                    else
-                    {
-                        directory_cache.push_back(std::make_pair(current_item, previous));
-                    }
-                }
-                else
-                {
-                    m_wndFileView.InsertItem(_T(path_data[i].c_str()), 2, 2, previous);
-                    previous = NULL;
-                }
-            }
+                directory_cache[i] = std::make_pair(current_item, previous);
         }
     }
 }
@@ -313,11 +312,25 @@ void CFileView::OnChangeVisualStyle()
 void CFileView::SetTreArchive(swganh::tre::TreArchive* archive)
 {
     archive_ = archive;
+    
+    CStatusBar* pStatus = (CStatusBar*) 
+	AfxGetApp()->m_pMainWnd->GetDescendantWindow(AFX_IDW_STATUS_BAR);
+	pStatus->SetWindowText("Loading tre file index...");
 
-    std::async(std::launch::async, [=] () {
+    file_listing_loader_.reset(new std::thread([=] () {
         file_listing_ = archive_->GetAvailableResources();
-        FillFileView();    
-    });
+
+        SetRedraw(FALSE);
+        FillFileView();   
+        SetRedraw(TRUE);
+        CRect rClient;
+        this->GetClientRect( rClient );
+        this->RedrawWindow( rClient, NULL, RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_INVALIDATE);
+
+        CStatusBar* pStatus = (CStatusBar*) 
+		AfxGetApp()->m_pMainWnd->GetDescendantWindow(AFX_IDW_STATUS_BAR);
+	    pStatus->SetWindowText("Ready");
+    }));
 }
 
 void CFileView::BuildPath(CString& path, HTREEITEM node)
