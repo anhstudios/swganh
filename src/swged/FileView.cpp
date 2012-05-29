@@ -195,7 +195,14 @@ void CFileView::OnProperties()
 
 void CFileView::OnFileOpen()
 {
-	// TODO: Add your command handler code here
+	CTreeCtrl* pWndTree = (CTreeCtrl*) &m_wndFileView;
+    HTREEITEM selected_item = pWndTree->GetSelectedItem();
+    auto selected_item_text = pWndTree->GetItemText(selected_item);
+    auto selected_item_path = selected_item_text;
+    
+    BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
+
+    AfxGetApp()->OpenDocumentFile(selected_item_path);
 }
 
 void CFileView::OnFileOpenWith()

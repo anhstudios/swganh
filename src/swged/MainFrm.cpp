@@ -282,3 +282,8 @@ BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParent
 	return TRUE;
 }
 
+
+swganh::tre::TreArchive* CMainFrame::GetTreArchive() const
+{
+    return archive_.get();
+}

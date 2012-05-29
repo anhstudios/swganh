@@ -7,8 +7,11 @@
 #include "afxdialogex.h"
 #include "SWGEd.h"
 #include "MainFrm.h"
-
 #include "ChildFrm.h"
+
+#include "HexDoc.h"
+#include "HexView.h"
+#include "TreDocumentManager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,6 +23,7 @@
 BEGIN_MESSAGE_MAP(CSWGEdApp, CWinAppEx)
 	ON_COMMAND(ID_APP_ABOUT, &CSWGEdApp::OnAppAbout)
 	ON_COMMAND(ID_FILE_NEW, &CSWGEdApp::OnFileNew)
+	ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
 END_MESSAGE_MAP()
 
 
@@ -118,7 +122,15 @@ BOOL CSWGEdApp::InitInstance()
 	m_hMDIMenu  = ::LoadMenu(hInst, MAKEINTRESOURCE(IDR_SWGEdTYPE));
 	m_hMDIAccel = ::LoadAccelerators(hInst, MAKEINTRESOURCE(IDR_SWGEdTYPE));
 
+    m_pDocManager = new TreDocumentManager;
 
+	CMultiDocTemplate* pDocTemplate;
+	pDocTemplate = new CMultiDocTemplate(
+		IDR_MAINFRAME,
+		RUNTIME_CLASS(CHexDoc),
+		RUNTIME_CLASS(CChildFrame),       // main SDI frame window
+		RUNTIME_CLASS(CHexView));
+	AddDocTemplate(pDocTemplate);
 
 
 	// The main window has been initialized, so show and update it
