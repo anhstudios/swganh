@@ -95,6 +95,11 @@ vector<string> TreArchive::GetAvailableResources() const
         resource_list.insert(begin(resource_list), begin(resources), end(resources));
     }
 
+    // sort and remove duplicates
+    std::sort(std::begin(resource_list), std::end(resource_list));
+    auto erase_iter = std::unique(resource_list.begin(), resource_list.end());
+    resource_list.erase(erase_iter, resource_list.end());
+
     return resource_list;
 }
 
