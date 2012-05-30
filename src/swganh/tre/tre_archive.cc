@@ -47,7 +47,7 @@ uint32_t TreArchive::GetResourceSize(const string& resource_name) const
     throw runtime_error("Requested unknown resource " + resource_name);
 }
 
-vector<char> TreArchive::GetResource(const string& resource_name)
+TreResourceData TreArchive::GetResource(const string& resource_name)
 {
     for (auto& reader : readers_)
     {

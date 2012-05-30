@@ -4,6 +4,7 @@
 #define HEXVIEW_H
 
 #include <afxwin.h>
+#include "HexDoc.h"
 
 class CHexView : public CScrollView
 {
@@ -16,6 +17,13 @@ protected:
     //{{AFX_VIRTUAL(CHexView)
    	virtual void OnInitialUpdate();
     virtual void OnDraw(CDC*);
+    BOOL PreCreateWindow(CREATESTRUCT& cs);
+    void UpdateScrollbars();
+    CHexDoc* GetDocument()
+    {
+        ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CHexDoc)));
+	    return (CHexDoc*)m_pDocument;
+    }
     //}}AFX_VIRTUAL
 
 public:
@@ -29,6 +37,11 @@ private:
 	DWORD m_dwTotalLines;
 	DWORD m_dwPageLines;
 	CFont m_Font;
+
+	unsigned int m_nCurSel, m_nCurSelEnd;
+	unsigned int m_nLineLength;
+	unsigned int m_nLineCount;
+	unsigned int m_nVisStart, m_nVisEnd;
 
     DECLARE_MESSAGE_MAP()
 public:

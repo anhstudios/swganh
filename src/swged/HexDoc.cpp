@@ -36,7 +36,7 @@ uint32_t CHexDoc::GetLength() const
     return file_data_.size();
 }
     
-const std::vector<char>& CHexDoc::GetData() const
+const std::vector<unsigned char>& CHexDoc::GetData() const
 {
     return file_data_;
 }

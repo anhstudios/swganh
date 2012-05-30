@@ -232,7 +232,7 @@ void CFileView::OnFileExport()
         auto resource = archive_->GetResource(selected_item_path.GetString());
         auto filename = file_dialog.GetPathName();
 
-        std::ofstream ofs(filename, std::ios::out | std::ios::binary);
+        std::basic_ofstream<unsigned char> ofs(filename, std::ios::out | std::ios::binary);
 
         if (resource.size() > 0)
         {

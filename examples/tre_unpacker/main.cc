@@ -25,7 +25,7 @@ std::tuple<std::string, std::string> ProcessInput(int argc, char *argv[]);
 void ValidateSwgLiveConfig(const std::string& path_to_config);
 void ValidateTargetOutputDirectory(const std::string& target_output_directory);
 
-void SaveFile(std::string filename, const std::vector<char>& filedata);
+void SaveFile(std::string filename, const std::vector<unsigned char>& filedata);
 
 void UpdateProgressBar(double total, double completed);
 
@@ -152,7 +152,7 @@ void ValidateTargetOutputDirectory(const std::string& target_output_directory)
     }
 }
 
-void SaveFile(std::string filename, const std::vector<char>& filedata)
+void SaveFile(std::string filename, const std::vector<unsigned char>& filedata)
 {
     auto path = bfs::path(filename);
 
@@ -166,7 +166,7 @@ void SaveFile(std::string filename, const std::vector<char>& filedata)
         bfs::create_directories(path.parent_path());
     }
     
-    std::ofstream ofs(filename, std::ios::out | std::ios::binary);
+    std::basic_ofstream<unsigned char> ofs(filename, std::ios::out | std::ios::binary);
 
     if (filedata.size() > 0)
     {
