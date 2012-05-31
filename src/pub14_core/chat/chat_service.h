@@ -1,14 +1,15 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_CHAT_CHAT_SERVICE_H_
-#define SWGANH_CHAT_CHAT_SERVICE_H_
+#ifndef SWGANH_SWGANH_CORE_CHAT_SERVICE_H_
+#define SWGANH_SWGANH_CORE_CHAT_SERVICE_H_
 
 #include <cstdint>
 #include <memory>
 #include <string>
 
-#include "anh/service/service_interface.h"
+#include "swganh/chat/chat_service_interface.h"
+#include "swganh/command/command_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/messages/controllers/command_queue_enqueue.h"
@@ -19,14 +20,14 @@ namespace object {
     namespace tangible { class Tangible; }
 }}  // namespace swganh::object
 
-namespace swganh {
+namespace swganh_core {
 namespace chat {
 
-    class ChatService: public anh::service::ServiceInterface
+    class ChatService: public swganh::chat::ChatServiceInterface
     {
     public:
         explicit ChatService(swganh::app::SwganhKernel* kernel);
-        
+        virtual ~ChatService();
         anh::service::ServiceDescription GetServiceDescription();
 
         void SendSpatialChat(
@@ -39,9 +40,10 @@ namespace chat {
         void Startup();
 
     private:
+		swganh::command::CommandServiceInterface* command_service_;
         swganh::app::SwganhKernel* kernel_;
     };
 
-}}  // namespace swganh::chat
+}}  // namespace swganh_core::chat
 
-#endif  // SWGANH_CHAT_CHAT_SERVICE_H_
+#endif  // SWGANH_SWGANH_CORE_CHAT_SERVICE_H_

@@ -8,21 +8,21 @@
 
 #include "swganh/command/base_swg_command.h"
 
-namespace swganh {
+namespace swganh_core {
 namespace chat {
 
     class ChatService;
 
-    class SpatialChatInternalCommand : public command::BaseSwgCommand
+    class SpatialChatInternalCommand : public swganh::command::BaseSwgCommand
     {
     public:
         SpatialChatInternalCommand(
-            app::SwganhKernel* kernel,
-            const command::CommandProperties& properties);
+            swganh::app::SwganhKernel* kernel,
+            const swganh::command::CommandProperties& properties);
 
         virtual ~SpatialChatInternalCommand();
 
-        virtual boost::optional<std::shared_ptr<command::CommandCallback>> Run();
+        virtual boost::optional<std::shared_ptr<swganh::command::CommandCallback>> Run();
 
     private:
         ChatService* chat_service_;

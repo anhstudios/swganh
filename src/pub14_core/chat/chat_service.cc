@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/chat/chat_service.h"
+#include "chat_service.h"
 
 #ifdef WIN32
 #include <regex>
@@ -32,7 +32,7 @@
 using namespace anh::app;
 using namespace anh::service;
 using namespace std;
-using namespace swganh::chat;
+using namespace swganh_core::chat;
 using namespace swganh::command;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;
@@ -54,6 +54,11 @@ using boost::regex_match;
 ChatService::ChatService(SwganhKernel* kernel)
     : kernel_(kernel)
 {}
+
+ChatService::~ChatService()
+{    
+}
+
 
 ServiceDescription ChatService::GetServiceDescription()
 {
@@ -95,9 +100,9 @@ void ChatService::SendSpatialChat(
 
 void ChatService::Startup()
 {
-	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
+	command_service_ = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
-    command_service->AddCommandCreator("spatialchatinternal",
+    command_service_->AddCommandCreator("spatialchatinternal",
         [] (
         swganh::app::SwganhKernel* kernel,
         const CommandProperties& properties)
