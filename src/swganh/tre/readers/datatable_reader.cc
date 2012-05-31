@@ -169,7 +169,7 @@ uint32_t DatatableReader::ParseColumn(uint8_t type, uint32_t offset, vector<Data
         break;
 
     case 's':
-        cell.SetValue(row_offset_ + offset);
+        cell.SetValue(reinterpret_cast<const char*>(row_offset_ + offset));
 
         string tmp(reinterpret_cast<const char*>(row_offset_ + offset));
         size = tmp.length() + 1;
