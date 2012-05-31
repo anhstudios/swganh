@@ -31,28 +31,8 @@ BOOL CHexView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CHexView::OnInitialUpdate()
 {
-	// Methode der Oberklasse aufrufen
 	CScrollView::OnInitialUpdate();
-    
-    // Hole Zeiger auf Dokument
-    CHexDoc* pDoc = (CHexDoc*) GetDocument();
-    ASSERT_VALID(pDoc);
-
-	// Datei besteht aus so vielen Zeilen
-    if(pDoc->GetLength() % 16)
-	{
-        m_dwTotalLines = pDoc->GetLength() / 16 + 1;
-	}
-    else
-	{
-        m_dwTotalLines = pDoc->GetLength() / 16;
-	}
-    
-	CRect rect;
-	GetClientRect(&rect);
-
-	// Größe des Dokuments in Pixel setzen
-    SetScrollSizes(MM_TEXT, CSize(rect.Width(), rect.Height()));
+    UpdateScrollbars();
 }
 
 void CHexView::OnDraw(CDC* pDC)
@@ -61,35 +41,26 @@ void CHexView::OnDraw(CDC* pDC)
 	CRect rect;
 	GetClientRect(&rect);
 
-    // Get the height for the current font
-    LOGFONT lf;
-    m_Font.GetLogFont(&lf);
-
-    uint32_t font_height = 16;
-
-	// Anzahl in Ansicht darstellbarer Zeilen
-	if(rect.Height() % font_height)
+    uint32_t page_lines = 0;
+	if(rect.Height() % 16)
 	{
-		m_dwPageLines = rect.Height() / font_height + 1;
+		page_lines = rect.Height() / 16 + 1;
 	}
 	else
 	{
-		m_dwPageLines = rect.Height() / font_height;
+		page_lines = rect.Height() / 16;
 	}
 
-	// 01-25-2006: prevents garbage being displayed
-	if (m_dwTotalLines < m_dwPageLines)
-		m_dwPageLines = m_dwTotalLines;
+	if (total_lines_ < page_lines)
+		page_lines = total_lines_;
+        
+    SetScrollSizes(MM_TEXT, CSize(line_width_, 16 * total_lines_ - 1),
+  		                    CSize(line_width_, 16 * (page_lines - 1)), CSize(line_width_, 16));
+        
+	page_bytes_offset_ = (GetScrollPos(SB_VERT) & 0xfffffff0);
+    uint32_t page_line_offset = page_bytes_offset_ / 16;
 
-	// Größe des Dokuments (in Pixel) erneut setzen
-    SetScrollSizes(MM_TEXT, CSize(rect.Width(), rect.Height()),
-  		                    CSize(rect.Width(), font_height * (m_dwPageLines - 1)), CSize(rect.Width(), font_height));
-
-	// Position of Scrollbalken
-	m_dwOffset = (GetScrollPos(SB_VERT) & 0xfffffff0);
-
-	// Hole Zeiger auf Dokumentobjekt
-	CHexDoc* pDoc = (CHexDoc*) GetDocument();
+	CHexDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
     std::ostringstream ss;
@@ -104,24 +75,23 @@ void CHexView::OnDraw(CDC* pDC)
     std::ios_base::fmtflags flags = ss.flags(ss.hex);
     char fill = ss.fill('0');
     std::streamsize width = ss.width(2);
-    int16_t offset_lines = (int16_t)m_dwOffset / 16;
 
     // The byte buffer should be printed out in lines of 16 characters and display
     // both hex and ascii values for each character, see most hex editors for
     // reference.
-    for (int32_t i = 0, dwOffset = m_dwOffset; i < (int32_t)m_dwPageLines; i++, dwOffset += 16) {
+    for (int32_t i = 0, bytes_offset = page_bytes_offset_; i < (int32_t)page_lines; i++, bytes_offset += 16) {
         // Print out a line number.
-        ss << std::setw(4) << (dwOffset) << ":   ";
+        ss << std::setw(4) << (bytes_offset) << ":   ";
         
         // Loop through the characters of this line (max 16)
         for (int16_t j = 0; j < 16; ++j) {
             // For the last line there may not be 16 characters. In this case filler
             // whitespace should be added to keep column widths consistent.
-            if (i + offset_lines == lines && j >= extra) {
+            if (i + page_line_offset == lines && j >= extra) {
                 ss << "   ";
             } else {
                 ss << std::setw(2)
-                    << static_cast<unsigned>(data[(dwOffset)+j]) << " ";
+                    << static_cast<unsigned>(data[(bytes_offset)+j]) << " ";
             }
         }
         
@@ -130,18 +100,18 @@ void CHexView::OnDraw(CDC* pDC)
         for (int16_t k = 0; k < 16; ++k) {
             // For the last line there may not be 16 characters. In this case
             // print a ' ' for these characters.
-            if ((i + offset_lines == lines) & (k >= extra)) {
+            if ((i + page_line_offset == lines) & (k >= extra)) {
                 ss << " ";
-            } else if (data[(dwOffset)+k] < ' ' || data[(dwOffset)+k] > '~') {
+            } else if (data[(bytes_offset)+k] < ' ' || data[(bytes_offset)+k] > '~') {
                 // Else if it's not an ascii value print a '.'
                 ss << '.';
             } else {
-                ss << data[(dwOffset)+k];
+                ss << data[(bytes_offset)+k];
             }
         }
         
         pDC->SelectObject(m_Font);
-        pDC->TextOut(10, dwOffset, _T(ss.str().c_str()));
+        pDC->TextOut(10, bytes_offset, _T(ss.str().c_str()));
 
         ss.str("");
         ss.clear();
@@ -177,7 +147,7 @@ void CHexView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 void CHexView::OnSizing(UINT, LPRECT)
 {
 	// Scrollbalken neu positionieren
-	SetScrollPos(SB_VERT, m_dwOffset);
+	SetScrollPos(SB_VERT, page_bytes_offset_);
 
 	// Veranlasse Neuzeichnen der Ansicht
 	Invalidate();
@@ -230,19 +200,24 @@ void CHexView::UpdateScrollbars()
 	// calculate how many bytes can be displayed across
 	CRect rcClient;
 	GetClientRect( &rcClient );
-	m_nLineLength = ( rcClient.Width() - 80 ) / 40;
 
-	// make calculations
-	CSize sizeTotal;
-	sizeTotal.cx = 1;
-    sizeTotal.cy = GetDocument()->GetLength() / m_nLineLength * 20 + 100;
-	m_nLineCount = GetDocument()->GetLength() / m_nLineLength;
+    // line length = 74 character width * 20px per character
+    line_length_ = 16;
+    line_width_ = 78 * 8;
+    total_lines_ = GetDocument()->GetLength() / line_length_;
+    
+    if (GetDocument()->GetLength() % line_length_)
+        ++total_lines_;
 
-	// set scrollbar sizes
-	SCROLLINFO siInfo;
-	siInfo.cbSize = sizeof( SCROLLINFO );
-	siInfo.fMask = SIF_RANGE;
-	siInfo.nMin = 0; siInfo.nMax = sizeTotal.cy;
-	SetScrollSizes(MM_TEXT, sizeTotal); // this manages most of the tedious stuff
-	SetScrollInfo( SB_VERT, &siInfo ); // here we actually set the size
+    CSize size_total;
+    size_total.cx = line_width_;
+    size_total.cy = total_lines_ * 20;
+
+    SCROLLINFO scroll_info;
+    scroll_info.fMask = SIF_RANGE;
+    scroll_info.nMin = 0;
+    scroll_info.nMax = size_total.cy;
+
+    SetScrollSizes(MM_TEXT, size_total);
+    //SetScrollInfo(SB_VERT, &scroll_info);
 }

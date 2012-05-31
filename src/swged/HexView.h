@@ -4,6 +4,8 @@
 #define HEXVIEW_H
 
 #include <afxwin.h>
+#include <cstdint>
+
 #include "HexDoc.h"
 
 class CHexView : public CScrollView
@@ -42,6 +44,11 @@ private:
 	unsigned int m_nLineLength;
 	unsigned int m_nLineCount;
 	unsigned int m_nVisStart, m_nVisEnd;
+
+    uint32_t line_length_;
+    uint32_t line_width_;
+    uint32_t total_lines_;
+    uint32_t page_bytes_offset_;
 
     DECLARE_MESSAGE_MAP()
 public:
