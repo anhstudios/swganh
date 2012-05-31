@@ -1,8 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_GAlAXY_PROVIDERS_GALAXY_PROVIDER_INTERFACE_H_
-#define SWGANH_GAlAXY_PROVIDERS_GALAXY_PROVIDER_INTERFACE_H_
+#ifndef SWGANH_GALAXY_PROVIDERS_GALAXY_PROVIDER_INTERFACE_H_
+#define SWGANH_GALAXY_PROVIDERS_GALAXY_PROVIDER_INTERFACE_H_
 
 #include <cstdint>
 
@@ -19,4 +19,4 @@ public:
 
 }}}  // namespace swganh::galaxy::providers
 
-#endif  // SWGANH_GAlAXY_PROVIDERS_GALAXY_PROVIDER_INTERFACE_H_
+#endif  // SWGANH_GALAXY_PROVIDERS_GALAXY_PROVIDER_INTERFACE_H_
