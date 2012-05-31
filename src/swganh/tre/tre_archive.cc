@@ -85,14 +85,25 @@ vector<string> TreArchive::GetTreFilenames() const
     return filenames;
 }
 
+
 vector<string> TreArchive::GetAvailableResources() const
+{
+    return GetAvailableResources(std::function<void (int total, int completed)>());
+}
+
+std::vector<std::string> TreArchive::GetAvailableResources(std::function<void (int total, int completed)> progress_callback) const
 {
     vector<string> resource_list;
 
+    int total = readers_.size();
+    int completed = 0;
     for (auto& reader : readers_)
     {
         auto resources = reader->GetResourceNames();
         resource_list.insert(begin(resource_list), begin(resources), end(resources));
+
+        ++completed;
+        progress_callback(total, completed);
     }
 
     // sort and remove duplicates

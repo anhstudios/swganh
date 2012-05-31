@@ -94,6 +94,8 @@ namespace tre {
          */
         std::vector<std::string> GetAvailableResources() const;
 
+        std::vector<std::string> GetAvailableResources(std::function<void (int total, int completed)> progress_callback) const;
+
     private:
 
         void CreateReaders(const std::vector<std::string>& resource_files);
