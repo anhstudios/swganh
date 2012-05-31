@@ -1,6 +1,6 @@
 
 #pragma once
-
+#include "ProgressDialog.h"
 #include "ViewTree.h"
 #include <thread>
 #include "swganh/tre/tre_archive.h"
@@ -47,21 +47,19 @@ protected:
 	afx_msg void OnFileOpen();
 	afx_msg void OnFileOpenWith();
 	afx_msg void OnFileExport();
-	afx_msg void OnDummyCompile();
-	afx_msg void OnEditCut();
-	afx_msg void OnEditCopy();
-	afx_msg void OnEditClear();
 	afx_msg void OnPaint();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
     afx_msg void OnOpenEnvironment();
 	DECLARE_MESSAGE_MAP()
 
 private:
+
+    void UpdateProgressBar(double total, double completed);
+
+    std::unique_ptr<ProgressDialog> dlg_progress_;
     swganh::tre::TreArchive* archive_;
     std::vector<std::string> file_listing_;
 
     std::unique_ptr<std::thread> file_listing_loader_;
-
-    void BuildPath(CString& path, HTREEITEM node);
 };
 

@@ -39,10 +39,6 @@ BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 	ON_COMMAND(ID_OPEN, OnFileOpen)
 	ON_COMMAND(ID_OPEN_WITH, OnFileOpenWith)
 	ON_COMMAND(ID_EXPORT_FILE, OnFileExport)
-	ON_COMMAND(ID_DUMMY_COMPILE, OnDummyCompile)
-	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
-	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
-	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
@@ -101,7 +97,8 @@ void CFileView::OnSize(UINT nType, int cx, int cy)
 void CFileView::FillFileView()
 {
     std::vector<std::pair<std::string, HTREEITEM>> directory_cache;
-
+    auto total = file_listing_.size();
+    int count = 0;
     // Loop through all the files in the listing
     for (auto& file : file_listing_)
     {
@@ -139,6 +136,13 @@ void CFileView::FillFileView()
             else
                 directory_cache[i] = std::make_pair(current_item, previous);
         }
+        
+        if (count % 100)
+        {
+            UpdateProgressBar(total, count);
+        }
+
+        ++count;
     }
 }
 
@@ -195,7 +199,14 @@ void CFileView::OnProperties()
 
 void CFileView::OnFileOpen()
 {
-	// TODO: Add your command handler code here
+	CTreeCtrl* pWndTree = (CTreeCtrl*) &m_wndFileView;
+    HTREEITEM selected_item = pWndTree->GetSelectedItem();
+    auto selected_item_text = pWndTree->GetItemText(selected_item);
+    auto selected_item_path = selected_item_text;
+    
+    m_wndFileView.BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
+
+    AfxGetApp()->OpenDocumentFile(selected_item_path);
 }
 
 void CFileView::OnFileOpenWith()
@@ -211,7 +222,7 @@ void CFileView::OnFileExport()
     auto selected_item_text = pWndTree->GetItemText(selected_item);
     auto selected_item_path = selected_item_text;
     
-    BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
+    m_wndFileView.BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
 
     CFileDialog file_dialog(FALSE, NULL, selected_item_text, OFN_HIDEREADONLY, _T("All files (*.*)|*.*||"));
     
@@ -225,7 +236,7 @@ void CFileView::OnFileExport()
         auto resource = archive_->GetResource(selected_item_path.GetString());
         auto filename = file_dialog.GetPathName();
 
-        std::ofstream ofs(filename, std::ios::out | std::ios::binary);
+        std::basic_ofstream<unsigned char> ofs(filename, std::ios::out | std::ios::binary);
 
         if (resource.size() > 0)
         {
@@ -238,26 +249,6 @@ void CFileView::OnOpenEnvironment()
 {
 	AfxMessageBox(_T("Open Environment...."));
 
-}
-
-void CFileView::OnDummyCompile()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditCut()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditCopy()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditClear()
-{
-	// TODO: Add your command handler code here
 }
 
 void CFileView::OnPaint()
@@ -313,40 +304,51 @@ void CFileView::SetTreArchive(swganh::tre::TreArchive* archive)
 {
     archive_ = archive;
     
-    CStatusBar* pStatus = (CStatusBar*) 
-	AfxGetApp()->m_pMainWnd->GetDescendantWindow(AFX_IDW_STATUS_BAR);
-	pStatus->SetWindowText("Loading tre file index...");
+    dlg_progress_.reset(new ProgressDialog(AfxGetMainWnd()));
+    dlg_progress_->Create(IDD_PROGRESS, this);
+    dlg_progress_->DisableAbort();
+    dlg_progress_->ShowWindow(SW_SHOW);
+   
+    AfxGetMainWnd()->BeginModalState();
+    dlg_progress_->EnableWindow(TRUE);
+	dlg_progress_->SetProgress(0, "Loading tre file archive");
+        
+    file_listing_ = archive_->GetAvailableResources([=] (int total, int completed) {
+        if (completed == 0)
+            return;
 
-    file_listing_loader_.reset(new std::thread([=] () {
-        file_listing_ = archive_->GetAvailableResources();
+        // how wide you want the progress meter to be
+        double fraction_complete = (float)completed / (float)total;
 
-        SetRedraw(FALSE);
-        FillFileView();   
-        SetRedraw(TRUE);
-        CRect rClient;
-        this->GetClientRect( rClient );
-        this->RedrawWindow( rClient, NULL, RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_INVALIDATE);
+        if (fraction_complete > 0.0f)
+        {
+            dlg_progress_->SetProgress(static_cast<int>((fraction_complete * 100) / 2));
+        }
+    });
+    
+	dlg_progress_->SetProgress(50, "Indexing tre files");
 
-        CStatusBar* pStatus = (CStatusBar*) 
-		AfxGetApp()->m_pMainWnd->GetDescendantWindow(AFX_IDW_STATUS_BAR);
-	    pStatus->SetWindowText("Ready");
-    }));
+    SetRedraw(FALSE);
+    FillFileView();   
+    SetRedraw(TRUE);
+    CRect rClient;
+    this->GetClientRect( rClient );
+    this->RedrawWindow( rClient, NULL, RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_INVALIDATE);
+    
+	dlg_progress_->SetProgress( 100, "Done!" );
+	dlg_progress_->ShowWindow(SW_HIDE);
+    dlg_progress_.reset();
+
+    AfxGetMainWnd()->EndModalState();
 }
 
-void CFileView::BuildPath(CString& path, HTREEITEM node)
-{    
-	CTreeCtrl* tree_control = (CTreeCtrl*) &m_wndFileView;
-    
-    HTREEITEM parent = tree_control->GetParentItem(node);
-    CString buffer = tree_control->GetItemText(node);
+void CFileView::UpdateProgressBar(double total, double completed)
+{
+    // how wide you want the progress meter to be
+    double fraction_complete = completed / total;
 
-    buffer += "/";
-
-    buffer += path;
-    path = buffer;
-
-    if (parent)
+    if (fraction_complete > 0.0f && dlg_progress_)
     {
-        BuildPath(path, parent);
+        dlg_progress_->SetProgress(static_cast<int>((fraction_complete * 100) / 2) + 50);
     }
 }

@@ -33,7 +33,7 @@ struct IffHeader
     char type[4];
 };
 
-DatatableReader::DatatableReader(vector<char>&& input)
+DatatableReader::DatatableReader(vector<unsigned char>&& input)
     : current_row_(-1)
     , input_(move(input))
 {
@@ -95,7 +95,7 @@ DatatableRow DatatableReader::GetRow()
     return row;
 }
 
-void DatatableReader::ValidateFile(const vector<char>& input) const
+void DatatableReader::ValidateFile(const vector<unsigned char>& input) const
 {
     const IffHeader* header = reinterpret_cast<const IffHeader*>(&input[0]);
 
@@ -110,7 +110,7 @@ void DatatableReader::ParseColumnNames()
     string tmp;
     for (uint32_t i = 0, offset = 0; i < column_header_->count; ++i)
     {
-        tmp = string(column_offset_ + offset);
+        tmp = string(reinterpret_cast<const char*>(column_offset_ + offset));
         column_names_.push_back(tmp);
         offset += tmp.size() + 1;
     }
@@ -121,7 +121,7 @@ void DatatableReader::ParseColumnTypes()
     string tmp;
     for (uint32_t i = 0, offset = 0; i < column_header_->count; ++i)
     {
-        tmp = string(type_offset_ + offset);
+        tmp = string(reinterpret_cast<const char*>(type_offset_ + offset));
         column_types_.push_back(tmp);
         offset += tmp.size() + 1;
     }
@@ -171,7 +171,7 @@ uint32_t DatatableReader::ParseColumn(uint8_t type, uint32_t offset, vector<Data
     case 's':
         cell.SetValue(row_offset_ + offset);
 
-        string tmp(row_offset_ + offset);
+        string tmp(reinterpret_cast<const char*>(row_offset_ + offset));
         size = tmp.length() + 1;
         break;
     }

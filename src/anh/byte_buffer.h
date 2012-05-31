@@ -26,7 +26,7 @@ public:
     explicit ByteBuffer(size_t length);
     
     /// Explicit constructor builds ByteBuffer instance from the passed data.
-    explicit ByteBuffer(std::vector<unsigned char>& data);
+    explicit ByteBuffer(std::vector<unsigned char> data);
     
     /// Explicit constructor builds ByteBuffer instance from the passed data.
     ByteBuffer(const unsigned char* data, size_t length);

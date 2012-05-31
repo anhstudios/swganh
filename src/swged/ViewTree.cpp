@@ -20,6 +20,7 @@ CViewTree::~CViewTree()
 }
 
 BEGIN_MESSAGE_MAP(CViewTree, CTreeCtrl)
+    ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -38,4 +39,47 @@ BOOL CViewTree::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 	}
 
 	return bRes;
+}
+
+void CViewTree::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+    HTREEITEM hTreeItem = NULL;
+    hTreeItem = GetSelectedItem();
+    if(NULL != hTreeItem)
+    {
+        CString strText = GetItemText(hTreeItem);
+        if (strText.FindOneOf(_T(".")) >= 0)
+        {
+            HTREEITEM selected_item = GetSelectedItem();
+            auto selected_item_text = GetItemText(selected_item);
+            auto selected_item_path = selected_item_text;
+    
+            BuildPath(selected_item_path, GetParentItem(selected_item));
+
+            AfxGetApp()->OpenDocumentFile(selected_item_path);
+        }
+        else
+        {
+            CTreeCtrl::OnLButtonDblClk(nFlags, point);
+        }
+    }
+}
+
+void CViewTree::BuildPath(CString& path, HTREEITEM node)
+{
+    if (!node)
+        return;
+
+    HTREEITEM parent = GetParentItem(node);
+    CString buffer = GetItemText(node);
+
+    buffer += "/";
+
+    buffer += path;
+    path = buffer;
+
+    if (parent)
+    {
+        BuildPath(path, parent);
+    }
 }

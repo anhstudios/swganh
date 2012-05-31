@@ -67,7 +67,7 @@ namespace tre {
          * \param resource_name The name of the resource.
          * \return The file in binary format (move constructable).
          */
-        std::vector<char> GetResource(const std::string& resource_name);
+        TreResourceData GetResource(const std::string& resource_name);
         
         /**
          * Returns the md5 hash of the requested resource.
@@ -93,6 +93,8 @@ namespace tre {
          * \return A list of available resources.
          */
         std::vector<std::string> GetAvailableResources() const;
+
+        std::vector<std::string> GetAvailableResources(std::function<void (int total, int completed)> progress_callback) const;
 
     private:
 

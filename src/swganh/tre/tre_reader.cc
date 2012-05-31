@@ -64,17 +64,17 @@ vector<string> TreReader::GetResourceNames() const
         end(resource_block_),
         [this, &resource_names] (const TreResourceInfo& info)
     {
-        resource_names.push_back(&name_block_[info.name_offset]);
+        resource_names.push_back(reinterpret_cast<const char*>(&name_block_[info.name_offset]));
     });
 
     return resource_names;
 }
 
-vector<char> TreReader::GetResource(const std::string& resource_name)
+TreResourceData TreReader::GetResource(const std::string& resource_name)
 {
     auto file_info = GetResourceInfo(resource_name);
 
-    vector<char> data(file_info.data_size); 
+    TreResourceData data(file_info.data_size); 
     
     if (file_info.data_size != 0)
     {
@@ -96,7 +96,7 @@ bool TreReader::ContainsResource(const string& resource_name) const
         end(resource_block_),
         [this, &resource_name] (const TreResourceInfo& info)
     {
-        return resource_name.compare(&name_block_[info.name_offset]) == 0;
+        return resource_name.compare(reinterpret_cast<const char*>(&name_block_[info.name_offset])) == 0;
     });
 
     return find_iter != end(resource_block_);
@@ -109,7 +109,7 @@ string TreReader::GetMd5Hash(const string& resource_name) const
         end(resource_block_),
         [this, &resource_name] (const TreResourceInfo& info)
     {
-        return resource_name.compare(&name_block_[info.name_offset]) == 0;
+        return resource_name.compare(reinterpret_cast<const char*>(&name_block_[info.name_offset])) == 0;
     });
 
     if (find_iter == resource_block_.end())
@@ -141,7 +141,7 @@ uint32_t TreReader::GetResourceSize(const string& resource_name) const
         end(resource_block_),
         [this, &resource_name] (const TreResourceInfo& info)
     {
-        return resource_name.compare(&name_block_[info.name_offset]) == 0;
+        return resource_name.compare(reinterpret_cast<const char*>(&name_block_[info.name_offset])) == 0;
     });
 
     if (find_iter == resource_block_.end())
@@ -159,7 +159,7 @@ const TreResourceInfo& TreReader::GetResourceInfo(const string& resource_name) c
         end(resource_block_),
         [this, &resource_name] (const TreResourceInfo& info)
     {
-        return resource_name.compare(&name_block_[info.name_offset]) == 0;
+        return resource_name.compare(reinterpret_cast<const char*>(&name_block_[info.name_offset])) == 0;
     });
     
     if (find_iter == end(resource_block_))
@@ -174,7 +174,7 @@ void TreReader::ReadHeader()
 {
     {
         boost::lock_guard<boost::mutex> lg(mutex_);
-        input_stream_.read(reinterpret_cast<char*>(&header_), sizeof(header_));
+        input_stream_.read(reinterpret_cast<unsigned char*>(&header_), sizeof(header_));
     }
 
     ValidateFileType(string(header_.file_type, 4));
@@ -198,14 +198,14 @@ vector<TreResourceInfo> TreReader::ReadResourceBlock()
         header_.info_compression,
         header_.info_compressed_size,
         uncompressed_size,
-        reinterpret_cast<char*>(&files[0]));
+        reinterpret_cast<unsigned char*>(&files[0]));
 
     return files;
 }
         
-vector<char> TreReader::ReadNameBlock()
+vector<unsigned char> TreReader::ReadNameBlock()
 {
-    vector<char> data(header_.name_uncompressed_size); 
+    vector<unsigned char> data(header_.name_uncompressed_size); 
     
     uint32_t name_offset = header_.info_offset + header_.info_compressed_size;
 
@@ -231,7 +231,7 @@ vector<TreReader::Md5Sum> TreReader::ReadMd5SumBlock()
     {
         boost::lock_guard<boost::mutex> lg(mutex_);
         input_stream_.seekg(offset, ios_base::beg);
-        input_stream_.read(reinterpret_cast<char*>(&data[0]), size);
+        input_stream_.read(reinterpret_cast<unsigned char*>(&data[0]), size);
     }
 
     return data;
@@ -258,7 +258,7 @@ void TreReader::ReadDataBlock(
     uint32_t compression,
     uint32_t compressed_size, 
     uint32_t uncompressed_size, 
-    char* buffer)
+    unsigned char* buffer)
 {    
     if (compression == 0)
     {
@@ -270,7 +270,7 @@ void TreReader::ReadDataBlock(
     }
     else if (compression == 2)
     {
-        vector<char> compressed_data(compressed_size);
+        vector<unsigned char> compressed_data(compressed_size);
         
         {
             boost::lock_guard<boost::mutex> lg(mutex_);
