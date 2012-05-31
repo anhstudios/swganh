@@ -29,6 +29,9 @@ namespace galaxy {
         ~GalaxyService();
 
     	uint32_t GetPopulation();
+		
+		uint64_t GetGalaxyTimeInMilliseconds();
+
     	anh::service::ServiceDescription GetServiceDescription();
         
         void Startup();

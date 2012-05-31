@@ -49,6 +49,10 @@ uint32_t GalaxyService::GetPopulation()
 	return galaxy_provider_->GetPopulation();
 }
 
+uint64_t GalaxyService::GetGalaxyTimeInMilliseconds()
+{
+	return kernel_->GetServiceDirectory()->galaxy().GetGalaxyTimeInMilliseconds();
+}
 void GalaxyService::Startup()
 {
     galaxy_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
