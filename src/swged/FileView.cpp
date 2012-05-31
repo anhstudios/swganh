@@ -97,7 +97,8 @@ void CFileView::OnSize(UINT nType, int cx, int cy)
 void CFileView::FillFileView()
 {
     std::vector<std::pair<std::string, HTREEITEM>> directory_cache;
-
+    auto total = file_listing_.size();
+    int count = 0;
     // Loop through all the files in the listing
     for (auto& file : file_listing_)
     {
@@ -135,6 +136,13 @@ void CFileView::FillFileView()
             else
                 directory_cache[i] = std::make_pair(current_item, previous);
         }
+        
+        if (count % 100)
+        {
+            UpdateProgressBar(total, count);
+        }
+
+        ++count;
     }
 }
 
@@ -296,22 +304,51 @@ void CFileView::SetTreArchive(swganh::tre::TreArchive* archive)
 {
     archive_ = archive;
     
-    CStatusBar* pStatus = (CStatusBar*) 
-	AfxGetApp()->m_pMainWnd->GetDescendantWindow(AFX_IDW_STATUS_BAR);
-	pStatus->SetWindowText("Loading tre file index...");
+    dlg_progress_.reset(new ProgressDialog(AfxGetMainWnd()));
+    dlg_progress_->Create(IDD_PROGRESS, this);
+    dlg_progress_->DisableAbort();
+    dlg_progress_->ShowWindow(SW_SHOW);
+   
+    AfxGetMainWnd()->BeginModalState();
+    dlg_progress_->EnableWindow(TRUE);
+	dlg_progress_->SetProgress(0, "Loading tre file archive");
+        
+    file_listing_ = archive_->GetAvailableResources([=] (int total, int completed) {
+        if (completed == 0)
+            return;
 
-    file_listing_loader_.reset(new std::thread([=] () {
-        file_listing_ = archive_->GetAvailableResources();
+        // how wide you want the progress meter to be
+        double fraction_complete = (float)completed / (float)total;
 
-        SetRedraw(FALSE);
-        FillFileView();   
-        SetRedraw(TRUE);
-        CRect rClient;
-        this->GetClientRect( rClient );
-        this->RedrawWindow( rClient, NULL, RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_INVALIDATE);
+        if (fraction_complete > 0.0f)
+        {
+            dlg_progress_->SetProgress(static_cast<int>((fraction_complete * 100) / 2));
+        }
+    });
+    
+	dlg_progress_->SetProgress(50, "Indexing tre files");
 
-        CStatusBar* pStatus = (CStatusBar*) 
-		AfxGetApp()->m_pMainWnd->GetDescendantWindow(AFX_IDW_STATUS_BAR);
-	    pStatus->SetWindowText("Ready");
-    }));
+    SetRedraw(FALSE);
+    FillFileView();   
+    SetRedraw(TRUE);
+    CRect rClient;
+    this->GetClientRect( rClient );
+    this->RedrawWindow( rClient, NULL, RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_INVALIDATE);
+    
+	dlg_progress_->SetProgress( 100, "Done!" );
+	dlg_progress_->ShowWindow(SW_HIDE);
+    dlg_progress_.reset();
+
+    AfxGetMainWnd()->EndModalState();
+}
+
+void CFileView::UpdateProgressBar(double total, double completed)
+{
+    // how wide you want the progress meter to be
+    double fraction_complete = completed / total;
+
+    if (fraction_complete > 0.0f && dlg_progress_)
+    {
+        dlg_progress_->SetProgress(static_cast<int>((fraction_complete * 100) / 2) + 50);
+    }
 }

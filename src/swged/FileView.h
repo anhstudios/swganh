@@ -1,6 +1,6 @@
 
 #pragma once
-
+#include "ProgressDialog.h"
 #include "ViewTree.h"
 #include <thread>
 #include "swganh/tre/tre_archive.h"
@@ -53,6 +53,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
+
+    void UpdateProgressBar(double total, double completed);
+
+    std::unique_ptr<ProgressDialog> dlg_progress_;
     swganh::tre::TreArchive* archive_;
     std::vector<std::string> file_listing_;
 
