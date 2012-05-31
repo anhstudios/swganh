@@ -47,10 +47,6 @@ protected:
 	afx_msg void OnFileOpen();
 	afx_msg void OnFileOpenWith();
 	afx_msg void OnFileExport();
-	afx_msg void OnDummyCompile();
-	afx_msg void OnEditCut();
-	afx_msg void OnEditCopy();
-	afx_msg void OnEditClear();
 	afx_msg void OnPaint();
 	afx_msg void OnSetFocus(CWnd* pOldWnd);
     afx_msg void OnOpenEnvironment();
@@ -61,7 +57,5 @@ private:
     std::vector<std::string> file_listing_;
 
     std::unique_ptr<std::thread> file_listing_loader_;
-
-    void BuildPath(CString& path, HTREEITEM node);
 };
 

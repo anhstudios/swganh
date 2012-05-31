@@ -39,10 +39,6 @@ BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 	ON_COMMAND(ID_OPEN, OnFileOpen)
 	ON_COMMAND(ID_OPEN_WITH, OnFileOpenWith)
 	ON_COMMAND(ID_EXPORT_FILE, OnFileExport)
-	ON_COMMAND(ID_DUMMY_COMPILE, OnDummyCompile)
-	ON_COMMAND(ID_EDIT_CUT, OnEditCut)
-	ON_COMMAND(ID_EDIT_COPY, OnEditCopy)
-	ON_COMMAND(ID_EDIT_CLEAR, OnEditClear)
 	ON_WM_PAINT()
 	ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
@@ -200,7 +196,7 @@ void CFileView::OnFileOpen()
     auto selected_item_text = pWndTree->GetItemText(selected_item);
     auto selected_item_path = selected_item_text;
     
-    BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
+    m_wndFileView.BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
 
     AfxGetApp()->OpenDocumentFile(selected_item_path);
 }
@@ -218,7 +214,7 @@ void CFileView::OnFileExport()
     auto selected_item_text = pWndTree->GetItemText(selected_item);
     auto selected_item_path = selected_item_text;
     
-    BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
+    m_wndFileView.BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
 
     CFileDialog file_dialog(FALSE, NULL, selected_item_text, OFN_HIDEREADONLY, _T("All files (*.*)|*.*||"));
     
@@ -245,26 +241,6 @@ void CFileView::OnOpenEnvironment()
 {
 	AfxMessageBox(_T("Open Environment...."));
 
-}
-
-void CFileView::OnDummyCompile()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditCut()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditCopy()
-{
-	// TODO: Add your command handler code here
-}
-
-void CFileView::OnEditClear()
-{
-	// TODO: Add your command handler code here
 }
 
 void CFileView::OnPaint()
@@ -338,22 +314,4 @@ void CFileView::SetTreArchive(swganh::tre::TreArchive* archive)
 		AfxGetApp()->m_pMainWnd->GetDescendantWindow(AFX_IDW_STATUS_BAR);
 	    pStatus->SetWindowText("Ready");
     }));
-}
-
-void CFileView::BuildPath(CString& path, HTREEITEM node)
-{    
-	CTreeCtrl* tree_control = (CTreeCtrl*) &m_wndFileView;
-    
-    HTREEITEM parent = tree_control->GetParentItem(node);
-    CString buffer = tree_control->GetItemText(node);
-
-    buffer += "/";
-
-    buffer += path;
-    path = buffer;
-
-    if (parent)
-    {
-        BuildPath(path, parent);
-    }
 }
