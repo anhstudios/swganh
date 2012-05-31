@@ -18,8 +18,8 @@
 #include "chat_service.h"
 
 using swganh::app::SwganhKernel;
-using swganh::chat::ChatService;
-using swganh::chat::SpatialChatInternalCommand;
+using swganh_core::chat::ChatService;
+using swganh_core::chat::SpatialChatInternalCommand;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCallback;
 using swganh::command::CommandProperties;

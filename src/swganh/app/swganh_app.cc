@@ -30,7 +30,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/chat/chat_service.h"
+#include "swganh/chat/chat_service_interface.h"
 #include "swganh/character/character_service.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
@@ -353,11 +353,7 @@ void SwganhApp::LoadCoreServices_()
 		kernel_->GetServiceManager()->AddService(
             "CharacterService", 
             std::make_shared<CharacterService>(kernel_.get()));
-        
-		kernel_->GetServiceManager()->AddService(
-            "ChatService", 
-            std::make_shared<ChatService>(kernel_.get()));
-    
+            
 		auto simulation_service = std::make_shared<SimulationService>(kernel_.get());
 		simulation_service->StartScene("corellia");
     
