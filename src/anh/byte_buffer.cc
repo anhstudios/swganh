@@ -20,8 +20,8 @@ ByteBuffer::ByteBuffer(size_t length)
 , read_position_(0)
 , write_position_(0) {}
 
-ByteBuffer::ByteBuffer(std::vector<unsigned char>& data)
-: data_(data.begin(), data.end())
+ByteBuffer::ByteBuffer(std::vector<unsigned char> data)
+: data_(std::move(data))
 , read_position_(0)
 , write_position_(data.size()) {}
 

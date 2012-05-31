@@ -248,6 +248,16 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
 END
 
+IDD_PROGRESS DIALOGEX 0, 0, 285, 47
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Loading..."
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_PROGRESSBAR,"msctls_progress32",WS_BORDER,7,7,271,14
+    PUSHBUTTON      "Abort",IDC_ABORT,217,26,50,14
+    LTEXT           "Current Task",IDC_TASK,7,28,134,12
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -302,6 +312,14 @@ BEGIN
         RIGHTMARGIN, 163
         TOPMARGIN, 7
         BOTTOMMARGIN, 55
+    END
+
+    IDD_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 278
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 40
     END
 END
 #endif    // APSTUDIO_INVOKED

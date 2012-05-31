@@ -20,6 +20,7 @@ public:
 // Operations
 public:
     void SetSwgLiveFile(std::wstring live_file);
+    swganh::tre::TreArchive* GetTreArchive() const;
 
 // Overrides
 public:
