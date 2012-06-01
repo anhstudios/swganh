@@ -39,7 +39,7 @@ class Server;
 namespace swganh {
 namespace character {
 class CharacterProviderInterface;
-class CharacterService;
+class CharacterServiceInterface;
 }}
 
 namespace swganh {
@@ -107,7 +107,7 @@ private:
     std::shared_ptr<providers::SessionProviderInterface> session_provider_;
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
-    swganh::character::CharacterService* character_service_;
+    swganh::character::CharacterServiceInterface* character_service_;
     swganh::login::LoginService* login_service_;
     swganh::simulation::SimulationService* simulation_service_;
 

@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/character/character_service.h"
+#include "character_service.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -40,6 +40,7 @@ using namespace anh;
 using namespace anh::app;
 using namespace anh::event_dispatcher;
 using namespace std;
+using namespace swganh_core::character;
 using namespace swganh::character;
 using namespace swganh::connection;
 using namespace swganh::login;
