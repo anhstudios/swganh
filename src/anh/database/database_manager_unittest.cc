@@ -16,7 +16,7 @@ protected:
     void SetUp();
     // Generates expectations for a driver that will return N connections.
     void generateExpectations(MockDriver& mock_driver, int connections);
-    void generateDefaultConnectionExpectations(MockDriver& mock_driver, MockConnection* mock_connection);
+    void generateDefaultConnectionExpectations(MockDriver& mock_driver, MockConnection& mock_connection);
     void generateExpectationsMultipleConnections(MockDriver& mock_driver);
     sql::SQLString host_;
     sql::SQLString username_;
@@ -84,29 +84,29 @@ BOOST_AUTO_TEST_CASE(RegisterConnectionDataCreatesConnectionPool) {
 BOOST_AUTO_TEST_CASE(CanRequestConnectionAfterRegistering) {
     // Create a mock driver and set it up to expect a simple successful connection creation.
     MockDriver mock_driver;
-    MockConnection* mock_connection = new MockConnection();
+    MockConnection mock_connection;
         
     // Expect the database manager to set the schema.
-    MOCK_EXPECT(*mock_connection, setSchema)
+    MOCK_EXPECT(mock_connection.setSchema)
         .with(sql::SQLString("galaxy"))
         .once();
 
     mock::sequence s;
-    MOCK_EXPECT(*mock_connection, isClosed)
+    MOCK_EXPECT(mock_connection.isClosed)
         .once()
         .in(s)
         .returns(false);
     
-    MOCK_EXPECT(*mock_connection, isClosed)
+    MOCK_EXPECT(mock_connection.isClosed)
         .once()
         .in(s)
         .returns(true);
 
     // We should expect a call to the driver's connect for a new connection
     // with these parameters. After returning the expectation should expire.
-    MOCK_EXPECT(mock_driver, connect3)
+    MOCK_EXPECT(mock_driver.connect3)
         .once()
-        .returns(mock_connection);
+        .returns(&mock_connection);
     // Create the database manager with the mock driver.
     DatabaseManager manager(&mock_driver);
     
@@ -155,29 +155,29 @@ BOOST_AUTO_TEST_CASE(CanRequestConnectionAfterRegistering) {
 BOOST_AUTO_TEST_CASE(DeletingConnectionReturnsItToThePool) {
     // Create a mock driver and set it up to expect a simple successful connection creation.
     MockDriver mock_driver;
-    MockConnection* mock_connection = new MockConnection();
+    MockConnection mock_connection;
         
     // Expect the database manager to set the schema.
-    MOCK_EXPECT(*mock_connection, setSchema)
+    MOCK_EXPECT(mock_connection.setSchema)
         .with(sql::SQLString("galaxy"))
         .once();
 
     mock::sequence s;
-    MOCK_EXPECT(*mock_connection, isClosed)
+    MOCK_EXPECT(mock_connection.isClosed)
         .once()
         .in(s)
         .returns(false);
     
-    MOCK_EXPECT(*mock_connection, isClosed)
+    MOCK_EXPECT(mock_connection.isClosed)
         .once()
         .in(s)
         .returns(true);
 
     // We should expect a call to the driver's connect for a new connection
     // with these parameters. After returning the expectation should expire.
-    MOCK_EXPECT(mock_driver, connect3)
+    MOCK_EXPECT(mock_driver.connect3)
         .once()
-        .returns(mock_connection);
+        .returns(&mock_connection);
     // Create the database manager with the mock driver.
     DatabaseManager manager(&mock_driver);
     
@@ -214,31 +214,31 @@ void DatabaseManagerTest::SetUp() {
     password_ = "swganh";
 }
 void DatabaseManagerTest::generateExpectationsMultipleConnections(MockDriver& mock_driver) {
-    MockConnection* mock_connection = new MockConnection();
+    MockConnection mock_connection;
     
     // We should expect a call to the driver's connect for a new connection
     // with these parameters. After returning the expectation should expire.
-    MOCK_EXPECT(mock_driver, connect3)
+    MOCK_EXPECT(mock_driver.connect3)
         .once()
-        .returns(mock_connection);
+        .returns(&mock_connection);
 
     
     // Expect the database manager to set the schema.
-    MOCK_EXPECT(*mock_connection, setSchema)
+    MOCK_EXPECT(mock_connection.setSchema)
         .with(sql::SQLString("galaxy"))
         .once();
 
-    MOCK_EXPECT(*mock_connection, isClosed)
+    MOCK_EXPECT(mock_connection.isClosed)
         .exactly(2)
         .returns(false);
     // We should expect a call to the driver's connect for a new connection
     // with these parameters. After returning the expectation should expire.
-    MOCK_EXPECT(mock_driver, connect3)
+    MOCK_EXPECT(mock_driver.connect3)
         .once()
-        .returns(mock_connection);
+        .returns(&mock_connection);
 
     // Expect the database manager to set the schema.
-    MOCK_EXPECT(*mock_connection, setSchema)
+    MOCK_EXPECT(mock_connection.setSchema)
         .with(sql::SQLString("galaxy"))
         .once();
 
@@ -251,7 +251,7 @@ void DatabaseManagerTest::generateExpectationsMultipleConnections(MockDriver& mo
         .in(s);*/
         
 
-    MOCK_EXPECT(*mock_connection, isClosed)
+    MOCK_EXPECT(mock_connection.isClosed)
         .once()
         .in(s)
         .returns(true);
@@ -260,33 +260,33 @@ void DatabaseManagerTest::generateExpectationsMultipleConnections(MockDriver& mo
 
 void DatabaseManagerTest::generateExpectations(MockDriver& mock_driver, int connections) {
     for (int i=0; i < connections; ++i) {
-        MockConnection* connection = new MockConnection();
+        MockConnection connection;
         
         generateDefaultConnectionExpectations(mock_driver, connection);
 
         // We should expect a call to the driver's connect for a new connection
         // with these parameters. After returning the expectation should expire.
-        MOCK_EXPECT(mock_driver, connect3)
+        MOCK_EXPECT(mock_driver.connect3)
             .once()
-            .returns(connection);
+            .returns(&connection);
     }
 }
 
-void DatabaseManagerTest::generateDefaultConnectionExpectations(MockDriver& mock_driver, MockConnection* mock_connection) {    
+void DatabaseManagerTest::generateDefaultConnectionExpectations(MockDriver& mock_driver, MockConnection& mock_connection) {    
     // Expect the database manager to set the schema.
-    MOCK_EXPECT(*mock_connection, setSchema)
+    MOCK_EXPECT(mock_connection.setSchema)
         .with(sql::SQLString("galaxy"))
         .once();
     mock::sequence s;
 
     // Expect isClosed() to return true after a call to close()
     
-    MOCK_EXPECT(*mock_connection, close)
+    MOCK_EXPECT(mock_connection.close)
         .once()
         .in(s);
         
 
-    MOCK_EXPECT(*mock_connection, isClosed)
+    MOCK_EXPECT(mock_connection.isClosed)
         .once()
         .in(s)
         .returns(true);
