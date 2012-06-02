@@ -18,7 +18,7 @@
 
 #include "swganh/network/base_swg_server.h"
 
-#include "swganh/character/character_service.h"
+#include "swganh/character/character_service_interface.h"
 #include "swganh/galaxy/galaxy_service.h"
 
 #include "swganh/login/login_client.h"
@@ -107,7 +107,7 @@ private:
     SessionMap session_map_;
 
     swganh::app::SwganhKernel* kernel_;
-    swganh::character::CharacterService* character_service_;
+    swganh::character::CharacterServiceInterface* character_service_;
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
 	swganh::galaxy::GalaxyService* galaxy_service_;

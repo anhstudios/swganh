@@ -13,6 +13,7 @@
 #include "anh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
+#include "pub14_core/character/character_service.h"
 
 #include "mysql_character_provider.h"
 #include "version.h"
@@ -25,19 +26,37 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     anh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
-    
-    // Register
-    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-        return new MysqlCharacterProvider(kernel);
-    };
+	
+	// Register
+	{
+		registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+			return new MysqlCharacterProvider(kernel);
+		};
 
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
-            delete static_cast<MysqlCharacterProvider*>(object);
-        }
-    };
+		registration.DestroyObject = [] (void * object) {
+			if (object) {
+				delete static_cast<MysqlCharacterProvider*>(object);
+			}
+		};
 
-    kernel->GetPluginManager()->RegisterObject("Character::CharacterProvider", &registration);    
+		kernel->GetPluginManager()->RegisterObject("Character::CharacterProvider", &registration);    
+	}
+	// Register Character Service
+	{ // Character::CharacterService
+        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+            auto character_service = new CharacterService(kernel);
+            
+            return character_service;
+        };
+
+        registration.DestroyObject = [] (void * object) {
+            if (object) {
+                delete static_cast<CharacterService*>(object);
+            }
+        };
+
+        kernel->GetPluginManager()->RegisterObject("Character::CharacterService", &registration);
+	}
 }
 
 }}  // namespace swganh_core::mysql_auth

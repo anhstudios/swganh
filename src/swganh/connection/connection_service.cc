@@ -17,7 +17,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/character/character_service.h"
+#include "swganh/character/character_service_interface.h"
 #include "swganh/character/character_provider_interface.h"
 #include "swganh/connection/ping_server.h"
 #include "swganh/connection/connection_client.h"
@@ -88,7 +88,7 @@ ServiceDescription ConnectionService::GetServiceDescription() {
 void ConnectionService::Startup() {
     ping_server_ = make_shared<PingServer>(kernel_->GetIoService(), ping_port_);
 
-    character_service_ = kernel_->GetServiceManager()->GetService<CharacterService>("CharacterService");
+    character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
     login_service_ = kernel_->GetServiceManager()->GetService<LoginService>("LoginService");
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
     

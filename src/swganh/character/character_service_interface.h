@@ -1,8 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_CHARACTER_CHARACTER_SERVICE_H_
-#define SWGANH_CHARACTER_CHARACTER_SERVICE_H_
+#ifndef SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
+#define SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
 
 #include <cstdint>
 #include <tuple>
@@ -32,32 +32,21 @@ namespace character {
 
 class CharacterProviderInterface;
     
-class CharacterService : public anh::service::ServiceInterface {
-public:
-    explicit CharacterService(swganh::app::SwganhKernel* kernel);
-    ~CharacterService();
-    
-    anh::service::ServiceDescription GetServiceDescription();
-
-    void Startup();
-
+class CharacterServiceInterface : public anh::service::ServiceInterface {
 private:
-    void HandleClientRandomNameRequest_(
+    virtual void HandleClientRandomNameRequest_(
         const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
-        swganh::messages::ClientRandomNameRequest message);
+        swganh::messages::ClientRandomNameRequest message) = 0;
 
-    void HandleClientCreateCharacter_(
+    virtual void HandleClientCreateCharacter_(
         const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
-        swganh::messages::ClientCreateCharacter message);
+        swganh::messages::ClientCreateCharacter message) = 0;
 
-    void HandleDeleteCharacterMessage_(
+    virtual void HandleDeleteCharacterMessage_(
         const std::shared_ptr<swganh::login::LoginClient>& login_client, 
-        swganh::messages::DeleteCharacterMessage message);
-
-    std::shared_ptr<CharacterProviderInterface> character_provider_;
-    swganh::app::SwganhKernel* kernel_;
+        swganh::messages::DeleteCharacterMessage message) = 0;
 };
 
 }}  // namespace swganh::character
 
-#endif  // SWGANH_CHARACTER_CHARACTER_SERVICE_H_
+#endif  // SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
