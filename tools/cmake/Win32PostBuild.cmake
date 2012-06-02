@@ -26,7 +26,8 @@ string(REPLACE "/" "\\" MYSQL_CONNECTOR_C_DLL_PATH "${MYSQL_CONNECTOR_C_DLL_PATH
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\$\(Configuration\)\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
+    COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\Debug\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
+    COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\opt\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
     VERBATIM
 )
 
