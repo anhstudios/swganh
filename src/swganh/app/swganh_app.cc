@@ -352,6 +352,7 @@ void SwganhApp::LoadCoreServices_()
             
 		auto simulation_service = std::make_shared<SimulationService>(kernel_.get());
 		simulation_service->StartScene("corellia");
+		simulation_service->StartScene("naboo");
     
 		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
     
