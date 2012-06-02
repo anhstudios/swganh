@@ -393,7 +393,10 @@ private:
 SimulationService::SimulationService(SwganhKernel* kernel)
     : impl_(new SimulationServiceImpl(kernel))
     , kernel_(kernel)
-{}
+{
+    impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel_->GetDatabaseManager()->getConnection("galaxy"));
+    RegisterObjectFactories();
+}
 
 SimulationService::~SimulationService()
 {}
@@ -414,10 +417,7 @@ ServiceDescription SimulationService::GetServiceDescription()
 
 void SimulationService::StartScene(const std::string& scene_label)
 {
-    impl_->GetSceneManager()->LoadSceneDescriptionsFromDatabase(kernel_->GetDatabaseManager()->getConnection("galaxy"));
     impl_->GetSceneManager()->StartScene(scene_label);
-    // load factories
-    RegisterObjectFactories();
 }
 
 void SimulationService::StopScene(const std::string& scene_label)
