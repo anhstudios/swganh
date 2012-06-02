@@ -30,8 +30,14 @@ protected:
 	HMENU  m_hMDIMenu;
 	HACCEL m_hMDIAccel;
 
+    CMultiDocTemplate* hex_doc_template_;
+    CMultiDocTemplate* datatable_doc_template_;
+
 public:
 	BOOL  m_bHiColorIcons;
+
+    CMultiDocTemplate* GetHexDocTemplate();
+    CMultiDocTemplate* GetDatatableDocTemplate();
 
 	virtual void PreLoadState();
 	virtual void LoadCustomState();

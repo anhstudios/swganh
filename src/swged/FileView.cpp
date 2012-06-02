@@ -206,7 +206,7 @@ void CFileView::OnFileOpen()
     
     m_wndFileView.BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
 
-    AfxGetApp()->OpenDocumentFile(selected_item_path);
+    static_cast<CSWGEdApp*>(AfxGetApp())->GetHexDocTemplate()->OpenDocumentFile(selected_item_path);
 }
 
 void CFileView::OnFileOpenWith()

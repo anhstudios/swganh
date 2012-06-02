@@ -1,6 +1,7 @@
 
 #include "stdafx.h"
 #include "ViewTree.h"
+#include "SWGEd.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -55,8 +56,8 @@ void CViewTree::OnLButtonDblClk(UINT nFlags, CPoint point)
             auto selected_item_path = selected_item_text;
     
             BuildPath(selected_item_path, GetParentItem(selected_item));
-
-            AfxGetApp()->OpenDocumentFile(selected_item_path);
+            
+            static_cast<CSWGEdApp*>(AfxGetApp())->GetDatatableDocTemplate()->OpenDocumentFile(selected_item_path);
         }
         else
         {

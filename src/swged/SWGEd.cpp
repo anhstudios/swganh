@@ -9,9 +9,11 @@
 #include "MainFrm.h"
 #include "ChildFrm.h"
 
-#include "HexDoc.h"
+#include "TreDocument.h"
 #include "HexView.h"
 #include "TreDocumentManager.h"
+#include "TreDocumentTemplate.h"
+#include "Views/DatatableView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -110,16 +112,24 @@ BOOL CSWGEdApp::InitInstance()
 
     m_pDocManager = new TreDocumentManager;
     
-	CMultiDocTemplate* pDocTemplate;
-	pDocTemplate = new CMultiDocTemplate(
+    datatable_doc_template_ = new TreDocumentTemplate(
 		IDR_MAINFRAME,
-		RUNTIME_CLASS(CHexDoc),
+		RUNTIME_CLASS(TreDocument),
+		RUNTIME_CLASS(CChildFrame),       // main SDI frame window
+		RUNTIME_CLASS(DatatableView));
+    if (!datatable_doc_template_)
+        return FALSE;
+	AddDocTemplate(datatable_doc_template_);
+
+	hex_doc_template_ = new TreDocumentTemplate(
+		IDR_MAINFRAME,
+		RUNTIME_CLASS(TreDocument),
 		RUNTIME_CLASS(CChildFrame),       // main SDI frame window
 		RUNTIME_CLASS(CHexView));
-    if (!pDocTemplate)
+    if (!hex_doc_template_)
         return FALSE;
-	AddDocTemplate(pDocTemplate);
-        
+	AddDocTemplate(hex_doc_template_);
+            
 	// create main MDI Frame window
 	CMainFrame* pMainFrame = new CMainFrame;
 	if (!pMainFrame || !pMainFrame->LoadFrame(IDR_MAINFRAME))
@@ -213,6 +223,16 @@ void CSWGEdApp::LoadCustomState()
 
 void CSWGEdApp::SaveCustomState()
 {
+}
+
+CMultiDocTemplate* CSWGEdApp::GetHexDocTemplate()
+{
+    return hex_doc_template_;
+}
+
+CMultiDocTemplate* CSWGEdApp::GetDatatableDocTemplate()
+{
+    return datatable_doc_template_;
 }
 
 // CSWGEdApp message handlers
