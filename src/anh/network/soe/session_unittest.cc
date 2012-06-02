@@ -134,7 +134,7 @@ udp::endpoint SessionTests::buildTestEndpoint() const {
 shared_ptr<MockServer> SessionTests::buildMockServer() const {
     auto server = make_shared<MockServer>();
 
-    MOCK_EXPECT(*server, max_receive_size)
+    MOCK_EXPECT(server->max_receive_size)
         .at_least(1)
         .returns(496);
         

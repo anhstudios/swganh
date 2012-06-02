@@ -85,7 +85,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         message(STATUS "- Treating all warnings as errors")
     endif()
 
-    set(AdditionalBoostLibs chrono)
+    set(AdditionalBoostLibs chrono regex)
 
     find_library(PTHREAD_LIBRARY NAMES pthread)
 endif()
@@ -150,7 +150,7 @@ if (NOT WIN32)
     find_package(TBB REQUIRED)
 endif()
 
-find_package(Boost 1.49.0 COMPONENTS date_time filesystem log log_setup program_options python3 regex system thread unit_test_framework ${AdditionalBoostLibs} REQUIRED)
+find_package(Boost 1.49.0 COMPONENTS date_time filesystem log log_setup program_options python3 system thread unit_test_framework ${AdditionalBoostLibs} REQUIRED)
 find_package(Glm REQUIRED)
 find_package(MysqlConnectorC REQUIRED)
 find_package(MysqlConnectorCpp REQUIRED)
