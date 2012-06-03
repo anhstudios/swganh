@@ -266,16 +266,18 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
 }
 
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
-    LOG(info) << "Loading plugins";
+    LOG(info) << "Loading plugins...";
 
     if (!plugins.empty()) {
         auto plugin_manager = kernel_->GetPluginManager();
         auto plugin_directory = kernel_->GetAppConfig().plugin_directory;
 
         for_each(plugins.begin(), plugins.end(), [plugin_manager, plugin_directory] (const string& plugin) {
+			LOG(info) << "Loading plugin " << plugin;
             plugin_manager->LoadPlugin(plugin, plugin_directory);
         });
     }
+	LOG(info) << "Finished Loading plugins...";
 }
 
 void SwganhApp::CleanupServices_() {
@@ -309,10 +311,11 @@ void SwganhApp::LoadCoreServices_()
 
         if (entry.first.length() > 7 && regex_match(name, m, rx)) {
             auto service_name = m[1].str();
-
+			LOG(info) << "Loading Service " << name << "...";
             auto service = kernel_->GetPluginManager()->CreateObject<anh::service::ServiceInterface>(name);
-
+			
             kernel_->GetServiceManager()->AddService(service_name, service);
+			LOG(info) << "Loaded Service " << name;
         }
     });
 
@@ -354,7 +357,7 @@ void SwganhApp::LoadCoreServices_()
             "SocialService", 
             std::make_shared<social::SocialService>(kernel_.get()));
 		
-		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("Simulation::SimulationService");
+		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		simulation_service->StartScene("corellia");
 		simulation_service->StartScene("naboo");
 	}

@@ -47,7 +47,6 @@ namespace simulation {
         void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object);
 
     private:
-        void RegisterEvents_(const std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>& event_dispatcher);
         void RegisterEvents(anh::EventDispatcher* event_dispatcher);
 
         bool ValidateCounter_(uint64_t object_id, uint32_t counter);
