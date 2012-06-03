@@ -29,7 +29,7 @@ namespace creature {
 }} // namespace object::creature
 
 namespace simulation {
-    class SimulationService;
+    class SimulationServiceInterface;
 }}  // namespace swganh::simulation;
 
 

@@ -16,7 +16,7 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/intangible/intangible.h"
 #include "swganh/object/exception.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;
 using namespace anh::database;
@@ -25,7 +25,7 @@ using namespace swganh::object::intangible;
 using namespace swganh::simulation;
 
 IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
-                             SimulationService* simulation_service,
+                             SimulationServiceInterface* simulation_service,
                              anh::EventDispatcher* event_dispatcher)
     : ObjectFactory(db_manager, simulation_service, event_dispatcher)
 {

@@ -16,7 +16,7 @@
 #include "swganh/object/player/player_events.h"
 #include "swganh/object/player/player.h"
 #include "swganh/object/exception.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/messages/containers/network_map.h"
 
 using namespace std;
@@ -28,7 +28,7 @@ using namespace swganh::simulation;
 using namespace swganh::messages::containers;
 
 WaypointFactory::WaypointFactory(DatabaseManagerInterface* db_manager,
-                             SimulationService* simulation_service, EventDispatcher* event_dispatcher)
+                             SimulationServiceInterface* simulation_service, EventDispatcher* event_dispatcher)
     : ObjectFactory(db_manager, simulation_service, event_dispatcher)
 {
     RegisterEventHandlers();

@@ -16,7 +16,7 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/exception.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;
 using namespace anh::database;
@@ -26,7 +26,7 @@ using namespace swganh::simulation;
 
 
 CreatureFactory::CreatureFactory(DatabaseManagerInterface* db_manager,
-                             SimulationService* simulation_service,
+                             SimulationServiceInterface* simulation_service,
                              anh::EventDispatcher* event_dispatcher)
     : TangibleFactory(db_manager, simulation_service, event_dispatcher)
 {

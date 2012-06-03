@@ -1,10 +1,10 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_SIMULATION_MOVEMENT_MANAGER_H_
-#define SWGANH_SIMULATION_MOVEMENT_MANAGER_H_
+#ifndef PUB14_CORE_SIMULATION_MOVEMENT_MANAGER_H_
+#define PUB14_CORE_SIMULATION_MOVEMENT_MANAGER_H_
 
-#include <memory>
+#include "swganh/simulation/movement_manager_interface.h"
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>
@@ -17,29 +17,20 @@ namespace Concurrency {
 
 #endif
 
-#include "swganh/messages/controllers/data_transform.h"
-#include "swganh/messages/controllers/data_transform_with_parent.h"
-
-namespace anh {
-    class EventDispatcher;
-namespace event_dispatcher {
-    class EventDispatcherInterface;
-}}  // namespace anh::event_dispatcher
-
 namespace swganh {
-namespace object {
-    class Object;
-    class ObjectController;
-}}  // namespace swganh::object
-
-namespace swganh {
+namespace app {
+	class SwganhKernel;
+} // app
 namespace simulation {
 	class SpatialProviderInterface;
+}} // swganh::simulation
 
-    class MovementManager
+namespace swganh_core {
+namespace simulation {
+	class MovementManager : public swganh::simulation::MovementManagerInterface
     {
     public:
-		explicit MovementManager(anh::EventDispatcher* event_dispatcher, std::shared_ptr<SpatialProviderInterface> spatial_provider);
+		explicit MovementManager(swganh::app::SwganhKernel* kernel);
 
         void HandleDataTransform(
             const std::shared_ptr<swganh::object::ObjectController>& controller, 
@@ -55,8 +46,9 @@ namespace simulation {
         void SendDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B);
         void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object);
 
+		void SetSpatialProvider(swganh::simulation::SpatialProviderInterface* spatial_provider);
+
     private:
-        void RegisterEvents_(const std::shared_ptr<anh::event_dispatcher::EventDispatcherInterface>& event_dispatcher);
         void RegisterEvents(anh::EventDispatcher* event_dispatcher);
 
         bool ValidateCounter_(uint64_t object_id, uint32_t counter);
@@ -66,9 +58,10 @@ namespace simulation {
         > UpdateCounterMap;
 
         UpdateCounterMap counter_map_;
-		std::shared_ptr<SpatialProviderInterface> spatial_provider_;
+		swganh::simulation::SpatialProviderInterface* spatial_provider_;
+		swganh::app::SwganhKernel* kernel_;
     };
 
 }}  // namespace swganh::simulation
 
-#endif  // SWGANH_SIMULATION_MOVEMENT_MANAGER_H_
+#endif  // PUB14_CORE_SIMULATION_MOVEMENT_MANAGER_H_

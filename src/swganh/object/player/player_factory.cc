@@ -19,7 +19,7 @@
 #include "swganh/object/player/player_events.h"
 
 #include "swganh/object/exception.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;
 using namespace anh::database;
@@ -30,7 +30,7 @@ using namespace swganh::simulation;
 uint32_t PlayerFactory::GetType() const { return Player::type; }
 
 PlayerFactory::PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service,
+            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher)
     : ObjectFactory(db_manager, simulation_service, event_dispatcher)
 {

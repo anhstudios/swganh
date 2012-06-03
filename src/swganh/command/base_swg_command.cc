@@ -9,7 +9,7 @@
 #include "swganh/object/object_controller.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandProperties;
@@ -17,7 +17,7 @@ using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::ObjectController;
 using swganh::object::creature::Creature;
 using swganh::object::tangible::Tangible;
-using swganh::simulation::SimulationService;
+using swganh::simulation::SimulationServiceInterface;
 
 BaseSwgCommand::BaseSwgCommand(
     swganh::app::SwganhKernel* kernel,
@@ -105,7 +105,7 @@ const std::shared_ptr<Creature>& BaseSwgCommand::GetActor() const
 {
     if (!actor_)
     {
-        auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+        auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
         actor_ = simulation_service->GetObjectById<Creature>(command_request_.observable_id);
     }
 
@@ -116,7 +116,7 @@ const std::shared_ptr<Tangible>& BaseSwgCommand::GetTarget() const
 {
     if (!target_)
     {
-        auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+        auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
         target_ = simulation_service->GetObjectById<Tangible>(command_request_.target_id);
     }
 

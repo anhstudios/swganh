@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/simulation/scene_manager.h"
+#include "scene_manager.h"
 
 #include <cppconn/connection.h>
 #include <cppconn/exception.h>
@@ -14,12 +14,12 @@
 
 #include "swganh/object/object.h"
 
-#include "swganh/simulation/scene.h"
+#include "swganh/simulation/scene_interface.h"
 
 using namespace sql;
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::simulation;
+using namespace swganh_core::simulation;
 
 void SceneManager::LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::Connection>& connection)
 {
@@ -49,7 +49,7 @@ void SceneManager::LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::
     }
 }
 
-std::shared_ptr<Scene> SceneManager::GetScene(const std::string& scene_label) const
+std::shared_ptr<swganh::simulation::SceneInterface> SceneManager::GetScene(const std::string& scene_label) const
 {
     auto find_iter = scenes_.find(scene_label);
 
@@ -61,7 +61,7 @@ std::shared_ptr<Scene> SceneManager::GetScene(const std::string& scene_label) co
     return find_iter->second;
 }
 
-std::shared_ptr<Scene> SceneManager::GetScene(uint32_t scene_id) const
+std::shared_ptr<swganh::simulation::SceneInterface> SceneManager::GetScene(uint32_t scene_id) const
 {
 	auto find_iter = find_if(begin(scenes_), end(scenes_), [scene_id] (ScenePair scene_pair) {
 		return scene_pair.second->GetSceneId() == scene_id;

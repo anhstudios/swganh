@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/simulation/simulation_service.h"
+#include "simulation_service.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -42,14 +42,16 @@
 #include "swganh/object/tangible/tangible_message_builder.h"
 #include "swganh/object/player/player_message_builder.h"
 
-#include "swganh/simulation/scene_manager.h"
+#include "swganh/simulation/scene_manager_interface.h"
 #include "swganh/simulation/spatial_provider_interface.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/update_containment_message.h"
 
-#include "swganh/simulation/movement_manager.h"
+#include "movement_manager.h"
+#include "scene_manager.h"
+#include "swganh/simulation/movement_manager_interface.h"
 
 using namespace anh;
 using namespace std;
@@ -58,13 +60,14 @@ using namespace swganh::messages;
 using namespace swganh::network;
 using namespace swganh::object;
 using namespace swganh::simulation;
+using namespace swganh_core::simulation;
 
 using anh::network::soe::ServerInterface;
 using anh::network::soe::Session;
 using anh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
 
-namespace swganh {
+namespace swganh_core {
 namespace simulation {
 
 class SimulationServiceImpl {
@@ -85,26 +88,27 @@ public:
         return object_manager_;
     }
 
-    const shared_ptr<SceneManager>& GetSceneManager()
+    const shared_ptr<SceneManagerInterface>& GetSceneManager()
     {
         if (!scene_manager_)
         {
-            scene_manager_ = make_shared<SceneManager>();
+            scene_manager_ = kernel_->GetPluginManager()->CreateObject<SceneManager>("Simulation::SceneManager");
         }
 
         return scene_manager_;
     }
 
-    MovementManager* GetMovementManager()
+    MovementManagerInterface* GetMovementManager()
     {
         if (!movement_manager_)
         {
-			movement_manager_ = make_shared<MovementManager>(kernel_->GetEventDispatcher(), spatial_provider_);
-        }
+			movement_manager_ = kernel_->GetPluginManager()->CreateObject<MovementManager>("Simulation::MovementManager");
+			movement_manager_->SetSpatialProvider(spatial_provider_.get());
+		}
 
         return movement_manager_.get();
     }
-
+	
     void PersistObject(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);
@@ -376,8 +380,8 @@ public:
 
 private:
     shared_ptr<ObjectManager> object_manager_;
-    shared_ptr<SceneManager> scene_manager_;
-    shared_ptr<MovementManager> movement_manager_;
+    shared_ptr<SceneManagerInterface> scene_manager_;
+    shared_ptr<MovementManagerInterface> movement_manager_;
     SwganhKernel* kernel_;
 	ServerInterface* server_;
 	shared_ptr<SpatialProviderInterface> spatial_provider_;
@@ -388,7 +392,7 @@ private:
     Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
 };
 
-}}  // namespace swganh::simulation
+}}  // namespace swganh_core::simulation
 
 SimulationService::SimulationService(SwganhKernel* kernel)
     : impl_(new SimulationServiceImpl(kernel))
@@ -515,11 +519,11 @@ void SimulationService::Startup()
     connection_service->RegisterMessageHandler(
         &SimulationServiceImpl::HandleObjControllerMessage, impl_.get());
 
-    RegisterControllerHandler(
-        &MovementManager::HandleDataTransform, impl_->GetMovementManager());
+    SimulationServiceInterface::RegisterControllerHandler(
+        &MovementManagerInterface::HandleDataTransform, impl_->GetMovementManager());
 
-    RegisterControllerHandler(
-        &MovementManager::HandleDataTransformWithParent, impl_->GetMovementManager());
+    SimulationServiceInterface::RegisterControllerHandler(
+        &MovementManagerInterface::HandleDataTransformWithParent, impl_->GetMovementManager());
 
     
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");

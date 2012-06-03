@@ -15,7 +15,7 @@ class DatabaseManagerInterface;
 
 namespace swganh {
 namespace simulation {
-    class SimulationService;
+    class SimulationServiceInterface;
 }}  // namespace swganh::simulation
 
 namespace sql {
@@ -32,7 +32,7 @@ namespace tangible {
     {
     public:
         TangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service,
+            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher);
         void LoadTemplates();
 

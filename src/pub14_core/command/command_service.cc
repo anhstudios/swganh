@@ -17,7 +17,7 @@
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/object_controller.h"
 
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 #include "swganh/command/base_swg_command.h"
 #include "swganh/command/command_properties_manager_interface.h"
@@ -41,7 +41,7 @@ using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::messages::controllers::CommandQueueRemove;
 using swganh::object::Object;
 using swganh::object::ObjectController;
-using swganh::simulation::SimulationService;
+using swganh::simulation::SimulationServiceInterface;
 
 CommandService::CommandService(SwganhKernel* kernel)
 : kernel_(kernel)
@@ -159,7 +159,7 @@ void CommandService::Startup()
 {
     script_prefix_ = kernel_->GetAppConfig().script_directory;
     
-    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
     simulation_service_->RegisterControllerHandler(&CommandService::EnqueueCommandRequest, this);
 
     auto event_dispatcher = kernel_->GetEventDispatcher();

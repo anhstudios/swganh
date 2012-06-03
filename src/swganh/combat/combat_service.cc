@@ -28,7 +28,7 @@
 #include "swganh/command/command_service_interface.h"
 #include "swganh/command/python_command_creator.h"
 #include "swganh/command/base_combat_command.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 #include "swganh/messages/controllers/combat_action_message.h"
 #include "swganh/messages/controllers/combat_spam_message.h"
@@ -76,7 +76,7 @@ ServiceDescription CombatService::GetServiceDescription()
 void CombatService::Startup()
 {
 	simulation_service_ = kernel_->GetServiceManager()
-        ->GetService<SimulationService>("SimulationService");
+        ->GetService<SimulationServiceInterface>("SimulationService");
 
 	command_service_ = kernel_->GetServiceManager()
 		->GetService<CommandServiceInterface>("CommandService");

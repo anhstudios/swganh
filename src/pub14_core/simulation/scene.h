@@ -1,23 +1,14 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_SIMULATION_SCENE_H_
-#define SWGANH_SIMULATION_SCENE_H_
+#ifndef PUB14_CORE_SIMULATION_SCENE_H_
+#define PUB14_CORE_SIMULATION_SCENE_H_
 
+#include "swganh/simulation/scene_interface.h"
 #include <cstdint>
-#include <map>
-#include <memory>
-#include <set>
 #include <string>
 
-#include <boost/noncopyable.hpp>
-
-namespace swganh {
-namespace object {
-    class Object;
-}}  // namespace swganh::object
-
-namespace swganh {
+namespace swganh_core {
 namespace simulation {
 
     struct SceneDescription
@@ -29,7 +20,7 @@ namespace simulation {
         std::string terrain;
     };
 
-    class Scene : boost::noncopyable
+    class Scene : public swganh::simulation::SceneInterface
     {
     public:
         explicit Scene(SceneDescription description);
@@ -59,4 +50,4 @@ namespace simulation {
 
 }}  // namespace swganh::simulation
 
-#endif  // SWGANH_SIMULATION_SCENE_H_
+#endif  // PUB14_CORE_SIMULATION_SCENE_H_

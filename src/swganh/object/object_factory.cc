@@ -15,7 +15,7 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/object.h"
 #include "swganh/object/exception.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 using namespace sql;
 using namespace std;
@@ -24,7 +24,7 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
-                             SimulationService* simulation_service,
+                             SimulationServiceInterface* simulation_service,
                              anh::EventDispatcher* event_dispatcher)
     : db_manager_(db_manager)
     , simulation_service_(simulation_service)

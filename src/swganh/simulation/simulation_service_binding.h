@@ -9,7 +9,7 @@
 #endif
 
 #include "anh/python_shared_ptr.h"
-#include "simulation_service.h"
+#include "simulation_service_interface.h"
 
 #include <boost/python.hpp>
 
@@ -19,11 +19,11 @@ using namespace std;
 
 void exportSimulationService()
 {
-    typedef std::shared_ptr<swganh::object::Object> (SimulationService::*GetObjectByIdBinding)(uint64_t);
+    typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*GetObjectByIdBinding)(uint64_t);
 
-    class_<SimulationService, std::shared_ptr<SimulationService>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
-        .def("persist", &SimulationService::PersistObject, "persists the specified object and it's containing objects")
-        .def("findObjectById", GetObjectByIdBinding(&SimulationService::GetObjectById), "Finds an object by its id")
+    class_<SimulationServiceInterface, std::shared_ptr<SimulationServiceInterface>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
+        .def("persist", &SimulationServiceInterface::PersistObject, "persists the specified object and it's containing objects")
+        .def("findObjectById", GetObjectByIdBinding(&SimulationServiceInterface::GetObjectById), "Finds an object by its id")
         ;
 }
 

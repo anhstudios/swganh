@@ -7,13 +7,15 @@
 
 #include "anh/event_dispatcher.h"
 
+#include "swganh/app/swganh_kernel.h"
+#include "anh/service/service_manager.h"
 #include "swganh/object/object.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
 
-#include "swganh/messages/update_containment_message.h"
-#include "swganh/messages/update_transform_message.h"
-#include "swganh/messages/update_transform_with_parent_message.h"
+#include "pub14_core/messages/update_containment_message.h"
+#include "pub14_core/messages/update_transform_message.h"
+#include "pub14_core/messages/update_transform_with_parent_message.h"
 
 #include "swganh/simulation/spatial_provider_interface.h"
 
@@ -24,11 +26,12 @@ using namespace swganh::messages::controllers;
 using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::simulation;
+using namespace swganh_core::simulation;
 
-MovementManager::MovementManager(anh::EventDispatcher* event_dispatcher, std::shared_ptr<SpatialProviderInterface> spatial_provider)
-	: spatial_provider_(spatial_provider)
+MovementManager::MovementManager(swganh::app::SwganhKernel* kernel)
+	: kernel_(kernel)
 {
-    RegisterEvents(event_dispatcher);
+	RegisterEvents(kernel_->GetEventDispatcher());
 }
 
 void MovementManager::HandleDataTransform(
@@ -54,7 +57,7 @@ void MovementManager::HandleDataTransform(
 }
 
 void MovementManager::HandleDataTransformWithParent(
-    const std::shared_ptr<ObjectController>& controller, 
+    const shared_ptr<ObjectController>& controller, 
     DataTransformWithParent message)
 {
     throw std::runtime_error("Cell movement currently disabled");
@@ -153,3 +156,7 @@ bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)
     return counter > counter_map_[object_id];
 }
 
+void MovementManager::SetSpatialProvider(swganh::simulation::SpatialProviderInterface* spatial_provider)
+{
+	spatial_provider_ = spatial_provider;
+}

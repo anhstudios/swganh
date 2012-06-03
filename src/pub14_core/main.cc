@@ -48,6 +48,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     swganh_core::galaxy::Initialize(swganh_kernel);
     swganh_core::simulation::Initialize(swganh_kernel);
     swganh_core::chat::Initialize(swganh_kernel);
+	swganh_core::simulation::Initialize(swganh_kernel);
 
     return ExitModule;
 }

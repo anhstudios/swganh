@@ -1,18 +1,19 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/simulation/scene.h"
+#include "scene.h"
 
 #include <algorithm>
 
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"
-#include "swganh/messages/scene_destroy_object.h"
+#include "pub14_core/messages/scene_destroy_object.h"
 
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object;
 using namespace swganh::simulation;
+using namespace swganh_core::simulation;
 
 class Scene::SceneImpl
 {

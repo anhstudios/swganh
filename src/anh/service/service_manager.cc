@@ -3,6 +3,8 @@
 
 #include "service_manager.h"
 
+#include "anh/logger.h"
+
 #include <algorithm>
 #include <string>
 #include <stdexcept>
@@ -71,8 +73,10 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
 void ServiceManager::Start() {
     for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
         if (entry.second.second) {
+			LOG(warning) << "Starting " << entry.second.first->name();
             entry.second.second->Startup();
-            entry.second.first->status(anh::service::Galaxy::ONLINE);
+			LOG(warning) << "Started...";
+			entry.second.first->status(anh::service::Galaxy::ONLINE);
             service_directory_->updateService(*entry.second.first);
         } 
     });    
