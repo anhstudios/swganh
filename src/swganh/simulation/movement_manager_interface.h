@@ -52,11 +52,7 @@ namespace simulation {
         
         virtual void SendDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B) = 0;
         virtual void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object) = 0;
-
-    private:
-        virtual void RegisterEvents(anh::EventDispatcher* event_dispatcher) = 0;
-
-        bool ValidateCounter_(uint64_t object_id, uint32_t counter);
+		virtual void SetSpatialProvider(swganh::simulation::SpatialProviderInterface* spatial_provider) = 0;
     };
 
 }}  // namespace swganh::simulation

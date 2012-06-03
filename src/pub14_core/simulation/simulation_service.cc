@@ -103,11 +103,12 @@ public:
         if (!movement_manager_)
         {
 			movement_manager_ = kernel_->GetPluginManager()->CreateObject<MovementManager>("Simulation::MovementManager");
+			movement_manager_->SetSpatialProvider(spatial_provider_.get());
 		}
 
         return movement_manager_.get();
     }
-
+	
     void PersistObject(uint64_t object_id)
     {
         auto find_iter = loaded_objects_.find(object_id);

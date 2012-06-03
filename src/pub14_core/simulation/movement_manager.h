@@ -46,6 +46,8 @@ namespace simulation {
         void SendDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B);
         void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object);
 
+		void SetSpatialProvider(swganh::simulation::SpatialProviderInterface* spatial_provider);
+
     private:
         void RegisterEvents(anh::EventDispatcher* event_dispatcher);
 

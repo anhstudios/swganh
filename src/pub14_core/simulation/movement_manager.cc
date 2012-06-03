@@ -31,7 +31,6 @@ using namespace swganh_core::simulation;
 MovementManager::MovementManager(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
 {
-	spatial_provider_ = kernel->GetServiceManager()->GetService<SpatialProviderInterface>("Simulation::SpatialProvider");
 	RegisterEvents(kernel_->GetEventDispatcher());
 }
 
@@ -157,3 +156,7 @@ bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)
     return counter > counter_map_[object_id];
 }
 
+void MovementManager::SetSpatialProvider(swganh::simulation::SpatialProviderInterface* spatial_provider)
+{
+	spatial_provider_ = spatial_provider;
+}

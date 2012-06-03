@@ -30,11 +30,13 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     anh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
+
+	SimulationService* simulation_service = nullptr;
 	
 	// Register Simulation Service
 	{
 		// Register
-		registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void* {
+		registration.CreateObject = [kernel, simulation_service] (anh::plugin::ObjectParams* params) -> void* {
 			return new SimulationService(kernel);
 		};
 		
@@ -47,7 +49,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	}
 	// Register Movement Manager
 	{
-		registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void* {
+		registration.CreateObject = [kernel, simulation_service] (anh::plugin::ObjectParams* params) -> void* {
 			return new MovementManager(kernel);
 		};
 		registration.DestroyObject = [] (void  * object) {
