@@ -76,7 +76,7 @@ namespace command {
         std::shared_ptr<swganh::command::CommandPropertiesManagerInterface> command_properties_manager_impl_;
         std::shared_ptr<swganh::command::CommandQueueManagerInterface> command_queue_manager_impl_;
         std::shared_ptr<swganh::command::CommandValidatorInterface> command_validator_impl_;
-        swganh::simulation::SimulationService* simulation_service_;
+        swganh::simulation::SimulationServiceInterface* simulation_service_;
         std::string script_prefix_;
         anh::CallbackId obj_ready_id_;
         anh::CallbackId obj_removed_id_;

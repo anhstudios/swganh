@@ -159,36 +159,40 @@ void Session::HandleMessage(anh::ByteBuffer message)
 
 void Session::HandleMessageInternal(anh::ByteBuffer message)
 {
-    uint16_t soe_opcode = message.peek<uint16_t>(true);
+	// Sanity Check
+	if (message.size() > 0)
+	{
+		uint16_t soe_opcode = message.peek<uint16_t>(true);
 
-    try {
-        switch(soe_opcode)
-        {
-            case CHILD_DATA_A:	   { handleChildDataA_(ChildDataA(message)); break; }
-            case MULTI_PACKET:	   { handleMultiPacket_(MultiPacket(message)); break; }
-            case DATA_FRAG_A:	   { handleDataFragA_(DataFragA(message)); break; }
-            case ACK_A:			   { handleAckA_(AckA(message)); break; }
-            case PING:			   { handlePing_(Ping(message)); break; }
-            case NET_STATS_CLIENT: { handleNetStatsClient_(NetStatsClient(message)); break; }
-            case OUT_OF_ORDER_A:   { handleOutOfOrderA_(OutOfOrderA(message)); break; }
-            case DISCONNECT:	   { handleDisconnect_(Disconnect(message)); break; }
-            case SESSION_REQUEST:  { handleSessionRequest_(SessionRequest(message)); break; }
-            case FATAL_ERROR:      { Close(); break; }
-            default:
-                if (message.peek<uint8_t>() != 0)
-                {
-                    server_->HandleMessage(shared_from_this(), move(message));
-                }
-                else
-                {
-                    LOG(warning) << "Unhandled SOE Opcode: "
-                        << std::hex << soe_opcode << "\n\n" << message;
-                }
-        }
-    } catch(const std::exception& e) {
-        LOG(warning) << "Error handling protocol message "
-            << std::hex << soe_opcode << "\n\n" << e.what();
-    }
+		try {
+			switch(soe_opcode)
+			{
+				case CHILD_DATA_A:	   { handleChildDataA_(ChildDataA(message)); break; }
+				case MULTI_PACKET:	   { handleMultiPacket_(MultiPacket(message)); break; }
+				case DATA_FRAG_A:	   { handleDataFragA_(DataFragA(message)); break; }
+				case ACK_A:			   { handleAckA_(AckA(message)); break; }
+				case PING:			   { handlePing_(Ping(message)); break; }
+				case NET_STATS_CLIENT: { handleNetStatsClient_(NetStatsClient(message)); break; }
+				case OUT_OF_ORDER_A:   { handleOutOfOrderA_(OutOfOrderA(message)); break; }
+				case DISCONNECT:	   { handleDisconnect_(Disconnect(message)); break; }
+				case SESSION_REQUEST:  { handleSessionRequest_(SessionRequest(message)); break; }
+				case FATAL_ERROR:      { Close(); break; }
+				default:
+					if (message.peek<uint8_t>() != 0)
+					{
+						server_->HandleMessage(shared_from_this(), move(message));
+					}
+					else
+					{
+						LOG(warning) << "Unhandled SOE Opcode: "
+							<< std::hex << soe_opcode << "\n\n" << message;
+					}
+			}
+		} catch(const std::exception& e) {
+			LOG(warning) << "Error handling protocol message "
+				<< std::hex << soe_opcode << "\n\n" << e.what();
+		}
+	}
 }
 
 void Session::HandleProtocolMessage(anh::ByteBuffer message)

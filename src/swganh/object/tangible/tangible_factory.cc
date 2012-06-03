@@ -15,7 +15,7 @@
 #include "anh/database/database_manager.h"
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/exception.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;
 using namespace anh::database;
@@ -26,7 +26,7 @@ using namespace swganh::simulation;
 uint32_t TangibleFactory::GetType() const { return Tangible::type; }
 
  TangibleFactory::TangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service,
+            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher)
     : ObjectFactory(db_manager, simulation_service, event_dispatcher)
 {

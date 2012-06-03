@@ -38,7 +38,7 @@ namespace Concurrency {
 
 namespace swganh {
 namespace simulation {
-class SimulationService;
+class SimulationServiceInterface;
 }
 namespace command {
 class CommandServiceInterface; 
@@ -123,7 +123,7 @@ namespace combat {
         // Message Helpers
         void BroadcastCombatSpam(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible>& target, const CombatData& properties, uint32_t damage, const std::string& string_file);
 
-        swganh::simulation::SimulationService* simulation_service_;
+        swganh::simulation::SimulationServiceInterface* simulation_service_;
 		swganh::command::CommandServiceInterface* command_service_;
 
         HandlerMap	combat_handlers_;

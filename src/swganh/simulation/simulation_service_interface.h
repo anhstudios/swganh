@@ -1,8 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_SIMULATION_SIMULATION_SERVICE_H_
-#define SWGANH_SIMULATION_SIMULATION_SERVICE_H_
+#ifndef SWGANH_SIMULATION_SIMULATION_SERVICE_INTERFACE_H_
+#define SWGANH_SIMULATION_SIMULATION_SERVICE_INTERFACE_H_
 
 #include <cstdint>
 #include <map>
@@ -31,30 +31,22 @@ namespace object {
 namespace swganh {
 namespace simulation {
     
-    class SimulationServiceImpl;
-
-    class SimulationService : public anh::service::ServiceInterface
+    class SimulationServiceInterface : public anh::service::ServiceInterface
     {
     public:
-        explicit SimulationService(swganh::app::SwganhKernel* kernel);
-    
-        ~SimulationService();
+        virtual void StartScene(const std::string& scene_label) = 0;
+        virtual void StopScene(const std::string& scene_label) = 0;
 
-        anh::service::ServiceDescription GetServiceDescription();
+        virtual void RegisterObjectFactories() = 0;
 
-        void StartScene(const std::string& scene_label);
-        void StopScene(const std::string& scene_label);
-
-        void RegisterObjectFactories();
-
-        void PersistObject(uint64_t object_id);
+        virtual void PersistObject(uint64_t object_id) = 0;
 		/*
 		*	\brief this persists the given object and all related objects (ie: everything contained inside this object)
 		*/
-		void PersistRelatedObjects(uint64_t parent_object_id);
+		virtual void PersistRelatedObjects(uint64_t parent_object_id) = 0;
         
-        std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id);
-        std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id, uint32_t type);
+        virtual std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id) = 0;
+        virtual std::shared_ptr<swganh::object::Object> LoadObjectById(uint64_t object_id, uint32_t type) = 0;
         
         template<typename T>
         std::shared_ptr<T> LoadObjectById(uint64_t object_id)
@@ -67,7 +59,7 @@ namespace simulation {
 #endif
         }
         
-        std::shared_ptr<swganh::object::Object> GetObjectById(uint64_t object_id);
+        virtual std::shared_ptr<swganh::object::Object> GetObjectById(uint64_t object_id) = 0;
 
         template<typename T>
         std::shared_ptr<T> GetObjectById(uint64_t object_id)
@@ -84,14 +76,14 @@ namespace simulation {
         /**
          * Removes the requested object from the simulation.
          */
-        void RemoveObjectById(uint64_t object_id);
-        void RemoveObject(const std::shared_ptr<swganh::object::Object>& object);
+        virtual void RemoveObjectById(uint64_t object_id) = 0;
+        virtual void RemoveObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
         
-        std::shared_ptr<swganh::object::ObjectController> StartControllingObject(
+        virtual std::shared_ptr<swganh::object::ObjectController> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
-            std::shared_ptr<swganh::connection::ConnectionClient> client);
+            std::shared_ptr<swganh::connection::ConnectionClient> client) = 0;
 
-        void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object);
+        virtual void StopControllingObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
 
         template<typename MessageType>
         struct GenericControllerHandler
@@ -154,11 +146,11 @@ namespace simulation {
          * \param handler_id The object controller message type.
          * \param handler The object controller handler.
          */
-        void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler);
+        virtual void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler) = 0;
 
-        void UnregisterControllerHandler(uint32_t handler_id);
+        virtual void UnregisterControllerHandler(uint32_t handler_id) = 0;
 
-        void SendToAll(anh::ByteBuffer message);
+        virtual void SendToAll(anh::ByteBuffer message) = 0;
 
         template <typename T>
         void SendToAll(const T& message)
@@ -169,7 +161,7 @@ namespace simulation {
             SendToAll(message_buffer);
         }
 
-        void SendToAllInScene(anh::ByteBuffer message, uint32_t scene_id);
+        virtual void SendToAllInScene(anh::ByteBuffer message, uint32_t scene_id) = 0;
 
         template<typename T>
         void SendToAllInScene(const T& message, uint32_t scene_id)
@@ -179,14 +171,6 @@ namespace simulation {
 
             SendToAllInScene(message_buffer, scene_id);
         }
-
-        void Startup();
-
-    private:
-
-        std::unique_ptr<SimulationServiceImpl> impl_;
-		std::shared_ptr<anh::network::soe::ServerInterface> server_;
-        swganh::app::SwganhKernel* kernel_;
     };
 
 }}  // namespace swganh::simulation

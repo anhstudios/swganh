@@ -1,31 +1,28 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_SIMULATION_SCENE_MANAGER_H_
-#define SWGANH_SIMULATION_SCENE_MANAGER_H_
+#ifndef PUB14_CORE_SIMULATION_SCENE_MANAGER_H_
+#define PUB14_CORE_SIMULATION_SCENE_MANAGER_H_
 
 #include <cstdint>
 #include <map>
 #include <memory>
 #include <string>
 
-#include "swganh/simulation/scene.h"
+#include "scene.h"
+#include "swganh/simulation/scene_manager_interface.h"
 
-namespace sql {
-    class Connection;
-}  // namespace sql
-
-namespace swganh {
+namespace swganh_core {
 namespace simulation {
     
-    class SceneManager
+    class SceneManager : public swganh::simulation::SceneManagerInterface
     {
     public:
 
         void LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::Connection>& connection);
         
-        std::shared_ptr<Scene> GetScene(const std::string& scene_label) const;
-		std::shared_ptr<Scene> GetScene(uint32_t scene_id) const;
+        std::shared_ptr<swganh::simulation::SceneInterface> GetScene(const std::string& scene_label) const;
+		std::shared_ptr<swganh::simulation::SceneInterface> GetScene(uint32_t scene_id) const;
 
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
@@ -50,6 +47,6 @@ namespace simulation {
         SceneMap scenes_;
     };
 
-}}  // namespace swganh::simulation
+}}  // namespace swganh_core::simulation
 
-#endif  // SWGANH_SIMULATION_SCENE_MANAGER_H_
+#endif  // PUB14_CORE_SIMULATION_SCENE_MANAGER_H_

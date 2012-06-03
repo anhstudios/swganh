@@ -90,7 +90,7 @@ void ConnectionService::Startup() {
 
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
     login_service_ = kernel_->GetServiceManager()->GetService<LoginService>("LoginService");
-    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationService>("SimulationService");
+    simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
     
     RegisterMessageHandler(&ConnectionService::HandleClientIdMsg_, this);
     RegisterMessageHandler(&ConnectionService::HandleCmdSceneReady_, this);
