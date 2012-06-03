@@ -25,7 +25,7 @@
 #include "swganh/object/tangible/tangible.h"
 
 #include "swganh/command/command_service_interface.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 #include "spatial_chat_internal_command.h"
 

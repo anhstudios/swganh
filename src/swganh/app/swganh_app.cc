@@ -34,7 +34,7 @@
 #include "swganh/character/character_service_interface.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
-#include "swganh/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/galaxy/galaxy_service.h"
 #include "swganh/combat/combat_service.h"
 #include "swganh/social/social_service.h"
@@ -350,16 +350,13 @@ void SwganhApp::LoadCoreServices_()
 			"CombatService",
 			std::make_shared<CombatService>(kernel_.get()));
             
-		auto simulation_service = std::make_shared<SimulationService>(kernel_.get());
-		simulation_service->StartScene("corellia");
-		simulation_service->StartScene("naboo");
-    
-		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
-    
-        kernel_->GetServiceManager()->AddService(
+		kernel_->GetServiceManager()->AddService(
             "SocialService", 
             std::make_shared<social::SocialService>(kernel_.get()));
-    
+		
+		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("Simulation::SimulationService");
+		simulation_service->StartScene("corellia");
+		simulation_service->StartScene("naboo");
 	}
 
 	// always need a galaxy service running

@@ -20,7 +20,7 @@ namespace sql {
 
 namespace swganh {
 namespace simulation {
-    class SimulationService;
+    class SimulationServiceInterface;
 }}  // namespace swganh::simulation
 
 namespace swganh {
@@ -32,7 +32,7 @@ namespace object {
     {
     public:
         ObjectFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationService* simulation_service,
+            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher);
         virtual ~ObjectFactory() {}
         /**
@@ -67,7 +67,7 @@ namespace object {
             const std::shared_ptr<sql::Statement>& statement);
 
         anh::database::DatabaseManagerInterface* db_manager_;   
-        swganh::simulation::SimulationService* simulation_service_;
+        swganh::simulation::SimulationServiceInterface* simulation_service_;
         anh::EventDispatcher* event_dispatcher_;
     };
 
