@@ -148,16 +148,10 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     auto controller = connection_client->GetController();
     if (controller)
     {
-        /// @TODO REFACTOR Move this functionality out to a PlayerService
-        auto player = simulation_service_->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
-		player->AddStatusFlag(swganh::object::player::LD);
-        // END todo
-
+		auto player = simulation_service_->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
+		kernel_->GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<swganh::object::player::Player>>>("Connection::PlayerRemoved", player));
+        
         simulation_service_->PersistRelatedObjects(controller->GetObject()->GetObjectId());
-
-        // set a timer to 5 minutes to destroy the object, unless logged back in.
-        auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(30));
-        deadline_timer->async_wait(boost::bind(&ConnectionService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, controller));
     }
 
     LOG(info) << "Removing disconnected client";
@@ -202,28 +196,6 @@ std::shared_ptr<ConnectionClient> ConnectionService::FindConnectionByPlayerId(ui
     }
 
     return connection;
-}
-
-void ConnectionService::RemoveClientTimerHandler_(
-    const boost::system::error_code& e,
-    shared_ptr<boost::asio::deadline_timer> timer,
-    int delay_in_secs,
-    shared_ptr<swganh::object::ObjectController> controller)
-{
-    if (controller)
-    {
-        // destroy if they haven't reconnected
-        if (controller->GetRemoteClient() == nullptr || !controller->GetRemoteClient()->connected())
-        {
-            auto object = controller->GetObject();
-            LOG(warning) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
-
-            simulation_service_->RemoveObject(object);
-
-            kernel_->GetEventDispatcher()->Dispatch(
-                make_shared<ValueEvent<shared_ptr<Object>>>("ObjectRemovedEvent", object));
-        }
-    }
 }
 
 void ConnectionService::HandleCmdSceneReady_(

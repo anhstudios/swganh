@@ -7,6 +7,7 @@
 
 #include "anh/byte_buffer.h"
 #include "anh/crc.h"
+#include "anh/event_dispatcher.h"
 #include "anh/service/service_manager.h"
 #include "anh/database/database_manager.h"
 #include "anh/network/soe/server_interface.h"
@@ -320,23 +321,25 @@ public:
             object = LoadObjectById(message.character_id, creature::Creature::type);
         }
 
-        /// @TODO REFACTOR Move this functionality out to a PlayerService
+        auto event_dispatcher = kernel_->GetEventDispatcher();
         auto contained = object->GetContainedObjects();
-
+		
         for_each(
             begin(contained),
             end(contained),
-            [] (Object::ObjectMap::value_type& object_entry)
+            [event_dispatcher] (Object::ObjectMap::value_type& object_entry)
         {
-            auto player = dynamic_pointer_cast<player::Player>(object_entry.second);
-
-            if (player)
-            {
-                player->RemoveStatusFlag(player::LD);
-            }
+			if (object_entry.second->GetType() == player::Player::type)
+			{
+				auto player = static_pointer_cast<player::Player>(object_entry.second);
+				if (player)
+				{
+					event_dispatcher->Dispatch(
+						make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", player));
+				}
+			}
         });
-        // END todo
-
+        
         StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
