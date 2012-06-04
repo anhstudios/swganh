@@ -112,7 +112,7 @@ BOOL CSWGEdApp::InitInstance()
 
     m_pDocManager = new TreDocumentManager;
     
-    datatable_doc_template_ = new TreDocumentTemplate(
+    datatable_doc_template_ = new CMultiDocTemplate(
 		IDR_MAINFRAME,
 		RUNTIME_CLASS(TreDocument),
 		RUNTIME_CLASS(CChildFrame),       // main SDI frame window
@@ -121,7 +121,7 @@ BOOL CSWGEdApp::InitInstance()
         return FALSE;
 	AddDocTemplate(datatable_doc_template_);
 
-	hex_doc_template_ = new TreDocumentTemplate(
+	hex_doc_template_ = new CMultiDocTemplate(
 		IDR_MAINFRAME,
 		RUNTIME_CLASS(TreDocument),
 		RUNTIME_CLASS(CChildFrame),       // main SDI frame window

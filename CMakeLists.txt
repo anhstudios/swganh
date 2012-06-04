@@ -120,6 +120,8 @@ if(MSVC)
     
     add_definitions(/D BOOST_ALL_NO_LIB)
     message(status "- BOOST: Disable automatic linking")
+    
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_CRTDBG_MAP_ALLOC")
 endif()
 
 # Use the static/multithreaded libraries.

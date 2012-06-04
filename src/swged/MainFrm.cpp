@@ -227,7 +227,7 @@ void CMainFrame::OnOpenEnvironment()
     if (file_dialog.DoModal() == IDOK)
     {
         std::string path(file_dialog.GetPathName().GetString());
-        archive_.reset(new swganh::tre::TreArchive(path));
+        archive_ = std::make_shared<swganh::tre::TreArchive>(path);
 
         m_wndFileView.SetTreArchive(archive_.get());
     }
