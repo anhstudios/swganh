@@ -28,6 +28,7 @@ END_MESSAGE_MAP()
 ****************************************************/
 DatatableGrid::DatatableGrid()
     : datatable_doc_(nullptr)
+    , datatable_reader_(nullptr)
 {
 }
 /***************************************************
@@ -44,7 +45,7 @@ OnSetup
 	It can be used to initially setup the grid
 ****************************************************/
 void DatatableGrid::OnSetup(){
-    if (!datatable_doc_)
+    if (!datatable_reader_)
         return;
     
     swganh::tre::readers::DatatableReader reader(datatable_doc_->GetData());
@@ -60,47 +61,40 @@ void DatatableGrid::OnSetup(){
 
     GetCell(0, 1, &cell);
     
+    swganh::tre::readers::DatatableRow row;
+
     while(reader.Next())
     {
-        auto row = reader.GetRow();
-        
         j = 0;
 
+		temp.Format("%d", (i+1));
+        QuickSetText(-1, i, temp);
+
+        row = reader.GetRow();
+        
         for (auto& row_cell : row)
         {
-            cell.SetText(_T(row_cell.second->ToString().c_str()));
-            SetCell(j, i, &cell);
+            if (i == 0)
+            {
+                QuickSetText(j, -1, row_cell.first.c_str());
+            }
+
+            QuickSetText(j, i, _T(row_cell.second->ToString().c_str()));
+
             ++j;
         }
 
         ++i;
     }
-
-    auto column_names = reader.GetColumnNames();
-    for (i = 0; i < columns; i++)
-    {
-        cell.SetText(_T(column_names[i].c_str()));
-        SetCell(i, -1, &cell);
-    }
-    
-	for (j = 0; j < rows; j++) {
-		temp.Format("%d", (j+1));
-		cell.SetText(temp);
-		SetCell(-1, j, &cell);
-	}
-
-    //for_each(
-    //    begin(row),
-    //    end(row),
-    //    [] (const std::map<std::string, DatatableCell*>::value_type& rowdata)
-    //{
-    //    cout << "[" << rowdata.first << "] = " << rowdata.second->ToString() << "\n";
-    //});
-
 }
 
 void DatatableGrid::SetDatatableDoc(TreDocument* datatable_doc)
 {
+    if (!datatable_doc)
+        return;
+
     datatable_doc_ = datatable_doc;
+    
+    datatable_reader_ = std::make_shared<swganh::tre::readers::DatatableReader>(datatable_doc_->GetData());
     OnSetup();
 }

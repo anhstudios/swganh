@@ -2,7 +2,14 @@
 
 #include <vector>
 
+#include <memory>
 #include "TreDocument.h"
+
+namespace swganh {
+namespace tre {
+namespace readers {
+    class DatatableReader;
+}}}
 
 class DatatableGrid : public CUGCtrl
 {
@@ -32,4 +39,5 @@ public:
     
 private:
     TreDocument* datatable_doc_;
+    std::shared_ptr<swganh::tre::readers::DatatableReader> datatable_reader_;
 };
