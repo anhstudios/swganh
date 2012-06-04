@@ -87,12 +87,13 @@ namespace readers {
         /**
          * Explicit constructor that takes ownership of a resource.
          */
-        explicit DatatableReader(std::vector<unsigned char>&& input);
+        explicit DatatableReader(std::vector<unsigned char> input);
 
         /**
          * \return The number of rows in this datatable.
          */
         uint32_t CountRows() const;
+        uint32_t CountColumns() const;
 
         /**
          * \return A list of all column names in the order they appear.

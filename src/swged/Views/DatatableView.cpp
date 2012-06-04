@@ -54,8 +54,9 @@ void DatatableView::OnDraw(CDC* pDC)
 {
 	TreDocument* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-
+    
 	// TODO: add draw code for native data here
+    m_ctrl.SetDatatableDoc(pDoc);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -86,7 +87,7 @@ int DatatableView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
+
 	//: Create the Grid control in the client rectangle
 	m_ctrl.CreateGrid(WS_CHILD|WS_VISIBLE,CRect(0,0,0,0),this,1234);
 	

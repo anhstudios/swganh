@@ -33,7 +33,7 @@ struct IffHeader
     char type[4];
 };
 
-DatatableReader::DatatableReader(vector<unsigned char>&& input)
+DatatableReader::DatatableReader(vector<unsigned char> input)
     : current_row_(-1)
     , input_(move(input))
 {
@@ -61,6 +61,11 @@ DatatableReader::DatatableReader(vector<unsigned char>&& input)
 uint32_t DatatableReader::CountRows() const
 {
     return row_header_->count;
+}
+
+uint32_t DatatableReader::CountColumns() const
+{
+    return column_names_.size();
 }
 
 const vector<string>& DatatableReader::GetColumnNames() const

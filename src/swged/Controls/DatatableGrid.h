@@ -1,5 +1,8 @@
 #include "UltimateGrid/ugctrl.h"
 
+#include <vector>
+
+#include "TreDocument.h"
 
 class DatatableGrid : public CUGCtrl
 {
@@ -9,6 +12,8 @@ public:
 
 	DatatableGrid();
 	~DatatableGrid();
+    
+    void SetDatatableDoc(TreDocument* datatable_doc);
 
 	// Overrides
 	// ClassWizard generated virtual function overrides
@@ -24,4 +29,7 @@ public:
 
 
 	virtual void OnSetup();
+    
+private:
+    TreDocument* datatable_doc_;
 };
