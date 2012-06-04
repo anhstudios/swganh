@@ -18,12 +18,12 @@ using anh::bigToHost;
 using boost::any_cast;
 using boost::lexical_cast;
 using std::for_each;
-using std::map;
 using std::move;
 using std::out_of_range;
 using std::runtime_error;
 using std::string;
 using std::transform;
+using std::unordered_map;
 using std::vector;
 
 struct IffHeader
@@ -168,6 +168,7 @@ uint32_t DatatableReader::ParseColumn(uint8_t type, uint32_t offset, vector<Data
     case 'h':
     case 'e':
     case 'i':
+    case 'I':
         cell.SetValue(reinterpret_cast<const int*>(row_offset_ + offset));
 
         size = 4;
