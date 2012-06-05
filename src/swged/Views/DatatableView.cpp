@@ -9,6 +9,7 @@
 #include "SWGEd.h"
 #endif
 
+
 #include "TreDoc.h"
 #include "DatatableView.h"
 #include "swganh/tre/readers/datatable_reader.h"
@@ -59,6 +60,7 @@ void CDatatableView::OnDraw(CDC* /*pDC*/)
 		return;
 
 	// TODO: add draw code for native data here
+    GetControl()->Refresh();
 }
 
 
@@ -76,6 +78,10 @@ void CDatatableView::OnInitialUpdate()
 	if (!pDoc)
 		return;
     
+    
+    GetControl()->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+    GetControl()->Dock = System::Windows::Forms::DockStyle::Fill;
+
     swganh::tre::readers::DatatableRow row;
     swganh::tre::readers::DatatableReader reader(pDoc->GetData());
     auto column_names = reader.GetColumnNames();
