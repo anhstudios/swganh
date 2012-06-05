@@ -40,4 +40,6 @@ public:
 private:
     TreDocument* datatable_doc_;
     std::shared_ptr<swganh::tre::readers::DatatableReader> datatable_reader_;
+
+    void SetCellText(int column, int row, const std::string& text);
 };

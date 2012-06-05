@@ -62,26 +62,25 @@ void DatatableGrid::OnSetup(){
     GetCell(0, 1, &cell);
     
     swganh::tre::readers::DatatableRow row;
+    auto column_names = reader.GetColumnNames();
+
+    // Print out the column names
+    for (j = 0; j < columns; j++)
+    {
+        SetCellText(j, -1, column_names[j]);
+    }
 
     while(reader.Next())
     {
-        j = 0;
-
+        // Print the row count in the left margin
 		temp.Format("%d", (i+1));
         QuickSetText(-1, i, temp);
 
         row = reader.GetRow();
-        
-        for (auto& row_cell : row)
+
+        for (j = 0; j < columns; ++j)
         {
-            if (i == 0)
-            {
-                QuickSetText(j, -1, row_cell.first.c_str());
-            }
-
-            QuickSetText(j, i, _T(row_cell.second->ToString().c_str()));
-
-            ++j;
+            SetCellText(j, i, row[column_names[j]]->ToString());
         }
 
         ++i;
@@ -97,4 +96,14 @@ void DatatableGrid::SetDatatableDoc(TreDocument* datatable_doc)
     
     datatable_reader_ = std::make_shared<swganh::tre::readers::DatatableReader>(datatable_doc_->GetData());
     OnSetup();
+}
+
+void DatatableGrid::SetCellText(int column, int row, const std::string& text)
+{    
+    int col_width = text.length() * 8;
+    
+    if (GetColWidth(column) < col_width)
+        SetColWidth(column, col_width);
+
+    QuickSetText(column, row, _T(text.c_str()));
 }
