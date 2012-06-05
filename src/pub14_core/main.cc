@@ -19,6 +19,7 @@
 #include "login/login_init.h"
 #include "galaxy/galaxy_init.h"
 #include "simulation/simulation_init.h"
+#include "player/player_init.h"
 
 using anh::app::KernelInterface;
 using anh::plugin::ExitFunc;
@@ -49,6 +50,6 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     swganh_core::simulation::Initialize(swganh_kernel);
     swganh_core::chat::Initialize(swganh_kernel);
 	swganh_core::simulation::Initialize(swganh_kernel);
-
+	swganh_core::player::Initialize(swganh_kernel);
     return ExitModule;
 }
