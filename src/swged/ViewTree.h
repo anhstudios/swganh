@@ -10,6 +10,13 @@ class CViewTree : public CTreeCtrl
 public:
 	CViewTree();
 
+    virtual BOOL OpenSelectedItem();
+    virtual CString GetSelectedItemPath();
+
+    virtual void OpenItem(CString item);
+
+    virtual bool IsDatatable(CString& item) const;
+
 // Overrides
 protected:
 	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);

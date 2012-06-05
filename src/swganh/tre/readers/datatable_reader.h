@@ -5,8 +5,8 @@
 #define SWGANH_TRE_READERS_DATATABLE_READER_H_
 
 #include <cstdint>
-#include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/any.hpp>
@@ -76,7 +76,7 @@ namespace readers {
         boost::any value_;
     };
 
-    typedef std::map<std::string, DatatableCell*> DatatableRow;
+    typedef std::unordered_map<std::string, DatatableCell*> DatatableRow;
 
     /**
      * A utility class for parsing files in the datatable format.
@@ -87,12 +87,13 @@ namespace readers {
         /**
          * Explicit constructor that takes ownership of a resource.
          */
-        explicit DatatableReader(std::vector<unsigned char>&& input);
+        explicit DatatableReader(std::vector<unsigned char> input);
 
         /**
          * \return The number of rows in this datatable.
          */
         uint32_t CountRows() const;
+        uint32_t CountColumns() const;
 
         /**
          * \return A list of all column names in the order they appear.

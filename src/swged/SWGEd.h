@@ -19,6 +19,8 @@ class CSWGEdApp : public CWinAppEx
 public:
 	CSWGEdApp();
 
+    CMultiDocTemplate* GetHexDocTemplate();
+    CMultiDocTemplate* GetDatatableDocTemplate();
 
 // Overrides
 public:
@@ -29,6 +31,8 @@ public:
 protected:
 	HMENU  m_hMDIMenu;
 	HACCEL m_hMDIAccel;
+    CMultiDocTemplate* hex_doc_template_;
+    CMultiDocTemplate* datatable_doc_template_;
 
 public:
 	BOOL  m_bHiColorIcons;
