@@ -167,6 +167,7 @@ uint32_t DatatableReader::ParseColumn(uint8_t type, uint32_t offset, vector<Data
     case 'b':
     case 'h':
     case 'e':
+    case 'z':
     case 'i':
     case 'I':
         cell.SetValue(reinterpret_cast<const int*>(row_offset_ + offset));
