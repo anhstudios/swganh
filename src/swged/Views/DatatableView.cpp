@@ -11,6 +11,7 @@
 
 #include "TreDoc.h"
 #include "DatatableView.h"
+#include "swganh/tre/readers/datatable_reader.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -70,14 +71,43 @@ System::Windows::Forms::DataGridView^ CDatatableView::GetControl()
 
 void CDatatableView::OnInitialUpdate()
 {
+	CTreDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	if (!pDoc)
+		return;
     
-    System::Windows::Forms::DataGridViewColumn^ dgvCol1 = 
-        gcnew System::Windows::Forms::DataGridViewColumn(gcnew System::Windows::Forms::DataGridViewTextBoxCell());
-    dgvCol1->HeaderText = L"Column1";
-    dgvCol1->Name = L"Column1";
+    swganh::tre::readers::DatatableRow row;
+    swganh::tre::readers::DatatableReader reader(pDoc->GetData());
+    auto column_names = reader.GetColumnNames();
+
+    for(auto& column_name : column_names)
+    {
+        System::Windows::Forms::DataGridViewColumn^ dgvCol1 = 
+            gcnew System::Windows::Forms::DataGridViewColumn(gcnew System::Windows::Forms::DataGridViewTextBoxCell());
+
+        dgvCol1->HeaderText = gcnew System::String(column_name.c_str());
+        dgvCol1->Name = gcnew System::String(column_name.c_str());
 
 
-    GetControl()->Columns->Add(dgvCol1); 
+        GetControl()->Columns->Add(dgvCol1);
+    }
+
+    while(reader.Next())
+    {
+        row = reader.GetRow();
+        
+        System::Windows::Forms::DataGridViewRow^ data_row = 
+            gcnew System::Windows::Forms::DataGridViewRow();
+
+        for (uint32_t i = 0; i < column_names.size(); ++i)
+        {
+            auto cell = gcnew System::Windows::Forms::DataGridViewTextBoxCell();
+            cell->Value = gcnew System::String(row[column_names[i]]->ToString().c_str());
+            data_row->Cells->Add(cell);
+        }
+
+        GetControl()->Rows->Add(data_row);
+    }
 }
 
 void CDatatableView::OnFilePrintPreview()
