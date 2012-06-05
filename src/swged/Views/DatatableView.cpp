@@ -32,7 +32,7 @@ END_MESSAGE_MAP()
 // CDatatableView construction/destruction
 
 CDatatableView::CDatatableView()
-    : Microsoft::VisualC::MFC::CWinFormsView(System::Windows::Forms::DataGridView::typeid)
+    : Microsoft::VisualC::MFC::CWinFormsView(DoubleBufferedDataGridView::typeid)
 {
 	// TODO: add construction code here
 
@@ -65,10 +65,10 @@ void CDatatableView::OnDraw(CDC* /*pDC*/)
 
 
 // CDatatableView printing
-System::Windows::Forms::DataGridView^ CDatatableView::GetControl()
+DoubleBufferedDataGridView^ CDatatableView::GetControl()
 {
 	System::Windows::Forms::Control^ control = CWinFormsView::GetControl();
-	return safe_cast<System::Windows::Forms::DataGridView^>(control);
+	return safe_cast<DoubleBufferedDataGridView^>(control);
 }
 
 void CDatatableView::OnInitialUpdate()
@@ -77,8 +77,8 @@ void CDatatableView::OnInitialUpdate()
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
-    
-    
+
+    //GetControl()->SetStyle(System::Windows::Forms::ControlStyles::OptimizedDoubleBuffer | System::Windows::Forms::ControlStyles::AllPaintingInWmPaint, true);
     GetControl()->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
     GetControl()->Dock = System::Windows::Forms::DockStyle::Fill;
 

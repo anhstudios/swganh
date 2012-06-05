@@ -7,6 +7,17 @@
 #include <afxwinforms.h>
 #using <System.Windows.Forms.dll>
 
+ref class DoubleBufferedDataGridView : public System::Windows::Forms::DataGridView
+{
+public:
+    DoubleBufferedDataGridView()
+        : System::Windows::Forms::DataGridView()
+    {
+        DoubleBuffered = true;
+    }
+};
+
+
 class CDatatableView : public Microsoft::VisualC::MFC::CWinFormsView
 {
 protected: // create from serialization only
@@ -16,7 +27,7 @@ protected: // create from serialization only
 // Attributes
 public:
 	CTreDoc* GetDocument() const;
-	System::Windows::Forms::DataGridView^ GetControl();
+	DoubleBufferedDataGridView^ GetControl();
 
 // Operations
 public:
