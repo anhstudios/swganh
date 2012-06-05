@@ -22,14 +22,11 @@ TreDocumentTemplate::~TreDocumentTemplate()
 BEGIN_MESSAGE_MAP(TreDocumentTemplate, CMultiDocTemplate)
 END_MESSAGE_MAP()
 
-CDocument* TreDocumentTemplate::OpenDocumentFile(LPCTSTR lpszPathName,BOOL )
+CDocument* TreDocumentTemplate::OpenDocumentFile(LPCTSTR lpszPathName, BOOL bMakeVisible)
 {
 	// We make visible later
-	CDocument* pDoc = CMultiDocTemplate::OpenDocumentFile(lpszPathName,FALSE);
+	CDocument* pDoc = CMultiDocTemplate::OpenDocumentFile(lpszPathName, bMakeVisible);
 	
-	CSWGEdApp* pApp = (CSWGEdApp*)AfxGetApp(); 
-	//pApp->m_IFramework->SetOpenedDocument(pDoc);	
-
 	return pDoc;
 }
 

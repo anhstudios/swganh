@@ -6,7 +6,7 @@
 #include <afxwin.h>
 #include <cstdint>
 
-#include "HexDoc.h"
+#include "TreDocument.h"
 
 class CHexView : public CScrollView
 {
@@ -21,10 +21,10 @@ protected:
     virtual void OnDraw(CDC*);
     BOOL PreCreateWindow(CREATESTRUCT& cs);
     void UpdateScrollbars();
-    CHexDoc* GetDocument()
+    TreDocument* GetDocument()
     {
-        ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CHexDoc)));
-	    return (CHexDoc*)m_pDocument;
+        ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(TreDocument)));
+	    return (TreDocument*)m_pDocument;
     }
     //}}AFX_VIRTUAL
 

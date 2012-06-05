@@ -54,7 +54,7 @@ protected:
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
 
 private:
-    std::unique_ptr<swganh::tre::TreArchive> archive_;
+    std::shared_ptr<swganh::tre::TreArchive> archive_;
 };
 
 
