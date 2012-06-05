@@ -79,12 +79,6 @@ public:
 private:        
     std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
     
-    void RemoveClientTimerHandler_(
-        const boost::system::error_code& e, 
-        std::shared_ptr<boost::asio::deadline_timer> timer, 
-        int delay_in_secs, 
-        std::shared_ptr<swganh::object::ObjectController> controller);
-
     void HandleClientIdMsg_(
         const std::shared_ptr<ConnectionClient>& client, 
         swganh::messages::ClientIdMsg message);
