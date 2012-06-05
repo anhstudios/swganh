@@ -18,12 +18,12 @@ using anh::bigToHost;
 using boost::any_cast;
 using boost::lexical_cast;
 using std::for_each;
-using std::map;
 using std::move;
 using std::out_of_range;
 using std::runtime_error;
 using std::string;
 using std::transform;
+using std::unordered_map;
 using std::vector;
 
 struct IffHeader
@@ -33,7 +33,7 @@ struct IffHeader
     char type[4];
 };
 
-DatatableReader::DatatableReader(vector<unsigned char>&& input)
+DatatableReader::DatatableReader(vector<unsigned char> input)
     : current_row_(-1)
     , input_(move(input))
 {
@@ -61,6 +61,11 @@ DatatableReader::DatatableReader(vector<unsigned char>&& input)
 uint32_t DatatableReader::CountRows() const
 {
     return row_header_->count;
+}
+
+uint32_t DatatableReader::CountColumns() const
+{
+    return column_names_.size();
 }
 
 const vector<string>& DatatableReader::GetColumnNames() const
@@ -162,7 +167,9 @@ uint32_t DatatableReader::ParseColumn(uint8_t type, uint32_t offset, vector<Data
     case 'b':
     case 'h':
     case 'e':
+    case 'z':
     case 'i':
+    case 'I':
         cell.SetValue(reinterpret_cast<const int*>(row_offset_ + offset));
 
         size = 4;

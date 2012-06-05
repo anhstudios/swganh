@@ -1,16 +1,16 @@
 
-#include "TreDocumentManager.h"
+#include "TreDocManager.h"
 
-IMPLEMENT_DYNCREATE(TreDocumentManager, CDocManager) 
+IMPLEMENT_DYNCREATE(CTreDocManager, CDocManager) 
 
-TreDocumentManager::TreDocumentManager()   
+CTreDocManager::CTreDocManager()   
 {}   
    
    
-TreDocumentManager::~TreDocumentManager()   
+CTreDocManager::~CTreDocManager()   
 {}   
 
-CDocument* TreDocumentManager::OpenDocumentFile(LPCTSTR lpszFileName)
+CDocument* CTreDocManager::OpenDocumentFile(LPCTSTR lpszFileName)
 {
 	if (lpszFileName == NULL)
 	{

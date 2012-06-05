@@ -26,10 +26,7 @@ CFileView::CFileView()
 }
 
 CFileView::~CFileView()
-{
-    if (file_listing_loader_ && file_listing_loader_->joinable())
-        file_listing_loader_->join();
-}
+{}
 
 BEGIN_MESSAGE_MAP(CFileView, CDockablePane)
 	ON_WM_CREATE()
@@ -199,14 +196,7 @@ void CFileView::OnProperties()
 
 void CFileView::OnFileOpen()
 {
-	CTreeCtrl* pWndTree = (CTreeCtrl*) &m_wndFileView;
-    HTREEITEM selected_item = pWndTree->GetSelectedItem();
-    auto selected_item_text = pWndTree->GetItemText(selected_item);
-    auto selected_item_path = selected_item_text;
-    
-    m_wndFileView.BuildPath(selected_item_path, pWndTree->GetParentItem(selected_item));
-
-    AfxGetApp()->OpenDocumentFile(selected_item_path);
+    m_wndFileView.OpenSelectedItem();
 }
 
 void CFileView::OnFileOpenWith()
@@ -304,7 +294,7 @@ void CFileView::SetTreArchive(swganh::tre::TreArchive* archive)
 {
     archive_ = archive;
     
-    dlg_progress_.reset(new ProgressDialog(AfxGetMainWnd()));
+    dlg_progress_ = std::make_shared<ProgressDialog>(AfxGetMainWnd());
     dlg_progress_->Create(IDD_PROGRESS, this);
     dlg_progress_->DisableAbort();
     dlg_progress_->ShowWindow(SW_SHOW);
