@@ -2,7 +2,6 @@
 
 #include "StdAfx.h"
 #include "HexView.h"
-#include "HexDoc.h"
 
 #include <iomanip>
 #include <sstream>
@@ -60,7 +59,7 @@ void CHexView::OnDraw(CDC* pDC)
 	page_bytes_offset_ = (GetScrollPos(SB_VERT) & 0xfffffff0);
     uint32_t page_line_offset = page_bytes_offset_ / 16;
 
-	CHexDoc* pDoc = GetDocument();
+	CTreDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
     std::ostringstream ss;

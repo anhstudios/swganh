@@ -36,10 +36,10 @@
 
 
 
+#using <System.Windows.Forms.dll>
 
-
-
-
+struct _TREEITEM
+{};
 
 #ifdef _UNICODE
 #if defined _M_IX86

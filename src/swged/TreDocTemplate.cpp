@@ -3,26 +3,26 @@
 
 #include "stdafx.h"
 #include "SWGEd.h"
-#include "TreDocumentTemplate.h"
+#include "TreDocTemplate.h"
 
 
 // CUMLEditorDemoTemp
 
-IMPLEMENT_DYNAMIC(TreDocumentTemplate, CMultiDocTemplate)
-TreDocumentTemplate::TreDocumentTemplate(UINT nIDResource, CRuntimeClass* pDocClass, CRuntimeClass* pFrameClass, CRuntimeClass* pViewClass)
+IMPLEMENT_DYNAMIC(CTreDocTemplate, CMultiDocTemplate)
+CTreDocTemplate::CTreDocTemplate(UINT nIDResource, CRuntimeClass* pDocClass, CRuntimeClass* pFrameClass, CRuntimeClass* pViewClass)
 
  : CMultiDocTemplate(nIDResource, pDocClass, pFrameClass, pViewClass)
 {
 }
 
-TreDocumentTemplate::~TreDocumentTemplate()
+CTreDocTemplate::~CTreDocTemplate()
 {
 }
 
-BEGIN_MESSAGE_MAP(TreDocumentTemplate, CMultiDocTemplate)
+BEGIN_MESSAGE_MAP(CTreDocTemplate, CMultiDocTemplate)
 END_MESSAGE_MAP()
 
-CDocument* TreDocumentTemplate::OpenDocumentFile(LPCTSTR lpszPathName,BOOL )
+CDocument* CTreDocTemplate::OpenDocumentFile(LPCTSTR lpszPathName,BOOL )
 {
 	// We make visible later
 	CDocument* pDoc = CMultiDocTemplate::OpenDocumentFile(lpszPathName,FALSE);

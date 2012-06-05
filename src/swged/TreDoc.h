@@ -1,22 +1,22 @@
-// HexDoc.h
+// TreDoc.h
 
-#ifndef HEXDOC_H
-#define HEXDOC_H
+#ifndef TRE_DOC_H_
+#define TRE_DOC_H_
 
 #include <afxwin.h>
 #include <cstdint>
 #include <vector>
 
-class CHexDoc : public CDocument
+class CTreDoc : public CDocument
 {
-	DECLARE_DYNCREATE(CHexDoc)
+	DECLARE_DYNCREATE(CTreDoc)
 
 protected:
-	CHexDoc();
-	~CHexDoc();
+	CTreDoc();
+	~CTreDoc();
 
 protected:
-	//{{AFX_VIRTUAL(CHexDoc)
+	//{{AFX_VIRTUAL(TreDocument)
     BOOL OnOpenDocument(LPCTSTR lpszPathName);
 	void Serialize(CArchive& archive);
 	//}}AFX_VIRTUAL
@@ -29,4 +29,4 @@ public:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif // HEXDOC_H
+#endif // TRE_DOC_H_
