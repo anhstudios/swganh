@@ -1,60 +1,60 @@
-// HexView.h
 
-#ifndef HEXVIEW_H
-#define HEXVIEW_H
+// DatatableView.h : interface of the CDatatableView class
+//
 
-#include <afxwin.h>
+#pragma once
+
+#include <afxwinforms.h>
 #include <cstdint>
+#include <memory>
 
 #include "TreDoc.h"
 
 #using <Be.Windows.Forms.HexBox.dll>
 
-class CHexView : public CScrollView
+class CHexView : public Microsoft::VisualC::MFC::CWinFormsView
 {
-    DECLARE_DYNCREATE(CHexView)
+protected: // create from serialization only
+	CHexView();
+	DECLARE_DYNCREATE(CHexView)
 
-protected:
-	CHexView() : m_dwTotalLines(0), m_dwPageLines(0) {}
+// Attributes
+public:
+	CTreDoc* GetDocument() const;
+	Be::Windows::Forms::HexBox^ GetControl();
 
+// Operations
+public:
+
+// Overrides
+public:
+	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
+	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 protected:
-    //{{AFX_VIRTUAL(CHexView)
    	virtual void OnInitialUpdate();
-    virtual void OnDraw(CDC*);
-    BOOL PreCreateWindow(CREATESTRUCT& cs);
-    void UpdateScrollbars();
-    CTreDoc* GetDocument()
-    {
-        ASSERT(m_pDocument->IsKindOf(RUNTIME_CLASS(CTreDoc)));
-	    return (CTreDoc*)m_pDocument;
-    }
-    //}}AFX_VIRTUAL
+	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
+	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
+	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 
+// Implementation
 public:
-	//{{AFX_MSG(CHexView)
-	afx_msg void OnSizing(UINT, LPRECT);
-	afx_msg void OnVScroll(UINT, UINT, CScrollBar*);
-	//{{AFX_MSG
+	virtual ~CHexView();
+#ifdef _DEBUG
+	virtual void AssertValid() const;
+	virtual void Dump(CDumpContext& dc) const;
+#endif
 
-private:
-	DWORD m_dwOffset;
-	DWORD m_dwTotalLines;
-	DWORD m_dwPageLines;
-	CFont m_Font;
+    void OnHexBoxResize(System::Object^ object, System::EventArgs^ e);
 
-	unsigned int m_nCurSel, m_nCurSelEnd;
-	unsigned int m_nLineLength;
-	unsigned int m_nLineCount;
-	unsigned int m_nVisStart, m_nVisEnd;
-
-    uint32_t line_length_;
-    uint32_t line_width_;
-    uint32_t total_lines_;
-    uint32_t page_bytes_offset_;
-
-    DECLARE_MESSAGE_MAP()
-public:
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+// Generated message map functions
+protected:
+	afx_msg void OnFilePrintPreview();
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+	DECLARE_MESSAGE_MAP()
 };
 
-#endif // HEXVIEW_H
+#ifndef _DEBUG  // debug version in CHexView.cpp
+inline CTreDoc* CHexView::GetDocument() const
+   { return reinterpret_cast<CTreDoc*>(m_pDocument); }
+#endif
