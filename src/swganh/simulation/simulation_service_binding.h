@@ -20,10 +20,13 @@ using namespace std;
 void exportSimulationService()
 {
     typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*GetObjectByIdBinding)(uint64_t);
+	typedef std::shared_ptr<swganh::object::Object> (SimulationServiceInterface::*GetObjectByCustomNameBinding)(const std::string&);
 
     class_<SimulationServiceInterface, std::shared_ptr<SimulationServiceInterface>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
         .def("persist", &SimulationServiceInterface::PersistObject, "persists the specified object and it's containing objects")
         .def("findObjectById", GetObjectByIdBinding(&SimulationServiceInterface::GetObjectById), "Finds an object by its id")
+		.def("transfer", &SimulationServiceInterface::TransferObjectToScene, "transfers the object to a new scene")
+		.def("findObject", GetObjectByCustomNameBinding(&SimulationServiceInterface::GetObjectByCustomName), "finds the object by their custom name")
         ;
 }
 
