@@ -8,6 +8,8 @@
 
 #include "TreDoc.h"
 
+#using <Be.Windows.Forms.HexBox.dll>
+
 class CHexView : public CScrollView
 {
     DECLARE_DYNCREATE(CHexView)
