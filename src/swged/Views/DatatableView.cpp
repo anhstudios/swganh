@@ -22,6 +22,20 @@ namespace swf = System::Windows::Forms;
 
 // CDatatableView
 
+
+ref class CDatatableViewWrapper
+{
+    CDatatableView* view_;
+
+public:
+    CDatatableViewWrapper(CDatatableView* view)
+        : view_(view)
+    {}
+    
+    void OnDataError(System::Object^ object, swf::DataGridViewDataErrorEventArgs^ e)
+    {}
+};
+
 IMPLEMENT_DYNCREATE(CDatatableView, Microsoft::VisualC::MFC::CWinFormsView)
 
 BEGIN_MESSAGE_MAP(CDatatableView, Microsoft::VisualC::MFC::CWinFormsView)
@@ -94,13 +108,14 @@ void CDatatableView::OnInitialUpdate()
 {
 	CTreDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	if (!pDoc)
+    if (!pDoc || pDoc->GetLength() == 0)
 		return;
-
+    
+    auto wrapper = gcnew CDatatableViewWrapper(this);
     auto control = GetControl();
     control->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
     control->Dock = System::Windows::Forms::DockStyle::Fill;
-
+    control->DataError += gcnew swf::DataGridViewDataErrorEventHandler(wrapper, &CDatatableViewWrapper::OnDataError);
     control->BorderStyle = swf::BorderStyle::None;
     control->BackgroundColor = System::Drawing::Color::White;
     control->ColumnHeadersDefaultCellStyle->Padding = swf::Padding(5, 2, 2, 5);
@@ -127,6 +142,7 @@ void CDatatableView::OnInitialUpdate()
         case 'i':
         case 'I':
         case 's':
+        default:
             dgvCol1 = gcnew swf::DataGridViewColumn(gcnew swf::DataGridViewTextBoxCell());
             break;
         }
@@ -139,7 +155,6 @@ void CDatatableView::OnInitialUpdate()
     }
 
     dgvCol1->AutoSizeMode = swf::DataGridViewAutoSizeColumnMode::Fill;
-    dgvCol1->MinimumWidth = 100;
 
     while(reader.Next())
     {
@@ -174,8 +189,14 @@ void CDatatableView::OnInitialUpdate()
                 break;
 
             case 's':
+            default:
                 cell = gcnew swf::DataGridViewTextBoxCell();
-                cell->Value = gcnew System::String(row[columns_meta_data[i].name]->ToString().c_str());
+                auto string = row[columns_meta_data[i].name]->ToString();
+                
+                if (string.length() > 0)
+                    cell->Value = gcnew System::String(row[columns_meta_data[i].name]->ToString().c_str());
+                else
+                    cell->Value = gcnew System::String(L"");
 
                 int length = row[columns_meta_data[i].name]->ToString().length() * 6;
                 if (length > control->Columns[i]->MinimumWidth)
