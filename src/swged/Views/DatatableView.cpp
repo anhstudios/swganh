@@ -107,19 +107,34 @@ void CDatatableView::OnInitialUpdate()
 
     swganh::tre::readers::DatatableRow row;
     swganh::tre::readers::DatatableReader reader(pDoc->GetData());
-    auto column_names = reader.GetColumnNames();
+    auto columns_meta_data = reader.GetColumnsMetaData();
 
     System::Windows::Forms::DataGridViewColumn^ dgvCol1;
 
-    for(auto& column_name : column_names)
+    for(auto& meta_data : columns_meta_data)
     {
-        dgvCol1 = 
-            gcnew System::Windows::Forms::DataGridViewColumn(gcnew System::Windows::Forms::DataGridViewTextBoxCell());
+        
+        switch(meta_data.type[0])
+        {
+        case 'b':
+            dgvCol1 = gcnew swf::DataGridViewColumn(gcnew swf::DataGridViewCheckBoxCell());
+            break;
+            
+        case 'f':
+        case 'h':
+        case 'e':
+        case 'z':
+        case 'i':
+        case 'I':
+        case 's':
+            dgvCol1 = gcnew swf::DataGridViewColumn(gcnew swf::DataGridViewTextBoxCell());
+            break;
+        }
 
-        dgvCol1->HeaderText = gcnew System::String(column_name.c_str());
-        dgvCol1->Name = gcnew System::String(column_name.c_str());
+        dgvCol1->HeaderText = gcnew System::String(meta_data.name.c_str());
+        dgvCol1->Name = gcnew System::String(meta_data.name.c_str());
         dgvCol1->SortMode = swf::DataGridViewColumnSortMode::Automatic;
-        dgvCol1->MinimumWidth = column_name.length() * 10;
+        dgvCol1->MinimumWidth = meta_data.name.length() * 10;
         control->Columns->Add(dgvCol1);
     }
 
@@ -130,13 +145,45 @@ void CDatatableView::OnInitialUpdate()
     {
         row = reader.GetRow();
         
-        System::Windows::Forms::DataGridViewRow^ data_row = 
-            gcnew System::Windows::Forms::DataGridViewRow();
+        swf::DataGridViewRow^ data_row = 
+            gcnew swf::DataGridViewRow();
 
-        for (uint32_t i = 0; i < column_names.size(); ++i)
+        for (uint32_t i = 0; i < columns_meta_data.size(); ++i)
         {
-            auto cell = gcnew System::Windows::Forms::DataGridViewTextBoxCell();
-            cell->Value = gcnew System::String(row[column_names[i]]->ToString().c_str());
+            swf::DataGridViewCell^ cell;            
+        
+            switch(columns_meta_data[i].type[0])
+            {
+            case 'b':
+                cell = gcnew swf::DataGridViewCheckBoxCell();
+                cell->Value = row[columns_meta_data[i].name]->GetValue<int>() != 0;
+                break;
+                
+            case 'f':
+                cell = gcnew swf::DataGridViewTextBoxCell();
+                cell->Value = row[columns_meta_data[i].name]->GetValue<float>();
+                break;
+
+            case 'h':
+            case 'e':
+            case 'z':
+            case 'i':
+            case 'I':
+                cell = gcnew swf::DataGridViewTextBoxCell();
+                cell->Value = row[columns_meta_data[i].name]->GetValue<int>();
+                break;
+
+            case 's':
+                cell = gcnew swf::DataGridViewTextBoxCell();
+                cell->Value = gcnew System::String(row[columns_meta_data[i].name]->ToString().c_str());
+
+                int length = row[columns_meta_data[i].name]->ToString().length() * 6;
+                if (length > control->Columns[i]->MinimumWidth)
+                    control->Columns[i]->MinimumWidth = length;
+
+                break;
+            }
+
             data_row->Cells->Add(cell);
         }
 
