@@ -78,6 +78,14 @@ namespace readers {
 
     typedef std::unordered_map<std::string, DatatableCell*> DatatableRow;
 
+    struct ColumnMetaData
+    {
+        std::string name;
+        std::string type;
+    };
+
+    typedef std::vector<ColumnMetaData> ColumnsMetaData;
+
     /**
      * A utility class for parsing files in the datatable format.
      */
@@ -99,6 +107,7 @@ namespace readers {
          * \return A list of all column names in the order they appear.
          */
         const std::vector<std::string>& GetColumnNames() const;
+        ColumnsMetaData GetColumnsMetaData() const;
 
         /**
          * Increments the datatable reader to the next row. Initially starts

@@ -34,8 +34,10 @@ public:
 
 // Overrides
 public:
+    virtual BOOL OnEraseBackground(CDC* pDC);
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+    void OnDataError(System::Object^ object, System::EventArgs^ e);
 protected:
    	virtual void OnInitialUpdate();
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
