@@ -14,6 +14,8 @@
 #include "DatatableView.h"
 #include "swganh/tre/readers/datatable_reader.h"
 
+#using <PresentationFramework.dll>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -119,6 +121,12 @@ void CDatatableView::OnInitialUpdate()
     control->BorderStyle = swf::BorderStyle::None;
     control->BackgroundColor = System::Drawing::Color::White;
     control->ColumnHeadersDefaultCellStyle->Padding = swf::Padding(5, 2, 2, 5);
+    control->SelectionMode = swf::DataGridViewSelectionMode::FullRowSelect;
+    control->ColumnHeadersBorderStyle = swf::DataGridViewHeaderBorderStyle::Single;
+    control->CellBorderStyle = swf::DataGridViewCellBorderStyle::Single;
+    control->GridColor = System::Drawing::SystemColors::ActiveBorder;
+
+    control->MultiSelect = false;
 
     swganh::tre::readers::DatatableRow row;
     swganh::tre::readers::DatatableReader reader(pDoc->GetData());
