@@ -52,6 +52,9 @@ namespace simulation {
 		virtual std::shared_ptr<swganh::object::Object> GetObjectByCustomName(const std::string& custom_name) = 0;
 
 		virtual void TransferObjectToScene(uint64_t object_id, const std::string& scene) = 0;
+		virtual void TransferObjectToScene(uint64_t object_id, const std::string& scene, float x, float y, float z) = 0;
+		virtual void TransferObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene) = 0;
+		virtual void TransferObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene, float x, float y, float z) = 0;
         
         template<typename T>
         std::shared_ptr<T> LoadObjectById(uint64_t object_id)

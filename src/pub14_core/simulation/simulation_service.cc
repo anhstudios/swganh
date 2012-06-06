@@ -247,10 +247,18 @@ public:
         return find_iter->second;
 	}
 
-	void TransferObjectToScene(uint64_t object_id, const string& scene)
+	void TransferObjectToSceneWithPosition(uint64_t object_id, const string& scene, float x, float y, float z)
 	{
-		// Get Object
-		auto obj = GetObjectById(object_id);
+		auto obj = TransferObjectToScene(object_id, scene);
+		obj->SetPosition(glm::vec3(x,y,z));
+	}
+	void TransferObjectToSceneWithPosition(shared_ptr<Object> obj, const string& scene, float x, float y, float z)
+	{
+		TransferObjectToScene(obj, scene);
+		obj->SetPosition(glm::vec3(x,y,z));
+	}
+	void TransferObjectToScene(shared_ptr<Object> obj, const string& scene)
+	{
 		// Get Next Scene
 		auto scene_obj = scene_manager_->GetScene(scene);
 
@@ -261,7 +269,7 @@ public:
 		// CmdStartScene
         CmdStartScene start_scene;
         start_scene.ignore_layout = 0;
-        start_scene.character_id = object_id;
+        start_scene.character_id = obj->GetObjectId();
 
         start_scene.terrain_map = scene_obj->GetTerrainMap();
         start_scene.position = obj->GetPosition();
@@ -273,6 +281,16 @@ public:
         scene_obj->AddObject(obj);
 	}
 
+	shared_ptr<Object> TransferObjectToScene(uint64_t object_id, const string& scene)
+	{
+		// Get Object
+		auto obj = GetObjectById(object_id);
+
+		TransferObjectToScene(obj, scene);
+
+		return obj;
+	}
+	
     shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<ConnectionClient> client)
     {
         shared_ptr<ObjectController> controller = nullptr;
@@ -533,7 +551,18 @@ void SimulationService::TransferObjectToScene(uint64_t object_id, const string& 
 {
 	impl_->TransferObjectToScene(object_id, scene);
 }
-
+void SimulationService::TransferObjectToScene(uint64_t object_id, const std::string& scene, float x, float y, float z)
+{
+	impl_->TransferObjectToSceneWithPosition(object_id, scene, x, y ,z);
+}
+void SimulationService::TransferObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene)
+{
+	impl_->TransferObjectToScene(object, scene);
+}
+void SimulationService::TransferObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene, float x, float y, float z)
+{
+	impl_->TransferObjectToSceneWithPosition(object, scene, x, y, z);
+}
 shared_ptr<ObjectController> SimulationService::StartControllingObject(
     const shared_ptr<Object>& object,
     shared_ptr<ConnectionClient> client)

@@ -40,7 +40,9 @@ namespace simulation {
 		std::shared_ptr<swganh::object::Object> GetObjectByCustomName(const std::string& custom_name);
 
 		void TransferObjectToScene(uint64_t object_id, const std::string& scene);
-
+		void TransferObjectToScene(uint64_t object_id, const std::string& scene, float x, float y, float z);
+		void TransferObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene);
+		void TransferObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene, float x, float y, float z);
         /**
          * Removes the requested object from the simulation.
          */
