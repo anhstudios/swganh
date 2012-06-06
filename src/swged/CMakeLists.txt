@@ -30,3 +30,13 @@ target_link_libraries(swged
     debug ${ZLIB_LIBRARY_DEBUG}
     optimized ${ZLIB_LIBRARY_RELEASE}
 )
+
+string(REPLACE "/" "\\" WIN_PROJECT_BINARY_DIR "${CMAKE_BINARY_DIR}")
+string(REPLACE "/" "\\" WIN_PROJECT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+
+add_custom_command(
+    TARGET swged
+    POST_BUILD
+    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\References\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
+    VERBATIM
+)
