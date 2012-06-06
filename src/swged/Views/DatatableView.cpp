@@ -18,6 +18,7 @@
 #define new DEBUG_NEW
 #endif
 
+namespace swf = System::Windows::Forms;
 
 // CDatatableView
 
@@ -52,12 +53,30 @@ BOOL CDatatableView::PreCreateWindow(CREATESTRUCT& cs)
 
 // CDatatableView drawing
 
+BOOL CDatatableView::OnEraseBackground(CDC* pDC)
+{
+    CBrush brNew(RGB(0,0,255));  //Creates a blue brush
+    CBrush* pOldBrush = (CBrush*)pDC->SelectObject(&brNew);
+     
+    CRect rc;
+    pDC->GetClipBox(rc); // Gets the co-ordinates of the client
+                         // area to repaint.
+    pDC->PatBlt(0,0,rc.Width(),rc.Height(),PATCOPY);
+                         // Repaints client area with current brush.
+    pDC->SelectObject(pOldBrush);
+     
+    return TRUE;    // Prevents the execution of return
+                    // CView::OnEraseBkgnd(pDC) statement
+}
+
 void CDatatableView::OnDraw(CDC* /*pDC*/)
 {
 	CTreDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
+
+
 
 	// TODO: add draw code for native data here
     GetControl()->Refresh();
@@ -78,25 +97,34 @@ void CDatatableView::OnInitialUpdate()
 	if (!pDoc)
 		return;
 
-    //GetControl()->SetStyle(System::Windows::Forms::ControlStyles::OptimizedDoubleBuffer | System::Windows::Forms::ControlStyles::AllPaintingInWmPaint, true);
-    GetControl()->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-    GetControl()->Dock = System::Windows::Forms::DockStyle::Fill;
+    auto control = GetControl();
+    control->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+    control->Dock = System::Windows::Forms::DockStyle::Fill;
+
+    control->BorderStyle = swf::BorderStyle::None;
+    control->BackgroundColor = System::Drawing::Color::White;
+    control->ColumnHeadersDefaultCellStyle->Padding = swf::Padding(5, 2, 2, 5);
 
     swganh::tre::readers::DatatableRow row;
     swganh::tre::readers::DatatableReader reader(pDoc->GetData());
     auto column_names = reader.GetColumnNames();
 
+    System::Windows::Forms::DataGridViewColumn^ dgvCol1;
+
     for(auto& column_name : column_names)
     {
-        System::Windows::Forms::DataGridViewColumn^ dgvCol1 = 
+        dgvCol1 = 
             gcnew System::Windows::Forms::DataGridViewColumn(gcnew System::Windows::Forms::DataGridViewTextBoxCell());
 
         dgvCol1->HeaderText = gcnew System::String(column_name.c_str());
         dgvCol1->Name = gcnew System::String(column_name.c_str());
-
-
-        GetControl()->Columns->Add(dgvCol1);
+        dgvCol1->SortMode = swf::DataGridViewColumnSortMode::Automatic;
+        dgvCol1->MinimumWidth = column_name.length() * 10;
+        control->Columns->Add(dgvCol1);
     }
+
+    dgvCol1->AutoSizeMode = swf::DataGridViewAutoSizeColumnMode::Fill;
+    dgvCol1->MinimumWidth = 100;
 
     while(reader.Next())
     {
@@ -112,7 +140,7 @@ void CDatatableView::OnInitialUpdate()
             data_row->Cells->Add(cell);
         }
 
-        GetControl()->Rows->Add(data_row);
+        control->Rows->Add(data_row);
     }
 }
 
