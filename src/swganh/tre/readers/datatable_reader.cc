@@ -85,7 +85,7 @@ ColumnsMetaData DatatableReader::GetColumnsMetaData() const
     transform(
         begin(column_names_), end(column_names_),
         begin(column_types_), inserter(meta_data, end(meta_data)),
-        [] (const std::string& name, const std::string& type)
+        [] (const std::string& name, const std::string& type) -> ColumnMetaData
     {
         ColumnMetaData meta_data;
         meta_data.name = name;
