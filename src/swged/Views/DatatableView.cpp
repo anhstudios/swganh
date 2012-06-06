@@ -14,12 +14,29 @@
 #include "DatatableView.h"
 #include "swganh/tre/readers/datatable_reader.h"
 
+#using <PresentationFramework.dll>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+namespace swf = System::Windows::Forms;
 
 // CDatatableView
+
+
+ref class CDatatableViewWrapper
+{
+    CDatatableView* view_;
+
+public:
+    CDatatableViewWrapper(CDatatableView* view)
+        : view_(view)
+    {}
+    
+    void OnDataError(System::Object^ object, swf::DataGridViewDataErrorEventArgs^ e)
+    {}
+};
 
 IMPLEMENT_DYNCREATE(CDatatableView, Microsoft::VisualC::MFC::CWinFormsView)
 
@@ -52,12 +69,30 @@ BOOL CDatatableView::PreCreateWindow(CREATESTRUCT& cs)
 
 // CDatatableView drawing
 
+BOOL CDatatableView::OnEraseBackground(CDC* pDC)
+{
+    CBrush brNew(RGB(0,0,255));  //Creates a blue brush
+    CBrush* pOldBrush = (CBrush*)pDC->SelectObject(&brNew);
+     
+    CRect rc;
+    pDC->GetClipBox(rc); // Gets the co-ordinates of the client
+                         // area to repaint.
+    pDC->PatBlt(0,0,rc.Width(),rc.Height(),PATCOPY);
+                         // Repaints client area with current brush.
+    pDC->SelectObject(pOldBrush);
+     
+    return TRUE;    // Prevents the execution of return
+                    // CView::OnEraseBkgnd(pDC) statement
+}
+
 void CDatatableView::OnDraw(CDC* /*pDC*/)
 {
 	CTreDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
+
+
 
 	// TODO: add draw code for native data here
     GetControl()->Refresh();
@@ -75,44 +110,113 @@ void CDatatableView::OnInitialUpdate()
 {
 	CTreDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	if (!pDoc)
+    if (!pDoc || pDoc->GetLength() == 0)
 		return;
+    
+    auto wrapper = gcnew CDatatableViewWrapper(this);
+    auto control = GetControl();
+    control->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
+    control->Dock = System::Windows::Forms::DockStyle::Fill;
+    control->DataError += gcnew swf::DataGridViewDataErrorEventHandler(wrapper, &CDatatableViewWrapper::OnDataError);
+    control->BorderStyle = swf::BorderStyle::None;
+    control->BackgroundColor = System::Drawing::Color::White;
+    control->ColumnHeadersDefaultCellStyle->Padding = swf::Padding(5, 2, 2, 5);
+    control->SelectionMode = swf::DataGridViewSelectionMode::FullRowSelect;
+    control->ColumnHeadersBorderStyle = swf::DataGridViewHeaderBorderStyle::Single;
+    control->CellBorderStyle = swf::DataGridViewCellBorderStyle::Single;
+    control->GridColor = System::Drawing::SystemColors::ActiveBorder;
 
-    //GetControl()->SetStyle(System::Windows::Forms::ControlStyles::OptimizedDoubleBuffer | System::Windows::Forms::ControlStyles::AllPaintingInWmPaint, true);
-    GetControl()->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-    GetControl()->Dock = System::Windows::Forms::DockStyle::Fill;
+    control->MultiSelect = false;
 
     swganh::tre::readers::DatatableRow row;
     swganh::tre::readers::DatatableReader reader(pDoc->GetData());
-    auto column_names = reader.GetColumnNames();
+    auto columns_meta_data = reader.GetColumnsMetaData();
 
-    for(auto& column_name : column_names)
+    System::Windows::Forms::DataGridViewColumn^ dgvCol1;
+
+    for(auto& meta_data : columns_meta_data)
     {
-        System::Windows::Forms::DataGridViewColumn^ dgvCol1 = 
-            gcnew System::Windows::Forms::DataGridViewColumn(gcnew System::Windows::Forms::DataGridViewTextBoxCell());
+        
+        switch(meta_data.type[0])
+        {
+        case 'b':
+            dgvCol1 = gcnew swf::DataGridViewColumn(gcnew swf::DataGridViewCheckBoxCell());
+            break;
+            
+        case 'f':
+        case 'h':
+        case 'e':
+        case 'z':
+        case 'i':
+        case 'I':
+        case 's':
+        default:
+            dgvCol1 = gcnew swf::DataGridViewColumn(gcnew swf::DataGridViewTextBoxCell());
+            break;
+        }
 
-        dgvCol1->HeaderText = gcnew System::String(column_name.c_str());
-        dgvCol1->Name = gcnew System::String(column_name.c_str());
-
-
-        GetControl()->Columns->Add(dgvCol1);
+        dgvCol1->HeaderText = gcnew System::String(meta_data.name.c_str());
+        dgvCol1->Name = gcnew System::String(meta_data.name.c_str());
+        dgvCol1->SortMode = swf::DataGridViewColumnSortMode::Automatic;
+        dgvCol1->MinimumWidth = meta_data.name.length() * 10;
+        control->Columns->Add(dgvCol1);
     }
+
+    dgvCol1->AutoSizeMode = swf::DataGridViewAutoSizeColumnMode::Fill;
 
     while(reader.Next())
     {
         row = reader.GetRow();
         
-        System::Windows::Forms::DataGridViewRow^ data_row = 
-            gcnew System::Windows::Forms::DataGridViewRow();
+        swf::DataGridViewRow^ data_row = 
+            gcnew swf::DataGridViewRow();
 
-        for (uint32_t i = 0; i < column_names.size(); ++i)
+        for (uint32_t i = 0; i < columns_meta_data.size(); ++i)
         {
-            auto cell = gcnew System::Windows::Forms::DataGridViewTextBoxCell();
-            cell->Value = gcnew System::String(row[column_names[i]]->ToString().c_str());
+            swf::DataGridViewCell^ cell;            
+        
+            switch(columns_meta_data[i].type[0])
+            {
+            case 'b':
+                cell = gcnew swf::DataGridViewCheckBoxCell();
+                cell->Value = row[columns_meta_data[i].name]->GetValue<int>() != 0;
+                break;
+                
+            case 'f':
+                cell = gcnew swf::DataGridViewTextBoxCell();
+                cell->Value = row[columns_meta_data[i].name]->GetValue<float>();
+                break;
+
+            case 'h':
+            case 'e':
+            case 'z':
+            case 'i':
+            case 'I':
+                cell = gcnew swf::DataGridViewTextBoxCell();
+                cell->Value = row[columns_meta_data[i].name]->GetValue<int>();
+                break;
+
+            case 's':
+            default:
+                cell = gcnew swf::DataGridViewTextBoxCell();
+                auto string = row[columns_meta_data[i].name]->ToString();
+                
+                if (string.length() > 0)
+                    cell->Value = gcnew System::String(row[columns_meta_data[i].name]->ToString().c_str());
+                else
+                    cell->Value = gcnew System::String(L"");
+
+                int length = row[columns_meta_data[i].name]->ToString().length() * 6;
+                if (length > control->Columns[i]->MinimumWidth)
+                    control->Columns[i]->MinimumWidth = length;
+
+                break;
+            }
+
             data_row->Cells->Add(cell);
         }
 
-        GetControl()->Rows->Add(data_row);
+        control->Rows->Add(data_row);
     }
 }
 

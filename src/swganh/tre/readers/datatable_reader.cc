@@ -73,6 +73,30 @@ const vector<string>& DatatableReader::GetColumnNames() const
     return column_names_;
 }
 
+ColumnsMetaData DatatableReader::GetColumnsMetaData() const
+{
+    if (column_names_.size() != column_types_.size())
+    {
+        throw runtime_error("Datatable header information is corrupt");
+    }
+
+    ColumnsMetaData meta_data;
+
+    transform(
+        begin(column_names_), end(column_names_),
+        begin(column_types_), inserter(meta_data, end(meta_data)),
+        [] (const std::string& name, const std::string& type)
+    {
+        ColumnMetaData meta_data;
+        meta_data.name = name;
+        meta_data.type = type;
+
+        return meta_data;
+    });
+
+    return meta_data;
+}
+
 bool DatatableReader::Next()
 {
     ++current_row_;
