@@ -40,6 +40,8 @@
 #include "swganh/social/social_service.h"
 #include "swganh/scripting/utilities.h"
 
+#include "version.h"
+
 using namespace anh;
 using namespace anh::app;
 using namespace boost::asio;
@@ -236,6 +238,34 @@ bool SwganhApp::IsRunning() {
 
 SwganhKernel* SwganhApp::GetAppKernel() const {
     return kernel_.get();
+}
+
+void SwganhApp::StartInteractiveConsole()
+{
+    swganh::scripting::ScopedGilLock lock;
+    anh::Logger::getInstance().DisableConsoleLogging();
+
+#ifdef WIN32
+    std::system("cls");
+#else
+    if (std::system("clear") != 0)
+    {
+        LOG(::error) << "Error clearing screen, ignoring console mode";
+        return;
+    }
+#endif
+
+    std::cout << "swgpy console " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << std::endl;
+    
+    boost::python::object main = boost::python::object (boost::python::handle<>(boost::python::borrowed(
+        PyImport_AddModule("__main__")
+    )));
+    auto global_dict = main.attr("__dict__");
+    global_dict["kernel"] = boost::python::ptr(GetAppKernel());
+    
+    PyRun_InteractiveLoop(stdin, "<stdin>");
+    
+    anh::Logger::getInstance().EnableConsoleLogging();
 }
 
 void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {

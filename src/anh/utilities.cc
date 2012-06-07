@@ -42,3 +42,24 @@ int anh::KeyboardHit()
     return 0;
 #endif
 }
+
+char anh::GetHitKey()
+{
+#ifdef WIN32
+    return _getch();
+#else        
+    struct termios oldt, newt;
+    int ch;
+
+    tcgetattr( STDIN_FILENO, &oldt );
+    newt = oldt;
+    newt.c_lflag &= ~( ICANON | ECHO );
+    tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+
+    ch = getchar();
+
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+
+    return ch;
+#endif
+}

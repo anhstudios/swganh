@@ -9,11 +9,10 @@
 #include <boost/python.hpp>
 
 #include "anh/logger.h"
+#include "anh/utilities.h"
 
 #include "swganh/app/swganh_app.h"
 #include "swganh/scripting/utilities.h"
-
-#include "version.h"
 
 using namespace boost;
 using namespace swganh;
@@ -31,40 +30,32 @@ int main(int argc, char* argv[])
         app::SwganhApp app(argc, argv);
 
         for (;;) {
-            string cmd;
-            cin >> cmd;
 
-            if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
-                LOG(info) << "Exit command received from command line. Shutting down.";
-				
-                break;
-            } else if(cmd.compare("console") == 0 || cmd.compare("~") == 0) {
-                swganh::scripting::ScopedGilLock lock;
-                anh::Logger::getInstance().DisableConsoleLogging();
-
-#ifdef WIN32
-                std::system("cls");
-#else
-                if (std::system("clear") != 0)
+            if (anh::KeyboardHit())
+            {
+                char input = anh::GetHitKey();
+                if (input == '`')
                 {
-                    LOG(error) << "Error clearing screen, ignoring console mode";
-                    continue;
+                    app.StartInteractiveConsole();
                 }
-#endif
-                std::cout << "swgpy console " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << std::endl;
+                else
+                {   
+                    // Echo out the input that was given and add it back to the input stream to read in.
+                    std::cout << input;
+                    cin.putback(input);
 
-                boost::python::object main = boost::python::object (boost::python::handle<>(boost::python::borrowed(
-                    PyImport_AddModule("__main__")
-                )));
-                auto global_dict = main.attr("__dict__");
-                global_dict["kernel"] = boost::python::ptr(app.GetAppKernel());
+                    string cmd;
+                    cin >> cmd;
 
-                PyRun_InteractiveLoop(stdin, "<stdin>");
-
-                anh::Logger::getInstance().EnableConsoleLogging();
-            } else {
-                LOG(warning) << "Invalid command received: " << cmd;
-                std::cout << "Type exit or (q)uit to quit" << std::endl;
+                    if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
+                        LOG(info) << "Exit command received from command line. Shutting down.";
+        
+                        break;
+                    } else {
+                        LOG(warning) << "Invalid command received: " << cmd;
+                        std::cout << "Type exit or (q)uit to quit" << std::endl;
+                    }
+                }
             }
         }
 

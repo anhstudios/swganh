@@ -113,6 +113,8 @@ namespace anh {
         
     int KeyboardHit();
 
+    char GetHitKey();
+
 }  // namespace anh
 
 #endif  // ANH_UTILITIES_H_
