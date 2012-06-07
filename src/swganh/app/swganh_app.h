@@ -65,6 +65,10 @@ public:
      */
     SwganhKernel* GetAppKernel() const;
 
+    /** Starts an interactive scripting console
+     */
+    void StartInteractiveConsole();
+
 private:
     SwganhApp();
 
