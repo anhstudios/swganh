@@ -89,7 +89,7 @@ void CDatatableView::OnDraw(CDC* /*pDC*/)
 {
 	CTreDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	if (!pDoc)
+    if (!pDoc || pDoc->GetLength() == 0)
 		return;
 
 

@@ -72,7 +72,7 @@ void CHexView::OnDraw(CDC* /*pDC*/)
 {
 	CTreDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	if (!pDoc)
+    if (!pDoc || pDoc->GetLength() == 0)
 		return;
 
 	// TODO: add draw code for native data here
@@ -91,7 +91,7 @@ void CHexView::OnInitialUpdate()
 {
 	CTreDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	if (!pDoc)
+    if (!pDoc || pDoc->GetLength() == 0)
 		return;
 
     auto document_data = pDoc->GetData();
