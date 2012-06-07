@@ -250,8 +250,8 @@ void SwganhApp::StartInteractiveConsole()
 #else
     if (std::system("clear") != 0)
     {
-        LOG(error) << "Error clearing screen, ignoring console mode";
-        continue;
+        LOG(::error) << "Error clearing screen, ignoring console mode";
+        return;
     }
 #endif
 
