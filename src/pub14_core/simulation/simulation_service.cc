@@ -45,6 +45,7 @@
 
 #include "swganh/simulation/scene_manager_interface.h"
 #include "swganh/simulation/spatial_provider_interface.h"
+#include "swganh/simulation/scene_interface.h"
 #include "swganh/messages/cmd_start_scene.h"
 #include "swganh/messages/cmd_scene_ready.h"
 #include "swganh/messages/obj_controller_message.h"
@@ -232,6 +233,64 @@ public:
         });
     }
 
+	shared_ptr<Object> GetObjectByCustomName(const wstring& custom_name)
+	{
+		auto find_iter = std::find_if(begin(loaded_objects_), end(loaded_objects_), [custom_name](pair<uint64_t, shared_ptr<Object>> key_value) {
+			return key_value.second->GetCustomName().compare(custom_name) == 0;
+		});
+
+		if (find_iter == loaded_objects_.end())
+        {
+            return nullptr;
+        }
+
+        return find_iter->second;
+	}
+
+	void TransferObjectToSceneWithPosition(uint64_t object_id, const string& scene, float x, float y, float z)
+	{
+		auto obj = TransferObjectToScene(object_id, scene);
+		obj->SetPosition(glm::vec3(x,y,z));
+	}
+	void TransferObjectToSceneWithPosition(shared_ptr<Object> obj, const string& scene, float x, float y, float z)
+	{
+		TransferObjectToScene(obj, scene);
+		obj->SetPosition(glm::vec3(x,y,z));
+	}
+	void TransferObjectToScene(shared_ptr<Object> obj, const string& scene)
+	{
+		// Get Next Scene
+		auto scene_obj = scene_manager_->GetScene(scene);
+
+		// Remove from existing scene
+		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
+
+		// Add to new scene
+		// CmdStartScene
+        CmdStartScene start_scene;
+        start_scene.ignore_layout = 0;
+        start_scene.character_id = obj->GetObjectId();
+
+        start_scene.terrain_map = scene_obj->GetTerrainMap();
+        start_scene.position = obj->GetPosition();
+        start_scene.shared_race_template = obj->GetTemplate();
+        start_scene.galaxy_time = 0;
+        obj->GetController()->GetRemoteClient()->SendTo(start_scene);
+
+        // Add object to scene and send baselines
+        scene_obj->AddObject(obj);
+	}
+
+	shared_ptr<Object> TransferObjectToScene(uint64_t object_id, const string& scene)
+	{
+		// Get Object
+		auto obj = GetObjectById(object_id);
+
+		TransferObjectToScene(obj, scene);
+
+		return obj;
+	}
+	
     shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<ConnectionClient> client)
     {
         shared_ptr<ObjectController> controller = nullptr;
@@ -478,6 +537,32 @@ void SimulationService::RemoveObject(const shared_ptr<Object>& object)
     impl_->RemoveObject(object);
 }
 
+shared_ptr<Object> SimulationService::GetObjectByCustomName(const string& custom_name)
+{
+	return GetObjectByCustomName(wstring(begin(custom_name), end(custom_name)));
+}
+
+shared_ptr<Object> SimulationService::GetObjectByCustomName(const wstring& custom_name)
+{
+	return impl_->GetObjectByCustomName(custom_name);
+}
+
+void SimulationService::TransferObjectToScene(uint64_t object_id, const string& scene)
+{
+	impl_->TransferObjectToScene(object_id, scene);
+}
+void SimulationService::TransferObjectToScene(uint64_t object_id, const std::string& scene, float x, float y, float z)
+{
+	impl_->TransferObjectToSceneWithPosition(object_id, scene, x, y ,z);
+}
+void SimulationService::TransferObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene)
+{
+	impl_->TransferObjectToScene(object, scene);
+}
+void SimulationService::TransferObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene, float x, float y, float z)
+{
+	impl_->TransferObjectToSceneWithPosition(object, scene, x, y, z);
+}
 shared_ptr<ObjectController> SimulationService::StartControllingObject(
     const shared_ptr<Object>& object,
     shared_ptr<ConnectionClient> client)
