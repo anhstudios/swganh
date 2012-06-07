@@ -262,6 +262,11 @@ public:
 		// Get Next Scene
 		auto scene_obj = scene_manager_->GetScene(scene);
 
+        if (!scene_obj)
+        {
+            throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
+        }
+
 		// Remove from existing scene
 		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
 
