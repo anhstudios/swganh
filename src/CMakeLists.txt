@@ -12,6 +12,7 @@ endif()
 
 ## project libraries
 add_subdirectory(anh)
+add_subdirectory(meshlib)
 
 ## project executables
 add_subdirectory(swganh)

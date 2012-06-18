@@ -1,0 +1,3 @@
+[submodule "src/meshlib"]
+	path = src/meshlib
+	url = git://github.com/apathyboy/meshlib.git
