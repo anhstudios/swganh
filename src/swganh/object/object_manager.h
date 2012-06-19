@@ -10,6 +10,19 @@
 #include <memory>
 #include <string>
 
+#ifdef WIN32
+#include <concurrent_unordered_map.h>
+#include <concurrent_queue.h>
+#else
+#include <tbb/concurrent_unordered_map.h>
+#include <tbb/concurrent_queue.h>
+
+namespace concurrency {
+    using ::tbb::concurrent_unordered_map;
+    using ::tbb::concurrent_queue;
+}
+#endif
+
 #include "anh/database/database_manager_interface.h"
 
 #include "swganh/object/object.h"
@@ -54,6 +67,11 @@ namespace object {
             RegisterObjectType(T::ObjectType::type, factory);
         }
 
+        /**
+         * Registers an object type for management based on the object type.
+         *
+         * @param object_type the type of object to manage.
+         */
         template<typename T>
         void RegisterObjectType(uint32_t object_type = T::type)
         {
@@ -74,18 +92,50 @@ namespace object {
         void UnregisterObjectType(uint32_t object_type);
 
         /**
-         * Registers message builders
+         * Loads an existing object by its identifier.
          *
-         * @param object_type the type of the object to register a builder to.
+         * @param object_id The id of the object to load
+         * @return Instance of the requested object, or nullptr if the object does not exist
          */
-        template<typename T>
-        void RegisterMessageBuilder(std::shared_ptr<T>& message_builder)
-        {
-            RegisterMessageBuilder(T::type, message_builder);
-        }
+        std::shared_ptr<Object> LoadObjectById(uint64_t object_id);
+        
+        /**
+         * Loads an existing object by its identifier.
+         *
+         * @param object_id The id of the object to load
+         * @param object_type the type of object to manage.
+         * @return Instance of the requested object, or nullptr if the object does not exist
+         */
+        std::shared_ptr<Object> LoadObjectById(uint64_t object_id, uint32_t object_type);
 
-        void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
-                
+        /**
+         * Removes an object from management.
+         *
+         * @TODO Refactor this and rename to Unload to match the Load semantics.
+         *
+         * This method removes an object from management. All existing handles to the
+         * object remain valid until the last one goes out of scope.
+         *
+         * @param object The object to remove from management
+         */
+        void RemoveObject(const std::shared_ptr<Object>& object);
+        
+        /**
+         * Finds and returns an object from management based on its id.
+         *
+         * @param object_id The id of the object to load
+         * @return Instance of the requested object, or nullptr if the object does not exist
+         */
+        std::shared_ptr<Object> GetObjectById(uint64_t object_id);
+        
+        /**
+         * Finds and returns an object from management based on its custom name.
+         *
+         * @param custom_name The custom name of the object to load
+         * @return Instance of the requested object, or nullptr if the object does not exist
+         */
+		std::shared_ptr<Object> GetObjectByCustomName(const std::wstring& custom_name);
+
         /**
          * Creates an instance of a stored object with the specified id.
          *
@@ -168,7 +218,48 @@ namespace object {
          */
         void PersistObject(const std::shared_ptr<Object>& object);
 
+        /**
+         * Persists a currently managed object by its id.
+         *
+         * @param object_id The id of the object to persist
+         */
+        void PersistObject(uint64_t object_id);
+        
+        /**
+         * Persists an object and all its related objects.
+         *
+         * @param object the object instance to persist.
+         */
+        void PersistRelatedObjects(const std::shared_ptr<Object>& object);
+        
+        /**
+         * Persists a managed object and all its related objects by id.
+         *
+         * @param object_id The id of the object to persist
+         */
+	    void PersistRelatedObjects(uint64_t parent_object_id);
+
     private:
+
+        /**
+         * Registers a message builder for a specific object type
+         *
+         * @param message_builder The message builder to store.
+         */
+        template<typename T>
+        void RegisterMessageBuilder(std::shared_ptr<T>& message_builder)
+        {
+            RegisterMessageBuilder(T::type, message_builder);
+        }
+        
+        /**
+         * Registers a message builder for a specific object type
+         *
+         * @param object_type the type of the object to register a builder to.
+         * @param message_builder The message builder to store.
+         */
+        void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
+
         anh::EventDispatcher* event_dispatcher_;
         anh::database::DatabaseManagerInterface* db_manager_;
 
@@ -186,6 +277,7 @@ namespace object {
 
         ObjectMessageBuilderMap message_builders_;
         
+        concurrency::concurrent_unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
     };
 
 }}  // namespace swganh::object

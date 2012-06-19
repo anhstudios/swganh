@@ -116,100 +116,43 @@ public:
 	
     void PersistObject(uint64_t object_id)
     {
-        auto find_iter = loaded_objects_.find(object_id);
-
-        if (find_iter == loaded_objects_.end())
-        {
-            LOG(warning) << "Nothing to persist, no object saved";
-            return;
-            //throw swganh::object::InvalidObject("Requested object already loaded");
-        }
-        object_manager_->PersistObject(find_iter->second);
+        object_manager_->PersistObject(object_id);
     }
 	void PersistRelatedObjects(uint64_t parent_object_id)
 	{
-		auto find_iter = loaded_objects_.find(parent_object_id);
-
-        if (find_iter == loaded_objects_.end())
-        {
-            LOG(warning) << "Nothing to persist, no object saved";
-            return;
-            //throw swganh::object::InvalidObject("Requested object already loaded");
-        }
-		// first persist the parent object
-		PersistObject(parent_object_id);
-		// get all the contained objects
-		auto contained_objects = find_iter->second->GetContainedObjects();
-		for_each(begin(contained_objects), end(contained_objects), [=](pair<uint64_t, shared_ptr<Object>> pair){
-			// if there's objects contained within this object do a recursion call
-			auto inner_contained = pair.second->GetContainedObjects();
-			if (inner_contained.size() > 0)
-			{
-				LOG(warning) << "Persist inner container recursively:" << pair.first;
-				PersistRelatedObjects(pair.first);
-			}
-			else
-			{
-				LOG(warning) << "Persist inner container:" << pair.first;
-				PersistObject(pair.first);
-			}
-		});
+        object_manager_->PersistRelatedObjects(parent_object_id);
 	}
+
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
     {
-        auto find_iter = loaded_objects_.find(object_id);
+        auto object = object_manager_->LoadObjectById(object_id);
 
-        if (find_iter != loaded_objects_.end())
-        {
-            return find_iter->second;
-            LOG(warning) << "Requested object already loaded";
-        }
-
-        auto object = object_manager_->CreateObjectFromStorage(object_id);
-
-        loaded_objects_.insert(make_pair(object_id, object));
 		spatial_provider_->AddObject(object); // Add object to spatial indexing.
+        
         return object;
     }
+
     shared_ptr<Object> LoadObjectById(uint64_t object_id, uint32_t type)
     {
-        auto find_iter = loaded_objects_.find(object_id);
+        auto object = object_manager_->LoadObjectById(object_id, type);
 
-        if (find_iter != loaded_objects_.end())
-        {
-            return find_iter->second;
-            LOG(warning) << "Requested object already loaded";
-        }
-
-        auto object = object_manager_->CreateObjectFromStorage(object_id, type);
-
-        loaded_objects_.insert(make_pair(object_id, object));
 		spatial_provider_->AddObject(object); // Add object to spatial indexing.
+
         return object;
     }
 
     shared_ptr<Object> GetObjectById(uint64_t object_id)
     {
-        auto find_iter = loaded_objects_.find(object_id);
-
-        if (find_iter == loaded_objects_.end())
-        {
-            return nullptr;
-        }
-
-        return find_iter->second;
+        return object_manager_->GetObjectById(object_id);
     }
 
     void RemoveObjectById(uint64_t object_id)
     {
-        auto find_iter = loaded_objects_.find(object_id);
-
-        if (find_iter == loaded_objects_.end())
+        auto object = object_manager_->GetObjectById(object_id);
+        if (object)
         {
-            LOG(warning) << "Requested an invalid object";
+            RemoveObject(object);
         }
-
-        RemoveObject(find_iter->second);
     }
 
     void RemoveObject(const shared_ptr<Object>& object)
@@ -224,8 +167,8 @@ public:
 
         StopControllingObject(object);
 
-        loaded_objects_.unsafe_erase(loaded_objects_.find(object->GetObjectId()));
-
+        object_manager_->RemoveObject(object);
+        
         auto contained_objects = object->GetContainedObjects();
         for_each(
             begin(contained_objects),
@@ -238,16 +181,7 @@ public:
 
 	shared_ptr<Object> GetObjectByCustomName(const wstring& custom_name)
 	{
-		auto find_iter = std::find_if(begin(loaded_objects_), end(loaded_objects_), [custom_name](pair<uint64_t, shared_ptr<Object>> key_value) {
-			return key_value.second->GetCustomName().compare(custom_name) == 0;
-		});
-
-		if (find_iter == loaded_objects_.end())
-        {
-            return nullptr;
-        }
-
-        return find_iter->second;
+        return object_manager_->GetObjectByCustomName(custom_name);
 	}
 
 	void TransferObjectToSceneWithPosition(uint64_t object_id, const string& scene, float x, float y, float z)
@@ -458,7 +392,6 @@ private:
 
     ObjControllerHandlerMap controller_handlers_;
 
-    Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<Object>> loaded_objects_;
     Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
 };
 
