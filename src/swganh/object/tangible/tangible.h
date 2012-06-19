@@ -81,6 +81,7 @@ struct ComponentCustomization
     uint32_t component_customization_crc;
 };
 
+class TangibleFactory;
 class TangibleMessageBuilder;
 
 /**
@@ -89,6 +90,9 @@ class TangibleMessageBuilder;
 class Tangible : public swganh::object::Object
 {
 public:
+    typedef TangibleFactory FactoryType;
+    typedef TangibleMessageBuilder MessageBuilderType;
+
     // TANO
     virtual uint32_t GetType() const { return Tangible::type; }
     const static uint32_t type = 0x54414e4f;

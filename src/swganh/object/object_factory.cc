@@ -14,6 +14,7 @@
 
 #include "anh/database/database_manager.h"
 #include "swganh/object/object.h"
+#include "swganh/object/object_manager.h"
 #include "swganh/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
@@ -24,13 +25,11 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
-                             SimulationServiceInterface* simulation_service,
                              anh::EventDispatcher* event_dispatcher)
     : db_manager_(db_manager)
-    , simulation_service_(simulation_service)
     , event_dispatcher_(event_dispatcher)
-{
-}
+{}
+
 void ObjectFactory::PersistObject(const shared_ptr<Object>& object)
 {
     try {
@@ -47,6 +46,7 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object)
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
 }
+
 void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared_ptr<sql::PreparedStatement>& prepared_statement)
 {
     try {
@@ -154,8 +154,9 @@ void ObjectFactory::LoadContainedObjects(
         {
             contained_id = result->getUInt64("id");
             contained_type = result->getUInt("type_id");
-            auto contained_object = simulation_service_->LoadObjectById(contained_id, contained_type);
 
+            auto contained_object = object_manager_->CreateObjectFromStorage(contained_id, contained_type);
+            
             object->AddContainedObject(contained_object, Object::LINK);
         }
     }

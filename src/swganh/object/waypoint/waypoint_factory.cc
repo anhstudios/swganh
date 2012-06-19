@@ -28,8 +28,8 @@ using namespace swganh::simulation;
 using namespace swganh::messages::containers;
 
 WaypointFactory::WaypointFactory(DatabaseManagerInterface* db_manager,
-                             SimulationServiceInterface* simulation_service, EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, simulation_service, event_dispatcher)
+                                 EventDispatcher* event_dispatcher)
+    : ObjectFactory(db_manager, event_dispatcher)
 {
     RegisterEventHandlers();
 }

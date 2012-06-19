@@ -17,11 +17,6 @@ class ResultSet;
 }
 
 namespace swganh {
-namespace simulation {
-    class SimulationServiceInterface;
-}}  // namespace swganh::simulation
-
-namespace swganh {
 namespace object {
 namespace player {
     
@@ -30,7 +25,6 @@ namespace player {
     {
     public:
         PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher);
 
         void LoadTemplates();
@@ -44,10 +38,7 @@ namespace player {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
-
-		virtual uint32_t GetType() const;
-        const static uint32_t type;
-
+        
         void RegisterEventHandlers();
     private:
         // Helpers

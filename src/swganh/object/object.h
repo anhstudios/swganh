@@ -42,9 +42,18 @@ typedef std::vector<
     swganh::messages::DeltasMessage
 > DeltasCacheContainer;
 
+class ObjectFactory;
+class ObjectMessageBuilder;
+
+
 class Object : public anh::observer::ObservableInterface, public std::enable_shared_from_this<Object>
 {
 public:
+    const static uint32_t type = 0;
+
+    typedef ObjectFactory FactoryType;
+    typedef ObjectMessageBuilder MessageBuilderType;
+
     enum ViewType : uint16_t
     {
         VIEW_1 = 1,
