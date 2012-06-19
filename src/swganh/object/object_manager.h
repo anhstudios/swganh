@@ -10,6 +10,19 @@
 #include <memory>
 #include <string>
 
+#ifdef WIN32
+#include <concurrent_unordered_map.h>
+#include <concurrent_queue.h>
+#else
+#include <tbb/concurrent_unordered_map.h>
+#include <tbb/concurrent_queue.h>
+
+namespace concurrency {
+    using ::tbb::concurrent_unordered_map;
+    using ::tbb::concurrent_queue;
+}
+#endif
+
 #include "anh/database/database_manager_interface.h"
 
 #include "swganh/object/object.h"
@@ -86,6 +99,16 @@ namespace object {
 
         void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
                 
+        std::shared_ptr<Object> LoadObjectById(uint64_t object_id);
+        std::shared_ptr<Object> LoadObjectById(uint64_t object_id, uint32_t type);
+
+        void RemoveObjectById(uint64_t object_id);
+        void RemoveObject(const std::shared_ptr<Object>& object);
+        
+        std::shared_ptr<Object> GetObjectById(uint64_t object_id);
+
+		std::shared_ptr<Object> GetObjectByCustomName(const std::wstring& custom_name);
+
         /**
          * Creates an instance of a stored object with the specified id.
          *
@@ -168,6 +191,10 @@ namespace object {
          */
         void PersistObject(const std::shared_ptr<Object>& object);
 
+        void PersistObject(uint64_t object_id);
+        
+        void PersistRelatedObjects(const std::shared_ptr<Object>& object);
+	    void PersistRelatedObjects(uint64_t parent_object_id);
     private:
         anh::EventDispatcher* event_dispatcher_;
         anh::database::DatabaseManagerInterface* db_manager_;
@@ -186,6 +213,7 @@ namespace object {
 
         ObjectMessageBuilderMap message_builders_;
         
+        concurrency::concurrent_unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
     };
 
 }}  // namespace swganh::object
