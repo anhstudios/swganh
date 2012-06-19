@@ -10,6 +10,14 @@
 using namespace std;
 using namespace swganh::object;
 
+ObjectManager::ObjectManager(anh::EventDispatcher* event_dispatcher, 
+                             anh::database::DatabaseManagerInterface* db_manager)
+    : event_dispatcher_(event_dispatcher)
+    , db_manager_(db_manager)
+{}
+
+ObjectManager::~ObjectManager()
+{}
 
 void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<ObjectFactoryInterface>& factory)
 {
@@ -50,6 +58,8 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
     if (!object)
     {
         object = CreateObjectFromStorage(object_id);
+
+        boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
         object_map_.insert(make_pair(object_id, object));
     }
 
@@ -63,6 +73,8 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
     if (!object)
     {
         object = CreateObjectFromStorage(object_id, object_type);
+
+        boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
         object_map_.insert(make_pair(object_id, object));
     }
 
@@ -71,6 +83,7 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
 
 shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
 {
+    boost::shared_lock<boost::shared_mutex> lock(object_map_mutex_);
     auto find_iter = object_map_.find(object_id);
 
     if (find_iter == object_map_.end())
@@ -83,12 +96,13 @@ shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
 
 void ObjectManager::RemoveObject(const shared_ptr<Object>& object)
 {
-    // @TODO Protect object_map_ with a reader/writer lock ex boost::shared_mutex
+    boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
     object_map_.unsafe_erase(object_map_.find(object->GetObjectId()));
 }
 
 shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_name)
 {
+    boost::shared_lock<boost::shared_mutex> lock(object_map_mutex_);
 	auto find_iter = std::find_if(
         std::begin(object_map_), 
         std::end(object_map_),
