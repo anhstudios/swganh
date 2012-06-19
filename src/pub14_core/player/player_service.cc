@@ -67,16 +67,22 @@ void PlayerService::CleanupPlayerState(shared_ptr<swganh::object::player::Player
 
 void PlayerService::OnPlayerEnter(shared_ptr<swganh::object::player::Player> player)
 {
-	player->ClearStatusFlags();
+    if (player)
+    {
+	    player->ClearStatusFlags();
+    }
 }
 
 void PlayerService::OnPlayerExit(shared_ptr<swganh::object::player::Player> player)
 {
-	player->ClearStatusFlags();
-	player->AddStatusFlag(swganh::object::player::LD);
-	// set a timer to 5 minutes to destroy the object, unless logged back in.
-    auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(30));
-    deadline_timer->async_wait(boost::bind(&PlayerService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, player->GetContainer()->GetController()));
+    if (player)
+    {
+	    player->ClearStatusFlags();
+	    player->AddStatusFlag(swganh::object::player::LD);
+	    // set a timer to 5 minutes to destroy the object, unless logged back in.
+        auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(30));
+        deadline_timer->async_wait(boost::bind(&PlayerService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, player->GetContainer()->GetController()));
+    }
 }
 
 void PlayerService::RemoveClientTimerHandler_(
