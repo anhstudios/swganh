@@ -77,7 +77,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 
     { // Command::CommandPropertiesManager
         registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-            return new CommandPropertiesManager(kernel->GetTreArchive());
+            return new CommandPropertiesManager(kernel->GetResourceManager());
         };
 
         registration.DestroyObject = [] (void * object) {

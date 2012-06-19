@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 
+#include <boost/thread/shared_mutex.hpp>
+
 #ifdef WIN32
 #include <concurrent_unordered_map.h>
 #include <concurrent_queue.h>
@@ -41,10 +43,10 @@ namespace object {
     class ObjectManager
     {
     public:
-        ObjectManager(anh::EventDispatcher* event_dispatcher, anh::database::DatabaseManagerInterface* db_manager)
-            : event_dispatcher_(event_dispatcher)
-            , db_manager_(db_manager)
-        {}
+        ObjectManager(
+            anh::EventDispatcher* event_dispatcher, 
+            anh::database::DatabaseManagerInterface* db_manager);
+        ~ObjectManager();
 
         /**
          * Registers an object type for management.
@@ -277,6 +279,7 @@ namespace object {
 
         ObjectMessageBuilderMap message_builders_;
         
+        boost::shared_mutex object_map_mutex_;
         concurrency::concurrent_unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
     };
 

@@ -36,7 +36,7 @@ uint32_t CTreDoc::GetLength() const
     return file_data_.size();
 }
     
-const std::vector<unsigned char>& CTreDoc::GetData() const
+const std::vector<char>& CTreDoc::GetData() const
 {
     return file_data_;
 }

@@ -33,7 +33,7 @@ struct IffHeader
     char type[4];
 };
 
-DatatableReader::DatatableReader(vector<unsigned char> input)
+DatatableReader::DatatableReader(vector<char> input)
     : current_row_(-1)
     , input_(move(input))
 {
@@ -124,7 +124,7 @@ DatatableRow DatatableReader::GetRow()
     return row;
 }
 
-void DatatableReader::ValidateFile(const vector<unsigned char>& input) const
+void DatatableReader::ValidateFile(const vector<char>& input) const
 {
     const IffHeader* header = reinterpret_cast<const IffHeader*>(&input[0]);
 

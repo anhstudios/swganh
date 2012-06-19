@@ -7,9 +7,10 @@
 
 #include "anh/logger.h"
 
-#include "swganh/tre/tre_archive.h"
+#include "anh/resource/resource_manager.h"
 
 using anh::HashString;
+using anh::resource::ResourceManager;
 using pub14_core::command::CommandPropertiesManager;
 using swganh::command::CommandProperties;
 using swganh::command::CommandPropertiesMap;
@@ -19,8 +20,8 @@ using std::make_pair;
 using std::string;
 using std::vector;
 
-CommandPropertiesManager::CommandPropertiesManager(swganh::tre::TreArchive* archive)
-    : archive_(archive)
+CommandPropertiesManager::CommandPropertiesManager(ResourceManager* resource_manager)
+    : resource_manager_(resource_manager)
 {
     command_properties_map_ = LoadCommandPropertiesMap();
 }
@@ -49,7 +50,8 @@ CommandPropertiesMap CommandPropertiesManager::LoadCommandPropertiesMap()
     
     try 
     {
-        DatatableReader reader(archive_->GetResource("datatables/command/command_table.iff"));
+        auto resource_handle = resource_manager_->GetHandle("datatables/command/command_table.iff");
+        DatatableReader reader(resource_handle->GetBuffer());
         
         while(reader.Next())
         {

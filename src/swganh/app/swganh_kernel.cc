@@ -10,6 +10,7 @@
 #include "anh/database/database_manager.h"
 #include "anh/event_dispatcher.h"
 #include "anh/plugin/plugin_manager.h"
+#include "anh/resource/resource_manager.h"
 #include "anh/service/datastore.h"
 #include "anh/service/service_directory.h"
 #include "anh/service/service_manager.h"
@@ -44,7 +45,7 @@ SwganhKernel::~SwganhKernel()
 {
     service_manager_->Stop();
 
-    tre_archive_.reset();
+    resource_manager_.reset();
     event_dispatcher_.reset();
     service_manager_.reset();
     service_directory_.reset();
@@ -109,11 +110,13 @@ boost::asio::io_service& SwganhKernel::GetIoService() {
     return io_service_;
 }
 
-swganh::tre::TreArchive* SwganhKernel::GetTreArchive() {
-    if (!tre_archive_) {
-        tre_archive_.reset(new swganh::tre::TreArchive(GetAppConfig().tre_config));
+anh::resource::ResourceManager* SwganhKernel::GetResourceManager()
+{
+    if (!resource_manager_)
+    {
+        resource_manager_.reset(new anh::resource::ResourceManager(
+            std::make_shared<swganh::tre::TreArchive>(GetAppConfig().tre_config), GetAppConfig().resource_cache_size));
     }
 
-    return tre_archive_.get();
+    return resource_manager_.get();
 }
-

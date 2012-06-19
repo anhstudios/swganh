@@ -72,10 +72,22 @@ vector<string> TreReader::GetResourceNames() const
 
 TreResourceData TreReader::GetResource(const std::string& resource_name)
 {
+    TreResourceData data; 
+    
+    GetResource(resource_name, data);
+
+    return data;
+}
+
+void TreReader::GetResource(const std::string& resource_name, std::vector<char>& buffer)
+{    
     auto file_info = GetResourceInfo(resource_name);
 
-    TreResourceData data(file_info.data_size); 
-    
+    if (file_info.data_size > buffer.size())
+    {
+        buffer.resize(file_info.data_size);
+    }
+
     if (file_info.data_size != 0)
     {
         ReadDataBlock(
@@ -83,10 +95,9 @@ TreResourceData TreReader::GetResource(const std::string& resource_name)
             file_info.data_compression,
             file_info.data_compressed_size,
             file_info.data_size,
-            &data[0]);
+            &buffer[0]);
     }
 
-    return data;
 }
 
 bool TreReader::ContainsResource(const string& resource_name) const
@@ -96,7 +107,7 @@ bool TreReader::ContainsResource(const string& resource_name) const
         end(resource_block_),
         [this, &resource_name] (const TreResourceInfo& info)
     {
-        return resource_name.compare(reinterpret_cast<const char*>(&name_block_[info.name_offset])) == 0;
+        return resource_name.compare(&name_block_[info.name_offset]) == 0;
     });
 
     return find_iter != end(resource_block_);
@@ -109,7 +120,7 @@ string TreReader::GetMd5Hash(const string& resource_name) const
         end(resource_block_),
         [this, &resource_name] (const TreResourceInfo& info)
     {
-        return resource_name.compare(reinterpret_cast<const char*>(&name_block_[info.name_offset])) == 0;
+        return resource_name.compare(&name_block_[info.name_offset]) == 0;
     });
 
     if (find_iter == resource_block_.end())
@@ -126,7 +137,7 @@ string TreReader::GetMd5Hash(const string& resource_name) const
     for_each(
         begin(md5sum_block_[find_iter - begin(resource_block_)]), 
         begin(md5sum_block_[find_iter - begin(resource_block_)]) + sizeof(Md5Sum),
-        [&ss] (unsigned char c) 
+        [&ss] (char c) 
     {
         ss << static_cast<unsigned>(c);
     });
@@ -159,7 +170,7 @@ const TreResourceInfo& TreReader::GetResourceInfo(const string& resource_name) c
         end(resource_block_),
         [this, &resource_name] (const TreResourceInfo& info)
     {
-        return resource_name.compare(reinterpret_cast<const char*>(&name_block_[info.name_offset])) == 0;
+        return resource_name.compare(&name_block_[info.name_offset]) == 0;
     });
     
     if (find_iter == end(resource_block_))
@@ -174,7 +185,7 @@ void TreReader::ReadHeader()
 {
     {
         boost::lock_guard<boost::mutex> lg(mutex_);
-        input_stream_.read(reinterpret_cast<unsigned char*>(&header_), sizeof(header_));
+        input_stream_.read(reinterpret_cast<char*>(&header_), sizeof(header_));
     }
 
     ValidateFileType(string(header_.file_type, 4));
@@ -198,14 +209,14 @@ vector<TreResourceInfo> TreReader::ReadResourceBlock()
         header_.info_compression,
         header_.info_compressed_size,
         uncompressed_size,
-        reinterpret_cast<unsigned char*>(&files[0]));
+        reinterpret_cast<char*>(&files[0]));
 
     return files;
 }
         
-vector<unsigned char> TreReader::ReadNameBlock()
+vector<char> TreReader::ReadNameBlock()
 {
-    vector<unsigned char> data(header_.name_uncompressed_size); 
+    vector<char> data(header_.name_uncompressed_size); 
     
     uint32_t name_offset = header_.info_offset + header_.info_compressed_size;
 
@@ -231,7 +242,7 @@ vector<TreReader::Md5Sum> TreReader::ReadMd5SumBlock()
     {
         boost::lock_guard<boost::mutex> lg(mutex_);
         input_stream_.seekg(offset, ios_base::beg);
-        input_stream_.read(reinterpret_cast<unsigned char*>(&data[0]), size);
+        input_stream_.read(reinterpret_cast<char*>(&data[0]), size);
     }
 
     return data;
@@ -258,7 +269,7 @@ void TreReader::ReadDataBlock(
     uint32_t compression,
     uint32_t compressed_size, 
     uint32_t uncompressed_size, 
-    unsigned char* buffer)
+    char* buffer)
 {    
     if (compression == 0)
     {
@@ -270,7 +281,7 @@ void TreReader::ReadDataBlock(
     }
     else if (compression == 2)
     {
-        vector<unsigned char> compressed_data(compressed_size);
+        vector<char> compressed_data(compressed_size);
         
         {
             boost::lock_guard<boost::mutex> lg(mutex_);

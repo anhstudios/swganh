@@ -12,10 +12,10 @@
 #include "swganh/command/command_properties_manager_interface.h"
 #include "swganh/tre/readers/datatable_reader.h"
 
-namespace swganh {
-namespace tre {
-    class TreArchive;
-}}  // namespace swganh::tre
+namespace anh {
+namespace resource {
+    class ResourceManager;
+}}  // namespace anh::resource
 
 namespace pub14_core {
 namespace command {
@@ -27,17 +27,17 @@ namespace command {
     {
     public:
         /**
-         * Creates a loader with a valid TreArchive instance.
+         * Creates a loader with a valid ResourceManager instance.
          *
          * This loader finds the command_table.iff in the client files managed by
          * the given archive and loads all the relevant command properties from it. 
          
-         * The caller is responsible for ensuring the TreArchive instance is properly
+         * The caller is responsible for ensuring the ResourceManager instance is properly
          * initialized before passing it in.
          *
-         * @param archive Valid TreArchive instance.
+         * @param resource_manager Valid ResourceManager instance.
          */
-        explicit CommandPropertiesManager(swganh::tre::TreArchive* archive);
+        explicit CommandPropertiesManager(anh::resource::ResourceManager* resource_manager);
         ~CommandPropertiesManager();
 
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
@@ -54,7 +54,7 @@ namespace command {
         uint64_t BuildAllowInState(swganh::tre::readers::DatatableRow* row);
         uint64_t BuildBitmask(const std::vector<int>& bits);
 
-        swganh::tre::TreArchive* archive_;
+        anh::resource::ResourceManager* resource_manager_;
         swganh::command::CommandPropertiesMap command_properties_map_;
     };
 

@@ -34,6 +34,11 @@ TreArchive::TreArchive(string config_file)
     CreateReaders(config_reader.GetTreFilenames());
 }
 
+bool TreArchive::Open()
+{
+    return true;
+}
+
 uint32_t TreArchive::GetResourceSize(const string& resource_name) const
 {
     for (auto& reader : readers_)
@@ -54,6 +59,19 @@ TreResourceData TreArchive::GetResource(const string& resource_name)
         if (reader->ContainsResource(resource_name))
         {
             return reader->GetResource(resource_name);
+        }
+    }
+
+    throw runtime_error("Requested unknown resource " + resource_name);
+}
+
+void TreArchive::GetResource(const std::string& resource_name, std::vector<char>& buffer)
+{
+    for (auto& reader : readers_)
+    {
+        if (reader->ContainsResource(resource_name))
+        {
+            return reader->GetResource(resource_name, buffer);
         }
     }
 

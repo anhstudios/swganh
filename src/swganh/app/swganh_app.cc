@@ -92,6 +92,9 @@ options_description AppConfig::BuildConfigDescription() {
 
         ("galaxy_name", boost::program_options::value<std::string>(&galaxy_name),
             "Name of the galaxy (cluster) to this process should run")
+            
+        ("resource_cache_size", boost::program_options::value<uint32_t>(&resource_cache_size),
+            "Available cache size for the resource manager (in Megabytes)")
 
         ("db.galaxy_manager.host", boost::program_options::value<std::string>(&galaxy_manager_db.host),
             "Host address for the galaxy_manager datastore")
