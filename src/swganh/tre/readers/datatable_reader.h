@@ -95,7 +95,7 @@ namespace readers {
         /**
          * Explicit constructor that takes ownership of a resource.
          */
-        explicit DatatableReader(std::vector<unsigned char> input);
+        explicit DatatableReader(std::vector<char> input);
 
         /**
          * \return The number of rows in this datatable.
@@ -135,7 +135,7 @@ namespace readers {
         DatatableRow GetRow();
 
     private:
-        void ValidateFile(const std::vector<unsigned char>& input) const;
+        void ValidateFile(const std::vector<char>& input) const;
 
         void ParseColumnNames();
         void ParseColumnTypes();
@@ -143,36 +143,36 @@ namespace readers {
         uint32_t ParseColumn(uint8_t type, uint32_t offset, std::vector<DatatableCell>& row);
 
         struct ColumnHeader {
-            unsigned char name[4];
+            char name[4];
             uint32_t size;
             uint32_t count;
         };
 
         struct TypeHeader {
-            unsigned char name[4];
+            char name[4];
             uint32_t size;
         };
 
         struct RowHeader {
-            unsigned char name[4];
+            char name[4];
             uint32_t size;
             uint32_t count;
         };
 
         int32_t current_row_;
 
-        std::vector<unsigned char> input_;
+        std::vector<char> input_;
 
         const ColumnHeader* column_header_;
-        const unsigned char* column_offset_;
+        const char* column_offset_;
         std::vector<std::string> column_names_;
 
         const TypeHeader* type_header_;
-        const unsigned char* type_offset_;
+        const char* type_offset_;
         std::vector<std::string> column_types_;
 
         const RowHeader* row_header_;
-        const unsigned char* row_offset_;
+        const char* row_offset_;
 
         std::vector<std::vector<DatatableCell>> row_data_;
     };

@@ -11,6 +11,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include "anh/resource/resource_archive_interface.h"
+
 #include "tre_reader.h"
 
 namespace swganh {
@@ -20,7 +22,7 @@ namespace tre {
      * TreArchive is a simple utility for accessing resource files from
      * a collection of .tre files.
      */
-    class TreArchive
+    class TreArchive : anh::resource::ResourceArchiveInterface
     {
     public:
         /**
@@ -47,6 +49,8 @@ namespace tre {
 
         ~TreArchive();
 
+        bool Open();
+
         /**
          * Returns the size of the requested resource.
          *
@@ -67,6 +71,17 @@ namespace tre {
          * \return The file in binary format (move constructable).
          */
         TreResourceData GetResource(const std::string& resource_name);
+        
+        /**
+         * Retrieves the requested resource in binary format.
+         *
+         * Searches for the most recent version of the requested file and 
+         * returns it in binary format.
+         *
+         * \param resource_name The name of the resource.
+         * \param buffer The buffer to store the resource.
+         */
+        void GetResource(const std::string& resource_name, std::vector<char>& buffer);
         
         /**
          * Returns the md5 hash of the requested resource.
