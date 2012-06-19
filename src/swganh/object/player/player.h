@@ -288,11 +288,15 @@ struct PlayerWaypointSerializer {
     std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint;
 };
 
+class PlayerFactory;
 class PlayerMessageBuilder;
 
 class Player : public swganh::object::Object
 {
 public:
+    typedef PlayerFactory FactoryType;
+    typedef PlayerMessageBuilder MessageBuilderType;
+
     Player();
     
     /**

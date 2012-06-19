@@ -27,12 +27,9 @@ using namespace swganh::object;
 using namespace swganh::object::player;
 using namespace swganh::simulation;
 
-uint32_t PlayerFactory::GetType() const { return Player::type; }
-
 PlayerFactory::PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, simulation_service, event_dispatcher)
+    : ObjectFactory(db_manager, event_dispatcher)
 {
     RegisterEventHandlers();
 }

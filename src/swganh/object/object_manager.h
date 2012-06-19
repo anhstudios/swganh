@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 
+#include "anh/database/database_manager_interface.h"
+
 #include "swganh/object/object.h"
 #include "swganh/object/exception.h"
 #include "swganh/object/object_factory_interface.h"
@@ -26,8 +28,11 @@ namespace object {
     class ObjectManager
     {
     public:
-        ObjectManager(anh::EventDispatcher* event_dispatcher)
-            : event_dispatcher_(event_dispatcher){}
+        ObjectManager(anh::EventDispatcher* event_dispatcher, anh::database::DatabaseManagerInterface* db_manager)
+            : event_dispatcher_(event_dispatcher)
+            , db_manager_(db_manager)
+        {}
+
         /**
          * Registers an object type for management.
          *
@@ -46,7 +51,19 @@ namespace object {
         template<typename T>
         void RegisterObjectType(const std::shared_ptr<T>& factory)
         {
-            RegisterObjectType(T::type, factory);
+            RegisterObjectType(T::ObjectType::type, factory);
+        }
+
+        template<typename T>
+        void RegisterObjectType(uint32_t object_type = T::type)
+        {
+            auto factory = std::make_shared<T::FactoryType>(db_manager_, event_dispatcher_);
+            factory->SetObjectManager(this);
+
+            RegisterObjectType(object_type, factory);
+            
+            auto message_builder = std::make_shared<T::MessageBuilderType>(event_dispatcher_);
+            RegisterMessageBuilder(object_type, message_builder);
         }
 
         /**
@@ -152,6 +169,7 @@ namespace object {
         void PersistObject(const std::shared_ptr<Object>& object);
 
     private:
+        anh::database::DatabaseManagerInterface* db_manager_;
         anh::EventDispatcher* event_dispatcher_;
         typedef std::map<
             uint32_t, 

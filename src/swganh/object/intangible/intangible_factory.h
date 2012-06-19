@@ -13,11 +13,6 @@ class DatabaseManagerInterface;
 }} // anh::database
 
 namespace swganh {
-namespace simulation {
-    class SimulationServiceInterface;
-}}  // namespace swganh::simulation
-
-namespace swganh {
 namespace object {
 namespace intangible {
     class Intangible;
@@ -26,7 +21,6 @@ namespace intangible {
     {
     public:
         IntangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher);
         void LoadTemplates();
 

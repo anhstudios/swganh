@@ -17,11 +17,6 @@ namespace sql {
 }  // namespace sql
 
 namespace swganh {
-namespace simulation {
-    class SimulationServiceInterface;
-}}  // namespace swganh::simulation
-
-namespace swganh {
 namespace object {
 namespace creature {
 
@@ -30,7 +25,6 @@ namespace creature {
     {
     public:
         CreatureFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher);
 
         void LoadTemplates();

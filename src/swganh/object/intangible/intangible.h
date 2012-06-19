@@ -14,10 +14,16 @@
 namespace swganh {
 namespace object {
 namespace intangible {
+
+class IntangibleFactory;
+class IntangibleMessageBuilder;
     
 class Intangible : public swganh::object::Object
 {
 public:
+    typedef IntangibleFactory FactoryType;
+    typedef IntangibleMessageBuilder MessageBuilderType;
+
     // ITNO
     /**
      * @return The type of this object instance.

@@ -352,12 +352,18 @@ struct SkillCommands
 
 };
 
+class CreatureFactory;
+class CreatureMessageBuilder;
+
 /**
  *
  */
 class Creature : public swganh::object::tangible::Tangible
 {
 public:
+    typedef CreatureFactory FactoryType;
+    typedef CreatureMessageBuilder MessageBuilderType;
+
     Creature();
     ~Creature();
 

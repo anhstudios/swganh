@@ -13,11 +13,6 @@ namespace database {
 class DatabaseManagerInterface;
 }} // anh::database
 
-namespace swganh {
-namespace simulation {
-    class SimulationServiceInterface;
-}}  // namespace swganh::simulation
-
 namespace sql {
 class Statement;
 }
@@ -27,12 +22,12 @@ namespace object {
 namespace tangible {
 
     class Tangible;
-    class Tangible;
     class TangibleFactory : public swganh::object::ObjectFactory
     {
     public:
+        typedef Tangible ObjectType;
+
         TangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher);
         void LoadTemplates();
 
@@ -47,8 +42,6 @@ namespace tangible {
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
         
-        virtual uint32_t GetType() const;
-        const static uint32_t type;
         virtual void RegisterEventHandlers(){}
     private:
         std::unordered_map<std::string, std::shared_ptr<swganh::object::tangible::Tangible>>::iterator GetTemplateIter_(const std::string& template_name);

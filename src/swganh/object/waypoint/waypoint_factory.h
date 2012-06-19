@@ -13,12 +13,6 @@ class DatabaseManagerInterface;
 }} // anh::database
 
 namespace swganh {
-namespace simulation {
-    class SimulationServiceInterface;
-}}  // namespace swganh::simulation
-
-
-namespace swganh {
 namespace object {
 
 namespace player {class Player; }
@@ -29,7 +23,6 @@ namespace waypoint {
     {
     public:
         WaypointFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher);
 
         void LoadTemplates();
