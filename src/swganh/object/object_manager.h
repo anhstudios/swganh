@@ -57,12 +57,12 @@ namespace object {
         template<typename T>
         void RegisterObjectType(uint32_t object_type = T::type)
         {
-            auto factory = std::make_shared<T::FactoryType>(db_manager_, event_dispatcher_);
+            auto factory = std::make_shared<typename T::FactoryType>(db_manager_, event_dispatcher_);
             factory->SetObjectManager(this);
 
             RegisterObjectType(object_type, factory);
             
-            auto message_builder = std::make_shared<T::MessageBuilderType>(event_dispatcher_);
+            auto message_builder = std::make_shared<typename T::MessageBuilderType>(event_dispatcher_);
             RegisterMessageBuilder(object_type, message_builder);
         }
 
@@ -169,8 +169,9 @@ namespace object {
         void PersistObject(const std::shared_ptr<Object>& object);
 
     private:
-        anh::database::DatabaseManagerInterface* db_manager_;
         anh::EventDispatcher* event_dispatcher_;
+        anh::database::DatabaseManagerInterface* db_manager_;
+
         typedef std::map<
             uint32_t, 
             std::shared_ptr<ObjectFactoryInterface>
