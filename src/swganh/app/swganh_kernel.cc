@@ -10,6 +10,7 @@
 #include "anh/database/database_manager.h"
 #include "anh/event_dispatcher.h"
 #include "anh/plugin/plugin_manager.h"
+#include "anh/resource/resource_manager.h"
 #include "anh/service/datastore.h"
 #include "anh/service/service_directory.h"
 #include "anh/service/service_manager.h"
@@ -117,3 +118,13 @@ swganh::tre::TreArchive* SwganhKernel::GetTreArchive() {
     return tre_archive_.get();
 }
 
+anh::resource::ResourceManager* SwganhKernel::GetResourceManager()
+{
+    if (!resource_manager_)
+    {
+        resource_manager_.reset(new anh::resource::ResourceManager(
+            std::make_shared<swganh::tre::TreArchive>(GetAppConfig().tre_config), 500));
+    }
+
+    return resource_manager_.get();
+}

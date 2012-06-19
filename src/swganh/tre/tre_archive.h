@@ -22,7 +22,7 @@ namespace tre {
      * TreArchive is a simple utility for accessing resource files from
      * a collection of .tre files.
      */
-    class TreArchive : anh::resource::ResourceArchiveInterface
+    class TreArchive : public anh::resource::ResourceArchiveInterface
     {
     public:
         /**

@@ -88,6 +88,8 @@ public:
 
     swganh::tre::TreArchive* GetTreArchive();
 
+    anh::resource::ResourceManager* GetResourceManager();
+
 private:
     SwganhKernel();
     anh::app::Version version_;
@@ -99,6 +101,7 @@ private:
     std::unique_ptr<anh::service::ServiceManager> service_manager_;
     std::unique_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
     std::unique_ptr<swganh::tre::TreArchive> tre_archive_;
+    std::unique_ptr<anh::resource::ResourceManager> resource_manager_;
 
     boost::asio::io_service& io_service_;
 };
