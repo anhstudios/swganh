@@ -148,7 +148,11 @@ public:
 
     void RemoveObjectById(uint64_t object_id)
     {
-        object_manager_->RemoveObjectById(object_id);
+        auto object = object_manager_->GetObjectById(object_id);
+        if (object)
+        {
+            RemoveObject(object);
+        }
     }
 
     void RemoveObject(const shared_ptr<Object>& object)

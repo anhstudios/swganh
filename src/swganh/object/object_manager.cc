@@ -45,33 +45,26 @@ void ObjectManager::RegisterMessageBuilder(uint32_t object_type, std::shared_ptr
 
 shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
 {
-    auto find_iter = object_map_.find(object_id);
+    auto object = GetObjectById(object_id);
 
-    if (find_iter != object_map_.end())
+    if (!object)
     {
-        return find_iter->second;
+        object = CreateObjectFromStorage(object_id);
+        object_map_.insert(make_pair(object_id, object));
     }
-
-    auto object = CreateObjectFromStorage(object_id);
-
-    object_map_.insert(make_pair(object_id, object));
 
     return object;
 }
 
 shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t type)
 {
-    auto find_iter = object_map_.find(object_id);
+    auto object = GetObjectById(object_id);
 
-    if (find_iter != object_map_.end())
+    if (!object)
     {
-        return find_iter->second;
-        LOG(warning) << "Requested object already loaded";
+        object = CreateObjectFromStorage(object_id, type);
+        object_map_.insert(make_pair(object_id, object));
     }
-
-    auto object = CreateObjectFromStorage(object_id, type);
-
-    object_map_.insert(make_pair(object_id, object));
 
     return object;
 }
@@ -88,20 +81,9 @@ shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
     return find_iter->second;
 }
 
-void ObjectManager::RemoveObjectById(uint64_t object_id)
-{
-    auto find_iter = object_map_.find(object_id);
-
-    if (find_iter == object_map_.end())
-    {
-        LOG(warning) << "Requested an invalid object";
-    }
-
-    RemoveObject(find_iter->second);
-}
-
 void ObjectManager::RemoveObject(const shared_ptr<Object>& object)
 {
+    // @TODO Protect object_map_ with a reader/writer lock ex boost::shared_mutex
     object_map_.unsafe_erase(object_map_.find(object->GetObjectId()));
 }
 

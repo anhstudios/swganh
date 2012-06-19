@@ -86,23 +86,9 @@ namespace object {
          */
         void UnregisterObjectType(uint32_t object_type);
 
-        /**
-         * Registers message builders
-         *
-         * @param object_type the type of the object to register a builder to.
-         */
-        template<typename T>
-        void RegisterMessageBuilder(std::shared_ptr<T>& message_builder)
-        {
-            RegisterMessageBuilder(T::type, message_builder);
-        }
-
-        void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
-                
         std::shared_ptr<Object> LoadObjectById(uint64_t object_id);
         std::shared_ptr<Object> LoadObjectById(uint64_t object_id, uint32_t type);
 
-        void RemoveObjectById(uint64_t object_id);
         void RemoveObject(const std::shared_ptr<Object>& object);
         
         std::shared_ptr<Object> GetObjectById(uint64_t object_id);
@@ -196,6 +182,19 @@ namespace object {
         void PersistRelatedObjects(const std::shared_ptr<Object>& object);
 	    void PersistRelatedObjects(uint64_t parent_object_id);
     private:
+        /**
+         * Registers message builders
+         *
+         * @param object_type the type of the object to register a builder to.
+         */
+        template<typename T>
+        void RegisterMessageBuilder(std::shared_ptr<T>& message_builder)
+        {
+            RegisterMessageBuilder(T::type, message_builder);
+        }
+
+        void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
+
         anh::EventDispatcher* event_dispatcher_;
         anh::database::DatabaseManagerInterface* db_manager_;
 
