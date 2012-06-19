@@ -9,6 +9,8 @@ tre_config = C:/Star Wars Galaxies/live.cfg
 
 script_directory = @PROJECT_SOURCE_DIR@/data/scripts
 
+resource_cache_size = 500
+
 [db.galaxy_manager]
 host = localhost
 schema = galaxy_manager

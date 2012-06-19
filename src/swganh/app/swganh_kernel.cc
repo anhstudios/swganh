@@ -115,7 +115,7 @@ anh::resource::ResourceManager* SwganhKernel::GetResourceManager()
     if (!resource_manager_)
     {
         resource_manager_.reset(new anh::resource::ResourceManager(
-            std::make_shared<swganh::tre::TreArchive>(GetAppConfig().tre_config), 500));
+            std::make_shared<swganh::tre::TreArchive>(GetAppConfig().tre_config), GetAppConfig().resource_cache_size));
     }
 
     return resource_manager_.get();

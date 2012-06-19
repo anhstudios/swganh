@@ -32,6 +32,7 @@ struct AppConfig {
     std::string script_directory;
     std::string galaxy_name;
     std::string tre_config;
+    uint32_t resource_cache_size;
 
     /*!
     * @Brief Contains information about the database config"

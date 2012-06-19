@@ -107,7 +107,15 @@ namespace tre {
          * \return A list of available resources.
          */
         std::vector<std::string> GetAvailableResources() const;
-
+        
+        /**
+         * Returns a list of the of all available resources in the archive.
+         *
+         * Accepts a progress callback, useful for keeping UI threads informed of load progress.
+         *
+         * \param progress_callback A callback handler to be called with progress status
+         * \return A list of available resources.
+         */
         std::vector<std::string> GetAvailableResources(std::function<void (int total, int completed)> progress_callback) const;
 
     private:
