@@ -25,9 +25,8 @@ using namespace swganh::object::intangible;
 using namespace swganh::simulation;
 
 IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
-                             SimulationServiceInterface* simulation_service,
                              anh::EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, simulation_service, event_dispatcher)
+    : ObjectFactory(db_manager, event_dispatcher)
 {
 }
 void IntangibleFactory::LoadTemplates()

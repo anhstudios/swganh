@@ -68,8 +68,6 @@ namespace object {
          */
         virtual uint32_t LookupType(uint64_t object_id) const = 0;
 
-        virtual uint32_t GetType() const = 0;
-
     };
 
 }}  // namespace swganh::object

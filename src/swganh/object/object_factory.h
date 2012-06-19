@@ -21,20 +21,27 @@ namespace sql {
 namespace swganh {
 namespace simulation {
     class SimulationServiceInterface;
-}}  // namespace swganh::simulation
+}
+
+namespace tre {
+    class TreArchive;
+}}  // namespace swganh::tre
 
 namespace swganh {
 namespace object {
 
     class Object;
+    class ObjectManager;
 
     class ObjectFactory : public ObjectFactoryInterface
     {
     public:
         ObjectFactory(anh::database::DatabaseManagerInterface* db_manager,
-            swganh::simulation::SimulationServiceInterface* simulation_service,
             anh::EventDispatcher* event_dispatcher);
         virtual ~ObjectFactory() {}
+
+        void SetObjectManager(ObjectManager* object_manager) { object_manager_ = object_manager; }
+
         /**
          * Loads in base values from a result set
          *
@@ -56,18 +63,17 @@ namespace object {
         virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
         virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name) { return nullptr; }
         uint32_t LookupType(uint64_t object_id) const;
-        virtual uint32_t GetType() const { return 0; }
-        const static uint32_t type;
-        virtual void RegisterEventHandlers(){}
 
+        virtual void RegisterEventHandlers(){}
+        void SetTreArchive(swganh::tre::TreArchive* tre_archive);
     protected:
         
 
         void LoadContainedObjects(const std::shared_ptr<Object>& object,
             const std::shared_ptr<sql::Statement>& statement);
-
+        
+        ObjectManager* object_manager_;
         anh::database::DatabaseManagerInterface* db_manager_;   
-        swganh::simulation::SimulationServiceInterface* simulation_service_;
         anh::EventDispatcher* event_dispatcher_;
     };
 
