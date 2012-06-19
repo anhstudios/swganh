@@ -56,13 +56,13 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
     return object;
 }
 
-shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t type)
+shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t object_type)
 {
     auto object = GetObjectById(object_id);
 
     if (!object)
     {
-        object = CreateObjectFromStorage(object_id, type);
+        object = CreateObjectFromStorage(object_id, object_type);
         object_map_.insert(make_pair(object_id, object));
     }
 
