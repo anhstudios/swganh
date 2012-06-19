@@ -45,7 +45,7 @@ SwganhKernel::~SwganhKernel()
 {
     service_manager_->Stop();
 
-    tre_archive_.reset();
+    resource_manager_.reset();
     event_dispatcher_.reset();
     service_manager_.reset();
     service_directory_.reset();
@@ -108,14 +108,6 @@ ServiceDirectoryInterface* SwganhKernel::GetServiceDirectory() {
 
 boost::asio::io_service& SwganhKernel::GetIoService() {
     return io_service_;
-}
-
-swganh::tre::TreArchive* SwganhKernel::GetTreArchive() {
-    if (!tre_archive_) {
-        tre_archive_.reset(new swganh::tre::TreArchive(GetAppConfig().tre_config));
-    }
-
-    return tre_archive_.get();
 }
 
 anh::resource::ResourceManager* SwganhKernel::GetResourceManager()
