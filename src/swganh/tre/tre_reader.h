@@ -18,7 +18,7 @@
 namespace swganh {
 namespace tre {
 
-    typedef std::vector<unsigned char> TreResourceData;
+    typedef std::vector<char> TreResourceData;
 
     /**
      * TreReader is a utility class used for reading data from a single 
@@ -83,6 +83,8 @@ namespace tre {
          */
         TreResourceData GetResource(const std::string& resource_name);
 
+        void GetResource(const std::string& resource_name, std::vector<char>& buffer);
+
         /**
          * Returns the md5 hash of the requested resource.
          *
@@ -98,9 +100,9 @@ namespace tre {
         void ReadIndex();
                 
         std::vector<TreResourceInfo> ReadResourceBlock();
-        std::vector<unsigned char> ReadNameBlock();
+        std::vector<char> ReadNameBlock();
 
-        typedef std::array<unsigned char, 16> Md5Sum;
+        typedef std::array<char, 16> Md5Sum;
         std::vector<Md5Sum> ReadMd5SumBlock();
         
         void ValidateFileType(std::string file_type) const;
@@ -111,11 +113,11 @@ namespace tre {
 	    	uint32_t compression,
 	    	uint32_t compressed_size, 
 	    	uint32_t uncompressed_size, 
-	    	unsigned char* buffer);
+	    	char* buffer);
 
         bool initialized_;
 
-        typedef std::basic_ifstream<unsigned char> BinaryStream;
+        typedef std::ifstream BinaryStream;
         BinaryStream input_stream_;
         std::string filename_;
         TreHeader header_;
@@ -123,7 +125,7 @@ namespace tre {
         boost::mutex mutex_;
 
         std::vector<TreResourceInfo> resource_block_;
-        std::vector<unsigned char> name_block_;
+        std::vector<char> name_block_;
         std::vector<Md5Sum> md5sum_block_;
     };
 

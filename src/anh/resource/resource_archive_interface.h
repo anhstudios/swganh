@@ -17,7 +17,7 @@ namespace resource {
 		virtual ~ResourceArchiveInterface() {}
 
 		virtual bool Open() = 0;
-		virtual uint32_t GetResourceSize(const std::string& resource_name) = 0;
+		virtual uint32_t GetResourceSize(const std::string& resource_name) const = 0;
 		virtual void GetResource(const std::string& resource_name, std::vector<char>& buffer) = 0;
 	};
 

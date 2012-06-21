@@ -32,6 +32,7 @@ struct AppConfig {
     std::string script_directory;
     std::string galaxy_name;
     std::string tre_config;
+    uint32_t resource_cache_size;
 
     /*!
     * @Brief Contains information about the database config"
@@ -86,7 +87,7 @@ public:
     
     boost::asio::io_service& GetIoService();
 
-    swganh::tre::TreArchive* GetTreArchive();
+    anh::resource::ResourceManager* GetResourceManager();
 
 private:
     SwganhKernel();
@@ -98,7 +99,7 @@ private:
     std::unique_ptr<anh::plugin::PluginManager> plugin_manager_;
     std::unique_ptr<anh::service::ServiceManager> service_manager_;
     std::unique_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
-    std::unique_ptr<swganh::tre::TreArchive> tre_archive_;
+    std::unique_ptr<anh::resource::ResourceManager> resource_manager_;
 
     boost::asio::io_service& io_service_;
 };
