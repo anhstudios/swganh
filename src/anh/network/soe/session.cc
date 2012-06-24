@@ -40,8 +40,6 @@ Session::Session(ServerInterface* server, boost::asio::io_service& io_service, b
 Session::~Session(void)
 {
     Close();
-
-    LOG(info) << "Session closed: " << connection_id_;
 }
 
 uint16_t Session::server_sequence() const {
@@ -378,7 +376,6 @@ void Session::handleOutOfOrderA_(OutOfOrderA packet)
 
 void Session::SendSoePacket_(anh::ByteBuffer message)
 {
-    LOG_NET << "SendSoePacket: Server -> Endpoint: " << remote_endpoint_.address().to_string() << " \n" << message;
     strand_.post(bind(&Session::SendSoePacketInternal, shared_from_this(), std::move(message)));
 }
 

@@ -192,6 +192,13 @@ FUNCTION(AddANHLibrary name)
     	        ${CMAKE_CURRENT_BINARY_DIR}/${name}_tests.vcxproj.user @ONLY)
         ENDIF()
 
+        add_custom_command(
+            TARGET ${name}_test
+            POST_BUILD
+            COMMAND $<TARGET_FILE:${name}_test>
+            WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${configuration}
+        )
+
         add_test(
             NAME all_${name}_tests
             CONFIGURATIONS ${configuration}
