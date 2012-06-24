@@ -70,11 +70,11 @@ endforeach()
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND for /R \"${WIN_PROJECT_SOURCE_DIR}\\plugins\\\" %%a IN \(*.cfg\) do \(xcopy %%a \"${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config\\plugins\\\" /D /I /Y\)
+    COMMAND for /R \"${WIN_PROJECT_SOURCE_DIR}\\plugins\\\" %%a IN \(*.cfg\) do \(xcopy \"%%a\" \"${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config\\plugins\\\" /D /I /Y\)
 )
 
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND for /R \"${WIN_PROJECT_SOURCE_DIR}\\src\\\" %%a IN \(*.cfg\) do \(xcopy %%a \"${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config\\plugins\\\" /D /I /Y\)
+    COMMAND for /R \"${WIN_PROJECT_SOURCE_DIR}\\src\\\" %%a IN \(*.cfg\) do \(xcopy \"%%a\" \"${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config\\plugins\\\" /D /I /Y\)
 )
