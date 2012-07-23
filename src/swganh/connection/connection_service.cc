@@ -131,6 +131,7 @@ shared_ptr<Session> ConnectionService::CreateSession(const udp::endpoint& endpoi
         {
             session = make_shared<ConnectionClient>(this, kernel_->GetIoService(), endpoint);
             session_map_.insert(make_pair(endpoint, session));
+			LOG(info) << "Created Connection Service Session for " << endpoint.address().to_string();
         }
     }
 
@@ -141,7 +142,7 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
         session_map_.erase(session->remote_endpoint());
-    }
+	}
 
     auto connection_client = static_pointer_cast<ConnectionClient>(session);
 
@@ -152,11 +153,13 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
 		kernel_->GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<swganh::object::player::Player>>>("Connection::PlayerRemoved", player));
         
         simulation_service_->PersistRelatedObjects(controller->GetObject()->GetObjectId());
+		//simulation_service_->PersistObject(controller->GetObject()->GetObjectId());
     }
 
     LOG(info) << "Removing disconnected client";
-    session_provider_->EndGameSession(connection_client->GetPlayerId());
+	session_provider_->EndGameSession(connection_client->GetPlayerId());
 
+	
     return true;
 }
 
@@ -167,6 +170,7 @@ shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint)
         auto find_iter = session_map_.find(endpoint);
         if (find_iter != session_map_.end())
         {
+			LOG(info) << "Get Existing Session for " << endpoint.address().to_string();
             return find_iter->second;
         }
     }

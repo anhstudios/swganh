@@ -61,6 +61,8 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
 
         boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
         object_map_.insert(make_pair(object_id, object));
+		
+		LoadContainedObjects(object);
     }
 
     return object;
@@ -76,9 +78,22 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
 
         boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
         object_map_.insert(make_pair(object_id, object));
+
+		LoadContainedObjects(object);		
     }
 
     return object;
+}
+
+void ObjectManager::LoadContainedObjects(std::shared_ptr<Object> object)
+{	
+	for(auto& inner_object : object->GetContainedObjects())
+	{
+		object_map_.insert(make_pair(inner_object.first, inner_object.second));
+		// Recurse
+		if (inner_object.second->GetContainedObjects().size() > 0)
+			LoadContainedObjects(inner_object.second);
+	}
 }
 
 shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
@@ -203,9 +218,10 @@ void ObjectManager::PersistObject(uint64_t object_id)
 
 void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object)
 {
+	
     if (object)
     {
-        // first persist the parent object
+		// first persist the parent object
         PersistObject(object);
 
         // get all the contained objects
