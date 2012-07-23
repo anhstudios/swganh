@@ -110,6 +110,13 @@ namespace object {
          */
         std::shared_ptr<Object> LoadObjectById(uint64_t object_id, uint32_t object_type);
 
+		/**
+		 * Loads an objects contained objects (recursively)
+		 *
+		 * @param object the object that will be used to load contained objects
+		 */
+		void LoadContainedObjects(std::shared_ptr<Object> object);
+
         /**
          * Removes an object from management.
          *

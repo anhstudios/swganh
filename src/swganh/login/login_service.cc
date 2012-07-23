@@ -192,7 +192,7 @@ void LoginService::login_error_timeout_secs(int new_timeout)
 }
 
 void LoginService::UpdateGalaxyStatus_() {
-    LOG(info) << "Updating galaxy status";
+    //LOG(info) << "Updating galaxy status";
 
     galaxy_status_ = GetGalaxyStatus_();
 
