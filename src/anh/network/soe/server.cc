@@ -77,6 +77,11 @@ void Server::AsyncReceive() {
 
                 AsyncReceive();
             }
+			else
+			{
+				LOG(warning) << "Server.cc Error in AsyncReceive: " << error.message();
+				AsyncReceive();
+			}
     });
 }
 
