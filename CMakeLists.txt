@@ -93,9 +93,9 @@ endif()
 if(MSVC)
     message(STATUS " - MSVC: Version ${MSVC_VERSION}")
 
-    # if(MSVC_VERSION LESS 1700)
-    	# message(FATAL_ERROR "Visual Studio 11 or newer is required ")
-    # endif()
+    if(MSVC_VERSION LESS 1700)
+        message(FATAL_ERROR "Visual Studio 11 or newer is required ")
+    endif()
 
     SET(_WIN32_WINNT 0x0601 CACHE INTERNAL "Setting _WIN32_WINNT to 0x0601 for Windows Vista minimum APIs")
     SET(WINVER ${_WIN32_WINNT} CACHE INTERNAL "Setting WINVER to 0x0601 for Windows Vista minimum APIs")
