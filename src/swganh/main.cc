@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
                     }
                 }
             }
+			boost::this_thread::sleep(boost::posix_time::milliseconds(5));
         }
 
     } catch(std::exception& e) {
