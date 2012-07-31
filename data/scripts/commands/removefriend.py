@@ -15,4 +15,3 @@ class RemoveFriendCommand(BaseSwgCommand):
                 self.GetController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_removed', swgpy.ProseType.TT, friend_name), False, False)
             else:
                 self.GetController().SendSystemMessage(swgpy.OutOfBand('cmnty', 'friend_not_found', swgpy.ProseType.TT, friend_name), False, False)
-                
