@@ -1,4 +1,5 @@
 import re
+import swgpy
 from swgpy.command import BaseSwgCommand
 
 class RemoveFriendCommand(BaseSwgCommand):
