@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/combat/combat_service.h"
+#include "combat_service.h"
 #include "combat_data.h"
 #include <cctype>
 
@@ -47,7 +47,7 @@ using namespace swganh::object::creature;
 using namespace swganh::object::weapon;
 using namespace swganh::object::tangible;
 using namespace swganh::simulation;
-using namespace swganh::combat;
+using namespace swganh_core::combat;
 using namespace swganh::command;
 
 using swganh::app::SwganhKernel;

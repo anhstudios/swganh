@@ -27,6 +27,8 @@ namespace Concurrency {
 
 #endif
 
+#include "swganh/combat/combat_service_interface.h"
+
 #include "anh/active_object.h"
 #include "anh/random_generator.h"
 #include "anh/service/service_interface.h"
@@ -36,32 +38,19 @@ namespace Concurrency {
 #include "swganh/messages/controllers/command_queue_enqueue.h"
 
 
-namespace swganh {
-namespace simulation {
-class SimulationServiceInterface;
-}
-namespace command {
-class CommandServiceInterface; 
-}
-namespace object {
-    class Object;
-    class ObjectController;
-namespace tangible {
-    class Tangible;
-}
-namespace creature {
-	class Creature;
-}}}  // namespace swganh::object::creature;
-
-
-namespace swganh {
-namespace command {    
-    class BaseCombatCommand;
-}
+namespace swganh_core {
     
 namespace combat {
+    
+    struct CombatData;
+	typedef std::function<boost::python::object (
+        swganh::app::SwganhKernel*,
+		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
+		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
+        const swganh::messages::controllers::CommandQueueEnqueue&)
+    > CombatHandler;
 
-    enum HIT_TYPE {
+	enum HIT_TYPE {
         HIT = 0,
         BLOCK,
         DODGE,
@@ -69,16 +58,7 @@ namespace combat {
         MISS
     };
 
-    typedef std::function<boost::python::object (
-        swganh::app::SwganhKernel*,
-		const std::shared_ptr<swganh::object::creature::Creature>&, // creature object
-		const std::shared_ptr<swganh::object::tangible::Tangible>&,	// target object
-        const swganh::messages::controllers::CommandQueueEnqueue&)
-    > CombatHandler;
-    
-    struct CombatData;
-
-    class CombatService: public anh::service::ServiceInterface
+    class CombatService: public swganh::combat::CombatServiceInterface
     {
     public:
         explicit CombatService(swganh::app::SwganhKernel* kernel);

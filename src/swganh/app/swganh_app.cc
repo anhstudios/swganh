@@ -30,12 +30,12 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/combat/combat_service_interface.h"
 #include "swganh/chat/chat_service_interface.h"
 #include "swganh/character/character_service_interface.h"
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/combat/combat_service.h"
 #include "swganh/social/social_service.h"
 #include "swganh/scripting/utilities.h"
 
@@ -48,11 +48,9 @@ using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
 using namespace swganh::chat;
-using namespace swganh::command;
 using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::connection;
-using namespace swganh::combat;
 using namespace swganh::simulation;
 using namespace swganh::galaxy;
 
@@ -366,10 +364,6 @@ void SwganhApp::LoadCoreServices_()
 
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		// These will be loaded in alphabetical order because of how std::map generates its keys
-		kernel_->GetServiceManager()->AddService(
-			"CombatService",
-			std::make_shared<CombatService>(kernel_.get()));
             
 		kernel_->GetServiceManager()->AddService(
             "SocialService", 

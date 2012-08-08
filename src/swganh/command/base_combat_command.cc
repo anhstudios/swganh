@@ -9,9 +9,9 @@
 
 #include "anh/service/service_manager.h"
 
-#include "swganh/combat/combat_service.h"
+#include "swganh/combat/combat_service_interface.h"
 
-using swganh::combat::CombatService;
+using swganh::combat::CombatServiceInterface;
 using swganh::command::BaseCombatCommand;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCallback;
@@ -29,7 +29,7 @@ BaseCombatCommand::~BaseCombatCommand()
 
 boost::optional<std::shared_ptr<CommandCallback>> BaseCombatCommand::Run()
 {
-    auto combat_service = GetKernel()->GetServiceManager()->GetService<CombatService>("CombatService");
+    auto combat_service = GetKernel()->GetServiceManager()->GetService<CombatServiceInterface>("CombatService");
 
     combat_service->SendCombatAction(this);
 

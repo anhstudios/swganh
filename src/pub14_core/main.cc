@@ -14,6 +14,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include "chat/chat_init.h"
+#include "combat/combat_init.h"
 #include "character/character_init.h"
 #include "command/command_init.h"
 #include "login/login_init.h"
@@ -45,6 +46,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
     
     swganh_core::character::Initialize(swganh_kernel);
     pub14_core::command::Initialize(swganh_kernel);
+	swganh_core::combat::Initialize(swganh_kernel);
     swganh_core::login::Initialize(swganh_kernel);
     swganh_core::galaxy::Initialize(swganh_kernel);
     swganh_core::simulation::Initialize(swganh_kernel);
