@@ -36,7 +36,6 @@
 #include "swganh/login/login_service_interface.h"
 #include "swganh/connection/connection_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/social/social_service.h"
 #include "swganh/scripting/utilities.h"
 
 #include "version.h"
@@ -353,11 +352,6 @@ void SwganhApp::LoadCoreServices_()
 
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-            
-		kernel_->GetServiceManager()->AddService(
-            "SocialService", 
-            std::make_shared<social::SocialService>(kernel_.get()));
-		
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		simulation_service->StartScene("corellia");
 		simulation_service->StartScene("naboo");

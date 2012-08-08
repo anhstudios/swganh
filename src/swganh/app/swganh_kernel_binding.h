@@ -17,7 +17,7 @@
 #include "anh/service/service_manager.h"
 #include "swganh/combat/combat_service_interface.h"
 #include "swganh/command/command_service_interface.h"
-#include "swganh/social/social_service.h"
+#include "swganh/social/social_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 #include <boost/python.hpp>
@@ -54,9 +54,9 @@ void exportSWGANHKernel()
                 boost::mpl::vector<swganh::simulation::SimulationServiceInterface*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SimulationService`")
         .def("social_service", make_function(
-               std::bind(&anh::service::ServiceManager::GetService<swganh::social::SocialService>, std::placeholders::_1, "SocialService"),
+               std::bind(&anh::service::ServiceManager::GetService<swganh::social::SocialServiceInterface>, std::placeholders::_1, "SocialService"),
                 return_value_policy<reference_existing_object>(),
-                boost::mpl::vector<swganh::social::SocialService*, anh::service::ServiceManager*>()),
+                boost::mpl::vector<swganh::social::SocialServiceInterface*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SocialService`")
        ;
        
