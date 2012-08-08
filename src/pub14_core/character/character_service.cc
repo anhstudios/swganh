@@ -18,8 +18,8 @@
 
 #include "anh/service/service_manager.h"
 
-#include "swganh/login/login_service.h"
-#include "swganh/login/login_client.h"
+#include "swganh/login/login_service_interface.h"
+#include "swganh/login/login_client_interface.h"
 #include "swganh/login/account.h"
 
 #include "swganh/character/character_provider_interface.h"
@@ -78,7 +78,7 @@ void CharacterService::Startup() {
     connection_service->RegisterMessageHandler(
         &CharacterService::HandleClientRandomNameRequest_, this);
 
-    auto login_service = kernel_->GetServiceManager()->GetService<LoginService>("LoginService");
+    auto login_service = kernel_->GetServiceManager()->GetService<LoginServiceInterface>("LoginService");
 
     login_service->RegisterMessageHandler(
         &CharacterService::HandleDeleteCharacterMessage_, this);
@@ -140,7 +140,7 @@ void CharacterService::HandleClientRandomNameRequest_(
 }
 
 void CharacterService::HandleDeleteCharacterMessage_(
-    const shared_ptr<LoginClient>& login_client, 
+    const shared_ptr<LoginClientInterface>& login_client, 
     DeleteCharacterMessage message)
 {
     DeleteCharacterReplyMessage reply_message;

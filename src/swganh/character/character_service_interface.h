@@ -24,7 +24,7 @@ class ConnectionClient;
 
 namespace swganh {
 namespace login {
-class LoginClient;
+class LoginClientInterface;
 }}  // namespace swganh::login
 
 namespace swganh {
@@ -43,7 +43,7 @@ private:
         swganh::messages::ClientCreateCharacter message) = 0;
 
     virtual void HandleDeleteCharacterMessage_(
-        const std::shared_ptr<swganh::login::LoginClient>& login_client, 
+        const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, 
         swganh::messages::DeleteCharacterMessage message) = 0;
 };
 

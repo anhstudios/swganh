@@ -89,7 +89,7 @@ void ConnectionService::Startup() {
     ping_server_ = make_shared<PingServer>(kernel_->GetIoService(), ping_port_);
 
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
-    login_service_ = kernel_->GetServiceManager()->GetService<LoginService>("LoginService");
+    login_service_ = kernel_->GetServiceManager()->GetService<LoginServiceInterface>("LoginService");
     simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
     
     RegisterMessageHandler(&ConnectionService::HandleClientIdMsg_, this);
