@@ -37,7 +37,7 @@
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/galaxy/galaxy_service.h"
 #include "swganh/combat/combat_service.h"
-#include "swganh/social/social_service.h"
+#include "swganh/social/social_service_interface.h"
 #include "swganh/scripting/utilities.h"
 
 #include "version.h"
@@ -385,10 +385,6 @@ void SwganhApp::LoadCoreServices_()
 		kernel_->GetServiceManager()->AddService(
 			"CombatService",
 			std::make_shared<CombatService>(kernel_.get()));
-            
-		kernel_->GetServiceManager()->AddService(
-            "SocialService", 
-            std::make_shared<social::SocialService>(kernel_.get()));
 		
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		simulation_service->StartScene("corellia");
