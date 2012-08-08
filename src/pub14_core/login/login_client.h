@@ -4,17 +4,12 @@
 #ifndef SWGANH_LOGIN_LOGIN_CLIENT_H_
 #define SWGANH_LOGIN_LOGIN_CLIENT_H_
 
-#include <memory>
-#include <string>
+#include "swganh/login/login_client_interface.h"
 
-#include "anh/network/soe/session.h"
-
-namespace swganh {
+namespace swganh_core {
 namespace login {
 
-class Account;
-
-class LoginClient : public anh::network::soe::Session {
+class LoginClient : public swganh::login::LoginClientInterface {
 public:    
     LoginClient(anh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
     
@@ -27,8 +22,8 @@ public:
     std::string GetVersion() const;
     void SetVersion(std::string version);
 
-    const std::shared_ptr<Account>& GetAccount() const;
-    void SetAccount(const std::shared_ptr<Account>& account);
+    const std::shared_ptr<swganh::login::Account>& GetAccount() const;
+    void SetAccount(const std::shared_ptr<swganh::login::Account>& account);
 
 private:
     LoginClient();
@@ -36,7 +31,7 @@ private:
     std::string username_;
     std::string password_;
     std::string version_;
-    std::shared_ptr<Account> account_;
+    std::shared_ptr<swganh::login::Account> account_;
 };
 
 }}  // namespace swganh::login

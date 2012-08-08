@@ -33,7 +33,7 @@
 #include "swganh/chat/chat_service_interface.h"
 #include "swganh/character/character_service_interface.h"
 #include "swganh/connection/connection_service.h"
-#include "swganh/login/login_service.h"
+#include "swganh/login/login_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/galaxy/galaxy_service.h"
 #include "swganh/combat/combat_service.h"
@@ -353,20 +353,6 @@ void SwganhApp::LoadCoreServices_()
     });
 
     auto app_config = kernel_->GetAppConfig();
-
-	if(strcmp("login", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
-        auto login_service = std::make_shared<LoginService>(
-		    app_config.login_config.listen_address, 
-		    app_config.login_config.listen_port, 
-		    kernel_.get());
-
-		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
-		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
-        login_service->login_auto_registration(app_config.login_config.login_auto_registration);
-    
-		kernel_->GetServiceManager()->AddService("LoginService", login_service);
-	}
 
 	if(strcmp("connection", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
