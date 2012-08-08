@@ -32,7 +32,7 @@
 
 #include "swganh/chat/chat_service_interface.h"
 #include "swganh/character/character_service_interface.h"
-#include "swganh/connection/connection_service.h"
+#include "swganh/connection/connection_service_interface.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/galaxy/galaxy_service.h"
@@ -366,17 +366,6 @@ void SwganhApp::LoadCoreServices_()
         login_service->login_auto_registration(app_config.login_config.login_auto_registration);
     
 		kernel_->GetServiceManager()->AddService("LoginService", login_service);
-	}
-
-	if(strcmp("connection", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
-		auto connection_service = std::make_shared<ConnectionService>(
-			app_config.connection_config.listen_address, 
-			app_config.connection_config.listen_port, 
-			app_config.connection_config.ping_port, 
-			kernel_.get());
-    
-		kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
 	}
 
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)

@@ -19,7 +19,7 @@ namespace anh { namespace database { class DatabaseManagerInterface; } }
 
 namespace swganh {
 namespace connection {
-class ConnectionClient;
+class ConnectionClientInterface;
 }}  // namespace swganh::connection
 
 namespace swganh {
@@ -45,11 +45,11 @@ public:
 
 private:
     void HandleClientRandomNameRequest_(
-        const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::ClientRandomNameRequest message);
 
     void HandleClientCreateCharacter_(
-        const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::ClientCreateCharacter message);
 
     void HandleDeleteCharacterMessage_(
