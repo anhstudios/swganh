@@ -35,7 +35,6 @@
 #include "swganh/connection/connection_service.h"
 #include "swganh/login/login_service.h"
 #include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/galaxy/galaxy_service.h"
 #include "swganh/combat/combat_service.h"
 #include "swganh/social/social_service.h"
 #include "swganh/scripting/utilities.h"
@@ -394,10 +393,6 @@ void SwganhApp::LoadCoreServices_()
 		simulation_service->StartScene("corellia");
 		simulation_service->StartScene("naboo");
 	}
-
-	// always need a galaxy service running
-	kernel_->GetServiceManager()->AddService("GalaxyService", 
-        std::make_shared<GalaxyService>(kernel_.get()));
 }
 
 void SwganhApp::SetupLogging_()

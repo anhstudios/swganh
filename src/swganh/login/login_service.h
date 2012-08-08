@@ -19,7 +19,7 @@
 #include "swganh/network/base_swg_server.h"
 
 #include "swganh/character/character_service_interface.h"
-#include "swganh/galaxy/galaxy_service.h"
+#include "swganh/galaxy/galaxy_service_interface.h"
 
 #include "swganh/login/login_client.h"
 
@@ -110,7 +110,7 @@ private:
     swganh::character::CharacterServiceInterface* character_service_;
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
-	swganh::galaxy::GalaxyService* galaxy_service_;
+	swganh::galaxy::GalaxyServiceInterface* galaxy_service_;
     std::shared_ptr<AuthenticationManager> authentication_manager_;
     std::shared_ptr<providers::AccountProviderInterface> account_provider_;
     

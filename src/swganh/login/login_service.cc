@@ -125,7 +125,7 @@ shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
 
 void LoginService::Startup() {
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
-	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyService>("GalaxyService");
+	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
     
     RegisterMessageHandler(&LoginService::HandleLoginClientId_, this);
 
