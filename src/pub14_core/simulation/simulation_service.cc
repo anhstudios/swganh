@@ -19,8 +19,8 @@
 #include "swganh/command/command_service_interface.h"
 #include "swganh/command/python_command_creator.h"
 
-#include "swganh/connection/connection_client.h"
-#include "swganh/connection/connection_service.h"
+#include "swganh/connection/connection_client_interface.h"
+#include "swganh/connection/connection_service_interface.h"
 
 #include "swganh/messages/select_character.h"
 
@@ -233,7 +233,7 @@ public:
 		return obj;
 	}
 	
-    shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<ConnectionClient> client)
+    shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<ConnectionClientInterface> client)
     {
         shared_ptr<ObjectController> controller = nullptr;
 
@@ -252,7 +252,7 @@ public:
             controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
         }
 
-        auto connection_client = std::static_pointer_cast<ConnectionClient>(client);
+        auto connection_client = std::static_pointer_cast<ConnectionClientInterface>(client);
         connection_client->SetController(controller);
 
         return controller;
@@ -297,7 +297,7 @@ public:
     }
 
     void HandleObjControllerMessage(
-        const shared_ptr<ConnectionClient>& client,
+        const shared_ptr<ConnectionClientInterface>& client,
         ObjControllerMessage message)
     {
         auto find_iter = controller_handlers_.find(message.message_type);
@@ -312,7 +312,7 @@ public:
     }
 
     void HandleSelectCharacter(
-        const shared_ptr<ConnectionClient>& client,
+        const shared_ptr<ConnectionClientInterface>& client,
         SelectCharacter message)
     {
         auto object = GetObjectById(message.character_id);
@@ -502,7 +502,7 @@ void SimulationService::TransferObjectToScene(std::shared_ptr<swganh::object::Ob
 }
 shared_ptr<ObjectController> SimulationService::StartControllingObject(
     const shared_ptr<Object>& object,
-    shared_ptr<ConnectionClient> client)
+    shared_ptr<ConnectionClientInterface> client)
 {
     return impl_->StartControllingObject(object, client);
 }
@@ -536,7 +536,7 @@ void SimulationService::SendToAllInScene(ByteBuffer message, uint32_t scene_id)
 
 void SimulationService::Startup()
 {
-	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
+	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 
     connection_service->RegisterMessageHandler(
         &SimulationServiceImpl::HandleSelectCharacter, impl_.get());

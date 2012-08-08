@@ -6,27 +6,15 @@
 
 #include <cstdint>
 
-#include "anh/network/soe/session.h"
+#include "swganh/connection/connection_client_interface.h"
 
-namespace swganh {
-namespace object {
-    class ObjectController;
-}}  // namespace swganh::object
-
-namespace swganh {
+namespace swganh_core {
 namespace connection {
 
-class ConnectionClient : public anh::network::soe::Session
+class ConnectionClient : public swganh::connection::ConnectionClientInterface
 {
 public:
-    enum State
-    {
-        CONNECTING = 0,
-        CONNECTED,
-        PLAYING,
-        DISCONNECTING
-    };
-    
+
     ConnectionClient(anh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
     
     State GetState() const;
@@ -45,7 +33,7 @@ private:
 
     void OnClose();
 
-    State state_;
+   State state_;
     uint32_t account_id_;
     uint64_t player_id_;
     std::shared_ptr<swganh::object::ObjectController> controller_;

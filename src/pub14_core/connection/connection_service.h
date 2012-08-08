@@ -11,46 +11,14 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include "anh/active_object.h"
-#include "anh/hash_string.h"
+#include "swganh/connection/connection_service_interface.h"
 
-#include "anh/network/soe/packet_utilities.h"
-#include "anh/network/soe/session.h"
-#include "anh/service/service_interface.h"
-
-#include "swganh/network/base_swg_server.h"
-
-#include "swganh/login/login_service_interface.h"
-#include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/messages/cmd_scene_ready.h"
-
-#include "swganh/connection/providers/session_provider_interface.h"
-
-#include "swganh/messages/client_permissions_message.h"
-#include "swganh/messages/client_id_msg.h"
-#include "swganh/messages/heart_beat.h"
-
-namespace anh {
-namespace network {
-namespace soe {
-class Server;
-}}}  // namespace anh::network::soe
-
-namespace swganh {
-namespace character {
-class CharacterProviderInterface;
-class CharacterServiceInterface;
-}}
-
-namespace swganh {
+namespace swganh_core {
 namespace connection {
-    
+
 class PingServer;
-class ConnectionClient;
-    
-class ConnectionService 
-    : public anh::service::ServiceInterface
-    , public swganh::network::BaseSwgServer
+
+class ConnectionService : public swganh::connection::ConnectionServiceInterface
 {
 public:
     ConnectionService(
@@ -67,7 +35,7 @@ public:
 
     std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
     
-    std::shared_ptr<ConnectionClient> FindConnectionByPlayerId(uint64_t player_id);
+    std::shared_ptr<swganh::connection::ConnectionClientInterface> FindConnectionByPlayerId(uint64_t player_id);
     
     void Startup();
     void Shutdown();
@@ -80,25 +48,25 @@ private:
     std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
     
     void HandleClientIdMsg_(
-        const std::shared_ptr<ConnectionClient>& client, 
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::ClientIdMsg message);
 
     void HandleCmdSceneReady_(
-        const std::shared_ptr<ConnectionClient>& client, 
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::CmdSceneReady message);
    
     typedef std::map<
         boost::asio::ip::udp::endpoint,
-        std::shared_ptr<ConnectionClient>
+        std::shared_ptr<swganh::connection::ConnectionClientInterface>
     > SessionMap;
     
     boost::mutex session_map_mutex_;
     SessionMap session_map_;
 
     swganh::app::SwganhKernel* kernel_;
-    std::shared_ptr<PingServer> ping_server_;
+    std::shared_ptr<swganh_core::connection::PingServer> ping_server_;
     
-    std::shared_ptr<providers::SessionProviderInterface> session_provider_;
+    std::shared_ptr<swganh::connection::providers::SessionProviderInterface> session_provider_;
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
     swganh::character::CharacterServiceInterface* character_service_;

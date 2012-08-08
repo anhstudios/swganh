@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/connection/connection_service.h"
+#include "connection_service.h"
 
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -19,8 +19,8 @@
 
 #include "swganh/character/character_service_interface.h"
 #include "swganh/character/character_provider_interface.h"
-#include "swganh/connection/ping_server.h"
-#include "swganh/connection/connection_client.h"
+#include "ping_server.h"
+#include "connection_client.h"
 #include "swganh/connection/providers/session_provider_interface.h"
 
 #include "swganh/object/object.h"
@@ -34,6 +34,7 @@ using namespace anh::network::soe;
 using namespace anh::service;
 using namespace swganh::character;
 using namespace swganh::connection;
+using namespace swganh_core::connection;
 using namespace swganh::login;
 using namespace swganh::messages;
 using namespace swganh::object;
@@ -51,7 +52,7 @@ ConnectionService::ConnectionService(
         uint16_t listen_port,
         uint16_t ping_port,
         SwganhKernel* kernel)
-    : swganh::network::BaseSwgServer(kernel->GetIoService())
+    : ConnectionServiceInterface(kernel)
     , kernel_(kernel)
     , ping_server_(nullptr)
     , active_(kernel->GetIoService())
@@ -60,7 +61,7 @@ ConnectionService::ConnectionService(
     , ping_port_(ping_port)
 {
 
-    session_provider_ = kernel_->GetPluginManager()->CreateObject<providers::SessionProviderInterface>("Login::SessionProvider");
+    session_provider_ = kernel_->GetPluginManager()->CreateObject<swganh::connection::providers::SessionProviderInterface>("Login::SessionProvider");
 
     character_provider_ = kernel_->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 }
@@ -178,9 +179,9 @@ shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint)
     return CreateSession(endpoint);
 }
 
-std::shared_ptr<ConnectionClient> ConnectionService::FindConnectionByPlayerId(uint64_t player_id)
+std::shared_ptr<ConnectionClientInterface> ConnectionService::FindConnectionByPlayerId(uint64_t player_id)
 {
-    shared_ptr<ConnectionClient> connection = nullptr;
+    shared_ptr<ConnectionClientInterface> connection = nullptr;
 
     {
         boost::lock_guard<boost::mutex> lg(session_map_mutex_);
@@ -203,7 +204,7 @@ std::shared_ptr<ConnectionClient> ConnectionService::FindConnectionByPlayerId(ui
 }
 
 void ConnectionService::HandleCmdSceneReady_(
-    const shared_ptr<ConnectionClient>& client, 
+    const shared_ptr<ConnectionClientInterface>& client, 
     CmdSceneReady message)
 {
     LOG(warning) << "Handling CmdSceneReady";
@@ -217,7 +218,7 @@ void ConnectionService::HandleCmdSceneReady_(
 }
 
 void ConnectionService::HandleClientIdMsg_(
-    const shared_ptr<ConnectionClient>& client, 
+    const shared_ptr<ConnectionClientInterface>& client, 
     ClientIdMsg message)
 {
     LOG(warning) << "Handling ClientIdMsg";
