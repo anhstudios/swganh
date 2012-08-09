@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/login/login_service.h"
+#include "login_service.h"
 
 #include "anh/logger.h"
 
@@ -27,13 +27,14 @@
 #include "swganh/messages/login_cluster_status.h"
 #include "swganh/messages/login_enum_cluster.h"
 
-#include "swganh/login/authentication_manager.h"
-#include "swganh/login/login_client.h"
+#include "authentication_manager.h"
+#include "login_client.h"
 #include "swganh/login/providers/account_provider_interface.h"
 #include "swganh/login/encoders/encoder_interface.h"
 
 using namespace anh;
 using namespace app;
+using namespace swganh_core::login;
 using namespace swganh::login;
 using namespace swganh::messages;
 using namespace network::soe;
@@ -48,14 +49,14 @@ using boost::asio::ip::udp;
 using swganh::app::SwganhKernel;
 
 LoginService::LoginService(string listen_address, uint16_t listen_port, SwganhKernel* kernel)
-    : swganh::network::BaseSwgServer(kernel->GetIoService())
+    : swganh::login::LoginServiceInterface(kernel->GetIoService())
     , kernel_(kernel)
     , galaxy_status_timer_(kernel->GetIoService())
     , listen_address_(listen_address)
     , listen_port_(listen_port)
     , active_(kernel->GetIoService())
 {
-    account_provider_ = kernel->GetPluginManager()->CreateObject<providers::AccountProviderInterface>("Login::AccountProvider");
+    account_provider_ = kernel->GetPluginManager()->CreateObject<swganh::login::providers::AccountProviderInterface>("Login::AccountProvider");
     
     shared_ptr<encoders::EncoderInterface> encoder = kernel->GetPluginManager()->CreateObject<encoders::EncoderInterface>("Login::Encoder");
 
@@ -125,7 +126,7 @@ shared_ptr<Session> LoginService::GetSession(const udp::endpoint& endpoint) {
 
 void LoginService::Startup() {
     character_service_ = kernel_->GetServiceManager()->GetService<CharacterServiceInterface>("CharacterService");
-	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyService>("GalaxyService");
+	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
     
     RegisterMessageHandler(&LoginService::HandleLoginClientId_, this);
 
@@ -247,7 +248,7 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, LoginClientId message)
+void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterface>& login_client, LoginClientId message)
 {
     login_client->SetUsername(message.username);
     login_client->SetPassword(message.password);

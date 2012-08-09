@@ -19,12 +19,12 @@ namespace anh { namespace database { class DatabaseManagerInterface; } }
 
 namespace swganh {
 namespace connection {
-class ConnectionClient;
+class ConnectionClientInterface;
 }}  // namespace swganh::connection
 
 namespace swganh {
 namespace login {
-class LoginClient;
+class LoginClientInterface;
 }}  // namespace swganh::login
 
 namespace swganh {
@@ -35,15 +35,15 @@ class CharacterProviderInterface;
 class CharacterServiceInterface : public anh::service::ServiceInterface {
 private:
     virtual void HandleClientRandomNameRequest_(
-        const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::ClientRandomNameRequest message) = 0;
 
     virtual void HandleClientCreateCharacter_(
-        const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::ClientCreateCharacter message) = 0;
 
     virtual void HandleDeleteCharacterMessage_(
-        const std::shared_ptr<swganh::login::LoginClient>& login_client, 
+        const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, 
         swganh::messages::DeleteCharacterMessage message) = 0;
 };
 

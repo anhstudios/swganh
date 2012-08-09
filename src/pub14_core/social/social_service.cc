@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/social/social_service.h"
+#include "social_service.h"
 
 #include "anh/logger.h"
 #include "anh/plugin/plugin_manager.h"
@@ -10,7 +10,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/connection/connection_service.h"
+#include "swganh/connection/connection_service_interface.h"
 #include "swganh/character/character_provider_interface.h"
 
 #include "swganh/object/player/player.h"
@@ -26,7 +26,7 @@ using namespace std;
 using namespace swganh::connection;
 using namespace swganh::object;
 using namespace swganh::object::player;
-using namespace swganh::social;
+using namespace swganh_core::social;
 
 using anh::app::KernelInterface;
 using anh::service::ServiceDescription;

@@ -18,14 +18,14 @@
 
 #include "anh/service/service_manager.h"
 
-#include "swganh/login/login_service.h"
-#include "swganh/login/login_client.h"
+#include "swganh/login/login_service_interface.h"
+#include "swganh/login/login_client_interface.h"
 #include "swganh/login/account.h"
 
 #include "swganh/character/character_provider_interface.h"
 
-#include "swganh/connection/connection_service.h"
-#include "swganh/connection/connection_client.h"
+#include "swganh/connection/connection_service_interface.h"
+#include "swganh/connection/connection_client_interface.h"
 #include "swganh/messages/heart_beat.h"
 
 #include "swganh/messages/delete_character_reply_message.h"
@@ -70,7 +70,7 @@ service::ServiceDescription CharacterService::GetServiceDescription() {
 }
 
 void CharacterService::Startup() {
-    auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionService>("ConnectionService");
+    auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 
     connection_service->RegisterMessageHandler(
         &CharacterService::HandleClientCreateCharacter_, this);
@@ -78,14 +78,14 @@ void CharacterService::Startup() {
     connection_service->RegisterMessageHandler(
         &CharacterService::HandleClientRandomNameRequest_, this);
 
-    auto login_service = kernel_->GetServiceManager()->GetService<LoginService>("LoginService");
+    auto login_service = kernel_->GetServiceManager()->GetService<LoginServiceInterface>("LoginService");
 
     login_service->RegisterMessageHandler(
         &CharacterService::HandleDeleteCharacterMessage_, this);
 }
 
 void CharacterService::HandleClientCreateCharacter_(
-    const shared_ptr<ConnectionClient>& client, 
+    const shared_ptr<ConnectionClientInterface>& client, 
     ClientCreateCharacter message) 
 {    
     uint64_t character_id;
@@ -124,7 +124,7 @@ void CharacterService::HandleClientCreateCharacter_(
 }
 
 void CharacterService::HandleClientRandomNameRequest_(
-    const shared_ptr<ConnectionClient>& client, 
+    const shared_ptr<ConnectionClientInterface>& client, 
     ClientRandomNameRequest message)
 {
     ClientRandomNameResponse response;
@@ -140,7 +140,7 @@ void CharacterService::HandleClientRandomNameRequest_(
 }
 
 void CharacterService::HandleDeleteCharacterMessage_(
-    const shared_ptr<LoginClient>& login_client, 
+    const shared_ptr<LoginClientInterface>& login_client, 
     DeleteCharacterMessage message)
 {
     DeleteCharacterReplyMessage reply_message;

@@ -1,8 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_SOCIAL_SOCIAL_SERVICE_H_
-#define SWGANH_SOCIAL_SOCIAL_SERVICE_H_
+#ifndef SWGANH_SOCIAL_SOCIAL_SERVICE_INTERFACE_H_
+#define SWGANH_SOCIAL_SOCIAL_SERVICE_INTERFACE_H_
 
 #include <cstdint>
 #include <map>
@@ -29,21 +29,14 @@ class CharacterProviderInterface;
 namespace swganh {
 namespace social {
     
-    class SocialService : public anh::service::ServiceInterface
+    class SocialServiceInterface : public anh::service::ServiceInterface
     {
     public:
-        explicit SocialService(swganh::app::SwganhKernel* kernel);
-    
-        ~SocialService();
-
-        anh::service::ServiceDescription GetServiceDescription();
-
-        bool AddFriend(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& friend_name);
-        bool AddIgnore(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& player_name);
         
-    private:
-        std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
-        swganh::app::SwganhKernel* kernel_;
+        virtual bool AddFriend(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& friend_name) = 0;
+        
+		virtual bool AddIgnore(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& player_name) = 0;
+        
     };
 
 }}  // namespace swganh::social

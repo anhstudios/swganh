@@ -1,8 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_CORE_GALAXY_INITIALIZATION_H_
-#define SWGANH_CORE_GALAXY_INITIALIZATION_H_
+#ifndef SWGANH_CORE_COMBAT_INITIALIZATION_H_
+#define SWGANH_CORE_COMBAT_INITIALIZATION_H_
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
@@ -14,13 +14,12 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "mysql_galaxy_provider.h"
-#include "galaxy_service.h"
+#include "combat_service.h"
 
 #include "version.h"
 
 namespace swganh_core {
-namespace galaxy {
+namespace combat {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
 {    
@@ -30,30 +29,16 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 
     // Register
     registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-        return new MysqlGalaxyProvider(kernel->GetDatabaseManager());
+        return new CombatService(kernel);
     };
 
     registration.DestroyObject = [] (void * object) {
         if (object) {
-            delete static_cast<MysqlGalaxyProvider*>(object);
+            delete static_cast<CombatService*>(object);
         }
     };
 
-    kernel->GetPluginManager()->RegisterObject("Galaxy::GalaxyProvider", &registration);
-
-	// Register
-    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-        return new GalaxyService(kernel);
-    };
-
-    registration.DestroyObject = [] (void * object) {
-        if (object) {
-            delete static_cast<GalaxyService*>(object);
-        }
-    };
-
-    kernel->GetPluginManager()->RegisterObject("Galaxy::GalaxyService", &registration);    
-
+    kernel->GetPluginManager()->RegisterObject("Combat::CombatService", &registration);    
 }
 
 }}  // namespace swganh_core::galaxy

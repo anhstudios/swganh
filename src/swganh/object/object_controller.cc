@@ -7,7 +7,7 @@
 #include "swganh/messages/out_of_band.h"
 #include "swganh/messages/chat_system_message.h"
 #include "swganh/messages/controllers/show_fly_text.h"
-#include "swganh/connection/connection_client.h"
+#include "swganh/connection/connection_client_interface.h"
 #include "swganh/object/object.h"
 
 #ifndef WIN32
@@ -27,7 +27,7 @@ using namespace swganh::object;
 
 ObjectController::ObjectController(
     shared_ptr<Object> object,
-    shared_ptr<ConnectionClient> client)
+    shared_ptr<ConnectionClientInterface> client)
     : object_(object)
     , client_(client)
 {
@@ -53,12 +53,12 @@ shared_ptr<Object> ObjectController::GetObject() const
     return object_;
 }
 
-shared_ptr<ConnectionClient> ObjectController::GetRemoteClient()
+shared_ptr<ConnectionClientInterface> ObjectController::GetRemoteClient()
 {
     return client_;
 }
 
-void ObjectController::SetRemoteClient(shared_ptr<ConnectionClient> remote_client)
+void ObjectController::SetRemoteClient(shared_ptr<ConnectionClientInterface> remote_client)
 {
     client_ = remote_client;
 }

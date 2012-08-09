@@ -4,61 +4,13 @@
 #ifndef SWGANH_LOGIN_LOGIN_SERVICE_H_
 #define SWGANH_LOGIN_LOGIN_SERVICE_H_
 
-#include <unordered_map>
+#include "swganh/login/login_service_interface.h"
 
-#include <boost/asio.hpp>
-#include <boost/thread/mutex.hpp>
-
-#include "anh/active_object.h"
-#include "anh/logger.h"
-
-#include "anh/network/soe/packet_utilities.h"
-#include "anh/network/soe/server.h"
-#include "anh/service/service_interface.h"
-
-#include "swganh/network/base_swg_server.h"
-
-#include "swganh/character/character_service_interface.h"
-#include "swganh/galaxy/galaxy_service.h"
-
-#include "swganh/login/login_client.h"
-
-#include "swganh/login/galaxy_status.h"
-#include "swganh/messages/login_client_id.h"
-
-namespace anh {
-namespace network {
-namespace soe {
-class Server;
-}}}  // namespace anh::network::soe
-
-namespace anh {
-namespace database {
-class DatabaseManagerInterface; 
-}}  // namespace anh::database
-
-namespace anh {
-namespace event_dispatcher {
-class EventInterface;
-}}  // namespace anh::event_dispatcher
-
-namespace swganh {
-namespace character {
-class CharacterProviderInterface;
-}}
-
-namespace swganh {
+namespace swganh_core {
 namespace login {
-    
-class AuthenticationManager;
-
-namespace providers {
-class AccountProviderInterface;
-}
 
 class LoginService 
-    : public anh::service::ServiceInterface
-    , public swganh::network::BaseSwgServer
+    : public swganh::login::LoginServiceInterface
 {
 public:
     LoginService(
@@ -93,14 +45,14 @@ private:
     
     std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
         
-    void HandleLoginClientId_(const std::shared_ptr<LoginClient>& login_client, swganh::messages::LoginClientId message);
+    void HandleLoginClientId_(const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, swganh::messages::LoginClientId message);
 
-    std::vector<GalaxyStatus> GetGalaxyStatus_();
+    std::vector<swganh::login::GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();
     
     typedef std::map<
         boost::asio::ip::udp::endpoint,
-        std::shared_ptr<LoginClient>
+        std::shared_ptr<swganh::login::LoginClientInterface>
     > SessionMap;
     
     boost::mutex session_map_mutex_;
@@ -110,11 +62,11 @@ private:
     swganh::character::CharacterServiceInterface* character_service_;
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
-	swganh::galaxy::GalaxyService* galaxy_service_;
-    std::shared_ptr<AuthenticationManager> authentication_manager_;
-    std::shared_ptr<providers::AccountProviderInterface> account_provider_;
+	swganh::galaxy::GalaxyServiceInterface* galaxy_service_;
+    std::shared_ptr<swganh::login::AuthenticationManagerInterface> authentication_manager_;
+    std::shared_ptr<swganh::login::providers::AccountProviderInterface> account_provider_;
     
-    std::vector<GalaxyStatus> galaxy_status_;
+    std::vector<swganh::login::GalaxyStatus> galaxy_status_;
     
     bool login_auto_registration_;
     int galaxy_status_check_duration_secs_;

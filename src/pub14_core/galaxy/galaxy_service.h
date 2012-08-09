@@ -4,25 +4,12 @@
 #ifndef SWGANH_GALAXY_GALAXY_SERVICE_H_
 #define SWGANH_GALAXY_GALAXY_SERVICE_H_
 
-#include <memory>
-#include <boost/asio/deadline_timer.hpp>
+#include "swganh/galaxy/galaxy_service_interface.h"
 
-#include "anh/service/service_interface.h"
-
-#include "swganh/app/swganh_kernel.h"
-#include "swganh/galaxy/providers/galaxy_provider_interface.h"
-
-namespace anh {
-    class EventDispatcherInterface;
-namespace app {
-class KernelInterface;
-}}  // namespace anh::app
-
-
-namespace swganh {
+namespace swganh_core {
 namespace galaxy {
 
-    class GalaxyService : public anh::service::ServiceInterface
+    class GalaxyService : public swganh::galaxy::GalaxyServiceInterface
     {
     public:    
         explicit GalaxyService(swganh::app::SwganhKernel* kernel);
@@ -41,7 +28,7 @@ namespace galaxy {
         
         void GalaxyStatusTimerHandler_(const boost::system::error_code& e, int delay_in_secs);
 
-    	std::shared_ptr<providers::GalaxyProviderInterface> galaxy_provider_;
+    	std::shared_ptr<swganh::galaxy::providers::GalaxyProviderInterface> galaxy_provider_;
         swganh::app::SwganhKernel* kernel_;
         anh::service::ServiceDirectoryInterface* service_directory_;
         anh::EventDispatcherInterface* event_dispatcher_;

@@ -12,7 +12,7 @@
 
 namespace swganh {
 namespace login {
-	class LoginClient;
+	class LoginClientInterface;
 }} // namespace swganh::login
 
 namespace swganh {
@@ -44,7 +44,7 @@ namespace messages {
     	}
     };
 
-    LoginClientToken BuildLoginClientToken(std::shared_ptr<swganh::login::LoginClient> login_client, const std::string& session_key);
+    LoginClientToken BuildLoginClientToken(std::shared_ptr<swganh::login::LoginClientInterface> login_client, const std::string& session_key);
 
 }} // namespace swganh::messages
 
