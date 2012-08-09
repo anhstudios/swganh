@@ -7,14 +7,14 @@
 
 #include "anh/logger.h"
 
-#include "anh/resource/resource_manager.h"
+#include "anh/resource/resource_manager_interface.h"
+#include "swganh/tre/visitors/visitor_types.h"
 #include "swganh/tre/visitors/datatables/datatable_visitor.h"
-#include "swganh/tre/iff/iff.h"
 
 using namespace swganh::tre;
 
 using anh::HashString;
-using anh::resource::ResourceManager;
+using anh::resource::ResourceManagerInterface;
 using pub14_core::command::CommandPropertiesManager;
 using swganh::command::CommandProperties;
 using swganh::command::CommandPropertiesMap;
@@ -23,7 +23,7 @@ using std::make_pair;
 using std::string;
 using std::vector;
 
-CommandPropertiesManager::CommandPropertiesManager(ResourceManager* resource_manager)
+CommandPropertiesManager::CommandPropertiesManager(ResourceManagerInterface* resource_manager)
     : resource_manager_(resource_manager)
 {
     command_properties_map_ = LoadCommandPropertiesMap();
@@ -53,10 +53,7 @@ CommandPropertiesMap CommandPropertiesManager::LoadCommandPropertiesMap()
     
     try 
     {
-        auto resource_handle = resource_manager_->GetHandle("datatables/command/command_table.iff");
-
-		auto datatable = std::make_shared<DatatableVisitor>();
-		iff_file iff(resource_handle->GetBuffer(), datatable);
+		auto datatable = std::static_pointer_cast<DatatableVisitor>(resource_manager_->getResourceByName("datatables/command/command_table.iff", DATATABLE_VISITOR));
         
 		vector<int> bits;
         std::for_each(datatable->begin_itr(), datatable->end_itr(), [&] (DatatableVisitor::DATA_ROW& row) {

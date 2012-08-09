@@ -13,7 +13,7 @@
 
 namespace anh {
 namespace resource {
-    class ResourceManager;
+    class ResourceManagerInterface;
 }}  // namespace anh::resource
 
 namespace pub14_core {
@@ -36,7 +36,7 @@ namespace command {
          *
          * @param resource_manager Valid ResourceManager instance.
          */
-        explicit CommandPropertiesManager(anh::resource::ResourceManager* resource_manager);
+        explicit CommandPropertiesManager(anh::resource::ResourceManagerInterface* resource_manager);
         ~CommandPropertiesManager();
 
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
@@ -50,7 +50,7 @@ namespace command {
         CommandPropertiesManager();
         uint64_t BuildBitmask(const std::vector<int>& bits) const;
 
-        anh::resource::ResourceManager* resource_manager_;
+        anh::resource::ResourceManagerInterface* resource_manager_;
         swganh::command::CommandPropertiesMap command_properties_map_;
     };
 

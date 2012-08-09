@@ -11,8 +11,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include "anh/resource/resource_archive_interface.h"
-
 #include "tre_reader.h"
 
 namespace swganh {
@@ -22,7 +20,7 @@ namespace tre {
      * TreArchive is a simple utility for accessing resource files from
      * a collection of .tre files.
      */
-    class TreArchive : public anh::resource::ResourceArchiveInterface
+    class TreArchive
     {
     public:
         /**
