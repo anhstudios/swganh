@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/galaxy/galaxy_service.h"
+#include "galaxy_service.h"
 
 #include <boost/asio/placeholders.hpp>
 
@@ -17,13 +17,13 @@ using namespace anh;
 using namespace app;
 using namespace service;
 using namespace swganh::app;
-using namespace swganh::galaxy;
+using namespace swganh_core::galaxy;
 using namespace std;
 
 GalaxyService::GalaxyService(SwganhKernel* kernel)
     : kernel_(kernel)
 {
-	galaxy_provider_ = kernel->GetPluginManager()->CreateObject<providers::GalaxyProviderInterface>("Galaxy::GalaxyProvider");
+	galaxy_provider_ = kernel->GetPluginManager()->CreateObject<swganh::galaxy::providers::GalaxyProviderInterface>("Galaxy::GalaxyProvider");
 }
 
 GalaxyService::~GalaxyService()

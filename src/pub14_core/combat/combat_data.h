@@ -20,7 +20,9 @@ namespace swganh {
 namespace command {
     class BaseCombatCommand;
 }
+}
 
+namespace swganh_core {
 namespace combat {
     
 struct CombatData : swganh::command::CommandProperties

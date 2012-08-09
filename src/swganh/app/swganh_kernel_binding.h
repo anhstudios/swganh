@@ -15,9 +15,9 @@
 #include "anh/event_dispatcher.h"
 #include "anh/app/kernel_interface.h"
 #include "anh/service/service_manager.h"
-#include "swganh/combat/combat_service.h"
+#include "swganh/combat/combat_service_interface.h"
 #include "swganh/command/command_service_interface.h"
-#include "swganh/social/social_service.h"
+#include "swganh/social/social_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 #include <boost/python.hpp>
@@ -39,9 +39,9 @@ void exportSWGANHKernel()
 
     class_<anh::service::ServiceManager, boost::noncopyable>("ServiceManager", "provides an interface to common services", no_init)
        .def("combat_service", make_function(
-               std::bind(&anh::service::ServiceManager::GetService<swganh::combat::CombatService>, std::placeholders::_1, "CombatService"),
+               std::bind(&anh::service::ServiceManager::GetService<swganh::combat::CombatServiceInterface>, std::placeholders::_1, "CombatService"),
                return_value_policy<reference_existing_object>(),
-                boost::mpl::vector<swganh::combat::CombatService*, anh::service::ServiceManager*>()),
+                boost::mpl::vector<swganh::combat::CombatServiceInterface*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.CombatService`")
        .def("command_service", make_function(
                std::bind(&anh::service::ServiceManager::GetService<swganh::command::CommandServiceInterface>, std::placeholders::_1, "CommandService"),
@@ -54,9 +54,9 @@ void exportSWGANHKernel()
                 boost::mpl::vector<swganh::simulation::SimulationServiceInterface*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SimulationService`")
         .def("social_service", make_function(
-               std::bind(&anh::service::ServiceManager::GetService<swganh::social::SocialService>, std::placeholders::_1, "SocialService"),
+               std::bind(&anh::service::ServiceManager::GetService<swganh::social::SocialServiceInterface>, std::placeholders::_1, "SocialService"),
                 return_value_policy<reference_existing_object>(),
-                boost::mpl::vector<swganh::social::SocialService*, anh::service::ServiceManager*>()),
+                boost::mpl::vector<swganh::social::SocialServiceInterface*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SocialService`")
        ;
        

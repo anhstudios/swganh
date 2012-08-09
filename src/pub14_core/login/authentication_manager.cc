@@ -1,11 +1,12 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/login/authentication_manager.h"
+#include "authentication_manager.h"
 
 #include "swganh/login/account.h"
-#include "swganh/login/login_client.h"
+#include "swganh/login/login_client_interface.h"
 
+using namespace swganh_core::login;
 using namespace swganh::login;
 using namespace std;
 
@@ -16,7 +17,7 @@ std::shared_ptr<encoders::EncoderInterface> AuthenticationManager::encoder() {
     return encoder_;
 }
 
-bool AuthenticationManager::Authenticate(std::shared_ptr<LoginClient> client, std::shared_ptr<Account> account) {
+bool AuthenticationManager::Authenticate(std::shared_ptr<LoginClientInterface> client, std::shared_ptr<Account> account) {
 
     auto current_account = client->GetAccount();
 

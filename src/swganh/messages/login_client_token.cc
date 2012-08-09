@@ -3,7 +3,7 @@
 
 #include "login_client_token.h"
 
-#include "swganh/login/login_client.h"
+#include "swganh/login/login_client_interface.h"
 #include "swganh/login/account.h"
 
 using namespace swganh::login;
@@ -13,7 +13,7 @@ using namespace std;
 using anh::ByteBuffer;
 
 LoginClientToken swganh::messages::BuildLoginClientToken(
-    shared_ptr<LoginClient> login_client, 
+    shared_ptr<LoginClientInterface> login_client, 
     const string& session_key)
 {
 	LoginClientToken message;

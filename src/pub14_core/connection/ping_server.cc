@@ -9,7 +9,7 @@
 
 #define RECEIVE_BUFFER 512
 
-using namespace swganh::connection;
+using namespace swganh_core::connection;
 
 PingServer::PingServer(boost::asio::io_service& io_service, uint16_t port)
     : socket_(io_service)

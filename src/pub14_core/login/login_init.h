@@ -14,6 +14,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "login_service.h"
 #include "mysql_account_provider.h"
 #include "mysql_session_provider.h"
 #include "sha512_encoder.h"
@@ -63,6 +64,30 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
      };
     
     kernel->GetPluginManager()->RegisterObject("Login::SessionProvider", &registration);
+
+	registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        auto app_config = kernel->GetAppConfig();
+		
+		auto login_service = new LoginService(
+		    app_config.login_config.listen_address, 
+		    app_config.login_config.listen_port, 
+		    kernel);
+
+		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
+		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
+        login_service->login_auto_registration(app_config.login_config.login_auto_registration);
+    
+		return login_service;
+    };
+
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete static_cast<LoginService*>(object);
+        }
+    };
+
+    kernel->GetPluginManager()->RegisterObject("Login::LoginService", &registration);
+
 }
 
 }}  // namespace swganh::login

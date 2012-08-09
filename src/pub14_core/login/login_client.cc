@@ -1,17 +1,18 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/login/login_client.h"
+#include "login_client.h"
 #include "swganh/object/object_controller.h"
 
 using namespace anh::network::soe;
 using namespace std;
+using namespace swganh_core::login;
 using namespace swganh::login;
 using namespace swganh::object;
 
 LoginClient::LoginClient(
     ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
-    : Session(server, io_service, remote_endpoint)
+    : LoginClientInterface(server, io_service, remote_endpoint)
 {}
 
 string LoginClient::GetUsername() const

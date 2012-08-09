@@ -7,7 +7,7 @@
 #include "anh/event_dispatcher.h"
 #include "anh/service/service_description.h"
 #include "anh/service/service_manager.h"
-#include "swganh/connection/connection_client.h"
+#include "swganh/connection/connection_client_interface.h"
 #include "swganh/object/player/player.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/simulation/simulation_service_interface.h"

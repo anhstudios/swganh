@@ -15,6 +15,7 @@
 #include "swganh/app/swganh_kernel.h"
 
 #include "mysql_galaxy_provider.h"
+#include "galaxy_service.h"
 
 #include "version.h"
 
@@ -38,7 +39,21 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
         }
     };
 
-    kernel->GetPluginManager()->RegisterObject("Galaxy::GalaxyProvider", &registration);    
+    kernel->GetPluginManager()->RegisterObject("Galaxy::GalaxyProvider", &registration);
+
+	// Register
+    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        return new GalaxyService(kernel);
+    };
+
+    registration.DestroyObject = [] (void * object) {
+        if (object) {
+            delete static_cast<GalaxyService*>(object);
+        }
+    };
+
+    kernel->GetPluginManager()->RegisterObject("Galaxy::GalaxyService", &registration);    
+
 }
 
 }}  // namespace swganh_core::galaxy
