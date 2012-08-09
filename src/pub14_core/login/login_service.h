@@ -63,8 +63,8 @@ private:
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
 
 	swganh::galaxy::GalaxyServiceInterface* galaxy_service_;
-    std::shared_ptr<AuthenticationManager> authentication_manager_;
-    std::shared_ptr<providers::AccountProviderInterface> account_provider_;
+    std::shared_ptr<swganh::login::AuthenticationManagerInterface> authentication_manager_;
+    std::shared_ptr<swganh::login::providers::AccountProviderInterface> account_provider_;
     
     std::vector<swganh::login::GalaxyStatus> galaxy_status_;
     

@@ -20,7 +20,7 @@
 
 #include "swganh/network/base_swg_server.h"
 
-#include "swganh/login/login_service.h"
+#include "swganh/login/login_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/messages/cmd_scene_ready.h"
 

@@ -19,7 +19,7 @@
 #include "swganh/network/base_swg_server.h"
 
 #include "swganh/character/character_service_interface.h"
-#include "swganh/galaxy/galaxy_service.h"
+#include "swganh/galaxy/galaxy_service_interface.h"
 
 #include "swganh/login/galaxy_status.h"
 #include "swganh/messages/login_client_id.h"
