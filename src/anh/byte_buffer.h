@@ -122,7 +122,7 @@ public:
     *
     * @return The next value in the ByteBuffer.
     */
-    template<typename T> const T read(bool do_swap_endian = false);
+    template<typename T> const T read(bool do_swap_endian = false, bool null_terminated_string=false);
 
     /*! Writes raw data to the ByteBuffer.
     *
@@ -150,6 +150,12 @@ public:
     * @param position The read position of the buffer.
     */
     void read_position(size_t position);
+
+	/*! Sets the read position of the ByteBuffer
+    *
+    * \param position A delta to apply to the read_position of the buffer
+    */
+    void read_position_delta(size_t delta);
 
     /*! @return Returns the write position of the ByteBuffer */
     size_t write_position() const;

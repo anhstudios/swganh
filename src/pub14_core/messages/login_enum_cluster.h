@@ -16,7 +16,7 @@
 
 namespace swganh {
 namespace login {
-	class LoginClient;
+	class LoginClientInterface;
 }} // namespace swganh::login
 
 namespace swganh {
@@ -64,7 +64,7 @@ namespace messages {
     	}
     };
 
-    LoginEnumCluster BuildLoginEnumCluster(std::shared_ptr<swganh::login::LoginClient> login_client, const std::vector<login::GalaxyStatus>& galaxy_status);
+    LoginEnumCluster BuildLoginEnumCluster(std::shared_ptr<swganh::login::LoginClientInterface> login_client, const std::vector<login::GalaxyStatus>& galaxy_status);
 
 }} // namespace swganh::messages
 

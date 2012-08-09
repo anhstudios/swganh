@@ -70,7 +70,7 @@ namespace tre {
          * \param resource_name The name of the resource.
          * \return The file in binary format (move constructable).
          */
-        TreResourceData GetResource(const std::string& resource_name);
+        anh::ByteBuffer GetResource(const std::string& resource_name);
         
         /**
          * Retrieves the requested resource in binary format.
@@ -81,7 +81,7 @@ namespace tre {
          * \param resource_name The name of the resource.
          * \param buffer The buffer to store the resource.
          */
-        void GetResource(const std::string& resource_name, std::vector<char>& buffer);
+        void GetResource(const std::string& resource_name, anh::ByteBuffer& buffer);
         
         /**
          * Returns the md5 hash of the requested resource.

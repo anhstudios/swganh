@@ -4,6 +4,7 @@
 #include "tre_archive.h"
 
 #include "config_reader.h"
+#include "anh/byte_buffer.h"
     
 using namespace swganh::tre;
 
@@ -52,7 +53,7 @@ uint32_t TreArchive::GetResourceSize(const string& resource_name) const
     throw runtime_error("Requested unknown resource " + resource_name);
 }
 
-TreResourceData TreArchive::GetResource(const string& resource_name)
+anh::ByteBuffer TreArchive::GetResource(const string& resource_name)
 {
     for (auto& reader : readers_)
     {
@@ -65,7 +66,7 @@ TreResourceData TreArchive::GetResource(const string& resource_name)
     throw runtime_error("Requested unknown resource " + resource_name);
 }
 
-void TreArchive::GetResource(const std::string& resource_name, std::vector<char>& buffer)
+void TreArchive::GetResource(const std::string& resource_name, anh::ByteBuffer& buffer)
 {
     for (auto& reader : readers_)
     {

@@ -10,7 +10,6 @@
 #include <boost/optional.hpp>
 
 #include "swganh/command/command_properties_manager_interface.h"
-#include "swganh/tre/readers/datatable_reader.h"
 
 namespace anh {
 namespace resource {
@@ -49,10 +48,7 @@ namespace command {
 
     private:
         CommandPropertiesManager();
-
-        uint64_t BuildAllowInLocomotion(swganh::tre::readers::DatatableRow* row);
-        uint64_t BuildAllowInState(swganh::tre::readers::DatatableRow* row);
-        uint64_t BuildBitmask(const std::vector<int>& bits);
+        uint64_t BuildBitmask(const std::vector<int>& bits) const;
 
         anh::resource::ResourceManager* resource_manager_;
         swganh::command::CommandPropertiesMap command_properties_map_;

@@ -9,6 +9,7 @@
 #include <vector>
 
 namespace anh {
+	class ByteBuffer;
 namespace resource {
 
 	class ResourceArchiveInterface
@@ -18,7 +19,7 @@ namespace resource {
 
 		virtual bool Open() = 0;
 		virtual uint32_t GetResourceSize(const std::string& resource_name) const = 0;
-		virtual void GetResource(const std::string& resource_name, std::vector<char>& buffer) = 0;
+		virtual void GetResource(const std::string& resource_name, ByteBuffer& buffer) = 0;
 	};
 
 }}  // namespace anh::resource

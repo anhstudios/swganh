@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "anh/byte_buffer.h"
+
 namespace anh {
 namespace resource {
 
@@ -23,20 +25,20 @@ namespace resource {
 		ResourceHandle(
 			ResourceManager* resource_manager, 
 			const std::string& resource_name, 
-			const std::shared_ptr<std::vector<char>>& buffer);
+			ByteBuffer& buffer);
 
 		void Load(const std::shared_ptr<ResourceArchiveInterface>& resource_archive);
 
 		uint32_t GetSize() const;
 
-		const std::vector<char>& GetBuffer() const;
+		ByteBuffer& GetBuffer();
 
         const std::string& GetName() const;
 
 	private:
 		ResourceManager* resource_manager_;
 		std::string resource_name_;
-		std::shared_ptr<std::vector<char>> buffer_;
+		ByteBuffer buffer_;
 		uint32_t size_;
 	};
 
@@ -58,7 +60,7 @@ namespace resource {
 		std::shared_ptr<ResourceHandle> Find(const std::string& resource_name);
 		std::shared_ptr<ResourceHandle> Load(const std::string& resource_name);
 		void Update(const std::shared_ptr<ResourceHandle>& handle);
-		std::shared_ptr<std::vector<char>> Allocate(uint32_t size);
+		ByteBuffer Allocate(uint32_t size);
 		void FreeOneResource();
 		bool MakeRoom(uint32_t size);
 		void Free(const std::shared_ptr<ResourceHandle>& handle);
