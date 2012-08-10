@@ -52,7 +52,8 @@
 #include "swganh/messages/obj_controller_message.h"
 #include "swganh/messages/update_containment_message.h"
 
-#include "swganh/tre/tre_archive.h"
+#include "swganh/tre/resource_manager.h"
+#include "swganh/tre/visitors/objects/object_visitor.h"
 
 #include "movement_manager.h"
 #include "scene_manager.h"
@@ -66,6 +67,8 @@ using namespace swganh::network;
 using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh_core::simulation;
+
+using namespace swganh::tre;
 
 using anh::network::soe::ServerInterface;
 using anh::network::soe::Session;
@@ -363,6 +366,19 @@ public:
 
         // Add object to scene and send baselines
         scene->AddObject(object);
+
+		////////// TESTING ///////////
+		////////// TESTING ///////////
+
+		auto object_template = std::static_pointer_cast<ObjectVisitor>(
+			kernel_->GetResourceManager()->getResourceByName(
+			"object/tangible/wearables/armor/marine/shared_armor_marine_backpack.iff", 
+			OIFF_VISITOR));
+		object_template->load_aggregate_data(kernel_->GetResourceManager());
+		object_template->load_referenced_files(kernel_->GetResourceManager());
+
+		////////// TESTING ///////////
+		////////// TESTING ///////////
     }
 
 	void SendToAll(ByteBuffer message)

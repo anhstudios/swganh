@@ -7,8 +7,10 @@
 #include "../../iff/filenode.h"
 #include "../../iff/foldernode.h"
 
-//#include <anh/clientfile_manager/filemanager.h>
+#include <anh/resource/resource_manager_interface.h>
 
+#include <swganh/tre/visitors/slots/slot_arrangement_visitor.h>
+#include <swganh/tre/visitors/slots/slot_descriptor_visitor.h>
 
 using namespace swganh::tre;
 using namespace std;
@@ -179,7 +181,7 @@ void ObjectVisitor::_handleClientString(ObjectVisitor* dst, string& name, anh::B
 				cs->entry = buf.read<std::string>(false,true);
 			}
 		}
-		dst->attributes_.insert(make_pair<string, shared_ptr<ClientString>>(move(name), std::move(cs)));
+		dst->attributes_.insert(AttributeMap::value_type(move(name), std::make_shared<boost::any>(cs)));
 	}
 }
 
@@ -187,7 +189,7 @@ void ObjectVisitor::_handleString(ObjectVisitor* dst, string& name, anh::ByteBuf
 {
 	if(buf.read<char>())
 	{
-		dst->attributes_.insert(make_pair<string, shared_ptr<string>>(move(name), make_shared<string>(buf.read<std::string>(false,true))));
+		dst->attributes_.insert(AttributeMap::value_type(move(name), std::make_shared<boost::any>(buf.read<std::string>(false,true))));
 	}
 }
 
@@ -197,7 +199,7 @@ void ObjectVisitor::_handleInt(ObjectVisitor* dst, string& name, anh::ByteBuffer
 	{
 		buf.read<char>();
 		uint32_t buffer = buf.read<uint32_t>();
-		dst->attributes_.insert(make_pair<string, uint32_t>(move(name), std::move(buffer)));
+		dst->attributes_.insert(AttributeMap::value_type(move(name), std::make_shared<boost::any>(buffer)));
 	}
 }
 
@@ -207,7 +209,7 @@ void ObjectVisitor::_handleFloat(ObjectVisitor* dst, string& name, anh::ByteBuff
 	{
 		buf.read<char>();
 		float buffer = buf.read<float>();
-		dst->attributes_.insert(make_pair<string, float>(move(name), std::move(buffer)));
+		dst->attributes_.insert(AttributeMap::value_type(move(name), std::make_shared<boost::any>(buffer)));
 	}
 }
 
@@ -215,7 +217,7 @@ void ObjectVisitor::_handleBool(ObjectVisitor* dst, string& name, anh::ByteBuffe
 {
 	if(buf.read<char>())
 	{
-		dst->attributes_.insert(make_pair<string, bool>(move(name), (buf.read<char>()) ? true : false));
+		dst->attributes_.insert(AttributeMap::value_type(move(name), std::make_shared<boost::any>((buf.read<char>()) ? true : false)));
 	}
 }
 
@@ -234,29 +236,29 @@ void ObjectVisitor::debug()
 		++parentIt;
 	}
 
-	std::map<std::string, boost::any>::const_iterator it = attributes_.cbegin();
+	AttributeMap::const_iterator it = attributes_.cbegin();
 
 	while(it != attributes_.cend())
 	{
-		printf("Attribute: \"%s\", value=", it->first.c_str(), it->second.type().name());
-		if(it->second.type() == typeid(std::uint32_t))
+		printf("Attribute: \"%s\", value=", it->first.c_str(), it->second->type().name());
+		if(it->second->type() == typeid(std::uint32_t))
 		{
 			printf("%d", boost::any_cast<std::uint32_t>(it->second));
 		}
-		else if(it->second.type() == typeid(shared_ptr<std::string>))
+		else if(it->second->type() == typeid(shared_ptr<std::string>))
 		{
 			printf("%s", boost::any_cast<shared_ptr<std::string>>(it->second)->c_str());
 		}
-		else if(it->second.type() == typeid(shared_ptr<ClientString>))
+		else if(it->second->type() == typeid(shared_ptr<ClientString>))
 		{
 			shared_ptr<ClientString> cs = boost::any_cast<shared_ptr<ClientString>>(it->second);
 			printf("@%s:%s", cs->file.c_str(), cs->entry.c_str());
 		}
-		else if(it->second.type() == typeid(float))
+		else if(it->second->type() == typeid(float))
 		{
 			printf("%f", boost::any_cast<float>(it->second));
 		}
-		else if(it->second.type() == typeid(shared_ptr<bool>))
+		else if(it->second->type() == typeid(shared_ptr<bool>))
 		{
 			printf("%s", (boost::any_cast<bool>(it->second)) ? "true" : "false");
 		}
@@ -265,48 +267,54 @@ void ObjectVisitor::debug()
 	}
 }
 
-/*
-void ObjectVisitor::load_aggregate_data(anh::clientfile_manager::file_manager& f)
+
+void ObjectVisitor::load_aggregate_data(anh::resource::ResourceManagerInterface* f)
 {
 	if(!has_aggregate_)
 	{
-		std::map<std::string, boost::any> aggregateAttributeMap;
+		AttributeMap aggregateAttributeMap;
 
-		std::set<std::string>::iterator it = parentFiles.begin();
-		std::set<std::string>::iterator end = parentFiles.end();
-		while(it != end)
+		std::for_each(parentFiles.begin(), parentFiles.end(), [&] (std::string parentFile)
 		{
-			std::shared_ptr<ObjectVisitor> subI = f.load<ObjectVisitor>((*it));
+			auto subI = std::static_pointer_cast<ObjectVisitor>(f->getResourceByName(parentFile, OIFF_VISITOR));
 			subI->load_aggregate_data(f);
 
 			//Now we continue to build up our map.
-			std::map<std::string, boost::any>::iterator sub_it = subI->attributes_.begin();
-			std::map<std::string, boost::any>::iterator sub_end = subI->attributes_.end();
-			while(sub_it != sub_end)
-			{
-				aggregateAttributeMap.insert(*sub_it);
-				++sub_it;
-			}
-			++it;
-		}
+			std::for_each(subI->attributes_.begin(), subI->attributes_.end(), [&] (AttributeMap::value_type pair) {
+				AttributeMap::iterator lb = aggregateAttributeMap.lower_bound(pair.first);
+				if(lb != aggregateAttributeMap.end() && !(aggregateAttributeMap.key_comp()(pair.first, lb->first)))
+				{
+					lb->second = pair.second;
+				}
+				else
+				{
+					aggregateAttributeMap.insert(lb, AttributeMap::value_type(pair.first, pair.second));
+				}
+			});
+		});
 
-		std::map<std::string, boost::any>::iterator old_it = attributes_.begin();
-		std::map<std::string, boost::any>::iterator old_end = attributes_.end();
-		while(old_it != old_end)
-		{
-			aggregateAttributeMap.insert(std::move(*old_it));
-			++old_it;
-		}
+		std::for_each(attributes_.begin(), attributes_.end(), [&] (AttributeMap::value_type pair) {
+			AttributeMap::iterator lb = aggregateAttributeMap.lower_bound(pair.first);
+			if(lb != aggregateAttributeMap.end() && !(aggregateAttributeMap.key_comp()(pair.first, lb->first)))
+			{
+				lb->second = pair.second;
+			}
+			else
+			{
+				aggregateAttributeMap.insert(lb, AttributeMap::value_type(pair.first, pair.second));    // Use lb as a hint to insert,
+																// so it can avoid another lookup
+			}
+		});
 
 		attributes_ = std::move(aggregateAttributeMap);
 		has_aggregate_ = true;
 	}
 }
 
-void ObjectVisitor::load_referenced_files(anh::clientfile_manager::file_manager& f)
+void ObjectVisitor::load_referenced_files(anh::resource::ResourceManagerInterface* f)
 {
-	std::map<std::string, boost::any>::iterator itr;
-	std::map<std::string, boost::any>::iterator end_itr = attributes_.end();
+	std::map<std::string, std::shared_ptr<boost::any>>::iterator itr;
+	std::map<std::string, std::shared_ptr<boost::any>>::iterator end_itr = attributes_.end();
 
 	//animationMapFilename
 	//appearanceFilename
@@ -314,7 +322,11 @@ void ObjectVisitor::load_referenced_files(anh::clientfile_manager::file_manager&
 	itr = attributes_.find("arrangementDescriptorFilename");
 	if(itr != end_itr)
 	{
-		itr->second = f.load<slot_arrangement_interpreter>(itr->first);
+		std::string value = boost::any_cast<std::string>(*(itr->second));
+		if(value != "") {
+			auto newVal = std::static_pointer_cast<SlotArrangementVisitor>(f->getResourceByName(value, SLOT_ARRANGEMENT_VISITOR));
+			itr->second = std::make_shared<boost::any>(newVal);
+		}
 	}
 
 	//clientDataFile
@@ -322,21 +334,23 @@ void ObjectVisitor::load_referenced_files(anh::clientfile_manager::file_manager&
 	//interiorLayoutFileName
 	//movementDatatable
 	//portalLayoutFilename
-	itr = attributes_.find("portalLayoutFilename");
+	/*itr = attributes_.find("portalLayoutFilename");
 	if(itr != end_itr)
 	{
 		itr->second = f.load<pob_interpreter>(itr->first);
-	}
+	}*/
 
 	//slotDescriptorFilename
 	itr = attributes_.find("slotDescriptorFilename");
 	if(itr != end_itr)
 	{
-		itr->second = f.load<slot_descriptor_interpreter>(itr->first);
+		std::string value = boost::any_cast<std::string>(*(itr->second));
+		if(value != "") {
+			auto newVal = std::static_pointer_cast<SlotDescriptorVisitor>(f->getResourceByName(value, SLOT_DESCRIPTOR_VISITOR));
+			itr->second = std::make_shared<boost::any>(newVal);
+		}
 	}
 
 	//structureFootprintFileName
 	//terrainModificationFileName
 }
-
-*/

@@ -14,6 +14,14 @@
 #include <memory>
 #include <boost/any.hpp>
 
+namespace anh
+{
+namespace resource
+{
+	class ResourceManagerInterface;
+}
+}
+
 namespace swganh
 {
 namespace tre
@@ -26,6 +34,7 @@ namespace tre
 	typedef std::function<void(ObjectVisitor*, std::string&, anh::ByteBuffer&)> AttributeFunctor;
 	typedef std::map<std::string, AttributeFunctor> AttributeHandlerIndex;
 	typedef std::map<std::string, AttributeFunctor>::const_iterator AttributeHandlerIndexIterator;
+	typedef std::map<std::string, std::shared_ptr<boost::any>> AttributeMap;
 	//End Typedefs
 
 	/**
@@ -87,7 +96,7 @@ namespace tre
 
 			@param f the filemanager instance for retriving the necessary files.
 		*/
-		//void load_aggregate_data(file_manager& f);
+		void load_aggregate_data(anh::resource::ResourceManagerInterface* f);
 
 		/**
 			@brief Causes this OIFFInterpreter to load any referenced files it has. It will use the filemanager
@@ -95,7 +104,7 @@ namespace tre
 
 			@param f the filemanager instance for retrieving the necessary files.
 		*/
-		//void load_referenced_files(file_manager& f);
+		void load_referenced_files(anh::resource::ResourceManagerInterface* f);
 
 		/**
 			@brief a simple output function for debugging values.
@@ -119,7 +128,7 @@ namespace tre
 		void _handleDERVXXXX(anh::ByteBuffer& buf);
 
 		//Attributes this object iff might have
-		std::map<std::string, boost::any> attributes_;
+		AttributeMap attributes_;
 				
 		//Parent files this object iff might have
 		std::set<std::string> parentFiles;
