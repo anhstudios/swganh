@@ -396,12 +396,14 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
     }
     else
     {
-        // Tell the client we have received an Out of Order sequence.
-        OutOfOrderA	out_of_order(sequence);
-        ByteBuffer buffer;
-        out_of_order.serialize(buffer);
-        SendSoePacket_(move(buffer));
-
+    	if (next_client_sequence_ < sequence)
+    	{
+	    // Tell the client we have received an Out of Order sequence.
+	    OutOfOrderA	out_of_order(sequence);
+	    ByteBuffer buffer;
+	    out_of_order.serialize(buffer);
+	    SendSoePacket_(move(buffer));
+	}
         return false;
     }
 }
