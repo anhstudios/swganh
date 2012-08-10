@@ -94,13 +94,6 @@ public:
 		GUILD = 1145850183,
 		GROUP = 1196578128
 	};
-
-    enum ContainmentType : uint32_t
-    {
-        UNLINK = 0xFFFFFFFF,
-        LINK = 4
-    };
-
 	
 	typedef std::map<
 		uint64_t,
@@ -141,9 +134,8 @@ public:
      * for other Objects. For example, storing items in an inventory.
      *
      * @param object The object to contain.
-     * @param containment_type The type of containment in which to hold the given object.
      */
-    void AddContainedObject(const std::shared_ptr<Object>& object, ContainmentType containment_type);
+    void AddContainedObject(const std::shared_ptr<Object>& object);
 
     /**
      * Checks to see if the current Object contains the given instance.
@@ -502,8 +494,15 @@ public:
     void RemoveFlag(std::string flag);
     bool HasFlag(std::string flag);
 
+	/// Slot Functions
+	int32_t GetAppropriateArrangementId(std::shared_ptr<Object> other);
+
+	///
+
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
+
+	std::atomic<int> arrangement_id_;
 
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create

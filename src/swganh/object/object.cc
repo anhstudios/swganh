@@ -67,7 +67,7 @@ void Object::ClearController()
     Unsubscribe(controller);
 }
 
-void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentType containment_type)
+void Object::AddContainedObject(const shared_ptr<Object>& object)
 {
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -512,9 +512,32 @@ bool Object::HasFlag(std::string flag)
 
     return flags_.find(flag) != flags_.end();
 }
+/// Slots
 
 void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements)
 {
 	slot_descriptor_ = slots;
 	slot_arrangements_ = arrangements;
+}
+
+int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
+{
+	if (slot_descriptor_.size() == 0)
+		return -1;
+
+	// Find appropriate arrangement
+	int arrangement_id = 0;
+	int filled_arrangement_id = -1;
+	for ( auto& arrangement : slot_arrangements_)
+	{
+		bool passes_completely = true;
+		
+		for (auto& slot : arrangement)
+		{
+			auto& f = find_if(begin(slot_descriptor_), end(slot_descriptor_), [&](ObjectSlots::value_type descriptor)
+			{
+				return descriptor.second->is_filled();
+			});
+		}
+	}
 }
