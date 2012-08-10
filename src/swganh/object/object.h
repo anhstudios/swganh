@@ -506,7 +506,9 @@ public:
 
 	/// Slot Functions
 	int32_t GetAppropriateArrangementId(std::shared_ptr<Object> other);
-
+	ObjectSlots GetSlotDescriptor();
+	ObjectArrangements GetSlotArrangements();
+	
 	///
 
 protected:

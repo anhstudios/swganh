@@ -22,6 +22,7 @@ void exportObject()
     //std::shared_ptr<ObjectController> (ObjectWrapper::*GetControllerPtr)() = &ObjectWrapper::GetController;
 
     typedef void (Object::*NotifyObserversFunc)(const anh::ByteBuffer& message);
+	void (Object::*EquipFunc)(shared_ptr<Object>) = &Object::AddContainedObject;
 
     class_<Object, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from", no_init)
 		.add_property("id", &Object::GetObjectId, "Gets The id of the object")
@@ -41,6 +42,8 @@ void exportObject()
         .def("HasFlag", &Object::HasFlag, "Checks if the object has a specific flag set on it")
         .def("SetFlag", &Object::SetFlag, "Sets a flag on the object")
         .def("RemoveFlag", &Object::RemoveFlag, "Removes a flag from the object")
+		.def("Equip", EquipFunc, "Equips an object")
+		.def("UnEquip", &Object::RemoveContainedObject, "UnEquips and object")
 		;
 }
 

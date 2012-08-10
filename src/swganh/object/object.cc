@@ -89,7 +89,7 @@ void Object::AddContainedObject(shared_ptr<Object> object)
 		object->SetArrangementId(arrangement_id);
 		object->SetContainer(shared_from_this());
     }
-			
+	
     if (HasController())
     {
         object->Subscribe(GetController());
@@ -573,6 +573,7 @@ void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangemen
 
 int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 {
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
 	if (slot_descriptor_.size() == 0)
 		return -1;
 
@@ -609,4 +610,15 @@ int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 		++arrangement_id;
 	}
 	return filled_arrangement_id;
+}
+
+ObjectSlots Object::GetSlotDescriptor()
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	return slot_descriptor_;
+}
+ObjectArrangements Object::GetSlotArrangements()
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	return slot_arrangements_;
 }

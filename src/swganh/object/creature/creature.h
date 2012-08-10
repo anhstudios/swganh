@@ -595,6 +595,10 @@ public:
     bool InDuelList(uint64_t id);
     std::vector<uint64_t> GetDuelList();
 
+	// overrides
+	virtual void AddContainedObject(std::shared_ptr<Object> object);
+	virtual void AddContainedObject(std::shared_ptr<Object> object, int32_t arrangement_id);
+
     // Baselines
     virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
 
