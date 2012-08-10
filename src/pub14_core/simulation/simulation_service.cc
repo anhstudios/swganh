@@ -565,7 +565,6 @@ void SimulationService::Startup()
 
     SimulationServiceInterface::RegisterControllerHandler(
         &MovementManagerInterface::HandleDataTransformWithParent, impl_->GetMovementManager());
-
     
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
