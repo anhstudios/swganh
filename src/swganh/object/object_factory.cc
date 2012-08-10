@@ -35,7 +35,7 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object)
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-            (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+            (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         PersistObject(object, statement);
         // Now execute the update
         statement->executeUpdate();
@@ -77,6 +77,7 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared
         auto custom_name = object->GetCustomName();
         prepared_statement->setString(15, string(begin(custom_name), end(custom_name)));
         prepared_statement->setUInt(16, object->GetVolume());
+		prepared_statement->setInt(17, object->GetArrangementId());
 
     }
     catch(sql::SQLException &e)
@@ -107,7 +108,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
         object->SetVolume(result->getUInt("volume"));
         object->SetTemplate(result->getString("iff_template"));
-		//object->SetArrangementId(result->getInt("arrangement_id"));
+		object->SetArrangementId(result->getInt("arrangement_id"));
 
 		object_manager_->LoadSlotsForObject(object);
     }

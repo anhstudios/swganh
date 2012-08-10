@@ -23,7 +23,8 @@ CREATE PROCEDURE `sp_PersistPlayer`(
     IN `in_stf_name_file` VARCHAR(255), 
     IN `in_stf_name_string` VARCHAR(255), 
     IN `in_custom_name` VARCHAR(50), 
-    IN `in_volume` INT, 
+    IN `in_volume` INT,
+	IN `in_arrangement_id` INT,
     IN `in_profession_tag` VARCHAR(255), 
     IN `in_total_playtime` BIGINT, 
     IN `in_csr_tag` SMALLINT, 
@@ -41,7 +42,7 @@ CREATE PROCEDURE `sp_PersistPlayer`(
     IN `in_jedi_state` INT)
 BEGIN
     CALL sp_PersistObject(in_object_id, in_scene_id, in_parent_id, template_string, posX, posY, posZ, oX, oY, oZ, oW, in_complexity, in_stf_name_file,
-        in_stf_name_string, in_custom_name, in_volume);
+        in_stf_name_string, in_custom_name, in_volume, in_arrangement_id);
 
     update player set profession_tag = in_profession_tag, total_playtime = in_total_playtime, csr_tag = in_csr_tag, max_force = in_max_force,
         experimentation_enabled = in_experimentation_enabled, crafting_stage = in_crafting_stage, nearest_crafting_station = in_nearest_crafting_station,

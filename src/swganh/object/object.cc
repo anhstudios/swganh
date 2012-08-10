@@ -437,7 +437,6 @@ uint8_t Object::GetHeading()
 void Object::SetContainer(const std::shared_ptr<Object>& container)
 {
     {
-		LOG(warning) << "Template id SetContainer: " << GetTemplate();
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         container_ = container;
     }

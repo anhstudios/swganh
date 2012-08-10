@@ -69,16 +69,16 @@ void TangibleFactory::PersistObject(const shared_ptr<Object>& object)
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-            (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+            (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         ObjectFactory::PersistObject(object, statement);
         // cast to tangible
         auto tangible = static_pointer_cast<Tangible>(object);
-        statement->setString(17, tangible->GetCustomization());
-        statement->setInt(18, tangible->GetOptionsMask());
-        statement->setInt(19, tangible->GetIncapTimer());
-        statement->setInt(20, tangible->GetCondition());
-        statement->setInt(21, tangible->GetMaxCondition());
-        statement->setBoolean(22, tangible->IsStatic());
+        statement->setString(18, tangible->GetCustomization());
+        statement->setInt(19, tangible->GetOptionsMask());
+        statement->setInt(20, tangible->GetIncapTimer());
+        statement->setInt(21, tangible->GetCondition());
+        statement->setInt(22, tangible->GetMaxCondition());
+        statement->setBoolean(23, tangible->IsStatic());
         statement->executeUpdate();
     }
     catch(sql::SQLException &e)
