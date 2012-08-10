@@ -525,7 +525,7 @@ int32_t Object::GetArrangementId()
 
 void Object::SetArrangementId(int32_t arrangement_id)
 {
-	arrangement_id_ = arrangement_id_;
+	arrangement_id_ = arrangement_id;
 }
 
 anh::EventDispatcher* Object::GetEventDispatcher()
