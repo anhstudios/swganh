@@ -29,7 +29,9 @@
 #include "swganh/messages/obj_controller_message.h"
 
 #include "swganh/object/object_controller.h"
-#include "swganh/object/slot_interface.h"
+
+#include "swganh/object/slot_exclusive.h"
+#include "swganh/object/slot_container.h"
 
 namespace swganh {
 namespace object {
@@ -45,8 +47,10 @@ typedef std::vector<
 
 typedef std::map<
 	int32_t,
-	std::shared_ptr<SlotInterface>
+	std::shared_ptr<SlotExclusive>
 > ObjectSlots;
+
+typedef std::shared_ptr<SlotContainer> BaseSlot;
 
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
@@ -185,6 +189,12 @@ public:
      * @return A map of all contained objects and their containment types.
      */
     ObjectMap GetContainedObjects();
+
+	std::shared_ptr<Object> GetEquippedObject(int slot_id);
+
+	const std::set<std::shared_ptr<Object>>& GetBaseSlotObjects();
+
+	void ClearSlot(int slot_id);
 
     /**
      * Adds an Object to the awareness list of the existing instance.
@@ -536,6 +546,7 @@ private:
 
     ObjectMap aware_objects_;
     
+	BaseSlot base_slot_;
 	ObjectSlots slot_descriptor_;
 	ObjectArrangements slot_arrangements_;
 

@@ -71,29 +71,13 @@ void Object::ClearController()
 
 void Object::AddContainedObject(shared_ptr<Object> object)
 {
+	int32_t arrangement_id = -2;
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-
-		int32_t arrangement_id = GetAppropriateArrangementId(object);
-		// Add to first slot if can't find appropriate
-		if (arrangement_id == -1)
-			slot_descriptor_[-1]->insert_object(object);
-		else
-		{
-			auto& arrangement = object->slot_arrangements_[arrangement_id-4];
-			for (auto& i : arrangement)
-			{
-				slot_descriptor_[i]->insert_object(object);
-			}
-		}
-		object->SetArrangementId(arrangement_id);
-		object->SetContainer(shared_from_this());
+		arrangement_id = GetAppropriateArrangementId(object);
     }
 	
-    if (HasController())
-    {
-        object->Subscribe(GetController());
-    }
+	AddContainedObject(object, arrangement_id);
 }
 
 void Object::AddContainedObject(std::shared_ptr<Object> object, int32_t arrangement_id)
@@ -103,7 +87,7 @@ void Object::AddContainedObject(std::shared_ptr<Object> object, int32_t arrangem
 
 		// Add to first slot if can't find appropriate
 		if (arrangement_id == -1)
-			slot_descriptor_[0]->insert_object(object);
+			base_slot_->insert_object(object);
 		else
 		{
 			auto& arrangement = object->slot_arrangements_[arrangement_id-4];
@@ -133,6 +117,7 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
     
+	base_slot_->remove_object(object);
 	for (auto& slot : slot_descriptor_)
 	{
 		slot.second->remove_object(object);
@@ -148,6 +133,11 @@ Object::ObjectMap Object::GetContainedObjects()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
     ObjectMap object_map;
+	
+	base_slot_->view_objects([&](const std::shared_ptr<Object> other){
+		object_map.insert(ObjectMap::value_type(other->GetObjectId(), other));
+	});
+
 	for (auto& descriptor : slot_descriptor_)
 	{
 		descriptor.second->view_objects([&](const std::shared_ptr<Object> other){
@@ -156,6 +146,33 @@ Object::ObjectMap Object::GetContainedObjects()
 	}
 
 	return object_map;
+}
+
+std::shared_ptr<Object> Object::GetEquippedObject(int slot_id)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+
+	auto slot_container = slot_descriptor_.find(slot_id);
+	if(slot_container != slot_descriptor_.end())
+	{
+		return slot_container->second->GetHeldObject();
+	}
+	return nullptr;
+}
+
+const std::set<std::shared_ptr<Object>>& Object::GetBaseSlotObjects()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return base_slot_->GetHeldObjects();
+}
+
+void Object::ClearSlot(int slot_id)
+{
+	auto contained_object = GetEquippedObject(slot_id);
+	if(contained_object != nullptr)
+	{
+		RemoveContainedObject(contained_object);
+	}
 }
 
 void Object::AddAwareObject(const shared_ptr<Object>& object)
@@ -569,6 +586,7 @@ void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangemen
 	boost::lock_guard<boost::mutex> lg(object_mutex_);
 	slot_descriptor_ = slots;
 	slot_arrangements_ = arrangements;
+	base_slot_ = std::make_shared<SlotContainer>();
 }
 
 int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)

@@ -290,19 +290,15 @@ void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 
 	// Globals
 	//
-	descriptors.insert(ObjectSlots::value_type(-1, shared_ptr<SlotContainer>(new SlotContainer())));				
 	for (size_t k = 0; k < slot_definition_->count(); ++k)
 	{
-		auto entry = slot_definition_->entry(k);
-			
+		auto entry = slot_definition_->entry(k);		
 		if (entry.global)
 		{
-			if (entry.exclusive)
-				descriptors.insert(ObjectSlots::value_type(k, shared_ptr<SlotExclusive>(new SlotExclusive())));
-			else
-				descriptors.insert(ObjectSlots::value_type(k, shared_ptr<SlotContainer>(new SlotContainer())));				
+			descriptors.insert(ObjectSlots::value_type(k, shared_ptr<SlotExclusive>(new SlotExclusive())));
 		}
 	}
+
 	// Descriptors
 	if (slotDescriptor != nullptr)
 	{
@@ -310,11 +306,7 @@ void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 		{
 			auto descriptor = slotDescriptor->slot(j);
 			size_t id = slot_definition_->findSlotByName(descriptor);
-			auto entry = slot_definition_->entry(id);
-			if (entry.exclusive)
-				descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotExclusive>(new SlotExclusive())));
-			else
-				descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotContainer>(new SlotContainer())));								
+			descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotExclusive>(new SlotExclusive())));							
 		}
 	}
 	
