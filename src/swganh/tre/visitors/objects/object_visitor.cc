@@ -19,7 +19,7 @@ using namespace std::tr1::placeholders;
 AttributeHandlerIndex ObjectVisitor::attributeHandler_;
 
 ObjectVisitor::ObjectVisitor()
-	: VisitorInterface(), has_aggregate_(false)
+	: VisitorInterface(), has_aggregate_(false), loaded_reference_(false)
 {
 	if(attributeHandler_.empty())
 	{
@@ -307,12 +307,14 @@ void ObjectVisitor::load_aggregate_data(anh::resource::ResourceManagerInterface*
 		});
 
 		attributes_ = std::move(aggregateAttributeMap);
-		has_aggregate_ = true;
+		has_aggregate_ = true;		
 	}
 }
 
 void ObjectVisitor::load_referenced_files(anh::resource::ResourceManagerInterface* f)
 {
+	if (loaded_reference_)
+		return;
 	std::map<std::string, std::shared_ptr<boost::any>>::iterator itr;
 	std::map<std::string, std::shared_ptr<boost::any>>::iterator end_itr = attributes_.end();
 
@@ -329,7 +331,8 @@ void ObjectVisitor::load_referenced_files(anh::resource::ResourceManagerInterfac
 		}
 		else
 		{
-			itr->second = make_shared<boost::any>();
+			shared_ptr<SlotArrangementVisitor> arrangement = nullptr;
+			itr->second = make_shared<boost::any>(arrangement);
 		}
 	}
 
@@ -355,10 +358,13 @@ void ObjectVisitor::load_referenced_files(anh::resource::ResourceManagerInterfac
 		}
 		else
 		{
-			itr->second = make_shared<boost::any>();
+			shared_ptr<SlotDescriptorVisitor> descriptor = nullptr;
+			itr->second = make_shared<boost::any>(descriptor);
 		}
 	}
 
 	//structureFootprintFileName
 	//terrainModificationFileName
+
+	loaded_reference_ = true;
 }

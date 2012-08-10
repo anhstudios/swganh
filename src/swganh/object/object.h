@@ -44,11 +44,11 @@ typedef std::vector<
 
 
 typedef std::map<
-	uint32_t,
+	int32_t,
 	std::shared_ptr<SlotInterface>
 > ObjectSlots;
 
-typedef std::vector<std::vector<uint32_t>> ObjectArrangements;
+typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
 class ObjectFactory;
 class ObjectMessageBuilder;
@@ -135,7 +135,7 @@ public:
      *
      * @param object The object to contain.
      */
-    void AddContainedObject(const std::shared_ptr<Object>& object);
+    virtual void AddContainedObject(std::shared_ptr<Object> object);
 
     /**
      * Checks to see if the current Object contains the given instance.
@@ -154,11 +154,18 @@ public:
     std::shared_ptr<T> GetContainedObject(uint64_t object_id)
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-
-        auto find_iter = contained_objects_.find(object_id);
-        if (find_iter == end(contained_objects_))
-            return nullptr;
-        auto object = find_iter->second;
+		shared_ptr<Object> object = nullptr;
+		for (auto& descriptor : slot_descriptor_)
+		{
+			descriptor.second->view_objects_if([&](std::shared_ptr<Object> other)->bool{
+				if (other->GetObjectId() == object_id)
+				{
+					object = other;
+					return true;
+				}
+				return false;
+			});
+		}
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
 #else
@@ -523,8 +530,7 @@ private:
     > ObserverContainer;
 
     ObjectMap aware_objects_;
-    ObjectMap contained_objects_;
-
+    
 	ObjectSlots slot_descriptor_;
 	ObjectArrangements slot_arrangements_;
 

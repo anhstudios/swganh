@@ -135,6 +135,7 @@ namespace tre
 
 		//Stored for determing if we've already loaded our aggregate information.
 		bool has_aggregate_;
+		bool loaded_reference_;
 	};
 }
 }

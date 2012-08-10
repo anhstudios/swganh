@@ -20,5 +20,12 @@ void SlotExclusive::remove_object(const std::shared_ptr<swganh::object::Object> 
 
 void SlotExclusive::view_objects(std::function<void(const std::shared_ptr<swganh::object::Object>&)> walkerFunction)
 {
+	if (held_object_ != nullptr)
+		walkerFunction(held_object_);
+}
+
+void SlotExclusive::view_objects_if(std::function<bool(std::shared_ptr<swganh::object::Object>)> walkerFunction)
+{
+	if (held_object_ != nullptr)
 	walkerFunction(held_object_);
 }

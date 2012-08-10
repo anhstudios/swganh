@@ -22,3 +22,11 @@ void SlotContainer::view_objects(std::function<void(const std::shared_ptr<swganh
 {
 	for_each(held_objects_.begin(), held_objects_.end(), walkerFunction);
 }
+void SlotContainer::view_objects_if(std::function<bool(std::shared_ptr<swganh::object::Object>)> walkerFunction)
+{
+	for(auto& v : held_objects_)
+	{		
+		if (walkerFunction(v))
+			return;
+	}
+}

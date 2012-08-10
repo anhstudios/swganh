@@ -7,6 +7,7 @@
 
 #include "object_events.h"
 
+#include "anh/logger.h"
 #include "anh/crc.h"
 #include "anh/observer/observer_interface.h"
 #include "swganh/messages/base_baselines_message.h"
@@ -67,19 +68,27 @@ void Object::ClearController()
     Unsubscribe(controller);
 }
 
-void Object::AddContainedObject(const shared_ptr<Object>& object)
+void Object::AddContainedObject(shared_ptr<Object> object)
 {
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-        if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
-        {
-            /// @TODO consider whether encountering this scenario is an error
-            return;
-        }
 
-        contained_objects_.insert(make_pair(object->GetObjectId(), object));
-        object->SetContainer(shared_from_this());
+		int32_t arrangement_id = GetAppropriateArrangementId(object);
+		// Add to first slot if can't find appropriate
+		if (arrangement_id == -1)
+			slot_descriptor_[0]->insert_object(object);
+		else
+		{
+			auto& arrangement = slot_arrangements_[arrangement_id];
+			for (auto& i : arrangement)
+			{
+				slot_descriptor_[i]->insert_object(object);
+			}
+		}
+		object->SetContainer(shared_from_this());
     }
+			
+    
 
     if (HasController())
     {
@@ -90,21 +99,18 @@ void Object::AddContainedObject(const shared_ptr<Object>& object)
 bool Object::IsContainerForObject(const shared_ptr<Object>& object)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return contained_objects_.find(object->GetObjectId()) != contained_objects_.end();
+    /*return contained_objects_.find(object->GetObjectId()) != contained_objects_.end();*/
+	return false;
 }
 
 void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    auto find_iter = contained_objects_.find(object->GetObjectId());
-
-    if (find_iter == contained_objects_.end())
-    {
-        /// @TODO consider whether encountering this scenario is an error
-        return;
-    }
-
-    contained_objects_.erase(find_iter);
+    
+	for (auto& slot : slot_descriptor_)
+	{
+		slot.second->remove_object(object);
+	}
 
     if (HasController())
     {
@@ -115,7 +121,15 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 Object::ObjectMap Object::GetContainedObjects()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return contained_objects_;
+    ObjectMap object_map;
+	for (auto& descriptor : slot_descriptor_)
+	{
+		descriptor.second->view_objects([&](const std::shared_ptr<Object> other){
+			object_map.insert(ObjectMap::value_type(other->GetObjectId(), other));
+		});
+	}
+
+	return object_map;
 }
 
 void Object::AddAwareObject(const shared_ptr<Object>& object)
@@ -283,7 +297,7 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
         UpdateContainmentMessage containment_message;
         containment_message.container_id = GetContainer()->GetObjectId();
         containment_message.object_id = GetObjectId();
-        containment_message.containment_type = 4;
+        containment_message.containment_type = arrangement_id_;
 
         controller->Notify(containment_message);
     }
@@ -397,6 +411,7 @@ uint8_t Object::GetHeading()
 void Object::SetContainer(const std::shared_ptr<Object>& container)
 {
     {
+		LOG(warning) << "Template id SetContainer: " << GetTemplate();
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         container_ = container;
     }
@@ -526,18 +541,36 @@ int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 		return -1;
 
 	// Find appropriate arrangement
-	int arrangement_id = 0;
-	int filled_arrangement_id = -1;
+	int32_t arrangement_id = 0;
+	int32_t filled_arrangement_id = -1;
+	// In each arrangment
 	for ( auto& arrangement : slot_arrangements_)
 	{
 		bool passes_completely = true;
-		
+		bool is_valid = true;
+		// Each Slot
 		for (auto& slot : arrangement)
 		{
-			auto& f = find_if(begin(slot_descriptor_), end(slot_descriptor_), [&](ObjectSlots::value_type descriptor)
+			// does slot exist in descriptor
+			auto& descriptor_iter = slot_descriptor_.find(slot);
+			if (descriptor_iter == end(slot_descriptor_))
 			{
-				return descriptor.second->is_filled();
-			});
+				is_valid = false;
+				break;
+			}
+			// is slot filled?
+			else if (descriptor_iter->second->is_filled())
+			{
+				passes_completely = false;
+			}
 		}
+		// if not filled return arrangement
+		if (is_valid && passes_completely)
+			return arrangement_id;
+		else if (is_valid)
+			filled_arrangement_id = arrangement_id;
+
+		++arrangement_id;
 	}
+	return filled_arrangement_id;
 }

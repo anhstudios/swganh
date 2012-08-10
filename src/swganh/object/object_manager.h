@@ -254,8 +254,9 @@ namespace object {
 		 */
 		std::shared_ptr<swganh::tre::SlotDefinitionVisitor> GetSlotDefinition();
 
+		void LoadSlotsForObject(std::shared_ptr<Object> object);
     private:
-
+		
         /**
          * Registers a message builder for a specific object type
          *
