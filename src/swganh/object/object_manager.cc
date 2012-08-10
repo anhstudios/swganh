@@ -6,15 +6,39 @@
 #include "anh/logger.h"
 
 #include "object_factory.h"
+#include "anh/event_dispatcher.h"
+#include "swganh/tre/resource_manager.h"
+#include "swganh/tre/visitors/objects/object_visitor.h"
+#include "swganh/tre/visitors/slots/slot_arrangement_visitor.h"
+#include "swganh/tre/visitors/slots/slot_descriptor_visitor.h"
+
 
 using namespace std;
+using namespace anh;
+using namespace swganh::tre;
 using namespace swganh::object;
+using namespace swganh::messages;
 
-ObjectManager::ObjectManager(anh::EventDispatcher* event_dispatcher, 
-                             anh::database::DatabaseManagerInterface* db_manager)
-    : event_dispatcher_(event_dispatcher)
-    , db_manager_(db_manager)
-{}
+ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
+    : kernel_(kernel)
+{
+	auto slot_definition = kernel->GetResourceManager()->getResourceByName("abstract/slot/slot_definition/slot_definitions.iff", SLOT_DEFINITION_VISITOR);
+	
+	slot_definition_ = static_pointer_cast<SlotDefinitionVisitor>(slot_definition);
+	
+	/// Hook into the Object Template event to ensure we always have the latest slot data loaded
+	kernel_->GetEventDispatcher()->Subscribe("Object::Template", [this] (const shared_ptr<EventInterface>& incoming_event)
+    {
+        auto value_event = static_pointer_cast<anh::ValueEvent<std::shared_ptr<Object>>>(incoming_event);
+        auto oiff = static_pointer_cast<ObjectVisitor>(kernel_->GetResourceManager()->getResourceByName(value_event->Get()->GetTemplate(), OIFF_VISITOR));
+		oiff->load_aggregate_data(kernel_->GetResourceManager());
+		oiff->load_referenced_files(kernel_->GetResourceManager());
+
+		auto arrangmentDescriptor = oiff->attribute<std::shared_ptr<SlotArrangementVisitor>>("arrangementDescriptorFilename");
+		auto slotDescriptor = oiff->attribute<std::shared_ptr<SlotDescriptorVisitor>>("slotDescriptorFilename");
+		
+    });
+}
 
 ObjectManager::~ObjectManager()
 {}
@@ -241,4 +265,10 @@ void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id)
     {
         PersistRelatedObjects(object);
     }
+}
+
+
+std::shared_ptr<swganh::tre::SlotDefinitionVisitor>  ObjectManager::GetSlotDefinition()
+{
+	return slot_definition_;
 }

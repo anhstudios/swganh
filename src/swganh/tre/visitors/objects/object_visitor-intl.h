@@ -8,12 +8,12 @@ namespace swganh
 {
 namespace tre
 {
-	template <class T> std::shared_ptr<T> ObjectVisitor::attribute(std::string& key)
+	template <class T> T ObjectVisitor::attribute(const std::string& key)
 	{
-		std::map<std::string, boost::any>::const_iterator it = attributes_.find(key);
+		std::map<std::string, std::shared_ptr<boost::any>>::const_iterator it = attributes_.find(key);
 		if(it != attributes_.cend())
 		{
-			return boost::any_cast<std::shared_ptr<T>>(it->second);
+			return boost::any_cast<T>(*it->second);
 		}
 		return nullptr;
 	}

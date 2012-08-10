@@ -90,7 +90,7 @@ public:
     {
         if (!object_manager_)
         {
-            object_manager_ = make_shared<ObjectManager>(kernel_->GetEventDispatcher(), kernel_->GetDatabaseManager());
+            object_manager_ = make_shared<ObjectManager>(kernel_);
         }
 
         return object_manager_;

@@ -24,8 +24,8 @@ namespace concurrency {
     using ::tbb::concurrent_queue;
 }
 #endif
-
-#include "anh/database/database_manager_interface.h"
+#include "swganh/app/swganh_kernel.h"
+#include "swganh/tre/visitors/slots/slot_definition_visitor.h"
 
 #include "swganh/object/object.h"
 #include "swganh/object/exception.h"
@@ -44,8 +44,8 @@ namespace object {
     {
     public:
         ObjectManager(
-            anh::EventDispatcher* event_dispatcher, 
-            anh::database::DatabaseManagerInterface* db_manager);
+			swganh::app::SwganhKernel* kernel
+			);
         ~ObjectManager();
 
         /**
@@ -77,12 +77,12 @@ namespace object {
         template<typename T>
         void RegisterObjectType(uint32_t object_type = T::type)
         {
-            auto factory = std::make_shared<typename T::FactoryType>(db_manager_, event_dispatcher_);
+            auto factory = std::make_shared<typename T::FactoryType>(kernel_->GetDatabaseManager(), kernel_->GetEventDispatcher());
             factory->SetObjectManager(this);
 
             RegisterObjectType(object_type, factory);
             
-            auto message_builder = std::make_shared<typename T::MessageBuilderType>(event_dispatcher_);
+            auto message_builder = std::make_shared<typename T::MessageBuilderType>(kernel_->GetEventDispatcher());
             RegisterMessageBuilder(object_type, message_builder);
         }
 
@@ -248,6 +248,12 @@ namespace object {
          */
 	    void PersistRelatedObjects(uint64_t parent_object_id);
 
+		/**
+		 * Gets the objects definition file data from the resource manager
+		 *
+		 */
+		std::shared_ptr<swganh::tre::SlotDefinitionVisitor> GetSlotDefinition();
+
     private:
 
         /**
@@ -269,8 +275,9 @@ namespace object {
          */
         void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
 
-        anh::EventDispatcher* event_dispatcher_;
-        anh::database::DatabaseManagerInterface* db_manager_;
+        swganh::app::SwganhKernel* kernel_;
+
+		std::shared_ptr<swganh::tre::SlotDefinitionVisitor> slot_definition_;
 
         typedef std::map<
             uint32_t, 

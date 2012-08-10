@@ -327,6 +327,10 @@ void ObjectVisitor::load_referenced_files(anh::resource::ResourceManagerInterfac
 			auto newVal = std::static_pointer_cast<SlotArrangementVisitor>(f->getResourceByName(value, SLOT_ARRANGEMENT_VISITOR));
 			itr->second = std::make_shared<boost::any>(newVal);
 		}
+		else
+		{
+			itr->second = make_shared<boost::any>();
+		}
 	}
 
 	//clientDataFile
@@ -348,6 +352,10 @@ void ObjectVisitor::load_referenced_files(anh::resource::ResourceManagerInterfac
 		if(value != "") {
 			auto newVal = std::static_pointer_cast<SlotDescriptorVisitor>(f->getResourceByName(value, SLOT_DESCRIPTOR_VISITOR));
 			itr->second = std::make_shared<boost::any>(newVal);
+		}
+		else
+		{
+			itr->second = make_shared<boost::any>();
 		}
 	}
 
