@@ -36,7 +36,9 @@ namespace tre
 		struct slot_entry
 		{
 			std::string name;
-			char unkFlag1;
+			bool global;
+			bool canMod;
+			bool exclusive;
 			std::string hardpoint_name;
 			std::uint32_t unkValue;
 		};
