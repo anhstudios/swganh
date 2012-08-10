@@ -289,6 +289,8 @@ void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 	ObjectSlots descriptors;
 
 	// Globals
+	//
+	descriptors.insert(ObjectSlots::value_type(-1, shared_ptr<SlotContainer>(new SlotContainer())));				
 	for (size_t k = 0; k < slot_definition_->count(); ++k)
 	{
 		auto entry = slot_definition_->entry(k);

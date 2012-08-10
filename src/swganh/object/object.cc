@@ -30,6 +30,7 @@ Object::Object()
     , stf_name_string_("")
     , custom_name_(L"")
     , volume_(0)
+	, arrangement_id_(-2)
 {
 }
 
@@ -76,10 +77,10 @@ void Object::AddContainedObject(shared_ptr<Object> object)
 		int32_t arrangement_id = GetAppropriateArrangementId(object);
 		// Add to first slot if can't find appropriate
 		if (arrangement_id == -1)
-			slot_descriptor_[0]->insert_object(object);
+			slot_descriptor_[-1]->insert_object(object);
 		else
 		{
-			auto& arrangement = slot_arrangements_[arrangement_id];
+			auto& arrangement = object->slot_arrangements_[arrangement_id-4];
 			for (auto& i : arrangement)
 			{
 				slot_descriptor_[i]->insert_object(object);
@@ -105,7 +106,7 @@ void Object::AddContainedObject(std::shared_ptr<Object> object, int32_t arrangem
 			slot_descriptor_[0]->insert_object(object);
 		else
 		{
-			auto& arrangement = slot_arrangements_[arrangement_id];
+			auto& arrangement = object->slot_arrangements_[arrangement_id-4];
 			for (auto& i : arrangement)
 			{
 				slot_descriptor_[i]->insert_object(object);
@@ -577,10 +578,10 @@ int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 		return -1;
 
 	// Find appropriate arrangement
-	int32_t arrangement_id = 0;
+	int32_t arrangement_id = 4;
 	int32_t filled_arrangement_id = -1;
 	// In each arrangment
-	for ( auto& arrangement : slot_arrangements_)
+	for ( auto& arrangement : other->slot_arrangements_)
 	{
 		bool passes_completely = true;
 		bool is_valid = true;
