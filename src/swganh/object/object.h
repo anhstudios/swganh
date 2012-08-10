@@ -512,7 +512,7 @@ public:
 protected:
     virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
 
-	std::atomic<int> arrangement_id_;
+	std::atomic<int32_t> arrangement_id_;
 
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
