@@ -85,11 +85,36 @@ void Object::AddContainedObject(shared_ptr<Object> object)
 				slot_descriptor_[i]->insert_object(object);
 			}
 		}
+		object->SetArrangementId(arrangement_id);
 		object->SetContainer(shared_from_this());
     }
 			
-    
+    if (HasController())
+    {
+        object->Subscribe(GetController());
+    }
+}
 
+void Object::AddContainedObject(std::shared_ptr<Object> object, int32_t arrangement_id)
+{
+    {
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
+
+		// Add to first slot if can't find appropriate
+		if (arrangement_id == -1)
+			slot_descriptor_[0]->insert_object(object);
+		else
+		{
+			auto& arrangement = slot_arrangements_[arrangement_id];
+			for (auto& i : arrangement)
+			{
+				slot_descriptor_[i]->insert_object(object);
+			}
+		}
+		object->SetArrangementId(arrangement_id);
+		object->SetContainer(shared_from_this());
+    }
+			
     if (HasController())
     {
         object->Subscribe(GetController());
@@ -491,6 +516,16 @@ void Object::SetSceneId(uint32_t scene_id)
 uint32_t Object::GetSceneId()
 {
 	return scene_id_;
+}
+
+int32_t Object::GetArrangementId()
+{
+	return arrangement_id_;
+}
+
+void Object::SetArrangementId(int32_t arrangement_id)
+{
+	arrangement_id_ = arrangement_id_;
 }
 
 anh::EventDispatcher* Object::GetEventDispatcher()

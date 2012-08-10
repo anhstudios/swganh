@@ -107,7 +107,8 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
         object->SetVolume(result->getUInt("volume"));
         object->SetTemplate(result->getString("iff_template"));
-		
+		object->SetArrangementId(result->getInt("arrangement_id"));
+
 		object_manager_->LoadSlotsForObject(object);
     }
     catch(sql::SQLException &e)
@@ -158,7 +159,7 @@ void ObjectFactory::LoadContainedObjects(
 
             auto contained_object = object_manager_->CreateObjectFromStorage(contained_id, contained_type);
             
-            object->AddContainedObject(contained_object);
+			object->AddContainedObject(contained_object, contained_object->GetArrangementId());
         }
     }
 }

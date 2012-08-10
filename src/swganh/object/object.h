@@ -136,6 +136,7 @@ public:
      * @param object The object to contain.
      */
     virtual void AddContainedObject(std::shared_ptr<Object> object);
+	virtual void AddContainedObject(std::shared_ptr<Object> object, int32_t arrangement_id);
 
     /**
      * Checks to see if the current Object contains the given instance.
@@ -481,6 +482,9 @@ public:
      */
     uint64_t GetObjectId() ;
 
+	int32_t GetArrangementId();
+	void SetArrangementId(int32_t arrangement_id);
+
     /**
      * @return The type of the object.
      */
@@ -496,7 +500,6 @@ public:
     void ClearDeltas();
     typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 
-    
     void SetFlag(std::string flag);
     void RemoveFlag(std::string flag);
     bool HasFlag(std::string flag);
