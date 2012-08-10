@@ -40,3 +40,13 @@ void SlotDefinitionVisitor::_handle0006DATA(anh::ByteBuffer& buf)
 		slots_.push_back(std::move(entry));
 	}
 }
+
+size_t SlotDefinitionVisitor::findSlotByName(const std::string& name)
+{
+	for(int i=0; i < slots_.size(); ++i) {
+	{
+		if(slots_[i].name == name)
+			return i;
+	}
+	return -1;
+}
