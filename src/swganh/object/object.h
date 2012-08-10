@@ -19,6 +19,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "anh/event_dispatcher.h"
 #include "anh/observer/observable_interface.h"
 #include "anh/observer/observer_interface.h"
 
@@ -28,8 +29,7 @@
 #include "swganh/messages/obj_controller_message.h"
 
 #include "swganh/object/object_controller.h"
-
-#include "anh/event_dispatcher.h"
+#include "swganh/object/slot_interface.h"
 
 namespace swganh {
 namespace object {
@@ -42,8 +42,17 @@ typedef std::vector<
     swganh::messages::DeltasMessage
 > DeltasCacheContainer;
 
+
+typedef std::map<
+	uint32_t,
+	std::shared_ptr<SlotInterface>
+> ObjectSlots;
+
+typedef std::vector<std::vector<uint32_t>> ObjectArrangements;
+
 class ObjectFactory;
 class ObjectMessageBuilder;
+
 
 
 class Object : public anh::observer::ObservableInterface, public std::enable_shared_from_this<Object>
@@ -91,13 +100,13 @@ public:
         UNLINK = 0xFFFFFFFF,
         LINK = 4
     };
-    
-    typedef std::map<
-        uint64_t,
-        std::shared_ptr<Object>
-    > ObjectMap;
 
-public:
+	
+	typedef std::map<
+		uint64_t,
+		std::shared_ptr<Object>
+	> ObjectMap;
+    
     Object();
     virtual ~Object() {}
 
@@ -478,6 +487,8 @@ public:
      */
     virtual uint32_t GetType() const { return 0; }
 
+	void SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements);
+
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
@@ -514,6 +525,9 @@ private:
 
     ObjectMap aware_objects_;
     ObjectMap contained_objects_;
+
+	ObjectSlots slot_descriptor_;
+	ObjectArrangements slot_arrangements_;
 
     ObserverContainer observers_;
     BaselinesCacheContainer baselines_;

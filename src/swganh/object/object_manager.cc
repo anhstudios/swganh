@@ -11,6 +11,8 @@
 #include "swganh/tre/visitors/objects/object_visitor.h"
 #include "swganh/tre/visitors/slots/slot_arrangement_visitor.h"
 #include "swganh/tre/visitors/slots/slot_descriptor_visitor.h"
+#include "swganh/object/slot_exclusive.h"
+#include "swganh/object/slot_container.h"
 
 
 using namespace std;
@@ -36,6 +38,54 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 
 		auto arrangmentDescriptor = oiff->attribute<std::shared_ptr<SlotArrangementVisitor>>("arrangementDescriptorFilename");
 		auto slotDescriptor = oiff->attribute<std::shared_ptr<SlotDescriptorVisitor>>("slotDescriptorFilename");
+		ObjectArrangements arrangements;
+		
+		// CRAZY SHIT
+		// arrangements
+		if (arrangmentDescriptor != nullptr)
+			{
+			for_each(arrangmentDescriptor->begin(), arrangmentDescriptor->end(), [&](std::vector<std::string> arrangement)
+			{			
+				std::vector<uint32_t> arr;
+				for (auto& str : arrangement)
+				{
+					arr.push_back(slot_definition_->findSlotByName(str));				
+				}
+				arrangements.push_back(arr);
+			});
+		}
+		ObjectSlots descriptors;
+
+		// Globals
+		for (size_t k = 0; k < slot_definition_->count(); ++k)
+		{
+			auto entry = slot_definition_->entry(k);
+			
+			if (entry.global)
+			{
+				if (entry.exclusive)
+					descriptors.insert(ObjectSlots::value_type(k, shared_ptr<SlotExclusive>(new SlotExclusive())));
+				else
+					descriptors.insert(ObjectSlots::value_type(k, shared_ptr<SlotContainer>(new SlotContainer())));				
+			}
+		}
+		// Descriptors
+		if (slotDescriptor != nullptr)
+		{
+			for ( size_t j = 0; j < slotDescriptor->available_count(); ++j)
+			{
+				auto descriptor = slotDescriptor->slot(j);
+				size_t id = slot_definition_->findSlotByName(descriptor);
+				auto entry = slot_definition_->entry(id);
+				if (entry.exclusive)
+					descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotExclusive>(new SlotExclusive())));
+				else
+					descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotContainer>(new SlotContainer())));								
+			}
+		}
+		string iff = value_event->Get()->GetTemplate();
+		
+		value_event->Get()->SetSlotInformation(descriptors, arrangements);
 		
     });
 }

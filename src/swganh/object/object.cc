@@ -512,3 +512,9 @@ bool Object::HasFlag(std::string flag)
 
     return flags_.find(flag) != flags_.end();
 }
+
+void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements)
+{
+	slot_descriptor_ = slots;
+	slot_arrangements_ = arrangements;
+}

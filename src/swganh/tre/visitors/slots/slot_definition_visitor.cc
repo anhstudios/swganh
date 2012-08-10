@@ -22,6 +22,8 @@ void SlotDefinitionVisitor::visit_data(shared_ptr<file_node> node)
 	}
 }
 
+
+
 void SlotDefinitionVisitor::_handle0006DATA(anh::ByteBuffer& buf)
 {
 	while(buf.read_position() < buf.size())
@@ -43,7 +45,7 @@ void SlotDefinitionVisitor::_handle0006DATA(anh::ByteBuffer& buf)
 
 size_t SlotDefinitionVisitor::findSlotByName(const std::string& name)
 {
-	for(int i=0; i < slots_.size(); ++i) {
+	for(size_t i = 0; i < slots_.size(); ++i)
 	{
 		if(slots_[i].name == name)
 			return i;

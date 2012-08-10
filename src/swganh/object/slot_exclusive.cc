@@ -3,14 +3,14 @@
 
 using namespace swganh::object;
 
-std::shared_ptr<swganh::object::Object> SlotExclusive::insert_object(std::shared_ptr<swganh::object::Object> insertObject)
+std::shared_ptr<swganh::object::Object> SlotExclusive::insert_object(const std::shared_ptr<swganh::object::Object> insertObject)
 {
 	std::shared_ptr<swganh::object::Object> result = held_object_;
 	held_object_ = insertObject;
 	return result;
 }
 
-void SlotExclusive::remove_object(std::shared_ptr<swganh::object::Object> removeObject)
+void SlotExclusive::remove_object(const std::shared_ptr<swganh::object::Object> removeObject)
 {
 	if(held_object_ == removeObject) 
 	{
@@ -18,7 +18,7 @@ void SlotExclusive::remove_object(std::shared_ptr<swganh::object::Object> remove
 	}
 }
 
-void SlotExclusive::view_objects(std::function<void(std::shared_ptr<swganh::object::Object>&)> walkerFunction)
+void SlotExclusive::view_objects(std::function<void(const std::shared_ptr<swganh::object::Object>&)> walkerFunction)
 {
 	walkerFunction(held_object_);
 }
