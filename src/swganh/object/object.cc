@@ -531,6 +531,7 @@ bool Object::HasFlag(std::string flag)
 
 void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements)
 {
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
 	slot_descriptor_ = slots;
 	slot_arrangements_ = arrangements;
 }

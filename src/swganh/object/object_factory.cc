@@ -107,7 +107,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
         object->SetVolume(result->getUInt("volume"));
         object->SetTemplate(result->getString("iff_template"));
-        
+		
 		object_manager_->LoadSlotsForObject(object);
     }
     catch(sql::SQLException &e)
