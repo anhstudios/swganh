@@ -103,6 +103,7 @@ void Object::AddContainedObject(std::shared_ptr<Object> object, int32_t arrangem
     if (HasController())
     {
         object->Subscribe(GetController());
+		object->MakeClean(GetController());
     }
 }
 
@@ -591,7 +592,6 @@ void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangemen
 
 int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 {
-	boost::lock_guard<boost::mutex> lg(object_mutex_);
 	if (slot_descriptor_.size() == 0)
 		return -1;
 

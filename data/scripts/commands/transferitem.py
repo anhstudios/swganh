@@ -16,4 +16,4 @@ class TransferItem(BaseSwgCommand):
         
         target = self.GetKernel().service_manager().simulation_service().findObjectById(int(target_id))
         
-        actor.Equip(target)
+        target.Equip(actor)
