@@ -47,7 +47,7 @@ void Server::SendTo(const udp::endpoint& endpoint, ByteBuffer buffer) {
         {
             LOG(warning) << "Sent 0 bytes";
         }
-
+		
         bytes_sent_ += bytes_transferred;
     });
 }
@@ -79,7 +79,7 @@ void Server::AsyncReceive() {
             }
 			else
 			{
-				LOG(warning) << "Server.cc Error in AsyncReceive: " << error.message();
+				LOG(info) << "Server.cc Error in AsyncReceive: " << error.message();
 				AsyncReceive();
 			}
     });
