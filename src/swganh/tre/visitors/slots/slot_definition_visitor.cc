@@ -29,11 +29,10 @@ void SlotDefinitionVisitor::_handle0006DATA(anh::ByteBuffer& buf)
 		slot_entry entry;
 
 		entry.name = buf.read<std::string>(false, true);
-		entry.unkFlag1 = buf.read<char>();
-
-		//Skip the two string reading flags
-		buf.read<char>();
-		buf.read<char>();
+		
+		entry.global = buf.read<char>() != 0;
+		entry.canMod = buf.read<char>() != 0;
+		entry.exclusive = buf.read<char>() != 0;
 
 		entry.hardpoint_name = buf.read<std::string>(false, true);
 		entry.unkValue = buf.read<std::uint32_t>();
