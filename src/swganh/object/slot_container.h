@@ -12,8 +12,10 @@ namespace object {
 	{
 	public:
 
+
 		virtual std::shared_ptr<swganh::object::Object> insert_object(const std::shared_ptr<swganh::object::Object> insertObject);
 		virtual void remove_object(const std::shared_ptr<swganh::object::Object> removeObject);
+		virtual bool is_filled() { return false; }
 		virtual void view_objects(std::function<void(const std::shared_ptr<swganh::object::Object>&)> walkerFunction);
 
 	private:
