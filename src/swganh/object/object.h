@@ -178,27 +178,6 @@ public:
     ObjectMap GetContainedObjects();
 
     /**
-     * Adds an Object to the awareness list of the existing instance.
-     *
-     * Aware Objects receive all message updates of the Objects they
-     * are aware of.
-     *
-     * @param object The object to be aware of.
-     */
-    void AddAwareObject(const std::shared_ptr<Object>& object);
-
-    /**
-     * @return True if the current Object is aware of the
-     *  given instance, false if not.
-     */
-    bool IsAwareOfObject(const std::shared_ptr<Object>& object);
-
-    /**
-     * Removes an object from the awareness list of the existing instance.
-     */
-    void RemoveAwareObject(const std::shared_ptr<Object>& object);
-
-    /**
      * Returns whether or not this observable object has any observers.
      *
      * @return True if has observers, false if not.
@@ -512,7 +491,6 @@ private:
         std::shared_ptr<anh::observer::ObserverInterface>
     > ObserverContainer;
 
-    ObjectMap aware_objects_;
     ObjectMap contained_objects_;
 
     ObserverContainer observers_;

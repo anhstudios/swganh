@@ -109,30 +109,34 @@ public:
 		const shared_ptr<ObjectController>& controller, 
 		DataTransform message)
 	{
-		for (auto& entry : controlled_objects_)
+		auto object = controller->GetObject();
+		if (object == nullptr);
+			return;
+
+		auto find_iter = controlled_objects_.find(object->GetObjectId());
+        if (find_iter != controlled_objects_.end())
 		{
-			if (controller->GetId() == entry.first)
-			{
-				// get the scene the object is in
-				auto scene = GetSceneManager()->GetScene(entry.second->GetObject()->GetSceneId());
-				if (scene != nullptr)
-					scene->HandleDataTransform(controller, message);
-			}
-		}		
+			// get the scene the object is in
+			auto scene = GetSceneManager()->GetScene(find_iter->second->GetObject()->GetSceneId());
+			if (scene != nullptr)
+				scene->HandleDataTransform(controller, message);
+		}
 	}
 	void SimulationServiceImpl::HandleDataTransformWithParent(
 		const shared_ptr<ObjectController>& controller, 
 		DataTransformWithParent message)
 	{
-		for (auto& entry : controlled_objects_)
-		{
-			if (controller->GetId() == entry.first)
-			{
-				// get the scene the object is in
-				auto scene = GetSceneManager()->GetScene(entry.second->GetObject()->GetSceneId());
-				if (scene != nullptr)
-					scene->HandleDataTransformWithParent(controller, message);
-			}
+		auto object = controller->GetObject();
+		if (object == nullptr);
+			return;
+
+		auto find_iter = controlled_objects_.find(object->GetObjectId());
+        if (find_iter != controlled_objects_.end())
+        {
+            // get the scene the object is in
+			auto scene = GetSceneManager()->GetScene(find_iter->second->GetObject()->GetSceneId());
+			if (scene != nullptr)
+				scene->HandleDataTransformWithParent(controller, message);
 		}		
 	}
 	

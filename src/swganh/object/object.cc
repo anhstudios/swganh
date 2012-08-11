@@ -118,46 +118,6 @@ Object::ObjectMap Object::GetContainedObjects()
     return contained_objects_;
 }
 
-void Object::AddAwareObject(const shared_ptr<Object>& object)
-{
-    {
-        boost::lock_guard<boost::mutex> lock(object_mutex_);
-        if (aware_objects_.find(object->GetObjectId()) == aware_objects_.end())
-        {
-            aware_objects_.insert(make_pair(object->GetObjectId(), object));
-        }
-    }
-    if (object->HasController()) {
-        Subscribe(object->GetController());
-        MakeClean(object->GetController());
-    }
-}
-
-bool Object::IsAwareOfObject(const shared_ptr<Object>& object)
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return aware_objects_.find(object->GetObjectId()) != aware_objects_.end();
-}
-
-void Object::RemoveAwareObject(const shared_ptr<Object>& object)
-{
-    {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-        auto find_iter = aware_objects_.find(object->GetObjectId());
-
-        if (find_iter != aware_objects_.end())
-        {
-            return;
-        }
-
-        aware_objects_.erase(find_iter);
-    }
-
-    if (HasController())
-    {
-        object->Unsubscribe(GetController());
-    }
-}
 string Object::GetTemplate()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
