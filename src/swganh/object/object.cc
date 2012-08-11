@@ -86,8 +86,8 @@ void Object::AddContainedObject(std::shared_ptr<Object> object, int32_t arrangem
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
 
 		// Add to first slot if can't find appropriate
-		if (arrangement_id == -1)
-			base_slot_->insert_object(object);
+		if (arrangement_id < 4)
+			slot_descriptor_[arrangement_id]->insert_object(object);
 		else
 		{
 			auto& arrangement = object->slot_arrangements_[arrangement_id-4];
@@ -118,7 +118,6 @@ void Object::RemoveContainedObject(const shared_ptr<Object>& object)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
     
-	base_slot_->remove_object(object);
 	for (auto& slot : slot_descriptor_)
 	{
 		slot.second->remove_object(object);
@@ -134,10 +133,6 @@ Object::ObjectMap Object::GetContainedObjects()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
     ObjectMap object_map;
-	
-	base_slot_->view_objects([&](const std::shared_ptr<Object> other){
-		object_map.insert(ObjectMap::value_type(other->GetObjectId(), other));
-	});
 
 	for (auto& descriptor : slot_descriptor_)
 	{
@@ -147,33 +142,6 @@ Object::ObjectMap Object::GetContainedObjects()
 	}
 
 	return object_map;
-}
-
-std::shared_ptr<Object> Object::GetEquippedObject(int slot_id)
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-
-	auto slot_container = slot_descriptor_.find(slot_id);
-	if(slot_container != slot_descriptor_.end())
-	{
-		return slot_container->second->GetHeldObject();
-	}
-	return nullptr;
-}
-
-const std::set<std::shared_ptr<Object>>& Object::GetBaseSlotObjects()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	return base_slot_->GetHeldObjects();
-}
-
-void Object::ClearSlot(int slot_id)
-{
-	auto contained_object = GetEquippedObject(slot_id);
-	if(contained_object != nullptr)
-	{
-		RemoveContainedObject(contained_object);
-	}
 }
 
 void Object::AddAwareObject(const shared_ptr<Object>& object)
@@ -587,7 +555,6 @@ void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangemen
 	boost::lock_guard<boost::mutex> lg(object_mutex_);
 	slot_descriptor_ = slots;
 	slot_arrangements_ = arrangements;
-	base_slot_ = std::make_shared<SlotContainer>();
 }
 
 int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
@@ -597,7 +564,7 @@ int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 
 	// Find appropriate arrangement
 	int32_t arrangement_id = 4;
-	int32_t filled_arrangement_id = -1;
+	int32_t filled_arrangement_id = 0;
 	// In each arrangment
 	for ( auto& arrangement : other->slot_arrangements_)
 	{

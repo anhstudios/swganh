@@ -3,7 +3,7 @@
 
 #include "swganh/equipment/equipment_service_binding.h"
 
-BOOST_PYTHON_MODULE(py_social) 
+BOOST_PYTHON_MODULE(py_equipment) 
 {
     docstring_options local_docstring_options(true, true, false);
 

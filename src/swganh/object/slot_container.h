@@ -19,8 +19,6 @@ namespace object {
 		virtual void view_objects(std::function<void(const std::shared_ptr<swganh::object::Object>&)> walkerFunction);
 		virtual void view_objects_if(std::function<bool(std::shared_ptr<swganh::object::Object>)> walkerFunction);
 
-		const std::set<std::shared_ptr<swganh::object::Object>>& GetHeldObjects() { return held_objects_; }
-
 	private:
 		std::set<std::shared_ptr<swganh::object::Object>> held_objects_;
 	};
