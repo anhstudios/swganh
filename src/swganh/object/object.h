@@ -28,6 +28,7 @@
 #include "swganh/messages/obj_controller_message.h"
 
 #include "swganh/object/object_controller.h"
+#include "swganh/object/container_interface.h"
 
 #include "anh/event_dispatcher.h"
 
@@ -46,7 +47,10 @@ class ObjectFactory;
 class ObjectMessageBuilder;
 
 
-class Object : public anh::observer::ObservableInterface, public std::enable_shared_from_this<Object>
+class Object : 
+	public anh::observer::ObservableInterface, 
+	public swganh::object::ContainerInterface, 
+	public std::enable_shared_from_this<Object>
 {
 public:
     const static uint32_t type = 0;
@@ -125,57 +129,13 @@ public:
      */
     void ClearController();
 
-    /**
-     * Adds an object to be contained by the current instance.
-     *
-     * All Object instances are composite objects that can serve as containers
-     * for other Objects. For example, storing items in an inventory.
-     *
-     * @param object The object to contain.
-     * @param containment_type The type of containment in which to hold the given object.
-     */
-    void AddContainedObject(const std::shared_ptr<Object>& object, ContainmentType containment_type);
-
-    /**
-     * Checks to see if the current Object contains the given instance.
-     *
-     * @param object The object to for which to check containment.
-     */
-    bool IsContainerForObject(const std::shared_ptr<Object>& object);
-
-    /**
-     * Checks to see if the object_id contains the given instance.
-     *
-     * @param the object_id to check for
-     * @return object The Object to return
-     */
-    template<typename T>
-    std::shared_ptr<T> GetContainedObject(uint64_t object_id)
-    {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-
-        auto find_iter = contained_objects_.find(object_id);
-        if (find_iter == end(contained_objects_))
-            return nullptr;
-        auto object = find_iter->second;
-#ifdef _DEBUG
-            return std::dynamic_pointer_cast<T>(object);
-#else
-            return std::static_pointer_cast<T>(object);
-#endif
-    }
-    
-    /**
-     * Removes an object from containment.
-     *
-     * @param object The Object to remove from containment.
-     */
-    void RemoveContainedObject(const std::shared_ptr<Object>& object);
-
-    /**
-     * @return A map of all contained objects and their containment types.
-     */
-    ObjectMap GetContainedObjects();
+	virtual void AddObject(std::shared_ptr<Object> newObject);
+	virtual void RemoveObject(std::shared_ptr<Object> oldObject);
+	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer);
+	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)>);
+	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
+	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)>);
+	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
 
     /**
      * Returns whether or not this observable object has any observers.

@@ -1,0 +1,37 @@
+#ifndef SWGANH_CONTAINER_INTERFACE_H_
+#define SWGANH_CONTAINER_INTERFACE_H_
+
+#include <memory>
+#include <functional>
+
+#include <anh/observer/observer_interface.h>
+
+namespace swganh
+{
+namespace object
+{
+	class Object;
+
+	class ContainerInterface 
+	{
+	public:
+
+		//Object Management
+		virtual void AddObject(std::shared_ptr<Object> newObject) = 0;
+		virtual void RemoveObject(std::shared_ptr<Object> oldObject) = 0;
+		virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer) = 0;
+		virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)>) = 0;
+
+		//Call to Create
+		virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object) = 0;
+		
+		//Call to View
+		virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)>) = 0;
+
+		//Call to Destroy
+		virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object) = 0;
+	};
+}
+}
+
+#endif

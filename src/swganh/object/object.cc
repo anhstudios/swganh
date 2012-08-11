@@ -67,57 +67,6 @@ void Object::ClearController()
     Unsubscribe(controller);
 }
 
-void Object::AddContainedObject(const shared_ptr<Object>& object, ContainmentType containment_type)
-{
-    {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-        if (contained_objects_.find(object->GetObjectId()) != contained_objects_.end())
-        {
-            /// @TODO consider whether encountering this scenario is an error
-            return;
-        }
-
-        contained_objects_.insert(make_pair(object->GetObjectId(), object));
-        object->SetContainer(shared_from_this());
-    }
-
-    if (HasController())
-    {
-        object->Subscribe(GetController());
-    }
-}
-
-bool Object::IsContainerForObject(const shared_ptr<Object>& object)
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return contained_objects_.find(object->GetObjectId()) != contained_objects_.end();
-}
-
-void Object::RemoveContainedObject(const shared_ptr<Object>& object)
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    auto find_iter = contained_objects_.find(object->GetObjectId());
-
-    if (find_iter == contained_objects_.end())
-    {
-        /// @TODO consider whether encountering this scenario is an error
-        return;
-    }
-
-    contained_objects_.erase(find_iter);
-
-    if (HasController())
-    {
-        object->Unsubscribe(GetController());
-    }
-}
-
-Object::ObjectMap Object::GetContainedObjects()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return contained_objects_;
-}
-
 string Object::GetTemplate()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
