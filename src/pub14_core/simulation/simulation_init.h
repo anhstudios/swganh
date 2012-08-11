@@ -75,8 +75,8 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	// Register Quadtree
 	{
 		// Register
-		registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-			return new QuadtreeSpatialProvider(kernel);
+		registration.CreateObject = [] (anh::plugin::ObjectParams* params) -> void * {
+			return new QuadtreeSpatialProvider();
 		};
 
 		registration.DestroyObject = [] (void * object) {

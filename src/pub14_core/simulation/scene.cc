@@ -48,29 +48,7 @@ public:
     void AddObject(const shared_ptr<Object>& object)
     {
 		InsertObject(object);
-
-        for(auto& object_entry : object_map_)        
-        {
-            auto& stored_object = object_entry.second;
-			
-/*			auto in_range = spatial_index_->GetObjectsInRange(stored_object->GetPosition(), 128);
-			for (auto& obj : in_range)
-			{
-				stored_object->Subscribe
-			}
-            stored_object->AddAwareObject(object);
-            object->AddAwareObject(stored_object);	*/		
-        };
-
-        auto contained_objects = object->GetContainedObjects();
-        
-        for_each(begin(contained_objects), end(contained_objects),
-            [this] (const ObjectMap::value_type& object_entry) 
-        {
-            auto& stored_object = object_entry.second;
-            AddObject(stored_object);
-        });
-
+		spatial_index_->AddObject(object);
     }
     
     void RemoveObject(const shared_ptr<Object>& object)
@@ -80,24 +58,9 @@ public:
             return;
         }
 
-		EraseObject(object);
-                
-        SceneDestroyObject destroy_message;
-        destroy_message.object_id = object->GetObjectId();
+		EraseObject(object);             
 
-        for_each(begin(object_map_), end(object_map_),
-            [&object, &destroy_message] (const ObjectMap::value_type& object_entry) 
-        {
-            auto& stored_object = object_entry.second;
-            
-            /*stored_object->RemoveContainedObject(object);
-            stored_object->RemoveAwareObject(object);
-
-            if (stored_object->HasController())
-            {
-                stored_object->GetController()->Notify(destroy_message);
-            }*/
-        });
+		spatial_index_->RemoveObject(object);
     }
 
 	void InsertObject(const shared_ptr<Object>& object)

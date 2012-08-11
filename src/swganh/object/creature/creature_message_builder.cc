@@ -17,8 +17,8 @@ void CreatureMessageBuilder::RegisterEventHandlers()
 {
     event_dispatcher->Subscribe("Creature::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
-        auto controller_event = static_pointer_cast<ControllerEvent>(incoming_event);
-        SendBaselines(static_pointer_cast<Creature>(controller_event->object), controller_event->controller);
+        auto observer_event = static_pointer_cast<ObserverEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Creature>(observer_event->object), observer_event->observer);
     });
     event_dispatcher->Subscribe("Creature::Bank", [this] (shared_ptr<EventInterface> incoming_event)
     {
@@ -222,7 +222,7 @@ void CreatureMessageBuilder::RegisterEventHandlers()
         BuildUpdatePvpStatusMessage(value_event->Get());
     });
 }
-void CreatureMessageBuilder::SendBaselines(const shared_ptr<Creature>& creature, const shared_ptr<ObjectController>& controller)
+void CreatureMessageBuilder::SendBaselines(const shared_ptr<Creature>& creature, const shared_ptr<anh::observer::ObserverInterface>& observer)
 {
     creature->AddBaselineToCache(BuildBaseline1(creature));
     creature->AddBaselineToCache(BuildBaseline3(creature));
@@ -230,10 +230,10 @@ void CreatureMessageBuilder::SendBaselines(const shared_ptr<Creature>& creature,
     creature->AddBaselineToCache(BuildBaseline6(creature));
     for (auto& baseline : creature->GetBaselines())
     {
-        controller->Notify(baseline);
+        observer->Notify(baseline);
     }
         
-    SendEndBaselines(creature, controller);
+    SendEndBaselines(creature, observer);
 
     BuildUpdatePvpStatusMessage(creature);
 }

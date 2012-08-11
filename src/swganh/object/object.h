@@ -405,7 +405,7 @@ public:
     /**
      * @return The id of this Object instance.
      */
-    uint64_t GetObjectId() ;
+    uint64_t GetObjectId();
 
     /**
      * @return The type of the object.

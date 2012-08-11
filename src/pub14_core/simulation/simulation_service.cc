@@ -81,8 +81,7 @@ class SimulationServiceImpl {
 public:
     SimulationServiceImpl(SwganhKernel* kernel)
         : kernel_(kernel)
-    {
-		//spatial_provider_ = kernel->GetPluginManager()->CreateObject<SpatialProviderInterface>("Simulation::SpatialProvider");
+    {		
     }
 
     const shared_ptr<ObjectManager>& GetObjectManager()
@@ -110,7 +109,7 @@ public:
 		DataTransform message)
 	{
 		auto object = controller->GetObject();
-		if (object == nullptr);
+		if (!object)
 			return;
 
 		auto find_iter = controlled_objects_.find(object->GetObjectId());
@@ -118,7 +117,7 @@ public:
 		{
 			// get the scene the object is in
 			auto scene = GetSceneManager()->GetScene(find_iter->second->GetObject()->GetSceneId());
-			if (scene != nullptr)
+			if (scene)
 				scene->HandleDataTransform(controller, message);
 		}
 	}
@@ -127,7 +126,7 @@ public:
 		DataTransformWithParent message)
 	{
 		auto object = controller->GetObject();
-		if (object == nullptr);
+		if (!object)
 			return;
 
 		auto find_iter = controlled_objects_.find(object->GetObjectId());
@@ -135,7 +134,7 @@ public:
         {
             // get the scene the object is in
 			auto scene = GetSceneManager()->GetScene(find_iter->second->GetObject()->GetSceneId());
-			if (scene != nullptr)
+			if (scene)
 				scene->HandleDataTransformWithParent(controller, message);
 		}		
 	}
@@ -152,9 +151,11 @@ public:
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
     {
         auto object = object_manager_->LoadObjectById(object_id);
-
 		
-        
+		auto scene = GetSceneManager()->GetScene(object->GetSceneId());
+		if (scene)
+			scene->AddObject(object);
+
         return object;
     }
 
@@ -162,7 +163,9 @@ public:
     {
         auto object = object_manager_->LoadObjectById(object_id, type);
 
-		//spatial_provider_->AddObject(object); // Add object to spatial indexing.
+		auto scene = GetSceneManager()->GetScene(object->GetSceneId());
+		if (scene)
+			scene->AddObject(object);
 
         return object;
     }
@@ -189,20 +192,9 @@ public:
             scene->RemoveObject(object);
         }
 
-		//spatial_provider_->RemoveObject(object); // Remove the object from spatial indexing.
-
-        StopControllingObject(object);
+		StopControllingObject(object);
 
         object_manager_->RemoveObject(object);
-        
-        auto contained_objects = object->GetContainedObjects();
-        for_each(
-            begin(contained_objects),
-            end(contained_objects),
-            [this] (const Object::ObjectMap::value_type& item)
-        {
-            RemoveObject(item.second);
-        });
     }
 
 	shared_ptr<Object> GetObjectByCustomName(const wstring& custom_name)
@@ -349,24 +341,11 @@ public:
         }
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
-        auto contained = object->GetContainedObjects();
-		
-        for_each(
-            begin(contained),
-            end(contained),
-            [event_dispatcher] (Object::ObjectMap::value_type& object_entry)
-        {
-			if (object_entry.second->GetType() == player::Player::type)
-			{
-				auto player = static_pointer_cast<player::Player>(object_entry.second);
-				if (player)
-				{
-					event_dispatcher->Dispatch(
-						make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", player));
-				}
-			}
-        });
-        
+        // TODO: Do with Equipment
+		// auto player = equipment_service_->GetSlot("player");
+		// event_dispatcher->Dispatch(
+		// make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", player));
+                
         StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());

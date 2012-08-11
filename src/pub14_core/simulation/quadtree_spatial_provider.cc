@@ -23,14 +23,25 @@ QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
 {
 }
 
-void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> obj)
+void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object)
 {
-	root_node_.InsertObject(obj);
+	root_node_.InsertObject(object);
+	
+	// Make objects aware
+	ViewObjects(0, true, [&](shared_ptr<Object> found_object){
+		found_object->AddAwareObject(object->GetController());
+		object->AddAwareObject(found_object->GetController());
+	}, object);
 }
 
-void QuadtreeSpatialProvider::RemoveObject(shared_ptr<Object> obj)
+void QuadtreeSpatialProvider::RemoveObject(shared_ptr<Object> object)
 {
-	root_node_.RemoveObject(obj);
+	root_node_.RemoveObject(object);
+	
+    ViewObjects(0, false, [&](shared_ptr<Object> found_object){
+		found_object->RemoveAwareObject(object->GetController());
+		object->RemoveAwareObject(found_object->GetController());
+	}, object);
 }
 
 void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old_position, glm::vec3 new_position)
@@ -43,7 +54,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 	
 }
 
-void QuadtreeSpatialProvider::ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint = nullptr)
+void QuadtreeSpatialProvider::ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint)
 {
 	LOG(warning) << "QUADTREE VIEW OBJECTS ";
 	std::vector<std::shared_ptr<Object>> contained_objects;
@@ -73,22 +84,7 @@ void QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object)
 {
 	LOG(warning) << "QUADTREE __InternalInsert " << object->GetObjectId();
 
-	root_node_.
-}
-
-void QuadtreeSpatialProvider::AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object)
-{
-
-}
-		
-void QuadtreeSpatialProvider::ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)>)
-{
-
-}
-
-void QuadtreeSpatialProvider::RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object)
-{
-
+	root_node_.InsertObject(object);
 }
 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)

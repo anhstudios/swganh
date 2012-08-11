@@ -22,8 +22,8 @@ void TangibleMessageBuilder::RegisterEventHandlers()
 {
     event_dispatcher->Subscribe("Tangible::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
-        auto controller_event = static_pointer_cast<ControllerEvent>(incoming_event);
-        SendBaselines(static_pointer_cast<Tangible>(controller_event->object), controller_event->controller);
+        auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Tangible>(controller_event->object), controller_event->observer);
     });
     event_dispatcher->Subscribe("Tangible::Customization", [this] (shared_ptr<EventInterface> incoming_event)
     {
@@ -71,7 +71,7 @@ void TangibleMessageBuilder::RegisterEventHandlers()
         BuildDefendersDelta(value_event->Get());
     });
 }
-void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible, const shared_ptr<ObjectController>& controller)
+void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible, const shared_ptr<anh::observer::ObserverInterface>& observer)
 {
     tangible->AddBaselineToCache(BuildBaseline3(tangible));
     tangible->AddBaselineToCache(BuildBaseline6(tangible));
@@ -79,10 +79,10 @@ void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible,
 
     for (auto& baseline : tangible->GetBaselines())
     {
-        controller->Notify(baseline);
+        observer->Notify(baseline);
     }
         
-    SendEndBaselines(tangible, controller);
+    SendEndBaselines(tangible, observer);
 }
 void TangibleMessageBuilder::BuildCustomizationDelta(const shared_ptr<Tangible>& tangible)
 {
