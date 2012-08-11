@@ -36,6 +36,9 @@ namespace object
 
 		//Call to Destroy
 		virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer) {};
+
+		virtual void LockObjectMutex() = 0;
+		virtual void UnlockObjectMutex() = 0;
 	};
 }
 }

@@ -573,3 +573,13 @@ bool Object::HasFlag(std::string flag)
 
     return flags_.find(flag) != flags_.end();
 }
+
+void Object::LockObjectMutex()
+{
+	object_mutex_.lock();
+}
+
+void Object::UnlockObjectMutex()
+{
+	object_mutex_.unlock();
+}

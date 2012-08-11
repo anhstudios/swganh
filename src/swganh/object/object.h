@@ -137,8 +137,10 @@ public:
 	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer);
 	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func);
 	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer);
-	
-    /**
+	virtual void LockObjectMutex();
+	virtual void UnlockObjectMutex();
+    
+	/**
      * Returns whether or not this observable object has any observers.
      *
      * @return True if has observers, false if not.
