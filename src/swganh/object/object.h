@@ -132,12 +132,12 @@ public:
 	virtual void AddObject(std::shared_ptr<Object> newObject);
 	virtual void RemoveObject(std::shared_ptr<Object> oldObject);
 	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer);
-	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint = nullptr);
-	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
-	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)>);
-	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
+	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
 	virtual void __InternalInsert(std::shared_ptr<Object> object);
-
+	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
+	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func);
+	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
+	
     /**
      * Returns whether or not this observable object has any observers.
      *

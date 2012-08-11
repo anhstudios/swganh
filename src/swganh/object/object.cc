@@ -7,6 +7,7 @@
 
 #include "object_events.h"
 
+#include "anh/logger.h"
 #include "anh/crc.h"
 #include "anh/observer/observer_interface.h"
 #include "swganh/messages/base_baselines_message.h"
@@ -65,6 +66,100 @@ void Object::ClearController()
     }
 
     Unsubscribe(controller);
+}
+
+void Object::AddObject(std::shared_ptr<Object> newObject)
+{
+	LOG(warning) << "INSERTING " << newObject->GetObjectId() << " INTO " << this->GetObjectId();
+	//Add Object To Datastructure
+	contained_objects_.insert(ObjectMap::value_type(newObject->GetObjectId(), newObject));
+
+	//Update our observers with the new object
+	for(auto& observer : observers_)
+	{
+		newObject->AddAwareObject(observer);
+	}
+}
+
+void Object::RemoveObject(std::shared_ptr<Object> oldObject)
+{
+	LOG(warning) << "REMOVING " << oldObject->GetObjectId() << " FROM " << this->GetObjectId();
+	
+	auto itr = contained_objects_.find(oldObject->GetObjectId());
+	if(itr != contained_objects_.end())
+	{
+		//Update our observers about the dead object
+		for(auto& observer : observers_)
+		{
+			oldObject->RemoveAwareObject(observer);
+		}
+
+		//Remove Object from Datastructure
+		contained_objects_.erase(itr);
+	}
+}
+
+void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer)
+{
+	LOG(warning) << "TRANSFER " << object->GetObjectId() << " FROM " << this->GetObjectId() << " TO " << newContainer->GetObjectId();
+	//Perform the transfer
+	auto itr = contained_objects_.find(object->GetObjectId());
+	if(itr != contained_objects_.end())
+	{
+		contained_objects_.erase(itr);
+		newContainer->__InternalInsert(object);
+
+		//Split into 3 groups -- only ours, only new, and both ours and new
+		//Send Creates to only nwe
+
+		//Send updates to both ours and new
+
+		//Send destroys to only ours
+	}
+}
+
+void Object::ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint)
+{
+	for(auto& object : contained_objects_)
+	{
+		if(topDown)
+			func(object.second);
+
+		if(max_depth != 1)
+			object.second->ViewObjects((max_depth == 0) ? 0 : max_depth-1, topDown, func);
+
+		if(!topDown)
+			func(object.second);
+	}
+}
+
+void Object::__InternalInsert(std::shared_ptr<Object> object)
+{
+	LOG(warning) << "INTERNAL_INSERTING " << object->GetObjectId() << " INTO " << this->GetObjectId();
+	contained_objects_.insert(ObjectMap::value_type(object->GetObjectId(), object));
+}
+
+void Object::AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object)
+{
+	Subscribe(object);
+
+	//TODO: Send Create
+
+}
+
+void Object::ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func)
+{
+	for(auto& observer : observers_)
+	{
+		func(observer);
+	}
+}
+
+void Object::RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object)
+{
+	//TODO: Send Destroy
+
+	Unsubscribe(object);
 }
 
 string Object::GetTemplate()
@@ -421,13 +516,3 @@ bool Object::HasFlag(std::string flag)
 
     return flags_.find(flag) != flags_.end();
 }
-
-void AddObject(std::shared_ptr<Object> newObject){}
-void RemoveObject(std::shared_ptr<Object> oldObject){}
-void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer){}
-void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint = nullptr){}
-
-void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object){}
-void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func){}
-void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object){}
-void __InternalInsert(std::shared_ptr<Object> object){}
