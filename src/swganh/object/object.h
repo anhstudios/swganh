@@ -132,9 +132,10 @@ public:
 	virtual void AddObject(std::shared_ptr<Object> newObject);
 	virtual void RemoveObject(std::shared_ptr<Object> oldObject);
 	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer);
-	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)>);
+	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
+	virtual void __InternalInsert(std::shared_ptr<Object> object);
 	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
-	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)>);
+	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func);
 	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
 
     /**
@@ -420,7 +421,7 @@ public:
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
-    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
+    virtual void CreateBaselines(std::shared_ptr<ObserverInterface> controller);
     void ClearBaselines();
     void ClearDeltas();
     typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
@@ -451,7 +452,6 @@ private:
         std::shared_ptr<anh::observer::ObserverInterface>
     > ObserverContainer;
 
-    ObjectMap aware_objects_;
     ObjectMap contained_objects_;
 
     ObserverContainer observers_;
