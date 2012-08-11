@@ -35,16 +35,7 @@ public:
 
 	//FOR USE BY TRANSFER OBJECT ONLY. DO NOT CALL IN OUTSIDE CODE
 	virtual void __InternalInsert(std::shared_ptr<swganh::object::Object> object) = 0;
-
-	//Call to Create
-	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object) = 0;
 		
-	//Call to View
-	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func) = 0;
-
-	//Call to Destroy
-	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object) = 0;
-	//
 	virtual void SpatialProviderInterface::UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position) = 0;
 };
 
