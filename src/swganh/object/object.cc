@@ -10,10 +10,15 @@
 #include "anh/logger.h"
 #include "anh/crc.h"
 #include "anh/observer/observer_interface.h"
-#include "swganh/messages/base_baselines_message.h"
+
+
 #include "swganh/messages/scene_create_object_by_crc.h"
-#include "swganh/messages/scene_end_baselines.h"
 #include "swganh/messages/update_containment_message.h"
+#include "swganh/messages/scene_destroy_object.h"
+
+#include "swganh/messages/base_baselines_message.h"
+#include "swganh/messages/scene_end_baselines.h"
+
 
 using namespace anh::observer;
 using namespace std;
@@ -32,6 +37,14 @@ Object::Object()
     , volume_(0)
 {
 }
+
+struct comp
+{
+	bool operator() (const std::shared_ptr<ObserverInterface>& lhs, const std::shared_ptr<ObserverInterface>& rhs)
+	{ 
+		return lhs->GetId() < rhs->GetId(); 
+	}
+};
 
 bool Object::HasController()
 {
@@ -110,11 +123,36 @@ void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<Cont
 		newContainer->__InternalInsert(object);
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
-		//Send Creates to only nwe
+		std::set<std::shared_ptr<ObserverInterface>, comp> oldObservers, newObservers, bothObservers;
 
-		//Send updates to both ours and new
+		ViewAwareObjects([&] (std::shared_ptr<ObserverInterface>& observer) {
+			oldObservers.insert(observer);
+		});
+
+		newContainer->ViewAwareObjects([&] (std::shared_ptr<ObserverInterface>& observer) {
+			auto itr = oldObservers.find(observer);
+			if(itr == oldObservers.end()) {
+				oldObservers.erase(itr);
+				bothObservers.insert(observer);
+			} else {
+				newObservers.insert(observer);
+			}
+		});
+
+		//Send Creates to only new
+		for(auto& observer : oldObservers) {
+			object->AddAwareObject(observer);
+		}
+
+		//Send updates to both
+		for(auto& observer : oldObservers) {
+			object->SendUpdateContainmentMessage(observer);
+		}
 
 		//Send destroys to only ours
+		for(auto& observer : oldObservers) {
+			object->RemoveAwareObject(observer);
+		}
 	}
 }
 
@@ -139,12 +177,14 @@ void Object::__InternalInsert(std::shared_ptr<Object> object)
 	contained_objects_.insert(ObjectMap::value_type(object->GetObjectId(), object));
 }
 
-void Object::AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object)
+void Object::AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
-	Subscribe(object);
-
-	//TODO: Send Create
-
+	if(observer != nullptr)
+	{
+		Subscribe(observer);
+		SendCreateByCrc(observer);
+		CreateBaselines(observer);
+	}
 }
 
 void Object::ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func)
@@ -155,11 +195,13 @@ void Object::ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::
 	}
 }
 
-void Object::RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object)
+void Object::RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
-	//TODO: Send Destroy
-
-	Unsubscribe(object);
+	if(observer != nullptr)
+	{
+		SendDestroy(observer);
+		Unsubscribe(observer);
+	}
 }
 
 string Object::GetTemplate()
@@ -272,25 +314,11 @@ void Object::MakeClean(std::shared_ptr<anh::observer::ObserverInterface> observe
     ClearBaselines();
     ClearDeltas();
     // SceneCreateObjectByCrc
-    swganh::messages::SceneCreateObjectByCrc scene_object;
-    scene_object.object_id = GetObjectId();
-    scene_object.object_crc = anh::memcrc(GetTemplate());
-    scene_object.position = GetPosition();
-	scene_object.orientation = GetOrientation();
-    scene_object.byte_flag = 0;
-    observer->Notify(scene_object);
+    
 
     CreateBaselines(observer);
 
-    if (GetContainer())
-    {
-        UpdateContainmentMessage containment_message;
-        containment_message.container_id = GetContainer()->GetObjectId();
-        containment_message.object_id = GetObjectId();
-        containment_message.containment_type = 4;
-
-        observer->Notify(containment_message);
-    }
+    
     
     OnMakeClean(observer);
 }
@@ -409,7 +437,7 @@ void Object::SetContainer(const std::shared_ptr<Object>& container)
         ("Object::Container",shared_from_this()));
 }
 
-shared_ptr<Object> Object::GetContainer()
+shared_ptr<ContainerInterface> Object::GetContainer()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return container_;
@@ -496,6 +524,35 @@ void Object::CreateBaselines( std::shared_ptr<anh::observer::ObserverInterface> 
 {
     GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
         ("Object::Baselines", shared_from_this(), observer));
+}
+
+void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer) 
+{
+	swganh::messages::SceneCreateObjectByCrc scene_object;
+    scene_object.object_id = GetObjectId();
+    scene_object.object_crc = anh::memcrc(GetTemplate());
+    scene_object.position = GetPosition();
+	scene_object.orientation = GetOrientation();
+    scene_object.byte_flag = 0;
+    observer->Notify(scene_object);
+
+	SendUpdateContainmentMessage(observer);
+}
+
+void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer)
+{
+	UpdateContainmentMessage containment_message;
+	containment_message.container_id = GetContainer()->GetObjectId();
+	containment_message.object_id = GetObjectId();
+	containment_message.containment_type = 4;
+	observer->Notify(containment_message);
+}
+
+void Object::SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer)
+{
+	swganh::messages::SceneDestroyObject scene_object;
+	scene_object.object_id = GetObjectId();
+	observer->Notify(scene_object);
 }
 
 void Object::SetFlag(std::string flag)
