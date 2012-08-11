@@ -1221,7 +1221,8 @@ std::vector<uint64_t> Creature::GetDuelList()
 
 shared_ptr<Player> Creature::GetPlayer()
 {
-    return GetContainedObject<Player>(GetObjectId() + PLAYER_OFFSET);
+    //return GetContainedObject<Player>(GetObjectId() + PLAYER_OFFSET);
+	return nullptr;
 }
 
 void Creature::CreateBaselines(std::shared_ptr<ObjectController> controller)

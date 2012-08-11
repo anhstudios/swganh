@@ -87,13 +87,13 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
 
 void ObjectManager::LoadContainedObjects(std::shared_ptr<Object> object)
 {	
-	for(auto& inner_object : object->GetContainedObjects())
-	{
-		object_map_.insert(make_pair(inner_object.first, inner_object.second));
-		// Recurse
-		if (inner_object.second->GetContainedObjects().size() > 0)
-			LoadContainedObjects(inner_object.second);
-	}
+	//for(auto& inner_object : object->GetContainedObjects())
+	//{
+	//	object_map_.insert(make_pair(inner_object.first, inner_object.second));
+	//	// Recurse
+	//	if (inner_object.second->GetContainedObjects().size() > 0)
+	//		LoadContainedObjects(inner_object.second);
+	//}
 }
 
 shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
@@ -225,11 +225,11 @@ void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object)
         PersistObject(object);
 
         // get all the contained objects
-        auto contained_objects = object->GetContainedObjects();
+       /* auto contained_objects = object->GetContainedObjects();
         for (auto& contained_object : contained_objects)
         {
             PersistRelatedObjects(contained_object.second);
-        }
+        }*/
     }
 }
 	

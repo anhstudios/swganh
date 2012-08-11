@@ -39,11 +39,11 @@ void ObjectMessageBuilder::RegisterEventHandlers()
     });
 }
 
-void ObjectMessageBuilder::SendEndBaselines(const shared_ptr<Object>& object, const shared_ptr<ObjectController>& controller)
+void ObjectMessageBuilder::SendEndBaselines(const shared_ptr<Object>& object, const shared_ptr<anh::observer::ObserverInterface>& observer)
 {
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = object->GetObjectId();
-    controller->Notify(scene_end_baselines);
+	observer->Notify(scene_end_baselines);
 }
 
 void ObjectMessageBuilder::BuildComplexityDelta(const shared_ptr<Object>& object)

@@ -157,7 +157,7 @@ void ObjectFactory::LoadContainedObjects(
 
             auto contained_object = object_manager_->CreateObjectFromStorage(contained_id, contained_type);
             
-            object->AddContainedObject(contained_object, Object::LINK);
+            //object->AddContainedObject(contained_object, Object::LINK);
         }
     }
 }

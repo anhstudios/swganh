@@ -132,10 +132,11 @@ public:
 	virtual void AddObject(std::shared_ptr<Object> newObject);
 	virtual void RemoveObject(std::shared_ptr<Object> oldObject);
 	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer);
-	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)>);
+	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint = nullptr);
 	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
 	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)>);
 	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
+	virtual void __InternalInsert(std::shared_ptr<Object> object);
 
     /**
      * Returns whether or not this observable object has any observers.
@@ -178,13 +179,7 @@ public:
 
         boost::lock_guard<boost::mutex> lock(object_mutex_);
 
-        std::for_each(
-            observers_.begin(),
-            observers_.end(),
-            [this, &message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
-        {
-            observer->Notify(message);
-        });
+        NotifyObservers<T>(message);
     }
 
     /**
@@ -219,7 +214,7 @@ public:
     /**
      * Regenerates the baselines and updates observers.
      */
-    void MakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
+    void MakeClean(std::shared_ptr<anh::observer::ObserverInterface> observer);
 
     /**
      * Returns the most recently generated baselines.
@@ -420,7 +415,7 @@ public:
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
-    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
+    virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
     void ClearBaselines();
     void ClearDeltas();
     typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
@@ -431,7 +426,7 @@ public:
     bool HasFlag(std::string flag);
 
 protected:
-    virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
+    virtual void OnMakeClean(std::shared_ptr<anh::observer::ObserverInterface> observer){}
 
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create

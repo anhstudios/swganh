@@ -172,7 +172,7 @@ void Object::ClearDeltas()
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     deltas_.clear();
 }
-void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> controller)
+void Object::MakeClean(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
     ClearBaselines();
     ClearDeltas();
@@ -183,9 +183,9 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
     scene_object.position = GetPosition();
 	scene_object.orientation = GetOrientation();
     scene_object.byte_flag = 0;
-    controller->Notify(scene_object);
+    observer->Notify(scene_object);
 
-    CreateBaselines(controller);
+    CreateBaselines(observer);
 
     if (GetContainer())
     {
@@ -194,10 +194,10 @@ void Object::MakeClean(std::shared_ptr<swganh::object::ObjectController> control
         containment_message.object_id = GetObjectId();
         containment_message.containment_type = 4;
 
-        controller->Notify(containment_message);
+        observer->Notify(containment_message);
     }
     
-    OnMakeClean(controller);
+    OnMakeClean(observer);
 }
 
 BaselinesCacheContainer Object::GetBaselines()
@@ -397,10 +397,10 @@ void Object::SetEventDispatcher(anh::EventDispatcher* dispatcher)
     event_dispatcher_ = dispatcher;
 }
 
-void Object::CreateBaselines( std::shared_ptr<ObjectController> controller)
+void Object::CreateBaselines( std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
-    GetEventDispatcher()->Dispatch(make_shared<ControllerEvent>
-        ("Object::Baselines", shared_from_this(), controller));
+    GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+        ("Object::Baselines", shared_from_this(), observer));
 }
 
 void Object::SetFlag(std::string flag)
@@ -421,3 +421,13 @@ bool Object::HasFlag(std::string flag)
 
     return flags_.find(flag) != flags_.end();
 }
+
+void AddObject(std::shared_ptr<Object> newObject){}
+void RemoveObject(std::shared_ptr<Object> oldObject){}
+void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer){}
+void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint = nullptr){}
+
+void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object){}
+void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func){}
+void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object){}
+void __InternalInsert(std::shared_ptr<Object> object){}
