@@ -75,7 +75,7 @@ std::shared_ptr<swganh::simulation::SceneInterface> SceneManager::GetScene(uint3
 	return find_iter->second;
 }
 
-void SceneManager::StartScene(const std::string& scene_label)
+void SceneManager::StartScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel)
 {
 	auto description_iter = scene_descriptions_.find(scene_label);
 
@@ -93,7 +93,7 @@ void SceneManager::StartScene(const std::string& scene_label)
 
     LOG(info) << "Starting scene: " << scene_label;
 
-    auto scene = make_shared<Scene>(description_iter->second);
+    auto scene = make_shared<Scene>(description_iter->second, kernel);
 
     scenes_.insert(make_pair(scene_label, scene));
 }

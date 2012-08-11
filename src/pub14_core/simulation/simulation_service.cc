@@ -45,12 +45,13 @@
 #include "swganh/object/player/player_message_builder.h"
 
 #include "swganh/simulation/scene_manager_interface.h"
-#include "swganh/simulation/spatial_provider_interface.h"
 #include "swganh/simulation/scene_interface.h"
-#include "swganh/messages/cmd_start_scene.h"
-#include "swganh/messages/cmd_scene_ready.h"
-#include "swganh/messages/obj_controller_message.h"
-#include "swganh/messages/update_containment_message.h"
+#include "pub14_core/messages/cmd_start_scene.h"
+#include "pub14_core/messages/cmd_scene_ready.h"
+#include "pub14_core/messages/obj_controller_message.h"
+#include "pub14_core/messages/update_containment_message.h"
+#include "pub14_core/messages/update_transform_message.h"
+#include "pub14_core/messages/update_transform_with_parent_message.h"
 
 #include "swganh/tre/tre_archive.h"
 
@@ -62,6 +63,7 @@ using namespace anh;
 using namespace std;
 using namespace swganh::connection;
 using namespace swganh::messages;
+using namespace swganh::messages::controllers;
 using namespace swganh::network;
 using namespace swganh::object;
 using namespace swganh::simulation;
@@ -80,7 +82,7 @@ public:
     SimulationServiceImpl(SwganhKernel* kernel)
         : kernel_(kernel)
     {
-		spatial_provider_ = kernel->GetPluginManager()->CreateObject<SpatialProviderInterface>("Simulation::SpatialProvider");
+		//spatial_provider_ = kernel->GetPluginManager()->CreateObject<SpatialProviderInterface>("Simulation::SpatialProvider");
     }
 
     const shared_ptr<ObjectManager>& GetObjectManager()
@@ -103,16 +105,36 @@ public:
         return scene_manager_;
     }
 
-    MovementManagerInterface* GetMovementManager()
-    {
-        if (!movement_manager_)
-        {
-			movement_manager_ = kernel_->GetPluginManager()->CreateObject<MovementManager>("Simulation::MovementManager");
-			movement_manager_->SetSpatialProvider(spatial_provider_.get());
-		}
-
-        return movement_manager_.get();
-    }
+	void SimulationServiceImpl::HandleDataTransform(
+		const shared_ptr<ObjectController>& controller, 
+		DataTransform message)
+	{
+		for (auto& entry : controlled_objects_)
+		{
+			if (controller->GetId() == entry.first)
+			{
+				// get the scene the object is in
+				auto scene = GetSceneManager()->GetScene(entry.second->GetObject()->GetSceneId());
+				if (scene != nullptr)
+					scene->HandleDataTransform(controller, message);
+			}
+		}		
+	}
+	void SimulationServiceImpl::HandleDataTransformWithParent(
+		const shared_ptr<ObjectController>& controller, 
+		DataTransformWithParent message)
+	{
+		for (auto& entry : controlled_objects_)
+		{
+			if (controller->GetId() == entry.first)
+			{
+				// get the scene the object is in
+				auto scene = GetSceneManager()->GetScene(entry.second->GetObject()->GetSceneId());
+				if (scene != nullptr)
+					scene->HandleDataTransformWithParent(controller, message);
+			}
+		}		
+	}
 	
     void PersistObject(uint64_t object_id)
     {
@@ -127,7 +149,7 @@ public:
     {
         auto object = object_manager_->LoadObjectById(object_id);
 
-		spatial_provider_->AddObject(object); // Add object to spatial indexing.
+		
         
         return object;
     }
@@ -136,7 +158,7 @@ public:
     {
         auto object = object_manager_->LoadObjectById(object_id, type);
 
-		spatial_provider_->AddObject(object); // Add object to spatial indexing.
+		//spatial_provider_->AddObject(object); // Add object to spatial indexing.
 
         return object;
     }
@@ -163,7 +185,7 @@ public:
             scene->RemoveObject(object);
         }
 
-		spatial_provider_->RemoveObject(object); // Remove the object from spatial indexing.
+		//spatial_provider_->RemoveObject(object); // Remove the object from spatial indexing.
 
         StopControllingObject(object);
 
@@ -388,8 +410,7 @@ private:
     shared_ptr<MovementManagerInterface> movement_manager_;
     SwganhKernel* kernel_;
 	ServerInterface* server_;
-	shared_ptr<SpatialProviderInterface> spatial_provider_;
-
+	
     ObjControllerHandlerMap controller_handlers_;
 
     Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
@@ -424,7 +445,7 @@ ServiceDescription SimulationService::GetServiceDescription()
 
 void SimulationService::StartScene(const std::string& scene_label)
 {
-    impl_->GetSceneManager()->StartScene(scene_label);
+    impl_->GetSceneManager()->StartScene(scene_label, kernel_);
 }
 
 void SimulationService::StopScene(const std::string& scene_label)
@@ -545,10 +566,10 @@ void SimulationService::Startup()
         &SimulationServiceImpl::HandleObjControllerMessage, impl_.get());
 
     SimulationServiceInterface::RegisterControllerHandler(
-        &MovementManagerInterface::HandleDataTransform, impl_->GetMovementManager());
+        &SimulationServiceImpl::HandleDataTransform, impl_.get());
 
     SimulationServiceInterface::RegisterControllerHandler(
-        &MovementManagerInterface::HandleDataTransformWithParent, impl_->GetMovementManager());
+        &SimulationServiceImpl::HandleDataTransformWithParent, impl_.get());
 
     
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
