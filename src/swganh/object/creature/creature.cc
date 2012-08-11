@@ -1225,8 +1225,8 @@ shared_ptr<Player> Creature::GetPlayer()
 	return nullptr;
 }
 
-void Creature::CreateBaselines(std::shared_ptr<ObjectController> controller)
+void Creature::CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
-    GetEventDispatcher()->Dispatch(make_shared<swganh::object::ControllerEvent>
-        ("Creature::Baselines", shared_from_this(), controller));
+    GetEventDispatcher()->Dispatch(make_shared<swganh::object::ObserverEvent>
+        ("Creature::Baselines", shared_from_this(), observer));
 }

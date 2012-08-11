@@ -866,7 +866,7 @@ public:
     void SetGender(Gender gender);
 
     // baselines
-    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
+    virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
 
     typedef anh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
 

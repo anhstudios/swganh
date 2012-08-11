@@ -4,6 +4,8 @@
 #ifndef QUADTREE_SPATIAL_PROVIDER_H_
 #define QUADTREE_SPATIAL_PROVIDER_H_
 
+#include <boost/thread/mutex.hpp>
+
 #include "swganh/simulation/spatial_provider_interface.h"
 #include "node.h"
 
@@ -27,8 +29,10 @@ public:
 
 	// FOR USE BY TRANSFER OBJECT DO NOT CALL IN OUTSIDE CODE
 	virtual void __InternalInsert(std::shared_ptr<swganh::object::Object> object);
-
+	virtual void LockObjectMutex() { spatial_mutex_.lock(); }
+	virtual void UnlockObjectMutex() { spatial_mutex_.unlock(); }
 private:
+	boost::mutex spatial_mutex_;
 	quadtree::Node root_node_;
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);
 };

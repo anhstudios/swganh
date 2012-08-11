@@ -37,6 +37,9 @@ public:
 	virtual void __InternalInsert(std::shared_ptr<swganh::object::Object> object) = 0;
 		
 	virtual void SpatialProviderInterface::UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position) = 0;
+
+	virtual void LockObjectMutex() = 0;
+	virtual void UnlockObjectMutex() = 0;
 };
 
 }} // namespace swganh::simulation

@@ -140,12 +140,12 @@ void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<Cont
 		});
 
 		//Send Creates to only new
-		for(auto& observer : oldObservers) {
+		for(auto& observer : newObservers) {
 			object->AddAwareObject(observer);
 		}
 
 		//Send updates to both
-		for(auto& observer : oldObservers) {
+		for(auto& observer : bothObservers) {
 			object->SendUpdateContainmentMessage(observer);
 		}
 

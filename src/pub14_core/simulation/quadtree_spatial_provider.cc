@@ -69,7 +69,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 		//Split into 3 groups -- only ours, only new, and both ours and new
 		std::set<std::shared_ptr<ObserverInterface>, comp> oldObservers, newObservers, bothObservers;
 
-		ViewAwareObjects([&] (std::shared_ptr<ObserverInterface>& observer) {
+		object->ViewAwareObjects([&] (std::shared_ptr<ObserverInterface>& observer) {
 			oldObservers.insert(observer);
 		});
 
@@ -84,12 +84,12 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 		});
 
 		//Send Creates to only new
-		for(auto& observer : oldObservers) {
+		for(auto& observer : newObservers) {
 			object->AddAwareObject(observer);
 		}
 
 		//Send updates to both
-		for(auto& observer : oldObservers) {
+		for(auto& observer : bothObservers) {
 			object->SendUpdateContainmentMessage(observer);
 		}
 
