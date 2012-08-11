@@ -45,13 +45,20 @@ public:
         return objects_.find(object) != objects_.end();
     }
 
-    void AddObject(const shared_ptr<Object>& object)
+    void AddObject(shared_ptr<Object> object)
     {
 		InsertObject(object);
+		for(auto&object_entry : object_map_)            
+        {
+            auto& stored_object = object_entry.second;
+
+            stored_object->AddObject(object);
+            object->AddObject(stored_object);
+        };
 		spatial_index_->AddObject(object);
     }
     
-    void RemoveObject(const shared_ptr<Object>& object)
+    void RemoveObject(shared_ptr<Object> object)
     {
         if (!HasObject(object))
         {
@@ -157,12 +164,12 @@ const std::string& Scene::GetTerrainMap() const
 {
 	return impl_->GetDescription().terrain;
 }
-void Scene::AddObject(const std::shared_ptr<swganh::object::Object>& object)
+void Scene::AddObject(std::shared_ptr<swganh::object::Object> object)
 {
     impl_->AddObject(object);
 }
 
-void Scene::RemoveObject(const std::shared_ptr<swganh::object::Object>& object)
+void Scene::RemoveObject(std::shared_ptr<swganh::object::Object> object)
 {
     impl_->RemoveObject(object);
 }

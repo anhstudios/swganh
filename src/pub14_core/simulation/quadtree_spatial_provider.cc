@@ -33,6 +33,7 @@ struct comp
 
 void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object)
 {
+	LOG(warning) << "QUADTREE AddObject " << object->GetObjectId();
 	root_node_.InsertObject(object);
 	
 	// Make objects aware
@@ -44,6 +45,7 @@ void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object)
 
 void QuadtreeSpatialProvider::RemoveObject(shared_ptr<Object> object)
 {
+	LOG(warning) << "QUADTREE RemoveObject " << object->GetObjectId();
 	root_node_.RemoveObject(object);
 	
     ViewObjects(0, false, [&](shared_ptr<Object> found_object){
@@ -54,12 +56,13 @@ void QuadtreeSpatialProvider::RemoveObject(shared_ptr<Object> object)
 
 void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old_position, glm::vec3 new_position)
 {
+	LOG(warning) << "QUADTREE UpdateObject " << obj->GetObjectId();
 	root_node_.UpdateObject(obj, old_position, new_position);
 }
 
 void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer)
 {
-	LOG(warning) << "TRANSFER " << object->GetObjectId() << " FROM " << this->GetObjectId() << " TO " << newContainer->GetObjectId();
+	LOG(warning) << "QUADTREE TRANSFER " << object->GetObjectId() << " FROM " << this->GetObjectId() << " TO " << newContainer->GetObjectId();
 	//Perform the transfer
 	if (object != newContainer)
 	{

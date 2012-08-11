@@ -163,10 +163,6 @@ public:
     {
         auto object = object_manager_->LoadObjectById(object_id, type);
 
-		auto scene = GetSceneManager()->GetScene(object->GetSceneId());
-		if (scene)
-			scene->AddObject(object);
-
         return object;
     }
 

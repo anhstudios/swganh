@@ -179,7 +179,7 @@ void Object::__InternalInsert(std::shared_ptr<Object> object)
 
 void Object::AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
-	if(observer != nullptr)
+	if(observer)
 	{
 		Subscribe(observer);
 		SendCreateByCrc(observer);
@@ -197,7 +197,7 @@ void Object::ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::
 
 void Object::RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
-	if(observer != nullptr)
+	if(observer)
 	{
 		SendDestroy(observer);
 		Unsubscribe(observer);
@@ -541,8 +541,12 @@ void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> o
 
 void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
+	uint64_t container_id = 0;
+	if (GetContainer())
+		container_id = GetContainer()->GetObjectId();
+
 	UpdateContainmentMessage containment_message;
-	containment_message.container_id = GetContainer()->GetObjectId();
+	containment_message.container_id = container_id;
 	containment_message.object_id = GetObjectId();
 	containment_message.containment_type = 4;
 	observer->Notify(containment_message);

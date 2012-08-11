@@ -37,9 +37,9 @@ namespace simulation {
         virtual const std::string& GetDescription() const = 0;
 		virtual const std::string& GetTerrainMap() const =  0;
 
-        virtual void AddObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
+        virtual void AddObject(std::shared_ptr<swganh::object::Object> object) = 0;
 
-        virtual void RemoveObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
+        virtual void RemoveObject(std::shared_ptr<swganh::object::Object> object) = 0;
 
 		virtual void HandleDataTransform(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransform message) = 0;
 		virtual void HandleDataTransformWithParent(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransformWithParent message) = 0;

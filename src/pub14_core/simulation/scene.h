@@ -45,9 +45,9 @@ namespace simulation {
         const std::string& GetDescription() const;
 		const std::string& GetTerrainMap() const;
 
-        void AddObject(const std::shared_ptr<swganh::object::Object>& object);
+        void AddObject(std::shared_ptr<swganh::object::Object> object);
 
-        void RemoveObject(const std::shared_ptr<swganh::object::Object>& object);
+        void RemoveObject(std::shared_ptr<swganh::object::Object> object);
 
 		void HandleDataTransform(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransform message);
 		void HandleDataTransformWithParent(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransformWithParent message);
