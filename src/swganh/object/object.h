@@ -134,9 +134,9 @@ public:
 	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer);
 	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
 	virtual void __InternalInsert(std::shared_ptr<Object> object);
-	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
+	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer);
 	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func);
-	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object);
+	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer);
 	
     /**
      * Returns whether or not this observable object has any observers.
@@ -289,7 +289,7 @@ public:
     /**
      * @return The container for the current object.
      */
-    std::shared_ptr<Object> GetContainer();
+    std::shared_ptr<ContainerInterface> GetContainer();
 
     /**
     *  @param Type of object to return
@@ -415,7 +415,6 @@ public:
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
-    virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
     void ClearBaselines();
     void ClearDeltas();
     typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
@@ -427,6 +426,12 @@ public:
 
 protected:
     virtual void OnMakeClean(std::shared_ptr<anh::observer::ObserverInterface> observer){}
+
+	virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
+
+	virtual void SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer);
+	virtual void SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer);
+	virtual void SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer);
 
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
@@ -452,7 +457,7 @@ private:
     BaselinesCacheContainer baselines_;
     DeltasCacheContainer deltas_;
 
-    std::shared_ptr<Object> container_;
+    std::shared_ptr<ContainerInterface> container_;
     std::shared_ptr<ObjectController> controller_;
     anh::EventDispatcher* event_dispatcher_;
 

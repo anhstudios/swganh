@@ -29,13 +29,13 @@ namespace object
 		virtual void __InternalInsert(std::shared_ptr<Object> object) = 0;
 
 		//Call to Create
-		virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object) = 0;
+		virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer) {};
 		
 		//Call to View
-		virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func) = 0;
+		virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func) {};
 
 		//Call to Destroy
-		virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> object) = 0;
+		virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer) {};
 	};
 }
 }
