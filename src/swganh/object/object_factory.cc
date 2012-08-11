@@ -53,7 +53,7 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared
         prepared_statement->setUInt64(1, object->GetObjectId());
 		if (object->GetContainer() != nullptr)
 		{
-			prepared_statement->setUInt(2, object->GetContainer()->GetSceneId());
+			prepared_statement->setUInt(2, object->GetSceneId());
 			prepared_statement->setUInt64(3, object->GetContainer()->GetObjectId());
 		}
         else

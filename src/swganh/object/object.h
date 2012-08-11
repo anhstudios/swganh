@@ -426,14 +426,16 @@ public:
     void RemoveFlag(std::string flag);
     bool HasFlag(std::string flag);
 
-protected:
-    virtual void OnMakeClean(std::shared_ptr<anh::observer::ObserverInterface> observer){}
+	virtual void OnMakeClean(std::shared_ptr<anh::observer::ObserverInterface> observer){}
 
 	virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
 
 	virtual void SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer);
 	virtual void SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer);
 	virtual void SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer);
+
+protected:
+
 
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
