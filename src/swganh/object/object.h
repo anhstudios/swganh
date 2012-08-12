@@ -19,6 +19,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "anh/event_dispatcher.h"
 #include "anh/observer/observable_interface.h"
 #include "anh/observer/observer_interface.h"
 
@@ -30,7 +31,7 @@
 #include "swganh/object/object_controller.h"
 #include "swganh/object/container_interface.h"
 
-#include "anh/event_dispatcher.h"
+#include "swganh/object/slot_interface.h"
 
 namespace swganh {
 namespace object {
@@ -43,9 +44,16 @@ typedef std::vector<
     swganh::messages::DeltasMessage
 > DeltasCacheContainer;
 
+
+typedef std::map<
+	int32_t,
+	std::shared_ptr<SlotInterface>
+> ObjectSlots;
+
+typedef std::vector<std::vector<int32_t>> ObjectArrangements;
+
 class ObjectFactory;
 class ObjectMessageBuilder;
-
 
 class Object : 
 	public anh::observer::ObservableInterface, 
@@ -89,19 +97,12 @@ public:
 		GUILD = 1145850183,
 		GROUP = 1196578128
 	};
-
-    enum ContainmentType : uint32_t
-    {
-        UNLINK = 0xFFFFFFFF,
-        LINK = 4
-    };
+	
+	typedef std::map<
+		uint64_t,
+		std::shared_ptr<Object>
+	> ObjectMap;
     
-    typedef std::map<
-        uint64_t,
-        std::shared_ptr<Object>
-    > ObjectMap;
-
-public:
     Object();
     virtual ~Object() {}
 
@@ -130,15 +131,26 @@ public:
     void ClearController();
 
 	virtual void AddObject(std::shared_ptr<Object> newObject);
+	virtual void AddObject(std::shared_ptr<Object> newObject, int32_t arrangement_id);
+
 	virtual void RemoveObject(std::shared_ptr<Object> oldObject);
+
 	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer);
+	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id);
+	
+	virtual void SwapSlots(std::shared_ptr<Object> object, int32_t new_arrangement_id);
+
 	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
+	
 	virtual void __InternalInsert(std::shared_ptr<Object> object);
+	virtual void __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id) = 0;
+	
 	virtual void AddAwareObject(std::shared_ptr<Object> object);
 	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<Object>)> func);
 	virtual void RemoveAwareObject(std::shared_ptr<Object> object);
 	virtual void LockObjectMutex();
 	virtual void UnlockObjectMutex();
+
     
 	/**
      * Returns whether or not this observable object has any observers.
@@ -409,10 +421,15 @@ public:
      */
     uint64_t GetObjectId();
 
+	int32_t GetArrangementId();
+	void SetArrangementId(int32_t arrangement_id);
+
     /**
      * @return The type of the object.
      */
     virtual uint32_t GetType() const { return 0; }
+
+	void SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements);
 
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
@@ -421,7 +438,6 @@ public:
     void ClearDeltas();
     typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 
-    
     void SetFlag(std::string flag);
     void RemoveFlag(std::string flag);
     bool HasFlag(std::string flag);
@@ -443,8 +459,16 @@ public:
 		return GetObjectId() == other->GetObjectId();
 	}
 
+	/// Slot Functions
+	int32_t GetAppropriateArrangementId(std::shared_ptr<Object> other);
+	ObjectSlots GetSlotDescriptor();
+	ObjectArrangements GetSlotArrangements();
+	
+
 protected:
 
+
+	std::atomic<int32_t> arrangement_id_;
 
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
@@ -463,7 +487,11 @@ private:
     typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
 
-    ObjectMap contained_objects_;
+
+    ObjectMap aware_objects_;
+    
+	ObjectSlots slot_descriptor_;
+	ObjectArrangements slot_arrangements_;
 
     ObserverContainer observers_;
 	AwareObjectContainer aware_objects_;

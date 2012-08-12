@@ -598,6 +598,7 @@ public:
     // Baselines
     virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
 
+
     // Helpers
     std::shared_ptr<swganh::object::player::Player> GetPlayer();
 

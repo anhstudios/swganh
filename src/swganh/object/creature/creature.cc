@@ -1227,6 +1227,8 @@ shared_ptr<Player> Creature::GetPlayer()
 
 void Creature::CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
+
     GetEventDispatcher()->Dispatch(make_shared<swganh::object::ObserverEvent>
         ("Creature::Baselines", shared_from_this(), observer));
 }
+

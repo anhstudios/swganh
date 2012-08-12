@@ -35,7 +35,7 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object)
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-            (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+            (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         PersistObject(object, statement);
         // Now execute the update
         statement->executeUpdate();
@@ -77,6 +77,7 @@ void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared
         auto custom_name = object->GetCustomName();
         prepared_statement->setString(15, string(begin(custom_name), end(custom_name)));
         prepared_statement->setUInt(16, object->GetVolume());
+		prepared_statement->setInt(17, object->GetArrangementId());
 
     }
     catch(sql::SQLException &e)
@@ -107,7 +108,9 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         object->SetCustomName(wstring(begin(custom_string), end(custom_string)));
         object->SetVolume(result->getUInt("volume"));
         object->SetTemplate(result->getString("iff_template"));
-        
+		object->SetArrangementId(result->getInt("arrangement_id"));
+
+		object_manager_->LoadSlotsForObject(object);
     }
     catch(sql::SQLException &e)
     {
@@ -156,7 +159,18 @@ void ObjectFactory::LoadContainedObjects(
             contained_type = result->getUInt("type_id");
 
             auto contained_object = object_manager_->CreateObjectFromStorage(contained_id, contained_type);
-            object->AddObject(contained_object);            
+
+			if(contained_object->GetArrangementId() == -2)
+			{
+				//This object has never been loaded before and needs to be put into the default slot.
+				object->AddObject(contained_object);
+			}
+			else 
+			{
+				//Put it back where it was persisted
+				object->AddObject(contained_object, contained_object->GetArrangementId());
+			}
+
         }
     }
 }

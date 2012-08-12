@@ -23,6 +23,7 @@
 #include "simulation/simulation_init.h"
 #include "player/player_init.h"
 #include "social/social_init.h"
+#include "equipment/equipment_init.h"
 
 using anh::app::KernelInterface;
 using anh::plugin::ExitFunc;
@@ -50,6 +51,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh_core::connection::Initialize(swganh_kernel);
     pub14_core::command::Initialize(swganh_kernel);
 	swganh_core::combat::Initialize(swganh_kernel);
+	swganh_core::equipment::Initialize(swganh_kernel);
     swganh_core::login::Initialize(swganh_kernel);
     swganh_core::galaxy::Initialize(swganh_kernel);
     swganh_core::simulation::Initialize(swganh_kernel);

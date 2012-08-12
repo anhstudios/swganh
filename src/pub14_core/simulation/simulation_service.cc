@@ -53,7 +53,8 @@
 #include "pub14_core/messages/update_transform_message.h"
 #include "pub14_core/messages/update_transform_with_parent_message.h"
 
-#include "swganh/tre/tre_archive.h"
+#include "swganh/tre/resource_manager.h"
+#include "swganh/tre/visitors/objects/object_visitor.h"
 
 #include "movement_manager.h"
 #include "scene_manager.h"
@@ -68,6 +69,8 @@ using namespace swganh::network;
 using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh_core::simulation;
+
+using namespace swganh::tre;
 
 using anh::network::soe::ServerInterface;
 using anh::network::soe::Session;
@@ -88,7 +91,7 @@ public:
     {
         if (!object_manager_)
         {
-            object_manager_ = make_shared<ObjectManager>(kernel_->GetEventDispatcher(), kernel_->GetDatabaseManager());
+            object_manager_ = make_shared<ObjectManager>(kernel_);
         }
 
         return object_manager_;
@@ -551,7 +554,7 @@ void SimulationService::Startup()
         &SimulationServiceImpl::HandleDataTransform, impl_.get());
 
     SimulationServiceInterface::RegisterControllerHandler(
-        &SimulationServiceImpl::HandleDataTransformWithParent, impl_.get());
+		&SimulationServiceImpl::HandleDataTransformWithParent, impl_.get());
 
     
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
@@ -560,5 +563,6 @@ void SimulationService::Startup()
 	command_service->AddCommandCreator("addfriend", swganh::command::PythonCommandCreator("commands.addfriend", "AddFriendCommand"));
 	command_service->AddCommandCreator("removefriend", swganh::command::PythonCommandCreator("commands.removefriend", "RemoveFriendCommand"));
 	command_service->AddCommandCreator("setmoodinternal", swganh::command::PythonCommandCreator("commands.setmoodinternal", "SetMoodInternalCommand"));
+	command_service->AddCommandCreator("transferitemmisc", swganh::command::PythonCommandCreator("commands.transferitem", "TransferItem"));
 
 }

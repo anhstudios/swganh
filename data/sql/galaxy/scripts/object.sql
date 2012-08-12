@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `object` (
   `updated_at` datetime NOT NULL,
   `deleted_at` datetime DEFAULT NULL,
   `type_id` int(10) DEFAULT NULL,
+  `arrangement_id` int(10) DEFAULT '-2',
   PRIMARY KEY (`id`),
   KEY `IDX_A8ADABEC166053B4` (`scene_id`),
   KEY `IDX_A8ADABEC727ACA70` (`parent_id`),
@@ -38,9 +39,9 @@ CREATE TABLE IF NOT EXISTS `object` (
 DELETE FROM `object`;
     
 /*!40000 ALTER TABLE `object` DISABLE KEYS */;
-INSERT INTO `object` (`id`, `scene_id`, `parent_id`, `iff_template_id`, `x_position`, `y_position`, `z_position`, `x_orientation`, `y_orientation`, `z_orientation`, `w_orientation`, `complexity`, `stf_name_file`, `stf_name_string`, `custom_name`, `volume`, `created_at`, `updated_at`, `deleted_at`, `type_id`) VALUES
-	(0, 1, NULL, 15495, 0, 0, 0, 0, 0, 0, 0, 0, 'universe', 'universe', 'universe', 0, '2011-10-21 23:00:59', '2011-10-21 23:01:00', '0000-00-00 00:00:00', NULL),
-	(8589934593, 1, 0, 1203, 0, 0, 0, 0, 0, 0, 0, 0, 'player', 'example', 'player', 0, '2011-10-21 23:02:22', '2011-10-21 23:02:23', '0000-00-00 00:00:00', 1347174745);
+INSERT INTO `object` (`id`, `scene_id`, `parent_id`, `iff_template_id`, `x_position`, `y_position`, `z_position`, `x_orientation`, `y_orientation`, `z_orientation`, `w_orientation`, `complexity`, `stf_name_file`, `stf_name_string`, `custom_name`, `volume`, `created_at`, `updated_at`, `deleted_at`, `type_id`, `arrangement_id`) VALUES
+	(0, 1, NULL, 15495, 0, 0, 0, 0, 0, 0, 0, 0, 'universe', 'universe', 'universe', 0, '2011-10-21 23:00:59', '2011-10-21 23:01:00', '0000-00-00 00:00:00', NULL, -1),
+	(8589934593, 1, 0, 1203, 0, 0, 0, 0, 0, 0, 0, 0, 'player', 'example', 'player', 0, '2011-10-21 23:02:22', '2011-10-21 23:02:23', '0000-00-00 00:00:00', 1347174745, -1);
 /*!40000 ALTER TABLE `object` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

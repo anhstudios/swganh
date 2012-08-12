@@ -23,7 +23,8 @@ CREATE PROCEDURE `sp_PersistObject`(
     IN `in_stf_name_file` VARCHAR(255), 
     IN `in_stf_name_string` VARCHAR(255), 
     IN `in_custom_name` VARCHAR(50),
-    IN `in_volume` INT)
+    IN `in_volume` INT,
+	IN `in_arrangement_id` INT)
 BEGIN
 -- First get our template_id
     DECLARE iff_template INT;
@@ -33,7 +34,7 @@ BEGIN
     UPDATE object SET scene_id = in_scene_id, parent_id = in_parent_id, iff_template_id = iff_template, 
         x_position = posX, y_position = posY, z_position = posZ, x_orientation = oX, y_orientation = oY, z_orientation = oZ,
         w_orientation = oW, complexity = in_complexity, stf_name_file = in_stf_name_file, stf_name_string= in_stf_name_string,
-        custom_name = in_custom_name, volume = in_volume, updated_at = NOW()
+        custom_name = in_custom_name, volume = in_volume, arrangement_id = in_arrangement_id, updated_at = NOW()
     WHERE object.id = in_object_id;
 END//
 DELIMITER ;
