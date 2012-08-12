@@ -458,10 +458,11 @@ uint8_t Object::GetHeading()
     }
 
     if (tmp.y < 0.0f && tmp.w > 0.0f) {
-        tmp.w *= -1;
+        tmp.y *= -1;
+		tmp.w *= -1;
     }
-
-    return static_cast<uint8_t>((glm::angle(tmp) / 6.283f) * 100);
+	
+    return static_cast<uint8_t>(glm::angle(tmp) / 0.0625f);
 }
 
 void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
