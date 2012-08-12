@@ -17,7 +17,7 @@ using namespace quadtree;
 class NodeTest {
 public:
 	NodeTest()
-		: root_node_(ROOT, Region(Point(-3000.0f, -3000.0f), Point(3000.0f, 3000.0f)), 0, 9, nullptr)
+		: root_node_(ROOT, Region(Point(-8300.0f, -8300.0f), Point(8300.0f, 8300.0f)), 0, 9, nullptr)
 		, event_dispatcher_(io_service_)
 	{}
 

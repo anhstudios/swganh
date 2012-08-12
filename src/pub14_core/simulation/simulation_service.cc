@@ -265,6 +265,8 @@ public:
         auto connection_client = std::static_pointer_cast<ConnectionClientInterface>(client);
         connection_client->SetController(controller);
 
+		object->CreateBaselines(controller);
+
 		// Get All ViewObjects and make the controller aware
 		object->ViewObjects(0, true, [&](shared_ptr<Object> found_obj){
 			found_obj->AddAwareObject(controller);
@@ -342,8 +344,6 @@ public:
 		// auto player = equipment_service_->GetSlot("player");
 		// event_dispatcher->Dispatch(
 		// make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", player));
-                
-        StartControllingObject(object, client);
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
 
@@ -365,6 +365,8 @@ public:
 
         // Add object to scene and send baselines
         scene->AddObject(object);
+
+		StartControllingObject(object, client);
     }
 
 	void SendToAll(ByteBuffer message)

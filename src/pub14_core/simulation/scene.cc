@@ -31,7 +31,7 @@ public:
 		
     {
 		auto tmp = kernel_->GetPluginManager()->CreateObject<swganh_core::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");
-		tmp->SetThis(spatial_index_);
+		tmp->SetThis(tmp);
 		spatial_index_ = tmp;
 
 		movement_manager_ = make_shared<MovementManager>(kernel);

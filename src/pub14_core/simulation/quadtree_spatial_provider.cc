@@ -112,7 +112,7 @@ void QuadtreeSpatialProvider::ViewObjects(uint32_t max_depth, bool topDown, std:
 	std::vector<std::shared_ptr<Object>> contained_objects;
 	if (hint)
 	{
-		contained_objects = root_node_.Query(GetQueryBoxViewRange(hint));
+		contained_objects = root_node_.Query(GetQueryBoxViewRange(hint));		
 	}
 	else
 	{
@@ -143,5 +143,6 @@ void QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object)
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
 	auto position = object->GetPosition();
-	return QueryBox(Point(position.x - 256, position.y + 256), Point(position.x + 256, position.y - 256));
+	return QueryBox(Point(position.x - 256, position.z - 256), Point(position.x + 256, position.z + 256));
+	
 }

@@ -433,7 +433,7 @@ void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
 {
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-        container_ = container;
+        container_ = container;		
     }
 
     GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
