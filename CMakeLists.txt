@@ -110,7 +110,7 @@ if(MSVC)
     MESSAGE(STATUS "- MSVC: Set variadic max to 10 for compatibility with dependencies")
 
     if(TREAT_WARNINGS_AS_ERRORS)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /WX")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
         message(STATUS "- MSVC: Treating all warnings as errors")
 	endif()
