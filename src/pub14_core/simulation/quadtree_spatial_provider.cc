@@ -75,11 +75,11 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 	});
 
 	//New Objects
-	for (auto& new_obj : new_objects)
+	for_each(new_objects.begin(), new_objects.end(), [&](std::shared_ptr<Object> new_obj)
 	{
 		new_obj->AddAwareObject(obj);
 		obj->AddAwareObject(new_obj);
-	}
+	});
 }
 
 void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer)
@@ -109,19 +109,22 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 		});
 
 		//Send Creates to only new
-		for(auto& observer : newObservers) {
+		for_each(newObservers.begin(), newObservers.end(), [&object](shared_ptr<Object> observer)
+		{
 			object->AddAwareObject(observer);
-		}
+		});
 
 		//Send updates to both
-		for(auto& observer : bothObservers) {
+		for_each(bothObservers.begin(), bothObservers.end(), [&object](shared_ptr<Object> observer)
+		{
 			object->SendUpdateContainmentMessage(observer->GetController());
-		}
+		});
 
 		//Send destroys to only ours
-		for(auto& observer : oldObservers) {
+		for_each(oldObservers.begin(), oldObservers.end(), [&object](shared_ptr<Object> observer)
+		{
 			object->RemoveAwareObject(observer);
-		}
+		});
 	}
 }
 

@@ -269,7 +269,7 @@ public:
 
 		// Get All ViewObjects and make the controller aware
 		object->ViewObjects(0, true, [&](shared_ptr<Object> found_obj){
-			found_obj->AddAwareObject(controller);
+			found_obj->AddAwareObject(object);
 		});
 
         return controller;
