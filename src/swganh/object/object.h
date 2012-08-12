@@ -434,6 +434,11 @@ public:
 	virtual void SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer);
 	virtual void SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer);
 
+	bool operator< (const std::shared_ptr<Object>& other)
+	{ 
+		return GetObjectId() < other->GetObjectId(); 
+	}
+
 protected:
 
 

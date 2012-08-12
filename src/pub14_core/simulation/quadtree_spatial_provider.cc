@@ -26,14 +26,6 @@ QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
 	__this.reset();
 }
 
-struct comp
-{
-	bool operator() (const std::shared_ptr<ObserverInterface>& lhs, const std::shared_ptr<ObserverInterface>& rhs)
-	{ 
-		return lhs->GetId() < rhs->GetId(); 
-	}
-};
-
 void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object)
 {
 	LOG(warning) << "QUADTREE AddObject " << object->GetObjectId();
@@ -100,7 +92,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 		newContainer->__InternalInsert(object);
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
-		std::set<std::shared_ptr<Object>, comp> oldObservers, newObservers, bothObservers;
+		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
 
 		object->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
 			oldObservers.insert(observer);

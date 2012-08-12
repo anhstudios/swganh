@@ -38,14 +38,6 @@ Object::Object()
 {
 }
 
-struct comp
-{
-	bool operator() (const std::shared_ptr<Object>& lhs, const std::shared_ptr<Object>& rhs)
-	{ 
-		return lhs->GetObjectId() < rhs->GetObjectId(); 
-	}
-};
-
 bool Object::HasController()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -89,10 +81,9 @@ void Object::AddObject(std::shared_ptr<Object> newObject)
 	newObject->SetContainer(shared_from_this());
 
 	//Update our observers with the new object
-	for(auto& observer : aware_objects_)
-	{
-		newObject->AddAwareObject(observer);		
-	}
+	std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
+		newObject->AddAwareObject(object);		
+	});
 }
 
 void Object::RemoveObject(std::shared_ptr<Object> oldObject)
@@ -103,10 +94,9 @@ void Object::RemoveObject(std::shared_ptr<Object> oldObject)
 	if(itr != contained_objects_.end())
 	{
 		//Update our observers about the dead object
-		for(auto& observer : aware_objects_)
-		{
-			oldObject->RemoveAwareObject(observer);
-		}
+		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
+			oldObject->RemoveAwareObject(object);		
+		});
 
 		//Remove Object from Datastructure
 		contained_objects_.erase(itr);
@@ -125,7 +115,7 @@ void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<Cont
 		newContainer->__InternalInsert(object);
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
-		std::set<std::shared_ptr<Object>, comp> oldObservers, newObservers, bothObservers;
+		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
 
 		ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
 			oldObservers.insert(observer);
@@ -200,10 +190,7 @@ void Object::AddAwareObject(std::shared_ptr<swganh::object::Object> object)
 
 void Object::ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func)
 {
-	for(auto& observer : aware_objects_)
-	{
-		func(observer);
-	}
+	std::for_each(aware_objects_.begin(), aware_objects_.end(), func);
 }
 
 void Object::RemoveAwareObject(std::shared_ptr<swganh::object::Object> object)
