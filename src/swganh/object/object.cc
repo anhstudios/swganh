@@ -35,6 +35,7 @@ Object::Object()
     , stf_name_string_("")
     , custom_name_(L"")
     , volume_(0)
+	, arrangement_id_(-2)
 {
 }
 
@@ -73,16 +74,21 @@ void Object::ClearController()
     Unsubscribe(controller);
 }
 
-void Object::AddObject(std::shared_ptr<Object> newObject)
+void Object::AddObject(std::shared_ptr<Object> object)
 {
-	LOG(warning) << "INSERTING " << newObject->GetObjectId() << " INTO " << this->GetObjectId();
+	int32_t arrangement_id = GetAppropriateArrangementId(object);
+	AddObject(object, arrangement_id);
+}
+
+void Object::AddObject(std::shared_ptr<Object> object, int32_t arrangement_id)
+{
+	LOG(warning) << "INSERTING " << object->GetObjectId() << " INTO " << this->GetObjectId();
 	//Add Object To Datastructure
-	contained_objects_.insert(ObjectMap::value_type(newObject->GetObjectId(), newObject));
-	newObject->SetContainer(shared_from_this());
+	__InternalInsert(object, arrangement_id);
 
 	//Update our observers with the new object
 	std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-		newObject->AddAwareObject(object);		
+		object->AddAwareObject(object);		
 	});
 }
 
@@ -90,84 +96,123 @@ void Object::RemoveObject(std::shared_ptr<Object> oldObject)
 {
 	LOG(warning) << "REMOVING " << oldObject->GetObjectId() << " FROM " << this->GetObjectId();
 	
-	auto itr = contained_objects_.find(oldObject->GetObjectId());
-	if(itr != contained_objects_.end())
-	{
-		//Update our observers about the dead object
-		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-			oldObject->RemoveAwareObject(object);		
-		});
+	//Update our observers about the dead object
+	std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
+		oldObject->RemoveAwareObject(object);		
+	});
 
-		//Remove Object from Datastructure
-		contained_objects_.erase(itr);
-		oldObject->SetContainer(nullptr);
+	//Remove Object from Datastructure
+	for(auto& slot : slot_descriptor_)
+	{
+		slot.second->remove_object(oldObject);
 	}
+	oldObject->SetContainer(nullptr);
 }
 
 void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer)
 {
+	TransferObject(object, newContainer, -2);
+}
+
+void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
+{
 	LOG(warning) << "TRANSFER " << object->GetObjectId() << " FROM " << this->GetObjectId() << " TO " << newContainer->GetObjectId();
 	//Perform the transfer
-	auto itr = contained_objects_.find(object->GetObjectId());
-	if(itr != contained_objects_.end())
+	for(auto& slot : slot_descriptor_)
 	{
-		contained_objects_.erase(itr);
-		newContainer->__InternalInsert(object);
+		slot.second->remove_object(object);
+	}
 
-		//Split into 3 groups -- only ours, only new, and both ours and new
-		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
+	newContainer->__InternalInsert(object, arrangement_id);
 
-		ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
-			oldObservers.insert(observer);
-		});
+	//Split into 3 groups -- only ours, only new, and both ours and new
+	std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
 
-		newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
-			auto itr = oldObservers.find(observer);
-			if(itr == oldObservers.end()) {
-				oldObservers.erase(itr);
-				bothObservers.insert(observer);
-			} else {
-				newObservers.insert(observer);
-			}
-		});
+	ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
+		oldObservers.insert(observer);
+	});
 
-		//Send Creates to only new
-		for(auto& observer : newObservers) {
-			object->AddAwareObject(observer);
+	newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
+		auto itr = oldObservers.find(observer);
+		if(itr == oldObservers.end()) {
+			oldObservers.erase(itr);
+			bothObservers.insert(observer);
+		} else {
+			newObservers.insert(observer);
 		}
+	});
 
-		//Send updates to both
-		for(auto& observer : bothObservers) {
-			object->SendUpdateContainmentMessage(observer->GetController());
-		}
+	//Send Creates to only new
+	for(auto& observer : newObservers) {
+		object->AddAwareObject(observer);
+	}
 
-		//Send destroys to only ours
-		for(auto& observer : oldObservers) {
-			object->RemoveAwareObject(observer);
-		}
+	//Send updates to both
+	for(auto& observer : bothObservers) {
+		object->SendUpdateContainmentMessage(observer->GetController());
+	}
+
+	//Send destroys to only ours
+	for(auto& observer : oldObservers) {
+		object->RemoveAwareObject(observer);
 	}
 }
 
 void Object::ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint)
 {
-	for(auto& object : contained_objects_)
+	for(auto& slot : slot_descriptor_)
 	{
-		if(topDown)
-			func(object.second);
+		slot.second->view_objects([&] (const std::shared_ptr<Object>& object) {
+			if(topDown)
+				func(object);
 
-		if(max_depth != 1)
-			object.second->ViewObjects((max_depth == 0) ? 0 : max_depth-1, topDown, func);
+			if(max_depth != 1)
+				object->ViewObjects((max_depth == 0) ? 0 : max_depth-1, topDown, func);
 
-		if(!topDown)
-			func(object.second);
+			if(!topDown)
+				func(object);
+		});
 	}
+}
+
+void Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
+{
+	if(arrangement_id == -2)
+		arrangement_id = GetAppropriateArrangementId(object);
+
+	if (arrangement_id < 4)
+		slot_descriptor_[arrangement_id]->insert_object(object);
+	else
+	{
+		auto& arrangement = object->slot_arrangements_[arrangement_id-4];
+		for (auto& i : arrangement)
+		{
+			slot_descriptor_[i]->insert_object(object);
+		}
+	}
+	object->SetArrangementId(arrangement_id);
+	object->SetContainer(shared_from_this());
 }
 
 void Object::__InternalInsert(std::shared_ptr<Object> object)
 {
 	LOG(warning) << "INTERNAL_INSERTING " << object->GetObjectId() << " INTO " << this->GetObjectId();
-	contained_objects_.insert(ObjectMap::value_type(object->GetObjectId(), object));
-	object->SetContainer(shared_from_this());
+	int32_t arrangement_id = GetAppropriateArrangementId(object);
+	__InternalInsert(object, arrangement_id);
+}
+
+void Object::SwapSlots(std::shared_ptr<Object> object, int32_t new_arrangement_id)
+{
+	for(auto& slot : slot_descriptor_)
+	{
+		slot.second->remove_object(object);
+	}
+	__InternalInsert(object, new_arrangement_id);
+
+
+	ViewAwareObjects([&] (std::shared_ptr<Object> aware_object) {
+		object->SendUpdateContainmentMessage(object->GetController());
+	});
 }
 
 void Object::AddAwareObject(std::shared_ptr<swganh::object::Object> object)
@@ -181,9 +226,11 @@ void Object::AddAwareObject(std::shared_ptr<swganh::object::Object> object)
 		SendCreateByCrc(observer);
 		CreateBaselines(observer);
 
-		for(auto& v : contained_objects_)
+		for(auto& slot : slot_descriptor_)
 		{
-			v.second->AddAwareObject(object);
+			slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+				v->AddAwareObject(object);
+			});
 		}
 	}
 }
@@ -200,9 +247,11 @@ void Object::RemoveAwareObject(std::shared_ptr<swganh::object::Object> object)
 
 	if(observer)
 	{
-		for(auto& v : contained_objects_)
+		for(auto& slot : slot_descriptor_)
 		{
-			v.second->RemoveAwareObject(object);
+			slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+				v->RemoveAwareObject(object);
+			});
 		}
 
 		SendDestroy(observer);
@@ -305,7 +354,6 @@ void Object::MakeClean(std::shared_ptr<anh::observer::ObserverInterface> observe
     ClearDeltas();
     // SceneCreateObjectByCrc
     
-
     CreateBaselines(observer);
 
     
@@ -501,6 +549,16 @@ uint32_t Object::GetSceneId()
 	return scene_id_;
 }
 
+int32_t Object::GetArrangementId()
+{
+	return arrangement_id_;
+}
+
+void Object::SetArrangementId(int32_t arrangement_id)
+{
+	arrangement_id_ = arrangement_id;
+}
+
 anh::EventDispatcher* Object::GetEventDispatcher()
 {
     return event_dispatcher_;
@@ -578,4 +636,64 @@ void Object::LockObjectMutex()
 void Object::UnlockObjectMutex()
 {
 	object_mutex_.unlock();
+}
+
+/// Slots
+
+void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements)
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	slot_descriptor_ = slots;
+	slot_arrangements_ = arrangements;
+}
+
+int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
+{
+	if (slot_descriptor_.size() == 0)
+		return -1;
+
+	// Find appropriate arrangement
+	int32_t arrangement_id = 4;
+	int32_t filled_arrangement_id = 0;
+	// In each arrangment
+	for ( auto& arrangement : other->slot_arrangements_)
+	{
+		bool passes_completely = true;
+		bool is_valid = true;
+		// Each Slot
+		for (auto& slot : arrangement)
+		{
+			// does slot exist in descriptor
+			auto& descriptor_iter = slot_descriptor_.find(slot);
+			if (descriptor_iter == end(slot_descriptor_))
+			{
+				is_valid = false;
+				break;
+			}
+			// is slot filled?
+			else if (descriptor_iter->second->is_filled())
+			{
+				passes_completely = false;
+			}
+		}
+		// if not filled return arrangement
+		if (is_valid && passes_completely)
+			return arrangement_id;
+		else if (is_valid)
+			filled_arrangement_id = arrangement_id;
+
+		++arrangement_id;
+	}
+	return filled_arrangement_id;
+}
+
+ObjectSlots Object::GetSlotDescriptor()
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	return slot_descriptor_;
+}
+ObjectArrangements Object::GetSlotArrangements()
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	return slot_arrangements_;
 }

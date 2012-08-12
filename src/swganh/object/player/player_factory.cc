@@ -72,25 +72,25 @@ void PlayerFactory::PersistObject(const shared_ptr<Object>& object)
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-			(conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+			(conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         ObjectFactory::PersistObject(object, statement);
 
 		auto player = static_pointer_cast<Player>(object);
-		statement->setString(17, player->GetProfessionTag());
-		statement->setUInt64(18, player->GetTotalPlayTime());
-		statement->setUInt(19, player->GetAdminTag());
-		statement->setUInt(20, player->GetMaxForcePower());
-		statement->setUInt(21, player->GetExperimentationFlag());
-		statement->setUInt(22, player->GetCraftingStage());
-		statement->setUInt64(23, player->GetNearestCraftingStation());
-		statement->setUInt(24, player->GetExperimentationPoints());
-		statement->setUInt(25, player->GetAccomplishmentCounter());
-		statement->setUInt(26, player->GetLanguage());
-		statement->setUInt(27, player->GetCurrentStomach());
-		statement->setUInt(28, player->GetMaxStomach());
-		statement->setUInt(29, player->GetCurrentDrink());
-		statement->setUInt(30, player->GetMaxDrink());
-		statement->setUInt(31, player->GetJediState());
+		statement->setString(18, player->GetProfessionTag());
+		statement->setUInt64(19, player->GetTotalPlayTime());
+		statement->setUInt(20, player->GetAdminTag());
+		statement->setUInt(21, player->GetMaxForcePower());
+		statement->setUInt(22, player->GetExperimentationFlag());
+		statement->setUInt(23, player->GetCraftingStage());
+		statement->setUInt64(24, player->GetNearestCraftingStation());
+		statement->setUInt(25, player->GetExperimentationPoints());
+		statement->setUInt(26, player->GetAccomplishmentCounter());
+		statement->setUInt(27, player->GetLanguage());
+		statement->setUInt(28, player->GetCurrentStomach());
+		statement->setUInt(29, player->GetMaxStomach());
+		statement->setUInt(30, player->GetCurrentDrink());
+		statement->setUInt(31, player->GetMaxDrink());
+		statement->setUInt(32, player->GetJediState());
 
         statement->executeUpdate();
 

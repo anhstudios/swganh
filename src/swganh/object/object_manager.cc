@@ -6,15 +6,28 @@
 #include "anh/logger.h"
 
 #include "object_factory.h"
+#include "anh/event_dispatcher.h"
+#include "swganh/tre/resource_manager.h"
+#include "swganh/tre/visitors/objects/object_visitor.h"
+#include "swganh/tre/visitors/slots/slot_arrangement_visitor.h"
+#include "swganh/tre/visitors/slots/slot_descriptor_visitor.h"
+#include "swganh/object/slot_exclusive.h"
+#include "swganh/object/slot_container.h"
+
 
 using namespace std;
+using namespace anh;
+using namespace swganh::tre;
 using namespace swganh::object;
+using namespace swganh::messages;
 
-ObjectManager::ObjectManager(anh::EventDispatcher* event_dispatcher, 
-                             anh::database::DatabaseManagerInterface* db_manager)
-    : event_dispatcher_(event_dispatcher)
-    , db_manager_(db_manager)
-{}
+ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
+    : kernel_(kernel)
+{
+	auto slot_definition = kernel->GetResourceManager()->getResourceByName("abstract/slot/slot_definition/slot_definitions.iff", SLOT_DEFINITION_VISITOR);
+	
+	slot_definition_ = static_pointer_cast<SlotDefinitionVisitor>(slot_definition);	
+}
 
 ObjectManager::~ObjectManager()
 {}
@@ -237,4 +250,69 @@ void ObjectManager::PersistRelatedObjects(uint64_t parent_object_id)
     {
         PersistRelatedObjects(object);
     }
+}
+
+
+std::shared_ptr<swganh::tre::SlotDefinitionVisitor>  ObjectManager::GetSlotDefinition()
+{
+	return slot_definition_;
+}
+
+void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
+{
+	auto oiff = static_pointer_cast<ObjectVisitor>(kernel_->GetResourceManager()->getResourceByName(object->GetTemplate(), OIFF_VISITOR));
+	oiff->load_aggregate_data(kernel_->GetResourceManager());
+	oiff->load_referenced_files(kernel_->GetResourceManager());
+
+	auto arrangmentDescriptor = oiff->attribute<std::shared_ptr<SlotArrangementVisitor>>("arrangementDescriptorFilename");
+	auto slotDescriptor = oiff->attribute<std::shared_ptr<SlotDescriptorVisitor>>("slotDescriptorFilename");
+	ObjectArrangements arrangements;
+		
+	// CRAZY SHIT
+	// arrangements
+	if (arrangmentDescriptor != nullptr)
+	{
+		for_each(arrangmentDescriptor->begin(), arrangmentDescriptor->end(), [&](std::vector<std::string> arrangement)
+		{			
+			std::vector<int32_t> arr;
+			for (auto& str : arrangement)
+			{
+				arr.push_back(slot_definition_->findSlotByName(str));				
+			}
+			arrangements.push_back(arr);
+		});
+	}
+	ObjectSlots descriptors;
+
+	// Globals
+	//
+	descriptors.insert(ObjectSlots::value_type(-1, shared_ptr<SlotContainer>(new SlotContainer())));
+	for (size_t k = 0; k < slot_definition_->count(); ++k)
+	{
+		auto entry = slot_definition_->entry(k);		
+		if (entry.global)
+		{
+			if(entry.exclusive)
+				descriptors.insert(ObjectSlots::value_type(k, shared_ptr<SlotExclusive>(new SlotExclusive())));
+			else
+				descriptors.insert(ObjectSlots::value_type(k, shared_ptr<SlotContainer>(new SlotContainer())));
+		}
+	}
+
+	// Descriptors
+	if (slotDescriptor != nullptr)
+	{
+		for ( size_t j = 0; j < slotDescriptor->available_count(); ++j)
+		{
+			auto descriptor = slotDescriptor->slot(j);
+			size_t id = slot_definition_->findSlotByName(descriptor);
+			auto entry = slot_definition_->entry(id);
+			if(entry.exclusive)
+				descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotExclusive>(new SlotExclusive())));
+			else
+				descriptors.insert(ObjectSlots::value_type(id, shared_ptr<SlotContainer>(new SlotContainer())));
+		}
+	}
+	
+	object->SetSlotInformation(descriptors, arrangements);
 }

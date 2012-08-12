@@ -10,12 +10,11 @@
 #include "anh/database/database_manager.h"
 #include "anh/event_dispatcher.h"
 #include "anh/plugin/plugin_manager.h"
-#include "anh/resource/resource_manager.h"
 #include "anh/service/datastore.h"
 #include "anh/service/service_directory.h"
 #include "anh/service/service_manager.h"
 
-#include "swganh/tre/tre_archive.h"
+#include "swganh/tre/resource_manager.h"
 
 #include "version.h"
 
@@ -110,12 +109,11 @@ boost::asio::io_service& SwganhKernel::GetIoService() {
     return io_service_;
 }
 
-anh::resource::ResourceManager* SwganhKernel::GetResourceManager()
+anh::resource::ResourceManagerInterface* SwganhKernel::GetResourceManager()
 {
     if (!resource_manager_)
     {
-        resource_manager_.reset(new anh::resource::ResourceManager(
-            std::make_shared<swganh::tre::TreArchive>(GetAppConfig().tre_config), GetAppConfig().resource_cache_size));
+        resource_manager_.reset(new swganh::tre::ResourceManager(std::make_shared<swganh::tre::TreArchive>(GetAppConfig().tre_config)));
     }
 
     return resource_manager_.get();

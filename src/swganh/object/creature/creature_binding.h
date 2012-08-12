@@ -177,6 +177,9 @@ void exportCreature()
         .def("remove_duel_list", &Creature::RemoveFromDuelList, "Removes the creature from the duel list")
         .def("get_player", &Creature::GetPlayer, "Gets the :class:`.Player` object that this creature owns")
         ;
+
+	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<Tangible>>();
+	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<Object>>();
 }
 
 #endif  //SWGANH_OBJECT_CREATURE_CREATURE_BINDING_H_
