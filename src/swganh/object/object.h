@@ -54,6 +54,7 @@ typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
 class ObjectFactory;
 class ObjectMessageBuilder;
+class ContainerPermissionsInterface;
 
 class Object : 
 	public anh::observer::ObservableInterface, 
@@ -103,6 +104,8 @@ public:
 		std::shared_ptr<Object>
 	> ObjectMap;
     
+	typedef std::shared_ptr<ContainerPermissionsInterface> PermissionsObject;
+
     Object();
     virtual ~Object() {}
 
@@ -456,6 +459,8 @@ public:
 	ObjectSlots GetSlotDescriptor();
 	ObjectArrangements GetSlotArrangements();
 	
+	PermissionsObject GetPermissions();
+	void SetPermissions(PermissionsObject obj);
 
 protected:
 
@@ -478,7 +483,9 @@ private:
 
     typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
+	
 
+	PermissionsObject container_permissions_;
 
     ObjectSlots slot_descriptor_;
 	ObjectArrangements slot_arrangements_;

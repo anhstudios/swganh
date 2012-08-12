@@ -19,6 +19,7 @@
 #include "swganh/messages/base_baselines_message.h"
 #include "swganh/messages/scene_end_baselines.h"
 
+#include "swganh/object/permissions/container_permissions_interface.h"
 
 using namespace anh::observer;
 using namespace std;
@@ -74,15 +75,15 @@ void Object::ClearController()
     Unsubscribe(controller);
 }
 
-void Object::AddObject(std::shared_ptr<Object> object, int32_t arrangement_id)
+void Object::AddObject(std::shared_ptr<Object> obj, int32_t arrangement_id)
 {
-	LOG(warning) << "INSERTING " << object->GetObjectId() << " INTO " << this->GetObjectId();
+	LOG(warning) << "INSERTING " << obj->GetObjectId() << " INTO " << this->GetObjectId();
 	//Add Object To Datastructure
-	arrangement_id = __InternalInsert(object, arrangement_id);
+	arrangement_id = __InternalInsert(obj, arrangement_id);
 
 	//Update our observers with the new object
 	std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-		object->AddAwareObject(object);		
+		obj->AddAwareObject(object);		
 	});
 }
 
@@ -211,21 +212,25 @@ void Object::SwapSlots(std::shared_ptr<Object> object, int32_t new_arrangement_i
 }
 
 void Object::AddAwareObject(std::shared_ptr<swganh::object::Object> object)
-{
-	auto observer = object->GetController();
-	aware_objects_.insert(object);
-
-	if(observer)
+{	
+	auto find_itr = aware_objects_.find(object);
+	if(find_itr == aware_objects_.end())
 	{
-		Subscribe(observer);
-		SendCreateByCrc(observer);
-		CreateBaselines(observer);
+		auto observer = object->GetController();
+		aware_objects_.insert(object);
 
-		for(auto& slot : slot_descriptor_)
+		if(observer)
 		{
-			slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-				v->AddAwareObject(object);
-			});
+			Subscribe(observer);
+			SendCreateByCrc(observer);
+			CreateBaselines(observer);
+
+			for(auto& slot : slot_descriptor_)
+			{
+				slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+					v->AddAwareObject(object);
+				});
+			}
 		}
 	}
 }
@@ -237,20 +242,24 @@ void Object::ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object:
 
 void Object::RemoveAwareObject(std::shared_ptr<swganh::object::Object> object)
 {
-	auto observer = object->GetController();
-	aware_objects_.erase(object);
-
-	if(observer)
+	auto find_itr = aware_objects_.find(object);
+	if(find_itr != aware_objects_.end())
 	{
-		for(auto& slot : slot_descriptor_)
-		{
-			slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-				v->RemoveAwareObject(object);
-			});
-		}
+		auto observer = object->GetController();
+		aware_objects_.erase(object);
 
-		SendDestroy(observer);
-		Unsubscribe(observer);
+		if(observer)
+		{
+			for(auto& slot : slot_descriptor_)
+			{
+				slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+					v->RemoveAwareObject(object);
+				});
+			}
+
+			SendDestroy(observer);
+			Unsubscribe(observer);
+		}
 	}
 }
 
@@ -531,6 +540,16 @@ uint32_t Object::GetVolume()
 	return volume_;
 }
 
+Object::PermissionsObject Object::GetPermissions()
+{
+	return container_permissions_;
+}
+
+void Object::SetPermissions(Object::PermissionsObject obj)
+{
+	container_permissions_ = obj;
+}
+
 void Object::SetSceneId(uint32_t scene_id)
 {
     scene_id_ = scene_id;
@@ -572,6 +591,8 @@ void Object::CreateBaselines( std::shared_ptr<anh::observer::ObserverInterface> 
 
 void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer) 
 {
+	DLOG(warning) << "SENDING " << GetObjectId() << " CREATE TO " << observer->GetId();
+
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
     scene_object.object_crc = anh::memcrc(GetTemplate());

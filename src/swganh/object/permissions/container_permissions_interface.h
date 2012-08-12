@@ -1,6 +1,8 @@
 #ifndef SWGANH_CONTAINER_PERMISSIONS_INTERFACE_H_
 #define SWGANH_CONTAINER_PERMISSIONS_INTERFACE_H_
 
+#include <memory>
+
 namespace swganh
 {
 namespace object
@@ -12,7 +14,7 @@ namespace object
 	{
 	public:
 
-		virtual bool canInsert(std:shared_ptr<Object> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object) = 0;
+		virtual bool canInsert(std::shared_ptr<Object> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object) = 0;
 
 		virtual bool canRemove(std::shared_ptr<Object> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object) = 0;
 
@@ -23,7 +25,7 @@ namespace object
 	class DefaultContainerPermissions : public ContainerPermissionsInterface
 	{
 	public:
-		bool canInsert(std:shared_ptr<Object> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object)
+		bool canInsert(std::shared_ptr<Object> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object)
 		{
 			return false;
 		}
