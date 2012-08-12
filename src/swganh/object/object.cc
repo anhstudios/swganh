@@ -187,6 +187,11 @@ void Object::AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> ob
 		Subscribe(observer);
 		SendCreateByCrc(observer);
 		CreateBaselines(observer);
+
+		for(auto& v : contained_objects_)
+		{
+			v.second->AddAwareObject(observer);
+		}
 	}
 }
 
@@ -202,6 +207,11 @@ void Object::RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface>
 {
 	if(observer)
 	{
+		for(auto& v : contained_objects_)
+		{
+			v.second->RemoveAwareObject(observer);
+		}
+
 		SendDestroy(observer);
 		Unsubscribe(observer);
 	}
