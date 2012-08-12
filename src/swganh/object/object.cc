@@ -140,7 +140,7 @@ void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<Cont
 		if (observer->HasController())
 		{
 			auto itr = oldObservers.find(observer);
-			if(itr == oldObservers.end()) {
+			if(itr != oldObservers.end()) {
 				oldObservers.erase(itr);
 				bothObservers.insert(observer);
 			} else {
