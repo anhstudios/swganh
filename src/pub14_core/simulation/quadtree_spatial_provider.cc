@@ -61,14 +61,18 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 	
 	obj->ViewAwareObjects([&] (std::shared_ptr<Object> aware_object) 
 	{
-		auto new_itr = new_objects.find(aware_object);
-		if(new_itr != new_objects.end())
+		// If we are top level (aka SI can see us)
+		if (aware_object->GetContainer()->GetObjectId() == GetObjectId())
 		{
-			new_objects.erase(new_itr);
-		}
-		else
-		{
-			deleted_objects.push_back(aware_object);
+			auto new_itr = new_objects.find(aware_object);
+			if(new_itr != new_objects.end())
+			{
+				new_objects.erase(new_itr);
+			}
+			else
+			{
+				deleted_objects.push_back(aware_object);
+			}
 		}
 	});
 
