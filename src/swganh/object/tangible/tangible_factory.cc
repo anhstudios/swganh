@@ -63,29 +63,32 @@ unordered_map<string, shared_ptr<Tangible>>::iterator TangibleFactory::GetTempla
     });
     return found;
 }
-void TangibleFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)
 {
+	uint32_t counter = 1;
     try 
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-            (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
-        ObjectFactory::PersistObject(object, statement);
+            (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+        counter = ObjectFactory::PersistObject(object, statement);
         // cast to tangible
         auto tangible = static_pointer_cast<Tangible>(object);
-        statement->setString(18, tangible->GetCustomization());
-        statement->setInt(19, tangible->GetOptionsMask());
-        statement->setInt(20, tangible->GetIncapTimer());
-        statement->setInt(21, tangible->GetCondition());
-        statement->setInt(22, tangible->GetMaxCondition());
-        statement->setBoolean(23, tangible->IsStatic());
+        statement->setString(counter++, tangible->GetCustomization());
+        statement->setInt(counter++, tangible->GetOptionsMask());
+        statement->setInt(counter++, tangible->GetIncapTimer());
+        statement->setInt(counter++, tangible->GetCondition());
+        statement->setInt(counter++, tangible->GetMaxCondition());
+        statement->setBoolean(counter++, tangible->IsStatic());
         statement->executeUpdate();
+		
     }
     catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
+	return counter;
 }
 
 void TangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)

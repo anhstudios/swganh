@@ -212,7 +212,7 @@ void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
         throw InvalidObjectType("Cannot persist object to storage for an unregistered type.");
     }
 
-    return find_iter->second->PersistObject(object);
+    find_iter->second->PersistObject(object);
 }
 
 void ObjectManager::PersistObject(uint64_t object_id)
@@ -232,13 +232,6 @@ void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object)
     {
 		// first persist the parent object
         PersistObject(object);
-
-        // get all the contained objects
-       /* auto contained_objects = object->GetContainedObjects();
-        for (auto& contained_object : contained_objects)
-        {
-            PersistRelatedObjects(contained_object.second);
-        }*/
     }
 }
 	

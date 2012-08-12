@@ -17,8 +17,10 @@ bool WeaponFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void WeaponFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	return 1;
+}
 
 void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

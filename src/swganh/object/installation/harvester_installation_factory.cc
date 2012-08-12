@@ -17,8 +17,12 @@ bool HarvesterInstallationFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void HarvesterInstallationFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t HarvesterInstallationFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	uint32_t counter = 1;
+	
+	return counter;
+}
 
 void HarvesterInstallationFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

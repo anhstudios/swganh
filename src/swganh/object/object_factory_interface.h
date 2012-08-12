@@ -36,7 +36,7 @@ namespace object {
          *
          * @param object the object instance to persist.
          */
-        virtual void PersistObject(const std::shared_ptr<Object>& object) = 0;
+        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object) = 0;
 
         /**
          * Deletes the requested object from storage.

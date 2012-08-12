@@ -30,61 +30,70 @@ ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
     , event_dispatcher_(event_dispatcher)
 {}
 
-void ObjectFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
 {
+	uint32_t counter = 1;
     try {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
             (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
-        PersistObject(object, statement);
+        counter = PersistObject(object, statement);
         // Now execute the update
         statement->executeUpdate();
+
+		
     }
     catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
+	return counter;
 }
 
-void ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared_ptr<sql::PreparedStatement>& prepared_statement)
+uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared_ptr<sql::PreparedStatement>& prepared_statement)
 {
-    try {
-        prepared_statement->setUInt64(1, object->GetObjectId());
+	uint32_t counter = 1;
+    try {		
+        prepared_statement->setUInt64(counter++, object->GetObjectId());
 		if (object->GetContainer() != nullptr)
 		{
-			prepared_statement->setUInt(2, object->GetSceneId());
-			prepared_statement->setUInt64(3, object->GetContainer()->GetObjectId());
+			prepared_statement->setUInt(counter++, object->GetSceneId());
+			prepared_statement->setUInt64(counter++, object->GetContainer()->GetObjectId());
 		}
         else
 		{
-			prepared_statement->setUInt(2, object->GetSceneId());
-            prepared_statement->setUInt64(3, 0);
+			prepared_statement->setUInt(counter++, object->GetSceneId());
+            prepared_statement->setUInt64(counter++, 0);
 		}
-        prepared_statement->setString(4, object->GetTemplate());
+        prepared_statement->setString(counter++, object->GetTemplate());
         auto position = object->GetPosition();
-        prepared_statement->setDouble(5, position.x);
-        prepared_statement->setDouble(6, position.y);
-        prepared_statement->setDouble(7, position.z);
+        prepared_statement->setDouble(counter++, position.x);
+        prepared_statement->setDouble(counter++, position.y);
+        prepared_statement->setDouble(counter++, position.z);
         auto orientation = object->GetOrientation();
-        prepared_statement->setDouble(8, orientation.x);
-        prepared_statement->setDouble(9, orientation.y);
-        prepared_statement->setDouble(10, orientation.z);
-        prepared_statement->setDouble(11, orientation.w);
-        prepared_statement->setDouble(12, object->GetComplexity());
-        prepared_statement->setString(13, object->GetStfNameFile());
-        prepared_statement->setString(14, object->GetStfNameString());
+        prepared_statement->setDouble(counter++, orientation.x);
+        prepared_statement->setDouble(counter++, orientation.y);
+        prepared_statement->setDouble(counter++, orientation.z);
+        prepared_statement->setDouble(counter++, orientation.w);
+        prepared_statement->setDouble(counter++, object->GetComplexity());
+        prepared_statement->setString(counter++, object->GetStfNameFile());
+        prepared_statement->setString(counter++, object->GetStfNameString());
         auto custom_name = object->GetCustomName();
-        prepared_statement->setString(15, string(begin(custom_name), end(custom_name)));
-        prepared_statement->setUInt(16, object->GetVolume());
-		prepared_statement->setInt(17, object->GetArrangementId());
+        prepared_statement->setString(counter++, string(begin(custom_name), end(custom_name)));
+        prepared_statement->setUInt(counter++, object->GetVolume());
+		prepared_statement->setInt(counter++, object->GetArrangementId());
+		// TODO: permissions
+		prepared_statement->setInt(counter++, 0);
 
+		
     }
     catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
+	return counter;
 }
 void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object, const shared_ptr<sql::ResultSet>& result)
 {
