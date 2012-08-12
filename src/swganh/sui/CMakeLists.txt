@@ -1,39 +1,10 @@
-#python directories
-set(ANH_PYTHON_BINDINGS "")
+include(ANHPythonBinding)
 
-add_subdirectory(app)
-add_subdirectory(command)
-add_subdirectory(combat)
-add_subdirectory(messages)
-add_subdirectory(object)
-add_subdirectory(social)
-add_subdirectory(simulation)
-add_subdirectory(sui)
-add_subdirectory(utilities)
-
-add_custom_target(
-    swgpy ALL
-    DEPENDS
-        swgpy_app swgpy_command swgpy_combat swgpy_messages swgpy_object swgpy_social swgpy_simulation swgpy_utility
-    COMMAND python "${CMAKE_SOURCE_DIR}/tools/swgpy/init_modules.py"
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/$\(Configuration\)/swgpy"
-    VERBATIM
-)
-set_target_properties(swgpy
-	PROPERTIES
-	FOLDER "cmake_targets"
-)
-
-set_target_properties(swgpy
-	PROPERTIES
-	FOLDER "cmake_targets"
-)
-
-include(ANHExecutable)
-
-AddANHExecutable(swganh
-    DEPENDS
-        anh_lib
+AddANHPythonBinding(sui
+	PREFIX_NAME swgpy
+    DEPENDS 
+        swganh_lib
+		anh_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
@@ -44,11 +15,10 @@ AddANHExecutable(swganh
         ${ZLIB_INCLUDE_DIR}
     ADDITIONAL_LIBRARY_DIRS
         ${Boost_LIBRARY_DIRS}
-    DEBUG_LIBRARIES
+    DEBUG_LIBRARIES 
         ${Boost_CHRONO_LIBRARY_DEBUG}
         ${Boost_DATE_TIME_LIBRARY_DEBUG}
         ${Boost_LOG_LIBRARY_DEBUG}
-        ${Boost_LOG_SETUP_LIBRARY_DEBUG}
         ${Boost_FILESYSTEM_LIBRARY_DEBUG}
         ${Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG}
         ${Boost_PYTHON3_LIBRARY_DEBUG}
@@ -60,11 +30,10 @@ AddANHExecutable(swganh
         ${PYTHON_LIBRARY}
         ${TBB_DEBUG_LIBRARIES}
         ${ZLIB_LIBRARY_DEBUG}
-    OPTIMIZED_LIBRARIES
+    OPTIMIZED_LIBRARIES 
         ${Boost_CHRONO_LIBRARY_RELEASE}
         ${Boost_DATE_TIME_LIBRARY_RELEASE}
         ${Boost_LOG_LIBRARY_RELEASE}
-        ${Boost_LOG_SETUP_LIBRARY_RELEASE}
         ${Boost_FILESYSTEM_LIBRARY_RELEASE}
         ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}
         ${Boost_PYTHON3_LIBRARY_RELEASE}
