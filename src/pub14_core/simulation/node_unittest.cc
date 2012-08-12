@@ -77,10 +77,10 @@ BOOST_AUTO_TEST_CASE(VerifyQuadrantSplit)
 	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().size());
 	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
     
-	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects()[0]->GetObjectId());
-	BOOST_CHECK_EQUAL(2, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects()[0]->GetObjectId());
-	BOOST_CHECK_EQUAL(3, root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects()[0]->GetObjectId());
-	BOOST_CHECK_EQUAL(4, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects()[0]->GetObjectId());
+	BOOST_CHECK_EQUAL(1, (*root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(2, (*root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(3, (*root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(4, (*root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().begin())->GetObjectId());
 
 	root_node_.RemoveObject(obj1);
 	root_node_.RemoveObject(obj2);

@@ -14,6 +14,8 @@ using namespace swganh::object;
 using namespace swganh_core::simulation;
 using namespace quadtree;
 
+static int VIEWING_RANGE = 128;
+
 QuadtreeSpatialProvider::QuadtreeSpatialProvider()
 	: root_node_(ROOT, Region(Point(-8300.0f, -8300.0f), Point(8300.0f, 8300.0f)), 0, 9, nullptr)
 {
@@ -59,8 +61,29 @@ void QuadtreeSpatialProvider::RemoveObject(shared_ptr<Object> object)
 
 void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old_position, glm::vec3 new_position)
 {
-	LOG(warning) << "QUADTREE UpdateObject " << obj->GetObjectId();
+	auto old_objects = root_node_.Query(GetQueryBoxViewRange(obj));
+	
 	root_node_.UpdateObject(obj, old_position, new_position);
+
+	auto new_objects = root_node_.Query(GetQueryBoxViewRange(obj));
+	// New To Us
+	for(auto& new_obj : new_objects)
+	{
+		auto old_iter = old_objects.find(new_obj);
+		// New
+		if (old_iter == old_objects.end())
+		{
+			(*old_iter)->AddAwareObject(obj->GetController());
+			obj->AddAwareObject((*old_iter)->GetController());			
+		}		
+		old_objects.erase(old_iter);
+	}
+	// Stale Objects (objects we should no longer see
+	for (auto& old_obj : old_objects)
+	{
+		old_obj->RemoveAwareObject(obj->GetController());
+		obj->RemoveAwareObject(old_obj->GetController());
+	}
 }
 
 void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer)
@@ -109,7 +132,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 void QuadtreeSpatialProvider::ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint)
 {
 	LOG(warning) << "QUADTREE VIEW OBJECTS ";
-	std::vector<std::shared_ptr<Object>> contained_objects;
+	std::set<std::shared_ptr<Object>> contained_objects;
 	if (hint)
 	{
 		contained_objects = root_node_.Query(GetQueryBoxViewRange(hint));		
@@ -143,6 +166,6 @@ void QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object)
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
 	auto position = object->GetPosition();
-	return QueryBox(Point(position.x - 256, position.z - 256), Point(position.x + 256, position.z + 256));
+	return QueryBox(Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));
 	
 }

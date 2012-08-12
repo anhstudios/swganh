@@ -567,6 +567,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::Observe
 
 void Object::SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
+	LOG(warning) << "OBJECT: " << GetObjectId() <<" SENDING DESTROY TO " << observer->GetId();
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();
 	observer->Notify(scene_object);
