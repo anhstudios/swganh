@@ -91,7 +91,7 @@ void Object::AddObject(std::shared_ptr<Object> newObject)
 	//Update our observers with the new object
 	for(auto& observer : observers_)
 	{
-		newObject->AddAwareObject(observer);
+		newObject->AddAwareObject(observer);		
 	}
 }
 

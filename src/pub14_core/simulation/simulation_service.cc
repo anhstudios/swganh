@@ -363,10 +363,10 @@ public:
         start_scene.galaxy_time = 0;
         client->SendTo(start_scene);
 
-        // Add object to scene and send baselines
-        scene->AddObject(object);
-
 		StartControllingObject(object, client);
+
+        // Add object to scene and send baselines
+        scene->AddObject(object);		
     }
 
 	void SendToAll(ByteBuffer message)
