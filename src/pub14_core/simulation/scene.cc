@@ -30,7 +30,10 @@ public:
 		, kernel_(kernel)
 		
     {
-		spatial_index_ = kernel_->GetPluginManager()->CreateObject<swganh::simulation::SpatialProviderInterface>("Simulation::SpatialProvider");
+		auto tmp = kernel_->GetPluginManager()->CreateObject<swganh_core::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");
+		tmp->SetThis(spatial_index_);
+		spatial_index_ = tmp;
+
 		movement_manager_ = make_shared<MovementManager>(kernel);
 		movement_manager_->SetSpatialProvider(spatial_index_.get());
 	}
@@ -48,13 +51,7 @@ public:
     void AddObject(shared_ptr<Object> object)
     {
 		InsertObject(object);
-		for(auto&object_entry : object_map_)            
-        {
-            auto& stored_object = object_entry.second;
 
-            stored_object->AddObject(object);
-            object->AddObject(stored_object);
-        };
 		spatial_index_->AddObject(object);
     }
     

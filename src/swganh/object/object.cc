@@ -86,6 +86,7 @@ void Object::AddObject(std::shared_ptr<Object> newObject)
 	LOG(warning) << "INSERTING " << newObject->GetObjectId() << " INTO " << this->GetObjectId();
 	//Add Object To Datastructure
 	contained_objects_.insert(ObjectMap::value_type(newObject->GetObjectId(), newObject));
+	newObject->SetContainer(shared_from_this());
 
 	//Update our observers with the new object
 	for(auto& observer : observers_)
@@ -109,6 +110,7 @@ void Object::RemoveObject(std::shared_ptr<Object> oldObject)
 
 		//Remove Object from Datastructure
 		contained_objects_.erase(itr);
+		oldObject->SetContainer(nullptr);
 	}
 }
 
@@ -175,6 +177,7 @@ void Object::__InternalInsert(std::shared_ptr<Object> object)
 {
 	LOG(warning) << "INTERNAL_INSERTING " << object->GetObjectId() << " INTO " << this->GetObjectId();
 	contained_objects_.insert(ObjectMap::value_type(object->GetObjectId(), object));
+	object->SetContainer(shared_from_this());
 }
 
 void Object::AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer)
@@ -426,7 +429,7 @@ uint8_t Object::GetHeading()
     return static_cast<uint8_t>((glm::angle(tmp) / 6.283f) * 100);
 }
 
-void Object::SetContainer(const std::shared_ptr<Object>& container)
+void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
 {
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);

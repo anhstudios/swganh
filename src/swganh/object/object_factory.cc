@@ -156,8 +156,7 @@ void ObjectFactory::LoadContainedObjects(
             contained_type = result->getUInt("type_id");
 
             auto contained_object = object_manager_->CreateObjectFromStorage(contained_id, contained_type);
-            
-            //object->AddContainedObject(contained_object, Object::LINK);
+            object->AddObject(contained_object);            
         }
     }
 }

@@ -313,7 +313,7 @@ public:
      *
      * @param container The new object container.
      */
-    void SetContainer(const std::shared_ptr<Object>& container);
+    void SetContainer(const std::shared_ptr<ContainerInterface>& container);
 
     /**
      * Base complexity for this object (primarily used for crafting).

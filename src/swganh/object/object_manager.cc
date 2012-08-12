@@ -87,13 +87,9 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
 
 void ObjectManager::LoadContainedObjects(std::shared_ptr<Object> object)
 {	
-	//for(auto& inner_object : object->GetContainedObjects())
-	//{
-	//	object_map_.insert(make_pair(inner_object.first, inner_object.second));
-	//	// Recurse
-	//	if (inner_object.second->GetContainedObjects().size() > 0)
-	//		LoadContainedObjects(inner_object.second);
-	//}
+	object->ViewObjects(0, true, [&](shared_ptr<Object> contained_object){
+		object_map_.insert(make_pair(contained_object->GetObjectId(), contained_object));
+	});
 }
 
 shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)

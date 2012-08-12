@@ -12,7 +12,7 @@ namespace object
 {
 	class Object;
 
-	class ContainerInterface 
+	class ContainerInterface
 	{
 	public:
 		

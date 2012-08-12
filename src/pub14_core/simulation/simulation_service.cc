@@ -151,10 +151,6 @@ public:
     shared_ptr<Object> LoadObjectById(uint64_t object_id)
     {
         auto object = object_manager_->LoadObjectById(object_id);
-		
-		auto scene = GetSceneManager()->GetScene(object->GetSceneId());
-		if (scene)
-			scene->AddObject(object);
 
         return object;
     }
@@ -268,6 +264,11 @@ public:
 
         auto connection_client = std::static_pointer_cast<ConnectionClientInterface>(client);
         connection_client->SetController(controller);
+
+		// Get All ViewObjects and make the controller aware
+		object->ViewObjects(0, true, [&](shared_ptr<Object> found_obj){
+			found_obj->AddAwareObject(controller);
+		});
 
         return controller;
     }

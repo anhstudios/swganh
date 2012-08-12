@@ -12,7 +12,8 @@
 namespace swganh_core {
 namespace simulation {
 
-class QuadtreeSpatialProvider : public swganh::simulation::SpatialProviderInterface
+class QuadtreeSpatialProvider 
+	: public swganh::simulation::SpatialProviderInterface
 {
 public:
 	QuadtreeSpatialProvider();
@@ -31,7 +32,10 @@ public:
 	virtual void __InternalInsert(std::shared_ptr<swganh::object::Object> object);
 	virtual void LockObjectMutex() { spatial_mutex_.lock(); }
 	virtual void UnlockObjectMutex() { spatial_mutex_.unlock(); }
+
+	void SetThis(std::shared_ptr<ContainerInterface> si) { __this = si; }
 private:
+	std::shared_ptr<ContainerInterface> __this;
 	boost::mutex spatial_mutex_;
 	quadtree::Node root_node_;
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);

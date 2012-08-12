@@ -21,6 +21,7 @@ QuadtreeSpatialProvider::QuadtreeSpatialProvider()
 
 QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
 {
+	__this.reset();
 }
 
 struct comp
@@ -35,6 +36,7 @@ void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object)
 {
 	LOG(warning) << "QUADTREE AddObject " << object->GetObjectId();
 	root_node_.InsertObject(object);
+	object->SetContainer(__this);
 	
 	// Make objects aware
 	ViewObjects(0, true, [&](shared_ptr<Object> found_object){
@@ -47,7 +49,8 @@ void QuadtreeSpatialProvider::RemoveObject(shared_ptr<Object> object)
 {
 	LOG(warning) << "QUADTREE RemoveObject " << object->GetObjectId();
 	root_node_.RemoveObject(object);
-	
+	object->SetContainer(nullptr);
+
     ViewObjects(0, false, [&](shared_ptr<Object> found_object){
 		found_object->RemoveAwareObject(object->GetController());
 		object->RemoveAwareObject(found_object->GetController());
@@ -134,6 +137,7 @@ void QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object)
 	LOG(warning) << "QUADTREE __InternalInsert " << object->GetObjectId();
 
 	root_node_.InsertObject(object);
+	object->SetContainer(__this);
 }
 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
