@@ -41,6 +41,7 @@ void exportTangible()
 		;
 
 	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<Object>>();
+	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<ContainerInterface>>();
 }
 
 #endif // SWGANH_OBJECT_TANGIBLE_TANGIBLE_BINDING_H_
