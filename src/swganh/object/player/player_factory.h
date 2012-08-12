@@ -31,7 +31,7 @@ namespace player {
 
         bool HasTemplate(const std::string& template_name);
 
-        void PersistObject(const std::shared_ptr<swganh::object::Object>& object);
+        uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 

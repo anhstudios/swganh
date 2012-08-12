@@ -16,9 +16,11 @@ ByteBuffer::ByteBuffer()
 , write_position_(0) {}
 
 ByteBuffer::ByteBuffer(size_t length)
-: data_(length)
+: data_()
 , read_position_(0)
-, write_position_(0) {}
+, write_position_(0) {
+	data_.reserve(length);
+}
 
 ByteBuffer::ByteBuffer(std::vector<unsigned char> data)
 : data_(std::move(data))
@@ -74,7 +76,7 @@ size_t ByteBuffer::capacity() const {
 }
 
 void ByteBuffer::write(const unsigned char* data, size_t size) {
-    data_.insert(data_.begin() + write_position_, data, data + size);
+	data_.insert(data_.begin() + write_position_, data, data + size);
     write_position_ += size;
 }
 

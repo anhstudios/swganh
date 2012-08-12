@@ -171,7 +171,7 @@ shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint)
         auto find_iter = session_map_.find(endpoint);
         if (find_iter != session_map_.end())
         {
-			LOG(info) << "Get Existing Session for " << endpoint.address().to_string();
+			//LOG(info) << "Get Existing Session for " << endpoint.address().to_string();
             return find_iter->second;
         }
     }

@@ -17,8 +17,12 @@ bool GuildFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void GuildFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t GuildFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	uint32_t counter = 1;
+
+	return counter;
+}
 
 void GuildFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

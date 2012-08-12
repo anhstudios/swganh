@@ -39,89 +39,91 @@ bool CreatureFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void CreatureFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object)
 {
     // Persist Tangible and Base Object First
-    TangibleFactory::PersistObject(object);
-    // Now for the biggy
+    uint32_t counter = 1;
+	TangibleFactory::PersistObject(object);
+	// Now for the biggy
     try
-    {
+    {		
         auto conn = db_manager_->getConnection("galaxy");
         // 65 of these
         string sql = "CALL sp_PersistCreature(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
             "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
         auto statement = unique_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         auto creature = static_pointer_cast<Creature>(object);
-        statement->setUInt64(1, creature->GetObjectId());
-        statement->setUInt64(2, creature->GetOwnerId());
-        statement->setUInt64(3, creature->GetListenToId());
-        statement->setUInt64(4, creature->GetBankCredits());
-        statement->setUInt64(5, creature->GetCashCredits());
-        statement->setUInt64(6, creature->GetPosture());
-        statement->setUInt(7, creature->GetFactionRank());
-        statement->setDouble(8, creature->GetScale());
-        statement->setUInt64(9, creature->GetBattleFatigue());
-        statement->setUInt64(10, creature->GetStateBitmask());
-        statement->setDouble(11, creature->GetAccelerationMultiplierBase());
-        statement->setDouble(12, creature->GetAccelerationMultiplierModifier());
-        statement->setDouble(13, creature->GetSpeedMultiplierBase());
-        statement->setDouble(14, creature->GetSpeedMultiplierModifier());
-        statement->setDouble(15, creature->GetRunSpeed());
-        statement->setDouble(16, creature->GetSlopeModifierAngle());
-        statement->setDouble(17, creature->GetSlopeModifierPercent());
-        statement->setDouble(18, creature->GetTurnRadius());
-        statement->setDouble(19, creature->GetWalkingSpeed());
-        statement->setDouble(20, creature->GetWaterModifierPercent());
-        statement->setInt(21, creature->GetCombatLevel());
-        statement->setString(22, creature->GetAnimation());
-        statement->setUInt64(23, creature->GetGroupId());
-        statement->setUInt(24, creature->GetGuildId());
-        statement->setUInt64(25, creature->GetWeaponId());
-        statement->setUInt(26, creature->GetMoodId());
-        statement->setUInt(27, creature->GetPerformanceId());
-        statement->setString(28, creature->GetDisguise());
+        statement->setUInt64(counter++, creature->GetObjectId());
+        statement->setUInt64(counter++, creature->GetOwnerId());
+        statement->setUInt64(counter++, creature->GetListenToId());
+        statement->setUInt64(counter++, creature->GetBankCredits());
+        statement->setUInt64(counter++, creature->GetCashCredits());
+        statement->setUInt64(counter++, creature->GetPosture());
+        statement->setUInt(counter++, creature->GetFactionRank());
+        statement->setDouble(counter++, creature->GetScale());
+        statement->setUInt64(counter++, creature->GetBattleFatigue());
+        statement->setUInt64(counter++, creature->GetStateBitmask());
+        statement->setDouble(counter++, creature->GetAccelerationMultiplierBase());
+        statement->setDouble(counter++, creature->GetAccelerationMultiplierModifier());
+        statement->setDouble(counter++, creature->GetSpeedMultiplierBase());
+        statement->setDouble(counter++, creature->GetSpeedMultiplierModifier());
+        statement->setDouble(counter++, creature->GetRunSpeed());
+        statement->setDouble(counter++, creature->GetSlopeModifierAngle());
+        statement->setDouble(counter++, creature->GetSlopeModifierPercent());
+        statement->setDouble(counter++, creature->GetTurnRadius());
+        statement->setDouble(counter++, creature->GetWalkingSpeed());
+        statement->setDouble(counter++, creature->GetWaterModifierPercent());
+        statement->setInt(counter++, creature->GetCombatLevel());
+        statement->setString(counter++, creature->GetAnimation());
+        statement->setUInt64(counter++, creature->GetGroupId());
+        statement->setUInt(counter++, creature->GetGuildId());
+        statement->setUInt64(counter++, creature->GetWeaponId());
+        statement->setUInt(counter++, creature->GetMoodId());
+        statement->setUInt(counter++, creature->GetPerformanceId());
+        statement->setString(counter++, creature->GetDisguise());
         // WOUNDS
-        statement->setInt(29, creature->GetStatWound(HEALTH));
-        statement->setInt(30, creature->GetStatWound(STRENGTH));
-        statement->setInt(31, creature->GetStatWound(CONSTITUTION));
-        statement->setInt(32, creature->GetStatWound(ACTION));
-        statement->setInt(33, creature->GetStatWound(QUICKNESS));
-        statement->setInt(34, creature->GetStatWound(STAMINA));
-        statement->setInt(35, creature->GetStatWound(MIND));
-        statement->setInt(36, creature->GetStatWound(FOCUS));
-        statement->setInt(37, creature->GetStatWound(WILLPOWER));
+        statement->setInt(counter++, creature->GetStatWound(HEALTH));
+        statement->setInt(counter++, creature->GetStatWound(STRENGTH));
+        statement->setInt(counter++, creature->GetStatWound(CONSTITUTION));
+        statement->setInt(counter++, creature->GetStatWound(ACTION));
+        statement->setInt(counter++, creature->GetStatWound(QUICKNESS));
+        statement->setInt(counter++, creature->GetStatWound(STAMINA));
+        statement->setInt(counter++, creature->GetStatWound(MIND));
+        statement->setInt(counter++, creature->GetStatWound(FOCUS));
+        statement->setInt(counter++, creature->GetStatWound(WILLPOWER));
         // ENCUMBERANCE
-        statement->setInt(38, creature->GetStatEncumberance(HEALTH));
-        statement->setInt(39, creature->GetStatEncumberance(STRENGTH));
-        statement->setInt(40, creature->GetStatEncumberance(CONSTITUTION));
-        statement->setInt(41, creature->GetStatEncumberance(ACTION));
-        statement->setInt(42, creature->GetStatEncumberance(QUICKNESS));
-        statement->setInt(43, creature->GetStatEncumberance(STAMINA));
-        statement->setInt(44, creature->GetStatEncumberance(MIND));
-        statement->setInt(45, creature->GetStatEncumberance(FOCUS));
-        statement->setInt(46, creature->GetStatEncumberance(WILLPOWER));
+        statement->setInt(counter++, creature->GetStatEncumberance(HEALTH));
+        statement->setInt(counter++, creature->GetStatEncumberance(STRENGTH));
+        statement->setInt(counter++, creature->GetStatEncumberance(CONSTITUTION));
+        statement->setInt(counter++, creature->GetStatEncumberance(ACTION));
+        statement->setInt(counter++, creature->GetStatEncumberance(QUICKNESS));
+        statement->setInt(counter++, creature->GetStatEncumberance(STAMINA));
+        statement->setInt(counter++, creature->GetStatEncumberance(MIND));
+        statement->setInt(counter++, creature->GetStatEncumberance(FOCUS));
+        statement->setInt(counter++, creature->GetStatEncumberance(WILLPOWER));
         // CURRENT
-        statement->setInt(47, creature->GetStatCurrent(HEALTH));
-        statement->setInt(48, creature->GetStatCurrent(STRENGTH));
-        statement->setInt(49, creature->GetStatCurrent(CONSTITUTION));
-        statement->setInt(50, creature->GetStatCurrent(ACTION));
-        statement->setInt(51, creature->GetStatCurrent(QUICKNESS));
-        statement->setInt(52, creature->GetStatCurrent(STAMINA));
-        statement->setInt(53, creature->GetStatCurrent(MIND));
-        statement->setInt(54, creature->GetStatCurrent(FOCUS));
-        statement->setInt(55, creature->GetStatCurrent(WILLPOWER));
+        statement->setInt(counter++, creature->GetStatCurrent(HEALTH));
+        statement->setInt(counter++, creature->GetStatCurrent(STRENGTH));
+        statement->setInt(counter++, creature->GetStatCurrent(CONSTITUTION));
+        statement->setInt(counter++, creature->GetStatCurrent(ACTION));
+        statement->setInt(counter++, creature->GetStatCurrent(QUICKNESS));
+        statement->setInt(counter++, creature->GetStatCurrent(STAMINA));
+        statement->setInt(counter++, creature->GetStatCurrent(MIND));
+        statement->setInt(counter++, creature->GetStatCurrent(FOCUS));
+        statement->setInt(counter++, creature->GetStatCurrent(WILLPOWER));
         // MAX
-        statement->setInt(56, creature->GetStatMax(HEALTH));
-        statement->setInt(57, creature->GetStatMax(STRENGTH));
-        statement->setInt(58, creature->GetStatMax(CONSTITUTION));
-        statement->setInt(59, creature->GetStatMax(ACTION));
-        statement->setInt(60, creature->GetStatMax(QUICKNESS));
-        statement->setInt(61, creature->GetStatMax(STAMINA));
-        statement->setInt(62, creature->GetStatMax(MIND));
-        statement->setInt(63, creature->GetStatMax(FOCUS));
-        statement->setInt(64, creature->GetStatMax(WILLPOWER));
+        statement->setInt(counter++, creature->GetStatMax(HEALTH));
+        statement->setInt(counter++, creature->GetStatMax(STRENGTH));
+        statement->setInt(counter++, creature->GetStatMax(CONSTITUTION));
+        statement->setInt(counter++, creature->GetStatMax(ACTION));
+        statement->setInt(counter++, creature->GetStatMax(QUICKNESS));
+        statement->setInt(counter++, creature->GetStatMax(STAMINA));
+        statement->setInt(counter++, creature->GetStatMax(MIND));
+        statement->setInt(counter++, creature->GetStatMax(FOCUS));
+        statement->setInt(counter++, creature->GetStatMax(WILLPOWER));
 
         int updated = statement->executeUpdate();
+				
         LOG(warning) << "Updated " << updated << " rows in sp_PersistCreature";
     }
     catch(sql::SQLException &e)
@@ -129,6 +131,7 @@ void CreatureFactory::PersistObject(const shared_ptr<Object>& object)
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
+	return counter;
 }
 
 void CreatureFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)

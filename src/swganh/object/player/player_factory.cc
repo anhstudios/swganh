@@ -66,31 +66,32 @@ unordered_map<string,shared_ptr<Player>>::iterator PlayerFactory::GetTemplateIte
     return iter;
 }
 
-void PlayerFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
 {
+	uint32_t counter = 1;
     try 
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-			(conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
-        ObjectFactory::PersistObject(object, statement);
+			(conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+        counter = ObjectFactory::PersistObject(object, statement);
 
 		auto player = static_pointer_cast<Player>(object);
-		statement->setString(18, player->GetProfessionTag());
-		statement->setUInt64(19, player->GetTotalPlayTime());
-		statement->setUInt(20, player->GetAdminTag());
-		statement->setUInt(21, player->GetMaxForcePower());
-		statement->setUInt(22, player->GetExperimentationFlag());
-		statement->setUInt(23, player->GetCraftingStage());
-		statement->setUInt64(24, player->GetNearestCraftingStation());
-		statement->setUInt(25, player->GetExperimentationPoints());
-		statement->setUInt(26, player->GetAccomplishmentCounter());
-		statement->setUInt(27, player->GetLanguage());
-		statement->setUInt(28, player->GetCurrentStomach());
-		statement->setUInt(29, player->GetMaxStomach());
-		statement->setUInt(30, player->GetCurrentDrink());
-		statement->setUInt(31, player->GetMaxDrink());
-		statement->setUInt(32, player->GetJediState());
+		statement->setString(counter++, player->GetProfessionTag());
+		statement->setUInt64(counter++, player->GetTotalPlayTime());
+		statement->setUInt(counter++, player->GetAdminTag());
+		statement->setUInt(counter++, player->GetMaxForcePower());
+		statement->setUInt(counter++, player->GetExperimentationFlag());
+		statement->setUInt(counter++, player->GetCraftingStage());
+		statement->setUInt64(counter++, player->GetNearestCraftingStation());
+		statement->setUInt(counter++, player->GetExperimentationPoints());
+		statement->setUInt(counter++, player->GetAccomplishmentCounter());
+		statement->setUInt(counter++, player->GetLanguage());
+		statement->setUInt(counter++, player->GetCurrentStomach());
+		statement->setUInt(counter++, player->GetMaxStomach());
+		statement->setUInt(counter++, player->GetCurrentDrink());
+		statement->setUInt(counter++, player->GetMaxDrink());
+		statement->setUInt(counter++, player->GetJediState());
 
         statement->executeUpdate();
 
@@ -107,7 +108,7 @@ void PlayerFactory::PersistObject(const shared_ptr<Object>& object)
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
-    
+	return counter;
 }
 
 void PlayerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)

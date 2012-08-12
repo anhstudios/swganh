@@ -1,9 +1,17 @@
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               5.5.24-MariaDB - mariadb.org binary distribution
+-- Server OS:                    Win32
+-- HeidiSQL version:             7.0.0.4053
+-- Date/time:                    2012-08-12 16:17:22
+-- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
+-- Dumping structure for table galaxy.object
+DROP TABLE IF EXISTS `object`;
 CREATE TABLE IF NOT EXISTS `object` (
   `id` bigint(20) NOT NULL DEFAULT '8589934593',
   `scene_id` int(11) DEFAULT NULL,
@@ -26,25 +34,19 @@ CREATE TABLE IF NOT EXISTS `object` (
   `deleted_at` datetime DEFAULT NULL,
   `type_id` int(10) DEFAULT NULL,
   `arrangement_id` int(10) DEFAULT '-2',
-  `permissions_type` int(10) DEFAULT '0',
+  `permission_type` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `IDX_A8ADABEC166053B4` (`scene_id`),
   KEY `IDX_A8ADABEC727ACA70` (`parent_id`),
   KEY `IDX_A8ADABEC1220ACE89` (`type_id`),
+  KEY `FK_A8ADABEC727AB45A` (`iff_template_id`),
+  KEY `permission_type` (`permission_type`),
+  CONSTRAINT `FK_A8ADABEC1220ACE89` FOREIGN KEY (`type_id`) REFERENCES `types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_A8ADABEC166053B4` FOREIGN KEY (`scene_id`) REFERENCES `scene` (`id`),
-  CONSTRAINT `FK_A8ADABEC727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `object` (`id`),
   CONSTRAINT `FK_A8ADABEC727AB45A` FOREIGN KEY (`iff_template_id`) REFERENCES `iff_templates` (`id`),
-  CONSTRAINT `FK_A8ADABEC1220ACE89` FOREIGN KEY (`type_id`) REFERENCES `types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_A8ADABEC727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `object` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-DELETE FROM `object`;
-    
-/*!40000 ALTER TABLE `object` DISABLE KEYS */;
-INSERT INTO `object` (`id`, `scene_id`, `parent_id`, `iff_template_id`, `x_position`, `y_position`, `z_position`, `x_orientation`, `y_orientation`, `z_orientation`, `w_orientation`, `complexity`, `stf_name_file`, `stf_name_string`, `custom_name`, `volume`, `created_at`, `updated_at`, `deleted_at`, `type_id`, `arrangement_id`) VALUES
-	(0, 1, NULL, 15495, 0, 0, 0, 0, 0, 0, 0, 0, 'universe', 'universe', 'universe', 0, '2011-10-21 23:00:59', '2011-10-21 23:01:00', '0000-00-00 00:00:00', NULL, -1),
-	(8589934593, 1, 0, 1203, 0, 0, 0, 0, 0, 0, 0, 0, 'player', 'example', 'player', 0, '2011-10-21 23:02:22', '2011-10-21 23:02:23', '0000-00-00 00:00:00', 1347174745, -1);
-/*!40000 ALTER TABLE `object` ENABLE KEYS */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+-- Data exporting was unselected.
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
