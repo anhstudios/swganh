@@ -142,7 +142,7 @@ public:
 	virtual void LockObjectMutex();
 	virtual void UnlockObjectMutex();
 
-	virtual void __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2);
+	virtual int32_t __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2);
     
 	/**
      * Returns whether or not this observable object has any observers.

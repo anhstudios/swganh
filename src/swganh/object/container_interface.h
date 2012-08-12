@@ -30,7 +30,7 @@ namespace object
 		virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr) = 0;
 
 		//FOR USE BY TRANSFER OBJECT ONLY. DO NOT CALL IN OUTSIDE CODE
-		virtual void __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2) = 0;
+		virtual int32_t __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2) = 0;
 
 		//Call to Create
 		virtual void AddAwareObject(std::shared_ptr<swganh::object::Object> observer) {};

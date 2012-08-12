@@ -78,7 +78,7 @@ void Object::AddObject(std::shared_ptr<Object> object, int32_t arrangement_id)
 {
 	LOG(warning) << "INSERTING " << object->GetObjectId() << " INTO " << this->GetObjectId();
 	//Add Object To Datastructure
-	__InternalInsert(object, arrangement_id);
+	arrangement_id = __InternalInsert(object, arrangement_id);
 
 	//Update our observers with the new object
 	std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
@@ -112,7 +112,7 @@ void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<Cont
 		slot.second->remove_object(object);
 	}
 
-	newContainer->__InternalInsert(object, arrangement_id);
+	arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
 
 	//Split into 3 groups -- only ours, only new, and both ours and new
 	std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
@@ -171,13 +171,15 @@ void Object::ViewObjects(uint32_t max_depth, bool topDown, std::function<void(st
 	}
 }
 
-void Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
+int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
 {
 	if(arrangement_id == -2)
 		arrangement_id = GetAppropriateArrangementId(object);
 
 	if (arrangement_id < 4)
+	{
 		slot_descriptor_[arrangement_id]->insert_object(object);
+	}
 	else
 	{
 		auto& arrangement = object->slot_arrangements_[arrangement_id-4];
@@ -188,6 +190,10 @@ void Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangemen
 	}
 	object->SetArrangementId(arrangement_id);
 	object->SetContainer(shared_from_this());
+
+	//Because we may have calculated it internally, send the arrangement_id used back
+	//To the caller so it can send the appropriate update.
+	return arrangement_id;
 }
 
 void Object::SwapSlots(std::shared_ptr<Object> object, int32_t new_arrangement_id)
@@ -586,7 +592,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::Observe
 	UpdateContainmentMessage containment_message;
 	containment_message.container_id = container_id;
 	containment_message.object_id = GetObjectId();
-	containment_message.containment_type = 4;
+	containment_message.containment_type = arrangement_id_;
 	observer->Notify(containment_message);
 }
 

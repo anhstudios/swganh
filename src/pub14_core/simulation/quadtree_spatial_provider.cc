@@ -99,7 +99,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 	if (object != newContainer)
 	{
 		root_node_.RemoveObject(object);
-		newContainer->__InternalInsert(object, arrangement_id);
+		arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
 		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
@@ -163,10 +163,11 @@ void QuadtreeSpatialProvider::ViewObjects(uint32_t max_depth, bool topDown, std:
 			func(object);
 	}
 }
-void QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
+int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
 {
 	root_node_.InsertObject(object);
 	object->SetContainer(__this);
+	return -1;
 }
 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)

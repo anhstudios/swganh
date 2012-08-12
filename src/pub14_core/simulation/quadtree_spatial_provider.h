@@ -29,7 +29,7 @@ public:
 	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)>, std::shared_ptr<swganh::object::Object> hint = nullptr);
 
 	// FOR USE BY TRANSFER OBJECT DO NOT CALL IN OUTSIDE CODE
-	virtual void __InternalInsert(std::shared_ptr<swganh::object::Object> object, int32_t arrangement_id=-2);
+	virtual int32_t __InternalInsert(std::shared_ptr<swganh::object::Object> object, int32_t arrangement_id=-2);
 
 	virtual void LockObjectMutex() { spatial_mutex_.lock(); }
 	virtual void UnlockObjectMutex() { spatial_mutex_.unlock(); }
