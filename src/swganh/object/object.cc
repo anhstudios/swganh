@@ -74,12 +74,6 @@ void Object::ClearController()
     Unsubscribe(controller);
 }
 
-void Object::AddObject(std::shared_ptr<Object> object)
-{
-	int32_t arrangement_id = GetAppropriateArrangementId(object);
-	AddObject(object, arrangement_id);
-}
-
 void Object::AddObject(std::shared_ptr<Object> object, int32_t arrangement_id)
 {
 	LOG(warning) << "INSERTING " << object->GetObjectId() << " INTO " << this->GetObjectId();
@@ -107,11 +101,6 @@ void Object::RemoveObject(std::shared_ptr<Object> oldObject)
 		slot.second->remove_object(oldObject);
 	}
 	oldObject->SetContainer(nullptr);
-}
-
-void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer)
-{
-	TransferObject(object, newContainer, -2);
 }
 
 void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
@@ -199,13 +188,6 @@ void Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangemen
 	}
 	object->SetArrangementId(arrangement_id);
 	object->SetContainer(shared_from_this());
-}
-
-void Object::__InternalInsert(std::shared_ptr<Object> object)
-{
-	LOG(warning) << "INTERNAL_INSERTING " << object->GetObjectId() << " INTO " << this->GetObjectId();
-	int32_t arrangement_id = GetAppropriateArrangementId(object);
-	__InternalInsert(object, arrangement_id);
 }
 
 void Object::SwapSlots(std::shared_ptr<Object> object, int32_t new_arrangement_id)

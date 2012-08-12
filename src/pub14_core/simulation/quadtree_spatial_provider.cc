@@ -26,22 +26,19 @@ QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
 	__this.reset();
 }
 
-void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object)
+void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object, int32_t arrangement_id)
 {
+	
 	LOG(warning) << "QUADTREE AddObject " << object->GetObjectId();
 	root_node_.InsertObject(object);
 	object->SetContainer(__this);
-	
+	object->SetArrangementId(arrangement_id);
+
 	// Make objects aware
 	ViewObjects(0, true, [&](shared_ptr<Object> found_object){
 		found_object->AddAwareObject(object);
 		object->AddAwareObject(found_object);
 	}, object);
-}
-void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object, int32_t arrangement_id)
-{
-	object->SetArrangementId(arrangement_id);
-	AddObject(object);
 }
 
 void QuadtreeSpatialProvider::RemoveObject(shared_ptr<Object> object)
@@ -94,12 +91,6 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 		new_obj->AddAwareObject(obj);
 		obj->AddAwareObject(new_obj);
 	});
-}
-
-void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer)
-{
-	LOG(warning) << "QUADTREE TRANSFER " << object->GetObjectId() << " FROM " << this->GetObjectId() << " TO " << newContainer->GetObjectId();
-	TransferObject(object, newContainer, -2);
 }
 
 void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
@@ -176,11 +167,6 @@ void QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object, i
 {
 	root_node_.InsertObject(object);
 	object->SetContainer(__this);
-}
-void QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object)
-{
-	LOG(warning) << "QUADTREE __InternalInsert " << object->GetObjectId();
-	__InternalInsert(object, -2);
 }
 
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)

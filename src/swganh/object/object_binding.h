@@ -12,24 +12,39 @@
 #include "swganh/object/object_controller_binding.h"
 
 #include <boost/python.hpp>
+#include <boost/python/overloads.hpp>
 
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
+
+boost::python::tuple AddObject(std::shared_ptr<Object> newObject, int32_t arrangement_id=-2)
+{
+	return boost::python::make_tuple(newObject, arrangement_id);
+}
+
+
+boost::python::tuple TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2)
+{
+	return boost::python::make_tuple(object, newContainer, arrangement_id);
+}
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 1, 2);
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 2, 3);
 
 void exportObject()
 {
     //std::shared_ptr<ObjectController> (ObjectWrapper::*GetControllerPtr)() = &ObjectWrapper::GetController;
 
     typedef void (Object::*NotifyObserversFunc)(const anh::ByteBuffer& message);
-	void (ContainerInterface::*AddObject)(shared_ptr<Object>) = &ContainerInterface::AddObject;
+	
 	void (ContainerInterface::*RemoveObject)(shared_ptr<Object>) = &ContainerInterface::RemoveObject;
-	void (ContainerInterface::*TransferObject)(shared_ptr<Object>, shared_ptr<ContainerInterface>) = &ContainerInterface::TransferObject;
+	
 
 	class_<ContainerInterface, std::shared_ptr<ContainerInterface>, boost::noncopyable>("ContainerInterface", "Container interface", no_init)
-		.def("Add", AddObject, "Adds an object to the current object")
+		.def("Add", &ContainerInterface::AddObject, addObjectOverload(args("newObject", "arrangement_id"), "Adds an object to the current object"))
 		.def("Remove", RemoveObject, "Removes an object fomr the current object")
-		.def("Transfer", TransferObject, "Transfer an object to a different object")
+		.def("Transfer", &ContainerInterface::TransferObject, transferObjectOverload(args("object", "newContainer", "arrangement_id"), "Transfer an object to a different object"))
 		.def("SwapSlots", &Object::SwapSlots, "Change an objects current arrangement")
 		;
 	

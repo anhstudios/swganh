@@ -130,20 +130,11 @@ public:
      */
     void ClearController();
 
-	virtual void AddObject(std::shared_ptr<Object> newObject);
-	virtual void AddObject(std::shared_ptr<Object> newObject, int32_t arrangement_id);
-
+	virtual void AddObject(std::shared_ptr<Object> newObject, int32_t arrangement_id=-2);
 	virtual void RemoveObject(std::shared_ptr<Object> oldObject);
-
-	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer);
-	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id);
-	
+	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
 	virtual void SwapSlots(std::shared_ptr<Object> object, int32_t new_arrangement_id);
-
 	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
-	
-	virtual void __InternalInsert(std::shared_ptr<Object> object);
-	virtual void __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id);
 	
 	virtual void AddAwareObject(std::shared_ptr<Object> object);
 	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<Object>)> func);
@@ -151,6 +142,7 @@ public:
 	virtual void LockObjectMutex();
 	virtual void UnlockObjectMutex();
 
+	virtual void __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2);
     
 	/**
      * Returns whether or not this observable object has any observers.
