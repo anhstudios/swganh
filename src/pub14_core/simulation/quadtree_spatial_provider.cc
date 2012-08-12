@@ -57,8 +57,8 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 
 	auto new_objects = root_node_.Query(GetQueryBoxViewRange(obj));
 	
-	std::set<std::shared_ptr<Object>> both_objects;
-
+	std::vector<std::shared_ptr<Object>> deleted_objects;
+	
 	obj->ViewAwareObjects([&] (std::shared_ptr<Object> aware_object) 
 	{
 		auto new_itr = new_objects.find(aware_object);
@@ -68,11 +68,16 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 		}
 		else
 		{
-			//Send Destroy
-			aware_object->RemoveAwareObject(obj);
-			obj->RemoveAwareObject(aware_object);
+			deleted_objects.push_back(aware_object);
 		}
 	});
+
+	for(auto& to_delete : deleted_objects)
+	{
+		//Send Destroy
+		obj->RemoveAwareObject(to_delete);
+		to_delete->RemoveAwareObject(obj);
+	}
 
 	//New Objects
 	for_each(new_objects.begin(), new_objects.end(), [&](std::shared_ptr<Object> new_obj)

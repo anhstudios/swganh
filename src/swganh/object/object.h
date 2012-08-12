@@ -438,6 +438,10 @@ public:
 	{ 
 		return GetObjectId() < other->GetObjectId(); 
 	}
+	bool operator== (const std::shared_ptr<Object>& other)
+	{
+		return GetObjectId() == other->GetObjectId();
+	}
 
 protected:
 
