@@ -143,7 +143,7 @@ public:
 	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
 	
 	virtual void __InternalInsert(std::shared_ptr<Object> object);
-	virtual void __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id) = 0;
+	virtual void __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id);
 	
 	virtual void AddAwareObject(std::shared_ptr<Object> object);
 	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<Object>)> func);
@@ -488,9 +488,7 @@ private:
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
 
 
-    ObjectMap aware_objects_;
-    
-	ObjectSlots slot_descriptor_;
+    ObjectSlots slot_descriptor_;
 	ObjectArrangements slot_arrangements_;
 
     ObserverContainer observers_;

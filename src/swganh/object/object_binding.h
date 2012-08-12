@@ -22,8 +22,17 @@ void exportObject()
     //std::shared_ptr<ObjectController> (ObjectWrapper::*GetControllerPtr)() = &ObjectWrapper::GetController;
 
     typedef void (Object::*NotifyObserversFunc)(const anh::ByteBuffer& message);
-	void (Object::*EquipFunc)(shared_ptr<Object>) = &Object::AddContainedObject;
+	void (ContainerInterface::*AddObject)(shared_ptr<Object>) = &ContainerInterface::AddObject;
+	void (ContainerInterface::*RemoveObject)(shared_ptr<Object>) = &ContainerInterface::RemoveObject;
+	void (ContainerInterface::*TransferObject)(shared_ptr<Object>, shared_ptr<ContainerInterface>) = &ContainerInterface::TransferObject;
 
+	class_<ContainerInterface, std::shared_ptr<ContainerInterface>, boost::noncopyable>("ContainerInterface", "Container interface", no_init)
+		.def("Add", AddObject, "Adds an object to the current object")
+		.def("Remove", RemoveObject, "Removes an object fomr the current object")
+		.def("Transfer", TransferObject, "Transfer an object to a different object")
+		.def("SwapSlots", &Object::SwapSlots, "Change an objects current arrangement")
+		;
+	
     class_<Object, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from", no_init)
 		.add_property("id", &Object::GetObjectId, "Gets The id of the object")
 		.add_property("scene_id", &Object::GetSceneId, "Gets the scene id the object is in")
@@ -42,9 +51,10 @@ void exportObject()
         .def("HasFlag", &Object::HasFlag, "Checks if the object has a specific flag set on it")
         .def("SetFlag", &Object::SetFlag, "Sets a flag on the object")
         .def("RemoveFlag", &Object::RemoveFlag, "Removes a flag from the object")
-		.def("Equip", EquipFunc, "Equips an object")
-		.def("UnEquip", &Object::RemoveContainedObject, "UnEquips and object")
+
 		;
+
+	implicitly_convertible<std::shared_ptr<Object>, std::shared_ptr<ContainerInterface>>();
 }
 
 #endif   //SWGANH_OBJECT_OBJECT_BINDING_H_

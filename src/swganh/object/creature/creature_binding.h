@@ -180,6 +180,7 @@ void exportCreature()
 
 	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<Tangible>>();
 	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<Object>>();
+	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<ContainerInterface>>();
 }
 
 #endif  //SWGANH_OBJECT_CREATURE_CREATURE_BINDING_H_
