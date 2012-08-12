@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `object` (
   `deleted_at` datetime DEFAULT NULL,
   `type_id` int(10) DEFAULT NULL,
   `arrangement_id` int(10) DEFAULT '-2',
+  `permissions_type` int(10) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `IDX_A8ADABEC166053B4` (`scene_id`),
   KEY `IDX_A8ADABEC727ACA70` (`parent_id`),
