@@ -70,8 +70,8 @@ void Server::AsyncReceive() {
             {
                 bytes_recv_ += bytes_transferred;
 
-                ByteBuffer message;
-                message.write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
+                ByteBuffer message(bytes_transferred);
+				message.write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
 
                 GetSession(current_remote_endpoint_)->HandleProtocolMessage(move(message));
 

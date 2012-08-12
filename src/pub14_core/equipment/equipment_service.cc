@@ -41,6 +41,7 @@ std::string EquipmentService::GetSlotNameById(int32_t slot_id)
 void EquipmentService::ClearSlot(std::shared_ptr<Object> object, std::string slot_name)
 {
 	//object->ClearSlot(slot_definitions_->findSlotByName(slot_name));
+	
 }
 		
 std::shared_ptr<Object> EquipmentService::GetEquippedObject(std::shared_ptr<Object> object, std::string slot_name)
