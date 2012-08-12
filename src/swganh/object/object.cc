@@ -40,9 +40,9 @@ Object::Object()
 
 struct comp
 {
-	bool operator() (const std::shared_ptr<ObserverInterface>& lhs, const std::shared_ptr<ObserverInterface>& rhs)
+	bool operator() (const std::shared_ptr<Object>& lhs, const std::shared_ptr<Object>& rhs)
 	{ 
-		return lhs->GetId() < rhs->GetId(); 
+		return lhs->GetObjectId() < rhs->GetObjectId(); 
 	}
 };
 
@@ -89,7 +89,7 @@ void Object::AddObject(std::shared_ptr<Object> newObject)
 	newObject->SetContainer(shared_from_this());
 
 	//Update our observers with the new object
-	for(auto& observer : observers_)
+	for(auto& observer : aware_objects_)
 	{
 		newObject->AddAwareObject(observer);		
 	}
@@ -103,7 +103,7 @@ void Object::RemoveObject(std::shared_ptr<Object> oldObject)
 	if(itr != contained_objects_.end())
 	{
 		//Update our observers about the dead object
-		for(auto& observer : observers_)
+		for(auto& observer : aware_objects_)
 		{
 			oldObject->RemoveAwareObject(observer);
 		}
@@ -125,13 +125,13 @@ void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<Cont
 		newContainer->__InternalInsert(object);
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
-		std::set<std::shared_ptr<ObserverInterface>, comp> oldObservers, newObservers, bothObservers;
+		std::set<std::shared_ptr<Object>, comp> oldObservers, newObservers, bothObservers;
 
-		ViewAwareObjects([&] (std::shared_ptr<ObserverInterface>& observer) {
+		ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
 			oldObservers.insert(observer);
 		});
 
-		newContainer->ViewAwareObjects([&] (std::shared_ptr<ObserverInterface>& observer) {
+		newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
 			auto itr = oldObservers.find(observer);
 			if(itr == oldObservers.end()) {
 				oldObservers.erase(itr);
@@ -148,7 +148,7 @@ void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<Cont
 
 		//Send updates to both
 		for(auto& observer : bothObservers) {
-			object->SendUpdateContainmentMessage(observer);
+			object->SendUpdateContainmentMessage(observer->GetController());
 		}
 
 		//Send destroys to only ours
@@ -180,8 +180,11 @@ void Object::__InternalInsert(std::shared_ptr<Object> object)
 	object->SetContainer(shared_from_this());
 }
 
-void Object::AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer)
+void Object::AddAwareObject(std::shared_ptr<swganh::object::Object> object)
 {
+	auto observer = object->GetController();
+	aware_objects_.insert(object);
+
 	if(observer)
 	{
 		Subscribe(observer);
@@ -190,26 +193,29 @@ void Object::AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> ob
 
 		for(auto& v : contained_objects_)
 		{
-			v.second->AddAwareObject(observer);
+			v.second->AddAwareObject(object);
 		}
 	}
 }
 
-void Object::ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func)
+void Object::ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func)
 {
-	for(auto& observer : observers_)
+	for(auto& observer : aware_objects_)
 	{
 		func(observer);
 	}
 }
 
-void Object::RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer)
+void Object::RemoveAwareObject(std::shared_ptr<swganh::object::Object> object)
 {
+	auto observer = object->GetController();
+	aware_objects_.erase(object);
+
 	if(observer)
 	{
 		for(auto& v : contained_objects_)
 		{
-			v.second->RemoveAwareObject(observer);
+			v.second->RemoveAwareObject(object);
 		}
 
 		SendDestroy(observer);
@@ -267,39 +273,23 @@ bool Object::HasObservers()
 void Object::Subscribe(const shared_ptr<ObserverInterface>& observer)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    auto find_iter = std::find_if(
-        observers_.begin(),
-        observers_.end(),
-        [&observer] (const std::shared_ptr<ObserverInterface>& stored_observer)
-    {
-        return observer == stored_observer;
-    });
+    auto find_iter = observers_.find(observer);
 
-    if (find_iter != observers_.end())
+    if (find_iter == observers_.end())
     {
-        return;
+        observers_.insert(observer);
     }
-
-    observers_.push_back(observer);
 }
 
 void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    auto find_iter = std::find_if(
-        observers_.begin(),
-        observers_.end(),
-        [&observer] (const std::shared_ptr<ObserverInterface>& stored_observer)
-    {
-        return observer == stored_observer;
-    });
+    auto find_iter = observers_.find(observer);
 
-    if (find_iter == observers_.end())
+    if (find_iter != observers_.end())
     {
-        return;
+        observers_.erase(find_iter);
     }
-
-    observers_.erase(find_iter);
 }
 
 void Object::NotifyObservers(const anh::ByteBuffer& message)

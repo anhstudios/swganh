@@ -134,9 +134,9 @@ public:
 	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer);
 	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
 	virtual void __InternalInsert(std::shared_ptr<Object> object);
-	virtual void AddAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer);
-	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<anh::observer::ObserverInterface>)> func);
-	virtual void RemoveAwareObject(std::shared_ptr<anh::observer::ObserverInterface> observer);
+	virtual void AddAwareObject(std::shared_ptr<Object> object);
+	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<Object>)> func);
+	virtual void RemoveAwareObject(std::shared_ptr<Object> object);
 	virtual void LockObjectMutex();
 	virtual void UnlockObjectMutex();
     
@@ -451,13 +451,14 @@ protected:
 private:
     mutable boost::mutex object_mutex_;
 
-    typedef std::vector<
-        std::shared_ptr<anh::observer::ObserverInterface>
-    > ObserverContainer;
+    typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
+	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
 
     ObjectMap contained_objects_;
 
     ObserverContainer observers_;
+	AwareObjectContainer aware_objects_;
+
     BaselinesCacheContainer baselines_;
     DeltasCacheContainer deltas_;
 

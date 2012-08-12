@@ -42,8 +42,8 @@ void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object)
 	
 	// Make objects aware
 	ViewObjects(0, true, [&](shared_ptr<Object> found_object){
-		found_object->AddAwareObject(object->GetController());
-		object->AddAwareObject(found_object->GetController());
+		found_object->AddAwareObject(object);
+		object->AddAwareObject(found_object);
 	}, object);
 }
 
@@ -54,35 +54,39 @@ void QuadtreeSpatialProvider::RemoveObject(shared_ptr<Object> object)
 	object->SetContainer(nullptr);
 
     ViewObjects(0, false, [&](shared_ptr<Object> found_object){
-		found_object->RemoveAwareObject(object->GetController());
-		object->RemoveAwareObject(found_object->GetController());
+		found_object->RemoveAwareObject(object);
+		object->RemoveAwareObject(found_object);
 	}, object);
 }
 
 void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old_position, glm::vec3 new_position)
 {
-	auto old_objects = root_node_.Query(GetQueryBoxViewRange(obj));
-	
 	root_node_.UpdateObject(obj, old_position, new_position);
 
 	auto new_objects = root_node_.Query(GetQueryBoxViewRange(obj));
-	// New To Us
-	for(auto& new_obj : new_objects)
+	
+	std::set<std::shared_ptr<Object>> both_objects;
+
+	obj->ViewAwareObjects([&] (std::shared_ptr<Object> aware_object) 
 	{
-		auto old_iter = old_objects.find(new_obj);
-		// New
-		if (old_iter == old_objects.end())
+		auto new_itr = new_objects.find(aware_object);
+		if(new_itr != new_objects.end())
 		{
-			(*old_iter)->AddAwareObject(obj->GetController());
-			obj->AddAwareObject((*old_iter)->GetController());			
-		}		
-		old_objects.erase(old_iter);
-	}
-	// Stale Objects (objects we should no longer see
-	for (auto& old_obj : old_objects)
+			new_objects.erase(new_itr);
+		}
+		else
+		{
+			//Send Destroy
+			aware_object->RemoveAwareObject(obj);
+			obj->RemoveAwareObject(aware_object);
+		}
+	});
+
+	//New Objects
+	for (auto& new_obj : new_objects)
 	{
-		old_obj->RemoveAwareObject(obj->GetController());
-		obj->RemoveAwareObject(old_obj->GetController());
+		new_obj->AddAwareObject(obj);
+		obj->AddAwareObject(new_obj);
 	}
 }
 
@@ -96,13 +100,13 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 		newContainer->__InternalInsert(object);
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
-		std::set<std::shared_ptr<ObserverInterface>, comp> oldObservers, newObservers, bothObservers;
+		std::set<std::shared_ptr<Object>, comp> oldObservers, newObservers, bothObservers;
 
-		object->ViewAwareObjects([&] (std::shared_ptr<ObserverInterface>& observer) {
+		object->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
 			oldObservers.insert(observer);
 		});
 
-		newContainer->ViewAwareObjects([&] (std::shared_ptr<ObserverInterface>& observer) {
+		newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
 			auto itr = oldObservers.find(observer);
 			if(itr == oldObservers.end()) {
 				oldObservers.erase(itr);
@@ -119,7 +123,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 
 		//Send updates to both
 		for(auto& observer : bothObservers) {
-			object->SendUpdateContainmentMessage(observer);
+			object->SendUpdateContainmentMessage(observer->GetController());
 		}
 
 		//Send destroys to only ours
