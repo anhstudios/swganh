@@ -33,7 +33,7 @@ void exportObject()
 		.def("SwapSlots", &Object::SwapSlots, "Change an objects current arrangement")
 		;
 	
-    class_<Object, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from", no_init)
+    class_<Object, bases<ContainerInterface>, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from", no_init)
 		.add_property("id", &Object::GetObjectId, "Gets The id of the object")
 		.add_property("scene_id", &Object::GetSceneId, "Gets the scene id the object is in")
 		.add_property("type", &Object::GetType, "Gets the type of the object")

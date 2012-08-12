@@ -129,16 +129,23 @@ void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<Cont
 	std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
 
 	ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
-		oldObservers.insert(observer);
+		if (observer->HasController())
+		{
+			oldObservers.insert(observer);
+		}
 	});
-
+	
 	newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
-		auto itr = oldObservers.find(observer);
-		if(itr == oldObservers.end()) {
-			oldObservers.erase(itr);
-			bothObservers.insert(observer);
-		} else {
-			newObservers.insert(observer);
+
+		if (observer->HasController())
+		{
+			auto itr = oldObservers.find(observer);
+			if(itr == oldObservers.end()) {
+				oldObservers.erase(itr);
+				bothObservers.insert(observer);
+			} else {
+				newObservers.insert(observer);
+			}
 		}
 	});
 
