@@ -140,13 +140,20 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 			oldObservers.insert(observer);
 		});
 	
-		newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
-			auto itr = oldObservers.find(observer);
-			if(itr != oldObservers.end()) {
-				oldObservers.erase(itr);
-				bothObservers.insert(observer);
-			} else {
-				newObservers.insert(observer);
+		newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) 
+		{
+			if(newContainer->GetPermissions()->canView(newContainer, observer))
+			{
+				auto itr = oldObservers.find(observer);
+				if(itr != oldObservers.end())
+				{
+					oldObservers.erase(itr);
+					bothObservers.insert(observer);
+				} 
+				else 
+				{
+					newObservers.insert(observer);
+				}
 			}
 		});
 

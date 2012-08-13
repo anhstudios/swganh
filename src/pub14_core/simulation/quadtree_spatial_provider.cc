@@ -35,7 +35,7 @@ void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> 
 	object->SetArrangementId(arrangement_id);
 
 	// Make objects aware
-	ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> found_object){
+	ViewObjects(object, 0, true, [&](shared_ptr<Object> found_object){
 		found_object->AddAwareObject(object);
 		object->AddAwareObject(found_object);
 	}, object);
@@ -46,7 +46,7 @@ void QuadtreeSpatialProvider::RemoveObject(std::shared_ptr<swganh::object::Objec
 	root_node_.RemoveObject(object);
 	object->SetContainer(nullptr);
 
-    ViewObjects(nullptr, 0, false, [&](shared_ptr<Object> found_object){
+    ViewObjects(object, 0, false, [&](shared_ptr<Object> found_object){
 		found_object->RemoveAwareObject(object);
 		object->RemoveAwareObject(found_object);
 	}, object);
