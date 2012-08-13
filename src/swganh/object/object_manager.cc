@@ -100,7 +100,7 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
 
 void ObjectManager::LoadContainedObjects(std::shared_ptr<Object> object)
 {	
-	object->ViewObjects(0, true, [&](shared_ptr<Object> contained_object){
+	object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> contained_object){
 		object_map_.insert(make_pair(contained_object->GetObjectId(), contained_object));
 	});
 }

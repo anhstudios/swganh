@@ -75,60 +75,72 @@ void Object::ClearController()
     Unsubscribe(controller);
 }
 
-void Object::AddObject(std::shared_ptr<Object> obj, int32_t arrangement_id)
+void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> obj, int32_t arrangement_id)
 {
-	LOG(warning) << "INSERTING " << obj->GetObjectId() << " INTO " << this->GetObjectId();
-	//Add Object To Datastructure
-	arrangement_id = __InternalInsert(obj, arrangement_id);
+	if(requester == nullptr || container_permissions_->canInsert(shared_from_this(), requester, obj))
+	{
+		LOG(warning) << "INSERTING " << obj->GetObjectId() << " INTO " << this->GetObjectId();
+		//Add Object To Datastructure
+		arrangement_id = __InternalInsert(obj, arrangement_id);
 
-	//Update our observers with the new object
-	std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-		obj->AddAwareObject(object);		
-	});
+		//Update our observers with the new object
+		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
+			obj->AddAwareObject(object);		
+		});
+	}
+	else
+	{
+		LOG(warning) << "NOT INSERTING " << obj->GetObjectId() << " INTO " << GetObjectId() <<" DUE TO INSUFFICIENT PERMISSIONS";
+	}
 }
 
-void Object::RemoveObject(std::shared_ptr<Object> oldObject)
+void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject)
 {
-	LOG(warning) << "REMOVING " << oldObject->GetObjectId() << " FROM " << this->GetObjectId();
+	if(requester == nullptr || container_permissions_->canRemove(shared_from_this(), requester, oldObject))
+	{
+		LOG(warning) << "REMOVING " << oldObject->GetObjectId() << " FROM " << this->GetObjectId();
 	
-	//Update our observers about the dead object
-	std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-		oldObject->RemoveAwareObject(object);		
-	});
+		//Update our observers about the dead object
+		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
+			oldObject->RemoveAwareObject(object);		
+		});
 
-	//Remove Object from Datastructure
-	for(auto& slot : slot_descriptor_)
-	{
-		slot.second->remove_object(oldObject);
-	}
-	oldObject->SetContainer(nullptr);
-}
-
-void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
-{
-	LOG(warning) << "TRANSFER " << object->GetObjectId() << " FROM " << this->GetObjectId() << " TO " << newContainer->GetObjectId();
-	//Perform the transfer
-	for(auto& slot : slot_descriptor_)
-	{
-		slot.second->remove_object(object);
-	}
-
-	arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
-
-	//Split into 3 groups -- only ours, only new, and both ours and new
-	std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
-
-	ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
-		if (observer->HasController())
+		//Remove Object from Datastructure
+		for(auto& slot : slot_descriptor_)
 		{
-			oldObservers.insert(observer);
+			slot.second->remove_object(oldObject);
 		}
-	});
-	
-	newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
+		oldObject->SetContainer(nullptr);
+	}
+	else
+	{
+		LOG(warning) << "NOT REMOVING " << oldObject->GetObjectId() << " FROM " << GetObjectId() <<" DUE TO INSUFFICIENT PERMISSIONS";
+	}
+}
 
-		if (observer->HasController())
+void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
+{
+	if(	requester == nullptr || 
+		this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
+		newContainer->GetPermissions()->canInsert(newContainer, requester, object))
+	{
+		LOG(warning) << "TRANSFER " << object->GetObjectId() << " FROM " << this->GetObjectId() << " TO " << newContainer->GetObjectId();
+		//Perform the transfer
+		for(auto& slot : slot_descriptor_)
 		{
+			slot.second->remove_object(object);
+		}
+
+		arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+
+		//Split into 3 groups -- only ours, only new, and both ours and new
+		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
+
+		object->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
+			oldObservers.insert(observer);
+		});
+	
+		newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
 			auto itr = oldObservers.find(observer);
 			if(itr != oldObservers.end()) {
 				oldObservers.erase(itr);
@@ -136,39 +148,46 @@ void Object::TransferObject(std::shared_ptr<Object> object, std::shared_ptr<Cont
 			} else {
 				newObservers.insert(observer);
 			}
+		});
+
+		//Send Creates to only new
+		for(auto& observer : newObservers) {
+			object->AddAwareObject(observer);
 		}
-	});
 
-	//Send Creates to only new
-	for(auto& observer : newObservers) {
-		object->AddAwareObject(observer);
+		//Send updates to both
+		for(auto& observer : bothObservers) {
+			object->SendUpdateContainmentMessage(observer->GetController());
+		}
+
+		//Send destroys to only ours
+		for(auto& observer : oldObservers) {
+			object->RemoveAwareObject(observer);
+		}
 	}
-
-	//Send updates to both
-	for(auto& observer : bothObservers) {
-		object->SendUpdateContainmentMessage(observer->GetController());
-	}
-
-	//Send destroys to only ours
-	for(auto& observer : oldObservers) {
-		object->RemoveAwareObject(observer);
+	else
+	{
+		LOG(warning) << "NOT TRANSFERRING " << object->GetObjectId() << " FROM " << GetObjectId() <<" DUE TO INSUFFICIENT PERMISSIONS";
 	}
 }
 
-void Object::ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint)
+void Object::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint)
 {
-	for(auto& slot : slot_descriptor_)
+	if(requester == nullptr || container_permissions_->canView(shared_from_this(), requester))
 	{
-		slot.second->view_objects([&] (const std::shared_ptr<Object>& object) {
-			if(topDown)
-				func(object);
+		for(auto& slot : slot_descriptor_)
+		{
+			slot.second->view_objects([&] (const std::shared_ptr<Object>& object) {
+				if(topDown)
+					func(object);
 
-			if(max_depth != 1)
-				object->ViewObjects((max_depth == 0) ? 0 : max_depth-1, topDown, func);
+				if(max_depth != 1)
+					object->ViewObjects(requester, (max_depth == 0) ? 0 : max_depth-1, topDown, func);
 
-			if(!topDown)
-				func(object);
-		});
+				if(!topDown)
+					func(object);
+			});
+		}
 	}
 }
 
@@ -197,7 +216,7 @@ int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrange
 	return arrangement_id;
 }
 
-void Object::SwapSlots(std::shared_ptr<Object> object, int32_t new_arrangement_id)
+void Object::SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id)
 {
 	for(auto& slot : slot_descriptor_)
 	{
@@ -351,18 +370,6 @@ void Object::ClearDeltas()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     deltas_.clear();
-}
-void Object::MakeClean(std::shared_ptr<anh::observer::ObserverInterface> observer)
-{
-    ClearBaselines();
-    ClearDeltas();
-    // SceneCreateObjectByCrc
-    
-    CreateBaselines(observer);
-
-    
-    
-    OnMakeClean(observer);
 }
 
 BaselinesCacheContainer Object::GetBaselines()
@@ -538,16 +545,6 @@ void Object::SetVolume(uint32_t volume)
 uint32_t Object::GetVolume()
 {
 	return volume_;
-}
-
-Object::PermissionsObject Object::GetPermissions()
-{
-	return container_permissions_;
-}
-
-void Object::SetPermissions(Object::PermissionsObject obj)
-{
-	container_permissions_ = obj;
 }
 
 void Object::SetSceneId(uint32_t scene_id)

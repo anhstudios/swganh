@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS `container_permissions` (
   PRIMARY KEY (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Data exporting was unselected.
+INSERT INTO `container_permissions` VALUES (1, 'default');
+INSERT INTO `container_permissions` VALUES (2, 'creature');
+INSERT INTO `container_permissions` VALUES (3, 'creature container');
+INSERT INTO `container_permissions` VALUES (4, 'rideable');
+
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

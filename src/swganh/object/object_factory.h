@@ -32,6 +32,10 @@ namespace object {
 
     class Object;
     class ObjectManager;
+	class ContainerPermissionsInterface;
+	enum PermissionsType;
+
+	typedef std::map<int, std::shared_ptr<ContainerPermissionsInterface>> PermissionsObjectMap;
 
     class ObjectFactory : public ObjectFactoryInterface
     {
@@ -67,7 +71,6 @@ namespace object {
         virtual void RegisterEventHandlers(){}
         void SetTreArchive(swganh::tre::TreArchive* tre_archive);
     protected:
-        
 
         void LoadContainedObjects(const std::shared_ptr<Object>& object,
             const std::shared_ptr<sql::Statement>& statement);
@@ -75,6 +78,8 @@ namespace object {
         ObjectManager* object_manager_;
         anh::database::DatabaseManagerInterface* db_manager_;   
         anh::EventDispatcher* event_dispatcher_;
+
+		PermissionsObjectMap permissions_objects_;
     };
 
 }}  // namespace swganh::object

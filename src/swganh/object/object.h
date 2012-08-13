@@ -133,11 +133,11 @@ public:
      */
     void ClearController();
 
-	virtual void AddObject(std::shared_ptr<Object> newObject, int32_t arrangement_id=-2);
-	virtual void RemoveObject(std::shared_ptr<Object> oldObject);
-	virtual void TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
-	virtual void SwapSlots(std::shared_ptr<Object> object, int32_t new_arrangement_id);
-	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
+	virtual void AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2);
+	virtual void RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject);
+	virtual void TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
+	virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id);
+	virtual void ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
 	
 	virtual void AddAwareObject(std::shared_ptr<Object> object);
 	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<Object>)> func);
@@ -221,11 +221,6 @@ public:
     bool IsDirty();
 
     /**
-     * Regenerates the baselines and updates observers.
-     */
-    void MakeClean(std::shared_ptr<anh::observer::ObserverInterface> observer);
-
-    /**
      * Returns the most recently generated baselines.
      *
      * @return The most recently generated baselines.
@@ -298,7 +293,7 @@ public:
     /**
      * @return The container for the current object.
      */
-    std::shared_ptr<ContainerInterface> GetContainer();
+    virtual std::shared_ptr<ContainerInterface> GetContainer();
 
     /**
     *  @param Type of object to return
@@ -437,8 +432,6 @@ public:
     void RemoveFlag(std::string flag);
     bool HasFlag(std::string flag);
 
-	virtual void OnMakeClean(std::shared_ptr<anh::observer::ObserverInterface> observer){}
-
 	virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
 
 	virtual void SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer);
@@ -458,9 +451,6 @@ public:
 	int32_t GetAppropriateArrangementId(std::shared_ptr<Object> other);
 	ObjectSlots GetSlotDescriptor();
 	ObjectArrangements GetSlotArrangements();
-	
-	PermissionsObject GetPermissions();
-	void SetPermissions(PermissionsObject obj);
 
 protected:
 
@@ -483,9 +473,6 @@ private:
 
     typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
-	
-
-	PermissionsObject container_permissions_;
 
     ObjectSlots slot_descriptor_;
 	ObjectArrangements slot_arrangements_;

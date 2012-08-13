@@ -18,19 +18,19 @@ using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
 
-boost::python::tuple AddObject(std::shared_ptr<Object> newObject, int32_t arrangement_id=-2)
+boost::python::tuple AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2)
 {
-	return boost::python::make_tuple(newObject, arrangement_id);
+	return boost::python::make_tuple(requester, newObject, arrangement_id);
 }
 
 
-boost::python::tuple TransferObject(std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2)
+boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2)
 {
-	return boost::python::make_tuple(object, newContainer, arrangement_id);
+	return boost::python::make_tuple(requester, object, newContainer, arrangement_id);
 }
 
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 1, 2);
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 2, 3);
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3);
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4);
 
 void exportObject()
 {
@@ -38,7 +38,7 @@ void exportObject()
 
     typedef void (Object::*NotifyObserversFunc)(const anh::ByteBuffer& message);
 	
-	void (ContainerInterface::*RemoveObject)(shared_ptr<Object>) = &ContainerInterface::RemoveObject;
+	void (ContainerInterface::*RemoveObject)(shared_ptr<Object>, shared_ptr<Object>) = &ContainerInterface::RemoveObject;
 	
 
 	class_<ContainerInterface, std::shared_ptr<ContainerInterface>, boost::noncopyable>("ContainerInterface", "Container interface", no_init)

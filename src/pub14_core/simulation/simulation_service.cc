@@ -271,7 +271,7 @@ public:
 		object->CreateBaselines(controller);
 
 		// Get All ViewObjects and make the controller aware
-		object->ViewObjects(0, true, [&](shared_ptr<Object> found_obj){
+		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> found_obj){
 			found_obj->AddAwareObject(object);
 		});
 

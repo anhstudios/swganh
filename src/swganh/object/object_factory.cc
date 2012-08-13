@@ -18,6 +18,10 @@
 #include "swganh/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
+#include "permissions/creature_permissions.h"
+#include "permissions/creature_container_permissions.h"
+#include "permissions/ridable_permissions.h"
+
 using namespace sql;
 using namespace std;
 using namespace anh::database;
@@ -28,7 +32,19 @@ ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
                              anh::EventDispatcher* event_dispatcher)
     : db_manager_(db_manager)
     , event_dispatcher_(event_dispatcher)
-{}
+{
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(1, 
+		shared_ptr<ContainerPermissionsInterface>(new DefaultContainerPermissions())));
+
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(2, 
+		shared_ptr<ContainerPermissionsInterface>(new CreaturePermissions())));
+
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(3, 
+		shared_ptr<ContainerPermissionsInterface>(new CreatureContainerPermissions())));
+
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(4, 
+		shared_ptr<ContainerPermissionsInterface>(new RideablePermissions())));
+}
 
 uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
 {
@@ -40,9 +56,7 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
         counter = PersistObject(object, statement);
         // Now execute the update
         statement->executeUpdate();
-
-		
-    }
+	}
     catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
@@ -83,10 +97,7 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, const sh
         prepared_statement->setString(counter++, string(begin(custom_name), end(custom_name)));
         prepared_statement->setUInt(counter++, object->GetVolume());
 		prepared_statement->setInt(counter++, object->GetArrangementId());
-		// TODO: permissions
-		prepared_statement->setInt(counter++, 0);
-
-		
+		prepared_statement->setInt(counter++, object->GetPermissions()->GetType());
     }
     catch(sql::SQLException &e)
     {
@@ -119,6 +130,16 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         object->SetTemplate(result->getString("iff_template"));
 		object->SetArrangementId(result->getInt("arrangement_id"));
 
+		auto permissions_itr = permissions_objects_.find(result->getInt("permission_type"));
+		if(permissions_itr != permissions_objects_.end())
+		{
+			object->SetPermissions(permissions_itr->second);
+		}
+		else
+		{
+			DLOG(error) << "FAILED TO FIND PERMISSION TYPE " << result->getInt("perission_type");
+			object->SetPermissions(permissions_objects_.find(DEFAULT_CONTAINER_PERMISSION)->second);
+		}
 		object_manager_->LoadSlotsForObject(object);
     }
     catch(sql::SQLException &e)
@@ -172,12 +193,12 @@ void ObjectFactory::LoadContainedObjects(
 			if(contained_object->GetArrangementId() == -2)
 			{
 				//This object has never been loaded before and needs to be put into the default slot.
-				object->AddObject(contained_object);
+				object->AddObject(nullptr, contained_object);
 			}
 			else 
 			{
 				//Put it back where it was persisted
-				object->AddObject(contained_object, contained_object->GetArrangementId());
+				object->AddObject(nullptr, contained_object, contained_object->GetArrangementId());
 			}
 
         }

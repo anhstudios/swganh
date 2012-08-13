@@ -7,6 +7,7 @@
 #include <boost/thread/mutex.hpp>
 
 #include "swganh/simulation/spatial_provider_interface.h"
+#include "swganh/object/permissions/container_permissions_interface.h"
 #include "node.h"
 
 namespace swganh_core {
@@ -22,14 +23,17 @@ public:
 	uint64_t GetObjectId() { return 0; }
 
 	//Object Management
-	virtual void AddObject(std::shared_ptr<swganh::object::Object> newObject, int32_t arrangement_id=-2);
-	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> oldObject);
-	virtual void TransferObject(std::shared_ptr<swganh::object::Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
+	virtual void AddObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> newObject, int32_t arrangement_id=-2);
+	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> oldObject);
+	virtual void TransferObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
 	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position);
-	virtual void ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)>, std::shared_ptr<swganh::object::Object> hint = nullptr);
+	virtual void ViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)>, std::shared_ptr<swganh::object::Object> hint = nullptr);
 
 	// FOR USE BY TRANSFER OBJECT DO NOT CALL IN OUTSIDE CODE
 	virtual int32_t __InternalInsert(std::shared_ptr<swganh::object::Object> object, int32_t arrangement_id=-2);
+
+	virtual std::shared_ptr<ContainerInterface> GetContainer() { return nullptr; }
+	virtual void SetContainer(const std::shared_ptr<ContainerInterface>& container) {}
 
 	virtual void LockObjectMutex() { spatial_mutex_.lock(); }
 	virtual void UnlockObjectMutex() { spatial_mutex_.unlock(); }
