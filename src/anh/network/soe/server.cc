@@ -66,22 +66,20 @@ void Server::AsyncReceive() {
         buffer(&recv_buffer_[0], recv_buffer_.size()), 
         current_remote_endpoint_,
         [this] (const boost::system::error_code& error, std::size_t bytes_transferred) {
-            if(!error || error == boost::asio::error::message_size)
+            if(!error)
             {
                 bytes_recv_ += bytes_transferred;
 
                 ByteBuffer message(bytes_transferred);
 				message.write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
 
-                GetSession(current_remote_endpoint_)->HandleProtocolMessage(move(message));
-
-                AsyncReceive();
+                GetSession(current_remote_endpoint_)->HandleProtocolMessage(move(message));                			
             }
-			else
+			else if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset )
 			{
-				LOG(info) << "Server.cc Error in AsyncReceive: " << error.message();
-				AsyncReceive();
-			}
+				LOG(info) << "lost client with AsyncReceive error: " << error.message();				
+			}		
+			AsyncReceive();
     });
 }
 

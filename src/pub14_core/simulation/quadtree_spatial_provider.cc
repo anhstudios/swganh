@@ -27,9 +27,7 @@ QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
 }
 
 void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object, int32_t arrangement_id)
-{
-	
-	LOG(warning) << "QUADTREE AddObject " << object->GetObjectId();
+{	
 	root_node_.InsertObject(object);
 	object->SetContainer(__this);
 	object->SetArrangementId(arrangement_id);
@@ -43,7 +41,6 @@ void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object, int32_t arran
 
 void QuadtreeSpatialProvider::RemoveObject(shared_ptr<Object> object)
 {
-	LOG(warning) << "QUADTREE RemoveObject " << object->GetObjectId();
 	root_node_.RemoveObject(object);
 	object->SetContainer(nullptr);
 
@@ -140,7 +137,6 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<Object> object, std
 
 void QuadtreeSpatialProvider::ViewObjects(uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint)
 {
-	LOG(warning) << "QUADTREE VIEW OBJECTS ";
 	std::set<std::shared_ptr<Object>> contained_objects;
 	if (hint)
 	{

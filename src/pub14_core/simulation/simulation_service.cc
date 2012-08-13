@@ -256,6 +256,14 @@ public:
         {
             controller = find_iter->second;
             controller->SetRemoteClient(client);
+
+			// Send Updates to aware objects if we are reconnecting and the object is still alive...
+			object->ViewAwareObjects([&](shared_ptr<Object> aware){
+			{
+				aware->SendCreateByCrc(controller);
+				aware->CreateBaselines(controller);
+			}
+		});
         }
         else
         {
@@ -268,12 +276,10 @@ public:
         auto connection_client = std::static_pointer_cast<ConnectionClientInterface>(client);
         connection_client->SetController(controller);
 
-		object->CreateBaselines(controller);
-
 		// Get All ViewObjects and make the controller aware
 		object->ViewObjects(0, true, [&](shared_ptr<Object> found_obj){
 			found_obj->AddAwareObject(object);
-		});
+		});		
 
         return controller;
     }
@@ -296,9 +302,7 @@ public:
 
         if (find_iter != controller_handlers_.end())
         {
-            // just return, we already have the handler registered
-            return;
-            //throw std::runtime_error("ObjControllerHandler already exists");
+            return;            
         }
 
         controller_handlers_.insert(make_pair(handler_id, move(handler)));
@@ -344,10 +348,15 @@ public:
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
         // TODO: Do with Equipment
-		// auto player = equipment_service_->GetSlot("player");
-		// event_dispatcher->Dispatch(
-		// make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", player));
-
+		object->ViewAwareObjects([&] (shared_ptr<Object> aware)
+		{
+			if (aware->GetType() == player::Player::type)
+			{
+				event_dispatcher->Dispatch(
+					make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", static_pointer_cast<player::Player>(aware)));
+			}
+		});
+		
         auto scene = scene_manager_->GetScene(object->GetSceneId());
 
         if (!scene)

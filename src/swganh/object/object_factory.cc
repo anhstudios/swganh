@@ -39,9 +39,7 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
             (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         counter = PersistObject(object, statement);
         // Now execute the update
-        statement->executeUpdate();
-
-		
+        statement->executeUpdate();		
     }
     catch(sql::SQLException &e)
     {
