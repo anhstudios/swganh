@@ -30,11 +30,11 @@
 #include "swganh/command/base_combat_command.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
-#include "swganh/messages/controllers/combat_action_message.h"
-#include "swganh/messages/controllers/combat_spam_message.h"
-#include "swganh/messages/controllers/show_fly_text.h"
-#include "swganh/messages/chat_system_message.h"
-#include "swganh/messages/out_of_band.h"
+#include "pub14_core/messages/controllers/combat_action_message.h"
+#include "pub14_core/messages/controllers/combat_spam_message.h"
+#include "pub14_core/messages/controllers/show_fly_text.h"
+#include "pub14_core/messages/chat_system_message.h"
+#include "pub14_core/messages/out_of_band.h"
 
 using namespace std;
 using namespace anh;

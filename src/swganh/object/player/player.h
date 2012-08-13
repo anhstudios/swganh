@@ -17,10 +17,10 @@
 #include "swganh/object/object.h"
 #include "swganh/object/waypoint/waypoint.h"
 
-#include "swganh/messages/containers/network_sorted_list.h"
-#include "swganh/messages/containers/network_array.h"
-#include "swganh/messages/containers/network_map.h"
-#include "swganh/messages/containers/network_sorted_vector.h"
+#include "pub14_core/messages/containers/network_sorted_list.h"
+#include "pub14_core/messages/containers/network_array.h"
+#include "pub14_core/messages/containers/network_map.h"
+#include "pub14_core/messages/containers/network_sorted_vector.h"
 
 namespace swganh {
 namespace object {

@@ -23,10 +23,10 @@
 #include "anh/observer/observable_interface.h"
 #include "anh/observer/observer_interface.h"
 
-#include "swganh/messages/base_baselines_message.h"
-#include "swganh/messages/baselines_message.h"
-#include "swganh/messages/deltas_message.h"
-#include "swganh/messages/obj_controller_message.h"
+#include "pub14_core/messages/base_baselines_message.h"
+#include "pub14_core/messages/baselines_message.h"
+#include "pub14_core/messages/deltas_message.h"
+#include "pub14_core/messages/obj_controller_message.h"
 
 #include "swganh/object/object_controller.h"
 #include "swganh/object/container_interface.h"

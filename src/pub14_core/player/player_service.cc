@@ -79,10 +79,10 @@ void PlayerService::OnPlayerExit(shared_ptr<swganh::object::player::Player> play
     {
 	    player->ClearStatusFlags();
 	    player->AddStatusFlag(swganh::object::player::LD);
-	    // set a timer to 5 minutes to destroy the object, unless logged back in.
+	    // set a timer to 30 seconds to destroy the object, unless logged back in.
         auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(30));
 		auto parent = std::static_pointer_cast<swganh::object::Object>(player->GetContainer());
-        deadline_timer->async_wait(boost::bind(&PlayerService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 10, parent->GetController()));
+        deadline_timer->async_wait(boost::bind(&PlayerService::RemoveClientTimerHandler_, this, boost::asio::placeholders::error, deadline_timer, 30, parent->GetController()));
     }
 }
 

@@ -17,7 +17,7 @@
 #include "swganh/object/player/player.h"
 #include "swganh/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/messages/containers/network_map.h"
+#include "pub14_core/messages/containers/network_map.h"
 
 using namespace std;
 using namespace anh;
