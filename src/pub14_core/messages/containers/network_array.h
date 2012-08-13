@@ -5,8 +5,8 @@
 #define SWGANH_MESSAGES_NETWORK_ARRAY_H_
 
 #include "anh/byte_buffer.h"
-#include "swganh/messages/baselines_message.h"
-#include "swganh/messages/deltas_message.h"
+#include "pub14_core/messages/baselines_message.h"
+#include "pub14_core/messages/deltas_message.h"
 
 namespace swganh {
 namespace messages {

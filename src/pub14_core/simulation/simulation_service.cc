@@ -22,7 +22,7 @@
 #include "swganh/connection/connection_client_interface.h"
 #include "swganh/connection/connection_service_interface.h"
 
-#include "swganh/messages/select_character.h"
+#include "pub14_core/messages/select_character.h"
 
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"

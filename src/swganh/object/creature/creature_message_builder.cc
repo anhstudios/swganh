@@ -3,8 +3,8 @@
 
 #include "creature_message_builder.h"
 #include "creature.h"
-#include "swganh/messages/update_pvp_status_message.h"
-#include "swganh/messages/controllers/posture.h"
+#include "pub14_core/messages/update_pvp_status_message.h"
+#include "pub14_core/messages/controllers/posture.h"
 #include "swganh/object/object_events.h"
 
 using namespace std;

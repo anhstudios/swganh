@@ -11,7 +11,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/messages/controllers/command_queue_remove.h"
+#include "pub14_core/messages/controllers/command_queue_remove.h"
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"

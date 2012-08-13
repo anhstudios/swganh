@@ -12,12 +12,12 @@
 #include "anh/observer/observer_interface.h"
 
 
-#include "swganh/messages/scene_create_object_by_crc.h"
-#include "swganh/messages/update_containment_message.h"
-#include "swganh/messages/scene_destroy_object.h"
+#include "pub14_core/messages/scene_create_object_by_crc.h"
+#include "pub14_core/messages/update_containment_message.h"
+#include "pub14_core/messages/scene_destroy_object.h"
 
-#include "swganh/messages/base_baselines_message.h"
-#include "swganh/messages/scene_end_baselines.h"
+#include "pub14_core/messages/base_baselines_message.h"
+#include "pub14_core/messages/scene_end_baselines.h"
 
 #include "swganh/object/permissions/container_permissions_interface.h"
 

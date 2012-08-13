@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "swganh/messages/baselines_message.h"
-#include "swganh/messages/deltas_message.h"
+#include "pub14_core/messages/baselines_message.h"
+#include "pub14_core/messages/deltas_message.h"
 
 namespace swganh {
 namespace messages {

@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/messages/out_of_band.h"
+#include "pub14_core/messages/out_of_band.h"
 #include "anh/byte_buffer.h"
 
 using namespace std;
