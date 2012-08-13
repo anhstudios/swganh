@@ -251,11 +251,14 @@ void Object::AddAwareObject(std::shared_ptr<swganh::object::Object> object)
 			SendCreateByCrc(observer);
 			CreateBaselines(observer);
 
-			for(auto& slot : slot_descriptor_)
+			if(GetPermissions()->canView(shared_from_this(), object))
 			{
-				slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-					v->AddAwareObject(object);
-				});
+				for(auto& slot : slot_descriptor_)
+				{
+					slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
+						v->AddAwareObject(object);
+					});
+				}
 			}
 		}
 	}
