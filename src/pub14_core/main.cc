@@ -12,7 +12,6 @@
 #include "anh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-
 #include "chat/chat_init.h"
 #include "character/character_init.h"
 #include "command/command_init.h"
@@ -21,6 +20,7 @@
 #include "simulation/simulation_init.h"
 #include "player/player_init.h"
 #include "social/social_init.h"
+#include "weather/weather_init.h"
 
 using anh::app::KernelInterface;
 using anh::plugin::ExitFunc;
@@ -53,5 +53,6 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh_core::simulation::Initialize(swganh_kernel);
 	swganh_core::player::Initialize(swganh_kernel);
 	swganh_core::social::Initialize(swganh_kernel);
+	swganh_core::weather::Initialize(swganh_kernel);
     return ExitModule;
 }
