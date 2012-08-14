@@ -39,6 +39,9 @@ void exportTangible()
         .def("clear_auto_attack", &Tangible::ClearAutoAttack, "Clears the auto attack flag")
         .def("is_auto_attacking", &Tangible::IsAutoAttacking, "returns true if currently auto attacking")
 		;
+
+	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<Object>>();
+	implicitly_convertible<std::shared_ptr<Tangible>, std::shared_ptr<ContainerInterface>>();
 }
 
 #endif // SWGANH_OBJECT_TANGIBLE_TANGIBLE_BINDING_H_

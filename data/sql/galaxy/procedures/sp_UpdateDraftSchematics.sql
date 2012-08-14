@@ -6,7 +6,7 @@
 # Dumping structure for procedure galaxy.sp_UpdateDraftSchematics
 DROP PROCEDURE IF EXISTS `sp_UpdateDraftSchematics`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_UpdateDraftSchematics`(IN `player_id_` BIGINT, IN `schematic_id_` INT, IN `schematic_crc` INT)
+CREATE PROCEDURE `sp_UpdateDraftSchematics`(IN `player_id_` BIGINT, IN `schematic_id_` INT, IN `schematic_crc` INT)
 BEGIN
 DECLARE row_id BIGINT;
 SELECT id from draft_schematic_list where player_id = player_id_ and schematic_id = schematic_id_ and schematic_crc = schematic_crc_ into row_id;

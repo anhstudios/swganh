@@ -7,7 +7,7 @@
 # Dumping structure for procedure galaxy.sp_UpdateFriends
 DROP PROCEDURE IF EXISTS `sp_UpdateFriends`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_UpdateFriends`(IN `object_id` BIGINT, IN `friend_id_` BIGINT)
+CREATE PROCEDURE `sp_UpdateFriends`(IN `object_id` BIGINT, IN `friend_id_` BIGINT)
 BEGIN
 IF NOT EXISTS(SELECT id from friend_list where player_id = object_id and friend_id = friend_id_) THEN
 	INSERT INTO friend_list SET player_id = object_id, friend_id = friend_id_;

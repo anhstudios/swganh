@@ -35,7 +35,7 @@ void exportSimulationService()
 		.def("transfer", TransferObjectToSceneObjectAndPositionBinding(&SimulationServiceInterface::TransferObjectToScene), "transfers the object to a new scene and changes the position")
 		.def("findObject", GetObjectByCustomNameBinding(&SimulationServiceInterface::GetObjectByCustomName), "finds the object by their custom name")
         .def("startScene", &SimulationServiceInterface::StartScene, "starts a scene by its label")
-        .def("stopScene", &SimulationServiceInterface::StopScene, "stops a scene by the given label")
+        .def("stopScene", &SimulationServiceInterface::StopScene, "stops a scene by the given label")		
         ;
 }
 

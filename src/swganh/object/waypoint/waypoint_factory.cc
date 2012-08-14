@@ -17,7 +17,7 @@
 #include "swganh/object/player/player.h"
 #include "swganh/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/messages/containers/network_map.h"
+#include "pub14_core/messages/containers/network_map.h"
 
 using namespace std;
 using namespace anh;
@@ -117,40 +117,43 @@ unordered_map<string,shared_ptr<Waypoint>>::iterator WaypointFactory::GetTemplat
     return iter;
 }
 
-void WaypointFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object)
 {
+	uint32_t counter = 1;
     if (object->IsDirty() && object->GetType() ==  Waypoint::type)
     {
         try 
-        {
+        {			
             auto waypoint = static_pointer_cast<Waypoint>(object);
             auto conn = db_manager_->getConnection("galaxy");
             auto statement = conn->prepareStatement("CALL sp_PersistWaypoint(?,?,?,?,?,?,?,?,?,?,?,?,?);");
-            statement->setDouble(1,waypoint->GetComplexity());
-            statement->setString(2, waypoint->GetStfNameFile());
-            statement->setString(3, waypoint->GetStfNameString());
+            statement->setDouble(counter++,waypoint->GetComplexity());
+            statement->setString(counter++, waypoint->GetStfNameFile());
+            statement->setString(counter++, waypoint->GetStfNameString());
 
             auto custom_name = waypoint->GetCustomName();
-            statement->setString(4, string(begin(custom_name), end(custom_name)));
+            statement->setString(counter++, string(begin(custom_name), end(custom_name)));
 
-            statement->setUInt(5, waypoint->GetVolume());
+            statement->setUInt(counter++, waypoint->GetVolume());
 
             auto coords = waypoint->GetCoordinates();
-            statement->setDouble(6, coords.x);
-            statement->setDouble(7, coords.y);
-            statement->setDouble(8, coords.z);
-            statement->setUInt(9, waypoint->GetActiveFlag());
-            statement->setString(10, waypoint->GetPlanet());
-            statement->setString(11, waypoint->GetNameStandard());
-            statement->setString(12, waypoint->GetColor());
+            statement->setDouble(counter++, coords.x);
+            statement->setDouble(counter++, coords.y);
+            statement->setDouble(counter++, coords.z);
+            statement->setUInt(counter++, waypoint->GetActiveFlag());
+            statement->setString(counter++, waypoint->GetPlanet());
+            statement->setString(counter++, waypoint->GetNameStandard());
+            statement->setString(counter++, waypoint->GetColor());
             statement->execute();
+						
         }
             catch(sql::SQLException &e)
         {
             LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
             LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-        }
+        }		
     }
+	return counter;
 }
 
 void WaypointFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)

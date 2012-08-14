@@ -23,14 +23,14 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include "swganh/messages/delete_character_reply_message.h"
+#include "pub14_core/messages/delete_character_reply_message.h"
 #include "swganh/character/character_data.h"
-#include "swganh/messages/delete_character_message.h"
-#include "swganh/messages/client_create_character.h"
-#include "swganh/messages/client_create_character_success.h"
-#include "swganh/messages/client_create_character_failed.h"
-#include "swganh/messages/client_random_name_request.h"
-#include "swganh/messages/client_random_name_response.h"
+#include "pub14_core/messages/delete_character_message.h"
+#include "pub14_core/messages/client_create_character.h"
+#include "pub14_core/messages/client_create_character_success.h"
+#include "pub14_core/messages/client_create_character_failed.h"
+#include "pub14_core/messages/client_random_name_request.h"
+#include "pub14_core/messages/client_random_name_response.h"
 
 #include "swganh/object/player/player.h"
 

@@ -8,7 +8,7 @@
 # Dumping structure for procedure galaxy.sp_RemoveIgnoredPlayer
 DROP PROCEDURE IF EXISTS `sp_RemoveIgnoredPlayer`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_RemoveIgnoredPlayer`(IN `player_id_` BIGINT, IN `ignore_id_` BIGINT)
+CREATE PROCEDURE `sp_RemoveIgnoredPlayer`(IN `player_id_` BIGINT, IN `ignore_id_` BIGINT)
 BEGIN
 IF EXISTS(SELECT id from ignore_list where player_id = player_id_ and ignored_player_id = ignore_id_) THEN
 	DELETE FROM ignore_list WHERE player_id = player_id_ and ignored_player_id = ignore_id_;

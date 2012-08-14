@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "swganh/messages/controllers/command_queue_enqueue.h"
+#include "pub14_core/messages/controllers/command_queue_enqueue.h"
 
 #include "command_interface.h"
 #include "command_properties.h"

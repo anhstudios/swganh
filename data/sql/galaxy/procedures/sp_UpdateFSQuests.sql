@@ -6,7 +6,7 @@
 # Dumping structure for procedure galaxy.sp_UpdateFSQuests
 DROP PROCEDURE IF EXISTS `sp_UpdateFSQuests`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_UpdateFSQuests`(IN `player_id_` BIGINT, IN `current_quest_mask` INT, IN `completed_quest_mask` INT)
+CREATE PROCEDURE `sp_UpdateFSQuests`(IN `player_id_` BIGINT, IN `current_quest_mask` INT, IN `completed_quest_mask` INT)
 BEGIN
 DECLARE fs_completed INT;
 DECLARE fs_not_completed INT;

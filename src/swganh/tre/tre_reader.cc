@@ -2,6 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "tre_reader.h"
+#include "anh/byte_buffer.h"
 
 #include <array>
 #include <algorithm>
@@ -70,16 +71,16 @@ vector<string> TreReader::GetResourceNames() const
     return resource_names;
 }
 
-TreResourceData TreReader::GetResource(const std::string& resource_name)
+anh::ByteBuffer TreReader::GetResource(const std::string& resource_name)
 {
-    TreResourceData data; 
+    anh::ByteBuffer data; 
     
     GetResource(resource_name, data);
 
     return data;
 }
 
-void TreReader::GetResource(const std::string& resource_name, std::vector<char>& buffer)
+void TreReader::GetResource(const std::string& resource_name, anh::ByteBuffer& buffer)
 {    
     auto file_info = GetResourceInfo(resource_name);
 
@@ -95,7 +96,7 @@ void TreReader::GetResource(const std::string& resource_name, std::vector<char>&
             file_info.data_compression,
             file_info.data_compressed_size,
             file_info.data_size,
-            &buffer[0]);
+            (char*)(&buffer.raw()[0]));
     }
 
 }

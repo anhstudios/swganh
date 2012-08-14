@@ -17,8 +17,10 @@ bool BuildingFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void BuildingFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t BuildingFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	return 0;
+}
 
 void BuildingFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

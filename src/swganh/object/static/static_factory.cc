@@ -17,8 +17,12 @@ bool StaticFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void StaticFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	uint32_t counter = 1;
+
+	return counter;
+}
 
 void StaticFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

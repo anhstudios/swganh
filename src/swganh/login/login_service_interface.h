@@ -22,7 +22,7 @@
 #include "swganh/galaxy/galaxy_service_interface.h"
 
 #include "swganh/login/galaxy_status.h"
-#include "swganh/messages/login_client_id.h"
+#include "pub14_core/messages/login_client_id.h"
 
 namespace anh {
 namespace network {

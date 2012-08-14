@@ -97,7 +97,7 @@ charCreate:BEGIN
         FROM creation_attributes WHERE creation_attributes.species_id = race_id AND creation_attributes.profession_id = profession_id
         INTO health, strength, constitution, action, quickness, stamina, mind, focus, willpower;
 
-        INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1129465167);
+        INSERT INTO `object` VALUES (object_id, start_scene, parent_id, iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'player_species', concat('name_',shortSpecies), start_custom_name,0, NOW(), NOW(), null, 1129465167, -1, 2);
         INSERT INTO `tangible` VALUES (object_id, start_appearance_customization, 0, 0, 0, 0, 1);
         INSERT INTO `creature`(id, owner_id, bank_credits, cash_credits, posture,
             scale, acceleration_base, acceleration_modifier, speed_base, speed_modifier,
@@ -111,25 +111,32 @@ charCreate:BEGIN
                 health, strength, constitution, action, quickness, stamina, mind, focus, willpower );
         -- APPEARANCE
         INSERT INTO `appearance` VALUES (object_id, scale, gender, shortSpecies, start_appearance_customization);
-        -- DATAPAD
-        --	INSERT INTO `object` VALUES (object_id + 2, start_scene, object_id, base_model_string, start_x,start_y,start_z,oX,oY,oZ,oW, 0, base_model_string, base_model_string, start_custom_name,0, NOW(), NOW(), null, start_custom_name + ' datapad');
-        -- INVENTORY
-        -- BANK
-        -- MISSION
-        -- HAIR
+        -- DATAPAD 2 -- 9357
+        INSERT INTO `object` VALUES (object_id+2, start_scene, object_id, 9357, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'datapad', '', 0, NOW(), NOW(), null, 1129465167, -2, 3);
+        INSERT INTO `tangible` VALUES (object_id+2, '', 0, 0, 0, 0, 1);
+        -- INVENTORY 3 -- 10708
+		INSERT INTO `object` VALUES (object_id+3, start_scene, object_id, 10708, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'inventory', '', 0, NOW(), NOW(), null, 1129465167, -2, 3);
+        INSERT INTO `tangible` VALUES (object_id+3, '', 0, 0, 0, 0, 1);
+        -- BANK 4 -- 8571
+		INSERT INTO `object` VALUES (object_id+4, start_scene, object_id, 8571, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'bank', '', 0, NOW(), NOW(), null, 1129465167, -2, 3);
+        INSERT INTO `tangible` VALUES (object_id+4, '', 0, 0, 0, 0, 1);
+        -- MISSION 5 -- 12386
+		INSERT INTO `object` VALUES (object_id+5, start_scene, object_id, 12386, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'item_n', 'mission_bag', '', 0, NOW(), NOW(), null, 1129465167, -2, 3);
+        INSERT INTO `tangible` VALUES (object_id+5, '', 0, 0, 0, 0, 1);
+        -- HAIR 6
 
         IF start_hair_model != '' THEN
             SET longHair = REPLACE(start_hair_model, '/hair_', '/shared_hair_');
             SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longHair INTO hair_iff_template_id;
 
-            INSERT INTO `object` VALUES (object_id + 6, start_scene, object_id, hair_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', '' ,0, NOW(), NOW(), null, 1413566031);
+            INSERT INTO `object` VALUES (object_id + 6, start_scene, object_id, hair_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', '' ,0, NOW(), NOW(), null, 1413566031, -2, 1);
             INSERT INTO `tangible` VALUES (object_id + 6, hair_customization, 0, 0, 0, 0, 0);
             INSERT INTO `appearance` VALUES (object_id + 6, scale, gender, shortSpecies, hair_customization);
         END IF;
 
-        -- EQUIPED
-        -- PLAYER
-        INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, player_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'string_id_table', '', start_custom_name,0, NOW(), NOW(), null, 1347174745);
+        -- EQUIPED ??
+        -- PLAYER 1
+        INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, player_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'string_id_table', '', start_custom_name,0, NOW(), NOW(), null, 1347174745, -2, 1);
         INSERT INTO `player` (id, profession_tag, born_date, csr_tag, current_language, jedi_state)
             VALUES (object_id + 1, start_profession, NOW(), 0, 0, 0);
         -- PLAYER ACCOUNT

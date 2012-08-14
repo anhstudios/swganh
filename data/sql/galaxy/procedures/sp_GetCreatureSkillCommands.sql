@@ -14,7 +14,7 @@
 # Dumping structure for procedure galaxy.sp_GetCreatureSkillCommands
 DROP PROCEDURE IF EXISTS `sp_GetCreatureSkillCommands`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetCreatureSkillCommands`(IN `object_id` BIGINT)
+CREATE PROCEDURE `sp_GetCreatureSkillCommands`(IN `object_id` BIGINT)
 BEGIN
 
     SELECT skill_command.id, skill_command.name

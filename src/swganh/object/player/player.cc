@@ -920,8 +920,8 @@ bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
     return waypoint->GetObjectId() == other.waypoint->GetObjectId();
 }
 
-void Player::CreateBaselines(shared_ptr<ObjectController> controller)
+void Player::CreateBaselines(shared_ptr<anh::observer::ObserverInterface> observer)
 {
-    GetEventDispatcher()->Dispatch(make_shared<ControllerEvent>
-        ("Player::Baselines", shared_from_this(), controller));
+    GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
+        ("Player::Baselines", shared_from_this(), observer));
 }

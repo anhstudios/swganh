@@ -7,7 +7,7 @@
 # Dumping structure for procedure galaxy.sp_GetFSQuestList
 DROP PROCEDURE IF EXISTS `sp_GetFSQuestList`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetFSQuestList`(IN `object_id` BIGINT)
+CREATE PROCEDURE `sp_GetFSQuestList`(IN `object_id` BIGINT)
 BEGIN
     select fs.quest_mask, fs.completed from force_sensitive_quest_list fs where fs.player_id = object_id;
 END//

@@ -17,8 +17,12 @@ bool ShipFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void ShipFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	uint32_t counter = 1;
+
+	return counter;
+}
 
 void ShipFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

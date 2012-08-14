@@ -32,7 +32,7 @@ namespace messages {
             buffer.write<int16_t>(static_cast<int16_t>(position.y * 8.0f + 0.5f));
             buffer.write<int16_t>(static_cast<int16_t>(position.z * 8.0f + 0.5f));
             buffer.write(update_counter);
-            buffer.write(static_cast<uint8_t>(0));
+            buffer.write(static_cast<uint8_t>(glm::length(position * 8.0f + 0.5f)));
             buffer.write(heading);
         }
 

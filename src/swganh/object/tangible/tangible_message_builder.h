@@ -20,7 +20,7 @@ namespace tangible {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendBaselines(const std::shared_ptr<Tangible>& tangible, const std::shared_ptr<ObjectController>& controller);
+        virtual void SendBaselines(const std::shared_ptr<Tangible>& tangible, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
         // deltas
         static void BuildCustomizationDelta(const std::shared_ptr<Tangible>& tangible);
         static void BuildComponentCustomizationDelta(const std::shared_ptr<Tangible>& tangible);

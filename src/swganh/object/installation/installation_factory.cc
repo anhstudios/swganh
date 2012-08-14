@@ -17,8 +17,12 @@ bool InstallationFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void InstallationFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	uint32_t counter = 1;
+
+	return counter;
+}
 
 void InstallationFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

@@ -17,8 +17,10 @@ bool ManufactureSchematicFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	return 0;
+}
 
 void ManufactureSchematicFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

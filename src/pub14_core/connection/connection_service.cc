@@ -26,8 +26,6 @@
 #include "swganh/object/object.h"
 #include "swganh/object/player/player.h"
 
-#include "swganh/messages/logout_message.h"
-
 using namespace anh::app;
 using namespace anh::event_dispatcher;
 using namespace anh::network::soe;
@@ -154,8 +152,7 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
 		kernel_->GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<swganh::object::player::Player>>>("Connection::PlayerRemoved", player));
         
         simulation_service_->PersistRelatedObjects(controller->GetObject()->GetObjectId());
-		//simulation_service_->PersistObject(controller->GetObject()->GetObjectId());
-    }
+	}
 
     LOG(info) << "Removing disconnected client";
 	session_provider_->EndGameSession(connection_client->GetPlayerId());
@@ -171,8 +168,7 @@ shared_ptr<Session> ConnectionService::GetSession(const udp::endpoint& endpoint)
         auto find_iter = session_map_.find(endpoint);
         if (find_iter != session_map_.end())
         {
-			LOG(info) << "Get Existing Session for " << endpoint.address().to_string();
-            return find_iter->second;
+			return find_iter->second;
         }
     }
 

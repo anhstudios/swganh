@@ -17,8 +17,10 @@ bool CellFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void CellFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	return 0;
+}
 
 void CellFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

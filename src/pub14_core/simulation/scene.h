@@ -5,11 +5,18 @@
 #define PUB14_CORE_SIMULATION_SCENE_H_
 
 #include "swganh/simulation/scene_interface.h"
+#include "swganh/simulation/spatial_provider_interface.h"
 #include <cstdint>
 #include <string>
 
+namespace swganh {
+namespace app {
+	class SwganhKernel;
+}}
+
 namespace swganh_core {
 namespace simulation {
+	class SpatialProviderInterface;
 
     struct SceneDescription
     {
@@ -23,13 +30,14 @@ namespace simulation {
     class Scene : public swganh::simulation::SceneInterface
     {
     public:
-        explicit Scene(SceneDescription description);
+        Scene(SceneDescription description, swganh::app::SwganhKernel* kernel);
         Scene(
             uint32_t id,
             std::string name,
             std::string label,
             std::string description,
-            std::string terrain);
+            std::string terrain,
+			swganh::app::SwganhKernel* kernel);
 
         uint32_t GetSceneId() const;
         const std::string& GetName() const;
@@ -37,9 +45,12 @@ namespace simulation {
         const std::string& GetDescription() const;
 		const std::string& GetTerrainMap() const;
 
-        void AddObject(const std::shared_ptr<swganh::object::Object>& object);
+        void AddObject(std::shared_ptr<swganh::object::Object> object);
 
-        void RemoveObject(const std::shared_ptr<swganh::object::Object>& object);
+        void RemoveObject(std::shared_ptr<swganh::object::Object> object);
+
+		void HandleDataTransform(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransform message);
+		void HandleDataTransformWithParent(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransformWithParent message);
 
     private:
         Scene();

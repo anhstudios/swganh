@@ -8,7 +8,7 @@
 # Dumping structure for procedure galaxy.sp_UpdateIgnoreList
 DROP PROCEDURE IF EXISTS `sp_UpdateIgnoreList`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_UpdateIgnoreList`(IN `player_id_` BIGINT, IN `ignore_id_` BIGINT)
+CREATE PROCEDURE `sp_UpdateIgnoreList`(IN `player_id_` BIGINT, IN `ignore_id_` BIGINT)
 BEGIN
 IF NOT EXISTS(SELECT id from ignore_list where player_id = player_id_ and ignored_player_id = ignore_id_)THEN
 	INSERT INTO ignore_list SET player_id = player_id_, ignored_player_id = ignore_id_;

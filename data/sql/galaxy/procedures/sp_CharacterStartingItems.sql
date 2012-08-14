@@ -31,8 +31,8 @@ BEGIN
 
                 SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE template INTO iff_template_id;
 
-                INSERT INTO `object` VALUES (object_id, NULL, owner_id, iff_template_id, 0,0,0,0,0,0,1, 0, '', '', '' ,0, NOW(), NOW(), null, 1413566031);
-                INSERT INTO `tangible` VALUES (object_id, '', 0, 0, 0, 0, 0);
+                INSERT INTO `object` VALUES (object_id, NULL, owner_id, iff_template_id, 0,0,0,0,0,0,1, 0, '', '', '' ,0, NOW(), NOW(), null, 1413566031, -2, 1);
+                INSERT INTO `tangible` VALUES (object_id, '', 0, 0, 100, 100, 0);
             END IF;
         UNTIL loopEnd END REPEAT;
     CLOSE cur_1;

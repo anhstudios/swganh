@@ -19,17 +19,19 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "anh/event_dispatcher.h"
 #include "anh/observer/observable_interface.h"
 #include "anh/observer/observer_interface.h"
 
-#include "swganh/messages/base_baselines_message.h"
-#include "swganh/messages/baselines_message.h"
-#include "swganh/messages/deltas_message.h"
-#include "swganh/messages/obj_controller_message.h"
+#include "pub14_core/messages/base_baselines_message.h"
+#include "pub14_core/messages/baselines_message.h"
+#include "pub14_core/messages/deltas_message.h"
+#include "pub14_core/messages/obj_controller_message.h"
 
 #include "swganh/object/object_controller.h"
+#include "swganh/object/container_interface.h"
 
-#include "anh/event_dispatcher.h"
+#include "swganh/object/slot_interface.h"
 
 namespace swganh {
 namespace object {
@@ -42,11 +44,22 @@ typedef std::vector<
     swganh::messages::DeltasMessage
 > DeltasCacheContainer;
 
+
+typedef std::map<
+	int32_t,
+	std::shared_ptr<SlotInterface>
+> ObjectSlots;
+
+typedef std::vector<std::vector<int32_t>> ObjectArrangements;
+
 class ObjectFactory;
 class ObjectMessageBuilder;
+class ContainerPermissionsInterface;
 
-
-class Object : public anh::observer::ObservableInterface, public std::enable_shared_from_this<Object>
+class Object : 
+	public anh::observer::ObservableInterface, 
+	public swganh::object::ContainerInterface, 
+	public std::enable_shared_from_this<Object>
 {
 public:
     const static uint32_t type = 0;
@@ -85,19 +98,14 @@ public:
 		GUILD = 1145850183,
 		GROUP = 1196578128
 	};
-
-    enum ContainmentType : uint32_t
-    {
-        UNLINK = 0xFFFFFFFF,
-        LINK = 4
-    };
+	
+	typedef std::map<
+		uint64_t,
+		std::shared_ptr<Object>
+	> ObjectMap;
     
-    typedef std::map<
-        uint64_t,
-        std::shared_ptr<Object>
-    > ObjectMap;
+	typedef std::shared_ptr<ContainerPermissionsInterface> PermissionsObject;
 
-public:
     Object();
     virtual ~Object() {}
 
@@ -125,80 +133,21 @@ public:
      */
     void ClearController();
 
-    /**
-     * Adds an object to be contained by the current instance.
-     *
-     * All Object instances are composite objects that can serve as containers
-     * for other Objects. For example, storing items in an inventory.
-     *
-     * @param object The object to contain.
-     * @param containment_type The type of containment in which to hold the given object.
-     */
-    void AddContainedObject(const std::shared_ptr<Object>& object, ContainmentType containment_type);
+	virtual void AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2);
+	virtual void RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject);
+	virtual void TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
+	virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id);
+	virtual void ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
+	
+	virtual void AddAwareObject(std::shared_ptr<Object> object);
+	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<Object>)> func);
+	virtual void RemoveAwareObject(std::shared_ptr<Object> object);
+	virtual void LockObjectMutex();
+	virtual void UnlockObjectMutex();
 
-    /**
-     * Checks to see if the current Object contains the given instance.
-     *
-     * @param object The object to for which to check containment.
-     */
-    bool IsContainerForObject(const std::shared_ptr<Object>& object);
-
-    /**
-     * Checks to see if the object_id contains the given instance.
-     *
-     * @param the object_id to check for
-     * @return object The Object to return
-     */
-    template<typename T>
-    std::shared_ptr<T> GetContainedObject(uint64_t object_id)
-    {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-
-        auto find_iter = contained_objects_.find(object_id);
-        if (find_iter == end(contained_objects_))
-            return nullptr;
-        auto object = find_iter->second;
-#ifdef _DEBUG
-            return std::dynamic_pointer_cast<T>(object);
-#else
-            return std::static_pointer_cast<T>(object);
-#endif
-    }
+	virtual int32_t __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2);
     
-    /**
-     * Removes an object from containment.
-     *
-     * @param object The Object to remove from containment.
-     */
-    void RemoveContainedObject(const std::shared_ptr<Object>& object);
-
-    /**
-     * @return A map of all contained objects and their containment types.
-     */
-    ObjectMap GetContainedObjects();
-
-    /**
-     * Adds an Object to the awareness list of the existing instance.
-     *
-     * Aware Objects receive all message updates of the Objects they
-     * are aware of.
-     *
-     * @param object The object to be aware of.
-     */
-    void AddAwareObject(const std::shared_ptr<Object>& object);
-
-    /**
-     * @return True if the current Object is aware of the
-     *  given instance, false if not.
-     */
-    bool IsAwareOfObject(const std::shared_ptr<Object>& object);
-
-    /**
-     * Removes an object from the awareness list of the existing instance.
-     */
-    void RemoveAwareObject(const std::shared_ptr<Object>& object);
-
-    /**
+	/**
      * Returns whether or not this observable object has any observers.
      *
      * @return True if has observers, false if not.
@@ -239,13 +188,7 @@ public:
 
         boost::lock_guard<boost::mutex> lock(object_mutex_);
 
-        std::for_each(
-            observers_.begin(),
-            observers_.end(),
-            [this, &message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
-        {
-            observer->Notify(message);
-        });
+        NotifyObservers<T>(message);
     }
 
     /**
@@ -276,11 +219,6 @@ public:
      * @return Modified since last reliable update.
      */
     bool IsDirty();
-
-    /**
-     * Regenerates the baselines and updates observers.
-     */
-    void MakeClean(std::shared_ptr<swganh::object::ObjectController> controller);
 
     /**
      * Returns the most recently generated baselines.
@@ -355,7 +293,7 @@ public:
     /**
      * @return The container for the current object.
      */
-    std::shared_ptr<Object> GetContainer();
+    virtual std::shared_ptr<ContainerInterface> GetContainer();
 
     /**
     *  @param Type of object to return
@@ -377,7 +315,7 @@ public:
      *
      * @param container The new object container.
      */
-    void SetContainer(const std::shared_ptr<Object>& container);
+    void SetContainer(const std::shared_ptr<ContainerInterface>& container);
 
     /**
      * Base complexity for this object (primarily used for crafting).
@@ -471,28 +409,53 @@ public:
     /**
      * @return The id of this Object instance.
      */
-    uint64_t GetObjectId() ;
+    uint64_t GetObjectId();
+
+	int32_t GetArrangementId();
+	void SetArrangementId(int32_t arrangement_id);
 
     /**
      * @return The type of the object.
      */
     virtual uint32_t GetType() const { return 0; }
 
+	void SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements);
+
     anh::EventDispatcher* GetEventDispatcher();
     void SetEventDispatcher(anh::EventDispatcher* dispatcher);
 
-    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
     void ClearBaselines();
     void ClearDeltas();
     typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 
-    
     void SetFlag(std::string flag);
     void RemoveFlag(std::string flag);
     bool HasFlag(std::string flag);
 
+	virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
+
+	virtual void SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer);
+	virtual void SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer);
+	virtual void SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer);
+
+	bool operator< (const std::shared_ptr<Object>& other)
+	{ 
+		return GetObjectId() < other->GetObjectId(); 
+	}
+	bool operator== (const std::shared_ptr<Object>& other)
+	{
+		return GetObjectId() == other->GetObjectId();
+	}
+
+	/// Slot Functions
+	int32_t GetAppropriateArrangementId(std::shared_ptr<Object> other);
+	ObjectSlots GetSlotDescriptor();
+	ObjectArrangements GetSlotArrangements();
+
 protected:
-    virtual void OnMakeClean(std::shared_ptr<swganh::object::ObjectController> controller) {}
+
+
+	std::atomic<int32_t> arrangement_id_;
 
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
@@ -508,18 +471,19 @@ protected:
 private:
     mutable boost::mutex object_mutex_;
 
-    typedef std::vector<
-        std::shared_ptr<anh::observer::ObserverInterface>
-    > ObserverContainer;
+    typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
+	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
 
-    ObjectMap aware_objects_;
-    ObjectMap contained_objects_;
+    ObjectSlots slot_descriptor_;
+	ObjectArrangements slot_arrangements_;
 
     ObserverContainer observers_;
+	AwareObjectContainer aware_objects_;
+
     BaselinesCacheContainer baselines_;
     DeltasCacheContainer deltas_;
 
-    std::shared_ptr<Object> container_;
+    std::shared_ptr<ContainerInterface> container_;
     std::shared_ptr<ObjectController> controller_;
     anh::EventDispatcher* event_dispatcher_;
 

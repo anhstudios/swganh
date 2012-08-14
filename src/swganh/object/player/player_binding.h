@@ -131,6 +131,9 @@ void exportPlayer()
 		.add_property("jedi_state", &PlayerWrapper::GetJediState, &PlayerWrapper::SetJediState, "Gets and set the jedi state")
 		.add_property("gender", &PlayerWrapper::GetGender, &PlayerWrapper::SetGender, "Gets and Sets the players :class:`.GENDER` ")
 		;
+
+	implicitly_convertible<std::shared_ptr<Player>, std::shared_ptr<Object>>();
+	implicitly_convertible<std::shared_ptr<Player>, std::shared_ptr<ContainerInterface>>();
 }
 
 #endif //SWGANH_OBJECT_PLAYER_PLAYER_BINDING_H_

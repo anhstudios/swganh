@@ -7,7 +7,7 @@
 # Dumping structure for procedure galaxy.sp_UpdateQuestJournal
 DROP PROCEDURE IF EXISTS `sp_UpdateQuestJournal`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_UpdateQuestJournal`(IN `player_id_` BIGINT, IN `owner_id_` BIGINT, IN `quest_crc_` INT, IN `bitmask_step` INT, IN `completed_bitmask_step` INT, IN `completed_flag` INT)
+CREATE PROCEDURE `sp_UpdateQuestJournal`(IN `player_id_` BIGINT, IN `owner_id_` BIGINT, IN `quest_crc_` INT, IN `bitmask_step` INT, IN `completed_bitmask_step` INT, IN `completed_flag` INT)
 BEGIN
 DECLARE found_id BIGINT(20);
 select id from quest_journal_list where player_id = player_id_ and owner_id = owner_id_ and quest_crc = quest_crc_ into found_id;

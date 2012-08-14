@@ -381,11 +381,15 @@ void Session::SendSoePacket_(anh::ByteBuffer message)
 
 void Session::SendSoePacketInternal(anh::ByteBuffer message)
 {
+	//LOG_NET << "Server -> Client: " << message;
+
     compression_filter_(this, &message);
     encryption_filter_(this, &message);
     crc_output_filter_(this, &message);
-
+	
     server_->SendTo(remote_endpoint(), move(message));
+
+	
 }
 
 bool Session::SequenceIsValid_(const uint16_t& sequence)

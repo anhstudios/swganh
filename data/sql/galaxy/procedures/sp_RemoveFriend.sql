@@ -8,7 +8,7 @@
 # Dumping structure for procedure galaxy.sp_RemoveFriend
 DROP PROCEDURE IF EXISTS `sp_RemoveFriend`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_RemoveFriend`(IN `player_id_` BIGINT, IN `friend_id_` BIGINT)
+CREATE PROCEDURE `sp_RemoveFriend`(IN `player_id_` BIGINT, IN `friend_id_` BIGINT)
 BEGIN
 IF EXISTS(SELECT id from friend_list where player_id = player_id_ and friend_id = friend_id_) THEN
 	DELETE FROM friend_list WHERE player_id = player_id_ and friend_id = friend_id_;

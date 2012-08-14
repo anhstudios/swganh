@@ -5,22 +5,38 @@
 
 #include <algorithm>
 
+#include "anh/plugin/plugin_manager.h"
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller.h"
 #include "pub14_core/messages/scene_destroy_object.h"
+#include "pub14_core/simulation/quadtree_spatial_provider.h"
+#include "pub14_core/simulation/movement_manager.h"
+#include "pub14_core/messages/update_transform_message.h"
+#include "pub14_core/messages/update_transform_with_parent_message.h"
 
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh_core::simulation;
+using namespace swganh::messages::controllers;
 
 class Scene::SceneImpl
 {
 public:
-    SceneImpl(SceneDescription description)
+    SceneImpl(SceneDescription description, swganh::app::SwganhKernel* kernel)
         : description_(move(description))
-    {}
+		, kernel_(kernel)
+		
+    {
+		auto tmp = kernel_->GetPluginManager()->CreateObject<swganh_core::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");
+		tmp->SetThis(tmp);
+		spatial_index_ = tmp;
+
+		movement_manager_ = make_shared<MovementManager>(kernel);
+		movement_manager_->SetSpatialProvider(spatial_index_.get());
+	}
 
     const SceneDescription& GetDescription() const
     {
@@ -32,55 +48,23 @@ public:
         return objects_.find(object) != objects_.end();
     }
 
-    void AddObject(const shared_ptr<Object>& object)
+    void AddObject(shared_ptr<Object> object)
     {
 		InsertObject(object);
 
-        for_each(begin(object_map_), end(object_map_),
-            [&object] (const ObjectMap::value_type& object_entry) 
-        {
-            auto& stored_object = object_entry.second;
-
-            stored_object->AddAwareObject(object);
-            object->AddAwareObject(stored_object);
-        });
-
-        auto contained_objects = object->GetContainedObjects();
-        
-        for_each(begin(contained_objects), end(contained_objects),
-            [this] (const ObjectMap::value_type& object_entry) 
-        {
-            auto& stored_object = object_entry.second;
-            AddObject(stored_object);
-        });
-
+		spatial_index_->AddObject(nullptr, object);
     }
     
-    void RemoveObject(const shared_ptr<Object>& object)
+    void RemoveObject(shared_ptr<Object> object)
     {
         if (!HasObject(object))
         {
             return;
         }
 
-		EraseObject(object);
-                
-        SceneDestroyObject destroy_message;
-        destroy_message.object_id = object->GetObjectId();
+		EraseObject(object);             
 
-        for_each(begin(object_map_), end(object_map_),
-            [&object, &destroy_message] (const ObjectMap::value_type& object_entry) 
-        {
-            auto& stored_object = object_entry.second;
-            
-            stored_object->RemoveContainedObject(object);
-            stored_object->RemoveAwareObject(object);
-
-            if (stored_object->HasController())
-            {
-                stored_object->GetController()->Notify(destroy_message);
-            }
-        });
+		spatial_index_->RemoveObject(nullptr, object);
     }
 
 	void InsertObject(const shared_ptr<Object>& object)
@@ -101,6 +85,17 @@ public:
         object_map_.erase(object->GetObjectId());
 	}
 
+	void HandleDataTransform(const shared_ptr<ObjectController>& controller, DataTransform message)
+	{
+		movement_manager_->HandleDataTransform(controller, message);
+	}
+	void HandleDataTransformWithParent(const shared_ptr<ObjectController>& controller, DataTransformWithParent message)
+	{
+		movement_manager_->HandleDataTransformWithParent(controller, message);
+	}
+
+	shared_ptr<swganh::simulation::SpatialProviderInterface> GetSpatialIndex() { return spatial_index_; }
+	shared_ptr<swganh::simulation::MovementManagerInterface> GetMovementManager() { return movement_manager_; }
 
 private:
 
@@ -117,15 +112,20 @@ private:
 
     ObjectSet objects_;
     ObjectMap object_map_;
+	
+	swganh::app::SwganhKernel* kernel_;
+	shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_index_;
+	shared_ptr<swganh::simulation::MovementManagerInterface> movement_manager_;
 
     SceneDescription description_;
+
 };
 
-Scene::Scene(SceneDescription description)
-: impl_(new SceneImpl(move(description)))
+Scene::Scene(SceneDescription description, swganh::app::SwganhKernel* kernel)
+: impl_(new SceneImpl(move(description), move(kernel)))
 {}
 
-Scene::Scene(uint32_t scene_id, string name, string label, string description, string terrain) 
+Scene::Scene(uint32_t scene_id, string name, string label, string description, string terrain, swganh::app::SwganhKernel* kernel) 
 {
     SceneDescription scene_description;
 
@@ -135,7 +135,7 @@ Scene::Scene(uint32_t scene_id, string name, string label, string description, s
     scene_description.description = move(description);
     scene_description.terrain = move(terrain);
 
-    impl_.reset(new SceneImpl(move(scene_description)));
+    impl_.reset(new SceneImpl(move(scene_description), move(kernel)));
 }
 
 uint32_t Scene::GetSceneId() const
@@ -161,12 +161,21 @@ const std::string& Scene::GetTerrainMap() const
 {
 	return impl_->GetDescription().terrain;
 }
-void Scene::AddObject(const std::shared_ptr<swganh::object::Object>& object)
+void Scene::AddObject(std::shared_ptr<swganh::object::Object> object)
 {
     impl_->AddObject(object);
 }
 
-void Scene::RemoveObject(const std::shared_ptr<swganh::object::Object>& object)
+void Scene::RemoveObject(std::shared_ptr<swganh::object::Object> object)
 {
     impl_->RemoveObject(object);
+}
+
+void Scene::HandleDataTransform(const shared_ptr<ObjectController>& controller, DataTransform message)
+{
+	impl_->HandleDataTransform(controller, message);
+}
+void Scene::HandleDataTransformWithParent(const shared_ptr<ObjectController>& controller, DataTransformWithParent message)
+{
+	impl_->HandleDataTransformWithParent(controller, message);
 }

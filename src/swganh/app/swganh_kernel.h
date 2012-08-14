@@ -87,7 +87,7 @@ public:
     
     boost::asio::io_service& GetIoService();
 
-    anh::resource::ResourceManager* GetResourceManager();
+    anh::resource::ResourceManagerInterface* GetResourceManager();
 
 private:
     SwganhKernel();
@@ -99,7 +99,7 @@ private:
     std::unique_ptr<anh::plugin::PluginManager> plugin_manager_;
     std::unique_ptr<anh::service::ServiceManager> service_manager_;
     std::unique_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
-    std::unique_ptr<anh::resource::ResourceManager> resource_manager_;
+    std::unique_ptr<anh::resource::ResourceManagerInterface> resource_manager_;
 
     boost::asio::io_service& io_service_;
 };

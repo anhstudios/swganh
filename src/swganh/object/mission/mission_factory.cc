@@ -17,8 +17,12 @@ bool MissionFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void MissionFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t MissionFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	uint32_t counter = 1;
+
+	return counter;
+}
 
 void MissionFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

@@ -25,7 +25,7 @@ public:
         RegisterEventHandlers();
     }
     virtual void RegisterEventHandlers();
-    virtual void SendBaselines(const std::shared_ptr<Creature>& creature, const std::shared_ptr<ObjectController>& controller);
+    virtual void SendBaselines(const std::shared_ptr<Creature>& creature, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
 private:
     // deltas
     static void BuildBankCreditsDelta(const std::shared_ptr<Creature>& creature);

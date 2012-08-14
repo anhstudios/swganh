@@ -6,9 +6,10 @@
 #include <cstdint>
 
 #include "swganh/object/object.h"
-#include "swganh/messages/baselines_message.h"
-#include "swganh/messages/deltas_message.h"
-#include "swganh/messages/scene_end_baselines.h"
+#include "pub14_core/messages/baselines_message.h"
+#include "pub14_core/messages/deltas_message.h"
+#include "pub14_core/messages/scene_end_baselines.h"
+#include "pub14_core/messages/update_containment_message.h"
 
 using namespace anh;
 using namespace std;
@@ -39,11 +40,11 @@ void ObjectMessageBuilder::RegisterEventHandlers()
     });
 }
 
-void ObjectMessageBuilder::SendEndBaselines(const shared_ptr<Object>& object, const shared_ptr<ObjectController>& controller)
+void ObjectMessageBuilder::SendEndBaselines(const shared_ptr<Object>& object, const shared_ptr<anh::observer::ObserverInterface>& observer)
 {
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = object->GetObjectId();
-    controller->Notify(scene_end_baselines);
+	observer->Notify(scene_end_baselines);
 }
 
 void ObjectMessageBuilder::BuildComplexityDelta(const shared_ptr<Object>& object)

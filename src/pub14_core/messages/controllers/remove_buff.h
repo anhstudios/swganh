@@ -9,7 +9,7 @@
 #include "anh/byte_buffer.h"
 #include "anh/hash_string.h"
 
-#include "swganh/messages/obj_controller_message.h"
+#include "pub14_core/messages/obj_controller_message.h"
 
 namespace swganh {
 namespace messages {
