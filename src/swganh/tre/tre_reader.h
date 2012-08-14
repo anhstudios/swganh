@@ -15,10 +15,12 @@
 
 #include "tre_data.h"
 
+namespace anh {
+	class ByteBuffer;
+}
+
 namespace swganh {
 namespace tre {
-
-    typedef std::vector<char> TreResourceData;
 
     /**
      * TreReader is a utility class used for reading data from a single 
@@ -81,9 +83,9 @@ namespace tre {
          * \param resource_name The name of the resource.
          * \return The file in binary format (move constructable).
          */
-        TreResourceData GetResource(const std::string& resource_name);
+        anh::ByteBuffer GetResource(const std::string& resource_name);
 
-        void GetResource(const std::string& resource_name, std::vector<char>& buffer);
+        void GetResource(const std::string& resource_name, anh::ByteBuffer& buffer);
 
         /**
          * Returns the md5 hash of the requested resource.

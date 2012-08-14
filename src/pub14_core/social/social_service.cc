@@ -18,7 +18,7 @@
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_manager.h"
 
-#include "swganh/messages/out_of_band.h"
+#include "pub14_core/messages/out_of_band.h"
 
 using namespace anh::database;
 using namespace anh::plugin;

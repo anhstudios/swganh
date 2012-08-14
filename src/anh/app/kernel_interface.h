@@ -26,7 +26,7 @@ namespace plugin {
 
 namespace anh {
 namespace resource {
-    class ResourceManager;
+    class ResourceManagerInterface;
 }}
 
 namespace anh {
@@ -65,7 +65,7 @@ public:
     
     virtual boost::asio::io_service& GetIoService() = 0;
 
-    virtual anh::resource::ResourceManager* GetResourceManager() = 0;
+    virtual anh::resource::ResourceManagerInterface* GetResourceManager() = 0;
 
     // also add entity manager, blah blah.
 };

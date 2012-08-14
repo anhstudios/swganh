@@ -8,7 +8,7 @@
 # Dumping structure for procedure galaxy.sp_GetIgnoredList
 DROP PROCEDURE IF EXISTS `sp_GetIgnoredList`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetIgnoredList`(IN `object_id` BIGINT)
+CREATE PROCEDURE `sp_GetIgnoredList`(IN `object_id` BIGINT)
 BEGIN
     select o.custom_name, o.id from ignore_list i, object o where i.player_id = object_id and i.ignored_player_id = o.id;
 END//

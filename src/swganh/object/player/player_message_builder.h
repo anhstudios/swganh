@@ -25,7 +25,7 @@ namespace player {
         {
             RegisterEventHandlers();
         }
-        virtual void SendBaselines(const std::shared_ptr<Player>& player, const std::shared_ptr<ObjectController>& controller);
+        virtual void SendBaselines(const std::shared_ptr<Player>& player, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
         virtual void RegisterEventHandlers();
         // deltas
         static void BuildStatusBitmaskDelta(const std::shared_ptr<Player>& object);

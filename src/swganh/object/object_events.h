@@ -18,4 +18,14 @@ struct ControllerEvent : anh::BaseEvent
     std::shared_ptr<swganh::object::ObjectController> controller;
 };
 
+struct ObserverEvent : anh::BaseEvent
+{
+	ObserverEvent(anh::EventType type, std::shared_ptr<swganh::object::Object> object_, std::shared_ptr<anh::observer::ObserverInterface> observer_)
+        : BaseEvent(type)
+        , object(object_)
+        , observer(observer_)
+    {}
+    std::shared_ptr<swganh::object::Object> object;
+    std::shared_ptr<anh::observer::ObserverInterface> observer;
+};
 }} // swganh::object

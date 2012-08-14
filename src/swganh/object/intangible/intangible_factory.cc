@@ -64,8 +64,9 @@ bool IntangibleFactory::HasTemplate(const string& template_name)
     return GetTemplateIter_(template_name) != end(intangible_templates_);
 }
 
-void IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
+uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
 {
+	uint32_t counter = 1;
     if (object->IsDirty() && object->GetType() == Intangible::type)
     {
         try 
@@ -74,9 +75,9 @@ void IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
             auto statement = conn->prepareStatement("CALL sp_PersistIntangible(?,?);");
             
             auto intangible = make_shared<Intangible>();
-            statement->setString(1, intangible->GetStfDetailFile());
-            statement->setString(2, intangible->GetStfDetailString());
-            statement->execute();
+            statement->setString(counter++, intangible->GetStfDetailFile());
+            statement->setString(counter++, intangible->GetStfDetailString());
+            statement->execute();			
         }
             catch(sql::SQLException &e)
         {
@@ -84,6 +85,7 @@ void IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
             LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
         }
     }
+	return counter;
 }
 
 void IntangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
