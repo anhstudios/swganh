@@ -10,27 +10,30 @@ namespace object
 {
 	class Object;
 }
-
 namespace sui
 {
+	class SUIWindowInterface;
 
-class UIElement;
+	class SUIServiceInterface : public anh::service::ServiceInterface
+	{
+	public:
 
-class SuiServiceInterface : public anh::service::ServiceInterface
-{
-public:
-	
-	virtual std::shared_ptr<UIElement> FindPageByName(const std::string& name) = 0;
+		virtual std::shared_ptr<SUIWindowInterface> GetNewSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
+							std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0) = 0;
 
-	//Creates a new SUI page and returns the id of the corresponding window id
-	virtual int32_t CreatePage(std::shared_ptr<UIElement> page_info, 
-								std::shared_ptr<swganh::object::Object> owner, 
-								std::shared_ptr<swganh::object::Object> ranged_object = nullptr, 
-								float max_distance = 0) = 0;
-	
-	//Forcefully closes a previously opened page.
-	virtual void ForceClose(int32_t windowId) = 0;
-};
+		//Creates a new SUI page and returns the id of the corresponding window id
+		virtual int32_t CreateSUIWindow(std::shared_ptr<SUIWindowInterface> window) = 0;
+
+		//UpdateWindow
+		virtual int32_t UpdateSUIWindow(std::shared_ptr<SUIWindowInterface> window) = 0;
+
+		//Get Window
+		virtual std::shared_ptr<SUIWindowInterface> GetSUIWindowById(std::shared_ptr<swganh::object::Object> owner, int32_t windowId) = 0;
+
+		//Forcefully closes a previously opened window.
+		virtual void CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, int32_t windowId) = 0;
+
+	};
 
 }
 }
