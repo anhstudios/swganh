@@ -720,3 +720,39 @@ ObjectArrangements Object::GetSlotArrangements()
 	boost::lock_guard<boost::mutex> lg(object_mutex_);
 	return slot_arrangements_;
 }
+bool Object::ClearSlot(int32_t slot_id)
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	bool cleared = false;
+	auto slot_iter = slot_descriptor_.find(slot_id);
+	if (slot_iter != slot_descriptor_.end())
+	{
+		auto slot = slot_iter->second;
+		if (!slot->is_filled())
+		{
+			slot->view_objects([&](shared_ptr<Object> object){
+				slot->remove_object(object);
+				cleared = true;
+			});
+			
+		}
+	}
+	return cleared;
+}
+shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	shared_ptr<Object> found = nullptr;
+	auto slot_iter = slot_descriptor_.find(slot_id);
+	if (slot_iter != slot_descriptor_.end())
+	{
+		auto slot = slot_iter->second;
+		if (!slot->is_filled())
+		{			
+			slot->view_objects([&](shared_ptr<Object> object){
+				found = object;
+			});
+		}
+	}
+	return found;
+}
