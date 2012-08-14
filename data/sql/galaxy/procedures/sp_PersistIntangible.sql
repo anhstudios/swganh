@@ -7,7 +7,7 @@
 # Dumping structure for procedure galaxy.sp_PersistIntangible
 DROP PROCEDURE IF EXISTS `sp_PersistIntangible`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_PersistIntangible`(IN `file` VARCHAR(50), IN `string` VARCHAR(50))
+CREATE PROCEDURE `sp_PersistIntangible`(IN `file` VARCHAR(50), IN `string` VARCHAR(50))
 BEGIN
 UPDATE intangible i set i.stf_detail_file = file, i.stf_detail_string = string;
 END//
