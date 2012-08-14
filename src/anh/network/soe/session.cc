@@ -381,11 +381,15 @@ void Session::SendSoePacket_(anh::ByteBuffer message)
 
 void Session::SendSoePacketInternal(anh::ByteBuffer message)
 {
+	//LOG_NET << "Server -> Client: " << message;
+
     compression_filter_(this, &message);
     encryption_filter_(this, &message);
     crc_output_filter_(this, &message);
-
+	
     server_->SendTo(remote_endpoint(), move(message));
+
+	
 }
 
 bool Session::SequenceIsValid_(const uint16_t& sequence)
@@ -396,12 +400,14 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
     }
     else
     {
-        // Tell the client we have received an Out of Order sequence.
-        OutOfOrderA	out_of_order(sequence);
-        ByteBuffer buffer;
-        out_of_order.serialize(buffer);
-        SendSoePacket_(move(buffer));
-
+    	if (next_client_sequence_ < sequence)
+    	{
+	    // Tell the client we have received an Out of Order sequence.
+	    OutOfOrderA	out_of_order(sequence);
+	    ByteBuffer buffer;
+	    out_of_order.serialize(buffer);
+	    SendSoePacket_(move(buffer));
+	}
         return false;
     }
 }

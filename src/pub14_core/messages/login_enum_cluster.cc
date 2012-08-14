@@ -3,14 +3,14 @@
 
 #include "login_enum_cluster.h"
 
-#include "swganh/login/login_client.h"
+#include "swganh/login/login_client_interface.h"
 
 using namespace swganh::login;
 using namespace swganh::messages;
 using namespace std;
 
 LoginEnumCluster swganh::messages::BuildLoginEnumCluster(
-    shared_ptr<LoginClient> login_client, 
+    shared_ptr<LoginClientInterface> login_client, 
     const vector<GalaxyStatus>& galaxy_status) 
 {
 	LoginEnumCluster message;

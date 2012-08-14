@@ -11,10 +11,10 @@
 
 #include "swganh/object/tangible/tangible.h"
 
-#include "swganh/messages/containers/network_array.h"
-#include "swganh/messages/containers/network_sorted_list.h"
-#include "swganh/messages/containers/network_list.h"
-#include "swganh/messages/containers/network_map.h"
+#include "pub14_core/messages/containers/network_array.h"
+#include "pub14_core/messages/containers/network_sorted_list.h"
+#include "pub14_core/messages/containers/network_list.h"
+#include "pub14_core/messages/containers/network_map.h"
 
 namespace swganh {
 namespace object {
@@ -596,7 +596,8 @@ public:
     std::vector<uint64_t> GetDuelList();
 
     // Baselines
-    virtual void CreateBaselines(std::shared_ptr<ObjectController> controller);
+    virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
+
 
     // Helpers
     std::shared_ptr<swganh::object::player::Player> GetPlayer();

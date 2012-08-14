@@ -35,7 +35,7 @@ namespace Concurrency {
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/command/command_properties.h"
-#include "swganh/messages/controllers/command_queue_enqueue.h"
+#include "pub14_core/messages/controllers/command_queue_enqueue.h"
 
 
 namespace swganh_core {

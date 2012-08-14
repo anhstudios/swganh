@@ -17,8 +17,12 @@ bool GroupFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void GroupFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t GroupFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	uint32_t counter = 1;
+
+	return counter;
+}
 
 void GroupFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

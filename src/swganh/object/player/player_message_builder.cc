@@ -7,9 +7,9 @@
 
 #include "anh/logger.h"
 #include "anh/crc.h"
-#include "swganh/messages/deltas_message.h"
-#include "swganh/messages/baselines_message.h"
-#include "swganh/messages/scene_end_baselines.h"
+#include "pub14_core/messages/deltas_message.h"
+#include "pub14_core/messages/baselines_message.h"
+#include "pub14_core/messages/scene_end_baselines.h"
 #include "swganh/object/player/player_events.h"
 #include "swganh/object/object_events.h"
 #include "swganh/object/waypoint/waypoint.h"
@@ -25,8 +25,8 @@ void PlayerMessageBuilder::RegisterEventHandlers()
 {
     event_dispatcher->Subscribe("Player::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
     {
-        auto controller_event = static_pointer_cast<ControllerEvent>(incoming_event);
-        SendBaselines(static_pointer_cast<Player>(controller_event->object), controller_event->controller);
+        auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Player>(controller_event->object), controller_event->observer);
     });
     event_dispatcher->Subscribe("Player::StatusBitmask", [this] (shared_ptr<EventInterface> incoming_event)
     {
@@ -175,7 +175,7 @@ void PlayerMessageBuilder::RegisterEventHandlers()
     });
 }
 
-void PlayerMessageBuilder::SendBaselines(const shared_ptr<Player>& player, const shared_ptr<ObjectController>& controller)
+void PlayerMessageBuilder::SendBaselines(const shared_ptr<Player>& player, const shared_ptr<anh::observer::ObserverInterface>& observer)
 {
     player->AddBaselineToCache(BuildBaseline3(player));
     player->AddBaselineToCache(BuildBaseline6(player));
@@ -185,10 +185,10 @@ void PlayerMessageBuilder::SendBaselines(const shared_ptr<Player>& player, const
    
     for (auto& baseline : player->GetBaselines())
     {
-        controller->Notify(baseline);
+        observer->Notify(baseline);
     }
         
-    SendEndBaselines(player, controller);
+    SendEndBaselines(player, observer);
 }
 void PlayerMessageBuilder::BuildStatusBitmaskDelta(const shared_ptr<Player>& object)
 {

@@ -4,7 +4,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_CreateSWGANHBots`(IN bots int, IN firstId int, IN start_city char(32))
+CREATE PROCEDURE `sp_CreateSWGANHBots`(IN bots int, IN firstId int, IN start_city char(32))
 BEGIN
 	DECLARE new_account_id BIGINT(20);
 	DECLARE new_username CHAR(16);

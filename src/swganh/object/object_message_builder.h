@@ -8,6 +8,7 @@
 #include <boost/optional.hpp>
 
 #include "anh/event_dispatcher.h"
+#include "anh/observer/observer_interface.h"
 
 namespace swganh {
 namespace messages {
@@ -29,7 +30,7 @@ namespace object {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendEndBaselines(const std::shared_ptr<Object>& object, const std::shared_ptr<ObjectController>& controller);
+        virtual void SendEndBaselines(const std::shared_ptr<Object>& object, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
         static void BuildComplexityDelta(const std::shared_ptr<Object>& object);
         static void BuildStfNameDelta(const std::shared_ptr<Object>& object);
         static void BuildCustomNameDelta(const std::shared_ptr<Object>& object);
