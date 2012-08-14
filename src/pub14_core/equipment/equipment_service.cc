@@ -1,6 +1,7 @@
 #include "equipment_service.h"
 
 #include <memory>
+#include "anh/logger.h"
 #include <swganh/tre/visitors/slots/slot_definition_visitor.h>
 #include <swganh/object/object.h>
 
@@ -40,11 +41,16 @@ std::string EquipmentService::GetSlotNameById(int32_t slot_id)
 
 void EquipmentService::ClearSlot(std::shared_ptr<Object> object, std::string slot_name)
 {
-	//object->ClearSlot(slot_definitions_->findSlotByName(slot_name));
-	
+	if (!object->ClearSlot(slot_definitions_->findSlotByName(slot_name)))
+		LOG(warning) << "Could not find slot with name " << slot_name << " in object " << object->GetObjectId();
 }
 		
 std::shared_ptr<Object> EquipmentService::GetEquippedObject(std::shared_ptr<Object> object, std::string slot_name)
 {
-	return nullptr; //object->GetEquippedObject(slot_definitions_->findSlotByName(slot_name));
+	size_t slot_id = slot_definitions_->findSlotByName(slot_name);
+	if (slot_id != -1)
+		return object->GetSlotObject(slot_id);
+	else
+		LOG(warning) << "Slot " << slot_name << " does not exist for object:" << object->GetObjectId();
+	return nullptr;
 }
