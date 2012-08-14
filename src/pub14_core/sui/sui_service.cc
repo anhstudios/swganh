@@ -75,14 +75,14 @@ ServiceDescription SUIService::GetServiceDescription()
 	return service_description;
 }
 
-std::shared_ptr<SUIWindowInterface> SUIService::GetNewSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
+std::shared_ptr<SUIWindowInterface> SUIService::CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
 							std::shared_ptr<swganh::object::Object> ranged_object, float max_distance)
 {
 	return std::shared_ptr<SUIWindowInterface>(new SUIWindow(script_name, owner, ranged_object, max_distance));
 }
 
 //Creates a new SUI page and returns the id of the corresponding window id
-int32_t SUIService::CreateSUIWindow(std::shared_ptr<SUIWindowInterface> window)
+int32_t SUIService::OpenSUIWindow(std::shared_ptr<SUIWindowInterface> window)
 {
 	int32_t window_id = -1;
 	auto owner = window->GetOwner()->GetController();
@@ -96,6 +96,16 @@ int32_t SUIService::CreateSUIWindow(std::shared_ptr<SUIWindowInterface> window)
 		create_page.window_id = window_id;
 		create_page.script_name = window->GetScriptName();
 		create_page.components = std::move(window->GetComponents());
+		if(window->GetRangedObject())
+		{
+			create_page.ranged_object = window->GetRangedObject()->GetObjectId();
+			create_page.range = window->GetMaxDistance();
+		}
+		else
+		{
+			create_page.ranged_object = 0;
+			create_page.range = 0.0f;
+		}
 		owner->Notify(create_page);
 	}
 	return window_id;
@@ -115,6 +125,16 @@ int32_t SUIService::UpdateSUIWindow(std::shared_ptr<SUIWindowInterface> window)
 		update_page.window_id = window_id;
 		update_page.script_name = window->GetScriptName();
 		update_page.components = std::move(window->GetComponents());
+		if(window->GetRangedObject())
+		{
+			update_page.ranged_object = window->GetRangedObject()->GetObjectId();
+			update_page.range = window->GetMaxDistance();
+		}
+		else
+		{
+			update_page.ranged_object = 0;
+			update_page.range = 0.0f;
+		}
 		owner->Notify(update_page);
 	}
 	return window_id;

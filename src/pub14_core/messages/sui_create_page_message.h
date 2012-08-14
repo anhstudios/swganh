@@ -22,6 +22,8 @@ namespace messages {
 		int32_t window_id;
 		std::string script_name;
 		std::vector<swganh::sui::SUIWindowInterface::SUI_WINDOW_COMPONENT> components;
+		uint64_t ranged_object;
+		float range;
 
     	void OnSerialize(anh::ByteBuffer& buffer) const
     	{
@@ -32,18 +34,23 @@ namespace messages {
 			for(auto& component : components)
 			{
 				buffer.write(component.type);
-				buffer.write(component.narrow_params.size());
-				for(auto& narrow : component.narrow_params)
-				{
-					buffer.write(narrow);
-				}
 
 				buffer.write(component.wide_params.size());
 				for(auto& wide : component.wide_params)
 				{
 					buffer.write(wide);
 				}
+
+				buffer.write(component.narrow_params.size());
+				for(auto& narrow : component.narrow_params)
+				{
+					buffer.write(narrow);
+				}
 			}
+
+			buffer.write(ranged_object);
+			buffer.write(range);
+			buffer.write<uint64_t>(0); //Unknown
     	}
 
     	void OnDeserialize(anh::ByteBuffer buffer)
@@ -70,6 +77,10 @@ namespace messages {
 
 				components.push_back(component);
 			}
+
+			ranged_object = buffer.read<uint64_t>();
+			range = buffer.read<float>();
+			buffer.read<uint64_t>();//Unknown Long
     	}
     };
 

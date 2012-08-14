@@ -1,7 +1,7 @@
 #include <anh/logger.h>
 
 #include "sui_window.h"
-#include <string.h>
+#include <boost/algorithm/string.hpp>
 
 using namespace swganh::object;
 using namespace swganh::sui;
@@ -33,11 +33,12 @@ std::shared_ptr<SUIWindowInterface> SUIWindow::SetProperty(std::string location_
 	component.type = 3;
 
 	//Add in narrows
-	char *dup = _strdup(location_string.c_str());
-	component.narrow_params.push_back(strtok(dup, ":"));
-	component.narrow_params.push_back(strtok(nullptr, ":"));
-	strtok(nullptr, ":");
-	free(dup);
+	std::vector<std::string> splits;
+	boost::split(splits, location_string, boost::is_any_of(":"));
+	for(auto& s : splits)
+	{
+		component.narrow_params.push_back(s);
+	}
 
 	//Add in wides
 	component.wide_params.push_back(value);
@@ -53,11 +54,12 @@ std::shared_ptr<SUIWindowInterface> SUIWindow::AddProperty(std::string location_
 	component.type = 4;
 
 	//Add in narrows
-	char *dup = _strdup(location_string.c_str());
-	component.narrow_params.push_back(strtok(dup, ":"));
-	component.narrow_params.push_back(strtok(nullptr, ":"));
-	strtok(nullptr, ":");
-	free(dup);
+	std::vector<std::string> splits;
+	boost::split(splits, location_string, boost::is_any_of(":"));
+	for(auto& s : splits)
+	{
+		component.narrow_params.push_back(s);
+	}
 
 	//Add in wides
 	component.wide_params.push_back(value);
@@ -79,16 +81,21 @@ std::shared_ptr<SUIWindowInterface> SUIWindow::SubscribeToEventCallback(
 
 	//Add narrows
 	component.narrow_params.push_back(event_source);
-	component.narrow_params.push_back(std::string((char*)trigger, 1));
-	component.narrow_params.push_back("STRING_NOT_USED");
+
+	std::string trigger_string;
+	trigger_string.push_back(trigger);
+
+	component.narrow_params.push_back(trigger_string);
+	component.narrow_params.push_back("handleSUI");
 
 	for(auto& returned : returned_properties)
 	{
-		char *dup = _strdup(returned.c_str());
-		component.narrow_params.push_back(strtok(dup, ":"));
-		component.narrow_params.push_back(strtok(nullptr, ":"));
-		strtok(nullptr, ":");
-		free(dup);
+		std::vector<std::string> splits;
+		boost::split(splits, returned, boost::is_any_of(":"));
+		for(auto& s : splits)
+		{
+			component.narrow_params.push_back(s);
+		}
 	}
 
 	//No wides to add
@@ -106,11 +113,12 @@ std::shared_ptr<SUIWindowInterface> SUIWindow::AddDataSourceContainer(std::strin
 	SUI_WINDOW_COMPONENT component;
 	component.type = 6;
 
-	char *dup = _strdup(location_string.c_str());
-	component.narrow_params.push_back(strtok(dup, ":"));
-	component.narrow_params.push_back(strtok(nullptr, ":"));
-	strtok(nullptr, ":");
-	free(dup);
+	std::vector<std::string> splits;
+	boost::split(splits, location_string, boost::is_any_of(":"));
+	for(auto& s : splits)
+	{
+		component.narrow_params.push_back(s);
+	}
 
 	component.wide_params.push_back(value);
 

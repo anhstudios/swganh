@@ -50,11 +50,11 @@ namespace sui
 
 		anh::service::ServiceDescription GetServiceDescription();
 
-		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> GetNewSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
+		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
 							std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
 
 		//Creates a new SUI page and returns the id of the corresponding window id
-		virtual int32_t CreateSUIWindow(std::shared_ptr<swganh::sui::SUIWindowInterface> window);
+		virtual int32_t OpenSUIWindow(std::shared_ptr<swganh::sui::SUIWindowInterface> window);
 
 		//UpdateWindow
 		virtual int32_t UpdateSUIWindow(std::shared_ptr<swganh::sui::SUIWindowInterface> window);
