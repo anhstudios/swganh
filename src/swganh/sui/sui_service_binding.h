@@ -25,7 +25,48 @@ using namespace swganh::sui;
 using namespace boost::python;
 using namespace std;
 
-//Fix GetNewSUIWindow
+//Converter Functions
+template <typename T>
+std::vector<T> vectorConvert(boost::python::list& list)
+{
+	std::vector<T> result_vector;
+	for(int i=0; i < len(list); ++i)
+	{
+		result_vector.push_back(extract<T>(list[i]));
+	}
+	return result_vector;
+}
+
+WindowCallbackFunction callbackConvert(boost::python::object& funct)
+{
+	return [&funct] (std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
+	{
+		swganh::scripting::ScopedGilLock lock;
+		return funct(object, event_type, result_list);
+	};
+}
+
+//Subscription wrapper
+std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInterface> self, uint32_t event_id, std::string event_source, InputTrigger input_trigger, 
+													boost::python::list result_list, boost::python::object funct)
+{
+	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, vectorConvert<std::string>(result_list), callbackConvert(funct));
+}
+
+//CreateListBox Wrapper
+std::shared_ptr<SUIWindowInterface> CreateListBoxWrapper(std::shared_ptr<SUIServiceInterface> self, int lstBox_type, 
+			std::string title, std::string prompt, boost::python::list dataList, std::shared_ptr<swganh::object::Object> owner, 
+			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0)
+{
+	return self->CreateListBox((ListBoxType)lstBox_type, std::wstring(title.begin(), title.end()), std::wstring(prompt.begin(), prompt.end()), vectorConvert<std::wstring>(dataList), owner, ranged_object, max_distance);
+}
+BOOST_PYTHON_FUNCTION_OVERLOADS(ListBoxOverloads, CreateListBoxWrapper, 6, 8);
+
+//CreateInputBox Wrapper
+
+//CreateInputBoxWithDropDown Wrapper
+
+//Custom Create Overload
 boost::python::tuple CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
 							std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0)
 {
@@ -33,30 +74,17 @@ boost::python::tuple CreateSUIWindow(std::string script_name, std::shared_ptr<sw
 }
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateOverload, CreateSUIWindow, 2, 4);
 
-std::vector<std::string> vectorConvert(boost::python::list& list)
+//Message Box Create Overload
+boost::python::tuple CreateMessageBox(MessageBoxType msgBox_type, std::wstring title, std::wstring caption,
+			std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> ranged_object = nullptr, 
+			float max_distance = 0)
 {
-	std::vector<std::string> result_vector;
-	for(int i=0; i < len(list); ++i)
-	{
-		result_vector.push_back(extract<std::string>(list[i]));
-	}
-	return result_vector;
+	return boost::python::make_tuple(msgBox_type, title, caption, owner, ranged_object, max_distance);
 }
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateMessageOverload, CreateMessageBox, 4, 6);
 
-WindowCallbackFunction callbackConvert(boost::python::object& funct)
-{
-	return [&funct] (std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list)
-	{
-		swganh::scripting::ScopedGilLock lock;
-		funct(object, event_type, result_list);
-	};
-}
 
-std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInterface> self, uint32_t event_id, std::string event_source, InputTrigger input_trigger, 
-													boost::python::list result_list, boost::python::object funct)
-{
-	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, vectorConvert(result_list), callbackConvert(funct));
-}
+
 
 void exportSuiService()
 {
@@ -64,6 +92,19 @@ void exportSuiService()
 		.value("update", InputTrigger::TRIGGER_UPDATE)
 		.value("ok", InputTrigger::TRIGGER_OK)
 		.value("cancel", InputTrigger::TRIGGER_CANCEL);
+
+	enum_<MessageBoxType>("MessageBoxType")
+		.value("ok", MessageBoxType::MESSAGE_BOX_OK)
+		.value("okcancel", MessageBoxType::MESSAGE_BOX_OK_CANCEL)
+		.value("yesno", MessageBoxType::MESSAGE_BOX_YES_NO);
+
+	enum_<InputBoxType>("InputBoxType")
+		.value("ok", InputBoxType::INPUT_BOX_OK)
+		.value("okcancel", InputBoxType::INPUT_BOX_OKCANCEL);
+
+	enum_<ListBoxType>("ListBoxType")
+		.value("ok", ListBoxType::LIST_BOX_OK)
+		.value("okcancel", ListBoxType::LIST_BOX_OKCANCEL);
 
 	class_<SUIWindowInterface, std::shared_ptr<SUIWindowInterface>, boost::noncopyable>("SUIWindow", "A SUI window class.", 
 		no_init)
@@ -82,6 +123,11 @@ void exportSuiService()
 
 	class_<SUIServiceInterface, std::shared_ptr<SUIServiceInterface>, boost::noncopyable>("SUIService", "The SUI service can be used to display custom interfaces on connected clients. It is used for several core game systems.", no_init)
 		.def("CreateSUIWindow", &SUIServiceInterface::CreateSUIWindow, CreateOverload(args("script_name", "owner", "ranged_object", "max_distance"), "Creates a new SUIWindow."))
+		.def("CreateMessageBox", &SUIServiceInterface::CreateMessageBox, CreateMessageOverload(args("msgBox_type", "title", "caption", "owner", "ranged_object", "max_distance"),"Creates a SUIWindow and fills in properties for a basic message box."))
+		.def("CreateListBox", CreateListBoxWrapper, ListBoxOverloads(args("self", "lstBox_type", "title", "prompt", "dataList", "owner", "ranged_object", "range"),"Creates a SUIWindow and fills in properties for a basic list box."))
+		.def("CreateInputBox", &SUIServiceInterface::CreateInputBox, "Creates a SUIWindow and fills in properties for a basic input box.")
+		.def("CreateInputBoxWithDropDown", &SUIServiceInterface::CreateInputBoxWithDropDown, "Creates a SUIWindow and fills in properties for a basic input box with a dropdown as well.")
+		
 		.def("OpenSUIWindow", &SUIServiceInterface::OpenSUIWindow, "Creates the given window for the window's current owner.")
 		.def("UpdateSUIWindow", &SUIServiceInterface::UpdateSUIWindow, "Updates the given window for the window's current owner.")
 		.def("GetSUIWindowById", &SUIServiceInterface::GetSUIWindowById, "Gets the SUI window associated with the given id from the given owner.")

@@ -65,6 +65,23 @@ namespace sui
 		//Forcefully closes a previously opened window.
 		virtual void CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, int32_t windowId);
 
+		/// PREBUILT SUI WINDOWS ///
+		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateMessageBox(swganh::sui::MessageBoxType msgBox_type, std::wstring title, std::wstring caption,
+			std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> ranged_object = nullptr, 
+			float max_distance = 0);
+
+		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateListBox(swganh::sui::ListBoxType lstBox_type, std::wstring title, std::wstring prompt, 
+			std::vector<std::wstring> dataList, std::shared_ptr<swganh::object::Object> owner, 
+			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
+			
+		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateInputBox(swganh::sui::InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
+			uint32_t input_max_length, std::shared_ptr<swganh::object::Object> owner, 
+			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
+
+		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateInputBoxWithDropDown(swganh::sui::InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
+			uint32_t input_max_length, std::vector<std::wstring> drop_items, std::shared_ptr<swganh::object::Object> owner, 
+			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
+
 	private:
 
 		void _handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification message);

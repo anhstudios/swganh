@@ -138,5 +138,6 @@ WindowCallbackFunction SUIWindow::GetFunctionById(uint32_t event_id)
 	return [] (std::shared_ptr<swganh::object::Object>,uint32_t, std::vector<std::wstring>)
 	{
 		LOG(error) << "Client attempted to fetch an unknown callback";
+		return true;
 	};
 }

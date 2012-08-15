@@ -13,6 +13,8 @@
 #include "swganh/sui/sui_window_interface.h"
 #include "swganh/object/object.h"
 
+#include "swganh/object/player/player.h"
+
 #include "sui_window.h"
 
 #include "swganh/app/swganh_kernel.h"
@@ -25,6 +27,8 @@ using namespace swganh::app;
 
 using namespace swganh_core::sui;
 using namespace swganh::sui;
+using namespace swganh::object;
+using namespace swganh::object::player;
 using namespace swganh::connection;
 using namespace swganh::messages;
 
@@ -40,7 +44,10 @@ SUIService::SUIService(swganh::app::SwganhKernel* kernel)
 		"Connection::PlayerRemoved",
 		[this] (std::shared_ptr<anh::EventInterface> incoming_event)
 	{
-		
+		//Clear all of this player's SUIs
+		const auto& player = std::static_pointer_cast<anh::ValueEvent<std::shared_ptr<Player>>>(incoming_event)->Get();
+		WindowMapRange range = window_lookup_.equal_range(player->GetObjectId());
+		window_lookup_.erase(range.first, range.second);
 	});
 
 }
@@ -54,7 +61,10 @@ void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connect
 	{
 		if(itr->second->GetWindowId() == message.window_id)
 		{
-			itr->second->GetFunctionById(message.event_type)(itr->second->GetOwner(), message.event_type, message.returnList);
+			if(itr->second->GetFunctionById(message.event_type)(itr->second->GetOwner(), message.event_type, message.returnList))
+			{
+				window_lookup_.erase(itr);
+			}
 			break;
 		}
 	};
@@ -183,4 +193,117 @@ void SUIService::CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, i
 			controller->Notify(force_close);
 		}
 	}
+}
+
+std::shared_ptr<SUIWindowInterface> SUIService::CreateMessageBox(MessageBoxType msgBox_type, std::wstring title, std::wstring caption,
+			std::shared_ptr<Object> owner, std::shared_ptr<Object> ranged_object, float max_distance)
+{
+	std::shared_ptr<SUIWindowInterface> result = CreateSUIWindow("Script.messageBox", owner, ranged_object, max_distance);
+	
+	//Write out the basic properties
+	result->SetProperty("bg.caption.lblTitle:Text", title)->SetProperty("Prompt.lblPrompt:Text", caption);
+	
+	//Write out the buttons
+	result->SetProperty("btnRevert:visible", L"False");
+	switch(msgBox_type)
+	{
+	case MESSAGE_BOX_OK:
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
+		result->SetProperty("btnCancel:visible", L"False");
+		break;
+	case MESSAGE_BOX_OK_CANCEL:
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
+		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"btnCancel");
+		break;
+	case MESSAGE_BOX_YES_NO:
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"@yes");
+		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"@no");
+		break;
+	}
+	return result;
+}
+
+std::shared_ptr<SUIWindowInterface> SUIService::CreateListBox(ListBoxType lstBox_type, std::wstring title, std::wstring prompt, 
+	std::vector<std::wstring> dataList, std::shared_ptr<Object> owner, std::shared_ptr<Object> ranged_object, float max_distance)
+{
+	std::shared_ptr<SUIWindowInterface> result = CreateSUIWindow("Script.listBox", owner, ranged_object, max_distance);
+	
+	//Write out the basic properties
+	result->SetProperty("bg.caption.lblTitle:Text", title)->SetProperty("Prompt.lblPrompt:Text", prompt);
+
+	//Write out the buttons
+	switch(lstBox_type) 
+	{
+	case LIST_BOX_OKCANCEL:
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
+		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"btnCancel");
+		break;
+	case LIST_BOX_OK:
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
+		result->SetProperty("btnCancel:visible", L"False");
+		break;
+	}
+
+	//Clear out the list
+	result->ClearDataSource("List.dataList");
+
+	//Write out the list
+	size_t index = 0;
+	std::wstringstream wss;
+	std::stringstream ss;
+	for(auto& string : dataList)
+	{
+		wss << index;
+		ss << "List.dataList." << index << ":Text";
+
+		//Now for each entry, we add it to the list with the id as the name
+		result->AddProperty("List.dataList:Name", wss.str());
+
+		//And Then set it's text property to the given string
+		result->SetProperty(ss.str(), string);
+
+		//Increment and clear the streams
+		++index;
+		wss.str(L"");
+		ss.str("");
+	}
+
+	return result;
+}
+			
+std::shared_ptr<SUIWindowInterface> SUIService::CreateInputBox(InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
+	uint32_t input_max_length, std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<Object> ranged_object, float max_distance)
+{
+	std::shared_ptr<SUIWindowInterface> result = CreateSUIWindow("Script.inputBox", owner, ranged_object, max_distance);
+	result->SetProperty("bg.caption.lblTitle:Text", title)->SetProperty("Prompt.lblPrompt:Text", prompt);
+
+	switch(iptBox_type)
+	{
+	case INPUT_BOX_OK:
+		break;
+	case INPUT_BOX_OKCANCEL:	
+		break;
+	}
+
+	result->SetProperty("cmbInput:visible", L"False");
+	return result;
+}
+
+std::shared_ptr<SUIWindowInterface> SUIService::CreateInputBoxWithDropDown(InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
+	uint32_t input_max_length, std::vector<std::wstring> drop_items, std::shared_ptr<Object> owner, 
+	std::shared_ptr<Object> ranged_object, float max_distance)
+{
+	std::shared_ptr<SUIWindowInterface> result = CreateSUIWindow("Script.inputBox", owner, ranged_object, max_distance);
+	result->SetProperty("bg.caption.lblTitle:Text", title)->SetProperty("Prompt.lblPrompt:Text", prompt);
+
+	switch(iptBox_type)
+	{
+	case INPUT_BOX_OK:
+		break;
+	case INPUT_BOX_OKCANCEL:	
+		break;
+	}
+
+	result->SetProperty("cmbInput:visible", L"True");
+	return result;
 }
