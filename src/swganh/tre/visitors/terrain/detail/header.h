@@ -2,14 +2,28 @@
 #define TRN_HEADER_H_
 
 #include <string>
+#include <anh/byte_buffer.h>
 
 struct TrnHeader
 {
+	void Deserialize(anh::ByteBuffer buffer)
+	{
+		filename = buffer.read<std::string>(false, true);
+		map_width = buffer.read<float>();
+		chunk_width = buffer.read<float>();
+		tiles_per_chunk = buffer.read<uint32_t>();
+		use_global_water_height = buffer.read<uint32_t>();
+		global_water_height = buffer.read<float>();
+		water_shader_size = buffer.read<float>();
+		water_shader_name = buffer.read<std::string>();
+		seconds_per_world_cycle = buffer.read<float>();
+	}
+
 	std::string filename;
 	float map_width;
 	float chunk_width;
-	int   tiles_per_chunk;
-	int   use_global_water_height;
+	uint32_t   tiles_per_chunk;
+	uint32_t   use_global_water_height;
 	float global_water_height;
 	float water_shader_size;
 	std::string water_shader_name;

@@ -14,12 +14,13 @@ namespace tre
 	{
 	public:
 
+		virtual void Deserialize(anh::ByteBuffer buffer);
 		virtual bool IsContained(float px, float pz);
 		virtual float Process(float px, float pz);
 		
 	protected:
 		std::vector<glm::vec2> verts;
-		int use_water_height;
+		uint32_t use_water_height;
 		float water_height;
 		float water_shader_size;
 		std::string water_shader;

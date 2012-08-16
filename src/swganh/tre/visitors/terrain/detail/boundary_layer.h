@@ -18,7 +18,7 @@ namespace tre
 		virtual float Process(float px, float pz) = 0;
 		
 	protected:
-		int feather_type;
+		uint32_t feather_type;
 		float feather_amount;
 	};
 }

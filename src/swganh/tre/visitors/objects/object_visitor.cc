@@ -120,11 +120,11 @@ ObjectVisitor::ObjectVisitor()
 	}
 }
 
-void ObjectVisitor::visit_folder(std::shared_ptr<folder_node> node)
+void ObjectVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
 {
 }
 
-void ObjectVisitor::visit_data(std::shared_ptr<file_node> node)
+void ObjectVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
 {
 	const std::string& nameRef = node->name();
 	if(nameRef == "XXXX")
