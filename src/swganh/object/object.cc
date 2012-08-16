@@ -478,12 +478,26 @@ uint8_t Object::GetHeading()
         tmp = orientation_;
     }
 
-    if (tmp.y < 0.0f && tmp.w > 0.0f) {
-        tmp.y *= -1;
-		tmp.w *= -1;
+    float heading = 0.0f;
+
+    if (glm::length(tmp) > 0.0f)
+    {
+        float s = sqrt(1 - (tmp.w * tmp.w));
+        if (s != 0.0f)
+        {
+            if (tmp.y < 0.0f && tmp.w > 0.0f) 
+            {
+                tmp.y *= -1;
+	        	tmp.w *= -1;
+            }
+
+			float radians = 2.0f * acos(tmp.w);
+			float t = radians / 0.06283f;
+			heading = (tmp.y / s) * t;
+        }
     }
-	
-    return static_cast<uint8_t>(glm::angle(tmp) / 0.0625f);
+
+	return static_cast<uint8_t>(heading);
 }
 
 void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
