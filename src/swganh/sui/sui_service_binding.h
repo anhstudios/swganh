@@ -8,7 +8,10 @@
 #include <Python.h>
 #endif
 
+#include "anh/logger.h"
 #include "anh/python_shared_ptr.h"
+
+
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
 #include <boost/python/call.hpp>
@@ -37,13 +40,45 @@ std::vector<T> vectorConvert(boost::python::list& list)
 	return result_vector;
 }
 
-WindowCallbackFunction callbackConvert(boost::python::object& funct)
+WindowCallbackFunction callbackConvert(boost::python::object funct)
 {
-	return [&funct] (std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
+	try {
+		WindowCallbackFunction callback_func = boost::python::extract<WindowCallbackFunction>(funct);
+		return callback_func;
+	}
+	catch(...)
 	{
-		swganh::scripting::ScopedGilLock lock;
-		return funct(object, event_type, result_list);
-	};
+		PyErr_Print();
+	}
+	return nullptr;
+	
+	//
+	//return [funct] (std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
+	//{
+	//	try {
+	//		boost::python::list l;
+	//		for (auto& v : result_list)
+	//		{
+	//			l.append(v);
+	//		}
+	//		swganh::scripting::ScopedGilLock lock;
+	//		
+	//		boost::python::object result = funct()(;
+
+	//		if (!result.is_none())
+	//		{
+	//			return result(object, event_type, l);
+	//		}
+	//		
+	//		//return funct(object, event_type, result_list);
+	//	}
+	//	catch(boost::python::error_already_set& e)
+ //       {
+	//		LOG(warning) << "Error in callback ";
+ //           PyErr_Print();
+ //       }
+	//	return false;
+	//};
 }
 
 //Subscription wrapper
@@ -54,7 +89,7 @@ std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInt
 }
 
 //CreateListBox Wrapper
-std::shared_ptr<SUIWindowInterface> CreateListBoxWrapper(std::shared_ptr<SUIServiceInterface> self, int lstBox_type, 
+std::shared_ptr<SUIWindowInterface> CreateListBoxWrapper(SUIServiceInterface* self, int lstBox_type, 
 			std::string title, std::string prompt, boost::python::list dataList, std::shared_ptr<swganh::object::Object> owner, 
 			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0)
 {

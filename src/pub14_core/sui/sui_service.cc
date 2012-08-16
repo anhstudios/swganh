@@ -54,7 +54,7 @@ SUIService::SUIService(swganh::app::SwganhKernel* kernel)
 
 void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification message)
 {
-	auto owner = client->GetPlayerId();
+	auto owner = client->GetController()->GetId();
 	WindowMapRange range = window_lookup_.equal_range(owner);
 	std::shared_ptr<SUIWindowInterface> result = nullptr;
 	for(auto itr=range.first; itr != range.second; ++itr)
@@ -99,6 +99,7 @@ int32_t SUIService::OpenSUIWindow(std::shared_ptr<SUIWindowInterface> window)
 	if(owner != nullptr)
 	{
 		window_id = window_id_counter_++;
+		window->SetWindowId(window_id);
 		window_lookup_.insert(WindowMap::value_type(window->GetOwner()->GetObjectId(), window));
 		
 		//Send Create to controller
