@@ -26,7 +26,7 @@ namespace sui
 		TRIGGER_CANCEL = 10
 	};
 
-	typedef std::function<void(std::shared_ptr<swganh::object::Object>, 
+	typedef std::function<bool(std::shared_ptr<swganh::object::Object>, 
 							uint32_t, std::vector<std::wstring>)> WindowCallbackFunction;
 
 	class SUIWindowInterface : public std::enable_shared_from_this<SUIWindowInterface>
