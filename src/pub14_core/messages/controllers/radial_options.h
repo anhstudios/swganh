@@ -279,6 +279,20 @@ namespace controllers {
             , action(1)
             , custom_description(L"")
 		{}
+		RadialOptions(uint8_t parent, uint8_t identifier_, uint8_t action_, std::wstring description)
+			: parent_item(parent)
+			, identifier((RadialIdentifier)identifier_)
+			, action(action_)
+			, custom_description(description){}
+
+		bool operator==(const RadialOptions& other)
+		{
+			return identifier == other.identifier;
+		}
+		bool operator<(const RadialOptions& other)
+		{
+			return identifier < other.identifier;
+		}
 		
         uint8_t parent_item;
         RadialIdentifier identifier;

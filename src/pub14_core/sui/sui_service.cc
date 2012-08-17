@@ -108,17 +108,17 @@ void SUIService::_handleObjectMenuRequest(
 
 	radial->BuildRadial(owner, target, message.radial_options);
 	
-	// For Right now just send a default response
-	// This will be filled in eventually in the python script
-	
-	ObjectMenuResponse response;
+	// Get the response filled in by python
+	auto response = *owner->GetMenuResponse();
 	response.owner_id = message.owner_id;
 	response.target_id = message.target_id;
-	response.radial_options = message.radial_options;
+	response.response_count = message.response_count;
+	// send it
 	if (owner)
 	{
 		owner->GetController()->Notify(response);
 	}
+	
 }
 
 ServiceDescription SUIService::GetServiceDescription()

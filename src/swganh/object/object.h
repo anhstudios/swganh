@@ -34,6 +34,12 @@
 #include "swganh/object/slot_interface.h"
 
 namespace swganh {
+
+namespace messages {
+namespace controllers {
+	class ObjectMenuResponse;
+	struct RadialOptions;
+}}
 namespace object {
 
 typedef std::vector<
@@ -438,6 +444,9 @@ public:
 	virtual void SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer);
 	virtual void SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer);
 
+	virtual void SetMenuResponse(std::vector<swganh::messages::controllers::RadialOptions> radials); 
+	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> GetMenuResponse();
+
 	bool operator< (const std::shared_ptr<Object>& other)
 	{ 
 		return GetObjectId() < other->GetObjectId(); 
@@ -455,7 +464,8 @@ public:
 	ObjectArrangements GetSlotArrangements();
 
 protected:
-
+	// Radials
+	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> menu_response_;
 
 	std::atomic<int32_t> arrangement_id_;
 
@@ -469,6 +479,8 @@ protected:
     std::string stf_name_string_;                    // update 3
     std::wstring custom_name_;                       // update 3
     std::atomic<uint32_t> volume_;                   // update 3
+
+	
 
 private:
     mutable boost::mutex object_mutex_;

@@ -18,6 +18,7 @@
 
 #include "pub14_core/messages/base_baselines_message.h"
 #include "pub14_core/messages/scene_end_baselines.h"
+#include "pub14_core/messages/controllers/object_menu_response.h"
 
 #include "swganh/object/permissions/container_permissions_interface.h"
 
@@ -36,8 +37,9 @@ Object::Object()
     , stf_name_string_("")
     , custom_name_(L"")
     , volume_(0)
-	, arrangement_id_(-2)
+	, arrangement_id_(-2) 
 {
+	menu_response_ = make_shared<swganh::messages::controllers::ObjectMenuResponse>();
 }
 
 bool Object::HasController()
@@ -769,4 +771,18 @@ shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
 		}
 	}
 	return found;
+}
+
+void Object::SetMenuResponse(std::vector<swganh::messages::controllers::RadialOptions> radials)
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	menu_response_->radial_options = radials;
+
+	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::SetMenuResponse", shared_from_this()));
+}
+
+std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> Object::GetMenuResponse()
+{
+	return menu_response_;
 }
