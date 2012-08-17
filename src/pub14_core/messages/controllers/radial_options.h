@@ -14,20 +14,7 @@ namespace swganh {
 namespace messages {
 namespace controllers {
 
-    struct RadialOptions {
-        RadialOptions()
-            : parent_item(0)
-            , identifier(Unknown)
-            , action(1)
-            , custom_description(L"")
-        {}
-
-        uint8_t parent_item;
-        RadialIdentifier identifier;
-        uint8_t action;
-        std::wstring custom_description; // only used if action is 3
-    };
-
+	
     enum RadialIdentifier : uint8_t
     {
         Unknown					                        = 0,
@@ -284,6 +271,21 @@ namespace controllers {
         ListIngredients					                = 251,
         StopManufacture					                = 252
     };
+
+	struct RadialOptions {
+        RadialOptions()
+            : parent_item(0)
+            , identifier(Unknown)
+            , action(1)
+            , custom_description(L"")
+		{}
+		
+        uint8_t parent_item;
+        RadialIdentifier identifier;
+        uint8_t action;
+        std::wstring custom_description; // only used if action is 3
+    };
+
 
 }}}  // namespace swganh::messages::controllers
 

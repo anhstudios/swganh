@@ -42,15 +42,15 @@ std::vector<T> vectorConvert(boost::python::list& list)
 
 WindowCallbackFunction callbackConvert(boost::python::object funct)
 {
-	try {
-		WindowCallbackFunction callback_func = boost::python::extract<WindowCallbackFunction>(funct);
-		return callback_func;
-	}
-	catch(...)
-	{
-		PyErr_Print();
-	}
-	return nullptr;
+	//try {
+	//	WindowCallbackFunction callback_func = boost::python::extract<WindowCallbackFunction>(funct);
+	//	return callback_func;
+	//}
+	//catch(...)
+	//{
+	//	PyErr_Print();
+	//}
+	//return nullptr;
 	
 	//
 	//return [funct] (std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
@@ -79,6 +79,8 @@ WindowCallbackFunction callbackConvert(boost::python::object funct)
  //       }
 	//	return false;
 	//};
+
+	return nullptr;
 }
 
 //Subscription wrapper

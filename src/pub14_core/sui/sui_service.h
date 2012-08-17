@@ -20,6 +20,11 @@ namespace connection
 namespace object
 {
 	class Object;
+	class ObjectController;
+}
+namespace simulation
+{
+	class SimulationServiceInterface;
 }
 
 namespace sui
@@ -30,6 +35,10 @@ namespace sui
 namespace messages
 {
 	struct SUIEventNotification;
+	namespace controllers 
+	{
+		class ObjectMenuRequest;
+	}
 }
 
 }
@@ -82,11 +91,17 @@ namespace sui
 			uint32_t input_max_length, std::vector<std::wstring> drop_items, std::shared_ptr<swganh::object::Object> owner, 
 			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
 
-	private:
+		void Startup();
 
+	private:
 		void _handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification message);
+		// Radials
+		void _handleObjectMenuRequest(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::ObjectMenuRequest message);
 		void _handlePlayerLogoutEvent();
 
+		std::string script_directory_;
+		swganh::app::SwganhKernel* kernel_;
+		swganh::simulation::SimulationServiceInterface* simulation_service_;
 		WindowMap window_lookup_;
 		int32_t window_id_counter_;
 	};

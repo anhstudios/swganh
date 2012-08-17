@@ -1,5 +1,6 @@
 
 #include "sui_service.h"
+#include "sui_window.h"
 
 #include <algorithm>
 
@@ -7,15 +8,19 @@
 #include "pub14_core/messages/sui_event_notification.h"
 #include "pub14_core/messages/sui_update_page_message.h"
 #include "pub14_core/messages/sui_force_close.h"
+#include "pub14_core/messages/controllers/object_menu_request.h"
+#include "pub14_core/messages/controllers/object_menu_response.h"
 
 #include "swganh/connection/connection_client_interface.h"
 #include "swganh/connection/connection_service_interface.h"
 #include "swganh/sui/sui_window_interface.h"
+#include "swganh/sui/radial_interface.h"
 #include "swganh/object/object.h"
-
 #include "swganh/object/player/player.h"
 
-#include "sui_window.h"
+#include "swganh/simulation/simulation_service_interface.h"
+
+#include "swganh/scripting/python_script.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "anh/service/service_manager.h"
@@ -31,16 +36,28 @@ using namespace swganh::object;
 using namespace swganh::object::player;
 using namespace swganh::connection;
 using namespace swganh::messages;
+using namespace swganh::messages::controllers;
+using namespace swganh::simulation;
 
 SUIService::SUIService(swganh::app::SwganhKernel* kernel)
-	: window_id_counter_(0)
+	: kernel_(kernel)
+	, window_id_counter_(0)
+	, script_directory_(kernel->GetAppConfig().script_directory + "/radials/")
+{
+}
+
+void SUIService::Startup()
 {
 	//Subscribe to EventNotifcation
-	auto connection_service = kernel->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
+	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 	connection_service->RegisterMessageHandler(&SUIService::_handleEventNotifyMessage, this);
+	
+	// Register Radial Events
+	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+	simulation_service_->RegisterControllerHandler(&SUIService::_handleObjectMenuRequest, this);
 
 	//Subscribe to player logouts
-	kernel->GetEventDispatcher()->Subscribe(
+	kernel_->GetEventDispatcher()->Subscribe(
 		"Connection::PlayerRemoved",
 		[this] (std::shared_ptr<anh::EventInterface> incoming_event)
 	{
@@ -49,7 +66,6 @@ SUIService::SUIService(swganh::app::SwganhKernel* kernel)
 		WindowMapRange range = window_lookup_.equal_range(player->GetObjectId());
 		window_lookup_.erase(range.first, range.second);
 	});
-
 }
 
 void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification message)
@@ -68,7 +84,47 @@ void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connect
 			break;
 		}
 	};
+}
 
+void SUIService::_handleObjectMenuRequest(
+	const std::shared_ptr<ObjectController>& controller,
+	ObjectMenuRequest message)
+{
+	LOG(warning) << "sui service _handleObjectMenuRequest";
+	LOG(warning) << "owner_id: " << message.owner_id << " target_id:" << message.target_id << " response count:" << message.response_count;
+	LOG(warning) << "radial options:";
+	for(auto& v : message.radial_options)
+	{
+		LOG(warning) << "identifier:" <<  v.identifier;
+		LOG(warning) << "description:" << std::string(v.custom_description.begin(), v.custom_description.end());
+		LOG(warning) << "action id:" << (uint8_t)v.action;
+		LOG(warning) << "parent_item_id:" << v.parent_item;
+	}
+	swganh::scripting::PythonScript p_script(script_directory_ + "radial_menu.py");
+	p_script.Run();
+
+	auto radials_extract = boost::python::extract<RadialInterface*>(p_script.GetFileObject());
+	
+	auto owner = simulation_service_->GetObjectById(message.owner_id);
+	auto target = simulation_service_->GetObjectById(message.target_id);
+
+	if (radials_extract.check() && owner && target)
+	{
+		auto r = radials_extract();
+		r->BuildRadial(owner, target, message.radial_options);
+	}
+	else
+	{
+		ObjectMenuResponse response;
+		response.owner_id = message.owner_id;
+		response.target_id = message.target_id;
+		response.radial_options = message.radial_options;
+		if (owner)
+		{
+			owner->GetController()->Notify(response);
+		}
+	}
+	
 }
 
 ServiceDescription SUIService::GetServiceDescription()
