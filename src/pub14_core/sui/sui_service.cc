@@ -20,7 +20,7 @@
 
 #include "swganh/simulation/simulation_service_interface.h"
 
-#include "swganh/scripting/python_script.h"
+#include "swganh/sui/python_radial_creator.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "anh/service/service_manager.h"
@@ -100,21 +100,22 @@ void SUIService::_handleObjectMenuRequest(
 		LOG(warning) << "action id:" << (uint8_t)v.action;
 		LOG(warning) << "parent_item_id:" << v.parent_item;
 	}
-	//swganh::scripting::PythonScript p_script(script_directory_ + "radial_menu.py");
+	PythonRadialCreator creator("radials.radial_menu", "PythonRadialMenu");
+	auto radial = creator();
 	
-	//p_script.Run();
-	auto python_obj = boost::python::import((script_directory_ + "radial_menu.py").c_str());
-	auto new_instance = python_obj.attr("PythonRadialMenu")();
-
 	auto owner = simulation_service_->GetObjectById(message.owner_id);
 	auto target = simulation_service_->GetObjectById(message.target_id);
 
-	if (!new_instance.is_none())
-	{
-		RadialInterface* radials_extract = boost::python::extract<RadialInterface*>(new_instance);
-		radials_extract->BuildRadial(owner, target, message.radial_options);
-	}
-	else
+	radial->BuildRadial(owner, target, message.radial_options);
+	
+	// module RadialMenu
+	//script_directory_ + "radial_menu.py");
+	
+
+	
+
+	
+	/*else
 	{
 		ObjectMenuResponse response;
 		response.owner_id = message.owner_id;
@@ -124,7 +125,7 @@ void SUIService::_handleObjectMenuRequest(
 		{
 			owner->GetController()->Notify(response);
 		}
-	}
+	}*/
 	
 
 	
