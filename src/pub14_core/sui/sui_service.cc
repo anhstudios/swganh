@@ -288,22 +288,3 @@ std::shared_ptr<SUIWindowInterface> SUIService::CreateInputBox(InputBoxType iptB
 	result->SetProperty("cmbInput:visible", L"False");
 	return result;
 }
-
-std::shared_ptr<SUIWindowInterface> SUIService::CreateInputBoxWithDropDown(InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
-	uint32_t input_max_length, std::vector<std::wstring> drop_items, std::shared_ptr<Object> owner, 
-	std::shared_ptr<Object> ranged_object, float max_distance)
-{
-	std::shared_ptr<SUIWindowInterface> result = CreateSUIWindow("Script.inputBox", owner, ranged_object, max_distance);
-	result->SetProperty("bg.caption.lblTitle:Text", title)->SetProperty("Prompt.lblPrompt:Text", prompt);
-
-	switch(iptBox_type)
-	{
-	case INPUT_BOX_OK:
-		break;
-	case INPUT_BOX_OKCANCEL:	
-		break;
-	}
-
-	result->SetProperty("cmbInput:visible", L"True");
-	return result;
-}

@@ -54,17 +54,13 @@ std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInt
 }
 
 //CreateListBox Wrapper
-std::shared_ptr<SUIWindowInterface> CreateListBoxWrapper(std::shared_ptr<SUIServiceInterface> self, int lstBox_type, 
-			std::string title, std::string prompt, boost::python::list dataList, std::shared_ptr<swganh::object::Object> owner, 
+std::shared_ptr<SUIWindowInterface> CreateListBoxWrapper(SUIServiceInterface* self, ListBoxType lstBox_type, 
+			std::wstring title, std::wstring prompt, boost::python::list dataList, std::shared_ptr<swganh::object::Object> owner, 
 			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0)
 {
-	return self->CreateListBox((ListBoxType)lstBox_type, std::wstring(title.begin(), title.end()), std::wstring(prompt.begin(), prompt.end()), vectorConvert<std::wstring>(dataList), owner, ranged_object, max_distance);
+	return self->CreateListBox(lstBox_type, title, prompt, vectorConvert<std::wstring>(dataList), owner, ranged_object, max_distance);
 }
 BOOST_PYTHON_FUNCTION_OVERLOADS(ListBoxOverloads, CreateListBoxWrapper, 6, 8);
-
-//CreateInputBox Wrapper
-
-//CreateInputBoxWithDropDown Wrapper
 
 //Custom Create Overload
 boost::python::tuple CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
@@ -83,7 +79,13 @@ boost::python::tuple CreateMessageBox(MessageBoxType msgBox_type, std::wstring t
 }
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateMessageOverload, CreateMessageBox, 4, 6);
 
-
+boost::python::tuple CreateInputBox(InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
+			uint32_t input_max_length, std::shared_ptr<swganh::object::Object> owner, 
+			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0)
+{
+	return boost::python::make_tuple(iptBox_type, title, prompt, input_max_length, owner, ranged_object, max_distance);
+}
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateInputOverload, CreateInputBox, 5, 7);
 
 
 void exportSuiService()
@@ -125,8 +127,7 @@ void exportSuiService()
 		.def("CreateSUIWindow", &SUIServiceInterface::CreateSUIWindow, CreateOverload(args("script_name", "owner", "ranged_object", "max_distance"), "Creates a new SUIWindow."))
 		.def("CreateMessageBox", &SUIServiceInterface::CreateMessageBox, CreateMessageOverload(args("msgBox_type", "title", "caption", "owner", "ranged_object", "max_distance"),"Creates a SUIWindow and fills in properties for a basic message box."))
 		.def("CreateListBox", CreateListBoxWrapper, ListBoxOverloads(args("self", "lstBox_type", "title", "prompt", "dataList", "owner", "ranged_object", "range"),"Creates a SUIWindow and fills in properties for a basic list box."))
-		.def("CreateInputBox", &SUIServiceInterface::CreateInputBox, "Creates a SUIWindow and fills in properties for a basic input box.")
-		.def("CreateInputBoxWithDropDown", &SUIServiceInterface::CreateInputBoxWithDropDown, "Creates a SUIWindow and fills in properties for a basic input box with a dropdown as well.")
+		.def("CreateInputBox", &SUIServiceInterface::CreateInputBox, CreateInputOverload(args("iptBox_type", "title", "caption", "max_input_length", "owner", "ranged_object", "max_distance"), "Creates a SUIWindow and fills in properties for a basic input box."))
 		
 		.def("OpenSUIWindow", &SUIServiceInterface::OpenSUIWindow, "Creates the given window for the window's current owner.")
 		.def("UpdateSUIWindow", &SUIServiceInterface::UpdateSUIWindow, "Updates the given window for the window's current owner.")
