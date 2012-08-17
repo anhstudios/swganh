@@ -12,11 +12,11 @@
 #include "anh/service/service_directory_interface.h"
 #include "pub14_core/messages/server_weather_message.h"
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/messages/out_of_band.h"
+#include "pub14_core/messages/out_of_band.h"
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/object/player/player.h"
 #include "swganh/object/object_controller.h"
-#include "swganh/connection/connection_client.h"
+#include "swganh/connection/connection_client_interface.h"
 #include "swganh/object/object.h"
 
 using namespace std;
@@ -196,7 +196,7 @@ void WeatherService::WeatherScript()
 
 void WeatherService::Startup() 
 {
-	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyService>("GalaxyService");
+	galaxy_service_  = kernel_->GetServiceManager()->GetService<GalaxyServiceInterface>("GalaxyService");
 	weatherScriptTimer=0;
 	RunWeatherSequence();
 }

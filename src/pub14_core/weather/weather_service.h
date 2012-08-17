@@ -15,10 +15,10 @@
 #include "anh/event_dispatcher.h"
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
-#include "swganh/galaxy/galaxy_service.h"
+#include "swganh/galaxy/galaxy_service_interface.h"
 #include "swganh/scripting/python_script.h"
 
-//#include "swganh/app/swganh_kernel.h"
+#include "swganh/app/swganh_kernel.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/player/player_service_interface.h"
 
@@ -67,7 +67,7 @@ namespace weather {
 		swganh::scripting::PythonScript script_;
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
 		anh::CallbackId player_selected_callback_;
-		swganh::galaxy::GalaxyService* galaxy_service_;
+		swganh::galaxy::GalaxyServiceInterface* galaxy_service_;
 		mutable boost::mutex weather_mutex_;
 		std::vector<swganh::weather::WeatherEvent> weather_sequence_;
 		std::shared_ptr<boost::asio::deadline_timer> weather_timer_;

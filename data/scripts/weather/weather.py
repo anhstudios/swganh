@@ -39,7 +39,6 @@ noWeather[:] = [
 #Crude random function with weight. Needs improving.
 def weather_choice(wList, scene):
     n = random.uniform(0, 1)
-    print(n)
     for item, weight in wList:
         if n < weight:
             weather_svc.set_scene_weather(scene, item)
