@@ -478,12 +478,26 @@ uint8_t Object::GetHeading()
         tmp = orientation_;
     }
 
-    if (tmp.y < 0.0f && tmp.w > 0.0f) {
-        tmp.y *= -1;
-		tmp.w *= -1;
+    float heading = 0.0f;
+
+    if (glm::length(tmp) > 0.0f)
+    {
+        float s = sqrt(1 - (tmp.w * tmp.w));
+        if (s != 0.0f)
+        {
+            if (tmp.y < 0.0f && tmp.w > 0.0f) 
+            {
+                tmp.y *= -1;
+	        	tmp.w *= -1;
+            }
+
+			float radians = 2.0f * acos(tmp.w);
+			float t = radians / 0.06283f;
+			heading = (tmp.y / s) * t;
+        }
     }
-	
-    return static_cast<uint8_t>(glm::angle(tmp) / 0.0625f);
+
+	return static_cast<uint8_t>(heading);
 }
 
 void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
@@ -719,4 +733,40 @@ ObjectArrangements Object::GetSlotArrangements()
 {
 	boost::lock_guard<boost::mutex> lg(object_mutex_);
 	return slot_arrangements_;
+}
+bool Object::ClearSlot(int32_t slot_id)
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	bool cleared = false;
+	auto slot_iter = slot_descriptor_.find(slot_id);
+	if (slot_iter != slot_descriptor_.end())
+	{
+		auto slot = slot_iter->second;
+		if (!slot->is_filled())
+		{
+			slot->view_objects([&](shared_ptr<Object> object){
+				slot->remove_object(object);
+				cleared = true;
+			});
+			
+		}
+	}
+	return cleared;
+}
+shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	shared_ptr<Object> found = nullptr;
+	auto slot_iter = slot_descriptor_.find(slot_id);
+	if (slot_iter != slot_descriptor_.end())
+	{
+		auto slot = slot_iter->second;
+		if (!slot->is_filled())
+		{			
+			slot->view_objects([&](shared_ptr<Object> object){
+				found = object;
+			});
+		}
+	}
+	return found;
 }

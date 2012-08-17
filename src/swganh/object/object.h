@@ -448,6 +448,8 @@ public:
 	}
 
 	/// Slot Functions
+	bool ClearSlot(int32_t slot_id);
+	std::shared_ptr<Object> GetSlotObject(int32_t slot_id);
 	int32_t GetAppropriateArrangementId(std::shared_ptr<Object> other);
 	ObjectSlots GetSlotDescriptor();
 	ObjectArrangements GetSlotArrangements();
