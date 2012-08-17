@@ -209,12 +209,12 @@ std::shared_ptr<SUIWindowInterface> SUIService::CreateMessageBox(MessageBoxType 
 	switch(msgBox_type)
 	{
 	case MESSAGE_BOX_OK:
-		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"@ok");
 		result->SetProperty("btnCancel:visible", L"False");
 		break;
 	case MESSAGE_BOX_OK_CANCEL:
-		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
-		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"btnCancel");
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"@ok");
+		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"@cancel");
 		break;
 	case MESSAGE_BOX_YES_NO:
 		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"@yes");
@@ -236,11 +236,11 @@ std::shared_ptr<SUIWindowInterface> SUIService::CreateListBox(ListBoxType lstBox
 	switch(lstBox_type) 
 	{
 	case LIST_BOX_OKCANCEL:
-		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
-		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"btnCancel");
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"@ok");
+		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"@cancel");
 		break;
 	case LIST_BOX_OK:
-		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
+		result->SetProperty("btnOk:visible", L"True");
 		result->SetProperty("btnCancel:visible", L"False");
 		break;
 	}
@@ -287,24 +287,5 @@ std::shared_ptr<SUIWindowInterface> SUIService::CreateInputBox(InputBoxType iptB
 	}
 
 	result->SetProperty("cmbInput:visible", L"False");
-	return result;
-}
-
-std::shared_ptr<SUIWindowInterface> SUIService::CreateInputBoxWithDropDown(InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
-	uint32_t input_max_length, std::vector<std::wstring> drop_items, std::shared_ptr<Object> owner, 
-	std::shared_ptr<Object> ranged_object, float max_distance)
-{
-	std::shared_ptr<SUIWindowInterface> result = CreateSUIWindow("Script.inputBox", owner, ranged_object, max_distance);
-	result->SetProperty("bg.caption.lblTitle:Text", title)->SetProperty("Prompt.lblPrompt:Text", prompt);
-
-	switch(iptBox_type)
-	{
-	case INPUT_BOX_OK:
-		break;
-	case INPUT_BOX_OKCANCEL:	
-		break;
-	}
-
-	result->SetProperty("cmbInput:visible", L"True");
 	return result;
 }
