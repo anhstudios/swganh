@@ -61,7 +61,7 @@ void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connect
 	{
 		if(itr->second->GetWindowId() == message.window_id)
 		{
-			if(itr->second->GetFunctionById(message.event_type)(itr->second->GetOwner(), message.event_type, message.returnList))
+			if(itr->second->GetFunctionById(message.event_type)(message.event_type, message.returnList))
 			{
 				window_lookup_.erase(itr);
 			}

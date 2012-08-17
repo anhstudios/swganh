@@ -42,50 +42,31 @@ std::vector<T> vectorConvert(boost::python::list& list)
 
 WindowCallbackFunction callbackConvert(boost::python::object funct)
 {
-	try {
-		WindowCallbackFunction callback_func = boost::python::extract<WindowCallbackFunction>(funct);
-		return callback_func;
-	}
-	catch(...)
-	{
-		PyErr_Print();
-	}
-	return nullptr;
-	
-	//
-	//return [funct] (std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
+	//try {
+	//	WindowCallbackFunction callback_func;
+	//	auto c = funct.attr("listBoxCallback");
+	//	callback_func = boost::python::extract<WindowCallbackFunction*>(c);
+	//	return callback_func;
+	//}
+	//catch(...)
 	//{
-	//	try {
-	//		boost::python::list l;
-	//		for (auto& v : result_list)
-	//		{
-	//			l.append(v);
-	//		}
-	//		swganh::scripting::ScopedGilLock lock;
-	//		
-	//		boost::python::object result = funct()(;
-
-	//		if (!result.is_none())
-	//		{
-	//			return result(object, event_type, l);
-	//		}
-	//		
-	//		//return funct(object, event_type, result_list);
-	//	}
-	//	catch(boost::python::error_already_set& e)
- //       {
-	//		LOG(warning) << "Error in callback ";
- //           PyErr_Print();
- //       }
-	//	return false;
-	//};
+	//	PyErr_Print();
+	//}
+	return nullptr;
 }
 
 //Subscription wrapper
 std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInterface> self, uint32_t event_id, std::string event_source, InputTrigger input_trigger, 
 													boost::python::list result_list, boost::python::object funct)
 {
-	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, vectorConvert<std::string>(result_list), callbackConvert(funct));
+	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, vectorConvert<std::string>(result_list), 
+		[&](uint32_t event_id_, boost::python::list result_list_)
+		{
+			auto callbak = funct.attr("listBoxCallback")(event_id_, vectorConvert<std::string>(result_list_));
+			WindowCallbackFunction* func = boost::python::extract<WindowCallbackFunction*>(callbak);
+			
+			return true;
+		});
 }
 
 //CreateListBox Wrapper
