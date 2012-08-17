@@ -17,7 +17,7 @@ using namespace quadtree;
 class NodeTest {
 public:
 	NodeTest()
-		: root_node_(ROOT, Region(Point(-3000.0f, -3000.0f), Point(3000.0f, 3000.0f)), 0, 9, nullptr)
+		: root_node_(ROOT, Region(Point(-8300.0f, -8300.0f), Point(8300.0f, 8300.0f)), 0, 9, nullptr)
 		, event_dispatcher_(io_service_)
 	{}
 
@@ -77,10 +77,10 @@ BOOST_AUTO_TEST_CASE(VerifyQuadrantSplit)
 	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().size());
 	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
     
-	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects()[0]->GetObjectId());
-	BOOST_CHECK_EQUAL(2, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects()[0]->GetObjectId());
-	BOOST_CHECK_EQUAL(3, root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects()[0]->GetObjectId());
-	BOOST_CHECK_EQUAL(4, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects()[0]->GetObjectId());
+	BOOST_CHECK_EQUAL(1, (*root_node_.GetLeafNodes()[NW_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(2, (*root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(3, (*root_node_.GetLeafNodes()[SW_QUADRANT]->GetObjects().begin())->GetObjectId());
+	BOOST_CHECK_EQUAL(4, (*root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().begin())->GetObjectId());
 
 	root_node_.RemoveObject(obj1);
 	root_node_.RemoveObject(obj2);

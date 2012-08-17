@@ -16,9 +16,11 @@ ByteBuffer::ByteBuffer()
 , write_position_(0) {}
 
 ByteBuffer::ByteBuffer(size_t length)
-: data_(length)
+: data_()
 , read_position_(0)
-, write_position_(0) {}
+, write_position_(0) {
+	data_.reserve(length);
+}
 
 ByteBuffer::ByteBuffer(std::vector<unsigned char> data)
 : data_(std::move(data))
@@ -74,7 +76,7 @@ size_t ByteBuffer::capacity() const {
 }
 
 void ByteBuffer::write(const unsigned char* data, size_t size) {
-    data_.insert(data_.begin() + write_position_, data, data + size);
+	data_.insert(data_.begin() + write_position_, data, data + size);
     write_position_ += size;
 }
 
@@ -101,6 +103,10 @@ size_t ByteBuffer::read_position() const {
 
 void ByteBuffer::read_position(size_t position) {
     read_position_ = position;
+}
+
+void ByteBuffer::read_position_delta(size_t delta) {
+	read_position_ += delta;
 }
 
 size_t ByteBuffer::write_position() const {
@@ -158,19 +164,25 @@ ByteBuffer& ByteBuffer::write<std::string>(std::string data) {
 }
 
 template<>
-const std::string ByteBuffer::read<std::string>(bool do_swap_endian) {
-    uint16_t length = read<uint16_t>(do_swap_endian);
+const std::string ByteBuffer::read<std::string>(bool do_swap_endian, bool null_terminated_string) {
     
-    if (data_.size() < read_position_ + length) {
-        throw std::out_of_range("Read past end of buffer");
-    }
-    
-    std::string data(data_.begin() + read_position_,
-                     data_.begin() + read_position_ + length);
-    
-    read_position_ += length;
-    
-    return data;
+	if(null_terminated_string)
+	{
+		std::string data(reinterpret_cast<const char*>(data()+read_position_));
+		read_position_ += data.size() + 1;
+		return data;
+	}
+	else
+	{
+		uint16_t length = read<uint16_t>(do_swap_endian);
+		if (data_.size() < read_position_ + length) {
+			throw std::out_of_range("Read past end of buffer");
+		}
+		std::string data(data_.begin() + read_position_,
+						data_.begin() + read_position_ + length);
+		read_position_ += length;
+		return data;
+	}
 }
 
 template<>
@@ -202,21 +214,26 @@ ByteBuffer& ByteBuffer::write<std::wstring>(std::wstring data) {
 }
 
 template<>
-const std::wstring ByteBuffer::read<std::wstring>(bool do_swap_endian) {
-    uint32_t length = read<uint32_t>(do_swap_endian);
-    
-    if (data_.size() < read_position_ + (length * 2)) {
-        throw std::out_of_range("Read past end of buffer");
-    }
-    
-    std::wstring data;
-    
-    for (size_t i = 0; i < length; ++i) {
-        data += *reinterpret_cast<uint16_t*>(&data_[read_position_]);
-        read_position_ += 2;
-    }
-    
-    return data;
+const std::wstring ByteBuffer::read<std::wstring>(bool do_swap_endian, bool null_terminated_string) {
+	if(null_terminated_string)
+	{
+		std::wstring data(reinterpret_cast<const wchar_t*>(data()+read_position_));
+		read_position_ += data.size()*2 + 1;
+		return data;
+	}
+	else
+	{
+		uint32_t length = read<uint32_t>(do_swap_endian);
+		if (data_.size() < read_position_ + (length * 2)) {
+			throw std::out_of_range("Read past end of buffer");
+		}
+		std::wstring data;
+		for (size_t i = 0; i < length; ++i) {
+			data += *reinterpret_cast<uint16_t*>(&data_[read_position_]);
+			read_position_ += 2;
+		}
+		return data;
+	}
 }
 
 std::ostream& operator<<(std::ostream& message, const ByteBuffer& buffer) {

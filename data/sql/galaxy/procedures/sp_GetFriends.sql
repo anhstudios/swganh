@@ -6,7 +6,7 @@
 # Dumping structure for procedure galaxy.sp_GetFriends
 DROP PROCEDURE IF EXISTS `sp_GetFriends`;
 DELIMITER //
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetFriends`(IN `object_id` BIGINT)
+CREATE PROCEDURE `sp_GetFriends`(IN `object_id` BIGINT)
 BEGIN
     select o.custom_name, o.id from friend_list f, object o where f.player_id = object_id and f.friend_id = o.id;
 END//

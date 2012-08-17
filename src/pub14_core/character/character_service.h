@@ -11,20 +11,20 @@
 #include "swganh/character/character_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/messages/delete_character_message.h"
-#include "swganh/messages/client_create_character.h"
-#include "swganh/messages/client_random_name_request.h"
+#include "pub14_core/messages/delete_character_message.h"
+#include "pub14_core/messages/client_create_character.h"
+#include "pub14_core/messages/client_random_name_request.h"
 
 namespace anh { namespace database { class DatabaseManagerInterface; } }
 
 namespace swganh {
 namespace connection {
-class ConnectionClient;
+class ConnectionClientInterface;
 }}  // namespace swganh::connection
 
 namespace swganh {
 namespace login {
-class LoginClient;
+class LoginClientInterface;
 }}  // namespace swganh::login
 
 namespace swganh {
@@ -45,15 +45,15 @@ public:
 
 private:
     void HandleClientRandomNameRequest_(
-        const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::ClientRandomNameRequest message);
 
     void HandleClientCreateCharacter_(
-        const std::shared_ptr<swganh::connection::ConnectionClient>& client, 
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::ClientCreateCharacter message);
 
     void HandleDeleteCharacterMessage_(
-        const std::shared_ptr<swganh::login::LoginClient>& login_client, 
+        const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, 
         swganh::messages::DeleteCharacterMessage message);
 
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;

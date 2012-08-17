@@ -30,14 +30,12 @@
 
 #include "swganh/app/swganh_kernel.h"
 
+#include "swganh/combat/combat_service_interface.h"
 #include "swganh/chat/chat_service_interface.h"
 #include "swganh/character/character_service_interface.h"
-#include "swganh/connection/connection_service.h"
-#include "swganh/login/login_service.h"
+#include "swganh/login/login_service_interface.h"
+#include "swganh/connection/connection_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/galaxy/galaxy_service.h"
-#include "swganh/combat/combat_service.h"
-#include "swganh/social/social_service_interface.h"
 #include "swganh/scripting/utilities.h"
 
 #include "version.h"
@@ -49,11 +47,9 @@ using namespace boost::program_options;
 using namespace std;
 using namespace swganh::app;
 using namespace swganh::chat;
-using namespace swganh::command;
 using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::connection;
-using namespace swganh::combat;
 using namespace swganh::simulation;
 using namespace swganh::galaxy;
 
@@ -354,46 +350,12 @@ void SwganhApp::LoadCoreServices_()
 
     auto app_config = kernel_->GetAppConfig();
 
-	if(strcmp("login", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
-        auto login_service = std::make_shared<LoginService>(
-		    app_config.login_config.listen_address, 
-		    app_config.login_config.listen_port, 
-		    kernel_.get());
-
-		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
-		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
-        login_service->login_auto_registration(app_config.login_config.login_auto_registration);
-    
-		kernel_->GetServiceManager()->AddService("LoginService", login_service);
-	}
-
-	if(strcmp("connection", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
-		auto connection_service = std::make_shared<ConnectionService>(
-			app_config.connection_config.listen_address, 
-			app_config.connection_config.listen_port, 
-			app_config.connection_config.ping_port, 
-			kernel_.get());
-    
-		kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
-	}
-
 	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
 	{
-		// These will be loaded in alphabetical order because of how std::map generates its keys
-		kernel_->GetServiceManager()->AddService(
-			"CombatService",
-			std::make_shared<CombatService>(kernel_.get()));
-		
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		simulation_service->StartScene("corellia");
 		simulation_service->StartScene("naboo");
 	}
-
-	// always need a galaxy service running
-	kernel_->GetServiceManager()->AddService("GalaxyService", 
-        std::make_shared<GalaxyService>(kernel_.get()));
 }
 
 void SwganhApp::SetupLogging_()

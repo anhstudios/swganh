@@ -17,8 +17,12 @@ bool ResourceContainerFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void ResourceContainerFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t ResourceContainerFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	uint32_t counter = 1;
+
+	return counter;
+}
 
 void ResourceContainerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}

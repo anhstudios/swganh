@@ -17,8 +17,11 @@ bool FactoryCrateFactory::HasTemplate(const string& template_name)
     return false;
 }
 
-void FactoryCrateFactory::PersistObject(const shared_ptr<Object>& object)
-{}
+uint32_t FactoryCrateFactory::PersistObject(const shared_ptr<Object>& object)
+{
+	uint32_t counter = 1;
+	return counter;
+}
 
 void FactoryCrateFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {}
