@@ -18,6 +18,7 @@
 
 #include "pub14_core/messages/base_baselines_message.h"
 #include "pub14_core/messages/scene_end_baselines.h"
+#include "pub14_core/messages/controllers/object_menu_response.h"
 
 #include "swganh/object/permissions/container_permissions_interface.h"
 
@@ -36,8 +37,9 @@ Object::Object()
     , stf_name_string_("")
     , custom_name_(L"")
     , volume_(0)
-	, arrangement_id_(-2)
+	, arrangement_id_(-2) 
 {
+	menu_response_ = make_shared<swganh::messages::controllers::ObjectMenuResponse>();
 }
 
 bool Object::HasController()
@@ -478,12 +480,26 @@ uint8_t Object::GetHeading()
         tmp = orientation_;
     }
 
-    if (tmp.y < 0.0f && tmp.w > 0.0f) {
-        tmp.y *= -1;
-		tmp.w *= -1;
+    float heading = 0.0f;
+
+    if (glm::length(tmp) > 0.0f)
+    {
+        float s = sqrt(1 - (tmp.w * tmp.w));
+        if (s != 0.0f)
+        {
+            if (tmp.y < 0.0f && tmp.w > 0.0f) 
+            {
+                tmp.y *= -1;
+	        	tmp.w *= -1;
+            }
+
+			float radians = 2.0f * acos(tmp.w);
+			float t = radians / 0.06283f;
+			heading = (tmp.y / s) * t;
+        }
     }
-	
-    return static_cast<uint8_t>(glm::angle(tmp) / 0.0625f);
+
+	return static_cast<uint8_t>(heading);
 }
 
 void Object::SetContainer(const std::shared_ptr<ContainerInterface>& container)
@@ -755,4 +771,18 @@ shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
 		}
 	}
 	return found;
+}
+
+void Object::SetMenuResponse(std::vector<swganh::messages::controllers::RadialOptions> radials)
+{
+	boost::lock_guard<boost::mutex> lg(object_mutex_);
+	menu_response_->radial_options = radials;
+
+	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::SetMenuResponse", shared_from_this()));
+}
+
+std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> Object::GetMenuResponse()
+{
+	return menu_response_;
 }

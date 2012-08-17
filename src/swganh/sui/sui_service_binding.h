@@ -42,16 +42,6 @@ std::vector<T> vectorConvert(boost::python::list& list)
 
 WindowCallbackFunction callbackConvert(boost::python::object funct)
 {
-	//try {
-	//	WindowCallbackFunction callback_func;
-	//	auto c = funct.attr("listBoxCallback");
-	//	callback_func = boost::python::extract<WindowCallbackFunction*>(c);
-	//	return callback_func;
-	//}
-	//catch(...)
-	//{
-	//	PyErr_Print();
-	//}
 	return nullptr;
 }
 

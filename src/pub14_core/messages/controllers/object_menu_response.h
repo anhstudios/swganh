@@ -15,16 +15,15 @@ namespace swganh {
 namespace messages {
 namespace controllers {
 
-    // Radial Request
+    // Radial Response
     class ObjectMenuResponse : public ObjControllerMessage
     {
     public:
-        explicit ObjectMenuRequest(uint32_t controller_type = 0x0000000B)
-            : ObjControllerMessage(controller_type, message_type())
-            , 
+        explicit ObjectMenuResponse(uint32_t controller_type = 0x0000000B)
+            : ObjControllerMessage(controller_type, message_type())            
         {}
 
-        explicit ObjectMenuRequest(ObjControllerMessage controller_message)
+        explicit ObjectMenuResponse(ObjControllerMessage controller_message)
             : ObjControllerMessage(std::move(controller_message))
         {
             OnControllerDeserialize(std::move(data));
@@ -32,15 +31,15 @@ namespace controllers {
 
         static uint32_t message_type() { return 0x00000147; }
         
-        uint64_t item_id;
-        uint64_t receiver_id;
+        uint64_t target_id;
+        uint64_t owner_id;
         std::vector<RadialOptions> radial_options;
         uint8_t response_count;
 
         void OnControllerSerialize(anh::ByteBuffer& buffer) const
         {
-            buffer.write(item_id);
-            buffer.write(receiver_id);
+            buffer.write(target_id);
+            buffer.write(owner_id);
 
             uint32_t size = radial_options.size();
             if (size > 0)
@@ -64,8 +63,8 @@ namespace controllers {
 
         void OnControllerDeserialize(anh::ByteBuffer buffer)
         {
-            item_id = buffer.read<uint64_t>();
-            receiver_id = buffer.read<uint64_t>();
+            target_id = buffer.read<uint64_t>();
+            owner_id = buffer.read<uint64_t>();
             
         }
     };
