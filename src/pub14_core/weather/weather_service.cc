@@ -100,7 +100,7 @@ void WeatherService::SetSceneWeather(uint32_t scene_id, std::vector<WeatherEvent
 		sceneLookup_[scene_id].sequenceCount_=0;
 	}
 	else
-		LOG(info) << "Scene: " << scene_id << " currently has a weather event";
+		LOG(warning) << "Scene: " << scene_id << " currently has a weather event";
 }
 
 void WeatherService::SendServerWeatherMessagePlayer_(
@@ -138,31 +138,35 @@ void WeatherService::tickPlanetWeather_()
 		if(planetWeather_.second.updateGalaxyTickTime_ <= galaxyTime)
 		{
 			uint32_t planetSequenceCount = planetWeather_.second.sequenceCount_;
-				if(planetWeather_.second.weatherSequence_.size()>planetSequenceCount)
-				{
-					LOG(info)<< "Setting weather on scene "<<Scene(planetWeather_.second.scene_);
-					SendServerWeatherMessageAll_(planetWeather_.second.weatherSequence_.at(planetSequenceCount).GetWeatherType(),planetWeather_.second.weatherSequence_.at(planetSequenceCount).GetCloudVector(),planetWeather_.second.scene_);
-					planetWeather_.second.updateGalaxyTickTime_ = galaxyTime + (planetWeather_.second.weatherSequence_.at(planetSequenceCount).GetDuration()*60);
-					planetWeather_.second.sequenceCount_++;
-				}
-				//If weather sequence has finished, remove scene map
-				if(planetWeather_.second.weatherSequence_.size()==planetSequenceCount)
-				{
-					removeWeather =true;
-					removeWeatherScene=planetWeather_.second.scene_;
-				}
+			WeatherEvent planetCurrentSeqeuence = planetWeather_.second.weatherSequence_.at(planetSequenceCount);
+
+			if(planetWeather_.second.weatherSequence_.size()>planetSequenceCount)
+			{
+				SendServerWeatherMessageAll_(planetCurrentSeqeuence.GetWeatherType(),planetCurrentSeqeuence.GetCloudVector(),planetWeather_.second.scene_);
+				planetWeather_.second.updateGalaxyTickTime_ = galaxyTime + (planetCurrentSeqeuence.GetDuration()*60);
+				planetWeather_.second.sequenceCount_++;
+			}
+
+			//If weather sequence has finished, remove scene map
+			if(planetWeather_.second.weatherSequence_.size()==planetSequenceCount)
+			{
+				removeWeather =true;
+				removeWeatherScene=planetWeather_.second.scene_;
+			}
 		}
 	});
+
 	if(removeWeather)
 		sceneLookup_.erase(removeWeatherScene);
 
+	//Execute weather script every 30 mins
 	if(weatherScriptTimer< galaxyTime)
-		{
-			//Execute weather script every 5 mins
-			WeatherScript();
-			weatherScriptTimer = galaxyTime + 1800;
-		}
+	{
+		WeatherScript();
+		weatherScriptTimer = galaxyTime + 1800;
+	}
 }
+
 void WeatherService::RunWeatherSequence()
 {		
 	weather_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
