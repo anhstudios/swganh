@@ -23,6 +23,7 @@
 #include "swganh/sui/python_radial_creator.h"
 
 #include "swganh/app/swganh_kernel.h"
+#include "swganh/scripting/utilities.h"
 #include "anh/service/service_manager.h"
 #include "anh/event_dispatcher.h"
 
@@ -77,7 +78,8 @@ void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connect
 	{
 		if(itr->second->GetWindowId() == message.window_id)
 		{
-			if(itr->second->GetFunctionById(message.event_type)(message.event_type, message.returnList))
+			swganh::scripting::ScopedGilLock lock;
+			if(itr->second->GetFunctionById(message.event_type)(itr->second->GetOwner(), message.event_type, message.returnList))
 			{
 				window_lookup_.erase(itr);
 			}

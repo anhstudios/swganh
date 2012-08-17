@@ -18,34 +18,6 @@ namespace sui {
         PythonRadialCreator(std::string module_name, std::string class_name);
 
         std::shared_ptr<RadialInterface> operator()();
-		//template<typename T>
-  //      std::shared_ptr<T> operator() ()
-  //      {
-  //          ScopedGilLock lock;
-  //          std::shared_ptr<T> interfaceObj = nullptr;
-  //          try 
-  //          {
-
-  //      #ifdef _DEBUG
-  //              module_ = bp::object(bp::handle<>(PyImport_ReloadModule(module_.ptr())));
-  //      #endif
-  //              
-  //              auto new_instance = module_.attr(class_name_.c_str())();
-
-  //              if (!new_instance.is_none())
-  //              {
-  //                  T* obj_pointer = bp::extract<T*>(new_instance);
-  //                  interfaceObj.reset(obj_pointer, [new_instance] (T*) {});
-  //              }
-  //          }
-  //          catch(bp::error_already_set& /*e*/)
-  //          {
-  //              PyErr_Print();
-  //          }
-
-  //          return interfaceObj;
-  //      }
-
     private:
         std::string module_name_;
         std::string class_name_;

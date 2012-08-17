@@ -87,10 +87,6 @@ namespace sui
 			uint32_t input_max_length, std::shared_ptr<swganh::object::Object> owner, 
 			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
 
-		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateInputBoxWithDropDown(swganh::sui::InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
-			uint32_t input_max_length, std::vector<std::wstring> drop_items, std::shared_ptr<swganh::object::Object> owner, 
-			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);
-
 		void Startup();
 
 	private:

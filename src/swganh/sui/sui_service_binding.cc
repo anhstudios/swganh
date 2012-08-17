@@ -6,7 +6,7 @@
 
 BOOST_PYTHON_MODULE(py_sui) 
 {
-    docstring_options local_docstring_options(true, true, false);
+    bp::docstring_options local_docstring_options(true, true, false);
 
     exportSuiService();
 

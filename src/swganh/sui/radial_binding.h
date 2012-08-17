@@ -32,7 +32,7 @@ using swganh::scripting::ScopedGilLock;
 namespace swganh {
 namespace sui {
 
-	struct RadialWrap : RadialInterface, wrapper<RadialInterface>
+	struct RadialWrap : RadialInterface, bp::wrapper<RadialInterface>
 	{
 		void BuildRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, std::vector<RadialOptions> radials)
 		{
@@ -71,11 +71,11 @@ namespace sui {
 	void exportRadial()
 	{
 		bp::class_<RadialWrap, boost::noncopyable>("RadialMenu", "A radial class purely used in python.")
-			.def("BuildRadial", pure_virtual(&RadialWrap::BuildRadial), "Builds a radial for the target :class:`Object`")
-			.def("HandleRadial", pure_virtual(&RadialWrap::HandleRadial), "Handles a specific radial action");
+			.def("BuildRadial", bp::pure_virtual(&RadialWrap::BuildRadial), "Builds a radial for the target :class:`Object`")
+			.def("HandleRadial", bp::pure_virtual(&RadialWrap::HandleRadial), "Handles a specific radial action");
 
 		bp::class_<RadialOptions>("RadialOptions", "class defining the options needed for radials", 
-			init<uint8_t, uint8_t, uint8_t, std::wstring>())
+			bp::init<uint8_t, uint8_t, uint8_t, std::wstring>())
 			.def_readwrite("parent_item", &RadialOptions::parent_item, "the parent item of this radial")
 			.def_readwrite("identifier", &RadialOptions::identifier, "the :class:`RadialIndentifier` this radial is")
 			.def_readwrite("action", &RadialOptions::action, "the action id this radial should apply to")
