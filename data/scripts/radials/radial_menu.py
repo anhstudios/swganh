@@ -1,10 +1,8 @@
 import swgpy
-import swgpy.sui
+from swgpy.sui import RadialMenu
 
 print('loaded radial menu')
-help(RadialMenu)
-
-class Radials(RadialMenu):
+class PythonRadialMenu(RadialMenu):
     def BuildRadial(self, owner, target, radials, action):
         print('hi')
         print(owner.id)

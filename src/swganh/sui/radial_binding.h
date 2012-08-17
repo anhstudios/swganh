@@ -21,8 +21,9 @@
 
 
 using namespace swganh::sui;
-using namespace boost::python;
+namespace bp = boost::python;
 using namespace std;
+using swganh::scripting::ScopedGilLock;
 
 namespace swganh {
 namespace sui {
@@ -31,22 +32,38 @@ namespace sui {
 	{
 		void BuildRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, std::vector<swganh::messages::controllers::RadialOptions> radials)
 		{
-			boost::python::list radials_python;
-			for (auto& r : radials)
+			try 
 			{
-				radials_python.append(r);
+				bp::list radials_python;
+				for (auto& r : radials)
+				{
+					radials_python.append(r);
+				}
+				ScopedGilLock lock;
+				this->get_override("BuildRadial")(owner, target, radials_python);
 			}
-			this->get_override("BuildRadial")(owner, target, radials_python);
+			catch (bp::error_already_set& )
+			{
+				PyErr_Print();
+			}
 		}
 		void HandleRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, uint8_t action)
 		{
-			this->get_override("HandleRadial")(owner, target, action);
+			try 
+			{
+				ScopedGilLock lock;
+				this->get_override("HandleRadial")(owner, target, action);
+			}
+			catch (bp::error_already_set& )
+			{
+				PyErr_Print();
+			}
 		}
 	};
 
 	void exportRadial()
 	{
-		class_<RadialWrap, boost::noncopyable>("RadialMenu", "A radial class purely used in python.", no_init)
+		bp::class_<RadialWrap, boost::noncopyable>("RadialMenu", "A radial class purely used in python.")
 			.def("BuildRadial", pure_virtual(&RadialWrap::BuildRadial), "Builds a radial for the target :class:`Object`")
 			.def("HandleRadial", pure_virtual(&RadialWrap::HandleRadial), "Handles a specific radial action");		
 	}
