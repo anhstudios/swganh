@@ -54,7 +54,7 @@ SUIService::SUIService(swganh::app::SwganhKernel* kernel)
 
 void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification message)
 {
-	auto owner = client->GetPlayerId();
+	auto owner = client->GetController()->GetId();
 	WindowMapRange range = window_lookup_.equal_range(owner);
 	std::shared_ptr<SUIWindowInterface> result = nullptr;
 	for(auto itr=range.first; itr != range.second; ++itr)
@@ -208,12 +208,12 @@ std::shared_ptr<SUIWindowInterface> SUIService::CreateMessageBox(MessageBoxType 
 	switch(msgBox_type)
 	{
 	case MESSAGE_BOX_OK:
-		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"@ok");
 		result->SetProperty("btnCancel:visible", L"False");
 		break;
 	case MESSAGE_BOX_OK_CANCEL:
-		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
-		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"btnCancel");
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"@ok");
+		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"@cancel");
 		break;
 	case MESSAGE_BOX_YES_NO:
 		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"@yes");
@@ -235,11 +235,11 @@ std::shared_ptr<SUIWindowInterface> SUIService::CreateListBox(ListBoxType lstBox
 	switch(lstBox_type) 
 	{
 	case LIST_BOX_OKCANCEL:
-		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
-		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"btnCancel");
+		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"@ok");
+		result->SetProperty("btnCancel:visible", L"True")->SetProperty("btnCancel:Text", L"@cancel");
 		break;
 	case LIST_BOX_OK:
-		result->SetProperty("btnOk:visible", L"True")->SetProperty("btnOk:Text", L"btnOk");
+		result->SetProperty("btnOk:visible", L"True");
 		result->SetProperty("btnCancel:visible", L"False");
 		break;
 	}
