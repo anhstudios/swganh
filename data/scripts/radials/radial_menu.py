@@ -2,14 +2,12 @@ import swgpy
 from swgpy.sui import RadialMenu
 
 class PyRadialMenu(RadialMenu):
-    def BuildRadial(self, owner, target, radials, action):
+    def BuildRadial(self, owner, target, radials):
         print('hi')
         print(owner.id)
         print(target.id)
         print(radials)
-        print(action)
         
-    def HandleRadial(self, owner, target, action):
+    def HandleRadial(self, owner, target):
         print(owner.id)
-        print(target.id)
-        print(action)
+        print(target.id)        

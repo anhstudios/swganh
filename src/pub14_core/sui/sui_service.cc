@@ -100,7 +100,7 @@ void SUIService::_handleObjectMenuRequest(
 		LOG(warning) << "action id:" << (uint8_t)v.action;
 		LOG(warning) << "parent_item_id:" << v.parent_item;
 	}
-	PythonRadialCreator creator("radials.radial_menu", "PythonRadialMenu");
+	PythonRadialCreator creator("radials.radial_menu", "PyRadialMenu");
 	auto radial = creator();
 	
 	auto owner = simulation_service_->GetObjectById(message.owner_id);
@@ -108,30 +108,17 @@ void SUIService::_handleObjectMenuRequest(
 
 	radial->BuildRadial(owner, target, message.radial_options);
 	
-	// module RadialMenu
-	//script_directory_ + "radial_menu.py");
+	// For Right now just send a default response
+	// This will be filled in eventually in the python script
 	
-
-	
-
-	
-	/*else
+	ObjectMenuResponse response;
+	response.owner_id = message.owner_id;
+	response.target_id = message.target_id;
+	response.radial_options = message.radial_options;
+	if (owner)
 	{
-		ObjectMenuResponse response;
-		response.owner_id = message.owner_id;
-		response.target_id = message.target_id;
-		response.radial_options = message.radial_options;
-		if (owner)
-		{
-			owner->GetController()->Notify(response);
-		}
-	}*/
-	
-
-	
-	
-	
-	
+		owner->GetController()->Notify(response);
+	}
 }
 
 ServiceDescription SUIService::GetServiceDescription()
