@@ -78,7 +78,6 @@ void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connect
 	{
 		if(itr->second->GetWindowId() == message.window_id)
 		{
-			swganh::scripting::ScopedGilLock lock;
 			if(itr->second->GetFunctionById(message.event_type)(itr->second->GetOwner(), message.event_type, message.returnList))
 			{
 				window_lookup_.erase(itr);
@@ -116,7 +115,7 @@ void SUIService::_handleObjectMenuRequest(
 ServiceDescription SUIService::GetServiceDescription()
 {
 	ServiceDescription service_description(
-		"SUIService",
+		"SuiService",
 		"sui",
 		"0.1",
 		"127.0.0.1",

@@ -187,13 +187,13 @@ void Object::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, 
 		for(auto& slot : slot_descriptor_)
 		{
 			slot.second->view_objects([&] (const std::shared_ptr<Object>& object) {
-				if(topDown)
+				if(!topDown)
 					func(object);
 
 				if(max_depth != 1)
 					object->ViewObjects(requester, (max_depth == 0) ? 0 : max_depth-1, topDown, func);
 
-				if(!topDown)
+				if(topDown)
 					func(object);
 			});
 		}
