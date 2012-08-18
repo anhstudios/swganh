@@ -7,6 +7,7 @@ class PyRadialMenu(RadialMenu):
         radial_list = RadialOptionsList()
         if (radials):
             radial_list.extend(radials)
+        blahz
         #TEST TO SHOW HOW RADIALS WORK
         #if (target):
         radial_list.append(RadialOptions(0, RadialIdentifier.serverMenu3, 3, '@sui:bank_credits'))

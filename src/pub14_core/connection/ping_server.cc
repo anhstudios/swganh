@@ -25,7 +25,7 @@ PingServer::PingServer(boost::asio::io_service& io_service, uint16_t port)
 
 PingServer::~PingServer()
 {
-    socket_.close();
+	socket_.close();
 }
 
 uint64_t PingServer::BytesReceived() const

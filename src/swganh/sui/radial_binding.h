@@ -36,33 +36,27 @@ namespace sui {
 	{
 		void BuildRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, std::vector<RadialOptions> radials)
 		{
+			ScopedGilLock lock;
 			try 
 			{
-				bp::list radials_python;
-				for (auto& r : radials)
-				{
-					radials_python.append(r);
-				}
-				ScopedGilLock lock;
+				
 
 				this->get_override("BuildRadial")(owner, target, radials);
 			}
 			catch (bp::error_already_set& )
 			{
-				ScopedGilLock lock;
 				PyErr_Print();
 			}
 		}
 		void HandleRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, uint8_t action)
 		{
+			ScopedGilLock lock;
 			try 
-			{
-				ScopedGilLock lock;
+			{				
 				this->get_override("HandleRadial")(owner, target, action);
 			}
 			catch (bp::error_already_set& )
 			{
-				ScopedGilLock lock;
 				PyErr_Print();				
 			}
 		}

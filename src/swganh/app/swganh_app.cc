@@ -229,6 +229,8 @@ void SwganhApp::Start() {
 
 void SwganhApp::Stop() {
     running_ = false;
+	// Shutdown Event Dispatcher
+	kernel_->GetEventDispatcher()->Shutdown();
 }
 
 bool SwganhApp::IsRunning() {
