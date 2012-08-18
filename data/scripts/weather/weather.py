@@ -10,30 +10,29 @@ weather_svc = service_mgr.weather_service()
 #As no error check is in place on server, if this script fails it WILL crash the server.
 #Weather duration is now set in minutes: weather_event(duration,weatherType,cloudVector).
 
-lightStormSequence = weather.weather_sequence()
-lightStormSequence[:] = [
-	weather.weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather.weather_event(10, weather.WEATHER.LIGHTSTORM, utility.vector3(0.0, 0.0, 0.0)),
-	weather.weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather.weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))
+lightStormSequence = [\
+	weather.weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),\
+	weather.weather_event(10, weather.WEATHER.LIGHTSTORM, utility.vector3(0.0, 0.0, 0.0)),\
+	weather.weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),\
+	weather.weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))\
 ]
-mediumStormSequence = weather.weather_sequence()
-mediumStormSequence[:] = [
-	weather.weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather.weather_event(10, weather.WEATHER.MEDIUMSTORM, utility.vector3(0.0, 0.0, 0.0)),
-	weather.weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather.weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))
+
+mediumStormSequence = [\
+	weather.weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),\
+	weather.weather_event(10, weather.WEATHER.MEDIUMSTORM, utility.vector3(0.0, 0.0, 0.0)),\
+	weather.weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),\
+	weather.weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))\
 ]
-heavyStormSequence = weather.weather_sequence()
-heavyStormSequence[:] = [
-	weather.weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather.weather_event(20, weather.WEATHER.HEAVYSTORM, utility.vector3(0.0, 0.0, 0.0)),
-	weather.weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather.weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))
+
+heavyStormSequence = [\
+	weather.weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),\
+	weather.weather_event(20, weather.WEATHER.HEAVYSTORM, utility.vector3(0.0, 0.0, 0.0)),\
+	weather.weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),\
+	weather.weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))\
 ]
-noWeather = weather.weather_sequence()
-noWeather[:] = [
-	weather.weather_event(0, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))
+
+noWeather = [\
+	weather.weather_event(0, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))\
 ]
 
 #Crude random function with weight. Needs improving.
@@ -48,6 +47,3 @@ def weather_choice(wList, scene):
 weather_choice([(heavyStormSequence, 0.02), (mediumStormSequence, 0.15), (lightStormSequence,0.2)],weather.SCENE.TATOOINE)
 weather_choice([(heavyStormSequence, 0.02), (mediumStormSequence, 0.15), (lightStormSequence,0.2)],weather.SCENE.CORELLIA)
 weather_choice([(heavyStormSequence, 0.02), (mediumStormSequence, 0.15), (lightStormSequence,0.2)],weather.SCENE.NABOO)
-
-
-    
