@@ -36,7 +36,7 @@ namespace controllers {
         uint64_t target_id;
         uint64_t owner_id;
         std::vector<RadialOptions> radial_options;
-        uint8_t response_count;
+        uint8_t response_count;		
 
         void OnControllerSerialize(anh::ByteBuffer& buffer) const
         {
@@ -49,7 +49,7 @@ namespace controllers {
                 int counter = 0;
                 for(auto& radial : radial_options)
                 {
-                    buffer.write(counter++);
+                    buffer.write(++counter);
                     buffer.write(radial.parent_item);
                     buffer.write(static_cast<uint8_t>(radial.identifier));
                     buffer.write(radial.action);
@@ -67,6 +67,19 @@ namespace controllers {
         {
             target_id = buffer.read<uint64_t>();
             owner_id = buffer.read<uint64_t>();
+
+			uint32_t size = buffer.read<uint32_t>();
+			int counter = 0;
+			for(uint32_t i = 0; i < size ; ++i)
+			{
+				RadialOptions r;
+				buffer.read<uint8_t>();
+				r.parent_item = buffer.read<uint8_t>();
+				r.identifier =	static_cast<RadialIdentifier>(buffer.read<uint8_t>());
+				r.action = buffer.read<uint8_t>();
+				r.custom_description = buffer.read<std::wstring>();
+				radial_options.push_back(r);
+			}
             
         }
     };

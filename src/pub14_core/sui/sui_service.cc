@@ -92,16 +92,6 @@ void SUIService::_handleObjectMenuRequest(
 	const std::shared_ptr<ObjectController>& controller,
 	ObjectMenuRequest message)
 {
-	LOG(warning) << "sui service _handleObjectMenuRequest";
-	LOG(warning) << "owner_id: " << message.owner_id << " target_id:" << message.target_id << " response count:" << message.response_count;
-	LOG(warning) << "radial options:";
-	for(auto& v : message.radial_options)
-	{
-		LOG(warning) << "identifier:" <<  v.identifier;
-		LOG(warning) << "description:" << std::string(v.custom_description.begin(), v.custom_description.end());
-		LOG(warning) << "action id:" << (uint8_t)v.action;
-		LOG(warning) << "parent_item_id:" << v.parent_item;
-	}
 	PythonRadialCreator creator("radials.radial_menu", "PyRadialMenu");
 	auto radial = creator();
 	

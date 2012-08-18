@@ -47,7 +47,7 @@ namespace controllers {
                 int counter = 0;
                 for(auto& radial : radial_options)
                 {
-                    buffer.write(counter++);
+                    buffer.write(++counter);
                     buffer.write(radial.parent_item);
                     buffer.write(static_cast<uint8_t>(radial.identifier));
                     buffer.write(radial.action);

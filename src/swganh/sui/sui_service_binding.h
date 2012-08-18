@@ -76,10 +76,7 @@ struct PythonCallback
 std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInterface> self, uint32_t event_id, std::string event_source, InputTrigger input_trigger, 
 													std::vector<std::string> result_list, PythonCallback funct)
 {
-	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, result_list, funct.callback_);
-	//funct.callback_(self->GetOwner(), event_id, result_list);
-	//return self->SubscribeToEventCallback(event_id, event_source, input_trigger, result_list, funct);
-	
+	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, result_list, funct.callback_);	
 }
 
 //CreateListBox Wrapper
