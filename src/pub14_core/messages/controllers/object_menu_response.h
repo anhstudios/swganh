@@ -44,7 +44,9 @@ namespace controllers {
             uint32_t size = radial_options.size();
             if (size > 0)
             {
-                int counter = 0;
+				// write size
+				buffer.write(size);
+                uint8_t counter = 0;
                 for(auto& radial : radial_options)
                 {
                     buffer.write(++counter);
@@ -58,7 +60,7 @@ namespace controllers {
             {
                 buffer.write(0);
             }
-            buffer.write(response_count);
+            buffer.write(response_count);			
         }
 
         void OnControllerDeserialize(anh::ByteBuffer buffer)
