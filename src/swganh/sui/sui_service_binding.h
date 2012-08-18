@@ -29,23 +29,7 @@ using namespace swganh::sui;
 namespace bp = boost::python;
 using namespace std;
 
-
-
-//Converter Functions
-template <typename T>
-std::vector<T> vectorConvert(bp::list& list)
-{
-	std::vector<T> result_vector;
-	for(int i=0; i < len(list); ++i)
-
-	{
-		result_vector.push_back(bp::extract<T>(list[i]));
-	}
-	return result_vector;
-}
- 
-
-
+//Converter Functions 
 struct PythonCallback
 {
 	PythonCallback(const std::string& module, const std::string& callback)
@@ -72,22 +56,25 @@ struct PythonCallback
 	bp::object module_;
 	bp::object callback_;
 };
+
 //Subscription wrapper
 std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInterface> self, uint32_t event_id, std::string event_source, InputTrigger input_trigger, 
 													std::vector<std::string> result_list, PythonCallback funct)
 {
-	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, result_list, funct.callback_);
-	//funct.callback_(self->GetOwner(), event_id, result_list);
-	//return self->SubscribeToEventCallback(event_id, event_source, input_trigger, result_list, funct);
-	
+	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, result_list, 
+	[&](std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
+	{ 
+		swganh::scripting::ScopedGilLock lock;
+		return funct.callback_(object, event_type, result_list);
+	});
 }
 
 //CreateListBox Wrapper
 std::shared_ptr<SUIWindowInterface> CreateListBoxWrapper(SUIServiceInterface* self, ListBoxType lstBox_type, 
-			std::wstring title, std::wstring prompt, bp::list dataList, std::shared_ptr<swganh::object::Object> owner, 
+			std::wstring title, std::wstring prompt, std::vector<std::wstring> dataList, std::shared_ptr<swganh::object::Object> owner, 
 			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0)
 {
-	return self->CreateListBox(lstBox_type, title, prompt, vectorConvert<std::wstring>(dataList), owner, ranged_object, max_distance);
+	return self->CreateListBox(lstBox_type, title, prompt, dataList, owner, ranged_object, max_distance);
 }
 BOOST_PYTHON_FUNCTION_OVERLOADS(ListBoxOverloads, CreateListBoxWrapper, 6, 8);
 
