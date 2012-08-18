@@ -82,12 +82,17 @@ void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object
 	if(requester == nullptr || container_permissions_->canInsert(shared_from_this(), requester, obj))
 	{
 		LOG(warning) << "INSERTING " << obj->GetObjectId() << " INTO " << this->GetObjectId();
+		boost::upgrade_lock<boost::shared_mutex> lock(global_container_lock_);
+		
 		//Add Object To Datastructure
-		arrangement_id = __InternalInsert(obj, arrangement_id);
+		{
+			boost::upgrade_to_unique_lock<boost::shared_mutex> unique_lock(lock);
+			arrangement_id = __InternalInsert(obj, arrangement_id);
+		}
 
 		//Update our observers with the new object
 		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-			obj->AddAwareObject(object);		
+			obj->__InternalAddAwareObject(object);		
 		});
 	}
 	else
@@ -102,17 +107,22 @@ void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Obj
 	{
 		LOG(warning) << "REMOVING " << oldObject->GetObjectId() << " FROM " << this->GetObjectId();
 	
+		boost::upgrade_lock<boost::shared_mutex> lock(global_container_lock_);
+
 		//Update our observers about the dead object
 		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-			oldObject->RemoveAwareObject(object);		
+			oldObject->__InternalRemoveAwareObject(object);		
 		});
 
-		//Remove Object from Datastructure
-		for(auto& slot : slot_descriptor_)
 		{
-			slot.second->remove_object(oldObject);
+			boost::upgrade_to_unique_lock<boost::shared_mutex> unique_lock(lock);
+			//Remove Object from Datastructure
+			for(auto& slot : slot_descriptor_)
+			{
+				slot.second->remove_object(oldObject);
+			}
+			oldObject->SetContainer(nullptr);
 		}
-		oldObject->SetContainer(nullptr);
 	}
 	else
 	{
@@ -127,22 +137,29 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 		newContainer->GetPermissions()->canInsert(newContainer, requester, object))
 	{
 		LOG(warning) << "TRANSFER " << object->GetObjectId() << " FROM " << this->GetObjectId() << " TO " << newContainer->GetObjectId();
-		//Perform the transfer
-		for(auto& slot : slot_descriptor_)
+		
+		boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
+		
 		{
-			slot.second->remove_object(object);
-		}
+			boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
 
-		arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+			//Perform the transfer
+			for(auto& slot : slot_descriptor_)
+			{
+				slot.second->remove_object(object);
+			}
+
+			arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+		}
 
 		//Split into 3 groups -- only ours, only new, and both ours and new
 		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
 
-		object->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
+		object->__InternalViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
 			oldObservers.insert(observer);
 		});
 	
-		newContainer->ViewAwareObjects([&] (std::shared_ptr<Object>& observer) 
+		newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object>& observer) 
 		{
 			if(newContainer->GetPermissions()->canView(newContainer, observer))
 			{
@@ -161,7 +178,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 
 		//Send Creates to only new
 		for(auto& observer : newObservers) {
-			object->AddAwareObject(observer);
+			object->__InternalAddAwareObject(observer);
 		}
 
 		//Send updates to both
@@ -171,7 +188,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 
 		//Send destroys to only ours
 		for(auto& observer : oldObservers) {
-			object->RemoveAwareObject(observer);
+			object->__InternalRemoveAwareObject(observer);
 		}
 	}
 	else
@@ -180,7 +197,7 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 	}
 }
 
-void Object::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint)
+void Object::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
 {
 	if(requester == nullptr || container_permissions_->canView(shared_from_this(), requester))
 	{
@@ -191,7 +208,7 @@ void Object::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, 
 					func(object);
 
 				if(max_depth != 1)
-					object->ViewObjects(requester, (max_depth == 0) ? 0 : max_depth-1, topDown, func);
+					object->__InternalViewObjects(requester, (max_depth == 0) ? 0 : max_depth-1, topDown, func);
 
 				if(topDown)
 					func(object);
@@ -227,19 +244,23 @@ int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrange
 
 void Object::SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id)
 {
-	for(auto& slot : slot_descriptor_)
+	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
+	
 	{
-		slot.second->remove_object(object);
+		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
+		for(auto& slot : slot_descriptor_)
+		{
+			slot.second->remove_object(object);
+		}
+		__InternalInsert(object, new_arrangement_id);
 	}
-	__InternalInsert(object, new_arrangement_id);
 
-
-	ViewAwareObjects([&] (std::shared_ptr<Object> aware_object) {
+	__InternalViewAwareObjects([&] (std::shared_ptr<Object> aware_object) {
 		object->SendUpdateContainmentMessage(object->GetController());
 	});
 }
 
-void Object::AddAwareObject(std::shared_ptr<swganh::object::Object> object)
+void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> object)
 {	
 	auto find_itr = aware_objects_.find(object);
 	if(find_itr == aware_objects_.end())
@@ -258,7 +279,7 @@ void Object::AddAwareObject(std::shared_ptr<swganh::object::Object> object)
 				for(auto& slot : slot_descriptor_)
 				{
 					slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-						v->AddAwareObject(object);
+						v->__InternalAddAwareObject(object);
 					});
 				}
 			}
@@ -266,12 +287,12 @@ void Object::AddAwareObject(std::shared_ptr<swganh::object::Object> object)
 	}
 }
 
-void Object::ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func)
+void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func)
 {
 	std::for_each(aware_objects_.begin(), aware_objects_.end(), func);
 }
 
-void Object::RemoveAwareObject(std::shared_ptr<swganh::object::Object> object)
+void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object> object)
 {
 	auto find_itr = aware_objects_.find(object);
 	if(find_itr != aware_objects_.end())
@@ -284,7 +305,7 @@ void Object::RemoveAwareObject(std::shared_ptr<swganh::object::Object> object)
 			for(auto& slot : slot_descriptor_)
 			{
 				slot.second->view_objects([&] (const std::shared_ptr<Object>& v) {
-					v->RemoveAwareObject(object);
+					v->__InternalRemoveAwareObject(object);
 				});
 			}
 
@@ -665,16 +686,6 @@ bool Object::HasFlag(std::string flag)
     boost::lock_guard<boost::mutex> lg(flags_mutex_);
 
     return flags_.find(flag) != flags_.end();
-}
-
-void Object::LockObjectMutex()
-{
-	object_mutex_.lock();
-}
-
-void Object::UnlockObjectMutex()
-{
-	object_mutex_.unlock();
 }
 
 /// Slots
