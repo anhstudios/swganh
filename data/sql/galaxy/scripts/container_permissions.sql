@@ -1,16 +1,7 @@
--- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               5.5.24-MariaDB - mariadb.org binary distribution
--- Server OS:                    Win32
--- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2012-08-12 16:17:22
--- --------------------------------------------------------
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
--- Dumping structure for table galaxy.container_permissions
 DROP TABLE IF EXISTS `container_permissions`;
 CREATE TABLE IF NOT EXISTS `container_permissions` (
   `type` int(11) NOT NULL AUTO_INCREMENT,
@@ -19,9 +10,10 @@ CREATE TABLE IF NOT EXISTS `container_permissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `container_permissions` VALUES (1, 'default');
-INSERT INTO `container_permissions` VALUES (2, 'creature');
-INSERT INTO `container_permissions` VALUES (3, 'creature container');
-INSERT INTO `container_permissions` VALUES (4, 'rideable');
+INSERT INTO `container_permissions` VALUES (2, 'world');
+INSERT INTO `container_permissions` VALUES (3, 'creature');
+INSERT INTO `container_permissions` VALUES (4, 'creature container');
+INSERT INTO `container_permissions` VALUES (5, 'rideable');
 
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
