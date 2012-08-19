@@ -34,6 +34,12 @@
 #include "swganh/object/slot_interface.h"
 
 namespace swganh {
+
+namespace messages {
+namespace controllers {
+	class ObjectMenuResponse;
+	struct RadialOptions;
+}}
 namespace object {
 
 typedef std::vector<
@@ -137,16 +143,14 @@ public:
 	virtual void RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject);
 	virtual void TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
 	virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id);
-	virtual void ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr);
 	
-	virtual void AddAwareObject(std::shared_ptr<Object> object);
-	virtual void ViewAwareObjects(std::function<void(std::shared_ptr<Object>)> func);
-	virtual void RemoveAwareObject(std::shared_ptr<Object> object);
-	virtual void LockObjectMutex();
-	virtual void UnlockObjectMutex();
+	virtual void __InternalAddAwareObject(std::shared_ptr<Object> object);
+	virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func);
+	virtual void __InternalRemoveAwareObject(std::shared_ptr<Object> object);
 
 	virtual int32_t __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2);
-    
+    virtual void __InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func);
+
 	/**
      * Returns whether or not this observable object has any observers.
      *
@@ -438,6 +442,9 @@ public:
 	virtual void SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer);
 	virtual void SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer);
 
+	virtual void SetMenuResponse(std::vector<swganh::messages::controllers::RadialOptions> radials); 
+	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> GetMenuResponse();
+
 	bool operator< (const std::shared_ptr<Object>& other)
 	{ 
 		return GetObjectId() < other->GetObjectId(); 
@@ -448,12 +455,15 @@ public:
 	}
 
 	/// Slot Functions
+	bool ClearSlot(int32_t slot_id);
+	std::shared_ptr<Object> GetSlotObject(int32_t slot_id);
 	int32_t GetAppropriateArrangementId(std::shared_ptr<Object> other);
 	ObjectSlots GetSlotDescriptor();
 	ObjectArrangements GetSlotArrangements();
 
 protected:
-
+	// Radials
+	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> menu_response_;
 
 	std::atomic<int32_t> arrangement_id_;
 
@@ -467,6 +477,8 @@ protected:
     std::string stf_name_string_;                    // update 3
     std::wstring custom_name_;                       // update 3
     std::atomic<uint32_t> volume_;                   // update 3
+
+	
 
 private:
     mutable boost::mutex object_mutex_;

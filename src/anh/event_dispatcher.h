@@ -85,6 +85,8 @@ namespace anh {
         virtual void Unsubscribe(EventType type, CallbackId identifier) = 0;
 
         virtual boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event) = 0;
+		// Shutdown the event dispatcher and stops dispatching events immediately
+		virtual void Shutdown() = 0;
     };
 
     class EventDispatcher : public EventDispatcherInterface
@@ -97,6 +99,8 @@ namespace anh {
         void Unsubscribe(EventType type, CallbackId identifier);
 
         boost::unique_future<std::shared_ptr<EventInterface>> Dispatch(const std::shared_ptr<EventInterface>& dispatch_event);
+
+		void Shutdown();
 
     private:
         typedef std::unordered_map<CallbackId, EventHandlerCallback> EventHandlerList;

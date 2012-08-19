@@ -56,6 +56,7 @@
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 
+#include "pub14_core/equipment/equipment_service.h"
 #include "movement_manager.h"
 #include "scene_manager.h"
 #include "swganh/simulation/movement_manager_interface.h"
@@ -68,6 +69,7 @@ using namespace swganh::messages::controllers;
 using namespace swganh::network;
 using namespace swganh::object;
 using namespace swganh::simulation;
+using namespace swganh_core::equipment;
 using namespace swganh_core::simulation;
 
 using namespace swganh::tre;
@@ -106,6 +108,16 @@ public:
 
         return scene_manager_;
     }
+
+	const shared_ptr<swganh::equipment::EquipmentServiceInterface>& GetEquipmentService()
+	{
+		if (!equipment_service_)
+		{
+			equipment_service_ = kernel_->GetPluginManager()->CreateObject<EquipmentService>("Equipment::EquipmentService");
+		}
+
+		return equipment_service_;
+	}
 
 	void SimulationServiceImpl::HandleDataTransform(
 		const shared_ptr<ObjectController>& controller, 
@@ -186,10 +198,13 @@ public:
         {
             scene->RemoveObject(object);
         }
-
 		StopControllingObject(object);
 
+		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> viewObject){
+			object_manager_->RemoveObject(viewObject);
+		});
         object_manager_->RemoveObject(object);
+		
     }
 
 	shared_ptr<Object> GetObjectByCustomName(const wstring& custom_name)
@@ -255,15 +270,7 @@ public:
         if (find_iter != controlled_objects_.end())
         {
             controller = find_iter->second;
-            controller->SetRemoteClient(client);
-
-			// Send Updates to aware objects if we are reconnecting and the object is still alive...
-			object->ViewAwareObjects([&](shared_ptr<Object> aware){
-			{
-				aware->SendCreateByCrc(controller);
-				aware->CreateBaselines(controller);
-			}
-		});
+            controller->SetRemoteClient(client);			
         }
         else
         {
@@ -272,14 +279,15 @@ public:
 
             controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
         }
+		// Send Updates to aware objects if we are reconnecting and the object is still alive...
+		object->ViewAwareObjects([&](shared_ptr<Object> aware){
+			aware->Subscribe(controller);
+			aware->SendCreateByCrc(controller);
+			aware->CreateBaselines(controller);
+		});
 
         auto connection_client = std::static_pointer_cast<ConnectionClientInterface>(client);
         connection_client->SetController(controller);
-
-		// Get All ViewObjects and make the controller aware
-		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> found_obj){
-			found_obj->AddAwareObject(object);
-		});		
 
         return controller;
     }
@@ -347,16 +355,11 @@ public:
         }
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
-        // TODO: Do with Equipment
-		object->ViewAwareObjects([&] (shared_ptr<Object> aware)
-		{
-			if (aware->GetType() == player::Player::type)
-			{
-				event_dispatcher->Dispatch(
-					make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", static_pointer_cast<player::Player>(aware)));
-			}
-		});
-		
+        
+		auto player = GetEquipmentService()->GetEquippedObject<player::Player>(object, "ghost");
+		event_dispatcher->Dispatch(
+					make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", player));
+
         auto scene = scene_manager_->GetScene(object->GetSceneId());
 
         if (!scene)
@@ -402,6 +405,7 @@ private:
     shared_ptr<ObjectManager> object_manager_;
     shared_ptr<SceneManagerInterface> scene_manager_;
     shared_ptr<MovementManagerInterface> movement_manager_;
+	shared_ptr<swganh::equipment::EquipmentServiceInterface> equipment_service_;
     SwganhKernel* kernel_;
 	ServerInterface* server_;
 	

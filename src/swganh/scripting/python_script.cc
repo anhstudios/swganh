@@ -39,6 +39,7 @@ PythonScript::PythonScript(const string& filename)
     }
     catch (error_already_set &)
     {
+		ScopedGilLock lock;
         PyErr_Print();
     }
 }

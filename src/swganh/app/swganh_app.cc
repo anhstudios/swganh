@@ -156,6 +156,8 @@ SwganhApp::SwganhApp(int argc, char* argv[])
 SwganhApp::~SwganhApp() 
 {
     Stop();
+	// Shutdown Event Dispatcher
+	kernel_->GetEventDispatcher()->Shutdown();
 
     kernel_.reset();
     io_work_.reset();
@@ -236,7 +238,7 @@ void SwganhApp::Start() {
 }
 
 void SwganhApp::Stop() {
-    running_ = false;
+    running_ = false;	
 }
 
 bool SwganhApp::IsRunning() {

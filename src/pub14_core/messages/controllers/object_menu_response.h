@@ -1,8 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_MESSAGES_CONTROLLERS_OBJECT_MENU_REQUEST_H_
-#define SWGANH_MESSAGES_CONTROLLERS_OBJECT_MENU_REQUEST_H_
+#ifndef SWGANH_MESSAGES_CONTROLLERS_OBJECT_MENU_RESPONSE_H_
+#define SWGANH_MESSAGES_CONTROLLERS_OBJECT_MENU_RESPONSE_H_
 
 #include <cstdint>
 #include <string>
@@ -15,28 +15,26 @@ namespace swganh {
 namespace messages {
 namespace controllers {
 
-
-
-    // Radial Request
-    class ObjectMenuRequest : public ObjControllerMessage
+    // Radial Response
+    class ObjectMenuResponse : public ObjControllerMessage
     {
     public:
-        explicit ObjectMenuRequest(uint32_t controller_type = 0x0000000B)
-            : ObjControllerMessage(controller_type, message_type())
+        explicit ObjectMenuResponse(uint32_t controller_type = 0x0000000B)
+            : ObjControllerMessage(controller_type, message_type())            
         {}
 
-        explicit ObjectMenuRequest(ObjControllerMessage controller_message)
+        explicit ObjectMenuResponse(ObjControllerMessage controller_message)
             : ObjControllerMessage(std::move(controller_message))
         {
             OnControllerDeserialize(std::move(data));
         }
 
-        static uint32_t message_type() { return 0x00000146; }
+        static uint32_t message_type() { return 0x00000147; }
         
         uint64_t target_id;
         uint64_t owner_id;
         std::vector<RadialOptions> radial_options;
-        uint8_t response_count;		
+        uint8_t response_count;
 
         void OnControllerSerialize(anh::ByteBuffer& buffer) const
         {
@@ -46,7 +44,9 @@ namespace controllers {
             uint32_t size = radial_options.size();
             if (size > 0)
             {
-                int counter = 0;
+				// write size
+				buffer.write(size);
+                uint8_t counter = 0;
                 for(auto& radial : radial_options)
                 {
                     buffer.write(++counter);
@@ -60,30 +60,17 @@ namespace controllers {
             {
                 buffer.write(0);
             }
-            buffer.write(response_count);
+            buffer.write(response_count);			
         }
 
         void OnControllerDeserialize(anh::ByteBuffer buffer)
         {
             target_id = buffer.read<uint64_t>();
             owner_id = buffer.read<uint64_t>();
-
-			uint32_t size = buffer.read<uint32_t>();
-			int counter = 0;
-			for(uint32_t i = 0; i < size ; ++i)
-			{
-				RadialOptions r;
-				buffer.read<uint8_t>();
-				r.parent_item = buffer.read<uint8_t>();
-				r.identifier =	static_cast<RadialIdentifier>(buffer.read<uint8_t>());
-				r.action = buffer.read<uint8_t>();
-				r.custom_description = buffer.read<std::wstring>();
-				radial_options.push_back(r);
-			}
             
         }
     };
 
 }}}  // namespace swganh::messages::controllers
 
-#endif  // SWGANH_MESSAGES_CONTROLLERS_OBJECT_MENU_REQUEST_H_
+#endif  // SWGANH_MESSAGES_CONTROLLERS_OBJECT_MENU_RESPONSE_H_
