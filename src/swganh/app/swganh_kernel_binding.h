@@ -61,7 +61,6 @@ void exportSWGANHKernel()
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::social::SocialServiceInterface*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SocialService`")
-<<<<<<< HEAD
 		.def("sui_service", make_function(
 				std::bind(&anh::service::ServiceManager::GetService<swganh::sui::SUIServiceInterface>, std::placeholders::_1, "SuiService"),
                 return_value_policy<reference_existing_object>(),
@@ -72,13 +71,11 @@ void exportSWGANHKernel()
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::equipment::EquipmentServiceInterface*, anh::service::ServiceManager*>()),
 				"returns an internal refrence of the :class:`.EquipmentService`")
-=======
 		.def("weather_service", make_function(
 				std::bind(&anh::service::ServiceManager::GetService<swganh::weather::WeatherServiceInterface>, std::placeholders::_1, "WeatherService"),
 				return_value_policy<reference_existing_object>(),
 				boost::mpl::vector<swganh::weather::WeatherServiceInterface*, anh::service::ServiceManager*>()),
 				"returns an internal refrence of the :class:`.WeatherService`")
->>>>>>> 17b3ddfaec74e8f9718701712a3bd6aa3d10e3b8
        ;
        
 }

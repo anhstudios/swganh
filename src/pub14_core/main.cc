@@ -61,10 +61,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh_core::simulation::Initialize(swganh_kernel);
 	swganh_core::player::Initialize(swganh_kernel);
 	swganh_core::social::Initialize(swganh_kernel);
-<<<<<<< HEAD
 	swganh_core::sui::Initialize(swganh_kernel);
-=======
 	swganh_core::weather::Initialize(swganh_kernel);
->>>>>>> 17b3ddfaec74e8f9718701712a3bd6aa3d10e3b8
     return ExitModule;
 }
