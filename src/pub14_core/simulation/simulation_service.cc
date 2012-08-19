@@ -198,10 +198,13 @@ public:
         {
             scene->RemoveObject(object);
         }
-
 		StopControllingObject(object);
 
+		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> viewObject){
+			object_manager_->RemoveObject(viewObject);
+		});
         object_manager_->RemoveObject(object);
+		
     }
 
 	shared_ptr<Object> GetObjectByCustomName(const wstring& custom_name)
@@ -267,15 +270,7 @@ public:
         if (find_iter != controlled_objects_.end())
         {
             controller = find_iter->second;
-            controller->SetRemoteClient(client);
-
-			// Send Updates to aware objects if we are reconnecting and the object is still alive...
-			object->ViewAwareObjects([&](shared_ptr<Object> aware){
-			{
-				aware->SendCreateByCrc(controller);
-				aware->CreateBaselines(controller);
-			}
-		});
+            controller->SetRemoteClient(client);			
         }
         else
         {
@@ -284,14 +279,15 @@ public:
 
             controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
         }
+		// Send Updates to aware objects if we are reconnecting and the object is still alive...
+		object->ViewAwareObjects([&](shared_ptr<Object> aware){
+			aware->Subscribe(controller);
+			aware->SendCreateByCrc(controller);
+			aware->CreateBaselines(controller);
+		});
 
         auto connection_client = std::static_pointer_cast<ConnectionClientInterface>(client);
         connection_client->SetController(controller);
-
-		// Get All ViewObjects and make the controller aware
-		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> found_obj){
-			found_obj->AddAwareObject(object);
-		});		
 
         return controller;
     }

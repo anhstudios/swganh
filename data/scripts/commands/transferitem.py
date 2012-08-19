@@ -8,10 +8,4 @@ class TransferItem(BaseSwgCommand):
         split = re.split('\W+', self.GetCommandString())
         container_id = split[1]
         container = self.GetKernel().service_manager().simulation_service().findObjectById(int(container_id))
-        
-        print(self.GetActor().id)
-        print(self.GetTarget().id)
-        print(container_id)
-        print(split)
-        print("tits")
         self.GetActor().Transfer(self.GetActor(), self.GetTarget(), container)

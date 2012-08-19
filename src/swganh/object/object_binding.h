@@ -13,6 +13,9 @@
 
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+
+#include "swganh/sui/radial_binding.h"
 
 using namespace boost::python;
 using namespace std;
@@ -66,7 +69,7 @@ void exportObject()
         .def("HasFlag", &Object::HasFlag, "Checks if the object has a specific flag set on it")
         .def("SetFlag", &Object::SetFlag, "Sets a flag on the object")
         .def("RemoveFlag", &Object::RemoveFlag, "Removes a flag from the object")
-
+		.def("SetMenuResponse", &Object::SetMenuResponse, "Sets the radial menu response from a python list")		
 		;
 
 	implicitly_convertible<std::shared_ptr<Object>, std::shared_ptr<ContainerInterface>>();

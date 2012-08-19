@@ -40,6 +40,8 @@ namespace scripting {
 		}
 
         boost::python::object GetGlobals() { return globals_; }
+
+		boost::python::object GetFileObject() { return file_object_; }
     private:
         PythonScript();
 

@@ -8,6 +8,7 @@ add_subdirectory(equipment)
 add_subdirectory(object)
 add_subdirectory(social)
 add_subdirectory(simulation)
+add_subdirectory(sui)
 add_subdirectory(utilities)
 
 add_custom_target(

@@ -5,6 +5,7 @@
 #include <functional>
 
 #include <anh/observer/observer_interface.h>
+#include <boost/thread/shared_mutex.hpp>
 
 namespace swganh
 {
@@ -21,39 +22,38 @@ namespace object
 
 		//Object Management
 		virtual void AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2) = 0;
-
 		virtual void RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject) = 0;
-
 		virtual void TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2) = 0;
+		virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id) {};
 
-		virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id) {}
-
-		virtual void ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func, std::shared_ptr<Object> hint=nullptr) = 0;
+		void ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func);
+		virtual void __InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func) = 0;
 
 		virtual std::shared_ptr<ContainerPermissionsInterface> GetPermissions();
-
 		virtual void SetPermissions(std::shared_ptr<ContainerPermissionsInterface> obj);
 
 		//FOR USE BY TRANSFER OBJECT ONLY. DO NOT CALL IN OUTSIDE CODE
 		virtual int32_t __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2) = 0;
-
-		//Call to Create
-		virtual void AddAwareObject(std::shared_ptr<swganh::object::Object> observer) {};
 		
+		//Call to Create
+		void AddAwareObject(std::shared_ptr<swganh::object::Object> observer);
+		virtual void __InternalAddAwareObject(std::shared_ptr<swganh::object::Object> observer) {};
+
 		//Call to View
-		virtual void ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func) {};
+		void ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func);
+		virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func) {};
 
 		//Call to Destroy
-		virtual void RemoveAwareObject(std::shared_ptr<swganh::object::Object> observer) {};
+		void RemoveAwareObject(std::shared_ptr<swganh::object::Object> observer);
+		virtual void __InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object> observer) {};
 
 		virtual std::shared_ptr<ContainerInterface> GetContainer() = 0;
 		virtual void SetContainer(const std::shared_ptr<ContainerInterface>& container) = 0;
 
-		virtual void LockObjectMutex() = 0;
-		virtual void UnlockObjectMutex() = 0;
-
 	protected:
 		std::shared_ptr<swganh::object::ContainerPermissionsInterface> container_permissions_;
+
+		static boost::shared_mutex global_container_lock_;
 	};
 }
 }

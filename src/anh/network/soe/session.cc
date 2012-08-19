@@ -381,7 +381,7 @@ void Session::SendSoePacket_(anh::ByteBuffer message)
 
 void Session::SendSoePacketInternal(anh::ByteBuffer message)
 {
-	//LOG_NET << "Server -> Client: " << message;
+	LOG_NET << "Server -> Client: \n" << message;
 
     compression_filter_(this, &message);
     encryption_filter_(this, &message);

@@ -4,8 +4,6 @@
 #ifndef QUADTREE_SPATIAL_PROVIDER_H_
 #define QUADTREE_SPATIAL_PROVIDER_H_
 
-#include <boost/thread/mutex.hpp>
-
 #include "swganh/simulation/spatial_provider_interface.h"
 #include "swganh/object/permissions/container_permissions_interface.h"
 #include "node.h"
@@ -27,21 +25,17 @@ public:
 	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> oldObject);
 	virtual void TransferObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
 	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position);
-	virtual void ViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)>, std::shared_ptr<swganh::object::Object> hint = nullptr);
 
 	// FOR USE BY TRANSFER OBJECT DO NOT CALL IN OUTSIDE CODE
 	virtual int32_t __InternalInsert(std::shared_ptr<swganh::object::Object> object, int32_t arrangement_id=-2);
+	virtual void __InternalViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
 
 	virtual std::shared_ptr<ContainerInterface> GetContainer() { return nullptr; }
 	virtual void SetContainer(const std::shared_ptr<ContainerInterface>& container) {}
 
-	virtual void LockObjectMutex() { spatial_mutex_.lock(); }
-	virtual void UnlockObjectMutex() { spatial_mutex_.unlock(); }
-
 	void SetThis(std::shared_ptr<ContainerInterface> si) { __this = si; }
 private:
 	std::shared_ptr<ContainerInterface> __this;
-	boost::mutex spatial_mutex_;
 	quadtree::Node root_node_;
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);
 };

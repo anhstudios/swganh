@@ -35,7 +35,7 @@ void Server::Startup(uint16_t port)
 }
 
 void Server::Shutdown(void) {
-    socket_.close();
+	socket_.close();
 }
     
 void Server::SendTo(const udp::endpoint& endpoint, ByteBuffer buffer) {
@@ -62,25 +62,28 @@ string Server::Resolve(const string& hostname)
 }
 
 void Server::AsyncReceive() {
-    socket_.async_receive_from(
-        buffer(&recv_buffer_[0], recv_buffer_.size()), 
-        current_remote_endpoint_,
-        [this] (const boost::system::error_code& error, std::size_t bytes_transferred) {
-            if(!error)
-            {
-                bytes_recv_ += bytes_transferred;
+	if (socket_.is_open())
+	{
+		socket_.async_receive_from(
+			buffer(&recv_buffer_[0], recv_buffer_.size()), 
+			current_remote_endpoint_,
+			[this] (const boost::system::error_code& error, std::size_t bytes_transferred) {
+				if(!error)
+				{
+					bytes_recv_ += bytes_transferred;
 
-                ByteBuffer message(bytes_transferred);
-				message.write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
+					ByteBuffer message(bytes_transferred);
+					message.write((const unsigned char*)recv_buffer_.data(), bytes_transferred);
 
-                GetSession(current_remote_endpoint_)->HandleProtocolMessage(move(message));                			
-            }
-			else if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset )
-			{
-				LOG(info) << "lost client with AsyncReceive error: " << error.message();				
-			}		
-			AsyncReceive();
-    });
+					GetSession(current_remote_endpoint_)->HandleProtocolMessage(move(message));                			
+				}
+				else if (error == boost::asio::error::connection_refused || error == boost::asio::error::connection_reset )
+				{
+					LOG(info) << "lost client with AsyncReceive error: " << error.message();				
+				}		
+				AsyncReceive();
+		});
+	}
 }
 
 boost::asio::ip::udp::socket* Server::socket() {
