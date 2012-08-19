@@ -7,7 +7,7 @@
 #include "../../iff/foldernode.h"
 
 using namespace swganh::tre;
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 using namespace std;
 using namespace boost;
 

@@ -33,7 +33,6 @@ namespace object {
     class Object;
     class ObjectManager;
 	class ContainerPermissionsInterface;
-	enum PermissionsType;
 
 	typedef std::map<int, std::shared_ptr<ContainerPermissionsInterface>> PermissionsObjectMap;
 

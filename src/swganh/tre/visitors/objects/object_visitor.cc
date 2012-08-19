@@ -7,14 +7,13 @@
 #include "../../iff/filenode.h"
 #include "../../iff/foldernode.h"
 
-#include <anh/resource/resource_manager_interface.h>
-
+#include <swganh/tre/resource_manager.h>
 #include <swganh/tre/visitors/slots/slot_arrangement_visitor.h>
 #include <swganh/tre/visitors/slots/slot_descriptor_visitor.h>
 
 using namespace swganh::tre;
 using namespace std;
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 
 AttributeHandlerIndex ObjectVisitor::attributeHandler_;
 
@@ -23,100 +22,100 @@ ObjectVisitor::ObjectVisitor()
 {
 	if(attributeHandler_.empty())
 	{
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("animationMapFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("appearanceFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("arrangementDescriptorFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("clearFloraRadius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("clientDataFile"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("cockpitFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionActionBlockFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionActionFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionActionPassFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionHeight"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionLength"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionMaterialBlockFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionMaterialFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionMaterialPassFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionRadius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("containerType"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("containerVolumeLimit"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("detailedDescription"), bind(&ObjectVisitor::_handleClientString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("gameObjectType"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("hasWings"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("interiorLayoutFileName"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("locationReservationRadius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("lookAtText"), bind(&ObjectVisitor::_handleClientString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("movementDatatable"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("niche"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("noBuildRadius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("numberOfPoles"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("objectName"), bind(&ObjectVisitor::_handleClientString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("onlyVisibleInTools"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("playerControlled"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("portalLayoutFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("race"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("radius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("scale"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("scaleThresholdBeforeExtentTest"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("sendToClient"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("slopeModAngle"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("slopeModPercent"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("slotDescriptorFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("snapToTerrain"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("species"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("stepHeight"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("structureFootprintFileName"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("swimHeight"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("targetable"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("terrainModificationFileName"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("tintPalette"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("useStructureFootprintOutline"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("warpTolerance"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("waterModPercent"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("weaponEffect"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("weaponEffectIndex"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("animationMapFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("appearanceFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("arrangementDescriptorFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("clearFloraRadius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("clientDataFile"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("cockpitFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionActionBlockFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionActionFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionActionPassFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionHeight"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionLength"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionMaterialBlockFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionMaterialFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionMaterialPassFlags"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionRadius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("containerType"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("containerVolumeLimit"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("detailedDescription"), bind(&ObjectVisitor::_handleClientString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("gameObjectType"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("hasWings"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("interiorLayoutFileName"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("locationReservationRadius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("lookAtText"), bind(&ObjectVisitor::_handleClientString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("movementDatatable"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("niche"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("noBuildRadius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("numberOfPoles"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("objectName"), bind(&ObjectVisitor::_handleClientString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("onlyVisibleInTools"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("playerControlled"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("portalLayoutFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("race"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("radius"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("scale"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("scaleThresholdBeforeExtentTest"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("sendToClient"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("slopeModAngle"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("slopeModPercent"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("slotDescriptorFilename"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("snapToTerrain"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("species"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("stepHeight"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("structureFootprintFileName"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("swimHeight"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("targetable"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("terrainModificationFileName"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("tintPalette"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("useStructureFootprintOutline"), bind(&ObjectVisitor::_handleBool, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("warpTolerance"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("waterModPercent"), bind(&ObjectVisitor::_handleFloat, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("weaponEffect"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("weaponEffectIndex"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
 
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("attackType"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("defaultValue"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("maxValueExclusive"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("minValueInclusive"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("palettePathName"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("defaultPaletteIndex"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("cameraHeight"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("variableName"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("sourceVariable"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("dependentVariable"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("gender"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("acceleration"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("speed"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("turnRate"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("postureAlignToTerrain"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionOffsetX"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("collisionOffsetZ"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("certificationsRequired"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("customizationVariableMapping"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("paletteColorCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("rangedIntCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("constStringCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("socketDestinations"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("surfaceType"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("attackType"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("defaultValue"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("maxValueExclusive"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("minValueInclusive"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("palettePathName"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("defaultPaletteIndex"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("cameraHeight"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("variableName"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("sourceVariable"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("dependentVariable"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("gender"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("acceleration"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("speed"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("turnRate"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("postureAlignToTerrain"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionOffsetX"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("collisionOffsetZ"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("certificationsRequired"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("customizationVariableMapping"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("paletteColorCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("rangedIntCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("constStringCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("socketDestinations"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("surfaceType"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 
 		//SCHEMATICS STUFF BELOW HERE
 		
 		//name is used for both "slots" and "attributes"
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("name"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("name"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 		
 		//slots marks the beginning of the slots section
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("slots"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("hardpoint"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("slots"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("hardpoint"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 		
 		//attributes marks the beginning of the attributes section
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("attributes"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("experiment"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("value"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("attributes"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("experiment"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("value"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 
 		//marks the end of the draft schematic.
-		attributeHandler_.insert(make_pair<string, AttributeFunctor>(string("craftedSharedTemplate"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		attributeHandler_.insert(make_pair(string("craftedSharedTemplate"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 	}
 }
 
@@ -240,7 +239,7 @@ void ObjectVisitor::debug()
 
 	while(it != attributes_.cend())
 	{
-		printf("Attribute: \"%s\", value=", it->first.c_str(), it->second->type().name());
+		printf("Attribute: \"%s\", value=", it->first.c_str());
 		if(it->second->type() == typeid(std::uint32_t))
 		{
 			printf("%d", boost::any_cast<std::uint32_t>(it->second));
@@ -268,7 +267,7 @@ void ObjectVisitor::debug()
 }
 
 
-void ObjectVisitor::load_aggregate_data(anh::resource::ResourceManagerInterface* f)
+void ObjectVisitor::load_aggregate_data(swganh::tre::ResourceManager* f)
 {
 	if(!has_aggregate_)
 	{
@@ -311,7 +310,7 @@ void ObjectVisitor::load_aggregate_data(anh::resource::ResourceManagerInterface*
 	}
 }
 
-void ObjectVisitor::load_referenced_files(anh::resource::ResourceManagerInterface* f)
+void ObjectVisitor::load_referenced_files(swganh::tre::ResourceManager* f)
 {
 	if (loaded_reference_)
 		return;

@@ -8,6 +8,9 @@
 #include <string>
 
 #include <boost/python/object.hpp>
+
+#include "swganh/scripting/utilities.h"
+
 namespace swganh {
 namespace scripting {
     class PythonScriptCreator
@@ -24,18 +27,18 @@ namespace scripting {
             {
 
         #ifdef _DEBUG
-                module_ = bp::object(bp::handle<>(PyImport_ReloadModule(module_.ptr())));
+                module_ = boost::python::object(bp::handle<>(PyImport_ReloadModule(module_.ptr())));
         #endif
                 
                 auto new_instance = module_.attr(class_name_.c_str())();
 
                 if (!new_instance.is_none())
                 {
-                    T* obj_pointer = bp::extract<T*>(new_instance);
+                    T* obj_pointer = boost::python::extract<T*>(new_instance);
                     interfaceObj.reset(obj_pointer, [new_instance] (T*) {});
                 }
             }
-            catch(bp::error_already_set& /*e*/)
+            catch(boost::python::error_already_set& /*e*/)
             {
                 PyErr_Print();
             }

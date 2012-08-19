@@ -25,7 +25,7 @@ namespace tre
 	{
 	public:
 		//Constructors
-		iff_file(anh::ByteBuffer& input, std::shared_ptr<VisitorInterface> interpret=nullptr);
+		iff_file(anh::ByteBuffer input, std::shared_ptr<VisitorInterface> interpret=nullptr);
 
 		/**
 			@return the interpreter associated with this IFFFile

@@ -20,6 +20,8 @@ namespace swganh
 {
 namespace tre
 {
+	class ResourceManager;
+	
 	class PobVisitor : public VisitorInterface
 	{
 	public:

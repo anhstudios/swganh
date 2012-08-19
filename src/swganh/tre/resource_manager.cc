@@ -2,7 +2,6 @@
 #include "anh/byte_buffer.h"
 #include "resource_manager.h"
 
-#include "visitors/visitor_interface.h"
 #include "iff/iff.h"
 
 #include "visitors/datatables/datatable_visitor.h"

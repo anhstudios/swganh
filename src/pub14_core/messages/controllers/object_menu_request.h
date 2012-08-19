@@ -69,7 +69,7 @@ namespace controllers {
             owner_id = buffer.read<uint64_t>();
 
 			uint32_t size = buffer.read<uint32_t>();
-			int counter = 0;
+			//int counter = 0;
 			for(uint32_t i = 0; i < size ; ++i)
 			{
 				RadialOptions r;

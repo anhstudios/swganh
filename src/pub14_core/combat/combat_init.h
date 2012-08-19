@@ -4,6 +4,10 @@
 #ifndef SWGANH_CORE_COMBAT_INITIALIZATION_H_
 #define SWGANH_CORE_COMBAT_INITIALIZATION_H_
 
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 

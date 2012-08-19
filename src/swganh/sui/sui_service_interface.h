@@ -15,9 +15,24 @@ namespace sui
 {
 	class SUIWindowInterface;
 
-	enum MessageBoxType;
-	enum ListBoxType;
-	enum InputBoxType;
+	enum MessageBoxType
+	{
+		MESSAGE_BOX_OK = 1,
+		MESSAGE_BOX_OK_CANCEL,
+		MESSAGE_BOX_YES_NO
+	};
+
+	enum ListBoxType
+	{
+		LIST_BOX_OK = 1,
+		LIST_BOX_OKCANCEL
+	};
+
+	enum InputBoxType
+	{
+		INPUT_BOX_OK = 1,
+		INPUT_BOX_OKCANCEL
+	};
 
 	class SUIServiceInterface : public anh::service::ServiceInterface
 	{
@@ -52,25 +67,6 @@ namespace sui
 		virtual std::shared_ptr<SUIWindowInterface> CreateInputBox(InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
 			uint32_t input_max_length, std::shared_ptr<swganh::object::Object> owner, 
 			std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0) = 0;
-	};
-
-	enum MessageBoxType
-	{
-		MESSAGE_BOX_OK = 1,
-		MESSAGE_BOX_OK_CANCEL,
-		MESSAGE_BOX_YES_NO
-	};
-
-	enum ListBoxType
-	{
-		LIST_BOX_OK = 1,
-		LIST_BOX_OKCANCEL
-	};
-
-	enum InputBoxType
-	{
-		INPUT_BOX_OK = 1,
-		INPUT_BOX_OKCANCEL,
 	};
 }
 }

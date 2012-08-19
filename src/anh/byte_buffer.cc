@@ -168,7 +168,8 @@ const std::string ByteBuffer::read<std::string>(bool do_swap_endian, bool null_t
     
 	if(null_terminated_string)
 	{
-		std::string data(reinterpret_cast<const char*>(data()+read_position_));
+        const char* tmp = reinterpret_cast<const char*>(data()+read_position_);
+		std::string data(tmp);
 		read_position_ += data.size() + 1;
 		return data;
 	}
@@ -217,7 +218,8 @@ template<>
 const std::wstring ByteBuffer::read<std::wstring>(bool do_swap_endian, bool null_terminated_string) {
 	if(null_terminated_string)
 	{
-		std::wstring data(reinterpret_cast<const wchar_t*>(data()+read_position_));
+        const wchar_t* tmp = reinterpret_cast<const wchar_t*>(data()+read_position_);
+		std::wstring data(tmp);
 		read_position_ += data.size()*2 + 1;
 		return data;
 	}

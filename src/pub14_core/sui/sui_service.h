@@ -95,8 +95,8 @@ namespace sui
 		void _handleObjectMenuRequest(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::ObjectMenuRequest message);
 		void _handlePlayerLogoutEvent();
 
-		std::string script_directory_;
 		swganh::app::SwganhKernel* kernel_;
+		std::string script_directory_;
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
 		WindowMap window_lookup_;
 		int32_t window_id_counter_;

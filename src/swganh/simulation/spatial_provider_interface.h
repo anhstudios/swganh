@@ -24,7 +24,7 @@ namespace simulation {
 class SpatialProviderInterface : public swganh::object::ContainerInterface
 {
 public:
-	virtual void SpatialProviderInterface::UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position) = 0;
+	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position) = 0;
 };
 
 }} // namespace swganh::simulation

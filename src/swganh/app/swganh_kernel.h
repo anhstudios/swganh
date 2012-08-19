@@ -17,6 +17,7 @@
 namespace swganh {
 namespace tre {
     class TreArchive;
+    class ResourceManager;
 }}  // namespace swganh::tre
 
 namespace swganh {
@@ -87,7 +88,7 @@ public:
     
     boost::asio::io_service& GetIoService();
 
-    anh::resource::ResourceManagerInterface* GetResourceManager();
+    swganh::tre::ResourceManager* GetResourceManager();
 
 private:
     SwganhKernel();
@@ -99,7 +100,7 @@ private:
     std::unique_ptr<anh::plugin::PluginManager> plugin_manager_;
     std::unique_ptr<anh::service::ServiceManager> service_manager_;
     std::unique_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
-    std::unique_ptr<anh::resource::ResourceManagerInterface> resource_manager_;
+    std::unique_ptr<swganh::tre::ResourceManager> resource_manager_;
 
     boost::asio::io_service& io_service_;
 };

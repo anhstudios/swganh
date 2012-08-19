@@ -109,7 +109,7 @@ boost::asio::io_service& SwganhKernel::GetIoService() {
     return io_service_;
 }
 
-anh::resource::ResourceManagerInterface* SwganhKernel::GetResourceManager()
+swganh::tre::ResourceManager* SwganhKernel::GetResourceManager()
 {
     if (!resource_manager_)
     {

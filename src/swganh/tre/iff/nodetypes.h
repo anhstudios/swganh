@@ -19,7 +19,7 @@ namespace tre
 		//These are the default types. 
 		//They mean that no specialized type could be found.
 		NODE_TYPE_FOLDER,
-		NODE_TYPE_FILE,
+		NODE_TYPE_FILE
 	};
 }
 }

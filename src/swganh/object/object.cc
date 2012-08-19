@@ -121,9 +121,9 @@ void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Obj
 
 void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
 {
-	if(	requester == nullptr || 
+	if(	requester == nullptr || (
 		this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
-		newContainer->GetPermissions()->canInsert(newContainer, requester, object))
+		newContainer->GetPermissions()->canInsert(newContainer, requester, object)))
 	{
 		boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 		
@@ -142,11 +142,11 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 		//Split into 3 groups -- only ours, only new, and both ours and new
 		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
 
-		object->__InternalViewAwareObjects([&] (std::shared_ptr<Object>& observer) {
+		object->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) {
 			oldObservers.insert(observer);
 		});
 	
-		newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object>& observer) 
+		newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) 
 		{
 			if(newContainer->GetPermissions()->canView(newContainer, observer))
 			{
@@ -694,7 +694,7 @@ int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 		for (auto& slot : arrangement)
 		{
 			// does slot exist in descriptor
-			auto& descriptor_iter = slot_descriptor_.find(slot);
+			auto descriptor_iter = slot_descriptor_.find(slot);
 			if (descriptor_iter == end(slot_descriptor_))
 			{
 				is_valid = false;

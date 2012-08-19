@@ -465,8 +465,6 @@ protected:
 	// Radials
 	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> menu_response_;
 
-	std::atomic<int32_t> arrangement_id_;
-
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
     std::string template_string_;                    // create
@@ -477,7 +475,7 @@ protected:
     std::string stf_name_string_;                    // update 3
     std::wstring custom_name_;                       // update 3
     std::atomic<uint32_t> volume_;                   // update 3
-
+    std::atomic<int32_t> arrangement_id_;
 	
 
 private:

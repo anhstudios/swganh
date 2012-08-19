@@ -42,8 +42,8 @@ using namespace swganh::simulation;
 
 SUIService::SUIService(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
-	, window_id_counter_(0)
 	, script_directory_(kernel->GetAppConfig().script_directory + "/radials/")
+	, window_id_counter_(0)
 {
 }
 

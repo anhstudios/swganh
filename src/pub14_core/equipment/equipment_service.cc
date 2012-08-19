@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "anh/logger.h"
+#include <swganh/tre/resource_manager.h>
 #include <swganh/tre/visitors/slots/slot_definition_visitor.h>
 #include <swganh/object/object.h>
 
@@ -10,7 +11,7 @@ using namespace swganh::object;
 using namespace swganh::tre;
 using namespace swganh_core::equipment;
 
-EquipmentService::EquipmentService(anh::resource::ResourceManagerInterface* resourceManager)
+EquipmentService::EquipmentService(swganh::tre::ResourceManager* resourceManager)
 {
 	auto slot_definition = resourceManager->getResourceByName("abstract/slot/slot_definition/slot_definitions.iff", SLOT_DEFINITION_VISITOR);
 	slot_definitions_ = std::static_pointer_cast<SlotDefinitionVisitor>(slot_definition);	
@@ -48,7 +49,7 @@ void EquipmentService::ClearSlot(std::shared_ptr<Object> object, std::string slo
 std::shared_ptr<Object> EquipmentService::GetEquippedObject(std::shared_ptr<Object> object, std::string slot_name)
 {
 	size_t slot_id = slot_definitions_->findSlotByName(slot_name);
-	if (slot_id != -1)
+	if (slot_id >= 0)
 		return object->GetSlotObject(slot_id);
 	else
 		LOG(warning) << "Slot " << slot_name << " does not exist for object:" << object->GetObjectId();
