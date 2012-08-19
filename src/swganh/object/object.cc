@@ -81,7 +81,6 @@ void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object
 {
 	if(requester == nullptr || container_permissions_->canInsert(shared_from_this(), requester, obj))
 	{
-		LOG(warning) << "INSERTING " << obj->GetObjectId() << " INTO " << this->GetObjectId();
 		boost::upgrade_lock<boost::shared_mutex> lock(global_container_lock_);
 		
 		//Add Object To Datastructure
@@ -95,18 +94,12 @@ void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object
 			obj->__InternalAddAwareObject(object);		
 		});
 	}
-	else
-	{
-		LOG(warning) << "NOT INSERTING " << obj->GetObjectId() << " INTO " << GetObjectId() <<" DUE TO INSUFFICIENT PERMISSIONS";
-	}
 }
 
 void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject)
 {
 	if(requester == nullptr || container_permissions_->canRemove(shared_from_this(), requester, oldObject))
 	{
-		LOG(warning) << "REMOVING " << oldObject->GetObjectId() << " FROM " << this->GetObjectId();
-	
 		boost::upgrade_lock<boost::shared_mutex> lock(global_container_lock_);
 
 		//Update our observers about the dead object
@@ -124,10 +117,6 @@ void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Obj
 			oldObject->SetContainer(nullptr);
 		}
 	}
-	else
-	{
-		LOG(warning) << "NOT REMOVING " << oldObject->GetObjectId() << " FROM " << GetObjectId() <<" DUE TO INSUFFICIENT PERMISSIONS";
-	}
 }
 
 void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
@@ -136,8 +125,6 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 		this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
 		newContainer->GetPermissions()->canInsert(newContainer, requester, object))
 	{
-		LOG(warning) << "TRANSFER " << object->GetObjectId() << " FROM " << this->GetObjectId() << " TO " << newContainer->GetObjectId();
-		
 		boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 		
 		{
@@ -190,10 +177,6 @@ void Object::TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<O
 		for(auto& observer : oldObservers) {
 			object->__InternalRemoveAwareObject(observer);
 		}
-	}
-	else
-	{
-		LOG(warning) << "NOT TRANSFERRING " << object->GetObjectId() << " FROM " << GetObjectId() <<" DUE TO INSUFFICIENT PERMISSIONS";
 	}
 }
 
@@ -635,8 +618,6 @@ void Object::CreateBaselines( std::shared_ptr<anh::observer::ObserverInterface> 
 
 void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer) 
 {
-	DLOG(warning) << "SENDING " << GetObjectId() << " CREATE TO " << observer->GetId();
-
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
     scene_object.object_crc = anh::memcrc(GetTemplate());
@@ -663,7 +644,6 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::Observe
 
 void Object::SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
-	LOG(warning) << "OBJECT: " << GetObjectId() <<" SENDING DESTROY TO " << observer->GetId();
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();
 	observer->Notify(scene_object);
