@@ -76,7 +76,7 @@ std::shared_ptr<SUIWindowInterface> CreateListBoxWrapper(SUIServiceInterface* se
 {
 	return self->CreateListBox(lstBox_type, title, prompt, dataList, owner, ranged_object, max_distance);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(ListBoxOverloads, CreateListBoxWrapper, 6, 8);
+BOOST_PYTHON_FUNCTION_OVERLOADS(ListBoxOverloads, CreateListBoxWrapper, 6, 8)
 
 //Custom Create Overload
 boost::python::tuple CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
@@ -84,7 +84,7 @@ boost::python::tuple CreateSUIWindow(std::string script_name, std::shared_ptr<sw
 {
 	return boost::python::make_tuple(script_name, owner, ranged_object, max_distance);
 }
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateOverload, CreateSUIWindow, 2, 4);
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateOverload, CreateSUIWindow, 2, 4)
 
 //Message Box Create Overload
 boost::python::tuple CreateMessageBox(MessageBoxType msgBox_type, std::wstring title, std::wstring caption,
@@ -93,7 +93,7 @@ boost::python::tuple CreateMessageBox(MessageBoxType msgBox_type, std::wstring t
 {
 	return boost::python::make_tuple(msgBox_type, title, caption, owner, ranged_object, max_distance);
 }
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateMessageOverload, CreateMessageBox, 4, 6);
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateMessageOverload, CreateMessageBox, 4, 6)
 
 boost::python::tuple CreateInputBox(InputBoxType iptBox_type, std::wstring title, std::wstring prompt, 
 			uint32_t input_max_length, std::shared_ptr<swganh::object::Object> owner, 
@@ -101,7 +101,7 @@ boost::python::tuple CreateInputBox(InputBoxType iptBox_type, std::wstring title
 {
 	return boost::python::make_tuple(iptBox_type, title, prompt, input_max_length, owner, ranged_object, max_distance);
 }
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateInputOverload, CreateInputBox, 5, 7);
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateInputOverload, CreateInputBox, 5, 7)
 
 
 void exportSuiService()
