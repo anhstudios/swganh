@@ -3,8 +3,12 @@
 
 #include "ws_visitor.h"
 
+#ifndef WIN32
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
+#else
+#define PRIu64       "I64u"
+#endif
 
 #include "../../iff/iff.h"
 #include "../../iff/filenode.h"
