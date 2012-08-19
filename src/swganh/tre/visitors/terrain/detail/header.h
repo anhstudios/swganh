@@ -4,6 +4,11 @@
 #include <string>
 #include <anh/byte_buffer.h>
 
+namespace swganh
+{
+namespace tre
+{
+
 struct TrnHeader
 {
 	void Deserialize(anh::ByteBuffer buffer)
@@ -58,4 +63,6 @@ struct TrnHeader
 	*/
 };
 
+}
+}
 #endif

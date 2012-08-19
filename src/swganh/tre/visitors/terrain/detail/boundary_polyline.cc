@@ -2,7 +2,7 @@
 
 using namespace swganh::tre;
 
-void BoundaryPolyline::Deserialize(anh::ByteBuffer buffer)
+void BoundaryPolyline::Deserialize(anh::ByteBuffer& buffer)
 {
 	unsigned int sizeTemp = buffer.read<uint32_t>();
 	unsigned int i=0;
@@ -43,13 +43,13 @@ void BoundaryPolyline::Deserialize(anh::ByteBuffer buffer)
 	max_z = max_z + line_width;
 }
 
-bool BoundaryPolyline::IsContained(float px, float pz)
+bool BoundaryPolyline::IsContained(double px, double pz)
 {
 	//@todo I believe this function may be a to-do
 	return false;
 }
 
-float BoundaryPolyline::Process(float px, float pz)
+double BoundaryPolyline::Process(double px, double pz)
 {
 	if (px < min_x)
 		return 0.0;
@@ -70,8 +70,8 @@ float BoundaryPolyline::Process(float px, float pz)
 	for (unsigned int i = 0; i < verts.size(); ++i) {
 		glm::vec2& point = verts.at(i);
 
-		distz = pz - point->z;
-		distx = px - point->x;
+		distz = pz - point.y;
+		distx = px - point.x;
 		dist = pow(distx,1) + pow(distz,2);
 		if ( dist < line2 ) 
 			line2 = dist;

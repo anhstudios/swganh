@@ -15,6 +15,9 @@ namespace tre
 	class LayerVisitor : public VisitorInterface
 	{
 	public:
+
+		~LayerVisitor();
+
 		/**
 			@brief returns the VisitorType associated with this visitor
 		*/
@@ -31,8 +34,11 @@ namespace tre
 			This should only be called by the IFFFile code.
 		*/
 		virtual void visit_folder(uint32_t depth, std::shared_ptr<folder_node> node);
+
+		std::vector<Layer*>& GetLayers() { return layers_; }
+
 	private:
-		std::list<Layer> layers_;
+		std::vector<Layer*> layers_;
 	};
 }
 }

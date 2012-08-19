@@ -98,24 +98,24 @@ public:
 
 		b = lerp(sx, u, v);
 
-		return lerp(sy, a, b);
+		return (float)lerp(sy, a, b);
 	}
 
 	static void normalize2(float v[2]) {
 		double s;
 
 		s = sqrt(v[0] * v[0] + v[1] * v[1]);
-		v[0] = v[0] / s;
-		v[1] = v[1] / s;
+		v[0] = (float)(v[0] / s);
+		v[1] = (float)(v[1] / s);
 	}
 
 	static void normalize3(float v[3]) {
 		double s;
 
 		s = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-		v[0] = v[0] / s;
-		v[1] = v[1] / s;
-		v[2] = v[2] / s;
+		v[0] = (float)(v[0] / s);
+		v[1] = (float)(v[1] / s);
+		v[2] = (float)(v[2] / s);
 	}
 
 	void init() {
@@ -124,10 +124,10 @@ public:
 		for (i = 0 ; i < PB ; i++) {
 			p[i] = i;
 
-			g1[i] = (double)((rand->next() % (PB + PB)) - PB) / PB;
+			g1[i] = (float)((double)((rand->next() % (PB + PB)) - PB) / PB);
 
 			for (j = 0 ; j < 2 ; j++) {
-				g2[i][j] = (double)((rand->next() % (PB + PB)) - PB) / PB;
+				g2[i][j] = (float)((double)((rand->next() % (PB + PB)) - PB) / PB);
 			}
 
 			normalize2(g2[i]);

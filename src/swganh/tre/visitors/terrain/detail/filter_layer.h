@@ -17,13 +17,11 @@ namespace tre
 
 		virtual LayerType GetType() { return LAYER_TYPE_FILTER; }
 
-		virtual void Deserialize(anh::ByteBuffer buffer) = 0;
-
-		virtual float Process(float x, float z, float transform_value, float& base_value, std::vector<Fractal>& fractals) = 0;
+		virtual double Process(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals) = 0;
 		
 	protected:
 		int   feather_type;
-        float feather_amount;
+        double feather_amount;
     };
 }
 }

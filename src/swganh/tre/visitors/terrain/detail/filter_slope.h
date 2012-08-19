@@ -12,21 +12,15 @@ namespace tre
 	{
 	public:
 		
-		virtual void Deserialize(anh::ByteBuffer buffer);
+		virtual void Deserialize(anh::ByteBuffer& buffer);
 
-		virtual float Process(float x, float z, float transform_value, float& base_value, std::vector<Fractal>& fractals);
+		virtual double Process(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals);
 
-		void SetMinAngle(float new_angle);
-		void SetMaxAngle(float new_angle);
+		void SetMinAngle(double new_angle);
+		void SetMaxAngle(double new_angle);
 
 	private:
-		float min_angle;
-		float min;
-		float max_angle;
-		float max;
-
-		float default_value;
-
+		double min_angle, min, max_angle, max, default_value;
 	};
 
 }

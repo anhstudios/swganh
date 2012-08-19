@@ -17,6 +17,12 @@ namespace tre
 		int fractal_id;
 		std::string fractal_label;
 
+		Fractal(anh::ByteBuffer& buffer)
+		{
+			fractal_id = buffer.read<int32_t>();
+			fractal_label = buffer.read<std::string>(false, true);
+		}
+
 		//MFRCFORM
 		int				seed;				//seed 
 		int				use_bias;			//Bias type
@@ -36,11 +42,8 @@ namespace tre
 		Random			rand;				// Random generator
 		PerlinNoise		noise;				// Noise generator
 
-		void Deserialize(anh::ByteBuffer buffer)
+		void Deserialize(anh::ByteBuffer& buffer)
 		{
-			fractal_id = buffer.read<int32_t>();
-			fractal_label = buffer.read<std::string>(false, true);
-
 			seed = buffer.read<int32_t>();
 
 			use_bias = buffer.read<int32_t>();
@@ -59,8 +62,6 @@ namespace tre
 			offset_z = buffer.read<float>();
 
 			combination_type = buffer.read<uint32_t>();
-
-			offset = buffer.read<float>();
 
 			setSeed(seed);
 		}
@@ -95,14 +96,14 @@ namespace tre
 			offset = curr_amplitude;
 
 			if (offset != 0)
-				offset = 1.0/offset;
+				offset = (float)(1.0/offset);
 		}
 
 		// Generate noise for given coordinates
-		float getNoise(float x, float z)
+		double getNoise(double x, double z)
 		{
-			float xFrequency = x * freq_x;
-			float zFrequency = z * freq_z;
+			double xFrequency = x * freq_x;
+			double zFrequency = z * freq_z;
 
 			double result = 0;
 
@@ -162,14 +163,14 @@ namespace tre
 			return result;
 		}
 
-		double calculateCombination1(float x, float z)
+		double calculateCombination1(double x, double z)
 		{
-			float curr_offset = 1, curr_ampl = 1;
+			double curr_offset = 1, curr_ampl = 1;
 			double result = 0;
 
-			float zOffset = z + offset_z; 
-			float xOffset = x + offset_x; 
-			float zNoise, xNoise, noise_gen = 0;
+			double zOffset = z + offset_z; 
+			double xOffset = x + offset_x; 
+			double zNoise, xNoise, noise_gen = 0;
 			double coord[2];
 
 			for (unsigned int i = 0; i < octaves; ++i) 
@@ -190,13 +191,13 @@ namespace tre
 			return result;
 		}
 
-		double calculateCombination2(float x, float z)
+		double calculateCombination2(double x, double z)
 		{
-			float noise_gen = 0;
-			float zOffset = z + offset_z;
-			float zNoise, xOffset, xNoise;
-			float curr_offset = 1.0;
-			float curr_ampl = 1.0;
+			double noise_gen = 0;
+			double zOffset = z + offset_z;
+			double zNoise, xOffset, xNoise;
+			double curr_offset = 1.0;
+			double curr_ampl = 1.0;
 			double result = 0;
 			double coord[2];
 
@@ -219,14 +220,14 @@ namespace tre
 			return result;
 		}
 
-		double calculateCombination3(float x, float z)
+		double calculateCombination3(double x, double z)
 		{
-			float curr_offset = 1.0;
-			float curr_ampl = 1.0;
+			double curr_offset = 1.0;
+			double curr_ampl = 1.0;
 			double result = 0;
-			float noise_gen = 0;
-			float zOffset = z + offset_z; 
-			float zNoise, xOffset, xNoise;
+			double noise_gen = 0;
+			double zOffset = z + offset_z; 
+			double zNoise, xOffset, xNoise;
 
 			double coord[2];
 
@@ -249,16 +250,16 @@ namespace tre
 			return result;
 		}
 
-		double calculateCombination4(float x, float z)
+		double calculateCombination4(double x, double z)
 		{
-			float noise_gen = 0;
-			float zNoise, xNoise, noise_gain;
-			float zOffset = z + offset_z; 
-			float xOffset = x + offset_x; 
+			double noise_gen = 0;
+			double zNoise, xNoise, noise_gain;
+			double zOffset = z + offset_z; 
+			double xOffset = x + offset_x; 
 			double coord[2];
 
-			float curr_offset = 1.0;
-			float curr_ampl = 1.0;
+			double curr_offset = 1.0;
+			double curr_ampl = 1.0;
 			double result = 0;
 
 			for (unsigned int i = 0; i < octaves; ++i) 
@@ -286,17 +287,17 @@ namespace tre
 			return result;
 		}
 
-		double calculateCombination5(float x, float z)
+		double calculateCombination5(double x, double z)
 		{
-			float noise_gen = 0;
-			float zNoise, xNoise, noise_gain;
-			float zOffset = z + offset_z; 
-			float xOffset = x + offset_x;
+			double noise_gen = 0;
+			double zNoise, xNoise, noise_gain;
+			double zOffset = z + offset_z; 
+			double xOffset = x + offset_x;
 			double coord[2];
 			double result = 0;
 
-			float curr_offset = 1.0;
-			float curr_ampl = 1.0;
+			double curr_offset = 1.0;
+			double curr_ampl = 1.0;
 
 			for (unsigned int i = 0; i < octaves; ++i) 
 			{

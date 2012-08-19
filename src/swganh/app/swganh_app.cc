@@ -40,6 +40,10 @@
 
 #include "version.h"
 
+///TESTING///
+#include <anh/resource/resource_manager_interface.h>
+#include <swganh/tre/visitors/terrain/terrain_visitor.h>
+
 using namespace anh;
 using namespace anh::app;
 using namespace boost::asio;
@@ -225,6 +229,10 @@ void SwganhApp::Start() {
     }
     
     kernel_->GetServiceManager()->Start();
+
+	///TESTING///
+	auto resource_manager = kernel_->GetResourceManager();
+	auto terrain = resource_manager->getResourceByName("terrain/tatooine.trn", swganh::tre::TRN_VISITOR);
 }
 
 void SwganhApp::Stop() {

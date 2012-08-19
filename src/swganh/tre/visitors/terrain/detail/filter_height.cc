@@ -2,7 +2,7 @@
 
 using namespace swganh::tre;
 
-void HeightFilter::Deserialize(anh::ByteBuffer buffer)
+void HeightFilter::Deserialize(anh::ByteBuffer& buffer)
 {
 	minHeight = buffer.read<float>();
 	maxHeight = buffer.read<float>();
@@ -11,12 +11,12 @@ void HeightFilter::Deserialize(anh::ByteBuffer buffer)
 	feather_amount = buffer.read<float>();
 }
 
-float HeightFilter::Process(float x, float z, float transform_value, float& base_value, std::vector<Fractal>& fractals)
+double HeightFilter::Process(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals)
 {
-	float result;
+	double result;
 
 	if ((base_value > minHeight) && (base_value < maxHeight)) {
-		float feather_result = (maxHeight - minHeight) * feather_amount * 0.5;
+		double feather_result = (maxHeight - minHeight) * feather_amount * 0.5;
 
 		if (minHeight + feather_result <= base_value) {
 			if (maxHeight - feather_result >= base_value) {

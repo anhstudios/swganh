@@ -2,7 +2,7 @@
 
 using namespace swganh::tre;
 
-void BoundaryPolygon::Deserialize(anh::ByteBuffer buffer)
+void BoundaryPolygon::Deserialize(anh::ByteBuffer& buffer)
 {
 	uint32_t sizeTemp = buffer.read<uint32_t>();
 
@@ -38,11 +38,11 @@ void BoundaryPolygon::Deserialize(anh::ByteBuffer buffer)
 	this->water_shader = buffer.read<std::string>(false, true);
 }
 
-bool BoundaryPolygon::IsContained(float x, float z)
+bool BoundaryPolygon::IsContained(double x, double z)
 {
 	int j;
 	bool odd_nodes = false;
-	float x1, x2;
+	double x1, x2;
 
 	for ( unsigned int i = 0; i < verts.size(); ++i )
 	{
@@ -61,12 +61,12 @@ bool BoundaryPolygon::IsContained(float x, float z)
 
 		/* First check if the ray is possible to cross the line */
 		if ( x > x1 && x <= x2 && ( z < verts[i].y || z <= verts[j].y ) ) {
-			static const float eps = 0.000001f;
+			static const double eps = 0.000001f;
 
 			/* Calculate the equation of the line */
-			float dx = verts[j].x - verts[i].x;
-			float dz = verts[j].y - verts[i].y;
-			float k;
+			double dx = verts[j].x - verts[i].x;
+			double dz = verts[j].y - verts[i].y;
+			double k;
 
 			if ( fabs(dx) < eps ){
 				k = std::numeric_limits<float>::infinity();
@@ -74,10 +74,10 @@ bool BoundaryPolygon::IsContained(float x, float z)
 				k = dz/dx;
 			}
 
-			float m = verts[i].y - k * verts[i].x;
+			double m = verts[i].y - k * verts[i].x;
 
 			/* Find if the ray crosses the line */
-			float z2 = k * x + m;
+			double z2 = k * x + m;
 			if ( z <= z2 )
 			{
 				odd_nodes=!odd_nodes;
@@ -89,9 +89,9 @@ bool BoundaryPolygon::IsContained(float x, float z)
 	return odd_nodes;
 }
 
-float BoundaryPolygon::Process(float px, float pz)
+double BoundaryPolygon::Process(double px, double pz)
 {
-	float result;
+	double result;
 	glm::vec2& last = verts.at(verts.size() - 1);
 	bool odd_nodes = false;
 

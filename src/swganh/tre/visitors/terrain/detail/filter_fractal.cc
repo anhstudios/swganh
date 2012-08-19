@@ -4,7 +4,7 @@
 
 using namespace swganh::tre;
 
-void FractalFilter::Deserialize(anh::ByteBuffer buffer)
+void FractalFilter::Deserialize(anh::ByteBuffer& buffer)
 {
 	fractal_id = buffer.read<uint32_t>();
 	
@@ -17,13 +17,13 @@ void FractalFilter::Deserialize(anh::ByteBuffer buffer)
 	step = buffer.read<float>();
 }
 
-float FractalFilter::Process(float x, float z, float transform_value, float& base_value, std::vector<Fractal>& fractals)
+double FractalFilter::Process(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals)
 {
-	float noise_result = fractals[fractal_id].getNoise(x, z) * step;
-	float result = 0;
+	double noise_result = fractals[fractal_id].getNoise(x, z) * step;
+	double result = 0;
 
 	if (noise_result > min && noise_result < max) {
-		float feather_result = (max - min) * feather_amount * 0.5;
+		double feather_result = (max - min) * feather_amount * 0.5;
 
 		if (min + feather_result <= noise_result) {
 			if (max - feather_result >= noise_result)

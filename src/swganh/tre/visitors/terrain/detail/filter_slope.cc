@@ -5,7 +5,7 @@
 
 using namespace swganh::tre;
 
-void SlopeFilter::Deserialize(anh::ByteBuffer buffer)
+void SlopeFilter::Deserialize(anh::ByteBuffer& buffer)
 {
 	default_value = 1.5707964f;
 
@@ -24,7 +24,7 @@ void SlopeFilter::Deserialize(anh::ByteBuffer buffer)
 		feather_amount = 1.0f;
 }
 
-void SlopeFilter::SetMinAngle(float new_angle)
+void SlopeFilter::SetMinAngle(double new_angle)
 {
 	if (new_angle >= 0) {
 		if (new_angle <= default_value) {
@@ -40,7 +40,7 @@ void SlopeFilter::SetMinAngle(float new_angle)
 	}
 }
 
-void SlopeFilter::SetMaxAngle(float new_angle)
+void SlopeFilter::SetMaxAngle(double new_angle)
 {
 	if (new_angle >= 0) {
 		if (new_angle <= default_value) {
@@ -56,12 +56,12 @@ void SlopeFilter::SetMaxAngle(float new_angle)
 	}
 }
 
-float SlopeFilter::Process(float x, float z, float transform_value, float& base_value, std::vector<Fractal>& fractals)
+double SlopeFilter::Process(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals)
 {
-	float result;
+	double result;
 
 	if (base_value > min && base_value < max) {
-		float feather_result = max - min * feather_amount * 0.5;
+		double feather_result = max - min * feather_amount * 0.5;
 
 		if (min + feather_result <= base_value) {
 			if (max - feather_result >= base_value) {

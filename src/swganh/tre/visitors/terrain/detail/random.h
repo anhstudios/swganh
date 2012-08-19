@@ -63,7 +63,7 @@ public:
 		if (seed < 0)
 			seed = seed + 0x7FFFFFFF;
 
-		v8 = ((double) unknown / 6669205.0); // random index?
+		v8 = (int)((double) unknown / 6669205.0); // random index?
 
 		unknown = table[v8];
 		table[v8] = seed;

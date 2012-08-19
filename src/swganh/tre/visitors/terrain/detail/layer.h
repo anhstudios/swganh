@@ -20,7 +20,7 @@ namespace tre
 
 		virtual LayerType GetType() = 0;
 		
-		virtual void Deserialize(anh::ByteBuffer buffer) = 0;
+		virtual void Deserialize(anh::ByteBuffer& buffer) = 0;
 
 	};
 

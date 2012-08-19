@@ -3,16 +3,15 @@
 
 #include "swganh/tre/visitors/visitor_interface.h"
 
-#include <list>
 #include <vector>
 
 namespace swganh
 {
 namespace tre
 {
-	class Layer;
 	class Fractal;
-	class TrnHeader;
+	class Layer;
+	struct TrnHeader;
 
 	class TerrainVisitor : public VisitorInterface
 	{
@@ -38,10 +37,13 @@ namespace tre
 		*/
 		virtual void visit_folder(uint32_t depth, std::shared_ptr<folder_node> node);
 
+		std::vector<Fractal*>& GetFractals() { return fractals_; }
+		std::vector<Layer*>& GetLayers() { return layers_; }
+
 	private:
 		TrnHeader* header;
-		std::vector<Fractal> fractals_;
-		std::list<Layer> layers_;
+		std::vector<Fractal*> fractals_;
+		std::vector<Layer*> layers_;
 	};
 }
 }

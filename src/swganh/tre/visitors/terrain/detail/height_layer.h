@@ -16,10 +16,8 @@ namespace tre
 	public:
 
 		virtual LayerType GetType() { return LAYER_TYPE_HEIGHT; }
-
-		virtual void Deserialize(anh::ByteBuffer buffer) = 0;
 		
-		virtual void GetBaseHeight(float x, float z, float transform_value, float& base_value, std::vector<Fractal>& fractals) = 0;
+		virtual void GetBaseHeight(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals) = 0;
 	};
 	
 }

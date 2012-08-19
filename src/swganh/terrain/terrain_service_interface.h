@@ -13,7 +13,7 @@ namespace terrain
 
 		virtual float GetHeight(uint32_t scene_id, float x, float z, bool raw=false) = 0;
 
-		virtual float IsWater(uint32_t scene_id, float x, float z, bool raw=false) = 0;
+		virtual bool IsWater(uint32_t scene_id, float x, float z, bool raw=false) = 0;
 
 	};
 }
