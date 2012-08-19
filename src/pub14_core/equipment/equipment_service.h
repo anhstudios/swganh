@@ -3,12 +3,11 @@
 
 #include <swganh/equipment/equipment_service_interface.h>
 
-#include <anh/resource/resource_manager_interface.h>
-
 namespace swganh
 {
 namespace tre
 {
+	class ResourceManager;
 	class SlotDefinitionVisitor;
 }
 }
@@ -20,7 +19,7 @@ namespace equipment
 	class EquipmentService : public swganh::equipment::EquipmentServiceInterface
 	{
 	public:
-		EquipmentService(anh::resource::ResourceManagerInterface* resourceManager);
+		EquipmentService(swganh::tre::ResourceManager* resourceManager);
 
 		anh::service::ServiceDescription GetServiceDescription();
 

@@ -1,15 +1,15 @@
 #ifndef SWGNAH_RESOURCE_MANAGER_H_
 #define SWGANH_RESOURCE_MANAGER_H_
 
-#include <anh/resource/resource_manager_interface.h>
 #include <map>
 
 #include "swganh/tre/tre_archive.h"
+#include "visitors/visitor_interface.h"
 
 namespace swganh {
 namespace tre {
 	
-	class ResourceManager : public anh::resource::ResourceManagerInterface
+	class ResourceManager
 	{
 	public:
 		ResourceManager(std::shared_ptr<swganh::tre::TreArchive> archive);

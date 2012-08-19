@@ -11,9 +11,9 @@
 
 #include "swganh/command/command_properties_manager_interface.h"
 
-namespace anh {
-namespace resource {
-    class ResourceManagerInterface;
+namespace swganh {
+namespace tre {
+    class ResourceManager;
 }}  // namespace anh::resource
 
 namespace pub14_core {
@@ -36,7 +36,7 @@ namespace command {
          *
          * @param resource_manager Valid ResourceManager instance.
          */
-        explicit CommandPropertiesManager(anh::resource::ResourceManagerInterface* resource_manager);
+        explicit CommandPropertiesManager(swganh::tre::ResourceManager* resource_manager);
         ~CommandPropertiesManager();
 
         boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
@@ -50,7 +50,7 @@ namespace command {
         CommandPropertiesManager();
         uint64_t BuildBitmask(const std::vector<int>& bits) const;
 
-        anh::resource::ResourceManagerInterface* resource_manager_;
+        swganh::tre::ResourceManager* resource_manager_;
         swganh::command::CommandPropertiesMap command_properties_map_;
     };
 
