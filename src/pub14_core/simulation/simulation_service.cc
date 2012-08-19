@@ -272,6 +272,7 @@ public:
 			// Send Updates to aware objects if we are reconnecting and the object is still alive...
 			object->ViewAwareObjects([&](shared_ptr<Object> aware){
 			{
+				aware->Subscribe(controller);
 				aware->SendCreateByCrc(controller);
 				aware->CreateBaselines(controller);
 			}
@@ -287,11 +288,6 @@ public:
 
         auto connection_client = std::static_pointer_cast<ConnectionClientInterface>(client);
         connection_client->SetController(controller);
-
-		// Get All ViewObjects and make the controller aware
-		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> found_obj){
-			found_obj->AddAwareObject(object);
-		});		
 
         return controller;
     }
