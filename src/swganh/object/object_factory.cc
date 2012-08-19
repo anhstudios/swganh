@@ -33,16 +33,19 @@ ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
     : db_manager_(db_manager)
     , event_dispatcher_(event_dispatcher)
 {
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(1, 
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(DEFAULT_CONTAINER_PERMISSION), 
 		shared_ptr<ContainerPermissionsInterface>(new DefaultContainerPermissions())));
 
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(2, 
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(WORLD_CONTAINER_PERMISSION), 
+		shared_ptr<ContainerPermissionsInterface>(new WorldContainerPermissions())));
+
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(CREATURE_CONTAINER_PERMISSION), 
 		shared_ptr<ContainerPermissionsInterface>(new CreaturePermissions())));
 
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(3, 
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(CREATURE_CONTAINER_CONTAINER_PERMISSION), 
 		shared_ptr<ContainerPermissionsInterface>(new CreatureContainerPermissions())));
 
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(4, 
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(RIDEABLE_CONTAINER_PERMISSION), 
 		shared_ptr<ContainerPermissionsInterface>(new RideablePermissions())));
 }
 

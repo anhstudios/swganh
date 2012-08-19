@@ -35,12 +35,7 @@ EventDispatcher::EventDispatcher(ba::io_service& io_service)
 
 EventDispatcher::~EventDispatcher()
 {
-    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
-    for (auto& item : event_handlers_)
-    {
-        item.second.clear();
-    }
-    event_handlers_.clear();
+    Shutdown();
 }
 
 CallbackId EventDispatcher::Subscribe(EventType type, EventHandlerCallback callback)
@@ -113,4 +108,14 @@ void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch
             handler.second(dispatch_event);
         });
     }
+}
+
+void EventDispatcher::Shutdown()
+{
+	boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+    for (auto& item : event_handlers_)
+    {
+        item.second.clear();
+    }
+    event_handlers_.clear();
 }
