@@ -61,8 +61,8 @@ struct PythonCallback
 std::shared_ptr<SUIWindowInterface> SubcribeWrapper(std::shared_ptr<SUIWindowInterface> self, uint32_t event_id, std::string event_source, InputTrigger input_trigger, 
 													std::vector<std::string> result_list, PythonCallback funct)
 {
-	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, result_list, 
-	[&](std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
+	return self->SubscribeToEventCallback(event_id, event_source, input_trigger, result_list,
+	[=](std::shared_ptr<swganh::object::Object> object, uint32_t event_type, std::vector<std::wstring> result_list) -> bool
 	{ 
 		swganh::scripting::ScopedGilLock lock;
 		return funct.callback_(object, event_type, result_list);
@@ -151,10 +151,10 @@ void exportSuiService()
 		.def("CloseSUIWindow", &SUIServiceInterface::CloseSUIWindow, "Forcefully closes the SUI window with the given id for the given owner");
 
 	bp::class_<std::vector<std::string>>("ResultList", "list for results of a SUI window")
-		.def(bp::vector_indexing_suite<std::vector<std::string>>());
+		.def(bp::vector_indexing_suite<std::vector<std::string>, true>());
 
 	bp::class_<std::vector<std::wstring>>("EventResultList", "list for results the event of a SUI window")
-		.def(bp::vector_indexing_suite<std::vector<std::wstring>>());
+		.def(bp::vector_indexing_suite<std::vector<std::wstring>, true>());
 
 	bp::class_<PythonCallback>("PythonCallback", bp::init<std::string, std::string>());
 }

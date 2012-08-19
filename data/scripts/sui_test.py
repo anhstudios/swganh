@@ -12,14 +12,20 @@ def sendMessageBox(kernel, player_id):
     sui_service.OpenSUIWindow(window)
 
 def listBoxCallback(object, event_type, result_list):
-    print('calledback')	
+    print(object.id)	
+    print(event_type)
+    print(result_list)
+    for i in range(len(result_list)):
+        print(result_list[i])        
+        ##print(r)
     
 def sendListBox(kernel, player_id):
     sui_service = kernel.service_manager().sui_service()
     owner = kernel.service_manager().simulation_service().findObjectById(player_id)
 
     #Create the window
-    result_list = ['Woot', 'Lol', 'Omg']
+    result_list = EventResultList()
+    result_list.extend( ['Woot', 'Lol', 'Omg'] )
     window = sui_service.CreateListBox(ListBoxType.okcancel, 'List Title', 'This is a list', result_list, owner)
 
     #Subscribe to some properties of the remote window
@@ -50,5 +56,5 @@ def sendInputBox(kernel, player_id):
     sui_service.OpenSUIWindow(window)
     
 #sui_test.sendMessageBox(kernel, 8589934603)
-#sui_test.sendListBox(kernel, 8589934603)
+#sui_test.sendListBox(kernel, 8589934649)
 #sui_test.sendInputBox(kernel, 8589934603)
