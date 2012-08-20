@@ -38,61 +38,61 @@ void BoundaryPolygon::Deserialize(anh::ByteBuffer& buffer)
 	this->water_shader = buffer.read<std::string>(false, true);
 }
 
-bool BoundaryPolygon::IsContained(double x, double z)
+bool BoundaryPolygon::IsContained(float x, float z)
 {
 	int j;
 	bool odd_nodes = false;
-	double x1, x2;
+	float x1, x2;
 
 	for ( unsigned int i = 0; i < verts.size(); ++i )
 	{
 		j = (i+1) % verts.size();
 
-		if ( verts[i].x < verts[j].x)
+		if ( verts.at(i).x < verts.at(j).x)
 		{
-			x1 = verts[i].x;
-			x2 = verts[j].x;
+			x1 = verts.at(i).x;
+			x2 = verts.at(j).x;
 		} 
 		else 
 		{
-			x1 = verts[j].x;
-			x2 = verts[i].x;
+			x1 = verts.at(j).x;
+			x2 = verts.at(i).x;
 		}
 
-		/* First check if the ray is possible to cross the line */
-		if ( x > x1 && x <= x2 && ( z < verts[i].y || z <= verts[j].y ) ) {
-			static const double eps = 0.000001f;
+			/* First check if the ray is possible to cross the line */
+			if ( x > x1 && x <= x2 && ( z < verts.at(i).y || z <= verts.at(j).y ) ) {
+				static const float eps = 0.000001f;
 
-			/* Calculate the equation of the line */
-			double dx = verts[j].x - verts[i].x;
-			double dz = verts[j].y - verts[i].y;
-			double k;
+				/* Calculate the equation of the line */
+				float dx = verts.at(j).x - verts.at(i).x;
+				float dz = verts.at(j).y - verts.at(i).y;
+				float k;
 
-			if ( fabs(dx) < eps ){
-				k = std::numeric_limits<float>::infinity();
-			} else {
-				k = dz/dx;
-			}
+				if ( fabs(dx) < eps ){
+					k = std::numeric_limits<float>::infinity();
+				} else {
+					k = dz/dx;
+				}
 
-			double m = verts[i].y - k * verts[i].x;
+				float m = verts.at(i).y - k * verts.at(i).x;
 
-			/* Find if the ray crosses the line */
-			double z2 = k * x + m;
-			if ( z <= z2 )
-			{
-				odd_nodes=!odd_nodes;
+				/* Find if the ray crosses the line */
+				float z2 = k * x + m;
+				if ( z <= z2 )
+				{
+					odd_nodes=!odd_nodes;
+				}
 			}
 		}
-	}
 
 
-	return odd_nodes;
+  return odd_nodes;
 }
 
-double BoundaryPolygon::Process(double px, double pz)
+float BoundaryPolygon::Process(float px, float pz)
 {
-	double result;
-	glm::vec2& last = verts.at(verts.size() - 1);
+	float result;
+	glm::vec2 last = verts.at(verts.size() - 1);
 	bool odd_nodes = false;
 
 	if (px < min_x || px > max_x || pz < min_z || pz > max_z)
@@ -103,7 +103,7 @@ double BoundaryPolygon::Process(double px, double pz)
 
 	for (unsigned int i = 0; i < verts.size(); i++)
 	{
-		glm::vec2& point = verts.at(i);
+		glm::vec2 point = verts.at(i);
 
 		if ((point.y <= pz && pz < last.y) || (last.y <= pz && pz < point.y))
 			if ((pz - point.y) * (last.x - point.x) / (last.y - point.y) + point.x > (double)px) 
@@ -125,7 +125,7 @@ double BoundaryPolygon::Process(double px, double pz)
 
 		for (unsigned int i = 0; i < verts.size(); ++i) 
 		{
-			glm::vec2& point = verts.at(i);
+			glm::vec2 point = verts.at(i);
 
 			diffz = pz - point.y;
 			diffx = px - point.x;
@@ -141,7 +141,7 @@ double BoundaryPolygon::Process(double px, double pz)
 
 		for (unsigned int i = 0; i < verts.size(); ++i) 
 		{
-			glm::vec2& point = verts.at(i);
+			glm::vec2 point = verts.at(i);
 
 			ltp_x = last.x - point.x;
 			ltp_z = last.y - point.y;
@@ -168,7 +168,7 @@ double BoundaryPolygon::Process(double px, double pz)
 		if ( feather2 >= new_feather - 0.00009999999747378752 && feather2 <= new_feather + 0.00009999999747378752 )
 			result = 1.0;
 		else
-			result = sqrt(feather2) / feather_amount;
+			result = (float)(sqrt(feather2) / feather_amount);
 	} 
 	else 
 	{

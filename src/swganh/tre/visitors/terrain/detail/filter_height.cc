@@ -11,12 +11,12 @@ void HeightFilter::Deserialize(anh::ByteBuffer& buffer)
 	feather_amount = buffer.read<float>();
 }
 
-double HeightFilter::Process(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals)
+float HeightFilter::Process(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals)
 {
-	double result;
+	float result;
 
 	if ((base_value > minHeight) && (base_value < maxHeight)) {
-		double feather_result = (maxHeight - minHeight) * feather_amount * 0.5;
+		float feather_result = (float)((maxHeight - minHeight) * feather_amount * 0.5);
 
 		if (minHeight + feather_result <= base_value) {
 			if (maxHeight - feather_result >= base_value) {

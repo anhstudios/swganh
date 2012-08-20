@@ -14,12 +14,12 @@ namespace tre
 
 		virtual void Deserialize(anh::ByteBuffer& buffer);
 		
-		virtual void GetBaseHeight(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals);
+		virtual void GetBaseHeight(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals);
 
 	private:
 		int   fractal_id;
 		int   transform_type;
-		double height_val;
+		float height_val;
 	};
 
 }

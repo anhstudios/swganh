@@ -4,13 +4,14 @@
 #include "swganh/tre/visitors/visitor_interface.h"
 #include <vector>
 #include <list>
-
+#include <stack>
 
 namespace swganh
 {
 namespace tre
 {
 	class Layer;
+	class ContainerLayer;
 
 	class LayerVisitor : public VisitorInterface
 	{
@@ -35,10 +36,12 @@ namespace tre
 		*/
 		virtual void visit_folder(uint32_t depth, std::shared_ptr<folder_node> node);
 
-		std::vector<Layer*>& GetLayers() { return layers_; }
+		std::vector<ContainerLayer*>& GetLayers() { return layers_; }
 
 	private:
-		std::vector<Layer*> layers_;
+		std::stack<std::pair<ContainerLayer*, uint32_t>> layer_stack_;
+		Layer* working_layer_;
+		std::vector<ContainerLayer*> layers_;
 	};
 }
 }

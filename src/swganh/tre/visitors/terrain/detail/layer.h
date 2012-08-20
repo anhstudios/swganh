@@ -1,6 +1,8 @@
 #ifndef TERRAIN_LAYER_H_
 #define TERRAIN_LAYER_H_
 
+#include <anh/byte_buffer.h>
+
 namespace swganh
 {
 namespace tre
@@ -18,9 +20,16 @@ namespace tre
 	{
 	public:
 
+		virtual void SetData(anh::ByteBuffer& buffer)
+		{
+			enabled = buffer.read<uint32_t>() == 1;
+		}
+
 		virtual LayerType GetType() = 0;
 		
 		virtual void Deserialize(anh::ByteBuffer& buffer) = 0;
+
+		bool enabled;
 
 	};
 

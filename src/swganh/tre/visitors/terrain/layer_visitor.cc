@@ -7,11 +7,7 @@
 
 #include "detail/layer_loader.h"
 
-#include <stack>
-
 using namespace swganh::tre;
-
-std::stack<std::pair<ContainerLayer*, uint32_t>> layer_stack_;
 
 LayerVisitor::~LayerVisitor()
 {
@@ -23,9 +19,13 @@ LayerVisitor::~LayerVisitor()
 
 void LayerVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
 {
-	if(node->name() == "DATAPARM" && layer_stack_.size() > 0)
+	if(node->name() == "0001DATA")
 	{
-		layer_stack_.top().first->Deserialize(node->data());
+		working_layer_->SetData(node->data());
+	}
+	else if(node->name() == "DATAPARM" || node->name() == "ADTA" && layer_stack_.size() > 0)
+	{
+		working_layer_->Deserialize(node->data());
 	}
 }
 
@@ -36,12 +36,12 @@ void LayerVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> nod
 		layer_stack_.pop();
 	}
 
-	Layer* working_layer_ = LayerLoader(node);
+	working_layer_ = LayerLoader(node);
 	if(working_layer_ != nullptr)
 	{
-		if(layer_stack_.size() == 0)
+		if(layer_stack_.size() == 0 && working_layer_->GetType() == LAYER_TYPE_CONTAINER)
 		{
-			layers_.push_back(working_layer_);
+			layers_.push_back((ContainerLayer*)working_layer_);
 		} 
 		else 
 		{

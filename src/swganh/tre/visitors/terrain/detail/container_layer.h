@@ -18,6 +18,9 @@ namespace tre
 
 		virtual void Deserialize(anh::ByteBuffer& buffer)
 		{
+			//Read ADTA
+			invert_boundaries = buffer.read<uint32_t>() == 1;
+			invert_filters = buffer.read<uint32_t>() == 1;
 		}
 
 		virtual LayerType GetType() { return LAYER_TYPE_CONTAINER; }
@@ -44,6 +47,8 @@ namespace tre
 		std::vector<BoundaryLayer*> boundaries;
 		std::vector<FilterLayer*> filters;
 		std::vector<HeightLayer*> heights;
+
+		bool invert_boundaries, invert_filters;
 
 	private:
 	};

@@ -13,12 +13,7 @@
 #include "anh/logger.h"
 #include "detail/header.h"
 
-#include <stack>
-
 using namespace swganh::tre;
-
-Fractal* working_fractal_;
-std::stack<std::pair<ContainerLayer*, uint32_t>> layer_stack_;
 
 TerrainVisitor::TerrainVisitor()
 {
@@ -31,7 +26,7 @@ TerrainVisitor::~TerrainVisitor()
 	
 	for(auto& fractal : fractals_)
 	{
-		delete fractal;
+		delete fractal.second;
 	}
 
 	for(auto& layer : layers_)
@@ -46,14 +41,18 @@ void TerrainVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
 	if(node->name() == "MFAMDATA")
 	{
 		working_fractal_ = new Fractal(node->data());
-		this->fractals_.push_back(working_fractal_);
+		this->fractals_.insert(FractalMap::value_type(working_fractal_->fractal_id, working_fractal_));
 	} 
 	else if(node->name() == "0001DATA" && working_fractal_ != nullptr) 
 	{
 		working_fractal_->Deserialize(node->data());
 		working_fractal_ = nullptr;
-	} 
-	else if(node->name() == "DATAPARM" && layer_stack_.size() > 0)
+	}
+	else if(node->name() == "0001DATA" && layer_stack_.size() > 0)
+	{
+		layer_stack_.top().first->SetData(node->data());
+	}
+	else if(node->name() == "DATAPARM" || node->name() == "DATA" || node->name() == "ADTA" && layer_stack_.size() > 0)
 	{
 		layer_stack_.top().first->Deserialize(node->data());
 	}
@@ -70,24 +69,21 @@ void TerrainVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> n
 		layer_stack_.pop();
 	}
 
-	Layer* working_layer_ = LayerLoader(node);
+	working_layer_ = LayerLoader(node);
 	if(working_layer_ != nullptr)
 	{
-		if(layer_stack_.size() == 0)
+		if(layer_stack_.size() == 0 && working_layer_->GetType() == LAYER_TYPE_CONTAINER)
 		{
-			layers_.push_back(working_layer_);
+			layers_.push_back((ContainerLayer*)working_layer_);
 		} 
-		else 
+		else if(layer_stack_.top().first->GetType() == LAYER_TYPE_CONTAINER)
 		{
-			layer_stack_.top().first->InsertLayer(working_layer_);
+			((ContainerLayer*)layer_stack_.top().first)->InsertLayer(working_layer_);
 		}
 
-		if(working_layer_->GetType() == LAYER_TYPE_CONTAINER)
-		{
-			auto entry = std::make_pair<ContainerLayer*, uint32_t>(std::forward<ContainerLayer*>((ContainerLayer*)working_layer_), 
-				std::forward<uint32_t>(depth));
+		auto entry = std::make_pair<Layer*, uint32_t>(std::forward<Layer*>(working_layer_), 
+			std::forward<uint32_t>(depth));
 
-			layer_stack_.push(std::move(entry));
-		}
+		layer_stack_.push(std::move(entry));
 	}
 }

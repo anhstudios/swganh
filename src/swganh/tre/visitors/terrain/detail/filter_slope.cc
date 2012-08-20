@@ -12,8 +12,8 @@ void SlopeFilter::Deserialize(anh::ByteBuffer& buffer)
 	min_angle = buffer.read<float>();
 	max_angle = buffer.read<float>();
 
-	SetMinAngle(M_PI * min_angle * MODIFIER);
-	SetMaxAngle(M_PI * max_angle * MODIFIER);
+	SetMinAngle((float)(M_PI * min_angle * MODIFIER));
+	SetMaxAngle((float)(M_PI * max_angle * MODIFIER));
 
 	feather_type = buffer.read<uint32_t>();
 	feather_amount = buffer.read<float>();
@@ -24,7 +24,7 @@ void SlopeFilter::Deserialize(anh::ByteBuffer& buffer)
 		feather_amount = 1.0f;
 }
 
-void SlopeFilter::SetMinAngle(double new_angle)
+void SlopeFilter::SetMinAngle(float new_angle)
 {
 	if (new_angle >= 0) {
 		if (new_angle <= default_value) {
@@ -40,7 +40,7 @@ void SlopeFilter::SetMinAngle(double new_angle)
 	}
 }
 
-void SlopeFilter::SetMaxAngle(double new_angle)
+void SlopeFilter::SetMaxAngle(float new_angle)
 {
 	if (new_angle >= 0) {
 		if (new_angle <= default_value) {
@@ -56,12 +56,12 @@ void SlopeFilter::SetMaxAngle(double new_angle)
 	}
 }
 
-double SlopeFilter::Process(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals)
+float SlopeFilter::Process(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals)
 {
-	double result;
+	float result;
 
 	if (base_value > min && base_value < max) {
-		double feather_result = max - min * feather_amount * 0.5;
+		float feather_result = (float)( max - min * feather_amount * 0.5);
 
 		if (min + feather_result <= base_value) {
 			if (max - feather_result >= base_value) {

@@ -8,12 +8,12 @@ void HeightConstant::Deserialize(anh::ByteBuffer& buffer)
 	this->height_val = buffer.read<float>();
 }
 		
-void HeightConstant::GetBaseHeight(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals)
+void HeightConstant::GetBaseHeight(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals)
 {
 	if (transform_value == 0)
 		return;
 
-	double result;
+	float result;
 
 	switch (transform_type) 
 	{
@@ -30,7 +30,7 @@ void HeightConstant::GetBaseHeight(double x, double z, double transform_value, d
 		result = 0;
 		break;
 	default:
-		result = (1.0 - transform_value) * base_value + transform_value * height_val;
+		result = (float)((1.0 - transform_value) * base_value + transform_value * height_val);
 	}
 
 	base_value = result;

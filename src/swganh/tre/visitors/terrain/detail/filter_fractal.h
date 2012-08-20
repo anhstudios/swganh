@@ -14,11 +14,11 @@ namespace tre
 		
 		virtual void Deserialize(anh::ByteBuffer& buffer);
 
-		virtual double Process(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals);
+		virtual float Process(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals);
 
 	private:
 		uint32_t fractal_id;
-		double min, max, step;
+		float min, max, step;
 	};
 
 }

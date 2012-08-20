@@ -100,10 +100,10 @@ namespace tre
 		}
 
 		// Generate noise for given coordinates
-		double getNoise(double x, double z)
+		float getNoise(float x, float z)
 		{
-			double xFrequency = x * freq_x;
-			double zFrequency = z * freq_z;
+			float xFrequency = x * freq_x;
+			float zFrequency = z * freq_z;
 
 			double result = 0;
 
@@ -138,14 +138,14 @@ namespace tre
 				{
 					result = 0;
 
-					return result;
+					return (float)result;
 				}
 
 				if (result > 0.999) 
 				{
 					result = 1.0;
 
-					return result;
+					return (float)result;
 				}
 
 				double log_gain = log(1.0 - gain) / log(0.5);
@@ -154,23 +154,23 @@ namespace tre
 				{
 					result = pow(result * 2, log_gain) * 0.5;
 
-					return result;
+					return (float)result;
 				}
 
 				result = 1.0 - pow((1.0 - result) * 2, log_gain) * 0.5;
 			}
 
-			return result;
+			return (float)result;
 		}
 
-		double calculateCombination1(double x, double z)
+		double calculateCombination1(float x, double z)
 		{
-			double curr_offset = 1, curr_ampl = 1;
+			float curr_offset = 1, curr_ampl = 1;
 			double result = 0;
 
-			double zOffset = z + offset_z; 
-			double xOffset = x + offset_x; 
-			double zNoise, xNoise, noise_gen = 0;
+			float zOffset = (float)( z + offset_z); 
+			float xOffset = x + offset_x; 
+			float zNoise, xNoise, noise_gen = 0;
 			double coord[2];
 
 			for (unsigned int i = 0; i < octaves; ++i) 
@@ -191,13 +191,13 @@ namespace tre
 			return result;
 		}
 
-		double calculateCombination2(double x, double z)
+		double calculateCombination2(float x, float z)
 		{
-			double noise_gen = 0;
-			double zOffset = z + offset_z;
-			double zNoise, xOffset, xNoise;
-			double curr_offset = 1.0;
-			double curr_ampl = 1.0;
+			float noise_gen = 0;
+			float zOffset = z + offset_z;
+			float zNoise, xOffset, xNoise;
+			float curr_offset = 1.0;
+			float curr_ampl = 1.0;
 			double result = 0;
 			double coord[2];
 
@@ -210,7 +210,7 @@ namespace tre
 				coord[0] = xNoise;
 				coord[1] = zNoise;
 
-				noise_gen = (1.0 - fabs(noise.noise2(coord))) * curr_ampl + noise_gen;
+				noise_gen = (float)( (1.0 - fabs(noise.noise2(coord))) * curr_ampl + noise_gen);
 				curr_offset = curr_offset * octaves_arg; 
 				curr_ampl = curr_ampl * amplitude;
 			}
@@ -220,14 +220,14 @@ namespace tre
 			return result;
 		}
 
-		double calculateCombination3(double x, double z)
+		double calculateCombination3(float x, float z)
 		{
-			double curr_offset = 1.0;
-			double curr_ampl = 1.0;
+			float curr_offset = 1.0;
+			float curr_ampl = 1.0;
 			double result = 0;
-			double noise_gen = 0;
-			double zOffset = z + offset_z; 
-			double zNoise, xOffset, xNoise;
+			float noise_gen = 0;
+			float zOffset = z + offset_z; 
+			float zNoise, xOffset, xNoise;
 
 			double coord[2];
 
@@ -250,16 +250,16 @@ namespace tre
 			return result;
 		}
 
-		double calculateCombination4(double x, double z)
+		double calculateCombination4(float x, float z)
 		{
-			double noise_gen = 0;
-			double zNoise, xNoise, noise_gain;
-			double zOffset = z + offset_z; 
-			double xOffset = x + offset_x; 
+			float noise_gen = 0;
+			float zNoise, xNoise, noise_gain;
+			float zOffset = z + offset_z; 
+			float xOffset = x + offset_x; 
 			double coord[2];
 
-			double curr_offset = 1.0;
-			double curr_ampl = 1.0;
+			float curr_offset = 1.0;
+			float curr_ampl = 1.0;
 			double result = 0;
 
 			for (unsigned int i = 0; i < octaves; ++i) 
@@ -277,7 +277,7 @@ namespace tre
 				else 
 					noise_gain = 0.0;
 
-				noise_gen = (1.0 - noise_gain) * curr_ampl + noise_gen;
+				noise_gen = (float)( (1.0 - noise_gain) * curr_ampl + noise_gen);
 				curr_offset = curr_offset * octaves_arg; 
 				curr_ampl = curr_ampl * amplitude;
 			}
@@ -287,17 +287,17 @@ namespace tre
 			return result;
 		}
 
-		double calculateCombination5(double x, double z)
+		double calculateCombination5(float x, float z)
 		{
-			double noise_gen = 0;
-			double zNoise, xNoise, noise_gain;
-			double zOffset = z + offset_z; 
-			double xOffset = x + offset_x;
+			float noise_gen = 0;
+			float zNoise, xNoise, noise_gain;
+			float zOffset = z + offset_z; 
+			float xOffset = x + offset_x;
 			double coord[2];
 			double result = 0;
 
-			double curr_offset = 1.0;
-			double curr_ampl = 1.0;
+			float curr_offset = 1.0;
+			float curr_ampl = 1.0;
 
 			for (unsigned int i = 0; i < octaves; ++i) 
 			{

@@ -4,6 +4,8 @@
 #include "swganh/tre/visitors/visitor_interface.h"
 
 #include <vector>
+#include <map>
+#include <stack>
 
 namespace swganh
 {
@@ -11,7 +13,10 @@ namespace tre
 {
 	class Fractal;
 	class Layer;
+	class ContainerLayer;
 	struct TrnHeader;
+
+	typedef std::map<uint32_t,Fractal*> FractalMap;
 
 	class TerrainVisitor : public VisitorInterface
 	{
@@ -37,13 +42,17 @@ namespace tre
 		*/
 		virtual void visit_folder(uint32_t depth, std::shared_ptr<folder_node> node);
 
-		std::vector<Fractal*>& GetFractals() { return fractals_; }
-		std::vector<Layer*>& GetLayers() { return layers_; }
+		FractalMap& GetFractals() { return fractals_; }
+		std::vector<ContainerLayer*>& GetLayers() { return layers_; }
 
 	private:
+		Fractal* working_fractal_;
+		std::stack<std::pair<Layer*, uint32_t>> layer_stack_;
+		Layer* working_layer_;
+
 		TrnHeader* header;
-		std::vector<Fractal*> fractals_;
-		std::vector<Layer*> layers_;
+		FractalMap fractals_;
+		std::vector<ContainerLayer*> layers_;
 	};
 }
 }

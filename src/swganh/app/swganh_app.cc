@@ -38,11 +38,11 @@
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/scripting/utilities.h"
 
-#include "version.h"
+#include "swganh/terrain/terrain_service_interface.h"
+using namespace swganh::terrain;
 
-///TESTING///
-#include <anh/resource/resource_manager_interface.h>
-#include <swganh/tre/visitors/terrain/terrain_visitor.h>
+
+#include "version.h"
 
 using namespace anh;
 using namespace anh::app;
@@ -231,10 +231,6 @@ void SwganhApp::Start() {
     }
     
     kernel_->GetServiceManager()->Start();
-
-	///TESTING///
-	auto resource_manager = kernel_->GetResourceManager();
-	auto terrain = resource_manager->getResourceByName("terrain/tatooine.trn", swganh::tre::TRN_VISITOR);
 }
 
 void SwganhApp::Stop() {
@@ -364,7 +360,7 @@ void SwganhApp::LoadCoreServices_()
 	{
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		simulation_service->StartScene("corellia");
-		simulation_service->StartScene("naboo");
+		//simulation_service->StartScene("naboo");
 	}
 }
 

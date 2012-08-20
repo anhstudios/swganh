@@ -7,7 +7,7 @@ namespace swganh
 {
 namespace terrain
 {
-	class TerrainServiceInterface : anh::service::ServiceInterface
+	class TerrainServiceInterface : public anh::service::ServiceInterface
 	{
 	public:
 

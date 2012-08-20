@@ -14,12 +14,11 @@ namespace tre
 		
 		virtual LayerType GetType() { return LAYER_TYPE_BOUNDARY; }
 
-		virtual bool IsContained(double px, double pz) = 0;
-		virtual double Process(double px, double pz) = 0;
+		virtual bool IsContained(float px, float pz) = 0;
+		virtual float Process(float px, float pz) = 0;
 		
-	protected:
 		uint32_t feather_type;
-		double feather_amount;
+		float feather_amount;
 	};
 }
 }

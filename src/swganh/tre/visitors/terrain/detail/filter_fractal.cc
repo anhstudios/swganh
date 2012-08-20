@@ -17,13 +17,15 @@ void FractalFilter::Deserialize(anh::ByteBuffer& buffer)
 	step = buffer.read<float>();
 }
 
-double FractalFilter::Process(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals)
+float FractalFilter::Process(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals)
 {
-	double noise_result = fractals[fractal_id].getNoise(x, z) * step;
-	double result = 0;
+	Fractal* fractal = fractals.find(fractal_id)->second;
+
+	float noise_result = fractal->getNoise(x, z) * step;
+	float result = 0;
 
 	if (noise_result > min && noise_result < max) {
-		double feather_result = (max - min) * feather_amount * 0.5;
+		float feather_result = (float)((max - min) * feather_amount * 0.5);
 
 		if (min + feather_result <= noise_result) {
 			if (max - feather_result >= noise_result)

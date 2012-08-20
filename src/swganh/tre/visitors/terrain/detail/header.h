@@ -20,7 +20,7 @@ struct TrnHeader
 		use_global_water_height = buffer.read<uint32_t>();
 		global_water_height = buffer.read<float>();
 		water_shader_size = buffer.read<float>();
-		water_shader_name = buffer.read<std::string>();
+		water_shader_name = buffer.read<std::string>(false, true);
 		seconds_per_world_cycle = buffer.read<float>();
 	}
 

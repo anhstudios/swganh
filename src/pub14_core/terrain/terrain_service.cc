@@ -1,5 +1,13 @@
 #include "terrain_service.h"
 
+#include <map>
+
+#include "pub14_core/simulation/scene_events.h"
+
+#include <anh/resource/resource_manager_interface.h>
+#include <anh/event_dispatcher.h>
+#include <anh/logger.h>
+
 #include "swganh/tre/visitors/terrain/layer_visitor.h"
 #include "swganh/tre/visitors/terrain/terrain_visitor.h"
 
@@ -11,23 +19,68 @@
 using namespace swganh_core::terrain;
 using namespace swganh::tre;
 
+TerrainService::TerrainService(swganh::app::SwganhKernel* kernel) : kernel_(kernel)
+{
+	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<anh::EventInterface>& newEvent)
+	{
+		auto real_event = std::static_pointer_cast<swganh_core::simulation::NewSceneEvent>(newEvent);
+
+		auto visitor = kernel_->GetResourceManager()->getResourceByName(real_event->terrain_filename, TRN_VISITOR);
+
+		SceneEntry entry;
+		entry.terrain_visitor_ = std::static_pointer_cast<TerrainVisitor>(visitor);
+		scenes_.insert(SceneMap::value_type(real_event->scene_id, std::move(entry)));
+
+		LOG(warning) << "-147 " << GetHeight(real_event->scene_id, -147.0f, -4735.0f) << " -4735";
+	});
+
+	kernel_->GetEventDispatcher()->Subscribe("SceneManager:DestroyScene", [&] (const std::shared_ptr<anh::EventInterface>& newEvent)
+	{
+		auto real_event = std::static_pointer_cast<swganh_core::simulation::DestroySceneEvent>(newEvent);
+		this->scenes_.erase(real_event->scene_id);
+	});
+}
+
+anh::service::ServiceDescription TerrainService::GetServiceDescription()
+{
+		anh::service::ServiceDescription service_description(        
+		"Terrain Service",
+        "terrain",
+        "0.1",
+        "127.0.0.1", 
+        0,
+        0, 
+        0);
+	return service_description;
+}
+
 float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
 {
 	auto itr = scenes_.find(scene_id);
 	if(itr != scenes_.end())
 	{
+		//Read in height at this point
+		auto& layers = itr->second.terrain_visitor_->GetLayers();
+		auto& fractals = itr->second.terrain_visitor_->GetFractals();
+
 		float affector_transform = 1.0f;
 		float transform_value = 0.0f;
-		float height_result = 0.0f;
-		
-		//Read in height at this point
+		double height_result = 0.0f;
 
-
+		for(auto& layer : layers)
+		{
+			if(layer->enabled)
+			{
+				transform_value = processLayerHeight(layer, x, z, height_result, affector_transform, fractals);
+			}
+		}
 
 		if(!raw)
 		{
 			//Apply any necessary layer modifications
 		}
+
+		return (float) height_result;
 	}
 	return FLT_MIN;
 }
@@ -37,7 +90,7 @@ bool TerrainService::IsWater(uint32_t scene_id, float x, float z, bool raw)
 	auto itr = scenes_.find(scene_id);
 	if(itr != scenes_.end())
 	{
-		//Read in height at this point
+		
 
 		if(!raw)
 		{
@@ -47,7 +100,7 @@ bool TerrainService::IsWater(uint32_t scene_id, float x, float z, bool raw)
 	return false;
 }
 
-float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z, float& base_value, float affector_transform)
+float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z, double& base_value, float affector_transform, std::map<uint32_t,Fractal*>& fractals)
 {
 	std::vector<BoundaryLayer*> boundaries = layer->boundaries;
 	std::vector<HeightLayer*> heights = layer->heights;
@@ -59,14 +112,14 @@ float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z
 
 	for (unsigned int i = 0; i < boundaries.size(); i++)
 	{
-		TRNLib::Boundary* boundary = (Boundary*)boundaries.at(i);
+		BoundaryLayer* boundary = (BoundaryLayer*)boundaries.at(i);
 
 		if (!boundary->enabled)
 			continue;
 		else
 			has_boundaries = true;
 
-		float result = boundary->process(x, z);
+		float result = (float) boundary->Process(x, z);
 
 		result = calculateFeathering(result, boundary->feather_type);
 
@@ -87,12 +140,12 @@ float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z
 	{
 		for (unsigned int i = 0; i < filters.size(); ++i) 
 		{
-			TRNLib::Filter* filter = (Filter*)filters.at(i);
+			FilterLayer* filter = (FilterLayer*)filters.at(i);
 
 			if (!filter->enabled)
 				continue;
 
-			float result = filter->process(x, z, transform_value, base_value, this);
+			float result = (float) filter->Process(x, z, transform_value, base_value, fractals);
 
 			result = calculateFeathering(result, filter->feather_type);
 
@@ -104,28 +157,28 @@ float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z
 		}
 
 		if (layer->invert_filters)
-			transform_value = 1.0 - transform_value;
+			transform_value = 1.0f - transform_value;
 
 		if (transform_value != 0)
 		{
 			for (unsigned int i = 0; i < heights.size(); i++)
 			{
-				TRNLib::Height* affector = (Height*)heights.at(i);
+				HeightLayer* affector = (HeightLayer*)heights.at(i);
 			
 				if (affector->enabled)
 				{
-					affector->getBaseHeight(x, z, transform_value, base_value, this);
+					affector->GetBaseHeight(x, z, transform_value, base_value, fractals);
 				}
 			}
 
-			std::vector<CONTAINER_LAYER*> children = layer->children;
+			std::vector<ContainerLayer*> children = layer->children;
 
 			for (unsigned int i = 0; i < children.size(); i++)
 			{
-				CONTAINER_LAYER* child = children.at(i);
+				ContainerLayer* child = children.at(i);
 
 				if (child->enabled)
-					processLayerHeight(child, x, z, base_value, affector_transform * transform_value);
+					processLayerHeight(child, x, z, base_value, affector_transform * transform_value, fractals);
 			}
 		}
 	}

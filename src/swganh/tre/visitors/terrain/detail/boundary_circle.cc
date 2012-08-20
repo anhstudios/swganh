@@ -12,10 +12,10 @@ void BoundaryCircle::Deserialize(anh::ByteBuffer& buffer)
 	this->feather_amount = buffer.read<float>();
 }
 
-bool BoundaryCircle::IsContained(double px, double pz)
+bool BoundaryCircle::IsContained(float px, float pz)
 {
-	double dist = pow(px-x,2) + pow(pz-z,2);
-	double r2 = pow(rad,2);
+	float dist = pow(px-x,2) + pow(pz-z,2);
+	float r2 = pow(rad,2);
 
 	if ( dist < r2)
 		return true;
@@ -23,15 +23,15 @@ bool BoundaryCircle::IsContained(double px, double pz)
 	return false;
 }
 
-double BoundaryCircle::Process(double px, double pz)
+float BoundaryCircle::Process(float px, float pz)
 {
-	double result;
-	double dist = pow(px-x,2) + pow(pz-z,2);
-	double r2 = pow(rad,2);
+	float result;
+	float dist = pow(px-x,2) + pow(pz-z,2);
+	float r2 = pow(rad,2);
 
 	if (dist <= r2)
 	{
-		double fCircle = pow((1.0 - feather_amount) * rad,2);
+		float fCircle = (float) pow((1.0 - feather_amount) * rad,2);
 
 		if (dist > fCircle)
 			result = 1.0f - (dist - fCircle) / (r2 - fCircle);

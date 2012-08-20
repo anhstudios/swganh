@@ -13,11 +13,11 @@ namespace tre
 	public:
 
 		virtual void Deserialize(anh::ByteBuffer& buffer);
-		virtual bool IsContained(double px, double pz);
-		virtual double Process(double px, double pz);
+		virtual bool IsContained(float px, float pz);
+		virtual float Process(float px, float pz);
 		
 	protected:
-		double x1, z1, x2, z2;
+		float x1, z1, x2, z2;
 	};
 
 }

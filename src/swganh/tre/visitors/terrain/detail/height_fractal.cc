@@ -10,11 +10,13 @@ void HeightFractal::Deserialize(anh::ByteBuffer& buffer)
 	this->height_val = buffer.read<float>();
 }
 		
-void HeightFractal::GetBaseHeight(double x, double z, double transform_value, double& base_value, std::vector<Fractal>& fractals)
+void HeightFractal::GetBaseHeight(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals)
 {
-	double noise_result = fractals[fractal_id].getNoise(x, z) * height_val;
+	Fractal* fractal = fractals.find(fractal_id)->second;
+	
+	float noise_result = fractal->getNoise(x, z) * height_val;
 
-	double result;
+	float result;
 
 	switch (transform_type)
 	{
