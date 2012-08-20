@@ -766,14 +766,16 @@ shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
 
 void Object::SetMenuResponse(std::vector<swganh::messages::controllers::RadialOptions> radials)
 {
-	boost::lock_guard<boost::mutex> lg(object_mutex_);
-	menu_response_->radial_options = radials;
-
+	{
+		boost::lock_guard<boost::mutex> lg(object_mutex_);
+		menu_response_->radial_options = radials;
+	}
 	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
         ("Object::SetMenuResponse", shared_from_this()));
 }
 
 std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> Object::GetMenuResponse()
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return menu_response_;
 }
