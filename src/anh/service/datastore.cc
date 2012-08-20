@@ -107,7 +107,7 @@ void Datastore::saveGalaxyStatus(int32_t galaxy_id, int32_t status) const
 {
     try {
         std::unique_ptr<sql::PreparedStatement> statement(connection_->prepareStatement(
-            "update galaxy set status = ? "
+			"update galaxy set status = ? , updated_at = NOW() "
             "where id = ?"));
 
         statement->setInt(1, status);
