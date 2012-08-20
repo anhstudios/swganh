@@ -227,7 +227,7 @@ void ObjectVisitor::_handleUnhandled(ObjectVisitor* dst, std::string& name, anh:
 
 void ObjectVisitor::debug()
 {
-	std::set<std::string>::iterator parentIt = parentFiles.begin();
+	/*std::set<std::string>::iterator parentIt = parentFiles.begin();
 	std::set<std::string>::iterator parentEnd = parentFiles.end();
 	while(parentIt != parentEnd)
 	{
@@ -263,7 +263,7 @@ void ObjectVisitor::debug()
 		}
 		printf("\n");
 		++it;
-	}
+	}*/
 }
 
 
