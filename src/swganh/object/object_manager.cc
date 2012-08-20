@@ -232,6 +232,11 @@ void ObjectManager::PersistRelatedObjects(const std::shared_ptr<Object>& object)
     {
 		// first persist the parent object
         PersistObject(object);
+		// Now related objects
+		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> contained)
+		{
+			PersistObject(contained);
+		});
     }
 }
 	
