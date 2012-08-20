@@ -160,9 +160,10 @@ void Session::HandleMessageInternal(anh::ByteBuffer message)
 	// Sanity Check
 	if (message.size() > 0)
 	{
-		uint16_t soe_opcode = message.peek<uint16_t>(true);
-
+		uint16_t soe_opcode = 0;
 		try {
+
+			soe_opcode = message.peek<uint16_t>(true);
 			switch(soe_opcode)
 			{
 				case CHILD_DATA_A:	   { handleChildDataA_(ChildDataA(message)); break; }
@@ -182,7 +183,7 @@ void Session::HandleMessageInternal(anh::ByteBuffer message)
 					}
 					else
 					{
-						LOG(warning) << "Unhandled SOE Opcode: "
+						DLOG(warning) << "Unhandled SOE Opcode: "
 							<< std::hex << soe_opcode << "\n\n" << message;
 					}
 			}
@@ -381,7 +382,7 @@ void Session::SendSoePacket_(anh::ByteBuffer message)
 
 void Session::SendSoePacketInternal(anh::ByteBuffer message)
 {
-	//LOG_NET << "Server -> Client: " << message;
+	LOG_NET << "Server -> Client: \n" << message;
 
     compression_filter_(this, &message);
     encryption_filter_(this, &message);

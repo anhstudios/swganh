@@ -39,20 +39,21 @@ PythonScript::PythonScript(const string& filename)
     }
     catch (error_already_set &)
     {
+		ScopedGilLock lock;
         PyErr_Print();
     }
 }
 
 void PythonScript::Run()
 {
+	swganh::scripting::ScopedGilLock lock;
 	try
     {
 #ifdef _DEBUG
         ReadFileContents();
 #endif
         LOG(info) << "Executing script: " << filename_;
-        swganh::scripting::ScopedGilLock lock;
-		file_object_ = exec(filecontents_.c_str(), globals_, globals_);
+        file_object_ = exec(filecontents_.c_str(), globals_, globals_);
     }
     catch (error_already_set &)
     {

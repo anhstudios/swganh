@@ -19,6 +19,8 @@
 #include "swganh/command/command_service_interface.h"
 #include "swganh/social/social_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
+#include "swganh/sui/sui_service_interface.h"
+#include "swganh/equipment/equipment_service_interface.h"
 #include "swganh/weather/weather_service_interface.h"
 
 #include <boost/python.hpp>
@@ -43,7 +45,7 @@ void exportSWGANHKernel()
                std::bind(&anh::service::ServiceManager::GetService<swganh::combat::CombatServiceInterface>, std::placeholders::_1, "CombatService"),
                return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::combat::CombatServiceInterface*, anh::service::ServiceManager*>()),
-                "returns an internal refrence of the :class:`.CombatService`")
+                "returns an internal refrence of the :class:`.CombatServiceInterface`")
        .def("command_service", make_function(
                std::bind(&anh::service::ServiceManager::GetService<swganh::command::CommandServiceInterface>, std::placeholders::_1, "CommandService"),
                return_value_policy<reference_existing_object>(),
@@ -59,6 +61,16 @@ void exportSWGANHKernel()
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::social::SocialServiceInterface*, anh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SocialService`")
+		.def("sui_service", make_function(
+				std::bind(&anh::service::ServiceManager::GetService<swganh::sui::SUIServiceInterface>, std::placeholders::_1, "SuiService"),
+                return_value_policy<reference_existing_object>(),
+                boost::mpl::vector<swganh::sui::SUIServiceInterface*, anh::service::ServiceManager*>()),
+				"returns an internal refrence of the :class:`.SUIService`")
+		.def("equipment_service", make_function(
+				std::bind(&anh::service::ServiceManager::GetService<swganh::equipment::EquipmentServiceInterface>, std::placeholders::_1, "EquipmentService"),
+                return_value_policy<reference_existing_object>(),
+                boost::mpl::vector<swganh::equipment::EquipmentServiceInterface*, anh::service::ServiceManager*>()),
+				"returns an internal refrence of the :class:`.EquipmentService`")
 		.def("weather_service", make_function(
 				std::bind(&anh::service::ServiceManager::GetService<swganh::weather::WeatherServiceInterface>, std::placeholders::_1, "WeatherService"),
 				return_value_policy<reference_existing_object>(),

@@ -49,7 +49,7 @@ void exportSocialService()
         ;
 
 	class_<std::vector<WeatherEvent> >("weather_sequence", "A vector for WeatherEvent objects which contain duration, weather type, and cloud vector.")
-        .def(vector_indexing_suite<std::vector<WeatherEvent>>())
+        .def(vector_indexing_suite<std::vector<WeatherEvent>, true>())
         ;
 
 	class_<WeatherEvent>("weather_event", "Contains the duration, weather type, and cloud vector for a weaather event.", init<long, Weather, glm::vec3>())

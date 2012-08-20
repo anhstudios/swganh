@@ -1,11 +1,3 @@
--- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               5.5.24-MariaDB - mariadb.org binary distribution
--- Server OS:                    Win32
--- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2012-08-12 16:17:22
--- --------------------------------------------------------
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET FOREIGN_KEY_CHECKS=0 */;
@@ -13,7 +5,7 @@
 -- Dumping structure for procedure galaxy.sp_PersistObject
 DROP PROCEDURE IF EXISTS `sp_PersistObject`;
 DELIMITER //
-CREATE DEFINER=`swganh`@`localhost` PROCEDURE `sp_PersistObject`(IN `in_object_id` BIGINT, IN `in_scene_id` INT, IN `in_parent_id` BIGINT, IN `template_string` VARCHAR(255), IN `posX` dOUBLE, IN `posY` dOUBLE, IN `posZ` DOUBLE, IN `oX` DOUBLE, IN `oY` DOUBLE, IN `oZ` DOUBLE, IN `oW` DOUBLE, IN `in_complexity` DOUBLE, IN `in_stf_name_file` VARCHAR(255), IN `in_stf_name_string` VARCHAR(255), IN `in_custom_name` VARCHAR(50), IN `in_volume` INT, IN `in_arrangement_id` INT, IN `in_permission_type` INT)
+CREATE PROCEDURE `sp_PersistObject`(IN `in_object_id` BIGINT, IN `in_scene_id` INT, IN `in_parent_id` BIGINT, IN `template_string` VARCHAR(255), IN `posX` dOUBLE, IN `posY` dOUBLE, IN `posZ` DOUBLE, IN `oX` DOUBLE, IN `oY` DOUBLE, IN `oZ` DOUBLE, IN `oW` DOUBLE, IN `in_complexity` DOUBLE, IN `in_stf_name_file` VARCHAR(255), IN `in_stf_name_string` VARCHAR(255), IN `in_custom_name` VARCHAR(50), IN `in_volume` INT, IN `in_arrangement_id` INT, IN `in_permission_type` INT)
 BEGIN
 -- First get our template_id
     DECLARE iff_template INT;

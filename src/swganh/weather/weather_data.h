@@ -51,6 +51,10 @@ namespace weather {
         {
             return weather_type == other.weather_type;
         }
+		bool operator<(WeatherEvent other)
+		{
+			return weather_type < other.weather_type;
+		}
 
     private:
         long duration;
