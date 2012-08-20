@@ -55,7 +55,7 @@ namespace terrain
 
 	private:
 
-		float processLayerHeight(swganh::tre::ContainerLayer* layer, float x, float z, double& base_value, float affector_transform, std::map<uint32_t, swganh::tre::Fractal*>& fractals);
+		float processLayerHeight(swganh::tre::ContainerLayer* layer, float x, float z, float& base_value, float affector_transform, std::map<uint32_t, swganh::tre::Fractal*>& fractals);
 		float calculateFeathering(float value, int featheringType);
 
 		SceneMap scenes_;

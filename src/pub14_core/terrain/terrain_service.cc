@@ -25,13 +25,13 @@ TerrainService::TerrainService(swganh::app::SwganhKernel* kernel) : kernel_(kern
 	{
 		auto real_event = std::static_pointer_cast<swganh_core::simulation::NewSceneEvent>(newEvent);
 
-		auto visitor = kernel_->GetResourceManager()->getResourceByName(real_event->terrain_filename, TRN_VISITOR);
+		/*auto visitor = kernel_->GetResourceManager()->getResourceByName(real_event->terrain_filename, TRN_VISITOR);
 
 		SceneEntry entry;
 		entry.terrain_visitor_ = std::static_pointer_cast<TerrainVisitor>(visitor);
 		scenes_.insert(SceneMap::value_type(real_event->scene_id, std::move(entry)));
 
-		LOG(warning) << "-147 " << GetHeight(real_event->scene_id, -147.0f, -4735.0f) << " -4735";
+		LOG(warning) << "-147 " << GetHeight(real_event->scene_id, -147.0f, -4735.0f) << " -4735";*/
 	});
 
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:DestroyScene", [&] (const std::shared_ptr<anh::EventInterface>& newEvent)
@@ -65,7 +65,7 @@ float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
 
 		float affector_transform = 1.0f;
 		float transform_value = 0.0f;
-		double height_result = 0.0f;
+		float height_result = 0.0f;
 
 		for(auto& layer : layers)
 		{
@@ -100,7 +100,7 @@ bool TerrainService::IsWater(uint32_t scene_id, float x, float z, bool raw)
 	return false;
 }
 
-float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z, double& base_value, float affector_transform, std::map<uint32_t,Fractal*>& fractals)
+float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z, float& base_value, float affector_transform, std::map<uint32_t,Fractal*>& fractals)
 {
 	std::vector<BoundaryLayer*> boundaries = layer->boundaries;
 	std::vector<HeightLayer*> heights = layer->heights;
