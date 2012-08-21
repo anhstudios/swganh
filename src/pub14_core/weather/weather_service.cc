@@ -59,7 +59,7 @@ void WeatherService::OnPlayerEnter(shared_ptr<Object> player_obj)
 	uint32_t playerScene = player_obj->GetSceneId();
 	if(sceneLookup_.count(playerScene))
 	{
-		SendServerWeatherMessagePlayer_(sceneLookup_[playerScene].weatherSequence_[(sceneLookup_[playerScene].sequenceCount_)-1], player_obj->GetController());
+		SendServerWeatherMessagePlayer_(sceneLookup_[playerScene].weatherSequence_[sceneLookup_[playerScene].sequenceCount_], player_obj->GetController());
 	}
 	else
 	{
@@ -99,8 +99,6 @@ void WeatherService::SetSceneWeather(uint32_t scene_id, std::vector<WeatherEvent
 		sceneLookup_[scene_id].updateGalaxyTickTime_=0;
 		sceneLookup_[scene_id].sequenceCount_=0;
 	}
-	else
-		LOG(warning) << "Scene: " << scene_id << " currently has a weather event";
 }
 
 void WeatherService::SendServerWeatherMessagePlayer_(
@@ -137,18 +135,16 @@ void WeatherService::tickPlanetWeather_()
 	std::for_each(sceneLookup_.begin(), sceneLookup_.end(), [this, &galaxyTime, &removeWeather, &removeWeatherScene] (std::pair<const uint32_t, PlanetWeather>& planetWeather_) {
 		if(planetWeather_.second.updateGalaxyTickTime_ <= galaxyTime)
 		{
-			uint32_t planetSequenceCount = planetWeather_.second.sequenceCount_;
-			WeatherEvent planetCurrentSeqeuence = planetWeather_.second.weatherSequence_.at(planetSequenceCount);
-
-			if(planetWeather_.second.weatherSequence_.size()>planetSequenceCount)
+			WeatherEvent planetCurrentSeqeuence = planetWeather_.second.weatherSequence_.at(planetWeather_.second.sequenceCount_);
+			
+			if(planetWeather_.second.weatherSequence_.size()>planetWeather_.second.sequenceCount_)
 			{
 				SendServerWeatherMessageAll_(planetCurrentSeqeuence.GetWeatherType(),planetCurrentSeqeuence.GetCloudVector(),planetWeather_.second.scene_);
 				planetWeather_.second.updateGalaxyTickTime_ = galaxyTime + (planetCurrentSeqeuence.GetDuration()*60);
 				planetWeather_.second.sequenceCount_++;
 			}
-
 			//If weather sequence has finished, remove scene map
-			if(planetWeather_.second.weatherSequence_.size()==planetSequenceCount)
+			if(planetWeather_.second.weatherSequence_.size()==planetWeather_.second.sequenceCount_)
 			{
 				removeWeather =true;
 				removeWeatherScene=planetWeather_.second.scene_;
@@ -157,7 +153,9 @@ void WeatherService::tickPlanetWeather_()
 	});
 
 	if(removeWeather)
+	{
 		sceneLookup_.erase(removeWeatherScene);
+	}
 
 	//Execute weather script every 30 mins
 	if(weatherScriptTimer< galaxyTime)

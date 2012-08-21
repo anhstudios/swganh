@@ -13,31 +13,32 @@ weather_svc = service_mgr.weather_service()
 
 lightStormSequence = weather_sequence()
 lightStormSequence.extend([
-	weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather_event(10, weather.WEATHER.LIGHTSTORM, utility.vector3(0.0, 0.0, 0.0)),
-	weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))
+	weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(10, weather.WEATHER.LIGHTSTORM, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(1.0, 0.0, 0.0))
 ])
 
 mediumStormSequence = weather_sequence()
 mediumStormSequence.extend([
-	weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather_event(10, weather.WEATHER.MEDIUMSTORM, utility.vector3(0.0, 0.0, 0.0)),
-	weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))
+	weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(1.0, 0.0, 0.0)),
+        weather_event(3, weather.WEATHER.LIGHTSTORM, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(10, weather.WEATHER.MEDIUMSTORM, utility.vector3(1.0, 0.0, 0.0)),
+        weather_event(3, weather.WEATHER.LIGHTSTORM, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(1.0, 0.0, 0.0))
 ])
 
 heavyStormSequence = weather_sequence()
 heavyStormSequence.extend([
-	weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather_event(20, weather.WEATHER.HEAVYSTORM, utility.vector3(0.0, 0.0, 0.0)),
-	weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(0.0, 0.0, 0.0)),
-	weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))
-])
-
-noWeather = weather_sequence()
-noWeather.extend([
-	weather_event(0, weather.WEATHER.NOSTORM, utility.vector3(0.0, 0.0, 0.0))
+	weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(1.0, 0.0, 0.0)),
+        weather_event(3, weather.WEATHER.LIGHTSTORM, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(5, weather.WEATHER.MEDIUMSTORM, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(20, weather.WEATHER.HEAVYSTORM, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(5, weather.WEATHER.MEDIUMSTORM, utility.vector3(1.0, 0.0, 0.0)),
+        weather_event(3, weather.WEATHER.LIGHTSTORM, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(10, weather.WEATHER.CLOUDY, utility.vector3(1.0, 0.0, 0.0)),
+	weather_event(10, weather.WEATHER.NOSTORM, utility.vector3(1.0, 0.0, 0.0))
 ])
 
 #Crude random function with weight. Needs improving.
@@ -49,6 +50,5 @@ def weather_choice(wList, scene):
             break
 
 
-weather_choice([(heavyStormSequence, 0.02), (mediumStormSequence, 0.15), (lightStormSequence,0.2)],weather.SCENE.TATOOINE)
 weather_choice([(heavyStormSequence, 0.02), (mediumStormSequence, 0.15), (lightStormSequence,0.2)],weather.SCENE.CORELLIA)
 weather_choice([(heavyStormSequence, 0.02), (mediumStormSequence, 0.15), (lightStormSequence,0.2)],weather.SCENE.NABOO)
