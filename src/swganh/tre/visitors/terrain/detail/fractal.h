@@ -2,6 +2,7 @@
 #define TRN_FRACTAL_FAMILY_H_
 
 #include <string>
+#include <iostream>
 
 #include "anh/byte_buffer.h"
 #include "random.h"
@@ -64,6 +65,7 @@ namespace tre
 			combination_type = buffer.read<uint32_t>();
 
 			setSeed(seed);
+			setAmplitude();
 		}
 
 
@@ -102,6 +104,7 @@ namespace tre
 		// Generate noise for given coordinates
 		float getNoise(float x, float z)
 		{
+			//std::cout << "MFAM::GETNOISE("<< x << "," << z <<")" << std::endl;
 			float xFrequency = x * freq_x;
 			float zFrequency = z * freq_z;
 
@@ -165,6 +168,7 @@ namespace tre
 
 		double calculateCombination1(float x, double z)
 		{
+			//std::cout << "MFAM::CALCCOMBO1("<< x << "," << z <<")" << std::endl;
 			float curr_offset = 1, curr_ampl = 1;
 			double result = 0;
 
@@ -193,6 +197,7 @@ namespace tre
 
 		double calculateCombination2(float x, float z)
 		{
+			//std::cout << "MFAM::CALCCOMBO2("<< x << "," << z <<")" << std::endl;
 			float noise_gen = 0;
 			float zOffset = z + offset_z;
 			float zNoise, xOffset, xNoise;
@@ -222,6 +227,7 @@ namespace tre
 
 		double calculateCombination3(float x, float z)
 		{
+			//std::cout << "MFAM::CALCCOMBO3("<< x << "," << z <<")" << std::endl;
 			float curr_offset = 1.0;
 			float curr_ampl = 1.0;
 			double result = 0;
@@ -252,6 +258,7 @@ namespace tre
 
 		double calculateCombination4(float x, float z)
 		{
+			//std::cout << "MFAM::CALCCOMBO4("<< x << "," << z <<")" << std::endl;
 			float noise_gen = 0;
 			float zNoise, xNoise, noise_gain;
 			float zOffset = z + offset_z; 
@@ -289,6 +296,7 @@ namespace tre
 
 		double calculateCombination5(float x, float z)
 		{
+			//std::cout << "MFAM::CALCCOMBO5("<< x << "," << z <<")" << std::endl;
 			float noise_gen = 0;
 			float zNoise, xNoise, noise_gain;
 			float zOffset = z + offset_z; 

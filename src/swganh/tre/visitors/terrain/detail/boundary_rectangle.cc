@@ -32,6 +32,7 @@ void BoundaryRectangle::Deserialize(anh::ByteBuffer& buffer)
 
 bool BoundaryRectangle::IsContained(float px, float pz)
 {
+	//std::cout << "BREC::ISCONTAINED("<< px << "," << pz <<")" << std::endl;
 	if (x2 >= px && x1 <= px && z2 >= pz && z1 <= pz)
 		return true;
 
@@ -40,6 +41,7 @@ bool BoundaryRectangle::IsContained(float px, float pz)
 
 float BoundaryRectangle::Process(float px, float pz)
 {
+	//std::cout << "BREC::PROCESS("<< px << "," << pz <<")" << std::endl;
 	float result;
 	
 	if (!IsContained(px, pz))

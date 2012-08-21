@@ -42,6 +42,7 @@ namespace tre
 		*/
 		virtual void visit_folder(uint32_t depth, std::shared_ptr<folder_node> node);
 
+		TrnHeader* GetHeader() { return header; }
 		FractalMap& GetFractals() { return fractals_; }
 		std::vector<ContainerLayer*>& GetLayers() { return layers_; }
 
@@ -49,6 +50,7 @@ namespace tre
 		Fractal* working_fractal_;
 		std::stack<std::pair<Layer*, uint32_t>> layer_stack_;
 		Layer* working_layer_;
+
 
 		TrnHeader* header;
 		FractalMap fractals_;

@@ -48,13 +48,14 @@ void TerrainVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
 		working_fractal_->Deserialize(node->data());
 		working_fractal_ = nullptr;
 	}
-	else if(node->name() == "0001DATA" && layer_stack_.size() > 0)
+	else if(working_layer_ != nullptr && node->name() == "0001DATA")
 	{
-		layer_stack_.top().first->SetData(node->data());
+		working_layer_->SetData(node->data());
 	}
-	else if(node->name() == "DATAPARM" || node->name() == "DATA" || node->name() == "ADTA" && layer_stack_.size() > 0)
+	else if(working_layer_ != nullptr && (node->name() == "DATAPARM" || node->name() == "DATA" || node->name() == "ADTA"))
 	{
-		layer_stack_.top().first->Deserialize(node->data());
+		working_layer_->Deserialize(node->data());
+		working_layer_ = nullptr;
 	}
 	else if(node->name() == "0014DATA")
 	{
@@ -69,9 +70,11 @@ void TerrainVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> n
 		layer_stack_.pop();
 	}
 
-	working_layer_ = LayerLoader(node);
-	if(working_layer_ != nullptr)
+	Layer* test_layer_ = LayerLoader(node);
+	if(test_layer_ != nullptr)
 	{
+		working_layer_ = test_layer_;
+
 		if(layer_stack_.size() == 0 && working_layer_->GetType() == LAYER_TYPE_CONTAINER)
 		{
 			layers_.push_back((ContainerLayer*)working_layer_);

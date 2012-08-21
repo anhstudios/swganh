@@ -233,17 +233,6 @@ void SwganhApp::Start() {
     }
     
     kernel_->GetServiceManager()->Start();
-
-	try
-	{
-		auto resource_manager = kernel_->GetResourceManager();
-		auto visitor = resource_manager->getResourceByName("terrain/corellia.trn", swganh::tre::TRN_VISITOR);
-		auto terrain_visitor = std::static_pointer_cast<swganh::tre::TerrainVisitor>(visitor);
-	} 
-	catch(exception& e) 
-	{
-		LOG(warning) << e.what();
-	}
 }
 
 void SwganhApp::Stop() {

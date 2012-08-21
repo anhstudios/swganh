@@ -13,6 +13,7 @@ void HeightFilter::Deserialize(anh::ByteBuffer& buffer)
 
 float HeightFilter::Process(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals)
 {
+	//std::cout << "FHGT::PROCESS("<< x << "," << z <<")" << std::endl;
 	float result;
 
 	if ((base_value > minHeight) && (base_value < maxHeight)) {

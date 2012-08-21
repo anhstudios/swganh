@@ -15,6 +15,8 @@
 #include "swganh/tre/visitors/terrain/detail/boundary_layer.h"
 #include "swganh/tre/visitors/terrain/detail/height_layer.h"
 #include "swganh/tre/visitors/terrain/detail/filter_layer.h"
+#include "swganh/tre/visitors/terrain/detail/boundary_polygon.h"
+#include "swganh/tre/visitors/terrain/detail/header.h"
 
 using namespace swganh_core::terrain;
 using namespace swganh::tre;
@@ -24,14 +26,18 @@ TerrainService::TerrainService(swganh::app::SwganhKernel* kernel) : kernel_(kern
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<anh::EventInterface>& newEvent)
 	{
 		auto real_event = std::static_pointer_cast<swganh_core::simulation::NewSceneEvent>(newEvent);
-
-		/*auto visitor = kernel_->GetResourceManager()->getResourceByName(real_event->terrain_filename, TRN_VISITOR);
-
-		SceneEntry entry;
-		entry.terrain_visitor_ = std::static_pointer_cast<TerrainVisitor>(visitor);
-		scenes_.insert(SceneMap::value_type(real_event->scene_id, std::move(entry)));
-
-		LOG(warning) << "-147 " << GetHeight(real_event->scene_id, -147.0f, -4735.0f) << " -4735";*/
+		try
+		{
+			auto visitor = kernel_->GetResourceManager()->getResourceByName(real_event->terrain_filename, TRN_VISITOR);
+	
+			SceneEntry entry;
+			entry.terrain_visitor_ = std::static_pointer_cast<TerrainVisitor>(visitor);
+			scenes_.insert(SceneMap::value_type(real_event->scene_id, std::move(entry)));
+		}
+		catch(...)
+		{
+			LOG(error) << "Failed to load trn file: " << real_event->terrain_filename;
+		}
 	});
 
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:DestroyScene", [&] (const std::shared_ptr<anh::EventInterface>& newEvent)
@@ -52,6 +58,62 @@ anh::service::ServiceDescription TerrainService::GetServiceDescription()
         0, 
         0);
 	return service_description;
+}
+
+bool TerrainService::waterHeightHelper(swganh::tre::ContainerLayer* layer, float x, float z, float& result)
+{
+	//Check our boundaries
+	for(auto& boundary : layer->boundaries)
+	{
+		if(boundary->GetType() == LAYER_TYPE_BOUNDARY_POLYGON)
+		{
+			BoundaryPolygon* bpol = (BoundaryPolygon*)boundary;
+			if(bpol->use_water_height && bpol->IsContained(x, z))
+			{
+				result = bpol->water_height;
+				return true;
+			}
+		}
+	}
+
+	//Check our children recursively
+	for(auto& child : layer->children)
+	{
+		if(waterHeightHelper(child, x, z, result))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+float TerrainService::GetWaterHeight(uint32_t scene_id, float x, float z, float raw)
+{
+	auto itr = scenes_.find(scene_id);
+	if(itr != scenes_.end())
+	{
+		for(auto& child : itr->second.terrain_visitor_->GetLayers())
+		{
+			float result;
+			if(waterHeightHelper(child, x, z, result))
+			{
+				return result;
+			}
+		}
+
+		if(!raw)
+		{
+			//Todo:Apply any necessary layer modifications
+		}
+		
+		auto header = itr->second.terrain_visitor_->GetHeader();
+		if(header->use_global_water_height)
+		{
+			return header->global_water_height;
+		}
+	}
+	return FLT_MIN;
 }
 
 float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
@@ -77,7 +139,7 @@ float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
 
 		if(!raw)
 		{
-			//Apply any necessary layer modifications
+			//Todo:Apply any necessary layer modifications
 		}
 
 		return (float) height_result;
@@ -87,21 +149,19 @@ float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
 
 bool TerrainService::IsWater(uint32_t scene_id, float x, float z, bool raw)
 {
-	auto itr = scenes_.find(scene_id);
-	if(itr != scenes_.end())
+	float water_height = GetWaterHeight(scene_id, x, z, raw);
+	if (water_height != FLT_MIN)
 	{
-		
-
-		if(!raw)
-		{
-			//Apply any necessary layer modifications
-		}
+		float height = GetHeight(scene_id, x, z);
+		if (height <= water_height)
+			return true;
 	}
 	return false;
 }
 
 float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z, float& base_value, float affector_transform, std::map<uint32_t,Fractal*>& fractals)
 {
+	//std::cout << "PROCESS_LAYER_HEIGHT("<< x << "," << z << "," << base_value << "," << affector_transform << ")" << std::endl;
 	std::vector<BoundaryLayer*> boundaries = layer->boundaries;
 	std::vector<HeightLayer*> heights = layer->heights;
 	std::vector<FilterLayer*> filters = layer->filters;

@@ -19,6 +19,8 @@ void FractalFilter::Deserialize(anh::ByteBuffer& buffer)
 
 float FractalFilter::Process(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals)
 {
+	//std::cout << "FFRA::PROCESS("<< x << "," << z <<")" << std::endl;
+	
 	Fractal* fractal = fractals.find(fractal_id)->second;
 
 	float noise_result = fractal->getNoise(x, z) * step;

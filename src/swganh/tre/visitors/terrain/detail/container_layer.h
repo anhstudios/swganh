@@ -33,6 +33,7 @@ namespace tre
 				children.push_back((ContainerLayer*)layer);
 				break;
 			case LAYER_TYPE_BOUNDARY:
+			case LAYER_TYPE_BOUNDARY_POLYGON:
 				boundaries.push_back((BoundaryLayer*)layer);
 				break;
 			case LAYER_TYPE_HEIGHT:

@@ -17,6 +17,8 @@ bool BoundaryCircle::IsContained(float px, float pz)
 	float dist = pow(px-x,2) + pow(pz-z,2);
 	float r2 = pow(rad,2);
 
+	//std::cout << "BCIR(" << this << ")::ISCONTAINED("<< px << "," << pz << "=" << (dist < r2) <<")" << std::endl;
+
 	if ( dist < r2)
 		return true;
 
@@ -40,6 +42,8 @@ float BoundaryCircle::Process(float px, float pz)
 	}
 	else
 		result = 0.0f;
+
+	//std::cout << "BCIR(" << this << ")::PROCESS("<< px << "," << pz << "=" << result <<")" << std::endl;
 
 	return result;
 }

@@ -50,6 +50,8 @@ bool BoundaryPolyline::IsContained(float px, float pz)
 
 float BoundaryPolyline::Process(float px, float pz)
 {
+	//std::cout << "BPLN::PROCESS("<< px << "," << pz <<")" << std::endl;
+
 	if (px < min_x)
 			return 0.0;
 

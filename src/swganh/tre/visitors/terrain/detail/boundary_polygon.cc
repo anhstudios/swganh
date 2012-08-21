@@ -40,6 +40,8 @@ void BoundaryPolygon::Deserialize(anh::ByteBuffer& buffer)
 
 bool BoundaryPolygon::IsContained(float x, float z)
 {
+	//std::cout << "BPOL::ISCONTAINED("<< x << "," << z <<")" << std::endl;
+
 	int j;
 	bool odd_nodes = false;
 	float x1, x2;
@@ -91,6 +93,7 @@ bool BoundaryPolygon::IsContained(float x, float z)
 
 float BoundaryPolygon::Process(float px, float pz)
 {
+	//std::cout << "BPOL::PROCESS("<< px << "," << pz <<")" << std::endl;
 	float result;
 	glm::vec2 last = verts.at(verts.size() - 1);
 	bool odd_nodes = false;

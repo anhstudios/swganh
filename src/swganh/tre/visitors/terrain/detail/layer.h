@@ -2,6 +2,7 @@
 #define TERRAIN_LAYER_H_
 
 #include <anh/byte_buffer.h>
+#include <iostream>
 
 namespace swganh
 {
@@ -12,6 +13,7 @@ namespace tre
 	{
 		LAYER_TYPE_CONTAINER = 1,
 		LAYER_TYPE_BOUNDARY,
+		LAYER_TYPE_BOUNDARY_POLYGON, //Special due to water
 		LAYER_TYPE_HEIGHT,
 		LAYER_TYPE_FILTER,
 	};

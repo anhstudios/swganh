@@ -46,6 +46,8 @@ namespace terrain
 
 		TerrainService(swganh::app::SwganhKernel* kernel);
 
+		virtual float GetWaterHeight(uint32_t scene_id, float x, float z, float raw=false);
+
 		virtual float GetHeight(uint32_t scene_id, float x, float z, bool raw=false);
 
 		virtual bool IsWater(uint32_t scene_id, float x, float z, bool raw=false);
@@ -54,6 +56,8 @@ namespace terrain
         
 
 	private:
+
+		bool waterHeightHelper(swganh::tre::ContainerLayer* layer, float x, float z, float& result);
 
 		float processLayerHeight(swganh::tre::ContainerLayer* layer, float x, float z, float& base_value, float affector_transform, std::map<uint32_t, swganh::tre::Fractal*>& fractals);
 		float calculateFeathering(float value, int featheringType);

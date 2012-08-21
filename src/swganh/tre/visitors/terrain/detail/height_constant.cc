@@ -10,6 +10,8 @@ void HeightConstant::Deserialize(anh::ByteBuffer& buffer)
 		
 void HeightConstant::GetBaseHeight(float x, float z, float transform_value, float& base_value, std::map<uint32_t,Fractal*>& fractals)
 {
+	//std::cout << "AHCN::PROCESS("<< x << "," << z <<")" << std::endl;
+	
 	if (transform_value == 0)
 		return;
 
