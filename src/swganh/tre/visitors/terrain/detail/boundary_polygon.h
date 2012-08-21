@@ -10,6 +10,10 @@ namespace swganh
 namespace tre
 {
 
+	/**
+		Boundary polygon class. It is used to restrict the extent of any of its parent's
+		layers. It is the only boundary that can have water.
+	*/
 	class BoundaryPolygon : public BoundaryLayer
 	{
 	public:

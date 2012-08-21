@@ -8,6 +8,10 @@ namespace swganh
 namespace tre
 {
 
+	/**
+		Boundary circle class. It is used to restrict the extent of any of its parent's
+		layers.
+	*/
 	class BoundaryCircle : public BoundaryLayer
 	{
 	public:

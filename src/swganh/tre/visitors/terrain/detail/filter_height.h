@@ -8,6 +8,10 @@ namespace swganh
 namespace tre
 {
 
+	/**
+		Height Filter. Used to filter fractal data for the parent container.
+		This can be used to keep heights between two particular bounds.
+	*/
 	class HeightFilter : public FilterLayer
 	{
 	public:

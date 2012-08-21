@@ -9,6 +9,10 @@ namespace swganh
 namespace tre
 {
 
+	/**
+		Boundary poly line class. It is used to restrict the extent of any of its parent's
+		layers.
+	*/
 	class BoundaryPolyline : public BoundaryLayer
 	{
 	public:

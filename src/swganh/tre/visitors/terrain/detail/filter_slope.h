@@ -8,6 +8,11 @@ namespace swganh
 namespace tre
 {
 
+	/**
+		Slope Filter. Used to filter fractal data for the parent container.
+
+		This can be used to restrict slope to a particular range.
+	*/
 	class SlopeFilter : public FilterLayer
 	{
 	public:

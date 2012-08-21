@@ -47,11 +47,13 @@ namespace tre
 		std::vector<ContainerLayer*>& GetLayers() { return layers_; }
 
 	private:
+
+		//This is working data.
 		Fractal* working_fractal_;
 		std::stack<std::pair<Layer*, uint32_t>> layer_stack_;
 		Layer* working_layer_;
 
-
+		//This is actual persistance data
 		TrnHeader* header;
 		FractalMap fractals_;
 		std::vector<ContainerLayer*> layers_;

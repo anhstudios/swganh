@@ -8,6 +8,9 @@ namespace swganh
 namespace tre
 {
 
+	/**
+		Sets the height for the parent container to a particular fractally generated value.
+	*/
 	class HeightFractal : public HeightLayer
 	{
 	public:

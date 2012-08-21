@@ -7,6 +7,10 @@ namespace swganh
 {
 namespace tre
 {
+
+	/**
+		Sets the height for the parent container to a particular constant value.
+	*/
 	class HeightConstant : public HeightLayer
 	{
 	public:

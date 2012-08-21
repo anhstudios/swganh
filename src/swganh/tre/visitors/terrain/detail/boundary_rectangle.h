@@ -8,6 +8,10 @@ namespace swganh
 namespace tre
 {
 
+	/**
+		Boundary rectangle class. It is used to restrict the extent of any of its parent's
+		layers.
+	*/
 	class BoundaryRectangle : public BoundaryLayer
 	{
 	public:

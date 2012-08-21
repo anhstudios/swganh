@@ -8,6 +8,9 @@ namespace swganh
 namespace tre
 {
 
+	/**
+		Fractal Filter. Used to filter fractal data for the parent container.
+	*/
 	class FractalFilter : public FilterLayer
 	{
 	public:

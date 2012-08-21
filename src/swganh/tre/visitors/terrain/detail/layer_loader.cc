@@ -13,6 +13,10 @@
 #include "height_constant.h"
 #include "height_fractal.h"
 
+/** 
+	This class is used to load a particular implementation based on it's node name.
+	We should consider using a map here instead as this is slightly inefficient.
+*/
 Layer* LayerLoader(std::shared_ptr<folder_node> node)
 {
 	if(node->name() == "LAYRFORM")
