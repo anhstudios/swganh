@@ -362,7 +362,7 @@ void SwganhApp::LoadCoreServices_()
 	{
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		simulation_service->StartScene("corellia");
-		//simulation_service->StartScene("naboo");
+		simulation_service->StartScene("naboo");
 	}
 }
 
