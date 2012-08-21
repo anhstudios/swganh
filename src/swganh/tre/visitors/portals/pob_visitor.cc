@@ -6,8 +6,15 @@
 #include "../../iff/filenode.h"
 #include "../../iff/foldernode.h"
 
+#ifndef WIN32
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+#else
+#define PRIu64       "I64u"
+#endif
+
 using namespace swganh::tre;
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 using namespace std;
 using namespace boost;
 
@@ -147,7 +154,7 @@ void PobVisitor::debug()
 	std::for_each(portals_.begin(), portals_.end(), [] (Portal& p) {
 		if(p.vertices.size() != 4)
 		{
-			printf("%d\n", p.vertices.size());
+			printf("%"PRIu64"\n", p.vertices.size());
 		}
 	});
 }

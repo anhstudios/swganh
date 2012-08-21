@@ -10,7 +10,7 @@
 
 using namespace swganh::tre;
 
-iff_file::iff_file(anh::ByteBuffer& input, std::shared_ptr<VisitorInterface> visitor)
+iff_file::iff_file(anh::ByteBuffer input, std::shared_ptr<VisitorInterface> visitor)
 	: visitor_(visitor)
 {
 	loadIFF_(input);
@@ -153,7 +153,7 @@ bool iff_file::isNodeNameCharacter_(char c)
 {
 	//Returns true if the character is within the proper range for an iff node name
 	//in regex : [A-Z0-9 ]
-	if(c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == ' ')
+	if((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == ' ')
 		return true;
 	else
 		return false;

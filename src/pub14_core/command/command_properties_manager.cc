@@ -7,14 +7,13 @@
 
 #include "anh/logger.h"
 
-#include "anh/resource/resource_manager_interface.h"
+#include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/visitor_types.h"
 #include "swganh/tre/visitors/datatables/datatable_visitor.h"
 
 using namespace swganh::tre;
 
 using anh::HashString;
-using anh::resource::ResourceManagerInterface;
 using pub14_core::command::CommandPropertiesManager;
 using swganh::command::CommandProperties;
 using swganh::command::CommandPropertiesMap;
@@ -23,7 +22,7 @@ using std::make_pair;
 using std::string;
 using std::vector;
 
-CommandPropertiesManager::CommandPropertiesManager(ResourceManagerInterface* resource_manager)
+CommandPropertiesManager::CommandPropertiesManager(swganh::tre::ResourceManager* resource_manager)
     : resource_manager_(resource_manager)
 {
     command_properties_map_ = LoadCommandPropertiesMap();
