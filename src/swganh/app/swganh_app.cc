@@ -38,12 +38,6 @@
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/scripting/utilities.h"
 
-#include "swganh/terrain/terrain_service_interface.h"
-#include "swganh/tre/visitors/terrain/terrain_visitor.h"
-#include "anh/resource/resource_manager_interface.h"
-using namespace swganh::terrain;
-
-
 #include "version.h"
 
 using namespace anh;
