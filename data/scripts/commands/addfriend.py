@@ -1,5 +1,6 @@
 import re
 import swgpy
+import swgpy.equipment
 from swgpy.command import BaseSwgCommand
 
 class AddFriendCommand(BaseSwgCommand):
@@ -8,7 +9,7 @@ class AddFriendCommand(BaseSwgCommand):
         friend_request_name = split[0]
         
         actor = self.GetActor()
-        player = actor.get_player()
+        player = self.GetKernel().service_manager().equipment_service().GetPlayerObject(actor)
         if player:
             # Check if the name is already in our friends list
             if not player.is_friend(friend_request_name):

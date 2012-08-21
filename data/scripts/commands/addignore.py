@@ -1,4 +1,5 @@
 import re
+import swgpy.equipment
 from swgpy.command import BaseSwgCommand
 
 class AddIgnoreCommand(BaseSwgCommand):
@@ -7,7 +8,7 @@ class AddIgnoreCommand(BaseSwgCommand):
         player_name = split[0]
         
         actor = self.GetActor()
-        player = actor.get_player()
+        player = self.GetKernel().service_manager().equipment_service().GetPlayerObject(actor)
         if player:
             # Check if the name is already in our friends list
             if not player.is_ignored(player_name):
