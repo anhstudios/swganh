@@ -123,6 +123,21 @@ const std::shared_ptr<Tangible>& BaseSwgCommand::GetTarget() const
     return target_;
 }
 
+const std::shared_ptr<Creature>& BaseSwgCommand::GetTargetCreature() const
+{	
+    if (!creature_target_)
+    {
+        auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+        creature_target_ = simulation_service->GetObjectById<Creature>(command_request_.target_id);
+    }
+	else
+	{
+		creature_target_ = std::static_pointer_cast<Creature>(target_);
+	}
+
+    return creature_target_;
+}
+
 void BaseSwgCommand::SetCommandProperties(const CommandProperties& properties)
 {
     properties_ = &properties;

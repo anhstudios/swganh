@@ -174,5 +174,6 @@ void swganh::command::ExportCommand()
         .def("IsQueuedCommand", &BaseSwgCommandWrapper::IsQueuedCommand)
         .def("GetActor", &BaseSwgCommandWrapper::GetActor, bp::return_value_policy<bp::copy_const_reference>())
         .def("GetTarget", &BaseSwgCommandWrapper::GetTarget, bp::return_value_policy<bp::copy_const_reference>())
+		.def("GetTargetCreature", &BaseSwgCommandWrapper::GetTargetCreature, bp::return_value_policy<bp::copy_const_reference>())
     ;
 }

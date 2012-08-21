@@ -26,8 +26,7 @@ void exportEquipmentService()
 
 	void (EquipmentServiceInterface::*ClearFunc)(std::shared_ptr<Object>, std::string) = &EquipmentServiceInterface::ClearSlot;
 	std::shared_ptr<Object> (EquipmentServiceInterface::*GetFunc)(std::shared_ptr<Object>, std::string) = &EquipmentServiceInterface::GetEquippedObject;
-	//std::shared_ptr<player::Player> (EquipmentServiceInterface::*GetPlayer)(std::shared_ptr<Object>, "ghost") = &EquipmentServiceInterface::GetEquippedObject<player::Player>;
-
+	
     class_<EquipmentServiceInterface, shared_ptr<EquipmentServiceInterface>, boost::noncopyable>("EquipmentService", "The equipment service is a utility class for helping with equipping.", no_init)
         .def("GetSlotIdByName", &EquipmentServiceInterface::GetSlotIdByName,"Returns the slot id associated with a slot name. This slot_id can then be used by objects to do equipment operations.")
 		.def("GetSlotNameById", &EquipmentServiceInterface::GetSlotNameById,"Returns the slot name by the slot_id. This can be used to 'undo' GetSlotIdByName")
