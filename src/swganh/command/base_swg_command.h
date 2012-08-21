@@ -73,6 +73,8 @@ namespace command {
 
         const std::shared_ptr<object::tangible::Tangible>& GetTarget() const;
 
+		const std::shared_ptr<object::creature::Creature>& GetTargetCreature() const;
+
         const std::wstring& GetCommandString() const;
 
         void SetCommandProperties(const CommandProperties& properties);
@@ -86,6 +88,7 @@ namespace command {
         std::shared_ptr<object::ObjectController> controller_;
         mutable std::shared_ptr<object::creature::Creature> actor_;
         mutable std::shared_ptr<object::tangible::Tangible> target_;
+		mutable std::shared_ptr<object::creature::Creature> creature_target_;
         swganh::messages::controllers::CommandQueueEnqueue command_request_;
     };
 
