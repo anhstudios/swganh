@@ -174,8 +174,7 @@ void exportCreature()
         .add_property("pvp_status", &Creature::GetPvpStatus, &Creature::SetPvPStatus, "Gets and Sets the :class:`.PVPSTATUS` of the creature")
         .def("in_duel_list", &Creature::InDuelList, "Returns a boolean based on if the creature is currently dueling the target")
         .def("add_duel_list", &Creature::AddToDuelList, "Adds the creature id to the duel list")
-        .def("remove_duel_list", &Creature::RemoveFromDuelList, "Removes the creature from the duel list")
-        .def("get_player", &Creature::GetPlayer, "Gets the :class:`.Player` object that this creature owns")
+        .def("remove_duel_list", &Creature::RemoveFromDuelList, "Removes the creature from the duel list")        
         ;
 
 	implicitly_convertible<std::shared_ptr<Creature>, std::shared_ptr<Tangible>>();
