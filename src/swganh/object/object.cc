@@ -779,3 +779,24 @@ std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> Object::GetMe
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return menu_response_;
 }
+
+AttributesMap Object::GetAttributeMap()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return attributes_map_;
+}
+
+boost::variant<float, int32_t, std::string> Object::GetAttribute(const std::string& name)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto find_iter = find_if(attributes_map_.begin(), attributes_map_.end(), [&](AttributesMap::value_type key_value)
+	{
+		return key_value.first == name;
+	});
+	if (find_iter != attributes_map_.end())
+	{
+		return find_iter->second;
+	}	
+	LOG(warning) << "Attribute "<< name << " does not exist returning default of 0";
+	return 0;
+}

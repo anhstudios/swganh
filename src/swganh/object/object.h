@@ -14,6 +14,7 @@
 #include <vector>
 
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include <glm/glm.hpp>
@@ -50,6 +51,10 @@ typedef std::vector<
     swganh::messages::DeltasMessage
 > DeltasCacheContainer;
 
+typedef std::map<
+	anh::HashString,
+	boost::variant<float, int32_t, std::string>
+> AttributesMap;
 
 typedef std::map<
 	int32_t,
@@ -496,6 +501,33 @@ public:
 	 */
 	ObjectArrangements GetSlotArrangements();
 
+	/**
+	 * @brief Gets the Attribute Map
+	 */ 
+	AttributesMap GetAttributeMap();
+
+	/**
+	 * @brief Sets an attribute of the specified type
+	 */
+	template<typename T>
+	void SetAttribute(const std::string& name, T attribute)
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		attributes_map_[name] = attribute;
+	}
+
+	/**
+	 * @brief Gets an attribute as the specified T type
+	 */
+	template<typename T>
+	T GetAttribute(const std::string& name)
+	{
+		auto val = GetAttribute(name);
+		return boost::get<T>(val)
+	}
+	boost::variant<float, int32_t, std::string> GetAttribute(const std::string& name);
+
+
 protected:
 	// Radials
 	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> menu_response_;
@@ -518,6 +550,8 @@ private:
 
     typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
+
+	AttributesMap attributes_map_;
 
     ObjectSlots slot_descriptor_;
 	ObjectArrangements slot_arrangements_;
