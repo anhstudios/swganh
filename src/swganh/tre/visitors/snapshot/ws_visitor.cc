@@ -72,7 +72,7 @@ void WsVisitor::_handle0000DATA(anh::ByteBuffer& buffer)
 
 void WsVisitor::debug()
 {
-	printf("World Object Count = %d\n", chunks.size());
+	/*printf("World Object Count = %d\n", static_cast<int>(chunks.size()));
 
 	CHUNK& c = chunks[0];
 	printf("Id = %"PRIu64"\n", c.id);
@@ -85,6 +85,6 @@ void WsVisitor::debug()
 	printf("Location(x=%f,y=%f,z=%f)\n", c.location.x, c.location.y, c.location.z);
 
 	printf("Priority = %f\n", c.object_priority);
-	printf("POB CRC = %02X\n", c.pob_crc);
+	printf("POB CRC = %02X\n", c.pob_crc);*/
 
 }
