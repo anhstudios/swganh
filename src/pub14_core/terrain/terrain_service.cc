@@ -8,7 +8,7 @@
 #include <anh/event_dispatcher.h>
 #include <anh/logger.h>
 
-#include "swganh/tre/visitors/terrain/layer_visitor.h"
+//#include "swganh/tre/visitors/terrain/layer_visitor.h"
 #include "swganh/tre/visitors/terrain/terrain_visitor.h"
 
 #include "swganh/tre/visitors/terrain/detail/container_layer.h"

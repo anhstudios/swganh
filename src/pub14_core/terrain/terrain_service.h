@@ -12,7 +12,7 @@ namespace swganh
 namespace tre
 {
 	class TerrainVisitor;
-	class LayerVisitor;
+	//class LayerVisitor;
 	class Fractal;
 
 	class ContainerLayer;
@@ -28,14 +28,14 @@ namespace terrain
 {
 	struct LayerEntry
 	{
-		std::shared_ptr<swganh::tre::LayerVisitor> layer_visitor_;
+		//std::shared_ptr<swganh::tre::LayerVisitor> layer_visitor_;
 		float offset_x, offset_z;
 	};
 
 	struct SceneEntry
 	{
 		std::shared_ptr<swganh::tre::TerrainVisitor> terrain_visitor_;
-		std::list<LayerEntry> layers_;
+		//std::list<LayerEntry> layers_;
 	};
 
 	typedef std::map<uint32_t, SceneEntry> SceneMap;
