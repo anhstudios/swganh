@@ -118,7 +118,6 @@ float TerrainService::GetWaterHeight(uint32_t scene_id, float x, float z, float 
 
 float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
 {
-	float transform_value = 0.0f;
 	auto itr = scenes_.find(scene_id);
 	if(itr != scenes_.end())
 	{
@@ -133,7 +132,7 @@ float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
 		{
 			if(layer->enabled)
 			{
-				transform_value = processLayerHeight(layer, x, z, height_result, affector_transform, fractals);
+				processLayerHeight(layer, x, z, height_result, affector_transform, fractals);
 			}
 		}
 
