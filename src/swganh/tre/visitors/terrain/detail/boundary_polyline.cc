@@ -5,8 +5,7 @@ using namespace swganh::tre;
 void BoundaryPolyline::Deserialize(anh::ByteBuffer& buffer)
 {
 	unsigned int sizeTemp = buffer.read<uint32_t>();
-	unsigned int i=0;
-
+	
 	// Initialize min and max values
 	min_x = FLT_MAX;
 	max_x = FLT_MIN;
