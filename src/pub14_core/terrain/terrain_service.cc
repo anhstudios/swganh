@@ -167,8 +167,7 @@ float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z
 	std::vector<FilterLayer*> filters = layer->filters;
 
 	float transform_value = 0.0f;
-	bool has_boundaries = false;
-	float result = 0.0f;
+	bool has_boundaries = false;	
 
 	for (unsigned int i = 0; i < boundaries.size(); i++)
 	{
