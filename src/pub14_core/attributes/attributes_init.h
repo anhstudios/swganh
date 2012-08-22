@@ -29,14 +29,14 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     // Register Attribute Service
 	{ // Attribute::AttributeService
         registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
-            auto attributes_service = new AttributeService(kernel);
+            auto attributes_service = new AttributesService(kernel);
             
             return attributes_service;
         };
 
         registration.DestroyObject = [] (void * object) {
             if (object) {
-                delete static_cast<AttributeService*>(object);
+                delete static_cast<AttributesService*>(object);
             }
         };
 

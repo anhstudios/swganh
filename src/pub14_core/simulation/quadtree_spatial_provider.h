@@ -21,7 +21,7 @@ public:
 	uint64_t GetObjectId() { return 0; }
 
 	//Object Management
-	virtual void AddObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> newObject, int32_t arrangement_id=-2);
+	virtual void AddObject(std::shared_ptr<swganh::object::Object> newObject, std::shared_ptr<swganh::object::Object> requester = nullptr, int32_t arrangement_id=-2);
 	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> oldObject);
 	virtual void TransferObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
 	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position);

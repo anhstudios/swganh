@@ -77,8 +77,7 @@ void Object::ClearController()
 
     Unsubscribe(controller);
 }
-
-void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> obj, int32_t arrangement_id)
+void Object::AddObject(std::shared_ptr<Object> obj, std::shared_ptr<Object> requester, int32_t arrangement_id)
 {
 	if(requester == nullptr || container_permissions_->canInsert(shared_from_this(), requester, obj))
 	{
@@ -828,4 +827,12 @@ std::wstring Object::GetAttributeAsString(const std::string& name)
 		throw e;
 	}
 	return L"";
+}
+uint8_t Object::GetAttributeTemplateId()
+{
+	return attributes_template_id;
+}
+void Object::SetAttributeTemplateId(uint8_t attribute_template_id)
+{
+	attributes_template_id = attribute_template_id;
 }

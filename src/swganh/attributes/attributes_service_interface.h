@@ -19,12 +19,19 @@ namespace object {
 namespace swganh {
 namespace attributes {
 
+	enum AttributeTemplateId : uint8_t
+	{
+		ARMOR = 0,
+		WEAPON
+	};
+
     class AttributesServiceInterface: public anh::service::ServiceInterface
     {
     public:        
-        virtual std::shared_ptr<AttributeTemplateInterface> GetAttributeTemplate(const std::string& name) = 0;
-        virtual void SetAttributeTemplate(const std::shared_ptr<AttributeTemplateInterface> template_, const std::string& name) = 0;        
-		virtual void SendAttributesMessage(const std::string& template_name, const std::shared_ptr<swganh::object::Object> object) = 0;
+        virtual std::shared_ptr<AttributeTemplateInterface> GetAttributeTemplate(AttributeTemplateId template_id) = 0;
+        virtual void SetAttributeTemplate(const std::shared_ptr<AttributeTemplateInterface> template_, AttributeTemplateId template_id) = 0;        
+		virtual bool HasAttributeTemplate(AttributeTemplateId template_id) = 0;
+		virtual void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object) = 0;
     };
 
 }}  // namespace swganh::attributes
