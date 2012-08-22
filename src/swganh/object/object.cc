@@ -4,6 +4,7 @@
 #include "object.h"
 
 #include <glm/gtx/transform2.hpp>
+#include <sstream>
 
 #include "object_events.h"
 
@@ -786,7 +787,7 @@ AttributesMap Object::GetAttributeMap()
 	return attributes_map_;
 }
 
-boost::variant<float, int32_t, std::string> Object::GetAttribute(const std::string& name)
+boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::string& name)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	auto find_iter = find_if(attributes_map_.begin(), attributes_map_.end(), [&](AttributesMap::value_type key_value)
@@ -797,6 +798,34 @@ boost::variant<float, int32_t, std::string> Object::GetAttribute(const std::stri
 	{
 		return find_iter->second;
 	}	
-	LOG(warning) << "Attribute "<< name << " does not exist returning default of 0";
-	return 0;
+	LOG(error) << "Attribute "<< name << " does not exist";	
+	throw std::runtime_error("Attribute " + name + " does not exist");
+}
+
+std::wstring Object::GetAttributeAsString(const std::string& name)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+
+	try {
+		auto val = GetAttribute(name);
+
+		wstringstream attribute;
+		switch (val.which())
+		{
+			// float
+			case 0:
+				attribute << boost::get<float>(val);
+				break;
+			case 1:
+				attribute << boost::get<int32_t>(val);
+				break;
+			case 2:
+				return boost::get<wstring>(val);
+
+		}
+	} catch (std::exception& e) {
+		LOG(error) << "Attribute " << name << " could not be converted to wstring";
+		throw e;
+	}
+	return L"";
 }

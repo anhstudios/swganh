@@ -53,7 +53,7 @@ typedef std::vector<
 
 typedef std::map<
 	anh::HashString,
-	boost::variant<float, int32_t, std::string>
+	boost::variant<float, int32_t, std::wstring>
 > AttributesMap;
 
 typedef std::map<
@@ -62,6 +62,8 @@ typedef std::map<
 > ObjectSlots;
 
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
+
+typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 
 class ObjectFactory;
 class ObjectMessageBuilder;
@@ -440,7 +442,7 @@ public:
 
     void ClearBaselines();
     void ClearDeltas();
-    typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
+    
 
 	void SetFlag(std::string flag);
     void RemoveFlag(std::string flag);
@@ -514,6 +516,8 @@ public:
 	{
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		attributes_map_[name] = attribute;
+
+		event_dispatcher_->Dispatch(make_shared<ObjectEvent>("Object::UpdateAttribute", shared_from_this()));
 	}
 
 	/**
@@ -525,7 +529,11 @@ public:
 		auto val = GetAttribute(name);
 		return boost::get<T>(val)
 	}
-	boost::variant<float, int32_t, std::string> GetAttribute(const std::string& name);
+	/**
+	 * @brief Gets an attribute value and then converts it to a wstring for printing
+	 */
+	std::wstring GetAttributeAsString(const std::string& name);
+	boost::variant<float, int32_t, std::wstring> GetAttribute(const std::string& name);
 
 
 protected:
@@ -543,7 +551,8 @@ protected:
     std::wstring custom_name_;                       // update 3
     std::atomic<uint32_t> volume_;                   // update 3
     std::atomic<int32_t> arrangement_id_;
-	
+
+	uint8_t attributes_template_id; // Used to determine which attribute template to b
 
 private:
     mutable boost::mutex object_mutex_;

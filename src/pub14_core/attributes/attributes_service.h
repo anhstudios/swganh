@@ -7,7 +7,9 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "anh/hash_string.h"
 #include "swganh/attributes/attributes_service_interface.h"
 #include "swganh/attributes/attribute_template_interface.h"
 
@@ -20,7 +22,7 @@ namespace attributes {
 		std::string, 
 		std::shared_ptr<swganh::attributes::AttributeTemplateInterface>
 	> AttributeTemplates;
-
+	
     class AttributesService: public swganh::attributes::AttributesServiceInterface
     {
     public:
@@ -30,11 +32,12 @@ namespace attributes {
 		
 		std::shared_ptr<swganh::attributes::AttributeTemplateInterface> GetAttributeTemplate(const std::string& name);
         void SetAttributeTemplate(const std::shared_ptr<swganh::attributes::AttributeTemplateInterface> template_, const std::string& name); 
-        void SendAttributesMessage(const std::string& template_name, const std::shared_ptr<swganh::object::Object> object);
-        void Startup();
+        void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object);
+		void Startup();
 
-    private:
+    private:		
 		AttributeTemplates attribute_templates_;
+		
 
 		swganh::app::SwganhKernel* kernel_;
     };
