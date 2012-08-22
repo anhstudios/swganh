@@ -11,11 +11,11 @@
 using namespace std;
 using namespace swganh::tre;
 
-void DatatableVisitor::visit_folder(std::shared_ptr<folder_node> node)
+void DatatableVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
 {
 }
 
-void DatatableVisitor::visit_data(std::shared_ptr<file_node> node)
+void DatatableVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
 {
 	if(node->name() == "0001COLS")
 	{

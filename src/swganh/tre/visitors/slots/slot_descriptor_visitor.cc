@@ -10,11 +10,11 @@
 using namespace std;
 using namespace swganh::tre;
 
-void SlotDescriptorVisitor::visit_folder(std::shared_ptr<folder_node> node)
+void SlotDescriptorVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
 {
 }
 
-void SlotDescriptorVisitor::visit_data(shared_ptr<file_node> node)
+void SlotDescriptorVisitor::visit_data(uint32_t depth, shared_ptr<file_node> node)
 {
 	if(node->name() == "0000DATA")
 	{

@@ -29,7 +29,7 @@ namespace simulation {
 		virtual std::shared_ptr<SceneInterface> GetScene(uint32_t scene_id) const = 0;
 
         virtual void StartScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel) = 0;
-        virtual void StopScene(const std::string& scene_label) = 0;
+        virtual void StopScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel) = 0;
     };
 
 }}  // namespace swganh::simulation

@@ -29,6 +29,7 @@
 #include "social/social_init.h"
 #include "equipment/equipment_init.h"
 #include "sui/sui_init.h"
+#include "terrain/terrain_init.h"
 
 using anh::app::KernelInterface;
 using anh::plugin::ExitFunc;
@@ -65,5 +66,6 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh_core::player::Initialize(swganh_kernel);
 	swganh_core::social::Initialize(swganh_kernel);
 	swganh_core::sui::Initialize(swganh_kernel);
+	swganh_core::terrain::Initialize(swganh_kernel);
     return ExitModule;
 }

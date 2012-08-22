@@ -27,6 +27,7 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 {
 	//We use a stack instead of recursion to make things more straightforward to follow.
 	std::stack<std::pair<std::shared_ptr<folder_node>, unsigned int>> loader;
+	int depth = 1;
 
 	//While the stream is not finished
 	while(inputstream.read_position() < inputstream.size())
@@ -36,6 +37,7 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 		{
 			//It has, so we pop the folder node off the stack
 			loader.pop();
+			--depth;
 		}
 		else
 		{
@@ -65,7 +67,7 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 
 					if(visitor_ != nullptr)
 					{
-						visitor_->visit_folder(folder);
+						visitor_->visit_folder(depth++, folder);
 					}
 				}
 				else
@@ -80,7 +82,7 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 					oldTop->add(folder);
 					if(visitor_ != nullptr)
 					{
-						visitor_->visit_folder(folder);
+						visitor_->visit_folder(depth++, folder);
 					}
 				}	
 			}
@@ -97,7 +99,7 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 					//If we hae an interpreter we will have it interpret our data
 					if(visitor_ != nullptr)
 					{
-						visitor_->visit_data(file);
+						visitor_->visit_data(depth, file);
 					}
 				}
 				else
@@ -110,7 +112,7 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 					//If we have an interpreter we wil have it interpret our data
 					if(visitor_ != nullptr)
 					{
-						visitor_->visit_data(file);
+						visitor_->visit_data(depth, file);
 					}
 				}
 			}

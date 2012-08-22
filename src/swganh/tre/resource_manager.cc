@@ -11,6 +11,8 @@
 #include "visitors/slots/slot_descriptor_visitor.h"
 #include "visitors/slots/slot_definition_visitor.h"
 #include "visitors/snapshot/ws_visitor.h"
+#include "visitors/terrain/terrain_visitor.h"
+//#include "visitors/terrain/layer_visitor.h"
 
 using namespace swganh::tre;
 
@@ -49,6 +51,12 @@ std::shared_ptr<VisitorInterface> ResourceManager::getResourceByName(const std::
 		case DATATABLE_VISITOR:
 			result = std::make_shared<DatatableVisitor>();
 			break;
+		case TRN_VISITOR:
+			result = std::make_shared<TerrainVisitor>();
+			break;
+		//case LAY_VISITOR:
+			//result = std::make_shared<LayerVisitor>();
+			//break;
 		default:
 			return nullptr;
 		}
