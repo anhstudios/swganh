@@ -3,11 +3,18 @@
 
 #include "ws_visitor.h"
 
+#ifndef WIN32
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+#else
+#define PRIu64       "I64u"
+#endif
+
 #include "../../iff/iff.h"
 #include "../../iff/filenode.h"
 
 using namespace std;
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 using namespace swganh::tre;
 
 WsVisitor::WsVisitor()
@@ -65,11 +72,11 @@ void WsVisitor::_handle0000DATA(anh::ByteBuffer& buffer)
 
 void WsVisitor::debug()
 {
-	printf("World Object Count = %d\n", chunks.size());
+	/*printf("World Object Count = %d\n", static_cast<int>(chunks.size()));
 
 	CHUNK& c = chunks[0];
-	printf("Id = %d\n", c.id);
-	printf("Parent Id = %d\n", c.parent_id);
+	printf("Id = %"PRIu64"\n", c.id);
+	printf("Parent Id = %"PRIu64"\n", c.parent_id);
 	printf("Name id = %d\n", c.name_id);
 	printf("Name = %s\n", names[c.name_id].c_str());
 	printf("Scale = %f\n", c.scale);
@@ -78,6 +85,6 @@ void WsVisitor::debug()
 	printf("Location(x=%f,y=%f,z=%f)\n", c.location.x, c.location.y, c.location.z);
 
 	printf("Priority = %f\n", c.object_priority);
-	printf("POB CRC = %02X\n", c.pob_crc);
+	printf("POB CRC = %02X\n", c.pob_crc);*/
 
 }

@@ -119,7 +119,7 @@ public:
 		return equipment_service_;
 	}
 
-	void SimulationServiceImpl::HandleDataTransform(
+	void HandleDataTransform(
 		const shared_ptr<ObjectController>& controller, 
 		DataTransform message)
 	{
@@ -136,7 +136,7 @@ public:
 				scene->HandleDataTransform(controller, message);
 		}
 	}
-	void SimulationServiceImpl::HandleDataTransformWithParent(
+	void HandleDataTransformWithParent(
 		const shared_ptr<ObjectController>& controller, 
 		DataTransformWithParent message)
 	{

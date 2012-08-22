@@ -1219,12 +1219,6 @@ std::vector<uint64_t> Creature::GetDuelList()
     return duel_list_;
 }
 
-shared_ptr<Player> Creature::GetPlayer()
-{
-    //return GetContainedObject<Player>(GetObjectId() + PLAYER_OFFSET);
-	return nullptr;
-}
-
 void Creature::CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
 

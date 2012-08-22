@@ -7,7 +7,7 @@
 #include "../../iff/foldernode.h"
 
 using namespace swganh::tre;
-using namespace std::tr1::placeholders;
+using namespace std::placeholders;
 using namespace std;
 using namespace boost;
 
@@ -144,10 +144,10 @@ void PobVisitor::_handlePRTL0004(PobVisitor* pob, anh::ByteBuffer& data)
 
 void PobVisitor::debug()
 {
-	std::for_each(portals_.begin(), portals_.end(), [] (Portal& p) {
+	/*std::for_each(portals_.begin(), portals_.end(), [] (Portal& p) {
 		if(p.vertices.size() != 4)
 		{
-			printf("%d\n", p.vertices.size());
+			printf("%d\n", static_cast<int>(p.vertices.size()));
 		}
-	});
+	});*/
 }

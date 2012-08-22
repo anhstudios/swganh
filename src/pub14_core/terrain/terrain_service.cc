@@ -4,10 +4,10 @@
 
 #include "pub14_core/simulation/scene_events.h"
 
-#include <anh/resource/resource_manager_interface.h>
 #include <anh/event_dispatcher.h>
 #include <anh/logger.h>
 
+#include "swganh/tre/resource_manager.h"
 //#include "swganh/tre/visitors/terrain/layer_visitor.h"
 #include "swganh/tre/visitors/terrain/terrain_visitor.h"
 

@@ -26,8 +26,8 @@ class Scene::SceneImpl
 {
 public:
     SceneImpl(SceneDescription description, swganh::app::SwganhKernel* kernel)
-        : description_(move(description))
-		, kernel_(kernel)
+        : kernel_(kernel)
+        , description_(move(description))
 		
     {
 		auto tmp = kernel_->GetPluginManager()->CreateObject<swganh_core::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");

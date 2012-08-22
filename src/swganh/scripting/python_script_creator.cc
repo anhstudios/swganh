@@ -3,8 +3,6 @@
 
 #include <boost/python.hpp>
 
-#include "swganh/scripting/utilities.h"
-
 namespace bp = boost::python;
 using swganh::scripting::ScopedGilLock;
 using namespace swganh::scripting;

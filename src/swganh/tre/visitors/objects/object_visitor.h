@@ -26,8 +26,8 @@ namespace swganh
 {
 namespace tre
 {
-
 	class ObjectVisitor;
+	class ResourceManager;
 	//End Forward Declarations
 
 	//Begin Typedefs
@@ -69,7 +69,7 @@ namespace tre
 			@brief An internal ClientString structure. This could later be moved outside this class.
 			It is merely here now for completeness.
 		*/
-		static class ClientString
+		class ClientString
 		{
 		public:
 			std::string file;
@@ -96,7 +96,7 @@ namespace tre
 
 			@param f the filemanager instance for retriving the necessary files.
 		*/
-		void load_aggregate_data(anh::resource::ResourceManagerInterface* f);
+		void load_aggregate_data(swganh::tre::ResourceManager* f);
 
 		/**
 			@brief Causes this OIFFInterpreter to load any referenced files it has. It will use the filemanager
@@ -104,7 +104,7 @@ namespace tre
 
 			@param f the filemanager instance for retrieving the necessary files.
 		*/
-		void load_referenced_files(anh::resource::ResourceManagerInterface* f);
+		void load_referenced_files(swganh::tre::ResourceManager* f);
 
 		/**
 			@brief a simple output function for debugging values.

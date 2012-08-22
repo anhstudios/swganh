@@ -65,8 +65,6 @@ public:
     
     virtual boost::asio::io_service& GetIoService() = 0;
 
-    virtual anh::resource::ResourceManagerInterface* GetResourceManager() = 0;
-
     // also add entity manager, blah blah.
 };
 

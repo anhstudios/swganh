@@ -18,9 +18,6 @@
 
 namespace swganh {
 namespace object {
-namespace player {
-    class Player;
-}
 namespace creature {
 
 /**
@@ -597,11 +594,7 @@ public:
 
     // Baselines
     virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
-
-
-    // Helpers
-    std::shared_ptr<swganh::object::player::Player> GetPlayer();
-
+	
     typedef anh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 private:
     mutable boost::mutex creature_mutex_;
