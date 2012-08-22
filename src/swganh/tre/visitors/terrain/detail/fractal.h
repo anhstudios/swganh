@@ -280,9 +280,13 @@ namespace tre
 				noise_gain = noise.noise2(coord);
 				if ( noise_gain >= 0.0 ) 
 					if ( noise_gain > 1.0 )
+					{
 						noise_gain = 1.0;
-				else 
-					noise_gain = 0.0;
+					}
+					else 
+					{
+						noise_gain = 0.0;
+					}
 
 				noise_gen = (float)( (1.0 - noise_gain) * curr_ampl + noise_gen);
 				curr_offset = curr_offset * octaves_arg; 
