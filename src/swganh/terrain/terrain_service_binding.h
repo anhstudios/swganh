@@ -24,19 +24,19 @@ boost::python::tuple GetHeight(uint32_t scene_id, float x, float z, bool raw=fal
 {
 	return boost::python::make_tuple(scene_id, x, z, raw);
 }
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(GetHeightOverload, GetHeight, 3, 4);
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(GetHeightOverload, GetHeight, 3, 4)
 
 boost::python::tuple GetWaterHeight(uint32_t scene_id, float x, float z, bool raw=false)
 {
 	return boost::python::make_tuple(scene_id, x, z, raw);
 }
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(GetWaterHeightOverload, GetWaterHeight, 3, 4);
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(GetWaterHeightOverload, GetWaterHeight, 3, 4)
 
 boost::python::tuple IsWater(uint32_t scene_id, float x, float z, bool raw=false)
 {
 	return boost::python::make_tuple(scene_id, x, z, raw);
 }
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(IsWaterOverload, IsWater, 3, 4);
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(IsWaterOverload, IsWater, 3, 4)
 
 void exportTerrainService()
 {
