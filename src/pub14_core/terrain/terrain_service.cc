@@ -126,7 +126,6 @@ float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
 		auto& fractals = itr->second.terrain_visitor_->GetFractals();
 
 		float affector_transform = 1.0f;
-		float transform_value = 0.0f;
 		float height_result = 0.0f;
 
 		for(auto& layer : layers)
