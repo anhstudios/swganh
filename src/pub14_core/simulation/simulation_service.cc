@@ -448,7 +448,7 @@ void SimulationService::StartScene(const std::string& scene_label)
 
 void SimulationService::StopScene(const std::string& scene_label)
 {
-    impl_->GetSceneManager()->StopScene(scene_label);
+    impl_->GetSceneManager()->StopScene(scene_label, kernel_);
 }
 void SimulationService::RegisterObjectFactories()
 {
