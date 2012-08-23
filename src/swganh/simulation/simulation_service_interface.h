@@ -26,6 +26,7 @@ namespace connection {
 namespace swganh {
 namespace object {
     class Object;
+	class ObjectManager;
 }}  // namespace swganh::object
 
 namespace swganh {
@@ -179,6 +180,8 @@ namespace simulation {
 
             SendToAllInScene(message_buffer, scene_id);
         }
+
+		virtual std::shared_ptr<swganh::object::ObjectManager> GetObjectManager() = 0;
     };
 
 }}  // namespace swganh::simulation

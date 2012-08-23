@@ -65,6 +65,8 @@ namespace simulation {
 
         void Startup();
 
+		std::shared_ptr<swganh::object::ObjectManager> GetObjectManager();
+
     private:
 
         std::unique_ptr<SimulationServiceImpl> impl_;

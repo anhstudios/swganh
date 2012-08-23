@@ -499,6 +499,11 @@ public:
 	 */
 	ObjectArrangements GetSlotArrangements();
 
+	bool IsDatabasePersisted();
+	bool IsInSnapshot();
+	void SetDatabasePersisted(bool value);
+	void SetInSnapshot(bool value);
+
 protected:
 	// Radials
 	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> menu_response_;
@@ -536,6 +541,9 @@ private:
     anh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;
+
+	bool database_persisted_;
+	bool in_snapshot_;
 
     boost::mutex flags_mutex_;
     std::set<std::string> flags_;

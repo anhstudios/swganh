@@ -37,7 +37,9 @@ Object::Object()
     , stf_name_string_("")
     , custom_name_(L"")
     , volume_(0)
-	, arrangement_id_(-2) 
+	, arrangement_id_(-2)
+	, database_persisted_(true)
+	, in_snapshot_(false)
 {
 	menu_response_ = make_shared<swganh::messages::controllers::ObjectMenuResponse>();
 }
@@ -778,4 +780,28 @@ std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> Object::GetMe
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return menu_response_;
+}
+
+bool Object::IsDatabasePersisted()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return database_persisted_;
+}
+
+bool Object::IsInSnapshot()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return in_snapshot_;
+}
+
+void Object::SetDatabasePersisted(bool value)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	database_persisted_ = value;
+}
+
+void Object::SetInSnapshot(bool value)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	in_snapshot_ = value;
 }

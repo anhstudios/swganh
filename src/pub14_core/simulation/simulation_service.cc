@@ -579,3 +579,8 @@ void SimulationService::Startup()
 	command_service->AddCommandCreator("transferitemmisc", swganh::command::PythonCommandCreator("commands.transferitem", "TransferItem"));
 
 }
+
+std::shared_ptr<ObjectManager> SimulationService::GetObjectManager()
+{
+	return impl_->GetObjectManager();
+}

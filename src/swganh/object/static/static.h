@@ -10,9 +10,15 @@ namespace swganh {
 namespace object {
 namespace static_obj {
   
+class StaticFactory;
+class StaticMessageBuilder;
+
 class Static : public swganh::object::Object
 {
 public:
+	typedef StaticFactory FactoryType;
+    typedef StaticMessageBuilder MessageBuilderType;
+
     // STAO
     uint32_t GetType() const;
     const static uint32_t type = 0x5354414F;

@@ -67,24 +67,5 @@ void WsVisitor::_handle0000DATA(anh::ByteBuffer& buffer)
 	c.object_priority = buffer.read<float>();
 	c.pob_crc = buffer.read<uint32_t>();
 
-	chunks.insert(std::make_pair<std::uint64_t, CHUNK>(std::move(c.parent_id), std::move(c)));
-}
-
-void WsVisitor::debug()
-{
-	/*printf("World Object Count = %d\n", static_cast<int>(chunks.size()));
-
-	CHUNK& c = chunks[0];
-	printf("Id = %"PRIu64"\n", c.id);
-	printf("Parent Id = %"PRIu64"\n", c.parent_id);
-	printf("Name id = %d\n", c.name_id);
-	printf("Name = %s\n", names[c.name_id].c_str());
-	printf("Scale = %f\n", c.scale);
-
-	printf("Orientation(w=%f,x=%f,y=%f,z=%f)\n", c.orientation.w, c.orientation.x, c.orientation.y, c.orientation.z);
-	printf("Location(x=%f,y=%f,z=%f)\n", c.location.x, c.location.y, c.location.z);
-
-	printf("Priority = %f\n", c.object_priority);
-	printf("POB CRC = %02X\n", c.pob_crc);*/
-
+	chunks_.push_back(std::move(c));
 }
