@@ -126,14 +126,13 @@ float TerrainService::GetHeight(uint32_t scene_id, float x, float z, bool raw)
 		auto& fractals = itr->second.terrain_visitor_->GetFractals();
 
 		float affector_transform = 1.0f;
-		float transform_value = 0.0f;
 		float height_result = 0.0f;
 
 		for(auto& layer : layers)
 		{
 			if(layer->enabled)
 			{
-				transform_value = processLayerHeight(layer, x, z, height_result, affector_transform, fractals);
+				processLayerHeight(layer, x, z, height_result, affector_transform, fractals);
 			}
 		}
 
@@ -167,8 +166,7 @@ float TerrainService::processLayerHeight(ContainerLayer* layer, float x, float z
 	std::vector<FilterLayer*> filters = layer->filters;
 
 	float transform_value = 0.0f;
-	bool has_boundaries = false;
-	float result = 0.0f;
+	bool has_boundaries = false;	
 
 	for (unsigned int i = 0; i < boundaries.size(); i++)
 	{
