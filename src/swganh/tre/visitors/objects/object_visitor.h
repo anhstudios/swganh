@@ -57,13 +57,13 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(std::shared_ptr<file_node> node);
+		virtual void visit_data(uint32_t depth, std::shared_ptr<file_node> node);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_folder(std::shared_ptr<folder_node> node);
+		virtual void visit_folder(uint32_t depth, std::shared_ptr<folder_node> node);
 
 		/**
 			@brief An internal ClientString structure. This could later be moved outside this class.
@@ -106,11 +106,6 @@ namespace tre
 		*/
 		void load_referenced_files(swganh::tre::ResourceManager* f);
 
-		/**
-			@brief a simple output function for debugging values.
-		*/
-		void debug();
-
 	private:
 		//Internal Index used to link the handlers with the attributes
 		static AttributeHandlerIndex attributeHandler_;
@@ -129,7 +124,7 @@ namespace tre
 
 		//Attributes this object iff might have
 		AttributeMap attributes_;
-				
+
 		//Parent files this object iff might have
 		std::set<std::string> parentFiles;
 

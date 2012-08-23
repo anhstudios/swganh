@@ -25,7 +25,7 @@ namespace simulation {
 		std::shared_ptr<swganh::simulation::SceneInterface> GetScene(uint32_t scene_id) const;
 
         void StartScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel);
-        void StopScene(const std::string& scene_label);
+        void StopScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel);
 
     private:
         typedef std::map<

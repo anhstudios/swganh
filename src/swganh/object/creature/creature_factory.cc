@@ -31,14 +31,6 @@ CreatureFactory::CreatureFactory(DatabaseManagerInterface* db_manager,
 {
 }
 
-void CreatureFactory::LoadTemplates()
-{}
-
-bool CreatureFactory::HasTemplate(const string& template_name)
-{
-    return false;
-}
-
 uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object)
 {
     // Persist Tangible and Base Object First
@@ -247,9 +239,17 @@ shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
     return creature;
 }
 
-shared_ptr<Object> CreatureFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> CreatureFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-    return make_shared<Creature>();
+	if(db_persisted || db_initialized)
+	{
+		//TODO: Have to hit the db to make this
+		return make_shared<Creature>();
+	}
+	else
+	{
+		return make_shared<Creature>();
+	}
 }
 
 void CreatureFactory::LoadSkills_(

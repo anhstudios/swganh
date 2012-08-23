@@ -20,6 +20,7 @@
 #include "swganh/social/social_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh/sui/sui_service_interface.h"
+#include "swganh/terrain/terrain_service_interface.h"
 #include "swganh/equipment/equipment_service_interface.h"
 #include "swganh/simulation/spatial_provider_interface.h"
 
@@ -66,6 +67,11 @@ void exportSWGANHKernel()
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::sui::SUIServiceInterface*, anh::service::ServiceManager*>()),
 				"returns an internal refrence of the :class:`.SUIService`")
+		.def("terrain_service", make_function(
+				std::bind(&anh::service::ServiceManager::GetService<swganh::terrain::TerrainServiceInterface>, std::placeholders::_1, "TerrainService"),
+                return_value_policy<reference_existing_object>(),
+                boost::mpl::vector<swganh::terrain::TerrainServiceInterface*, anh::service::ServiceManager*>()),
+				"returns an internal refrence of the :class:`.TerrainService`")
 		.def("equipment_service", make_function(
 				std::bind(&anh::service::ServiceManager::GetService<swganh::equipment::EquipmentServiceInterface>, std::placeholders::_1, "EquipmentService"),
                 return_value_policy<reference_existing_object>(),

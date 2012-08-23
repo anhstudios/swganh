@@ -95,6 +95,7 @@ public:
     // These match the database
 	enum Type : uint32_t
 	{
+		INVALID = 0,
 		PLAYER = 1347174745,
 		CREATURE = 1129465167,
 		TANGIBLE = 1413566031,
@@ -109,7 +110,8 @@ public:
 		SHIP = 1874303456,
 		WEAPON = 1789660414,
 		GUILD = 1145850183,
-		GROUP = 1196578128
+		GROUP = 1196578128,
+		RESOURCE_CONTAINER = 1380142671
 	};
 	
 	typedef std::map<

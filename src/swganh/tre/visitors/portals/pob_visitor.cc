@@ -28,11 +28,11 @@ PobVisitor::PobVisitor()
 	}
 }
 
-void PobVisitor::visit_folder(std::shared_ptr<folder_node> node)
+void PobVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
 {
 }
 
-void PobVisitor::visit_data(std::shared_ptr<file_node> node)
+void PobVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
 {
 	NodeNameIndexIterator it = nameLookup_.find(node->name());
 	if( it != nameLookup_.cend())

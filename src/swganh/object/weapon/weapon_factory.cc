@@ -9,14 +9,6 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::weapon;
 
-void WeaponFactory::LoadTemplates()
-{}
-
-bool WeaponFactory::HasTemplate(const string& template_name)
-{
-    return false;
-}
-
 uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	return 1;
@@ -30,7 +22,8 @@ shared_ptr<Object> WeaponFactory::CreateObjectFromStorage(uint64_t object_id)
     return make_shared<Weapon>();
 }
 
-shared_ptr<Object> WeaponFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> WeaponFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
+	//@TODO: Create me with help from db
     return make_shared<Weapon>();
 }
