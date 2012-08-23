@@ -29,10 +29,6 @@ namespace tangible {
 
         TangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
-        void LoadTemplates();
-
-        bool HasTemplate(const std::string& template_name);
-
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
@@ -40,12 +36,10 @@ namespace tangible {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
         void CreateTangible(const std::shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
         
         virtual void RegisterEventHandlers(){}
     private:
-        std::unordered_map<std::string, std::shared_ptr<swganh::object::tangible::Tangible>>::iterator GetTemplateIter_(const std::string& template_name);
-        std::unordered_map<std::string, std::shared_ptr<swganh::object::tangible::Tangible>> tangible_templates_;
     };
 
 }}}  // namespace swganh::object::tangible
