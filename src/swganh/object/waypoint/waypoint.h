@@ -34,12 +34,6 @@ public:
     Waypoint(glm::vec3 coordinates, bool activated, const std::string& planet, const std::wstring& name, const std::string& color);
 
     /**
-    * @brief Waypoints do not have uses
-    */
-    uint32_t GetUses();
-    void SetUses(uint32_t uses);
-
-    /**
     * @brief gets the glm::vec3 coordinates of the waypoint
     *
     *   @returns glm::vec3 coordinates
@@ -136,13 +130,11 @@ public:
     typedef anh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
 private:
 
-    std::atomic<uint32_t> uses_;				        //update 3
     glm::vec3 coordinates_;			                    //update 3
     std::atomic<uint8_t> activated_flag_;		        //update 3
     std::atomic<uint64_t> location_network_id_;	        //update 3
     std::string planet_name_;		                    //update 3
     std::wstring name_;				                    //update 3
-    std::atomic<uint8_t> not_used_;				        //update 3
     std::string color_;				                    //update 3
 };
 

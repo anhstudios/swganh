@@ -32,7 +32,7 @@ public:
 	uint32_t GetGenericInt();
 	void SetGenericInt(uint32_t generic_int);
 
-private:
+protected:
 	uint32_t generic_int_;
 };
     

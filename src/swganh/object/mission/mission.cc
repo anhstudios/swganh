@@ -19,6 +19,9 @@ uint32_t Mission::GetDifficultyLevel() const
 void Mission::SetDifficultyLevel(uint32_t difficulty_level)
 {
     difficulty_level_ = difficulty_level;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::DifficultyLevel", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 vec3 Mission::GetStartingPosition() const
@@ -29,6 +32,9 @@ vec3 Mission::GetStartingPosition() const
 void Mission::SetStartingPosition(vec3 starting_position)
 {
     starting_position_ = starting_position;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::StartLocation", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 uint32_t Mission::GetStartingSceneCrc() const
@@ -39,6 +45,9 @@ uint32_t Mission::GetStartingSceneCrc() const
 void Mission::SetStartingSceneCrc(uint32_t scene_crc)
 {
     starting_scene_ = scene_crc;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::StartLocation", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 wstring Mission::GetMissionCreator() const
@@ -49,6 +58,9 @@ wstring Mission::GetMissionCreator() const
 void Mission::SetMissionCreator(wstring mission_creator)
 {
     creator_ = mission_creator;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::CreatorName", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 uint32_t Mission::GetMissionReward() const
@@ -59,6 +71,9 @@ uint32_t Mission::GetMissionReward() const
 void Mission::SetMissionReward(uint32_t mission_reward)
 {
     reward_ = mission_reward;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::CreditReward", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 vec3 Mission::GetDestinationPosition() const
@@ -69,6 +84,9 @@ vec3 Mission::GetDestinationPosition() const
 void Mission::SetDestinationPosition(vec3 destination_position)
 {
     destination_position_ = destination_position;
+	
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::DestinationLocation", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 uint32_t Mission::GetDestinationSceneCrc() const
@@ -79,6 +97,9 @@ uint32_t Mission::GetDestinationSceneCrc() const
 void Mission::SetDestinationSceneCrc(uint32_t scene_crc)
 {
     destination_scene_ = scene_crc;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::DestinationLocation", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 std::string Mission::GetTargetObjectTemplate() const
@@ -94,6 +115,9 @@ uint32_t Mission::GetTargetObjectTemplateCrc() const
 void Mission::SetTargetObjectTemplate(std::string object_template)
 {
     target_object_template_ = object_template;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::TargetIff", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 std::string Mission::GetMissionDescriptionStfFile() const
@@ -110,6 +134,9 @@ void Mission::SetMissionDescription(const std::string& stf_file_name, const std:
 {
     mission_description_stf_file_ = stf_file_name;
     mission_description_stf_name_ = stf_string;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::MissionDescription", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 std::string Mission::GetMissionTitleStfFile() const
@@ -126,6 +153,9 @@ void Mission::SetMissionTitle(const std::string& stf_file_name, const std::strin
 {
     mission_title_stf_file_ = stf_file_name;
     mission_title_stf_name_ = stf_string;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::MissionTitle", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 uint32_t Mission::GetRepeatCounter() const
@@ -136,11 +166,17 @@ uint32_t Mission::GetRepeatCounter() const
 void Mission::IncrementRepeatCounter()
 {
     ++repeat_counter_;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::RepeatCounter", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 void Mission::SetRepeatCounter(uint32_t counter)
 {
     repeat_counter_ = counter;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::RepeatCounter", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 std::string Mission::GetMissionType()
@@ -156,6 +192,9 @@ uint32_t Mission::GetMissionTypeCrc()
 void Mission::SetMissionType(std::string mission_type)
 {
     mission_type_ = mission_type;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::MissionType", static_pointer_cast<Mission>(shared_from_this())));
 }
 
 std::string Mission::GetTargetName() const
@@ -166,5 +205,20 @@ std::string Mission::GetTargetName() const
 void Mission::SetTargetName(std::string target_name)
 {
     target_name_ = target_name;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::TargetName", static_pointer_cast<Mission>(shared_from_this())));
 }
 
+std::shared_ptr<swganh::object::waypoint::Waypoint> Mission::GetMissionWaypoint()
+{
+	return waypoint_;
+}
+
+void Mission::SetMissionWaypoint(std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint)
+{
+	waypoint_ = waypoint;
+
+	GetEventDispatcher()->Dispatch(make_shared<MissionEvent>
+        ("Mission::Waypoint", static_pointer_cast<Mission>(shared_from_this())));
+}

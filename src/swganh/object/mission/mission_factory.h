@@ -4,13 +4,13 @@
 #ifndef SWGANH_OBJECT_MISSION_MISSION_FACTORY_H_
 #define SWGANH_OBJECT_MISSION_MISSION_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/intangible/intangible_factory.h"
 
 namespace swganh {
 namespace object {
 namespace mission {
 
-    class MissionFactory : public swganh::object::ObjectFactoryInterface
+    class MissionFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);

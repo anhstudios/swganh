@@ -29,18 +29,6 @@ Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, c
     activated ? activated_flag_ = ACTIVATED : activated_flag_ = DEACTIVATED;
 }
 
-uint32_t Waypoint::GetUses()
-{
-    return uses_;
-}
-
-void Waypoint::SetUses(uint32_t uses) 
-{
-    uses_ = uses;
-
-    GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
-        ("Waypoint::Uses", static_pointer_cast<Waypoint>(shared_from_this())));
-}
 glm::vec3 Waypoint::GetCoordinates()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);

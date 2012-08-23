@@ -18,16 +18,6 @@ void WaypointMessageBuilder::RegisterEventHandlers()
     // TODO: Register Event Handlers Here For Waypoints
 }
 
-void WaypointMessageBuilder::BuildUsesDelta(const shared_ptr<Waypoint>& object)
-{
-    if (object->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 4);
-        message.data.write(object->GetUses());
-    
-        object->AddDeltasUpdate(message);    
-    }
-}
 void WaypointMessageBuilder::BuildActivateDelta(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
@@ -71,9 +61,24 @@ void WaypointMessageBuilder::BuildColor(const shared_ptr<Waypoint>& object)
         object->AddDeltasUpdate(message);    
     }
 }
+
+void WaypointMessageBuilder::SendBaselines(const std::shared_ptr<Waypoint>& waypoint, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+{
+	waypoint->AddBaselineToCache(BuildBaseline3(waypoint));
+    waypoint->AddBaselineToCache(BuildBaseline6(waypoint));
+
+    for (auto& baseline : waypoint->GetBaselines())
+    {
+        observer->Notify(baseline);
+    }
+        
+    SendEndBaselines(waypoint, observer);
+}
+
 BaselinesMessage WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoint>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3, 12);
+	message.data.append(ObjectMessageBuilder::BuildBaseline3(object).data);
     auto coords = object->GetCoordinates();
     message.data.write(coords.x);
     message.data.write(coords.z);
@@ -85,4 +90,11 @@ BaselinesMessage WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoin
     message.data.write<uint8_t>(0);
     message.data.write(object->GetColor());
     return BaselinesMessage(std::move(message));
+}
+
+BaselinesMessage WaypointMessageBuilder::BuildBaseline6(const std::shared_ptr<Waypoint>& object)
+{
+	auto message = CreateBaselinesMessage(object, Object::VIEW_6, 5);
+	message.data.append(ObjectMessageBuilder::BuildBaseline6(object).data);
+	return message;
 }

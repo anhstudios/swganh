@@ -30,7 +30,11 @@ namespace cell {
         }
         virtual void RegisterEventHandlers();
         static void BuildStfDetailDelta(const std::shared_ptr<Cell>& intangible);
-        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Intangible>& intangible);
+
+		virtual void SendBaselines(const std::shared_ptr<Cell>& cell, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+
+		static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Cell>& cell);
+        static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Cell>& cell);
     };
 
 }}}  // swganh::object::intangible

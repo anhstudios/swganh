@@ -33,6 +33,10 @@
 #include "swganh/object/building/building_factory.h"
 #include "swganh/object/building/building_message_builder.h"
 
+#include "swganh/object/cell/cell.h"
+#include "swganh/object/cell/cell_factory.h"
+#include "swganh/object/cell/cell_message_builder.h"
+
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/creature/creature_factory.h"
 #include "swganh/object/creature/creature_message_builder.h"
@@ -53,10 +57,17 @@
 #include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player_message_builder.h"
 
+#include "swganh/object/static/static.h"
+#include "swganh/object/static/static_factory.h"
+#include "swganh/object/static/static_message_builder.h"
+
 #include "swganh/object/tangible/tangible.h"
 #include "swganh/object/tangible/tangible_factory.h"
 #include "swganh/object/tangible/tangible_message_builder.h"
 
+#include "swganh/object/waypoint/waypoint.h"
+#include "swganh/object/waypoint/waypoint_factory.h"
+#include "swganh/object/waypoint/waypoint_message_builder.h"
 
 
 #include "swganh/simulation/scene_manager_interface.h"
@@ -471,13 +482,14 @@ void SimulationService::RegisterObjectFactories()
 
     object_manager->RegisterObjectType<Object>();
 
+	object_manager->RegisterObjectType<static_object::Static>();
+	object_manager->RegisterObjectType<tangible::Tangible>();
+	object_manager->RegisterObjectType<intangible::Intangible>();    
 	object_manager->RegisterObjectType<guild::Guild>();
 	object_manager->RegisterObjectType<group::Group>();
-
-    object_manager->RegisterObjectType<tangible::Tangible>();
+	object_manager->RegisterObjectType<waypoint::Waypoint>();
     object_manager->RegisterObjectType<creature::Creature>();
-
-	object_manager->RegisterObjectType<intangible::Intangible>();    
+	object_manager->RegisterObjectType<cell::Cell>();
     object_manager->RegisterObjectType<player::Player>();
 	
 }

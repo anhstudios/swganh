@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::static_obj;
+using namespace swganh::object::static_object;
 
 uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object)
 {
