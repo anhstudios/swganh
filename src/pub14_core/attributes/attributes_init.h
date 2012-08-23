@@ -40,7 +40,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
             }
         };
 
-        kernel->GetPluginManager()->RegisterObject("Attribute::AttributeService", &registration);
+        kernel->GetPluginManager()->RegisterObject("Attribute::AttributesService", &registration);
 	}
 }
 

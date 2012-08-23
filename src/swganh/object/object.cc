@@ -798,16 +798,16 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::str
 		return find_iter->second;
 	}	
 	LOG(error) << "Attribute "<< name << " does not exist";	
-	throw std::runtime_error("Attribute " + name + " does not exist");
+	return L"";
+	//throw std::runtime_error("Attribute " + name + " does not exist");
 }
 
 std::wstring Object::GetAttributeAsString(const std::string& name)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-
 	try {
 		auto val = GetAttribute(name);
 
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		wstringstream attribute;
 		switch (val.which())
 		{

@@ -19,11 +19,19 @@ namespace swganh {
 namespace app {
 	class SwganhKernel;
 }
+namespace command {
+	class CommandInterface;
+	class CommandServiceInterface;
+	struct CommandProperties;
+}
 namespace simulation {
 	class SimulationServiceInterface; 
 }
 namespace object {
 	class ObjectController;
+namespace creature {
+	class Creature;
+}
 }
 }
 
@@ -44,12 +52,12 @@ namespace attributes {
 		std::shared_ptr<swganh::attributes::AttributeTemplateInterface> GetAttributeTemplate(swganh::attributes::AttributeTemplateId template_id);
         void SetAttributeTemplate(const std::shared_ptr<swganh::attributes::AttributeTemplateInterface> template_, swganh::attributes::AttributeTemplateId template_id); 
 		bool HasAttributeTemplate(swganh::attributes::AttributeTemplateId template_id);
-        void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object);
+        void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor);
 		void Startup();
-
+		void HandleGetAttributesBatch(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor);
     private:		
 		void LoadAttributeTemplates_();
-		void HandleGetAttributesBatch_(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::GetAttributesBatchMessage message);
+		
 		AttributeTemplates attribute_templates_;
 		
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
