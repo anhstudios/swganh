@@ -52,7 +52,7 @@ public:
     {
 		InsertObject(object);
 
-		spatial_index_->AddObject(nullptr, object);
+		spatial_index_->AddObject(object);
     }
     
     void RemoveObject(shared_ptr<Object> object)

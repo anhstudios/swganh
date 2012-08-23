@@ -153,6 +153,15 @@ public:
 				scene->HandleDataTransformWithParent(controller, message);
 		}		
 	}
+
+	void AddObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene_label)
+	{
+		auto scene = scene_manager_->GetScene(scene_label);
+        if (scene)
+        {
+            scene->AddObject(object);
+        }
+	}
 	
     void PersistObject(uint64_t object_id)
     {
@@ -551,6 +560,10 @@ void SimulationService::SendToAll(ByteBuffer message)
 void SimulationService::SendToAllInScene(ByteBuffer message, uint32_t scene_id)
 {
     impl_->SendToAllInScene(message, scene_id);
+}
+void SimulationService::AddObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene_label)
+{
+	impl_->AddObjectToScene(object, scene_label);
 }
 
 void SimulationService::Startup()

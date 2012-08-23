@@ -28,7 +28,7 @@ QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
 	__this.reset();
 }
 
-void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> requester,shared_ptr<Object> object, int32_t arrangement_id)
+void QuadtreeSpatialProvider::AddObject(shared_ptr<Object> object, std::shared_ptr<swganh::object::Object> requester, int32_t arrangement_id)
 {
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 	{
