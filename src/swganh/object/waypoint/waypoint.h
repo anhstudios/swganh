@@ -8,7 +8,7 @@
 
 #include <glm/glm.hpp>
 
-#include "swganh/object/object.h"
+#include "swganh/object/intangible/intangible.h"
 
 namespace swganh {
 namespace object {
@@ -23,7 +23,7 @@ enum WaypointStatus
 /**
 * @brief Object that defines the data in a Waypoint
 */
-class Waypoint : public swganh::object::Object {
+class Waypoint : public swganh::object::intangible::Intangible {
 
 public:
     virtual uint32_t GetType() const { return Waypoint::type; }

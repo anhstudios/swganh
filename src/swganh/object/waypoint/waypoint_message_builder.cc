@@ -5,8 +5,11 @@
 
 #include <cstdint>
 
-#include "swganh/object/object.h"
 #include "swganh/object/waypoint/waypoint.h"
+#include "swganh/object/object_events.h"
+#include "pub14_core/messages/scene_end_baselines.h"
+#include "pub14_core/messages/deltas_message.h"
+#include "pub14_core/messages/baselines_message.h"
 
 using namespace anh;
 using namespace std;
@@ -15,7 +18,31 @@ using namespace swganh::object::waypoint;
 
 void WaypointMessageBuilder::RegisterEventHandlers()
 {
-    // TODO: Register Event Handlers Here For Waypoints
+    event_dispatcher->Subscribe("Waypoint::Baselines", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto controller_event = static_pointer_cast<ObserverEvent>(incoming_event);
+        SendBaselines(static_pointer_cast<Waypoint>(controller_event->object), controller_event->observer);
+    });
+    event_dispatcher->Subscribe("Waypoint::Activated", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<WaypointEvent>(incoming_event);
+		BuildActivateDelta(value_event->Get());
+    });
+	event_dispatcher->Subscribe("Waypoint::Coordinates", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<WaypointEvent>(incoming_event);
+		BuildCoordinatesDelta(value_event->Get());
+    });
+	event_dispatcher->Subscribe("Waypoint::Planet", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<WaypointEvent>(incoming_event);
+		BuildPlanetDelta(value_event->Get());
+    });
+	event_dispatcher->Subscribe("Waypoint::Color", [this] (shared_ptr<EventInterface> incoming_event)
+    {
+        auto value_event = static_pointer_cast<WaypointEvent>(incoming_event);
+		BuildColorDelta(value_event->Get());
+    });
 }
 
 void WaypointMessageBuilder::BuildActivateDelta(const shared_ptr<Waypoint>& object)
@@ -51,7 +78,7 @@ void WaypointMessageBuilder::BuildCoordinatesDelta(const shared_ptr<Waypoint>& o
         object->AddDeltasUpdate(message);    
     }
 }
-void WaypointMessageBuilder::BuildColor(const shared_ptr<Waypoint>& object)
+void WaypointMessageBuilder::BuildColorDelta(const shared_ptr<Waypoint>& object)
 {
 	if (object->HasObservers())
     {
@@ -78,7 +105,7 @@ void WaypointMessageBuilder::SendBaselines(const std::shared_ptr<Waypoint>& wayp
 BaselinesMessage WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoint>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3, 12);
-	message.data.append(ObjectMessageBuilder::BuildBaseline3(object).data);
+	message.data.append(IntangibleMessageBuilder::BuildBaseline3(object).data);
     auto coords = object->GetCoordinates();
     message.data.write(coords.x);
     message.data.write(coords.z);
@@ -95,6 +122,6 @@ BaselinesMessage WaypointMessageBuilder::BuildBaseline3(const shared_ptr<Waypoin
 BaselinesMessage WaypointMessageBuilder::BuildBaseline6(const std::shared_ptr<Waypoint>& object)
 {
 	auto message = CreateBaselinesMessage(object, Object::VIEW_6, 5);
-	message.data.append(ObjectMessageBuilder::BuildBaseline6(object).data);
+	message.data.append(IntangibleMessageBuilder::BuildBaseline6(object).data);
 	return message;
 }
