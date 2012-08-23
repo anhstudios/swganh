@@ -519,7 +519,7 @@ public:
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		attributes_map_[name] = attribute;
 
-		event_dispatcher_->Dispatch(make_shared<ObjectEvent>("Object::UpdateAttribute", shared_from_this()));
+		event_dispatcher_->Dispatch(std::make_shared<ObjectEvent>("Object::UpdateAttribute", shared_from_this()));
 	}
 
 	/**
