@@ -27,17 +27,13 @@ namespace creature {
         CreatureFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
 
-        void LoadTemplates();
-
-        bool HasTemplate(const std::string& template_name);
-
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
         
     private:
         void LoadSkills_(const std::shared_ptr<Creature>& creature, 
@@ -48,9 +44,6 @@ namespace creature {
 
         void LoadSkillCommands_(const std::shared_ptr<Creature>& creature, 
             const std::shared_ptr<sql::Statement>& statement);
-
-        std::unordered_map<std::string, std::shared_ptr<Creature>>::iterator GetTemplateIter_(const std::string& template_name);
-        std::unordered_map<std::string, std::shared_ptr<Creature>> creature_templates_;
     };
 
 }}}  // namespace swganh::object::creature

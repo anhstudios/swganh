@@ -9,14 +9,6 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::manufacture_schematic;
 
-void ManufactureSchematicFactory::LoadTemplates()
-{}
-
-bool ManufactureSchematicFactory::HasTemplate(const string& template_name)
-{
-    return false;
-}
-
 uint32_t ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	return 0;
@@ -30,7 +22,8 @@ shared_ptr<Object> ManufactureSchematicFactory::CreateObjectFromStorage(uint64_t
     return make_shared<ManufactureSchematic>();
 }
 
-shared_ptr<Object> ManufactureSchematicFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> ManufactureSchematicFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
+	//@TODO: Create me with help from db
     return make_shared<ManufactureSchematic>();
 }

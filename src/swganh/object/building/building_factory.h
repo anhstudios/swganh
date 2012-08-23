@@ -18,12 +18,9 @@ namespace building {
     class BuildingFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
+
         BuildingFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
-		
-		void LoadTemplates();
-
-        bool HasTemplate(const std::string& template_name);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
@@ -34,6 +31,7 @@ namespace building {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
 
 		virtual void RegisterEventHandlers(){}
+
     };
 
 }}}  // namespace swganh::object::building

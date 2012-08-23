@@ -9,14 +9,6 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::installation;
 
-void HarvesterInstallationFactory::LoadTemplates()
-{}
-
-bool HarvesterInstallationFactory::HasTemplate(const string& template_name)
-{
-    return false;
-}
-
 uint32_t HarvesterInstallationFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
@@ -32,7 +24,7 @@ shared_ptr<Object> HarvesterInstallationFactory::CreateObjectFromStorage(uint64_
     return make_shared<Installation>();
 }
 
-shared_ptr<Object> HarvesterInstallationFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> HarvesterInstallationFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
     return make_shared<Installation>();
 }
