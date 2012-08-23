@@ -18,18 +18,6 @@ namespace object {
     {
     public:
         virtual ~ObjectFactoryInterface() {}
-        
-        /**
-         * Loads templates from storage into memory. Templates are preconfigured
-         * object instances with no ID assigned. These templates are used as
-         * prototypes in the construction of new objects.
-         */
-        virtual void LoadTemplates() = 0;
-
-        /**
-         * @return true if the requested template exists in this factory, false if not.
-         */
-        virtual bool HasTemplate(const std::string& template_name) = 0;
 
         /**
          * Persists the object's state to storage.
@@ -59,7 +47,8 @@ namespace object {
          * @return the created object instance.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
-        virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name) = 0;
+        virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true) = 0;
+
         /**
          * Gets the type of the object from a db lookup call
          *

@@ -49,23 +49,6 @@ void PlayerFactory::RegisterEventHandlers()
     });
 }
 
-void PlayerFactory::LoadTemplates()
-{
-}
-
-bool PlayerFactory::HasTemplate(const string& template_name)
-{
-    return GetTemplateIter_(template_name) != end(player_templates_);
-}
-unordered_map<string,shared_ptr<Player>>::iterator PlayerFactory::GetTemplateIter_(const string& template_name)
-{
-    auto iter = find_if(begin(player_templates_), end(player_templates_), [&template_name] (pair<string, shared_ptr<Player>> template_pair) {
-        return template_name == template_pair.first;
-    });
-
-    return iter;
-}
-
 uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
@@ -186,20 +169,10 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
     return player;
 }
 
-shared_ptr<Object> PlayerFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> PlayerFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-    auto object = make_shared<Player>();
-    auto found = GetTemplateIter_(template_name);
-    if (found != end(player_templates_))
-    {
-        object = found->second;
-    }
-    else
-    {
-        throw swganh::object::InvalidObjectTemplate("Template Not Found: " + template_name);
-    }
-    
-    return object;
+	//@TODO: Create me with help from db
+	return make_shared<Player>();
 }
 
 void PlayerFactory::LoadStatusFlags_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)

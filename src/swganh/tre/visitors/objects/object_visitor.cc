@@ -120,8 +120,7 @@ ObjectVisitor::ObjectVisitor()
 }
 
 void ObjectVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
-{
-}
+{}
 
 void ObjectVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
 {
@@ -224,48 +223,6 @@ void ObjectVisitor::_handleUnhandled(ObjectVisitor* dst, std::string& name, anh:
 {
 	//@TODO: PRINT A MESSAGE
 }
-
-void ObjectVisitor::debug()
-{
-	/*std::set<std::string>::iterator parentIt = parentFiles.begin();
-	std::set<std::string>::iterator parentEnd = parentFiles.end();
-	while(parentIt != parentEnd)
-	{
-		printf("Has Parent: %s\n", parentIt->c_str());
-		++parentIt;
-	}
-
-	AttributeMap::const_iterator it = attributes_.cbegin();
-
-	while(it != attributes_.cend())
-	{
-		printf("Attribute: \"%s\", value=", it->first.c_str());
-		if(it->second->type() == typeid(std::uint32_t))
-		{
-			printf("%d", boost::any_cast<std::uint32_t>(it->second));
-		}
-		else if(it->second->type() == typeid(shared_ptr<std::string>))
-		{
-			printf("%s", boost::any_cast<shared_ptr<std::string>>(it->second)->c_str());
-		}
-		else if(it->second->type() == typeid(shared_ptr<ClientString>))
-		{
-			shared_ptr<ClientString> cs = boost::any_cast<shared_ptr<ClientString>>(it->second);
-			printf("@%s:%s", cs->file.c_str(), cs->entry.c_str());
-		}
-		else if(it->second->type() == typeid(float))
-		{
-			printf("%f", boost::any_cast<float>(it->second));
-		}
-		else if(it->second->type() == typeid(shared_ptr<bool>))
-		{
-			printf("%s", (boost::any_cast<bool>(it->second)) ? "true" : "false");
-		}
-		printf("\n");
-		++it;
-	}*/
-}
-
 
 void ObjectVisitor::load_aggregate_data(swganh::tre::ResourceManager* f)
 {

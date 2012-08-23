@@ -13,9 +13,6 @@ namespace factory_crate {
     class FactoryCrateFactory : public swganh::object::ObjectFactoryInterface
     {
     public:
-        void LoadTemplates();
-
-        bool HasTemplate(const std::string& template_name);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
@@ -23,7 +20,7 @@ namespace factory_crate {
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
 }}}  // namespace swganh::object::factory_crate

@@ -106,11 +106,6 @@ namespace tre
 		*/
 		void load_referenced_files(swganh::tre::ResourceManager* f);
 
-		/**
-			@brief a simple output function for debugging values.
-		*/
-		void debug();
-
 	private:
 		//Internal Index used to link the handlers with the attributes
 		static AttributeHandlerIndex attributeHandler_;
@@ -129,7 +124,7 @@ namespace tre
 
 		//Attributes this object iff might have
 		AttributeMap attributes_;
-				
+
 		//Parent files this object iff might have
 		std::set<std::string> parentFiles;
 

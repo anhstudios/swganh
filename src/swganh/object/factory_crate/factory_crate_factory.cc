@@ -9,14 +9,6 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::factory_crate;
 
-void FactoryCrateFactory::LoadTemplates()
-{}
-
-bool FactoryCrateFactory::HasTemplate(const string& template_name)
-{
-    return false;
-}
-
 uint32_t FactoryCrateFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
@@ -31,7 +23,15 @@ shared_ptr<Object> FactoryCrateFactory::CreateObjectFromStorage(uint64_t object_
     return make_shared<FactoryCrate>();
 }
 
-shared_ptr<Object> FactoryCrateFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> FactoryCrateFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-    return make_shared<FactoryCrate>();
+	if(db_persisted || db_initialized)
+	{
+		//TODO: Have to hit the db to make this
+		return make_shared<FactoryCrate>();
+	}
+	else
+	{
+		return make_shared<FactoryCrate>();
+	}
 }

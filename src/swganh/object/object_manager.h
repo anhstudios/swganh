@@ -193,8 +193,16 @@ namespace object {
          * @return the created object instance.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
-        std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name);
+        std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool is_persisted=true, bool is_initialized=true);
         
+		
+		/**
+		* Creates an instance of an object from the specified template using the given object_id as the id.
+		* The created object will not be persisted and will not be intialized from the db.
+		* @throws InvalidObjectTemplate when the specified template does not exist.
+		*/
+		std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, uint64_t object_id);
+		
         /**
          * Creates an instance of an object from the specified template.
          *
@@ -202,9 +210,9 @@ namespace object {
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         template<typename T>
-        std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name)
+        std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, bool is_persisted=true, bool is_initialized=true)
         {
-            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name);
+            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, is_initialized);
 
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
@@ -257,6 +265,21 @@ namespace object {
 		void LoadSlotsForObject(std::shared_ptr<Object> object);
     private:
 		
+		typedef std::map<
+            uint32_t, 
+            std::shared_ptr<ObjectFactoryInterface>
+        > ObjectFactoryMap;
+
+		typedef std::map<
+            uint32_t,
+            std::shared_ptr<ObjectMessageBuilder>
+        > ObjectMessageBuilderMap;
+
+		typedef std::map<
+			std::string,
+			uint32_t
+		> TemplateTypeMap;
+
         /**
          * Registers a message builder for a specific object type
          *
@@ -280,20 +303,12 @@ namespace object {
 
 		std::shared_ptr<swganh::tre::SlotDefinitionVisitor> slot_definition_;
 
-        typedef std::map<
-            uint32_t, 
-            std::shared_ptr<ObjectFactoryInterface>
-        > ObjectFactoryMap;
-
         ObjectFactoryMap factories_;
-
-        typedef std::map<
-            uint32_t,
-            std::shared_ptr<ObjectMessageBuilder>
-        > ObjectMessageBuilderMap;
-
         ObjectMessageBuilderMap message_builders_;
-        
+        TemplateTypeMap type_lookup_;
+
+		uint64_t next_dynamic_id_;
+
         boost::shared_mutex object_map_mutex_;
         concurrency::concurrent_unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
     };

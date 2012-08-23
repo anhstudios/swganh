@@ -52,8 +52,6 @@ namespace object {
          * @param the result set from which to load the values from
          */
         void CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::ResultSet>& result);
-        virtual void LoadTemplates(){}
-        virtual bool HasTemplate(const std::string& template_name){ return false; }
         virtual uint32_t PersistObject(const std::shared_ptr<Object>& object);
         /**
          * Persists the Base Object Data
@@ -64,7 +62,7 @@ namespace object {
         uint32_t PersistObject(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::PreparedStatement>& prepared_statement);
         virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object){}
         virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
-        virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name) { return nullptr; }
+        virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted, bool db_initialized) { return nullptr; }
         uint32_t LookupType(uint64_t object_id) const;
 
         virtual void RegisterEventHandlers(){}

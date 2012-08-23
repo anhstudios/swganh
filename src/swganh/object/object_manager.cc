@@ -14,6 +14,13 @@
 #include "swganh/object/slot_exclusive.h"
 #include "swganh/object/slot_container.h"
 
+#include "anh/database/database_manager_interface.h"
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
 
 using namespace std;
 using namespace anh;
@@ -22,11 +29,25 @@ using namespace swganh::object;
 using namespace swganh::messages;
 
 ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
-    : kernel_(kernel)
+    : kernel_(kernel), next_dynamic_id_(17596481011712) //Dynamic id start value
 {
+	//Load slot definitions
 	auto slot_definition = kernel->GetResourceManager()->getResourceByName("abstract/slot/slot_definition/slot_definitions.iff", SLOT_DEFINITION_VISITOR);
-	
 	slot_definition_ = static_pointer_cast<SlotDefinitionVisitor>(slot_definition);	
+
+	//Load Object Templates
+	auto conn = kernel->GetDatabaseManager()->getConnection("galaxy");
+    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+    statement->execute("SELECT i.iff_template, i.object_type FROM iff_templates i WHERE i.object_type != 0;");
+	auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
+
+	while(result->next())
+	{
+		std::string key = result->getString("iff_template");
+		uint32_t value = result->getUInt("object_type");
+		type_lookup_.insert(make_pair(key, value));
+	}
+
 }
 
 ObjectManager::~ObjectManager()
@@ -175,20 +196,61 @@ shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, ui
     return find_iter->second->CreateObjectFromStorage(object_id);
 }
 
-shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const std::string& template_name)
+shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const std::string& template_name, bool is_persisted, bool is_initialized)
 {
-    auto find_iter = find_if(begin(factories_), end(factories_),
-        [&template_name] (const ObjectFactoryMap::value_type& factory_entry) 
-    {
-        return factory_entry.second->HasTemplate(template_name);
-    });
-    
-    if (find_iter == factories_.end())
-    {
-        throw InvalidObjectType("Cannot create object for an unregistered type.");
-    }
-    
-    return find_iter->second->CreateObjectFromTemplate(template_name);
+	shared_ptr<Object> created_object;
+    auto template_itr = type_lookup_.find(template_name);
+	if(template_itr != type_lookup_.end())
+	{
+		auto factory_itr = factories_.find(template_itr->second);
+		if(factory_itr != factories_.end())
+		{
+			created_object = factory_itr->second->CreateObjectFromTemplate(template_name, is_persisted, is_initialized);
+			if(created_object != nullptr)
+			{
+				if(!is_persisted)
+				{
+					created_object->SetObjectId(next_dynamic_id_++);
+				}
+				object_map_.insert(make_pair(created_object->GetObjectId(), created_object));
+			}
+		}
+	}
+
+	//Make sure the object is valid
+	if(created_object == nullptr)
+	{
+		throw InvalidObjectTemplate("Invalid object template: "+template_name);
+	}
+
+	return created_object;
+}
+
+std::shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const std::string& template_name, uint64_t object_id)
+{
+	shared_ptr<Object> created_object;
+    auto template_itr = type_lookup_.find(template_name);
+	if(template_itr != type_lookup_.end())
+	{
+		auto factory_itr = factories_.find(template_itr->second);
+		if(factory_itr != factories_.end())
+		{
+			created_object = factory_itr->second->CreateObjectFromTemplate(template_name, false, false);
+			if(created_object != nullptr)
+			{
+				created_object->SetObjectId(object_id);
+				object_map_.insert(make_pair(object_id, created_object));
+			}
+		}
+	}
+
+	//Make sure the object is valid
+	if(created_object == nullptr)
+	{
+		throw InvalidObjectTemplate("Invalid object template: "+template_name);
+	}
+
+	return created_object;
 }
 
 void ObjectManager::DeleteObjectFromStorage(const std::shared_ptr<Object>& object)

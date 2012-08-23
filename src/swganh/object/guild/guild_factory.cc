@@ -9,14 +9,6 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::guild;
 
-void GuildFactory::LoadTemplates()
-{}
-
-bool GuildFactory::HasTemplate(const string& template_name)
-{
-    return false;
-}
-
 uint32_t GuildFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
@@ -32,7 +24,15 @@ shared_ptr<Object> GuildFactory::CreateObjectFromStorage(uint64_t object_id)
     return make_shared<Guild>();
 }
 
-shared_ptr<Object> GuildFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> GuildFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-    return make_shared<Guild>();
+	if(db_persisted || db_initialized)
+	{
+		//TODO: Have to hit the db to make this
+		return make_shared<Guild>();
+	}
+	else
+	{
+		return make_shared<Guild>();
+	}
 }

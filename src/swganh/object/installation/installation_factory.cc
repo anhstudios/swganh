@@ -9,14 +9,6 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::installation;
 
-void InstallationFactory::LoadTemplates()
-{}
-
-bool InstallationFactory::HasTemplate(const string& template_name)
-{
-    return false;
-}
-
 uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
@@ -32,7 +24,8 @@ shared_ptr<Object> InstallationFactory::CreateObjectFromStorage(uint64_t object_
     return make_shared<Installation>();
 }
 
-shared_ptr<Object> InstallationFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> InstallationFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
+	//@TODO: Create me with help from db
     return make_shared<Installation>();
 }

@@ -28,41 +28,7 @@ using namespace swganh::simulation;
     : ObjectFactory(db_manager, event_dispatcher)
 {
 }
-void TangibleFactory::LoadTemplates()
-{
-    try {
 
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetTangibleTemplates();");
-        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-
-        while (result->next())
-        {
-            auto tangible = make_shared<Tangible>();
-            
-            
-            tangible_templates_.insert(make_pair(tangible->GetTemplate(), move(tangible)));
-        } while (statement->getMoreResults());
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-
-bool TangibleFactory::HasTemplate(const string& template_name)
-{
-    auto found = GetTemplateIter_(template_name);
-    return found != end(tangible_templates_);
-}
-unordered_map<string, shared_ptr<Tangible>>::iterator TangibleFactory::GetTemplateIter_(const string& template_name)
-{
-    auto found = find_if(begin(tangible_templates_), end(tangible_templates_), [&template_name] (pair<string, shared_ptr<Tangible>> template_pair) {
-        return template_name == template_pair.first;
-    });
-    return found;
-}
 uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
@@ -153,18 +119,8 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
     return tangible;
 }
 
-shared_ptr<Object> TangibleFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> TangibleFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-    auto object = make_shared<Tangible>();
-    auto found = GetTemplateIter_(template_name);
-    if (found != end(tangible_templates_))
-    {
-        object = found->second;
-    }
-    else
-    {
-        throw swganh::object::InvalidObjectTemplate("Template Not Found: " + template_name);
-    }
-    
-    return object;
+	//@TODO: Create me with help from db
+	return make_shared<Tangible>();
 }
