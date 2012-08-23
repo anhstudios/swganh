@@ -254,6 +254,7 @@ BaselinesMessage MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mis
 	auto end_location = mission->GetDestinationPosition();
 	auto waypoint_location = waypoint->GetCoordinates();
 	
+	message.data.append(IntangibleMessageBuilder::BuildBaseline3(mission).data);
 	message.data.write(mission->GetDifficultyLevel());
 	message.data.write(start_location.x);
 	message.data.write(start_location.y);
@@ -293,6 +294,6 @@ BaselinesMessage MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mis
 BaselinesMessage MissionMessageBuilder::BuildBaseline6(const std::shared_ptr<Mission>& mission)
 {
 	auto message = CreateBaselinesMessage(mission, Object::VIEW_6, 1);
-    message.data.append(IntangibleMessageBuilder::BuildBaseline3(mission).data);
+    message.data.append(IntangibleMessageBuilder::BuildBaseline6(mission).data);
     return BaselinesMessage(move(message));
 }
