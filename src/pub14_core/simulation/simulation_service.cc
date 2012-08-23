@@ -37,6 +37,14 @@
 #include "swganh/object/creature/creature_factory.h"
 #include "swganh/object/creature/creature_message_builder.h"
 
+#include "swganh/object/group/group.h"
+#include "swganh/object/group/group_factory.h"
+#include "swganh/object/group/group_message_builder.h"
+
+#include "swganh/object/guild/guild.h"
+#include "swganh/object/guild/guild_factory.h"
+#include "swganh/object/guild/guild_message_builder.h"
+
 #include "swganh/object/intangible/intangible.h"
 #include "swganh/object/intangible/intangible_factory.h"
 #include "swganh/object/intangible/intangible_message_builder.h"
@@ -462,11 +470,16 @@ void SimulationService::RegisterObjectFactories()
     auto object_manager = impl_->GetObjectManager();
 
     object_manager->RegisterObjectType<Object>();
+
+	object_manager->RegisterObjectType<guild::Guild>();
+	object_manager->RegisterObjectType<group::Group>();
+
     object_manager->RegisterObjectType<tangible::Tangible>();
-    object_manager->RegisterObjectType<intangible::Intangible>();
     object_manager->RegisterObjectType<creature::Creature>();
+
+	object_manager->RegisterObjectType<intangible::Intangible>();    
     object_manager->RegisterObjectType<player::Player>();
-	object_manager->RegisterObjectType<building::Building>();
+	
 }
 
 void SimulationService::PersistObject(uint64_t object_id)

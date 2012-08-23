@@ -515,10 +515,10 @@ protected:
     std::atomic<uint32_t> volume_;                   // update 3
     std::atomic<int32_t> arrangement_id_;
 	
+	mutable boost::mutex object_mutex_;
 
 private:
-    mutable boost::mutex object_mutex_;
-
+    
     typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
 

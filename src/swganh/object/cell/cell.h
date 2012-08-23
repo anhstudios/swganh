@@ -6,13 +6,13 @@
 
 #include <glm/glm.hpp>
 
-#include "swganh/object/object.h"
+#include "swganh/object/intangible/intangible.h"
 
 namespace swganh {
 namespace object {
 namespace cell {
 
-class Cell : public swganh::object::Object {
+class Cell : public swganh::object::intangible::Intangible {
 
 public:
     // SCLT

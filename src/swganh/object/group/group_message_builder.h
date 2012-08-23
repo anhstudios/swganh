@@ -39,9 +39,12 @@ public:
     static void BuildDifficultyDelta(const std::shared_ptr<Group>& group);
     static void BuildLootMasterDelta(const std::shared_ptr<Group>& group);
 
-    // baselines
-    static void BuildBaseline3(const std::shared_ptr<Group>& group);
-    static void BuildBaseline6(const std::shared_ptr<Group>& group);
+    virtual void SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+
+	static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Group>& group);
+    static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Group>& group);
+private:
+	typedef anh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
 };
 
 }}} // swganh::object::group
