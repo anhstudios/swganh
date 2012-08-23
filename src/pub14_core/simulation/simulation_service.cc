@@ -53,6 +53,10 @@
 #include "swganh/object/intangible/intangible_factory.h"
 #include "swganh/object/intangible/intangible_message_builder.h"
 
+#include "swganh/object/mission/mission.h"
+#include "swganh/object/mission/mission_factory.h"
+#include "swganh/object/mission/mission_message_builder.h"
+
 #include "swganh/object/player/player.h"
 #include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player_message_builder.h"
@@ -484,7 +488,8 @@ void SimulationService::RegisterObjectFactories()
 
 	object_manager->RegisterObjectType<static_object::Static>();
 	object_manager->RegisterObjectType<tangible::Tangible>();
-	object_manager->RegisterObjectType<intangible::Intangible>();    
+	object_manager->RegisterObjectType<intangible::Intangible>();
+	object_manager->RegisterObjectType<mission::Mission>();
 	object_manager->RegisterObjectType<guild::Guild>();
 	object_manager->RegisterObjectType<group::Group>();
 	object_manager->RegisterObjectType<waypoint::Waypoint>();

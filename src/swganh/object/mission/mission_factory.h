@@ -13,6 +13,9 @@ namespace mission {
     class MissionFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
+		MissionFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
+
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

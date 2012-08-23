@@ -10,8 +10,7 @@ using namespace swganh::messages;
 using namespace swganh::object::waypoint;
 
 Waypoint::Waypoint()
-    : uses_(0)
-    , coordinates_(glm::vec3(0,0,0))
+    : coordinates_(glm::vec3(0,0,0))
     , activated_flag_(0)
     , location_network_id_(0)
     , planet_name_("")
@@ -20,8 +19,7 @@ Waypoint::Waypoint()
 {
 }
 Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, const wstring& name, const string& color)
-    : uses_(0)
-    , coordinates_(coordinates)
+    : coordinates_(coordinates)
     , planet_name_(planet)
     , name_(name)
     , color_(color)

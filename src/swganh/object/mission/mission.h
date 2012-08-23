@@ -16,9 +16,15 @@ namespace swganh {
 namespace object {
 namespace mission {
 
+class MissionFactory;
+class MissionMessageBuilder;
+
 class Mission : public swganh::object::intangible::Intangible
 {
 public:
+	typedef MissionFactory FactoryType;
+    typedef MissionMessageBuilder MessageBuilderType;
+
     /**
      * @return The type of this object instance.
      */

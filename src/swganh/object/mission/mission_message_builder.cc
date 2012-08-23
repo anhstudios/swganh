@@ -106,7 +106,7 @@ void MissionMessageBuilder::BuildStartingLocationDelta(const std::shared_ptr<Mis
 		message.data.write(location.y);
 		message.data.write(location.z);
 		message.data.write<uint64_t>(0L);
-		message.data.write(mission->GetStartingSceneCrc);
+		message.data.write(mission->GetStartingSceneCrc());
 		mission->AddDeltasUpdate(move(message));
 	}
 }
@@ -259,7 +259,7 @@ BaselinesMessage MissionMessageBuilder::BuildBaseline3(const std::shared_ptr<Mis
 	message.data.write(start_location.y);
 	message.data.write(start_location.z);
 	message.data.write<uint64_t>(0L);
-	message.data.write(mission->GetStartingSceneCrc);
+	message.data.write(mission->GetStartingSceneCrc());
 	message.data.write(mission->GetMissionCreator());
 	message.data.write(mission->GetMissionReward());
 	message.data.write(end_location.x);
