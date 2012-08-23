@@ -10,9 +10,12 @@ namespace swganh {
 namespace object {
 namespace mission {
 
+	class Mission;
     class MissionFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
+		typedef Mission ObjectType;
+
 		MissionFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
 

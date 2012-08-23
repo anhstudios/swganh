@@ -18,6 +18,7 @@ namespace building {
     class BuildingFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
+		typedef Building ObjectType;
 
         BuildingFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);

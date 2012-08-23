@@ -24,6 +24,8 @@ namespace player {
     class PlayerFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
+		typedef Player ObjectType;
+
         PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);

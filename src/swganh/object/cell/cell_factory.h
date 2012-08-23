@@ -14,6 +14,8 @@ namespace cell {
     class CellFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
+		typedef Cell ObjectType;
+
         CellFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
 

@@ -22,6 +22,8 @@ namespace waypoint {
     class WaypointFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
+		typedef Waypoint ObjectType;
+
         WaypointFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
 

@@ -4,15 +4,30 @@
 #ifndef SWGANH_OBJECT_STATIC_STATIC_FACTORY_H_
 #define SWGANH_OBJECT_STATIC_STATIC_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/object_factory.h"
+
+namespace anh {
+namespace database {
+class DatabaseManagerInterface;
+}} // anh::database
+
+namespace sql {
+class Statement;
+}
 
 namespace swganh {
 namespace object {
 namespace static_object {
 
-    class StaticFactory : public swganh::object::ObjectFactoryInterface
+	class Static;
+    class StaticFactory : public swganh::object::ObjectFactory
     {
     public:
+		typedef Static ObjectType;
+
+		 StaticFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
+
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

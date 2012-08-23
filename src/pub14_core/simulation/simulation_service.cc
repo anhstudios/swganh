@@ -61,6 +61,11 @@
 #include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player_message_builder.h"
 
+#include "swganh/object/resource_container/resource_container.h"
+#include "swganh/object/resource_container/resource_container_factory.h"
+#include "swganh/object/resource_container/resource_container_message_builder.h"
+
+
 #include "swganh/object/static/static.h"
 #include "swganh/object/static/static_factory.h"
 #include "swganh/object/static/static_message_builder.h"
@@ -496,6 +501,7 @@ void SimulationService::RegisterObjectFactories()
     object_manager->RegisterObjectType<creature::Creature>();
 	object_manager->RegisterObjectType<cell::Cell>();
     object_manager->RegisterObjectType<player::Player>();
+	object_manager->RegisterObjectType<resource_container::ResourceContainer>();
 	
 }
 

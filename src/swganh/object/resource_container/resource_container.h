@@ -12,9 +12,14 @@ namespace swganh {
 namespace object {
 namespace resource_container {
 
+class ResourceContainerFactory;
+class ResourceContainerMessageBuilder;
 class ResourceContainer : public swganh::object::tangible::Tangible
 {
 public:
+	typedef ResourceContainerFactory FactoryType;
+    typedef ResourceContainerMessageBuilder MessageBuilderType;
+
     // RCNO
     ResourceContainer();
     ResourceContainer(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,

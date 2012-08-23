@@ -20,12 +20,18 @@ enum WaypointStatus
     ACTIVATED = 1
 };
 
+class WaypointFactory;
+class WaypointMessageBuilder;
+
 /**
 * @brief Object that defines the data in a Waypoint
 */
 class Waypoint : public swganh::object::intangible::Intangible {
 
 public:
+	typedef WaypointFactory FactoryType;
+    typedef WaypointMessageBuilder MessageBuilderType;
+
     virtual uint32_t GetType() const { return Waypoint::type; }
     const static uint32_t type = 0x57415950;
 
@@ -56,12 +62,12 @@ public:
     * @brief checks if the waypoint is activated
     *   @returns true if the waypoint is activated
     */
-    bool Active() const { return activated_flag_ == 1; }
+    bool Active() const;
     /**
     * @brief checks if the waypoint is activated
     *   @returns 0 if the waypoint is activated, 1 else
     */
-    uint8_t GetActiveFlag() { return activated_flag_; }
+    uint8_t GetActiveFlag();
     /**
     * @brief sets the current waypoint to Activated
     */
@@ -79,7 +85,7 @@ public:
     * @brief Gets the string of the planet name as seen in the CRC Tables
     *   @returns string of the planet the waypoint is located
     */
-    const std::string& GetPlanet() { return planet_name_; }
+    const std::string& GetPlanet();
     /**
     * @brief sets the current waypoint's planet
     *   @param planet_name the planet to set the string to
@@ -90,8 +96,8 @@ public:
     * @brief gets the waypoint's Unicode name
     *   @returns name of the waypoint in Unicode
     */
-    const std::wstring& GetName() { return name_; }
-    std::string GetNameStandard() { return std::string(std::begin(name_), std::end(name_)); }
+    const std::wstring& GetName();
+    std::string GetNameStandard();
     /**
     * @brief sets the waypoint's Unicode name
     *   @param name of the waypoint in Unicode
@@ -104,7 +110,7 @@ public:
     *   Possible Options: green,purple,white,blue,yellow,orange,space
     *   @returns color of the waypoint
     */
-    const std::string& GetColor() { return color_; }
+    const std::string& GetColor();
     /**
     * @brief gets the waypoint's current color as a Byte
     *
