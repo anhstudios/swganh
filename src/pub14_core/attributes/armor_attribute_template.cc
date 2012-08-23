@@ -15,37 +15,11 @@ using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
 ArmorAttributeTemplate::ArmorAttributeTemplate(anh::EventDispatcher* dispatcher)
-	: AttributeTemplateInterface(dispatcher)
+	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();
 }
-void ArmorAttributeTemplate::RegisterEventHandlers()
-{
-	event_dispatcher_->Subscribe("Object::UpdateAttribute", [this](const shared_ptr<EventInterface>& incoming_event)
-	{
-		const auto& object = static_pointer_cast<ObjectEvent>(incoming_event)->Get();
-		
-		// Clear out attributes if they have been updated
-		if (HasAttributeListMessage(object->GetObjectId()))
-			object_attribute_list_messages_[object->GetObjectId()].attributes.clear();
-	});
-}
-bool ArmorAttributeTemplate::HasAttributeListMessage(uint64_t object_id)
-{
-	bool hasMessage = false;
-	auto found = find_if(object_attribute_list_messages_.begin(), object_attribute_list_messages_.end(),[object_id](ObjectMapAttributeListMessages::value_type entry)
-	{
-		return entry.first == object_id;
-	});
-	if (found != object_attribute_list_messages_.end())
-	{
-		if (found->second.attributes.size() > 0)
-		{
-			hasMessage = true;
-		}
-	}
-	return hasMessage;
-}
+
 swganh::messages::AttributeListMessage ArmorAttributeTemplate::BuildAttributeTemplate(shared_ptr<Object> object)
 {
 	uint64_t object_id = object->GetObjectId();

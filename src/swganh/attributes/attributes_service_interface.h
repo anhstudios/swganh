@@ -22,7 +22,17 @@ namespace attributes {
 	enum AttributeTemplateId : uint8_t
 	{
 		ARMOR = 0,
-		WEAPON
+		CRAFTING_TOOL,
+		DEED,
+		DROID,
+		FACTORY_CRATE,
+		FOOD,
+		FURNITURE,
+		MEDS,
+		SHIP,
+		SURVEY_TOOL,
+		WEAPON,
+		WEARABLE 
 	};
 
     class AttributesServiceInterface: public anh::service::ServiceInterface

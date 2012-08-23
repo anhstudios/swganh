@@ -2,7 +2,19 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "attributes_service.h"
+// Templates
 #include "armor_attribute_template.h"
+#include "crafting_tool_attribute_template.h"
+#include "deed_attribute_template.h"
+#include "droid_attribute_template.h"
+#include "factory_crate_attribute_template.h"
+#include "food_attribute_template.h"
+#include "furniture_attribute_template.h"
+#include "meds_attribute_template.h"
+#include "ship_attribute_template.h"
+#include "weapon_attribute_template.h"
+#include "wearable_attribute_template.h"
+//
 #include "attributes_get_batch_command.h"
 
 #include "anh/logger.h"
@@ -115,6 +127,16 @@ void AttributesService::SendAttributesMessage(const std::shared_ptr<swganh::obje
 void AttributesService::LoadAttributeTemplates_()
 {
 	SetAttributeTemplate(make_shared<ArmorAttributeTemplate>(kernel_->GetEventDispatcher()), ARMOR);
+	SetAttributeTemplate(make_shared<CraftingToolAttributeTemplate>(kernel_->GetEventDispatcher()), CRAFTING_TOOL);
+	SetAttributeTemplate(make_shared<DeedAttributeTemplate>(kernel_->GetEventDispatcher()), DEED);
+	SetAttributeTemplate(make_shared<DroidAttributeTemplate>(kernel_->GetEventDispatcher()), DROID);
+	SetAttributeTemplate(make_shared<FactoryCrateAttributeTemplate>(kernel_->GetEventDispatcher()), FACTORY_CRATE);
+	SetAttributeTemplate(make_shared<FoodAttributeTemplate>(kernel_->GetEventDispatcher()), FOOD);
+	SetAttributeTemplate(make_shared<FurnitureAttributeTemplate>(kernel_->GetEventDispatcher()), FURNITURE);
+	SetAttributeTemplate(make_shared<MedsAttributeTemplate>(kernel_->GetEventDispatcher()), MEDS);
+	SetAttributeTemplate(make_shared<ShipAttributeTemplate>(kernel_->GetEventDispatcher()), SHIP);
+	SetAttributeTemplate(make_shared<WeaponAttributeTemplate>(kernel_->GetEventDispatcher()), WEAPON);
+	SetAttributeTemplate(make_shared<WearableAttributeTemplate>(kernel_->GetEventDispatcher()), WEARABLE);
 }
 
 void AttributesService::HandleGetAttributesBatch(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor)
