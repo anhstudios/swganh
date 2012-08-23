@@ -537,6 +537,27 @@ public:
 	std::wstring GetAttributeAsString(const std::string& name);
 	boost::variant<float, int32_t, std::wstring> GetAttribute(const std::string& name);
 
+	std::wstring GetAttributeRecursiveAsString(const std::string& name);
+	boost::variant<float, int32_t, std::wstring> GetAttributeRecursive(const std::string& name);
+	template<typename T>
+	T GetAttributeRecursive(const std::string& name)
+	{
+		auto val = GetAttributeRecursive(name);
+		return boost::get<T>(val);
+	}
+	template<typename T>
+	T AddAttributeRecursive(T val, const std::string& name)
+	{
+		ViewObjects(nullptr, 1, false, [&](shared_ptr<Object> recurse)
+		{
+			T found_val = recurse->GetAttribute<T>(name);
+			// Add Values
+			val += found_val;
+		});
+
+		return val;
+	}
+
 	uint8_t GetAttributeTemplateId();
 	void SetAttributeTemplateId(uint8_t attribute_template_id);
 
