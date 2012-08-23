@@ -4,16 +4,24 @@
 #ifndef SWGANH_OBJECT_BUILDING_BUILDING_FACTORY_H_
 #define SWGANH_OBJECT_BUILDING_BUILDING_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/tangible/tangible_factory.h"
 
 namespace swganh {
 namespace object {
+
+	class ObjectManager;
+
 namespace building {
 
-    class BuildingFactory : public swganh::object::ObjectFactoryInterface
+	class Building;
+
+    class BuildingFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
-        void LoadTemplates();
+        BuildingFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
+		
+		void LoadTemplates();
 
         bool HasTemplate(const std::string& template_name);
 
@@ -24,6 +32,8 @@ namespace building {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+
+		virtual void RegisterEventHandlers(){}
     };
 
 }}}  // namespace swganh::object::building

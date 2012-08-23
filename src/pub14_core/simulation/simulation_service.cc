@@ -28,21 +28,28 @@
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_manager.h"
 
-// factories
-#include "swganh/object/creature/creature_factory.h"
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible_factory.h"
-#include "swganh/object/tangible/tangible.h"
-#include "swganh/object/intangible/intangible_factory.h"
-#include "swganh/object/intangible/intangible.h"
-#include "swganh/object/player/player_factory.h"
-#include "swganh/object/player/player.h"
+// Objects
+#include "swganh/object/building/building.h"
+#include "swganh/object/building/building_factory.h"
+#include "swganh/object/building/building_message_builder.h"
 
-// message builders
+#include "swganh/object/creature/creature.h"
+#include "swganh/object/creature/creature_factory.h"
 #include "swganh/object/creature/creature_message_builder.h"
+
+#include "swganh/object/intangible/intangible.h"
+#include "swganh/object/intangible/intangible_factory.h"
 #include "swganh/object/intangible/intangible_message_builder.h"
-#include "swganh/object/tangible/tangible_message_builder.h"
+
+#include "swganh/object/player/player.h"
+#include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player_message_builder.h"
+
+#include "swganh/object/tangible/tangible.h"
+#include "swganh/object/tangible/tangible_factory.h"
+#include "swganh/object/tangible/tangible_message_builder.h"
+
+
 
 #include "swganh/simulation/scene_manager_interface.h"
 #include "swganh/simulation/scene_interface.h"
@@ -459,6 +466,7 @@ void SimulationService::RegisterObjectFactories()
     object_manager->RegisterObjectType<intangible::Intangible>();
     object_manager->RegisterObjectType<creature::Creature>();
     object_manager->RegisterObjectType<player::Player>();
+	object_manager->RegisterObjectType<building::Building>();
 }
 
 void SimulationService::PersistObject(uint64_t object_id)

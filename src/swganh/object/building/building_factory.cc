@@ -9,6 +9,11 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::building;
 
+BuildingFactory::BuildingFactory(anh::database::DatabaseManagerInterface* db_manager, anh::EventDispatcher* event_dispatcher)
+	: TangibleFactory(db_manager, event_dispatcher)
+{
+}
+
 void BuildingFactory::LoadTemplates()
 {}
 
