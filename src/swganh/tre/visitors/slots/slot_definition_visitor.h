@@ -48,7 +48,7 @@ namespace tre
 		slot_entry& entry(size_t id) { return slots_[id];}
 
 	private:
-		void _handle0006DATA(anh::ByteBuffer& buf);
+		void _handle0006DATA(anh::ByteBuffer& buf, uint32_t size);
 
 		std::vector<slot_entry> slots_;
 	};

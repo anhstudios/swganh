@@ -16,13 +16,14 @@ void SlotDefinitionVisitor::visit_data(uint32_t depth, std::string name, uint32_
 {
 	if(name == "0006DATA")
 	{
-		_handle0006DATA(data);
+		_handle0006DATA(data, size);
 	}
 }
 
-void SlotDefinitionVisitor::_handle0006DATA(anh::ByteBuffer& buf)
+void SlotDefinitionVisitor::_handle0006DATA(anh::ByteBuffer& buf, uint32_t size)
 {
-	while(buf.read_position() < buf.size())
+	uint32_t final_loc = buf.read_position() + size;
+	while(buf.read_position() < final_loc)
 	{
 		slot_entry entry;
 

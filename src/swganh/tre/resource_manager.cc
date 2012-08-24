@@ -21,12 +21,12 @@ ResourceManager::ResourceManager(std::shared_ptr<TreArchive> archive)
 {
 }
 
-std::shared_ptr<VisitorInterface> ResourceManager::getResourceByName(const std::string& name, VisitorType type) 
+std::shared_ptr<VisitorInterface> ResourceManager::getResourceByName(const std::string& name, VisitorType type, bool is_cached) 
 {
+	std::shared_ptr<VisitorInterface> result = nullptr;
 	auto itr = loadedResources_.find(name);
 	if(itr == loadedResources_.end()) {
 		std::string nameCopy(name); 
-		std::shared_ptr<VisitorInterface> result = nullptr;
 		//Fill the result
 		switch(type)
 		{
@@ -63,8 +63,18 @@ std::shared_ptr<VisitorInterface> ResourceManager::getResourceByName(const std::
 
 		//Load it
 		iff_file iff(archive_->GetResource(name), result);
-		loadedResources_.insert(std::make_pair<std::string, std::shared_ptr<VisitorInterface>>(std::move(nameCopy), std::move(result)));
-		itr = loadedResources_.find(name);
+
+		if(is_cached)
+		{
+			loadedResources_.insert(std::make_pair<std::string, std::shared_ptr<VisitorInterface>>(std::move(nameCopy), std::move(result)));
+			itr = loadedResources_.find(name);
+			result = itr->second;
+		}
 	}
-	return itr->second;
+	else
+	{
+		result = itr->second;
+	}
+
+	return result;
 }
