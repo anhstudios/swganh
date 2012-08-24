@@ -93,9 +93,9 @@ std::vector<Installation::Resource> Installation::GetAvailableResources()
 	for(uint16_t i = 0; i < size; ++i)
 	{
 		Installation::Resource resource;
-		resource.global_id = resource_pool_ids_[i];
-		resource.resource_name = resource_names_[i];
-		resource.resource_type = resource_types_[i];
+		resource.global_id = resource_pool_ids_[i].id;
+		resource.resource_name = resource_names_[i].name;
+		resource.resource_type = resource_types_[i].name;
 		available_resources.push_back(resource);
 	}
 
@@ -171,9 +171,9 @@ void Installation::UpdateResource(uint64_t global_id, std::string name, std::str
 		{
 			if(resource_pool_ids_[index] == global_id)
 			{
-				resource_pool_ids_.Update(index, global_id);
-				resource_names_.Update(index, name);
-				resource_types_.Update(index, type);
+				resource_pool_ids_.Update(index, ResourceId(global_id));
+				resource_names_.Update(index, ResourceString(name));
+				resource_types_.Update(index, ResourceString(type));
 				send_update = true;
 				break;
 			}
@@ -449,19 +449,19 @@ void Installation::SetConditionPercentage(uint8_t condition)
         ("Installation::ConditionPercent",static_pointer_cast<Installation>(shared_from_this())));
 }
 
-NetworkSortedVector<uint64_t> Installation::GetResourceIds_()
+NetworkSortedVector<ResourceId> Installation::GetResourceIds_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_pool_ids_;
 }
 
-NetworkSortedVector<std::string> Installation::GetResourceNames_()
+NetworkSortedVector<ResourceString> Installation::GetResourceNames_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_names_;
 }
 
-NetworkSortedVector<std::string> Installation::GetResourceTypes_()
+NetworkSortedVector<ResourceString> Installation::GetResourceTypes_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_types_;
