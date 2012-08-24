@@ -15,6 +15,71 @@ namespace swganh {
 namespace object {
 namespace installation {
 
+struct ResourceId
+{
+    ResourceId(void)
+        : id(0)
+    {}
+
+    ResourceId(const uint64_t& value_)
+        : id(value_)
+    {}
+
+    ~ResourceId()
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<uint64_t>(id);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<uint64_t>(id);
+    }
+    bool operator==(const ResourceId& other)
+    {
+        return id == other.id;
+    }
+
+    uint64_t id;
+};
+
+struct ResourceString
+{
+    ResourceString(void)
+        : name("")
+    {}
+
+    ResourceString(const std::string& value_)
+        : name(value_)
+    {}
+
+    ~ResourceString()
+    {}
+
+    void Serialize(swganh::messages::BaselinesMessage& message)
+    {
+        message.data.write<std::string>(name);
+    }
+
+    void Serialize(swganh::messages::DeltasMessage& message)
+    {
+        message.data.write<std::string>(name);
+    }
+    bool Contains(const std::string& str) const
+    {
+        return name.find(str) != std::string::npos;
+    }
+    bool operator==(const ResourceString& other)
+    {
+        return name == other.name;
+    }
+
+    std::string name;
+};
+
+
 class InstallationFactory;
 class InstallationMessageBuilder;
 class Installation : public swganh::object::tangible::Tangible
@@ -34,6 +99,18 @@ public:
     {
         uint64_t global_id;
         float quantity;
+
+		void Serialize(swganh::messages::BaselinesMessage& message)
+		{
+			message.data.write(global_id);
+			message.data.write(quantity);
+		}
+
+		void Serialize(swganh::messages::DeltasMessage& message)
+		{
+			message.data.write(global_id);
+			message.data.write(quantity);
+		}
 
 		bool operator==(const HopperItem& other)
 		{
@@ -277,9 +354,9 @@ public:
      */
     void SetConditionPercentage(uint8_t condition);
 
-	swganh::messages::containers::NetworkSortedVector<uint64_t> GetResourceIds_();
-	swganh::messages::containers::NetworkSortedVector<std::string> GetResourceNames_();
-	swganh::messages::containers::NetworkSortedVector<std::string> GetResourceTypes_();
+	swganh::messages::containers::NetworkSortedVector<ResourceId> GetResourceIds_();
+	swganh::messages::containers::NetworkSortedVector<ResourceString> GetResourceNames_();
+	swganh::messages::containers::NetworkSortedVector<ResourceString> GetResourceTypes_();
 
 private:
 	typedef anh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;
@@ -288,9 +365,9 @@ private:
     float power_reserve_;
     float power_cost_;
     
-	swganh::messages::containers::NetworkSortedVector<uint64_t> resource_pool_ids_;
-	swganh::messages::containers::NetworkSortedVector<std::string> resource_names_;
-	swganh::messages::containers::NetworkSortedVector<std::string> resource_types_;
+	swganh::messages::containers::NetworkSortedVector<ResourceId> resource_pool_ids_;
+	swganh::messages::containers::NetworkSortedVector<ResourceString> resource_names_;
+	swganh::messages::containers::NetworkSortedVector<ResourceString> resource_types_;
 	
     std::atomic<uint64_t> selected_resource_;
     
