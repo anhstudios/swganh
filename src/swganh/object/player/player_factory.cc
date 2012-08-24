@@ -29,7 +29,7 @@ using namespace swganh::simulation;
 
 PlayerFactory::PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, event_dispatcher)
+    : IntangibleFactory(db_manager, event_dispatcher)
 {
     RegisterEventHandlers();
 }

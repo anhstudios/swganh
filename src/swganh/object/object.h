@@ -576,12 +576,11 @@ protected:
     std::wstring custom_name_;                       // update 3
     std::atomic<uint32_t> volume_;                   // update 3
     std::atomic<int32_t> arrangement_id_;
-
-	std::atomic<uint8_t> attributes_template_id; // Used to determine which attribute template to b
+	std::atomic<uint8_t> attributes_template_id;	 // Used to determine which attribute template to use
+	mutable boost::mutex object_mutex_;
 
 private:
-    mutable boost::mutex object_mutex_;
-
+    
     typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
 

@@ -4,13 +4,13 @@
 #ifndef SWGANH_OBJECT_FACTORY_CRATE_FACTORY_CRATE_H_
 #define SWGANH_OBJECT_FACTORY_CRATE_FACTORY_CRATE_H_
 
-#include "swganh/object/object.h"
+#include "swganh/object/tangible/tangible.h"
 
 namespace swganh {
 namespace object {
 namespace factory_crate {
 
-class FactoryCrate : public swganh::object::Object 
+class FactoryCrate : public swganh::object::tangible::Tangible 
 {
 public:
     // FCYT

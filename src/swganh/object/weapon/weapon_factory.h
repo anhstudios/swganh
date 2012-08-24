@@ -4,15 +4,21 @@
 #ifndef SWGANH_OBJECT_WEAPON_WEAPON_FACTORY_H_
 #define SWGANH_OBJECT_WEAPON_WEAPON_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/tangible/tangible_factory.h"
 
 namespace swganh {
 namespace object {
 namespace weapon {
 
-    class WeaponFactory : public swganh::object::ObjectFactoryInterface
+	class Weapon;
+    class WeaponFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
+		typedef Weapon ObjectType;
+
+		 WeaponFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
+
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

@@ -17,37 +17,31 @@ uint32_t ManufactureSchematic::GetType() const
 
 uint32_t ManufactureSchematic::GetSchematicQuantity() const
 {
-    return schematic_quantity_;
+	return generic_int_;
 }
 
 void ManufactureSchematic::SetSchematicQuantity(uint32_t quantity)
 {
-    schematic_quantity_ = (quantity > 1000) ? 1000 : quantity;
-    /*if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_3, 4);
-        message.data.write(schematic_quantity_);
-        
-        AddDeltasUpdate(message);
-    }*/
+	{
+		generic_int_ = (quantity > 1000) ? 1000 : quantity;
+	}
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Quantity", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
 void ManufactureSchematic::IncrementSchematicQuantity(int32_t increment_by)
 {
-    uint32_t tmp = schematic_quantity_ + increment_by;
-    schematic_quantity_ = (tmp > 1000) ? 1000 : tmp;
-    /*if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_3, 4);
-        message.data.write(schematic_quantity_);
-        
-        AddDeltasUpdate(message);
-    }*/
+	{
+		uint32_t tmp = generic_int_ + increment_by;
+		generic_int_ = (tmp > 1000) ? 1000 : tmp;
+	}
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Quantity", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
 std::vector<ManufactureSchematic::Property> ManufactureSchematic::GetProperties() const
 {
-    return properties_;
+	return properties_;
 }
 
 void ManufactureSchematic::AddProperty(
@@ -55,38 +49,43 @@ void ManufactureSchematic::AddProperty(
     std::string property_stf_name,
     float value)
 {
-    auto find_iter = find_if(
-        properties_.begin(),
-        properties_.end(),
-        [&property_stf_name] (const Property& stored_property)
-    {
-        return stored_property.property_stf_name.compare(property_stf_name) == 0;
-    });
+	{
+		auto find_iter = find_if(
+			properties_.begin(),
+			properties_.end(),
+			[&property_stf_name] (const Property& stored_property)
+		{
+			return stored_property.property_stf_name.compare(property_stf_name) == 0;
+		});
 
-    if (find_iter != properties_.end())
-    {
-        // Already in the list.
-        return;
-    }
-    /*if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_3, 0);
-        message.data.write(properties_.size());
-        message.data.write(property_counter_++);
-        message.data.write(property_stf_file);
-        message.data.write(0);
-        message.data.write(property_stf_name);
-        message.data.write(value);
+		if (find_iter != properties_.end())
+		{
+			// Already in the list.
+			return;
+		}
+		/*if (HasObservers())
+		{
+			DeltasMessage message = CreateDeltasMessage(VIEW_3, 0);
+			message.data.write(properties_.size());
+			message.data.write(property_counter_++);
+			message.data.write(property_stf_file);
+			message.data.write(0);
+			message.data.write(property_stf_name);
+			message.data.write(value);
         
-        AddDeltasUpdate(message);
-    }*/
-    // now push it back
-    Property new_property;
-    new_property.property_stf_file = move(property_stf_file);
-    new_property.property_stf_name = move(property_stf_name);
-    new_property.value = value;
+			AddDeltasUpdate(message);
+		}*/
+		// now push it back
+		Property new_property;
+		new_property.property_stf_file = move(property_stf_file);
+		new_property.property_stf_name = move(property_stf_name);
+		new_property.value = value;
 
-    properties_.push_back(move(new_property));
+		properties_.push_back(move(new_property));
+	}
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Property", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
+
 }
 
 void ManufactureSchematic::RemoveProperty(
@@ -94,34 +93,38 @@ void ManufactureSchematic::RemoveProperty(
     std::string property_stf_name,
     float value)
 {
-    auto find_iter = find_if(
-        properties_.begin(),
-        properties_.end(),
-        [&property_stf_name] (const Property& stored_property)
-    {
-        return stored_property.property_stf_name.compare(property_stf_name) == 0;
-    });
+	{
+		auto find_iter = find_if(
+			properties_.begin(),
+			properties_.end(),
+			[&property_stf_name] (const Property& stored_property)
+		{
+			return stored_property.property_stf_name.compare(property_stf_name) == 0;
+		});
 
-    if (find_iter == properties_.end())
-    {
-        // Not in the list.
-        return;
-    }
-    /*if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_3, 5);
-        message.data.write(properties_.size());
-        message.data.write(property_counter_);
-        message.data.write<uint8_t>(1);
-        message.data.write(property_stf_file);
-        message.data.write(0);
-        message.data.write(property_stf_name);
-        message.data.write(value);
+		if (find_iter == properties_.end())
+		{
+			// Not in the list.
+			return;
+		}
+		/*if (HasObservers())
+		{
+			DeltasMessage message = CreateDeltasMessage(VIEW_3, 5);
+			message.data.write(properties_.size());
+			message.data.write(property_counter_);
+			message.data.write<uint8_t>(1);
+			message.data.write(property_stf_file);
+			message.data.write(0);
+			message.data.write(property_stf_name);
+			message.data.write(value);
         
-        AddDeltasUpdate(message);
-    }*/
+			AddDeltasUpdate(message);
+		}*/
 
-    properties_.erase(find_iter);
+		properties_.erase(find_iter);
+	}
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Property", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
 void ManufactureSchematic::UpdateProperty(
@@ -129,35 +132,39 @@ void ManufactureSchematic::UpdateProperty(
     std::string property_stf_name,
     float value)
 {
-    auto find_iter = find_if(
-        properties_.begin(),
-        properties_.end(),
-        [&property_stf_name] (const Property& stored_property)
-    {
-        return stored_property.property_stf_name.compare(property_stf_name) == 0;
-    });
+	{
+		auto find_iter = find_if(
+			properties_.begin(),
+			properties_.end(),
+			[&property_stf_name] (const Property& stored_property)
+		{
+			return stored_property.property_stf_name.compare(property_stf_name) == 0;
+		});
 
-    if (find_iter == properties_.end())
-    {
-        // Not in the list.
-        return;
-    }
-    /*if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(VIEW_3, 2);
-        message.data.write(properties_.size());
-        message.data.write(property_counter_);
-        message.data.write(property_stf_file);
-        message.data.write(0);
-        message.data.write(property_stf_name);
-        message.data.write(value);
+		if (find_iter == properties_.end())
+		{
+			// Not in the list.
+			return;
+		}
+		/*if (HasObservers())
+		{
+			DeltasMessage message = CreateDeltasMessage(VIEW_3, 2);
+			message.data.write(properties_.size());
+			message.data.write(property_counter_);
+			message.data.write(property_stf_file);
+			message.data.write(0);
+			message.data.write(property_stf_name);
+			message.data.write(value);
         
-        AddDeltasUpdate(message);
-    }*/
+			AddDeltasUpdate(message);
+		}*/
 
-    find_iter->property_stf_file = move(property_stf_file);
-    find_iter->property_stf_name = move(property_stf_name);
-    find_iter->value = value;
+		find_iter->property_stf_file = move(property_stf_file);
+		find_iter->property_stf_name = move(property_stf_name);
+		find_iter->value = value;
+	}
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Property", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
 std::wstring ManufactureSchematic::GetCreatorName() const
@@ -167,7 +174,11 @@ std::wstring ManufactureSchematic::GetCreatorName() const
 
 void ManufactureSchematic::SetCreatorName(std::wstring creator)
 {
-    creator_ = move(creator);
+	{
+		creator_ = move(creator);
+	}
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::CreatorName", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 
     /*if (HasObservers())
     {
@@ -185,7 +196,12 @@ uint32_t ManufactureSchematic::GetSchematicComplexity() const
 
 void ManufactureSchematic::SetSchematicComplexity(uint32_t complexity)
 {
-    complexity_ = complexity;
+	{
+		complexity_ = complexity;
+	}
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Complexity", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
+
     /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 7);
@@ -202,8 +218,11 @@ float ManufactureSchematic::GetSchematicDataSize() const
 
 void ManufactureSchematic::SetSchematicDataSize(float schematic_data_size)
 {
-    schematic_data_size_ = schematic_data_size;
-
+	{
+		schematic_data_size_ = schematic_data_size;
+	}
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::DataSize", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
     /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_3, 8);
@@ -220,7 +239,11 @@ std::vector<uint8_t> ManufactureSchematic::GetCustomizationString() const
 
 void ManufactureSchematic::SetCustomizationString(std::vector<uint8_t> customization_string)
 {
-    customization_ = move(customization_string);
+	{
+		customization_ = move(customization_string);
+	}
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::CustomizationString", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
     /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 1);
@@ -237,7 +260,13 @@ std::string ManufactureSchematic::GetCustomizationModel() const
 
 void ManufactureSchematic::SetCustomizationModel(std::string customization_model)
 {
-    customization_model_ = customization_model;
+	{
+		customization_model_ = customization_model;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::CustomizationModel", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
+
     /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 2);
@@ -259,7 +288,12 @@ uint32_t ManufactureSchematic::GetPrototypeCrc() const
 
 void ManufactureSchematic::SetPrototypeModel(std::string prototype_model)
 {
-    prototype_model_ = move(prototype_model);
+	{
+		prototype_model_ = move(prototype_model);
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::PrototypeModel", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 
     /*if (HasObservers())
     {
@@ -293,8 +327,12 @@ void ManufactureSchematic::Deactive()
 
 void ManufactureSchematic::ToggleActive()
 {
-    //is_active_ = !is_active_;
-    //uint8_t flag = is_active_ ? 1 : 0;
+	{
+		is_active_ ^= true;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Active", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 
     /*if (HasObservers())
     {
@@ -312,7 +350,13 @@ uint8_t ManufactureSchematic::GetSlotCount() const
 
 void ManufactureSchematic::IncreaseSlotCount()
 {
-    ++slot_count_;
+	{
+		++slot_count_;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::SlotCount", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
+
     /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 5);
@@ -324,7 +368,13 @@ void ManufactureSchematic::IncreaseSlotCount()
 
 void ManufactureSchematic::DecreaseSlotCount()
 {
-    --slot_count_;
+	{
+		--slot_count_;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::SlotCount", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
+
     /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 5);
@@ -336,7 +386,13 @@ void ManufactureSchematic::DecreaseSlotCount()
 
 void ManufactureSchematic::ResetSlotCount(uint8_t slot_count)
 {
-    slot_count_ = slot_count;
+	{
+		slot_count_ = slot_count;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::SlotCount", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
+
     /*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_6, 5);
@@ -409,25 +465,26 @@ void ManufactureSchematic::BuildSlotDelta_(
 
 void ManufactureSchematic::RemoveSlot(uint16_t index)
 {
-    auto find_iter = find_if(
-        slots_.begin(),
-        slots_.end(),
-        [index] (const Slot& slot)
-    {
-        return index == slot.index;
-    });
+	{
+		auto find_iter = find_if(
+			slots_.begin(),
+			slots_.end(),
+			[index] (const Slot& slot)
+		{
+			return index == slot.index;
+		});
 
-    if (find_iter == slots_.end())
-    {
-        // Not in the list.
-        return;
-    }
-    // loop through all the types
-    for (int update_type = 0; update_type < 7; ++update_type)
-    {
-        BuildSlotDelta_(update_type, 0, find_iter);
-    }
-    slots_.erase(find_iter);
+		if (find_iter == slots_.end())
+		{
+			// Not in the list.
+			return;
+		}
+   
+		slots_.erase(find_iter);
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
 /**
@@ -441,36 +498,35 @@ uint16_t ManufactureSchematic::AddSlot(
     uint32_t ingredient_quantity,
     uint32_t clean)
 {
-    auto find_iter = find_if(
-        slots_.begin(),
-        slots_.end(),
-        [&slot_stf_name] (const Slot& slot)
-    {
-        return slot.slot_stf_name.compare(slot_stf_name) == 0;
-    });
+	{
+		auto find_iter = find_if(
+			slots_.begin(),
+			slots_.end(),
+			[&slot_stf_name] (const Slot& slot)
+		{
+			return slot.slot_stf_name.compare(slot_stf_name) == 0;
+		});
 
-    if (find_iter != slots_.end())
-    {
-        // Already in the list.
-        return 0;
-    }
+		if (find_iter != slots_.end())
+		{
+			// Already in the list.
+			return 0;
+		}
 
-    Slot slot;    
-    slot.index = customizations_.back().index + 1;
-    slot.slot_stf_file = move(slot_stf_file);
-    slot.slot_stf_name = move(slot_stf_name);
-    slot.type = type;
-    slot.ingredient = ingredient;
-    slot.ingredient_quantity = ingredient_quantity;
-    slot.clean = clean;
+		Slot slot;    
+		slot.index = customizations_.back().index + 1;
+		slot.slot_stf_file = move(slot_stf_file);
+		slot.slot_stf_name = move(slot_stf_name);
+		slot.type = type;
+		slot.ingredient = ingredient;
+		slot.ingredient_quantity = ingredient_quantity;
+		slot.clean = clean;
 
-    slots_.push_back(slot);
+		slots_.push_back(slot);
+	}
 
-    // loop through all the types
-    for (int update_type = 0; update_type < 7; ++update_type)
-    {
-        BuildSlotDelta_(update_type, 1, find_iter);
-    }
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 
     return slot.index;
 }
@@ -484,38 +540,43 @@ void ManufactureSchematic::UpdateSlot(
     uint32_t ingredient_quantity,
     uint32_t clean)
 {
-    auto find_iter = find_if(
-        slots_.begin(),
-        slots_.end(),
-        [index] (const Slot& slot)
-    {
-        return index == slot.index;
-    });
+	{
+		auto find_iter = find_if(
+			slots_.begin(),
+			slots_.end(),
+			[index] (const Slot& slot)
+		{
+			return index == slot.index;
+		});
 
-    if (find_iter == slots_.end())
-    {
-        // Not in the list.
-        return;
-    }
+		if (find_iter == slots_.end())
+		{
+			// Not in the list.
+			return;
+		}
     
-    find_iter->slot_stf_file = move(slot_stf_file);
-    find_iter->slot_stf_name = move(slot_stf_name);
-    find_iter->type = type;
-    find_iter->ingredient = ingredient;
-    find_iter->ingredient_quantity = ingredient_quantity;
-    find_iter->clean = clean;
+		find_iter->slot_stf_file = move(slot_stf_file);
+		find_iter->slot_stf_name = move(slot_stf_name);
+		find_iter->type = type;
+		find_iter->ingredient = ingredient;
+		find_iter->ingredient_quantity = ingredient_quantity;
+		find_iter->clean = clean;
+	}
 
-    // loop through all the types
-    for (int update_type = 0; update_type < 7; ++update_type)
-    {
-        BuildSlotDelta_(update_type, 2, find_iter);
-    }
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
 void ManufactureSchematic::ResetSlots(std::vector<ManufactureSchematic::Slot> slots)
 {
-    slots_ = move(slots);
-    /*if (HasObservers())
+	{
+		slots_ = move(slots);
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
+		("ManufactureSchematic::Slot", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
+
+	/*if (HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(VIEW_7, 3);;
         message.data.write(slots_.size());

@@ -17,25 +17,28 @@ void IntangibleMessageBuilder::RegisterEventHandlers()
     // TODO: Register Event Handlers for Intangible
 }
 
-void IntangibleMessageBuilder::BuildStfDetailDelta(const shared_ptr<Intangible>& object)
+void IntangibleMessageBuilder::SendBaselines(const std::shared_ptr<Intangible>& intangible, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-    // Only build a message if there are observers.
-    if (object->HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_6, 1);
-        message.data.write(object->GetStfDetailFile());
-        message.data.write<uint32_t>(0);
-        message.data.write(object->GetStfDetailString());
+	intangible->AddBaselineToCache(BuildBaseline3(intangible));
+    intangible->AddBaselineToCache(BuildBaseline6(intangible));
 
-        object->AddDeltasUpdate(message);                
+	for (auto& baseline : intangible->GetBaselines())
+    {
+        observer->Notify(baseline);
     }
+        
+    SendEndBaselines(intangible, observer);
 }
-BaselinesMessage IntangibleMessageBuilder::BuildBaseline6(const shared_ptr<Intangible>& object)
+
+BaselinesMessage IntangibleMessageBuilder::BuildBaseline3(const std::shared_ptr<Intangible>& intangible)
 {
-    auto message = CreateBaselinesMessage(object, object->Object::VIEW_6, 1);
-    message.data.write(0);
-    message.data.write(object->GetStfDetailFile());
-    message.data.write(0);
-    message.data.write(object->GetStfDetailString());
-    return BaselinesMessage(std::move(message));
+	auto message = CreateBaselinesMessage(intangible, intangible->Object::VIEW_3, 5);
+	message.data.append(ObjectMessageBuilder::BuildBaseline3(intangible).data);
+	message.data.write(intangible->GetGenericInt()); 
+	return BaselinesMessage(std::move(message));
+}
+
+BaselinesMessage IntangibleMessageBuilder::BuildBaseline6(const shared_ptr<Intangible>& intangible)
+{
+    return CreateBaselinesMessage(intangible, intangible->Object::VIEW_6, 1);
 }

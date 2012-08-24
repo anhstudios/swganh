@@ -8,7 +8,7 @@
 
 namespace swganh {
 namespace object {
-namespace static_obj {
+namespace static_object {
   
 class Static : public swganh::object::Object
 {

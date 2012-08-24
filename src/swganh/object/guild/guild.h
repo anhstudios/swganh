@@ -65,11 +65,8 @@ public:
     virtual uint32_t GetType() const { return type; }
     const static uint32_t type = 0x444C4947;
 
-    static void GetBaseline3();
-    static void GetBaseline6();
-    typedef anh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
 private:
-    mutable boost::mutex guild_mutex_;
+	typedef anh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
     swganh::messages::containers::NetworkList<GuildTag>     guild_list_;
 };
 

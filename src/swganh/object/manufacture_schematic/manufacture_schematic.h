@@ -6,15 +6,16 @@
 
 #include <cstdint>
 #include <string>
-#include <vector>
 
-#include "swganh/object/object.h"
+#include "pub14_core/messages/containers/network_array.h"
+
+#include "swganh/object/intangible/intangible.h"
 
 namespace swganh {
 namespace object {
 namespace manufacture_schematic {
 
-class ManufactureSchematic : public swganh::object::Object
+class ManufactureSchematic : public swganh::object::intangible::Intangible
 {
 public:
     struct Property
@@ -420,10 +421,10 @@ public:
     void ToggleReady();
 
 private:
-    void BuildSlotDelta_(uint8_t update_type, uint8_t sub_type, std::vector<Slot>::iterator slot_iterator);
-    uint32_t schematic_quantity_;
+	typedef anh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
+
     uint32_t property_counter_;
-    std::vector<Property> properties_;
+    swganh::messages::containers::NetworkArray<Property> properties_;
     std::wstring creator_;
     uint32_t complexity_;
     float schematic_data_size_;
@@ -432,7 +433,10 @@ private:
     std::string prototype_model_;
     bool is_active_;
     uint8_t slot_count_;
-    std::vector<Slot> slots_;
+    
+	std::vector<Slot> slots_;
+
+
     uint32_t slot_counter_;
     uint32_t ingredients_counter_;
     std::vector<Experiment> experiments_;

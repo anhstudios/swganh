@@ -10,8 +10,7 @@ using namespace swganh::messages;
 using namespace swganh::object::waypoint;
 
 Waypoint::Waypoint()
-    : uses_(0)
-    , coordinates_(glm::vec3(0,0,0))
+    : coordinates_(glm::vec3(0,0,0))
     , activated_flag_(0)
     , location_network_id_(0)
     , planet_name_("")
@@ -20,8 +19,7 @@ Waypoint::Waypoint()
 {
 }
 Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, const wstring& name, const string& color)
-    : uses_(0)
-    , coordinates_(coordinates)
+    : coordinates_(coordinates)
     , planet_name_(planet)
     , name_(name)
     , color_(color)
@@ -29,26 +27,14 @@ Waypoint::Waypoint(glm::vec3 coordinates, bool activated,const string& planet, c
     activated ? activated_flag_ = ACTIVATED : activated_flag_ = DEACTIVATED;
 }
 
-uint32_t Waypoint::GetUses()
-{
-    return uses_;
-}
-
-void Waypoint::SetUses(uint32_t uses) 
-{
-    uses_ = uses;
-
-    GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
-        ("Waypoint::Uses", static_pointer_cast<Waypoint>(shared_from_this())));
-}
 glm::vec3 Waypoint::GetCoordinates()
 {
-	boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return coordinates_;
 }
 void Waypoint::SetCoordinates(const glm::vec3& coords)
 {
-    boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
 	coordinates_ = move(coords);
     
 	GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
@@ -82,7 +68,7 @@ void Waypoint::SetLocationNetworkId(uint64_t location_network_id)
 void Waypoint::SetPlanet(const string& planet_name)
 {
     {
-	    boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         planet_name_ = planet_name;
     }
 
@@ -92,7 +78,7 @@ void Waypoint::SetPlanet(const string& planet_name)
 
 uint8_t Waypoint::GetColorByte()
 {
-	boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 
     if (color_.compare("blue") != 0)
         return 1;
@@ -116,7 +102,7 @@ uint8_t Waypoint::GetColorByte()
 void Waypoint::SetColor(const string& color)
 {
     {
-	    boost::lock_guard<boost::mutex> lock(waypoint_mutex_);
+	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         color_ = color;
     }
 
@@ -150,4 +136,51 @@ void Waypoint::SetColorByte(uint8_t color_byte)
         SetColor("blue");
         break;
     }
+}
+
+void Waypoint::SetName(const std::wstring& name)
+{
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		name_ = name;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<WaypointEvent>
+        ("Waypoint::Name", static_pointer_cast<Waypoint>(shared_from_this())));
+}
+
+bool Waypoint::Active() const 
+{ 
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return activated_flag_ == 1; 
+}
+
+uint8_t Waypoint::GetActiveFlag() 
+{ 
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return activated_flag_; 
+}
+
+const std::string& Waypoint::GetPlanet() 
+{ 
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return planet_name_; 
+}
+
+const std::wstring& Waypoint::GetName() 
+{ 
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return name_; 
+}
+
+std::string Waypoint::GetNameStandard() 
+{ 
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return std::string(std::begin(name_), std::end(name_)); 
+}
+
+const std::string& Waypoint::GetColor() 
+{ 
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return color_; 
 }

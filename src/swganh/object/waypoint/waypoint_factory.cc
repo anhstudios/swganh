@@ -29,7 +29,7 @@ using namespace swganh::messages::containers;
 
 WaypointFactory::WaypointFactory(DatabaseManagerInterface* db_manager,
                                  EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, event_dispatcher)
+    : IntangibleFactory(db_manager, event_dispatcher)
 {
     RegisterEventHandlers();
 }

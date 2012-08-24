@@ -7,8 +7,6 @@
 #include <cstdint>
 #include <string>
 
-#include <boost/thread/mutex.hpp>
-
 #include "swganh/object/object.h"
 
 namespace swganh {
@@ -30,33 +28,12 @@ public:
      */
     virtual uint32_t GetType() const { return Intangible::type; }
     const static uint32_t type = 0x494E534F;
-
-    /**
-     * @return The stf file containing the detailed description of the object.
-     */
-    std::string GetStfDetailFile();
-
-    /**
-     * @return The stf string containing the detailed description of the object.
-     */
-    std::string GetStfDetailString();
-
-    /** 
-     * Sets the stf string that contains the detailed description of the object.
-     *
-     * @param stf_file_name Stf file containing the string.
-     * @param stf_string Name of the string containing the detailed description.
-     */
-    void SetStfDetail(const std::string& stf_file_name, const std::string& stf_string);
     
+	uint32_t GetGenericInt();
+	void SetGenericInt(uint32_t generic_int);
+
 protected:
-    virtual void GetBaseline6();
-
-private:
-    mutable boost::mutex intangible_mutex_;
-
-    std::string stf_detail_file_;
-    std::string stf_detail_string_;
+	uint32_t generic_int_;
 };
     
 }}}  // namespace swganh::object::intangible

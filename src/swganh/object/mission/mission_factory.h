@@ -4,15 +4,21 @@
 #ifndef SWGANH_OBJECT_MISSION_MISSION_FACTORY_H_
 #define SWGANH_OBJECT_MISSION_MISSION_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/intangible/intangible_factory.h"
 
 namespace swganh {
 namespace object {
 namespace mission {
 
-    class MissionFactory : public swganh::object::ObjectFactoryInterface
+	class Mission;
+    class MissionFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
+		typedef Mission ObjectType;
+
+		MissionFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
+
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
