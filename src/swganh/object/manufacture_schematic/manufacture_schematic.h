@@ -424,7 +424,7 @@ private:
 	typedef anh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
 
     uint32_t property_counter_;
-    swganh::messages::containers::NetworkArray<Property> properties_;
+    std::vector<Property> properties_;
     std::wstring creator_;
     uint32_t complexity_;
     float schematic_data_size_;

@@ -7,6 +7,15 @@ using namespace std;
 using namespace swganh::object::installation;
 using namespace swganh::messages::containers;
 
+Installation::Installation()
+	: Tangible()
+	, resource_pool_ids_(10)
+	, resource_names_(10)
+	, resource_types_(10)
+	, hopper_(10)
+{
+}
+
 uint32_t Installation::GetType() const
 { 
     return Installation::type; 
@@ -229,7 +238,7 @@ void Installation::SetDisplayedMaxExtractionRate(uint32_t extraction_rate)
         ("Installation::DisplayedMaxExtraction",static_pointer_cast<Installation>(shared_from_this())));
 }
     
-uint32_t Installation::GetDisplayedCurrentExtractionRate() const
+uint32_t Installation::GetDisplayedMaxExtractionRate() const
 {
 	return displayed_max_extraction_rate_;
 }
@@ -456,4 +465,17 @@ NetworkSortedVector<std::string> Installation::GetResourceTypes_()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return resource_types_;
+}
+
+uint64_t Installation::GetSelectedResourceId()
+{
+	return selected_resource_;
+}
+
+void Installation::SetSelectedResourceId(uint64_t new_id)
+{
+	selected_resource_ = new_id;
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::SelectedResource",static_pointer_cast<Installation>(shared_from_this())));
 }

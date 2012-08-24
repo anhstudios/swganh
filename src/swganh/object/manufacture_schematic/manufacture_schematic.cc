@@ -407,62 +407,6 @@ std::vector<ManufactureSchematic::Slot> ManufactureSchematic::GetSlots() const
     return slots_;
 }
 
-void ManufactureSchematic::BuildSlotDelta_(
-    uint8_t update_type, uint8_t sub_type, 
-    std::vector<Slot>::iterator slot_iterator)
-{
-    //// no observers, don't bother
-    //if (!HasObservers())
-    //{
-    //    return;
-    //}
-    //// don't handle reset all here
-    //if (sub_type == 3)
-    //    return;
-    //
-    //DeltasMessage message = CreateDeltasMessage(VIEW_7, 0);
-    //message.data.write(slots_.size());
-    //message.data.write(slot_counter_);
-    //message.data.write<uint8_t>(sub_type);
-    //// clear
-    //if (sub_type == 4)
-    //{
-    //    return;
-    //}
-    //// everything needs the index, but 3,4
-    //message.data.write(slot_iterator - slots_.begin());
-    //// remove just needs index so return here
-    //if (sub_type == 0)
-    //{
-    //    return;
-    //}    
-
-    //switch (update_type)
-    //{
-    //    case 0:
-    //        message.data.write(slot_iterator->slot_stf_file);
-    //        message.data.write(0);
-    //        message.data.write(slot_iterator->slot_stf_name);
-    //        break;
-    //    case 1:
-    //        message.data.write(slot_iterator->type);
-    //        break;
-    //    case 2:
-    //        message.data.write(slot_iterator->ingredient);
-    //        break;
-    //    case 3:
-    //        message.data.write(slot_iterator->ingredient_quantity);
-    //        break;
-    //    case 5:
-    //        message.data.write(slot_iterator->clean);
-    //        break;
-    //    case 6:
-    //        message.data.write(slot_iterator->index);
-    //        break;
-    //}
-    //AddDeltasUpdate(message);
-}
-
 void ManufactureSchematic::RemoveSlot(uint16_t index)
 {
 	{

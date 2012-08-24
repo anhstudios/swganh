@@ -22,10 +22,12 @@ namespace installation {
         virtual void RegisterEventHandlers();
         virtual void SendBaselines(const std::shared_ptr<Installation>& installation, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
         // deltas
+
         static void BuildActiveDelta(const std::shared_ptr<Installation>& installation);
 		static void BuildPowerReserveDelta(const std::shared_ptr<Installation>& installation);
         static void BuildPowerCostDelta(const std::shared_ptr<Installation>& installation);
         static void BuildAvailableResourceDelta(const std::shared_ptr<Installation>& installation);
+		static void BuildSelectedResourceDelta(const std::shared_ptr<Installation>& installation);
 		static void BuildDisplayedMaxExtractionDelta(const std::shared_ptr<Installation>& installation);
 		static void BuildMaxExtractionDelta(const std::shared_ptr<Installation>& installation);
 		static void BuildCurrentExtractionDelta(const std::shared_ptr<Installation>& installation);
