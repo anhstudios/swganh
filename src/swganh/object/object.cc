@@ -839,6 +839,7 @@ void Object::SetAttributeTemplateId(uint8_t attribute_template_id)
 
 std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	wstringstream ss;
 	auto val = GetAttributeRecursive(name);
 	ss << val;
@@ -846,6 +847,7 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 }
 boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	auto val = GetAttribute(name);
 	float float_val;
 	int32_t int_val;

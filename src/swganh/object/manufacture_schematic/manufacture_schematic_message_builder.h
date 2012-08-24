@@ -11,6 +11,7 @@
 namespace swganh {
 namespace object {
 namespace manufacture_schematic {
+    typedef anh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
     class ManufactureSchematicMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
     {
     public:
@@ -28,8 +29,6 @@ namespace manufacture_schematic {
         static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);
 		static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);
-	private:
-		typedef anh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
     };
 
 }}}  // swganh::object::player
