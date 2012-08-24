@@ -47,7 +47,7 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 				
 					LOG(warning) << "LOADING OBJECT: " << snapshot_visitor->name(chunk.name_id);
 				
-					object->SetEventDispatcher(kernel->GetEventDispatcher());
+					object->SetEventDispatcher(kernel_->GetEventDispatcher());
 					object->SetPosition(chunk.location);
 					object->SetOrientation(chunk.orientation);
 					
