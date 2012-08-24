@@ -16,7 +16,7 @@ namespace resource {
 	class ResourceManagerInterface
 	{
 	public:
-		virtual std::shared_ptr<swganh::tre::VisitorInterface> getResourceByName(const std::string& name, swganh::tre::VisitorType type) = 0;
+		virtual std::shared_ptr<swganh::tre::VisitorInterface> getResourceByName(const std::string& name, swganh::tre::VisitorType type, bool is_cached=true) = 0;
 	};
 
 }

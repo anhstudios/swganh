@@ -35,48 +35,45 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 		
 		//Load objects from snapshot
 		
-			std::string snapshot_filename = "snapshot/"+real_event->scene_label+".ws";
-			auto visitor = kernel_->GetResourceManager()->getResourceByName(snapshot_filename, WS_VISITOR);
-			auto snapshot_visitor = std::static_pointer_cast<WsVisitor>(visitor);
+		std::string snapshot_filename = "snapshot/"+real_event->scene_label+".ws";
+		auto visitor = kernel_->GetResourceManager()->getResourceByName(snapshot_filename, WS_VISITOR, false);
+		auto snapshot_visitor = std::static_pointer_cast<WsVisitor>(visitor);
 			
-			auto chunks = snapshot_visitor->chunks();
-			std::for_each(chunks.begin(), chunks.end(), [&] (WsVisitor::CHUNK& chunk) {
-				try
-				{
-					auto object = object_manager->CreateObjectFromTemplate(snapshot_visitor->name(chunk.name_id), chunk.id);
+		auto chunks = snapshot_visitor->chunks();
+		std::for_each(chunks.begin(), chunks.end(), [&] (WsVisitor::CHUNK& chunk) {
+			try
+			{
+				auto object = object_manager->CreateObjectFromTemplate(snapshot_visitor->name(chunk.name_id), chunk.id);
 				
-					LOG(warning) << "LOADING OBJECT: " << snapshot_visitor->name(chunk.name_id);
+				//LOG(warning) << "LOADING OBJECT: " << snapshot_visitor->name(chunk.name_id);
 				
-					object->SetEventDispatcher(kernel_->GetEventDispatcher());
-					object->SetPosition(chunk.location);
-					object->SetOrientation(chunk.orientation);
-					object->SetSceneId(real_event->scene_id);
+				object->SetEventDispatcher(kernel_->GetEventDispatcher());
+				object->SetPosition(chunk.location);
+				object->SetOrientation(chunk.orientation);
+				object->SetSceneId(real_event->scene_id);
 					
-					//@Todo: Set scale
+				//@Todo: Set scale
 				
-					if(chunk.parent_id == 0)
-					{
-						//Put it into the scene
-						simulation_service->TransferObjectToScene(object, real_event->scene_label);
-					}
-					else
-					{
-						//It has a parent, so get it's parent and put it into that
-						auto parent = object_manager->GetObjectById(chunk.parent_id);
-						if(parent != nullptr)
-						{
-							parent->AddObject(nullptr, object);
-						}
-					}
-				}
-				catch(...)
+				if(chunk.parent_id == 0)
 				{
-					LOG(warning) << "Failed to load files from snapshot for: " << real_event->scene_label;
+					//Put it into the scene
+					simulation_service->TransferObjectToScene(object, real_event->scene_label);
 				}
-			});
-			
-		
-		
+				else
+				{
+					//It has a parent, so get it's parent and put it into that
+					auto parent = object_manager->GetObjectById(chunk.parent_id);
+					if(parent != nullptr)
+					{
+						parent->AddObject(nullptr, object);
+					}
+				}
+			}
+			catch(...)
+			{
+				LOG(warning) << "Failed to load files from snapshot for: " << real_event->scene_label;
+			}
+		});		
 	});
 
 	/* Dont need this now, but we might later.

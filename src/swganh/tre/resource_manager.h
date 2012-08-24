@@ -14,7 +14,7 @@ namespace tre {
 	public:
 		ResourceManager(std::shared_ptr<swganh::tre::TreArchive> archive);
 
-		std::shared_ptr<swganh::tre::VisitorInterface> getResourceByName(const std::string& name, swganh::tre::VisitorType type);
+		std::shared_ptr<swganh::tre::VisitorInterface> getResourceByName(const std::string& name, swganh::tre::VisitorType type, bool is_cached=true);
 
 	private:
 		std::map<std::string, std::shared_ptr<swganh::tre::VisitorInterface>> loadedResources_;
