@@ -836,3 +836,33 @@ void Object::SetAttributeTemplateId(uint8_t attribute_template_id)
 {
 	attributes_template_id = attribute_template_id;
 }
+
+std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
+{
+	wstringstream ss;
+	auto val = GetAttributeRecursive(name);
+	ss << val;
+	return ss.str();
+}
+boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
+{
+	auto val = GetAttribute(name);
+	float float_val;
+	int32_t int_val;
+	wstring attr_val;
+	switch(val.which())
+	{
+		// float
+		case 0:
+			 float_val = boost::get<float>(val);
+			return AddAttributeRecursive<float>(float_val, name);			
+		case 1:
+			int_val = boost::get<int32_t>(val);
+			return AddAttributeRecursive<int32_t>(int_val, name);			
+		case 2:
+			attr_val = boost::get<wstring>(val);
+			return AddAttributeRecursive<wstring>(attr_val, name);			
+	}	
+	return boost::get<wstring>(val);
+	
+}
