@@ -22,6 +22,10 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
+#include "permissions/creature_permissions.h"
+#include "permissions/creature_container_permissions.h"
+#include "permissions/ridable_permissions.h"
+
 using namespace std;
 using namespace anh;
 using namespace swganh::tre;
@@ -31,6 +35,22 @@ using namespace swganh::messages;
 ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
     : kernel_(kernel), next_dynamic_id_(17596481011712) //Dynamic id start value
 {
+	//Load Permissions
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(DEFAULT_CONTAINER_PERMISSION), 
+		shared_ptr<ContainerPermissionsInterface>(new DefaultContainerPermissions())));
+
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(WORLD_CONTAINER_PERMISSION), 
+		shared_ptr<ContainerPermissionsInterface>(new WorldContainerPermissions())));
+
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(CREATURE_CONTAINER_PERMISSION), 
+		shared_ptr<ContainerPermissionsInterface>(new CreaturePermissions())));
+
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(CREATURE_CONTAINER_CONTAINER_PERMISSION), 
+		shared_ptr<ContainerPermissionsInterface>(new CreatureContainerPermissions())));
+
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(RIDEABLE_CONTAINER_PERMISSION), 
+		shared_ptr<ContainerPermissionsInterface>(new RideablePermissions())));
+
 	//Load slot definitions
 	auto slot_definition = kernel->GetResourceManager()->getResourceByName("abstract/slot/slot_definition/slot_definitions.iff", SLOT_DEFINITION_VISITOR);
 	slot_definition_ = static_pointer_cast<SlotDefinitionVisitor>(slot_definition);	
@@ -208,6 +228,8 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const std::string& te
 			created_object = factory_itr->second->CreateObjectFromTemplate(template_name, is_persisted, is_initialized);
 			if(created_object != nullptr)
 			{
+				created_object->SetPermissions(permissions_objects_.find(DEFAULT_CONTAINER_PERMISSION)->second);
+
 				if(!is_persisted)
 				{
 					created_object->SetObjectId(next_dynamic_id_++);
@@ -375,4 +397,9 @@ void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 	}
 	
 	object->SetSlotInformation(descriptors, arrangements);
+}
+
+PermissionsObjectMap& ObjectManager::GetPermissionsMap()
+{
+	return permissions_objects_;
 }

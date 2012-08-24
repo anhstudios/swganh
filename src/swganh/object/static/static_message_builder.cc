@@ -6,6 +6,10 @@ using namespace std;
 using namespace swganh::object::static_object;
 using namespace swganh::messages;
 
+void StaticMessageBuilder::RegisterEventHandlers()
+{
+}
+
 void StaticMessageBuilder::SendBaselines(const std::shared_ptr<Static>& static_object, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
 	static_object->AddBaselineToCache(BuildBaseline3(static_object));

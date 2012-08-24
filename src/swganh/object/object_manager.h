@@ -35,6 +35,8 @@ namespace concurrency {
 namespace swganh {
 namespace object {
     
+	typedef std::map<int, std::shared_ptr<ContainerPermissionsInterface>> PermissionsObjectMap;
+
     /**
      * ObjectManager is a general interface for managing the object lifecycles for
      * general user defined types. In order to manage an object type an implementation
@@ -263,6 +265,9 @@ namespace object {
 		std::shared_ptr<swganh::tre::SlotDefinitionVisitor> GetSlotDefinition();
 
 		void LoadSlotsForObject(std::shared_ptr<Object> object);
+
+		PermissionsObjectMap& GetPermissionsMap();
+
     private:
 		
 		typedef std::map<
@@ -311,6 +316,8 @@ namespace object {
 
         boost::shared_mutex object_map_mutex_;
         concurrency::concurrent_unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
+
+		PermissionsObjectMap permissions_objects_;
     };
 
 }}  // namespace swganh::object
