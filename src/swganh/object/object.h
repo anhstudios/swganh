@@ -548,7 +548,7 @@ public:
 	template<typename T>
 	T AddAttributeRecursive(T val, const std::string& name)
 	{
-		ViewObjects(nullptr, 1, false, [&](shared_ptr<Object> recurse)
+		ViewObjects(nullptr, 1, false, [&](std::shared_ptr<Object> recurse)
 		{
 			T found_val = recurse->GetAttribute<T>(name);
 			// Add Values
