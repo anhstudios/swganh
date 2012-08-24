@@ -45,7 +45,7 @@ swganh::messages::AttributeListMessage ArmorAttributeTemplate::BuildAttributeTem
 	attribute_list.push_back(Attribute("@obj_attr_n:original_name", object->GetAttributeAsString("original_name")));
 	attribute_list.push_back(Attribute("@obj_attr_n:condition", condition));
 	attribute_list.push_back(Attribute("@obj_attr_n:volume", object->GetAttributeAsString("volume")));
-	AttributesHelper::SetOptionalAttribute(attribute_list, "obj_attr_n:sockets", "sockets", objectfalse);
+	AttributesHelper::SetOptionalAttribute(attribute_list, "obj_attr_n:sockets", "sockets", object, true);
 	attribute_list.push_back(Attribute("@obj_attr_n:armor_rating", object->GetAttributeAsString("armor_rating")));
 	AttributesHelper::SetOptionalAttribute(attribute_list, "cat_armor_special_protection.@obj_attr_n:armor_eff_kinetic", "cat_armor_special_protection.armor_eff_kinetic", object, true);
 	AttributesHelper::SetOptionalAttribute(attribute_list, "cat_armor_special_protection.@obj_attr_n:armor_eff_energy", "cat_armor_special_protection.armor_eff_energy", object, true);
