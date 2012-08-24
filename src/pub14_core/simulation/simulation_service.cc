@@ -41,6 +41,10 @@
 #include "swganh/object/creature/creature_factory.h"
 #include "swganh/object/creature/creature_message_builder.h"
 
+#include "swganh/object/factory_crate/factory_crate.h"
+#include "swganh/object/factory_crate/factory_crate_factory.h"
+#include "swganh/object/factory_crate/factory_crate_message_builder.h"
+
 #include "swganh/object/group/group.h"
 #include "swganh/object/group/group_factory.h"
 #include "swganh/object/group/group_message_builder.h"
@@ -65,7 +69,6 @@
 #include "swganh/object/resource_container/resource_container_factory.h"
 #include "swganh/object/resource_container/resource_container_message_builder.h"
 
-
 #include "swganh/object/static/static.h"
 #include "swganh/object/static/static_factory.h"
 #include "swganh/object/static/static_message_builder.h"
@@ -78,6 +81,9 @@
 #include "swganh/object/waypoint/waypoint_factory.h"
 #include "swganh/object/waypoint/waypoint_message_builder.h"
 
+#include "swganh/object/weapon/weapon.h"
+#include "swganh/object/weapon/weapon_factory.h"
+#include "swganh/object/weapon/weapon_message_builder.h"
 
 #include "swganh/simulation/scene_manager_interface.h"
 #include "swganh/simulation/scene_interface.h"
@@ -490,7 +496,6 @@ void SimulationService::RegisterObjectFactories()
     auto object_manager = impl_->GetObjectManager();
 
     object_manager->RegisterObjectType<Object>();
-
 	object_manager->RegisterObjectType<static_object::Static>();
 	object_manager->RegisterObjectType<tangible::Tangible>();
 	object_manager->RegisterObjectType<intangible::Intangible>();
@@ -502,6 +507,8 @@ void SimulationService::RegisterObjectFactories()
 	object_manager->RegisterObjectType<cell::Cell>();
     object_manager->RegisterObjectType<player::Player>();
 	object_manager->RegisterObjectType<resource_container::ResourceContainer>();
+	object_manager->RegisterObjectType<factory_crate::FactoryCrate>();
+	object_manager->RegisterObjectType<weapon::Weapon>();
 	
 }
 
