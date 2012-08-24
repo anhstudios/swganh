@@ -26,11 +26,15 @@ namespace tre {
 			{
 				return std::static_pointer_cast<ValueType>(itr->second);
 			}
-			else
+			else if(name.size() != 0)
 			{
 				std::shared_ptr<ValueType> visitor = std::make_shared<ValueType>();
 				LoadResourceByName(name, visitor, is_cached);
 				return visitor;
+			}
+			else
+			{
+				return nullptr;
 			}
 		}
 

@@ -4,6 +4,8 @@
 
 #include "iff/iff.h"
 
+#include "anh/logger.h"
+
 using namespace swganh::tre;
 
 ResourceManager::ResourceManager(std::shared_ptr<TreArchive> archive) 
