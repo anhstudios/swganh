@@ -5,6 +5,16 @@
 
 using namespace std;
 using namespace swganh::object::installation;
+using namespace swganh::messages::containers;
+
+Installation::Installation()
+	: Tangible()
+	, resource_pool_ids_(10)
+	, resource_names_(10)
+	, resource_types_(10)
+	, hopper_(10)
+{
+}
 
 uint32_t Installation::GetType() const
 { 
@@ -35,145 +45,266 @@ void Installation::Deactivate()
 void Installation::ToggleActive()
 {
     is_active_ = !is_active_;
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::Active",static_pointer_cast<Installation>(shared_from_this())));
 }
 
 float Installation::GetPowerReserve() const
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return power_reserve_;
 }
 
 void Installation::SetPowerReserve(float power_reserve)
 {
-    power_reserve_ = power_reserve;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		power_reserve_ = power_reserve;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::PowerReserve",static_pointer_cast<Installation>(shared_from_this())));
 }
 
 float Installation::GetPowerCost() const
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return power_cost_;
 }
 
 void Installation::SetPowerCost(float power_cost)
 {
-    power_cost_ = power_cost;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		power_cost_ = power_cost;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::PowerCost",static_pointer_cast<Installation>(shared_from_this())));
 }
 
-std::vector<Installation::Resource> Installation::GetAvailableResources() const
+std::vector<Installation::Resource> Installation::GetAvailableResources()
 {
-    return available_resource_pool_;
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+
+	std::vector<Installation::Resource> available_resources;
+	uint16_t size = resource_pool_ids_.Size();
+	for(uint16_t i = 0; i < size; ++i)
+	{
+		Installation::Resource resource;
+		resource.global_id = resource_pool_ids_[i];
+		resource.resource_name = resource_names_[i];
+		resource.resource_type = resource_types_[i];
+		available_resources.push_back(resource);
+	}
+
+    return available_resources;
 }
 
 void Installation::AddAvailableResource(uint64_t global_id, std::string name, std::string type)
 {
-    auto find_iter = find_if(
-        available_resource_pool_.begin(),
-        available_resource_pool_.end(),
-        [global_id] (const Resource& resource)
-    {
-        return global_id == resource.global_id;
-    });
+	bool send_update = true;
 
-    if (find_iter != available_resource_pool_.end())
-    {
-        // Already in the list.
-        return;
-    }
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		uint16_t size = resource_pool_ids_.Size();
+		for(uint16_t i = 0; i < size; ++i)
+		{
+			if(resource_pool_ids_[i] == global_id)
+			{
+				//We already have it
+				send_update = false;
+				return;
+			}
+		}
+	
+		resource_pool_ids_.Add(global_id);
+		resource_names_.Add(name);
+		resource_types_.Add(type);
+	}
 
-    Resource resource;
-    resource.global_id = global_id;
-    resource.name = move(name);
-    resource.type = move(type);
-
-    available_resource_pool_.push_back(move(resource));
+	if(send_update)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
+	}
 }
 
 void Installation::RemoveAvailableResourceById(uint64_t global_id)
 {
-    auto find_iter = find_if(
-        available_resource_pool_.begin(),
-        available_resource_pool_.end(),
-        [global_id] (const Resource& resource)
-    {
-        return global_id == resource.global_id;
-    });
+	bool send_update = false;
 
-    if (find_iter == available_resource_pool_.end())
-    {
-        // Not in the list.
-        return;
-    }
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		uint16_t size = resource_pool_ids_.Size();
+		uint16_t index;
+		for(index = 0; index < size; ++index)
+		{
+			if(resource_pool_ids_[index] == global_id)
+			{
+				resource_pool_ids_.Remove(index);
+				resource_names_.Remove(index);
+				resource_types_.Remove(index);
+				send_update = true;
+				break;
+			}
+		}
+	}
 
-    available_resource_pool_.erase(find_iter);
+	if(send_update)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
+	}
 }
 
 void Installation::UpdateResource(uint64_t global_id, std::string name, std::string type)
 {
+	bool send_update = false;
 
-    auto find_iter = find_if(
-        available_resource_pool_.begin(),
-        available_resource_pool_.end(),
-        [global_id] (const Resource& resource)
-    {
-        return global_id == resource.global_id;
-    });
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		uint16_t size = resource_pool_ids_.Size();
+		uint16_t index;
+		for(index = 0; index < size; ++index)
+		{
+			if(resource_pool_ids_[index] == global_id)
+			{
+				resource_pool_ids_.Update(index, global_id);
+				resource_names_.Update(index, name);
+				resource_types_.Update(index, type);
+				send_update = true;
+				break;
+			}
+		}
+	}
 
-    if (find_iter == available_resource_pool_.end())
-    {
-        // Not in the list.
-        return;
-    }
-
-    find_iter->name = move(name);
-    find_iter->type = move(type);
+	if(send_update)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
+	}
 }
 
 void Installation::ResetAvailableResources(std::vector<Installation::Resource> available_resource_pool)
 {
-    available_resource_pool_ = move(available_resource_pool);
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		//Clean out the lists
+		resource_pool_ids_.Clear();
+		resource_names_.Clear();
+		resource_types_.Clear();
+    
+		//Put the new values in
+		for(auto& resource : available_resource_pool)
+		{
+			resource_pool_ids_.Add(resource.global_id);
+			resource_names_.Add(resource.resource_name);
+			resource_types_.Add(resource.resource_type);
+		}
+	
+		//Clear Deltas and Reinstall
+		resource_pool_ids_.ClearDeltas();
+		resource_names_.ClearDeltas();
+		resource_types_.ClearDeltas();
+
+		resource_pool_ids_.Reinstall();
+		resource_names_.Reinstall();
+		resource_types_.Reinstall();
+	}
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
 }
 
 void Installation::ClearAllAvailableResources()
 {
-    available_resource_pool_.clear();
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		resource_pool_ids_.Clear();
+		resource_names_.Clear();
+		resource_types_.Clear();
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::AvailableResource",static_pointer_cast<Installation>(shared_from_this())));
+}
+
+void Installation::SetDisplayedMaxExtractionRate(uint32_t extraction_rate)
+{
+	displayed_max_extraction_rate_ = extraction_rate;
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::DisplayedMaxExtraction",static_pointer_cast<Installation>(shared_from_this())));
+}
+    
+uint32_t Installation::GetDisplayedMaxExtractionRate() const
+{
+	return displayed_max_extraction_rate_;
 }
 
 float Installation::GetMaxExtractionRate() const
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return max_extraction_rate_;
 }
 
 void Installation::SetMaxExtractionRate(float extraction_rate)
 {
-    max_extraction_rate_ = extraction_rate;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		max_extraction_rate_ = extraction_rate;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::MaxExtraction",static_pointer_cast<Installation>(shared_from_this())));
 }
 
 float Installation::GetCurrentExtractionRate() const
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return current_extraction_rate_;
 }
 
 void Installation::SetCurrentExtractionRate(float extraction_rate)
 {
-    current_extraction_rate_ = extraction_rate;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		current_extraction_rate_ = extraction_rate;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::CurrentExtraction",static_pointer_cast<Installation>(shared_from_this())));
 }
 
 float Installation::GetCurrentHopperSize() const
 {
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return current_hopper_size_;
 }
 
 void Installation::SetCurrentHopperSize(float hopper_size)
 {
-    current_hopper_size_ = hopper_size;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		current_hopper_size_ = hopper_size;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::CurrentHopperSize",static_pointer_cast<Installation>(shared_from_this())));
 }
 
-float Installation::GetMaxHopperSize() const
+uint32_t Installation::GetMaxHopperSize() const
 {
     return max_hopper_size_;
 }
 
-void Installation::SetMaxHopperSize(float hopper_size)
+void Installation::SetMaxHopperSize(uint32_t hopper_size)
 {
-    max_hopper_size_ = hopper_size;
+	max_hopper_size_ = hopper_size;
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::MaxHopperSize",static_pointer_cast<Installation>(shared_from_this())));
 }
 
 bool Installation::IsUpdating() const
@@ -200,82 +331,108 @@ void Installation::StopUpdating()
 void Installation::ToggleUpdating()
 {
     is_updating_ = !is_updating_;
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::IsUpdating",static_pointer_cast<Installation>(shared_from_this())));
 }
 
-std::vector<Installation::HopperItem> Installation::GetHopperContents() const
+NetworkSortedVector<Installation::HopperItem> Installation::GetHopperContents() const
 {
     return hopper_;
 }
 
 void Installation::AddToHopper(uint64_t global_id, float quantity)
 {
-    auto find_iter = find_if(
-        hopper_.begin(),
-        hopper_.end(),
-        [global_id] (const HopperItem& hopper_item)
-    {
-        return global_id == hopper_item.global_id;
-    });
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		HopperItem item;
+		item.global_id = global_id;
+		item.quantity = quantity;
+		hopper_.Add(move(item));
+	}
 
-    if (find_iter != hopper_.end())
-    {
-        // Already in the list.
-        return;
-    }
-
-    HopperItem item;
-    item.global_id = global_id;
-    item.quantity = quantity;
-
-    hopper_.push_back(move(item));
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
 }
 
 void Installation::RemoveHopperItem(uint64_t global_id)
 {
-    auto find_iter = find_if(
-        hopper_.begin(),
-        hopper_.end(),
-        [global_id] (const HopperItem& hopper_item)
-    {
-        return global_id == hopper_item.global_id;
-    });
+	bool send_update = false;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		for(uint16_t i=0; i < hopper_.Size(); ++i)
+		{
+			if(hopper_[i].global_id == global_id)
+			{
+				hopper_.Remove(i);
+				send_update = true;
+				break;
+			}
+		}
+	}
 
-    if (find_iter == hopper_.end())
-    {
-        // Not in the list.
-        return;
-    }
-
-    hopper_.erase(find_iter);
+	if(send_update)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
+	}
 }
 
 void Installation::UpdateHopperItem(uint64_t global_id, float quantity)
 {
-    auto find_iter = find_if(
-        hopper_.begin(),
-        hopper_.end(),
-        [global_id] (const HopperItem& hopper_item)
-    {
-        return global_id == hopper_item.global_id;
-    });
+    bool send_update = false;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		for(uint16_t i=0; i < hopper_.Size(); ++i)
+		{
+			if(hopper_[i].global_id == global_id)
+			{
+				HopperItem new_item;
+				new_item.global_id = global_id;
+				new_item.quantity = quantity;
+				hopper_.Update(i, new_item);
 
-    if (find_iter == hopper_.end())
-    {
-        // Not in the list.
-        return;
-    }
+				send_update = true;
+				break;
+			}
+		}
+	}
 
-    find_iter->quantity = quantity;
+	if(send_update)
+	{
+		GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
+	}
 }
 
 void Installation::ResetContents(std::vector<Installation::HopperItem> hopper)
 {
-    hopper_ = move(hopper);
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		hopper_.Clear();
+
+		for(auto& item : hopper)
+		{
+			hopper_.Add(item);
+		}
+
+		hopper_.ClearDeltas();
+		hopper_.Reinstall();
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
 }
 
 void Installation::ClearAllHopperContents()
 {
-    hopper_.clear();
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		hopper_.Clear();
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::Hopper",static_pointer_cast<Installation>(shared_from_this())));
 }
 
 uint8_t Installation::GetConditionPercentage() const
@@ -285,7 +442,40 @@ uint8_t Installation::GetConditionPercentage() const
 
 void Installation::SetConditionPercentage(uint8_t condition)
 {
-    condition = (condition > 100) ? 100 : condition;
+	condition = (condition > 100) ? 100 : condition;
+	condition_percent_ = condition;
 
-    condition_percent_ = condition;
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::ConditionPercent",static_pointer_cast<Installation>(shared_from_this())));
+}
+
+NetworkSortedVector<uint64_t> Installation::GetResourceIds_()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return resource_pool_ids_;
+}
+
+NetworkSortedVector<std::string> Installation::GetResourceNames_()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return resource_names_;
+}
+
+NetworkSortedVector<std::string> Installation::GetResourceTypes_()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return resource_types_;
+}
+
+uint64_t Installation::GetSelectedResourceId()
+{
+	return selected_resource_;
+}
+
+void Installation::SetSelectedResourceId(uint64_t new_id)
+{
+	selected_resource_ = new_id;
+
+	GetEventDispatcher()->Dispatch(make_shared<InstallationEvent>
+        ("Installation::SelectedResource",static_pointer_cast<Installation>(shared_from_this())));
 }

@@ -597,8 +597,6 @@ public:
 	
     typedef anh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 private:
-    mutable boost::mutex creature_mutex_;
-
     std::atomic<uint32_t>    bank_credits_;                                                             // update 1 variable 0
     std::atomic<uint32_t>    cash_credits_;                                                             // update 1 variable 1
     swganh::messages::containers::NetworkArray<Stat> stat_base_list_;                                   // update 1 variable 2

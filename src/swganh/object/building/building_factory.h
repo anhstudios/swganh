@@ -4,15 +4,25 @@
 #ifndef SWGANH_OBJECT_BUILDING_BUILDING_FACTORY_H_
 #define SWGANH_OBJECT_BUILDING_BUILDING_FACTORY_H_
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/tangible/tangible_factory.h"
 
 namespace swganh {
 namespace object {
+
+	class ObjectManager;
+
 namespace building {
 
-    class BuildingFactory : public swganh::object::ObjectFactoryInterface
+	class Building;
+
+    class BuildingFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
+		typedef Building ObjectType;
+
+        BuildingFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
+
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
@@ -20,6 +30,9 @@ namespace building {
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+
+		virtual void RegisterEventHandlers(){}
+
     };
 
 }}}  // namespace swganh::object::building

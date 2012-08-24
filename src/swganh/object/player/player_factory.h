@@ -4,7 +4,7 @@
 #ifndef SWGANH_OBJECT_PLAYER_PLAYER_FACTORY_H_
 #define SWGANH_OBJECT_PLAYER_PLAYER_FACTORY_H_
 
-#include "swganh/object/object_factory.h"
+#include "swganh/object/intangible/intangible_factory.h"
 #include <unordered_map>
 
 namespace anh {
@@ -21,9 +21,11 @@ namespace object {
 namespace player {
     
     class Player;
-    class PlayerFactory : public swganh::object::ObjectFactory
+    class PlayerFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
+		typedef Player ObjectType;
+
         PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);

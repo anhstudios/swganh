@@ -9,16 +9,22 @@
 
 #include <glm/glm.hpp>
 
-#include "swganh/object/object.h"
+#include "swganh/object/intangible/intangible.h"
 #include "swganh/object/waypoint/waypoint.h"
 
 namespace swganh {
 namespace object {
 namespace mission {
 
-class Mission : public swganh::object::Object
+class MissionFactory;
+class MissionMessageBuilder;
+
+class Mission : public swganh::object::intangible::Intangible
 {
 public:
+	typedef MissionFactory FactoryType;
+    typedef MissionMessageBuilder MessageBuilderType;
+
     /**
      * @return The type of this object instance.
      */
@@ -231,7 +237,13 @@ public:
      */
     void SetTargetName(std::string target_name);
 
-private:
+	std::shared_ptr<swganh::object::waypoint::Waypoint> GetMissionWaypoint();
+
+	void SetMissionWaypoint(std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint);
+
+protected:
+	typedef anh::ValueEvent<std::shared_ptr<Mission>> MissionEvent;
+
     uint32_t difficulty_level_;
     glm::vec3 starting_position_;
     uint32_t starting_scene_;
@@ -247,7 +259,7 @@ private:
     uint32_t repeat_counter_;
     std::string mission_type_;
     std::string target_name_;
-    swganh::object::waypoint::Waypoint waypoint_;
+    std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint_;
 };
 
 }}}  // swganh::object::mission
