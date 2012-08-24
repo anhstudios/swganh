@@ -16,6 +16,8 @@ namespace tre
 	class SlotArrangementVisitor : public VisitorInterface
 	{
 	public:
+		static const VisitorType Type = SLOT_ARRANGEMENT_VISITOR;
+
 		/**
 			@brief returns the InterpreterType associated with this Interpreter
 		*/

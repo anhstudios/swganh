@@ -23,11 +23,6 @@ namespace tre
 	public:
 
 		/**
-			@brief returns the VisitorType associated with this visitor
-		*/
-		virtual VisitorType getType() { return IFF_VISITOR; }
-
-		/**
 			@brief interprets a IFF::FileNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/

@@ -21,14 +21,10 @@ namespace tre
 	class TerrainVisitor : public VisitorInterface
 	{
 	public:
+		static const VisitorType Type = TRN_VISITOR;
 
 		TerrainVisitor();
 		~TerrainVisitor();
-
-		/**
-			@brief returns the VisitorType associated with this visitor
-		*/
-		virtual VisitorType getType() { return TRN_VISITOR; }
 
 		/**
 			@brief interprets a IFF::FileNode associated with this visitor.

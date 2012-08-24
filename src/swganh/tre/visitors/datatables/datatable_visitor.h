@@ -20,10 +20,7 @@ namespace tre
 	class DatatableVisitor : public VisitorInterface
 	{
 	public:
-		/**
-			@brief returns the VisitorType associated with this Visitor
-		*/
-		virtual VisitorType getType() { return DATATABLE_VISITOR; }
+		static const VisitorType Type = DATATABLE_VISITOR;
 
 		/**
 			@brief interprets a IFF::FileNode associated with this visitor.

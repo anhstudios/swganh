@@ -22,17 +22,14 @@ namespace tre
 	class iff_file
 	{
 	public:
-		//Constructors
-		iff_file(anh::ByteBuffer input, std::shared_ptr<VisitorInterface> interpret=nullptr);
+
+		static void loadIFF(anh::ByteBuffer& input, std::shared_ptr<VisitorInterface> visitor=nullptr);
 
 	private:
-		void loadIFF_(anh::ByteBuffer& inputstream);
-		bool isNodeNameCharacter_(char c);
-		unsigned int getNameSize_(char namedata[], unsigned int size);
-		bool isFolderNode_(std::string& name);
-		std::string getIFFName_(anh::ByteBuffer& input);
-
-		std::shared_ptr<VisitorInterface> visitor_;
+		static bool isNodeNameCharacter_(char c);
+		static unsigned int getNameSize_(char namedata[], unsigned int size);
+		static bool isFolderNode_(std::string& name);
+		static std::string getIFFName_(anh::ByteBuffer& input);
 	};
 }
 }

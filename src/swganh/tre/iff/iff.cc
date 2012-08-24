@@ -7,13 +7,7 @@
 
 using namespace swganh::tre;
 
-iff_file::iff_file(anh::ByteBuffer input, std::shared_ptr<VisitorInterface> visitor)
-	: visitor_(visitor)
-{
-	loadIFF_(input);
-}
-
-void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
+void iff_file::loadIFF(anh::ByteBuffer& inputstream, std::shared_ptr<VisitorInterface> visitor)
 {
 	//We use a stack instead of recursion to make things more straightforward to follow.
 	std::stack<uint32_t> loader;
@@ -45,18 +39,18 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 			{
 				//We must be a folder.
 				loader.push(inputstream.read_position()+size);
-				if(visitor_ != nullptr)
+				if(visitor != nullptr)
 				{
-					visitor_->visit_folder(depth++, name, size);
+					visitor->visit_folder(depth++, name, size);
 				}
 			}
 			else
 			{
 				uint32_t post_data_position_ = inputstream.read_position() + size;
 				//If we have an interpreter we wil have it interpret our data
-				if(visitor_ != nullptr)
+				if(visitor != nullptr)
 				{
-					visitor_->visit_data(depth, name, size, inputstream);
+					visitor->visit_data(depth, name, size, inputstream);
 				}
 				inputstream.read_position(post_data_position_);
 			}

@@ -21,16 +21,12 @@ namespace tre
 	class WsVisitor : public VisitorInterface
 	{
 	public:
+		static const VisitorType Type = WS_VISITOR;
 
 		/**
 			@brief Constructor for a ws interpreter
 		*/
 		WsVisitor();
-
-		/**
-			@brief returns the InterpreterType associated with this Interpreter
-		*/
-		virtual VisitorType getType() { return WS_VISITOR; }
 
 		/**
 			@brief interprets a IFF::FileNode associated with this interpreter.

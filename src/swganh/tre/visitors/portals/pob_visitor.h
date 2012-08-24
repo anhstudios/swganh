@@ -25,6 +25,8 @@ namespace tre
 	class PobVisitor : public VisitorInterface
 	{
 	public:
+		static const VisitorType Type = POB_VISITOR;
+
 		typedef std::function<void(PobVisitor*, anh::ByteBuffer& buffer)> NodeFunctor;
 		typedef std::map<std::string, NodeFunctor> NodeNameIndex;
 		typedef std::map<std::string, NodeFunctor>::iterator NodeNameIndexIterator;
@@ -33,11 +35,6 @@ namespace tre
 			@brief Constructor for a pob interpreter
 		*/
 		PobVisitor();
-
-		/**
-			@brief returns the InterpreterType associated with this Interpreter
-		*/
-		virtual VisitorType getType() { return POB_VISITOR; }
 
 		/**
 			@brief interprets a IFF::FileNode associated with this interpreter.

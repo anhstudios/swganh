@@ -16,10 +16,7 @@ namespace tre
 	class SlotDefinitionVisitor : public VisitorInterface
 	{
 	public:
-		/**
-			@brief returns the InterpreterType associated with this Interpreter
-		*/
-		virtual VisitorType getType() { return SLOT_DEFINITION_VISITOR; }
+		static const VisitorType Type = SLOT_DEFINITION_VISITOR;
 
 		/**
 			@brief interprets a IFF::FileNode associated with this interpreter.

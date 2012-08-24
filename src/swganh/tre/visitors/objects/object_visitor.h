@@ -43,15 +43,12 @@ namespace tre
 	class ObjectVisitor : public VisitorInterface
 	{
 	public:
+		static const VisitorType Type = OIFF_VISITOR;
+
 		/**
 			@brief Constructor for an object iff visitor
 		*/
 		ObjectVisitor();
-				
-		/**
-			@brief returns the VisitorType associated with this visitor
-		*/
-		virtual VisitorType getType() { return OIFF_VISITOR; }
 				
 		/**
 			@brief interprets a IFF::FileNode associated with this visitor.
@@ -97,14 +94,6 @@ namespace tre
 			@param f the filemanager instance for retriving the necessary files.
 		*/
 		void load_aggregate_data(swganh::tre::ResourceManager* f);
-
-		/**
-			@brief Causes this OIFFInterpreter to load any referenced files it has. It will use the filemanager
-			to accomplish this.
-
-			@param f the filemanager instance for retrieving the necessary files.
-		*/
-		void load_referenced_files(swganh::tre::ResourceManager* f);
 
 	private:
 		//Internal Index used to link the handlers with the attributes

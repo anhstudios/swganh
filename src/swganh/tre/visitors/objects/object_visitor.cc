@@ -6,8 +6,6 @@
 #include "../../iff/iff.h"
 
 #include <swganh/tre/resource_manager.h>
-#include <swganh/tre/visitors/slots/slot_arrangement_visitor.h>
-#include <swganh/tre/visitors/slots/slot_descriptor_visitor.h>
 
 using namespace swganh::tre;
 using namespace std;
@@ -224,7 +222,8 @@ void ObjectVisitor::load_aggregate_data(swganh::tre::ResourceManager* f)
 
 		std::for_each(parentFiles.begin(), parentFiles.end(), [&] (std::string parentFile)
 		{
-			auto subI = std::static_pointer_cast<ObjectVisitor>(f->getResourceByName(parentFile, OIFF_VISITOR));
+			auto subI = f->GetResourceByName<ObjectVisitor>(parentFile);
+
 			subI->load_aggregate_data(f);
 
 			//Now we continue to build up our map.
@@ -257,62 +256,4 @@ void ObjectVisitor::load_aggregate_data(swganh::tre::ResourceManager* f)
 		attributes_ = std::move(aggregateAttributeMap);
 		has_aggregate_ = true;		
 	}
-}
-
-void ObjectVisitor::load_referenced_files(swganh::tre::ResourceManager* f)
-{
-	if (loaded_reference_)
-		return;
-	std::map<std::string, std::shared_ptr<boost::any>>::iterator itr;
-	std::map<std::string, std::shared_ptr<boost::any>>::iterator end_itr = attributes_.end();
-
-	//animationMapFilename
-	//appearanceFilename
-	//arrangementDescriptorFilename
-	itr = attributes_.find("arrangementDescriptorFilename");
-	if(itr != end_itr)
-	{
-		std::string value = boost::any_cast<std::string>(*(itr->second));
-		if(value != "") {
-			auto newVal = std::static_pointer_cast<SlotArrangementVisitor>(f->getResourceByName(value, SLOT_ARRANGEMENT_VISITOR));
-			itr->second = std::make_shared<boost::any>(newVal);
-		}
-		else
-		{
-			shared_ptr<SlotArrangementVisitor> arrangement = nullptr;
-			itr->second = make_shared<boost::any>(arrangement);
-		}
-	}
-
-	//clientDataFile
-	//cockpitFileName
-	//interiorLayoutFileName
-	//movementDatatable
-	//portalLayoutFilename
-	/*itr = attributes_.find("portalLayoutFilename");
-	if(itr != end_itr)
-	{
-		itr->second = f.load<pob_interpreter>(itr->first);
-	}*/
-
-	//slotDescriptorFilename
-	itr = attributes_.find("slotDescriptorFilename");
-	if(itr != end_itr)
-	{
-		std::string value = boost::any_cast<std::string>(*(itr->second));
-		if(value != "") {
-			auto newVal = std::static_pointer_cast<SlotDescriptorVisitor>(f->getResourceByName(value, SLOT_DESCRIPTOR_VISITOR));
-			itr->second = std::make_shared<boost::any>(newVal);
-		}
-		else
-		{
-			shared_ptr<SlotDescriptorVisitor> descriptor = nullptr;
-			itr->second = make_shared<boost::any>(descriptor);
-		}
-	}
-
-	//structureFootprintFileName
-	//terrainModificationFileName
-
-	loaded_reference_ = true;
 }
