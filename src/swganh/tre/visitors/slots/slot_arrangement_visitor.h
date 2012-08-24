@@ -16,6 +16,8 @@ namespace tre
 	class SlotArrangementVisitor : public VisitorInterface
 	{
 	public:
+		static const VisitorType Type = SLOT_ARRANGEMENT_VISITOR;
+
 		/**
 			@brief returns the InterpreterType associated with this Interpreter
 		*/
@@ -25,13 +27,13 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this interpreter.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::shared_ptr<file_node> node);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this interpreter.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_folder(uint32_t depth, std::shared_ptr<folder_node> node);
+		virtual void visit_folder(uint32_t depth, std::string name, uint32_t size);
 
 		//const std::vector<std::string>& slots_occupied(size_t id) { return combinations_[id]; };
 

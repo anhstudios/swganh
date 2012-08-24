@@ -52,8 +52,7 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 		shared_ptr<ContainerPermissionsInterface>(new RideablePermissions())));
 
 	//Load slot definitions
-	auto slot_definition = kernel->GetResourceManager()->getResourceByName("abstract/slot/slot_definition/slot_definitions.iff", SLOT_DEFINITION_VISITOR);
-	slot_definition_ = static_pointer_cast<SlotDefinitionVisitor>(slot_definition);	
+	slot_definition_ = kernel->GetResourceManager()->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
 
 	//Load Object Templates
 	auto conn = kernel->GetDatabaseManager()->getConnection("galaxy");
@@ -344,15 +343,17 @@ std::shared_ptr<swganh::tre::SlotDefinitionVisitor>  ObjectManager::GetSlotDefin
 
 void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 {
-	auto oiff = static_pointer_cast<ObjectVisitor>(kernel_->GetResourceManager()->getResourceByName(object->GetTemplate(), OIFF_VISITOR));
+	auto oiff = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(object->GetTemplate());
 	oiff->load_aggregate_data(kernel_->GetResourceManager());
-	oiff->load_referenced_files(kernel_->GetResourceManager());
 
-	auto arrangmentDescriptor = oiff->attribute<std::shared_ptr<SlotArrangementVisitor>>("arrangementDescriptorFilename");
-	auto slotDescriptor = oiff->attribute<std::shared_ptr<SlotDescriptorVisitor>>("slotDescriptorFilename");
+	auto arrangmentDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotArrangementVisitor>(
+		oiff->attribute<std::string>("arrangementDescriptorFilename"));
+
+	auto slotDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotDescriptorVisitor>(
+		oiff->attribute<std::string>("slotDescriptorFilename"));
+
 	ObjectArrangements arrangements;
 		
-	// CRAZY SHIT
 	// arrangements
 	if (arrangmentDescriptor != nullptr)
 	{

@@ -2,19 +2,9 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "ws_visitor.h"
-
-#ifndef WIN32
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
-#else
-#define PRIu64       "I64u"
-#endif
-
-#include "../../iff/iff.h"
-#include "../../iff/filenode.h"
+#include <anh/byte_buffer.h>
 
 using namespace std;
-using namespace std::placeholders;
 using namespace swganh::tre;
 
 WsVisitor::WsVisitor()
@@ -22,20 +12,19 @@ WsVisitor::WsVisitor()
 {
 }
 
-void WsVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
+void WsVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {
 }
 
-void WsVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
+void WsVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
 {
-	const std::string& nameRef = node->name();
-	if(nameRef == "0000DATA")
+	if(name == "0000DATA")
 	{
-		_handle0000DATA(node->data());
+		_handle0000DATA(data);
 	}
-	else if(nameRef == "OTNL")
+	else if(name == "OTNL")
 	{
-		_handleOTNL(node->data());
+		_handleOTNL(data);
 	}
 }
 
