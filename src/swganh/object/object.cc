@@ -4,6 +4,7 @@
 #include "object.h"
 
 #include <glm/gtx/transform2.hpp>
+#include <sstream>
 
 #include "object_events.h"
 
@@ -78,8 +79,7 @@ void Object::ClearController()
 
     Unsubscribe(controller);
 }
-
-void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> obj, int32_t arrangement_id)
+void Object::AddObject(std::shared_ptr<Object> obj, std::shared_ptr<Object> requester, int32_t arrangement_id)
 {
 	if(requester == nullptr || container_permissions_->canInsert(shared_from_this(), requester, obj))
 	{
@@ -804,4 +804,94 @@ void Object::SetInSnapshot(bool value)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	in_snapshot_ = value;
+}
+
+AttributesMap Object::GetAttributeMap()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return attributes_map_;
+}
+
+boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::string& name)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto find_iter = find_if(attributes_map_.begin(), attributes_map_.end(), [&](AttributesMap::value_type key_value)
+	{
+		return key_value.first == name;
+	});
+	if (find_iter != attributes_map_.end())
+	{
+		return find_iter->second;
+	}	
+	LOG(error) << "Attribute "<< name << " does not exist";	
+	return L"";
+	//throw std::runtime_error("Attribute " + name + " does not exist");
+}
+
+std::wstring Object::GetAttributeAsString(const std::string& name)
+{
+	try {
+		auto val = GetAttribute(name);
+
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		wstringstream attribute;
+		switch (val.which())
+		{
+			// float
+			case 0:
+				attribute << boost::get<float>(val);
+				break;
+			case 1:
+				attribute << boost::get<int32_t>(val);
+				break;
+			case 2:
+				return boost::get<wstring>(val);
+
+		}
+	} catch (std::exception& e) {
+		LOG(error) << "Attribute " << name << " could not be converted to wstring";
+		throw e;
+	}
+	return L"";
+}
+
+uint8_t Object::GetAttributeTemplateId()
+{
+	return attributes_template_id;
+}
+
+void Object::SetAttributeTemplateId(uint8_t attribute_template_id)
+{
+	attributes_template_id = attribute_template_id;
+}
+
+std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	wstringstream ss;
+	auto val = GetAttributeRecursive(name);
+	ss << val;
+	return ss.str();
+}
+boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto val = GetAttribute(name);
+	float float_val;
+	int32_t int_val;
+	wstring attr_val;
+	switch(val.which())
+	{
+		// float
+		case 0:
+			 float_val = boost::get<float>(val);
+			return AddAttributeRecursive<float>(float_val, name);			
+		case 1:
+			int_val = boost::get<int32_t>(val);
+			return AddAttributeRecursive<int32_t>(int_val, name);			
+		case 2:
+			attr_val = boost::get<wstring>(val);
+			return AddAttributeRecursive<wstring>(attr_val, name);			
+	}	
+	return boost::get<wstring>(val);
 }

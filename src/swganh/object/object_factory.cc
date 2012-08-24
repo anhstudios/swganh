@@ -196,12 +196,12 @@ void ObjectFactory::LoadContainedObjects(
 			if(contained_object->GetArrangementId() == -2)
 			{
 				//This object has never been loaded before and needs to be put into the default slot.
-				object->AddObject(nullptr, contained_object);
+				object->AddObject(contained_object);
 			}
 			else 
 			{
 				//Put it back where it was persisted
-				object->AddObject(nullptr, contained_object, contained_object->GetArrangementId());
+				object->AddObject(contained_object, nullptr, contained_object->GetArrangementId());
 			}
 
         }

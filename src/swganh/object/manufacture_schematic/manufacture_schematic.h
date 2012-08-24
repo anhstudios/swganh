@@ -8,13 +8,14 @@
 #include <string>
 
 #include "pub14_core/messages/containers/network_array.h"
+#include "pub14_core/messages/containers/network_sorted_vector.h"
+#include "pub14_core/messages/containers/network_map.h"
 
 #include "swganh/object/intangible/intangible.h"
 
 namespace swganh {
 namespace object {
 namespace manufacture_schematic {
-
 class ManufactureSchematic : public swganh::object::intangible::Intangible
 {
 public:
@@ -23,6 +24,20 @@ public:
         std::string property_stf_file;
         std::string property_stf_name;
         float value;
+
+		bool operator==(const Property& other)
+		{
+			return other.value == value;
+		}
+		void Serialize(swganh::messages::BaselinesMessage& message)
+		{
+			
+		}
+
+		void Serialize(swganh::messages::DeltasMessage& message)
+		{
+        
+		}
     };
 
     struct Slot 
@@ -34,6 +49,18 @@ public:
         uint64_t ingredient;
         uint32_t ingredient_quantity;
         uint32_t clean;
+
+		bool operator==(const Slot& other) const
+		{
+			return other.ingredient == ingredient;
+		}
+		void Serialize(swganh::messages::BaselinesMessage& message)
+		{
+		}
+
+		void Serialize(swganh::messages::DeltasMessage& message)
+		{
+		}
     };
 
     struct Experiment
@@ -45,8 +72,19 @@ public:
         float offset;
         float size;
         float max_value;
-    };
+		bool operator==(const Experiment& other)
+		{
+			return other.value == value;
+		}
+		void Serialize(swganh::messages::BaselinesMessage& message)
+		{
+		}
 
+		void Serialize(swganh::messages::DeltasMessage& message)
+		{
+		}
+    };
+	
     struct Customization
     {
         uint16_t index;
@@ -54,9 +92,22 @@ public:
         uint32_t pallet_selection;
         uint32_t pallet_start_index;
         uint32_t pallet_end_index;
+
+		bool operator==(const Customization& other)
+		{
+			return other.name == name;
+		}
+		void Serialize(swganh::messages::BaselinesMessage& message)
+		{
+		}
+
+		void Serialize(swganh::messages::DeltasMessage& message)
+		{
+		}
     };
 
 public:
+	ManufactureSchematic();
     // MSCO
     /**
      * @return The type of the object.
@@ -87,7 +138,7 @@ public:
     /**
      * @return property list.
      */
-    std::vector<Property> GetProperties() const;
+    swganh::messages::containers::NetworkArray<Property> GetProperties() const;
     
     /**
      * Adds a property to the properties list.
@@ -160,14 +211,14 @@ public:
     /**
      * @return the customization string set in the item customization phase.
      */
-    std::vector<uint8_t> GetCustomizationString() const;
+    std::string GetCustomizationString() const;
 
     /**
      * Sets the customization string set in the item customization phase.
      *
-     * @param customization_string The customization string.
+     * @param Customization string
      */
-    void SetCustomizationString(std::vector<uint8_t> customization_string);
+    void SetCustomizationString(const std::string& customization_string);
 
     /**
      * By default is null, gets set via a delta update later in the crafting session.
@@ -247,7 +298,7 @@ public:
     /**
      * @return the list of ingredient slots.
      */
-    std::vector<Slot> GetSlots() const;
+    swganh::messages::containers::NetworkSortedVector<Slot> GetSlots() const;
 
     /**
      * Removes an ingredient slot.
@@ -266,7 +317,9 @@ public:
         uint64_t ingredient,
         uint32_t ingredient_quantity,
         uint32_t clean);
-
+	uint16_t AddSlot(
+		Slot slot
+		);
 
     void UpdateSlot(
         uint16_t index,
@@ -292,7 +345,7 @@ public:
     /**
      * @return experiment list.
      */
-    std::vector<Experiment> GetExperiments() const;
+    swganh::messages::containers::NetworkSortedVector<Experiment> GetExperiments() const;
 
     /**
      * Removes an experiment.
@@ -319,6 +372,10 @@ public:
         float offset,
         float size,
         float max_value);
+
+	uint16_t AddExperiment(
+		Experiment experiment
+		);
 
     /**
      * Updates an experiment.
@@ -355,7 +412,7 @@ public:
     /**
      * @return customizations list.
      */
-    std::vector<Customization> GetCustomizations() const;
+    swganh::messages::containers::NetworkSortedVector<Customization> GetCustomizations() const;
     
     /**
      * Removes a customization.
@@ -420,31 +477,25 @@ public:
      */
     void ToggleReady();
 
-private:
 	typedef anh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
 
-    uint32_t property_counter_;
-    std::vector<Property> properties_;
+private:
+	swganh::messages::containers::NetworkArray<Property> properties_;
     std::wstring creator_;
-    uint32_t complexity_;
+    std::atomic<uint32_t> complexity_;
     float schematic_data_size_;
-    std::vector<uint8_t> customization_;
+    std::string customization_;
     std::string customization_model_;
     std::string prototype_model_;
     bool is_active_;
-    uint8_t slot_count_;
+    std::atomic<uint8_t> slot_count_;
     
-	std::vector<Slot> slots_;
+	swganh::messages::containers::NetworkSortedVector<Slot> slots_;
 
-
-    uint32_t slot_counter_;
-    uint32_t ingredients_counter_;
-    std::vector<Experiment> experiments_;
-    uint32_t experiment_counter_;
-    std::vector<Customization> customizations_;
-    uint32_t customization_counter_;
+    swganh::messages::containers::NetworkSortedVector<Experiment> experiments_;
+    swganh::messages::containers::NetworkSortedVector<Customization> customizations_;
     float risk_factor_;
-    bool is_ready_;
+    std::atomic<bool> is_ready_;
 };
 
 }}}  // namespace swganh::object::manufacture_schematic

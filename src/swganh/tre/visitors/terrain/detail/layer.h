@@ -15,7 +15,7 @@ namespace tre
 		LAYER_TYPE_BOUNDARY,
 		LAYER_TYPE_BOUNDARY_POLYGON, //Special due to water
 		LAYER_TYPE_HEIGHT,
-		LAYER_TYPE_FILTER,
+		LAYER_TYPE_FILTER
 	};
 
 	class Layer

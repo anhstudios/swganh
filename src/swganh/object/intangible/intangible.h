@@ -33,7 +33,7 @@ public:
 	void SetGenericInt(uint32_t generic_int);
 
 protected:
-	uint32_t generic_int_;
+	std::atomic<uint32_t> generic_int_;
 };
     
 }}}  // namespace swganh::object::intangible

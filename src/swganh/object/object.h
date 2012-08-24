@@ -14,6 +14,7 @@
 #include <vector>
 
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include <glm/glm.hpp>
@@ -50,6 +51,10 @@ typedef std::vector<
     swganh::messages::DeltasMessage
 > DeltasCacheContainer;
 
+typedef std::map<
+	anh::HashString,
+	boost::variant<float, int32_t, std::wstring>
+> AttributesMap;
 
 typedef std::map<
 	int32_t,
@@ -57,6 +62,8 @@ typedef std::map<
 > ObjectSlots;
 
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
+
+typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 
 class ObjectFactory;
 class ObjectMessageBuilder;
@@ -104,8 +111,7 @@ public:
 		WEAPON = 1789660414,
 		GUILD = 1145850183,
 		GROUP = 1196578128,
-		RESOURCE_CONTAINER = 1380142671,
-
+		RESOURCE_CONTAINER = 1380142671
 	};
 	
 	typedef std::map<
@@ -142,7 +148,7 @@ public:
      */
     void ClearController();
 
-	virtual void AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2);
+	virtual void AddObject(std::shared_ptr<Object> newObject, std::shared_ptr<Object> requester = nullptr, int32_t arrangement_id=-2);
 	virtual void RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject);
 	virtual void TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
 	virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id);
@@ -438,7 +444,7 @@ public:
 
     void ClearBaselines();
     void ClearDeltas();
-    typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
+    
 
 	void SetFlag(std::string flag);
     void RemoveFlag(std::string flag);
@@ -499,10 +505,68 @@ public:
 	 */
 	ObjectArrangements GetSlotArrangements();
 
+
 	bool IsDatabasePersisted();
 	bool IsInSnapshot();
 	void SetDatabasePersisted(bool value);
 	void SetInSnapshot(bool value);
+
+	/**
+	 * @brief Gets the Attribute Map
+	 */ 
+	AttributesMap GetAttributeMap();
+
+	/**
+	 * @brief Sets an attribute of the specified type
+	 */
+	template<typename T>
+	void SetAttribute(const std::string& name, T attribute)
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		attributes_map_[name] = attribute;
+
+		event_dispatcher_->Dispatch(std::make_shared<ObjectEvent>("Object::UpdateAttribute", shared_from_this()));
+	}
+
+	/**
+	 * @brief Gets an attribute as the specified T type
+	 */
+	template<typename T>
+	T GetAttribute(const std::string& name)
+	{
+		auto val = GetAttribute(name);
+		return boost::get<T>(val);
+	}
+	/**
+	 * @brief Gets an attribute value and then converts it to a wstring for printing
+	 */
+	std::wstring GetAttributeAsString(const std::string& name);
+	boost::variant<float, int32_t, std::wstring> GetAttribute(const std::string& name);
+
+	std::wstring GetAttributeRecursiveAsString(const std::string& name);
+	boost::variant<float, int32_t, std::wstring> GetAttributeRecursive(const std::string& name);
+	template<typename T>
+	T GetAttributeRecursive(const std::string& name)
+	{
+		auto val = GetAttributeRecursive(name);
+		return boost::get<T>(val);
+	}
+	template<typename T>
+	T AddAttributeRecursive(T val, const std::string& name)
+	{
+		ViewObjects(nullptr, 1, false, [&](std::shared_ptr<Object> recurse)
+		{
+			T found_val = recurse->GetAttribute<T>(name);
+			// Add Values
+			val += found_val;
+		});
+
+		return val;
+	}
+
+	uint8_t GetAttributeTemplateId();
+	void SetAttributeTemplateId(uint8_t attribute_template_id);
+
 
 protected:
 	// Radials
@@ -519,13 +583,15 @@ protected:
     std::wstring custom_name_;                       // update 3
     std::atomic<uint32_t> volume_;                   // update 3
     std::atomic<int32_t> arrangement_id_;
-	
+	std::atomic<uint8_t> attributes_template_id;	 // Used to determine which attribute template to use
 	mutable boost::mutex object_mutex_;
 
 private:
     
     typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
+
+	AttributesMap attributes_map_;
 
     ObjectSlots slot_descriptor_;
 	ObjectArrangements slot_arrangements_;

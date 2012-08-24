@@ -22,6 +22,7 @@
 #include "swganh/sui/sui_service_interface.h"
 #include "swganh/terrain/terrain_service_interface.h"
 #include "swganh/equipment/equipment_service_interface.h"
+#include "swganh/simulation/spatial_provider_interface.h"
 
 #include <boost/python.hpp>
 
@@ -37,7 +38,7 @@ void exportSWGANHKernel()
     class_<SwganhKernel, bases<KernelInterface>, boost::noncopyable>("SWGKernel", "Provides an interface to access the Service Manager and App Configuration", no_init)
         .def("app_config", &swganh::app::SwganhKernel::GetAppConfig, return_value_policy<copy_non_const_reference>(), "gets the app configuration")
         .def("service_manager", &swganh::app::SwganhKernel::GetServiceManager,return_internal_reference<>(), "Gets the application's :class:`.ServiceManager`")
-        .def("event_dispatcher", &swganh::app::SwganhKernel::GetEventDispatcher, return_internal_reference<>(), "gets the applications :class:`.EventDispatcher`")
+        .def("event_dispatcher", &swganh::app::SwganhKernel::GetEventDispatcher, return_value_policy<reference_existing_object>(), "gets the applications :class:`.EventDispatcher`")
         ;
 
     class_<anh::service::ServiceManager, boost::noncopyable>("ServiceManager", "provides an interface to common services", no_init)

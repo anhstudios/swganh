@@ -38,6 +38,8 @@ namespace simulation {
         virtual void StartScene(const std::string& scene_label) = 0;
         virtual void StopScene(const std::string& scene_label) = 0;
 
+		virtual void AddObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene_label) = 0;
+
         virtual void RegisterObjectFactories() = 0;
 
         virtual void PersistObject(uint64_t object_id) = 0;
