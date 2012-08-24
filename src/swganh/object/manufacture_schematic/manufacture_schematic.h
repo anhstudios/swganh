@@ -16,9 +16,6 @@
 namespace swganh {
 namespace object {
 namespace manufacture_schematic {
-
-typedef anh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
-
 class ManufactureSchematic : public swganh::object::intangible::Intangible
 {
 public:
@@ -27,6 +24,20 @@ public:
         std::string property_stf_file;
         std::string property_stf_name;
         float value;
+
+		bool operator==(const Property& other)
+		{
+			return other.value == value;
+		}
+		void Serialize(swganh::messages::BaselinesMessage& message)
+		{
+			
+		}
+
+		void Serialize(swganh::messages::DeltasMessage& message)
+		{
+        
+		}
     };
 
     struct Slot 
@@ -38,6 +49,18 @@ public:
         uint64_t ingredient;
         uint32_t ingredient_quantity;
         uint32_t clean;
+
+		bool operator==(const Slot& other) const
+		{
+			return other.ingredient == ingredient;
+		}
+		void Serialize(swganh::messages::BaselinesMessage& message)
+		{
+		}
+
+		void Serialize(swganh::messages::DeltasMessage& message)
+		{
+		}
     };
 
     struct Experiment
@@ -49,6 +72,17 @@ public:
         float offset;
         float size;
         float max_value;
+		bool operator==(const Experiment& other)
+		{
+			return other.value == value;
+		}
+		void Serialize(swganh::messages::BaselinesMessage& message)
+		{
+		}
+
+		void Serialize(swganh::messages::DeltasMessage& message)
+		{
+		}
     };
 	
     struct Customization
@@ -58,9 +92,22 @@ public:
         uint32_t pallet_selection;
         uint32_t pallet_start_index;
         uint32_t pallet_end_index;
+
+		bool operator==(const Customization& other)
+		{
+			return other.name == name;
+		}
+		void Serialize(swganh::messages::BaselinesMessage& message)
+		{
+		}
+
+		void Serialize(swganh::messages::DeltasMessage& message)
+		{
+		}
     };
 
 public:
+	ManufactureSchematic();
     // MSCO
     /**
      * @return The type of the object.
@@ -91,7 +138,7 @@ public:
     /**
      * @return property list.
      */
-    swganh::messages::containers::NetworkMap<std::string, float> GetProperties() const;
+    swganh::messages::containers::NetworkArray<Property> GetProperties() const;
     
     /**
      * Adds a property to the properties list.
@@ -430,8 +477,10 @@ public:
      */
     void ToggleReady();
 
+	typedef anh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
+
 private:
-	swganh::messages::containers::NetworkMap<std::string, float> properties_;
+	swganh::messages::containers::NetworkArray<Property> properties_;
     std::wstring creator_;
     std::atomic<uint32_t> complexity_;
     float schematic_data_size_;

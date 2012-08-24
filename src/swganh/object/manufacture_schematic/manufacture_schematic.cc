@@ -11,6 +11,24 @@ using namespace swganh::object::manufacture_schematic;
 using namespace swganh::messages;
 using namespace containers;
 
+
+ManufactureSchematic::ManufactureSchematic()
+	: properties_(NetworkArray<Property>(14))
+	, creator_(L"")
+	, complexity_(0)
+	, schematic_data_size_(0.0f)
+	, customization_()
+	, customization_model_()
+	, prototype_model_()
+	, is_active_(false)
+	, slot_count_(0)
+	, slots_(NetworkSortedVector<Slot>(8))
+	, experiments_(NetworkSortedVector<Experiment>(12))
+	, customizations_(NetworkSortedVector<Customization>(14))
+	, risk_factor_(0.0f)
+	, is_ready_(true)
+{}
+
 uint32_t ManufactureSchematic::GetType() const
 { 
     return ManufactureSchematic::type; 
@@ -42,10 +60,10 @@ void ManufactureSchematic::IncrementSchematicQuantity(int32_t increment_by)
 		("ManufactureSchematic::Quantity", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
 }
 
-NetworkMap<std::string, float> ManufactureSchematic::GetProperties() const
-{
-	return properties_;
-}
+//NetworkArray<Property> ManufactureSchematic::GetProperties() const
+//{
+//	return properties_;
+//}
 
 void ManufactureSchematic::AddProperty(
     std::string property_stf_file,
@@ -54,7 +72,7 @@ void ManufactureSchematic::AddProperty(
 {
 	{
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		properties_.Add(property_stf_file + ":" + property_stf_name, value);
+		//properties_.Add(property_stf_file + ":" + property_stf_name, value);
 	}
 	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
 		("ManufactureSchematic::Property", static_pointer_cast<ManufactureSchematic>(shared_from_this())));
@@ -67,11 +85,11 @@ void ManufactureSchematic::RemoveProperty(
     float value)
 {
 	{
-		std::string stf = property_stf_file + ":" + property_stf_name;
+		/*std::string stf = property_stf_file + ":" + property_stf_name;
 		auto iter = properties_.Find(stf);
 		if (iter != properties_.end())
 			properties_.Remove(iter);
-		else
+		else*/
 			return;
 	}
 	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
@@ -85,10 +103,10 @@ void ManufactureSchematic::UpdateProperty(
 {
 	{
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		std::string stf = property_stf_file + ":" + property_stf_name;
+		/*std::string stf = property_stf_file + ":" + property_stf_name;
 		if (properties_.Contains(stf))
 			properties_.Update(stf, value);
-		else
+		else*/
 			return;
 	}
 	GetEventDispatcher()->Dispatch(make_shared<ManufactureSchematicEvent>
@@ -591,7 +609,6 @@ void ManufactureSchematic::UpdateCustomization(
     uint32_t pallet_start_index,
     uint32_t pallet_end_index)
 {
-	int32_t index;
 	{
 		boost::lock_guard<boost::mutex> lock(object_mutex_);
 		auto find_iter = find_if(

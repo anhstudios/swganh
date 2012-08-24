@@ -53,6 +53,18 @@
 #include "swganh/object/guild/guild_factory.h"
 #include "swganh/object/guild/guild_message_builder.h"
 
+#include "swganh/object/installation/installation.h"
+#include "swganh/object/installation/installation_factory.h"
+#include "swganh/object/installation/installation_message_builder.h"
+
+#include "swganh/object/harvester_installation/harvester_installation.h"
+#include "swganh/object/harvester_installation/harvester_installation_factory.h"
+#include "swganh/object/harvester_installation/harvester_installation_message_builder.h"
+
+#include "swganh/object/installation/installation.h"
+#include "swganh/object/installation/installation_factory.h"
+#include "swganh/object/installation/installation_message_builder.h"
+
 #include "swganh/object/intangible/intangible.h"
 #include "swganh/object/intangible/intangible_factory.h"
 #include "swganh/object/intangible/intangible_message_builder.h"

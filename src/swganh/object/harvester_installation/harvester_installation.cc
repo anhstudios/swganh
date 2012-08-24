@@ -3,7 +3,12 @@
 
 #include "swganh/object/harvester_installation/harvester_installation.h"
 
-using namespace swganh::object::installation;
+using namespace swganh::object::harvester_installation;
+
+HarvesterInstallation::HarvesterInstallation()
+	: Installation()
+{
+}
 
 uint32_t HarvesterInstallation::GetType() const
 { 

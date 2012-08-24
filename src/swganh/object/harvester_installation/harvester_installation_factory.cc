@@ -8,6 +8,12 @@
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::installation;
+using namespace swganh::object::harvester_installation;
+
+HarvesterInstallationFactory::HarvesterInstallationFactory(anh::database::DatabaseManagerInterface* db_manager, anh::EventDispatcher* event_dispatcher)
+	: InstallationFactory(db_manager, event_dispatcher)
+{
+}
 
 uint32_t HarvesterInstallationFactory::PersistObject(const shared_ptr<Object>& object)
 {
@@ -21,10 +27,10 @@ void HarvesterInstallationFactory::DeleteObjectFromStorage(const shared_ptr<Obje
 
 shared_ptr<Object> HarvesterInstallationFactory::CreateObjectFromStorage(uint64_t object_id)
 {
-    return make_shared<Installation>();
+    return make_shared<HarvesterInstallation>();
 }
 
 shared_ptr<Object> HarvesterInstallationFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-    return make_shared<Installation>();
+    return make_shared<HarvesterInstallation>();
 }

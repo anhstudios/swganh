@@ -54,7 +54,7 @@ public:
 	void Remove(uint16_t index)
 	{
 		items_removed_.push_back(index);
-		items_.erase(items.begin()+index);
+		items_.erase(items_.begin()+index);
 	}
 
     void Remove(iterator iter)

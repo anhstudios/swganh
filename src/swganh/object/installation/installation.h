@@ -15,9 +15,13 @@ namespace swganh {
 namespace object {
 namespace installation {
 
+class InstallationFactory;
+class InstallationMessageBuilder;
 class Installation : public swganh::object::tangible::Tangible
 {
 public:
+	typedef InstallationFactory FactoryType;
+    typedef InstallationMessageBuilder MessageBuilderType;
 
 	struct Resource
 	{
@@ -30,9 +34,15 @@ public:
     {
         uint64_t global_id;
         float quantity;
+
+		bool operator==(const HopperItem& other)
+		{
+			return other.global_id == global_id;
+		}
     };
 
-public:
+	Installation();
+
     /**
      * @return The type of this object instance.
      */
@@ -150,7 +160,7 @@ public:
     /**
      * @return The current percentage efficiency of extraction that is displayed
      */
-    uint32_t GetDisplayedCurrentExtractionRate() const;
+    uint32_t GetDisplayedMaxExtractionRate() const;
 
     /**
      * Sets the maximum possible extraction rate.

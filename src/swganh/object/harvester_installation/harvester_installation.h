@@ -1,18 +1,25 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_OBJECT_INSTALLATION_HARVESTER_INSTALLATION_H_
-#define SWGANH_OBJECT_INSTALLATION_HARVESTER_INSTALLATION_H_
+#ifndef SWGANH_OBJECT_HARVESTER_INSTALLATION_HARVESTER_INSTALLATION_H_
+#define SWGANH_OBJECT_HARVESTER_INSTALLATION_HARVESTER_INSTALLATION_H_
 
 #include "swganh/object/installation/installation.h"
 
 namespace swganh {
 namespace object {
-namespace installation {
+namespace harvester_installation {
 
-class HarvesterInstallation : public Installation
+class HarvesterInstallationFactory;
+class HarvesterInstallationMessageBuilder;
+class HarvesterInstallation : public swganh::object::installation::Installation
 {
 public:
+	typedef HarvesterInstallationFactory FactoryType;
+    typedef HarvesterInstallationMessageBuilder MessageBuilderType;
+
+	HarvesterInstallation();
+
     /**
      * @return The type of this object instance.
      */
