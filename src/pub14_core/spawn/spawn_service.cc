@@ -50,6 +50,7 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 					object->SetEventDispatcher(kernel_->GetEventDispatcher());
 					object->SetPosition(chunk.location);
 					object->SetOrientation(chunk.orientation);
+					object->SetSceneId(real_event->scene_id);
 					
 					//@Todo: Set scale
 				

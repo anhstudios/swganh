@@ -260,6 +260,8 @@ std::shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const std::strin
 			created_object = factory_itr->second->CreateObjectFromTemplate(template_name, false, false);
 			if(created_object != nullptr)
 			{
+				created_object->SetPermissions(permissions_objects_.find(DEFAULT_CONTAINER_PERMISSION)->second);
+
 				created_object->SetObjectId(object_id);
 				object_map_.insert(make_pair(object_id, created_object));
 			}

@@ -307,7 +307,11 @@ public:
         start_scene.position = obj->GetPosition();
         start_scene.shared_race_template = obj->GetTemplate();
         start_scene.galaxy_time = 0;
-        obj->GetController()->GetRemoteClient()->SendTo(start_scene);
+
+		if(obj->GetController() != nullptr)
+		{
+			obj->GetController()->GetRemoteClient()->SendTo(start_scene);
+		}
 
         // Add object to scene and send baselines
         scene_obj->AddObject(obj);
