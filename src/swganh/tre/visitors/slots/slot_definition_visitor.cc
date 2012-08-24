@@ -4,25 +4,21 @@
 #include "slot_definition_visitor.h"
 
 #include "../../iff/iff.h"
-#include "../../iff/filenode.h"
-#include "../../iff/foldernode.h"
 
 using namespace std;
 using namespace swganh::tre;
 
-void SlotDefinitionVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
+void SlotDefinitionVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {
 }
 
-void SlotDefinitionVisitor::visit_data(uint32_t depth, shared_ptr<file_node> node)
+void SlotDefinitionVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
 {
-	if(node->name() == "0006DATA")
+	if(name == "0006DATA")
 	{
-		_handle0006DATA(node->data());
+		_handle0006DATA(data);
 	}
 }
-
-
 
 void SlotDefinitionVisitor::_handle0006DATA(anh::ByteBuffer& buf)
 {

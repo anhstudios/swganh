@@ -18,9 +18,6 @@ namespace swganh
 {
 namespace tre
 {
-	class file_node;
-	class folder_node;
-
 	class VisitorInterface
 	{
 	public:
@@ -34,13 +31,13 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::shared_ptr<file_node> node) = 0;
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data) = 0;
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_folder(uint32_t depth, std::shared_ptr<folder_node> node) = 0;
+		virtual void visit_folder(uint32_t depth, std::string name, uint32_t size) = 0;
 	};
 }
 }

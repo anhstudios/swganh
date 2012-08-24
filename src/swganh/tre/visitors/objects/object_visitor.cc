@@ -4,8 +4,6 @@
 #include "object_visitor.h"
 
 #include "../../iff/iff.h"
-#include "../../iff/filenode.h"
-#include "../../iff/foldernode.h"
 
 #include <swganh/tre/resource_manager.h>
 #include <swganh/tre/visitors/slots/slot_arrangement_visitor.h>
@@ -119,32 +117,26 @@ ObjectVisitor::ObjectVisitor()
 	}
 }
 
-void ObjectVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
+void ObjectVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {}
 
-void ObjectVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
+void ObjectVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
 {
-	const std::string& nameRef = node->name();
-	if(nameRef == "XXXX")
+	if(name == "XXXX")
 	{
-		_handleXXXX(node->data());
+		_handleXXXX(data);
 	}
-	else if(nameRef == "DERVXXXX")
+	else if(name == "DERVXXXX")
 	{
-		_handleDERVXXXX(node->data());
+		_handleDERVXXXX(data);
 	}
-
 }
 
 void ObjectVisitor::_handleXXXX(anh::ByteBuffer& buf)
 {
 	if(buf.size() > 0)
 	{
-		if(buf.peek<char>() == 1)
-		{
-			//This is a weird schematic edge case
-		}
-		else
+		if(buf.peek<char>() != 1)
 		{
 			std::string attributeName = buf.read<std::string>(false,true);
 			AttributeHandlerIndexIterator it = attributeHandler_.find(attributeName);
