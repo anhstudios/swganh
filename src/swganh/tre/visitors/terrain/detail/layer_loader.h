@@ -1,7 +1,7 @@
 #pragma once
-#include "swganh/tre/iff/foldernode.h"
 
-using namespace swganh::tre;
+#include <string>
+
 
 namespace swganh
 {
@@ -10,4 +10,4 @@ namespace tre {
 }
 }
 
-swganh::tre::Layer* LayerLoader(std::shared_ptr<folder_node> node);
+swganh::tre::Layer* LayerLoader(std::string node_name);

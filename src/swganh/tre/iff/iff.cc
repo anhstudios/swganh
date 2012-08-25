@@ -2,38 +2,22 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "iff.h"
-#include "node.h"
-#include "filenode.h"
-#include "foldernode.h"
 
 #include <stack>
 
 using namespace swganh::tre;
 
-iff_file::iff_file(anh::ByteBuffer input, std::shared_ptr<VisitorInterface> visitor)
-	: visitor_(visitor)
-{
-	loadIFF_(input);
-}
-
-iff_file& iff_file::operator=(iff_file&& other)
-{
-	visitor_ = other.visitor_;
-	headNodes = other.headNodes;
-	return *this;
-}
-
-void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
+void iff_file::loadIFF(anh::ByteBuffer& inputstream, std::shared_ptr<VisitorInterface> visitor)
 {
 	//We use a stack instead of recursion to make things more straightforward to follow.
-	std::stack<std::pair<std::shared_ptr<folder_node>, unsigned int>> loader;
+	std::stack<uint32_t> loader;
 	int depth = 1;
 
 	//While the stream is not finished
 	while(inputstream.read_position() < inputstream.size())
 	{
 		//We check to see if our read_position has exited a folder node on the stack
-		if(!loader.empty() && inputstream.read_position() == loader.top().second)
+		if(!loader.empty() && inputstream.read_position() == loader.top())
 		{
 			//It has, so we pop the folder node off the stack
 			loader.pop();
@@ -54,67 +38,21 @@ void iff_file::loadIFF_(anh::ByteBuffer& inputstream)
 			if(size >= 4 && isFolderNode_(name))
 			{
 				//We must be a folder.
-				if(loader.empty())
+				loader.push(inputstream.read_position()+size);
+				if(visitor != nullptr)
 				{
-					//The loader is empty, so we don't have a parent, and we need to be pushed back on to the head nodes instead of our parent's child list
-					
-					loader.push(std::make_pair<std::shared_ptr<folder_node>,unsigned int>(
-						std::make_shared<folder_node>(name, size),
-							inputstream.read_position()+size));
-
-					std::shared_ptr<folder_node> folder(loader.top().first);
-					headNodes.push_back(folder);
-
-					if(visitor_ != nullptr)
-					{
-						visitor_->visit_folder(depth++, folder);
-					}
+					visitor->visit_folder(depth++, name, size);
 				}
-				else
-				{
-					//The loader has something, so we have a parent we need to register with
-					auto oldTop = loader.top().first;
-					loader.push(std::make_pair<std::shared_ptr<folder_node>,unsigned int>(
-						std::make_shared<folder_node>(name, size, loader.top().first), 
-						inputstream.read_position()+size));
-
-					std::shared_ptr<folder_node> folder(loader.top().first);
-					oldTop->add(folder);
-					if(visitor_ != nullptr)
-					{
-						visitor_->visit_folder(depth++, folder);
-					}
-				}	
 			}
 			else
 			{
-				//We must be a file.
-				if(loader.empty())
+				uint32_t post_data_position_ = inputstream.read_position() + size;
+				//If we have an interpreter we wil have it interpret our data
+				if(visitor != nullptr)
 				{
-					//The loader has nothing. This is weird for a file node, but we'll try and handle it anyway
-					std::shared_ptr<file_node> file = std::make_shared<file_node>(name, size);
-					file->loadData(inputstream);
-					headNodes.push_back(file);
-
-					//If we hae an interpreter we will have it interpret our data
-					if(visitor_ != nullptr)
-					{
-						visitor_->visit_data(depth, file);
-					}
+					visitor->visit_data(depth, name, size, inputstream);
 				}
-				else
-				{
-					//The loader has a folder for us to register with
-					std::shared_ptr<file_node> file = std::make_shared<file_node>(name, size, loader.top().first);
-					file->loadData(inputstream);
-					loader.top().first->add(file);
-
-					//If we have an interpreter we wil have it interpret our data
-					if(visitor_ != nullptr)
-					{
-						visitor_->visit_data(depth, file);
-					}
-				}
+				inputstream.read_position(post_data_position_);
 			}
 		}
 	}
