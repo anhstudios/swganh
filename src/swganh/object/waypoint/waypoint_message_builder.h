@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_WAYPOINT_WAYPOINT_MESSAGE_BUILDER_H_
-#define SWGANH_OBJECT_WAYPOINT_WAYPOINT_MESSAGE_BUILDER_H_
+#pragma once
 
 #include "swganh/object/intangible/intangible_message_builder.h"
 
@@ -40,5 +38,3 @@ namespace waypoint {
     };
 
 }}}  // swganh::object::waypoint
-
-#endif  // SWGANH_OBJECT_WAYPOINT_WAYPOINT_MESSAGE_BUILDER_H_

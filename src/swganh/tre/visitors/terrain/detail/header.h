@@ -1,5 +1,4 @@
-#ifndef TRN_HEADER_H_
-#define TRN_HEADER_H_
+#pragma once
 
 #include <string>
 #include <anh/byte_buffer.h>
@@ -65,4 +64,3 @@ struct TrnHeader
 
 }
 }
-#endif

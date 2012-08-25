@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_SIMULATION_SIMULATION_SERVICE_H_
-#define PUB14_CORE_SIMULATION_SIMULATION_SERVICE_H_
+#pragma once
 
 #include "swganh/simulation/simulation_service_interface.h"
 
@@ -67,7 +65,9 @@ namespace simulation {
 
         void Startup();
 
-		std::shared_ptr<swganh::object::ObjectManager> GetObjectManager();
+        virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
+			swganh::object::PermissionType type=swganh::object::DEFAULT_CONTAINER_PERMISSION, bool is_persisted=true, 
+			bool is_initialized=true, uint64_t object_id=0);
 
     private:
 
@@ -77,5 +77,3 @@ namespace simulation {
     };
 
 }}  // namespace swganh_core::simulation
-
-#endif  // PUB14_CORE_SIMULATION_SIMULATION_SERVICE_H_

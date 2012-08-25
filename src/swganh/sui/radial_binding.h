@@ -1,6 +1,4 @@
-#ifndef SWGANH_SUI_RADIAL_BINDING_H_
-#define SWGANH_SUI_RADIAL_BINDING_H_
-
+#pragma once
 
 #ifndef WIN32
 #include <Python.h>
@@ -334,5 +332,3 @@ namespace sui {
 			.value("StopManufacture", StopManufacture);
 	}
 }}
-
-#endif //SWGANH_SUI_RADIAL_BINDING_H_

@@ -1,5 +1,4 @@
-#ifndef TERRAIN_LAYER_H_
-#define TERRAIN_LAYER_H_
+#pragma once
 
 #include <anh/byte_buffer.h>
 #include <iostream>
@@ -37,5 +36,3 @@ namespace tre
 
 }
 }
-
-#endif

@@ -8,6 +8,11 @@ using namespace swganh::object;
 using namespace swganh::object::intangible;
 using namespace swganh::messages;
 
+Intangible::Intangible()
+	: generic_int_(0)
+{
+}
+
 uint32_t Intangible::GetGenericInt()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);

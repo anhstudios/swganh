@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef  SWGANH_OBJECT_OBJECT_BINDING_H_
-#define  SWGANH_OBJECT_OBJECT_BINDING_H_
+#pragma once
 
 #ifndef WIN32
 #include <Python.h>
@@ -89,5 +87,3 @@ void exportObject()
 
 	implicitly_convertible<std::shared_ptr<Object>, std::shared_ptr<ContainerInterface>>();
 }
-
-#endif   //SWGANH_OBJECT_OBJECT_BINDING_H_

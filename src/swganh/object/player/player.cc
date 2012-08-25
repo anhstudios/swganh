@@ -20,7 +20,8 @@ using namespace swganh::messages;
 using namespace containers;
 
 Player::Player()
-: status_flags_(array<FlagBitmask, 4>())
+: Intangible()
+, status_flags_(array<FlagBitmask, 4>())
 , profile_flags_(array<FlagBitmask, 4>())
 , profession_tag_("")
 , born_date_(0)
@@ -483,11 +484,11 @@ void Player::ClearAllQuests()
 
 swganh::messages::containers::NetworkSortedList<Ability> Player::GetAbilityList() 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-
     auto creature = GetContainer<creature::Creature>();
-    auto skill_commands = creature->GetSkillCommands();
-    swganh::messages::containers::NetworkSortedList<Ability> abilities;
+	auto skill_commands = creature->GetSkillCommands();
+	
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	swganh::messages::containers::NetworkSortedList<Ability> abilities;
     for_each(begin(skill_commands), end(skill_commands),[&abilities](pair<uint32_t, string> skill_command){
         abilities.Add(Ability(skill_command.second));
     });

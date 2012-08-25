@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_MANUFACTURE_SCHEMATIC_MANUFACTURE_SCHEMATIC_FACTORY_H_
-#define SWGANH_OBJECT_MANUFACTURE_SCHEMATIC_MANUFACTURE_SCHEMATIC_FACTORY_H_
+#pragma once
 
 #include "swganh/object/intangible/intangible_factory.h"
 
@@ -29,5 +27,3 @@ namespace manufacture_schematic {
     };
 
 }}}  // namespace swganh::object::manufacture_schematic
-
-#endif  // SWGANH_OBJECT_MANUFACTURE_SCHEMATIC_MANUFACTURE_SCHEMATIC_FACTORY_H_

@@ -215,64 +215,48 @@ shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, ui
     return find_iter->second->CreateObjectFromStorage(object_id);
 }
 
-shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const std::string& template_name, bool is_persisted, bool is_initialized)
+shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& template_name, 
+			PermissionType type, bool is_persisted, bool is_initialized, uint64_t object_id)
 {
+	//First find the container permission
+	auto permission_itr = permissions_objects_.find(type);
+	if(permission_itr == permissions_objects_.end())
+	{
+		throw std::runtime_error("Cannot create object due to invalid permission type");
+	}
+
+	//Then make sure we actually can create an object of this type
 	shared_ptr<Object> created_object;
     auto template_itr = type_lookup_.find(template_name);
 	if(template_itr != type_lookup_.end())
 	{
+		//Find that type's facory
 		auto factory_itr = factories_.find(template_itr->second);
 		if(factory_itr != factories_.end())
 		{
+			//Create the object with that factory
 			created_object = factory_itr->second->CreateObjectFromTemplate(template_name, is_persisted, is_initialized);
 			if(created_object != nullptr)
 			{
-				created_object->SetPermissions(permissions_objects_.find(DEFAULT_CONTAINER_PERMISSION)->second);
+				//Set the required stuff
+				created_object->SetPermissions(permission_itr->second);
+				created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
+				created_object->SetTemplate(template_name);
 
+				//Set the ID based on the inputs
 				if(!is_persisted)
 				{
-					created_object->SetObjectId(next_dynamic_id_++);
+					if(object_id == 0)
+						created_object->SetObjectId(next_dynamic_id_++);
+					else
+						created_object->SetObjectId(object_id);
 				}
+
+				//Insert it into the object map
 				object_map_.insert(make_pair(created_object->GetObjectId(), created_object));
 			}
 		}
 	}
-
-	//Make sure the object is valid
-	if(created_object == nullptr)
-	{
-		throw InvalidObjectTemplate("Invalid object template: "+template_name);
-	}
-
-	return created_object;
-}
-
-std::shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const std::string& template_name, uint64_t object_id)
-{
-	shared_ptr<Object> created_object;
-    auto template_itr = type_lookup_.find(template_name);
-	if(template_itr != type_lookup_.end())
-	{
-		auto factory_itr = factories_.find(template_itr->second);
-		if(factory_itr != factories_.end())
-		{
-			created_object = factory_itr->second->CreateObjectFromTemplate(template_name, false, false);
-			if(created_object != nullptr)
-			{
-				created_object->SetPermissions(permissions_objects_.find(DEFAULT_CONTAINER_PERMISSION)->second);
-
-				created_object->SetObjectId(object_id);
-				object_map_.insert(make_pair(object_id, created_object));
-			}
-		}
-	}
-
-	//Make sure the object is valid
-	if(created_object == nullptr)
-	{
-		throw InvalidObjectTemplate("Invalid object template: "+template_name);
-	}
-
 	return created_object;
 }
 
