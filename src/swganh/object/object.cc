@@ -255,6 +255,7 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 
 		if(observer)
 		{
+			LOG(warning) << "INFORMING " << observer->GetId() << " OF " << object->GetObjectId();
 			Subscribe(observer);
 			SendCreateByCrc(observer);
 			CreateBaselines(observer);
@@ -294,6 +295,7 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 				});
 			}
 
+			LOG(warning) << "UNINFORMING " << observer->GetId() << " OF " << object->GetObjectId();
 			SendDestroy(observer);
 			Unsubscribe(observer);
 		}
@@ -642,6 +644,8 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::Observe
 	containment_message.object_id = GetObjectId();
 	containment_message.containment_type = arrangement_id_;
 	observer->Notify(containment_message);
+
+	LOG(warning) << "UPDATE CONTAINMENT FOR " << observer->GetId() << ": " << GetObjectId() << " INTO " << GetContainer()->GetObjectId();
 }
 
 void Object::SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer)

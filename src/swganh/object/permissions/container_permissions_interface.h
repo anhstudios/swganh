@@ -1,21 +1,13 @@
 #ifndef SWGANH_CONTAINER_PERMISSIONS_INTERFACE_H_
 #define SWGANH_CONTAINER_PERMISSIONS_INTERFACE_H_
 
+#include "permission_type.h"
 #include <memory>
 
 namespace swganh
 {
 namespace object
 {
-
-	enum PermissionType
-	{
-		DEFAULT_CONTAINER_PERMISSION = 1,
-		WORLD_CONTAINER_PERMISSION,
-		CREATURE_CONTAINER_PERMISSION,
-		CREATURE_CONTAINER_CONTAINER_PERMISSION,
-		RIDEABLE_CONTAINER_PERMISSION
-	};
 
 	class Object;
 	class ContainerInterface;

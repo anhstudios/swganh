@@ -661,7 +661,8 @@ void SimulationService::Startup()
 
 }
 
-std::shared_ptr<ObjectManager> SimulationService::GetObjectManager()
+shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 
+											bool is_persisted, bool is_initialized, uint64_t object_id)
 {
-	return impl_->GetObjectManager();
+	return impl_->GetObjectManager()->CreateObjectFromTemplate(template_name, type, is_persisted, is_initialized, object_id);
 }

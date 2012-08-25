@@ -10,12 +10,22 @@
 
 #include "anh/python_shared_ptr.h"
 #include "simulation_service_interface.h"
+#include "swganh/object/object_manager.h"
 
 #include <boost/python.hpp>
+#include <boost/python/overloads.hpp>
 
 using namespace swganh::simulation;
+using namespace swganh::object;
 using namespace boost::python;
 using namespace std;
+
+boost::python::tuple CreateObjectFromTemplate(const std::string& template_name, 
+			bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0)
+{
+	return boost::python::make_tuple(template_name, is_persisted, is_initialized, object_id);
+}
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CreateOverload, CreateObjectFromTemplate, 1, 4)
 
 void exportSimulationService()
 {
@@ -25,6 +35,13 @@ void exportSimulationService()
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneObjectBinding)(shared_ptr<swganh::object::Object>, const std::string&);
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneAndPositionBinding)(uint64_t, const std::string&, float, float, float);
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneObjectAndPositionBinding)(shared_ptr<swganh::object::Object>, const std::string&, float, float, float);
+
+	enum_<PermissionType>("ContainerPermission")
+		.value("Default", DEFAULT_CONTAINER_PERMISSION)
+		.value("World", WORLD_CONTAINER_PERMISSION)
+		.value("Creature", CREATURE_CONTAINER_PERMISSION)
+		.value("CreatureContainer", CREATURE_CONTAINER_CONTAINER_PERMISSION)
+		.value("Rideable", RIDEABLE_CONTAINER_PERMISSION);
 
     class_<SimulationServiceInterface, std::shared_ptr<SimulationServiceInterface>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
         .def("persist", &SimulationServiceInterface::PersistObject, "persists the specified object and it's containing objects")
@@ -36,7 +53,8 @@ void exportSimulationService()
 		.def("findObject", GetObjectByCustomNameBinding(&SimulationServiceInterface::GetObjectByCustomName), "finds the object by their custom name")
 		.def("addObjectToScene", &SimulationServiceInterface::AddObjectToScene, "Adds the Object to the specified scene")
         .def("startScene", &SimulationServiceInterface::StartScene, "starts a scene by its label")
-        .def("stopScene", &SimulationServiceInterface::StopScene, "stops a scene by the given label")		
+        .def("stopScene", &SimulationServiceInterface::StopScene, "stops a scene by the given label")
+		.def("createObject", &SimulationServiceInterface::CreateObjectFromTemplate, CreateOverload(args("template_name", "is_persisted", "is_initialized", "object_id"), "Creates an object of the given template"))
         ;
 }
 

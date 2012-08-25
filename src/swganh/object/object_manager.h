@@ -31,6 +31,7 @@ namespace concurrency {
 #include "swganh/object/exception.h"
 #include "swganh/object/object_factory_interface.h"
 #include "swganh/object/object_message_builder.h"
+#include "swganh/object/permissions/permission_type.h"
 
 namespace swganh {
 namespace object {
@@ -195,15 +196,8 @@ namespace object {
          * @return the created object instance.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
-        std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool is_persisted=true, bool is_initialized=true);
-        
-		
-		/**
-		* Creates an instance of an object from the specified template using the given object_id as the id.
-		* The created object will not be persisted and will not be intialized from the db.
-		* @throws InvalidObjectTemplate when the specified template does not exist.
-		*/
-		std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, uint64_t object_id);
+        virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
+			swganh::object::PermissionType type=swganh::object::DEFAULT_CONTAINER_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0);
 		
         /**
          * Creates an instance of an object from the specified template.
@@ -212,9 +206,10 @@ namespace object {
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         template<typename T>
-        std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, bool is_persisted=true, bool is_initialized=true)
+        std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, 
+			swganh::object::PermissionType type=swganh::object::DEFAULT_CONTAINER_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0)
         {
-            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, is_initialized);
+            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, is_initialized, objectId);
 
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
