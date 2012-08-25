@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_STATIC_STATIC_FACTORY_H_
-#define SWGANH_OBJECT_STATIC_STATIC_FACTORY_H_
+#pragma once
 
 #include "swganh/object/object_factory.h"
 
@@ -38,5 +36,3 @@ namespace static_object {
     };
 
 }}}  // namespace swganh::object::static
-
-#endif  // SWGANH_OBJECT_STATIC_STATIC_FACTORY_H_

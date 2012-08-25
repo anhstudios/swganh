@@ -1,8 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef ANH_DATABASE_DATABASE_MANAGER_INTERFACE_H_
-#define ANH_DATABASE_DATABASE_MANAGER_INTERFACE_H_
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -60,4 +59,3 @@ public:
 };
 } // database
 } // anh
-#endif //ANH_DATABASE_DATABASE_MANAGER_INTERFACE_H_

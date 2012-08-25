@@ -255,7 +255,7 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 
 		if(observer)
 		{
-			LOG(warning) << "INFORMING " << observer->GetId() << " OF " << object->GetObjectId();
+			LOG(warning) << "INFORMING " << observer->GetId() << " OF " << GetObjectId();
 			Subscribe(observer);
 			SendCreateByCrc(observer);
 			CreateBaselines(observer);

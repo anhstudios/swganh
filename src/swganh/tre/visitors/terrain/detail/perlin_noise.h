@@ -4,9 +4,7 @@
  *  Created on: 17/12/2010
  *      Author: victor
  */
-
-#ifndef PERLINNOISE_H_
-#define PERLINNOISE_H_
+#pragma once
 
 /* coherent noise function over 1, 2 or 3 dimensions */
 /* (copyright Ken Perlin) */
@@ -157,5 +155,3 @@ public:
 	}
 
 };
-
-#endif /* PERLINNOISE_H_ */

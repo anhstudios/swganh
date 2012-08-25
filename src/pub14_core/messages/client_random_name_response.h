@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_MESSAGES_CLIENT_RANDOM_NAME_RESPONSE_H_
-#define SWGANH_MESSAGES_CLIENT_RANDOM_NAME_RESPONSE_H_
+#pragma once
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
@@ -41,5 +39,3 @@ namespace messages {
     };
 
 }}  // namespace swganh::messages
-
-#endif  // SWGANH_MESSAGES_CLIENT_RANDOM_NAME_RESPONSE_H_

@@ -20,7 +20,8 @@ using namespace swganh::messages;
 using namespace containers;
 
 Player::Player()
-: status_flags_(array<FlagBitmask, 4>())
+: Intangible()
+, status_flags_(array<FlagBitmask, 4>())
 , profile_flags_(array<FlagBitmask, 4>())
 , profession_tag_("")
 , born_date_(0)

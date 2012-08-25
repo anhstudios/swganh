@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef MYSQL_AUTH_ACCOUNT_PROVIDER_H_
-#define MYSQL_AUTH_ACCOUNT_PROVIDER_H_
+#pragma once
 
 #include "swganh/login/providers/account_provider_interface.h"
 
@@ -29,5 +27,3 @@ private:
 };
 
 }}  // namespace swganh::login
-
-#endif  // MYSQL_AUTH_ACCOUNT_PROVIDER_H_

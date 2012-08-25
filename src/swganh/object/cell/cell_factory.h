@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_CELL_CELL_FACTORY_H_
-#define SWGANH_OBJECT_CELL_CELL_FACTORY_H_
+#pragma once
 
 #include "swganh/object/intangible/intangible_factory.h"
 
@@ -31,5 +29,3 @@ namespace cell {
     };
 
 }}}  // namespace swganh::object::cell
-
-#endif  // SWGANH_OBJECT_CELL_CELL_FACTORY_H_

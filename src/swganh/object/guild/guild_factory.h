@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_GUILD_GUILD_FACTORY_H_
-#define SWGANH_OBJECT_GUILD_GUILD_FACTORY_H_
+#pragma once
 
 #include "swganh/object/object_factory_interface.h"
 
@@ -26,5 +24,3 @@ namespace guild {
     };
 
 }}}  // namespace swganh::object::guild
-
-#endif  // SWGANH_OBJECT_GUILD_GUILD_FACTORY_H_

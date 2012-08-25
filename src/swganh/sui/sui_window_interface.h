@@ -1,5 +1,4 @@
-#ifndef SWGANH_SUI_WINDOW_INTERFACE_H_
-#define SWGANH_SUI_WINDOW_INTERFACE_H_
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -188,5 +187,3 @@ namespace sui
 
 }
 }
-
-#endif

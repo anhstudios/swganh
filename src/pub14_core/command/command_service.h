@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_COMMAND_COMMAND_SERVICE_H_
-#define PUB14_CORE_COMMAND_COMMAND_SERVICE_H_
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -83,5 +81,3 @@ namespace command {
     };
 
 }}  // namespace pub14_core::command
-
-#endif  // PUB14_CORE_COMMAND_COMMAND_SERVICE_H_

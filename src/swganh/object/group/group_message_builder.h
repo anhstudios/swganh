@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_GROUP_GROUP_MESSAGE_BUILDER_H_
-#define SWGANH_OBJECT_GROUP_GROUP_MESSAGE_BUIlDER_H_
+#pragma once
 
 #include <boost/optional.hpp>
 #include <cstdint>
@@ -48,5 +46,3 @@ private:
 };
 
 }}} // swganh::object::group
-
-#endif // SWGANH_OBJECT_GROUP_GROUP_MESSAGE_BUILDER_H_

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_CONNECTION_CONNECTION_SERVICE_H_
-#define SWGANH_CONNECTION_CONNECTION_SERVICE_H_
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -81,5 +79,3 @@ private:
 };
     
 }}  // namespace swganh::connection
-
-#endif  // SWGANH_CONNECTION_CONNECTION_SERVICE_H_
