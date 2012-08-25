@@ -7,9 +7,6 @@
 
 #include "detail/layer_loader.h"
 
-#include "swganh/tre/iff/filenode.h"
-#include "swganh/tre/iff/foldernode.h"
-
 #include "anh/logger.h"
 #include "detail/header.h"
 
@@ -35,39 +32,39 @@ TerrainVisitor::~TerrainVisitor()
 	}
 }
 
-void TerrainVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
+void TerrainVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
 {
-	if(node->name() == "MFAMDATA")
+	if(name == "MFAMDATA")
 	{
 		//Reading a new fractal
-		working_fractal_ = new Fractal(node->data());
+		working_fractal_ = new Fractal(data);
 		this->fractals_.insert(FractalMap::value_type(working_fractal_->fractal_id, working_fractal_));
 	} 
-	else if(node->name() == "0001DATA" && working_fractal_ != nullptr) 
+	else if(name == "0001DATA" && working_fractal_ != nullptr) 
 	{
 		//Filling in data for a fractal
-		working_fractal_->Deserialize(node->data());
+		working_fractal_->Deserialize(data);
 		working_fractal_ = nullptr;
 	}
-	else if(working_layer_ != nullptr && node->name() == "0001DATA")
+	else if(working_layer_ != nullptr && name == "0001DATA")
 	{
 		//Loading basic layer data for the layer
-		working_layer_->SetData(node->data());
+		working_layer_->SetData(data);
 	}
-	else if(working_layer_ != nullptr && (node->name() == "DATAPARM" || node->name() == "DATA" || node->name() == "ADTA"))
+	else if(working_layer_ != nullptr && (name == "DATAPARM" || name == "DATA" || name == "ADTA"))
 	{
 		//Loading in layer specific layer data
-		working_layer_->Deserialize(node->data());
+		working_layer_->Deserialize(data);
 		working_layer_ = nullptr;
 	}
-	else if(node->name() == "0014DATA")
+	else if(name == "0014DATA")
 	{
 		//Loading header data
-		header->Deserialize(node->data());
+		header->Deserialize(data);
 	}
 }
 
-void TerrainVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
+void TerrainVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {	
 	//Get our layer stack back to where it should be
 	while(layer_stack_.size() > 0 && layer_stack_.top().second > depth)
@@ -76,7 +73,7 @@ void TerrainVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> n
 	}
 
 	//If we can create the layer, we have an implementation for it
-	Layer* test_layer_ = LayerLoader(node);
+	Layer* test_layer_ = LayerLoader(name);
 	if(test_layer_ != nullptr)
 	{
 		//We created a layer, so set it as the working layer
