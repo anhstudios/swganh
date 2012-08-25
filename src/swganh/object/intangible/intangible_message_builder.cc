@@ -40,5 +40,7 @@ BaselinesMessage IntangibleMessageBuilder::BuildBaseline3(const std::shared_ptr<
 
 BaselinesMessage IntangibleMessageBuilder::BuildBaseline6(const shared_ptr<Intangible>& intangible)
 {
-    return CreateBaselinesMessage(intangible, intangible->Object::VIEW_6, 1);
+	auto message = CreateBaselinesMessage(intangible, intangible->Object::VIEW_6, 1);
+	message.data.append(ObjectMessageBuilder::BuildBaseline6(intangible).data);
+    return BaselinesMessage(std::move(message));
 }

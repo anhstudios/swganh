@@ -26,8 +26,11 @@ using namespace swganh_core::simulation;
 
 SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 {
+	/* Commenting this out for now until we get _HAS_ITERATOR_DEBUGGING=0 working
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<anh::EventInterface>& newEvent)
 	{
+		
+		
 		auto real_event = std::static_pointer_cast<swganh_core::simulation::NewSceneEvent>(newEvent);
 		
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
@@ -36,8 +39,7 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 		//Load objects from snapshot
 		
 		std::string snapshot_filename = "snapshot/"+real_event->scene_label+".ws";
-		auto visitor = kernel_->GetResourceManager()->getResourceByName(snapshot_filename, WS_VISITOR, false);
-		auto snapshot_visitor = std::static_pointer_cast<WsVisitor>(visitor);
+		auto snapshot_visitor = kernel_->GetResourceManager()->GetResourceByName<WsVisitor>(snapshot_filename, false);
 			
 		auto chunks = snapshot_visitor->chunks();
 		std::for_each(chunks.begin(), chunks.end(), [&] (WsVisitor::CHUNK& chunk) {
@@ -74,7 +76,7 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 				LOG(warning) << "Failed to load files from snapshot for: " << real_event->scene_label;
 			}
 		});		
-	});
+	});*/
 
 	/* Dont need this now, but we might later.
 	

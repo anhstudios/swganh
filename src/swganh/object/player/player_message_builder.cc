@@ -532,7 +532,7 @@ BaselinesMessage PlayerMessageBuilder::BuildBaseline3(const shared_ptr<Player>& 
 BaselinesMessage PlayerMessageBuilder::BuildBaseline6(const shared_ptr<Player>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_6, 2);
-    message.data.append(IntangibleMessageBuilder::BuildBaseline3(object).data);
+    message.data.append(IntangibleMessageBuilder::BuildBaseline6(object).data);
     message.data.write<uint8_t>(object->GetAdminTag());     // Admin Tag
     return BaselinesMessage(move(message));
 }
