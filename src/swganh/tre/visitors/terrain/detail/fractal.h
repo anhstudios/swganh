@@ -1,5 +1,4 @@
-#ifndef TRN_FRACTAL_FAMILY_H_
-#define TRN_FRACTAL_FAMILY_H_
+#pragma once
 
 #include <string>
 #include <iostream>
@@ -347,5 +346,3 @@ namespace tre
 
 }
 }
-
-#endif

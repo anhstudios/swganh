@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_UTILS_ACTIVE_OBJECT_H_
-#define ANH_UTILS_ACTIVE_OBJECT_H_
+#pragma once
 
 #include <algorithm>
 #include <list>
@@ -110,4 +108,3 @@ private:
     
 }  // namespace anh
 
-#endif  // ANH_UTILS_ACTIVE_OBJECT_H_

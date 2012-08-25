@@ -1,8 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
-#ifndef ANH_LIB_LOGGER_H_
-#define ANH_LIB_LOGGER_H_
 // LOG
 #include <boost/log/common.hpp>
 #include <boost/log/core.hpp>
@@ -113,5 +112,3 @@ private:
 };
 
 } // anh
-
-#endif // ANH_LIB_LOGGER_H_

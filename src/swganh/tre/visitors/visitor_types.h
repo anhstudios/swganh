@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef IFF_VISITOR_TYPES_H
-#define IFF_VISITOR_TYPES_H
+#pragma once
 
 namespace swganh
 {
@@ -26,4 +24,3 @@ namespace tre
 	};
 }
 }
-#endif

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef MYSQL_AUTH_MYSQL_SESSION_PROVIDER_H_
-#define MYSQL_AUTH_MYSQL_SESSION_PROVIDER_H_
+#pragma once
 
 #include "swganh/connection/providers/session_provider_interface.h"
 #include <memory>
@@ -28,4 +26,3 @@ private:
 
 }}  // namespace swganh::login
 
-#endif  // MYSQL_AUTH_MYSQL_SESSION_PROVIDER_H_

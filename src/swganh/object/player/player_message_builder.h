@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_PLAYER_PLAYER_MESSAGE_BUILDER_H_
-#define SWGANH_OBJECT_PLAYER_PLAYER_MESSAGE_BUILDER_H_
+#pragma once
 
 #include "swganh/object/object_message_builder.h"
 
@@ -66,5 +64,3 @@ namespace player {
     };
 
 }}}  // swganh::object::player
-
-#endif  // SWGANH_OBJECT_PLAYER_PLAYER_MESSAGE_BUILDER_H_

@@ -1,5 +1,4 @@
-#ifndef BOUNDARY_POLYLINE_H_
-#define BOUNDARY_POLYLINE_H_
+#pragma once
 
 #include "boundary_layer.h"
 #include <glm/glm.hpp>
@@ -29,6 +28,3 @@ namespace tre
 
 }
 }
-
-
-#endif

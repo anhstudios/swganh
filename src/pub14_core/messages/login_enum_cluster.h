@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_MESSAGES_LOGIN_ENUM_CLUSTER_H_
-#define SWGANH_MESSAGES_LOGIN_ENUM_CLUSTER_H_
+#pragma once
 
 #include <cstdint>
 #include <algorithm>
@@ -67,5 +65,3 @@ namespace messages {
     LoginEnumCluster BuildLoginEnumCluster(std::shared_ptr<swganh::login::LoginClientInterface> login_client, const std::vector<login::GalaxyStatus>& galaxy_status);
 
 }} // namespace swganh::messages
-
-#endif // SWGANH_MESSAGES_LOGIN_ENUM_CLUSTER_H_

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_PLUGIN_PLATFORM_LIBRARY_INTERFACE_H_
-#define ANH_PLUGIN_PLATFORM_LIBRARY_INTERFACE_H_
+#pragma once
 
 namespace anh {
 namespace plugin {
@@ -23,5 +21,3 @@ public:
 };
 
 }}}  // namespace anh::plugin::platform;
-
-#endif  // ANH_PLUGIN_PLATFORM_LIBRARY_INTERFACE_H_
