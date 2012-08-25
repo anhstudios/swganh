@@ -16,16 +16,12 @@ void SlotArrangementVisitor::visit_data(uint32_t depth, std::string name, uint32
 {
 	if(name == "0000ARG ")
 	{
-		_handle0000ARG(data);
+		uint32_t end_pos = data.read_position() + size;
+		std::vector<string> combination;
+		while(data.read_position() < end_pos)
+		{
+			combination.push_back(data.read<string>(false, true));
+		}
+		combinations_.push_back(std::move(combination));
 	}
-}
-
-void SlotArrangementVisitor::_handle0000ARG(anh::ByteBuffer& buf)
-{
-	std::vector<string> combination;
-	while(buf.read_position() < buf.size())
-	{
-		combination.push_back(buf.read<string>(false, true));
-	}
-	combinations_.push_back(std::move(combination));
 }
