@@ -34,8 +34,6 @@ namespace tre
 		std::string& slot(size_t id) {return slots_available[id];}
 
 	private:
-		void _handle0000DATA(anh::ByteBuffer& buf);
-
 		std::vector<std::string> slots_available;
 	};
 }

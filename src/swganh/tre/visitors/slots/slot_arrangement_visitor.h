@@ -41,8 +41,6 @@ namespace tre
 		std::list<std::vector<std::string>>::const_iterator end() {return combinations_.cend();}
 
 	private:
-		void _handle0000ARG(anh::ByteBuffer& buf);
-
 		std::list<std::vector<std::string>> combinations_;
 
 	};

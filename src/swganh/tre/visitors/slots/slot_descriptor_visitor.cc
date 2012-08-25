@@ -16,14 +16,10 @@ void SlotDescriptorVisitor::visit_data(uint32_t depth, std::string name, uint32_
 {
 	if(name == "0000DATA")
 	{
-		_handle0000DATA(data);
-	}
-}
-
-void SlotDescriptorVisitor::_handle0000DATA(anh::ByteBuffer& buf)
-{
-	while(buf.read_position() < buf.size())
-	{
-		slots_available.push_back(buf.read<std::string>(false, true));
+		uint32_t end_pos = data.read_position() + size;
+		while(data.read_position() < end_pos)
+		{
+			slots_available.push_back(data.read<std::string>(false, true));
+		}
 	}
 }
