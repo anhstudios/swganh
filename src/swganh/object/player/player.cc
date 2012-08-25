@@ -484,11 +484,11 @@ void Player::ClearAllQuests()
 
 swganh::messages::containers::NetworkSortedList<Ability> Player::GetAbilityList() 
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-
     auto creature = GetContainer<creature::Creature>();
-    auto skill_commands = creature->GetSkillCommands();
-    swganh::messages::containers::NetworkSortedList<Ability> abilities;
+	auto skill_commands = creature->GetSkillCommands();
+	
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	swganh::messages::containers::NetworkSortedList<Ability> abilities;
     for_each(begin(skill_commands), end(skill_commands),[&abilities](pair<uint32_t, string> skill_command){
         abilities.Add(Ability(skill_command.second));
     });

@@ -241,6 +241,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 				//Set the required stuff
 				created_object->SetPermissions(permission_itr->second);
 				created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
+				created_object->SetTemplate(template_name);
 
 				//Set the ID based on the inputs
 				if(!is_persisted)
