@@ -4,9 +4,7 @@
  *  Created on: 17/12/2010
  *      Author: victor
  */
-
-#ifndef RANDOM_H_
-#define RANDOM_H_
+#pragma once
 
 class Random {
 	int seed;
@@ -71,5 +69,3 @@ public:
 		return unknown;
 	}
 };
-
-#endif /* RANDOM_H_ */

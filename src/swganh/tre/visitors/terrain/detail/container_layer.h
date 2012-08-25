@@ -1,5 +1,4 @@
-#ifndef CONTAINER_LAYER_H_
-#define CONTAINER_LAYER_H_
+#pragma once
 
 #include "layer.h"
 #include <vector>
@@ -56,6 +55,3 @@ namespace tre
 
 }
 }
-
-
-#endif

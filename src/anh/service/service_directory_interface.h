@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_SERVICE_SERVICE_DIRECTORY_INTERFACE_H_
-#define ANH_SERVICE_SERVICE_DIRECTORY_INTERFACE_H_
+#pragma once
 
 #include <cstdint>
 
@@ -90,5 +88,3 @@ public:
 
 }  // namespace service
 }  // namespace anh
-
-#endif  // ANH_SERVICE_SERVICE_DIRECTORY_INTERFACE_H_

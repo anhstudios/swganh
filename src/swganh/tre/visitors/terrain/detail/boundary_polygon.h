@@ -1,5 +1,4 @@
-#ifndef BOUNDARY_POLYGON_H_
-#define BOUNDARY_POLYGON_H_
+#pragma once
 
 #include "boundary_layer.h"
 #include <glm/glm.hpp>
@@ -37,6 +36,3 @@ namespace tre
 
 }
 }
-
-
-#endif

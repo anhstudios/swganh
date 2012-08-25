@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef MYSQL_CHARACTER_PROVIDER_H_
-#define MYSQL_CHARACTER_PROVIDER_H_
+#pragma once
 
 #include "swganh/character/character_provider_interface.h"
 
@@ -39,5 +37,3 @@ private:
 };
 
 }}  // namespace swganh_core::character
-
-#endif  // MYSQL_CHARACTER_PROVIDER_H_

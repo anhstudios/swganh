@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_LOGIN_LOGIN_CLIENT_H_
-#define SWGANH_LOGIN_LOGIN_CLIENT_H_
+#pragma once
 
 #include "swganh/login/login_client_interface.h"
 
@@ -36,4 +34,3 @@ private:
 
 }}  // namespace swganh::login
 
-#endif  // SWGANH_LOGIN_LOGIN_CLIENT_H_

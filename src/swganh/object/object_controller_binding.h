@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_OBJECT_CONTROLLER_H_
-#define SWGANH_OBJECT_OBJECT_CONTROLLER_H_
+#pragma once
 
 #ifndef WIN32
 #include <Python.h>
@@ -70,5 +68,3 @@ void exportObjectController()
         .def("Notify", NotifyFunc(&ObjectController::Notify), "Notifies the controller whent he object has been updated")
     ;
 }
-
-#endif //  SWGANH_OBJECT_OBJECT_CONTROLLER_H_

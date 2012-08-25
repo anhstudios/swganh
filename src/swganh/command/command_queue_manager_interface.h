@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_COMMAND_COMMAND_QUEUE_MANAGER_INTERFACE_H_
-#define SWGANH_COMMAND_COMMAND_QUEUE_MANAGER_INTERFACE_H_
+#pragma once
 
 #include <memory>
 
@@ -50,5 +48,3 @@ namespace command {
     };
 
 }}
-
-#endif  // SWGANH_COMMAND_COMMAND_QUEUE_MANAGER_INTERFACE_H_

@@ -1,5 +1,4 @@
-#ifndef BOUNDARY_RECTANGLE_H_
-#define BOUNDARY_RECTANGLE_H_
+#pragma once
 
 #include "boundary_layer.h"
 
@@ -26,6 +25,3 @@ namespace tre
 
 }
 }
-
-
-#endif

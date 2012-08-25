@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_CHAT_SPATIAL_CHAT_INTERNAL_COMMAND_H_
-#define SWGANH_CHAT_SPATIAL_CHAT_INTERNAL_COMMAND_H_
+#pragma once
 
 #include <memory>
 
@@ -29,5 +27,3 @@ namespace chat {
     };
 
 }}
-
-#endif  // SWGANH_COMMAND_COMMAND_INTERFACE_H_

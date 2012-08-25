@@ -1,5 +1,4 @@
-#ifndef SWGANH_SUI_RADIAL_INTERFACE_H_
-#define SWGANH_SUI_RADIAL_INTERFACE_H_
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -24,6 +23,3 @@ public:
 };
 
 }}
-
-#endif
-//  SWGANH_SUI_RADIAL_INTERFACE_H_

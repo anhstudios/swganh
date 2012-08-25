@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_SIMULATION_MOVEMENT_MANAGER_H_
-#define PUB14_CORE_SIMULATION_MOVEMENT_MANAGER_H_
+#pragma once
 
 #include "swganh/simulation/movement_manager_interface.h"
 
@@ -63,5 +61,3 @@ namespace simulation {
     };
 
 }}  // namespace swganh::simulation
-
-#endif  // PUB14_CORE_SIMULATION_MOVEMENT_MANAGER_H_

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_BYTE_BUFFER_INL_H_
-#define ANH_BYTE_BUFFER_INL_H_
+#pragma once
 
 #include <algorithm>
 #include <string>
@@ -117,5 +115,3 @@ anh::ByteBuffer& operator<<(anh::ByteBuffer& buffer, const T& value) {
   buffer.write<T>(value);
   return buffer;
 }
-
-#endif  // ANH_BYTE_BUFFER_INL_H_

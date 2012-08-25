@@ -1,5 +1,4 @@
-#ifndef SWGANH_EQUIPMENT_SERVICE_INTERFACE_H_
-#define SWGANH_EQUIPMENT_SERVICE_INTERFACE_H_
+#pragma once
 
 #include <anh/service/service_interface.h>
 
@@ -38,5 +37,3 @@ namespace equipment
 	};
 }
 }
-
-#endif

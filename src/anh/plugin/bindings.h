@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_PLUGIN_BINDINGS_H_
-#define ANH_PLUGIN_BINDINGS_H_
+#pragma once
 
 #include <cstdint>
 #include <functional>
@@ -44,5 +42,3 @@ struct ObjectRegistration {
 #endif
 
 }}  // namespace anh::plugin
-
-#endif  // ANH_PLUGIN_BINDINGS_H_

@@ -1,5 +1,4 @@
-#ifndef ANH_TERRAIN_BOUNDARY_H_
-#define ANH_TERRAIN_BOUNDARY_H_
+#pragma once
 
 #include "anh/byte_buffer.h"
 #include "layer.h"
@@ -22,5 +21,3 @@ namespace tre
 	};
 }
 }
-
-#endif

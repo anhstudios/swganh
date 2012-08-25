@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_SIMULATION_SIMULATION_SERVICE_H_
-#define PUB14_CORE_SIMULATION_SIMULATION_SERVICE_H_
+#pragma once
 
 #include "swganh/simulation/simulation_service_interface.h"
 
@@ -75,5 +73,3 @@ namespace simulation {
     };
 
 }}  // namespace swganh_core::simulation
-
-#endif  // PUB14_CORE_SIMULATION_SIMULATION_SERVICE_H_

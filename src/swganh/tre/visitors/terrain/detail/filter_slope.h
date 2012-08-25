@@ -1,5 +1,4 @@
-#ifndef FILTER_SLOPE_H_
-#define FILTER_SLOPE_H_
+#pragma once
 
 #include "filter_layer.h"
 
@@ -30,6 +29,3 @@ namespace tre
 
 }
 }
-
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef PUB14_CORE_EQUIPMENT_SERVICE_H_
-#define PUB14_CORE_EQUIPMENT_SERVICE_H_
+#pragma once
 
 #include <swganh/equipment/equipment_service_interface.h>
 
@@ -36,4 +35,3 @@ namespace equipment
 	};
 }
 }
-#endif

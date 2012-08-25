@@ -1,5 +1,4 @@
-#ifndef SWGANH_TERRAIN_SERVICE_H_
-#define SWGANH_TERRAIN_SERVICE_H_
+#pragma once
 
 #include "swganh/terrain/terrain_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
@@ -67,5 +66,3 @@ namespace terrain
 	};
 }
 }
-
-#endif

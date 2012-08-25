@@ -1,5 +1,4 @@
-#ifndef SWGANH_SUI_WINDOW_H_
-#define SWGANH_SUI_WINDOW_H_
+#pragma once
 
 #include <map>
 #include <memory>
@@ -74,5 +73,3 @@ namespace sui
 
 }
 }
-
-#endif

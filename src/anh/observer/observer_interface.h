@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_OBSERVER_OBSERVER_INTERFACE_H_
-#define ANH_OBSERVER_OBSERVER_INTERFACE_H_
+#pragma once
 
 #include "anh/byte_buffer.h"
 
@@ -101,5 +99,3 @@ namespace observer {
     };
 
 }}  // namespace anh::observer
-
-#endif  // ANH_OBSERVER_OBSERVER_INTERFACE_H_

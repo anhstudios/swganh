@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_CREATURE_H_
-#define SWGANH_OBJECT_CREATURE_H_
+#pragma once
 
 #include <atomic>
 #include <list>
@@ -647,5 +645,3 @@ private:
 };
 
 }}}  // namespace swganh::object::creature
-
-#endif // SWGANH_OBJECT_CREATURE_CREATURE_H_

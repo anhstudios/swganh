@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_STATIC_STATIC_H_
-#define SWGANH_OBJECT_STATIC_STATIC_H_
+#pragma once
 
 #include "swganh/object/object.h"
 
@@ -19,5 +17,3 @@ public:
 };
 
 }}}  // namespace swganh::object::static_obj
-
-#endif  // SWGANH_OBJECT_STATIC_STATIC_H_

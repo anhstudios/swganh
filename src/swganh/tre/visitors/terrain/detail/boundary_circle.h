@@ -1,5 +1,4 @@
-#ifndef BOUNDARY_CIRCLE_H_
-#define BOUNDARY_CIRCLE_H_
+#pragma once
 
 #include "boundary_layer.h"
 
@@ -27,6 +26,3 @@ namespace tre
 
 }
 }
-
-
-#endif

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_CHAT_CHAT_SERVICE_H_
-#define SWGANH_CHAT_CHAT_SERVICE_H_
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -35,5 +33,3 @@ namespace chat {
     };
 
 }}  // namespace swganh::chat
-
-#endif  // SWGANH_CHAT_CHAT_SERVICE_H_

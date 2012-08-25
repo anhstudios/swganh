@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_BYTE_BUFFER_H_
-#define ANH_BYTE_BUFFER_H_
+#pragma once
 
 #include <cstdint>
 #include <vector>
@@ -260,5 +258,3 @@ std::ostream& operator<<(std::ostream& message, const anh::ByteBuffer& buffer);
 // Move inline implementations to a separate file to
 // clean up the declaration header.
 #include "anh/byte_buffer-inl.h"
-
-#endif  // ANH_BYTE_BUFFER_H_

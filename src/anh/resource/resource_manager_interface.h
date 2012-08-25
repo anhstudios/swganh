@@ -1,5 +1,4 @@
-#ifndef ANH_RESOURCE_MANAGER_H_
-#define ANH_RESOURCE_MANAGER_H_
+#pragma once
 
 #include <memory>
 #include <string>
@@ -21,5 +20,3 @@ namespace resource {
 
 }
 }
-
-#endif

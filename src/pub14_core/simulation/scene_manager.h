@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_SIMULATION_SCENE_MANAGER_H_
-#define PUB14_CORE_SIMULATION_SCENE_MANAGER_H_
+#pragma once
 
 #include <cstdint>
 #include <map>
@@ -48,5 +46,3 @@ namespace simulation {
     };
 
 }}  // namespace swganh_core::simulation
-
-#endif  // PUB14_CORE_SIMULATION_SCENE_MANAGER_H_

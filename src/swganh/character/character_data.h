@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_CHARACTER_CHARACTER_DATA_H_
-#define SWGANH_CHARACTER_CHARACTER_DATA_H_
+#pragma once
 
 #include <string>
 #include <glm/glm.hpp>
@@ -50,5 +48,3 @@ struct CharacterCreateInfo {
 //#undef hair_customization_size
 
 }}  // namespace swganh::character
-
-#endif  // SWGANH_CHARACTER_CHARACTER_DATA_H_

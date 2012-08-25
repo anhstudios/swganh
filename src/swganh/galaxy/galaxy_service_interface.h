@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_GALAXY_GALAXY_SERVICE_INTERFACE_H_
-#define SWGANH_GALAXY_GALAXY_SERVICE_INTERFACE_H_
+#pragma once
 
 #include <memory>
 #include <boost/asio/deadline_timer.hpp>
@@ -37,5 +35,3 @@ namespace galaxy {
     };
 
 }}  // swganh::galaxy
-
-#endif // SWGANH_GALAXY_GALAXY_SERVICE_H_

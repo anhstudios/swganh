@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_RANDOM_GENERATOR_H_
-#define ANH_RANDOM_GENERATOR_H_
+#pragma once
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
@@ -31,4 +29,3 @@ private:
 };
 
 }
-#endif // ANH_RANDOM_GENERATOR_H_

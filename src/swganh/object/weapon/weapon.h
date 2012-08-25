@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_WEAPON_WEAPON_H_
-#define SWGANH_OBJECT_WEAPON_WEAPON_H_
+#pragma once
 
 #include "swganh/object/tangible/tangible.h"
 
@@ -56,5 +54,3 @@ private:
 };
     
 }}}  // namespace swganh::object::weapon
-
-#endif  // SWGANH_OBJECT_WEAPON_WEAPON_H_

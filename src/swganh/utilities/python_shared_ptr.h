@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_PYTHON_SHAREDPTR_H_
-#define SWGANH_PYTHON_SHAREDPTR_H_
+#pragma once
 
 #include <memory>
 
@@ -27,6 +25,3 @@ namespace boost {
 //    };
 //
 //}}
-
-
-#endif//SWGANH_PYTHON_SHAREDPTR_H_

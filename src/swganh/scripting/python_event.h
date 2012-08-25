@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_SCRIPTING_PYTHON_EVENT_H_
-#define SWGANH_SCRIPTING_PYTHON_EVENT_H_
+#pragma once
 
 #include <boost/python/object.hpp>
 
@@ -29,5 +27,3 @@ namespace scripting {
     };
 
 }} // swganh::scripting
-
-#endif // SWGANH_SCRIPTING_PYTHON_EVENT_H_

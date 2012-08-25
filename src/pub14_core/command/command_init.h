@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_COMMAND_INITIALIZATION_H_
-#define PUB14_CORE_COMMAND_INITIALIZATION_H_
+#pragma once
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
@@ -134,4 +132,3 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 
 }}  // namespace pub14_core::command
 
-#endif  // PUB14_CORE_COMMAND_INITIALIZATION_H_

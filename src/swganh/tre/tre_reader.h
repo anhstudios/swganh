@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_TRE_TRE_READER_H_
-#define SWGANH_TRE_TRE_READER_H_
+#pragma once
 
 #include <cstdint>
 #include <array>
@@ -132,5 +130,3 @@ namespace tre {
     };
 
 }}  // namespace swganh::tre
-
-#endif  // SWGANH_TRE_TRE_READER_H_

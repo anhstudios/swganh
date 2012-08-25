@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_SERVICE_DATASTORE_H_
-#define ANH_SERVICE_DATASTORE_H_
+#pragma once
 
 #include <cstdint>
 
@@ -51,4 +49,3 @@ private:
 }  // namespace service_directory
 }  // namespace anh
 
-#endif  // ANH_SERVICE_DATASTORE_H_

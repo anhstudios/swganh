@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef MYSQL_AUTH_ENCODERS_SHA512_ENCODER_H_
-#define MYSQL_AUTH_ENCODERS_SHA512_ENCODER_H_
+#pragma once
 
 #include "swganh/login/encoders/encoder_interface.h"
 #include <memory>
@@ -26,4 +24,3 @@ private:
 
 }}  // namespace swganh_core::login
 
-#endif  // MYSQL_AUTH_ENCODERS_SHA512_ENCODER_H_

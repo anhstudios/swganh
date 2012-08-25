@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_COMBAT_COMBAT_SERVICE_BINDING_H_
-#define SWGANH_COMBAT_COMBAT_SERVICE_BINDING_H_
+#pragma once
 
 #ifndef WIN32
 #include <Python.h>
@@ -26,5 +24,3 @@ void exportCombatService()
         .def("end_combat", &CombatServiceInterface::EndCombat, "Ends combat between the attacker and target")
         ;
 }
-
-#endif // SWGANH_COMBAT_COMBAT_SERVICE_BINDING_H_

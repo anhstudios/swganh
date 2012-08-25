@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PLUGINS_MYSQL_GALAXY_PROVIDER_H_
-#define PLUGINS_MYSQL_GALAXY_PROVIDER_H_
+#pragma once
 
 #include "swganh/galaxy/providers/galaxy_provider_interface.h"
 #include <memory>
@@ -25,5 +23,3 @@ private:
 };
 
 }}  // namespace swganh::galaxy::providers
-
-#endif  // PLUGINS_MYSQL_GALAXY_PROVIDER_H_

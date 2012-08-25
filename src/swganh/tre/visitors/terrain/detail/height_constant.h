@@ -1,5 +1,4 @@
-#ifndef HEIGHT_CONSTANT_H_
-#define HEIGHT_CONSTANT_H_
+#pragma once
 
 #include "height_layer.h"
 
@@ -27,6 +26,3 @@ namespace tre
 
 }
 }
-
-
-#endif

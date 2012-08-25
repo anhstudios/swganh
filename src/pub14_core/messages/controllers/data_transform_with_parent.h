@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_MESSAGES_CONTROLLERS_DATA_TRANSFORM_WITH_PARENT_H_
-#define SWGANH_MESSAGES_CONTROLLERS_DATA_TRANSFORM_WITH_PARENT_H_
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -64,6 +62,3 @@ namespace controllers {
     };
 
 }}}  // namespace swganh::messages::controllers
-
-
-#endif  // SWGANH_MESSAGES_CONTROLLERS_DATA_TRANSFORM_WITH_PARENT_H_

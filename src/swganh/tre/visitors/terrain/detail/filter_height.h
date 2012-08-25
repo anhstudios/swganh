@@ -1,5 +1,4 @@
-#ifndef FILTER_HEIGHT_H_
-#define FILTER_HEIGHT_H_
+#pragma once
 
 #include "filter_layer.h"
 
@@ -26,6 +25,3 @@ namespace tre
 
 }
 }
-
-
-#endif

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_LIB_ATTRIBUTES_HELPER_H_
-#define PUB14_CORE_LIB_ATTRIBUTES_HELPER_H_
+#pragma once
 
 #include <memory>
 #include <string>
@@ -30,6 +28,3 @@ namespace attributes {
 	};
 
 }}
-
-
-#endif //  PUB14_CORE_LIB_WEAPON_ATTRIBUTE_TEMPLATE_H_

@@ -1,5 +1,4 @@
-#ifndef SWGNAH_RESOURCE_MANAGER_H_
-#define SWGANH_RESOURCE_MANAGER_H_
+#pragma once
 
 #include <map>
 
@@ -45,5 +44,3 @@ namespace tre {
 
 }
 }
-
-#endif

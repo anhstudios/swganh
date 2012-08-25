@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_TERRAIN_SERVICE_BINDING_H_
-#define SWGANH_TERRAIN_SERVICE_BINDING_H_
+#pragma once
 
 #ifndef WIN32
 #include <Python.h>
@@ -45,5 +43,3 @@ void exportTerrainService()
 		.def("GetWaterHeight", &TerrainServiceInterface::GetWaterHeight, GetWaterHeightOverload(args("scene_id", "x", "z", "raw"), "Returns the water height at a particular x, z coordinate. This is probably not necessary for external code."))
 		.def("IsWater", &TerrainServiceInterface::IsWater, IsWaterOverload(args("scene_id", "x", "z", "raw"), "Returns true iff the x, z is water."));
 }
-
-#endif //SWGANH_TERRAIN_SERVICE_BINDING_H_

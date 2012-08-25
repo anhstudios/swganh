@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_PLAYER_PLAYER_EVENTS_H_
-#define SWGANH_OBJECT_PLAYER_PLAYER_EVENTS_H_
+#pragma once
 
 #include "anh/event_dispatcher.h"
 
@@ -38,5 +36,3 @@ namespace player {
 
 
 }}}
-
-#endif // SWGANH_OBJECT_PLAYER_PLAYER_EVENTS_H_

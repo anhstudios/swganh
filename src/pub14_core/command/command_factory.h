@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_COMMAND_COMMAND_FACTORY_H_
-#define PUB14_CORE_COMMAND_COMMAND_FACTORY_H_
+#pragma once
 
 #include <map>
 #include <tuple>
@@ -60,5 +58,3 @@ namespace command {
     };
 
 }}
-
-#endif  // PUB14_CORE_COMMAND_COMMAND_FACTORY_H_

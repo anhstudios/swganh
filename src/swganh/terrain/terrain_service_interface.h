@@ -1,5 +1,4 @@
-#ifndef SWGANH_TERRAIN_SERVICE_INTERFACE_H_
-#define SWGANH_TERRAIN_SERVICE_INTERFACE_H_
+#pragma once
 
 #include "anh/service/service_interface.h"
 
@@ -20,5 +19,3 @@ namespace terrain
 	};
 }
 }
-
-#endif

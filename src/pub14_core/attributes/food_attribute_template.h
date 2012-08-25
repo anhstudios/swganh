@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_LIB_FOOD_ATTRIBUTE_TEMPLATE_H_
-#define PUB14_CORE_LIB_FOOD_ATTRIBUTE_TEMPLATE_H_
+#pragma once
 
 #include "base_attribute_template.h"
 
@@ -16,6 +14,3 @@ namespace attributes {
 	};
 
 }}
-
-
-#endif //  PUB14_CORE_LIB_FOOD_ATTRIBUTE_TEMPLATE_H_

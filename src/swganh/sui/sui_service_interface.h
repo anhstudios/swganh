@@ -1,5 +1,4 @@
-#ifndef SWGANH_UI_SERVICE_INTERFACE_H_
-#define SWGNAH_UI_SERVICE_INTERFACE_H_
+#pragma once
 
 #include <memory>
 #include <anh/service/service_interface.h>
@@ -70,5 +69,3 @@ namespace sui
 	};
 }
 }
-
-#endif

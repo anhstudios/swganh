@@ -1,5 +1,4 @@
-#ifndef ANH_TERRAIN_FILTER_H_
-#define ANH_TERRAIN_FILTER_H_
+#pragma once
 
 #include <map>
 #include "anh/byte_buffer.h"
@@ -24,4 +23,3 @@ namespace tre
     };
 }
 }
-#endif
