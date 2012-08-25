@@ -13,8 +13,7 @@ using namespace swganh_core::equipment;
 
 EquipmentService::EquipmentService(swganh::tre::ResourceManager* resourceManager)
 {
-	auto slot_definition = resourceManager->getResourceByName("abstract/slot/slot_definition/slot_definitions.iff", SLOT_DEFINITION_VISITOR);
-	slot_definitions_ = std::static_pointer_cast<SlotDefinitionVisitor>(slot_definition);	
+	slot_definitions_ = resourceManager->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
 }
 
 anh::service::ServiceDescription EquipmentService::GetServiceDescription()

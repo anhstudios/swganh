@@ -4,12 +4,8 @@
 #include "object_visitor.h"
 
 #include "../../iff/iff.h"
-#include "../../iff/filenode.h"
-#include "../../iff/foldernode.h"
 
 #include <swganh/tre/resource_manager.h>
-#include <swganh/tre/visitors/slots/slot_arrangement_visitor.h>
-#include <swganh/tre/visitors/slots/slot_descriptor_visitor.h>
 
 using namespace swganh::tre;
 using namespace std;
@@ -119,32 +115,26 @@ ObjectVisitor::ObjectVisitor()
 	}
 }
 
-void ObjectVisitor::visit_folder(uint32_t depth, std::shared_ptr<folder_node> node)
+void ObjectVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {}
 
-void ObjectVisitor::visit_data(uint32_t depth, std::shared_ptr<file_node> node)
+void ObjectVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
 {
-	const std::string& nameRef = node->name();
-	if(nameRef == "XXXX")
+	if(name == "XXXX")
 	{
-		_handleXXXX(node->data());
+		_handleXXXX(data);
 	}
-	else if(nameRef == "DERVXXXX")
+	else if(name == "DERVXXXX")
 	{
-		_handleDERVXXXX(node->data());
+		_handleDERVXXXX(data);
 	}
-
 }
 
 void ObjectVisitor::_handleXXXX(anh::ByteBuffer& buf)
 {
 	if(buf.size() > 0)
 	{
-		if(buf.peek<char>() == 1)
-		{
-			//This is a weird schematic edge case
-		}
-		else
+		if(buf.peek<char>() != 1)
 		{
 			std::string attributeName = buf.read<std::string>(false,true);
 			AttributeHandlerIndexIterator it = attributeHandler_.find(attributeName);
@@ -232,7 +222,8 @@ void ObjectVisitor::load_aggregate_data(swganh::tre::ResourceManager* f)
 
 		std::for_each(parentFiles.begin(), parentFiles.end(), [&] (std::string parentFile)
 		{
-			auto subI = std::static_pointer_cast<ObjectVisitor>(f->getResourceByName(parentFile, OIFF_VISITOR));
+			auto subI = f->GetResourceByName<ObjectVisitor>(parentFile);
+
 			subI->load_aggregate_data(f);
 
 			//Now we continue to build up our map.
@@ -265,62 +256,4 @@ void ObjectVisitor::load_aggregate_data(swganh::tre::ResourceManager* f)
 		attributes_ = std::move(aggregateAttributeMap);
 		has_aggregate_ = true;		
 	}
-}
-
-void ObjectVisitor::load_referenced_files(swganh::tre::ResourceManager* f)
-{
-	if (loaded_reference_)
-		return;
-	std::map<std::string, std::shared_ptr<boost::any>>::iterator itr;
-	std::map<std::string, std::shared_ptr<boost::any>>::iterator end_itr = attributes_.end();
-
-	//animationMapFilename
-	//appearanceFilename
-	//arrangementDescriptorFilename
-	itr = attributes_.find("arrangementDescriptorFilename");
-	if(itr != end_itr)
-	{
-		std::string value = boost::any_cast<std::string>(*(itr->second));
-		if(value != "") {
-			auto newVal = std::static_pointer_cast<SlotArrangementVisitor>(f->getResourceByName(value, SLOT_ARRANGEMENT_VISITOR));
-			itr->second = std::make_shared<boost::any>(newVal);
-		}
-		else
-		{
-			shared_ptr<SlotArrangementVisitor> arrangement = nullptr;
-			itr->second = make_shared<boost::any>(arrangement);
-		}
-	}
-
-	//clientDataFile
-	//cockpitFileName
-	//interiorLayoutFileName
-	//movementDatatable
-	//portalLayoutFilename
-	/*itr = attributes_.find("portalLayoutFilename");
-	if(itr != end_itr)
-	{
-		itr->second = f.load<pob_interpreter>(itr->first);
-	}*/
-
-	//slotDescriptorFilename
-	itr = attributes_.find("slotDescriptorFilename");
-	if(itr != end_itr)
-	{
-		std::string value = boost::any_cast<std::string>(*(itr->second));
-		if(value != "") {
-			auto newVal = std::static_pointer_cast<SlotDescriptorVisitor>(f->getResourceByName(value, SLOT_DESCRIPTOR_VISITOR));
-			itr->second = std::make_shared<boost::any>(newVal);
-		}
-		else
-		{
-			shared_ptr<SlotDescriptorVisitor> descriptor = nullptr;
-			itr->second = make_shared<boost::any>(descriptor);
-		}
-	}
-
-	//structureFootprintFileName
-	//terrainModificationFileName
-
-	loaded_reference_ = true;
 }

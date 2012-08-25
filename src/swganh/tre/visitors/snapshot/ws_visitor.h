@@ -21,6 +21,7 @@ namespace tre
 	class WsVisitor : public VisitorInterface
 	{
 	public:
+		static const VisitorType Type = WS_VISITOR;
 
 		/**
 			@brief Constructor for a ws interpreter
@@ -28,21 +29,16 @@ namespace tre
 		WsVisitor();
 
 		/**
-			@brief returns the InterpreterType associated with this Interpreter
-		*/
-		virtual VisitorType getType() { return WS_VISITOR; }
-
-		/**
 			@brief interprets a IFF::FileNode associated with this interpreter.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::shared_ptr<file_node> node);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this interpreter.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_folder(uint32_t depth, std::shared_ptr<folder_node> node);
+		virtual void visit_folder(uint32_t depth, std::string name, uint32_t size);
 
 		/**
 			@brief A single chunk object in the world 
@@ -64,11 +60,6 @@ namespace tre
 		//This interface should be satisfactory
 		size_t name_count() { return names.size(); }
 		std::string name(size_t id) { return names[id];}
-
-		/**
-			@brief a simple output function for debugging values.
-		*/
-		void debug();
 
 	private:
 

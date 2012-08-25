@@ -52,7 +52,7 @@ CommandPropertiesMap CommandPropertiesManager::LoadCommandPropertiesMap()
     
     try 
     {
-		auto datatable = std::static_pointer_cast<DatatableVisitor>(resource_manager_->getResourceByName("datatables/command/command_table.iff", DATATABLE_VISITOR));
+		auto datatable = resource_manager_->GetResourceByName<DatatableVisitor>("datatables/command/command_table.iff");
         
 		vector<int> bits;
         std::for_each(datatable->begin_itr(), datatable->end_itr(), [&] (DatatableVisitor::DATA_ROW& row) {

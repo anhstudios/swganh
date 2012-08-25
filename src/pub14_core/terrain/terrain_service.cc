@@ -28,10 +28,8 @@ TerrainService::TerrainService(swganh::app::SwganhKernel* kernel) : kernel_(kern
 		auto real_event = std::static_pointer_cast<swganh_core::simulation::NewSceneEvent>(newEvent);
 		try
 		{
-			auto visitor = kernel_->GetResourceManager()->getResourceByName(real_event->terrain_filename, TRN_VISITOR);
-	
 			SceneEntry entry;
-			entry.terrain_visitor_ = std::static_pointer_cast<TerrainVisitor>(visitor);
+			entry.terrain_visitor_ = kernel_->GetResourceManager()->GetResourceByName<TerrainVisitor>(real_event->terrain_filename, false);
 			scenes_.insert(SceneMap::value_type(real_event->scene_id, std::move(entry)));
 		}
 		catch(...)
