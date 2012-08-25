@@ -299,17 +299,18 @@ public:
 
 		// Add to new scene
 		// CmdStartScene
-        CmdStartScene start_scene;
-        start_scene.ignore_layout = 0;
-        start_scene.character_id = obj->GetObjectId();
-
-        start_scene.terrain_map = scene_obj->GetTerrainMap();
-        start_scene.position = obj->GetPosition();
-        start_scene.shared_race_template = obj->GetTemplate();
-        start_scene.galaxy_time = 0;
-
 		if(obj->GetController() != nullptr)
 		{
+			CmdStartScene start_scene;
+			start_scene.ignore_layout = 0;
+			start_scene.character_id = obj->GetObjectId();
+
+			start_scene.terrain_map = scene_obj->GetTerrainMap();
+			start_scene.position = obj->GetPosition();
+			start_scene.shared_race_template = obj->GetTemplate();
+			start_scene.galaxy_time = 0;
+
+		
 			obj->GetController()->GetRemoteClient()->SendTo(start_scene);
 		}
 
