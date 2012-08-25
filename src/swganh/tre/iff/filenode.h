@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef IFF_FILENODE_H
-#define IFF_FILENODE_H
+#pragma once
 
 #include "node.h"
 #include <boost/shared_array.hpp>
@@ -57,4 +55,3 @@ namespace tre
 	};
 }
 }
-#endif

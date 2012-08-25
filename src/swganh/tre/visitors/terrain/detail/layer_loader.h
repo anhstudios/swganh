@@ -1,3 +1,4 @@
+#pragma once
 #include "swganh/tre/iff/foldernode.h"
 
 using namespace swganh::tre;

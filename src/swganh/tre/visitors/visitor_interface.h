@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef VISTORS_IFF_H
-#define VISTORS_IFF_H
+#pragma once
 
 #include <memory> //For shared ptr
 #include <string> //For String
@@ -44,4 +42,3 @@ namespace tre
 	};
 }
 }
-#endif

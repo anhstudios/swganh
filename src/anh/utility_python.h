@@ -25,9 +25,7 @@
 	\author Timothy M. Shead (tshead@k-3d.com)
 */
 // modified by Kyle Craviotto for ANHStudios
-
-#ifndef ANH_SCRIPTING_UTILITY_H
-#define ANH_SCRIPTING_UTILITY_H
+#pragma once
 
 #include <boost/python/import.hpp>
 #include <boost/python/list.hpp>
@@ -120,6 +118,3 @@ inline void add_method(const boost::python::object& Function, const std::string&
 }
 
 } // namespace utility
-
-#endif // !ANH_SCRIPTING_UTILITY_H
-

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef NODE_H_
-#define NODE_H_
+#pragma once
 
 #include <set>
 #include <memory>
@@ -97,5 +95,3 @@ private:
 };
 
 } // namespace quadtree
-
-#endif // NODE_H_

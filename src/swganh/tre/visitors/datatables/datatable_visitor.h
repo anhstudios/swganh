@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef DATATABLE_VISITOR_H
-#define DATATABLE_VISITOR_H
+#pragma once
 
 #include "../visitor_interface.h"
 
@@ -66,5 +64,3 @@ namespace tre
 	};
 }
 }
-
-#endif

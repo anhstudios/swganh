@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_PLUGIN_PLUGIN_MANAGER_H_
-#define ANH_PLUGIN_PLUGIN_MANAGER_H_
+#pragma once
 
 #include <exception>
 #include <map>
@@ -90,5 +88,3 @@ std::shared_ptr<T> PluginManager::CreateObject(const std::string& name) {
 }
 
 }}  // namespace anh::plugin
-
-#endif  // ANH_PLUGIN_PLUGIN_MANAGER_H_

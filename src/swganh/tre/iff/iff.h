@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef IFF_H
-#define IFF_H
+#pragma once
 
 #include <stdio.h>
 #include <vector>
@@ -59,4 +57,3 @@ namespace tre
 	};
 }
 }
-#endif

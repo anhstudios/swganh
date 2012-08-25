@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef IFF_NODE_H
-#define IFF_NODE_H
+#pragma once
 
 #include <string> //for String
 #include <memory> //for shared_ptr/weak_ptr
@@ -72,5 +70,3 @@ namespace tre
 	};
 }
 }
-
-#endif

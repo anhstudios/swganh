@@ -1,5 +1,4 @@
-#ifndef SWGANH_CONTAINER_PERMISSIONS_INTERFACE_H_
-#define SWGANH_CONTAINER_PERMISSIONS_INTERFACE_H_
+#pragma once
 
 #include <memory>
 
@@ -83,5 +82,3 @@ namespace object
 	};
 }
 }
-
-#endif

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_MESSAGES_UPDATE_POSTURE_MESSAGE_H_
-#define SWGANH_MESSAGES_UPDATE_POSTURE_MESSAGE_H_
+#pragma once
 
 #include <cstdint>
 #include "anh/byte_buffer.h"
@@ -34,5 +32,3 @@ namespace controllers {
     };
 
 }}}  // namespace swganh::messages::controllers
-
-#endif  // SWGANH_MESSAGES_UPDATE_POSTURE_MESSAGE_H_

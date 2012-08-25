@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_COMBAT_COMBAT_SERVICE_H_
-#define SWGANH_COMBAT_COMBAT_SERVICE_H_
+#pragma once
 
 #ifndef WIN32
 #include <Python.h>
@@ -117,5 +115,3 @@ namespace combat {
     };
 
 }}  // namespace swganh::combat
-
-#endif  // SWGANH_COMBAT_COMBAT_SERVICE_H_

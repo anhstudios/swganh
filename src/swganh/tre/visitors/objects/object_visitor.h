@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef VISITORS_OBJECT_VISITOR_H
-#define VISITORS_OBJECT_VISITOR_H
+#pragma once
 
 #include "../visitor_interface.h"
 
@@ -136,5 +134,3 @@ namespace tre
 }
 
 #include "object_visitor-intl.h"
-
-#endif
