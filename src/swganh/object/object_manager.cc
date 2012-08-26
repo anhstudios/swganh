@@ -22,9 +22,13 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include "permissions/creature_permissions.h"
-#include "permissions/creature_container_permissions.h"
-#include "permissions/ridable_permissions.h"
+#include "permissions/default_permission.h"
+#include "permissions/world_permission.h"
+#include "permissions/static_container_permission.h"
+#include "permissions/creature_permission.h"
+#include "permissions/creature_container_permission.h"
+#include "permissions/ridable_permission.h"
+#include "permissions/world_cell_permission.h"
 
 using namespace std;
 using namespace anh;
@@ -32,24 +36,25 @@ using namespace swganh::tre;
 using namespace swganh::object;
 using namespace swganh::messages;
 
+#define DYNAMIC_ID_START 17596481011712
+
+void ObjectManager::AddContainerPermissionType_(PermissionType type, ContainerPermissionsInterface* ptr)
+{
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(type), 
+		shared_ptr<ContainerPermissionsInterface>(ptr)));
+}
+
 ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
-    : kernel_(kernel), next_dynamic_id_(17596481011712) //Dynamic id start value
+    : kernel_(kernel), next_dynamic_id_(DYNAMIC_ID_START)
 {
 	//Load Permissions
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(DEFAULT_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new DefaultContainerPermissions())));
-
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(WORLD_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new WorldContainerPermissions())));
-
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(CREATURE_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new CreaturePermissions())));
-
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(CREATURE_CONTAINER_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new CreatureContainerPermissions())));
-
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(RIDEABLE_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new RideablePermissions())));
+	AddContainerPermissionType_(DEFAULT_PERMISSION, new DefaultPermission());
+	AddContainerPermissionType_(WORLD_PERMISSION, new WorldPermission());
+	AddContainerPermissionType_(STATIC_CONTAINER_PERMISSION, new StaticContainerPermission());
+	AddContainerPermissionType_(WORLD_CELL_PERMISSION, new WorldCellPermission());
+	AddContainerPermissionType_(CREATURE_PERMISSION, new CreaturePermission());
+	AddContainerPermissionType_(CREATURE_CONTAINER_PERMISSION, new CreatureContainerPermission());
+	AddContainerPermissionType_(RIDEABLE_PERMISSION, new RideablePermission());
 
 	//Load slot definitions
 	slot_definition_ = kernel->GetResourceManager()->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
@@ -161,7 +166,7 @@ shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
 void ObjectManager::RemoveObject(const shared_ptr<Object>& object)
 {
     boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-    object_map_.unsafe_erase(object_map_.find(object->GetObjectId()));
+    object_map_.erase(object_map_.find(object->GetObjectId()));
 }
 
 shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_name)
@@ -222,7 +227,8 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 	auto permission_itr = permissions_objects_.find(type);
 	if(permission_itr == permissions_objects_.end())
 	{
-		throw std::runtime_error("Cannot create object due to invalid permission type");
+		LOG(warning) << "Bad permission type requested in CreateObjectFromTemplate";
+		return nullptr;
 	}
 
 	//Then make sure we actually can create an object of this type
@@ -242,6 +248,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 				created_object->SetPermissions(permission_itr->second);
 				created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
 				created_object->SetTemplate(template_name);
+				LoadSlotsForObject(created_object);
 
 				//Set the ID based on the inputs
 				if(!is_persisted)
@@ -253,6 +260,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 				}
 
 				//Insert it into the object map
+				boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
 				object_map_.insert(make_pair(created_object->GetObjectId(), created_object));
 			}
 		}
@@ -389,4 +397,10 @@ void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 PermissionsObjectMap& ObjectManager::GetPermissionsMap()
 {
 	return permissions_objects_;
+}
+
+void ObjectManager::PrepareToAccomodate(uint32_t delta)
+{
+	boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
+	object_map_.reserve(object_map_.size() + delta);
 }

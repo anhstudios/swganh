@@ -10,15 +10,18 @@
 #include "pub14_core/simulation/simulation_service.h"
 #include "pub14_core/simulation/scene_events.h"
 
+#include "swganh/object/permissions/permission_type.h"
 #include "swganh/object/object_manager.h"
 #include "swganh/object/object.h"
 
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/snapshot/ws_visitor.h"
+#include "swganh/tre/visitors/objects/object_visitor.h"
 
 using namespace anh::service;
 using namespace swganh::app;
 using namespace swganh::simulation;
+using namespace swganh::object;
 using namespace swganh::tre;
 
 using namespace swganh_core::spawn;
@@ -32,23 +35,27 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 		
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		
-		//Load objects from snapshot
-		
+		LOG(info) << "SpawnService: Loading static objects for planet: " << real_event->scene_label;
+
+		//Load objects from snapshot	
 		std::string snapshot_filename = "snapshot/"+real_event->scene_label+".ws";
 		auto snapshot_visitor = kernel_->GetResourceManager()->GetResourceByName<WsVisitor>(snapshot_filename, false);
-			
+
 		auto chunks = snapshot_visitor->chunks();
-		std::for_each(chunks.begin(), chunks.end(), [&] (WsVisitor::CHUNK& chunk) {
-			try
-			{
-				auto object = simulation_service->CreateObjectFromTemplate(snapshot_visitor->name(chunk.name_id), swganh::object::DEFAULT_CONTAINER_PERMISSION, false, true, chunk.id);
+		simulation_service->PrepareToAccomodate(chunks.size());
+		for(auto& chunk : chunks) 
+		{
+			auto filename = snapshot_visitor->name(chunk.name_id);
+			auto object = simulation_service->CreateObjectFromTemplate(filename, 
+				FindProperPermission_(filename), false, false, chunk.id);
 				
-				//LOG(warning) << "LOADING OBJECT: " << snapshot_visitor->name(chunk.name_id);
-				if (object)
-				{
-					object->SetPosition(chunk.location);
-					object->SetOrientation(chunk.orientation);
-					object->SetSceneId(real_event->scene_id);
+			if(object)
+			{
+				object->SetPosition(chunk.location);
+				object->SetOrientation(chunk.orientation);
+				object->SetSceneId(real_event->scene_id);
+				object->SetInSnapshot(true);
+				object->SetDatabasePersisted(false);
 					
 					//@Todo: Set scale
 				
@@ -69,14 +76,14 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 				}
 				else
 				{
-					LOG(warning) << "Failed to load files from snapshot for: " << real_event->scene_label;
+					//It has a parent, so get it's parent and put it into that
+					auto parent = simulation_service->GetObjectById(chunk.parent_id);
+					if(parent != nullptr)
+					{
+						parent->AddObject(nullptr, object);
+					}
 				}
 			}
-			catch(...)
-			{
-				LOG(warning) << "Failed to load files from snapshot for: " << real_event->scene_label;
-			}
-		});		
 	});
 
 	/* Dont need this now, but we might later.
@@ -104,4 +111,13 @@ ServiceDescription SpawnService::GetServiceDescription()
         0);
 
     return service_description;
+}
+
+PermissionType SpawnService::FindProperPermission_(const std::string& iff_name)
+{
+	if(iff_name.compare("object/cell/shared_cell.iff") == 0)
+	{
+		return WORLD_CELL_PERMISSION;
+	}
+	return DEFAULT_PERMISSION;
 }

@@ -2,8 +2,8 @@
 #define SWGANH_SPAWN_SERVICE_H_
 
 #include "swganh/spawn/spawn_service_interface.h"
-
 #include "swganh/app/swganh_kernel.h"
+#include "swganh/object/permissions/permission_type.h"
 
 namespace swganh_core
 {
@@ -18,6 +18,8 @@ namespace spawn
 		 anh::service::ServiceDescription GetServiceDescription();
 	
 	private:
+
+		swganh::object::PermissionType FindProperPermission_(const std::string& iff_name);
 		swganh::app::SwganhKernel* kernel_;
 	};
 }

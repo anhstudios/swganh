@@ -18,6 +18,7 @@
 #include "pub14_core/messages/update_transform_with_parent_message.h"
 
 #include "swganh/simulation/spatial_provider_interface.h"
+#include "swganh/simulation/simulation_service_interface.h"
 
 using namespace anh::event_dispatcher;
 using namespace std;
@@ -31,6 +32,8 @@ using namespace swganh_core::simulation;
 MovementManager::MovementManager(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)
 {
+	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+
 	RegisterEvents(kernel_->GetEventDispatcher());
 }
 
@@ -60,21 +63,32 @@ void MovementManager::HandleDataTransformWithParent(
     const shared_ptr<ObjectController>& controller, 
     DataTransformWithParent message)
 {
-    throw std::runtime_error("Cell movement currently disabled");
-
     auto object = controller->GetObject();
-        
-    if (!ValidateCounter_(object->GetObjectId(), message.counter))
-    {
-        return;
-    }
-
-    counter_map_[object->GetObjectId()] = message.counter;
     
-    object->SetPosition(message.position);
-    object->SetOrientation(message.orientation);
-        
-    SendUpdateDataTransformWithParentMessage(object);
+	auto container = simulation_service_->GetObjectById(message.cell_id);
+	if(container != nullptr)
+	{
+		if (!ValidateCounter_(object->GetObjectId(), message.counter))
+		{
+			return;
+		}
+
+		counter_map_[object->GetObjectId()] = message.counter;
+
+		//Set the new position and orientation
+		object->SetPosition(message.position);
+		object->SetOrientation(message.orientation);
+    
+		//Perform the transfer
+		object->GetContainer()->TransferObject(object, object, container);
+
+		//Send the update transform
+		SendUpdateDataTransformWithParentMessage(object);
+	}
+	else
+	{
+		LOG(error) << "Cell ID: " << message.cell_id << " not found.";
+	}
 }
 
 void MovementManager::SendDataTransformMessage(const shared_ptr<Object>& object, uint32_t unknown)

@@ -6,6 +6,7 @@
 #include "anh/logger.h"
 
 #include "swganh/object/object.h"
+#include "swganh/object/permissions/world_permission.h"
 
 using std::shared_ptr;
 
@@ -20,7 +21,7 @@ QuadtreeSpatialProvider::QuadtreeSpatialProvider()
 	: root_node_(ROOT, Region(Point(-8300.0f, -8300.0f), 
 	Point(8300.0f, 8300.0f)), 0, 9, nullptr)
 {
-	SetPermissions(std::shared_ptr<ContainerPermissionsInterface>(new WorldContainerPermissions()));
+	SetPermissions(std::shared_ptr<ContainerPermissionsInterface>(new WorldPermission()));
 }
 
 QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
@@ -78,7 +79,8 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 		// If we are top level (aka SI can see us)
 		if (aware_object->GetContainer()->GetObjectId() == GetObjectId())
 		{
-			auto new_itr = new_objects.find(aware_object);
+			auto new_itr = std::find(new_objects.begin(), new_objects.end(), aware_object);
+
 			if(new_itr != new_objects.end())
 			{
 				new_objects.erase(new_itr);
@@ -156,7 +158,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 
 void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
 {
-	std::set<std::shared_ptr<Object>> contained_objects;
+	std::list<std::shared_ptr<Object>> contained_objects;
 	if (requester)
 	{
 		contained_objects = root_node_.Query(GetQueryBoxViewRange(requester));		
