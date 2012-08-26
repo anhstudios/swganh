@@ -126,7 +126,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 		else
 		{
 			DLOG(error) << "FAILED TO FIND PERMISSION TYPE " << result->getInt("perission_type");
-			object->SetPermissions(permissions_objects_.find(DEFAULT_CONTAINER_PERMISSION)->second);
+			object->SetPermissions(permissions_objects_.find(DEFAULT_PERMISSION)->second);
 		}
 		object_manager_->LoadSlotsForObject(object);
     }

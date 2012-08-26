@@ -57,22 +57,12 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 				object->SetInSnapshot(true);
 				object->SetDatabasePersisted(false);
 					
-					//@Todo: Set scale
+				//@Todo: Set scale
 				
-					if(chunk.parent_id == 0)
-					{
-						//Put it into the scene
-						simulation_service->TransferObjectToScene(object, real_event->scene_label);
-					}
-					else
-					{
-						//It has a parent, so get it's parent and put it into that
-						auto parent = simulation_service->GetObjectById(chunk.parent_id);
-						if(parent != nullptr)
-						{
-							parent->AddObject(nullptr, object);
-						}
-					}
+				if(chunk.parent_id == 0)
+				{
+					//Put it into the scene
+					simulation_service->TransferObjectToScene(object, real_event->scene_label);
 				}
 				else
 				{
@@ -84,6 +74,7 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 					}
 				}
 			}
+		}
 	});
 
 	/* Dont need this now, but we might later.

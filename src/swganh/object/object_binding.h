@@ -30,10 +30,6 @@ boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shar
 	return boost::python::make_tuple(requester, object, newContainer, arrangement_id);
 }
 
-void SetDefaultPermissions(std::shared_ptr<Object> requester)
-{
-	requester->SetPermissions(make_shared<DefaultContainerPermissions>());	
-}
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 1, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
@@ -51,8 +47,7 @@ void exportObject()
 		.def("Add", &ContainerInterface::AddObject, addObjectOverload(args("newObject", "object", "arrangement_id"), "Adds an object to the current object"))
 		.def("Remove", RemoveObject, "Removes an object fomr the current object")
 		.def("Transfer", &ContainerInterface::TransferObject, transferObjectOverload(args("object", "newContainer", "arrangement_id"), "Transfer an object to a different object"))
-		.def("SwapSlots", &Object::SwapSlots, "Change an objects current arrangement")
-		.def("SetDefaultPermission", SetDefaultPermissions, "Sets the permissions of a container to a default")
+		.def("SwapSlots", &Object::SwapSlots, "Change an objects current arrangement")		
 		;
 	
     class_<Object, bases<ContainerInterface>, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from")
