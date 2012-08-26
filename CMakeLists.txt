@@ -9,7 +9,7 @@ project(swganh CXX)
 # current version
 set(swganh_VERSION_MAJOR 0)
 set(swganh_VERSION_MINOR 5)
-set(swganh_VERSION_PATCH 0)
+set(swganh_VERSION_PATCH 1)
 set(swganh_VERSION
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
 
@@ -120,6 +120,12 @@ if(MSVC)
     
     add_definitions(/D BOOST_ALL_NO_LIB)
     message(status "- BOOST: Disable automatic linking")
+    
+    ADD_DEFINITIONS (/D _HAS_ITERATOR_DEBUGGING=0)
+    MESSAGE(STATUS "- MSVC: set iterator debugging to 0")
+    
+    ADD_DEFINITIONS (/D _SECURE_SCL=0)
+    MESSAGE(STATUS "- MSVC: set iterator debugging to 0")
 endif()
 
 # Use the static/multithreaded libraries.
@@ -150,7 +156,7 @@ if (NOT WIN32)
     find_package(TBB REQUIRED)
 endif()
 
-find_package(Boost 1.49.0 COMPONENTS date_time filesystem log log_setup program_options python3 system thread unit_test_framework ${AdditionalBoostLibs} REQUIRED)
+find_package(Boost 1.51.0 COMPONENTS date_time filesystem log log_setup program_options python3 system thread unit_test_framework ${AdditionalBoostLibs} REQUIRED)
 find_package(Glm REQUIRED)
 find_package(MysqlConnectorC REQUIRED)
 find_package(MysqlConnectorCpp REQUIRED)
