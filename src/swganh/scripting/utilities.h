@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_SCRIPTING_UTILITIES_H_
-#define SWGANH_SCRIPTING_UTILITIES_H_
+#pragma once
 
 #include <boost/python/detail/wrap_python.hpp>
 
@@ -67,5 +65,3 @@ namespace scripting {
     };
 
 }}  // namespace swganh::scripting
-
-#endif  // SWGANH_SCRIPTING_UTILITIES_H_

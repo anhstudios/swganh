@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_APP_SWGANH_APP_H_
-#define SWGANH_APP_SWGANH_APP_H_
+#pragma once
 
 #include <atomic>
 #include <list>
@@ -89,5 +87,3 @@ private:
 };
 
 }}  // namespace swganh::app
-
-#endif  // SWGANH_APP_SWGANH_APP_H_

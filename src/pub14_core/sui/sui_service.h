@@ -1,5 +1,4 @@
-#ifndef SWGANH_UI_SERVICE_H_
-#define SWGNAH_UI_SERVICE_H_
+#pragma once
 
 #include <map>
 
@@ -104,5 +103,3 @@ namespace sui
 
 }
 }
-
-#endif

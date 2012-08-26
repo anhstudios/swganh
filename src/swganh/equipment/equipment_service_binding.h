@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_SOCIAL_SOCIAL_SERVICE_BINDING_H_
-#define SWGANH_SOCIAL_SOCIAL_SERVICE_BINDING_H_
+#pragma once
 
 #ifndef WIN32
 #include <Python.h>
@@ -39,5 +37,3 @@ void exportEquipmentService()
 			"returns the :class:`.Player` equipped by this creature object")
         ;
 }
-
-#endif //SWGANH_SOCIAL_SOCIAL_SERVICE_BINDING_H_

@@ -1,5 +1,4 @@
-#ifndef SWGANH_CREATURE_PERMISSIONS_H_
-#define SWGANH_CREATURE_PERMISSIONS_H_
+#pragma once
 
 #include "container_permissions_interface.h"
 
@@ -22,5 +21,3 @@ class CreaturePermissions : public ContainerPermissionsInterface
 
 }
 }
-
-#endif

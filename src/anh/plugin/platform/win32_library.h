@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_PLUGIN_PLATFORM_WIN32_LIBRARY_H_
-#define ANH_PLUGIN_PLATFORM_WIN32_LIBRARY_H_
+#pragma once
 
 #ifdef WIN32
 
@@ -41,5 +39,3 @@ private:
 }}}  // namespace anh::plugin::platform
 
 #endif  // WIN32
-
-#endif  // ANH_PLUGIN_PLATFORM_WIN32_LIBRARY_H_

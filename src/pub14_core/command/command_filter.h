@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_COMMAND_COMMAND_FILTER_H_
-#define PUB14_CORE_COMMAND_COMMAND_FILTER_H_
+#pragma once
 
 #include <tuple>
 #include <cstdint>
@@ -59,5 +57,3 @@ struct CommandFilters {
 };
 
 }} // pub14_core::command
-
-#endif // PUB14_CORE_COMMAND_COMMAND_FILTER_H_

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef QUADTREE_SPATIAL_PROVIDER_H_
-#define QUADTREE_SPATIAL_PROVIDER_H_
+#pragma once
 
 #include "swganh/simulation/spatial_provider_interface.h"
 #include "swganh/object/permissions/container_permissions_interface.h"
@@ -41,5 +39,3 @@ private:
 };
 
 }} // swganh_core::simulation
-
-#endif // QUADTREE_SPATIAL_PROVIDER_H_

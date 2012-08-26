@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef ANH_SERVICE_SERVICE_H_
-#define ANH_SERVICE_SERVICE_H_
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -170,4 +168,3 @@ private:
 }  // namespace service
 }  // namespace anh
 
-#endif  // ANH_SERVICE_SERVICE_H_

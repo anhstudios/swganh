@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef VISITORS_WS_H
-#define VISITORS_WS_H
+#pragma once
 
 #include "../visitor_interface.h"
 #include <cstdint> //for the std::uint32_t and std::uint64_t, ect
@@ -72,4 +70,3 @@ namespace tre
 	};
 }
 }
-#endif

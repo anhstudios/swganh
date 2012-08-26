@@ -1,5 +1,4 @@
-#ifndef SWGANH_TRE_TERRAIN_VISITOR_H_
-#define SWGANH_TRE_TERRAIN_VISITOR_H_
+#pragma once
 
 #include "swganh/tre/visitors/visitor_interface.h"
 
@@ -56,5 +55,3 @@ namespace tre
 	};
 }
 }
-
-#endif
