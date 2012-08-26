@@ -35,11 +35,13 @@ void exportSimulationService()
 	typedef void (SimulationServiceInterface::*TransferObjectToSceneObjectAndPositionBinding)(shared_ptr<swganh::object::Object>, const std::string&, float, float, float);
 
 	enum_<PermissionType>("ContainerPermission")
-		.value("Default", DEFAULT_CONTAINER_PERMISSION)
-		.value("World", WORLD_CONTAINER_PERMISSION)
-		.value("Creature", CREATURE_CONTAINER_PERMISSION)
-		.value("CreatureContainer", CREATURE_CONTAINER_CONTAINER_PERMISSION)
-		.value("Rideable", RIDEABLE_CONTAINER_PERMISSION);
+		.value("Default", DEFAULT_PERMISSION)
+		.value("World", WORLD_PERMISSION)
+		.value("StaticContainer", STATIC_CONTAINER_PERMISSION)
+		.value("WorldCell", WORLD_CELL_PERMISSION)
+		.value("Creature", CREATURE_PERMISSION)
+		.value("CreatureContainer", CREATURE_CONTAINER_PERMISSION)
+		.value("Rideable", RIDEABLE_PERMISSION);
 
     class_<SimulationServiceInterface, std::shared_ptr<SimulationServiceInterface>, boost::noncopyable>("SimulationService", "The simulation service handles the current scenes aka planets", no_init)
         .def("persist", &SimulationServiceInterface::PersistObject, "persists the specified object and it's containing objects")

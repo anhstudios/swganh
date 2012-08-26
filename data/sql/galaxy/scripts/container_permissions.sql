@@ -9,11 +9,14 @@ CREATE TABLE IF NOT EXISTS `container_permissions` (
   PRIMARY KEY (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `container_permissions` VALUES (1, 'default');
-INSERT INTO `container_permissions` VALUES (2, 'world');
-INSERT INTO `container_permissions` VALUES (3, 'creature');
-INSERT INTO `container_permissions` VALUES (4, 'creature container');
-INSERT INTO `container_permissions` VALUES (5, 'rideable');
+INSERT INTO `container_permissions` (`name`) VALUES 
+	('default'),
+	('world'),
+	('static'),
+	('world cell'),
+	('creature'),
+	('creature container'),
+	('rideable');
 
 /*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

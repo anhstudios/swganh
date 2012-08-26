@@ -255,10 +255,13 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 
 		if(observer)
 		{
-			LOG(warning) << "INFORMING " << observer->GetId() << " OF " << GetObjectId();
 			Subscribe(observer);
-			SendCreateByCrc(observer);
-			CreateBaselines(observer);
+			if(!IsInSnapshot())
+			{
+				LOG(warning) << "INFORMING " << observer->GetId() << " OF " << GetObjectId();
+				SendCreateByCrc(observer);
+				CreateBaselines(observer);
+			}
 
 			if(GetPermissions()->canView(shared_from_this(), object))
 			{
@@ -295,8 +298,11 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 				});
 			}
 
-			LOG(warning) << "UNINFORMING " << observer->GetId() << " OF " << object->GetObjectId();
-			SendDestroy(observer);
+			if(!IsInSnapshot())
+			{
+				LOG(warning) << "UNINFORMING " << observer->GetId() << " OF " << object->GetObjectId();
+				SendDestroy(observer);
+			}
 			Unsubscribe(observer);
 		}
 	}

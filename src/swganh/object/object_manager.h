@@ -197,7 +197,7 @@ namespace object {
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
-			swganh::object::PermissionType type=swganh::object::DEFAULT_CONTAINER_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0);
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0);
 		
         /**
          * Creates an instance of an object from the specified template.
@@ -207,7 +207,7 @@ namespace object {
          */
         template<typename T>
         std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, 
-			swganh::object::PermissionType type=swganh::object::DEFAULT_CONTAINER_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0)
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0)
         {
             std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, is_initialized, objectId);
 
@@ -300,6 +300,8 @@ namespace object {
          * @param message_builder The message builder to store.
          */
         void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
+
+		void ObjectManager::AddContainerPermissionType_(swganh::object::PermissionType type, swganh::object::ContainerPermissionsInterface* ptr);
 
         swganh::app::SwganhKernel* kernel_;
 

@@ -6,6 +6,7 @@
 #include "anh/logger.h"
 
 #include "swganh/object/object.h"
+#include "swganh/object/permissions/world_permission.h"
 
 using std::shared_ptr;
 
@@ -20,7 +21,7 @@ QuadtreeSpatialProvider::QuadtreeSpatialProvider()
 	: root_node_(ROOT, Region(Point(-8300.0f, -8300.0f), 
 	Point(8300.0f, 8300.0f)), 0, 9, nullptr)
 {
-	SetPermissions(std::shared_ptr<ContainerPermissionsInterface>(new WorldContainerPermissions()));
+	SetPermissions(std::shared_ptr<ContainerPermissionsInterface>(new WorldPermission()));
 }
 
 QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
