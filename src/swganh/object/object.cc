@@ -318,7 +318,6 @@ void Object::SetTemplate(const string& template_string)
 }
 void Object::SetObjectId(uint64_t object_id)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
 	object_id_ = object_id;
 }
 uint64_t Object::GetObjectId()

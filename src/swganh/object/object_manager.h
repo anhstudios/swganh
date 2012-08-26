@@ -263,6 +263,8 @@ namespace object {
 
 		PermissionsObjectMap& GetPermissionsMap();
 
+		virtual void PrepareToAccomodate(uint32_t delta);
+
     private:
 		
 		typedef std::map<
@@ -310,7 +312,7 @@ namespace object {
 		uint64_t next_dynamic_id_;
 
         boost::shared_mutex object_map_mutex_;
-        concurrency::concurrent_unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
+        std::unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
 
 		PermissionsObjectMap permissions_objects_;
     };

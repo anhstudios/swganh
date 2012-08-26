@@ -666,3 +666,8 @@ shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& tem
 {
 	return impl_->GetObjectManager()->CreateObjectFromTemplate(template_name, type, is_persisted, is_initialized, object_id);
 }
+
+void SimulationService::PrepareToAccomodate(uint32_t delta)
+{
+	impl_->GetObjectManager()->PrepareToAccomodate(delta);
+}

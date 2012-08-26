@@ -161,7 +161,7 @@ shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
 void ObjectManager::RemoveObject(const shared_ptr<Object>& object)
 {
     boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-    object_map_.unsafe_erase(object_map_.find(object->GetObjectId()));
+    object_map_.erase(object_map_.find(object->GetObjectId()));
 }
 
 shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_name)
@@ -253,6 +253,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 				}
 
 				//Insert it into the object map
+				boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
 				object_map_.insert(make_pair(created_object->GetObjectId(), created_object));
 			}
 		}
@@ -389,4 +390,10 @@ void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 PermissionsObjectMap& ObjectManager::GetPermissionsMap()
 {
 	return permissions_objects_;
+}
+
+void ObjectManager::PrepareToAccomodate(uint32_t delta)
+{
+	boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
+	object_map_.reserve(object_map_.size() + delta);
 }
