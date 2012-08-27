@@ -79,7 +79,7 @@ void Object::ClearController()
 
     Unsubscribe(controller);
 }
-void Object::AddObject(std::shared_ptr<Object> obj, std::shared_ptr<Object> requester, int32_t arrangement_id)
+void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> obj, int32_t arrangement_id)
 {
 	if(requester == nullptr || container_permissions_->canInsert(shared_from_this(), requester, obj))
 	{
@@ -255,10 +255,9 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 
 		if(observer)
 		{
-			Subscribe(observer);
 			if(!IsInSnapshot())
 			{
-				LOG(warning) << "INFORMING " << observer->GetId() << " OF " << GetObjectId();
+				Subscribe(observer);
 				SendCreateByCrc(observer);
 				CreateBaselines(observer);
 			}
@@ -300,10 +299,9 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 
 			if(!IsInSnapshot())
 			{
-				LOG(warning) << "UNINFORMING " << observer->GetId() << " OF " << object->GetObjectId();
 				SendDestroy(observer);
+				Unsubscribe(observer);
 			}
-			Unsubscribe(observer);
 		}
 	}
 }
@@ -640,6 +638,9 @@ void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> o
 
 void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
+	if(observer == nullptr)
+		return;
+
 	uint64_t container_id = 0;
 	if (GetContainer())
 		container_id = GetContainer()->GetObjectId();
@@ -649,8 +650,6 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::Observe
 	containment_message.object_id = GetObjectId();
 	containment_message.containment_type = arrangement_id_;
 	observer->Notify(containment_message);
-
-	LOG(warning) << "UPDATE CONTAINMENT FOR " << observer->GetId() << ": " << GetObjectId() << " INTO " << GetContainer()->GetObjectId();
 }
 
 void Object::SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer)

@@ -111,5 +111,5 @@ PermissionType SpawnService::FindProperPermission_(const std::string& iff_name)
 	{
 		return WORLD_CELL_PERMISSION;
 	}
-	return DEFAULT_PERMISSION;
+	return STATIC_CONTAINER_PERMISSION;
 }

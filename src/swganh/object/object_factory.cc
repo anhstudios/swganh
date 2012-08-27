@@ -126,7 +126,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 		else
 		{
 			DLOG(error) << "FAILED TO FIND PERMISSION TYPE " << result->getInt("perission_type");
-			object->SetPermissions(permissions_objects_.find(DEFAULT_CONTAINER_PERMISSION)->second);
+			object->SetPermissions(permissions_objects_.find(DEFAULT_PERMISSION)->second);
 		}
 		object_manager_->LoadSlotsForObject(object);
     }
@@ -181,12 +181,12 @@ void ObjectFactory::LoadContainedObjects(
 			if(contained_object->GetArrangementId() == -2)
 			{
 				//This object has never been loaded before and needs to be put into the default slot.
-				object->AddObject(contained_object);
+				object->AddObject(nullptr, contained_object);
 			}
 			else 
 			{
 				//Put it back where it was persisted
-				object->AddObject(contained_object, nullptr, contained_object->GetArrangementId());
+				object->AddObject(nullptr, contained_object, contained_object->GetArrangementId());
 			}
 
         }
