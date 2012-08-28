@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/object/object_factory.h"
+#include "swganh/object/intangible/intangible_factory.h"
 #include <unordered_map>
 
 namespace anh {
@@ -17,9 +17,11 @@ namespace player {class Player; }
 
 namespace waypoint {
     class Waypoint;
-    class WaypointFactory : public swganh::object::ObjectFactory
+    class WaypointFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
+		typedef Waypoint ObjectType;
+
         WaypointFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
 

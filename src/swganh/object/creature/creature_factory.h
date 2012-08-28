@@ -22,6 +22,8 @@ namespace creature {
     class CreatureFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
+		typedef Creature ObjectType;
+
         CreatureFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
 

@@ -32,7 +32,7 @@ Group::~Group()
 
 void Group::AddGroupMember(uint64_t member, std::string name)
 {
-    boost::lock_guard<boost::mutex> lock(group_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     member_list_.Add(Member(member, name));
     
     GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
@@ -41,7 +41,7 @@ void Group::AddGroupMember(uint64_t member, std::string name)
 
 void Group::RemoveGroupMember(uint64_t member)
 {
-    boost::lock_guard<boost::mutex> lock(group_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto iter = std::find_if(begin(member_list_), end(member_list_), [=](const Member& x)->bool {
         return member == x.object_id;
     });
@@ -59,7 +59,7 @@ void Group::RemoveGroupMember(uint64_t member)
     
 swganh::messages::containers::NetworkSortedVector<Member> Group::GetGroupMembers()
 {
-    boost::lock_guard<boost::mutex> lock(group_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return member_list_;
 }
 
@@ -105,21 +105,12 @@ uint64_t Group::GetLootMaster(void)
 
 uint16_t Group::GetCapacity(void)
 {
-    boost::lock_guard<boost::mutex> lock(group_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return member_list_.Capacity();
 }
 
 uint16_t Group::GetSize(void)
 {
-    boost::lock_guard<boost::mutex> lock(group_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return member_list_.Size();
-}
-
-void Group::GetBaseline3()
-{
-    
-}
-
-void Group::GetBaseline6()
-{
 }

@@ -148,7 +148,7 @@ public:
      */
     void ClearController();
 
-	virtual void AddObject(std::shared_ptr<Object> newObject, std::shared_ptr<Object> requester = nullptr, int32_t arrangement_id=-2);
+	virtual void AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2);
 	virtual void RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject);
 	virtual void TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
 	virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id);
@@ -505,6 +505,12 @@ public:
 	 */
 	ObjectArrangements GetSlotArrangements();
 
+
+	bool IsDatabasePersisted();
+	bool IsInSnapshot();
+	void SetDatabasePersisted(bool value);
+	void SetInSnapshot(bool value);
+
 	/**
 	 * @brief Gets the Attribute Map
 	 */ 
@@ -561,6 +567,7 @@ public:
 	uint8_t GetAttributeTemplateId();
 	void SetAttributeTemplateId(uint8_t attribute_template_id);
 
+
 protected:
 	// Radials
 	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> menu_response_;
@@ -576,12 +583,11 @@ protected:
     std::wstring custom_name_;                       // update 3
     std::atomic<uint32_t> volume_;                   // update 3
     std::atomic<int32_t> arrangement_id_;
-
-	std::atomic<uint8_t> attributes_template_id; // Used to determine which attribute template to b
+	std::atomic<uint8_t> attributes_template_id;	 // Used to determine which attribute template to use
+	mutable boost::mutex object_mutex_;
 
 private:
-    mutable boost::mutex object_mutex_;
-
+    
     typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
 
@@ -601,6 +607,9 @@ private:
     anh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;
+
+	bool database_persisted_;
+	bool in_snapshot_;
 
     boost::mutex flags_mutex_;
     std::set<std::string> flags_;

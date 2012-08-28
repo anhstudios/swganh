@@ -4,13 +4,13 @@
 
 #include <glm/glm.hpp>
 
-#include "swganh/object/object.h"
+#include "swganh/object/intangible/intangible.h"
 
 namespace swganh {
 namespace object {
 namespace cell {
 
-class Cell : public swganh::object::Object {
+class Cell : public swganh::object::intangible::Intangible {
 
 public:
     // SCLT
@@ -21,17 +21,14 @@ public:
     * @brief Gets the current cell number
     *   @returns cell number
     */
-    uint32_t GetCell() { return cell_number_; }
+    uint32_t GetCell();
+
     /**
     * @brief sets the current cell number
     *   @param cell number
     */
     void SetCell(uint32_t cell_number);
 
-    virtual void GetBaseline3();
-
-private:
-    uint32_t cell_number_;			//update 3
 };
 
 }}} // swganh::object::cell

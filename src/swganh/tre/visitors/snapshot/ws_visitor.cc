@@ -56,5 +56,5 @@ void WsVisitor::_handle0000DATA(anh::ByteBuffer& buffer)
 	c.object_priority = buffer.read<float>();
 	c.pob_crc = buffer.read<uint32_t>();
 
-	chunks.insert(std::make_pair<std::uint64_t, CHUNK>(std::move(c.parent_id), std::move(c)));
+	chunks_.push_back(std::move(c));
 }
