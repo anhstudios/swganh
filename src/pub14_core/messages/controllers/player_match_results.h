@@ -40,12 +40,6 @@ namespace controllers {
             , player_matches(std::vector<PlayerMatch>())
         {}
 
-        explicit PlayerMatchResults(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
-
         static uint32_t message_type() { return 0x000001E7; }
         
         std::vector<PlayerMatch> player_matches;
@@ -73,7 +67,7 @@ namespace controllers {
             
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             uint32_t count = buffer.read<uint32_t>();
             for (int i = 0; i < count; i++)

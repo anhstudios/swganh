@@ -21,10 +21,10 @@ namespace messages {
     	std::wstring value;
     };
 
-    struct AttributeListMessage : public BaseSwgMessage<AttributeListMessage>
+    struct AttributeListMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0xF3F12F2A; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0xF3F12F2A; }
 
     	uint64_t object_id;
     	std::vector<Attribute> attributes;
@@ -39,7 +39,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
             object_id = buffer.read<uint64_t>();
     		uint32_t attribute_count = buffer.read<uint32_t>();

@@ -31,12 +31,6 @@ namespace controllers {
     		, defender_list(std::vector<CombatDefender>())
         {}
 
-        explicit CombatActionMessage(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
-
     	static uint32_t message_type() { return 0x000000CC; }
         
     	uint32_t action_crc;
@@ -66,7 +60,7 @@ namespace controllers {
             });
     	}
     
-    	void OnControllerDeserialize(anh::ByteBuffer buffer) {
+    	void OnControllerDeserialize(anh::ByteBuffer& buffer) {
     		action_crc = buffer.read<uint32_t>();
     		attacker_id = buffer.read<uint64_t>();
     		weapon_id = buffer.read<uint64_t>();

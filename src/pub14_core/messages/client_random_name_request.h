@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
     
-    struct ClientRandomNameRequest : public BaseSwgMessage<ClientRandomNameRequest>
+    struct ClientRandomNameRequest : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 2; }
-        static uint32_t Opcode() { return 0xD6D1B6D1; }
+        uint16_t Opcount() const { return 2; }
+        uint32_t Opcode() const { return 0xD6D1B6D1; }
         
         std::string player_race_iff;
 
@@ -21,7 +21,7 @@ namespace messages {
             buffer.write(player_race_iff);	
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
         	player_race_iff = buffer.read<std::string>();
         }

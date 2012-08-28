@@ -10,10 +10,10 @@ namespace swganh {
 namespace messages {
 namespace controllers {
     
-    struct UpdatePostureMessage : public BaseSwgMessage<UpdatePostureMessage>
+    struct UpdatePostureMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x0BDE6B41; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x0BDE6B41; }
 
         int8_t posture_id;
         uint64_t object_id;
@@ -24,7 +24,7 @@ namespace controllers {
             buffer.write(object_id);
         }
     	
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
         {
             posture_id = buffer.read<int8_t>();
             object_id = buffer.read<uint64_t>();

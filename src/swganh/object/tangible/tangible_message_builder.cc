@@ -73,13 +73,13 @@ void TangibleMessageBuilder::RegisterEventHandlers()
 }
 void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible, const shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-    tangible->AddBaselineToCache(BuildBaseline3(tangible));
-    tangible->AddBaselineToCache(BuildBaseline6(tangible));
-    tangible->AddBaselineToCache(BuildBaseline7(tangible));
+    tangible->AddBaselineToCache(&BuildBaseline3(tangible));
+    tangible->AddBaselineToCache(&BuildBaseline6(tangible));
+    tangible->AddBaselineToCache(&BuildBaseline7(tangible));
 
     for (auto& baseline : tangible->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(tangible, observer);
@@ -91,7 +91,7 @@ void TangibleMessageBuilder::BuildCustomizationDelta(const shared_ptr<Tangible>&
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 4);
         message.data.write<std::string>(tangible->GetCustomization());
 
-        tangible->AddDeltasUpdate(move(message));
+        tangible->AddDeltasUpdate(&message);
     }
 }
 void TangibleMessageBuilder::BuildComponentCustomizationDelta(const shared_ptr<Tangible>& tangible)
@@ -100,7 +100,7 @@ void TangibleMessageBuilder::BuildComponentCustomizationDelta(const shared_ptr<T
     {
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 5);
         tangible->GetComponentCustomization().Serialize(message);
-        tangible->AddDeltasUpdate(move(message));
+        tangible->AddDeltasUpdate(&message);
     }
     else
         tangible->GetComponentCustomization().ClearDeltas();
@@ -111,7 +111,7 @@ void TangibleMessageBuilder::BuildOptionsMaskDelta(const shared_ptr<Tangible>& t
     {
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 6);
         message.data.write(tangible->GetOptionsMask());
-        tangible->AddDeltasUpdate(move(message));
+        tangible->AddDeltasUpdate(&message);
     }
 }
 void TangibleMessageBuilder::BuildIncapTimerDelta(const shared_ptr<Tangible>& tangible)
@@ -120,7 +120,7 @@ void TangibleMessageBuilder::BuildIncapTimerDelta(const shared_ptr<Tangible>& ta
     {
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 7);
         message.data.write(tangible->GetIncapTimer());
-        tangible->AddDeltasUpdate(move(message));
+        tangible->AddDeltasUpdate(&message);
     }
 }
 void TangibleMessageBuilder::BuildConditionDamageDelta(const shared_ptr<Tangible>& tangible)
@@ -129,7 +129,7 @@ void TangibleMessageBuilder::BuildConditionDamageDelta(const shared_ptr<Tangible
     {
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 8);
         message.data.write(tangible->GetCondition());
-        tangible->AddDeltasUpdate(move(message));
+        tangible->AddDeltasUpdate(&message);
     }
 }
 void TangibleMessageBuilder::BuildMaxConditionDelta(const shared_ptr<Tangible>& tangible)
@@ -138,7 +138,7 @@ void TangibleMessageBuilder::BuildMaxConditionDelta(const shared_ptr<Tangible>& 
     {
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 9);
         message.data.write(tangible->GetMaxCondition());
-        tangible->AddDeltasUpdate(move(message));
+        tangible->AddDeltasUpdate(&message);
     }
 }
 void TangibleMessageBuilder::BuildStaticDelta(const shared_ptr<Tangible>& tangible)
@@ -147,7 +147,7 @@ void TangibleMessageBuilder::BuildStaticDelta(const shared_ptr<Tangible>& tangib
     {
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_3, 10);
         message.data.write(tangible->IsStatic());
-        tangible->AddDeltasUpdate(move(message));
+        tangible->AddDeltasUpdate(&message);
     }
 }
 
@@ -157,7 +157,7 @@ void TangibleMessageBuilder::BuildDefendersDelta(const shared_ptr<Tangible>& tan
     {
         DeltasMessage message = CreateDeltasMessage(tangible, Object::VIEW_6, 1);
         tangible->GetDefenders().Serialize(message);
-        tangible->AddDeltasUpdate(move(message));
+        tangible->AddDeltasUpdate(&message);
     }
 }
 

@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ChatEnterRoomById : public BaseSwgMessage<ChatEnterRoomById>
+    struct ChatEnterRoomById : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0xBC6BDDF2; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0xBC6BDDF2; }
 
     	uint32_t attempts_counter;
     	uint32_t channel_id;
@@ -23,7 +23,7 @@ namespace messages {
     		buffer.write(channel_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		attempts_counter = buffer.read<uint32_t>();
     		channel_id = buffer.read<uint32_t>();

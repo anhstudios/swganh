@@ -19,12 +19,6 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
-        explicit SecureTrade(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
-
 		static uint32_t message_type() { return 0x00000115; }
 		
 		uint32_t error;
@@ -44,7 +38,7 @@ namespace controllers {
 			buffer.write(target_id);
 		}
 		
-		void OnControllerDeserialize(anh::ByteBuffer buffer)
+		void OnControllerDeserialize(anh::ByteBuffer& buffer)
 		{
 			error = buffer.read<uint32_t>();
 			trader_id = buffer.read<uint64_t>();

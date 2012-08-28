@@ -10,14 +10,14 @@
 namespace swganh {
 namespace messages {
 
-    struct AbortTradeMessage : public BaseSwgMessage<AbortTradeMessage> 
+    struct AbortTradeMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 1; }
-    	static uint32_t Opcode() { return 0x9CA80F98; }
+    	uint16_t Opcount() const { return 1; }
+    	uint32_t Opcode() const { return 0x9CA80F98; }
     	
     	void OnSerialize(anh::ByteBuffer& buffer) const {}
     	
-    	void OnDeserialize(anh::ByteBuffer buffer) {}
+    	void OnDeserialize(anh::ByteBuffer& buffer) {}
     };
 
 }} // namespace swganh::messages

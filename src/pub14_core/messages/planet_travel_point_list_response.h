@@ -13,10 +13,10 @@
 namespace swganh {
 namespace messages {
 
-    struct PlanetTravelPointListResponse : public BaseSwgMessage<PlanetTravelPointListResponse>
+    struct PlanetTravelPointListResponse : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 9; }
-    	static uint32_t Opcode() { return 0x4D32541F; }
+    	uint16_t Opcount() const { return 9; }
+    	uint32_t Opcode() const { return 0x4D32541F; }
     	
     	std::string planet_name;
     	std::list<std::string> location_names; // contains names of the starports and/or shuttleports
@@ -47,7 +47,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		uint32_t location_names_count = buffer.read<uint32_t>();

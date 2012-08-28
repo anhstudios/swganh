@@ -26,12 +26,6 @@ namespace controllers {
             , unicode_string(L"")
         {}
 
-        explicit CombatSpamMessage(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
-
     	static uint32_t message_type() { return 0x00000134; }
         
     	uint64_t attacker_id;
@@ -56,7 +50,7 @@ namespace controllers {
     
     	}
     
-    	void OnControllerDeserialize(anh::ByteBuffer buffer) {
+    	void OnControllerDeserialize(anh::ByteBuffer& buffer) {
     		attacker_id = buffer.read<uint64_t>();
     		defender_id = buffer.read<uint64_t>();
     		weapon_id = buffer.read<uint64_t>();

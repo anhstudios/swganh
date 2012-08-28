@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct CreateAuctionResponseMessage : public BaseSwgMessage<CreateAuctionResponseMessage>
+    struct CreateAuctionResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0xE61CC92; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0xE61CC92; }
     	
     	uint64_t unknown; // default: 0
     	uint32_t response_type; // setting this determines what message will display on the client
@@ -58,7 +58,7 @@ namespace messages {
     		buffer.write(response_type);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		unknown = buffer.read<uint64_t>();
     		response_type = buffer.read<uint32_t>();

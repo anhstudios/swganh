@@ -153,7 +153,7 @@ const CommandQueueEnqueue& BaseSwgCommand::GetCommandRequest() const
     return command_request_;
 }
 
-void BaseSwgCommand::SetCommandRequest(const swganh::messages::controllers::CommandQueueEnqueue& command_request)
+void BaseSwgCommand::SetCommandRequest(swganh::messages::controllers::CommandQueueEnqueue command_request)
 {
     command_request_ = command_request;
 }

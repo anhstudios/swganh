@@ -201,7 +201,7 @@ std::shared_ptr<ConnectionClientInterface> ConnectionService::FindConnectionByPl
 
 void ConnectionService::HandleCmdSceneReady_(
     const shared_ptr<ConnectionClientInterface>& client, 
-    CmdSceneReady message)
+    CmdSceneReady* message)
 {
     LOG(warning) << "Handling CmdSceneReady";
 
@@ -215,12 +215,12 @@ void ConnectionService::HandleCmdSceneReady_(
 
 void ConnectionService::HandleClientIdMsg_(
     const shared_ptr<ConnectionClientInterface>& client, 
-    ClientIdMsg message)
+    ClientIdMsg* message)
 {
     LOG(warning) << "Handling ClientIdMsg";
 
     // get session key from login service
-    uint32_t account_id = login_service_->GetAccountBySessionKey(message.session_hash);
+    uint32_t account_id = login_service_->GetAccountBySessionKey(message->session_hash);
 
     // authorized
     if (! account_id) {

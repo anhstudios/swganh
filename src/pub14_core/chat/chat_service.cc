@@ -95,7 +95,7 @@ void ChatService::SendSpatialChat(
 
     spatial_chat.language = static_cast<uint8_t>(0);
     
-    actor->NotifyObservers(spatial_chat);
+    actor->NotifyObservers(&spatial_chat);
 }
 
 void ChatService::Startup()

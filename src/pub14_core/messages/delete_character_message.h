@@ -9,15 +9,15 @@
 namespace swganh {
 namespace messages {
     
-    struct DeleteCharacterMessage : public BaseSwgMessage<DeleteCharacterMessage>
+    struct DeleteCharacterMessage : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 3; }
-        static uint32_t Opcode() { return 0xE87AD031; }
+        uint16_t Opcount() const { return 3; }
+        uint32_t Opcode() const { return 0xE87AD031; }
 
         int32_t server_id;
         uint64_t character_id;
         
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
             server_id = buffer.read<int32_t>();
             character_id = buffer.read<uint64_t>();

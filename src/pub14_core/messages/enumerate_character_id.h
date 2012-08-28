@@ -13,10 +13,10 @@
 namespace swganh {
 namespace messages {
 
-    struct EnumerateCharacterId : public BaseSwgMessage<EnumerateCharacterId>
+    struct EnumerateCharacterId : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x65EA4574; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x65EA4574; }
 
     	std::vector<swganh::character::CharacterData> characters;
 
@@ -36,7 +36,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer) {
+    	void OnDeserialize(anh::ByteBuffer& buffer) {
     		uint32_t character_count = buffer.read<uint32_t>();
     		for (uint32_t i = 0; i < character_count; i++)
     		{

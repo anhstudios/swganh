@@ -79,7 +79,7 @@ namespace command {
         
         const swganh::messages::controllers::CommandQueueEnqueue& GetCommandRequest() const;
 
-        void SetCommandRequest(const swganh::messages::controllers::CommandQueueEnqueue& command_request);
+        void SetCommandRequest(swganh::messages::controllers::CommandQueueEnqueue command_request);
     private:    
         swganh::app::SwganhKernel* kernel_;
         const CommandProperties* properties_;

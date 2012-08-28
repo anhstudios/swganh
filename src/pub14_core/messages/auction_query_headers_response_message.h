@@ -31,9 +31,9 @@ namespace messages {
     	uint32_t vendor_entrance_fee;
     };
 
-    struct AuctionQueryHeadersResponseMessage : public BaseSwgMessage<AuctionQueryHeadersResponseMessage> {
-    	static uint16_t Opcount() { return 8; }
-    	static uint32_t Opcode() { return 0xFA500E52; }
+    struct AuctionQueryHeadersResponseMessage : public BaseSwgMessage {
+    	uint16_t Opcount() const { return 8; }
+    	uint32_t Opcode() const { return 0xFA500E52; }
     
     	uint32_t counter;
     	uint32_t vendor_screen_flag; // 2 = All items, 3 = My sales, 4 = My bids, 5 = Available items, 7 = For sale, 9 = Offers to vendor
@@ -77,7 +77,7 @@ namespace messages {
     		buffer.write(continuation_flag);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
             counter = buffer.read<uint32_t>();
     		vendor_screen_flag = buffer.read<uint32_t>();

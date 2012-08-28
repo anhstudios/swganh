@@ -187,7 +187,7 @@ public:
      * @param message Message containing the updated state of the observable object.
      */
     template<typename T>
-    void NotifyObservers(const swganh::messages::BaseBaselinesMessage<T>& message)
+    void NotifyObservers(swganh::messages::BaseBaselinesMessage* message)
     {
         if (! (message.view_type == 3 || message.view_type == 6))
         {
@@ -204,26 +204,7 @@ public:
         NotifyObservers<T>(message);
     }
 
-    /**
-     * Notifies observers that the observable object has changed state.
-     *
-     * @param message Message containing the updated state of the observable object.
-     */
-    template<typename T>
-    void NotifyObservers(const T& message)
-    {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-
-        std::for_each(
-            observers_.begin(),
-            observers_.end(),
-            [&message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
-        {
-            observer->Notify(message);
-        });
-    }
-
-    void NotifyObservers(const anh::ByteBuffer& message);
+	void NotifyObservers(swganh::messages::BaseSwgMessage* message);
 
     /**
      * Returns whether or not the object has been modified since the last reliable
@@ -408,9 +389,9 @@ public:
      *
      * @param message The deltas message to store.
      */
-    void AddDeltasUpdate(swganh::messages::DeltasMessage message);
+    void AddDeltasUpdate(swganh::messages::DeltasMessage* message);
 
-    void AddBaselineToCache(swganh::messages::BaselinesMessage baseline);
+    void AddBaselineToCache(swganh::messages::BaselinesMessage* baseline);
 
     /**
      * Sets the id of this object instance.

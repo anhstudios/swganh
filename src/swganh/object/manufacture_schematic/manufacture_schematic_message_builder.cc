@@ -95,13 +95,13 @@ void ManufactureSchematicMessageBuilder::SendBaselines(
     const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, 
     const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-	manufacture_schematic->AddBaselineToCache(BuildBaseline3(manufacture_schematic));
-	manufacture_schematic->AddBaselineToCache(BuildBaseline6(manufacture_schematic));
-	manufacture_schematic->AddBaselineToCache(BuildBaseline7(manufacture_schematic));
+	manufacture_schematic->AddBaselineToCache(&BuildBaseline3(manufacture_schematic));
+	manufacture_schematic->AddBaselineToCache(&BuildBaseline6(manufacture_schematic));
+	manufacture_schematic->AddBaselineToCache(&BuildBaseline7(manufacture_schematic));
 
 	for (auto& baseline : manufacture_schematic->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(manufacture_schematic, observer);
@@ -113,7 +113,7 @@ void ManufactureSchematicMessageBuilder::BuildSchematicQuantityDelta(const std::
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_3, 4);
 		message.data.write<uint32_t>(manufacture_schematic->GetSchematicQuantity());
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildPropertyDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -123,7 +123,7 @@ void ManufactureSchematicMessageBuilder::BuildPropertyDelta(const std::shared_pt
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_3, 5);
 		//manufacture_schematic->GetProperties().Serialize(message);
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildCreatorNameDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -133,7 +133,7 @@ void ManufactureSchematicMessageBuilder::BuildCreatorNameDelta(const std::shared
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_3, 6);
 		message.data.write<std::wstring>(manufacture_schematic->GetCreatorName());
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildSchematicComplexityDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -143,7 +143,7 @@ void ManufactureSchematicMessageBuilder::BuildSchematicComplexityDelta(const std
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_3, 7);
 		message.data.write<uint32_t>(manufacture_schematic->GetSchematicComplexity());
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildDataSizeDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -153,7 +153,7 @@ void ManufactureSchematicMessageBuilder::BuildDataSizeDelta(const std::shared_pt
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_3, 8);
 		message.data.write<float>(manufacture_schematic->GetSchematicDataSize());
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildCustomizationStringDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -163,7 +163,7 @@ void ManufactureSchematicMessageBuilder::BuildCustomizationStringDelta(const std
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_6, 1);
 		message.data.write<std::string>(manufacture_schematic->GetCustomizationString());
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildCustomizationModelDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -173,7 +173,7 @@ void ManufactureSchematicMessageBuilder::BuildCustomizationModelDelta(const std:
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_6, 2);
 		message.data.write<std::string>(manufacture_schematic->GetCustomizationModel());
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildPrototypeModelDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -183,7 +183,7 @@ void ManufactureSchematicMessageBuilder::BuildPrototypeModelDelta(const std::sha
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_6, 3);
 		message.data.write<uint32_t>(manufacture_schematic->GetPrototypeCrc());
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildActiveDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -193,7 +193,7 @@ void ManufactureSchematicMessageBuilder::BuildActiveDelta(const std::shared_ptr<
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_6, 4);
 		message.data.write<uint32_t>(manufacture_schematic->IsActive() ? 1 : 0);
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildSlotCountDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -203,7 +203,7 @@ void ManufactureSchematicMessageBuilder::BuildSlotCountDelta(const std::shared_p
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_6, 5);
 		message.data.write<uint8_t>(manufacture_schematic->GetSlotCount());
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildSlotDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)
@@ -218,7 +218,7 @@ void ManufactureSchematicMessageBuilder::BuildSlotDelta(const std::shared_ptr<Ma
 			
 		}
 		// TODO THIS IS A BITCH
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 
 	}
 }
@@ -230,7 +230,7 @@ void ManufactureSchematicMessageBuilder::BuildExperimentDelta(const std::shared_
 		DeltasMessage message = CreateDeltasMessage(manufacture_schematic, Object::VIEW_7, 1);
 		manufacture_schematic->GetSlots().Serialize(message);
 
-		manufacture_schematic->AddDeltasUpdate(move(message));
+		manufacture_schematic->AddDeltasUpdate(&message);
 	}
 }
 void ManufactureSchematicMessageBuilder::BuildCustomizationDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic)

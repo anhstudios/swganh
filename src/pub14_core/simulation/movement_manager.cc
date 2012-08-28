@@ -101,7 +101,7 @@ void MovementManager::SendDataTransformMessage(const shared_ptr<Object>& object,
     transform.position = object->GetPosition();
     transform.speed = creature->GetWalkingSpeed();
 
-    object->GetController()->Notify(transform);
+    object->GetController()->Notify(&transform);
 }
 
 void MovementManager::SendUpdateDataTransformMessage(const shared_ptr<Object>& object)
@@ -112,7 +112,7 @@ void MovementManager::SendUpdateDataTransformMessage(const shared_ptr<Object>& o
     transform_update.position = object->GetPosition();
     transform_update.update_counter = ++counter_map_[object->GetObjectId()];
     
-    object->NotifyObservers(transform_update);
+    object->NotifyObservers(&transform_update);
 }
 
 void MovementManager::SendDataTransformWithParentMessage(const shared_ptr<Object>& object, uint32_t unknown)
@@ -126,7 +126,7 @@ void MovementManager::SendDataTransformWithParentMessage(const shared_ptr<Object
     transform.position      = object->GetPosition();
     transform.speed         = creature->GetWalkingSpeed();
 
-    object->GetController()->Notify(transform);
+    object->GetController()->Notify(&transform);
 }
 
 void MovementManager::SendUpdateDataTransformWithParentMessage(const shared_ptr<Object>& object)
@@ -138,7 +138,7 @@ void MovementManager::SendUpdateDataTransformWithParentMessage(const shared_ptr<
     transform_update.position = object->GetPosition();
     transform_update.update_counter = ++counter_map_[object->GetObjectId()];
     
-    object->NotifyObservers(transform_update);
+    object->NotifyObservers(&transform_update);
 }
 
 void MovementManager::RegisterEvents(anh::EventDispatcher* event_dispatcher)

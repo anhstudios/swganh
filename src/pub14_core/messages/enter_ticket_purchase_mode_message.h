@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct EnterTicketPurchaseModeMessage : public BaseSwgMessage<EnterTicketPurchaseModeMessage>
+    struct EnterTicketPurchaseModeMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 4; }
-    	static uint32_t Opcode() { return 0x904DAE1A; }
+    	uint16_t Opcount() const { return 4; }
+    	uint32_t Opcode() const { return 0x904DAE1A; }
     
     	std::string planet_name; // planet on which the terminal is located
     	std::string city_name; // city in which the terminal is located
@@ -24,7 +24,7 @@ namespace messages {
     		buffer.write(city_name);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		city_name = buffer.read<std::string>();

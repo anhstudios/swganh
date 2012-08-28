@@ -79,7 +79,7 @@ namespace command {
 
         virtual void EnqueueCommandRequest(
             const std::shared_ptr<swganh::object::ObjectController>& controller,
-            swganh::messages::controllers::CommandQueueEnqueue message) = 0;
+            swganh::messages::controllers::CommandQueueEnqueue* message) = 0;
 
         /**
          * Sends a command queue removal message to the specified controller client.

@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ChatRequestPersistentMessage : public BaseSwgMessage<ChatRequestPersistentMessage>
+    struct ChatRequestPersistentMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x07E3559F; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x07E3559F; }
 
     	uint32_t spacer;
     	uint32_t mail_message_id;
@@ -23,7 +23,7 @@ namespace messages {
     		buffer.write(mail_message_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		spacer = buffer.read<uint32_t>();
     		mail_message_id = buffer.read<uint32_t>();

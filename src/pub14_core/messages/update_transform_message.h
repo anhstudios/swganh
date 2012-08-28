@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
     
-    struct UpdateTransformMessage : public BaseSwgMessage<UpdateTransformMessage>
+    struct UpdateTransformMessage : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 8; }
-        static uint32_t Opcode() { return 0x1B24F808; }
+        uint16_t Opcount() const { return 8; }
+        uint32_t Opcode() const { return 0x1B24F808; }
         
         uint64_t object_id;
         glm::vec3 position;
@@ -32,7 +32,7 @@ namespace messages {
             buffer.write(heading);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
             object_id = buffer.read<uint64_t>();
             position.x = buffer.read<int16_t>();

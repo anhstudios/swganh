@@ -28,10 +28,10 @@ namespace messages {
     	uint32_t distance;
     };
 
-    struct LoginEnumCluster : public BaseSwgMessage<LoginEnumCluster>
+    struct LoginEnumCluster : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0xC11C63B9; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0xC11C63B9; }
 
     	std::list<Cluster> servers;
     	uint32_t max_account_chars;
@@ -47,7 +47,7 @@ namespace messages {
             buffer.write<uint32_t>(max_account_chars);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
             uint32_t server_count = buffer.read<uint32_t>();
             for(uint32_t i = 0; i < server_count; i++)

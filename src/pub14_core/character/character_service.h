@@ -44,15 +44,15 @@ public:
 private:
     void HandleClientRandomNameRequest_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
-        swganh::messages::ClientRandomNameRequest message);
+        swganh::messages::ClientRandomNameRequest* message);
 
     void HandleClientCreateCharacter_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
-        swganh::messages::ClientCreateCharacter message);
+        swganh::messages::ClientCreateCharacter* message);
 
     void HandleDeleteCharacterMessage_(
         const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, 
-        swganh::messages::DeleteCharacterMessage message);
+        swganh::messages::DeleteCharacterMessage* message);
 
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;
     swganh::app::SwganhKernel* kernel_;

@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
     
-struct UpdateCellPermissionMessage : public BaseSwgMessage<UpdateCellPermissionMessage>
+struct UpdateCellPermissionMessage : public BaseSwgMessage
 {
-    static uint16_t Opcount() { return 3; }
-    static uint32_t Opcode() { return 0xF612499C; }
+    uint16_t Opcount() const { return 3; }
+    uint32_t Opcode() const { return 0xF612499C; }
     
     uint8_t permission_flag;
     uint64_t cell_id;
@@ -23,7 +23,7 @@ struct UpdateCellPermissionMessage : public BaseSwgMessage<UpdateCellPermissionM
         buffer.write(cell_id);
     }
 
-    void OnDeserialize(anh::ByteBuffer buffer)
+    void OnDeserialize(anh::ByteBuffer& buffer)
     {
         permission_flag = buffer.read<uint8_t>();
         cell_id = buffer.read<uint64_t>();

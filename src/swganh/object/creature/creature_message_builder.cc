@@ -224,13 +224,13 @@ void CreatureMessageBuilder::RegisterEventHandlers()
 }
 void CreatureMessageBuilder::SendBaselines(const shared_ptr<Creature>& creature, const shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-    creature->AddBaselineToCache(BuildBaseline1(creature));
-    creature->AddBaselineToCache(BuildBaseline3(creature));
-    creature->AddBaselineToCache(BuildBaseline4(creature));
-    creature->AddBaselineToCache(BuildBaseline6(creature));
+    creature->AddBaselineToCache(&BuildBaseline1(creature));
+    creature->AddBaselineToCache(&BuildBaseline3(creature));
+    creature->AddBaselineToCache(&BuildBaseline4(creature));
+    creature->AddBaselineToCache(&BuildBaseline6(creature));
     for (auto& baseline : creature->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(creature, observer);
@@ -243,7 +243,7 @@ void CreatureMessageBuilder::BuildBankCreditsDelta(const shared_ptr<Creature>& c
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 0);
         message.data.write<uint32_t>(creature->GetBankCredits());   // Bank Credits
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -253,7 +253,7 @@ void CreatureMessageBuilder::BuildCashCreditsDelta(const shared_ptr<Creature>& c
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 1);
         message.data.write<uint32_t>(creature->GetCashCredits());   // Cash Credits
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -263,7 +263,7 @@ void CreatureMessageBuilder::BuildStatBaseDelta(const shared_ptr<Creature>& crea
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 2);
         creature->GetBaseStats().Serialize(message);
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
     else
         creature->GetBaseStats().ClearDeltas();
@@ -275,7 +275,7 @@ void CreatureMessageBuilder::BuildSkillDelta(const shared_ptr<Creature>& creatur
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_1, 3);
         creature->GetSkills().Serialize(message);
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
     else
         creature->GetSkills().ClearDeltas();
@@ -288,7 +288,7 @@ void CreatureMessageBuilder::BuildPostureUpdate(const shared_ptr<Creature>& crea
 		// Update the posture message
 		controllers::Posture posture;
 		posture.posture_id = creature->GetPosture();
-		creature->GetController()->Notify(posture);
+		creature->GetController()->Notify(&posture);
 	}
 }
 
@@ -298,7 +298,7 @@ void CreatureMessageBuilder::BuildPostureDelta(const shared_ptr<Creature>& creat
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 11);
         message.data.write<uint8_t>(creature->GetPosture());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -308,7 +308,7 @@ void CreatureMessageBuilder::BuildFactionRankDelta(const shared_ptr<Creature>& c
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 12);
         message.data.write<uint8_t>(creature->GetFactionRank());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -318,7 +318,7 @@ void CreatureMessageBuilder::BuildOwnerIdDelta(const shared_ptr<Creature>& creat
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 13);
         message.data.write<uint64_t>(creature->GetOwnerId());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -328,7 +328,7 @@ void CreatureMessageBuilder::BuildScaleDelta(const shared_ptr<Creature>& creatur
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 14);
         message.data.write<float>(creature->GetScale());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -338,7 +338,7 @@ void CreatureMessageBuilder::BuildBattleFatigueDelta(const shared_ptr<Creature>&
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 15);
         message.data.write<uint32_t>(creature->GetBattleFatigue());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -348,7 +348,7 @@ void CreatureMessageBuilder::BuildStateBitmaskDelta(const shared_ptr<Creature>& 
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 16);
         message.data.write<uint64_t>(creature->GetStateBitmask());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -358,7 +358,7 @@ void CreatureMessageBuilder::BuildStatWoundDelta(const shared_ptr<Creature>& cre
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_3, 17);
         creature->GetStatWounds().Serialize(message);
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
     else
         creature->GetStatWounds().ClearDeltas();
@@ -370,7 +370,7 @@ void CreatureMessageBuilder::BuildAccelerationMultiplierBaseDelta(const shared_p
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 0);
         message.data.write<float>(creature->GetAccelerationMultiplierBase());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -380,7 +380,7 @@ void CreatureMessageBuilder::BuildAccelerationMultiplierModifierDelta(const shar
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 1);
         message.data.write<float>(creature->GetAccelerationMultiplierModifier());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -390,7 +390,7 @@ void CreatureMessageBuilder::BuildStatEncumberanceDelta(const shared_ptr<Creatur
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 2);
         creature->GetStatEncumberances().Serialize(message);
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
     else
         creature->GetStatEncumberances().ClearDeltas();
@@ -402,7 +402,7 @@ void CreatureMessageBuilder::BuildSkillModDelta(const shared_ptr<Creature>& crea
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 3);
         creature->GetSkillMods().Serialize(message);
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
     else
         creature->GetSkillMods().ClearDeltas();
@@ -414,7 +414,7 @@ void CreatureMessageBuilder::BuildSpeedMultiplierBaseDelta(const shared_ptr<Crea
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 4);
         message.data.write<float>(creature->GetSpeedMultiplierBase());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -424,7 +424,7 @@ void CreatureMessageBuilder::BuildSpeedMultiplierModifierDelta(const shared_ptr<
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 5);
         message.data.write<float>(creature->GetSpeedMultiplierModifier());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -434,7 +434,7 @@ void CreatureMessageBuilder::BuildListenToIdDelta(const shared_ptr<Creature>& cr
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 6);
         message.data.write<uint64_t>(creature->GetListenToId());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -444,7 +444,7 @@ void CreatureMessageBuilder::BuildRunSpeedDelta(const shared_ptr<Creature>& crea
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 7);
         message.data.write<float>(creature->GetRunSpeed());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -454,7 +454,7 @@ void CreatureMessageBuilder::BuildSlopeModifierAngleDelta(const shared_ptr<Creat
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 8);
         message.data.write<float>(creature->GetSlopeModifierAngle());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -464,7 +464,7 @@ void CreatureMessageBuilder::BuildSlopeModifierPercentDelta(const shared_ptr<Cre
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 9);
         message.data.write<float>(creature->GetSlopeModifierPercent());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -474,7 +474,7 @@ void CreatureMessageBuilder::BuildTurnRadiusDelta(const shared_ptr<Creature>& cr
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 10);
         message.data.write<float>(creature->GetTurnRadius());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -484,7 +484,7 @@ void CreatureMessageBuilder::BuildWalkingSpeedDelta(const shared_ptr<Creature>& 
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 11);
         message.data.write<float>(creature->GetWalkingSpeed());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -494,7 +494,7 @@ void CreatureMessageBuilder::BuildWaterModifierPrecentDelta(const shared_ptr<Cre
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 12);
         message.data.write<float>(creature->GetWaterModifierPercent());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -504,7 +504,7 @@ void CreatureMessageBuilder::BuildMissionCriticalObjectDelta(const shared_ptr<Cr
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_4, 13);
         creature->GetMissionCriticalObjects().Serialize(message);
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
     else
         creature->GetMissionCriticalObjects().ClearDeltas();
@@ -516,7 +516,7 @@ void CreatureMessageBuilder::BuildCombatLevelDelta(const shared_ptr<Creature>& c
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 2);
         message.data.write<uint16_t>(creature->GetCombatLevel());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -526,7 +526,7 @@ void CreatureMessageBuilder::BuildAnimationDelta(const shared_ptr<Creature>& cre
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 3);
         message.data.write<std::string>(creature->GetAnimation());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -536,7 +536,7 @@ void CreatureMessageBuilder::BuildMoodAnimationDelta(const shared_ptr<Creature>&
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 4);
         message.data.write<std::string>(creature->GetMoodAnimation());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -546,7 +546,7 @@ void CreatureMessageBuilder::BuildWeaponIdDelta(const shared_ptr<Creature>& crea
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 5);
         message.data.write<uint64_t>(creature->GetWeaponId());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -556,7 +556,7 @@ void CreatureMessageBuilder::BuildGroupIdDelta(const shared_ptr<Creature>& creat
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 6);
         message.data.write<uint64_t>(creature->GetGroupId());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -567,7 +567,7 @@ void CreatureMessageBuilder::BuildInviteSenderIdDelta(const shared_ptr<Creature>
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 7);
         message.data.write<uint64_t>(creature->IncrementInviteCounter());
         message.data.write<uint64_t>(creature->GetInviteSenderId());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -577,7 +577,7 @@ void CreatureMessageBuilder::BuildGuildIdDelta(const shared_ptr<Creature>& creat
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 8);
         message.data.write<uint32_t>(creature->GetGuildId());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -587,7 +587,7 @@ void CreatureMessageBuilder::BuildTargetIdDelta(const shared_ptr<Creature>& crea
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 9);
         message.data.write<uint64_t>(creature->GetTargetId());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -597,7 +597,7 @@ void CreatureMessageBuilder::BuildMoodIdDelta(const shared_ptr<Creature>& creatu
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 10);
         message.data.write<uint8_t>(creature->GetMoodId());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -607,7 +607,7 @@ void CreatureMessageBuilder::BuildPerformanceIdDelta(const shared_ptr<Creature>&
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 12);
         message.data.write<uint32_t>(creature->GetPerformanceId());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -617,7 +617,7 @@ void CreatureMessageBuilder::BuildStatCurrentDelta(const shared_ptr<Creature>& c
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 13);
         creature->GetCurrentStats().Serialize(message);
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
     else
         creature->GetCurrentStats().ClearDeltas();
@@ -629,7 +629,7 @@ void CreatureMessageBuilder::BuildStatMaxDelta(const shared_ptr<Creature>& creat
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 14);
         creature->GetMaxStats().Serialize(message);
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
     else
         creature->GetMaxStats().ClearDeltas();
@@ -641,7 +641,7 @@ void CreatureMessageBuilder::BuildEquipmentDelta(const shared_ptr<Creature>& cre
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 15);
         creature->GetEquipment().Serialize(message);
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
     else
         creature->GetEquipment().ClearDeltas();
@@ -653,7 +653,7 @@ void CreatureMessageBuilder::BuildDisguiseDelta(const shared_ptr<Creature>& crea
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 16);
         message.data.write<std::string>(creature->GetDisguise());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -663,7 +663,7 @@ void CreatureMessageBuilder::BuildStationaryDelta(const shared_ptr<Creature>& cr
     {
         DeltasMessage message = CreateDeltasMessage(creature, Object::VIEW_6, 17);
         message.data.write<uint8_t>(creature->IsStationary());
-        creature->AddDeltasUpdate(std::move(message));
+        creature->AddDeltasUpdate(&message);
     }
 }
 
@@ -676,8 +676,7 @@ void CreatureMessageBuilder::BuildUpdatePvpStatusMessage(const shared_ptr<Creatu
         message.object_id = creature->GetObjectId();
         message.faction = 0;
         message.pvp_status = creature->GetPvpStatus();
-
-        creature->NotifyObservers(message);
+        creature->NotifyObservers(&message);
     }
 }
 
@@ -689,7 +688,7 @@ BaselinesMessage CreatureMessageBuilder::BuildBaseline1(const shared_ptr<Creatur
     creature->GetBaseStats().Serialize(message);                           // Stats Negative
     creature->GetSkills().Serialize(message);                                   // Skills
     
-    return BaselinesMessage(move(message));
+    return BaselinesMessage(std::move(message));
 }
 
 BaselinesMessage CreatureMessageBuilder::BuildBaseline3(const shared_ptr<Creature>& creature)

@@ -12,10 +12,10 @@
 namespace swganh {
 namespace messages {
 
-    struct CreateClientPathMessage : public BaseSwgMessage<CreateClientPathMessage>
+    struct CreateClientPathMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 5; }
-    	static uint32_t Opcode() { return 0x71957628; }
+    	uint16_t Opcount() const { return 5; }
+    	uint32_t Opcode() const { return 0x71957628; }
     	
     	std::list<glm::vec3> path_coordinates;
     
@@ -29,7 +29,7 @@ namespace messages {
     		});
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		uint32_t coordinate_count = buffer.read<uint32_t>();
     		for (uint32_t i = 0; i < coordinate_count; i++) {

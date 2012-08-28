@@ -89,9 +89,9 @@ namespace sui
 		void Startup();
 
 	private:
-		void _handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification message);
+		void _handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification* message);
 		// Radials
-		void _handleObjectMenuRequest(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::ObjectMenuRequest message);
+		void _handleObjectMenuRequest(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::ObjectMenuRequest* message);
 		void _handlePlayerLogoutEvent();
 
 		swganh::app::SwganhKernel* kernel_;

@@ -11,10 +11,10 @@
 namespace swganh {
 namespace messages {
 
-    struct PlayClientEventLocMessage : public BaseSwgMessage<PlayClientEventLocMessage>
+    struct PlayClientEventLocMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 9; }
-    	static uint32_t Opcode() { return 0x0A4E222C; }
+    	uint16_t Opcount() const { return 9; }
+    	uint32_t Opcode() const { return 0x0A4E222C; }
 
     	std::string client_effect_file; // uncertain, because PlayClientEffectLocMessage is used for clienteffect files already
     	std::string planet_name; // e.g. "naboo"
@@ -33,7 +33,7 @@ namespace messages {
     		buffer.write(unknown2);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		client_effect_file = buffer.read<std::string>();
     		planet_name = buffer.read<std::string>();

@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ParametersMessage : public BaseSwgMessage<ParametersMessage>
+    struct ParametersMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x487652DA; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x487652DA; }
     	
     	uint32_t parameter_flag; // default: 900 = decimal, 384 = hex, 1110000100 = binary
     
@@ -21,7 +21,7 @@ namespace messages {
     		buffer.write(parameter_flag);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		parameter_flag = buffer.read<uint32_t>();
     	}

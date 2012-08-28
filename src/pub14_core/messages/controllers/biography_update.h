@@ -21,12 +21,6 @@ namespace controllers {
             , biography(L"")
         {}
 
-        explicit BiographyUpdate(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
-
         static uint32_t message_type() { return 0x000001DB; }
         
         uint64_t owner_id;
@@ -39,7 +33,7 @@ namespace controllers {
             buffer.write<std::wstring>(biography);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             owner_id = buffer.read<uint64_t>();
             biography = buffer.read<std::wstring>();

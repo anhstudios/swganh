@@ -19,12 +19,6 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
-        explicit Posture(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
-
         static uint32_t message_type() { return 0x00000131; }
         
         uint8_t posture_id;
@@ -35,7 +29,7 @@ namespace controllers {
     		buffer.write<uint8_t>(1);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             posture_id = buffer.read<uint8_t>();
         }

@@ -43,7 +43,7 @@ private:
     
     std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
         
-    void HandleLoginClientId_(const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, swganh::messages::LoginClientId message);
+    void HandleLoginClientId_(const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, swganh::messages::LoginClientId* message);
 
     std::vector<swganh::login::GalaxyStatus> GetGalaxyStatus_();
     void UpdateGalaxyStatus_();

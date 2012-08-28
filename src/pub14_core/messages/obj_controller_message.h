@@ -11,11 +11,11 @@
 namespace swganh {
 namespace messages {
 
-    class ObjControllerMessage : public BaseSwgMessage<ObjControllerMessage>
+    class ObjControllerMessage : public BaseSwgMessage
     {
     public:
-        static uint16_t Opcount() { return 5; }
-        static uint32_t Opcode() { return 0x80CE5E46; }
+        virtual uint16_t Opcount() const { return 5; }
+        virtual uint32_t Opcode() const { return 0x80CE5E46; }
 
         ObjControllerMessage()
         {}
@@ -37,7 +37,7 @@ namespace messages {
             buffer.write(data.data(), data.size());
         }
 
-        virtual void OnControllerDeserialize(anh::ByteBuffer buffer)
+        virtual void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             data = std::move(buffer);
         }
@@ -52,7 +52,7 @@ namespace messages {
             OnControllerSerialize(buffer);
         }
 
-        virtual void OnDeserialize(anh::ByteBuffer buffer) 
+        virtual void OnDeserialize(anh::ByteBuffer& buffer) 
         {
             controller_type = buffer.read<uint32_t>();
             message_type = buffer.read<uint32_t>();  

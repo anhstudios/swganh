@@ -4,7 +4,13 @@
 
 #include <memory>
 
-#include "anh/byte_buffer.h"
+namespace swganh
+{
+namespace messages
+{
+	struct BaseSwgMessage;
+}
+}
 
 namespace anh {
 namespace observer {
@@ -42,7 +48,7 @@ namespace observer {
          *
          * @param message Message containing the updated state of the observable object.
          */
-        virtual void NotifyObservers(const anh::ByteBuffer& message) = 0;
+        virtual void NotifyObservers(swganh::messages::BaseSwgMessage* message) = 0;
     };
 
 }}  // namespace anh::observer

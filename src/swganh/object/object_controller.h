@@ -44,7 +44,7 @@ namespace object {
 
     typedef std::function<
         void (const std::shared_ptr<ObjectController>&, 
-        swganh::messages::ObjControllerMessage)
+        swganh::messages::ObjControllerMessage*)
     > ObjControllerHandler;
 
     typedef Concurrency::concurrent_unordered_map<
@@ -90,7 +90,7 @@ namespace object {
          *
          * @param message The message to be delivered to the remote client.
          */
-        void Notify(const anh::ByteBuffer& message);
+        void Notify(swganh::messages::BaseSwgMessage* message);
 
         // Send System Message
 

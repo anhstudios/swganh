@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ServerWeatherMessage : public BaseSwgMessage<ServerWeatherMessage>
+    struct ServerWeatherMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x486356EA; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x486356EA; }
 
     	uint32_t weather_id;
     	glm::vec3 cloud_vector;
@@ -26,7 +26,7 @@ namespace messages {
     		buffer.write(cloud_vector.y);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		weather_id = buffer.read<uint32_t>();
     		cloud_vector.x = buffer.read<float>();

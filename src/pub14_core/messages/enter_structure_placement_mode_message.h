@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct EnterStructurePlacementModeMessage : public BaseSwgMessage<EnterStructurePlacementModeMessage>
+    struct EnterStructurePlacementModeMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0xE8A54DC1; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0xE8A54DC1; }
 
     	uint64_t deed_id;
     	std::string object_file_path; // e.g. "object/building/player/shared_player_garage_corellia_style_01.iff"
@@ -24,7 +24,7 @@ namespace messages {
     		buffer.write(object_file_path);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		deed_id = buffer.read<uint64_t>();
     		object_file_path = buffer.read<std::string>();

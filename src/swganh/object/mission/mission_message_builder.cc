@@ -92,7 +92,7 @@ void MissionMessageBuilder::BuildDifficultyLevelDelta(const std::shared_ptr<Miss
     {
 		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 5);
 		message.data.write(mission->GetDifficultyLevel());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -107,7 +107,7 @@ void MissionMessageBuilder::BuildStartingLocationDelta(const std::shared_ptr<Mis
 		message.data.write(location.z);
 		message.data.write<uint64_t>(0L);
 		message.data.write(mission->GetStartingSceneCrc());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -117,7 +117,7 @@ void MissionMessageBuilder::BuildCreatorNameDelta(const std::shared_ptr<Mission>
     {
 		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 7);
 		message.data.write(mission->GetMissionCreator());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -127,7 +127,7 @@ void MissionMessageBuilder::BuildCreditRewardDelta(const std::shared_ptr<Mission
     {
 		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 8);
 		message.data.write(mission->GetMissionReward());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 	
@@ -142,7 +142,7 @@ void MissionMessageBuilder::BuildDestinationLocationDelta(const std::shared_ptr<
 		message.data.write(location.z);
 		message.data.write<uint64_t>(0L);
 		message.data.write(mission->GetDestinationSceneCrc());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -152,7 +152,7 @@ void MissionMessageBuilder::BuildTargetIffCrcDelta(const std::shared_ptr<Mission
     {
 		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 10);
 		message.data.write(mission->GetTargetObjectTemplateCrc());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -164,7 +164,7 @@ void MissionMessageBuilder::BuildMissionDescriptionDelta(const std::shared_ptr<M
 		message.data.write(mission->GetMissionDescriptionStfFile());
 		message.data.write<uint32_t>(0);
 		message.data.write(mission->GetMissionDescriptionStfName());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -176,7 +176,7 @@ void MissionMessageBuilder::BuildMissionTitleDelta(const std::shared_ptr<Mission
 		message.data.write(mission->GetMissionTitleStfFile());
 		message.data.write<uint32_t>(0);
 		message.data.write(mission->GetMissionTitleStfName());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -186,7 +186,7 @@ void MissionMessageBuilder::BuildRepeatCounterDelta(const std::shared_ptr<Missio
     {
 		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 13);
 		message.data.write(mission->GetRepeatCounter());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -196,7 +196,7 @@ void MissionMessageBuilder::BuildMissionTypeCrcDelta(const std::shared_ptr<Missi
     {
 		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 14);
 		message.data.write(mission->GetMissionTypeCrc());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -206,7 +206,7 @@ void MissionMessageBuilder::BuildTargetNameDelta(const std::shared_ptr<Mission>&
     {
 		DeltasMessage message = CreateDeltasMessage(mission, Object::VIEW_3, 15);
 		message.data.write(mission->GetTargetName());
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
@@ -229,18 +229,18 @@ void MissionMessageBuilder::BuildMissionWaypointDelta(const std::shared_ptr<Miss
 		message.data.write(waypoint->GetColorByte());
 		message.data.write(waypoint->GetActiveFlag());
 
-		mission->AddDeltasUpdate(move(message));
+		mission->AddDeltasUpdate(&message);
 	}
 }
 
 void MissionMessageBuilder::SendBaselines(const std::shared_ptr<Mission>& mission, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-	mission->AddBaselineToCache(BuildBaseline3(mission));
-    mission->AddBaselineToCache(BuildBaseline6(mission));
+	mission->AddBaselineToCache(&BuildBaseline3(mission));
+    mission->AddBaselineToCache(&BuildBaseline6(mission));
     
     for (auto& baseline : mission->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(mission, observer);

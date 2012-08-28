@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct OpenedContainerMessage : public BaseSwgMessage<OpenedContainerMessage>
+    struct OpenedContainerMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 4; }
-    	static uint32_t Opcode() { return 0x2E11E4AB; }
+    	uint16_t Opcount() const { return 4; }
+    	uint32_t Opcode() const { return 0x2E11E4AB; }
     	
     	uint32_t unknown1;
     	uint64_t container_object_id;
@@ -26,7 +26,7 @@ namespace messages {
     		buffer.write(container_slot);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		unknown1 = buffer.read<uint32_t>();
     		container_object_id = buffer.read<uint64_t>();

@@ -26,12 +26,6 @@ namespace controllers {
             , unknown1(0)
         {}
 
-        explicit SpatialChat(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
-
         static uint32_t message_type() { return 0x000000F4; }
         
         uint64_t speaker_id;
@@ -59,7 +53,7 @@ namespace controllers {
             buffer.write(unknown1);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             speaker_id = buffer.read<uint64_t>();
             target_id = buffer.read<uint64_t>();

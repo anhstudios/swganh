@@ -11,10 +11,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ChatPersistentMessageToServer : public BaseSwgMessage<ChatPersistentMessageToServer>
+    struct ChatPersistentMessageToServer : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 6; }
-    	static uint32_t Opcode() { return 0x25A29FA6; }
+    	uint16_t Opcount() const { return 6; }
+    	uint32_t Opcode() const { return 0x25A29FA6; }
 
     	std::wstring mail_message_body;
     	uint32_t chat_parameter_size; // uncertain
@@ -57,7 +57,7 @@ namespace messages {
     		buffer.write(recipient_name);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		mail_message_body = buffer.read<std::wstring>();
     		chat_parameter_size = buffer.read<uint32_t>();

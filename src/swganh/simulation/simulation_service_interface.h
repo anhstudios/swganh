@@ -99,7 +99,7 @@ namespace simulation {
         struct GenericControllerHandler
         {
             typedef std::function<void (
-                const std::shared_ptr<swganh::object::ObjectController>&, MessageType)
+                const std::shared_ptr<swganh::object::ObjectController>&, MessageType*)
             > HandlerType;
         };
         
@@ -117,7 +117,7 @@ namespace simulation {
          * \param instance An instance of a class that implements memfunc.
          */
         template<typename T, typename U, typename MessageType>
-        void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::ObjectController>&, MessageType), U instance)
+        void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::ObjectController>&, MessageType*), U instance)
         {
             RegisterControllerHandler<MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }
@@ -137,11 +137,12 @@ namespace simulation {
 
             auto wrapped_handler = [this, shared_handler] (
                 const std::shared_ptr<swganh::object::ObjectController>& controller,
-                swganh::messages::ObjControllerMessage message)
+                swganh::messages::ObjControllerMessage* message)
             {
-                MessageType tmp(std::move(message));
+                MessageType tmp;
+				tmp.OnControllerDeserialize(message->data);
 
-                (*shared_handler)(controller, std::move(tmp));
+                (*shared_handler)(controller, &tmp);
             };
 
             RegisterControllerHandler(MessageType::message_type(), std::move(wrapped_handler));

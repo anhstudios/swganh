@@ -174,7 +174,7 @@ public:
 
 	void HandleDataTransform(
 		const shared_ptr<ObjectController>& controller, 
-		DataTransform message)
+		DataTransform* message)
 	{
 		auto object = controller->GetObject();
 		if (!object)
@@ -186,12 +186,12 @@ public:
 			// get the scene the object is in
 			auto scene = GetSceneManager()->GetScene(find_iter->second->GetObject()->GetSceneId());
 			if (scene)
-				scene->HandleDataTransform(controller, message);
+				scene->HandleDataTransform(controller, *message);
 		}
 	}
 	void HandleDataTransformWithParent(
 		const shared_ptr<ObjectController>& controller, 
-		DataTransformWithParent message)
+		DataTransformWithParent* message)
 	{
 		auto object = controller->GetObject();
 		if (!object)
@@ -203,7 +203,7 @@ public:
             // get the scene the object is in
 			auto scene = GetSceneManager()->GetScene(find_iter->second->GetObject()->GetSceneId());
 			if (scene)
-				scene->HandleDataTransformWithParent(controller, message);
+				scene->HandleDataTransformWithParent(controller, *message);
 		}		
 	}
 
@@ -397,28 +397,28 @@ public:
 
     void HandleObjControllerMessage(
         const shared_ptr<ConnectionClientInterface>& client,
-        ObjControllerMessage message)
+        ObjControllerMessage* message)
     {
-        auto find_iter = controller_handlers_.find(message.message_type);
+        auto find_iter = controller_handlers_.find(message->message_type);
 
         if (find_iter == controller_handlers_.end())
         {
-            DLOG(warning) << "No handler registered to process the given message. " << message.data;
+            DLOG(warning) << "No handler registered to process the given message. " << message->data;
             return;
         }
 
-        find_iter->second(client->GetController(), move(message));
+        find_iter->second(client->GetController(), message);
     }
 
     void HandleSelectCharacter(
         const shared_ptr<ConnectionClientInterface>& client,
-        SelectCharacter message)
+        SelectCharacter* message)
     {
-        auto object = GetObjectById(message.character_id);
+        auto object = GetObjectById(message->character_id);
 
         if (!object)
         {
-            object = LoadObjectById(message.character_id, creature::Creature::type);
+            object = LoadObjectById(message->character_id, creature::Creature::type);
         }
 
         auto event_dispatcher = kernel_->GetEventDispatcher();

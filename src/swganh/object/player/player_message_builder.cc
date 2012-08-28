@@ -177,15 +177,15 @@ void PlayerMessageBuilder::RegisterEventHandlers()
 
 void PlayerMessageBuilder::SendBaselines(const shared_ptr<Player>& player, const shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-    player->AddBaselineToCache(BuildBaseline3(player));
-    player->AddBaselineToCache(BuildBaseline6(player));
-    player->AddBaselineToCache(BuildBaseline8(player));
-    player->AddBaselineToCache(BuildBaseline9(player));
+    player->AddBaselineToCache(&BuildBaseline3(player));
+    player->AddBaselineToCache(&BuildBaseline6(player));
+    player->AddBaselineToCache(&BuildBaseline8(player));
+    player->AddBaselineToCache(&BuildBaseline9(player));
     
    
     for (auto& baseline : player->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(player, observer);
@@ -207,7 +207,7 @@ void PlayerMessageBuilder::BuildStatusBitmaskDelta(const shared_ptr<Player>& obj
             flag.Serialize(message);
         });
         
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildProfileBitmaskDelta(const shared_ptr<Player>& object)
@@ -227,7 +227,7 @@ void PlayerMessageBuilder::BuildProfileBitmaskDelta(const shared_ptr<Player>& ob
             flag.Serialize(message);
         });
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildProfessionTagDelta(const shared_ptr<Player>& object)
@@ -237,7 +237,7 @@ void PlayerMessageBuilder::BuildProfessionTagDelta(const shared_ptr<Player>& obj
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 7);
         message.data.write(object->GetProfessionTag());
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildBornDateDelta(const shared_ptr<Player>& object)
@@ -247,7 +247,7 @@ void PlayerMessageBuilder::BuildBornDateDelta(const shared_ptr<Player>& object)
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 8);
         message.data.write(object->GetBornDate());
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildPlayTimeDelta(const shared_ptr<Player>& object)
@@ -257,7 +257,7 @@ void PlayerMessageBuilder::BuildPlayTimeDelta(const shared_ptr<Player>& object)
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 9);
         message.data.write(object->GetTotalPlayTime());
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 
@@ -267,7 +267,7 @@ void PlayerMessageBuilder::BuildAdminTagDelta(const shared_ptr<Player>& object)
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_6, 1);
         message.data.write<uint8_t>(object->GetAdminTag());
-        object->AddDeltasUpdate(std::move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildXpDelta(const shared_ptr<Player>& object)
@@ -276,7 +276,7 @@ void PlayerMessageBuilder::BuildXpDelta(const shared_ptr<Player>& object)
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 0);
         object->GetXp().Serialize(message);
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
     else
         object->GetXp().ClearDeltas();
@@ -287,7 +287,7 @@ void PlayerMessageBuilder::BuildWaypointDelta(const shared_ptr<Player>& object)
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_7, 1);
         object->GetWaypoints().Serialize(message);
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildCurrentForcePowerDelta(const shared_ptr<Player>& object)
@@ -297,7 +297,7 @@ void PlayerMessageBuilder::BuildCurrentForcePowerDelta(const shared_ptr<Player>&
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 2);
         message.data.write(object->GetCurrentForcePower());
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildMaxForcePowerDelta(const shared_ptr<Player>& object)
@@ -307,7 +307,7 @@ void PlayerMessageBuilder::BuildMaxForcePowerDelta(const shared_ptr<Player>& obj
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 3);
         message.data.write(object->GetMaxForcePower());
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildForceSensitiveQuestDelta(const shared_ptr<Player>& object)
@@ -317,7 +317,7 @@ void PlayerMessageBuilder::BuildForceSensitiveQuestDelta(const shared_ptr<Player
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 4);
         message.data.write(object->GetCurrentForceSensitiveQuests());
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(const shared_ptr<Player>& object)
@@ -327,7 +327,7 @@ void PlayerMessageBuilder::BuildCompletedForceSensitiveQuestDelta(const shared_p
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 5);
         message.data.write(object->GetCompletedForceSensitiveQuests());
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildQuestJournalDelta(const shared_ptr<Player>& object)
@@ -336,7 +336,7 @@ void PlayerMessageBuilder::BuildQuestJournalDelta(const shared_ptr<Player>& obje
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_8, 6);
         object->GetQuests().Serialize(message);
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
     else
         object->GetQuests().ClearDeltas();
@@ -347,7 +347,7 @@ void PlayerMessageBuilder::BuildAbilityDelta(const shared_ptr<Player>& object)
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 0);
         object->GetAbilityList().Serialize(message);
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 
@@ -358,7 +358,7 @@ void PlayerMessageBuilder::BuildExperimentationFlagDelta(const shared_ptr<Player
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 1);
         message.data.write(object->GetExperimentationFlag());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildCraftingStageDelta(const shared_ptr<Player>& object)
@@ -368,7 +368,7 @@ void PlayerMessageBuilder::BuildCraftingStageDelta(const shared_ptr<Player>& obj
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 2);
         message.data.write(object->GetCraftingStage());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildNearestCraftingStationDelta(const shared_ptr<Player>& object)
@@ -378,7 +378,7 @@ void PlayerMessageBuilder::BuildNearestCraftingStationDelta(const shared_ptr<Pla
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 3);
         message.data.write(object->GetNearestCraftingStation());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildDraftSchematicDelta(const shared_ptr<Player>& object)
@@ -387,7 +387,7 @@ void PlayerMessageBuilder::BuildDraftSchematicDelta(const shared_ptr<Player>& ob
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 4);
         object->GetDraftSchematics().Serialize(message);
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
     else
         object->GetDraftSchematics().ClearDeltas();
@@ -400,7 +400,7 @@ void PlayerMessageBuilder::BuildExperimentationPointsDelta(const shared_ptr<Play
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 5);
         message.data.write(object->GetExperimentationPoints());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(const shared_ptr<Player>& object)
@@ -410,7 +410,7 @@ void PlayerMessageBuilder::BuildAccomplishmentCounterDelta(const shared_ptr<Play
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 6);
         message.data.write(object->GetAccomplishmentCounter());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildFriendsDelta(const shared_ptr<Player>& object)
@@ -419,7 +419,7 @@ void PlayerMessageBuilder::BuildFriendsDelta(const shared_ptr<Player>& object)
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 7);
         object->GetFriends().Serialize(message);
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
     else
         object->GetFriends().ClearDeltas();
@@ -430,7 +430,7 @@ void PlayerMessageBuilder::BuildIgnoredDelta(const shared_ptr<Player>& object)
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 8);
         object->GetIgnoredPlayers().Serialize(message);
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
     else
         object->GetIgnoredPlayers().ClearDeltas();
@@ -442,7 +442,7 @@ void PlayerMessageBuilder::BuildLanguageDelta(const shared_ptr<Player>& object)
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 9);
         message.data.write(object->GetLanguage());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildCurrentStomachDelta(const shared_ptr<Player>& object)
@@ -452,7 +452,7 @@ void PlayerMessageBuilder::BuildCurrentStomachDelta(const shared_ptr<Player>& ob
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 10);
         message.data.write(object->GetCurrentStomach());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildMaxStomachDelta(const shared_ptr<Player>& object)
@@ -462,7 +462,7 @@ void PlayerMessageBuilder::BuildMaxStomachDelta(const shared_ptr<Player>& object
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 11);
         message.data.write(object->GetMaxStomach());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildCurrentDrinkDelta(const shared_ptr<Player>& object)
@@ -472,7 +472,7 @@ void PlayerMessageBuilder::BuildCurrentDrinkDelta(const shared_ptr<Player>& obje
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 12);
         message.data.write(object->GetCurrentDrink());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildMaxDrinkDelta(const shared_ptr<Player>& object)
@@ -482,7 +482,7 @@ void PlayerMessageBuilder::BuildMaxDrinkDelta(const shared_ptr<Player>& object)
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 13);
         message.data.write(object->GetMaxDrink());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 void PlayerMessageBuilder::BuildJediStateDelta(const shared_ptr<Player>& object)
@@ -492,7 +492,7 @@ void PlayerMessageBuilder::BuildJediStateDelta(const shared_ptr<Player>& object)
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_9, 17);
         message.data.write(object->GetExperimentationPoints());            
 
-        object->AddDeltasUpdate(move(message));
+        object->AddDeltasUpdate(&message);
     }
 }
 // baselines

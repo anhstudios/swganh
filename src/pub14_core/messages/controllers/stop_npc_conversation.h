@@ -20,12 +20,6 @@ namespace controllers {
             , npc_id(0)
         {}
 
-        explicit StopNPCConversation(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
-
         static uint32_t message_type() { return 0x000000DE; }
         
         uint64_t npc_id;        
@@ -40,7 +34,7 @@ namespace controllers {
             buffer.write<uint8_t>(0);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             npc_id = buffer.read<uint64_t>();
         }

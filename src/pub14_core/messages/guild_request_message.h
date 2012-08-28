@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct GuildRequestMessage : public BaseSwgMessage<GuildRequestMessage>
+    struct GuildRequestMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x81EB4EF7; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x81EB4EF7; }
     	
     	uint64_t object_id;
     	
@@ -21,7 +21,7 @@ namespace messages {
     		buffer.write(object_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		object_id = buffer.read<uint64_t>();
     	}

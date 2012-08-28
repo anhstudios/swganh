@@ -63,9 +63,11 @@ void ObjectController::SetRemoteClient(shared_ptr<ConnectionClientInterface> rem
     client_ = remote_client;
 }
 
-void ObjectController::Notify(const anh::ByteBuffer& message)
+void ObjectController::Notify(BaseSwgMessage* message)
 {
-    client_->SendTo(message);
+	anh::ByteBuffer buffer;
+	message->Serialize(buffer);
+    client_->SendTo(buffer);
 }
 
 bool ObjectController::SendSystemMessage(std::string filename, std::string label)
@@ -114,9 +116,9 @@ bool ObjectController::SendSystemMessage_(const wstring& custom_message, const O
     }
 
     if (send_to_inrange)
-        object_->NotifyObservers(SystemMessage);
+        object_->NotifyObservers(&SystemMessage);
     else
-        Notify(SystemMessage);
+        Notify(&SystemMessage);
 
     return true;
 }
@@ -162,7 +164,7 @@ void ObjectController::SendFlyText(const std::string& fly_text, FlyTextColor col
                 break;
         }
         fly_text.display_flag = (display_flag == true) ? 0 : 1;
-        object_->NotifyObservers(fly_text);
+        object_->NotifyObservers(&fly_text);
 
     }
 }

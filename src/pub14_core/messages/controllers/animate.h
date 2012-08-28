@@ -19,12 +19,6 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
-        explicit Animate(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
-
         Animate(const std::string& animation_, uint64_t object_id_)
             : animation(animation_)
             , object_id(object_id_)
@@ -42,7 +36,7 @@ namespace controllers {
             buffer.write(animation);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             object_id = buffer.read<uint64_t>();
             buffer.read<uint32_t>();

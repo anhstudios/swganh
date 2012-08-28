@@ -9,14 +9,14 @@
 namespace swganh {
 namespace messages {
 
-    struct BeginVerificationMessage : public BaseSwgMessage<BeginVerificationMessage>
+    struct BeginVerificationMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 1; }
-    	static uint32_t Opcode() { return 0xE7491DF5; }
+    	uint16_t Opcount() const { return 1; }
+    	uint32_t Opcode() const { return 0xE7491DF5; }
     	
     	void OnSerialize(anh::ByteBuffer& buffer) const {}
     	
-    	void OnDeserialize(anh::ByteBuffer buffer) {}
+    	void OnDeserialize(anh::ByteBuffer& buffer) {}
     };
 
 }} // namespace swganh::messages

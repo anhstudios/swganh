@@ -47,11 +47,11 @@ private:
     
     void HandleClientIdMsg_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
-        swganh::messages::ClientIdMsg message);
+        swganh::messages::ClientIdMsg* message);
 
     void HandleCmdSceneReady_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
-        swganh::messages::CmdSceneReady message);
+        swganh::messages::CmdSceneReady* message);
    
     typedef std::map<
         boost::asio::ip::udp::endpoint,

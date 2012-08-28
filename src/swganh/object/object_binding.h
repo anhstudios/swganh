@@ -43,10 +43,7 @@ void exportObject()
 {
     //std::shared_ptr<ObjectController> (ObjectWrapper::*GetControllerPtr)() = &ObjectWrapper::GetController;
 
-    typedef void (Object::*NotifyObserversFunc)(const anh::ByteBuffer& message);
-	
 	void (ContainerInterface::*RemoveObject)(shared_ptr<Object>, shared_ptr<Object>) = &ContainerInterface::RemoveObject;
-	
 
 	class_<ContainerInterface, std::shared_ptr<ContainerInterface>, boost::noncopyable>("ContainerInterface", "Container interface", no_init)
 		.def("Add", &ContainerInterface::AddObject, addObjectOverload(args("requester", "newObject", "arrangement_id"), "Adds an object to the current object"))
@@ -68,7 +65,6 @@ void exportObject()
 		.add_property("stf_name_string", &Object::GetStfNameString, "gets the stf name file of the object")
 		.def("stf_name", &Object::SetStfName, "sets the full stf name, takes stf_name_file and stf_name_string as parameters")
 		.add_property("custom_name", &Object::GetCustomName, &Object::SetCustomName, "Property to get and set the custom name")
-		.def("NotifyObservers", NotifyObserversFunc(&Object::NotifyObservers), "Notifies Observers of the passed in message")
         .def("Controller", &Object::GetController, "Get the :class:`.ObjectController` of the object")
         .def("HasFlag", &Object::HasFlag, "Checks if the object has a specific flag set on it")
         .def("SetFlag", &Object::SetFlag, "Sets a flag on the object")

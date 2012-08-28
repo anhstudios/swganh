@@ -18,10 +18,10 @@ namespace messages {
     	std::wstring description;
     }
 
-    struct GetAuctionDetailsResponse : public BaseSwgMessage<GetAuctionDetailsResponse>
+    struct GetAuctionDetailsResponse : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 9; }
-    	static uint32_t Opcode() { return 0xFE0E644B; }
+    	uint16_t Opcount() const { return 9; }
+    	uint32_t Opcode() const { return 0xFE0E644B; }
     	
     	uint64_t item_id;
     	std::list<ItemDetail> auction_details;
@@ -36,7 +36,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		uint32_t auction_details_count = buffer.read<uint32_t>();

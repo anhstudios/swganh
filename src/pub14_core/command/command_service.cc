@@ -106,15 +106,15 @@ void CommandService::EnqueueCommand(const std::shared_ptr<swganh::command::Comma
 
 void CommandService::EnqueueCommandRequest(
     const std::shared_ptr<ObjectController>& controller,
-    CommandQueueEnqueue command_request)
+    CommandQueueEnqueue* command_request)
 {
-    auto command = command_factory_impl_->CreateCommand(command_request.command_crc);
+    auto command = command_factory_impl_->CreateCommand(command_request->command_crc);
     if (command)
     {
         auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
 
         swg_command->SetController(controller);
-        swg_command->SetCommandRequest(command_request);
+        swg_command->SetCommandRequest(*command_request);
 
         EnqueueCommand(swg_command);
     }
@@ -181,7 +181,7 @@ void CommandService::SendCommandQueueRemove(
     remove.error = error;
     remove.action = action;
 
-    controller->Notify(remove);
+    controller->Notify(&remove);
 }
 
 void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)

@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ConGenericMessage : public BaseSwgMessage<ConGenericMessage>
+    struct ConGenericMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x8C5FC76; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x8C5FC76; }
 
     	std::string message;
     	uint32_t string_spacer;
@@ -24,7 +24,7 @@ namespace messages {
     		buffer.write(string_spacer);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		message = buffer.read<std::string>();
     		string_spacer = buffer.read<uint32_t>();

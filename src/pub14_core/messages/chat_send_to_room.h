@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ChatSendToRoom : public BaseSwgMessage<ChatSendToRoom>
+    struct ChatSendToRoom : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 5; }
-    	static uint32_t Opcode() { return 0x20E4DBE3; }
+    	uint16_t Opcount() const { return 5; }
+    	uint32_t Opcode() const { return 0x20E4DBE3; }
 
     	std::string sender_character_name;
     	std::wstring message;
@@ -30,7 +30,7 @@ namespace messages {
     		buffer.write(attempts_counter);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		sender_character_name = buffer.read<std::string>();
     		message = buffer.read<std::wstring>();

@@ -24,10 +24,10 @@ namespace messages {
     	uint8_t type_displayAsActive;
     }
 
-    struct GetMapLocationsResponseMessage : public BaseSwgMessage<GetMapLocationsResponseMessage>
+    struct GetMapLocationsResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 28; }
-    	static uint32_t Opcode() { return 0x9F80464C; }
+    	uint16_t Opcount() const { return 28; }
+    	uint32_t Opcode() const { return 0x9F80464C; }
     	
     	std::string planet_name;
     	std::list<MapLocation> locations;
@@ -70,7 +70,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		uint32_t locations_count = buffer.read<uint32_t>();
