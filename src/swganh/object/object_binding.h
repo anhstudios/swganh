@@ -52,8 +52,7 @@ void exportObject()
 		.def("Add", &ContainerInterface::AddObject, addObjectOverload(args("requester", "newObject", "arrangement_id"), "Adds an object to the current object"))
 		.def("Remove", RemoveObject, "Removes an object fomr the current object")
 		.def("Transfer", &ContainerInterface::TransferObject, transferObjectOverload(args("object", "newContainer", "arrangement_id"), "Transfer an object to a different object"))
-		.def("SwapSlots", &Object::SwapSlots, "Change an objects current arrangement")
-		.def("SetDefaultPermission", SetDefaultPermissions, "Sets the permissions of a container to a default")
+		.def("SwapSlots", &Object::SwapSlots, "Change an objects current arrangement")		
 		;
 	
     class_<Object, bases<ContainerInterface>, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from")

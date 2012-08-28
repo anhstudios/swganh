@@ -322,7 +322,7 @@ void Object::SetTemplate(const string& template_string)
 }
 void Object::SetObjectId(uint64_t object_id)
 {
-	object_id_ = object_id;
+    object_id_ = object_id;
 }
 uint64_t Object::GetObjectId()
 {
@@ -839,9 +839,7 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::str
 std::wstring Object::GetAttributeAsString(const std::string& name)
 {
 	try {
-		auto val = GetAttribute(name);
-
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto val = GetAttribute(name);		
 		wstringstream attribute;
 		switch (val.which())
 		{
@@ -875,31 +873,45 @@ void Object::SetAttributeTemplateId(uint8_t attribute_template_id)
 
 std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	wstringstream ss;
 	auto val = GetAttributeRecursive(name);
-	ss << val;
+	wstringstream ss;
+	switch(val.which())
+		{
+			// float
+			case 0:
+				 ss << boost::get<float>(val);
+				break;
+			case 1:
+				ss << boost::get<int32_t>(val);
+				break;
+			case 2:
+				ss << boost::get<wstring>(val);
+				break;
+		}		
+	
 	return ss.str();
 }
 boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	auto val = GetAttribute(name);
-	float float_val;
-	int32_t int_val;
-	wstring attr_val;
-	switch(val.which())
 	{
-		// float
-		case 0:
-			 float_val = boost::get<float>(val);
-			return AddAttributeRecursive<float>(float_val, name);			
-		case 1:
-			int_val = boost::get<int32_t>(val);
-			return AddAttributeRecursive<int32_t>(int_val, name);			
-		case 2:
-			attr_val = boost::get<wstring>(val);
-			return AddAttributeRecursive<wstring>(attr_val, name);			
-	}	
-	return boost::get<wstring>(val);
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		float float_val;
+		int32_t int_val;
+		wstring attr_val;
+		switch(val.which())
+		{
+			// float
+			case 0:
+				 float_val = boost::get<float>(val);
+				return AddAttributeRecursive<float>(float_val, name);			
+			case 1:
+				int_val = boost::get<int32_t>(val);
+				return AddAttributeRecursive<int32_t>(int_val, name);			
+			case 2:
+				attr_val = boost::get<wstring>(val);
+				return AddAttributeRecursive<wstring>(attr_val, name);			
+		}	
+		return boost::get<wstring>(val);
+	}
 }

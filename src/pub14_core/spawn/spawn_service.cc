@@ -42,10 +42,9 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 		auto snapshot_visitor = kernel_->GetResourceManager()->GetResourceByName<WsVisitor>(snapshot_filename, false);
 
 		auto chunks = snapshot_visitor->chunks();
-
 		simulation_service->PrepareToAccomodate(chunks.size());
-		for(auto& chunk : chunks) {
-
+		for(auto& chunk : chunks) 
+		{
 			auto filename = snapshot_visitor->name(chunk.name_id);
 			auto object = simulation_service->CreateObjectFromTemplate(filename, 
 				FindProperPermission_(filename), false, false, chunk.id);
@@ -75,7 +74,7 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 					}
 				}
 			}
-		}	
+		}
 	});
 
 	/* Dont need this now, but we might later.
