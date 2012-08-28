@@ -151,6 +151,9 @@ void Tangible::SetConditionDamage(uint32_t damage)
     condition_damage_ = damage;
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::ConditionDamage",static_pointer_cast<Tangible>(shared_from_this())));
+	
+	GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
+        ("Object::UpdateAttribute", static_pointer_cast<Tangible>(shared_from_this())));
 }
 
 uint32_t Tangible::GetCondition(void)
@@ -163,6 +166,8 @@ void Tangible::SetMaxCondition(uint32_t max_condition)
     max_condition_ = max_condition;
     GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
         ("Tangible::MaxCondition",static_pointer_cast<Tangible>(shared_from_this())));
+	GetEventDispatcher()->Dispatch(make_shared<TangibleEvent>
+        ("Object::UpdateAttribute", static_pointer_cast<Tangible>(shared_from_this())));
 }
 
 uint32_t Tangible::GetMaxCondition(void)

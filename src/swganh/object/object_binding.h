@@ -31,6 +31,11 @@ boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shar
 	return boost::python::make_tuple(requester, object, newContainer, arrangement_id);
 }
 
+void SetDefaultPermissions(std::shared_ptr<Object> requester)
+{
+	requester->SetPermissions(make_shared<DefaultPermission>());	
+}
+
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
 
