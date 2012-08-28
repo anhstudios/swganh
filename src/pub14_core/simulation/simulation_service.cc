@@ -535,6 +535,7 @@ void SimulationService::RegisterObjectFactories()
 	object_manager->RegisterObjectType<resource_container::ResourceContainer>();
 	object_manager->RegisterObjectType<factory_crate::FactoryCrate>();
 	object_manager->RegisterObjectType<weapon::Weapon>();
+	object_manager->RegisterObjectType<building::Building>();
 	
 }
 

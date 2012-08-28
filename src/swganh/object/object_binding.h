@@ -9,6 +9,7 @@
 #include "swganh/object/object.h"
 #include "swganh/object/object_controller_binding.h"
 #include "swganh/object/permissions/container_permissions_interface.h"
+#include "swganh/object/permissions/default_permission.h"
 
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
@@ -20,7 +21,7 @@ using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
 
-boost::python::tuple AddObject(std::shared_ptr<Object> newObject, std::shared_ptr<Object> requester = nullptr, int32_t arrangement_id=-2)
+boost::python::tuple AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2)
 {
 	return boost::python::make_tuple(newObject, requester, arrangement_id);
 }
@@ -30,8 +31,7 @@ boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shar
 	return boost::python::make_tuple(requester, object, newContainer, arrangement_id);
 }
 
-
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 1, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
 
 void exportObject()
@@ -44,7 +44,7 @@ void exportObject()
 	
 
 	class_<ContainerInterface, std::shared_ptr<ContainerInterface>, boost::noncopyable>("ContainerInterface", "Container interface", no_init)
-		.def("Add", &ContainerInterface::AddObject, addObjectOverload(args("newObject", "object", "arrangement_id"), "Adds an object to the current object"))
+		.def("Add", &ContainerInterface::AddObject, addObjectOverload(args("requester", "newObject", "arrangement_id"), "Adds an object to the current object"))
 		.def("Remove", RemoveObject, "Removes an object fomr the current object")
 		.def("Transfer", &ContainerInterface::TransferObject, transferObjectOverload(args("object", "newContainer", "arrangement_id"), "Transfer an object to a different object"))
 		.def("SwapSlots", &Object::SwapSlots, "Change an objects current arrangement")		
