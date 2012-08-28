@@ -8,9 +8,12 @@ namespace swganh {
 namespace object {
 namespace group {
 
+	class Group;
     class GroupFactory : public swganh::object::ObjectFactoryInterface
     {
     public:
+		typedef Group ObjectType;
+
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

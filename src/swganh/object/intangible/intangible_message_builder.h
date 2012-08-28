@@ -27,7 +27,10 @@ namespace intangible {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        static void BuildStfDetailDelta(const std::shared_ptr<Intangible>& intangible);
+
+		virtual void SendBaselines(const std::shared_ptr<Intangible>& intangible, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+
+		static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Intangible>& intangible);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Intangible>& intangible);
     };
 

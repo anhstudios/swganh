@@ -21,6 +21,7 @@ namespace app {
 } // app
 namespace simulation {
 	class SpatialProviderInterface;
+	class SimulationServiceInterface;
 }} // swganh::simulation
 
 namespace swganh_core {
@@ -57,6 +58,7 @@ namespace simulation {
 
         UpdateCounterMap counter_map_;
 		swganh::simulation::SpatialProviderInterface* spatial_provider_;
+		swganh::simulation::SimulationServiceInterface* simulation_service_;
 		swganh::app::SwganhKernel* kernel_;
     };
 

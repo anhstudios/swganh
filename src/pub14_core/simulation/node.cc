@@ -129,13 +129,13 @@ void Node::Split()
 	}
 }
 
-std::set<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_box)
+std::list<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_box)
 {
-	std::set<std::shared_ptr<swganh::object::Object>> return_list;
+	std::list<std::shared_ptr<swganh::object::Object>> return_list;
 
 	std::for_each(objects_.begin(), objects_.end(), [=,& return_list](std::shared_ptr<swganh::object::Object> obj) {
 		if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().z), query_box))
-			return_list.insert(obj);
+			return_list.push_back(obj);
 	});
 
 	if(state_ == BRANCH)
@@ -145,24 +145,21 @@ std::set<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_box
 			// Node is within Query Box.
 			if(boost::geometry::within(node->GetRegion(), query_box))
 			{
-				auto contained_objects = node->GetContainedObjects();
-				return_list.insert( contained_objects.begin(), contained_objects.end() );
+				return_list.splice(return_list.end(), node->GetContainedObjects());
 				continue;
 			}
 			
 			// Query Box is within node.
 			if(boost::geometry::within(query_box, node->GetRegion()))
 			{
-				std::set<std::shared_ptr<swganh::object::Object>> list = node->Query(query_box);
-				return_list.insert( list.begin(), list.end() );
+				return_list.splice( return_list.end(), node->Query(query_box) );
 				break;
 			}
 
 			// Query Box intersects with node.
 			if(boost::geometry::intersects(query_box, node->GetRegion()))
 			{
-				std::set<std::shared_ptr<swganh::object::Object>> list = node->Query(query_box);
-				return_list.insert( list.begin(), list.end() );
+				return_list.splice( return_list.end(), node->Query(query_box) );
 			}
 		}
 	}
@@ -170,21 +167,16 @@ std::set<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_box
 	return return_list;
 }
 
-const std::set<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(void)
+std::list<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(void)
 {
-	std::set<std::shared_ptr<swganh::object::Object>> objs;
-
-	objs.insert(objects_.begin(), objects_.end());
-
+	std::list<std::shared_ptr<swganh::object::Object>> objs(objects_.begin(), objects_.end());
 	if(state_ == BRANCH)
 	{
 		for(const std::shared_ptr<Node> node : leaf_nodes_)
 		{
-			std::set<std::shared_ptr<swganh::object::Object>> objs2 = node->GetContainedObjects();
-			objs.insert(objs2.begin(), objs2.end());
+			objs.splice(objs.end(), node->GetContainedObjects());
 		}
 	}
-
 	return objs;
 }
 

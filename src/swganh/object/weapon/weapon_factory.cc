@@ -9,6 +9,11 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::weapon;
 
+WeaponFactory::WeaponFactory(anh::database::DatabaseManagerInterface* db_manager, anh::EventDispatcher* event_dispatcher)
+	: TangibleFactory(db_manager, event_dispatcher)
+{
+}
+
 uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	return 1;

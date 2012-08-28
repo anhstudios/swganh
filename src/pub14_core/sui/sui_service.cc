@@ -64,8 +64,11 @@ void SUIService::Startup()
 	{
 		//Clear all of this player's SUIs
 		const auto& player = std::static_pointer_cast<anh::ValueEvent<std::shared_ptr<Player>>>(incoming_event)->Get();
-		WindowMapRange range = window_lookup_.equal_range(player->GetObjectId());
-		window_lookup_.erase(range.first, range.second);
+		if(player != nullptr)
+		{
+			WindowMapRange range = window_lookup_.equal_range(player->GetObjectId());
+			window_lookup_.erase(range.first, range.second);
+		}
 	});
 }
 

@@ -9,10 +9,13 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::factory_crate;
 
+FactoryCrateFactory::FactoryCrateFactory(anh::database::DatabaseManagerInterface* db_manager, anh::EventDispatcher* event_dispatcher)
+	: TangibleFactory(db_manager, event_dispatcher)
+{
+}
 uint32_t FactoryCrateFactory::PersistObject(const shared_ptr<Object>& object)
 {
-	uint32_t counter = 1;
-	return counter;
+	return 0;
 }
 
 void FactoryCrateFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
@@ -20,6 +23,7 @@ void FactoryCrateFactory::DeleteObjectFromStorage(const shared_ptr<Object>& obje
 
 shared_ptr<Object> FactoryCrateFactory::CreateObjectFromStorage(uint64_t object_id)
 {
+	//@TODO: Load me from storage
     return make_shared<FactoryCrate>();
 }
 

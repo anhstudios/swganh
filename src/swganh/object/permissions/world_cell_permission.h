@@ -7,11 +7,11 @@ namespace swganh
 namespace object
 {
 
-class CreaturePermissions : public ContainerPermissionsInterface
+class WorldCellPermission : public ContainerPermissionsInterface
 {
 	virtual PermissionType GetType()
 	{
-		return CREATURE_CONTAINER_PERMISSION;
+		return WORLD_CELL_PERMISSION;
 	}
 
 	bool canInsert(std::shared_ptr<ContainerInterface> container, std::shared_ptr<Object> requester, std::shared_ptr<Object> object);

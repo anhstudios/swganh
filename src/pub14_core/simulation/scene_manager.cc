@@ -98,7 +98,7 @@ void SceneManager::StartScene(const std::string& scene_label, swganh::app::Swgan
     scenes_.insert(make_pair(scene_label, scene));
 
 	kernel->GetEventDispatcher()->Dispatch(std::make_shared<NewSceneEvent>("SceneManager:NewScene", 
-		scene->GetSceneId(), scene->GetTerrainMap()));
+		scene->GetSceneId(), scene->GetLabel(), scene->GetTerrainMap()));
 }
 
 void SceneManager::StopScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel)

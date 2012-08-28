@@ -13,7 +13,7 @@ namespace tre
 		{
 			return boost::any_cast<T>(*it->second);
 		}
-		return nullptr;
+		throw std::runtime_error("Invalid type requested for attribute");
 	}
 }
 }

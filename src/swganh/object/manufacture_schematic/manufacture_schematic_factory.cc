@@ -9,6 +9,11 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::manufacture_schematic;
 
+ManufactureSchematicFactory::ManufactureSchematicFactory(anh::database::DatabaseManagerInterface* db_manager, anh::EventDispatcher* event_dispatcher)
+	: IntangibleFactory(db_manager, event_dispatcher)
+{
+}
+
 uint32_t ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	return 0;

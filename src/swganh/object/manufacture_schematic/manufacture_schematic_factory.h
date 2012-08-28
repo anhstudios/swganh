@@ -2,18 +2,20 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/intangible/intangible_factory.h"
 
 namespace swganh {
 namespace object {
 namespace manufacture_schematic {
 
-    class ManufactureSchematicFactory : public swganh::object::ObjectFactoryInterface
+	class ManufactureSchematic;
+    class ManufactureSchematicFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
-        void LoadTemplates();
+		typedef ManufactureSchematic ObjectType;
 
-        bool HasTemplate(const std::string& template_name);
+		ManufactureSchematicFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 

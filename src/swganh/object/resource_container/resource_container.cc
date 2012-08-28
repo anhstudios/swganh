@@ -28,71 +28,85 @@ ResourceContainer::ResourceContainer(const std::string& customization, std::vect
 {
 }
 
+uint32_t ResourceContainer::GetCurrentQuantity()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return current_quantity_;
+}
+
+uint64_t ResourceContainer::GetGlobalResource()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return global_resource_id_;
+}
+
+uint32_t ResourceContainer::GetMaxQuantity()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return max_quantity_;
+}
+
+std::string ResourceContainer::GetResourceType()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return resource_type_;
+}
+
+std::wstring ResourceContainer::GetResourceName()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return variation_name_;
+}
+
 void ResourceContainer::SetCurrentQuantity(uint32_t current_quantity)
 {
-    current_quantity_ = current_quantity;
-    /*if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_3, 11);
-        message.data.write(current_quantity_);
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		current_quantity_ = current_quantity;
+	}
 
-        AddDeltasUpdate(move(message));
-    }*/
+	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
+        ("ResourceContainer::CurrentQuantity",static_pointer_cast<ResourceContainer>(shared_from_this())));
+}
+
+void ResourceContainer::SetGlobalResource(uint64_t global_resource)
+{
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		global_resource_id_ = global_resource;
+	}
+
+	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
+        ("ResourceContainer::GlobalResourceId",static_pointer_cast<ResourceContainer>(shared_from_this())));
 }
 
 void ResourceContainer::SetMaxQuantity(uint32_t max_quantity)
 {
-    max_quantity_ = max_quantity;
-    /*if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6, 2);
-        message.data.write(max_quantity_);
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		max_quantity_ = max_quantity;
+	}
 
-        AddDeltasUpdate(move(message));
-    }*/
+	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
+        ("ResourceContainer::MaxQuantity",static_pointer_cast<ResourceContainer>(shared_from_this())));
 }
 void ResourceContainer::SetResourceType(const string& resource_type)
 {
-    resource_type_ = resource_type;
-    /*if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6, 3);
-        message.data.write(resource_type_);
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		resource_type_ = resource_type;
+	}
 
-        AddDeltasUpdate(move(message));
-    }*/
+	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
+        ("ResourceContainer::ResourceType",static_pointer_cast<ResourceContainer>(shared_from_this())));
 }
 void ResourceContainer::SetResourceName(const wstring& name)
 {
-    variation_name_ = name;
-    /*if (HasObservers())
-    {
-        DeltasMessage message = CreateDeltasMessage(Object::VIEW_6, 4);
-        message.data.write(max_quantity_);
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		variation_name_ = name;
+	}
 
-        AddDeltasUpdate(move(message));
-    }*/
-}
-void ResourceContainer::GetBaseline3()
-{
-    //auto message = CreateBaselinesMessage(Object::VIEW_3, 13);
-    //
-    //// base data
-    //message.data.append(Tangible::GetBaseline3().get().data);
-    //message.data.write(GetCurrentQuantity());
-    //message.data.write(GetGlobalResource());
-
-    //return boost::optional<BaselinesMessage>(std::move(message));
-}
-void ResourceContainer::GetBaseline6()
-{
-    //auto message = CreateBaselinesMessage(Object::VIEW_6, 5);
-    //
-    //// base data
-    //message.data.append(Tangible::GetBaseline6().get().data);
-    //message.data.write(GetMaxQuantity());
-    //message.data.write(GetResourceType());
-    //message.data.write(GetResourceName());
-
-    //return boost::optional<BaselinesMessage>(std::move(message));
+	GetEventDispatcher()->Dispatch(make_shared<ResourceContainerEvent>
+        ("ResourceContainer::ResourceName",static_pointer_cast<ResourceContainer>(shared_from_this())));
 }

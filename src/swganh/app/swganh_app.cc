@@ -65,7 +65,6 @@ using boost::smatch;
 using boost::regex_match;
 #endif
 
-
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
 
@@ -356,7 +355,6 @@ void SwganhApp::LoadCoreServices_()
 	{
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		simulation_service->StartScene("corellia");
-		simulation_service->StartScene("naboo");
 	}
 }
 

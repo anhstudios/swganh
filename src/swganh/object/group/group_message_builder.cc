@@ -61,25 +61,45 @@ void GroupMessageBuilder::BuildLootMasterDelta(const shared_ptr<Group>& group)
     }
 }
 
-void GroupMessageBuilder::BuildBaseline3(const shared_ptr<Group>& group)
+void GroupMessageBuilder::SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-    auto message = CreateBaselinesMessage(group, Object::VIEW_3, 8);
-	ObjectMessageBuilder::BuildBaseline3(group);
+	group->AddBaselineToCache(BuildBaseline3(group));
+    group->AddBaselineToCache(BuildBaseline6(group));
+
+	for (auto& baseline : group->GetBaselines())
+    {
+        observer->Notify(baseline);
+    }
+        
+    SendEndBaselines(group, observer);
 }
 
-void GroupMessageBuilder::BuildBaseline6(const shared_ptr<Group>& group)
+BaselinesMessage GroupMessageBuilder::BuildBaseline3(const std::shared_ptr<Group>& group)
 {
-    auto message = CreateBaselinesMessage(group, Object::VIEW_6, 6);
+	auto message = CreateBaselinesMessage(group, Object::VIEW_3, 8);
+	message.data.append(ObjectMessageBuilder::BuildBaseline3(group).data);
+	return BaselinesMessage(std::move(message));
+}
+
+BaselinesMessage GroupMessageBuilder::BuildBaseline6(const std::shared_ptr<Group>& group)
+{
+	auto message = CreateBaselinesMessage(group, Object::VIEW_6, 6);
 	message.data.append(ObjectMessageBuilder::BuildBaseline6(group).data);
     group->GetGroupMembers().Serialize(message);
+	
+	//Unknown List
 	message.data.write<uint32_t>(0);
 	message.data.write<uint32_t>(0);
+
+	//Unknown String
 	message.data.write<std::string>("");
+
     message.data.write<uint16_t>(group->GetDifficulty());
-	message.data.write<uint32_t>(4);
+	message.data.write<uint32_t>(4); //Unknown Int
     message.data.write<uint64_t>(group->GetLootMaster());
     message.data.write<uint32_t>(group->GetLootMode());
 	group->AddBaselineToCache(message);
+	return BaselinesMessage(std::move(message));
 }
 
 }}} // swganh::object::group

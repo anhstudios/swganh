@@ -18,9 +18,7 @@
 #include "swganh/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
-#include "permissions/creature_permissions.h"
-#include "permissions/creature_container_permissions.h"
-#include "permissions/ridable_permissions.h"
+#include "swganh/object/permissions/container_permissions_interface.h"
 
 using namespace sql;
 using namespace std;
@@ -32,21 +30,7 @@ ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
                              anh::EventDispatcher* event_dispatcher)
     : db_manager_(db_manager)
     , event_dispatcher_(event_dispatcher)
-{
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(DEFAULT_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new DefaultContainerPermissions())));
-
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(WORLD_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new WorldContainerPermissions())));
-
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(CREATURE_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new CreaturePermissions())));
-
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(CREATURE_CONTAINER_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new CreatureContainerPermissions())));
-
-	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(RIDEABLE_CONTAINER_PERMISSION), 
-		shared_ptr<ContainerPermissionsInterface>(new RideablePermissions())));
+{	
 }
 
 uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
@@ -133,6 +117,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         object->SetTemplate(result->getString("iff_template"));
 		object->SetArrangementId(result->getInt("arrangement_id"));
 
+		auto permissions_objects_ = object_manager_->GetPermissionsMap();
 		auto permissions_itr = permissions_objects_.find(result->getInt("permission_type"));
 		if(permissions_itr != permissions_objects_.end())
 		{
@@ -141,7 +126,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 		else
 		{
 			DLOG(error) << "FAILED TO FIND PERMISSION TYPE " << result->getInt("perission_type");
-			object->SetPermissions(permissions_objects_.find(DEFAULT_CONTAINER_PERMISSION)->second);
+			object->SetPermissions(permissions_objects_.find(DEFAULT_PERMISSION)->second);
 		}
 		object_manager_->LoadSlotsForObject(object);
     }
@@ -196,12 +181,12 @@ void ObjectFactory::LoadContainedObjects(
 			if(contained_object->GetArrangementId() == -2)
 			{
 				//This object has never been loaded before and needs to be put into the default slot.
-				object->AddObject(contained_object);
+				object->AddObject(nullptr, contained_object);
 			}
 			else 
 			{
 				//Put it back where it was persisted
-				object->AddObject(contained_object, nullptr, contained_object->GetArrangementId());
+				object->AddObject(nullptr, contained_object, contained_object->GetArrangementId());
 			}
 
         }

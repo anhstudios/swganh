@@ -94,14 +94,8 @@ public:
     uint32_t GetType() const { return type; }
     const static uint32_t type = 0x47525550;
 
-protected:
-    typedef anh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
-    virtual void GetBaseline3();
-    virtual void GetBaseline6();
-
 private:
-    mutable boost::mutex group_mutex_;
-
+	typedef anh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
     swganh::messages::containers::NetworkSortedVector<Member> member_list_;                     // update 6 variable 1
     std::atomic<uint16_t> difficulty_;                                                                       // update 6 variable 4
     std::atomic<uint64_t> loot_master_;                                                                      // update 6 variable 6

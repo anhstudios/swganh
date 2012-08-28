@@ -95,8 +95,8 @@ void ObjectMessageBuilder::BuildServerIDDelta(const shared_ptr<Object>& object)
     if (object->HasObservers())
     {
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_6, 1);
-        //@TODO: Add server id
-        message.data.write(0);
+        
+		message.data.write(object->GetSceneId());
 
         object->AddDeltasUpdate(message);                
     }
@@ -107,21 +107,17 @@ BaselinesMessage ObjectMessageBuilder::BuildBaseline3(const shared_ptr<Object>& 
     auto message = CreateBaselinesMessage(object, Object::VIEW_3);
     message.data.write(object->GetComplexity());
     message.data.write(object->GetStfNameFile());
-    // spacer
-    message.data.write<uint32_t>(0);
+    message.data.write<uint32_t>(0); // spacer
     message.data.write(object->GetStfNameString());
     message.data.write(object->GetCustomName());
     message.data.write(object->GetVolume());
-
     return BaselinesMessage(move(message));
 }
 
 BaselinesMessage ObjectMessageBuilder::BuildBaseline6(const shared_ptr<Object>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_6);
-    // server ID
-    message.data.write(0);
-
+	message.data.write(object->GetSceneId());
     return BaselinesMessage(move(message));
 }
 

@@ -28,21 +28,74 @@
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object_manager.h"
 
-// factories
-#include "swganh/object/creature/creature_factory.h"
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible_factory.h"
-#include "swganh/object/tangible/tangible.h"
-#include "swganh/object/intangible/intangible_factory.h"
-#include "swganh/object/intangible/intangible.h"
-#include "swganh/object/player/player_factory.h"
-#include "swganh/object/player/player.h"
+// Objects
+#include "swganh/object/building/building.h"
+#include "swganh/object/building/building_factory.h"
+#include "swganh/object/building/building_message_builder.h"
 
-// message builders
+#include "swganh/object/cell/cell.h"
+#include "swganh/object/cell/cell_factory.h"
+#include "swganh/object/cell/cell_message_builder.h"
+
+#include "swganh/object/creature/creature.h"
+#include "swganh/object/creature/creature_factory.h"
 #include "swganh/object/creature/creature_message_builder.h"
+
+#include "swganh/object/factory_crate/factory_crate.h"
+#include "swganh/object/factory_crate/factory_crate_factory.h"
+#include "swganh/object/factory_crate/factory_crate_message_builder.h"
+
+#include "swganh/object/group/group.h"
+#include "swganh/object/group/group_factory.h"
+#include "swganh/object/group/group_message_builder.h"
+
+#include "swganh/object/guild/guild.h"
+#include "swganh/object/guild/guild_factory.h"
+#include "swganh/object/guild/guild_message_builder.h"
+
+#include "swganh/object/installation/installation.h"
+#include "swganh/object/installation/installation_factory.h"
+#include "swganh/object/installation/installation_message_builder.h"
+
+#include "swganh/object/harvester_installation/harvester_installation.h"
+#include "swganh/object/harvester_installation/harvester_installation_factory.h"
+#include "swganh/object/harvester_installation/harvester_installation_message_builder.h"
+
+#include "swganh/object/installation/installation.h"
+#include "swganh/object/installation/installation_factory.h"
+#include "swganh/object/installation/installation_message_builder.h"
+
+#include "swganh/object/intangible/intangible.h"
+#include "swganh/object/intangible/intangible_factory.h"
 #include "swganh/object/intangible/intangible_message_builder.h"
-#include "swganh/object/tangible/tangible_message_builder.h"
+
+#include "swganh/object/mission/mission.h"
+#include "swganh/object/mission/mission_factory.h"
+#include "swganh/object/mission/mission_message_builder.h"
+
+#include "swganh/object/player/player.h"
+#include "swganh/object/player/player_factory.h"
 #include "swganh/object/player/player_message_builder.h"
+
+#include "swganh/object/resource_container/resource_container.h"
+#include "swganh/object/resource_container/resource_container_factory.h"
+#include "swganh/object/resource_container/resource_container_message_builder.h"
+
+#include "swganh/object/static/static.h"
+#include "swganh/object/static/static_factory.h"
+#include "swganh/object/static/static_message_builder.h"
+
+#include "swganh/object/tangible/tangible.h"
+#include "swganh/object/tangible/tangible_factory.h"
+#include "swganh/object/tangible/tangible_message_builder.h"
+
+#include "swganh/object/waypoint/waypoint.h"
+#include "swganh/object/waypoint/waypoint_factory.h"
+#include "swganh/object/waypoint/waypoint_message_builder.h"
+
+#include "swganh/object/weapon/weapon.h"
+#include "swganh/object/weapon/weapon_factory.h"
+#include "swganh/object/weapon/weapon_message_builder.h"
 
 #include "swganh/simulation/scene_manager_interface.h"
 #include "swganh/simulation/scene_interface.h"
@@ -246,15 +299,20 @@ public:
 
 		// Add to new scene
 		// CmdStartScene
-        CmdStartScene start_scene;
-        start_scene.ignore_layout = 0;
-        start_scene.character_id = obj->GetObjectId();
+		if(obj->GetController() != nullptr)
+		{
+			CmdStartScene start_scene;
+			start_scene.ignore_layout = 0;
+			start_scene.character_id = obj->GetObjectId();
 
-        start_scene.terrain_map = scene_obj->GetTerrainMap();
-        start_scene.position = obj->GetPosition();
-        start_scene.shared_race_template = obj->GetTemplate();
-        start_scene.galaxy_time = 0;
-        obj->GetController()->GetRemoteClient()->SendTo(start_scene);
+			start_scene.terrain_map = scene_obj->GetTerrainMap();
+			start_scene.position = obj->GetPosition();
+			start_scene.shared_race_template = obj->GetTemplate();
+			start_scene.galaxy_time = 0;
+
+		
+			obj->GetController()->GetRemoteClient()->SendTo(start_scene);
+		}
 
         // Add object to scene and send baselines
         scene_obj->AddObject(obj);
@@ -464,10 +522,21 @@ void SimulationService::RegisterObjectFactories()
     auto object_manager = impl_->GetObjectManager();
 
     object_manager->RegisterObjectType<Object>();
-    object_manager->RegisterObjectType<tangible::Tangible>();
-    object_manager->RegisterObjectType<intangible::Intangible>();
+	object_manager->RegisterObjectType<static_object::Static>();
+	object_manager->RegisterObjectType<tangible::Tangible>();
+	object_manager->RegisterObjectType<intangible::Intangible>();
+	object_manager->RegisterObjectType<mission::Mission>();
+	object_manager->RegisterObjectType<guild::Guild>();
+	object_manager->RegisterObjectType<group::Group>();
+	object_manager->RegisterObjectType<waypoint::Waypoint>();
     object_manager->RegisterObjectType<creature::Creature>();
+	object_manager->RegisterObjectType<cell::Cell>();
     object_manager->RegisterObjectType<player::Player>();
+	object_manager->RegisterObjectType<resource_container::ResourceContainer>();
+	object_manager->RegisterObjectType<factory_crate::FactoryCrate>();
+	object_manager->RegisterObjectType<weapon::Weapon>();
+	object_manager->RegisterObjectType<building::Building>();
+	
 }
 
 void SimulationService::PersistObject(uint64_t object_id)
@@ -591,4 +660,15 @@ void SimulationService::Startup()
 	command_service->AddCommandCreator("setmoodinternal", swganh::command::PythonCommandCreator("commands.setmoodinternal", "SetMoodInternalCommand"));
 	command_service->AddCommandCreator("transferitemmisc", swganh::command::PythonCommandCreator("commands.transferitem", "TransferItem"));
 
+}
+
+shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 
+											bool is_persisted, bool is_initialized, uint64_t object_id)
+{
+	return impl_->GetObjectManager()->CreateObjectFromTemplate(template_name, type, is_persisted, is_initialized, object_id);
+}
+
+void SimulationService::PrepareToAccomodate(uint32_t delta)
+{
+	impl_->GetObjectManager()->PrepareToAccomodate(delta);
 }

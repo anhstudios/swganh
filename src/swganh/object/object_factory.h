@@ -34,8 +34,6 @@ namespace object {
     class ObjectManager;
 	class ContainerPermissionsInterface;
 
-	typedef std::map<int, std::shared_ptr<ContainerPermissionsInterface>> PermissionsObjectMap;
-
     class ObjectFactory : public ObjectFactoryInterface
     {
     public:
@@ -75,8 +73,6 @@ namespace object {
         ObjectManager* object_manager_;
         anh::database::DatabaseManagerInterface* db_manager_;   
         anh::EventDispatcher* event_dispatcher_;
-
-		PermissionsObjectMap permissions_objects_;
     };
 
 }}  // namespace swganh::object

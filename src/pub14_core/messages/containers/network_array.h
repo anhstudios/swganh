@@ -3,6 +3,9 @@
 #pragma once
 
 #include "anh/byte_buffer.h"
+
+#include <list>
+
 #include "pub14_core/messages/baselines_message.h"
 #include "pub14_core/messages/deltas_message.h"
 

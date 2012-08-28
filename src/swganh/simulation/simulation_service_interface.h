@@ -11,6 +11,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/object_controller.h"
+#include "swganh/object/permissions/permission_type.h"
 
 namespace anh {
 	class ByteBuffer;
@@ -24,6 +25,7 @@ namespace connection {
 namespace swganh {
 namespace object {
     class Object;
+	class ObjectManager;
 }}  // namespace swganh::object
 
 namespace swganh {
@@ -179,6 +181,11 @@ namespace simulation {
 
             SendToAllInScene(message_buffer, scene_id);
         }
+
+		virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0) = 0;
+
+		virtual void PrepareToAccomodate(uint32_t delta) = 0;
     };
 
 }}  // namespace swganh::simulation

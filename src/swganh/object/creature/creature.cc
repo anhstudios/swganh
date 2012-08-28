@@ -99,7 +99,7 @@ uint32_t Creature::GetCashCredits(void)
 void Creature::SetStatBase(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         stat_base_list_.Update(stat_index, Stat(value));
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -109,7 +109,7 @@ void Creature::SetStatBase(StatIndex stat_index, int32_t value)
 void Creature::AddStatBase(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         uint32_t new_stat = stat_base_list_[stat_index].value + value;
         stat_base_list_.Update(stat_index, Stat(new_stat));
     }
@@ -120,7 +120,7 @@ void Creature::AddStatBase(StatIndex stat_index, int32_t value)
 void Creature::DeductStatBase(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         int32_t current = stat_base_list_[stat_index].value;
         if (current > value)
         {
@@ -138,20 +138,20 @@ void Creature::DeductStatBase(StatIndex stat_index, int32_t value)
 
 NetworkArray<Stat> Creature::GetBaseStats(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_base_list_;
 }
 
 int32_t Creature::GetStatBase(StatIndex stat_index)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_base_list_.At(stat_index).value;
 }
 
 void Creature::AddSkill(std::string skill)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         skills_.Add(Skill(skill));
     }
 
@@ -162,7 +162,7 @@ void Creature::AddSkill(std::string skill)
 void Creature::RemoveSkill(std::string skill)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         auto iter = std::find_if(begin(skills_), end(skills_), [=](const Skill& other_skill){
             return (skill == other_skill.name);
         });
@@ -181,13 +181,13 @@ void Creature::RemoveSkill(std::string skill)
 
 NetworkList<Skill> Creature::GetSkills(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return skills_;
 }
 
 bool Creature::HasSkill(std::string skill)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto iter = std::find_if(begin(skills_), end(skills_), [=](const Skill& other_skill){
         return (skill == other_skill.name);
     });
@@ -200,12 +200,12 @@ bool Creature::HasSkill(std::string skill)
 
 std::map<uint32_t, std::string>  Creature::GetSkillCommands()
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return skill_commands_;
 }
 bool  Creature::HasSkillCommand(std::string skill_command)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto find_it = find_if(begin(skill_commands_), end(skill_commands_), [=] (pair<uint32_t, string> command){
         return command.second == skill_command;
     });
@@ -216,7 +216,7 @@ bool  Creature::HasSkillCommand(std::string skill_command)
 }
 void  Creature::AddSkillCommand(std::pair<uint32_t, std::string> skill_command)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto find_it = skill_commands_.find(skill_command.first);
 
     if (find_it == end(skill_commands_))
@@ -225,7 +225,7 @@ void  Creature::AddSkillCommand(std::pair<uint32_t, std::string> skill_command)
 }
 void  Creature::RemoveSkillCommand(std::string skill_command)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto find_it = find_if(begin(skill_commands_), end(skill_commands_), [=] (pair<uint32_t, string> command){
         return command.second == skill_command;
     });
@@ -284,7 +284,7 @@ uint64_t Creature::GetOwnerId(void)
 void Creature::SetScale(float scale)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         scale_ = scale;
     }
 
@@ -294,7 +294,7 @@ void Creature::SetScale(float scale)
 
 float Creature::GetScale(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return scale_;
 }
 
@@ -356,7 +356,7 @@ void Creature::ToggleStateBitmask(uint64_t state_bitmask)
 void Creature::SetStatWound(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         stat_wound_list_.Update(stat_index, Stat(value));
     }
 
@@ -367,7 +367,7 @@ void Creature::SetStatWound(StatIndex stat_index, int32_t value)
 void Creature::AddStatWound(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         int32_t new_stat = stat_wound_list_[stat_index].value + value;
         stat_wound_list_.Update(stat_index, Stat(new_stat));
     }
@@ -378,7 +378,7 @@ void Creature::AddStatWound(StatIndex stat_index, int32_t value)
 void Creature::DeductStatWound(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         int32_t current = stat_wound_list_[stat_index].value;
         if (current > value)
         {
@@ -396,20 +396,20 @@ void Creature::DeductStatWound(StatIndex stat_index, int32_t value)
 
 NetworkArray<Stat> Creature::GetStatWounds(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_wound_list_;
 }
 
 int32_t Creature::GetStatWound(StatIndex stat_index)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_wound_list_.At(stat_index).value;
 }
 
 void Creature::SetAccelerationMultiplierBase(float acceleration_multiplier_base)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         acceleration_multiplier_base_ = acceleration_multiplier_base;
     }
 
@@ -419,14 +419,14 @@ void Creature::SetAccelerationMultiplierBase(float acceleration_multiplier_base)
 
 float Creature::GetAccelerationMultiplierBase(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return acceleration_multiplier_base_;
 }
 
 void Creature::SetAccelerationMultiplierModifier(float acceleration_multiplier_modifier)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         acceleration_multiplier_modifier_ = acceleration_multiplier_modifier;
     }
 
@@ -436,14 +436,14 @@ void Creature::SetAccelerationMultiplierModifier(float acceleration_multiplier_m
 
 float Creature::GetAccelerationMultiplierModifier(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return acceleration_multiplier_modifier_;
 }
 
 void Creature::SetStatEncumberance(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         stat_encumberance_list_.Update(stat_index, Stat(value));
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -453,7 +453,7 @@ void Creature::SetStatEncumberance(StatIndex stat_index, int32_t value)
 void Creature::AddStatEncumberance(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         int32_t new_stat = stat_encumberance_list_[stat_index].value + value;
         stat_encumberance_list_.Update(stat_index, Stat(new_stat));
     }
@@ -464,7 +464,7 @@ void Creature::AddStatEncumberance(StatIndex stat_index, int32_t value)
 void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         int32_t current = stat_encumberance_list_[stat_index].value;
         if (current > value)
         {
@@ -481,20 +481,20 @@ void Creature::DeductStatEncumberance(StatIndex stat_index, int32_t value)
 
 NetworkArray<Stat> Creature::GetStatEncumberances(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_encumberance_list_;
 }
 
 int32_t Creature::GetStatEncumberance(StatIndex stat_index)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_encumberance_list_.At(stat_index).value;
 }
 
 void Creature::AddSkillMod(SkillMod mod)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         skill_mod_list_.Add(mod.identifier, mod);
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -504,7 +504,7 @@ void Creature::AddSkillMod(SkillMod mod)
 void Creature::RemoveSkillMod(std::string identifier)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         auto iter = std::find_if(begin(skill_mod_list_), end(skill_mod_list_), [=](std::pair<std::string, SkillMod> pair)->bool {
             return (identifier == pair.first);
         });
@@ -524,7 +524,7 @@ void Creature::RemoveSkillMod(std::string identifier)
 void Creature::SetSkillMod(SkillMod mod)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         skill_mod_list_.Update(mod.identifier, mod);
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -534,7 +534,7 @@ void Creature::SetSkillMod(SkillMod mod)
 void Creature::ClearSkillMods(void)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         skill_mod_list_.Clear();
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -543,13 +543,13 @@ void Creature::ClearSkillMods(void)
 
 NetworkMap<std::string, SkillMod> Creature::GetSkillMods(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return skill_mod_list_;
 }
 
 SkillMod Creature::GetSkillMod(std::string identifier)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto iter = std::find_if(begin(skill_mod_list_), end(skill_mod_list_), [=](std::pair<std::string, SkillMod> pair)->bool {
         return (pair.second.identifier == identifier);
     });
@@ -563,7 +563,7 @@ SkillMod Creature::GetSkillMod(std::string identifier)
 void Creature::SetSpeedMultiplierBase(float speed_multiplier_base)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         speed_multiplier_base_ = speed_multiplier_base;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -572,14 +572,14 @@ void Creature::SetSpeedMultiplierBase(float speed_multiplier_base)
 
 float Creature::GetSpeedMultiplierBase(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return speed_multiplier_base_;
 }
 
 void Creature::SetSpeedMultiplierModifier(float speed_multiplier_modifier)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         speed_multiplier_modifier_ = speed_multiplier_modifier;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -588,7 +588,7 @@ void Creature::SetSpeedMultiplierModifier(float speed_multiplier_modifier)
 
 float Creature::GetSpeedMultiplierModifier(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return speed_multiplier_modifier_;
 }
 
@@ -608,7 +608,7 @@ uint64_t Creature::GetListenToId(void)
 void Creature::SetRunSpeed(float run_speed)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         run_speed_ = run_speed;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -617,14 +617,14 @@ void Creature::SetRunSpeed(float run_speed)
 
 float Creature::GetRunSpeed(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return run_speed_;
 }
 
 void Creature::SetSlopeModifierAngle(float slope_modifier_angle)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         slope_modifier_angle_ = slope_modifier_angle;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -633,14 +633,14 @@ void Creature::SetSlopeModifierAngle(float slope_modifier_angle)
 
 float Creature::GetSlopeModifierAngle(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return slope_modifier_angle_;
 }
 
 void Creature::SetSlopeModifierPercent(float slope_modifier_percent)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         slope_modifier_percent_ = slope_modifier_percent;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -649,14 +649,14 @@ void Creature::SetSlopeModifierPercent(float slope_modifier_percent)
 
 float Creature::GetSlopeModifierPercent(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return slope_modifier_percent_;
 }
 
 void Creature::SetTurnRadius(float turn_radius)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         turn_radius_ = turn_radius;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -665,14 +665,14 @@ void Creature::SetTurnRadius(float turn_radius)
 
 float Creature::GetTurnRadius(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return turn_radius_;
 }
 
 void Creature::SetWalkingSpeed(float walking_speed)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         walking_speed_ = walking_speed;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -681,14 +681,14 @@ void Creature::SetWalkingSpeed(float walking_speed)
 
 float Creature::GetWalkingSpeed(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return walking_speed_;
 }
 
 void Creature::SetWaterModifierPercent(float water_modifier_percent)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         water_modifier_percent_ = water_modifier_percent;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -697,14 +697,14 @@ void Creature::SetWaterModifierPercent(float water_modifier_percent)
 
 float Creature::GetWaterModifierPercent(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return water_modifier_percent_;
 }
 
 void Creature::AddMissionCriticalObject(MissionCriticalObject& object)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         mission_critical_object_list_.Add(object);
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -714,7 +714,7 @@ void Creature::AddMissionCriticalObject(MissionCriticalObject& object)
 void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t object_id)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         auto iter = std::find_if(begin(mission_critical_object_list_), end(mission_critical_object_list_), [=](const MissionCriticalObject& obj)->bool {
             if(mission_owner != obj.mission_owner_id_)
                 return false;
@@ -738,7 +738,7 @@ void Creature::RemoveMissionCriticalObject(uint64_t mission_owner, uint64_t obje
 
 MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uint64_t mission_owner)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto iter = std::find_if(begin(mission_critical_object_list_), end(mission_critical_object_list_), [=](const MissionCriticalObject& x)->bool {
         if(x.mission_owner_id_ != mission_owner)
             return false;
@@ -757,7 +757,7 @@ MissionCriticalObject Creature::GetMissionCriticalObject(uint64_t object_id, uin
 
 NetworkList<MissionCriticalObject> Creature::GetMissionCriticalObjects(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return mission_critical_object_list_;
 }
 
@@ -777,7 +777,7 @@ uint16_t Creature::GetCombatLevel(void)
 void Creature::SetAnimation(std::string animation)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         animation_ = animation;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -786,14 +786,14 @@ void Creature::SetAnimation(std::string animation)
 
 std::string Creature::GetAnimation(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return animation_;
 }
 
 void Creature::SetMoodAnimation(std::string mood_animation)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         mood_animation_ = mood_animation;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -802,7 +802,7 @@ void Creature::SetMoodAnimation(std::string mood_animation)
 
 std::string Creature::GetMoodAnimation(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return mood_animation_;
 }
 
@@ -930,7 +930,7 @@ uint32_t Creature::GetPerformanceCounter(void) const
 void Creature::SetStatCurrent(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         stat_current_list_.Update(stat_index, Stat(value));
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -940,7 +940,7 @@ void Creature::SetStatCurrent(StatIndex stat_index, int32_t value)
 void Creature::AddStatCurrent(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         int32_t new_value = stat_current_list_[stat_index].value + value;
         stat_current_list_.Update(stat_index, Stat(new_value));
     }
@@ -951,7 +951,7 @@ void Creature::AddStatCurrent(StatIndex stat_index, int32_t value)
 void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         int32_t current = stat_current_list_[stat_index].value;
         if (current > value)
         {
@@ -968,20 +968,20 @@ void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value)
 
 NetworkArray<Stat> Creature::GetCurrentStats(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_current_list_;
 }
 
 int32_t Creature::GetStatCurrent(StatIndex stat_index)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_current_list_.At(stat_index).value;
 }
 
 void Creature::SetStatMax(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         stat_max_list_.Update(stat_index, Stat(value));
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -991,7 +991,7 @@ void Creature::SetStatMax(StatIndex stat_index, int32_t value)
 void Creature::AddStatMax(StatIndex stat_index, int32_t value)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         stat_max_list_.Update(stat_index, Stat(stat_max_list_.At(stat_index).value + value));
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -1001,7 +1001,7 @@ void Creature::AddStatMax(StatIndex stat_index, int32_t value)
 void Creature::DeductStatMax(StatIndex stat_index, int32_t value)
 {
     {   
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         int32_t current = stat_max_list_[stat_index].value;
         if (current > value)
         {
@@ -1018,20 +1018,20 @@ void Creature::DeductStatMax(StatIndex stat_index, int32_t value)
 
 NetworkArray<Stat> Creature::GetMaxStats(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_max_list_;
 }
 
 int32_t Creature::GetStatMax(StatIndex stat_index)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return stat_max_list_.At(stat_index).value;
 }
 
 void Creature::AddEquipmentItem(EquipmentItem& item)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         equipment_list_.Add(item);
     }
 
@@ -1042,7 +1042,7 @@ void Creature::AddEquipmentItem(EquipmentItem& item)
 void Creature::RemoveEquipmentItem(uint64_t object_id)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         auto iter = std::find_if(begin(equipment_list_), end(equipment_list_), [=](std::pair<uint16_t, EquipmentItem> item)->bool {
             return (object_id == item.second.object_id);
         });
@@ -1060,7 +1060,7 @@ void Creature::RemoveEquipmentItem(uint64_t object_id)
 void Creature::UpdateEquipmentItem(EquipmentItem& item)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         auto iter = equipment_list_.Find(item);
         if(iter != end(equipment_list_))
             equipment_list_.Update(iter->first, item);
@@ -1071,13 +1071,13 @@ void Creature::UpdateEquipmentItem(EquipmentItem& item)
 
 NetworkSortedList<EquipmentItem> Creature::GetEquipment(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return equipment_list_;
 }
 
 EquipmentItem Creature::GetEquipmentItem(uint64_t object_id)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto iter = std::find_if(begin(equipment_list_), end(equipment_list_), [=](std::pair<uint16_t, EquipmentItem> pair) {
         return pair.second.object_id == object_id;
     });
@@ -1091,7 +1091,7 @@ EquipmentItem Creature::GetEquipmentItem(uint64_t object_id)
 void Creature::SetDisguise(std::string disguise)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         disguise_ = disguise;
     }
     
@@ -1101,7 +1101,7 @@ void Creature::SetDisguise(std::string disguise)
 
 std::string Creature::GetDisguise(void)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return disguise_;
 }
 
@@ -1120,14 +1120,14 @@ bool Creature::IsStationary(void)
 
 PvpStatus Creature::GetPvpStatus() const
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return pvp_status_;
 }
 
 void Creature::SetPvPStatus(PvpStatus status)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         pvp_status_ = status;
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -1137,7 +1137,7 @@ void Creature::SetPvPStatus(PvpStatus status)
 void Creature::TogglePvpStateOn(PvpStatus state)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         pvp_status_ = static_cast<PvpStatus>(pvp_status_ | state);
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -1147,7 +1147,7 @@ void Creature::TogglePvpStateOn(PvpStatus state)
 void Creature::TogglePvpStateOff(PvpStatus state)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         pvp_status_ = static_cast<PvpStatus>(pvp_status_ & ~state);
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -1157,7 +1157,7 @@ void Creature::TogglePvpStateOff(PvpStatus state)
 void Creature::TogglePvpState(PvpStatus state)
 {
     {
-        boost::lock_guard<boost::mutex> lock(creature_mutex_);
+        boost::lock_guard<boost::mutex> lock(object_mutex_);
         pvp_status_ = static_cast<PvpStatus>(pvp_status_ ^ state);
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
@@ -1166,7 +1166,7 @@ void Creature::TogglePvpState(PvpStatus state)
 
 bool Creature::CheckPvpState(PvpStatus state) const
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return static_cast<PvpStatus>(pvp_status_ & state) == state;
 }
 bool Creature::CanAttack(Creature* creature)
@@ -1188,7 +1188,7 @@ bool Creature::CanAttack(Creature* creature)
 
 void Creature::AddToDuelList(uint64_t id)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto found = find_if(begin(duel_list_), end(duel_list_), [=] (uint64_t dueler) {
         return id == dueler;
     });
@@ -1197,7 +1197,7 @@ void Creature::AddToDuelList(uint64_t id)
 }
 void Creature::RemoveFromDuelList(uint64_t id)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto found = find_if(begin(duel_list_), end(duel_list_), [=] (uint64_t dueler) {
         return id == dueler;
     });
@@ -1206,7 +1206,7 @@ void Creature::RemoveFromDuelList(uint64_t id)
 }
 bool Creature::InDuelList(uint64_t id)
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     auto found = find_if(begin(duel_list_), end(duel_list_), [=] (uint64_t dueler) {
         return id == dueler;
     });
@@ -1215,7 +1215,7 @@ bool Creature::InDuelList(uint64_t id)
 }
 std::vector<uint64_t> Creature::GetDuelList()
 {
-    boost::lock_guard<boost::mutex> lock(creature_mutex_);
+    boost::lock_guard<boost::mutex> lock(object_mutex_);
     return duel_list_;
 }
 

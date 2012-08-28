@@ -10,9 +10,14 @@ namespace swganh {
 namespace object {
 namespace resource_container {
 
+class ResourceContainerFactory;
+class ResourceContainerMessageBuilder;
 class ResourceContainer : public swganh::object::tangible::Tangible
 {
 public:
+	typedef ResourceContainerFactory FactoryType;
+    typedef ResourceContainerMessageBuilder MessageBuilderType;
+
     // RCNO
     ResourceContainer();
     ResourceContainer(const std::string& customization, std::vector<uint32_t> component_customization, uint32_t bitmask_options,
@@ -21,25 +26,25 @@ public:
 
     virtual uint32_t GetType() const { return ResourceContainer::type; }
     const static uint32_t type = 0x52434e4f;
-    uint32_t GetCurrentQuantity() { return current_quantity_; }
+
+    uint32_t GetCurrentQuantity();
     void SetCurrentQuantity(uint32_t quantity);
 
-    uint64_t GetGlobalResource() { return global_resource_id_; }
+    uint64_t GetGlobalResource();
     void SetGlobalResource(uint64_t global_resource);
 
-    uint32_t GetMaxQuantity() { return max_quantity_; }
+    uint32_t GetMaxQuantity();
     void SetMaxQuantity(uint32_t max_quantity);
 
-    std::string GetResourceType() { return resource_type_; }
+    std::string GetResourceType();
     void SetResourceType(const std::string& resource_type);
 
-    std::wstring GetResourceName() { return variation_name_; }
+    std::wstring GetResourceName();
     void SetResourceName(const std::wstring& name);
 
-    virtual void GetBaseline3();
-    virtual void GetBaseline6();
-
 private:
+	typedef anh::ValueEvent<std::shared_ptr<ResourceContainer>> ResourceContainerEvent;
+
     uint32_t current_quantity_;			                    // update 3
     uint64_t global_resource_id_;		                    // update 3
     uint32_t max_quantity_;				                    // update 6

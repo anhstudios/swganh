@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/object/object_message_builder.h"
+#include "swganh/object/intangible/intangible_message_builder.h"
 
 #include "player.h"
 
@@ -15,11 +15,11 @@ namespace waypoint {
 namespace swganh {
 namespace object {
 namespace player {
-    class PlayerMessageBuilder : public ObjectMessageBuilder
+    class PlayerMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
     {
     public:
         PlayerMessageBuilder(anh::EventDispatcher* dispatcher) :
-            ObjectMessageBuilder(dispatcher)
+            IntangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
         }

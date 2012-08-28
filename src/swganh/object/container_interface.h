@@ -21,7 +21,7 @@ namespace object
 		virtual uint64_t GetObjectId() = 0;
 
 		//Object Management
-		virtual void AddObject(std::shared_ptr<Object> newObject, std::shared_ptr<Object> requester = nullptr, int32_t arrangement_id=-2) = 0;
+		virtual void AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> newObject, int32_t arrangement_id=-2) = 0;
 		virtual void RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> oldObject) = 0;
 		virtual void TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2) = 0;
 		virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id) {};

@@ -53,7 +53,7 @@ namespace tre
 			std::uint32_t pob_crc;
 		};
 
-		const std::map<std::uint64_t, CHUNK>& chunk_map() { return chunks; }
+		std::vector<CHUNK>& chunks() { return chunks_; }
 
 		//This interface should be satisfactory
 		size_t name_count() { return names.size(); }
@@ -61,7 +61,7 @@ namespace tre
 
 	private:
 
-		std::map<std::uint64_t, CHUNK> chunks;
+		std::vector<CHUNK> chunks_;
 		std::vector<std::string> names;
 
 		//Internal Node Handling functions

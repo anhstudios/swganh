@@ -28,6 +28,19 @@ void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
         guild->GetGuildList().ClearDeltas();
 }
 
+void GuildMessageBuilder::SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+{
+	guild->AddBaselineToCache(BuildBaseline3(guild));
+    guild->AddBaselineToCache(BuildBaseline6(guild));
+
+    for (auto& baseline : guild->GetBaselines())
+    {
+        observer->Notify(baseline);
+    }
+        
+    SendEndBaselines(guild, observer);
+}
+
 BaselinesMessage GuildMessageBuilder::BuildBaseline3(const shared_ptr<Guild>& guild)
 {
     auto message = CreateBaselinesMessage(guild, Object::VIEW_3, 5);

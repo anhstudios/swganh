@@ -499,8 +499,7 @@ void PlayerMessageBuilder::BuildJediStateDelta(const shared_ptr<Player>& object)
 BaselinesMessage PlayerMessageBuilder::BuildBaseline3(const shared_ptr<Player>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_3, 10);
-    message.data.append(ObjectMessageBuilder::BuildBaseline3(object).data);
-    message.data.write<uint32_t>(0);                                    // Not Used
+    message.data.append(IntangibleMessageBuilder::BuildBaseline3(object).data);
     
     auto status_flags = object->GetStatusFlags();
 
@@ -533,7 +532,7 @@ BaselinesMessage PlayerMessageBuilder::BuildBaseline3(const shared_ptr<Player>& 
 BaselinesMessage PlayerMessageBuilder::BuildBaseline6(const shared_ptr<Player>& object)
 {
     auto message = CreateBaselinesMessage(object, Object::VIEW_6, 2);
-    message.data.write<uint32_t>(object->GetSceneId());    // Region Id
+    message.data.append(IntangibleMessageBuilder::BuildBaseline6(object).data);
     message.data.write<uint8_t>(object->GetAdminTag());     // Admin Tag
     return BaselinesMessage(move(message));
 }
