@@ -51,11 +51,16 @@ void MovementManager::HandleDataTransform(
     counter_map_[object->GetObjectId()] = message.counter;
     
 	glm::vec3 old_position = object->GetPosition();
-	spatial_provider_->UpdateObject(controller->GetObject(), old_position, message.position);
 
-    object->SetPosition(message.position);
+	object->SetPosition(message.position);
     object->SetOrientation(message.orientation);
-    
+
+	//If the object was inside a container we need to move it out
+	if(object->GetContainer() != spatial_provider_)
+		object->GetContainer()->TransferObject(object, object, spatial_provider_);
+	else
+		spatial_provider_->UpdateObject(controller->GetObject(), old_position, message.position);
+
     SendUpdateDataTransformMessage(object);
 }
 
@@ -170,7 +175,7 @@ bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)
     return counter > counter_map_[object_id];
 }
 
-void MovementManager::SetSpatialProvider(swganh::simulation::SpatialProviderInterface* spatial_provider)
+void MovementManager::SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider)
 {
 	spatial_provider_ = spatial_provider;
 }

@@ -154,7 +154,7 @@ public:
 	virtual void SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, int32_t new_arrangement_id);
 	
 	virtual void __InternalAddAwareObject(std::shared_ptr<Object> object);
-	virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func);
+	virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr);
 	virtual void __InternalRemoveAwareObject(std::shared_ptr<Object> object);
 
 	virtual int32_t __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2);

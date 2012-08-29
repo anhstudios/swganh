@@ -275,7 +275,7 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 	}
 }
 
-void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func)
+void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint)
 {
 	std::for_each(aware_objects_.begin(), aware_objects_.end(), func);
 }

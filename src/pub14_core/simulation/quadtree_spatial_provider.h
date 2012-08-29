@@ -28,6 +28,8 @@ public:
 	virtual int32_t __InternalInsert(std::shared_ptr<swganh::object::Object> object, int32_t arrangement_id=-2);
 	virtual void __InternalViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
 
+	virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr);
+
 	virtual std::shared_ptr<ContainerInterface> GetContainer() { return nullptr; }
 	virtual void SetContainer(const std::shared_ptr<ContainerInterface>& container) {}
 

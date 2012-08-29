@@ -40,8 +40,8 @@ namespace object
 		virtual void __InternalAddAwareObject(std::shared_ptr<swganh::object::Object> observer) {};
 
 		//Call to View
-		void ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func);
-		virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func) {};
+		void ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr);
+		virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr) = 0;
 
 		//Call to Destroy
 		void RemoveAwareObject(std::shared_ptr<swganh::object::Object> observer);

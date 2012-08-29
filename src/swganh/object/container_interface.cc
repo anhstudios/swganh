@@ -28,10 +28,10 @@ void ContainerInterface::AddAwareObject(std::shared_ptr<swganh::object::Object> 
 	__InternalAddAwareObject(observer);
 }
 
-void ContainerInterface::ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func)
+void ContainerInterface::ViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint)
 {
 	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
-	__InternalViewAwareObjects(func);
+	__InternalViewAwareObjects(func, hint);
 }
 
 void ContainerInterface::RemoveAwareObject(std::shared_ptr<swganh::object::Object> observer)

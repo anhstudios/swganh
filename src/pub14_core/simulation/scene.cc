@@ -35,7 +35,7 @@ public:
 		spatial_index_ = tmp;
 
 		movement_manager_ = make_shared<MovementManager>(kernel);
-		movement_manager_->SetSpatialProvider(spatial_index_.get());
+		movement_manager_->SetSpatialProvider(spatial_index_);
 	}
 
     const SceneDescription& GetDescription() const
