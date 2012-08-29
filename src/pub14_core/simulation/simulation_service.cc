@@ -658,8 +658,10 @@ void SimulationService::Startup()
 	command_service->AddCommandCreator("addfriend", swganh::command::PythonCommandCreator("commands.addfriend", "AddFriendCommand"));
 	command_service->AddCommandCreator("removefriend", swganh::command::PythonCommandCreator("commands.removefriend", "RemoveFriendCommand"));
 	command_service->AddCommandCreator("setmoodinternal", swganh::command::PythonCommandCreator("commands.setmoodinternal", "SetMoodInternalCommand"));
-	command_service->AddCommandCreator("transferitemmisc", swganh::command::PythonCommandCreator("commands.transferitem", "TransferItem"));
-
+	command_service->AddCommandCreator("transferitemmisc", swganh::command::PythonCommandCreator("commands.transferItemMisc", "TransferItem"));
+	command_service->AddCommandCreator("transferitem", swganh::command::PythonCommandCreator("commands.transferItem", "TransferItem"));
+	command_service->AddCommandCreator("transferitemarmor", swganh::command::PythonCommandCreator("commands.transferItemArmor", "TransferItemArmor"));
+	command_service->AddCommandCreator("transferitemweapon", swganh::command::PythonCommandCreator("commands.transferItemWeapon", "TransferItemWeapon"));
 }
 
 shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 
