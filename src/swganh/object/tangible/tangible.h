@@ -9,8 +9,6 @@
 #include <vector>
 #include <list>
 
-#include <boost/thread/mutex.hpp>
-
 #include "swganh/object/object.h"
 #include "pub14_core/messages/containers/network_sorted_vector.h"
 #include "pub14_core/messages/containers/network_list.h"
@@ -146,8 +144,6 @@ public:
     virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
 private:
     typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
-    
-    mutable boost::mutex tangible_mutex_;
 
     std::string customization_;                                                                                      // update 3 variable 4
     swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;                 // update 3 variable 5

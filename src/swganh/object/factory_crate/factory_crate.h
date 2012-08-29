@@ -2,13 +2,13 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/object/object.h"
+#include "swganh/object/tangible/tangible.h"
 
 namespace swganh {
 namespace object {
 namespace factory_crate {
 
-class FactoryCrate : public swganh::object::Object 
+class FactoryCrate : public swganh::object::tangible::Tangible 
 {
 public:
     // FCYT

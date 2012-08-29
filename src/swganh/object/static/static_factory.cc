@@ -7,7 +7,13 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::static_obj;
+using namespace swganh::object::static_object;
+
+StaticFactory::StaticFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher)
+	: ObjectFactory(db_manager, event_dispatcher)
+{
+}
 
 uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object)
 {

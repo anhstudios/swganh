@@ -31,10 +31,13 @@ namespace concurrency {
 #include "swganh/object/exception.h"
 #include "swganh/object/object_factory_interface.h"
 #include "swganh/object/object_message_builder.h"
+#include "swganh/object/permissions/permission_type.h"
 
 namespace swganh {
 namespace object {
     
+	typedef std::map<int, std::shared_ptr<ContainerPermissionsInterface>> PermissionsObjectMap;
+
     /**
      * ObjectManager is a general interface for managing the object lifecycles for
      * general user defined types. In order to manage an object type an implementation
@@ -193,15 +196,8 @@ namespace object {
          * @return the created object instance.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
-        std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool is_persisted=true, bool is_initialized=true);
-        
-		
-		/**
-		* Creates an instance of an object from the specified template using the given object_id as the id.
-		* The created object will not be persisted and will not be intialized from the db.
-		* @throws InvalidObjectTemplate when the specified template does not exist.
-		*/
-		std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, uint64_t object_id);
+        virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0);
 		
         /**
          * Creates an instance of an object from the specified template.
@@ -210,9 +206,10 @@ namespace object {
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
         template<typename T>
-        std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, bool is_persisted=true, bool is_initialized=true)
+        std::shared_ptr<T> CreateObjectFromTemplate(const std::string& template_name, 
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0)
         {
-            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, is_initialized);
+            std::shared_ptr<Object> object = CreateObjectFromTemplate(template_name, is_persisted, is_initialized, objectId);
 
 #ifdef _DEBUG
             return std::dynamic_pointer_cast<T>(object);
@@ -263,6 +260,11 @@ namespace object {
 		std::shared_ptr<swganh::tre::SlotDefinitionVisitor> GetSlotDefinition();
 
 		void LoadSlotsForObject(std::shared_ptr<Object> object);
+
+		PermissionsObjectMap& GetPermissionsMap();
+
+		virtual void PrepareToAccomodate(uint32_t delta);
+
     private:
 		
 		typedef std::map<
@@ -299,6 +301,8 @@ namespace object {
          */
         void RegisterMessageBuilder(uint32_t object_type, std::shared_ptr<ObjectMessageBuilder> message_builder);
 
+		void ObjectManager::AddContainerPermissionType_(swganh::object::PermissionType type, swganh::object::ContainerPermissionsInterface* ptr);
+
         swganh::app::SwganhKernel* kernel_;
 
 		std::shared_ptr<swganh::tre::SlotDefinitionVisitor> slot_definition_;
@@ -310,7 +314,9 @@ namespace object {
 		uint64_t next_dynamic_id_;
 
         boost::shared_mutex object_map_mutex_;
-        concurrency::concurrent_unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
+        std::unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
+
+		PermissionsObjectMap permissions_objects_;
     };
 
 }}  // namespace swganh::object

@@ -38,7 +38,9 @@ Object::Object()
     , stf_name_string_("")
     , custom_name_(L"")
     , volume_(0)
-	, arrangement_id_(-2) 
+	, arrangement_id_(-2)
+	, database_persisted_(true)
+	, in_snapshot_(false)
 {
 	menu_response_ = make_shared<swganh::messages::controllers::ObjectMenuResponse>();
 }
@@ -77,7 +79,7 @@ void Object::ClearController()
 
     Unsubscribe(controller);
 }
-void Object::AddObject(std::shared_ptr<Object> obj, std::shared_ptr<Object> requester, int32_t arrangement_id)
+void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> obj, int32_t arrangement_id)
 {
 	if(requester == nullptr || container_permissions_->canInsert(shared_from_this(), requester, obj))
 	{
@@ -253,9 +255,12 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 
 		if(observer)
 		{
-			Subscribe(observer);
-			SendCreateByCrc(observer);
-			CreateBaselines(observer);
+			if(!IsInSnapshot())
+			{
+				Subscribe(observer);
+				SendCreateByCrc(observer);
+				CreateBaselines(observer);
+			}
 
 			if(GetPermissions()->canView(shared_from_this(), object))
 			{
@@ -292,8 +297,11 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 				});
 			}
 
-			SendDestroy(observer);
-			Unsubscribe(observer);
+			if(!IsInSnapshot())
+			{
+				SendDestroy(observer);
+				Unsubscribe(observer);
+			}
 		}
 	}
 }
@@ -314,8 +322,7 @@ void Object::SetTemplate(const string& template_string)
 }
 void Object::SetObjectId(uint64_t object_id)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-	object_id_ = object_id;
+    object_id_ = object_id;
 }
 uint64_t Object::GetObjectId()
 {
@@ -631,6 +638,9 @@ void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> o
 
 void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
+	if(observer == nullptr)
+		return;
+
 	uint64_t container_id = 0;
 	if (GetContainer())
 		container_id = GetContainer()->GetObjectId();
@@ -780,6 +790,30 @@ std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> Object::GetMe
 	return menu_response_;
 }
 
+bool Object::IsDatabasePersisted()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return database_persisted_;
+}
+
+bool Object::IsInSnapshot()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return in_snapshot_;
+}
+
+void Object::SetDatabasePersisted(bool value)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	database_persisted_ = value;
+}
+
+void Object::SetInSnapshot(bool value)
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	in_snapshot_ = value;
+}
+
 AttributesMap Object::GetAttributeMap()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -805,9 +839,7 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::str
 std::wstring Object::GetAttributeAsString(const std::string& name)
 {
 	try {
-		auto val = GetAttribute(name);
-
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto val = GetAttribute(name);		
 		wstringstream attribute;
 		switch (val.which())
 		{
@@ -828,10 +860,12 @@ std::wstring Object::GetAttributeAsString(const std::string& name)
 	}
 	return L"";
 }
+
 uint8_t Object::GetAttributeTemplateId()
 {
 	return attributes_template_id;
 }
+
 void Object::SetAttributeTemplateId(uint8_t attribute_template_id)
 {
 	attributes_template_id = attribute_template_id;
@@ -839,30 +873,45 @@ void Object::SetAttributeTemplateId(uint8_t attribute_template_id)
 
 std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 {
-	wstringstream ss;
 	auto val = GetAttributeRecursive(name);
-	ss << val;
+	wstringstream ss;
+	switch(val.which())
+		{
+			// float
+			case 0:
+				 ss << boost::get<float>(val);
+				break;
+			case 1:
+				ss << boost::get<int32_t>(val);
+				break;
+			case 2:
+				ss << boost::get<wstring>(val);
+				break;
+		}		
+	
 	return ss.str();
 }
 boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
 {
 	auto val = GetAttribute(name);
-	float float_val;
-	int32_t int_val;
-	wstring attr_val;
-	switch(val.which())
 	{
-		// float
-		case 0:
-			 float_val = boost::get<float>(val);
-			return AddAttributeRecursive<float>(float_val, name);			
-		case 1:
-			int_val = boost::get<int32_t>(val);
-			return AddAttributeRecursive<int32_t>(int_val, name);			
-		case 2:
-			attr_val = boost::get<wstring>(val);
-			return AddAttributeRecursive<wstring>(attr_val, name);			
-	}	
-	return boost::get<wstring>(val);
-	
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		float float_val;
+		int32_t int_val;
+		wstring attr_val;
+		switch(val.which())
+		{
+			// float
+			case 0:
+				 float_val = boost::get<float>(val);
+				return AddAttributeRecursive<float>(float_val, name);			
+			case 1:
+				int_val = boost::get<int32_t>(val);
+				return AddAttributeRecursive<int32_t>(int_val, name);			
+			case 2:
+				attr_val = boost::get<wstring>(val);
+				return AddAttributeRecursive<wstring>(attr_val, name);			
+		}	
+		return boost::get<wstring>(val);
+	}
 }

@@ -12,7 +12,7 @@
 
 #include "anh/crc.h"
 
-#include "swganh/object/object.h"
+#include "swganh/object/intangible/intangible.h"
 #include "swganh/object/waypoint/waypoint.h"
 
 #include "pub14_core/messages/containers/network_sorted_list.h"
@@ -289,7 +289,7 @@ struct PlayerWaypointSerializer {
 class PlayerFactory;
 class PlayerMessageBuilder;
 
-class Player : public swganh::object::Object
+class Player : public swganh::object::intangible::Intangible
 {
 public:
     typedef PlayerFactory FactoryType;
@@ -870,8 +870,6 @@ public:
 
 private:
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
-
-    mutable boost::mutex player_mutex_;
 
     std::array<FlagBitmask, 4> status_flags_;
     std::array<FlagBitmask, 4> profile_flags_;
