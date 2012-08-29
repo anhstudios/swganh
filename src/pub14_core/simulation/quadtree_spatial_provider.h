@@ -33,6 +33,8 @@ public:
 	virtual std::shared_ptr<ContainerInterface> GetContainer() { return nullptr; }
 	virtual void SetContainer(const std::shared_ptr<ContainerInterface>& container) {}
 
+	virtual glm::vec3 __InternalGetAbsolutePosition();
+
 	void SetThis(std::shared_ptr<ContainerInterface> si) { __this = si; }
 private:
 	std::shared_ptr<ContainerInterface> __this;

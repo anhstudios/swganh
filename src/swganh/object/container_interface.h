@@ -6,6 +6,7 @@
 
 #include <anh/observer/observer_interface.h>
 #include <boost/thread/shared_mutex.hpp>
+#include <glm/glm.hpp>
 
 namespace swganh
 {
@@ -49,6 +50,9 @@ namespace object
 
 		virtual std::shared_ptr<ContainerInterface> GetContainer() = 0;
 		virtual void SetContainer(const std::shared_ptr<ContainerInterface>& container) = 0;
+
+		virtual glm::vec3 GetAbsolutePosition();
+		virtual glm::vec3 __InternalGetAbsolutePosition() = 0;
 
 	protected:
 		std::shared_ptr<swganh::object::ContainerPermissionsInterface> container_permissions_;

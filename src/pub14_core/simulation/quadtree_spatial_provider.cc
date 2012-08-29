@@ -193,9 +193,14 @@ int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object
 	return -1;
 }
 
+glm::vec3 QuadtreeSpatialProvider::__InternalGetAbsolutePosition()
+{
+	return glm::vec3(0, 0, 0);
+}
+
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
-	auto position = object->GetPosition();
+	auto position = object->__InternalGetAbsolutePosition();
 	return QueryBox(Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));
 	
 }

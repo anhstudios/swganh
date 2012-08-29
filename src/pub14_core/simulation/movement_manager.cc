@@ -85,7 +85,8 @@ void MovementManager::HandleDataTransformWithParent(
 		object->SetOrientation(message.orientation);
     
 		//Perform the transfer
-		object->GetContainer()->TransferObject(object, object, container);
+		if(object->GetContainer() != container)
+			object->GetContainer()->TransferObject(object, object, container);
 
 		//Send the update transform
 		SendUpdateDataTransformWithParentMessage(object);

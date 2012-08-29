@@ -1,6 +1,7 @@
 #include "container_interface.h"
 #include "swganh/object/permissions/container_permissions_interface.h"
 
+#include <glm/glm.hpp>
 #include <boost/thread/locks.hpp>
 
 using namespace swganh::object;
@@ -38,4 +39,10 @@ void ContainerInterface::RemoveAwareObject(std::shared_ptr<swganh::object::Objec
 {
 	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
 	__InternalRemoveAwareObject(observer);
+}
+
+glm::vec3 ContainerInterface::GetAbsolutePosition()
+{
+	boost::shared_lock<boost::shared_mutex> shared(global_container_lock_);
+	return __InternalGetAbsolutePosition();
 }

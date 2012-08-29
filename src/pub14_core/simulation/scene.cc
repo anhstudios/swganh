@@ -179,3 +179,8 @@ void Scene::HandleDataTransformWithParent(const shared_ptr<ObjectController>& co
 {
 	impl_->HandleDataTransformWithParent(controller, message);
 }
+
+void Scene::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
+{
+	impl_->GetSpatialIndex()->ViewObjects(requester, max_depth, topDown, func);
+}

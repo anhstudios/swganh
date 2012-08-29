@@ -346,12 +346,6 @@ public:
 
             controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
         }
-		// Send Updates to aware objects if we are reconnecting and the object is still alive...
-		object->ViewAwareObjects([&](shared_ptr<Object> aware){
-			aware->Subscribe(controller);
-			aware->SendCreateByCrc(controller);
-			aware->CreateBaselines(controller);
-		});
 
         auto connection_client = std::static_pointer_cast<ConnectionClientInterface>(client);
         connection_client->SetController(controller);
@@ -445,10 +439,29 @@ public:
         start_scene.galaxy_time = 0;
         client->SendTo(start_scene);
 
+		if(object->GetContainer() == nullptr)
+		{
+			scene->AddObject(object);
+		}
+
+		//Attach the controller
 		StartControllingObject(object, client);
 
-        // Add object to scene and send baselines
-        scene->AddObject(object);		
+		//Make sure the controller gets his awareness creates
+		//regardless of the current state of awareness.
+		auto controller = object->GetController();
+		scene->ViewObjects(object, 0, true, [&] (std::shared_ptr<swganh::object::Object> aware) {
+			if(aware->__HasAwareObject(object) && !aware->IsInSnapshot())
+			{
+				//Send create manually
+				aware->SendCreateByCrc(controller);
+				aware->CreateBaselines(controller);
+			}
+			else
+			{
+				aware->__InternalAddAwareObject(object);
+			}
+		});
     }
 
 	void SendToAll(ByteBuffer message)
