@@ -409,26 +409,23 @@ public:
         SelectCharacter message)
     {
         auto object = GetObjectById(message.character_id);
-
         if (!object)
         {
             object = LoadObjectById(message.character_id, creature::Creature::type);
         }
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
-        
 		auto player = GetEquipmentService()->GetEquippedObject<player::Player>(object, "ghost");
 		event_dispatcher->Dispatch(
 					make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", player));
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
-
         if (!scene)
         {
             throw std::runtime_error("Invalid scene selected for object");
         }
 
-        // CmdStartScene
+		// CmdStartScene
         CmdStartScene start_scene;
         start_scene.ignore_layout = 0;
         start_scene.character_id = object->GetObjectId();
@@ -454,12 +451,14 @@ public:
 			if(aware->__HasAwareObject(object) && !aware->IsInSnapshot())
 			{
 				//Send create manually
+				aware->Subscribe(controller);
 				aware->SendCreateByCrc(controller);
 				aware->CreateBaselines(controller);
 			}
 			else
 			{
-				aware->__InternalAddAwareObject(object);
+				aware->AddAwareObject(object);
+				object->AddAwareObject(aware);
 			}
 		});
     }
