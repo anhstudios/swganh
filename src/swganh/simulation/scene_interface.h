@@ -2,6 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
+#include <functional>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -36,8 +37,9 @@ namespace simulation {
 		virtual const std::string& GetTerrainMap() const =  0;
 
         virtual void AddObject(std::shared_ptr<swganh::object::Object> object) = 0;
-
         virtual void RemoveObject(std::shared_ptr<swganh::object::Object> object) = 0;
+		virtual void ViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, 
+			bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func) = 0;
 
 		virtual void HandleDataTransform(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransform message) = 0;
 		virtual void HandleDataTransformWithParent(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransformWithParent message) = 0;

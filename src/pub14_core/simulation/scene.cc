@@ -35,7 +35,7 @@ public:
 		spatial_index_ = tmp;
 
 		movement_manager_ = make_shared<MovementManager>(kernel);
-		movement_manager_->SetSpatialProvider(spatial_index_.get());
+		movement_manager_->SetSpatialProvider(spatial_index_);
 	}
 
     const SceneDescription& GetDescription() const
@@ -178,4 +178,9 @@ void Scene::HandleDataTransform(const shared_ptr<ObjectController>& controller, 
 void Scene::HandleDataTransformWithParent(const shared_ptr<ObjectController>& controller, DataTransformWithParent message)
 {
 	impl_->HandleDataTransformWithParent(controller, message);
+}
+
+void Scene::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
+{
+	impl_->GetSpatialIndex()->ViewObjects(requester, max_depth, topDown, func);
 }
