@@ -33,6 +33,7 @@ namespace object
 		virtual void SetPermissions(std::shared_ptr<ContainerPermissionsInterface> obj);
 
 		//FOR USE BY TRANSFER OBJECT ONLY. DO NOT CALL IN OUTSIDE CODE
+		virtual void __InternalTransfer(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2) {};
 		virtual int32_t __InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id=-2) = 0;
 		
 		//Call to Create
