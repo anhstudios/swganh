@@ -37,7 +37,8 @@ swganh::messages::AttributeListMessage WearableAttributeTemplate::BuildAttribute
 	wstringstream ss;
 	if (tano)
 	{
-		ss << tano->GetCondition() << L"/" << tano->GetMaxCondition();
+		int32_t max_condition = tano->GetMaxCondition();
+		ss << max_condition - tano->GetCondition() << L"/" << max_condition;
 		condition = ss.str();
 		object->SetAttribute<wstring>("condition", condition);
 	}
