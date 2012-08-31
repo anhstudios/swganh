@@ -50,7 +50,7 @@ namespace simulation {
         
         virtual void SendDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B) = 0;
         virtual void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object) = 0;
-		virtual void SetSpatialProvider(swganh::simulation::SpatialProviderInterface* spatial_provider) = 0;
+		virtual void SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider) = 0;
     };
 
 }}  // namespace swganh::simulation

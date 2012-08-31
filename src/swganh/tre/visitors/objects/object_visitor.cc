@@ -71,47 +71,47 @@ ObjectVisitor::ObjectVisitor()
 		attributeHandler_.insert(make_pair(string("weaponEffect"), bind(&ObjectVisitor::_handleString, _1, _2, _3)));
 		attributeHandler_.insert(make_pair(string("weaponEffectIndex"), bind(&ObjectVisitor::_handleInt, _1, _2, _3)));
 
-		attributeHandler_.insert(make_pair(string("attackType"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("defaultValue"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("maxValueExclusive"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("minValueInclusive"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("palettePathName"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("defaultPaletteIndex"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("cameraHeight"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("variableName"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("sourceVariable"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("dependentVariable"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("gender"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("acceleration"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("speed"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("turnRate"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("postureAlignToTerrain"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("collisionOffsetX"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("collisionOffsetZ"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("certificationsRequired"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("customizationVariableMapping"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("paletteColorCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("rangedIntCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("constStringCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("socketDestinations"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("surfaceType"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("attackType"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("defaultValue"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("maxValueExclusive"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("minValueInclusive"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("palettePathName"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("defaultPaletteIndex"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("cameraHeight"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("variableName"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("sourceVariable"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("dependentVariable"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("gender"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("acceleration"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("speed"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("turnRate"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("postureAlignToTerrain"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("collisionOffsetX"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("collisionOffsetZ"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("certificationsRequired"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("customizationVariableMapping"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("paletteColorCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("rangedIntCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("constStringCustomizationVariables"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("socketDestinations"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("surfaceType"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 
 		//SCHEMATICS STUFF BELOW HERE
 		
 		//name is used for both "slots" and "attributes"
-		attributeHandler_.insert(make_pair(string("name"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("name"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 		
 		//slots marks the beginning of the slots section
-		attributeHandler_.insert(make_pair(string("slots"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("hardpoint"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("slots"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("hardpoint"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 		
 		//attributes marks the beginning of the attributes section
-		attributeHandler_.insert(make_pair(string("attributes"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("experiment"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
-		attributeHandler_.insert(make_pair(string("value"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("attributes"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("experiment"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("value"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 
 		//marks the end of the draft schematic.
-		attributeHandler_.insert(make_pair(string("craftedSharedTemplate"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
+		//attributeHandler_.insert(make_pair(string("craftedSharedTemplate"), bind(&ObjectVisitor::_handleUnhandled, _1, _2, _3)));
 	}
 }
 
@@ -142,10 +142,6 @@ void ObjectVisitor::_handleXXXX(anh::ByteBuffer& buf)
 			if(it != attributeHandler_.cend())
 			{
 				it->second(this, attributeName, buf);
-			}
-			else
-			{
-				printf("WARNING: \"%s\" is truly unhandled!\n", attributeName.c_str());
 			}
 		}
 	}
