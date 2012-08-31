@@ -19,6 +19,11 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
+		DataTransformWithParent(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x000000F1; }
         uint32_t counter;
         uint64_t cell_id;

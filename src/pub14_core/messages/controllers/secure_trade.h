@@ -19,6 +19,11 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
+		SecureTrade(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
 		static uint32_t message_type() { return 0x00000115; }
 		
 		uint32_t error;

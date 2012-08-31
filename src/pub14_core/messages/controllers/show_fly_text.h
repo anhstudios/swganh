@@ -27,6 +27,11 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
+		ShowFlyText(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x000001BD; }
         
         uint64_t object_id;

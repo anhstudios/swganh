@@ -22,6 +22,11 @@ namespace controllers {
             , duration(0.0f)
         {}
 
+		AddBuff(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x00000229; }
         
         anh::HashString buff;        

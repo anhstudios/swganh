@@ -40,6 +40,11 @@ namespace controllers {
             , player_matches(std::vector<PlayerMatch>())
         {}
 
+		PlayerMatchResults(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x000001E7; }
         
         std::vector<PlayerMatch> player_matches;

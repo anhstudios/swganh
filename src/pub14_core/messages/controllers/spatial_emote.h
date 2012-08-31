@@ -22,6 +22,11 @@ namespace controllers {
             , emote_flags(0)
         {}
 
+		SpatialEmote(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x0000012E; }
         
         uint64_t source_id;

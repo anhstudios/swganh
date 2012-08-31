@@ -18,6 +18,11 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
+		GetAttributesBatchMessage(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x164550EF; }
                 
 

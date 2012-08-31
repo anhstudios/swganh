@@ -21,6 +21,11 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())            
         {}
 
+		ObjectMenuResponse(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x00000147; }
         
         uint64_t target_id;

@@ -139,7 +139,7 @@ namespace simulation {
                 const std::shared_ptr<swganh::object::ObjectController>& controller,
                 swganh::messages::ObjControllerMessage* message)
             {
-                MessageType tmp;
+                MessageType tmp(*message);
 				tmp.OnControllerDeserialize(message->data);
 
                 (*shared_handler)(controller, &tmp);

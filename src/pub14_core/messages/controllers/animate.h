@@ -24,6 +24,11 @@ namespace controllers {
             , object_id(object_id_)
         {}
 
+		Animate(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x000000F2; }
         
         uint64_t object_id;

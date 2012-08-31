@@ -31,6 +31,11 @@ namespace controllers {
     		, defender_list(std::vector<CombatDefender>())
         {}
 
+		CombatActionMessage(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
     	static uint32_t message_type() { return 0x000000CC; }
         
     	uint32_t action_crc;

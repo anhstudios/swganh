@@ -36,6 +36,11 @@ namespace controllers {
             , starting_locations(std::vector<StartPlanet>())
         {}
 
+		StartingLocation(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x000001FC; }
         
         std::vector<StartPlanet> starting_locations;

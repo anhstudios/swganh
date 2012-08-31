@@ -26,6 +26,14 @@ namespace messages {
             message_type = message_type_;
         }
 
+		ObjControllerMessage(const ObjControllerMessage& other)
+		{
+			controller_type = other.controller_type;
+			message_type = other.message_type;
+			observable_id = other.observable_id;
+			tick_count = other.tick_count;
+		}
+
         uint32_t controller_type;
         uint32_t message_type;
         uint64_t observable_id;
@@ -58,7 +66,7 @@ namespace messages {
             message_type = buffer.read<uint32_t>();  
             observable_id = buffer.read<uint64_t>();
             tick_count = buffer.read<uint32_t>();
-            OnControllerDeserialize(std::move(buffer));
+            OnControllerDeserialize(buffer);
         }
     };
 

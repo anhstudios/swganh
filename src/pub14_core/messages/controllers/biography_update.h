@@ -21,6 +21,11 @@ namespace controllers {
             , biography(L"")
         {}
 
+		BiographyUpdate(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x000001DB; }
         
         uint64_t owner_id;

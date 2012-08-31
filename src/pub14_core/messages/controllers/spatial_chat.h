@@ -26,6 +26,11 @@ namespace controllers {
             , unknown1(0)
         {}
 
+		SpatialChat(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x000000F4; }
         
         uint64_t speaker_id;

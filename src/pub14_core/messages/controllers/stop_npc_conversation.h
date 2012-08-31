@@ -20,6 +20,11 @@ namespace controllers {
             , npc_id(0)
         {}
 
+		StopNPCConversation(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x000000DE; }
         
         uint64_t npc_id;        

@@ -23,6 +23,11 @@ namespace controllers {
             , coord_y(0.0f)
         {}
 
+		SitOnObject(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x0000013B; }
         
         uint64_t cell_id;

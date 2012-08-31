@@ -20,6 +20,11 @@ namespace controllers {
             , flourish_id(0)
         {}
 
+		EntertainerFlourish(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x00000166; }
         
         uint32_t flourish_id;

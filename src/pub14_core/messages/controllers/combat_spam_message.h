@@ -26,6 +26,11 @@ namespace controllers {
             , unicode_string(L"")
         {}
 
+		CombatSpamMessage(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
     	static uint32_t message_type() { return 0x00000134; }
         
     	uint64_t attacker_id;

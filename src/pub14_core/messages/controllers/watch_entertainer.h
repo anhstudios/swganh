@@ -20,6 +20,11 @@ namespace controllers {
             , entertainer_id(0)
         {}
 
+		WatchEntertainer(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
+
         static uint32_t message_type() { return 0x0000022B; }
         
         uint64_t entertainer_id;
