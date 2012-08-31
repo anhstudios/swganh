@@ -2,9 +2,9 @@ import re
 import swgpy
 from swgpy.command import BaseSwgCommand
 
-class TransferItem(BaseSwgCommand):
+class TransferItemWeapon(BaseSwgCommand):
     def Run(self):
-        print('transfer item entered')
+        print('transfer item weapon entered')
         split = re.split('\W+', self.GetCommandString())
         container_id = split[1]
         container = self.GetKernel().service_manager().simulation_service().findObjectById(int(container_id))
