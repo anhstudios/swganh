@@ -9,19 +9,20 @@
 #include "command_interface.h"
 #include "command_properties.h"
 
+namespace anh {
+namespace observer {
+	class ObserverInterface;
+}
+}
+
 namespace swganh {
 namespace app {
     class SwganhKernel;
 }
 
 namespace object {
-    class ObjectController;
-namespace creature {
-    class Creature;
-}  // namespace creature
-namespace tangible {
-    class Tangible;
-}}  // namespace object::tangible
+	class Object;
+}
 
 namespace messages {
 namespace controllers {
@@ -39,9 +40,7 @@ namespace command {
 
         ~BaseSwgCommand();
 
-        virtual const std::shared_ptr<object::ObjectController>& GetController() const;
-
-        virtual void SetController(const std::shared_ptr<object::ObjectController>& controller);
+        const std::shared_ptr<anh::observer::ObserverInterface> GetController() const;
 
         virtual bool Validate();
         
@@ -67,11 +66,11 @@ namespace command {
 
         bool IsQueuedCommand() const;
 
-        const std::shared_ptr<object::creature::Creature>& GetActor() const;
+        const std::shared_ptr<object::Object>& GetActor() const;
+		void SetActor(std::shared_ptr<object::Object> object);
 
-        const std::shared_ptr<object::tangible::Tangible>& GetTarget() const;
-
-		const std::shared_ptr<object::creature::Creature>& GetTargetCreature() const;
+        const std::shared_ptr<object::Object>& GetTarget() const;
+		void SetTarget(std::shared_ptr<object::Object> target);
 
         const std::wstring& GetCommandString() const;
 
@@ -83,10 +82,8 @@ namespace command {
     private:    
         swganh::app::SwganhKernel* kernel_;
         const CommandProperties* properties_;
-        std::shared_ptr<object::ObjectController> controller_;
-        mutable std::shared_ptr<object::creature::Creature> actor_;
-        mutable std::shared_ptr<object::tangible::Tangible> target_;
-		mutable std::shared_ptr<object::creature::Creature> creature_target_;
+        mutable std::shared_ptr<object::Object> actor_;
+        mutable std::shared_ptr<object::Object> target_;
         swganh::messages::controllers::CommandQueueEnqueue command_request_;
     };
 

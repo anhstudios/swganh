@@ -42,16 +42,6 @@ namespace object {
     class Object;
     class ObjectController;
 
-    typedef std::function<
-        void (const std::shared_ptr<ObjectController>&, 
-        swganh::messages::ObjControllerMessage*)
-    > ObjControllerHandler;
-
-    typedef Concurrency::concurrent_unordered_map<
-        uint32_t, 
-        ObjControllerHandler
-    > ObjControllerHandlerMap;
-
     class ObjectController : public anh::observer::ObserverInterface, public std::enable_shared_from_this<ObjectController>
     {
     public:
@@ -93,28 +83,6 @@ namespace object {
         void Notify(swganh::messages::BaseSwgMessage* message);
 
         // Send System Message
-
-        /**
-         * Used to send a specific system message to the player
-         *
-         * @param custom_message, the custom message to send
-         * @param chatbox_only used to send to only the chatbox or to the screen as well
-         * @param send_to_inrange used to determine to send to any players in range as well
-         */
-        bool SendSystemMessage(const std::string& custom_message) { return SendSystemMessage(std::wstring(custom_message.begin(), custom_message.end())); }
-        bool SendSystemMessage(const std::wstring& custom_message, bool chatbox_only = false, bool send_to_inrange = false);
-
-        bool SendSystemMessage(std::string filename, std::string label);
-
-        bool SendSystemMessage(const swganh::messages::OutOfBand& prose, bool chatbox_only = false, bool send_to_inrange = false);
-
-        /**
-         * Used to send Fly Text to the character
-         *
-         * @param
-         */
-        void SendFlyText(const std::string& fly_text, swganh::messages::controllers::FlyTextColor color, bool display_flag, uint8_t red = 0, uint8_t green = 0, uint8_t blue = 0);
-        void SendFlyText(const std::string& fly_text, swganh::messages::controllers::FlyTextColor color);
         
     private:
         /**

@@ -6,10 +6,11 @@
 
 #include "anh/network/soe/session.h"
 
-namespace swganh {
-namespace object {
-    class ObjectController;
-}}  // namespace swganh::object
+namespace anh {
+namespace observer {
+	class ObserverInterface;
+}
+}
 
 namespace swganh {
 namespace connection {
@@ -39,9 +40,9 @@ public:
 
     virtual void Connect(uint32_t account_id, uint64_t player_id) = 0;
     
-    virtual const std::shared_ptr<swganh::object::ObjectController>& GetController() const = 0;
+    virtual const std::shared_ptr<anh::observer::ObserverInterface>& GetController() const = 0;
 
-    virtual void SetController(const std::shared_ptr<swganh::object::ObjectController>& controller) = 0;
+    virtual void SetController(const std::shared_ptr<anh::observer::ObserverInterface>& controller) = 0;
 
 };
 

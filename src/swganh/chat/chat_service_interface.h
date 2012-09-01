@@ -13,8 +13,7 @@
 
 namespace swganh {
 namespace object {
-    namespace creature { class Creature; }
-    namespace tangible { class Tangible; }
+    class Object;
 }}  // namespace swganh::object
 
 namespace swganh {
@@ -25,8 +24,8 @@ namespace chat {
     public:
         
         virtual void SendSpatialChat(
-		    const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
-		    const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+		    const std::shared_ptr<swganh::object::Object>& actor, // creature object
+		    const std::shared_ptr<swganh::object::Object>& target,	// target object
             std::wstring chat_message,
             uint16_t chat_type,
             uint16_t mood) = 0;

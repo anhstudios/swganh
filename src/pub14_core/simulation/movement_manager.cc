@@ -38,10 +38,9 @@ MovementManager::MovementManager(swganh::app::SwganhKernel* kernel)
 }
 
 void MovementManager::HandleDataTransform(
-    const shared_ptr<ObjectController>& controller, 
+    const shared_ptr<Object>& object, 
     DataTransform message)
 {
-    auto object = controller->GetObject();
     
     if (!ValidateCounter_(object->GetObjectId(), message.counter))
     {
@@ -59,16 +58,15 @@ void MovementManager::HandleDataTransform(
 	if(object->GetContainer() != spatial_provider_)
 		object->GetContainer()->TransferObject(object, object, spatial_provider_);
 	else
-		spatial_provider_->UpdateObject(controller->GetObject(), old_position, message.position);
+		spatial_provider_->UpdateObject(object, old_position, message.position);
 
     SendUpdateDataTransformMessage(object);
 }
 
 void MovementManager::HandleDataTransformWithParent(
-    const shared_ptr<ObjectController>& controller, 
+    const shared_ptr<Object>& object, 
     DataTransformWithParent message)
 {
-    auto object = controller->GetObject();
     
 	auto container = simulation_service_->GetObjectById(message.cell_id);
 	if(container != nullptr)

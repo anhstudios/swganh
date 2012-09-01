@@ -6,9 +6,11 @@
 #include <algorithm>
 
 #include "anh/plugin/plugin_manager.h"
+#include "anh/observer/observer_interface.h"
+
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/object.h"
-#include "swganh/object/object_controller.h"
+
 #include "pub14_core/messages/scene_destroy_object.h"
 #include "pub14_core/simulation/quadtree_spatial_provider.h"
 #include "pub14_core/simulation/movement_manager.h"
@@ -21,6 +23,7 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh_core::simulation;
 using namespace swganh::messages::controllers;
+using namespace anh::observer;
 
 class Scene::SceneImpl
 {
@@ -85,13 +88,13 @@ public:
         object_map_.erase(object->GetObjectId());
 	}
 
-	void HandleDataTransform(const shared_ptr<ObjectController>& controller, DataTransform message)
+	void HandleDataTransform(const shared_ptr<Object>& object, DataTransform message)
 	{
-		movement_manager_->HandleDataTransform(controller, message);
+		movement_manager_->HandleDataTransform(object, message);
 	}
-	void HandleDataTransformWithParent(const shared_ptr<ObjectController>& controller, DataTransformWithParent message)
+	void HandleDataTransformWithParent(const shared_ptr<Object>& object, DataTransformWithParent message)
 	{
-		movement_manager_->HandleDataTransformWithParent(controller, message);
+		movement_manager_->HandleDataTransformWithParent(object, message);
 	}
 
 	shared_ptr<swganh::simulation::SpatialProviderInterface> GetSpatialIndex() { return spatial_index_; }
@@ -171,13 +174,13 @@ void Scene::RemoveObject(std::shared_ptr<swganh::object::Object> object)
     impl_->RemoveObject(object);
 }
 
-void Scene::HandleDataTransform(const shared_ptr<ObjectController>& controller, DataTransform message)
+void Scene::HandleDataTransform(const shared_ptr<Object>& object, DataTransform message)
 {
-	impl_->HandleDataTransform(controller, message);
+	impl_->HandleDataTransform(object, message);
 }
-void Scene::HandleDataTransformWithParent(const shared_ptr<ObjectController>& controller, DataTransformWithParent message)
+void Scene::HandleDataTransformWithParent(const shared_ptr<Object>& object, DataTransformWithParent message)
 {
-	impl_->HandleDataTransformWithParent(controller, message);
+	impl_->HandleDataTransformWithParent(object, message);
 }
 
 void Scene::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)

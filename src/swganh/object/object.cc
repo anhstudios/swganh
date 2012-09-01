@@ -51,13 +51,13 @@ bool Object::HasController()
     return controller_ != nullptr;
 }
 
-shared_ptr<ObjectController> Object::GetController()
+shared_ptr<ObserverInterface> Object::GetController()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return controller_;
 }
 
-void Object::SetController(const shared_ptr<ObjectController>& controller)
+void Object::SetController(const shared_ptr<ObserverInterface>& controller)
 {
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -69,7 +69,7 @@ void Object::SetController(const shared_ptr<ObjectController>& controller)
 
 void Object::ClearController()
 {
-    shared_ptr<ObjectController> controller;
+    shared_ptr<ObserverInterface> controller;
 
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);

@@ -4,6 +4,14 @@
 
 #include "swganh/sui/sui_service_interface.h"
 
+namespace anh
+{
+namespace observer
+{
+	class ObserverInterface;
+}
+}
+
 namespace swganh
 {
 namespace app
@@ -19,7 +27,6 @@ namespace connection
 namespace object
 {
 	class Object;
-	class ObjectController;
 }
 namespace simulation
 {
@@ -91,7 +98,7 @@ namespace sui
 	private:
 		void _handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification* message);
 		// Radials
-		void _handleObjectMenuRequest(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::ObjectMenuRequest* message);
+		void _handleObjectMenuRequest(const std::shared_ptr<swganh::object::Object>& object, swganh::messages::controllers::ObjectMenuRequest* message);
 		void _handlePlayerLogoutEvent();
 
 		swganh::app::SwganhKernel* kernel_;

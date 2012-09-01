@@ -134,14 +134,14 @@ public:
      *
      * @TODO Consider returning a null object instead of nullptr.
      */
-    std::shared_ptr<ObjectController> GetController();
+    std::shared_ptr<anh::observer::ObserverInterface> GetController();
 
     /**
      * Sets the controller for this Object instance.
      *
      * @param controller
      */
-    void SetController(const std::shared_ptr<ObjectController>& controller);
+    void SetController(const std::shared_ptr<anh::observer::ObserverInterface>& controller);
 
     /**
      * Clears the active current controller, if one exists, for this instance.
@@ -582,12 +582,12 @@ private:
 
     ObserverContainer observers_;
 	AwareObjectContainer aware_objects_;
+	std::shared_ptr<anh::observer::ObserverInterface> controller_;
 
     BaselinesCacheContainer baselines_;
     DeltasCacheContainer deltas_;
 
     std::shared_ptr<ContainerInterface> container_;
-    std::shared_ptr<ObjectController> controller_;
     anh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;

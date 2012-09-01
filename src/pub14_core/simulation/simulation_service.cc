@@ -12,6 +12,7 @@
 #include "anh/database/database_manager.h"
 #include "anh/network/soe/server_interface.h"
 #include "anh/plugin/plugin_manager.h"
+#include "anh/observer/observer_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -25,7 +26,6 @@
 #include "pub14_core/messages/select_character.h"
 
 #include "swganh/object/object.h"
-#include "swganh/object/object_controller.h"
 #include "swganh/object/object_manager.h"
 
 // Objects
@@ -127,6 +127,7 @@ using namespace swganh_core::simulation;
 
 using namespace swganh::tre;
 
+using anh::observer::ObserverInterface;
 using anh::network::soe::ServerInterface;
 using anh::network::soe::Session;
 using anh::service::ServiceDescription;
@@ -173,37 +174,34 @@ public:
 	}
 
 	void HandleDataTransform(
-		const shared_ptr<ObjectController>& controller, 
+		const shared_ptr<Object>& object, 
 		DataTransform* message)
 	{
-		auto object = controller->GetObject();
-		if (!object)
-			return;
-
 		auto find_iter = controlled_objects_.find(object->GetObjectId());
         if (find_iter != controlled_objects_.end())
 		{
 			// get the scene the object is in
 			auto scene = GetSceneManager()->GetScene(find_iter->second->GetObject()->GetSceneId());
 			if (scene)
-				scene->HandleDataTransform(controller, *message);
+			{
+				scene->HandleDataTransform(object, *message);
+			}
 		}
 	}
+
 	void HandleDataTransformWithParent(
-		const shared_ptr<ObjectController>& controller, 
+		const shared_ptr<Object>& object, 
 		DataTransformWithParent* message)
 	{
-		auto object = controller->GetObject();
-		if (!object)
-			return;
-
 		auto find_iter = controlled_objects_.find(object->GetObjectId());
         if (find_iter != controlled_objects_.end())
         {
             // get the scene the object is in
 			auto scene = GetSceneManager()->GetScene(find_iter->second->GetObject()->GetSceneId());
 			if (scene)
-				scene->HandleDataTransformWithParent(controller, *message);
+			{
+				scene->HandleDataTransformWithParent(object, *message);
+			}
 		}		
 	}
 
@@ -310,8 +308,7 @@ public:
 			start_scene.shared_race_template = obj->GetTemplate();
 			start_scene.galaxy_time = 0;
 
-		
-			obj->GetController()->GetRemoteClient()->SendTo(start_scene);
+			obj->GetController()->Notify(&start_scene);
 		}
 
         // Add object to scene and send baselines
@@ -328,7 +325,7 @@ public:
 		return obj;
 	}
 	
-    shared_ptr<ObjectController> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<ConnectionClientInterface> client)
+    shared_ptr<ObserverInterface> StartControllingObject(const shared_ptr<Object>& object, shared_ptr<ConnectionClientInterface> client)
     {
         shared_ptr<ObjectController> controller = nullptr;
 
@@ -401,7 +398,11 @@ public:
             return;
         }
 
-        find_iter->second(client->GetController(), message);
+		auto object = object_manager_->GetObjectById(client->GetController()->GetId());
+		if(object != nullptr) 
+		{
+			find_iter->second(object, message);
+		}
     }
 
     void HandleSelectCharacter(
@@ -609,7 +610,7 @@ void SimulationService::TransferObjectToScene(std::shared_ptr<swganh::object::Ob
 {
 	impl_->TransferObjectToSceneWithPosition(object, scene, x, y, z);
 }
-shared_ptr<ObjectController> SimulationService::StartControllingObject(
+shared_ptr<ObserverInterface> SimulationService::StartControllingObject(
     const shared_ptr<Object>& object,
     shared_ptr<ConnectionClientInterface> client)
 {

@@ -19,10 +19,6 @@
 #include "pub14_core/messages/obj_controller_message.h"
 
 #include "swganh/object/object.h"
-#include "swganh/object/object_controller.h"
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/player/player.h"
-#include "swganh/object/tangible/tangible.h"
 
 #include "swganh/command/command_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
@@ -75,8 +71,8 @@ ServiceDescription ChatService::GetServiceDescription()
 }
 
 void ChatService::SendSpatialChat(
-	const std::shared_ptr<swganh::object::creature::Creature>& actor, // creature object
-	const std::shared_ptr<swganh::object::tangible::Tangible>& target,	// target object
+	const std::shared_ptr<swganh::object::Object>& actor,
+	const std::shared_ptr<swganh::object::Object>& target,
     wstring chat_message,
     uint16_t chat_type,
     uint16_t mood)

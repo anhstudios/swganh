@@ -13,6 +13,12 @@
 
 #include "swganh/command/command_service_interface.h"
 
+namespace anh {
+namespace observer {
+	class ObserverInterface;
+}
+}
+
 namespace pub14_core {
 namespace command {
 
@@ -37,7 +43,7 @@ namespace command {
         void EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
 
         void SendCommandQueueRemove(
-            const std::shared_ptr<swganh::object::ObjectController>& controller,
+            const std::shared_ptr<swganh::object::Object>& object,
             uint32_t action_counter,
             float default_time_sec,
             uint32_t error,
@@ -54,7 +60,7 @@ namespace command {
         void Startup();
         
         void EnqueueCommandRequest(
-            const std::shared_ptr<swganh::object::ObjectController>& controller,
+            const std::shared_ptr<swganh::object::Object>& controller,
             swganh::messages::controllers::CommandQueueEnqueue* message);
         
         

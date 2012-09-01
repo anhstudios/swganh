@@ -27,7 +27,6 @@ namespace event_dispatcher {
 namespace swganh {
 namespace object {
     class Object;
-    class ObjectController;
 }}  // namespace swganh::object
 
 namespace swganh {
@@ -38,11 +37,11 @@ namespace simulation {
     {
     public:
 		virtual void HandleDataTransform(
-            const std::shared_ptr<swganh::object::ObjectController>& controller, 
+            const std::shared_ptr<swganh::object::Object>& controller, 
             swganh::messages::controllers::DataTransform message) = 0;
 
         virtual void HandleDataTransformWithParent(
-            const std::shared_ptr<swganh::object::ObjectController>& controller, 
+            const std::shared_ptr<swganh::object::Object>& controller, 
             swganh::messages::controllers::DataTransformWithParent message) = 0;
         
         virtual void SendDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B) = 0;

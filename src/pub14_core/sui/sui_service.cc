@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+#include "anh/observer/observer_interface.h"
+
 #include "pub14_core/messages/sui_create_page_message.h"
 #include "pub14_core/messages/sui_event_notification.h"
 #include "pub14_core/messages/sui_update_page_message.h"
@@ -91,7 +93,7 @@ void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connect
 }
 
 void SUIService::_handleObjectMenuRequest(
-	const std::shared_ptr<ObjectController>& controller,
+	const std::shared_ptr<swganh::object::Object>& controller,
 	ObjectMenuRequest* message)
 {
 	PythonRadialCreator creator("radials.radial_menu", "PyRadialMenu");

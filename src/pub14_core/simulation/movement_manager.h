@@ -32,11 +32,11 @@ namespace simulation {
 		explicit MovementManager(swganh::app::SwganhKernel* kernel);
 
         void HandleDataTransform(
-            const std::shared_ptr<swganh::object::ObjectController>& controller, 
+            const std::shared_ptr<swganh::object::Object>& object, 
             swganh::messages::controllers::DataTransform message);
 
         void HandleDataTransformWithParent(
-            const std::shared_ptr<swganh::object::ObjectController>& controller, 
+            const std::shared_ptr<swganh::object::Object>& object, 
             swganh::messages::controllers::DataTransformWithParent message);
         
         void SendDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B);

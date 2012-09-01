@@ -15,10 +15,14 @@
 #include "command_validator_interface.h"
 #include "command_properties_manager_interface.h"
 
+namespace anh {
+namespace observer {
+	class ObserverInterface;
+}}
+
 namespace swganh {
 namespace object {
     class Object;
-    class ObjectController;
 namespace tangible {
     class Tangible;
 }
@@ -78,7 +82,7 @@ namespace command {
         virtual void EnqueueCommand(const std::shared_ptr<CommandInterface>& command) = 0;
 
         virtual void EnqueueCommandRequest(
-            const std::shared_ptr<swganh::object::ObjectController>& controller,
+            const std::shared_ptr<swganh::object::Object>& object,
             swganh::messages::controllers::CommandQueueEnqueue* message) = 0;
 
         /**
@@ -91,7 +95,7 @@ namespace command {
          * @param action An action flag associated with the error.
          */
         virtual void SendCommandQueueRemove(
-            const std::shared_ptr<swganh::object::ObjectController>& controller,
+            const std::shared_ptr<swganh::object::Object>& controller,
             uint32_t action_counter,
             float default_time_sec,
             uint32_t error,
