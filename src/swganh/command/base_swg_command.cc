@@ -30,11 +30,12 @@ BaseSwgCommand::~BaseSwgCommand()
 
 const std::shared_ptr<ObserverInterface> BaseSwgCommand::GetController() const
 {
-	if(actor_ != nullptr)
-	{
-		return actor_->GetController();
-	}
-	return nullptr;
+	return controller_;
+}
+
+void BaseSwgCommand::SetController(std::shared_ptr<anh::observer::ObserverInterface> controller)
+{
+	controller_ = controller;
 }
 
 bool BaseSwgCommand::Validate()

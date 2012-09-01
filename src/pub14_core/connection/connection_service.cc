@@ -207,7 +207,7 @@ void ConnectionService::HandleCmdSceneReady_(
 
     client->SendTo(CmdSceneReady());
 
-	auto object = simulation_service_->GetObjectById<swganh::object::player::Player>(client->GetController()->GetId());
+	auto object = simulation_service_->GetObjectById(client->GetController()->GetId());
 
     kernel_->GetEventDispatcher()->Dispatch(
         make_shared<ValueEvent<shared_ptr<Object>>>("ObjectReadyEvent", object));

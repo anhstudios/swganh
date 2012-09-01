@@ -110,6 +110,7 @@ void CommandService::EnqueueCommandRequest(
     {
         auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
 
+		swg_command->SetController(object->GetController());
         swg_command->SetCommandRequest(*command_request);
 
         EnqueueCommand(swg_command);
