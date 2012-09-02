@@ -2,6 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "scene_manager.h"
+#include "scene_events.h"
 
 #include <cppconn/connection.h>
 #include <cppconn/exception.h>
@@ -85,7 +86,6 @@ void SceneManager::StartScene(const std::string& scene_label, swganh::app::Swgan
     }
 
     auto scene_iter = scenes_.find(scene_label);
-
     if (scene_iter != scenes_.end()) 
     {
         throw std::runtime_error("Scene has already been loaded: " + scene_label);
@@ -96,9 +96,19 @@ void SceneManager::StartScene(const std::string& scene_label, swganh::app::Swgan
     auto scene = make_shared<Scene>(description_iter->second, kernel);
 
     scenes_.insert(make_pair(scene_label, scene));
+
+	kernel->GetEventDispatcher()->Dispatch(std::make_shared<NewSceneEvent>("SceneManager:NewScene", 
+		scene->GetSceneId(), scene->GetLabel(), scene->GetTerrainMap()));
 }
 
-void SceneManager::StopScene(const std::string& scene_label)
+void SceneManager::StopScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel)
 {
-    scenes_.erase(scene_label);
+	auto itr = scenes_.find(scene_label);
+	if(itr != scenes_.end()) {
+
+		kernel->GetEventDispatcher()->Dispatch(std::make_shared<DestroySceneEvent>("SceneManager:DestroyScene",
+			itr->second->GetSceneId()));
+
+		scenes_.erase(scene_label);
+	}
 }

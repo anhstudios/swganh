@@ -1,21 +1,30 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
-#ifndef SWGANH_OBJECT_STATIC_STATIC_FACTORY_H_
-#define SWGANH_OBJECT_STATIC_STATIC_FACTORY_H_
+#include "swganh/object/object_factory.h"
 
-#include "swganh/object/object_factory_interface.h"
+namespace anh {
+namespace database {
+class DatabaseManagerInterface;
+}} // anh::database
+
+namespace sql {
+class Statement;
+}
 
 namespace swganh {
 namespace object {
-namespace static_obj {
+namespace static_object {
 
-    class StaticFactory : public swganh::object::ObjectFactoryInterface
+	class Static;
+    class StaticFactory : public swganh::object::ObjectFactory
     {
     public:
-        void LoadTemplates();
+		typedef Static ObjectType;
 
-        bool HasTemplate(const std::string& template_name);
+		 StaticFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
@@ -23,9 +32,7 @@ namespace static_obj {
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
 }}}  // namespace swganh::object::static
-
-#endif  // SWGANH_OBJECT_STATIC_STATIC_FACTORY_H_

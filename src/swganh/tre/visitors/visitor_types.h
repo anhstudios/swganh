@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef IFF_VISITOR_TYPES_H
-#define IFF_VISITOR_TYPES_H
+#pragma once
 
 namespace swganh
 {
@@ -22,8 +20,7 @@ namespace tre
 		SLOT_DESCRIPTOR_VISITOR,
 		SLOT_DEFINITION_VISITOR,
 		DATATABLE_VISITOR,
-		TERRAIN_VISITOR
+		LAY_VISITOR
 	};
 }
 }
-#endif

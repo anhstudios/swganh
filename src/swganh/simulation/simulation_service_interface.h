@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_SIMULATION_SIMULATION_SERVICE_INTERFACE_H_
-#define SWGANH_SIMULATION_SIMULATION_SERVICE_INTERFACE_H_
+#pragma once
 
 #include <cstdint>
 #include <map>
@@ -13,6 +11,7 @@
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/object_controller.h"
+#include "swganh/object/permissions/permission_type.h"
 
 namespace anh {
 	class ByteBuffer;
@@ -26,6 +25,7 @@ namespace connection {
 namespace swganh {
 namespace object {
     class Object;
+	class ObjectManager;
 }}  // namespace swganh::object
 
 namespace swganh {
@@ -36,6 +36,8 @@ namespace simulation {
     public:
         virtual void StartScene(const std::string& scene_label) = 0;
         virtual void StopScene(const std::string& scene_label) = 0;
+
+		virtual void AddObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene_label) = 0;
 
         virtual void RegisterObjectFactories() = 0;
 
@@ -179,8 +181,11 @@ namespace simulation {
 
             SendToAllInScene(message_buffer, scene_id);
         }
+
+		virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
+			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0) = 0;
+
+		virtual void PrepareToAccomodate(uint32_t delta) = 0;
     };
 
 }}  // namespace swganh::simulation
-
-#endif  // SWGANH_SIMULATION_SIMULATION_SERVICE_H_

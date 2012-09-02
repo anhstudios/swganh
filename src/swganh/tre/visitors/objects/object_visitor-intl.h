@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef OBJECT_VISITOR_INTL_H
-#define OBJECT_VISITOR_INTL_H
+#pragma once
 
 namespace swganh
 {
@@ -15,9 +13,7 @@ namespace tre
 		{
 			return boost::any_cast<T>(*it->second);
 		}
-		return nullptr;
+		throw std::runtime_error("Invalid type requested for attribute");
 	}
 }
 }
-
-#endif

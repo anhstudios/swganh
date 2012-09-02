@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_MESSAGES_CONTAINERS_NETWORK_SORTED_VECTOR_H_
-#define SWGANH_MESSAGES_CONTAINERS_NETWORK_SORTED_VECTOR_H_
+#pragma once
 
 #include <vector>
 
@@ -51,6 +49,12 @@ public:
         }
     }
 
+	void Remove(uint16_t index)
+	{
+		items_removed_.push_back(index);
+		items_.erase(items_.begin()+index);
+	}
+
     void Remove(iterator iter)
     {
         uint16_t distance = std::distance<const_iterator>(items_.begin(), iter);
@@ -82,6 +86,12 @@ public:
         items_changed_.push_back(index);
     }
 
+	void Update(uint16_t index, T& item)
+	{
+		items_[index] = item;
+		items_changed_.push_back(index);
+	}
+
     void Clear()
     {
         clear_ = true;
@@ -99,6 +109,22 @@ public:
         });
 
         return iter;
+    }
+
+	/**
+     *
+     */
+    T At(uint16_t index)
+    {
+        return items_.at(index);
+    }
+
+    /**
+     *
+     */
+    T operator[](uint16_t index)
+    {
+        return At(index);
     }
 
     /**
@@ -185,5 +211,3 @@ private:
 };
 
 }}} // swganh::messages::containers
-
-#endif // SWGANH_MESSAGES_CONTAINERS_NETWORK_SORTED_VECTOR_H_

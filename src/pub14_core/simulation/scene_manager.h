@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_SIMULATION_SCENE_MANAGER_H_
-#define PUB14_CORE_SIMULATION_SCENE_MANAGER_H_
+#pragma once
 
 #include <cstdint>
 #include <map>
@@ -25,7 +23,7 @@ namespace simulation {
 		std::shared_ptr<swganh::simulation::SceneInterface> GetScene(uint32_t scene_id) const;
 
         void StartScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel);
-        void StopScene(const std::string& scene_label);
+        void StopScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel);
 
     private:
         typedef std::map<
@@ -48,5 +46,3 @@ namespace simulation {
     };
 
 }}  // namespace swganh_core::simulation
-
-#endif  // PUB14_CORE_SIMULATION_SCENE_MANAGER_H_

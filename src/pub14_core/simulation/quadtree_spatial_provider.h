@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef QUADTREE_SPATIAL_PROVIDER_H_
-#define QUADTREE_SPATIAL_PROVIDER_H_
+#pragma once
 
 #include "swganh/simulation/spatial_provider_interface.h"
 #include "swganh/object/permissions/container_permissions_interface.h"
@@ -30,8 +28,12 @@ public:
 	virtual int32_t __InternalInsert(std::shared_ptr<swganh::object::Object> object, int32_t arrangement_id=-2);
 	virtual void __InternalViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
 
+	virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr);
+
 	virtual std::shared_ptr<ContainerInterface> GetContainer() { return nullptr; }
 	virtual void SetContainer(const std::shared_ptr<ContainerInterface>& container) {}
+
+	virtual glm::vec3 __InternalGetAbsolutePosition();
 
 	void SetThis(std::shared_ptr<ContainerInterface> si) { __this = si; }
 private:
@@ -41,5 +43,3 @@ private:
 };
 
 }} // swganh_core::simulation
-
-#endif // QUADTREE_SPATIAL_PROVIDER_H_

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef VISITORS_POB_H
-#define VISITORS_POB_H
+#pragma once
 
 #include "../visitor_interface.h"
 #include <vector>
@@ -25,6 +23,8 @@ namespace tre
 	class PobVisitor : public VisitorInterface
 	{
 	public:
+		static const VisitorType Type = POB_VISITOR;
+
 		typedef std::function<void(PobVisitor*, anh::ByteBuffer& buffer)> NodeFunctor;
 		typedef std::map<std::string, NodeFunctor> NodeNameIndex;
 		typedef std::map<std::string, NodeFunctor>::iterator NodeNameIndexIterator;
@@ -35,21 +35,16 @@ namespace tre
 		PobVisitor();
 
 		/**
-			@brief returns the InterpreterType associated with this Interpreter
-		*/
-		virtual VisitorType getType() { return POB_VISITOR; }
-
-		/**
 			@brief interprets a IFF::FileNode associated with this interpreter.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(std::shared_ptr<file_node> node);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this interpreter.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_folder(std::shared_ptr<folder_node> node);
+		virtual void visit_folder(uint32_t depth, std::string name, uint32_t size);
 
 		/**
 			@brief A portal object used inside the POB files.
@@ -167,4 +162,3 @@ namespace tre
 	};
 }
 }
-#endif

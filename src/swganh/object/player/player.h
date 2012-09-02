@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_PLAYER_PLAYER_H_
-#define SWGANH_OBJECT_PLAYER_PLAYER_H_
+#pragma once
 
 #include <cstdint>
 #include <array>
@@ -14,7 +12,7 @@
 
 #include "anh/crc.h"
 
-#include "swganh/object/object.h"
+#include "swganh/object/intangible/intangible.h"
 #include "swganh/object/waypoint/waypoint.h"
 
 #include "pub14_core/messages/containers/network_sorted_list.h"
@@ -291,7 +289,7 @@ struct PlayerWaypointSerializer {
 class PlayerFactory;
 class PlayerMessageBuilder;
 
-class Player : public swganh::object::Object
+class Player : public swganh::object::intangible::Intangible
 {
 public:
     typedef PlayerFactory FactoryType;
@@ -873,8 +871,6 @@ public:
 private:
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);
 
-    mutable boost::mutex player_mutex_;
-
     std::array<FlagBitmask, 4> status_flags_;
     std::array<FlagBitmask, 4> profile_flags_;
     std::string profession_tag_;
@@ -907,5 +903,3 @@ private:
 };
 
 }}}  // namespace swganh::object::player
-
-#endif  // SWGANH_OBJECT_PLAYER_PLAYER_H_

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef PUB14_CORE_SIMULATION_MOVEMENT_MANAGER_H_
-#define PUB14_CORE_SIMULATION_MOVEMENT_MANAGER_H_
+#pragma once
 
 #include "swganh/simulation/movement_manager_interface.h"
 
@@ -23,6 +21,7 @@ namespace app {
 } // app
 namespace simulation {
 	class SpatialProviderInterface;
+	class SimulationServiceInterface;
 }} // swganh::simulation
 
 namespace swganh_core {
@@ -46,7 +45,7 @@ namespace simulation {
         void SendDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B);
         void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object);
 
-		void SetSpatialProvider(swganh::simulation::SpatialProviderInterface* spatial_provider);
+		void SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider);
 
     private:
         void RegisterEvents(anh::EventDispatcher* event_dispatcher);
@@ -58,10 +57,9 @@ namespace simulation {
         > UpdateCounterMap;
 
         UpdateCounterMap counter_map_;
-		swganh::simulation::SpatialProviderInterface* spatial_provider_;
+		std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider_;
+		swganh::simulation::SimulationServiceInterface* simulation_service_;
 		swganh::app::SwganhKernel* kernel_;
     };
 
 }}  // namespace swganh::simulation
-
-#endif  // PUB14_CORE_SIMULATION_MOVEMENT_MANAGER_H_

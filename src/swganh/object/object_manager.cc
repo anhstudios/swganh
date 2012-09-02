@@ -14,6 +14,21 @@
 #include "swganh/object/slot_exclusive.h"
 #include "swganh/object/slot_container.h"
 
+#include "anh/database/database_manager_interface.h"
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+
+#include "permissions/default_permission.h"
+#include "permissions/world_permission.h"
+#include "permissions/static_container_permission.h"
+#include "permissions/creature_permission.h"
+#include "permissions/creature_container_permission.h"
+#include "permissions/ridable_permission.h"
+#include "permissions/world_cell_permission.h"
 
 using namespace std;
 using namespace anh;
@@ -21,12 +36,42 @@ using namespace swganh::tre;
 using namespace swganh::object;
 using namespace swganh::messages;
 
-ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
-    : kernel_(kernel)
+#define DYNAMIC_ID_START 17596481011712
+
+void ObjectManager::AddContainerPermissionType_(PermissionType type, ContainerPermissionsInterface* ptr)
 {
-	auto slot_definition = kernel->GetResourceManager()->getResourceByName("abstract/slot/slot_definition/slot_definitions.iff", SLOT_DEFINITION_VISITOR);
-	
-	slot_definition_ = static_pointer_cast<SlotDefinitionVisitor>(slot_definition);	
+	permissions_objects_.insert(std::make_pair<int, std::shared_ptr<ContainerPermissionsInterface>>(static_cast<int>(type), 
+		shared_ptr<ContainerPermissionsInterface>(ptr)));
+}
+
+ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
+    : kernel_(kernel), next_dynamic_id_(DYNAMIC_ID_START)
+{
+	//Load Permissions
+	AddContainerPermissionType_(DEFAULT_PERMISSION, new DefaultPermission());
+	AddContainerPermissionType_(WORLD_PERMISSION, new WorldPermission());
+	AddContainerPermissionType_(STATIC_CONTAINER_PERMISSION, new StaticContainerPermission());
+	AddContainerPermissionType_(WORLD_CELL_PERMISSION, new WorldCellPermission());
+	AddContainerPermissionType_(CREATURE_PERMISSION, new CreaturePermission());
+	AddContainerPermissionType_(CREATURE_CONTAINER_PERMISSION, new CreatureContainerPermission());
+	AddContainerPermissionType_(RIDEABLE_PERMISSION, new RideablePermission());
+
+	//Load slot definitions
+	slot_definition_ = kernel->GetResourceManager()->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
+
+	//Load Object Templates
+	auto conn = kernel->GetDatabaseManager()->getConnection("galaxy");
+    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
+    statement->execute("SELECT i.iff_template, i.object_type FROM iff_templates i WHERE i.object_type != 0;");
+	auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());
+
+	while(result->next())
+	{
+		std::string key = result->getString("iff_template");
+		uint32_t value = result->getUInt("object_type");
+		type_lookup_.insert(make_pair(key, value));
+	}
+
 }
 
 ObjectManager::~ObjectManager()
@@ -121,7 +166,7 @@ shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
 void ObjectManager::RemoveObject(const shared_ptr<Object>& object)
 {
     boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-    object_map_.unsafe_erase(object_map_.find(object->GetObjectId()));
+    object_map_.erase(object_map_.find(object->GetObjectId()));
 }
 
 shared_ptr<Object> ObjectManager::GetObjectByCustomName(const wstring& custom_name)
@@ -175,20 +220,52 @@ shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, ui
     return find_iter->second->CreateObjectFromStorage(object_id);
 }
 
-shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const std::string& template_name)
+shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& template_name, 
+			PermissionType type, bool is_persisted, bool is_initialized, uint64_t object_id)
 {
-    auto find_iter = find_if(begin(factories_), end(factories_),
-        [&template_name] (const ObjectFactoryMap::value_type& factory_entry) 
-    {
-        return factory_entry.second->HasTemplate(template_name);
-    });
-    
-    if (find_iter == factories_.end())
-    {
-        throw InvalidObjectType("Cannot create object for an unregistered type.");
-    }
-    
-    return find_iter->second->CreateObjectFromTemplate(template_name);
+	//First find the container permission
+	auto permission_itr = permissions_objects_.find(type);
+	if(permission_itr == permissions_objects_.end())
+	{
+		LOG(warning) << "Bad permission type requested in CreateObjectFromTemplate";
+		return nullptr;
+	}
+
+	//Then make sure we actually can create an object of this type
+	shared_ptr<Object> created_object;
+    auto template_itr = type_lookup_.find(template_name);
+	if(template_itr != type_lookup_.end())
+	{
+		//Find that type's facory
+		auto factory_itr = factories_.find(template_itr->second);
+		if(factory_itr != factories_.end())
+		{
+			//Create the object with that factory
+			created_object = factory_itr->second->CreateObjectFromTemplate(template_name, is_persisted, is_initialized);
+			if(created_object != nullptr)
+			{
+				//Set the required stuff
+				created_object->SetPermissions(permission_itr->second);
+				created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
+				created_object->SetTemplate(template_name);
+				LoadSlotsForObject(created_object);
+
+				//Set the ID based on the inputs
+				if(!is_persisted)
+				{
+					if(object_id == 0)
+						created_object->SetObjectId(next_dynamic_id_++);
+					else
+						created_object->SetObjectId(object_id);
+				}
+
+				//Insert it into the object map
+				boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
+				object_map_.insert(make_pair(created_object->GetObjectId(), created_object));
+			}
+		}
+	}
+	return created_object;
 }
 
 void ObjectManager::DeleteObjectFromStorage(const std::shared_ptr<Object>& object)
@@ -259,15 +336,17 @@ std::shared_ptr<swganh::tre::SlotDefinitionVisitor>  ObjectManager::GetSlotDefin
 
 void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 {
-	auto oiff = static_pointer_cast<ObjectVisitor>(kernel_->GetResourceManager()->getResourceByName(object->GetTemplate(), OIFF_VISITOR));
+	auto oiff = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(object->GetTemplate());
 	oiff->load_aggregate_data(kernel_->GetResourceManager());
-	oiff->load_referenced_files(kernel_->GetResourceManager());
 
-	auto arrangmentDescriptor = oiff->attribute<std::shared_ptr<SlotArrangementVisitor>>("arrangementDescriptorFilename");
-	auto slotDescriptor = oiff->attribute<std::shared_ptr<SlotDescriptorVisitor>>("slotDescriptorFilename");
+	auto arrangmentDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotArrangementVisitor>(
+		oiff->attribute<std::string>("arrangementDescriptorFilename"));
+
+	auto slotDescriptor = kernel_->GetResourceManager()->GetResourceByName<SlotDescriptorVisitor>(
+		oiff->attribute<std::string>("slotDescriptorFilename"));
+
 	ObjectArrangements arrangements;
 		
-	// CRAZY SHIT
 	// arrangements
 	if (arrangmentDescriptor != nullptr)
 	{
@@ -286,17 +365,6 @@ void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 	// Globals
 	//
 	descriptors.insert(ObjectSlots::value_type(-1, shared_ptr<SlotContainer>(new SlotContainer())));
-	for (size_t k = 0; k < slot_definition_->count(); ++k)
-	{
-		auto entry = slot_definition_->entry(k);		
-		if (entry.global)
-		{
-			if(entry.exclusive)
-				descriptors.insert(ObjectSlots::value_type(k, shared_ptr<SlotExclusive>(new SlotExclusive())));
-			else
-				descriptors.insert(ObjectSlots::value_type(k, shared_ptr<SlotContainer>(new SlotContainer())));
-		}
-	}
 
 	// Descriptors
 	if (slotDescriptor != nullptr)
@@ -314,4 +382,15 @@ void ObjectManager::LoadSlotsForObject(std::shared_ptr<Object> object)
 	}
 	
 	object->SetSlotInformation(descriptors, arrangements);
+}
+
+PermissionsObjectMap& ObjectManager::GetPermissionsMap()
+{
+	return permissions_objects_;
+}
+
+void ObjectManager::PrepareToAccomodate(uint32_t delta)
+{
+	boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
+	object_map_.reserve(object_map_.size() + delta);
 }

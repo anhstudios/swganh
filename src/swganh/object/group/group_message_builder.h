@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_GROUP_GROUP_MESSAGE_BUILDER_H_
-#define SWGANH_OBJECT_GROUP_GROUP_MESSAGE_BUIlDER_H_
+#pragma once
 
 #include <boost/optional.hpp>
 #include <cstdint>
@@ -39,11 +37,12 @@ public:
     static void BuildDifficultyDelta(const std::shared_ptr<Group>& group);
     static void BuildLootMasterDelta(const std::shared_ptr<Group>& group);
 
-    // baselines
-    static void BuildBaseline3(const std::shared_ptr<Group>& group);
-    static void BuildBaseline6(const std::shared_ptr<Group>& group);
+    virtual void SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+
+	static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Group>& group);
+    static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Group>& group);
+private:
+	typedef anh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
 };
 
 }}} // swganh::object::group
-
-#endif // SWGANH_OBJECT_GROUP_GROUP_MESSAGE_BUILDER_H_

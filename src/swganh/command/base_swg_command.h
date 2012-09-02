@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_COMMAND_BASE_SWG_COMMAND_H_
-#define SWGANH_COMMAND_BASE_SWG_COMMAND_H_
+#pragma once
 
 #include <memory>
 
@@ -73,6 +71,8 @@ namespace command {
 
         const std::shared_ptr<object::tangible::Tangible>& GetTarget() const;
 
+		const std::shared_ptr<object::creature::Creature>& GetTargetCreature() const;
+
         const std::wstring& GetCommandString() const;
 
         void SetCommandProperties(const CommandProperties& properties);
@@ -86,9 +86,8 @@ namespace command {
         std::shared_ptr<object::ObjectController> controller_;
         mutable std::shared_ptr<object::creature::Creature> actor_;
         mutable std::shared_ptr<object::tangible::Tangible> target_;
+		mutable std::shared_ptr<object::creature::Creature> creature_target_;
         swganh::messages::controllers::CommandQueueEnqueue command_request_;
     };
 
 }}
-
-#endif  // SWGANH_COMMAND_BASE_SWG_COMMAND_H_

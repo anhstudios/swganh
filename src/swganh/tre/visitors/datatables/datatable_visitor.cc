@@ -3,31 +3,29 @@
 
 #include "datatable_visitor.h"
 #include "../../iff/iff.h"
-#include "../../iff/filenode.h"
-#include "../../iff/foldernode.h"
 
 #include <regex>
 
 using namespace std;
 using namespace swganh::tre;
 
-void DatatableVisitor::visit_folder(std::shared_ptr<folder_node> node)
+void DatatableVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {
 }
 
-void DatatableVisitor::visit_data(std::shared_ptr<file_node> node)
+void DatatableVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
 {
-	if(node->name() == "0001COLS")
+	if(name == "0001COLS")
 	{
-		_handle0001COLS(node->data());
+		_handle0001COLS(data);
 	}
-	else if(node->name() == "TYPE")
+	else if(name == "TYPE")
 	{
-		_handleTYPE(node->data());
+		_handleTYPE(data);
 	}
-	else if(node->name() == "ROWS")
+	else if(name == "ROWS")
 	{
-		_handleROWS(node->data());
+		_handleROWS(data);
 	}
 }
 

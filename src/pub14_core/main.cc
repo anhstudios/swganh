@@ -16,6 +16,8 @@
 #include "anh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
+
+#include "attributes/attributes_init.h"
 #include "chat/chat_init.h"
 #include "combat/combat_init.h"
 #include "character/character_init.h"
@@ -28,8 +30,10 @@
 #include "player/player_init.h"
 #include "social/social_init.h"
 #include "equipment/equipment_init.h"
+#include "spawn/spawn_init.h"
 #include "sui/sui_init.h"
 #include "weather/weather_init.h"
+#include "terrain/terrain_init.h"
 
 using anh::app::KernelInterface;
 using anh::plugin::ExitFunc;
@@ -53,6 +57,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 {
     auto swganh_kernel = static_cast<SwganhKernel*>(kernel);    
     
+	swganh_core::attributes::Initialize(swganh_kernel);
     swganh_core::character::Initialize(swganh_kernel);
 	swganh_core::connection::Initialize(swganh_kernel);
     pub14_core::command::Initialize(swganh_kernel);
@@ -65,7 +70,9 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh_core::simulation::Initialize(swganh_kernel);
 	swganh_core::player::Initialize(swganh_kernel);
 	swganh_core::social::Initialize(swganh_kernel);
+	swganh_core::spawn::Initialize(swganh_kernel);
 	swganh_core::sui::Initialize(swganh_kernel);
 	swganh_core::weather::Initialize(swganh_kernel);
+	swganh_core::terrain::Initialize(swganh_kernel);
     return ExitModule;
 }

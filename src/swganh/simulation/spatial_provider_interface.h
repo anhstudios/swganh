@@ -1,9 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
-#ifndef SWGANH_SIMULATION_SPATIAL_PROVIDER_H_
-#define SWGANH_SIMULATION_SPATIAL_PROVIDER_H_
-
+#include <list>
 #include <memory>
 #include <glm/glm.hpp>
 
@@ -28,5 +27,3 @@ public:
 };
 
 }} // namespace swganh::simulation
-
-#endif // SWGANH_SIMULATION_SPATIAL_INDEX_PROVIDER_H_

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_MESSAGES_ATTRIBUTE_LIST_MESSAGE_H_
-#define SWGANH_MESSAGES_ATTRIBUTE_LIST_MESSAGE_H_
+#pragma once
 
 #include <cstdint>
 #include <algorithm>
@@ -16,6 +14,9 @@ namespace messages {
 
     struct Attribute
     {
+		Attribute(std::string name_, std::wstring val)
+			: name(name_)
+			, value(val) { }
     	std::string name;
     	std::wstring value;
     };
@@ -43,14 +44,12 @@ namespace messages {
             object_id = buffer.read<uint64_t>();
     		uint32_t attribute_count = buffer.read<uint32_t>();
     		for(uint32_t i = 0; i < attribute_count; i++) {
-    			Attribute attribute;
-    			attribute.name = buffer.read<std::string>();
-    			attribute.value = buffer.read<std::wstring>();
-    			attributes.push_back(attribute);
+    			
+    			auto name = buffer.read<std::string>();
+    			auto value = buffer.read<std::wstring>();
+    			attributes.push_back(std::move(Attribute(name, value)));
     		}
     	}
     };
 
 }} // namespace swganh::messages
-
-#endif // SWGANH_MESSAGES_ATTRIBUTE_LIST_MESSAGE_H_

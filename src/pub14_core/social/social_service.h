@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_CORE_SOCIAL_SOCIAL_SERVICE_H_
-#define SWGANH_CORE_SOCIAL_SOCIAL_SERVICE_H_
+#pragma once
 
 #include <cstdint>
 #include <map>
@@ -34,5 +32,3 @@ namespace social {
     };
 
 }}  // namespace swganh::social
-
-#endif  // SWGANH_SOCIAL_SOCIAL_SERVICE_H_

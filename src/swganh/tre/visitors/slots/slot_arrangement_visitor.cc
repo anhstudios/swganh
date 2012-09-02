@@ -4,30 +4,24 @@
 #include "slot_arrangement_visitor.h"
 
 #include "../../iff/iff.h"
-#include "../../iff/filenode.h"
-#include "../../iff/foldernode.h"
 
 using namespace std;
 using namespace swganh::tre;
 
-void SlotArrangementVisitor::visit_folder(std::shared_ptr<folder_node> node)
+void SlotArrangementVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {
 }
 
-void SlotArrangementVisitor::visit_data(shared_ptr<file_node> node)
+void SlotArrangementVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
 {
-	if(node->name() == "0000ARG ")
+	if(name == "0000ARG ")
 	{
-		_handle0000ARG(node->data());
+		uint32_t end_pos = data.read_position() + size;
+		std::vector<string> combination;
+		while(data.read_position() < end_pos)
+		{
+			combination.push_back(data.read<string>(false, true));
+		}
+		combinations_.push_back(std::move(combination));
 	}
-}
-
-void SlotArrangementVisitor::_handle0000ARG(anh::ByteBuffer& buf)
-{
-	std::vector<string> combination;
-	while(buf.read_position() < buf.size())
-	{
-		combination.push_back(buf.read<string>(false, true));
-	}
-	combinations_.push_back(std::move(combination));
 }

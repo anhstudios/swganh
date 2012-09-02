@@ -1,10 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
-#ifndef SWGANH_OBJECT_PLAYER_PLAYER_FACTORY_H_
-#define SWGANH_OBJECT_PLAYER_PLAYER_FACTORY_H_
-
-#include "swganh/object/object_factory.h"
+#include "swganh/object/intangible/intangible_factory.h"
 #include <unordered_map>
 
 namespace anh {
@@ -21,23 +19,20 @@ namespace object {
 namespace player {
     
     class Player;
-    class PlayerFactory : public swganh::object::ObjectFactory
+    class PlayerFactory : public swganh::object::intangible::IntangibleFactory
     {
     public:
+		typedef Player ObjectType;
+
         PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
             anh::EventDispatcher* event_dispatcher);
-
-        void LoadTemplates();
-
-        bool HasTemplate(const std::string& template_name);
-
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
         
         void RegisterEventHandlers();
     private:
@@ -60,11 +55,6 @@ namespace player {
         void LoadIgnoredList_(std::shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement);
         void RemoveFromIgnoredList_(const std::shared_ptr<Player>& player, uint64_t ignore_player_id);
         void PersistIgnoredList_(const std::shared_ptr<Player>& player);
-
-        std::unordered_map<std::string, std::shared_ptr<Player>>::iterator GetTemplateIter_(const std::string& template_name);
-        std::unordered_map<std::string, std::shared_ptr<Player>> player_templates_;
     };
 
 }}}  // namespace swganh::object::player
-
-#endif  // SWGANH_OBJECT_PLAYER_PLAYER_FACTORY_H_

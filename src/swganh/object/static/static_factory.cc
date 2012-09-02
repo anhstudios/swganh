@@ -7,14 +7,12 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::static_obj;
+using namespace swganh::object::static_object;
 
-void StaticFactory::LoadTemplates()
-{}
-
-bool StaticFactory::HasTemplate(const string& template_name)
+StaticFactory::StaticFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher)
+	: ObjectFactory(db_manager, event_dispatcher)
 {
-    return false;
 }
 
 uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object)
@@ -32,7 +30,8 @@ shared_ptr<Object> StaticFactory::CreateObjectFromStorage(uint64_t object_id)
     return make_shared<Static>();
 }
 
-shared_ptr<Object> StaticFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> StaticFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
+	//@TODO: Create me with help from db
     return make_shared<Static>();
 }

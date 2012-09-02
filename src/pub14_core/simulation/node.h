@@ -1,9 +1,8 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
-#ifndef NODE_H_
-#define NODE_H_
-
+#include <list>
 #include <set>
 #include <memory>
 
@@ -62,7 +61,7 @@ public:
 	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
 	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::vec3& old_position, const glm::vec3& new_position);
 	void Split();
-	std::set<std::shared_ptr<swganh::object::Object>> Query(QueryBox query_box);
+	std::list<std::shared_ptr<swganh::object::Object>> Query(QueryBox query_box);
 
 	const NodeQuadrant& GetQuadrant(void) { return quadrant_; }
 	const uint32_t& GetLevel(void) { return level_; }
@@ -70,7 +69,7 @@ public:
 	const Region& GetRegion(void) { return region_; }
 	const boost::array<std::shared_ptr<Node>, 4>& GetLeafNodes(void) { return leaf_nodes_; }
 	const std::set<std::shared_ptr<swganh::object::Object>>& GetObjects(void) { return objects_; }
-	const std::set<std::shared_ptr<swganh::object::Object>> GetContainedObjects(void);
+	std::list<std::shared_ptr<swganh::object::Object>> GetContainedObjects(void);
 
 protected:
 	void InsertObject_(std::shared_ptr<swganh::object::Object> obj);
@@ -97,5 +96,3 @@ private:
 };
 
 } // namespace quadtree
-
-#endif // NODE_H_

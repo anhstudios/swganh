@@ -1,21 +1,25 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
-#ifndef SWGANH_OBJECT_FACTORY_CRATE_FACTORY_CRATE_FACTORY_H_
-#define SWGANH_OBJECT_FACTORY_CRATE_FACTORY_CRATE_FACTORY_H_
-
-#include "swganh/object/object_factory_interface.h"
+#include "swganh/object/tangible/tangible_factory.h"
 
 namespace swganh {
 namespace object {
+
+	class ObjectManager;
+
 namespace factory_crate {
 
-    class FactoryCrateFactory : public swganh::object::ObjectFactoryInterface
+	class FactoryCrate;
+
+    class FactoryCrateFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
-        void LoadTemplates();
+		typedef FactoryCrate ObjectType;
 
-        bool HasTemplate(const std::string& template_name);
+        FactoryCrateFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
@@ -23,9 +27,11 @@ namespace factory_crate {
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+
+		virtual void RegisterEventHandlers(){}
+
     };
 
-}}}  // namespace swganh::object::factory_crate
 
-#endif  // SWGANH_OBJECT_FACTORY_CRATE_FACTORY_CRATE_FACTORY_H_
+}}}  // namespace swganh::object::factory_crate

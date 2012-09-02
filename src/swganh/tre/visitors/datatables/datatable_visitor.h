@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef DATATABLE_VISITOR_H
-#define DATATABLE_VISITOR_H
+#pragma once
 
 #include "../visitor_interface.h"
 
@@ -20,22 +18,19 @@ namespace tre
 	class DatatableVisitor : public VisitorInterface
 	{
 	public:
-		/**
-			@brief returns the VisitorType associated with this Visitor
-		*/
-		virtual VisitorType getType() { return DATATABLE_VISITOR; }
+		static const VisitorType Type = DATATABLE_VISITOR;
 
 		/**
 			@brief interprets a IFF::FileNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(std::shared_ptr<file_node> node);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_folder(std::shared_ptr<folder_node> node);
+		virtual void visit_folder(uint32_t depth, std::string name, uint32_t size);
 
 		class DATA_ROW
 		{
@@ -66,5 +61,3 @@ namespace tre
 	};
 }
 }
-
-#endif

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef LIBANH_CRC_H_
-#define LIBANH_CRC_H_
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -47,5 +45,3 @@ uint32_t memcrc(const std::string& source_string);
 uint32_t memcrc(const unsigned char* src_buffer, uint32_t length, uint32_t seed);
 
 }  // namespace anh
-
-#endif  // LIBANH_CRC_H_

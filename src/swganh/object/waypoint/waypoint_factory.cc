@@ -29,7 +29,7 @@ using namespace swganh::messages::containers;
 
 WaypointFactory::WaypointFactory(DatabaseManagerInterface* db_manager,
                                  EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, event_dispatcher)
+    : IntangibleFactory(db_manager, event_dispatcher)
 {
     RegisterEventHandlers();
 }
@@ -71,50 +71,6 @@ void WaypointFactory::LoadWaypoints(const shared_ptr<player::Player>& player, co
             
         player->AddWaypoint(move(player::PlayerWaypointSerializer(waypoint)));
     }
-}
-
-void WaypointFactory::LoadTemplates()
-{
-    try {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_GetWaypointTemplates();");
-        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());
-
-		while (result->next())
-        {
-            auto waypoint = make_shared<Waypoint>();
-            // position orientation not used in waypoints
-            
-            waypoint->SetCoordinates(
-                static_cast<int16_t>(result->getDouble("coord_x")),
-                static_cast<int16_t>(result->getDouble("coord_y")),
-                static_cast<int16_t>(result->getDouble("coord_z")));
-            uint16_t activated = result->getUInt("active");
-            activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
-            waypoint->SetPlanet(result->getString("planet"));
-            waypoint->SetColor(result->getString("color"));
-            
-            waypoint_templates_.insert(make_pair(waypoint->GetTemplate(), move(waypoint)));
-        } while (statement->getMoreResults());
-    }
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-}
-
-bool WaypointFactory::HasTemplate(const string& template_name)
-{
-    return GetTemplateIter_(template_name) != end(waypoint_templates_);
-}
-unordered_map<string,shared_ptr<Waypoint>>::iterator WaypointFactory::GetTemplateIter_(const string& template_name)
-{
-    auto iter = find_if(begin(waypoint_templates_), end(waypoint_templates_), [&template_name] (pair<string, shared_ptr<Waypoint>> template_pair) {
-        return template_name == template_pair.first;
-    });
-
-    return iter;
 }
 
 uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object)
@@ -202,18 +158,8 @@ shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
     return waypoint;
 }
 
-shared_ptr<Object> WaypointFactory::CreateObjectFromTemplate(const string& template_name)
+shared_ptr<Object> WaypointFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-    auto object = make_shared<Waypoint>();
-    auto found = GetTemplateIter_(template_name);
-    if (found != end(waypoint_templates_))
-    {
-        object = found->second;
-    }
-    else
-    {
-        throw swganh::object::InvalidObjectTemplate("Template Not Found: " + template_name);
-    }
-    
-    return object;
+	//@TODO: Create me with help from db
+	return make_shared<Waypoint>();
 }

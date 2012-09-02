@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_CREATURE_H_
-#define SWGANH_OBJECT_CREATURE_H_
+#pragma once
 
 #include <atomic>
 #include <list>
@@ -597,8 +595,6 @@ public:
 	
     typedef anh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 private:
-    mutable boost::mutex creature_mutex_;
-
     std::atomic<uint32_t>    bank_credits_;                                                             // update 1 variable 0
     std::atomic<uint32_t>    cash_credits_;                                                             // update 1 variable 1
     swganh::messages::containers::NetworkArray<Stat> stat_base_list_;                                   // update 1 variable 2
@@ -647,5 +643,3 @@ private:
 };
 
 }}}  // namespace swganh::object::creature
-
-#endif // SWGANH_OBJECT_CREATURE_CREATURE_H_

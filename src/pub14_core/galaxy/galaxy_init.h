@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_CORE_GALAXY_INITIALIZATION_H_
-#define SWGANH_CORE_GALAXY_INITIALIZATION_H_
+#pragma once
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
@@ -57,5 +55,3 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 }
 
 }}  // namespace swganh_core::galaxy
-
-#endif  // SWGANH_CORE_GALAXY_INITIALIZATION_H_

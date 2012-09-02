@@ -9,6 +9,7 @@ add_subdirectory(object)
 add_subdirectory(social)
 add_subdirectory(simulation)
 add_subdirectory(sui)
+add_subdirectory(terrain)
 add_subdirectory(utilities)
 add_subdirectory(weather)
 

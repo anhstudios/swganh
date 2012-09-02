@@ -1,21 +1,30 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
-#ifndef SWGANH_OBJECT_RESOURCE_CONTAINER_RESOURCE_CONTAINER_FACTORY_H_
-#define SWGANH_OBJECT_RESOURCE_CONTAINER_RESOURCE_CONTAINER_FACTORY_H_
+#include "swganh/object/tangible/tangible_factory.h"
 
-#include "swganh/object/object_factory_interface.h"
+namespace anh {
+namespace database {
+class DatabaseManagerInterface;
+}} // anh::database
+
+namespace sql {
+class Statement;
+}
 
 namespace swganh {
 namespace object {
 namespace resource_container {
 
-    class ResourceContainerFactory : public swganh::object::ObjectFactoryInterface
+	class ResourceContainer;
+    class ResourceContainerFactory : public swganh::object::tangible::TangibleFactory
     {
     public:
-        void LoadTemplates();
+		typedef ResourceContainer ObjectType;
 
-        bool HasTemplate(const std::string& template_name);
+		 ResourceContainerFactory(anh::database::DatabaseManagerInterface* db_manager,
+            anh::EventDispatcher* event_dispatcher);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
@@ -23,9 +32,9 @@ namespace resource_container {
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
-        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name);
+        std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
+
+		virtual void RegisterEventHandlers(){}
     };
 
 }}}  // namespace swganh::object::resource_container
-
-#endif  // SWGANH_OBJECT_RESOURCE_CONTAINER_RESOURCE_CONTAINER_FACTORY_H_

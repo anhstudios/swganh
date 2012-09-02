@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_GUILD_GUILD_H_
-#define SWGANH_OBJECT_GUILD_GUILD_H_
+#pragma once
 
 #include <sstream>
 
@@ -65,14 +63,9 @@ public:
     virtual uint32_t GetType() const { return type; }
     const static uint32_t type = 0x444C4947;
 
-    static void GetBaseline3();
-    static void GetBaseline6();
-    typedef anh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
 private:
-    mutable boost::mutex guild_mutex_;
+	typedef anh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
     swganh::messages::containers::NetworkList<GuildTag>     guild_list_;
 };
 
 }}}  // namespaces swganh::object::guild
-
-#endif // SWGANH_OBJECT_GUILD_GUILD_H_

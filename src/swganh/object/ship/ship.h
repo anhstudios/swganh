@@ -1,13 +1,11 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_SHIP_SHIP_H_
-#define SWGANH_OBJECT_SHIP_SHIP_H_
+#pragma once
 
 #include <cstdint>
 #include <string>
 
-#include "swganh/object/object.h"
+#include "swganh/object/creature/creature.h"
 
 namespace swganh {
 namespace object {
@@ -20,7 +18,7 @@ struct ShipList {
     ValueType value;
 };
     
-class Ship : public swganh::object::Object
+class Ship : public swganh::object::creature::Creature
 {
 public:
     // SHIP
@@ -28,8 +26,6 @@ public:
     const static uint32_t type = 0x6FB799E0; 
     
 private:
-    std::vector<ShipList<float>> ukn1;                              // update 1
-    std::vector<ShipList<float>> ukn2;                              // update 1
     std::vector<ShipList<float>> energy_drain_;                     // update 1
     std::vector<ShipList<float>> mass_;                             // update 1
     std::vector<ShipList<std::wstring>> custom_component_names_;    // update 1
@@ -68,8 +64,8 @@ private:
     uint32_t unkow6;                                                // update 1
     uint32_t unkow7;                                                // update 1
     uint32_t unkow8;                                                // update 1
+
+
 };
     
 }}}  // namespace swganh::object::ship
-
-#endif  // SWGANH_OBJECT_SHIP_SHIP_H_

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_NETWORK_NETWORK_LIST_H_
-#define SWGANH_NETWORK_NETWORK_LIST_H_
+#pragma once
 
 #include <list>
 
@@ -157,5 +155,3 @@ private:
 };
 
 }}} // namespaces
-
-#endif // SWGANH_NETWORK_NETWORK_VECTOR_H_

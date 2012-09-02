@@ -6,6 +6,7 @@
 #include "anh/logger.h"
 
 #include "swganh/object/object.h"
+#include "swganh/object/permissions/world_permission.h"
 
 using std::shared_ptr;
 
@@ -20,7 +21,7 @@ QuadtreeSpatialProvider::QuadtreeSpatialProvider()
 	: root_node_(ROOT, Region(Point(-8300.0f, -8300.0f), 
 	Point(8300.0f, 8300.0f)), 0, 9, nullptr)
 {
-	SetPermissions(std::shared_ptr<ContainerPermissionsInterface>(new WorldContainerPermissions()));
+	SetPermissions(std::shared_ptr<ContainerPermissionsInterface>(new WorldPermission()));
 }
 
 QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
@@ -28,7 +29,7 @@ QuadtreeSpatialProvider::~QuadtreeSpatialProvider(void)
 	__this.reset();
 }
 
-void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> requester,shared_ptr<Object> object, int32_t arrangement_id)
+void QuadtreeSpatialProvider::AddObject(std::shared_ptr<swganh::object::Object> requester, shared_ptr<Object> object, int32_t arrangement_id)
 {
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 	{
@@ -63,6 +64,8 @@ void QuadtreeSpatialProvider::RemoveObject(std::shared_ptr<swganh::object::Objec
 
 void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old_position, glm::vec3 new_position)
 {
+	std::vector<std::shared_ptr<Object>> deleted_objects;
+
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 	{
 		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
@@ -71,14 +74,13 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 
 	auto new_objects = root_node_.Query(GetQueryBoxViewRange(obj));
 	
-	std::vector<std::shared_ptr<Object>> deleted_objects;
-	
 	obj->__InternalViewAwareObjects([&] (std::shared_ptr<Object> aware_object) 
 	{
 		// If we are top level (aka SI can see us)
 		if (aware_object->GetContainer()->GetObjectId() == GetObjectId())
 		{
-			auto new_itr = new_objects.find(aware_object);
+			auto new_itr = std::find(new_objects.begin(), new_objects.end(), aware_object);
+
 			if(new_itr != new_objects.end())
 			{
 				new_objects.erase(new_itr);
@@ -126,7 +128,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 
 		newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) {
 			auto itr = oldObservers.find(observer);
-			if(itr == oldObservers.end()) {
+			if(itr != oldObservers.end()) {
 				oldObservers.erase(itr);
 				bothObservers.insert(observer);
 			} else {
@@ -156,7 +158,7 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 
 void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
 {
-	std::set<std::shared_ptr<Object>> contained_objects;
+	std::list<std::shared_ptr<Object>> contained_objects;
 	if (requester)
 	{
 		contained_objects = root_node_.Query(GetQueryBoxViewRange(requester));		
@@ -179,6 +181,11 @@ void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requ
 	}
 }
 
+void QuadtreeSpatialProvider::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint)
+{
+	__InternalViewObjects(hint, 0, true, func);
+}
+
 int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
 {
 	root_node_.InsertObject(object);
@@ -186,9 +193,14 @@ int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object
 	return -1;
 }
 
+glm::vec3 QuadtreeSpatialProvider::__InternalGetAbsolutePosition()
+{
+	return glm::vec3(0, 0, 0);
+}
+
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
-	auto position = object->GetPosition();
+	auto position = object->__InternalGetAbsolutePosition();
 	return QueryBox(Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));
 	
 }

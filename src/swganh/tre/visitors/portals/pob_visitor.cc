@@ -3,13 +3,10 @@
 
 #include "pob_visitor.h"
 #include "../../iff/iff.h"
-#include "../../iff/filenode.h"
-#include "../../iff/foldernode.h"
 
 using namespace swganh::tre;
 using namespace std::placeholders;
 using namespace std;
-using namespace boost;
 
 PobVisitor::NodeNameIndex PobVisitor::nameLookup_;
 
@@ -28,16 +25,16 @@ PobVisitor::PobVisitor()
 	}
 }
 
-void PobVisitor::visit_folder(std::shared_ptr<folder_node> node)
+void PobVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {
 }
 
-void PobVisitor::visit_data(std::shared_ptr<file_node> node)
+void PobVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
 {
-	NodeNameIndexIterator it = nameLookup_.find(node->name());
+	NodeNameIndexIterator it = nameLookup_.find(name);
 	if( it != nameLookup_.cend())
 	{
-		it->second(this, node->data());
+		it->second(this, data);
 	}
 }
 

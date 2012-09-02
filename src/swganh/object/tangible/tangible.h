@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_TANGIBLE_TANGIBLE_H_
-#define SWGANH_OBJECT_TANGIBLE_TANGIBLE_H_
+#pragma once
 
 #include <cstdint>
 #include <atomic>
@@ -10,8 +8,6 @@
 #include <string>
 #include <vector>
 #include <list>
-
-#include <boost/thread/mutex.hpp>
 
 #include "swganh/object/object.h"
 #include "pub14_core/messages/containers/network_sorted_vector.h"
@@ -148,8 +144,6 @@ public:
     virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
 private:
     typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
-    
-    mutable boost::mutex tangible_mutex_;
 
     std::string customization_;                                                                                      // update 3 variable 4
     swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;                 // update 3 variable 5
@@ -164,5 +158,3 @@ private:
 };
     
 }}}  // namespace swganh::object::tangible
-
-#endif  // SWGANH_OBJECT_TANGIBLE_TANGIBLE_H_

@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_INTANGIBLE_INTANGIBLE_MESSAGE_BUILDER_H_
-#define SWGANH_OBJECT_INTANGIBLE_INTANGIBLE_MESSAGE_BUILDER_H_
+#pragma once
 
 #include <memory>
 #include <boost/optional.hpp>
@@ -29,10 +27,11 @@ namespace intangible {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        static void BuildStfDetailDelta(const std::shared_ptr<Intangible>& intangible);
+
+		virtual void SendBaselines(const std::shared_ptr<Intangible>& intangible, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+
+		static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Intangible>& intangible);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Intangible>& intangible);
     };
 
 }}}  // swganh::object::intangible
-
-#endif  // SWGANH_OBJECT_INTANGIBLE_INTANGIBLE_MESSAGE_BUILDER_H_
