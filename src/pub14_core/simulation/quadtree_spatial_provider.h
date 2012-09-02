@@ -36,6 +36,8 @@ private:
 	std::shared_ptr<ContainerInterface> __this;
 	quadtree::Node root_node_;
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);
+
+	void CheckCollisions(std::shared_ptr<swganh::object::Object> object);
 };
 
 }} // swganh_core::simulation

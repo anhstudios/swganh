@@ -14,17 +14,14 @@
 
 #include <glm/glm.hpp>
 
-namespace swganh {
-namespace object {
-	class Object;
-}} // namespace swganh::object
-
+#include <swganh/object/object.h>
 namespace quadtree
 {
 
 typedef boost::geometry::model::box< boost::geometry::model::d2::point_xy<double> > Region;
 typedef boost::geometry::model::box< boost::geometry::model::d2::point_xy<double> > QueryBox;
 typedef boost::geometry::model::d2::point_xy<double> Point;
+typedef boost::geometry::model::polygon<Point> QueryRegion;
 
 enum NodeQuadrant
 {
@@ -74,7 +71,7 @@ public:
 protected:
 	void InsertObject_(std::shared_ptr<swganh::object::Object> obj);
 	void RemoveObject_(std::shared_ptr<swganh::object::Object> obj);
-	std::shared_ptr<Node> GetNodeWithinPoint_(Point point);
+	std::shared_ptr<Node> GetNodeContainingVolume_(swganh::object::BoundingVolume volumn);
 	
 	Node* GetRootNode_(void) { 	
 		// Go to the root.

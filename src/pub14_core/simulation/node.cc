@@ -27,6 +27,9 @@ Node::~Node(void)
 
 void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 {
+	obj->__BuildCollisionBox();
+	obj->__BuildBoundingVolume();
+
 	// If the amount of objects contained is equal to or exceeds (in the case of objects not fitting
 	// completely into one node), and we havn't reached the "maximum level" count, and we are a LEAF
 	// node, Split().
@@ -35,7 +38,7 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 		Split();
 	}
 
-	// Flipped to true if a child node of proper side was found to
+	// Flipped to true if a child node of proper size was found to
 	// contain the object. Otherwise, the object will be added to 
 	// this node.
 	bool success = false;
@@ -44,7 +47,7 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 	{
 		std::for_each(leaf_nodes_.begin(), leaf_nodes_.end(), [=, &obj, &success](std::shared_ptr<Node> node){
 			// If we can fit within the node, traverse.
-			if(boost::geometry::within( Point(obj->GetPosition().x, obj->GetPosition().z) , node->GetRegion()))
+			if(boost::geometry::within( obj->GetWorldBoundingVolume(), node->GetRegion() ))
 			{
 				node->InsertObject(obj);
 				success = true;
@@ -55,6 +58,7 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 
 	if(success)
 		return;
+
 
 	objects_.insert(obj);
 }
@@ -77,18 +81,17 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 	// each leaf node if we are a BRANCH.
 	if(state_ == BRANCH)
 	{
-		Point obj_point(obj->GetPosition().x, obj->GetPosition().z);
+		auto bounding_volume = obj->GetWorldBoundingVolume();
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
 			// If we can actually fit inside the node, traverse farther.
-			if(boost::geometry::within(obj_point, node->GetRegion()))
+			if(boost::geometry::within(bounding_volume, node->GetRegion()))
 			{
 				node->RemoveObject(obj);
 				return;
 			}
 		}
 	}
-
 }
 
 void Node::Split()
@@ -112,10 +115,11 @@ void Node::Split()
 	for(auto i = objects_.begin(); i != objects_.end();)
 	{
 		auto obj = (*i);
+		auto bounding_volume = obj->GetWorldBoundingVolume();
 		bool success = false;
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
-			if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().z) , node->GetRegion()))
+			if(boost::geometry::within(bounding_volume , node->GetRegion()))
 			{
 				i = objects_.erase(i);
 				node->InsertObject(std::move(obj));
@@ -134,7 +138,7 @@ std::list<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_bo
 	std::list<std::shared_ptr<swganh::object::Object>> return_list;
 
 	std::for_each(objects_.begin(), objects_.end(), [=,& return_list](std::shared_ptr<swganh::object::Object> obj) {
-		if(boost::geometry::within(Point(obj->GetPosition().x, obj->GetPosition().z), query_box))
+		if(boost::geometry::intersects(obj->GetWorldBoundingVolume(), query_box))
 			return_list.push_back(obj);
 	});
 
@@ -182,22 +186,28 @@ std::list<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(voi
 
 void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::vec3& old_position, const glm::vec3& new_position)
 {
-	Point old_position_point(old_position.x, old_position.z);
-	Point new_position_point(new_position.x, new_position.z);
+	swganh::object::BoundingVolume new_bounding_volumn;
+	boost::geometry::transform(obj->GetLocalBoundingVolume(), new_bounding_volumn, boost::geometry::strategy::transform::translate_transformer<Point, Point>(new_position.x, new_position.z));
+	
+	swganh::object::BoundingVolume old_bounding_volumn;
+	boost::geometry::transform(obj->GetLocalBoundingVolume(), old_bounding_volumn, boost::geometry::strategy::transform::translate_transformer<Point, Point>(old_position.x, old_position.z));
 
 	// Check the objects of this node.
 	for(auto i = objects_.begin(); i != objects_.end(); i++) {
 		auto node_obj = (*i);
 		if(node_obj->GetObjectId() == obj->GetObjectId())
 		{
+			node_obj->UpdateWorldBoundingVolume();
+			node_obj->UpdateWorldCollisionBox();
+
 			// If we are in the same node, we don't need to do anything.
-			if(boost::geometry::within(new_position_point, region_))
+			if(boost::geometry::within(new_bounding_volumn, region_))
 			{
 				return;
 			}
 
 			// Move our object from this node to a new node.
-			std::shared_ptr<Node> node = GetRootNode_()->GetNodeWithinPoint_(new_position_point);
+			std::shared_ptr<Node> node = GetRootNode_()->GetNodeContainingVolume_(new_bounding_volumn);
 			objects_.erase(i);
 			node->InsertObject(obj);
 			return;
@@ -209,7 +219,7 @@ void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
 			// Go further into the tree if our point is within our child node.
-			if(boost::geometry::within(old_position_point, node->GetRegion()))
+			if(boost::geometry::within(old_bounding_volumn, node->GetRegion()))
 			{
 				node->UpdateObject(obj, old_position, new_position);
 				return;
@@ -218,10 +228,10 @@ void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::
 	}
 }
 
-std::shared_ptr<Node> Node::GetNodeWithinPoint_(Point point)
+std::shared_ptr<Node> Node::GetNodeContainingVolume_(swganh::object::BoundingVolume volumn)
 {
 	// If we don't within the actual Spatial Indexing area, bail.
-	if(!boost::geometry::within(point, region_))
+	if(!boost::geometry::within(volumn, region_))
 		throw new std::runtime_error("Quadtree: Object position out of bounds.");
 
 	if(state_ == BRANCH)
@@ -229,9 +239,9 @@ std::shared_ptr<Node> Node::GetNodeWithinPoint_(Point point)
 		// See if we can fit inside leaf_nodes_
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
-			if(boost::geometry::within(point, node->GetRegion()))
+			if(boost::geometry::within(volumn, node->GetRegion()))
 			{
-				return node->GetNodeWithinPoint_(point);
+				return node->GetNodeContainingVolume_(volumn);
 			}
 		}
 	}

@@ -51,10 +51,12 @@ void MovementManager::HandleDataTransform(
     counter_map_[object->GetObjectId()] = message.counter;
     
 	glm::vec3 old_position = object->GetPosition();
+    
+	object->SetPosition(message.position);
+    object->SetOrientation(message.orientation);
+
 	spatial_provider_->UpdateObject(controller->GetObject(), old_position, message.position);
 
-    object->SetPosition(message.position);
-    object->SetOrientation(message.orientation);
     
     SendUpdateDataTransformMessage(object);
 }

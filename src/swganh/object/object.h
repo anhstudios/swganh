@@ -17,6 +17,10 @@
 #include <boost/variant.hpp>
 #include <boost/thread/mutex.hpp>
 
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -64,6 +68,10 @@ typedef std::map<
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
 typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
+
+typedef boost::geometry::model::d2::point_xy<double> Point;
+typedef boost::geometry::model::polygon<Point> CollisionBox;
+typedef boost::geometry::model::box<Point> BoundingVolume;
 
 class ObjectFactory;
 class ObjectMessageBuilder;
@@ -568,6 +576,67 @@ public:
 	void SetAttributeTemplateId(uint8_t attribute_template_id);
 
 
+	//
+	// Spatial/Collision
+	//
+	virtual void OnCollisionEnter(std::shared_ptr<Object> collider) { }
+	virtual void OnCollisionStay(std::shared_ptr<Object> collider) { }
+	virtual void OnCollisionLeave(std::shared_ptr<Object> collider) { }
+
+	virtual void __BuildCollisionBox(void)
+	{
+			local_collision_box_.clear();
+			boost::geometry::append(local_collision_box_, Point(-1.0f, -1.0f));
+			boost::geometry::append(local_collision_box_, Point(-1.0f, 1.0f));
+			boost::geometry::append(local_collision_box_, Point(1.0f, 1.0f));
+			boost::geometry::append(local_collision_box_, Point(-1.0f, -1.0f));
+			UpdateWorldCollisionBox();
+	}
+
+	virtual void __BuildBoundingVolume(void)
+	{
+		local_bounding_volume_ = BoundingVolume(Point(-1.0f, -1.0f), Point(1.0f, 1.0f));
+		UpdateWorldBoundingVolume();
+	}
+
+	void UpdateWorldBoundingVolume() 
+	{ 
+		boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
+		boost::geometry::transform(local_bounding_volume_, world_bounding_volume_, translate);
+	}
+
+	void UpdateWorldCollisionBox() 
+	{ 
+		boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
+		boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
+	}
+
+	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const { return collided_objects_; }
+	void AddCollidedObject(std::shared_ptr<Object> obj)
+	{
+		bool found = false;
+
+		std::for_each(collided_objects_.begin(), collided_objects_.end(), [=, &found](std::shared_ptr<Object> other) {
+			if(other->GetObjectId() == obj->GetObjectId())
+				found = true;
+		});
+
+		if(found == false)
+			collided_objects_.insert(obj);
+	}
+
+	void RemoveCollidedObject(std::shared_ptr<Object> obj)
+	{
+		auto i = collided_objects_.find(obj);
+		if(i != collided_objects_.end())
+			collided_objects_.erase(i);
+	}
+
+	const CollisionBox& GetLocalCollisionBox(void) const { return local_collision_box_; }
+	const CollisionBox& GetWorldCollisionBox(void) const { return world_collision_box_; }
+	const BoundingVolume& GetLocalBoundingVolume(void) const { return local_bounding_volume_; }
+	const BoundingVolume& GetWorldBoundingVolume(void) const { return world_bounding_volume_; }
+
 protected:
 	// Radials
 	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> menu_response_;
@@ -585,6 +654,17 @@ protected:
     std::atomic<int32_t> arrangement_id_;
 	std::atomic<uint8_t> attributes_template_id;	 // Used to determine which attribute template to use
 	mutable boost::mutex object_mutex_;
+	
+	//
+	// Spatial
+	//
+	std::set<std::shared_ptr<Object>> collided_objects_;
+
+	CollisionBox local_collision_box_;
+	CollisionBox world_collision_box_;
+
+	BoundingVolume local_bounding_volume_;
+	BoundingVolume world_bounding_volume_;
 
 private:
     
