@@ -8,9 +8,10 @@ service_mgr = kernel.service_manager()
 weather_svc = service_mgr.weather_service()
 
 #This script is called every 30 minutes.
-#As no error check is in place on server, if this script fails it WILL crash the server.
-#Weather duration is now set in minutes: weather_event(duration,weatherType,cloudVector).
-
+#Weather duration is now set in minutes: weather_event(duration(mins),weatherType,cloudVector(X,Y,Z)).
+#Each of the following is a list of weather sequences. Each sequence runs until its duration has expired.
+#At the end of the sequence, NOSTORM is used to set the weather back to clear. Whilst each weather sequence list
+#is running, no other weather sequence can be used on the same scene until the sequences have expired.
 lightStormSequence = weather_sequence()
 lightStormSequence.extend([
 	weather_event(20, weather.WEATHER.CLOUDY, utility.vector3(1.0, 0.0, 0.0)),
@@ -51,4 +52,3 @@ def weather_choice(wList, scene):
 
 
 weather_choice([(heavyStormSequence, 0.02), (mediumStormSequence, 0.15), (lightStormSequence,0.2)],weather.SCENE.CORELLIA)
-weather_choice([(heavyStormSequence, 0.02), (mediumStormSequence, 0.15), (lightStormSequence,0.2)],weather.SCENE.NABOO)
