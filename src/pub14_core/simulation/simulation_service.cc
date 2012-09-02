@@ -346,12 +346,6 @@ public:
 
             controlled_objects_.insert(make_pair(object->GetObjectId(), controller));
         }
-		// Send Updates to aware objects if we are reconnecting and the object is still alive...
-		object->ViewAwareObjects([&](shared_ptr<Object> aware){
-			aware->Subscribe(controller);
-			aware->SendCreateByCrc(controller);
-			aware->CreateBaselines(controller);
-		});
 
         auto connection_client = std::static_pointer_cast<ConnectionClientInterface>(client);
         connection_client->SetController(controller);
@@ -415,26 +409,23 @@ public:
         SelectCharacter message)
     {
         auto object = GetObjectById(message.character_id);
-
         if (!object)
         {
             object = LoadObjectById(message.character_id, creature::Creature::type);
         }
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
-        
 		auto player = GetEquipmentService()->GetEquippedObject<player::Player>(object, "ghost");
 		event_dispatcher->Dispatch(
 					make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", player));
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
-
         if (!scene)
         {
             throw std::runtime_error("Invalid scene selected for object");
         }
 
-        // CmdStartScene
+		// CmdStartScene
         CmdStartScene start_scene;
         start_scene.ignore_layout = 0;
         start_scene.character_id = object->GetObjectId();
@@ -445,10 +436,31 @@ public:
         start_scene.galaxy_time = 0;
         client->SendTo(start_scene);
 
+		if(object->GetContainer() == nullptr)
+		{
+			scene->AddObject(object);
+		}
+
+		//Attach the controller
 		StartControllingObject(object, client);
 
-        // Add object to scene and send baselines
-        scene->AddObject(object);		
+		//Make sure the controller gets his awareness creates
+		//regardless of the current state of awareness.
+		auto controller = object->GetController();
+		scene->ViewObjects(object, 0, true, [&] (std::shared_ptr<swganh::object::Object> aware) {
+			if(aware->__HasAwareObject(object) && !aware->IsInSnapshot())
+			{
+				//Send create manually
+				aware->Subscribe(controller);
+				aware->SendCreateByCrc(controller);
+				aware->CreateBaselines(controller);
+			}
+			else
+			{
+				aware->AddAwareObject(object);
+				object->AddAwareObject(aware);
+			}
+		});
     }
 
 	void SendToAll(ByteBuffer message)
@@ -658,8 +670,10 @@ void SimulationService::Startup()
 	command_service->AddCommandCreator("addfriend", swganh::command::PythonCommandCreator("commands.addfriend", "AddFriendCommand"));
 	command_service->AddCommandCreator("removefriend", swganh::command::PythonCommandCreator("commands.removefriend", "RemoveFriendCommand"));
 	command_service->AddCommandCreator("setmoodinternal", swganh::command::PythonCommandCreator("commands.setmoodinternal", "SetMoodInternalCommand"));
-	command_service->AddCommandCreator("transferitemmisc", swganh::command::PythonCommandCreator("commands.transferitem", "TransferItem"));
-
+	command_service->AddCommandCreator("transferitemmisc", swganh::command::PythonCommandCreator("commands.transferItemMisc", "TransferItem"));
+	command_service->AddCommandCreator("transferitem", swganh::command::PythonCommandCreator("commands.transferItem", "TransferItem"));
+	command_service->AddCommandCreator("transferitemarmor", swganh::command::PythonCommandCreator("commands.transferItemArmor", "TransferItemArmor"));
+	command_service->AddCommandCreator("transferitemweapon", swganh::command::PythonCommandCreator("commands.transferItemWeapon", "TransferItemWeapon"));
 }
 
 shared_ptr<Object> SimulationService::CreateObjectFromTemplate(const string& template_name, PermissionType type, 

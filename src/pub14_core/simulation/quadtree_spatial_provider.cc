@@ -66,6 +66,8 @@ void QuadtreeSpatialProvider::RemoveObject(std::shared_ptr<swganh::object::Objec
 
 void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old_position, glm::vec3 new_position)
 {
+	std::vector<std::shared_ptr<Object>> deleted_objects;
+
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 	{
 		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
@@ -75,8 +77,6 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 	CheckCollisions(obj);
 
 	auto new_objects = root_node_.Query(GetQueryBoxViewRange(obj));
-	
-	std::vector<std::shared_ptr<Object>> deleted_objects;
 	
 	obj->__InternalViewAwareObjects([&] (std::shared_ptr<Object> aware_object) 
 	{
@@ -188,6 +188,11 @@ void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requ
 	}
 }
 
+void QuadtreeSpatialProvider::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint)
+{
+	__InternalViewObjects(hint, 0, true, func);
+}
+
 int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
 {
 	root_node_.InsertObject(object);
@@ -195,11 +200,15 @@ int32_t QuadtreeSpatialProvider::__InternalInsert(std::shared_ptr<Object> object
 	return -1;
 }
 
+glm::vec3 QuadtreeSpatialProvider::__InternalGetAbsolutePosition()
+{
+	return glm::vec3(0, 0, 0);
+}
+
 QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> object)
 {
-	auto position = object->GetPosition();
-	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));
-	
+	auto position = object->__InternalGetAbsolutePosition();
+	return QueryBox(quadtree::Point(position.x - VIEWING_RANGE, position.z - VIEWING_RANGE), quadtree::Point(position.x + VIEWING_RANGE, position.z + VIEWING_RANGE));	
 }
 
 void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Object> object)

@@ -94,6 +94,7 @@ void Object::AddObject(std::shared_ptr<Object> requester, std::shared_ptr<Object
 		//Update our observers with the new object
 		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
 			obj->__InternalAddAwareObject(object);		
+			object->__InternalAddAwareObject(obj);
 		});
 	}
 }
@@ -106,7 +107,8 @@ void Object::RemoveObject(std::shared_ptr<Object> requester, std::shared_ptr<Obj
 
 		//Update our observers about the dead object
 		std::for_each(aware_objects_.begin(), aware_objects_.end(), [&] (std::shared_ptr<Object> object) {
-			oldObject->__InternalRemoveAwareObject(object);		
+			oldObject->__InternalRemoveAwareObject(object);	
+			object->__InternalRemoveAwareObject(oldObject);
 		});
 
 		{
@@ -204,19 +206,32 @@ void Object::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t m
 
 int32_t Object::__InternalInsert(std::shared_ptr<Object> object, int32_t arrangement_id)
 {
+	std::shared_ptr<Object> removed_object = nullptr;
 	if(arrangement_id == -2)
 		arrangement_id = GetAppropriateArrangementId(object);
 
 	if (arrangement_id < 4)
 	{
-		slot_descriptor_[arrangement_id]->insert_object(object);
+		// Remove object in existing slot
+		removed_object = slot_descriptor_[arrangement_id]->insert_object(object);
+		if (removed_object)
+		{
+			// Transfer it out, put it in the place the replacing object came from
+			removed_object->__InternalTransfer(nullptr, removed_object, object->GetContainer());
+		}
 	}
 	else
 	{
 		auto& arrangement = object->slot_arrangements_[arrangement_id-4];
 		for (auto& i : arrangement)
 		{
-			slot_descriptor_[i]->insert_object(object);
+			// Remove object in existing slot
+			removed_object = slot_descriptor_[i]->insert_object(object);			
+			if (removed_object)
+			{
+				// Transfer it out, put it in the place the replacing object came from
+				removed_object->__InternalTransfer(nullptr, removed_object, object->GetContainer());
+			}
 		}
 	}
 	object->SetArrangementId(arrangement_id);
@@ -245,6 +260,57 @@ void Object::SwapSlots(std::shared_ptr<Object> requester, std::shared_ptr<Object
 	});
 }
 
+void Object::__InternalTransfer(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id)
+{
+	// we are already locked
+	if(	requester == nullptr || (
+		this->GetPermissions()->canRemove(shared_from_this(), requester, object) && 
+		newContainer->GetPermissions()->canInsert(newContainer, requester, object)))
+		{
+			arrangement_id = newContainer->__InternalInsert(object, arrangement_id);
+
+		//Split into 3 groups -- only ours, only new, and both ours and new
+		std::set<std::shared_ptr<Object>> oldObservers, newObservers, bothObservers;
+
+		object->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) {
+			oldObservers.insert(observer);
+		});
+	
+		newContainer->__InternalViewAwareObjects([&] (std::shared_ptr<Object> observer) 
+		{
+			if(newContainer->GetPermissions()->canView(newContainer, observer))
+			{
+				auto itr = oldObservers.find(observer);
+				if(itr != oldObservers.end())
+				{
+					oldObservers.erase(itr);
+					bothObservers.insert(observer);
+				} 
+				else 
+				{
+					newObservers.insert(observer);
+				}
+			}
+		});
+
+		//Send Creates to only new
+		for(auto& observer : newObservers) {
+			object->__InternalAddAwareObject(observer);
+		}
+
+		//Send updates to both
+		for(auto& observer : bothObservers) {
+			object->SendUpdateContainmentMessage(observer->GetController());
+		}
+
+		//Send destroys to only ours
+		for(auto& observer : oldObservers) {
+			object->__InternalRemoveAwareObject(observer);
+		}
+	}
+}
+
+
 void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> object)
 {	
 	auto find_itr = aware_objects_.find(object);
@@ -257,6 +323,7 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 		{
 			if(!IsInSnapshot())
 			{
+				LOG(warning) << "SENDING " << GetObjectId() << " TO " << observer->GetId();
 				Subscribe(observer);
 				SendCreateByCrc(observer);
 				CreateBaselines(observer);
@@ -275,7 +342,7 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 	}
 }
 
-void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func)
+void Object::__InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint)
 {
 	std::for_each(aware_objects_.begin(), aware_objects_.end(), func);
 }
@@ -299,11 +366,25 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 
 			if(!IsInSnapshot())
 			{
+				LOG(warning) << "DELETING " << GetObjectId() << " FOR " << observer->GetId();
 				SendDestroy(observer);
 				Unsubscribe(observer);
 			}
 		}
 	}
+}
+
+bool Object::__HasAwareObject(std::shared_ptr<Object> object)
+{
+	return aware_objects_.find(object) != aware_objects_.end();
+}
+
+glm::vec3 Object::__InternalGetAbsolutePosition()
+{
+	glm::vec3 parentPos = GetContainer()->__InternalGetAbsolutePosition();
+
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return glm::vec3(parentPos.x + position_.x, parentPos.y + position_.y, parentPos.z + position_.z);
 }
 
 string Object::GetTemplate()
@@ -625,6 +706,8 @@ void Object::CreateBaselines( std::shared_ptr<anh::observer::ObserverInterface> 
 
 void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer) 
 {
+	LOG(warning) << "SEND " << GetObjectId() << " TO " << observer->GetId();
+
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
     scene_object.object_crc = anh::memcrc(GetTemplate());
@@ -645,15 +728,20 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::Observe
 	if (GetContainer())
 		container_id = GetContainer()->GetObjectId();
 
+	LOG(warning) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
+
 	UpdateContainmentMessage containment_message;
 	containment_message.container_id = container_id;
 	containment_message.object_id = GetObjectId();
 	containment_message.containment_type = arrangement_id_;
+
 	observer->Notify(containment_message);
 }
 
 void Object::SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
+	LOG(warning) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
+
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();
 	observer->Notify(scene_object);
@@ -689,7 +777,7 @@ void Object::SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangemen
 
 int32_t Object::GetAppropriateArrangementId(std::shared_ptr<Object> other)
 {
-	if (slot_descriptor_.size() == 0)
+	if (slot_descriptor_.size() == 1)
 		return -1;
 
 	// Find appropriate arrangement
