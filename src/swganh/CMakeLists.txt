@@ -11,6 +11,7 @@ add_subdirectory(simulation)
 add_subdirectory(sui)
 add_subdirectory(terrain)
 add_subdirectory(utilities)
+add_subdirectory(weather)
 
 add_custom_target(
     swgpy ALL
