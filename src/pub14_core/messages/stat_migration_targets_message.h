@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct StatMigrationTargetsMessage : public BaseSwgMessage<StatMigrationTargetsMessage>
+    struct StatMigrationTargetsMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 9; }
-    	static uint32_t Opcode() { return 0xEFAC38C4; }
+    	uint16_t Opcount() const { return 9; }
+    	uint32_t Opcode() const { return 0xEFAC38C4; }
 
     	uint32_t health_points;
     	uint32_t strength_points;
@@ -39,7 +39,7 @@ namespace messages {
     		buffer.write(points_remaining);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		health_points = buffer.read<uint32_t>();
     		strength_points = buffer.read<uint32_t>();

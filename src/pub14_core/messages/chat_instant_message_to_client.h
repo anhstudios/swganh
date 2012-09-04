@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ChatInstantMessageToClient : public BaseSwgMessage<ChatInstantMessageToClient>
+    struct ChatInstantMessageToClient : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 4; }
-    	static uint32_t Opcode() { return 0x3C565CED; }
+    	uint16_t Opcount() const { return 4; }
+    	uint32_t Opcode() const { return 0x3C565CED; }
 
     	std::string game_name; // arbitrary: "SWG"
     	std::string server_name; // galaxy name
@@ -32,7 +32,7 @@ namespace messages {
     		buffer.write(message);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		game_name = buffer.read<std::string>();
     		server_name = buffer.read<std::string>();

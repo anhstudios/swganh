@@ -34,10 +34,10 @@ namespace messages {
     	{}
     };
 
-    struct ChatOnCreateRoom : public BaseSwgMessage<ChatOnCreateRoom>
+    struct ChatOnCreateRoom : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 4; }
-    	static uint32_t Opcode() { return 0x35D7CC9F; }
+    	uint16_t Opcount() const { return 4; }
+    	uint32_t Opcode() const { return 0x35D7CC9F; }
 
     	uint32_t error; // 0 = success, 6 = cannot create because name invalid, 18 = no message
     	uint32_t channel_id;
@@ -88,7 +88,7 @@ namespace messages {
     		buffer.write(request_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
             error = buffer.read<uint32_t>();
     		channel_id = buffer.read<uint32_t>();

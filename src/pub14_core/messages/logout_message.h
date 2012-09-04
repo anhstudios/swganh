@@ -11,12 +11,12 @@ namespace messages {
     
     struct LogoutMessage : public BaseSwgMessage<LogoutMessage>
     {
-        static const uint16_t Opcount() { return 1; }
-        static const uint32_t Opcode() { return 0x42FD19DD; }
+        static const uint16_t Opcount() const { return 1; }
+        static const uint32_t Opcode() const { return 0x42FD19DD; }
         
         void OnSerialize(anh::ByteBuffer& buffer) const {}
 
-        void OnDeserialize(anh::ByteBuffer buffer) {}
+        void OnDeserialize(anh::ByteBuffer& buffer) {}
     };
 
 }}  // namespace swganh::messages

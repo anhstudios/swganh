@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ExecuteConsoleCommand : public BaseSwgMessage<ExecuteConsoleCommand>
+    struct ExecuteConsoleCommand : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0xB1CFCE1C; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0xB1CFCE1C; }
     
     	std::string command;
     
@@ -21,7 +21,7 @@ namespace messages {
     		buffer.write(command);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer) {
+    	void OnDeserialize(anh::ByteBuffer& buffer) {
     		command = buffer.read<std::string>();
     	}
     };

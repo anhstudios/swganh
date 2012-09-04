@@ -13,10 +13,10 @@
 namespace swganh {
 namespace messages {
     
-    struct SceneCreateObjectByCrc : public BaseSwgMessage<SceneCreateObjectByCrc>
+    struct SceneCreateObjectByCrc : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 5; }
-        static uint32_t Opcode() { return 0xFE89DDEA; }
+        uint16_t Opcount() const { return 5; }
+        uint32_t Opcode() const { return 0xFE89DDEA; }
         
         uint64_t object_id;
         glm::quat orientation;
@@ -38,7 +38,7 @@ namespace messages {
             buffer.write(byte_flag);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
         	object_id = buffer.read<uint64_t>();
             orientation.x = buffer.read<float>();

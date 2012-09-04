@@ -83,13 +83,13 @@ void InstallationMessageBuilder::RegisterEventHandlers()
 
 void InstallationMessageBuilder::SendBaselines(const std::shared_ptr<Installation>& installation, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-	installation->AddBaselineToCache(BuildBaseline3(installation));
-    installation->AddBaselineToCache(BuildBaseline6(installation));
-    installation->AddBaselineToCache(BuildBaseline7(installation));
+	installation->AddBaselineToCache(&BuildBaseline3(installation));
+    installation->AddBaselineToCache(&BuildBaseline6(installation));
+    installation->AddBaselineToCache(&BuildBaseline7(installation));
     
     for (auto& baseline : installation->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(installation, observer);
@@ -101,11 +101,11 @@ void InstallationMessageBuilder::BuildActiveDelta(const std::shared_ptr<Installa
     {
         DeltasMessage message11 = CreateDeltasMessage(installation, Object::VIEW_3, 11);
 		message11.data.write<uint8_t>((installation->IsActive()) ? 1 : 0);
-        installation->AddDeltasUpdate(std::move(message11));
+        installation->AddDeltasUpdate(&message11);
 
 		DeltasMessage message6 = CreateDeltasMessage(installation, Object::VIEW_7, 6);
 		message6.data.write<uint8_t>((installation->IsActive()) ? 1 : 0);
-        installation->AddDeltasUpdate(std::move(message6));
+        installation->AddDeltasUpdate(&message6);
     }
 }
 
@@ -115,7 +115,7 @@ void InstallationMessageBuilder::BuildPowerReserveDelta(const std::shared_ptr<In
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_3, 12);
 		
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 
@@ -125,7 +125,7 @@ void InstallationMessageBuilder::BuildPowerCostDelta(const std::shared_ptr<Insta
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_3, 13);
 		
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 
@@ -135,19 +135,19 @@ void InstallationMessageBuilder::BuildAvailableResourceDelta(const std::shared_p
     {
         DeltasMessage message1 = CreateDeltasMessage(installation, Object::VIEW_7, 1);
         installation->GetResourceIds_().Serialize(message1);
-		installation->AddDeltasUpdate(std::move(message1));
+		installation->AddDeltasUpdate(&message1);
 
 		DeltasMessage message2 = CreateDeltasMessage(installation, Object::VIEW_7, 2);
 		installation->GetResourceIds_().Serialize(message2);
-        installation->AddDeltasUpdate(std::move(message2));
+        installation->AddDeltasUpdate(&message2);
 
 		DeltasMessage message3 = CreateDeltasMessage(installation, Object::VIEW_7, 3);
 		installation->GetResourceNames_().Serialize(message3);
-		installation->AddDeltasUpdate(std::move(message3));
+		installation->AddDeltasUpdate(&message3);
 
 		DeltasMessage message4 = CreateDeltasMessage(installation, Object::VIEW_7, 4);
 		installation->GetResourceTypes_().Serialize(message4);
-		installation->AddDeltasUpdate(std::move(message4));
+		installation->AddDeltasUpdate(&message4);
     }
 }
 
@@ -157,7 +157,7 @@ void InstallationMessageBuilder::BuildSelectedResourceDelta(const std::shared_pt
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_7, 5);
 		message.data.write(installation->GetSelectedResourceId());
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 
@@ -167,7 +167,7 @@ void InstallationMessageBuilder::BuildDisplayedMaxExtractionDelta(const std::sha
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_7, 7);
 		message.data.write(installation->GetDisplayedMaxExtractionRate());
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 
@@ -177,7 +177,7 @@ void InstallationMessageBuilder::BuildMaxExtractionDelta(const std::shared_ptr<I
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_7, 8);
 		message.data.write(installation->GetMaxExtractionRate());
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 
@@ -187,7 +187,7 @@ void InstallationMessageBuilder::BuildCurrentExtractionDelta(const std::shared_p
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_7, 9);
 		message.data.write(installation->GetCurrentExtractionRate());
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 
@@ -197,7 +197,7 @@ void InstallationMessageBuilder::BuildCurrentHopperSizeDelta(const std::shared_p
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_7, 10);
 		message.data.write(installation->GetCurrentHopperSize());
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 
@@ -207,7 +207,7 @@ void InstallationMessageBuilder::BuildMaxHopperSizeDelta(const std::shared_ptr<I
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_7, 11);
 		message.data.write(installation->GetMaxHopperSize());
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 
@@ -217,11 +217,11 @@ void InstallationMessageBuilder::BuildIsUpdatingDelta(const std::shared_ptr<Inst
     {
 		DeltasMessage message0 = CreateDeltasMessage(installation, Object::VIEW_7, 0);
 		message0.data.write<uint8_t>((installation->IsUpdating()) ? 1 : 0);
-        installation->AddDeltasUpdate(std::move(message0));
+        installation->AddDeltasUpdate(&message0);
 
         DeltasMessage message12 = CreateDeltasMessage(installation, Object::VIEW_7, 12);
 		message12.data.write<uint8_t>((installation->IsUpdating()) ? 1 : 0);
-        installation->AddDeltasUpdate(std::move(message12));
+        installation->AddDeltasUpdate(&message12);
     }
 }
 
@@ -231,7 +231,7 @@ void InstallationMessageBuilder::BuildHopperDelta(const std::shared_ptr<Installa
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_7, 13);
 		installation->GetHopperContents().Serialize(message);
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 
@@ -241,7 +241,7 @@ void InstallationMessageBuilder::BuildConditionPercentDelta(const std::shared_pt
     {
         DeltasMessage message = CreateDeltasMessage(installation, Object::VIEW_7, 14);
 		message.data.write(installation->GetConditionPercentage()); //TODO: calculate me
-        installation->AddDeltasUpdate(std::move(message));
+        installation->AddDeltasUpdate(&message);
     }
 }
 

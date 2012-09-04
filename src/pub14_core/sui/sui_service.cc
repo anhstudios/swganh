@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+#include "anh/observer/observer_interface.h"
+
 #include "pub14_core/messages/sui_create_page_message.h"
 #include "pub14_core/messages/sui_event_notification.h"
 #include "pub14_core/messages/sui_update_page_message.h"
@@ -72,16 +74,16 @@ void SUIService::Startup()
 	});
 }
 
-void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification message)
+void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification* message)
 {
 	auto owner = client->GetController()->GetId();
 	WindowMapRange range = window_lookup_.equal_range(owner);
 	std::shared_ptr<SUIWindowInterface> result = nullptr;
 	for(auto itr=range.first; itr != range.second; ++itr)
 	{
-		if(itr->second->GetWindowId() == message.window_id)
+		if(itr->second->GetWindowId() == message->window_id)
 		{
-			if(itr->second->GetFunctionById(message.event_type)(itr->second->GetOwner(), message.event_type, message.returnList))
+			if(itr->second->GetFunctionById(message->event_type)(itr->second->GetOwner(), message->event_type, message->returnList))
 			{
 				window_lookup_.erase(itr);
 			}
@@ -91,26 +93,26 @@ void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connect
 }
 
 void SUIService::_handleObjectMenuRequest(
-	const std::shared_ptr<ObjectController>& controller,
-	ObjectMenuRequest message)
+	const std::shared_ptr<swganh::object::Object>& controller,
+	ObjectMenuRequest* message)
 {
 	PythonRadialCreator creator("radials.radial_menu", "PyRadialMenu");
 	auto radial = creator();
 	
-	auto owner = simulation_service_->GetObjectById(message.owner_id);
-	auto target = simulation_service_->GetObjectById(message.target_id);
+	auto owner = simulation_service_->GetObjectById(message->owner_id);
+	auto target = simulation_service_->GetObjectById(message->target_id);
 
-	radial->BuildRadial(owner, target, message.radial_options);
+	radial->BuildRadial(owner, target, message->radial_options);
 	
 	// Get the response filled in by python
 	auto response = *owner->GetMenuResponse();
-	response.owner_id = message.owner_id;
-	response.target_id = message.target_id;
-	response.response_count = message.response_count;
+	response.owner_id = message->owner_id;
+	response.target_id = message->target_id;
+	response.response_count = message->response_count;
 	// send it
 	if (owner)
 	{
-		owner->GetController()->Notify(response);
+		owner->GetController()->Notify(&response);
 	}
 	
 }
@@ -161,7 +163,7 @@ int32_t SUIService::OpenSUIWindow(std::shared_ptr<SUIWindowInterface> window)
 			create_page.ranged_object = 0;
 			create_page.range = 0.0f;
 		}
-		owner->Notify(create_page);
+		owner->Notify(&create_page);
 	}
 	return window_id;
 }
@@ -190,7 +192,7 @@ int32_t SUIService::UpdateSUIWindow(std::shared_ptr<SUIWindowInterface> window)
 			update_page.ranged_object = 0;
 			update_page.range = 0.0f;
 		}
-		owner->Notify(update_page);
+		owner->Notify(&update_page);
 	}
 	return window_id;
 }
@@ -235,7 +237,7 @@ void SUIService::CloseSUIWindow(std::shared_ptr<swganh::object::Object> owner, i
 		{
 			SUIForceClose force_close;
 			force_close.window_id = windowId;
-			controller->Notify(force_close);
+			controller->Notify(&force_close);
 		}
 	}
 }

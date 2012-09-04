@@ -19,11 +19,10 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
-        explicit CommandQueueRemove(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		CommandQueueRemove(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x00000117; }
         
@@ -40,7 +39,7 @@ namespace controllers {
             buffer.write(action);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             action_counter = buffer.read<uint32_t>();
             timer = buffer.read<float>();

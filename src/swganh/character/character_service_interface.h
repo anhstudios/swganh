@@ -34,15 +34,15 @@ class CharacterServiceInterface : public anh::service::ServiceInterface {
 private:
     virtual void HandleClientRandomNameRequest_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
-        swganh::messages::ClientRandomNameRequest message) = 0;
+        swganh::messages::ClientRandomNameRequest* message) = 0;
 
     virtual void HandleClientCreateCharacter_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
-        swganh::messages::ClientCreateCharacter message) = 0;
+        swganh::messages::ClientCreateCharacter* message) = 0;
 
     virtual void HandleDeleteCharacterMessage_(
         const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, 
-        swganh::messages::DeleteCharacterMessage message) = 0;
+        swganh::messages::DeleteCharacterMessage* message) = 0;
 };
 
 }}  // namespace swganh::character

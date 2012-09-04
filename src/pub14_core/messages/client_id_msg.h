@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
     
-    struct ClientIdMsg : public BaseSwgMessage<ClientIdMsg>
+    struct ClientIdMsg : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 3; }
-        static uint32_t Opcode() { return 0xD5899226; }
+        uint16_t Opcount() const { return 3; }
+        uint32_t Opcode() const { return 0xD5899226; }
         
         std::string session_hash;
         
@@ -24,7 +24,7 @@ namespace messages {
             buffer.write(session_hash);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
             buffer.read<uint32_t>();  // unknown
             buffer.read<uint32_t>();  // size @TODO Investigate if this is proper usage.

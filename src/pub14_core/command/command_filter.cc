@@ -75,17 +75,19 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::StateCheckFilter(CommandInt
 	uint32_t error = 0;
 	uint32_t action = 0;
 
-    auto actor = swg_command->GetActor();
-
-    uint64_t current_state = actor->GetStateBitmask();
-    if (!actor->HasState(swg_command->GetAllowedStateBitmask()))
+	auto actor = std::static_pointer_cast<Creature>(swg_command->GetActor());
+	if(actor)
 	{
-		check_passed = true;
-	}
-	else
-	{
-		error = CANNOT_WHILE_IN_STATE;
-		action = GetLowestCommonBit(current_state, swg_command->GetAllowedStateBitmask());
+		uint64_t current_state = actor->GetStateBitmask();
+		if (!actor->HasState(swg_command->GetAllowedStateBitmask()))
+		{
+			check_passed = true;
+		}
+		else
+		{
+			error = CANNOT_WHILE_IN_STATE;
+			action = GetLowestCommonBit(current_state, swg_command->GetAllowedStateBitmask());
+		}
 	}
 	return std::tie (check_passed, error, action);
 }
@@ -103,7 +105,8 @@ std::tuple<bool, uint32_t, uint32_t> CommandFilters::AbilityCheckFilter(CommandI
 
     if (required_ability.length() > 0)
 	{
-        if (swg_command->GetActor()->HasSkillCommand(required_ability))
+		auto actor = std::static_pointer_cast<Creature>(swg_command->GetActor());
+        if (actor != nullptr && actor->HasSkillCommand(required_ability))
 		{
 			check_passed = true;
 		}

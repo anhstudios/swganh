@@ -24,6 +24,16 @@ namespace connection {
 
 namespace swganh {
 namespace object {
+
+	typedef std::function<
+        void (std::shared_ptr<swganh::object::Object>, swganh::messages::ObjControllerMessage*)
+    > ObjControllerHandler;
+
+    typedef Concurrency::concurrent_unordered_map<
+        uint32_t, 
+        ObjControllerHandler
+    > ObjControllerHandlerMap;
+
     class Object;
 	class ObjectManager;
 }}  // namespace swganh::object
@@ -89,7 +99,7 @@ namespace simulation {
         virtual void RemoveObjectById(uint64_t object_id) = 0;
         virtual void RemoveObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
         
-        virtual std::shared_ptr<swganh::object::ObjectController> StartControllingObject(
+        virtual std::shared_ptr<anh::observer::ObserverInterface> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
             std::shared_ptr<swganh::connection::ConnectionClientInterface> client) = 0;
 
@@ -99,7 +109,7 @@ namespace simulation {
         struct GenericControllerHandler
         {
             typedef std::function<void (
-                const std::shared_ptr<swganh::object::ObjectController>&, MessageType)
+                std::shared_ptr<swganh::object::Object>, MessageType*)
             > HandlerType;
         };
         
@@ -117,7 +127,7 @@ namespace simulation {
          * \param instance An instance of a class that implements memfunc.
          */
         template<typename T, typename U, typename MessageType>
-        void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::ObjectController>&, MessageType), U instance)
+        void RegisterControllerHandler(void (T::*memfunc)(const std::shared_ptr<swganh::object::Object>&, MessageType*), U instance)
         {
             RegisterControllerHandler<MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }
@@ -136,12 +146,13 @@ namespace simulation {
             auto shared_handler = std::make_shared<typename GenericControllerHandler<MessageType>::HandlerType>(std::move(handler));
 
             auto wrapped_handler = [this, shared_handler] (
-                const std::shared_ptr<swganh::object::ObjectController>& controller,
-                swganh::messages::ObjControllerMessage message)
+                std::shared_ptr<swganh::object::Object> object,
+                swganh::messages::ObjControllerMessage* message)
             {
-                MessageType tmp(std::move(message));
+                MessageType tmp(*message);
+				tmp.OnControllerDeserialize(message->data);
 
-                (*shared_handler)(controller, std::move(tmp));
+				(*shared_handler)(object, &tmp);
             };
 
             RegisterControllerHandler(MessageType::message_type(), std::move(wrapped_handler));

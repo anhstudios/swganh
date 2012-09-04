@@ -10,11 +10,11 @@
 namespace swganh {
 namespace messages {
 
-    class ChatRoomMessage : public BaseSwgMessage<ChatRoomMessage>
+    class ChatRoomMessage : public BaseSwgMessage
     {
     public:
-    	static uint16_t Opcount() { return 5; }
-    	static uint32_t Opcode() { return 0xCD4CE444; }
+    	uint16_t Opcount() const { return 5; }
+    	uint32_t Opcode() const { return 0xCD4CE444; }
 
     	std::string game_name; // arbitrary: "SWG"
     	std::string server_name; // galaxy name
@@ -42,7 +42,7 @@ namespace messages {
     		buffer.write(out_of_band);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		game_name = buffer.read<std::string>();
     		server_name = buffer.read<std::string>();

@@ -27,11 +27,10 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
-        explicit ShowFlyText(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		ShowFlyText(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x000001BD; }
         
@@ -56,7 +55,7 @@ namespace controllers {
             buffer.write(display_flag);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             object_id = buffer.read<uint64_t>();
             //buffer.read<uint16_t>();

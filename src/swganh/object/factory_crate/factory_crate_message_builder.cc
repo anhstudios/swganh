@@ -18,12 +18,12 @@ void FactoryCrateMessageBuilder::RegisterEventHandlers()
 
 void FactoryCrateMessageBuilder::SendBaselines(const shared_ptr<FactoryCrate>& factory_crate, const shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-    factory_crate->AddBaselineToCache(BuildBaseline3(factory_crate));
-    factory_crate->AddBaselineToCache(BuildBaseline6(factory_crate));
+    factory_crate->AddBaselineToCache(&BuildBaseline3(factory_crate));
+    factory_crate->AddBaselineToCache(&BuildBaseline6(factory_crate));
 
     for (auto& baseline : factory_crate->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(factory_crate, observer);

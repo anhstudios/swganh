@@ -10,14 +10,14 @@
 namespace swganh {
 namespace messages {
     
-    struct HeartBeat : public BaseSwgMessage<HeartBeat>
+    struct HeartBeat : public BaseSwgMessage
     {
-        static const uint16_t Opcount() { return 1; }
-        static const uint32_t Opcode() { return 0xA16CF9AF; }
+        uint16_t Opcount() const { return 1; }
+        uint32_t Opcode() const { return 0xA16CF9AF; }
         
         void OnSerialize(anh::ByteBuffer& buffer) const {}
     
-        void OnDeserialize(anh::ByteBuffer buffer) {}
+        void OnDeserialize(anh::ByteBuffer& buffer) {}
     };
 
 }}  // namespace swganh::messages

@@ -18,11 +18,10 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
-        explicit GetAttributesBatchMessage(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		GetAttributesBatchMessage(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x164550EF; }
                 
@@ -32,7 +31,7 @@ namespace controllers {
             buffer.write<uint32_t>(0);            
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {            
         }
     };

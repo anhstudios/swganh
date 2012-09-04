@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ClientInactivityMessage : public BaseSwgMessage<ClientInactivityMessage>
+    struct ClientInactivityMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x0F5D5325; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x0F5D5325; }
 
     	uint8_t inactivity_flag; // 0 = active, 1 = inactive
     	
@@ -21,7 +21,7 @@ namespace messages {
     		buffer.write(inactivity_flag);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		inactivity_flag = buffer.read<uint8_t>();
     	}

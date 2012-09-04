@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
     
-    struct ClientCreateCharacter : public BaseSwgMessage<ClientCreateCharacter>
+    struct ClientCreateCharacter : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 0x0C; }
-        static uint32_t Opcode() { return 0xB97F3074; }
+        uint16_t Opcount() const { return 0x0C; }
+        uint32_t Opcode() const { return 0xB97F3074; }
         
         std::string character_customization;
         std::wstring character_name;
@@ -43,7 +43,7 @@ namespace messages {
             buffer.write(tutorial_flag);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
             character_customization = buffer.read<std::string>();
             character_name = buffer.read<std::wstring>();

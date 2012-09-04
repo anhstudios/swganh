@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct RetrieveAuctionItemResponseMessage : public BaseSwgMessage<RetrieveAuctionItemResponseMessage>
+    struct RetrieveAuctionItemResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x9499EF8C; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x9499EF8C; }
     	
     	uint64_t item_id;
     	uint32_t success_flag; // 00 = success, 01 = You are not allowed to retrieve that item, 12 = Inventory full
@@ -23,7 +23,7 @@ namespace messages {
     		buffer.write(success_flag);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		success_flag = buffer.read<uint32_t>();

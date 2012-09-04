@@ -11,10 +11,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ClientMfdStatusUpdateMessage : public BaseSwgMessage<ClientMfdStatusUpdateMessage>
+    struct ClientMfdStatusUpdateMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 6; }
-    	static uint32_t Opcode() { return 0x2D2D6EE1; }
+    	uint16_t Opcount() const { return 6; }
+    	uint32_t Opcode() const { return 0x2D2D6EE1; }
 
     	std::string planet_name;
     	uint64_t object_id;
@@ -29,7 +29,7 @@ namespace messages {
     		buffer.write(object_location.z);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		object_id = buffer.read<uint64_t>();

@@ -121,7 +121,7 @@ void AttributesService::SendAttributesMessage(const std::shared_ptr<swganh::obje
 		auto message = attribute_templates_[template_id]->BuildAttributeTemplate(object);
 		// Append Pups
 		// Append Slicing
-		actor->NotifyObservers(message);
+		actor->NotifyObservers(&message);
 	}
 }
 void AttributesService::LoadAttributeTemplates_()

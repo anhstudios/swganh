@@ -11,10 +11,10 @@
 namespace swganh {
 namespace messages {
 
-    struct CharacterSheetResponseMessage : public BaseSwgMessage<CharacterSheetResponseMessage>
+    struct CharacterSheetResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 1; }
-    	static uint32_t Opcode() { return 0x9B3A17C4; }
+    	uint16_t Opcount() const { return 1; }
+    	uint32_t Opcode() const { return 0x9B3A17C4; }
 
     	uint32_t unknown1;
     	uint32_t unknown2;
@@ -51,7 +51,7 @@ namespace messages {
     		buffer.write(faction_status);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		unknown1 = buffer.read<uint32_t>();
     		unknown2 = buffer.read<uint32_t>();

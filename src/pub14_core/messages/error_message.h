@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ErrorMessage : public BaseSwgMessage<ErrorMessage>
+    struct ErrorMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0xB5ABF91A; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0xB5ABF91A; }
 
     	std::string type;
     	std::string message;
@@ -26,7 +26,7 @@ namespace messages {
     		buffer.write(force_fatal);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		type = buffer.read<std::string>();
     		message = buffer.read<std::string>();

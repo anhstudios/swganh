@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ChatCreateRoom : public BaseSwgMessage<ChatCreateRoom>
+    struct ChatCreateRoom : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 7; }
-    	static uint32_t Opcode() { return 0x35366BED; }
+    	uint16_t Opcount() const { return 7; }
+    	uint32_t Opcode() const { return 0x35366BED; }
 
     	uint8_t public_flag; // 0 = private, 1 = public
     	uint8_t moderation_flag; // 0 = unmoderated, 1 = moderated
@@ -32,7 +32,7 @@ namespace messages {
     		buffer.write(attempts_counter);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		public_flag = buffer.read<uint8_t>();
     		moderation_flag = buffer.read<uint8_t>();

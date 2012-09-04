@@ -11,10 +11,14 @@
 
 #include <boost/noncopyable.hpp>
 
+namespace anh {
+namespace observer {
+	class ObserverInterface;
+}}
+
 namespace swganh {
 namespace object {
     class Object;
-	class ObjectController;
 }}  // namespace swganh::object
 
 namespace swganh {
@@ -41,8 +45,8 @@ namespace simulation {
 		virtual void ViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, 
 			bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func) = 0;
 
-		virtual void HandleDataTransform(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransform message) = 0;
-		virtual void HandleDataTransformWithParent(const std::shared_ptr<swganh::object::ObjectController>& controller, swganh::messages::controllers::DataTransformWithParent message) = 0;
+		virtual void HandleDataTransform(const std::shared_ptr<swganh::object::Object>& controller, swganh::messages::controllers::DataTransform message) = 0;
+		virtual void HandleDataTransformWithParent(const std::shared_ptr<swganh::object::Object>& controller, swganh::messages::controllers::DataTransformWithParent message) = 0;
     };
 
 }}  // namespace swganh::simulation

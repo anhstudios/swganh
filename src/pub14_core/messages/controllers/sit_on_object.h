@@ -23,11 +23,10 @@ namespace controllers {
             , coord_y(0.0f)
         {}
 
-        explicit SitOnObject(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		SitOnObject(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x0000013B; }
         
@@ -45,7 +44,7 @@ namespace controllers {
             buffer.write(coord_y);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             cell_id = buffer.read<uint64_t>();
             coord_x = buffer.read<float>();

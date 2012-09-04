@@ -12,10 +12,10 @@
 namespace swganh {
 namespace messages {
 
-    struct FactionResponseMessage : public BaseSwgMessage<FactionResponseMessage>
+    struct FactionResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 6; }
-    	static uint32_t Opcode() { return 0x5DD53957; }
+    	uint16_t Opcount() const { return 6; }
+    	uint32_t Opcode() const { return 0x5DD53957; }
     	
     	std::string faction_rank;
     	uint32_t faction_points_rebel;
@@ -40,7 +40,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		faction_rank = buffer.read<std::string>();
     		faction_points_rebel = buffer.read<uint32_t>();

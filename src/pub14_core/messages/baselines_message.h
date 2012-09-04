@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
     
-    struct BaselinesMessage : public BaseBaselinesMessage<BaselinesMessage>
+    struct BaselinesMessage : public BaseBaselinesMessage
     {
-        static uint16_t Opcount() { return 5; }
-        static uint32_t Opcode() { return 0x68A75F0C; }
+        uint16_t Opcount() const { return 5; }
+        uint32_t Opcode() const { return 0x68A75F0C; }
     };
     
 }}  // namespace swganh::messages

@@ -9,14 +9,14 @@
 namespace swganh {
 namespace messages {
 
-    struct DestroyClientPathMessage : public BaseSwgMessage<DestroyClientPathMessage>
+    struct DestroyClientPathMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 1; }
-    	static uint32_t Opcode() { return 0xA75E85EB; }
+    	uint16_t Opcount() const { return 1; }
+    	uint32_t Opcode() const { return 0xA75E85EB; }
 
     	void OnSerialize(anh::ByteBuffer& buffer) const {}
 
-    	void OnDeserialize(anh::ByteBuffer buffer) {}
+    	void OnDeserialize(anh::ByteBuffer& buffer) {}
     };
 
 }} // namespace swganh::messages

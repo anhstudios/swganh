@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct SearchKnowledgebaseMessage : public BaseSwgMessage<SearchKnowledgebaseMessage>
+    struct SearchKnowledgebaseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x962E8B9B; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x962E8B9B; }
     	
     	std::wstring search_text;
     	
@@ -22,7 +22,7 @@ namespace messages {
     		buffer.write(search_text);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		search_text = buffer.read<std::wstring>();
     	}

@@ -71,7 +71,7 @@ namespace network {
          * \param instance An instance of a class that implements memfunc.
          */
         template<typename T, typename U, typename ConnectionType, typename MessageType>
-        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, MessageType), U instance)
+        void RegisterMessageHandler(void (T::*memfunc)(const std::shared_ptr<ConnectionType>&, MessageType*), U instance)
         {
             RegisterMessageHandler<ConnectionType, MessageType>(std::bind(memfunc, instance, std::placeholders::_1, std::placeholders::_2));
         }
@@ -86,9 +86,9 @@ namespace network {
          */
         template<typename ConnectionType, typename MessageType>
         void RegisterMessageHandler(
-            typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType&& handler)
+            typename GenericMessageHandler<ConnectionType, MessageType*>::HandlerType&& handler)
         {
-            auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType>::HandlerType>(std::move(handler));
+            auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType*>::HandlerType>(std::move(handler));
 
             auto wrapped_handler = [this, shared_handler] (
                 const std::shared_ptr<anh::network::soe::Session>& client,
@@ -97,10 +97,10 @@ namespace network {
                 MessageType tmp;
                 tmp.Deserialize(std::move(message));
 
-                (*shared_handler)(std::static_pointer_cast<ConnectionType>(client), std::move(tmp));
+                (*shared_handler)(std::static_pointer_cast<ConnectionType>(client), &tmp);
             };
 
-            RegisterMessageHandler(MessageType::Opcode(), std::move(wrapped_handler));
+            RegisterMessageHandler(MessageType().Opcode(), std::move(wrapped_handler));
         }
 
         /**

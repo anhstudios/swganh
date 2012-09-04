@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ConnectPlayerResponseMessage : public BaseSwgMessage<ConnectPlayerResponseMessage>
+    struct ConnectPlayerResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x6137556F; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x6137556F; }
 
     	uint32_t unknown1; // always 5
     	uint32_t unknown2;
@@ -27,7 +27,7 @@ namespace messages {
     		buffer.write(unknown2);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		unknown1 = buffer.read<uint32_t>();
     		unknown2 = buffer.read<uint32_t>();

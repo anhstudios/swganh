@@ -11,10 +11,10 @@
 namespace swganh {
 namespace messages {
     
-    struct CmdStartScene : public BaseSwgMessage<CmdStartScene>
+    struct CmdStartScene : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 8; }
-        static uint32_t Opcode() { return 0x3AE6DFAE; }
+        uint16_t Opcount() const { return 8; }
+        uint32_t Opcode() const { return 0x3AE6DFAE; }
         
         uint8_t ignore_layout;
         uint64_t character_id;
@@ -35,7 +35,7 @@ namespace messages {
         	buffer.write(galaxy_time);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
         	ignore_layout = buffer.read<uint8_t>();
         	character_id = buffer.read<uint64_t>();

@@ -248,19 +248,19 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
     return galaxy_status;
 }
 
-void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterface>& login_client, LoginClientId message)
+void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterface>& login_client, LoginClientId* message)
 {
-    login_client->SetUsername(message.username);
-    login_client->SetPassword(message.password);
-    login_client->SetVersion(message.client_version);
+    login_client->SetUsername(message->username);
+    login_client->SetPassword(message->password);
+    login_client->SetVersion(message->client_version);
 
-    auto account = account_provider_->FindByUsername(message.username);
+    auto account = account_provider_->FindByUsername(message->username);
 
     if (!account && login_auto_registration_ == true)
     {
-        if(account_provider_->AutoRegisterAccount(message.username, message.password))
+        if(account_provider_->AutoRegisterAccount(message->username, message->password))
         {
-            account = account_provider_->FindByUsername(message.username);
+            account = account_provider_->FindByUsername(message->username);
         }
     }
 

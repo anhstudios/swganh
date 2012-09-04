@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct GiveMoneyMessage : public BaseSwgMessage<GiveMoneyMessage>
+    struct GiveMoneyMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0xD1527EE8; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0xD1527EE8; }
     	
     	uint32_t credit_amount;
     	
@@ -21,7 +21,7 @@ namespace messages {
     		buffer.write(credit_amount);
     	}
     	
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		credit_amount = buffer.read<uint32_t>();
     	}

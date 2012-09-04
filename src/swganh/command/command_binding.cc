@@ -34,27 +34,6 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
         bp::detail::initialize_wrapper(obj, this);
     }
 
-    const std::shared_ptr<ObjectController>& GetController() const
-    {
-        {
-            ScopedGilLock lock;
-            try 
-            {
-                bp::override get_controller = this->get_override("GetController");
-                if (get_controller)
-                {
-                    return get_controller().as<const std::shared_ptr<ObjectController>&>();
-                }
-            }
-            catch(bp::error_already_set& /*e*/)
-            {
-                PyErr_Print();
-            }
-        }
-
-        return this->BaseSwgCommand::GetController();
-    }
-
     bool Validate()
     {
         bool validated = false;
@@ -152,14 +131,12 @@ void swganh::command::ExportCommand()
     ;
 
     bp::class_<CommandInterface, boost::noncopyable>("CommandInterface", bp::no_init)
-        .def("GetController", bp::pure_virtual(&CommandInterface::GetController), bp::return_internal_reference<>())
         .def("Validate", bp::pure_virtual(&CommandInterface::Validate))
         .def("Run", bp::pure_virtual(&CommandInterface::Run))
     ;
     
     bp::class_<BaseSwgCommand, BaseSwgCommandWrapper, bp::bases<CommandInterface>, boost::noncopyable>
         ("BaseSwgCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&>())
-        .def("GetController", &BaseSwgCommandWrapper::GetController, bp::return_value_policy<bp::copy_const_reference>())
         .def("Validate", &BaseSwgCommandWrapper::Validate)
         .def("GetKernel", &BaseSwgCommandWrapper::GetKernel, bp::return_internal_reference<>())
         .def("GetCommandName", &BaseSwgCommandWrapper::GetCommandName)
@@ -174,6 +151,5 @@ void swganh::command::ExportCommand()
         .def("IsQueuedCommand", &BaseSwgCommandWrapper::IsQueuedCommand)
         .def("GetActor", &BaseSwgCommandWrapper::GetActor, bp::return_value_policy<bp::copy_const_reference>())
         .def("GetTarget", &BaseSwgCommandWrapper::GetTarget, bp::return_value_policy<bp::copy_const_reference>())
-		.def("GetTargetCreature", &BaseSwgCommandWrapper::GetTargetCreature, bp::return_value_policy<bp::copy_const_reference>())
     ;
 }
