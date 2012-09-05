@@ -98,6 +98,6 @@ const std::string& Galaxy::updated_at() const {
 
 uint64_t Galaxy::GetGalaxyTimeInMilliseconds() {
     boost::posix_time::ptime start_time(boost::posix_time::time_from_string(created_at()));
-    boost::posix_time::ptime current_time(boost::posix_time::time_from_string(updated_at()));
+	boost::posix_time::ptime current_time(boost::posix_time::second_clock::local_time());
     return (current_time - start_time).total_milliseconds();
 }

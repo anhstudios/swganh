@@ -23,6 +23,7 @@
 #include "character/character_init.h"
 #include "connection/connection_init.h"
 #include "command/command_init.h"
+#include "equipment/equipment_init.h"
 #include "login/login_init.h"
 #include "galaxy/galaxy_init.h"
 #include "simulation/simulation_init.h"
@@ -31,6 +32,7 @@
 #include "equipment/equipment_init.h"
 #include "spawn/spawn_init.h"
 #include "sui/sui_init.h"
+#include "weather/weather_init.h"
 #include "terrain/terrain_init.h"
 
 using anh::app::KernelInterface;
@@ -70,6 +72,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh_core::social::Initialize(swganh_kernel);
 	swganh_core::spawn::Initialize(swganh_kernel);
 	swganh_core::sui::Initialize(swganh_kernel);
+	swganh_core::weather::Initialize(swganh_kernel);
 	swganh_core::terrain::Initialize(swganh_kernel);
     return ExitModule;
 }
