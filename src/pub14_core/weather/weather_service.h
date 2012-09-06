@@ -58,7 +58,7 @@ namespace weather {
 		void WeatherService::tickPlanetWeather_();
 		void WeatherService::WeatherScript();
 		void WeatherService::RemoveWeatherScene(uint32_t scene_);
-		void SendServerWeatherMessagePlayer_(swganh::weather::WeatherEvent weatherdata_, std::shared_ptr<swganh::object::ObjectController> obj_controller);
+		void SendServerWeatherMessagePlayer_(swganh::weather::WeatherEvent weatherdata_, std::shared_ptr<anh::observer::ObserverInterface> obj_controller);
 		void SendServerWeatherMessageAll_(swganh::weather::Weather weather_type, glm::vec3 cloud_vector, uint32_t scene_id);
 		void OnPlayerEnter(std::shared_ptr<swganh::object::Object> player_obj);
 		void swganh_core::weather::WeatherService::RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);

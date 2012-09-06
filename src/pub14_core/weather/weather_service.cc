@@ -103,13 +103,16 @@ void WeatherService::SetSceneWeather(uint32_t scene_id, std::vector<WeatherEvent
 
 void WeatherService::SendServerWeatherMessagePlayer_(
 	WeatherEvent weatherdata_,
-	std::shared_ptr<swganh::object::ObjectController> obj_controller)
+	std::shared_ptr<anh::observer::ObserverInterface> observer)
 {
-	ServerWeatherMessage server_weather_message;
-	server_weather_message.weather_id = weatherdata_.GetWeatherType();
-	server_weather_message.cloud_vector = weatherdata_.GetCloudVector();
-	obj_controller->GetRemoteClient()->SendTo(server_weather_message);
-			
+	auto controller = static_pointer_cast<swganh::object::ObjectController>(observer);
+	if (controller)
+	{
+		ServerWeatherMessage server_weather_message;
+		server_weather_message.weather_id = weatherdata_.GetWeatherType();
+		server_weather_message.cloud_vector = weatherdata_.GetCloudVector();
+		controller->GetRemoteClient()->SendTo(server_weather_message);			
+	}
 }
 
 void WeatherService::SendServerWeatherMessageAll_(

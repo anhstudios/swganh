@@ -80,25 +80,9 @@ namespace object {
          *
          * @param message The message to be delivered to the remote client.
          */
-        void Notify(swganh::messages::BaseSwgMessage* message);
-
-        // Send System Message
+        void Notify(swganh::messages::BaseSwgMessage* message);        
         
     private:
-        /**
-         * Sends out a system message.
-         *
-         * This internal method is invoked by the two SendSystemMessage overloads to send out a system message.
-         *
-         * @param custom_message A custom text string to be sent.
-         * @param prose A custom STF string package.
-         * @param player The recepient of the system message. If no player is passed the message is sent to everyone.
-         * @param chatbox_only Determines whether the message is displayed on screen or in the chatbox
-         *                     only. By default this is false meaning messages are by default displayed on screen and the chatbox.
-         * @param send_to_inrange If true the message is sent to all in-range players of the target recipient.
-         */
-        bool SendSystemMessage_(const std::wstring& custom_message, const swganh::messages::OutOfBand& prose, bool chatbox_only, bool send_to_inrange);
-
 
         ObjectController();
 

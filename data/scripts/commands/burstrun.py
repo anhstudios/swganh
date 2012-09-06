@@ -12,11 +12,11 @@ class BurstRunCommand(BaseSwgCommand):
             return False
 
         if actor.HasFlag("BurstRunning"):
-            self.GetController().SendSystemMessage('combat_effects', 'burst_run_no')
+            actor.SendSystemMessage('combat_effects', 'burst_run_no')
             return False
 
         if actor.HasFlag("BurstRunCooldown"):
-            self.GetController().SendSystemMessage('combat_effects', 'burst_run_wait')
+            actor.SendSystemMessage('combat_effects', 'burst_run_wait')
             return False
 
         # @TODO Check for mounts and whether or not in a space station/vehicle
@@ -32,7 +32,7 @@ class BurstRunCommand(BaseSwgCommand):
         # increase the actor's run speed
         actor.run_speed *= self.base_run_multiplier
 
-        self.GetController().SendSystemMessage('cbt_spam', 'burstrun_start_single')
+        actor.SendSystemMessage('cbt_spam', 'burstrun_start_single')
    
         return Callback(self.EndBurstRun, self.base_run_duration_ms)
 
@@ -44,8 +44,8 @@ class BurstRunCommand(BaseSwgCommand):
         # decrease the actor's run speed by the increased amount
         actor.run_speed /= self.base_run_multiplier
 
-        self.GetController().SendSystemMessage('cbt_spam', 'burstrun_stop_single')
-        self.GetController().SendSystemMessage('combat_effects', 'burst_run_tired')
+        actor.SendSystemMessage('cbt_spam', 'burstrun_stop_single')
+        actor.SendSystemMessage('combat_effects', 'burst_run_tired')
  
         return Callback(self.EndBurstRunCooldown, self.base_cooldate_timer_ms - self.base_run_duration_ms)
 
@@ -54,4 +54,4 @@ class BurstRunCommand(BaseSwgCommand):
         
         actor.RemoveFlag("BurstRunCooldown")
         
-        self.GetController().SendSystemMessage('combat_effects', 'burst_run_not_tired')
+        actor.SendSystemMessage('combat_effects', 'burst_run_not_tired')

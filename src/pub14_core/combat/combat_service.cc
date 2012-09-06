@@ -33,8 +33,9 @@
 #include "pub14_core/messages/controllers/combat_action_message.h"
 #include "pub14_core/messages/controllers/combat_spam_message.h"
 #include "pub14_core/messages/controllers/show_fly_text.h"
-#include "pub14_core/messages/chat_system_message.h"
 #include "pub14_core/messages/out_of_band.h"
+#include "pub14_core/messages/chat_system_message.h"
+#include "pub14_core/messages/system_message.h"
 
 using namespace std;
 using namespace anh;
@@ -123,7 +124,7 @@ bool CombatService::InitiateCombat(
     
     if (attacker->GetObjectId() == target->GetObjectId())
     {
-        //TODO: attacker->GetController()->SendSystemMessage(OutOfBand("cbt_spam","shoot_self"));
+        SystemMessage::Send(attacker, OutOfBand("cbt_spam", "shoot_self"));
         return false;
     }
 
@@ -281,24 +282,24 @@ int CombatService::SingleTargetCombatAction(
         // Block
     case BLOCK:
         SendCombatActionMessage(defender, attacker, properties, "block");
-        //TODO: defender->GetController()->SendFlyText("@combat_effects:block", FlyTextColor::GREEN); 
+        SystemMessage::FlyText(defender, "@combat_effects:block", FlyTextColor::GREEN); 
         BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::BLOCK_spam());
         damage_multiplier = 0.5f;
         break;
     case DODGE:
         // Dodge
         SendCombatActionMessage(defender, attacker, properties, "dodge");
-        //TODO: defender->GetController()->SendFlyText("@combat_effects:dodge", FlyTextColor::GREEN); 
+        SystemMessage::FlyText(defender, "@combat_effects:dodge", FlyTextColor::GREEN); 
         damage_multiplier = 0.0f;
         BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::DODGE_spam());
         break;
     case COUNTER:
-        //TODO: defender->GetController()->SendFlyText("@combat_effects:counterattack", FlyTextColor::GREEN); 
+        SystemMessage::FlyText(defender, "@combat_effects:counterattack", FlyTextColor::GREEN); 
         BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::COUNTER_spam());
         damage_multiplier = 0.0f;
     case MISS:
         // Miss
-        //TODO: defender->GetController()->SendFlyText("@combat_effects:miss", FlyTextColor::WHITE); 
+        SystemMessage::FlyText(defender, "@combat_effects:miss", FlyTextColor::WHITE); 
         BroadcastCombatSpam(attacker, defender, properties, damage, CombatData::MISS_spam());
         damage_multiplier = 0.0f;
         return 0;
@@ -632,14 +633,14 @@ void CombatService::SetIncapacitated(const shared_ptr<Creature>& attacker, const
     target->SetIncapTimer(15);
     EndCombat(attacker, target);
 
-    //TODO: attacker->GetController()->SendSystemMessage(OutOfBand("base_player", "prose_target_incap", TT, target->GetObjectId()));
+    SystemMessage::Send(attacker, OutOfBand("base_player", "prose_target_incap", TT, target->GetObjectId()));
     if (attacker)
     {
-        //TODO: target->GetController()->SendSystemMessage(OutOfBand("base_player", "prose_victim_incap", TT, attacker->GetObjectId()));
+        SystemMessage::Send(target, OutOfBand("base_player", "prose_victim_incap", TT, attacker->GetObjectId()));
     }
     else
 	{
-        //TODO: target->GetController()->SendSystemMessage(OutOfBand("base_player", "victim_incapacitated"));
+        SystemMessage::Send(target, OutOfBand("base_player", "victim_incapacitated"));
 	}
 
     active_.AsyncDelayed(boost::posix_time::seconds(15), [target](){
@@ -657,16 +658,16 @@ void CombatService::SetDead(const shared_ptr<Creature>& attacker, const shared_p
     // Clear States
     target->SetStateBitmask(NONE);
     EndCombat(attacker, target);
-    //TODO: attacker->GetController()->SendSystemMessage(OutOfBand("base_player", "killer_target_dead", TT, target->GetObjectId()));
-    //TODO: attacker->GetController()->SendSystemMessage(OutOfBand("base_player", "prose_target_dead", TT, target->GetObjectId()));
-    //if (attacker)
-	//{
-    //    TODO: target->GetController()->SendSystemMessage(OutOfBand("base_player", "prose_victim_dead", TT, attacker->GetObjectId()));
-	//}
-    //else
-	//{
-    //    TODO: target->GetController()->SendSystemMessage(OutOfBand("base_player", "victim_dead"));
-	//}
+    SystemMessage::Send(attacker, OutOfBand("base_player", "killer_target_dead", TT, target->GetObjectId()));
+    SystemMessage::Send(attacker, OutOfBand("base_player", "prose_target_dead", TT, target->GetObjectId()));
+    if (attacker)
+	{
+        SystemMessage::Send(target, OutOfBand("base_player", "prose_victim_dead", TT, attacker->GetObjectId()));
+	}
+    else
+	{
+        SystemMessage::Send(target, OutOfBand("base_player", "victim_dead"));
+	}
 }
 
 void CombatService::EndDuel(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target)
@@ -679,8 +680,8 @@ void CombatService::EndDuel(const shared_ptr<Creature>& attacker, const shared_p
         attacker->SetPvPStatus(PvPStatus_Player);
         attacker->ToggleStateOff(COMBAT);
         attacker->SetTargetId(0);
-        //TODO: attacker->GetController()->SendSystemMessage(OutOfBand("duel", "end_self", TT, target->GetObjectId()));
-        //TODO: target->GetController()->SendSystemMessage(OutOfBand("duel", "end_target", TT, attacker->GetObjectId()));
+        SystemMessage::Send(attacker, OutOfBand("duel", "end_self", TT, target->GetObjectId()));
+        SystemMessage::Send(target, OutOfBand("duel", "end_target", TT, attacker->GetObjectId()));
         // End the Duel for the target as well
         target->ClearAutoAttack();
         target->RemoveFromDuelList(attacker->GetObjectId());

@@ -17,6 +17,8 @@
 
 #include "swganh/sui/radial_binding.h"
 
+#include "pub14_core/messages/system_message.h"
+
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
@@ -36,13 +38,60 @@ void SetDefaultPermissions(std::shared_ptr<Object> requester)
 	requester->SetPermissions(make_shared<DefaultPermission>());	
 }
 
+void SendSystemMessage1(std::shared_ptr<Object> requester, std::string filename, std::string label)
+{
+	SystemMessage::Send(requester, filename, label);
+}
+void SendSystemMessage2(std::shared_ptr<Object> requester, std::wstring& custom_message, bool chatbox_only, bool send_to_inrange)
+{
+	SystemMessage::Send(requester, custom_message, chatbox_only, send_to_inrange);
+}
+void SendSystemMessage3(std::shared_ptr<Object> requester, swganh::messages::OutOfBand& out_of_band, bool chatbox_only, bool send_to_inrange)
+{
+	SystemMessage::Send(requester, out_of_band, chatbox_only, send_to_inrange);
+}
+void SendSystemMessage4(std::shared_ptr<Object> requester, std::wstring custom_message, swganh::messages::OutOfBand& out_of_band, bool chatbox_only, bool send_to_inrange)
+{
+	SystemMessage::Send(requester, custom_message, out_of_band, chatbox_only, send_to_inrange);
+}
+void SendFlyText(std::shared_ptr<Object> requester, const std::string& fly_text, controllers::FlyTextColor color)
+{
+	SystemMessage::FlyText(requester, fly_text, color);
+}
+
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
 
+struct ProsePackageWrapper : ProsePackage, wrapper<ProsePackage>
+{
+    ProsePackageWrapper() : ProsePackage(){}
+};
+
+void exportOutOfBand()
+{
+    enum_<ProseType>("ProseType", "Prose type of the :class:`.OutOfBand` Message")
+        .value("TU", TU)
+        .value("TT", TT)
+        .value("TO", TO)
+        .value("DI", DI)
+        .value("DF", DF)
+        ;
+    class_<OutOfBand, boost::noncopyable>("OutOfBand","object that is used in the help with sending system stf messages")
+        .def(init<std::string, std::string, ProseType, uint64_t>())
+        .def(init<std::string, std::string, ProseType, std::wstring>())
+        .def(init<std::string, std::string>())
+    ;
+}
+
 void exportObject()
 {
-    //std::shared_ptr<ObjectController> (ObjectWrapper::*GetControllerPtr)() = &ObjectWrapper::GetController;
-
+	enum_<controllers::FlyTextColor>("FlyTextColor", "Object that describes the different colors Fly Text Can be")
+    .value("RED", controllers::RED)
+    .value("GREEN", controllers::GREEN)
+    .value("BLUE", controllers::BLUE)
+    .value("WHITE", controllers::WHITE)
+    .value("MIX", controllers::MIX)
+    ;
 	void (ContainerInterface::*RemoveObject)(shared_ptr<Object>, shared_ptr<Object>) = &ContainerInterface::RemoveObject;
 
 	class_<ContainerInterface, std::shared_ptr<ContainerInterface>, boost::noncopyable>("ContainerInterface", "Container interface", no_init)
@@ -79,6 +128,11 @@ void exportObject()
 		.def("set_string_attribute", &Object::SetAttribute<wstring>, "sets the string attribute value")
 		.add_property("attribute_template_id", &Object::GetAttributeTemplateId, &Object::SetAttributeTemplateId, "Gets and Sets the attribute template_id")
 		.def("event_dispatcher", &Object::SetEventDispatcher, "Sets the event dispatcher pointer")
+		.def("SendSystemMessage", SendSystemMessage1, "Send a system message to the requester, see :class:`")
+		.def("SendSystemMessage", SendSystemMessage2, "Send a system message to the requester")
+		.def("SendSystemMessage", SendSystemMessage3, "Send a system message to the requester")
+		.def("SendSystemMessage", SendSystemMessage4, "Send a system message to the requester")
+		.def("SendFlyText", SendFlyText, "Sends Fly Text to the player, see :class:`.FlyTextColor`")
 		
 		;
 
