@@ -19,10 +19,10 @@ namespace messages {
     	std::string type;
     };
 
-    struct ResourceListForSurveyMessage : public BaseSwgMessage<ResourceListForSurveyMessage>
+    struct ResourceListForSurveyMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 4; }
-    	static uint32_t Opcode() { return 0x8A64B1D5; }
+    	uint16_t Opcount() const { return 4; }
+    	uint32_t Opcode() const { return 0x8A64B1D5; }
     	
     	std::list<ResourceInfo> resources;
     	std::string resources_type; // type of all resources in the list
@@ -40,7 +40,7 @@ namespace messages {
     		buffer.write(surveyor_object_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		uint32_t resources_count = buffer.read<uint32_t>();
     		for (uint32_t i = 0; i < resources_count; i++) {

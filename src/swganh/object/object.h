@@ -134,14 +134,14 @@ public:
      *
      * @TODO Consider returning a null object instead of nullptr.
      */
-    std::shared_ptr<ObjectController> GetController();
+    std::shared_ptr<anh::observer::ObserverInterface> GetController();
 
     /**
      * Sets the controller for this Object instance.
      *
      * @param controller
      */
-    void SetController(const std::shared_ptr<ObjectController>& controller);
+    void SetController(const std::shared_ptr<anh::observer::ObserverInterface>& controller);
 
     /**
      * Clears the active current controller, if one exists, for this instance.
@@ -191,7 +191,7 @@ public:
      * @param message Message containing the updated state of the observable object.
      */
     template<typename T>
-    void NotifyObservers(const swganh::messages::BaseBaselinesMessage<T>& message)
+    void NotifyObservers(swganh::messages::BaseBaselinesMessage* message)
     {
         if (! (message.view_type == 3 || message.view_type == 6))
         {
@@ -208,26 +208,7 @@ public:
         NotifyObservers<T>(message);
     }
 
-    /**
-     * Notifies observers that the observable object has changed state.
-     *
-     * @param message Message containing the updated state of the observable object.
-     */
-    template<typename T>
-    void NotifyObservers(const T& message)
-    {
-	    boost::lock_guard<boost::mutex> lock(object_mutex_);
-
-        std::for_each(
-            observers_.begin(),
-            observers_.end(),
-            [&message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
-        {
-            observer->Notify(message);
-        });
-    }
-
-    void NotifyObservers(const anh::ByteBuffer& message);
+	void NotifyObservers(swganh::messages::BaseSwgMessage* message);
 
     /**
      * Returns whether or not the object has been modified since the last reliable
@@ -412,9 +393,9 @@ public:
      *
      * @param message The deltas message to store.
      */
-    void AddDeltasUpdate(swganh::messages::DeltasMessage message);
+    void AddDeltasUpdate(swganh::messages::DeltasMessage* message);
 
-    void AddBaselineToCache(swganh::messages::BaselinesMessage baseline);
+    void AddBaselineToCache(swganh::messages::BaselinesMessage* baseline);
 
     /**
      * Sets the id of this object instance.
@@ -602,12 +583,12 @@ private:
 
     ObserverContainer observers_;
 	AwareObjectContainer aware_objects_;
+	std::shared_ptr<anh::observer::ObserverInterface> controller_;
 
     BaselinesCacheContainer baselines_;
     DeltasCacheContainer deltas_;
 
     std::shared_ptr<ContainerInterface> container_;
-    std::shared_ptr<ObjectController> controller_;
     anh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;

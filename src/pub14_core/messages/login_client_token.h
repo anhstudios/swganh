@@ -16,10 +16,10 @@ namespace login {
 namespace swganh {
 namespace messages {
 
-    struct LoginClientToken : public BaseSwgMessage<LoginClientToken>
+    struct LoginClientToken : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 4; }
-    	static uint32_t Opcode() { return 0xAAB296C6; }
+    	uint16_t Opcount() const { return 4; }
+    	uint32_t Opcode() const { return 0xAAB296C6; }
 
     	anh::ByteBuffer session_key;
     	uint32_t station_id;
@@ -33,7 +33,7 @@ namespace messages {
     		buffer.write(station_username);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		session_key = anh::ByteBuffer(buffer.data(), buffer.read<uint32_t>());
     		buffer.read_position(buffer.read_position() + session_key.size());

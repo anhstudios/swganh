@@ -86,13 +86,13 @@ void CharacterService::Startup() {
 
 void CharacterService::HandleClientCreateCharacter_(
     const shared_ptr<ConnectionClientInterface>& client, 
-    ClientCreateCharacter message) 
+    ClientCreateCharacter* message) 
 {    
     uint64_t character_id;
     string error_code;
 	bool name_check;
 	string name_check_error_code;
-	string name = std::string(message.character_name.begin(), message.character_name.end());
+	string name = std::string(message->character_name.begin(), message->character_name.end());
 	
 	// Profanity/Reserve/Developer/ect... name check.
 	tie(name_check, name_check_error_code) = character_provider_->IsNameAllowed(name);
@@ -105,7 +105,7 @@ void CharacterService::HandleClientCreateCharacter_(
 		return; // Bail out of character creation.
 	}
 
-    tie(character_id, error_code) = character_provider_->CreateCharacter(message, client->GetAccountId());
+    tie(character_id, error_code) = character_provider_->CreateCharacter(*message, client->GetAccountId());
 
     // heartbeat to let the client know we're still here
     HeartBeat heartbeat;
@@ -125,12 +125,12 @@ void CharacterService::HandleClientCreateCharacter_(
 
 void CharacterService::HandleClientRandomNameRequest_(
     const shared_ptr<ConnectionClientInterface>& client, 
-    ClientRandomNameRequest message)
+    ClientRandomNameRequest* message)
 {
     ClientRandomNameResponse response;
-    response.player_race_iff = message.player_race_iff;
+    response.player_race_iff = message->player_race_iff;
 
-    response.random_name = character_provider_->GetRandomNameRequest(message.player_race_iff);
+    response.random_name = character_provider_->GetRandomNameRequest(message->player_race_iff);
     if (response.random_name.length() > 0) {
         response.stf_file = "ui";
         response.approval_string = "name_approved";
@@ -141,12 +141,12 @@ void CharacterService::HandleClientRandomNameRequest_(
 
 void CharacterService::HandleDeleteCharacterMessage_(
     const shared_ptr<LoginClientInterface>& login_client, 
-    DeleteCharacterMessage message)
+    DeleteCharacterMessage* message)
 {
     DeleteCharacterReplyMessage reply_message;
     reply_message.failure_flag = 1;
 
-    if (character_provider_->DeleteCharacter(message.character_id, login_client->GetAccount()->account_id())) {
+    if (character_provider_->DeleteCharacter(message->character_id, login_client->GetAccount()->account_id())) {
         reply_message.failure_flag = 0;
     }
 

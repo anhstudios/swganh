@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct SUIForceClose : public BaseSwgMessage<SUIForceClose>
+    struct SUIForceClose : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x990B5DE0; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x990B5DE0; }
 
 		int32_t window_id;
 
@@ -22,7 +22,7 @@ namespace messages {
     		buffer.write(window_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		window_id = buffer.read<int32_t>();
     	}

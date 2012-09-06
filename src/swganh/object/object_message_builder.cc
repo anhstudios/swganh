@@ -44,7 +44,7 @@ void ObjectMessageBuilder::SendEndBaselines(const shared_ptr<Object>& object, co
 {
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = object->GetObjectId();
-	observer->Notify(scene_end_baselines);
+	observer->Notify(&scene_end_baselines);
 }
 
 void ObjectMessageBuilder::BuildComplexityDelta(const shared_ptr<Object>& object)
@@ -54,7 +54,7 @@ void ObjectMessageBuilder::BuildComplexityDelta(const shared_ptr<Object>& object
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 0);
         message.data.write(object->GetComplexity());
 
-        object->AddDeltasUpdate(message);                
+        object->AddDeltasUpdate(&message);                
     }
 }
 void ObjectMessageBuilder::BuildStfNameDelta(const shared_ptr<Object>& object)
@@ -66,7 +66,7 @@ void ObjectMessageBuilder::BuildStfNameDelta(const shared_ptr<Object>& object)
         message.data.write<uint32_t>(0);
         message.data.write(object->GetStfNameString());
 
-        object->AddDeltasUpdate(message);                
+        object->AddDeltasUpdate(&message);                
     }
 }
 void ObjectMessageBuilder::BuildCustomNameDelta(const shared_ptr<Object>& object)
@@ -76,7 +76,7 @@ void ObjectMessageBuilder::BuildCustomNameDelta(const shared_ptr<Object>& object
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 2);
         message.data.write(object->GetCustomName());
 
-        object->AddDeltasUpdate(message);                
+        object->AddDeltasUpdate(&message);                
     }
 }
 void ObjectMessageBuilder::BuildVolumeDelta(const shared_ptr<Object>& object)
@@ -86,7 +86,7 @@ void ObjectMessageBuilder::BuildVolumeDelta(const shared_ptr<Object>& object)
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 3);
         message.data.write(object->GetVolume());
 
-        object->AddDeltasUpdate(message);                
+        object->AddDeltasUpdate(&message);                
     }
 }
 
@@ -98,7 +98,7 @@ void ObjectMessageBuilder::BuildServerIDDelta(const shared_ptr<Object>& object)
         
 		message.data.write(object->GetSceneId());
 
-        object->AddDeltasUpdate(message);                
+        object->AddDeltasUpdate(&message);                
     }
 }
 

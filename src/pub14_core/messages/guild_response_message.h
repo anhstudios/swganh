@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct GuildResponseMessage : public BaseSwgMessage<GuildResponseMessage>
+    struct GuildResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 1; }
-    	static uint32_t Opcode() { return 0x32263F20; }
+    	uint16_t Opcount() const { return 1; }
+    	uint32_t Opcode() const { return 0x32263F20; }
     	
     	uint64_t guild_id;
     	std::string guild_name;
@@ -26,7 +26,7 @@ namespace messages {
     		buffer.write(unknown);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		guild_id = buffer.read<uint64_t>();
     		guild_name = buffer.read<std::string>();

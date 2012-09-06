@@ -20,11 +20,10 @@ namespace controllers {
             , flourish_id(0)
         {}
 
-        explicit EntertainerFlourish(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		EntertainerFlourish(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x00000166; }
         
@@ -39,7 +38,7 @@ namespace controllers {
             buffer.write<uint32_t>(0);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             flourish_id = buffer.read<uint32_t>();
         }

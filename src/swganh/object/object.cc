@@ -51,13 +51,13 @@ bool Object::HasController()
     return controller_ != nullptr;
 }
 
-shared_ptr<ObjectController> Object::GetController()
+shared_ptr<ObserverInterface> Object::GetController()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
     return controller_;
 }
 
-void Object::SetController(const shared_ptr<ObjectController>& controller)
+void Object::SetController(const shared_ptr<ObserverInterface>& controller)
 {
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -69,7 +69,7 @@ void Object::SetController(const shared_ptr<ObjectController>& controller)
 
 void Object::ClearController()
 {
-    shared_ptr<ObjectController> controller;
+    shared_ptr<ObserverInterface> controller;
 
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -455,9 +455,17 @@ void Object::Unsubscribe(const shared_ptr<ObserverInterface>& observer)
     }
 }
 
-void Object::NotifyObservers(const anh::ByteBuffer& message)
+void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message)
 {
-    NotifyObservers<anh::ByteBuffer>(message);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+
+    std::for_each(
+        observers_.begin(),
+        observers_.end(),
+        [&message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+    {
+        observer->Notify(message);
+    });
 }
 
 bool Object::IsDirty()
@@ -488,17 +496,17 @@ DeltasCacheContainer Object::GetDeltas(uint64_t viewer_id)
     return deltas_;
 }
 
-void Object::AddDeltasUpdate(DeltasMessage message)
+void Object::AddDeltasUpdate(DeltasMessage* message)
 {
     NotifyObservers(message);
 
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    deltas_.push_back(move(message));
+    deltas_.push_back(*message);
 }
-void Object::AddBaselineToCache(swganh::messages::BaselinesMessage baseline)
+void Object::AddBaselineToCache(swganh::messages::BaselinesMessage* baseline)
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
-    baselines_.push_back(move(baseline));
+    baselines_.push_back(*baseline);
 }
 
 void Object::SetPosition(glm::vec3 position)
@@ -714,7 +722,7 @@ void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> o
     scene_object.position = GetPosition();
 	scene_object.orientation = GetOrientation();
     scene_object.byte_flag = 0;
-    observer->Notify(scene_object);
+    observer->Notify(&scene_object);
 
 	SendUpdateContainmentMessage(observer);
 }
@@ -734,8 +742,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::Observe
 	containment_message.container_id = container_id;
 	containment_message.object_id = GetObjectId();
 	containment_message.containment_type = arrangement_id_;
-
-	observer->Notify(containment_message);
+	observer->Notify(&containment_message);
 }
 
 void Object::SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer)
@@ -744,7 +751,7 @@ void Object::SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> obser
 
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();
-	observer->Notify(scene_object);
+	observer->Notify(&scene_object);
 }
 
 void Object::SetFlag(std::string flag)

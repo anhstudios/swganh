@@ -13,16 +13,14 @@
 
 #include "pub14_core/messages/controllers/command_queue_remove.h"
 
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible.h"
-#include "swganh/object/object_controller.h"
-
 #include "swganh/simulation/simulation_service_interface.h"
 
 #include "swganh/command/base_swg_command.h"
 #include "swganh/command/command_properties_manager_interface.h"
 #include "swganh/command/command_queue_interface.h"
 #include "swganh/command/command_queue_manager_interface.h"
+
+#include "swganh/object/object.h"
 
 using anh::service::ServiceDescription;
 using pub14_core::command::CommandService;
@@ -40,7 +38,6 @@ using swganh::command::CommandValidatorInterface;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::messages::controllers::CommandQueueRemove;
 using swganh::object::Object;
-using swganh::object::ObjectController;
 using swganh::simulation::SimulationServiceInterface;
 
 CommandService::CommandService(SwganhKernel* kernel)
@@ -105,16 +102,16 @@ void CommandService::EnqueueCommand(const std::shared_ptr<swganh::command::Comma
 }
 
 void CommandService::EnqueueCommandRequest(
-    const std::shared_ptr<ObjectController>& controller,
-    CommandQueueEnqueue command_request)
+    const std::shared_ptr<swganh::object::Object>& object,
+    CommandQueueEnqueue* command_request)
 {
-    auto command = command_factory_impl_->CreateCommand(command_request.command_crc);
+    auto command = command_factory_impl_->CreateCommand(command_request->command_crc);
     if (command)
     {
         auto swg_command = std::static_pointer_cast<BaseSwgCommand>(command);
 
-        swg_command->SetController(controller);
-        swg_command->SetCommandRequest(command_request);
+		swg_command->SetController(object->GetController());
+        swg_command->SetCommandRequest(*command_request);
 
         EnqueueCommand(swg_command);
     }
@@ -169,19 +166,22 @@ void CommandService::Startup()
 }
 
 void CommandService::SendCommandQueueRemove(
-    const std::shared_ptr<ObjectController>& controller,
+    const std::shared_ptr<swganh::object::Object>& object,
     uint32_t action_counter,
     float default_time_sec,
     uint32_t error,
     uint32_t action)
 {
-    CommandQueueRemove remove;
-    remove.action_counter = action_counter;
-    remove.timer = default_time_sec;
-    remove.error = error;
-    remove.action = action;
-
-    controller->Notify(remove);
+	auto controller = object->GetController();
+	if(controller != nullptr)
+	{
+		CommandQueueRemove remove;
+		remove.action_counter = action_counter;
+		remove.timer = default_time_sec;
+		remove.error = error;
+		remove.action = action;
+		controller->Notify(&remove);
+	}
 }
 
 void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)

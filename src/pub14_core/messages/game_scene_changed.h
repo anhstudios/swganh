@@ -9,14 +9,14 @@
 namespace swganh {
 namespace messages {
 
-    struct GameSceneChanged : public BaseSwgMessage<GameSceneChanged>
+    struct GameSceneChanged : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 1; }
-    	static uint32_t Opcode() { return 0xBBADAEB9; }
+    	uint16_t Opcount() const { return 1; }
+    	uint32_t Opcode() const { return 0xBBADAEB9; }
 
     	void OnSerialize(anh::ByteBuffer& buffer) const {}
 
-    	void OnDeserialize(anh::ByteBuffer buffer) {}
+    	void OnDeserialize(anh::ByteBuffer& buffer) {}
     };
 
 }} // namespace swganh::messages

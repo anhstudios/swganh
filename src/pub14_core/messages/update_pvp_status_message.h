@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
     
-    struct UpdatePvpStatusMessage : public BaseSwgMessage<UpdatePvpStatusMessage>
+    struct UpdatePvpStatusMessage : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 4; }
-        static uint32_t Opcode() { return 0x08A1C126; }
+        uint16_t Opcount() const { return 4; }
+        uint32_t Opcode() const { return 0x08A1C126; }
         
         uint32_t pvp_status;
         uint32_t faction;
@@ -25,7 +25,7 @@ namespace messages {
             buffer.write(object_id);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
             pvp_status = buffer.read<uint32_t>();
             faction = buffer.read<uint32_t>();

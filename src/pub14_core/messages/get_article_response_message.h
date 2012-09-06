@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct GetArticleResponseMessage : public BaseSwgMessage<GetArticleResponseMessage>
+    struct GetArticleResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x934BAEE0; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x934BAEE0; }
     	
     	uint32_t article_text_flag; // 0 = display the article text, 1 = article unable to be retrieved
     	std::wstring article_text;
@@ -24,7 +24,7 @@ namespace messages {
     		buffer.write(article_text);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		article_text_flag = buffer.read<uint32_t>();
     		article_text = buffer.read<std::wstring>();

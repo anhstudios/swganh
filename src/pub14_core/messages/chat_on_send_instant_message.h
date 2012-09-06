@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ChatOnSendInstantMessage : public BaseSwgMessage<ChatOnSendInstantMessage>
+    struct ChatOnSendInstantMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x88DBB381; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x88DBB381; }
 
     	uint32_t success_flag; // 0x00 = success, 0x04 = failure
     	uint32_t sequence_number;
@@ -23,7 +23,7 @@ namespace messages {
     		buffer.write(sequence_number);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		success_flag = buffer.read<uint32_t>();
     		sequence_number = buffer.read<uint32_t>();

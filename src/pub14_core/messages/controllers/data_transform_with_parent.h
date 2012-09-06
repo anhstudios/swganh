@@ -19,11 +19,10 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
-        explicit DataTransformWithParent(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		DataTransformWithParent(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x000000F1; }
         uint32_t counter;
@@ -46,7 +45,7 @@ namespace controllers {
             buffer.write(speed);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             counter = buffer.read<uint32_t>();
             cell_id = buffer.read<uint64_t>();

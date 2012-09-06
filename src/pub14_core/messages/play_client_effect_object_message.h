@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct PlayClientEffectObjectMessage : public BaseSwgMessage<PlayClientEffectObjectMessage>
+    struct PlayClientEffectObjectMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x8855434A; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x8855434A; }
 
     	std::string client_effect_file; // e.g. "clienteffect/frs_dark_envy.cef"
     	std::string auxiliary_string; // Place from where to start the animation. See wiki for examples.
@@ -26,7 +26,7 @@ namespace messages {
     		buffer.write(object_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		client_effect_file = buffer.read<std::string>();
     		auxiliary_string = buffer.read<std::string>();

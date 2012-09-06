@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct NewTicketActivityMessage : public BaseSwgMessage<NewTicketActivityMessage>
+    struct NewTicketActivityMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x274F4E78; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x274F4E78; }
     	
     	uint64_t ticket_id;
     	
@@ -21,7 +21,7 @@ namespace messages {
     		buffer.write(ticket_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		ticket_id = buffer.read<uint64_t>();
     	}

@@ -23,10 +23,10 @@ namespace messages {
     	{}
     };
 
-    struct SurveyMessage : public BaseSwgMessage<SurveyMessage>
+    struct SurveyMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x877F79AC; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x877F79AC; }
     	
     	std::list<SurveyResource> resources;
 
@@ -41,7 +41,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		uint32_t resources_count = buffer.read<uint32_t>();
     		for (uint32_t i = 0; i < resources_count; i++) {

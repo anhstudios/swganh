@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct GetMapLocationsRequestMessage : public BaseSwgMessage<GetMapLocationsRequestMessage>
+    struct GetMapLocationsRequestMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 5; }
-    	static uint32_t Opcode() { return 0x1A7AB839; }
+    	uint16_t Opcount() const { return 5; }
+    	uint32_t Opcode() const { return 0x1A7AB839; }
     	
     	std::string planet_name;
     	uint32_t unknown1;
@@ -28,7 +28,7 @@ namespace messages {
     		buffer.write(unknown3);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		unknown1 = buffer.read<uint32_t>();

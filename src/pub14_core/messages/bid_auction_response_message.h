@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct BidAuctionResponseMessage : public BaseSwgMessage<BidAuctionResponseMessage>
+    struct BidAuctionResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0xC58A446E; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0xC58A446E; }
 
     	uint64_t item_id;
     	uint32_t status_flag; // 0 = Succeeded, 1 = Auctioneer is Invalid, 2 = Invalid Item, 9 = Not Enough Credits
@@ -23,7 +23,7 @@ namespace messages {
     		buffer.write(status_flag);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		status_flag = buffer.read<uint32_t>();

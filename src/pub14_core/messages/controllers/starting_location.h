@@ -36,11 +36,10 @@ namespace controllers {
             , starting_locations(std::vector<StartPlanet>())
         {}
 
-        explicit StartingLocation(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		StartingLocation(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x000001FC; }
         
@@ -63,7 +62,7 @@ namespace controllers {
             }
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             int size = buffer.read<uint32_t>();
             for (int i = 0; i < size; i++)

@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct RemoveItemMessage : public BaseSwgMessage<RemoveItemMessage>
+    struct RemoveItemMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 1; }
-    	static uint32_t Opcode() { return 0x4417AF8B; }
+    	uint16_t Opcount() const { return 1; }
+    	uint32_t Opcode() const { return 0x4417AF8B; }
     	
     	uint64_t item_id;
     	
@@ -21,7 +21,7 @@ namespace messages {
     		buffer.write(item_id);
     	}
     	
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     	}

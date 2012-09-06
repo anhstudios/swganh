@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct AcceptAuctionResponseMessage : public BaseSwgMessage<AcceptAuctionResponseMessage> 
+    struct AcceptAuctionResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0xC58A446E; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0xC58A446E; }
 
     	uint64_t item_id;
     	uint32_t error;
@@ -23,7 +23,7 @@ namespace messages {
     		buffer.write(error);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		error = buffer.read<uint32_t>();

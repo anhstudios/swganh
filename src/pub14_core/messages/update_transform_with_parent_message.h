@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct UpdateTransformWithParentMessage : public BaseSwgMessage<UpdateTransformWithParentMessage>
+    struct UpdateTransformWithParentMessage : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 9; }
-        static uint32_t Opcode() { return 0xC867AB5A; }
+        uint16_t Opcount() const { return 9; }
+        uint32_t Opcode() const { return 0xC867AB5A; }
 
         uint64_t cell_id;
         uint64_t object_id;
@@ -34,7 +34,7 @@ namespace messages {
             buffer.write(heading);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
             cell_id = buffer.read<uint64_t>();
             object_id = buffer.read<uint64_t>();

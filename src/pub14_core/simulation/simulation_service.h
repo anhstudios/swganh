@@ -49,7 +49,7 @@ namespace simulation {
         void RemoveObjectById(uint64_t object_id);
         void RemoveObject(const std::shared_ptr<swganh::object::Object>& object);
         
-        std::shared_ptr<swganh::object::ObjectController> StartControllingObject(
+        std::shared_ptr<anh::observer::ObserverInterface> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
             std::shared_ptr<swganh::connection::ConnectionClientInterface> client);
 

@@ -259,8 +259,6 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
         statement->setString(12, character_info.hair_customization);
         statement->setString(13, character_info.player_race_iff);
 
-		LOG(warning) << character_info.player_race_iff;
-
         statement->execute();
 
         statement.reset(conn->prepareStatement("SELECT @output as _object_id"));

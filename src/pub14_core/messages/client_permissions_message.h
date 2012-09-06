@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
     
-    struct ClientPermissionsMessage : public BaseSwgMessage<ClientPermissionsMessage>
+    struct ClientPermissionsMessage : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 4; }
-        static uint32_t Opcode() { return 0xE00730E5; }
+        uint16_t Opcount() const { return 4; }
+        uint32_t Opcode() const { return 0xE00730E5; }
         
         uint8_t galaxy_available;
         uint8_t available_character_slots;
@@ -25,7 +25,7 @@ namespace messages {
         	buffer.write(unlimited_characters);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
         	galaxy_available = buffer.read<uint8_t>();
         	available_character_slots = buffer.read<uint8_t>();

@@ -23,11 +23,10 @@ namespace controllers {
             : ObjControllerMessage(controller_type, message_type())
         {}
 
-        explicit ObjectMenuRequest(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		ObjectMenuRequest(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x00000146; }
         
@@ -61,7 +60,7 @@ namespace controllers {
             buffer.write(response_count);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             target_id = buffer.read<uint64_t>();
             owner_id = buffer.read<uint64_t>();

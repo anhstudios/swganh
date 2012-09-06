@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ItemSoldMessage : public BaseSwgMessage<ItemSoldMessage>
+    struct ItemSoldMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x0E61CC92; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x0E61CC92; }
 
     	uint64_t item_id;
     	uint32_t status_flag; // See wiki.opengalaxies.org/ItemSoldMessage for status flags
@@ -24,7 +24,7 @@ namespace messages {
     		buffer.write(status_flag);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		status_flag = buffer.read<uint32_t>();

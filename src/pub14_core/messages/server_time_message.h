@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ServerTimeMessage : public BaseSwgMessage<ServerTimeMessage>
+    struct ServerTimeMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x2EBC3BD9; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x2EBC3BD9; }
 
     	uint64_t galactic_time; // number of seconds from server start to present galactic time
 
@@ -21,7 +21,7 @@ namespace messages {
     		buffer.write(galactic_time);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		galactic_time = buffer.read<uint64_t>();
     	}

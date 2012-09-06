@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct VerifyPlayerNameMessage : public BaseSwgMessage<VerifyPlayerNameMessage>
+    struct VerifyPlayerNameMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0xBB8CAD45; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0xBB8CAD45; }
     	
     	std::wstring name;
     	uint32_t attempts_counter;
@@ -26,7 +26,7 @@ namespace messages {
     		buffer.write(unknown);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		name = buffer.read<std::wstring>();
     		attempts_counter = buffer.read<uint32_t>();

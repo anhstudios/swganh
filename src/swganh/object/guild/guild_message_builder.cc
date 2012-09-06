@@ -22,7 +22,7 @@ void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
     {
         DeltasMessage message = CreateDeltasMessage(guild, Object::VIEW_3, 4);
         guild->GetGuildList().Serialize(message);
-        guild->AddDeltasUpdate(std::move(message));
+        guild->AddDeltasUpdate(&message);
     }
     else
         guild->GetGuildList().ClearDeltas();
@@ -30,12 +30,12 @@ void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
 
 void GuildMessageBuilder::SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-	guild->AddBaselineToCache(BuildBaseline3(guild));
-    guild->AddBaselineToCache(BuildBaseline6(guild));
+	guild->AddBaselineToCache(&BuildBaseline3(guild));
+    guild->AddBaselineToCache(&BuildBaseline6(guild));
 
     for (auto& baseline : guild->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(guild, observer);

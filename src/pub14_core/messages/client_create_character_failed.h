@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
     
-    struct ClientCreateCharacterFailed : public BaseSwgMessage<ClientCreateCharacterFailed>
+    struct ClientCreateCharacterFailed : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 3; }
-        static uint32_t Opcode() { return 0xDF333C6E; }
+        uint16_t Opcount() const { return 3; }
+        uint32_t Opcode() const { return 0xDF333C6E; }
         
         std::wstring unk1;
         std::string stf_file;
@@ -26,7 +26,7 @@ namespace messages {
             buffer.write(error_string);
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
         	unk1 = buffer.read<std::wstring>();
             stf_file = buffer.read<std::string>();

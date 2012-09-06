@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
     
-    struct ChatSystemMessage : public BaseSwgMessage<ChatSystemMessage>
+    struct ChatSystemMessage : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 4; }
-        static uint32_t Opcode() { return 0x6D2A6413; }
+        uint16_t Opcount() const { return 4; }
+        uint32_t Opcode() const { return 0x6D2A6413; }
 
         uint8_t display_type;
         std::wstring message;
@@ -40,7 +40,7 @@ namespace messages {
                 buffer.write(out_of_band);
             }
         }
-        void OnDeserialize(anh::ByteBuffer buffer) 
+        void OnDeserialize(anh::ByteBuffer& buffer) 
         {
             display_type = buffer.read<uint8_t>();
             message = buffer.read<std::wstring>();

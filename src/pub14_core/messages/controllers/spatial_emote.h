@@ -22,11 +22,10 @@ namespace controllers {
             , emote_flags(0)
         {}
 
-        explicit SpatialEmote(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		SpatialEmote(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x0000012E; }
         
@@ -43,7 +42,7 @@ namespace controllers {
             buffer.write(emote_flags);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             source_id = buffer.read<uint64_t>();
             target_id = buffer.read<uint64_t>();

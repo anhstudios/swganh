@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct ChatPersistentMessageToClient : public BaseSwgMessage<ChatPersistentMessageToClient>
+    struct ChatPersistentMessageToClient : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x08485E17; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x08485E17; }
 
     	std::string sender_character_name;
     	std::string game_name; // arbitrary: "SWG"
@@ -53,7 +53,7 @@ namespace messages {
     		buffer.write(unknown);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		sender_character_name = buffer.read<std::string>();
     		game_name = buffer.read<std::string>();

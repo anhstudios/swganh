@@ -52,7 +52,7 @@ void WaypointMessageBuilder::BuildActivateDelta(const shared_ptr<Waypoint>& obje
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 6);
         message.data.write<uint8_t>(object->GetActiveFlag());
     
-        object->AddDeltasUpdate(message);    
+        object->AddDeltasUpdate(&message);    
     }
 }
 void WaypointMessageBuilder::BuildPlanetDelta(const shared_ptr<Waypoint>& object)
@@ -62,7 +62,7 @@ void WaypointMessageBuilder::BuildPlanetDelta(const shared_ptr<Waypoint>& object
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 8);
         message.data.write(object->GetPlanet());
     
-        object->AddDeltasUpdate(message);    
+        object->AddDeltasUpdate(&message);    
     }
 }
 void WaypointMessageBuilder::BuildCoordinatesDelta(const shared_ptr<Waypoint>& object)
@@ -75,7 +75,7 @@ void WaypointMessageBuilder::BuildCoordinatesDelta(const shared_ptr<Waypoint>& o
 		message.data.write(coords.y);
 		message.data.write(coords.z);
     
-        object->AddDeltasUpdate(message);    
+        object->AddDeltasUpdate(&message);    
     }
 }
 void WaypointMessageBuilder::BuildColorDelta(const shared_ptr<Waypoint>& object)
@@ -85,18 +85,18 @@ void WaypointMessageBuilder::BuildColorDelta(const shared_ptr<Waypoint>& object)
         DeltasMessage message = CreateDeltasMessage(object, Object::VIEW_3, 11);
         message.data.write<uint8_t>(object->GetColorByte());
     
-        object->AddDeltasUpdate(message);    
+        object->AddDeltasUpdate(&message);    
     }
 }
 
 void WaypointMessageBuilder::SendBaselines(const std::shared_ptr<Waypoint>& waypoint, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-	waypoint->AddBaselineToCache(BuildBaseline3(waypoint));
-    waypoint->AddBaselineToCache(BuildBaseline6(waypoint));
+	waypoint->AddBaselineToCache(&BuildBaseline3(waypoint));
+    waypoint->AddBaselineToCache(&BuildBaseline6(waypoint));
 
     for (auto& baseline : waypoint->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(waypoint, observer);

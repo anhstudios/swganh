@@ -20,11 +20,10 @@ namespace controllers {
             , entertainer_id(0)
         {}
 
-        explicit WatchEntertainer(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		WatchEntertainer(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x0000022B; }
         
@@ -37,7 +36,7 @@ namespace controllers {
             buffer.write<uint32_t>(0);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             entertainer_id = buffer.read<uint64_t>();
         }

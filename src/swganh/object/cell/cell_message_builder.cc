@@ -14,12 +14,12 @@ using namespace swganh::messages;
 
 void CellMessageBuilder::SendBaselines(const std::shared_ptr<Cell>& cell, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-	cell->AddBaselineToCache(BuildBaseline3(cell));
-    cell->AddBaselineToCache(BuildBaseline6(cell));
+	cell->AddBaselineToCache(&BuildBaseline3(cell));
+    cell->AddBaselineToCache(&BuildBaseline6(cell));
 
     for (auto& baseline : cell->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(cell, observer);

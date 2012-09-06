@@ -12,10 +12,10 @@
 namespace swganh {
 namespace messages {
 
-    struct SUIUpdatePageMessage : public BaseSwgMessage<SUIUpdatePageMessage>
+    struct SUIUpdatePageMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x5F3342F6; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x5F3342F6; }
 
 		int32_t window_id;
 		std::string script_name;
@@ -50,7 +50,7 @@ namespace messages {
 			buffer.write<uint64_t>(0); //Unknown
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		window_id = buffer.read<int32_t>();
 			script_name = buffer.read<std::string>();

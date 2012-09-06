@@ -11,8 +11,7 @@
 namespace swganh {
 namespace messages {
     
-    template<typename T>
-    struct BaseDeltasMessage : public BaseSwgMessage<T>
+    struct BaseDeltasMessage : public BaseSwgMessage
     {    
         uint64_t object_id;
         uint32_t object_type;
@@ -32,7 +31,7 @@ namespace messages {
             buffer.write(data.data(), data.size());   
         }
     
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {        
             object_id = buffer.read<uint32_t>();
             object_type = buffer.read<uint32_t>();  

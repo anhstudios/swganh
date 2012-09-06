@@ -22,11 +22,10 @@ namespace controllers {
             , duration(0.0f)
         {}
 
-        explicit AddBuff(ObjControllerMessage controller_message)
-            : ObjControllerMessage(std::move(controller_message))
-        {
-            OnControllerDeserialize(std::move(data));
-        }
+		AddBuff(const ObjControllerMessage& base)
+			: ObjControllerMessage(base)
+		{
+		}
 
         static uint32_t message_type() { return 0x00000229; }
         
@@ -40,7 +39,7 @@ namespace controllers {
             buffer.write(duration);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer buffer)
+        void OnControllerDeserialize(anh::ByteBuffer& buffer)
         {
             buff = buffer.read<uint32_t>();
             duration = buffer.read<float>();

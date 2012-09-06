@@ -148,10 +148,10 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     auto controller = connection_client->GetController();
     if (controller)
     {
-		auto player = simulation_service_->GetObjectById<swganh::object::player::Player>(controller->GetObject()->GetObjectId() + 1);
+		auto player = simulation_service_->GetObjectById<swganh::object::player::Player>(controller->GetId() + 1);
 		kernel_->GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<swganh::object::player::Player>>>("Connection::PlayerRemoved", player));
         
-        simulation_service_->PersistRelatedObjects(controller->GetObject()->GetObjectId());
+		simulation_service_->PersistRelatedObjects(controller->GetId());
 	}
 
     LOG(info) << "Removing disconnected client";
@@ -201,13 +201,13 @@ std::shared_ptr<ConnectionClientInterface> ConnectionService::FindConnectionByPl
 
 void ConnectionService::HandleCmdSceneReady_(
     const shared_ptr<ConnectionClientInterface>& client, 
-    CmdSceneReady message)
+    CmdSceneReady* message)
 {
     LOG(warning) << "Handling CmdSceneReady";
 
     client->SendTo(CmdSceneReady());
 
-    auto object = client->GetController()->GetObject();
+	auto object = simulation_service_->GetObjectById(client->GetController()->GetId());
 
     kernel_->GetEventDispatcher()->Dispatch(
         make_shared<ValueEvent<shared_ptr<Object>>>("ObjectReadyEvent", object));
@@ -215,12 +215,12 @@ void ConnectionService::HandleCmdSceneReady_(
 
 void ConnectionService::HandleClientIdMsg_(
     const shared_ptr<ConnectionClientInterface>& client, 
-    ClientIdMsg message)
+    ClientIdMsg* message)
 {
     LOG(warning) << "Handling ClientIdMsg";
 
     // get session key from login service
-    uint32_t account_id = login_service_->GetAccountBySessionKey(message.session_hash);
+    uint32_t account_id = login_service_->GetAccountBySessionKey(message->session_hash);
 
     // authorized
     if (! account_id) {

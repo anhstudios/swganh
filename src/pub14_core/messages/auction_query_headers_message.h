@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct AuctionQueryHeadersMessage : public BaseSwgMessage<AuctionQueryHeadersMessage>
+    struct AuctionQueryHeadersMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 14; }
-    	static uint32_t Opcode() { return 0x679E0D00; }
+    	uint16_t Opcount() const { return 14; }
+    	uint32_t Opcode() const { return 0x679E0D00; }
     
     	uint32_t region_flag; // 0 = Galaxy, 1 = This planet, 2 = This region, 3 = Vendor only
     	uint32_t attempts_counter;
@@ -52,7 +52,7 @@ namespace messages {
     		buffer.write(first_auction_to_display);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		region_flag = buffer.read<uint32_t>();
     		attempts_counter = buffer.read<uint32_t>();

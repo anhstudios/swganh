@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
     
-    struct DeleteCharacterReplyMessage : public BaseSwgMessage<DeleteCharacterReplyMessage>
+    struct DeleteCharacterReplyMessage : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 2; }
-        static uint32_t Opcode() { return 0x8268989B; }
+        uint16_t Opcount() const { return 2; }
+        uint32_t Opcode() const { return 0x8268989B; }
     
         int32_t failure_flag;
         
@@ -21,7 +21,7 @@ namespace messages {
             buffer.write<int32_t>(failure_flag);
         }
     
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
             failure_flag = buffer.read<int32_t>();
         }

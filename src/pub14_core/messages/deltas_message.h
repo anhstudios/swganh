@@ -9,11 +9,11 @@
 namespace swganh {
 namespace messages {
     
-    class DeltasMessage : public BaseDeltasMessage<DeltasMessage>
+    class DeltasMessage : public BaseDeltasMessage
     {
     public:
-        static uint16_t Opcount() { return 5; }
-        static uint32_t Opcode() { return 0x12862153; }
+        uint16_t Opcount() const { return 5; }
+        uint32_t Opcode() const { return 0x12862153; }
     };
     
 }}  // namespace swganh::messages

@@ -28,10 +28,10 @@ namespace messages {
     	uint8_t not_recommended_flag;
     };
 
-    struct LoginClusterStatus : public BaseSwgMessage<LoginClusterStatus>
+    struct LoginClusterStatus : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 2; }
-    	static uint32_t Opcode() { return 0x3436AEB6; }
+    	uint16_t Opcount() const { return 2; }
+    	uint32_t Opcode() const { return 0x3436AEB6; }
 
     	std::list<ClusterServer> servers;
 
@@ -52,7 +52,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
             uint32_t server_count = buffer.read<uint32_t>();
             for(uint32_t i = 0; i < server_count; i++)

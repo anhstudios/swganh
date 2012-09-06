@@ -55,7 +55,7 @@ void ResourceContainerMessageBuilder::BuildCurrentUnitsDelta(const std::shared_p
     {
 		DeltasMessage message = CreateDeltasMessage(resource_container, Object::VIEW_3, 11);
 		message.data.write(resource_container->GetCurrentQuantity());
-		resource_container->AddDeltasUpdate(move(message));
+		resource_container->AddDeltasUpdate(&message);
 	}
 }
 
@@ -65,7 +65,7 @@ void ResourceContainerMessageBuilder::BuildGlobalResourceIdDelta(const std::shar
     {
 		DeltasMessage message = CreateDeltasMessage(resource_container, Object::VIEW_3, 12);
 		message.data.write(resource_container->GetGlobalResource());
-		resource_container->AddDeltasUpdate(move(message));
+		resource_container->AddDeltasUpdate(&message);
 	}
 }
 
@@ -75,7 +75,7 @@ void ResourceContainerMessageBuilder::BuildMaxQuantityDelta(const std::shared_pt
     {
 		DeltasMessage message = CreateDeltasMessage(resource_container, Object::VIEW_6, 2);
 		message.data.write(resource_container->GetMaxQuantity());
-		resource_container->AddDeltasUpdate(move(message));
+		resource_container->AddDeltasUpdate(&message);
 	}
 }
 
@@ -85,7 +85,7 @@ void ResourceContainerMessageBuilder::BuildResourceTypeDelta(const std::shared_p
     {
 		DeltasMessage message = CreateDeltasMessage(resource_container, Object::VIEW_6, 3);
 		message.data.write(resource_container->GetResourceType());
-		resource_container->AddDeltasUpdate(move(message));
+		resource_container->AddDeltasUpdate(&message);
 	}
 }
 
@@ -95,18 +95,18 @@ void ResourceContainerMessageBuilder::BuildVariationNameDelta(const std::shared_
     {
 		DeltasMessage message = CreateDeltasMessage(resource_container, Object::VIEW_6, 4);
 		message.data.write(resource_container->GetResourceName());
-		resource_container->AddDeltasUpdate(move(message));
+		resource_container->AddDeltasUpdate(&message);
 	}
 }
 
 void ResourceContainerMessageBuilder::SendBaselines(const std::shared_ptr<ResourceContainer>& resource_container, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-	resource_container->AddBaselineToCache(BuildBaseline3(resource_container));
-    resource_container->AddBaselineToCache(BuildBaseline6(resource_container));
+	resource_container->AddBaselineToCache(&BuildBaseline3(resource_container));
+    resource_container->AddBaselineToCache(&BuildBaseline6(resource_container));
     
     for (auto& baseline : resource_container->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(resource_container, observer);

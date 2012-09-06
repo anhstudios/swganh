@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
     
-    struct ClientCreateCharacterSuccess : public BaseSwgMessage<ClientCreateCharacterSuccess>
+    struct ClientCreateCharacterSuccess : public BaseSwgMessage
     {
-        static uint16_t Opcount() { return 2; }
-        static uint32_t Opcode() { return 0x1DB575CC; }
+        uint16_t Opcount() const { return 2; }
+        uint32_t Opcode() const { return 0x1DB575CC; }
         
         uint64_t character_id;
 
@@ -21,7 +21,7 @@ namespace messages {
             buffer.write(character_id);	
         }
 
-        void OnDeserialize(anh::ByteBuffer buffer)
+        void OnDeserialize(anh::ByteBuffer& buffer)
         {
         	character_id = buffer.read<uint64_t>();
         }

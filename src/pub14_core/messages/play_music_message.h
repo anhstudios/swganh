@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct PlayMusicMessage : public BaseSwgMessage<PlayMusicMessage>
+    struct PlayMusicMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 5; }
-    	static uint32_t Opcode() { return 0x04270D8A; }
+    	uint16_t Opcount() const { return 5; }
+    	uint32_t Opcode() const { return 0x04270D8A; }
     	
     	std::string music_file; // e.g. "sound/music_id_tent_naboo_loop.snd"
     	uint64_t unknown1;
@@ -28,7 +28,7 @@ namespace messages {
     		buffer.write(unknown3);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		music_file = buffer.read<std::string>();
     		unknown1 = buffer.read<uint64_t>();

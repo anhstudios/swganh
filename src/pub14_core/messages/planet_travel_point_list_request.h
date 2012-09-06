@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct PlanetTravelPointListRequest : public BaseSwgMessage<PlanetTravelPointListRequest>
+    struct PlanetTravelPointListRequest : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 3; }
-    	static uint32_t Opcode() { return 0x96405D4D; }
+    	uint16_t Opcount() const { return 3; }
+    	uint32_t Opcode() const { return 0x96405D4D; }
     	
     	uint64_t travel_terminal_id;
     	std::string planet_name;
@@ -24,7 +24,7 @@ namespace messages {
     		buffer.write(planet_name);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		travel_terminal_id = buffer.read<uint64_t>();
     		planet_name = buffer.read<std::string>();

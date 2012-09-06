@@ -8,11 +8,13 @@
 
 #include <boost/optional.hpp>
 
-namespace swganh {
-namespace object {
-    class ObjectController;
+namespace anh {
+namespace observer {
+	class ObserverInterface;
+}
 }
 
+namespace swganh {
 namespace command {
 
     struct CommandProperties;
@@ -58,12 +60,7 @@ namespace command {
         /**
          * @return The controller associated with this command invocation.
          */
-        virtual const std::shared_ptr<object::ObjectController>& GetController() const = 0;
-
-        /**
-         * @return The controller associated with this command invocation.
-         */
-        virtual void SetController(const std::shared_ptr<object::ObjectController>&) = 0;
+        virtual const std::shared_ptr<anh::observer::ObserverInterface> GetController() const = 0;
         
         virtual void SetCommandProperties(const CommandProperties& properties) = 0;
 

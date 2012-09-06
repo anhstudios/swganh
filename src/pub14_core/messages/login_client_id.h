@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct LoginClientId : public BaseSwgMessage<LoginClientId>
+    struct LoginClientId : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 4; }
-    	static uint32_t Opcode() { return 0x41131F96; }
+    	uint16_t Opcount() const { return 4; }
+    	uint32_t Opcode() const { return 0x41131F96; }
     
     	std::string username;
     	std::string password;
@@ -26,7 +26,7 @@ namespace messages {
     		buffer.write(client_version);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		username = buffer.read<std::string>();
     		password = buffer.read<std::string>();

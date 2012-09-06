@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct BeginTradeMessage : public BaseSwgMessage<BeginTradeMessage>
+    struct BeginTradeMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 1; }
-    	static uint32_t Opcode() { return 0x325932D8; }
+    	uint16_t Opcount() const { return 1; }
+    	uint32_t Opcode() const { return 0x325932D8; }
     	
     	uint64_t target_id;
     	
@@ -21,7 +21,7 @@ namespace messages {
     		buffer.write(target_id);
     	}
     	
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		target_id = buffer.read<uint64_t>();
     	}

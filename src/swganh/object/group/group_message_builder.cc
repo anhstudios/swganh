@@ -25,7 +25,7 @@ void GroupMessageBuilder::BuildMemberListDelta(const shared_ptr<Group>& group)
     {
         DeltasMessage message = CreateDeltasMessage(group, Object::VIEW_6, 1);
         group->GetGroupMembers().Serialize(message);
-        group->AddDeltasUpdate(move(message));
+        group->AddDeltasUpdate(&message);
     }
     else
         group->GetGroupMembers().ClearDeltas();
@@ -37,7 +37,7 @@ void GroupMessageBuilder::BuildLootModeDelta(const shared_ptr<Group>& group)
     {
         DeltasMessage message = CreateDeltasMessage(group, Object::VIEW_6, 7);
         message.data.write<uint32_t>(group->GetLootMode());
-        group->AddDeltasUpdate(move(message));
+        group->AddDeltasUpdate(&message);
     }
 }
 
@@ -47,7 +47,7 @@ void GroupMessageBuilder::BuildDifficultyDelta(const shared_ptr<Group>& group)
     {
         DeltasMessage message = CreateDeltasMessage(group, Object::VIEW_6, 4);
         message.data.write<uint16_t>(group->GetDifficulty());
-        group->AddDeltasUpdate(move(message));
+        group->AddDeltasUpdate(&message);
     }
 }
 
@@ -57,18 +57,18 @@ void GroupMessageBuilder::BuildLootMasterDelta(const shared_ptr<Group>& group)
     {
         DeltasMessage message = CreateDeltasMessage(group, Object::VIEW_6, 6);
         message.data.write<uint64_t>(group->GetLootMaster());
-        group->AddDeltasUpdate(move(message));
+        group->AddDeltasUpdate(&message);
     }
 }
 
 void GroupMessageBuilder::SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
 {
-	group->AddBaselineToCache(BuildBaseline3(group));
-    group->AddBaselineToCache(BuildBaseline6(group));
+	group->AddBaselineToCache(&BuildBaseline3(group));
+    group->AddBaselineToCache(&BuildBaseline6(group));
 
 	for (auto& baseline : group->GetBaselines())
     {
-        observer->Notify(baseline);
+        observer->Notify(&baseline);
     }
         
     SendEndBaselines(group, observer);
@@ -98,7 +98,6 @@ BaselinesMessage GroupMessageBuilder::BuildBaseline6(const std::shared_ptr<Group
 	message.data.write<uint32_t>(4); //Unknown Int
     message.data.write<uint64_t>(group->GetLootMaster());
     message.data.write<uint32_t>(group->GetLootMode());
-	group->AddBaselineToCache(message);
 	return BaselinesMessage(std::move(message));
 }
 

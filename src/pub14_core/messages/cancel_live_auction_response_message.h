@@ -9,10 +9,10 @@
 namespace swganh {
 namespace messages {
 
-    struct CancelLiveAuctionResponseMessage : public BaseSwgMessage<CancelLiveAuctionResponseMessage>
+    struct CancelLiveAuctionResponseMessage : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 4; }
-    	static uint32_t Opcode() { return 0x7DA2246C; }
+    	uint16_t Opcount() const { return 4; }
+    	uint32_t Opcode() const { return 0x7DA2246C; }
     
     	uint64_t item_id;
     	uint32_t error; // 0 = success, 1 = not allowed, 2 = item invalid, 3 = blank, 8 = must be owner of item to cancel, 15 = too late/auction already completed
@@ -25,7 +25,7 @@ namespace messages {
     		buffer.write(unknown);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		error = buffer.read<uint32_t>();

@@ -10,10 +10,10 @@
 namespace swganh {
 namespace messages {
 
-    struct SUIEventNotification : public BaseSwgMessage<SUIEventNotification>
+    struct SUIEventNotification : public BaseSwgMessage
     {
-    	static uint16_t Opcount() { return 4; }
-    	static uint32_t Opcode() { return 0x092D3564; }
+    	uint16_t Opcount() const { return 4; }
+    	uint32_t Opcode() const { return 0x092D3564; }
 
 		int window_id;
 		int event_type;
@@ -32,7 +32,7 @@ namespace messages {
 			}
     	}
 
-    	void OnDeserialize(anh::ByteBuffer buffer)
+    	void OnDeserialize(anh::ByteBuffer& buffer)
     	{
     		window_id = buffer.read<int32_t>();
 			event_type = buffer.read<int32_t>();
