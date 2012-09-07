@@ -9,7 +9,7 @@
 #include "command_interface.h"
 #include "command_properties.h"
 
-namespace anh {
+namespace swganh {
 namespace observer {
 	class ObserverInterface;
 }

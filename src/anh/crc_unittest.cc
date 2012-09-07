@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "anh/crc.h"
+#include "swganh/crc.h"
 
 using anh::memcrc;
 #define BOOST_TEST_MAIN

@@ -6,7 +6,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace anh {
+namespace swganh {
 
 template<typename T>
 void ByteBuffer::swapEndian(T& data) const {
@@ -108,7 +108,7 @@ template<> const std::string ByteBuffer::read<std::string>(bool doSwapEndian, bo
 template<> ByteBuffer& ByteBuffer::write<std::wstring>(std::wstring data);
 template<> const std::wstring ByteBuffer::read<std::wstring>(bool doSwapEndian, bool null_terminated_string);
 
-}  // namespace anh
+}  // namespace swganh
 
 template<typename T>
 anh::ByteBuffer& operator<<(anh::ByteBuffer& buffer, const T& value) {

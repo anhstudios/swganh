@@ -7,7 +7,7 @@
 #include <string>
 
 
-namespace anh{
+namespace swganh{
     class ByteBuffer;
 }
 /*! \brief Common is a catch-all library containing primarily base classes and

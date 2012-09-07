@@ -10,7 +10,7 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include "anh/crc.h"
+#include "swganh/crc.h"
 
 #include "swganh/object/intangible/intangible.h"
 #include "swganh/object/waypoint/waypoint.h"

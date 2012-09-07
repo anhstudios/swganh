@@ -6,7 +6,7 @@
 #include <cstring>
 #include <type_traits>
 
-namespace anh {
+namespace swganh {
 
     namespace detail {
         //// @TODO Remove comment when visual studio begins supporting constexpr.
@@ -113,4 +113,4 @@ namespace anh {
 
     char GetHitKey();
 
-}  // namespace anh
+}  // namespace swganh

@@ -9,15 +9,15 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "anh/crc.h"
-#include "anh/utilities.h"
+#include "swganh/crc.h"
+#include "swganh/utilities.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace std;
 using anh::memcrc;
 using boost::lexical_cast;
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
 
@@ -108,4 +108,4 @@ uint32_t CreateEndpointHash(const boost::asio::ip::udp::endpoint& endpoint) {
     return memcrc(crc_string);
 }
 
-}}}  // namespace anh::network::soe
+}}}  // namespace swganh::network::soe

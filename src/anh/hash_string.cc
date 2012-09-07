@@ -4,7 +4,7 @@
 #include "hash_string.h"
 #include "crc.h"
 
-using namespace anh;
+using namespace swganh;
 
 HashString::HashString()
     : ident_(0)

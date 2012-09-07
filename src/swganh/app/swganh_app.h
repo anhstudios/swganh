@@ -13,8 +13,8 @@
 #include <boost/noncopyable.hpp>
 #include <boost/thread/thread.hpp>
 
-#include "anh/app/app_interface.h"
-#include "anh/service/service_directory.h"
+#include "swganh/app/app_interface.h"
+#include "swganh/service/service_directory.h"
 #include "swganh/app/swganh_kernel.h"
 
 namespace swganh {

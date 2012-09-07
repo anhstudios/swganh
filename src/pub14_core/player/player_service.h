@@ -7,7 +7,7 @@
 #include <boost/asio.hpp>
 
 #include "swganh/app/swganh_kernel.h"
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 
 namespace swganh {
 namespace object {

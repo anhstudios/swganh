@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 
 #include <list>
 

@@ -12,7 +12,7 @@ namespace messages
 }
 }
 
-namespace anh {
+namespace swganh {
 namespace observer {
 
     class ObserverInterface;
@@ -51,4 +51,4 @@ namespace observer {
         virtual void NotifyObservers(swganh::messages::BaseSwgMessage* message) = 0;
     };
 
-}}  // namespace anh::observer
+}}  // namespace swganh::observer

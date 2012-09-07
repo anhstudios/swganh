@@ -3,7 +3,7 @@
 
 #include "creature.h"
 
-#include "anh/crc.h"
+#include "swganh/crc.h"
 
 #include "swganh/object/object_events.h"
 #include "swganh/object/player/player.h"

@@ -9,7 +9,7 @@
 
 #include <zlib.h>
 
-namespace anh {
+namespace swganh {
 
     class ByteBuffer;
 
@@ -43,4 +43,4 @@ namespace filters {
         std::vector<uint8_t> decompression_output_;
     };
 
-}}}} // namespace anh::network::soe::filters
+}}}} // namespace swganh::network::soe::filters

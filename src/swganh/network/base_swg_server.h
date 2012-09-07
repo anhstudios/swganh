@@ -17,15 +17,15 @@ namespace Concurrency {
 
 #endif
 
-#include "anh/byte_buffer.h"
-#include "anh/hash_string.h"
-#include "anh/network/soe/server.h"
+#include "swganh/byte_buffer.h"
+#include "swganh/hash_string.h"
+#include "swganh/network/soe/server.h"
 
-namespace anh {
+namespace swganh {
 
     class ByteBuffer;
 
-}  // namespace anh::network::soe
+}  // namespace swganh::network::soe
 
 
 namespace swganh {

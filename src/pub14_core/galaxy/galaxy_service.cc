@@ -5,15 +5,15 @@
 
 #include <boost/asio/placeholders.hpp>
 
-#include "anh/event_dispatcher.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/service_directory_interface.h"
-#include "anh/service/service_manager.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/service/service_directory_interface.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/galaxy/providers/galaxy_provider_interface.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace app;
 using namespace service;
 using namespace swganh::app;

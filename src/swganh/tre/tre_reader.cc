@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "tre_reader.h"
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 
 #include <array>
 #include <algorithm>

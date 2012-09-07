@@ -13,7 +13,7 @@
 
 #include "tre_data.h"
 
-namespace anh {
+namespace swganh {
 	class ByteBuffer;
 }
 

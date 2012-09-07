@@ -3,7 +3,7 @@
 
 #include "random_generator.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace boost::random;
 
 RandomGenerator::RandomGenerator(uniform_int_distribution<> distribution)

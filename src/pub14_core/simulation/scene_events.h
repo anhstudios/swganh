@@ -1,6 +1,6 @@
 #pragma once
 
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 
 namespace swganh_core
 {

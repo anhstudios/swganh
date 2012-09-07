@@ -7,7 +7,7 @@
 
 #include <boost/python.hpp>
 using namespace boost::python;
-namespace anh
+namespace swganh
 {
 namespace utilities
 {
@@ -60,4 +60,4 @@ void define_class_glm_quat()
 		.def(self /= glm::float_t());
 		//.def(self_ns::str(self));
 }
-}} // namespace anh::utilities
+}} // namespace swganh::utilities

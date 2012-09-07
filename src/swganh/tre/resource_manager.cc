@@ -1,10 +1,10 @@
 
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 #include "resource_manager.h"
 
 #include "iff/iff.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 using namespace swganh::tre;
 

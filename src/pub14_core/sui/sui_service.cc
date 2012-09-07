@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-#include "anh/observer/observer_interface.h"
+#include "swganh/observer/observer_interface.h"
 
 #include "pub14_core/messages/sui_create_page_message.h"
 #include "pub14_core/messages/sui_event_notification.h"
@@ -26,11 +26,11 @@
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/scripting/utilities.h"
-#include "anh/service/service_manager.h"
-#include "anh/event_dispatcher.h"
+#include "swganh/service/service_manager.h"
+#include "swganh/event_dispatcher.h"
 
 
-using namespace anh::service;
+using namespace swganh::service;
 using namespace swganh::app;
 
 using namespace swganh_core::sui;

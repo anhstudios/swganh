@@ -3,10 +3,10 @@
 
 #include "social_service.h"
 
-#include "anh/logger.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/service_manager.h"
-#include "anh/database/database_manager.h"
+#include "swganh/logger.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/service/service_manager.h"
+#include "swganh/database/database_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -20,8 +20,8 @@
 
 #include "pub14_core/messages/out_of_band.h"
 
-using namespace anh::database;
-using namespace anh::plugin;
+using namespace swganh::database;
+using namespace swganh::plugin;
 using namespace std;
 using namespace swganh::connection;
 using namespace swganh::object;

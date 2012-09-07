@@ -5,9 +5,9 @@
 #define SWGANH_OBJECT_OBJECT_FACTORY_H_
 
 #include "swganh/object/object_factory_interface.h"
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 
-namespace anh {
+namespace swganh {
 namespace database {
 class DatabaseManagerInterface;
 }} // anh::database

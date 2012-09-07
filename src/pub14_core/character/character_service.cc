@@ -5,18 +5,18 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 #include <iomanip>
 
-#include "anh/crc.h"
+#include "swganh/crc.h"
 
-#include "anh/plugin/plugin_manager.h"
+#include "swganh/plugin/plugin_manager.h"
 
-#include "anh/network/soe/session.h"
-#include "anh/network/soe/server_interface.h"
+#include "swganh/network/soe/session.h"
+#include "swganh/network/soe/server_interface.h"
 
-#include "anh/service/service_manager.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/login/login_service_interface.h"
 #include "swganh/login/login_client_interface.h"
@@ -36,9 +36,9 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-using namespace anh;
-using namespace anh::app;
-using namespace anh::event_dispatcher;
+using namespace swganh;
+using namespace swganh::app;
+using namespace swganh::event_dispatcher;
 using namespace std;
 using namespace swganh_core::character;
 using namespace swganh::character;

@@ -1,9 +1,9 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "anh/service/service_description.h"
+#include "swganh/service/service_description.h"
 
-using namespace anh::service;
+using namespace swganh::service;
 
 ServiceDescription::ServiceDescription()
     : id_(0) {}

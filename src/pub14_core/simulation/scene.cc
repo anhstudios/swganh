@@ -5,8 +5,8 @@
 
 #include <algorithm>
 
-#include "anh/plugin/plugin_manager.h"
-#include "anh/observer/observer_interface.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/observer/observer_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/object.h"
@@ -23,7 +23,7 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh_core::simulation;
 using namespace swganh::messages::controllers;
-using namespace anh::observer;
+using namespace swganh::observer;
 
 class Scene::SceneImpl
 {

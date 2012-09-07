@@ -8,11 +8,11 @@
 #include <cppconn/statement.h>
 #include <cppconn/sqlstring.h>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/database/database_manager.h"
+#include "swganh/database/database_manager.h"
 
-using namespace anh::database;
+using namespace swganh::database;
 using namespace swganh_core::login;
 using namespace std;
 

@@ -12,7 +12,7 @@
 #include "swganh/weather/weather_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/weather/weather_data.h"
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
 #include "swganh/galaxy/galaxy_service_interface.h"

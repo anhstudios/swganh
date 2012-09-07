@@ -3,7 +3,7 @@
 
 #include "service_manager.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 #include <algorithm>
 #include <string>
@@ -22,7 +22,7 @@
     using std::regex_search;
 #endif
 
-using namespace anh::service;
+using namespace swganh::service;
 using namespace std;
 
 ServiceManager::ServiceManager(ServiceDirectoryInterface* service_directory) 

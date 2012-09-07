@@ -4,7 +4,7 @@
 #include "manufacture_schematic.h"
 
 #include "pub14_core/messages/deltas_message.h"
-#include "anh/crc.h"
+#include "swganh/crc.h"
 
 using namespace std;
 using namespace swganh::object::manufacture_schematic;

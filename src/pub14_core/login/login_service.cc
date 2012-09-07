@@ -3,20 +3,20 @@
 
 #include "login_service.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "anh/database/database_manager.h"
+#include "swganh/database/database_manager.h"
 
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 
-#include "anh/network/soe/session.h"
-#include "anh/network/soe/server.h"
+#include "swganh/network/soe/session.h"
+#include "swganh/network/soe/server.h"
 
-#include "anh/service/service_directory_interface.h"
-#include "anh/service/service_manager.h"
-#include "anh/plugin/plugin_manager.h"
+#include "swganh/service/service_directory_interface.h"
+#include "swganh/service/service_manager.h"
+#include "swganh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/character/character_provider_interface.h"
@@ -32,7 +32,7 @@
 #include "swganh/login/providers/account_provider_interface.h"
 #include "swganh/login/encoders/encoder_interface.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace app;
 using namespace swganh_core::login;
 using namespace swganh::login;

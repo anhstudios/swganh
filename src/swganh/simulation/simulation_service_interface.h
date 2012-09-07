@@ -6,14 +6,14 @@
 #include <map>
 #include <memory>
 
-#include "anh/network/soe/server.h"
-#include "anh/service/service_interface.h"
+#include "swganh/network/soe/server.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/object/permissions/permission_type.h"
 
-namespace anh {
+namespace swganh {
 	class ByteBuffer;
 }
 

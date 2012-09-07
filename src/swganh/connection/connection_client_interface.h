@@ -4,9 +4,9 @@
 
 #include <cstdint>
 
-#include "anh/network/soe/session.h"
+#include "swganh/network/soe/session.h"
 
-namespace anh {
+namespace swganh {
 namespace observer {
 	class ObserverInterface;
 }

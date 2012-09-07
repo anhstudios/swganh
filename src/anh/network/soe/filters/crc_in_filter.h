@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace anh {
+namespace swganh {
 
     class ByteBuffer;
 
@@ -20,4 +20,4 @@ namespace filters {
         void operator()(Session* session, ByteBuffer* message) const;
     };
 
-}}}} // namespace anh::network::soe::filters
+}}}} // namespace swganh::network::soe::filters

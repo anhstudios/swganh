@@ -10,14 +10,14 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include "anh/service/galaxy.h"
-#include "anh/service/service_description.h"
-#include "anh/service/service_directory_interface.h"
+#include "swganh/service/galaxy.h"
+#include "swganh/service/service_description.h"
+#include "swganh/service/service_directory_interface.h"
 
 // Forward Declare
-namespace anh { class EventDispatcher; }
+namespace swganh { class EventDispatcher; }
 
-namespace anh {
+namespace swganh {
 namespace service {
 
 class DatastoreInterface;
@@ -77,4 +77,4 @@ private:
 };
 
 }  // namespace service
-}  // namespace anh
+}  // namespace swganh

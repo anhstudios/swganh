@@ -9,32 +9,32 @@
 
 #include <boost/asio/io_service.hpp>
 
-namespace anh {
+namespace swganh {
 namespace database {
     class DatabaseManagerInterface;
-}}  // namespace anh::database
+}}  // namespace swganh::database
 
-namespace anh {
+namespace swganh {
     class EventDispatcher;
-}  // namespace anh
+}  // namespace swganh
 
-namespace anh {
+namespace swganh {
 namespace plugin {
     class PluginManager;
-}}  // namespace anh::plugin
+}}  // namespace swganh::plugin
 
-namespace anh {
+namespace swganh {
 namespace resource {
     class ResourceManagerInterface;
 }}
 
-namespace anh {
+namespace swganh {
 namespace service {
     class ServiceDirectoryInterface;
     class ServiceManager;
-}}  // namespace anh::service
+}}  // namespace swganh::service
 
-namespace anh {
+namespace swganh {
 namespace app {
 
 struct Version {
@@ -67,4 +67,4 @@ public:
     // also add entity manager, blah blah.
 };
 
-}}  // namespace anh::app
+}}  // namespace swganh::app

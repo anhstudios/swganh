@@ -8,7 +8,7 @@
 #include <Python.h>
 #endif
 
-#include "anh/python_shared_ptr.h"
+#include "swganh/python_shared_ptr.h"
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "weather_service_interface.h"
 #include "weather_data.h"

@@ -4,7 +4,7 @@
 
 #include "swganh/login/providers/account_provider_interface.h"
 
-namespace anh { namespace database { class DatabaseManagerInterface; 
+namespace swganh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
 namespace swganh_core {

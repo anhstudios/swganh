@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace anh {
+namespace swganh {
 namespace app {
 
 class KernelInterface;
@@ -29,4 +29,4 @@ public:
     virtual KernelInterface* GetAppKernel() const = 0;
 };
 
-}}  // namespace anh::app
+}}  // namespace swganh::app

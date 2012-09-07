@@ -2,10 +2,10 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "pub14_core/messages/out_of_band.h"
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 
 using namespace std;
-using namespace anh;
+using namespace swganh;
 using namespace swganh::messages;
 
 ProsePackage::ProsePackage()

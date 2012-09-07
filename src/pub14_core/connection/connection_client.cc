@@ -3,16 +3,16 @@
 
 #include "connection_client.h"
 
-#include "anh/observer/observer_interface.h"
+#include "swganh/observer/observer_interface.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/object/object.h"
 #include "swganh/object/player/player.h"
 
-using namespace anh::network::soe;
+using namespace swganh::network::soe;
 using namespace std;
 using namespace swganh_core::connection;
 using namespace swganh::object;
-using namespace anh::observer;
+using namespace swganh::observer;
 
 ConnectionClient::ConnectionClient(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
     : ConnectionClientInterface(server, io_service, remote_endpoint)

@@ -5,7 +5,7 @@
 
 #include <memory>
 
-namespace anh {
+namespace swganh {
 
     class ByteBuffer;
 
@@ -21,4 +21,4 @@ namespace filters {
         void operator()(Session* session, ByteBuffer* message);
     };
 
-}}}} // namespace anh::network::soe::filters
+}}}} // namespace swganh::network::soe::filters

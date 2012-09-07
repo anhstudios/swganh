@@ -8,7 +8,7 @@
 #include <anh/event_dispatcher.h>
 #include <anh/service/datastore.h>
 
-using namespace anh::service;
+using namespace swganh::service;
 using namespace std;
 
 ServiceDirectory::ServiceDirectory(

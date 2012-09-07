@@ -3,12 +3,12 @@
 
 #include "movement_manager.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "anh/service/service_manager.h"
+#include "swganh/service/service_manager.h"
 #include "swganh/object/object.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/object_controller.h"
@@ -20,7 +20,7 @@
 #include "swganh/simulation/spatial_provider_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
-using namespace anh::event_dispatcher;
+using namespace swganh::event_dispatcher;
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;

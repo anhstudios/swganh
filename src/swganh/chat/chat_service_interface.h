@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include "anh/service/service_interface.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "pub14_core/messages/controllers/command_queue_enqueue.h"

@@ -20,9 +20,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include "anh/event_dispatcher.h"
-#include "anh/observer/observable_interface.h"
-#include "anh/observer/observer_interface.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/observer/observable_interface.h"
+#include "swganh/observer/observer_interface.h"
 
 #include "pub14_core/messages/base_baselines_message.h"
 #include "pub14_core/messages/baselines_message.h"

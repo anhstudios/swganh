@@ -10,9 +10,9 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/database/database_manager.h"
+#include "swganh/database/database_manager.h"
 
 using namespace swganh_core::galaxy;
 using namespace std;

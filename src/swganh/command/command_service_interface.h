@@ -9,13 +9,13 @@
 
 #include <boost/optional.hpp>
 
-#include "anh/service/service_interface.h"
+#include "swganh/service/service_interface.h"
 
 #include "command_factory_interface.h"
 #include "command_validator_interface.h"
 #include "command_properties_manager_interface.h"
 
-namespace anh {
+namespace swganh {
 namespace observer {
 	class ObserverInterface;
 }}

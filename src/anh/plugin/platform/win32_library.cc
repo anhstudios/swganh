@@ -3,7 +3,7 @@
 
 #ifdef WIN32
 
-#include "anh/plugin/platform/win32_library.h"
+#include "swganh/plugin/platform/win32_library.h"
 
 #include <exception>
 #include <sstream>
@@ -12,7 +12,7 @@
 
 #include <boost/filesystem.hpp>
 
-using namespace anh::plugin;
+using namespace swganh::plugin;
 using namespace boost::filesystem;
 using namespace platform;
 using namespace std;

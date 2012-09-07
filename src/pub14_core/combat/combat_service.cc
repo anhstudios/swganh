@@ -11,12 +11,12 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/crc.h"
-#include "anh/event_dispatcher.h"
-#include "anh/database/database_manager_interface.h"
-#include "anh/service/service_manager.h"
+#include "swganh/crc.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/database/database_manager_interface.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -38,9 +38,9 @@
 #include "pub14_core/messages/system_message.h"
 
 using namespace std;
-using namespace anh;
-using namespace anh::app;
-using namespace anh::service;
+using namespace swganh;
+using namespace swganh::app;
+using namespace swganh::service;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;

@@ -5,11 +5,11 @@
 
 #include <algorithm>
 #include <ctime>
-#include "anh/logger.h"
-#include "anh/event_dispatcher.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/service_manager.h"
-#include "anh/service/service_directory_interface.h"
+#include "swganh/logger.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/service/service_manager.h"
+#include "swganh/service/service_directory_interface.h"
 #include "pub14_core/messages/server_weather_message.h"
 #include "swganh/app/swganh_kernel.h"
 #include "pub14_core/messages/out_of_band.h"
@@ -20,9 +20,9 @@
 #include "swganh/object/object.h"
 
 using namespace std;
-using namespace anh;
-using namespace anh::service;
-using namespace anh::plugin;
+using namespace swganh;
+using namespace swganh::service;
+using namespace swganh::plugin;
 using namespace swganh::messages;
 using namespace swganh::simulation;
 using namespace swganh_core::weather;

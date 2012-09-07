@@ -3,7 +3,7 @@
 
 #include "command_factory.h"
 
-#include "anh/service/service_manager.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/command/command_interface.h"

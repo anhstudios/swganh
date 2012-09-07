@@ -3,9 +3,9 @@
 
 #include "command_queue.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/service/service_manager.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 

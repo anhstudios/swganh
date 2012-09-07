@@ -8,16 +8,16 @@
 #undef SendMessage
 #endif
 
-namespace anh {
+namespace swganh {
 class ByteBuffer;
-}  // namespace anh
+}  // namespace swganh
 
-namespace anh {
+namespace swganh {
 namespace event_dispatcher {
 class EventDispatcherInterface;
-}}  // namespace anh::event_dispatcher
+}}  // namespace swganh::event_dispatcher
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
 
@@ -50,4 +50,4 @@ public:
     virtual uint32_t max_receive_size() = 0;
 };
 
-}}} // namespace anh::network::soe
+}}} // namespace swganh::network::soe

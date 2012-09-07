@@ -12,7 +12,7 @@
 namespace swganh {
 namespace tre {
     class ResourceManager;
-}}  // namespace anh::resource
+}}  // namespace swganh::resource
 
 namespace pub14_core {
 namespace command {

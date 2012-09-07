@@ -5,7 +5,7 @@
 #include <functional>
 #include <memory>
 
-#include "anh/hash_string.h"
+#include "swganh/hash_string.h"
 
 namespace swganh {
 namespace app {

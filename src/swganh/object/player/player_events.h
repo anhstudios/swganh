@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 
 namespace sql { class ResultSet; }
 

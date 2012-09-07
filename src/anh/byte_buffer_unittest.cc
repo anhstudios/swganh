@@ -2,9 +2,9 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include <boost/test/unit_test.hpp>
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 
-using namespace anh;
+using namespace swganh;
 
 namespace {
 

@@ -4,7 +4,7 @@
 
 #include "swganh/object/tangible/tangible_factory.h"
 
-namespace anh {
+namespace swganh {
 namespace database {
 class DatabaseManagerInterface;
 }} // anh::database

@@ -3,14 +3,14 @@
 
 #include "quadtree_spatial_provider.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 #include "swganh/object/object.h"
 #include "swganh/object/permissions/world_permission.h"
 
 using std::shared_ptr;
 
-using namespace anh::observer;
+using namespace swganh::observer;
 using namespace swganh::object;
 using namespace swganh_core::simulation;
 using namespace quadtree;

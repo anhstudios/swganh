@@ -11,7 +11,7 @@
 #include "pub14_core/messages/scene_end_baselines.h"
 #include "pub14_core/messages/update_containment_message.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object;

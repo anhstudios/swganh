@@ -9,11 +9,11 @@
 
 #include <boost/optional.hpp>
 
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 
 #include "swganh/command/command_service_interface.h"
 
-namespace anh {
+namespace swganh {
 namespace observer {
 	class ObserverInterface;
 }

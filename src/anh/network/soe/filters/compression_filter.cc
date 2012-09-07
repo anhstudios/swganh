@@ -7,10 +7,10 @@
 
 #include <zlib.h>
 
-#include "anh/byte_buffer.h"
-#include "anh/network/soe/session.h"
+#include "swganh/byte_buffer.h"
+#include "swganh/network/soe/session.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace network::soe;
 using namespace filters;
 using namespace std;

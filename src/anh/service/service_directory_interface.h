@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "anh/service/galaxy.h"
-#include "anh/service/service_description.h"
+#include "swganh/service/galaxy.h"
+#include "swganh/service/service_description.h"
 
-namespace anh {
+namespace swganh {
 namespace service {
 
 typedef std::list<Galaxy> GalaxyList;
@@ -87,4 +87,4 @@ public:
 };
 
 }  // namespace service
-}  // namespace anh
+}  // namespace swganh

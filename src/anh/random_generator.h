@@ -6,7 +6,7 @@
 #include <boost/random/uniform_int_distribution.hpp>
 #include <cstdint>
 
-namespace anh {
+namespace swganh {
 
 class RandomGenerator
 {

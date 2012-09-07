@@ -17,10 +17,10 @@
 //
 #include "attributes_get_batch_command.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/service/service_manager.h"
-#include "anh/database/database_manager.h"
+#include "swganh/service/service_manager.h"
+#include "swganh/database/database_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/creature/creature.h"
@@ -41,7 +41,7 @@ using namespace swganh_core::connection;
 using namespace swganh::attributes;
 using namespace sql;
 using namespace std;
-using namespace anh::database;
+using namespace swganh::database;
 
 AttributesService::AttributesService(SwganhKernel* kernel)
     : kernel_(kernel)

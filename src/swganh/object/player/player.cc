@@ -3,9 +3,9 @@
 
 #include "player.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/crc.h"
+#include "swganh/crc.h"
 
 #include "player_events.h"
 #include "swganh/object/object_events.h"

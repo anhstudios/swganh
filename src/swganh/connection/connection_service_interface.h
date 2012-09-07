@@ -9,12 +9,12 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include "anh/active_object.h"
-#include "anh/hash_string.h"
+#include "swganh/active_object.h"
+#include "swganh/hash_string.h"
 
-#include "anh/network/soe/packet_utilities.h"
-#include "anh/network/soe/session.h"
-#include "anh/service/service_interface.h"
+#include "swganh/network/soe/packet_utilities.h"
+#include "swganh/network/soe/session.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/network/base_swg_server.h"
 
@@ -28,11 +28,11 @@
 #include "pub14_core/messages/client_id_msg.h"
 #include "pub14_core/messages/heart_beat.h"
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
 class Server;
-}}}  // namespace anh::network::soe
+}}}  // namespace swganh::network::soe
 
 namespace swganh {
 namespace character {

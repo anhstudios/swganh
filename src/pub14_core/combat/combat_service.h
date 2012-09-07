@@ -27,9 +27,9 @@ namespace Concurrency {
 
 #include "swganh/combat/combat_service_interface.h"
 
-#include "anh/active_object.h"
-#include "anh/random_generator.h"
-#include "anh/service/service_interface.h"
+#include "swganh/active_object.h"
+#include "swganh/random_generator.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/command/command_properties.h"

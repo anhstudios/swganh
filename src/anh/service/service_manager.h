@@ -9,12 +9,12 @@
 
 #include "service_interface.h"
 
-namespace anh {
+namespace swganh {
 namespace database {
     class DatabaseManagerInterface;
-}}  // namespace anh::database
+}}  // namespace swganh::database
 
-namespace anh {
+namespace swganh {
 namespace service {
 
 class ServiceDirectoryInterface;
@@ -84,4 +84,4 @@ private:
     ServiceDirectoryInterface* service_directory_;
 };
     
-}}  // namespace anh::service
+}}  // namespace swganh::service

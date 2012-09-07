@@ -3,9 +3,9 @@
 #pragma once
 
 #include <boost/program_options/options_description.hpp>
-#include "anh/service/service_description.h"
+#include "swganh/service/service_description.h"
 
-namespace anh {
+namespace swganh {
 namespace service {
 
 class ServiceInterface {
@@ -25,4 +25,4 @@ public:
 
 };
 
-}}  // namespace anh::service
+}}  // namespace swganh::service

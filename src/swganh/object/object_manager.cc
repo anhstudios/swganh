@@ -3,10 +3,10 @@
 
 #include "object_manager.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 #include "object_factory.h"
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 #include "swganh/tre/visitors/slots/slot_arrangement_visitor.h"
@@ -14,7 +14,7 @@
 #include "swganh/object/slot_exclusive.h"
 #include "swganh/object/slot_container.h"
 
-#include "anh/database/database_manager_interface.h"
+#include "swganh/database/database_manager_interface.h"
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
@@ -31,7 +31,7 @@
 #include "permissions/world_cell_permission.h"
 
 using namespace std;
-using namespace anh;
+using namespace swganh;
 using namespace swganh::tre;
 using namespace swganh::object;
 using namespace swganh::messages;

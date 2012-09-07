@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <string>
 
-namespace anh {
+namespace swganh {
 namespace service {
 
 class ServiceDescription {    
@@ -166,5 +166,5 @@ private:
 };
 
 }  // namespace service
-}  // namespace anh
+}  // namespace swganh
 

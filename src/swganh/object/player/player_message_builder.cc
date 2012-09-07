@@ -5,8 +5,8 @@
 
 #include <algorithm>
 
-#include "anh/logger.h"
-#include "anh/crc.h"
+#include "swganh/logger.h"
+#include "swganh/crc.h"
 #include "pub14_core/messages/deltas_message.h"
 #include "pub14_core/messages/baselines_message.h"
 #include "pub14_core/messages/scene_end_baselines.h"
@@ -14,7 +14,7 @@
 #include "swganh/object/object_events.h"
 #include "swganh/object/waypoint/waypoint.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace std;
 using namespace swganh::object;
 using namespace player;

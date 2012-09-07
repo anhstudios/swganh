@@ -6,7 +6,7 @@
 
 #include <unordered_map>
 
-namespace anh {
+namespace swganh {
 namespace database {
 class DatabaseManagerInterface;
 }} // anh::database

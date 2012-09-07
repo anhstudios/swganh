@@ -6,9 +6,9 @@
 
 #include <turtle/mock.hpp>
 
-#include "anh/network/soe/server.h"
+#include "swganh/network/soe/server.h"
 
-namespace anh{
+namespace swganh{
 
 class ByteBuffer;
  
@@ -32,6 +32,6 @@ MOCK_BASE_CLASS(MockServer, ServerInterface )
     MOCK_METHOD(max_receive_size, 0);
 };
     
-}}}  // namespace anh::network::soe
+}}}  // namespace swganh::network::soe
 
 #endif  // ANH_NETWORK_SOE_MOCK_SERVER_H_

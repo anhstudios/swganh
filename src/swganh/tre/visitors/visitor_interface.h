@@ -7,7 +7,7 @@
 #include "visitor_types.h" //For visitor types
 
 //Forward Declarations
-namespace anh
+namespace swganh
 {
 	class ByteBuffer;
 }

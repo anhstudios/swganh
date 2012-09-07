@@ -9,9 +9,9 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/database/database_manager.h"
+#include "swganh/database/database_manager.h"
 #include "swganh/object/waypoint/waypoint.h"
 #include "swganh/object/player/player_events.h"
 #include "swganh/object/player/player.h"
@@ -20,8 +20,8 @@
 #include "pub14_core/messages/containers/network_map.h"
 
 using namespace std;
-using namespace anh;
-using namespace anh::database;
+using namespace swganh;
+using namespace swganh::database;
 using namespace swganh::object;
 using namespace swganh::object::waypoint;
 using namespace swganh::simulation;

@@ -5,7 +5,7 @@
 
 #include "database_manager_interface.h"
 
-namespace anh {
+namespace swganh {
 namespace database {
 class DatabaseManagerImpl;
 
@@ -49,4 +49,4 @@ private:
 };
 
 }  // namespace database
-}  // namespace anh
+}  // namespace swganh

@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace anh {
+namespace swganh {
 
     class ByteBuffer;
 
@@ -22,4 +22,4 @@ private:
 	void Compress_(ByteBuffer* message);
 };
 
-}}}} // namespace anh::network::soe::filters
+}}}} // namespace swganh::network::soe::filters

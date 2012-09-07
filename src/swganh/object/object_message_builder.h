@@ -7,8 +7,8 @@
 #include <memory>
 #include <boost/optional.hpp>
 
-#include "anh/event_dispatcher.h"
-#include "anh/observer/observer_interface.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/observer/observer_interface.h"
 
 namespace swganh {
 namespace messages {

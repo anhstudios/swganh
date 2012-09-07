@@ -1,26 +1,26 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "anh/plugin/plugin_manager.h"
+#include "swganh/plugin/plugin_manager.h"
 
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 
 #include <boost/filesystem.hpp>
-#include "anh/logger.h"
+#include "swganh/logger.h"
 #include <boost/program_options.hpp>
 
-#include "anh/app/kernel_interface.h"
+#include "swganh/app/kernel_interface.h"
 
-#include "anh/plugin/platform/library_interface.h"
+#include "swganh/plugin/platform/library_interface.h"
 
 #ifdef WIN32
-#include "anh/plugin/platform/win32_library.h"
+#include "swganh/plugin/platform/win32_library.h"
 typedef anh::plugin::platform::Win32Library DynamicLibrary;
 #else
 #include <dlfcn.h>
-#include "anh/plugin/platform/posix_library.h"
+#include "swganh/plugin/platform/posix_library.h"
 typedef anh::plugin::platform::PosixLibrary DynamicLibrary;
 #endif
 
@@ -32,8 +32,8 @@ typedef anh::plugin::platform::PosixLibrary DynamicLibrary;
   static std::string library_extension(".so");
 #endif
 
-using namespace anh::app;
-using namespace anh::plugin;
+using namespace swganh::app;
+using namespace swganh::plugin;
 using namespace boost::program_options;
 using namespace std;
 

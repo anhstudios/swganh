@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "anh/service/datastore.h"
+#include "swganh/service/datastore.h"
 
 #include <memory>
 #include <sstream>
@@ -14,10 +14,10 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/resultset.h>
 
-#include "anh/service/service_description.h"
-#include "anh/logger.h"
+#include "swganh/service/service_description.h"
+#include "swganh/logger.h"
 
-using namespace anh::service;
+using namespace swganh::service;
 using namespace boost::posix_time;
 using namespace std;
 

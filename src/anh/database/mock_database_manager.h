@@ -7,7 +7,7 @@
 #include <turtle/mock.hpp>
 #include <anh/database/database_manager_interface.h>
 
-namespace anh {
+namespace swganh {
 namespace database{
 
 MOCK_BASE_CLASS(MockDatabaseManager, DatabaseManagerInterface)
@@ -18,6 +18,6 @@ MOCK_BASE_CLASS(MockDatabaseManager, DatabaseManagerInterface)
     MOCK_METHOD(getConnection, 1);    
 };
 } //namespace database
-} //namespace anh
+} //namespace swganh
 
 #endif //ANH_DATABASE_MOCK_DATABASE_MANAGER_H_

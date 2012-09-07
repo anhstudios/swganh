@@ -9,9 +9,9 @@
 
 #include <boost/program_options/options_description.hpp>
 
-#include "anh/app/kernel_interface.h"
+#include "swganh/app/kernel_interface.h"
 
-namespace anh {
+namespace swganh {
 namespace plugin {
     
 struct ObjectParams {
@@ -41,4 +41,4 @@ struct ObjectRegistration {
     #define PLUGIN_API 
 #endif
 
-}}  // namespace anh::plugin
+}}  // namespace swganh::plugin

@@ -4,7 +4,7 @@
 
 #include "swganh/sui/sui_service_interface.h"
 
-namespace anh
+namespace swganh
 {
 namespace observer
 {

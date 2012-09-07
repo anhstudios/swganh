@@ -3,7 +3,7 @@
 
 #define NOMINMAX
 
-#include "anh/database/database_manager.h"
+#include "swganh/database/database_manager.h"
 
 #include <algorithm>
 #include <functional>
@@ -28,7 +28,7 @@ namespace Concurrency {
 
 #endif
 
-using namespace anh::database;
+using namespace swganh::database;
 using namespace std;
 
 class anh::database::DatabaseManagerImpl {

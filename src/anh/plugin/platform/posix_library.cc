@@ -3,7 +3,7 @@
 
 #ifndef WIN32
 
-#include "anh/plugin/platform/posix_library.h"
+#include "swganh/plugin/platform/posix_library.h"
 
 #include <exception>
 #include <sstream>
@@ -12,9 +12,9 @@
 
 #include <boost/filesystem.hpp>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-using namespace anh::plugin;
+using namespace swganh::plugin;
 using namespace boost::filesystem;
 using namespace platform;
 using namespace std;

@@ -7,7 +7,7 @@
 #endif
 
 
-#include "anh/python_shared_ptr.h"
+#include "swganh/python_shared_ptr.h"
 #include "equipment_service_interface.h"
 #include <swganh/object/object.h>
 #include "swganh/object/player/player.h"

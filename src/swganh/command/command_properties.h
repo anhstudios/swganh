@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <map>
 
-#include "anh/hash_string.h"
+#include "swganh/hash_string.h"
 
 namespace swganh {
 namespace command {

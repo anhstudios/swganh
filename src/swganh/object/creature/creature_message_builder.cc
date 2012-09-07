@@ -8,7 +8,7 @@
 #include "swganh/object/object_events.h"
 
 using namespace std;
-using namespace anh;
+using namespace swganh;
 using namespace swganh::object::creature;
 using namespace swganh::object;
 using namespace swganh::messages;

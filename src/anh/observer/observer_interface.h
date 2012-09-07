@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 
 namespace swganh
 {
@@ -12,7 +12,7 @@ namespace messages
 }
 }
 
-namespace anh {
+namespace swganh {
 namespace observer {
 
     class ObserverInterface
@@ -30,4 +30,4 @@ namespace observer {
         virtual void Notify(swganh::messages::BaseSwgMessage* message) = 0;
     };
 
-}}  // namespace anh::observer
+}}  // namespace swganh::observer

@@ -4,7 +4,7 @@
 
 #include <boost/python/object.hpp>
 
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 
 namespace swganh {
 namespace scripting {

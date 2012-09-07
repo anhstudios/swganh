@@ -15,7 +15,7 @@ using namespace boost::chrono;
 
 #include <boost/asio/io_service.hpp>
 
-using namespace anh;
+using namespace swganh;
 using namespace std;
 
 namespace ba = boost::asio;

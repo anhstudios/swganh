@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-namespace anh {
+namespace swganh {
 
 /*! \brief The ByteBuffer is a handy utility class for packing data into a
 * binary format fit for storage or passing over the network or persistent
@@ -219,7 +219,7 @@ inline bool operator!=(const ByteBuffer& lhs, const ByteBuffer& rhs) {
     return !(lhs == rhs);
 }
 
-}  // namespace anh
+}  // namespace swganh
 
 /*! This helper function is used to provide support for streaming values to a
 * ByteBuffer instance (making it the lvalue):
@@ -257,4 +257,4 @@ std::ostream& operator<<(std::ostream& message, const anh::ByteBuffer& buffer);
 
 // Move inline implementations to a separate file to
 // clean up the declaration header.
-#include "anh/byte_buffer-inl.h"
+#include "swganh/byte_buffer-inl.h"

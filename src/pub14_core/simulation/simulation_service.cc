@@ -5,14 +5,14 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "anh/byte_buffer.h"
-#include "anh/crc.h"
-#include "anh/event_dispatcher.h"
-#include "anh/service/service_manager.h"
-#include "anh/database/database_manager.h"
-#include "anh/network/soe/server_interface.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/observer/observer_interface.h"
+#include "swganh/byte_buffer.h"
+#include "swganh/crc.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/service/service_manager.h"
+#include "swganh/database/database_manager.h"
+#include "swganh/network/soe/server_interface.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/observer/observer_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -114,7 +114,7 @@
 #include "scene_manager.h"
 #include "swganh/simulation/movement_manager_interface.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace std;
 using namespace swganh::connection;
 using namespace swganh::messages;

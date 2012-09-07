@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-namespace anh {
+namespace swganh {
 namespace plugin {
 namespace platform {
 
@@ -20,4 +20,4 @@ public:
     virtual void * GetSymbol(const std::string& symbol) = 0;
 };
 
-}}}  // namespace anh::plugin::platform;
+}}}  // namespace swganh::plugin::platform;

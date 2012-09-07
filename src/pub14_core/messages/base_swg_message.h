@@ -5,8 +5,8 @@
 #include <cassert>
 #include <cstdint>
 
-#include "anh/byte_buffer.h"
-#include "anh/utilities.h"
+#include "swganh/byte_buffer.h"
+#include "swganh/utilities.h"
 
 namespace swganh {
 namespace messages {

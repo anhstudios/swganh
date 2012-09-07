@@ -6,7 +6,7 @@
 #include "pub14_core/messages/deltas_message.h"
 #include "pub14_core/messages/baselines_message.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::factory_crate;

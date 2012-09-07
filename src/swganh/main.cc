@@ -8,8 +8,8 @@
 #include <boost/thread.hpp>
 #include <boost/python.hpp>
 
-#include "anh/logger.h"
-#include "anh/utilities.h"
+#include "swganh/logger.h"
+#include "swganh/utilities.h"
 
 #include "swganh/app/swganh_app.h"
 #include "swganh/scripting/utilities.h"

@@ -8,15 +8,15 @@
 #include <string>
 #include <vector>
 
-#include "anh/plugin/bindings.h"
-#include "anh/logger.h"
+#include "swganh/plugin/bindings.h"
+#include "swganh/logger.h"
 
-namespace anh {
+namespace swganh {
 namespace app {
 class KernelInterface;
-}}  // namespace anh::app
+}}  // namespace swganh::app
 
-namespace anh {
+namespace swganh {
 namespace plugin {
 
 namespace platform {
@@ -87,4 +87,4 @@ std::shared_ptr<T> PluginManager::CreateObject(const std::string& name) {
     return object;
 }
 
-}}  // namespace anh::plugin
+}}  // namespace swganh::plugin

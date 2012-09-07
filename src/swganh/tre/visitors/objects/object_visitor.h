@@ -12,7 +12,7 @@
 #include <memory>
 #include <boost/any.hpp>
 
-namespace anh
+namespace swganh
 {
 namespace resource
 {

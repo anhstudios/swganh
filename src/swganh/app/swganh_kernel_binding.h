@@ -9,11 +9,11 @@
 
 #include "swganh_kernel.h"
 
-#include "anh/python_shared_ptr.h"
+#include "swganh/python_shared_ptr.h"
 
-#include "anh/event_dispatcher.h"
-#include "anh/app/kernel_interface.h"
-#include "anh/service/service_manager.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/app/kernel_interface.h"
+#include "swganh/service/service_manager.h"
 #include "swganh/combat/combat_service_interface.h"
 #include "swganh/command/command_service_interface.h"
 #include "swganh/social/social_service_interface.h"
@@ -26,7 +26,7 @@
 
 #include <boost/python.hpp>
 
-using namespace anh::app;
+using namespace swganh::app;
 using namespace swganh::app;
 using namespace boost::python;
 using namespace std;

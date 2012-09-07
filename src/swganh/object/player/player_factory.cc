@@ -11,10 +11,10 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/crc.h"
-#include "anh/database/database_manager.h"
+#include "swganh/crc.h"
+#include "swganh/database/database_manager.h"
 #include "swganh/object/player/player.h"
 #include "swganh/object/player/player_events.h"
 
@@ -22,7 +22,7 @@
 #include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;
-using namespace anh::database;
+using namespace swganh::database;
 using namespace swganh::object;
 using namespace swganh::object::player;
 using namespace swganh::simulation;

@@ -3,7 +3,7 @@
 
 #include "command_binding.h"
 
-#include "anh/python_shared_ptr.h"
+#include "swganh/python_shared_ptr.h"
 #include <boost/python.hpp>
 
 #include "swganh/app/swganh_kernel.h"

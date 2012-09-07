@@ -1,12 +1,12 @@
 #include "equipment_service.h"
 
 #include <memory>
-#include "anh/logger.h"
+#include "swganh/logger.h"
 #include <swganh/tre/resource_manager.h>
 #include <swganh/tre/visitors/slots/slot_definition_visitor.h>
 #include <swganh/object/object.h>
 
-using namespace anh::service;
+using namespace swganh::service;
 using namespace swganh::object;
 using namespace swganh::tre;
 using namespace swganh_core::equipment;

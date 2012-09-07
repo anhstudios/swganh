@@ -5,10 +5,10 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/plugin/bindings.h"
-#include "anh/plugin/plugin_manager.h"
+#include "swganh/plugin/bindings.h"
+#include "swganh/plugin/plugin_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 

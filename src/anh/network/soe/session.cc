@@ -1,20 +1,20 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "anh/network/soe/session.h"
+#include "swganh/network/soe/session.h"
 
 #include <algorithm>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/network/soe/server_interface.h"
+#include "swganh/network/soe/server_interface.h"
 
-#include "anh/network/soe/packet_utilities.h"
+#include "swganh/network/soe/packet_utilities.h"
 
-using namespace anh;
-using namespace anh::event_dispatcher;
-using namespace anh::network;
-using namespace anh::network::soe;
+using namespace swganh;
+using namespace swganh::event_dispatcher;
+using namespace swganh::network;
+using namespace swganh::network::soe;
 using namespace std;
 
 Session::Session(ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)

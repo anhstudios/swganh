@@ -4,11 +4,11 @@
 #include <boost/test/unit_test.hpp>
 #include <turtle/mock.hpp>
 
-#include "anh/database/mock_cppconn.h"
+#include "swganh/database/mock_cppconn.h"
 
-#include "anh/database/database_manager.h"
+#include "swganh/database/database_manager.h"
 
-using namespace anh::database; 
+using namespace swganh::database; 
 
 /// Test fixture for testing the DatabaseManager, provides setup/teardown
 class DatabaseManagerTest {

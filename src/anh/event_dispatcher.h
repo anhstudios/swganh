@@ -20,7 +20,7 @@ namespace asio {
     class io_service;
 }}  // namespace boost::asio
 
-namespace anh {
+namespace swganh {
 
     class EventInterface;
 
@@ -116,4 +116,4 @@ namespace anh {
         boost::asio::io_service& io_service_;
     };
 
-}  // namespace anh
+}  // namespace swganh

@@ -9,9 +9,9 @@
 #include <boost/regex.hpp>
 #endif
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/service/service_manager.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -25,8 +25,8 @@
 
 #include "spatial_chat_internal_command.h"
 
-using namespace anh::app;
-using namespace anh::service;
+using namespace swganh::app;
+using namespace swganh::service;
 using namespace std;
 using namespace swganh_core::chat;
 using namespace swganh::command;

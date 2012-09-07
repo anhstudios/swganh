@@ -5,8 +5,8 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "anh/logger.h"
-#include "anh/service/service_manager.h"
+#include "swganh/logger.h"
+#include "swganh/service/service_manager.h"
 #include "swganh/app/swganh_kernel.h"
 
 #include "swganh/object/creature/creature.h"

@@ -15,7 +15,7 @@
 #include <cppconn/statement.h>
 
 // Generate mock objects for the Mysql Connector/C++ interface.
-namespace anh {
+namespace swganh {
 namespace database {
 
 MOCK_BASE_CLASS( MockDriver, sql::Driver )
@@ -182,6 +182,6 @@ MOCK_BASE_CLASS(MockResultSet, sql::ResultSet)
 };
 
 }  // namespace database
-}  // namespace anh
+}  // namespace swganh
 
 #endif  // ANH_DATABASE_MOCK_CPPCONN_H_

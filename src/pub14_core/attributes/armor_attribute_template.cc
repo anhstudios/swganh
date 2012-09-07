@@ -5,11 +5,11 @@
 #include "attributes_helper.h"
 #include <sstream>
 
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 #include "swganh/object/tangible/tangible.h"
 
 using namespace std;
-using namespace anh;
+using namespace swganh;
 using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;

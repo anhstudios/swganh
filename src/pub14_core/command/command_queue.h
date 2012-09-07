@@ -10,7 +10,7 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include "anh/active_object.h"
+#include "swganh/active_object.h"
 
 #include "swganh/command/command_interface.h"
 #include "swganh/command/command_queue_interface.h"

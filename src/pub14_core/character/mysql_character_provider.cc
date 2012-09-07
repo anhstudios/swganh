@@ -11,10 +11,10 @@
 #include <boost/regex.hpp>
 #endif
 
-#include "anh/crc.h"
+#include "swganh/crc.h"
 #include "swganh/app/swganh_kernel.h"
-#include "anh/database/database_manager.h"
-#include "anh/service/service_directory.h"
+#include "swganh/database/database_manager.h"
+#include "swganh/service/service_directory.h"
 
 #include <cppconn/connection.h>
 #include <cppconn/exception.h>
@@ -34,12 +34,12 @@
 
 #include "swganh/object/player/player.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 using namespace std;
-using namespace anh;
-using namespace anh::app;
-using namespace anh::database;
+using namespace swganh;
+using namespace swganh::app;
+using namespace swganh::database;
 using namespace swganh::character;
 using namespace swganh_core::character;
 using namespace swganh::messages;

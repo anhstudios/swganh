@@ -72,7 +72,7 @@ static src::severity_logger<severity_level> SeverityLogger;
 #define DLOG(level) if (true);else LOG(level)
 #endif
 
-namespace anh {
+namespace swganh {
 
 /**
  * A general boost.log initialization logging object

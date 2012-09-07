@@ -4,7 +4,7 @@
 
 #include <boost/asio/deadline_timer.hpp>
 
-namespace anh {
+namespace swganh {
 
 template<typename Handler>
 class RepeatHandler {
@@ -35,5 +35,5 @@ private:
     Handler handler_;
 };
 
-}  // namespace anh
+}  // namespace swganh
 

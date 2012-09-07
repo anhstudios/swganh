@@ -9,10 +9,10 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "anh/plugin/bindings.h"
-#include "anh/plugin/platform/library_interface.h"
+#include "swganh/plugin/bindings.h"
+#include "swganh/plugin/platform/library_interface.h"
 
-namespace anh {
+namespace swganh {
 namespace plugin {
 namespace platform {
 
@@ -34,7 +34,7 @@ private:
     anh::plugin::ExitFunc exit_func_;
 };
 
-}}}  // namespace anh::module::platform
+}}}  // namespace swganh::module::platform
 
 #endif  // WIN32
 

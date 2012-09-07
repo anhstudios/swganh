@@ -3,8 +3,8 @@
 
 #include "base_swg_server.h"
 
-#include "anh/logger.h"
-#include "anh/network/soe/session.h"
+#include "swganh/logger.h"
+#include "swganh/network/soe/session.h"
 
 using namespace swganh::network;
 

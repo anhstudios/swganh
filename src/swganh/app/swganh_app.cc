@@ -21,12 +21,12 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
 
-#include "anh/logger.h"
-#include "anh/database/database_manager_interface.h"
-#include "anh/event_dispatcher.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/datastore.h"
-#include "anh/service/service_manager.h"
+#include "swganh/logger.h"
+#include "swganh/database/database_manager_interface.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/service/datastore.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -40,8 +40,8 @@
 
 #include "version.h"
 
-using namespace anh;
-using namespace anh::app;
+using namespace swganh;
+using namespace swganh::app;
 using namespace boost::asio;
 using namespace boost::program_options;
 using namespace std;

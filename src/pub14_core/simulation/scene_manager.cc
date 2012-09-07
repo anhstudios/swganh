@@ -11,7 +11,7 @@
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 #include "swganh/object/object.h"
 

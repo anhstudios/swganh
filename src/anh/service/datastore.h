@@ -10,14 +10,14 @@
 
 #include <boost/noncopyable.hpp>
 
-#include "anh/service/datastore_interface.h"
-#include "anh/service/galaxy.h"
+#include "swganh/service/datastore_interface.h"
+#include "swganh/service/galaxy.h"
 
 namespace sql {
     class Connection; 
 }
 
-namespace anh {
+namespace swganh {
 namespace service {
 
 class ServiceDescription;
@@ -47,5 +47,5 @@ private:
 };
 
 }  // namespace service_directory
-}  // namespace anh
+}  // namespace swganh
 

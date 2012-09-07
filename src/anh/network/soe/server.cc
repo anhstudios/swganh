@@ -1,16 +1,16 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "anh/network/soe/server.h"
+#include "swganh/network/soe/server.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 #include <boost/pool/pool_alloc.hpp>
 
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 
-#include "anh/network/soe/session.h"
+#include "swganh/network/soe/session.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace network::soe;
 using namespace filters;
 using namespace std;

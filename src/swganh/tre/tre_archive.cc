@@ -4,7 +4,7 @@
 #include "tre_archive.h"
 
 #include "config_reader.h"
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
     
 using namespace swganh::tre;
 

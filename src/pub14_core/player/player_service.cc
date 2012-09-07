@@ -3,18 +3,18 @@
 
 #include "player_service.h"
 
-#include "anh/logger.h"
-#include "anh/event_dispatcher.h"
-#include "anh/service/service_description.h"
-#include "anh/service/service_manager.h"
+#include "swganh/logger.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/service/service_description.h"
+#include "swganh/service/service_manager.h"
 #include "swganh/connection/connection_client_interface.h"
 #include "swganh/object/player/player.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;
-using namespace anh;
-using namespace anh::service;
+using namespace swganh;
+using namespace swganh::service;
 using namespace swganh_core::player;
 using namespace swganh::object::player;
 

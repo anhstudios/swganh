@@ -5,7 +5,7 @@
 #include "swganh/login/encoders/encoder_interface.h"
 #include <memory>
 
-namespace anh { namespace database { class DatabaseManagerInterface; 
+namespace swganh { namespace database { class DatabaseManagerInterface; 
 }}  // anh::database
 
 namespace swganh_core {

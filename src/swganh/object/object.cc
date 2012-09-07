@@ -8,9 +8,9 @@
 
 #include "object_events.h"
 
-#include "anh/logger.h"
-#include "anh/crc.h"
-#include "anh/observer/observer_interface.h"
+#include "swganh/logger.h"
+#include "swganh/crc.h"
+#include "swganh/observer/observer_interface.h"
 
 
 #include "pub14_core/messages/scene_create_object_by_crc.h"
@@ -23,7 +23,7 @@
 
 #include "swganh/object/permissions/container_permissions_interface.h"
 
-using namespace anh::observer;
+using namespace swganh::observer;
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;

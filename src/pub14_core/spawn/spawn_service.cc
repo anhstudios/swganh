@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <memory>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/service/service_manager.h"
+#include "swganh/service/service_manager.h"
 
 #include "pub14_core/simulation/simulation_service.h"
 #include "pub14_core/simulation/scene_events.h"
@@ -18,7 +18,7 @@
 #include "swganh/tre/visitors/snapshot/ws_visitor.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 
-using namespace anh::service;
+using namespace swganh::service;
 using namespace swganh::app;
 using namespace swganh::simulation;
 using namespace swganh::object;

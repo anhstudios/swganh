@@ -8,7 +8,7 @@
 
 #include <boost/optional.hpp>
 
-namespace anh {
+namespace swganh {
 namespace observer {
 	class ObserverInterface;
 }

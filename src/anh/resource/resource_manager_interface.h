@@ -10,7 +10,7 @@ namespace tre {
 }
 }
 
-namespace anh {
+namespace swganh {
 namespace resource {
 	class ResourceManagerInterface
 	{

@@ -8,7 +8,7 @@
 #include <string>
 
 #include <boost/noncopyable.hpp>
-#include "anh/hash_string.h"
+#include "swganh/hash_string.h"
 
 namespace sql {
     class Connection;
@@ -19,7 +19,7 @@ namespace sql {
 */
 typedef anh::HashString StorageType;
 
-namespace anh {
+namespace swganh {
 namespace database {
 /*! Interface class that exposes an API for managing mysql connector/c++
 * connections.

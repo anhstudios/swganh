@@ -3,7 +3,7 @@
 
 #include "swganh/object/waypoint/waypoint.h"
 
-#include "anh/crc.h"
+#include "swganh/crc.h"
 
 using namespace std;
 using namespace swganh::messages;

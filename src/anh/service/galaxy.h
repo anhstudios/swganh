@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <string>
 
-namespace anh {
+namespace swganh {
 namespace service {
 
 class Galaxy {
@@ -118,4 +118,4 @@ private:
 };
 
 }  // namespace service
-}  // namespace anh
+}  // namespace swganh

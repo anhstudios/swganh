@@ -9,8 +9,8 @@
 #include <boost/regex.hpp>
 #endif
 
-#include "anh/logger.h"
-#include "anh/service/service_manager.h"
+#include "swganh/logger.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/tangible/tangible.h"

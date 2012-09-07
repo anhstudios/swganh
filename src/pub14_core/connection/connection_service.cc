@@ -6,14 +6,14 @@
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/crc.h"
-#include "anh/event_dispatcher.h"
-#include "anh/network/soe/server.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/service_directory_interface.h"
-#include "anh/service/service_manager.h"
+#include "swganh/crc.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/network/soe/server.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/service/service_directory_interface.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -26,10 +26,10 @@
 #include "swganh/object/object.h"
 #include "swganh/object/player/player.h"
 
-using namespace anh::app;
-using namespace anh::event_dispatcher;
-using namespace anh::network::soe;
-using namespace anh::service;
+using namespace swganh::app;
+using namespace swganh::event_dispatcher;
+using namespace swganh::network::soe;
+using namespace swganh::service;
 using namespace swganh::character;
 using namespace swganh::connection;
 using namespace swganh_core::connection;

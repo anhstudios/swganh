@@ -4,7 +4,7 @@
 #ifndef ANH_NETWORK_SOE_PROTOCOL_OPCODES_H_
 #define ANH_NETWORK_SOE_PROTOCOL_OPCODES_H_
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
 
@@ -44,6 +44,6 @@ enum ProtocolOpcodes
 
 } // namespace soe
 } // namespace network
-} // namespace anh
+} // namespace swganh
 
 #endif // ANH_NETWORK_SOE_PROTOCOL_OPCODES_H_ 

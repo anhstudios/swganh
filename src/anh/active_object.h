@@ -11,9 +11,9 @@
 #include <boost/asio/strand.hpp>
 #include <boost/thread/future.hpp>
 
-#include "anh/timing.h"
+#include "swganh/timing.h"
 
-namespace anh {
+namespace swganh {
 
 /** 
  * There are many times when it makes sense to break an object off and run it
@@ -106,5 +106,5 @@ private:
     boost::asio::strand strand_;
 };
     
-}  // namespace anh
+}  // namespace swganh
 

@@ -7,9 +7,9 @@
 
 #include <boost/asio.hpp>
 
-#include "anh/network/soe/server_interface.h"
+#include "swganh/network/soe/server_interface.h"
 
-namespace anh {
+namespace swganh {
 
 class ByteBuffer;
 
@@ -73,4 +73,4 @@ private:
     uint32_t max_receive_size_;
 };
 
-}}} // namespace anh::network::soe
+}}} // namespace swganh::network::soe

@@ -20,18 +20,18 @@ namespace Concurrency {
 
 #include <boost/asio.hpp>
 
-#include "anh/network/soe/protocol_packets.h"
-#include "anh/network/soe/server_interface.h"
+#include "swganh/network/soe/protocol_packets.h"
+#include "swganh/network/soe/server_interface.h"
 
-#include "anh/network/soe/filters/crc_in_filter.h"
-#include "anh/network/soe/filters/decryption_filter.h"
-#include "anh/network/soe/filters/decompression_filter.h"
-#include "anh/network/soe/filters/compression_filter.h"
-#include "anh/network/soe/filters/crc_out_filter.h"
-#include "anh/network/soe/filters/encryption_filter.h"
-#include "anh/network/soe/filters/security_filter.h"
+#include "swganh/network/soe/filters/crc_in_filter.h"
+#include "swganh/network/soe/filters/decryption_filter.h"
+#include "swganh/network/soe/filters/decompression_filter.h"
+#include "swganh/network/soe/filters/compression_filter.h"
+#include "swganh/network/soe/filters/crc_out_filter.h"
+#include "swganh/network/soe/filters/encryption_filter.h"
+#include "swganh/network/soe/filters/security_filter.h"
 
-namespace anh {
+namespace swganh {
 
 // FORWARD DECLARATIONS
 class ByteBuffer;
@@ -203,4 +203,4 @@ private:
     filters::SecurityFilter security_filter_;
 };
 
-}}} // namespace anh::network::soe
+}}} // namespace swganh::network::soe

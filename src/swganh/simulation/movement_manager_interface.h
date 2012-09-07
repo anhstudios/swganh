@@ -18,11 +18,11 @@ namespace Concurrency {
 #include "pub14_core/messages/controllers/data_transform.h"
 #include "pub14_core/messages/controllers/data_transform_with_parent.h"
 
-namespace anh {
+namespace swganh {
     class EventDispatcher;
 namespace event_dispatcher {
     class EventDispatcherInterface;
-}}  // namespace anh::event_dispatcher
+}}  // namespace swganh::event_dispatcher
 
 namespace swganh {
 namespace object {

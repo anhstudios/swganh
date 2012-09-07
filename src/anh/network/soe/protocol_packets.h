@@ -9,9 +9,9 @@
 #include <anh/byte_buffer.h>
 #include <anh/utilities.h>
 #include <anh/network/soe/protocol_opcodes.h>
-#include "anh/network/soe/packet_utilities.h"
+#include "swganh/network/soe/packet_utilities.h"
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
     
@@ -391,4 +391,4 @@ struct FatalErrorResponse
 
 } // namespace soe
 } // namespace network
-} // namespace anh
+} // namespace swganh

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-namespace anh {
+namespace swganh {
 namespace service {
 
 class Galaxy;
@@ -34,4 +34,4 @@ public:
 };
 
 }  // namespace service
-}  // namespace anh
+}  // namespace swganh

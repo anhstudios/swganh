@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "anh/hash_string.h"
+#include "swganh/hash_string.h"
 #include "swganh/attributes/attributes_service_interface.h"
 #include "swganh/attributes/attribute_template_interface.h"
 

@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <string>
 
-namespace anh {
+namespace swganh {
 
 /*! \brief This class provides a utility for generating identifiers that are
  * easy to read and can be used as key values in the standard 
@@ -82,7 +82,7 @@ private:
     std::string ident_string_;
 };
 
-}  // namespace anh
+}  // namespace swganh
 
 namespace std {    
     // specialization of std::hash to make using

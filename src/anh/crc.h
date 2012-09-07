@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <string>
 
-namespace anh {
+namespace swganh {
 
 /** 
  * @brief Calculates a 32-bit checksum of a c-style string.
@@ -44,4 +44,4 @@ uint32_t memcrc(const std::string& source_string);
  */
 uint32_t memcrc(const unsigned char* src_buffer, uint32_t length, uint32_t seed);
 
-}  // namespace anh
+}  // namespace swganh

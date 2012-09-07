@@ -3,7 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "anh/utilities.h"
+#include "swganh/utilities.h"
 
 BOOST_AUTO_TEST_SUITE(ANHUtility)
 

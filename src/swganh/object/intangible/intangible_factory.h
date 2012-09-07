@@ -5,7 +5,7 @@
 #include "swganh/object/object_factory.h"
 #include <unordered_map>
 
-namespace anh {
+namespace swganh {
 namespace database {
 class DatabaseManagerInterface;
 }} // anh::database

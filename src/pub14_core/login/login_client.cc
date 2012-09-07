@@ -4,7 +4,7 @@
 #include "login_client.h"
 #include "swganh/object/object_controller.h"
 
-using namespace anh::network::soe;
+using namespace swganh::network::soe;
 using namespace std;
 using namespace swganh_core::login;
 using namespace swganh::login;

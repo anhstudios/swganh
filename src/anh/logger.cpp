@@ -3,7 +3,7 @@
 
 #include "logger.h"
 
-using namespace anh;
+using namespace swganh;
 
 Logger& Logger::getInstance()
 {

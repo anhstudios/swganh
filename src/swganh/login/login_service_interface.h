@@ -7,12 +7,12 @@
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include "anh/active_object.h"
-#include "anh/logger.h"
+#include "swganh/active_object.h"
+#include "swganh/logger.h"
 
-#include "anh/network/soe/packet_utilities.h"
-#include "anh/network/soe/server.h"
-#include "anh/service/service_interface.h"
+#include "swganh/network/soe/packet_utilities.h"
+#include "swganh/network/soe/server.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/network/base_swg_server.h"
 
@@ -22,21 +22,21 @@
 #include "swganh/login/galaxy_status.h"
 #include "pub14_core/messages/login_client_id.h"
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
 class Server;
-}}}  // namespace anh::network::soe
+}}}  // namespace swganh::network::soe
 
-namespace anh {
+namespace swganh {
 namespace database {
 class DatabaseManagerInterface; 
-}}  // namespace anh::database
+}}  // namespace swganh::database
 
-namespace anh {
+namespace swganh {
 namespace event_dispatcher {
 class EventInterface;
-}}  // namespace anh::event_dispatcher
+}}  // namespace swganh::event_dispatcher
 
 namespace swganh {
 namespace character {

@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace anh {
+namespace swganh {
 
     class ByteBuffer;
 
@@ -26,4 +26,4 @@ namespace filters {
     	int Decrypt_(char* buffer, uint32_t len, uint32_t seed) const;
     };
 
-}}}} // namespace anh::network::soe::filters
+}}}} // namespace swganh::network::soe::filters

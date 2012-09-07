@@ -5,11 +5,11 @@
 #include <stdexcept>
 #include <tuple>
 #include <boost/test/unit_test.hpp>
-#include "anh/network/soe/packet_utilities.h"
-#include "anh/byte_buffer.h"
-#include "anh/utilities.h"
+#include "swganh/network/soe/packet_utilities.h"
+#include "swganh/byte_buffer.h"
+#include "swganh/utilities.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace network::soe;
 using namespace std;
 

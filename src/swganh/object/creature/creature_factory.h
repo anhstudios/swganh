@@ -5,7 +5,7 @@
 #include "swganh/object/tangible/tangible_factory.h"
 #include <unordered_map>
 
-namespace anh {
+namespace swganh {
 namespace database {
 class DatabaseManagerInterface;
 }} // anh::database

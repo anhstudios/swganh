@@ -10,7 +10,7 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include "anh/app/kernel_interface.h"
+#include "swganh/app/kernel_interface.h"
 
 namespace swganh {
 namespace tre {
@@ -103,4 +103,4 @@ private:
     boost::asio::io_service& io_service_;
 };
 
-}}  // namespace anh::app
+}}  // namespace swganh::app

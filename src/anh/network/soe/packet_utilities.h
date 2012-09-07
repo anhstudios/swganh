@@ -8,9 +8,9 @@
 
 #include <boost/asio/ip/udp.hpp>
 
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
 
@@ -72,4 +72,4 @@ class EndpointEqual {
     }
 };
 
-}}}  // namespace anh::network::soe
+}}}  // namespace swganh::network::soe

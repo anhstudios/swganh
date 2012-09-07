@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "anh/network/soe/session.h"
+#include "swganh/network/soe/session.h"
 
 namespace swganh {
 namespace login {

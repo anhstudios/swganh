@@ -11,15 +11,15 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/database/database_manager.h"
+#include "swganh/database/database_manager.h"
 #include "swganh/object/creature/creature.h"
 #include "swganh/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;
-using namespace anh::database;
+using namespace swganh::database;
 using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::simulation;

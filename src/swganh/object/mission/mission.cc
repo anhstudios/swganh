@@ -3,7 +3,7 @@
 
 #include "swganh/object/mission/mission.h"
 
-#include "anh/crc.h"
+#include "swganh/crc.h"
 
 using namespace glm;
 using namespace std;

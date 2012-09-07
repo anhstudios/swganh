@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <memory>
 
-namespace anh {
+namespace swganh {
 
     class ByteBuffer;
 
@@ -36,4 +36,4 @@ namespace filters {
         uint32_t max_receive_size_;
     };
 
-}}}} // namespace anh::network::soe::filters
+}}}} // namespace swganh::network::soe::filters

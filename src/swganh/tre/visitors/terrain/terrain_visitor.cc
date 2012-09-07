@@ -7,7 +7,7 @@
 
 #include "detail/layer_loader.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 #include "detail/header.h"
 
 using namespace swganh::tre;

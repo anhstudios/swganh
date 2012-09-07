@@ -3,11 +3,11 @@
 
 #include "command_service.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
-#include "anh/event_dispatcher.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/service_manager.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 

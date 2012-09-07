@@ -7,9 +7,9 @@
 
 #include <map>
 
-#include "anh/hash_string.h"
+#include "swganh/hash_string.h"
 
-using namespace anh;
+using namespace swganh;
 using namespace std;
 
 

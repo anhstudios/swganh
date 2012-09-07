@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 #include "random.h"
 #include "perlin_noise.h"
 

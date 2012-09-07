@@ -1,10 +1,10 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "anh/service/galaxy.h"
+#include "swganh/service/galaxy.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-using namespace anh::service;
+using namespace swganh::service;
 
 Galaxy::Galaxy()
     : id_(0) {}

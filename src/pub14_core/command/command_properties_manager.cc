@@ -5,7 +5,7 @@
 
 #include <exception>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/visitor_types.h"

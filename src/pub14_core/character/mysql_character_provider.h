@@ -4,10 +4,10 @@
 
 #include "swganh/character/character_provider_interface.h"
 
-namespace anh {
+namespace swganh {
 namespace app {
 class KernelInterface;
-}}  // namespace anh::app
+}}  // namespace swganh::app
 
 namespace swganh_core {
 namespace character {

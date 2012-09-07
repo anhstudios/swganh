@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 #include "base_swg_message.h"
 #include "swganh/character/character_data.h"
 

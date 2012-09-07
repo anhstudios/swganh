@@ -6,16 +6,16 @@
 #include <boost/asio.hpp>
 #include <boost/test/unit_test.hpp>
 
-#include "anh/byte_buffer.h"
-#include "anh/network/soe/session.h"
+#include "swganh/byte_buffer.h"
+#include "swganh/network/soe/session.h"
 
-#include "anh/network/soe/mock_server.h"
+#include "swganh/network/soe/mock_server.h"
 
-using namespace anh::network;
+using namespace swganh::network;
 using namespace boost::asio::ip;
 using namespace std;
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
 
@@ -141,4 +141,4 @@ shared_ptr<MockServer> SessionTests::buildMockServer() const {
     return server;
 }
 
-}}}  // namespace anh::network::soe
+}}}  // namespace swganh::network::soe

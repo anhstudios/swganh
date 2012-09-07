@@ -1,9 +1,9 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "anh/crc.h"
+#include "swganh/crc.h"
 
-using namespace anh;
+using namespace swganh;
 
 const uint32_t CRC_TABLE[256] = {
     0x0000000,
