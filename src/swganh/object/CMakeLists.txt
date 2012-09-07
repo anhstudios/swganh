@@ -3,8 +3,7 @@ include(ANHPythonBinding)
 AddANHPythonBinding(object
 	PREFIX_NAME swgpy
     DEPENDS
-        swganh_lib
-		anh_lib
+        swganh_lib		
         pub14_core_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}

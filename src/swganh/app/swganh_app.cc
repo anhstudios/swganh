@@ -40,11 +40,10 @@
 
 #include "version.h"
 
-using namespace swganh;
-using namespace swganh::app;
 using namespace boost::asio;
 using namespace boost::program_options;
 using namespace std;
+using namespace swganh;
 using namespace swganh::app;
 using namespace swganh::chat;
 using namespace swganh::login;

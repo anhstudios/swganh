@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <unordered_map>
 
-#include <anh/hash_string.h>
+#include <swganh/hash_string.h>
 #include "swganh/command/command_properties.h"
 #include "swganh/scripting/utilities.h"
 #include <boost/python.hpp>

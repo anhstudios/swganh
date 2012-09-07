@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <anh/event_dispatcher.h>
+#include <swganh/event_dispatcher.h>
 
 namespace swganh
 {

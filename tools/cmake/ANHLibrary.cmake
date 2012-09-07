@@ -164,7 +164,7 @@ FUNCTION(AddANHLibrary name)
         TARGET_LINK_LIBRARIES(${name}_test
             ${ANHLIB_DEPENDS})
         add_dependencies(${name}_test DEPS)
-
+		MESSAGE("link dependencies in " ${name}_test ${ANHLIB_DEPENDS})
         IF(_debug_list_length GREATER 0)
             FOREACH(debug_library ${ANHLIB_DEBUG_LIBRARIES})
                 if (NOT ${debug_library} MATCHES ".*NOTFOUND")

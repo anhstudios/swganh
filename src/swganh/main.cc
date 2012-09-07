@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
             if (swganh::KeyboardHit())
             {
                 char input = swganh::GetHitKey();
-                if (input == '`')
+                if (input == '`' || input =='~')
                 {
                     app.StartInteractiveConsole();
                 }

@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "ws_visitor.h"
-#include <anh/byte_buffer.h>
+#include <swganh/byte_buffer.h>
 
 using namespace std;
 using namespace swganh::tre;

@@ -2,7 +2,6 @@ include(ANHPlugin)
 
 AddANHPlugin(pub14_core
     DEPENDS
-        anh_lib
         swganh_lib
     ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
