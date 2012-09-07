@@ -23,7 +23,7 @@ namespace cell {
     class CellMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
     {
     public:
-        CellMessageBuilder(anh::EventDispatcher* dispatcher) :
+        CellMessageBuilder(swganh::EventDispatcher* dispatcher) :
             IntangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
@@ -31,7 +31,7 @@ namespace cell {
         virtual void RegisterEventHandlers();
         static void BuildStfDetailDelta(const std::shared_ptr<Cell>& intangible);
 
-		virtual void SendBaselines(const std::shared_ptr<Cell>& cell, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+		virtual void SendBaselines(const std::shared_ptr<Cell>& cell, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 
 		static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Cell>& cell);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Cell>& cell);

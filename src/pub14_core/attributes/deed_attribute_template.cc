@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-DeedAttributeTemplate::DeedAttributeTemplate(anh::EventDispatcher* dispatcher)
+DeedAttributeTemplate::DeedAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();

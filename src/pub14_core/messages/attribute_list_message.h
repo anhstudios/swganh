@@ -29,7 +29,7 @@ namespace messages {
     	uint64_t object_id;
     	std::vector<Attribute> attributes;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(object_id);
     		buffer.write<uint32_t>(attributes.size());
@@ -39,7 +39,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
             object_id = buffer.read<uint64_t>();
     		uint32_t attribute_count = buffer.read<uint32_t>();

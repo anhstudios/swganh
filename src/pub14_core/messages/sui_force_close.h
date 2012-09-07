@@ -17,12 +17,12 @@ namespace messages {
 
 		int32_t window_id;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(window_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		window_id = buffer.read<int32_t>();
     	}

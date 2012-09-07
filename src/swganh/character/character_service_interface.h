@@ -30,7 +30,7 @@ namespace character {
 
 class CharacterProviderInterface;
     
-class CharacterServiceInterface : public anh::service::ServiceInterface {
+class CharacterServiceInterface : public swganh::service::ServiceInterface {
 private:
     virtual void HandleClientRandomNameRequest_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 

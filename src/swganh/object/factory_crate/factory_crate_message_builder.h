@@ -14,19 +14,19 @@ namespace factory_crate {
     class FactoryCrateMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
     {
     public:
-        FactoryCrateMessageBuilder(anh::EventDispatcher* dispatcher) :
+        FactoryCrateMessageBuilder(swganh::EventDispatcher* dispatcher) :
             TangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendBaselines(const std::shared_ptr<FactoryCrate>& factory_crate, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+        virtual void SendBaselines(const std::shared_ptr<FactoryCrate>& factory_crate, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
         
         // baselines
         static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<FactoryCrate>& factory_crate);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<FactoryCrate>& factory_crate);
     private:
-        typedef anh::ValueEvent<std::shared_ptr<FactoryCrate>> FactoryCrateEvent;
+        typedef swganh::ValueEvent<std::shared_ptr<FactoryCrate>> FactoryCrateEvent;
     };
 
 }}}  // swganh::object::tangible

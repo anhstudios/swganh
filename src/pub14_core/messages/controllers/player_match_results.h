@@ -50,7 +50,7 @@ namespace controllers {
         std::vector<PlayerMatch> player_matches;
         
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(player_matches.size());
             for(auto& match : player_matches)
@@ -72,7 +72,7 @@ namespace controllers {
             
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             uint32_t count = buffer.read<uint32_t>();
             for (int i = 0; i < count; i++)

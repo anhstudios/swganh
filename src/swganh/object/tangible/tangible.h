@@ -141,9 +141,9 @@ public:
     void ClearAutoAttack();
     bool IsAutoAttacking();
 
-    virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
+    virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 private:
-    typedef anh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
+    typedef swganh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
 
     std::string customization_;                                                                                      // update 3 variable 4
     swganh::messages::containers::NetworkList<ComponentCustomization> component_customization_list_;                 // update 3 variable 5

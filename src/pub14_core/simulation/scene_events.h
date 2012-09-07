@@ -6,9 +6,9 @@ namespace swganh_core
 {
 namespace simulation
 {
-struct NewSceneEvent : anh::BaseEvent
+struct NewSceneEvent : swganh::BaseEvent
 {
-	NewSceneEvent(anh::EventType type, uint32_t scene_id_, std::string scene_label_, std::string terrain_filename_)
+	NewSceneEvent(swganh::EventType type, uint32_t scene_id_, std::string scene_label_, std::string terrain_filename_)
         : BaseEvent(type)
         , scene_id(scene_id_)
 		, scene_label(scene_label_)
@@ -19,9 +19,9 @@ struct NewSceneEvent : anh::BaseEvent
 	std::string terrain_filename;
 };
 
-struct DestroySceneEvent : anh::BaseEvent
+struct DestroySceneEvent : swganh::BaseEvent
 {
-	DestroySceneEvent(anh::EventType type, uint32_t scene_id_)
+	DestroySceneEvent(swganh::EventType type, uint32_t scene_id_)
         : BaseEvent(type)
         , scene_id(scene_id_)
     {}

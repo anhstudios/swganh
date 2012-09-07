@@ -20,13 +20,13 @@ namespace chat {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
 {    
-    anh::plugin::ObjectRegistration registration;
+    swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
     
     // Register Chat Service
 	{ // Chat::ChatService
-        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
             auto chat_service = new ChatService(kernel);
             
             return chat_service;

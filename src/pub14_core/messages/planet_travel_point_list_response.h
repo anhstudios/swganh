@@ -24,7 +24,7 @@ namespace messages {
     	std::list<uint32_t> location_tax_rates; // uncertain, possibly ticket prices minus a tax amount instead of just a tax amount
     	std::list<uint8_t> location_starport_flags; // 0 = shuttleport, 1 = starport
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(planet_name);
     		buffer.write<uint32_t>(location_names.size());
@@ -47,7 +47,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		uint32_t location_names_count = buffer.read<uint32_t>();

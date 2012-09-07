@@ -20,7 +20,7 @@ namespace equipment
 	public:
 		EquipmentService(swganh::tre::ResourceManager* resourceManager);
 
-		anh::service::ServiceDescription GetServiceDescription();
+		swganh::service::ServiceDescription GetServiceDescription();
 
 		virtual int32_t GetSlotIdByName(std::string slot_name);
 		virtual std::string GetSlotNameById(int32_t slot_id);

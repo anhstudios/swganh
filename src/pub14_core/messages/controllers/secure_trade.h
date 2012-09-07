@@ -36,14 +36,14 @@ namespace controllers {
 			, target_id(0)
 		{}
 		
-		void OnControllerSerialize(anh::ByteBuffer& buffer) const
+		void OnControllerSerialize(swganh::ByteBuffer& buffer) const
 		{
 			buffer.write(error);
 			buffer.write(trader_id);
 			buffer.write(target_id);
 		}
 		
-		void OnControllerDeserialize(anh::ByteBuffer& buffer)
+		void OnControllerDeserialize(swganh::ByteBuffer& buffer)
 		{
 			error = buffer.read<uint32_t>();
 			trader_id = buffer.read<uint64_t>();

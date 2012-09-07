@@ -29,7 +29,7 @@ namespace messages {
     	uint32_t faction_crc;
     	uint32_t faction_status; // 00 = neutral, 01 = covert, 02 = overt
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(unknown1);
     		buffer.write(unknown2);
@@ -51,7 +51,7 @@ namespace messages {
     		buffer.write(faction_status);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		unknown1 = buffer.read<uint32_t>();
     		unknown2 = buffer.read<uint32_t>();

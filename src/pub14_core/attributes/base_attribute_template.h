@@ -15,7 +15,7 @@ namespace attributes {
 	class BaseAttributeTemplate : public swganh::attributes::AttributeTemplateInterface
 	{
 	public:
-		BaseAttributeTemplate(anh::EventDispatcher* dispatcher);
+		BaseAttributeTemplate(swganh::EventDispatcher* dispatcher);
 		virtual void RegisterEventHandlers();
 		virtual swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 

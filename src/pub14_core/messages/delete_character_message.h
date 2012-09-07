@@ -17,13 +17,13 @@ namespace messages {
         int32_t server_id;
         uint64_t character_id;
         
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
             server_id = buffer.read<int32_t>();
             character_id = buffer.read<uint64_t>();
         }
         
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(server_id);
             buffer.write(character_id);

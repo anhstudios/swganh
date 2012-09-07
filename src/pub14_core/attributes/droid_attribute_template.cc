@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-DroidAttributeTemplate::DroidAttributeTemplate(anh::EventDispatcher* dispatcher)
+DroidAttributeTemplate::DroidAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();

@@ -20,7 +20,7 @@ namespace messages {
 		std::vector<std::wstring> returnList;
 		int update_count;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(window_id);
 			buffer.write(event_type);
@@ -32,7 +32,7 @@ namespace messages {
 			}
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		window_id = buffer.read<int32_t>();
 			event_type = buffer.read<int32_t>();

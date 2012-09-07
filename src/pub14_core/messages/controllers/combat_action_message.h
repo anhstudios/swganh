@@ -47,7 +47,7 @@ namespace controllers {
     
     	std::vector<CombatDefender> defender_list;                         
     
-    	void OnControllerSerialize(anh::ByteBuffer& buffer) const {
+    	void OnControllerSerialize(swganh::ByteBuffer& buffer) const {
     		buffer.write(action_crc);
     		buffer.write(attacker_id);
     		buffer.write(weapon_id);
@@ -65,7 +65,7 @@ namespace controllers {
             });
     	}
     
-    	void OnControllerDeserialize(anh::ByteBuffer& buffer) {
+    	void OnControllerDeserialize(swganh::ByteBuffer& buffer) {
     		action_crc = buffer.read<uint32_t>();
     		attacker_id = buffer.read<uint64_t>();
     		weapon_id = buffer.read<uint64_t>();

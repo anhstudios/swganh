@@ -46,7 +46,7 @@ namespace command {
      * The command service is responsible for the handling of incoming command
      * requests for game objects.
      */
-    class CommandServiceInterface: public anh::service::ServiceInterface
+    class CommandServiceInterface: public swganh::service::ServiceInterface
     {
     public:
         virtual ~CommandServiceInterface() {}
@@ -68,16 +68,16 @@ namespace command {
          * @param command The name/crc of the command.
          * @param creator The creator associated with the specified command.
          */
-        virtual void AddCommandCreator(anh::HashString command, CommandCreator&& creator) = 0;
+        virtual void AddCommandCreator(swganh::HashString command, CommandCreator&& creator) = 0;
         
         /**
          * Removes the creator for a given command type if one is set.
          *
          * @param command The name/crc of the command.
          */
-        virtual void RemoveCommandCreator(anh::HashString command) = 0;
+        virtual void RemoveCommandCreator(swganh::HashString command) = 0;
 
-        virtual std::shared_ptr<CommandInterface> CreateCommand(anh::HashString command) = 0;
+        virtual std::shared_ptr<CommandInterface> CreateCommand(swganh::HashString command) = 0;
                 
         virtual void EnqueueCommand(const std::shared_ptr<CommandInterface>& command) = 0;
 
@@ -133,7 +133,7 @@ namespace command {
          * @param command A command name/crc to find.
          * @return An optional value containing a reference to the properties requested.
          */
-        virtual boost::optional<const CommandProperties&> FindPropertiesForCommand(anh::HashString command) = 0;
+        virtual boost::optional<const CommandProperties&> FindPropertiesForCommand(swganh::HashString command) = 0;
         
         virtual void SetDefaultCommand(uint64_t queue_owner_id, const std::shared_ptr<swganh::command::CommandInterface>& command) = 0;
         

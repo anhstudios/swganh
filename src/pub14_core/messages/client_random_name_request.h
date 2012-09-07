@@ -16,12 +16,12 @@ namespace messages {
         
         std::string player_race_iff;
 
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(player_race_iff);	
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
         	player_race_iff = buffer.read<std::string>();
         }

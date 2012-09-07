@@ -19,14 +19,14 @@ namespace messages {
     	std::string message;
     	bool force_fatal;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(type);
     		buffer.write(message);
     		buffer.write(force_fatal);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		type = buffer.read<std::string>();
     		message = buffer.read<std::string>();

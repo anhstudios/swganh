@@ -118,7 +118,7 @@ ObjectVisitor::ObjectVisitor()
 void ObjectVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {}
 
-void ObjectVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
+void ObjectVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
 	if(name == "XXXX")
 	{
@@ -130,7 +130,7 @@ void ObjectVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, 
 	}
 }
 
-void ObjectVisitor::_handleXXXX(anh::ByteBuffer& buf)
+void ObjectVisitor::_handleXXXX(swganh::ByteBuffer& buf)
 {
 	if(buf.size() > 0)
 	{
@@ -147,12 +147,12 @@ void ObjectVisitor::_handleXXXX(anh::ByteBuffer& buf)
 	}
 }
 
-void ObjectVisitor::_handleDERVXXXX(anh::ByteBuffer& buf)
+void ObjectVisitor::_handleDERVXXXX(swganh::ByteBuffer& buf)
 {
 	parentFiles.insert(buf.read<std::string>(false,true));
 }
 
-void ObjectVisitor::_handleClientString(ObjectVisitor* dst, string& name, anh::ByteBuffer& buf)
+void ObjectVisitor::_handleClientString(ObjectVisitor* dst, string& name, swganh::ByteBuffer& buf)
 {
 	if(buf.read<char>())
 	{
@@ -169,7 +169,7 @@ void ObjectVisitor::_handleClientString(ObjectVisitor* dst, string& name, anh::B
 	}
 }
 
-void ObjectVisitor::_handleString(ObjectVisitor* dst, string& name, anh::ByteBuffer& buf)
+void ObjectVisitor::_handleString(ObjectVisitor* dst, string& name, swganh::ByteBuffer& buf)
 {
 	if(buf.read<char>())
 	{
@@ -177,7 +177,7 @@ void ObjectVisitor::_handleString(ObjectVisitor* dst, string& name, anh::ByteBuf
 	}
 }
 
-void ObjectVisitor::_handleInt(ObjectVisitor* dst, string& name, anh::ByteBuffer& buf)
+void ObjectVisitor::_handleInt(ObjectVisitor* dst, string& name, swganh::ByteBuffer& buf)
 {
 	if(buf.read<char>())
 	{
@@ -187,7 +187,7 @@ void ObjectVisitor::_handleInt(ObjectVisitor* dst, string& name, anh::ByteBuffer
 	}
 }
 
-void ObjectVisitor::_handleFloat(ObjectVisitor* dst, string& name, anh::ByteBuffer& buf)
+void ObjectVisitor::_handleFloat(ObjectVisitor* dst, string& name, swganh::ByteBuffer& buf)
 {
 	if(buf.read<char>())
 	{
@@ -197,7 +197,7 @@ void ObjectVisitor::_handleFloat(ObjectVisitor* dst, string& name, anh::ByteBuff
 	}
 }
 
-void ObjectVisitor::_handleBool(ObjectVisitor* dst, string& name, anh::ByteBuffer& buf)
+void ObjectVisitor::_handleBool(ObjectVisitor* dst, string& name, swganh::ByteBuffer& buf)
 {
 	if(buf.read<char>())
 	{
@@ -205,7 +205,7 @@ void ObjectVisitor::_handleBool(ObjectVisitor* dst, string& name, anh::ByteBuffe
 	}
 }
 
-void ObjectVisitor::_handleUnhandled(ObjectVisitor* dst, std::string& name, anh::ByteBuffer& buf)
+void ObjectVisitor::_handleUnhandled(ObjectVisitor* dst, std::string& name, swganh::ByteBuffer& buf)
 {
 	//@TODO: PRINT A MESSAGE
 }

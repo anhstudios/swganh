@@ -9,8 +9,8 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::static_object;
 
-StaticFactory::StaticFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher)
+StaticFactory::StaticFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher)
 	: ObjectFactory(db_manager, event_dispatcher)
 {
 }

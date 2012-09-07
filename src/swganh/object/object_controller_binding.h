@@ -23,7 +23,7 @@ struct ObjectControllerWrapper : ObjectController, wrapper<ObjectController>
 
 void exportObjectController()
 {
-    typedef void (ObjectController::*NotifyFunc)(const anh::ByteBuffer& message);
+    typedef void (ObjectController::*NotifyFunc)(const swganh::ByteBuffer& message);
     class_<ObjectController, std::shared_ptr<ObjectController>, boost::noncopyable>("ObjectController", "Object that describes the Controller of an object", no_init)
         .def("Notify", NotifyFunc(&ObjectController::Notify), "Notifies the controller whent he object has been updated")
     ;

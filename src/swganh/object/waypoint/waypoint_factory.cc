@@ -35,7 +35,7 @@ WaypointFactory::WaypointFactory(DatabaseManagerInterface* db_manager,
 }
 void WaypointFactory::RegisterEventHandlers()
 {
-    event_dispatcher_->Subscribe("PersistWaypoints", [this] (shared_ptr<anh::EventInterface> incoming_event)
+    event_dispatcher_->Subscribe("PersistWaypoints", [this] (shared_ptr<swganh::EventInterface> incoming_event)
     {
         auto value_event = static_pointer_cast<ValueEvent<NetworkMap<uint64_t, player::PlayerWaypointSerializer>>>(incoming_event);
         auto waypoints = value_event->Get();
@@ -44,7 +44,7 @@ void WaypointFactory::RegisterEventHandlers()
             PersistObject(waypoint_pair.second.waypoint);
         };
     });
-    event_dispatcher_->Subscribe("LoadWaypoints", [this] (shared_ptr<anh::EventInterface> incoming_event)
+    event_dispatcher_->Subscribe("LoadWaypoints", [this] (shared_ptr<swganh::EventInterface> incoming_event)
     {
         auto waypoint_event = static_pointer_cast<player::WaypointEvent>(incoming_event);
 

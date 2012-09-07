@@ -15,7 +15,7 @@ namespace spawn
 		SpawnService(swganh::app::SwganhKernel* kernel);
 		~SpawnService();
 		
-		 anh::service::ServiceDescription GetServiceDescription();
+		 swganh::service::ServiceDescription GetServiceDescription();
 	
 	private:
 

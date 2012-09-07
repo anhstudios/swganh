@@ -19,14 +19,14 @@ namespace messages {
     	std::string password;
     	std::string client_version; // <year><month><day>-<hour>:<minute> for publish, e.g. Publish 13.0 = 20050125-12:19
     
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(username);
     		buffer.write(password);
     		buffer.write(client_version);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		username = buffer.read<std::string>();
     		password = buffer.read<std::string>();

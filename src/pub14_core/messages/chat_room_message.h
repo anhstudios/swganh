@@ -27,12 +27,12 @@ namespace messages {
     		: game_name("SWG")
     	{}
 
-    	void AddProsePackage(const anh::ByteBuffer* prose_package)
+    	void AddProsePackage(const swganh::ByteBuffer* prose_package)
         {
             prose_package_ = prose_package;
         }
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(game_name);
     		buffer.write(server_name);
@@ -42,7 +42,7 @@ namespace messages {
     		buffer.write(out_of_band);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		game_name = buffer.read<std::string>();
     		server_name = buffer.read<std::string>();
@@ -53,7 +53,7 @@ namespace messages {
     	}
 
     private:
-    	const anh::ByteBuffer* prose_package_;
+    	const swganh::ByteBuffer* prose_package_;
     };
 
 }} // namespace swganh::messages

@@ -46,7 +46,7 @@ struct CombatData : swganh::command::CommandProperties
         , range (0)
         , cone_angle(0)
         , area_range(0)
-        , animation_crc(anh::HashString(""))
+        , animation_crc(swganh::HashString(""))
     {
     }
 
@@ -75,7 +75,7 @@ struct CombatData : swganh::command::CommandProperties
     int cone_angle;
     int area_range;
 
-    anh::HashString animation_crc;
+    swganh::HashString animation_crc;
     
     std::string combat_spam;
 

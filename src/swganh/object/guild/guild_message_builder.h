@@ -23,7 +23,7 @@ class Guild;
 class GuildMessageBuilder : public ObjectMessageBuilder
 {
 public:
-    GuildMessageBuilder(anh::EventDispatcher* dispatcher)
+    GuildMessageBuilder(swganh::EventDispatcher* dispatcher)
         : ObjectMessageBuilder(dispatcher)
     {
         RegisterEventHandlers();
@@ -32,13 +32,13 @@ public:
     // deltas
     static void BuildGuildTagsDelta(const std::shared_ptr<Guild>& guild);
 
-	virtual void SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+	virtual void SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 
     // baselines
     static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Guild>& guild);
     static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Guild>& guild);
 private:
-	typedef anh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
+	typedef swganh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
 };
 
 }}} // swganh::object::guild

@@ -18,13 +18,13 @@ namespace messages {
     	uint64_t deed_id;
     	std::string object_file_path; // e.g. "object/building/player/shared_player_garage_corellia_style_01.iff"
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(deed_id);
     		buffer.write(object_file_path);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		deed_id = buffer.read<uint64_t>();
     		object_file_path = buffer.read<std::string>();

@@ -25,7 +25,7 @@ namespace chat {
     public:
         explicit ChatService(swganh::app::SwganhKernel* kernel);
         virtual ~ChatService();
-        anh::service::ServiceDescription GetServiceDescription();
+        swganh::service::ServiceDescription GetServiceDescription();
 
         void SendSpatialChat(
 		    const std::shared_ptr<swganh::object::Object>& actor, // creature object

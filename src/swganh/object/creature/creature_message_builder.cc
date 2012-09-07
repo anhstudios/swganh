@@ -222,7 +222,7 @@ void CreatureMessageBuilder::RegisterEventHandlers()
         BuildUpdatePvpStatusMessage(value_event->Get());
     });
 }
-void CreatureMessageBuilder::SendBaselines(const shared_ptr<Creature>& creature, const shared_ptr<anh::observer::ObserverInterface>& observer)
+void CreatureMessageBuilder::SendBaselines(const shared_ptr<Creature>& creature, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
     creature->AddBaselineToCache(&BuildBaseline1(creature));
     creature->AddBaselineToCache(&BuildBaseline3(creature));

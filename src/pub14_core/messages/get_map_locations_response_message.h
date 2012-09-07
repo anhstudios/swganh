@@ -34,7 +34,7 @@ namespace messages {
     	std::list<MapLocation> blank_list1;
     	std::list<MapLocation> blank_list2;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(planet_name);
     		buffer.write(locations.size());
@@ -70,7 +70,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		uint32_t locations_count = buffer.read<uint32_t>();

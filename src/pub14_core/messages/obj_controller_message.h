@@ -38,19 +38,19 @@ namespace messages {
         uint32_t message_type;
         uint64_t observable_id;
         uint32_t tick_count;
-        anh::ByteBuffer data;
+        swganh::ByteBuffer data;
         
-        virtual void OnControllerSerialize(anh::ByteBuffer& buffer) const 
+        virtual void OnControllerSerialize(swganh::ByteBuffer& buffer) const 
         {
             buffer.write(data.data(), data.size());
         }
 
-        virtual void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        virtual void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             data = std::move(buffer);
         }
 
-        virtual void OnSerialize(anh::ByteBuffer& buffer) const 
+        virtual void OnSerialize(swganh::ByteBuffer& buffer) const 
         {
             buffer.write(controller_type);
             buffer.write(message_type);
@@ -60,7 +60,7 @@ namespace messages {
             OnControllerSerialize(buffer);
         }
 
-        virtual void OnDeserialize(anh::ByteBuffer& buffer) 
+        virtual void OnDeserialize(swganh::ByteBuffer& buffer) 
         {
             controller_type = buffer.read<uint32_t>();
             message_type = buffer.read<uint32_t>();  

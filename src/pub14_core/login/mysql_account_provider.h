@@ -5,14 +5,14 @@
 #include "swganh/login/providers/account_provider_interface.h"
 
 namespace swganh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
+}}  // swganh::database
 
 namespace swganh_core {
 namespace login {
 
 class MysqlAccountProvider : public swganh::login::providers::AccountProviderInterface {
 public:
-    explicit MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager);
+    explicit MysqlAccountProvider(swganh::database::DatabaseManagerInterface* db_manager);
     ~MysqlAccountProvider();
 
     virtual std::shared_ptr<swganh::login::Account> FindByUsername(std::string username);
@@ -23,7 +23,7 @@ public:
 	virtual bool CreatePlayerAccount(uint64_t account_id);
 	
 private:
-    anh::database::DatabaseManagerInterface* db_manager_;
+    swganh::database::DatabaseManagerInterface* db_manager_;
 };
 
 }}  // namespace swganh::login

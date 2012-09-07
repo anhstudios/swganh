@@ -17,11 +17,11 @@ namespace messages {
     
     	std::string command;
     
-    	void OnSerialize(anh::ByteBuffer& buffer) const {
+    	void OnSerialize(swganh::ByteBuffer& buffer) const {
     		buffer.write(command);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer) {
+    	void OnDeserialize(swganh::ByteBuffer& buffer) {
     		command = buffer.read<std::string>();
     	}
     };

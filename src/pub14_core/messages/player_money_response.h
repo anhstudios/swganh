@@ -17,13 +17,13 @@ namespace messages {
     	uint32_t inventory_credit_amount;
     	uint32_t bank_credit_amount;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(inventory_credit_amount);
     		buffer.write(bank_credit_amount);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		inventory_credit_amount = buffer.read<uint32_t>();
     		bank_credit_amount = buffer.read<uint32_t>();

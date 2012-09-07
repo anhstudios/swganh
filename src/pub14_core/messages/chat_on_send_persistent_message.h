@@ -17,13 +17,13 @@ namespace messages {
     	uint32_t success_flag; // 0x00 = success, 0x04 = failure
     	uint32_t sequence_number;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(success_flag);
     		buffer.write(sequence_number);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		success_flag = buffer.read<uint32_t>();
     		sequence_number = buffer.read<uint32_t>();

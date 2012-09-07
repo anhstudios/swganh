@@ -30,13 +30,13 @@ namespace controllers {
         uint64_t entertainer_id;
         
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(entertainer_id);
             buffer.write<uint32_t>(0);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             entertainer_id = buffer.read<uint64_t>();
         }

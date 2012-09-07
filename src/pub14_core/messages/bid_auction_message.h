@@ -18,14 +18,14 @@ namespace messages {
     	uint32_t bid_price;
     	uint32_t price_proxy;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const 
+    	void OnSerialize(swganh::ByteBuffer& buffer) const 
     	{
     		buffer.write(item_id);
     		buffer.write(bid_price);
     		buffer.write(price_proxy);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer) 
+    	void OnDeserialize(swganh::ByteBuffer& buffer) 
     	{
     		item_id = buffer.read<uint64_t>();
     		bid_price = buffer.read<uint32_t>();

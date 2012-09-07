@@ -30,7 +30,7 @@ namespace controllers {
         uint64_t npc_id;        
         
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(npc_id);
             // @TODO Unknown
@@ -39,7 +39,7 @@ namespace controllers {
             buffer.write<uint8_t>(0);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             npc_id = buffer.read<uint64_t>();
         }

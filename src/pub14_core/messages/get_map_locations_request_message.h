@@ -20,7 +20,7 @@ namespace messages {
     	uint32_t unknown2;
     	uint32_t unknown3;
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(planet_name);
     		buffer.write(unknown1);
@@ -28,7 +28,7 @@ namespace messages {
     		buffer.write(unknown3);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		unknown1 = buffer.read<uint32_t>();

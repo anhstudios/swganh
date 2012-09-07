@@ -18,13 +18,13 @@ namespace messages {
     	std::string message;
     	uint32_t string_spacer;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(message);
     		buffer.write(string_spacer);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		message = buffer.read<std::string>();
     		string_spacer = buffer.read<uint32_t>();

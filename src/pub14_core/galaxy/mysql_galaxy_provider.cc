@@ -17,7 +17,7 @@
 using namespace swganh_core::galaxy;
 using namespace std;
 
-MysqlGalaxyProvider::MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager)
+MysqlGalaxyProvider::MysqlGalaxyProvider(swganh::database::DatabaseManagerInterface* db_manager)
     : GalaxyProviderInterface()
     , db_manager_(db_manager) {}
 

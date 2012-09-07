@@ -25,11 +25,11 @@ namespace command {
         explicit CommandFactory(swganh::app::SwganhKernel* kernel);
         ~CommandFactory();
 
-        virtual void AddCommandCreator(anh::HashString command, swganh::command::CommandCreator&& creator);
+        virtual void AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator&& creator);
 
-        virtual void RemoveCommandCreator(anh::HashString command);
+        virtual void RemoveCommandCreator(swganh::HashString command);
 
-        virtual std::shared_ptr<swganh::command::CommandInterface> CreateCommand(anh::HashString command);
+        virtual std::shared_ptr<swganh::command::CommandInterface> CreateCommand(swganh::HashString command);
 
     private:
         swganh::command::CommandServiceInterface* GetCommandService();
@@ -47,7 +47,7 @@ namespace command {
         };
 
         typedef std::map<
-            anh::HashString, CreatorData
+            swganh::HashString, CreatorData
         > CreatorMap;
 
         swganh::app::SwganhKernel* kernel_;

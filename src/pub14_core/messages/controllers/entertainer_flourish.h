@@ -30,7 +30,7 @@ namespace controllers {
         uint32_t flourish_id;
         
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write<uint32_t>(0);
             buffer.write(flourish_id);
@@ -38,7 +38,7 @@ namespace controllers {
             buffer.write<uint32_t>(0);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             flourish_id = buffer.read<uint32_t>();
         }

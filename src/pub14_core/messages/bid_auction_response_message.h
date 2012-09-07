@@ -17,13 +17,13 @@ namespace messages {
     	uint64_t item_id;
     	uint32_t status_flag; // 0 = Succeeded, 1 = Auctioneer is Invalid, 2 = Invalid Item, 9 = Not Enough Credits
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(item_id);
     		buffer.write(status_flag);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		status_flag = buffer.read<uint32_t>();

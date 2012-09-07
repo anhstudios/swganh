@@ -13,7 +13,7 @@ void DatatableVisitor::visit_folder(uint32_t depth, std::string name, uint32_t s
 {
 }
 
-void DatatableVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
+void DatatableVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
 	if(name == "0001COLS")
 	{
@@ -29,7 +29,7 @@ void DatatableVisitor::visit_data(uint32_t depth, std::string name, uint32_t siz
 	}
 }
 
-void DatatableVisitor::_handle0001COLS(anh::ByteBuffer& buf)
+void DatatableVisitor::_handle0001COLS(swganh::ByteBuffer& buf)
 {
 	std::uint32_t count = buf.read<std::uint32_t>();
 	for(unsigned int i=0; i < count; ++i)
@@ -38,7 +38,7 @@ void DatatableVisitor::_handle0001COLS(anh::ByteBuffer& buf)
 	}
 }
 
-void DatatableVisitor::_handleTYPE(anh::ByteBuffer& buf)
+void DatatableVisitor::_handleTYPE(swganh::ByteBuffer& buf)
 {
 	std::string buffer;
 	for(unsigned int i=0; i < column_names_.size(); ++i)
@@ -74,7 +74,7 @@ void DatatableVisitor::_handleTYPE(anh::ByteBuffer& buf)
 	}
 }
 
-void DatatableVisitor::_handleROWS(anh::ByteBuffer& buf)
+void DatatableVisitor::_handleROWS(swganh::ByteBuffer& buf)
 {
 	std::uint32_t count = buf.read<std::uint32_t>();
 	for(std::uint32_t i=0; i < count; ++i)

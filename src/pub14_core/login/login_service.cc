@@ -134,7 +134,7 @@ void LoginService::Startup() {
 
     event_dispatcher->Subscribe(
         "UpdateGalaxyStatus",
-        [this] (const shared_ptr<anh::EventInterface>& incoming_event)
+        [this] (const shared_ptr<swganh::EventInterface>& incoming_event)
     {
         UpdateGalaxyStatus_();
     });
@@ -218,10 +218,10 @@ std::vector<GalaxyStatus> LoginService::GetGalaxyStatus_() {
 
     auto galaxy_list = service_directory->getGalaxySnapshot();
 
-    std::for_each(galaxy_list.begin(), galaxy_list.end(), [this, &galaxy_status, &service_directory] (anh::service::Galaxy& galaxy) {
+    std::for_each(galaxy_list.begin(), galaxy_list.end(), [this, &galaxy_status, &service_directory] (swganh::service::Galaxy& galaxy) {
         auto service_list = service_directory->getServiceSnapshot(galaxy);
 
-        auto it = std::find_if(service_list.begin(), service_list.end(), [] (anh::service::ServiceDescription& service) {
+        auto it = std::find_if(service_list.begin(), service_list.end(), [] (swganh::service::ServiceDescription& service) {
             return service.type().compare("connection") == 0;
         });
 

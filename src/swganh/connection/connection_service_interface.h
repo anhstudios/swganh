@@ -45,7 +45,7 @@ namespace connection {
     
 class ConnectionClientInterface;
 
-class ConnectionServiceInterface : public anh::service::ServiceInterface, public swganh::network::BaseSwgServer
+class ConnectionServiceInterface : public swganh::service::ServiceInterface, public swganh::network::BaseSwgServer
 {
 public:
     
@@ -54,9 +54,9 @@ public:
 	{
 	}
 
-    virtual bool RemoveSession(std::shared_ptr<anh::network::soe::Session> session) = 0;
+    virtual bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session) = 0;
 
-    virtual std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
+    virtual std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
     
     virtual std::shared_ptr<ConnectionClientInterface> FindConnectionByPlayerId(uint64_t player_id) = 0;
     

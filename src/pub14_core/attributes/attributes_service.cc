@@ -48,9 +48,9 @@ AttributesService::AttributesService(SwganhKernel* kernel)
 {
 }
 
-anh::service::ServiceDescription AttributesService::GetServiceDescription()
+swganh::service::ServiceDescription AttributesService::GetServiceDescription()
 {
-	anh::service::ServiceDescription service_description(
+	swganh::service::ServiceDescription service_description(
         "Attributes Service",
         "attributes",
         "0.1",

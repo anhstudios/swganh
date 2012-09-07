@@ -131,7 +131,7 @@ public:
     */
     void SetColorByte(uint8_t color_byte);
 
-    typedef anh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
+    typedef swganh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
 private:
 
     glm::vec3 coordinates_;			                    //update 3

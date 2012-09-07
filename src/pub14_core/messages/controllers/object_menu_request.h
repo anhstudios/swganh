@@ -35,7 +35,7 @@ namespace controllers {
         std::vector<RadialOptions> radial_options;
         uint8_t response_count;		
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(target_id);
             buffer.write(owner_id);
@@ -60,7 +60,7 @@ namespace controllers {
             buffer.write(response_count);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             target_id = buffer.read<uint64_t>();
             owner_id = buffer.read<uint64_t>();

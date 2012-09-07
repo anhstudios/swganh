@@ -26,7 +26,7 @@ class WeatherProviderInterface;
 namespace swganh {
 namespace weather {
     
-    class WeatherServiceInterface : public anh::service::ServiceInterface
+    class WeatherServiceInterface : public swganh::service::ServiceInterface
     {
     public:
 

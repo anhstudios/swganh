@@ -257,15 +257,15 @@ public:
      *
      * @return A const pointer to a ByteBuffer instance containing the OutOfBand data.
      */
-    const anh::ByteBuffer* Pack() const;
+    const swganh::ByteBuffer* Pack() const;
 
 protected:
     void Initialize_();
-    void SetCount_(anh::ByteBuffer& buffer, uint16_t count);
-    void SetLength_(anh::ByteBuffer& buffer);
+    void SetCount_(swganh::ByteBuffer& buffer, uint16_t count);
+    void SetLength_(swganh::ByteBuffer& buffer);
 
     uint16_t count_;
 
-    std::unique_ptr<anh::ByteBuffer> data_;
+    std::unique_ptr<swganh::ByteBuffer> data_;
 };
 }} // swganh::messages

@@ -18,14 +18,14 @@ namespace messages {
         uint64_t container_id;
         int32_t containment_type;
         
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(object_id);
             buffer.write(container_id);
             buffer.write(containment_type);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
             object_id = buffer.read<uint64_t>();
             container_id = buffer.read<uint64_t>();

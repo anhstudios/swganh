@@ -34,14 +34,14 @@ namespace controllers {
         uint64_t object_id;
         std::string animation;
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(object_id);
             buffer.write<uint32_t>(0);
             buffer.write(animation);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             object_id = buffer.read<uint64_t>();
             buffer.read<uint32_t>();

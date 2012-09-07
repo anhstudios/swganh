@@ -40,7 +40,7 @@ using namespace swganh::simulation;
 
 using namespace std;
 
-using anh::ValueEvent;
+using swganh::ValueEvent;
 
 using boost::asio::ip::udp;
 using swganh::app::SwganhKernel;
@@ -149,7 +149,7 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     if (controller)
     {
 		auto player = simulation_service_->GetObjectById<swganh::object::player::Player>(controller->GetId() + 1);
-		kernel_->GetEventDispatcher()->Dispatch(make_shared<anh::ValueEvent<shared_ptr<swganh::object::player::Player>>>("Connection::PlayerRemoved", player));
+		kernel_->GetEventDispatcher()->Dispatch(make_shared<swganh::ValueEvent<shared_ptr<swganh::object::player::Player>>>("Connection::PlayerRemoved", player));
         
 		simulation_service_->PersistRelatedObjects(controller->GetId());
 	}

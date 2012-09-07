@@ -9,7 +9,7 @@ namespace attributes {
 	class WeaponAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		WeaponAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		WeaponAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

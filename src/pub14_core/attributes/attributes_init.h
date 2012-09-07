@@ -20,13 +20,13 @@ namespace attributes {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
 {    
-    anh::plugin::ObjectRegistration registration;
+    swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
     
     // Register Attribute Service
 	{ // Attribute::AttributeService
-        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
             auto attributes_service = new AttributesService(kernel);
             
             return attributes_service;

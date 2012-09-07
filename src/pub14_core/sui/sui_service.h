@@ -63,7 +63,7 @@ namespace sui
 		
 		SUIService(swganh::app::SwganhKernel* kernel);
 
-		anh::service::ServiceDescription GetServiceDescription();
+		swganh::service::ServiceDescription GetServiceDescription();
 
 		virtual std::shared_ptr<swganh::sui::SUIWindowInterface> CreateSUIWindow(std::string script_name, std::shared_ptr<swganh::object::Object> owner, 
 							std::shared_ptr<swganh::object::Object> ranged_object = nullptr, float max_distance = 0);

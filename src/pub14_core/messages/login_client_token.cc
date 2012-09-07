@@ -10,7 +10,7 @@ using namespace swganh::login;
 using namespace swganh::messages;
 using namespace std;
 
-using anh::ByteBuffer;
+using swganh::ByteBuffer;
 
 LoginClientToken swganh::messages::BuildLoginClientToken(
     shared_ptr<LoginClientInterface> login_client, 

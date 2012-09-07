@@ -16,12 +16,12 @@ namespace messages {
         
         uint64_t character_id;
 
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(character_id);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
         	character_id = buffer.read<uint64_t>();
         }

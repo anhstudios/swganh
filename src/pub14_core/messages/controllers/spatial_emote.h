@@ -34,7 +34,7 @@ namespace controllers {
         uint32_t emote_id;
         uint8_t emote_flags;
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(source_id);
             buffer.write(target_id);
@@ -42,7 +42,7 @@ namespace controllers {
             buffer.write(emote_flags);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             source_id = buffer.read<uint64_t>();
             target_id = buffer.read<uint64_t>();

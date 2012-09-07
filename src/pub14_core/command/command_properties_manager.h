@@ -37,7 +37,7 @@ namespace command {
         explicit CommandPropertiesManager(swganh::tre::ResourceManager* resource_manager);
         ~CommandPropertiesManager();
 
-        boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
+        boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(swganh::HashString command);
 
         /**
          * Loads a map of all of the commands listed in the client files.

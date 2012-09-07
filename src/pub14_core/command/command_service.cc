@@ -22,7 +22,7 @@
 
 #include "swganh/object/object.h"
 
-using anh::service::ServiceDescription;
+using swganh::service::ServiceDescription;
 using pub14_core::command::CommandService;
 using swganh::app::SwganhKernel;
 using swganh::command::BaseSwgCommand;
@@ -81,17 +81,17 @@ void CommandService::AddCommandProcessFilter(CommandFilter&& filter)
     command_validator_impl_->AddCommandProcessFilter(std::move(filter));
 }
 
-void CommandService::AddCommandCreator(anh::HashString command, CommandCreator&& creator)
+void CommandService::AddCommandCreator(swganh::HashString command, CommandCreator&& creator)
 {
     command_factory_impl_->AddCommandCreator(command, std::move(creator));
 }
 
-void CommandService::RemoveCommandCreator(anh::HashString command)
+void CommandService::RemoveCommandCreator(swganh::HashString command)
 {
     command_factory_impl_->RemoveCommandCreator(command);
 }
 
-std::shared_ptr<CommandInterface> CommandService::CreateCommand(anh::HashString command)
+std::shared_ptr<CommandInterface> CommandService::CreateCommand(swganh::HashString command)
 {
     return command_factory_impl_->CreateCommand(command);
 }
@@ -147,7 +147,7 @@ swganh::command::CommandPropertiesMap CommandService::LoadCommandPropertiesMap()
     return command_properties_manager_impl_->LoadCommandPropertiesMap();
 }
  
-boost::optional<const CommandProperties&> CommandService::FindPropertiesForCommand(anh::HashString command)
+boost::optional<const CommandProperties&> CommandService::FindPropertiesForCommand(swganh::HashString command)
 {
     return command_properties_manager_impl_->FindPropertiesForCommand(command);
 }
@@ -184,13 +184,13 @@ void CommandService::SendCommandQueueRemove(
 	}
 }
 
-void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)
+void CommandService::SubscribeObjectReadyEvent(swganh::EventDispatcher* dispatcher)
 {
     obj_ready_id_ = dispatcher->Subscribe(
         "ObjectReadyEvent",
-        [this] (std::shared_ptr<anh::EventInterface> incoming_event)
+        [this] (std::shared_ptr<swganh::EventInterface> incoming_event)
     {
-        const auto& object = std::static_pointer_cast<anh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
+        const auto& object = std::static_pointer_cast<swganh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
 
         command_queue_manager_impl_->AddQueue(
             object->GetObjectId(), 
@@ -198,13 +198,13 @@ void CommandService::SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher)
     });
 }
 
-void CommandService::SubscribeObjectRemovedEvent(anh::EventDispatcher* dispatcher)
+void CommandService::SubscribeObjectRemovedEvent(swganh::EventDispatcher* dispatcher)
 {
     obj_removed_id_ = dispatcher->Subscribe(
         "ObjectRemovedEvent",
-        [this] (std::shared_ptr<anh::EventInterface> incoming_event)
+        [this] (std::shared_ptr<swganh::EventInterface> incoming_event)
     {
-        const auto& object = std::static_pointer_cast<anh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
+        const auto& object = std::static_pointer_cast<swganh::ValueEvent<std::shared_ptr<Object>>>(incoming_event)->Get();
         command_queue_manager_impl_->RemoveQueue(object->GetObjectId());
     });
 }

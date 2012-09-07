@@ -17,13 +17,13 @@ namespace creature {
 class CreatureMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
 {
 public:
-    CreatureMessageBuilder(anh::EventDispatcher* event_dispatcher_)
+    CreatureMessageBuilder(swganh::EventDispatcher* event_dispatcher_)
         : TangibleMessageBuilder(event_dispatcher_) 
     {
         RegisterEventHandlers();
     }
     virtual void RegisterEventHandlers();
-    virtual void SendBaselines(const std::shared_ptr<Creature>& creature, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+    virtual void SendBaselines(const std::shared_ptr<Creature>& creature, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 private:
     // deltas
     static void BuildBankCreditsDelta(const std::shared_ptr<Creature>& creature);
@@ -75,7 +75,7 @@ private:
     static swganh::messages::BaselinesMessage BuildBaseline4(const std::shared_ptr<Creature>& creature);
     static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Creature>& creature);
 
-    typedef anh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
+    typedef swganh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 };
 
 }}} // swganh::object::creature

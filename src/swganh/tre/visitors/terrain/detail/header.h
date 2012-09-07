@@ -10,7 +10,7 @@ namespace tre
 
 struct TrnHeader
 {
-	void Deserialize(anh::ByteBuffer buffer)
+	void Deserialize(swganh::ByteBuffer buffer)
 	{
 		filename = buffer.read<std::string>(false, true);
 		map_width = buffer.read<float>();

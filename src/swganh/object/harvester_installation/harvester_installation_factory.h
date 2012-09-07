@@ -14,7 +14,7 @@ namespace harvester_installation {
     public:
 		typedef HarvesterInstallation ObjectType;
 
-        HarvesterInstallationFactory(anh::database::DatabaseManagerInterface* db_manager, anh::EventDispatcher* event_dispatcher);
+        HarvesterInstallationFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 

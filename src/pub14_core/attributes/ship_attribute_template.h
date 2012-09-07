@@ -9,7 +9,7 @@ namespace attributes {
 	class ShipAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		ShipAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		ShipAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

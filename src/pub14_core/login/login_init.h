@@ -22,12 +22,12 @@ namespace login {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
 {    
-    anh::plugin::ObjectRegistration registration;
+    swganh::plugin::ObjectRegistration registration;
     registration.version.major = 0;
     registration.version.minor = 4;
 
     // Register
-    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
         return new Sha512Encoder(kernel->GetDatabaseManager());
     };
 
@@ -39,7 +39,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 
     kernel->GetPluginManager()->RegisterObject("Login::Encoder", &registration);
     
-    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
         return new MysqlAccountProvider(kernel->GetDatabaseManager());
     };
 
@@ -51,7 +51,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     
     kernel->GetPluginManager()->RegisterObject("Login::AccountProvider", &registration);
         
-     registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+     registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
          return new MysqlSessionProvider(kernel->GetDatabaseManager());
      };
     
@@ -63,7 +63,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     
     kernel->GetPluginManager()->RegisterObject("Login::SessionProvider", &registration);
 
-	registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+	registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
         auto app_config = kernel->GetAppConfig();
 		
 		auto login_service = new LoginService(

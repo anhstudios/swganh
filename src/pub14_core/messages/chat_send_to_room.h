@@ -21,7 +21,7 @@ namespace messages {
     	uint32_t channel_id;
     	uint32_t attempts_counter;
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(sender_character_name);
     		buffer.write(message);
@@ -30,7 +30,7 @@ namespace messages {
     		buffer.write(attempts_counter);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		sender_character_name = buffer.read<std::string>();
     		message = buffer.read<std::wstring>();

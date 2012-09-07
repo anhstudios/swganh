@@ -145,13 +145,13 @@ void MovementManager::SendUpdateDataTransformWithParentMessage(const shared_ptr<
     object->NotifyObservers(&transform_update);
 }
 
-void MovementManager::RegisterEvents(anh::EventDispatcher* event_dispatcher)
+void MovementManager::RegisterEvents(swganh::EventDispatcher* event_dispatcher)
 {
     event_dispatcher->Subscribe(
         "ObjectReadyEvent",
-        [this] (shared_ptr<anh::EventInterface> incoming_event)
+        [this] (shared_ptr<swganh::EventInterface> incoming_event)
     {
-        const auto& object = static_pointer_cast<anh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
+        const auto& object = static_pointer_cast<swganh::ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
         
         if (counter_map_.find(object->GetObjectId()) == counter_map_.end())
         {

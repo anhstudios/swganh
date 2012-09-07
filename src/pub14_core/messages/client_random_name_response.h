@@ -19,7 +19,7 @@ namespace messages {
         std::string stf_file;
         std::string approval_string;
 
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(player_race_iff);	
             buffer.write(random_name);
@@ -28,7 +28,7 @@ namespace messages {
             buffer.write(approval_string);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
         	player_race_iff = buffer.read<std::string>();
             random_name = buffer.read<std::wstring>();

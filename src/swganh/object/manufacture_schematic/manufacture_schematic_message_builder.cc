@@ -93,7 +93,7 @@ void ManufactureSchematicMessageBuilder::RegisterEventHandlers()
 }
 void ManufactureSchematicMessageBuilder::SendBaselines(
     const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, 
-    const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+    const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
 	manufacture_schematic->AddBaselineToCache(&BuildBaseline3(manufacture_schematic));
 	manufacture_schematic->AddBaselineToCache(&BuildBaseline6(manufacture_schematic));

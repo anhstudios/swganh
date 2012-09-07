@@ -47,7 +47,7 @@ namespace weather {
     
         ~WeatherService();
 
-        anh::service::ServiceDescription GetServiceDescription();
+        swganh::service::ServiceDescription GetServiceDescription();
 		
 		swganh::weather::Weather GetSceneWeather(uint32_t scene_id);
 		void SetSceneWeather(uint32_t scene_id,  std::vector<swganh::weather::WeatherEvent> weather_sequence_);
@@ -58,7 +58,7 @@ namespace weather {
 		void WeatherService::tickPlanetWeather_();
 		void WeatherService::WeatherScript();
 		void WeatherService::RemoveWeatherScene(uint32_t scene_);
-		void SendServerWeatherMessagePlayer_(swganh::weather::WeatherEvent weatherdata_, std::shared_ptr<anh::observer::ObserverInterface> obj_controller);
+		void SendServerWeatherMessagePlayer_(swganh::weather::WeatherEvent weatherdata_, std::shared_ptr<swganh::observer::ObserverInterface> obj_controller);
 		void SendServerWeatherMessageAll_(swganh::weather::Weather weather_type, glm::vec3 cloud_vector, uint32_t scene_id);
 		void OnPlayerEnter(std::shared_ptr<swganh::object::Object> player_obj);
 		void swganh_core::weather::WeatherService::RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);
@@ -66,7 +66,7 @@ namespace weather {
 		swganh::app::SwganhKernel* kernel_;
 		swganh::scripting::PythonScript script_;
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
-		anh::CallbackId player_selected_callback_;
+		swganh::CallbackId player_selected_callback_;
 		swganh::galaxy::GalaxyServiceInterface* galaxy_service_;
 		mutable boost::mutex weather_mutex_;
 		std::vector<swganh::weather::WeatherEvent> weather_sequence_;

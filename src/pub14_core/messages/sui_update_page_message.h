@@ -23,7 +23,7 @@ namespace messages {
 		uint64_t ranged_object;
 		float range;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(window_id);
 			buffer.write(script_name);
@@ -50,7 +50,7 @@ namespace messages {
 			buffer.write<uint64_t>(0); //Unknown
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		window_id = buffer.read<int32_t>();
 			script_name = buffer.read<std::string>();

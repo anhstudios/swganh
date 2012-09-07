@@ -37,7 +37,7 @@ public:
     explicit CharacterService(swganh::app::SwganhKernel* kernel);
     ~CharacterService();
     
-    anh::service::ServiceDescription GetServiceDescription();
+    swganh::service::ServiceDescription GetServiceDescription();
 
     void Startup();
 

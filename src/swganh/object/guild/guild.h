@@ -64,7 +64,7 @@ public:
     const static uint32_t type = 0x444C4947;
 
 private:
-	typedef anh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
+	typedef swganh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
     swganh::messages::containers::NetworkList<GuildTag>     guild_list_;
 };
 

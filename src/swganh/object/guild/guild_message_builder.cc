@@ -28,7 +28,7 @@ void GuildMessageBuilder::BuildGuildTagsDelta(const shared_ptr<Guild>& guild)
         guild->GetGuildList().ClearDeltas();
 }
 
-void GuildMessageBuilder::SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+void GuildMessageBuilder::SendBaselines(const std::shared_ptr<Guild>& guild, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
 	guild->AddBaselineToCache(&BuildBaseline3(guild));
     guild->AddBaselineToCache(&BuildBaseline6(guild));

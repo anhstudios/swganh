@@ -25,7 +25,7 @@ class Group;
 class GroupMessageBuilder : public ObjectMessageBuilder
 {
 public:
-    GroupMessageBuilder(anh::EventDispatcher* event_dispatcher)
+    GroupMessageBuilder(swganh::EventDispatcher* event_dispatcher)
         : ObjectMessageBuilder(event_dispatcher)
     {
         RegisterEventHandlers();
@@ -37,12 +37,12 @@ public:
     static void BuildDifficultyDelta(const std::shared_ptr<Group>& group);
     static void BuildLootMasterDelta(const std::shared_ptr<Group>& group);
 
-    virtual void SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+    virtual void SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
 
 	static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Group>& group);
     static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Group>& group);
 private:
-	typedef anh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
+	typedef swganh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
 };
 
 }}} // swganh::object::group

@@ -23,7 +23,7 @@ namespace messages {
         std::string shared_race_template;
         uint64_t galaxy_time;
         
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
         	buffer.write(ignore_layout);
         	buffer.write(character_id);
@@ -35,7 +35,7 @@ namespace messages {
         	buffer.write(galaxy_time);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
         	ignore_layout = buffer.read<uint8_t>();
         	character_id = buffer.read<uint64_t>();

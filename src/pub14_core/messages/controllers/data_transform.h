@@ -31,7 +31,7 @@ namespace controllers {
         glm::vec3 position;
         float speed;
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(counter);
             buffer.write(orientation.x);
@@ -44,7 +44,7 @@ namespace controllers {
             buffer.write(speed);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             counter = buffer.read<uint32_t>();
             orientation.x = buffer.read<float>();

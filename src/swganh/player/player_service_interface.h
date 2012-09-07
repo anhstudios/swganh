@@ -14,7 +14,7 @@ namespace player {
 namespace swganh {
 namespace player {
 
-class PlayerServiceInterface : anh::service::ServiceInterface
+class PlayerServiceInterface : swganh::service::ServiceInterface
 {
 public:
 	virtual void CleanupPlayerState(std::shared_ptr<swganh::object::player::Player> player) = 0;

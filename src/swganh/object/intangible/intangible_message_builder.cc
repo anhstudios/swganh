@@ -17,7 +17,7 @@ void IntangibleMessageBuilder::RegisterEventHandlers()
     // TODO: Register Event Handlers for Intangible
 }
 
-void IntangibleMessageBuilder::SendBaselines(const std::shared_ptr<Intangible>& intangible, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+void IntangibleMessageBuilder::SendBaselines(const std::shared_ptr<Intangible>& intangible, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
 	intangible->AddBaselineToCache(&BuildBaseline3(intangible));
     intangible->AddBaselineToCache(&BuildBaseline6(intangible));

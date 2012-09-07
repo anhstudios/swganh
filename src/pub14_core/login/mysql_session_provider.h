@@ -6,14 +6,14 @@
 #include <memory>
 
 namespace swganh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
+}}  // swganh::database
 
 namespace swganh_core {
 namespace login {
 
 class MysqlSessionProvider : public swganh::connection::providers::SessionProviderInterface {
 public:
-    explicit MysqlSessionProvider(anh::database::DatabaseManagerInterface* db_manager);
+    explicit MysqlSessionProvider(swganh::database::DatabaseManagerInterface* db_manager);
     ~MysqlSessionProvider();
 
     virtual uint64_t GetPlayerId(uint32_t account_id);
@@ -21,7 +21,7 @@ public:
     virtual bool CreateGameSession(uint64_t player_id, uint32_t session_id);
 	virtual void EndGameSession(uint64_t player_id);
 private:
-    anh::database::DatabaseManagerInterface* db_manager_;
+    swganh::database::DatabaseManagerInterface* db_manager_;
 };
 
 }}  // namespace swganh::login

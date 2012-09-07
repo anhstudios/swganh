@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-CraftingToolAttributeTemplate::CraftingToolAttributeTemplate(anh::EventDispatcher* dispatcher)
+CraftingToolAttributeTemplate::CraftingToolAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();

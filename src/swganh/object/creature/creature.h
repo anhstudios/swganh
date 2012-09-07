@@ -591,9 +591,9 @@ public:
     std::vector<uint64_t> GetDuelList();
 
     // Baselines
-    virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
+    virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 	
-    typedef anh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
+    typedef swganh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 private:
     std::atomic<uint32_t>    bank_credits_;                                                             // update 1 variable 0
     std::atomic<uint32_t>    cash_credits_;                                                             // update 1 variable 1

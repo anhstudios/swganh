@@ -27,7 +27,7 @@ namespace player {
 		
 		void Startup();
 
-		anh::service::ServiceDescription GetServiceDescription();
+		swganh::service::ServiceDescription GetServiceDescription();
 
 		void CleanupPlayerState(std::shared_ptr<swganh::object::player::Player> player);
 
@@ -43,8 +43,8 @@ namespace player {
 
 		swganh::app::SwganhKernel* kernel_;
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
-		anh::CallbackId player_selected_callback_;
-		anh::CallbackId player_removed_;
+		swganh::CallbackId player_selected_callback_;
+		swganh::CallbackId player_removed_;
 	};
 
 }} // swganh_core::player

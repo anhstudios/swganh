@@ -40,8 +40,8 @@ namespace command {
 
         ~BaseSwgCommand();
 
-        const std::shared_ptr<anh::observer::ObserverInterface> GetController() const;
-		void SetController(std::shared_ptr<anh::observer::ObserverInterface> controller);
+        const std::shared_ptr<swganh::observer::ObserverInterface> GetController() const;
+		void SetController(std::shared_ptr<swganh::observer::ObserverInterface> controller);
 
         virtual bool Validate();
         
@@ -83,7 +83,7 @@ namespace command {
     private:    
         swganh::app::SwganhKernel* kernel_;
         const CommandProperties* properties_;
-        std::shared_ptr<anh::observer::ObserverInterface> controller_;
+        std::shared_ptr<swganh::observer::ObserverInterface> controller_;
 		mutable std::shared_ptr<object::Object> actor_;
         mutable std::shared_ptr<object::Object> target_;
         swganh::messages::controllers::CommandQueueEnqueue command_request_;

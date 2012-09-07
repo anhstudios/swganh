@@ -13,7 +13,7 @@
 
 using namespace swganh::tre;
 
-using anh::HashString;
+using swganh::HashString;
 using pub14_core::command::CommandPropertiesManager;
 using swganh::command::CommandProperties;
 using swganh::command::CommandPropertiesMap;

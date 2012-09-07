@@ -29,7 +29,7 @@ CommandFactory::CommandFactory(SwganhKernel* kernel)
 CommandFactory::~CommandFactory()
 {}
 
-void CommandFactory::AddCommandCreator(anh::HashString command, swganh::command::CommandCreator&& creator)
+void CommandFactory::AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator&& creator)
 {    
     auto properties = GetCommandService()->FindPropertiesForCommand(command);
 
@@ -40,13 +40,13 @@ void CommandFactory::AddCommandCreator(anh::HashString command, swganh::command:
     }
 }
 
-void CommandFactory::RemoveCommandCreator(anh::HashString command)
+void CommandFactory::RemoveCommandCreator(swganh::HashString command)
 {
     boost::lock_guard<boost::mutex> lg(creators_mutex_);
     command_creators_.erase(command);
 }
 
-std::shared_ptr<CommandInterface> CommandFactory::CreateCommand(anh::HashString command)
+std::shared_ptr<CommandInterface> CommandFactory::CreateCommand(swganh::HashString command)
 {
     std::shared_ptr<CommandInterface> new_command = nullptr;
 

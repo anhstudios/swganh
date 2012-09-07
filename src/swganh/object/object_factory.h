@@ -10,7 +10,7 @@
 namespace swganh {
 namespace database {
 class DatabaseManagerInterface;
-}} // anh::database
+}} // swganh::database
 
 namespace sql {
     class ResultSet;
@@ -37,8 +37,8 @@ namespace object {
     class ObjectFactory : public ObjectFactoryInterface
     {
     public:
-        ObjectFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher);
+        ObjectFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher);
         virtual ~ObjectFactory() {}
 
         void SetObjectManager(ObjectManager* object_manager) { object_manager_ = object_manager; }
@@ -71,8 +71,8 @@ namespace object {
             const std::shared_ptr<sql::Statement>& statement);
         
         ObjectManager* object_manager_;
-        anh::database::DatabaseManagerInterface* db_manager_;   
-        anh::EventDispatcher* event_dispatcher_;
+        swganh::database::DatabaseManagerInterface* db_manager_;   
+        swganh::EventDispatcher* event_dispatcher_;
     };
 
 }}  // namespace swganh::object

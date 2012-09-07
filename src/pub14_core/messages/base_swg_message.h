@@ -15,20 +15,20 @@ namespace messages {
     {
 		virtual uint16_t Opcount() const = 0;
 		virtual uint32_t Opcode() const = 0;
-		virtual void OnSerialize(anh::ByteBuffer& buffer) const = 0;
-		virtual void OnDeserialize(anh::ByteBuffer& buffer) = 0;
+		virtual void OnSerialize(swganh::ByteBuffer& buffer) const = 0;
+		virtual void OnDeserialize(swganh::ByteBuffer& buffer) = 0;
 
-        virtual void Serialize(anh::ByteBuffer& buffer) const
+        virtual void Serialize(swganh::ByteBuffer& buffer) const
         {
-            buffer.write(anh::hostToLittle(Opcount()));
+            buffer.write(swganh::hostToLittle(Opcount()));
             buffer.write(Opcode());
             
             OnSerialize(buffer);
         }
     
-        virtual void Deserialize(anh::ByteBuffer buffer)
+        virtual void Deserialize(swganh::ByteBuffer buffer)
         {
-            uint32_t opcount = anh::littleToHost(buffer.read<uint16_t>()); // Opcount
+            uint32_t opcount = swganh::littleToHost(buffer.read<uint16_t>()); // Opcount
             uint32_t opcode = buffer.read<uint32_t>();
     
             if (opcount != Opcount() && opcode != Opcode())

@@ -52,13 +52,13 @@ namespace messages {
     		29: An unknown error occured while creating the sale
     	*/
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(unknown);
     		buffer.write(response_type);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		unknown = buffer.read<uint64_t>();
     		response_type = buffer.read<uint32_t>();

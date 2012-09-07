@@ -46,7 +46,7 @@ namespace controllers {
         std::vector<StartPlanet> starting_locations;
         
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(starting_locations.size());
             for(auto& location : starting_locations)
@@ -62,7 +62,7 @@ namespace controllers {
             }
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             int size = buffer.read<uint32_t>();
             for (int i = 0; i < size; i++)

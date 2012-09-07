@@ -9,7 +9,7 @@ namespace attributes {
 	class CraftingToolAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		CraftingToolAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		CraftingToolAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

@@ -15,9 +15,9 @@ namespace messages {
         uint32_t object_type;
         uint16_t object_opcount;
         uint8_t view_type;    
-        anh::ByteBuffer data;
+        swganh::ByteBuffer data;
     
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(object_id);
             buffer.write(object_type);
@@ -28,7 +28,7 @@ namespace messages {
             buffer.write(data.data(), data.size());        
         }
     
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {        
             object_id = buffer.read<uint32_t>();
             object_type = buffer.read<uint32_t>();  
@@ -36,7 +36,7 @@ namespace messages {
             object_opcount = buffer.read<uint16_t>();
     
             uint32_t data_size = buffer.read<uint32_t>();
-            data = anh::ByteBuffer(buffer.data() + buffer.read_position(), data_size);
+            data = swganh::ByteBuffer(buffer.data() + buffer.read_position(), data_size);
         }
     };
     

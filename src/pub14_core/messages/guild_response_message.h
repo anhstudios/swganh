@@ -19,14 +19,14 @@ namespace messages {
     	std::string guild_name;
     	uint16_t unknown;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(guild_id);
     		buffer.write(guild_name);
     		buffer.write(unknown);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		guild_id = buffer.read<uint64_t>();
     		guild_name = buffer.read<std::string>();

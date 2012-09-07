@@ -18,7 +18,7 @@ namespace waypoint {
     class WaypointMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
     {
     public:
-        WaypointMessageBuilder(anh::EventDispatcher* dispatcher) : 
+        WaypointMessageBuilder(swganh::EventDispatcher* dispatcher) : 
             IntangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
@@ -29,12 +29,12 @@ namespace waypoint {
 		static void BuildCoordinatesDelta(const std::shared_ptr<Waypoint>& object);
 		static void BuildColorDelta(const std::shared_ptr<Waypoint>& object);
 
-		virtual void SendBaselines(const std::shared_ptr<Waypoint>& waypoint, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+		virtual void SendBaselines(const std::shared_ptr<Waypoint>& waypoint, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 
         static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Waypoint>& object);
 		static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Waypoint>& object);
 	private:
-		typedef anh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
+		typedef swganh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
     };
 
 }}}  // swganh::object::waypoint

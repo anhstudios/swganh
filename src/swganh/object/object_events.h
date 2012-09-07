@@ -7,9 +7,9 @@
 namespace swganh {
 namespace object {
 
-struct ControllerEvent : anh::BaseEvent
+struct ControllerEvent : swganh::BaseEvent
 {
-    ControllerEvent(anh::EventType type, std::shared_ptr<swganh::object::Object> object_, std::shared_ptr<swganh::object::ObjectController> controller_)
+    ControllerEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> object_, std::shared_ptr<swganh::object::ObjectController> controller_)
         : BaseEvent(type)
         , object(object_)
         , controller(controller_)
@@ -18,14 +18,14 @@ struct ControllerEvent : anh::BaseEvent
     std::shared_ptr<swganh::object::ObjectController> controller;
 };
 
-struct ObserverEvent : anh::BaseEvent
+struct ObserverEvent : swganh::BaseEvent
 {
-	ObserverEvent(anh::EventType type, std::shared_ptr<swganh::object::Object> object_, std::shared_ptr<anh::observer::ObserverInterface> observer_)
+	ObserverEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> object_, std::shared_ptr<swganh::observer::ObserverInterface> observer_)
         : BaseEvent(type)
         , object(object_)
         , observer(observer_)
     {}
     std::shared_ptr<swganh::object::Object> object;
-    std::shared_ptr<anh::observer::ObserverInterface> observer;
+    std::shared_ptr<swganh::observer::ObserverInterface> observer;
 };
 }} // swganh::object

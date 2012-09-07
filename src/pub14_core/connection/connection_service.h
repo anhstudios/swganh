@@ -27,11 +27,11 @@ public:
     
     ~ConnectionService();
 
-    anh::service::ServiceDescription GetServiceDescription();
+    swganh::service::ServiceDescription GetServiceDescription();
     
-    bool RemoveSession(std::shared_ptr<anh::network::soe::Session> session);
+    bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session);
 
-    std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
     
     std::shared_ptr<swganh::connection::ConnectionClientInterface> FindConnectionByPlayerId(uint64_t player_id);
     
@@ -43,7 +43,7 @@ public:
     uint16_t listen_port();
         
 private:        
-    std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<swganh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
     
     void HandleClientIdMsg_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
@@ -71,7 +71,7 @@ private:
     swganh::login::LoginServiceInterface* login_service_;
     swganh::simulation::SimulationServiceInterface* simulation_service_;
 
-    anh::ActiveObject active_;
+    swganh::ActiveObject active_;
     std::string listen_address_;
     uint16_t listen_port_;
     uint16_t ping_port_;

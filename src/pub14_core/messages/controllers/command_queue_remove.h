@@ -31,7 +31,7 @@ namespace controllers {
         uint32_t error;
         uint32_t action;
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(action_counter);
             buffer.write(timer);
@@ -39,7 +39,7 @@ namespace controllers {
             buffer.write(action);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             action_counter = buffer.read<uint32_t>();
             timer = buffer.read<float>();

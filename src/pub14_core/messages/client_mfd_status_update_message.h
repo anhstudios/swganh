@@ -20,7 +20,7 @@ namespace messages {
     	uint64_t object_id;
     	glm::vec3 object_location;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(planet_name);
     		buffer.write(object_id);
@@ -29,7 +29,7 @@ namespace messages {
     		buffer.write(object_location.z);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		object_id = buffer.read<uint64_t>();

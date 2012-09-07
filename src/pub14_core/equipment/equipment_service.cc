@@ -16,7 +16,7 @@ EquipmentService::EquipmentService(swganh::tre::ResourceManager* resourceManager
 	slot_definitions_ = resourceManager->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
 }
 
-anh::service::ServiceDescription EquipmentService::GetServiceDescription()
+swganh::service::ServiceDescription EquipmentService::GetServiceDescription()
 {
 	ServiceDescription service_description(        
 		"Equipment Service",

@@ -18,14 +18,14 @@ namespace messages {
         uint32_t faction;
         uint64_t object_id;
         
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(pvp_status);
             buffer.write(faction);
             buffer.write(object_id);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
             pvp_status = buffer.read<uint32_t>();
             faction = buffer.read<uint32_t>();

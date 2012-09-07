@@ -30,7 +30,7 @@ namespace messages {
     	
     	std::list<SurveyResource> resources;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(resources.size());
     		std::for_each(resources.begin(), resources.end(), [&buffer] (SurveyResource resource) {
@@ -41,7 +41,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		uint32_t resources_count = buffer.read<uint32_t>();
     		for (uint32_t i = 0; i < resources_count; i++) {

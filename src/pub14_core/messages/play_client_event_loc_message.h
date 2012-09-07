@@ -22,7 +22,7 @@ namespace messages {
     	uint64_t unknown1;
     	uint32_t unknown2;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(client_effect_file);
     		buffer.write(planet_name);
@@ -33,7 +33,7 @@ namespace messages {
     		buffer.write(unknown2);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		client_effect_file = buffer.read<std::string>();
     		planet_name = buffer.read<std::string>();

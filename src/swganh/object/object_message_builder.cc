@@ -40,7 +40,7 @@ void ObjectMessageBuilder::RegisterEventHandlers()
     });
 }
 
-void ObjectMessageBuilder::SendEndBaselines(const shared_ptr<Object>& object, const shared_ptr<anh::observer::ObserverInterface>& observer)
+void ObjectMessageBuilder::SendEndBaselines(const shared_ptr<Object>& object, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
     swganh::messages::SceneEndBaselines scene_end_baselines;
     scene_end_baselines.object_id = object->GetObjectId();

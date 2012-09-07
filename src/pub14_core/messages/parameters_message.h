@@ -16,12 +16,12 @@ namespace messages {
     	
     	uint32_t parameter_flag; // default: 900 = decimal, 384 = hex, 1110000100 = binary
     
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(parameter_flag);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		parameter_flag = buffer.read<uint32_t>();
     	}

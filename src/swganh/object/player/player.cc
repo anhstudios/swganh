@@ -894,7 +894,7 @@ void PlayerWaypointSerializer::Serialize(swganh::messages::BaselinesMessage& mes
     message.data.write<float>(coordinates_.y);
     message.data.write<float>(coordinates_.z);
     message.data.write<uint64_t>(0);
-    message.data.write<uint32_t>(anh::memcrc(waypoint->GetPlanet()));
+    message.data.write<uint32_t>(swganh::memcrc(waypoint->GetPlanet()));
     message.data.write<std::wstring>(waypoint->GetName());
     message.data.write<uint64_t>(waypoint->GetObjectId());
     message.data.write<uint8_t>(waypoint->GetColorByte());
@@ -909,7 +909,7 @@ void PlayerWaypointSerializer::Serialize(swganh::messages::DeltasMessage& messag
     message.data.write<float>(coordinates_.y);
     message.data.write<float>(coordinates_.z);
     message.data.write<uint64_t>(0);
-    message.data.write<uint32_t>(anh::memcrc(waypoint->GetPlanet()));
+    message.data.write<uint32_t>(swganh::memcrc(waypoint->GetPlanet()));
     message.data.write<std::wstring>(waypoint->GetName());
     message.data.write<uint64_t>(waypoint->GetObjectId());
     message.data.write<uint8_t>(waypoint->GetColorByte());
@@ -921,7 +921,7 @@ bool PlayerWaypointSerializer::operator==(const PlayerWaypointSerializer& other)
     return waypoint->GetObjectId() == other.waypoint->GetObjectId();
 }
 
-void Player::CreateBaselines(shared_ptr<anh::observer::ObserverInterface> observer)
+void Player::CreateBaselines(shared_ptr<swganh::observer::ObserverInterface> observer)
 {
     GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
         ("Player::Baselines", shared_from_this(), observer));

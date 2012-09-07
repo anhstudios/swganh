@@ -43,7 +43,7 @@ namespace messages {
     	uint16_t item_list_start_offset; // WHen the continuation flag is enabled, this offset could have a value other than 0
     	uint8_t continuation_flag; // Determines whether or not more items are to be added to the list
     
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(counter);
     		buffer.write(vendor_screen_flag);
@@ -77,7 +77,7 @@ namespace messages {
     		buffer.write(continuation_flag);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
             counter = buffer.read<uint32_t>();
     		vendor_screen_flag = buffer.read<uint32_t>();

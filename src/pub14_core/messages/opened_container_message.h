@@ -19,14 +19,14 @@ namespace messages {
     	uint64_t container_object_id;
     	std::string container_slot;
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(unknown1);
     		buffer.write(container_object_id);
     		buffer.write(container_slot);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		unknown1 = buffer.read<uint32_t>();
     		container_object_id = buffer.read<uint64_t>();

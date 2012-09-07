@@ -127,10 +127,10 @@ using namespace swganh_core::simulation;
 
 using namespace swganh::tre;
 
-using anh::observer::ObserverInterface;
-using anh::network::soe::ServerInterface;
-using anh::network::soe::Session;
-using anh::service::ServiceDescription;
+using swganh::observer::ObserverInterface;
+using swganh::network::soe::ServerInterface;
+using swganh::network::soe::Session;
+using swganh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
 
 namespace swganh_core {

@@ -18,7 +18,7 @@ namespace messages {
     	uint32_t weather_id;
     	glm::vec3 cloud_vector;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(weather_id);
     		buffer.write(cloud_vector.x);
@@ -26,7 +26,7 @@ namespace messages {
     		buffer.write(cloud_vector.y);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		weather_id = buffer.read<uint32_t>();
     		cloud_vector.x = buffer.read<float>();

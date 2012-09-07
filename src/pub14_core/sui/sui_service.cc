@@ -62,10 +62,10 @@ void SUIService::Startup()
 	//Subscribe to player logouts
 	kernel_->GetEventDispatcher()->Subscribe(
 		"Connection::PlayerRemoved",
-		[this] (std::shared_ptr<anh::EventInterface> incoming_event)
+		[this] (std::shared_ptr<swganh::EventInterface> incoming_event)
 	{
 		//Clear all of this player's SUIs
-		const auto& player = std::static_pointer_cast<anh::ValueEvent<std::shared_ptr<Player>>>(incoming_event)->Get();
+		const auto& player = std::static_pointer_cast<swganh::ValueEvent<std::shared_ptr<Player>>>(incoming_event)->Get();
 		if(player != nullptr)
 		{
 			WindowMapRange range = window_lookup_.equal_range(player->GetObjectId());

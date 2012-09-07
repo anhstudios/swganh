@@ -14,20 +14,20 @@ namespace harvester_installation {
     class HarvesterInstallationMessageBuilder : public swganh::object::installation::InstallationMessageBuilder
     {
     public:
-        HarvesterInstallationMessageBuilder(anh::EventDispatcher* dispatcher) :
+        HarvesterInstallationMessageBuilder(swganh::EventDispatcher* dispatcher) :
             InstallationMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendBaselines(const std::shared_ptr<HarvesterInstallation>& harvester_installation, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+        virtual void SendBaselines(const std::shared_ptr<HarvesterInstallation>& harvester_installation, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
         
         // baselines
         static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<HarvesterInstallation>& harvester_installation);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<HarvesterInstallation>& harvester_installation);
 		static swganh::messages::BaselinesMessage BuildBaseline7(const std::shared_ptr<HarvesterInstallation>& harvester_installation);
     private:
-        typedef anh::ValueEvent<std::shared_ptr<HarvesterInstallation>> HarvesterInstallationEvent;
+        typedef swganh::ValueEvent<std::shared_ptr<HarvesterInstallation>> HarvesterInstallationEvent;
     };
 
 }}}  // swganh::object::tangible

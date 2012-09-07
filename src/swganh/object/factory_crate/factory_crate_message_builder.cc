@@ -16,7 +16,7 @@ void FactoryCrateMessageBuilder::RegisterEventHandlers()
 {
 }
 
-void FactoryCrateMessageBuilder::SendBaselines(const shared_ptr<FactoryCrate>& factory_crate, const shared_ptr<anh::observer::ObserverInterface>& observer)
+void FactoryCrateMessageBuilder::SendBaselines(const shared_ptr<FactoryCrate>& factory_crate, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
     factory_crate->AddBaselineToCache(&BuildBaseline3(factory_crate));
     factory_crate->AddBaselineToCache(&BuildBaseline6(factory_crate));

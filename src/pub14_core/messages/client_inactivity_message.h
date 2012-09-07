@@ -16,12 +16,12 @@ namespace messages {
 
     	uint8_t inactivity_flag; // 0 = active, 1 = inactive
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(inactivity_flag);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		inactivity_flag = buffer.read<uint8_t>();
     	}

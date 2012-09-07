@@ -9,7 +9,7 @@ namespace login {
 
 class LoginClient : public swganh::login::LoginClientInterface {
 public:    
-    LoginClient(anh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
+    LoginClient(swganh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
     
     std::string GetUsername() const;
     void SetUsername(std::string username);

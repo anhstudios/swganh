@@ -25,7 +25,7 @@ namespace simulation {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
 {    
-    anh::plugin::ObjectRegistration registration;
+    swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
 
@@ -34,7 +34,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	// Register Simulation Service
 	{
 		// Register
-		registration.CreateObject = [kernel, simulation_service] (anh::plugin::ObjectParams* params) -> void* {
+		registration.CreateObject = [kernel, simulation_service] (swganh::plugin::ObjectParams* params) -> void* {
 			return new SimulationService(kernel);
 		};
 		
@@ -47,7 +47,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	}
 	// Register Movement Manager
 	{
-		registration.CreateObject = [kernel, simulation_service] (anh::plugin::ObjectParams* params) -> void* {
+		registration.CreateObject = [kernel, simulation_service] (swganh::plugin::ObjectParams* params) -> void* {
 			return new MovementManager(kernel);
 		};
 		registration.DestroyObject = [] (void  * object) {
@@ -60,7 +60,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 
 	// Register Scene Manager
 	{
-		registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void* {
+		registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void* {
 			return new SceneManager();
 		};
 		registration.DestroyObject = [] (void * object) {
@@ -73,7 +73,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	// Register Quadtree
 	{
 		// Register
-		registration.CreateObject = [] (anh::plugin::ObjectParams* params) -> void * {
+		registration.CreateObject = [] (swganh::plugin::ObjectParams* params) -> void * {
 			return new QuadtreeSpatialProvider();
 		};
 

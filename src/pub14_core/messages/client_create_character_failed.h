@@ -18,7 +18,7 @@ namespace messages {
         std::string stf_file;
         std::string error_string;
 
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(unk1);
             buffer.write(stf_file);
@@ -26,7 +26,7 @@ namespace messages {
             buffer.write(error_string);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
         	unk1 = buffer.read<std::wstring>();
             stf_file = buffer.read<std::string>();

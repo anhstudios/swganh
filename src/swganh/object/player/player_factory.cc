@@ -27,8 +27,8 @@ using namespace swganh::object;
 using namespace swganh::object::player;
 using namespace swganh::simulation;
 
-PlayerFactory::PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher)
+PlayerFactory::PlayerFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher)
     : IntangibleFactory(db_manager, event_dispatcher)
 {
     RegisterEventHandlers();
@@ -36,13 +36,13 @@ PlayerFactory::PlayerFactory(anh::database::DatabaseManagerInterface* db_manager
 
 void PlayerFactory::RegisterEventHandlers()
 {
-    event_dispatcher_->Subscribe("Player::RemoveFriend", [this] (shared_ptr<anh::EventInterface> incoming_event)
+    event_dispatcher_->Subscribe("Player::RemoveFriend", [this] (shared_ptr<swganh::EventInterface> incoming_event)
     {
         auto name_event = static_pointer_cast<NameEvent>(incoming_event);
         RemoveFriend_(name_event->player, name_event->name_id);
     });
 
-    event_dispatcher_->Subscribe("Player::RemoveIgnoredPlayer", [this] (shared_ptr<anh::EventInterface> incoming_event)
+    event_dispatcher_->Subscribe("Player::RemoveIgnoredPlayer", [this] (shared_ptr<swganh::EventInterface> incoming_event)
     {
         auto name_event = static_pointer_cast<NameEvent>(incoming_event);
         RemoveFromIgnoredList_(name_event->player, name_event->name_id);
@@ -275,7 +275,7 @@ void PlayerFactory::LoadWaypoints_(shared_ptr<Player> player, const std::shared_
 void PlayerFactory::PersistWaypoints_(const shared_ptr<Player>& player)
 {
     auto waypoints = player->GetWaypoints();
-    event_dispatcher_->Dispatch(make_shared<anh::ValueEvent<swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer>>>
+    event_dispatcher_->Dispatch(make_shared<swganh::ValueEvent<swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer>>>
                                 ("PersistWaypoints", waypoints));
 }
 void PlayerFactory::LoadDraftSchematics_(shared_ptr<Player> player, const std::shared_ptr<sql::Statement>& statement)

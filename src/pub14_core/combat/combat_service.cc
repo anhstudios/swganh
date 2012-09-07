@@ -112,10 +112,10 @@ void CombatService::SendCombatAction(BaseCombatCommand* command)
 bool CombatService::InitiateCombat(
     const std::shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible>& target, 
-    const anh::HashString& command)
+    const swganh::HashString& command)
 {
     // check to see if we are able to start combat ( are we in peace? )
-    if (command == anh::HashString("peace")) {
+    if (command == swganh::HashString("peace")) {
         return false;
     }
 
@@ -600,7 +600,7 @@ void CombatService::SendCombatActionMessage(
         {
             if (animation.length() > 0)
             {
-                cam.action_crc = anh::HashString(animation);
+                cam.action_crc = swganh::HashString(animation);
             }
             else
                 cam.action_crc = command_property.animation_crc;

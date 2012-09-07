@@ -28,14 +28,14 @@ namespace controllers {
 
         static uint32_t message_type() { return 0x0000022A; }
         
-        anh::HashString buff;        
+        swganh::HashString buff;        
         
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(buff);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             buff = buffer.read<uint32_t>();
         }

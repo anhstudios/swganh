@@ -61,7 +61,7 @@ void GroupMessageBuilder::BuildLootMasterDelta(const shared_ptr<Group>& group)
     }
 }
 
-void GroupMessageBuilder::SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+void GroupMessageBuilder::SendBaselines(const std::shared_ptr<Group>& group, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
 	group->AddBaselineToCache(&BuildBaseline3(group));
     group->AddBaselineToCache(&BuildBaseline6(group));

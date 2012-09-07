@@ -32,7 +32,7 @@ namespace messages {
     	uint8_t vendor_flag; // 0 = bazaar terminal, 1 = vendor
     	uint16_t first_auction_to_display; // number of the first auction to display
     
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(region_flag);
     		buffer.write(attempts_counter);
@@ -52,7 +52,7 @@ namespace messages {
     		buffer.write(first_auction_to_display);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		region_flag = buffer.read<uint32_t>();
     		attempts_counter = buffer.read<uint32_t>();

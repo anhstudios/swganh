@@ -24,7 +24,7 @@ namespace messages {
     		: game_name("SWG")
     	{}
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(game_name);
     		buffer.write(server_name);
@@ -32,7 +32,7 @@ namespace messages {
     		buffer.write(message);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		game_name = buffer.read<std::string>();
     		server_name = buffer.read<std::string>();

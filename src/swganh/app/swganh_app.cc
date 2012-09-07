@@ -53,7 +53,7 @@ using namespace swganh::connection;
 using namespace swganh::simulation;
 using namespace swganh::galaxy;
 
-using anh::plugin::RegistrationMap;
+using swganh::plugin::RegistrationMap;
 
 #ifdef WIN32
 using std::regex;
@@ -243,7 +243,7 @@ SwganhKernel* SwganhApp::GetAppKernel() const {
 void SwganhApp::StartInteractiveConsole()
 {
     swganh::scripting::ScopedGilLock lock;
-    anh::Logger::getInstance().DisableConsoleLogging();
+    swganh::Logger::getInstance().DisableConsoleLogging();
 
 #ifdef WIN32
     std::system("cls");
@@ -265,7 +265,7 @@ void SwganhApp::StartInteractiveConsole()
     
     PyRun_InteractiveLoop(stdin, "<stdin>");
     
-    anh::Logger::getInstance().EnableConsoleLogging();
+    swganh::Logger::getInstance().EnableConsoleLogging();
 }
 
 void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
@@ -322,7 +322,7 @@ void SwganhApp::CleanupServices_() {
 
     LOG(warning) << "Services were not shutdown properly";
 
-    for_each(services.begin(), services.end(), [this, &service_directory] (anh::service::ServiceDescription& service) {
+    for_each(services.begin(), services.end(), [this, &service_directory] (swganh::service::ServiceDescription& service) {
         service_directory->removeService(service);
     });
 }
@@ -342,7 +342,7 @@ void SwganhApp::LoadCoreServices_()
         if (entry.first.length() > 7 && regex_match(name, m, rx)) {
             auto service_name = m[1].str();
 			LOG(info) << "Loading Service " << name << "...";
-            auto service = kernel_->GetPluginManager()->CreateObject<anh::service::ServiceInterface>(name);
+            auto service = kernel_->GetPluginManager()->CreateObject<swganh::service::ServiceInterface>(name);
 			
             kernel_->GetServiceManager()->AddService(service_name, service);
 			LOG(info) << "Loaded Service " << name;
@@ -360,5 +360,5 @@ void SwganhApp::LoadCoreServices_()
 
 void SwganhApp::SetupLogging_()
 {
-    anh::Logger::getInstance().init("swganh");    
+    swganh::Logger::getInstance().init("swganh");    
 }

@@ -31,9 +31,9 @@ int main(int argc, char* argv[])
 
         for (;;) {
 
-            if (anh::KeyboardHit())
+            if (swganh::KeyboardHit())
             {
-                char input = anh::GetHitKey();
+                char input = swganh::GetHitKey();
                 if (input == '`')
                 {
                     app.StartInteractiveConsole();

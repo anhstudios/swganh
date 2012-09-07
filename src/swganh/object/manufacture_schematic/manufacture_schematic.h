@@ -475,7 +475,7 @@ public:
      */
     void ToggleReady();
 
-	typedef anh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
+	typedef swganh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
 
 private:
 	swganh::messages::containers::NetworkArray<Property> properties_;

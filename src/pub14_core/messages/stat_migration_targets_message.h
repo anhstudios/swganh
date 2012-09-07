@@ -25,7 +25,7 @@ namespace messages {
     	uint32_t willpower_points;
     	uint32_t points_remaining;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(health_points);
     		buffer.write(strength_points);
@@ -39,7 +39,7 @@ namespace messages {
     		buffer.write(points_remaining);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		health_points = buffer.read<uint32_t>();
     		strength_points = buffer.read<uint32_t>();

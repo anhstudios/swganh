@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-FactoryCrateAttributeTemplate::FactoryCrateAttributeTemplate(anh::EventDispatcher* dispatcher)
+FactoryCrateAttributeTemplate::FactoryCrateAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();

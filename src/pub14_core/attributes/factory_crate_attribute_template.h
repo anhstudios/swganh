@@ -9,7 +9,7 @@ namespace attributes {
 	class FactoryCrateAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		FactoryCrateAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		FactoryCrateAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

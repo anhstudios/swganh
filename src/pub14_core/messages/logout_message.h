@@ -14,9 +14,9 @@ namespace messages {
         static const uint16_t Opcount() const { return 1; }
         static const uint32_t Opcode() const { return 0x42FD19DD; }
         
-        void OnSerialize(anh::ByteBuffer& buffer) const {}
+        void OnSerialize(swganh::ByteBuffer& buffer) const {}
 
-        void OnDeserialize(anh::ByteBuffer& buffer) {}
+        void OnDeserialize(swganh::ByteBuffer& buffer) {}
     };
 
 }}  // namespace swganh::messages

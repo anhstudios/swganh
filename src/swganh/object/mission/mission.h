@@ -240,7 +240,7 @@ public:
 	void SetMissionWaypoint(std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint);
 
 protected:
-	typedef anh::ValueEvent<std::shared_ptr<Mission>> MissionEvent;
+	typedef swganh::ValueEvent<std::shared_ptr<Mission>> MissionEvent;
 
     uint32_t difficulty_level_;
     glm::vec3 starting_position_;

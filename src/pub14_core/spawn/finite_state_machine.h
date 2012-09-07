@@ -26,7 +26,7 @@ namespace spawn
 	class FiniteStateMachine
 	{
 	public:
-		FiniteStateMachine(anh::EventDispatcher* dispatch);
+		FiniteStateMachine(swganh::EventDispatcher* dispatch);
 		
 		void StartManagingObject(std::shared_ptr<swganh::object::Object> object);
 		
@@ -38,7 +38,7 @@ namespace spawn
 	private:
 		void HandleEvent_(const std::shared_ptr<EventInterface>& event);
 	
-		anh::EventDispatcher* dispatch_;
+		swganh::EventDispatcher* dispatch_;
 		std::shared_ptr<FsmStateInterface> initial_state_;
 	
 		std::multi_map<EventType, StateTransition> transitionLookup_;

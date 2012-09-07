@@ -21,20 +21,20 @@ class Static;
 class StaticMessageBuilder : public ObjectMessageBuilder
 {
 public:
-    StaticMessageBuilder(anh::EventDispatcher* dispatcher)
+    StaticMessageBuilder(swganh::EventDispatcher* dispatcher)
         : ObjectMessageBuilder(dispatcher)
     {
         RegisterEventHandlers();
     }
     virtual void RegisterEventHandlers();
 
-	virtual void SendBaselines(const std::shared_ptr<Static>& static_object, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+	virtual void SendBaselines(const std::shared_ptr<Static>& static_object, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 
     // baselines
     static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Static>& static_object);
     static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Static>& static_object);
 private:
-	typedef anh::ValueEvent<std::shared_ptr<Static>> StaticEvent;
+	typedef swganh::ValueEvent<std::shared_ptr<Static>> StaticEvent;
 };
 
 }}} // swganh::object::guild

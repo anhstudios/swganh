@@ -16,7 +16,7 @@ namespace simulation {
     
         ~SimulationService();
 
-        anh::service::ServiceDescription GetServiceDescription();
+        swganh::service::ServiceDescription GetServiceDescription();
 
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
@@ -49,7 +49,7 @@ namespace simulation {
         void RemoveObjectById(uint64_t object_id);
         void RemoveObject(const std::shared_ptr<swganh::object::Object>& object);
         
-        std::shared_ptr<anh::observer::ObserverInterface> StartControllingObject(
+        std::shared_ptr<swganh::observer::ObserverInterface> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
             std::shared_ptr<swganh::connection::ConnectionClientInterface> client);
 
@@ -59,9 +59,9 @@ namespace simulation {
 
         void UnregisterControllerHandler(uint32_t handler_id);
 
-        void SendToAll(anh::ByteBuffer message);
+        void SendToAll(swganh::ByteBuffer message);
 
-        void SendToAllInScene(anh::ByteBuffer message, uint32_t scene_id);
+        void SendToAllInScene(swganh::ByteBuffer message, uint32_t scene_id);
 
         void Startup();
 
@@ -74,7 +74,7 @@ namespace simulation {
     private:
 
         std::unique_ptr<SimulationServiceImpl> impl_;
-		std::shared_ptr<anh::network::soe::ServerInterface> server_;
+		std::shared_ptr<swganh::network::soe::ServerInterface> server_;
         swganh::app::SwganhKernel* kernel_;
     };
 

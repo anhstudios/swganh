@@ -14,8 +14,8 @@ namespace mission {
     public:
 		typedef Mission ObjectType;
 
-		MissionFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher);
+		MissionFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 

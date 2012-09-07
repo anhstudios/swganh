@@ -462,7 +462,7 @@ void Object::NotifyObservers(swganh::messages::BaseSwgMessage* message)
     std::for_each(
         observers_.begin(),
         observers_.end(),
-        [&message] (const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+        [&message] (const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
     {
         observer->Notify(message);
     });
@@ -696,29 +696,29 @@ void Object::SetArrangementId(int32_t arrangement_id)
 	arrangement_id_ = arrangement_id;
 }
 
-anh::EventDispatcher* Object::GetEventDispatcher()
+swganh::EventDispatcher* Object::GetEventDispatcher()
 {
     return event_dispatcher_;
 }
 
-void Object::SetEventDispatcher(anh::EventDispatcher* dispatcher)
+void Object::SetEventDispatcher(swganh::EventDispatcher* dispatcher)
 {
     event_dispatcher_ = dispatcher;
 }
 
-void Object::CreateBaselines( std::shared_ptr<anh::observer::ObserverInterface> observer)
+void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
     GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
         ("Object::Baselines", shared_from_this(), observer));
 }
 
-void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer) 
+void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 
 {
 	LOG(warning) << "SEND " << GetObjectId() << " TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
-    scene_object.object_crc = anh::memcrc(GetTemplate());
+    scene_object.object_crc = swganh::memcrc(GetTemplate());
     scene_object.position = GetPosition();
 	scene_object.orientation = GetOrientation();
     scene_object.byte_flag = 0;
@@ -727,7 +727,7 @@ void Object::SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> o
 	SendUpdateContainmentMessage(observer);
 }
 
-void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer)
+void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
 	if(observer == nullptr)
 		return;
@@ -745,7 +745,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<anh::observer::Observe
 	observer->Notify(&containment_message);
 }
 
-void Object::SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer)
+void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
 	LOG(warning) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
 

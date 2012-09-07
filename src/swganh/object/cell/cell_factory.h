@@ -14,8 +14,8 @@ namespace cell {
     public:
 		typedef Cell ObjectType;
 
-        CellFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher);
+        CellFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 

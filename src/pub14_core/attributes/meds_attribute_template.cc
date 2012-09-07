@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-MedsAttributeTemplate::MedsAttributeTemplate(anh::EventDispatcher* dispatcher)
+MedsAttributeTemplate::MedsAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();

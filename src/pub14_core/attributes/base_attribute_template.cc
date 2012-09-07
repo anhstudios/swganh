@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-BaseAttributeTemplate::BaseAttributeTemplate(anh::EventDispatcher* dispatcher)
+BaseAttributeTemplate::BaseAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: swganh::attributes::AttributeTemplateInterface(dispatcher)
 {
 

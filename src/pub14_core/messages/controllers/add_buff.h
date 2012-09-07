@@ -29,17 +29,17 @@ namespace controllers {
 
         static uint32_t message_type() { return 0x00000229; }
         
-        anh::HashString buff;        
+        swganh::HashString buff;        
         float duration;
         
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(buff);
             buffer.write(duration);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             buff = buffer.read<uint32_t>();
             duration = buffer.read<float>();

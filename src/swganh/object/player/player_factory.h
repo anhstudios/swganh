@@ -8,7 +8,7 @@
 namespace swganh {
 namespace database {
 class DatabaseManagerInterface;
-}} // anh::database
+}} // swganh::database
 
 namespace sql {
 class ResultSet;
@@ -24,8 +24,8 @@ namespace player {
     public:
 		typedef Player ObjectType;
 
-        PlayerFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher);
+        PlayerFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher);
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

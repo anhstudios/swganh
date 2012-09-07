@@ -27,12 +27,12 @@ namespace command {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
 {    
-    anh::plugin::ObjectRegistration registration;
+    swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
     
     { // Command::CommandFactory
-        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
             return new CommandFactory(kernel);
         };
 
@@ -46,7 +46,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     }
 
     { // Command::CommandQueue
-        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
             return new CommandQueue(kernel);
         };
 
@@ -60,7 +60,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     }
 
     { // Command::CommandQueueManager
-        registration.CreateObject = [] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [] (swganh::plugin::ObjectParams* params) -> void * {
             return new CommandQueueManager();
         };
 
@@ -74,7 +74,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     }
 
     { // Command::CommandPropertiesManager
-        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
             return new CommandPropertiesManager(kernel->GetResourceManager());
         };
 
@@ -88,7 +88,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     }
 
     { // Command::CommandService
-        registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
             auto command_service = new CommandService(kernel);
             
             // add filters
@@ -116,7 +116,7 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     }
 
     { // Command::CommandValidator
-        registration.CreateObject = [] (anh::plugin::ObjectParams* params) -> void * {
+        registration.CreateObject = [] (swganh::plugin::ObjectParams* params) -> void * {
             return new CommandValidator();
         };
 

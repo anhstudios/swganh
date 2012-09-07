@@ -18,13 +18,13 @@ namespace messages {
     	uint32_t article_text_flag; // 0 = display the article text, 1 = article unable to be retrieved
     	std::wstring article_text;
     
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(article_text_flag);
     		buffer.write(article_text);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		article_text_flag = buffer.read<uint32_t>();
     		article_text = buffer.read<std::wstring>();

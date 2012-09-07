@@ -10,7 +10,7 @@ namespace attributes {
 	class FurnitureAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		FurnitureAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		FurnitureAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

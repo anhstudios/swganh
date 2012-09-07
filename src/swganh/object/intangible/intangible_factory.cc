@@ -25,7 +25,7 @@ using namespace swganh::object::intangible;
 using namespace swganh::simulation;
 
 IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
-                             anh::EventDispatcher* event_dispatcher)
+                             swganh::EventDispatcher* event_dispatcher)
     : ObjectFactory(db_manager, event_dispatcher)
 {
 }

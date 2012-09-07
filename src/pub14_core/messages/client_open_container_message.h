@@ -18,14 +18,14 @@ namespace messages {
     	uint32_t unknown1;
     	uint32_t unknown2;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(container_object_id);
     		buffer.write(unknown1);
     		buffer.write(unknown2);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		container_object_id = buffer.read<uint64_t>();
     		unknown1 = buffer.read<uint32_t>();

@@ -16,7 +16,7 @@ namespace containers {
  * transfered over the network.
  *
  * Types used are required to have the following functions:
- * - Serialize(anh::ByteBuffer& message)
+ * - Serialize(swganh::ByteBuffer& message)
  * - operator ==(T other)
  */
 template <typename T>

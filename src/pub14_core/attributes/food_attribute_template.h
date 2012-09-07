@@ -9,7 +9,7 @@ namespace attributes {
 	class FoodAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		FoodAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		FoodAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

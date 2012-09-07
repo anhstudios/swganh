@@ -61,7 +61,7 @@ namespace combat {
     public:
         explicit CombatService(swganh::app::SwganhKernel* kernel);
         
-        anh::service::ServiceDescription GetServiceDescription();
+        swganh::service::ServiceDescription GetServiceDescription();
 
         void SetIncapacitated(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target);
         
@@ -80,7 +80,7 @@ namespace combat {
             CombatHandler
         > HandlerMap;
         
-        bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const anh::HashString& command);
+        bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::HashString& command);
         
         bool InitiateCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
         void SendCombatAction(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::tangible::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message, boost::python::object p_object);
@@ -108,9 +108,9 @@ namespace combat {
 
 		swganh::command::CommandPropertiesMap combat_properties_map_;
 
-        anh::RandomGenerator generator_;
+        swganh::RandomGenerator generator_;
 
-        anh::ActiveObject active_;
+        swganh::ActiveObject active_;
         swganh::app::SwganhKernel* kernel_;
     };
 

@@ -16,12 +16,12 @@ namespace messages {
     	
     	uint32_t credit_amount;
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(credit_amount);
     	}
     	
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		credit_amount = buffer.read<uint32_t>();
     	}

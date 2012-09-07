@@ -36,7 +36,7 @@ namespace controllers {
         float coord_y;
         
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(cell_id);
             buffer.write(coord_x);
@@ -44,7 +44,7 @@ namespace controllers {
             buffer.write(coord_y);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             cell_id = buffer.read<uint64_t>();
             coord_x = buffer.read<float>();

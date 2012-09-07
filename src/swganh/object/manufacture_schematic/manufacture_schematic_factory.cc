@@ -9,7 +9,7 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::manufacture_schematic;
 
-ManufactureSchematicFactory::ManufactureSchematicFactory(anh::database::DatabaseManagerInterface* db_manager, anh::EventDispatcher* event_dispatcher)
+ManufactureSchematicFactory::ManufactureSchematicFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
 	: IntangibleFactory(db_manager, event_dispatcher)
 {
 }

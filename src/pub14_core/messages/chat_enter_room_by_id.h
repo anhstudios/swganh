@@ -17,13 +17,13 @@ namespace messages {
     	uint32_t attempts_counter;
     	uint32_t channel_id;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(attempts_counter);
     		buffer.write(channel_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		attempts_counter = buffer.read<uint32_t>();
     		channel_id = buffer.read<uint32_t>();

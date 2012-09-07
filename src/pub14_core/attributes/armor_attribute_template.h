@@ -11,7 +11,7 @@ namespace attributes {
 	class ArmorAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		ArmorAttributeTemplate(anh::EventDispatcher* dispatcher);
+		ArmorAttributeTemplate(swganh::EventDispatcher* dispatcher);
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);			
 	};
 

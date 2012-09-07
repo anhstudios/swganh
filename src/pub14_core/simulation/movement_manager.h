@@ -48,7 +48,7 @@ namespace simulation {
 		void SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider);
 
     private:
-        void RegisterEvents(anh::EventDispatcher* event_dispatcher);
+        void RegisterEvents(swganh::EventDispatcher* event_dispatcher);
 
         bool ValidateCounter_(uint64_t object_id, uint32_t counter);
 

@@ -17,13 +17,13 @@ namespace messages {
     	uint8_t success_flag; // 0 = name not accepted, 1 = name accepted
     	uint32_t attempts_counter; // corresponds to the VerifyPlayerNameMessage packet
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(success_flag);
     		buffer.write(attempts_counter);
     	}
     	
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		success_flag = buffer.read<uint8_t>();
     		attempts_counter = buffer.read<uint32_t>();

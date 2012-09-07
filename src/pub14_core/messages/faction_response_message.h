@@ -24,7 +24,7 @@ namespace messages {
     	std::list<std::string> faction_names;
     	std::list<float> faction_points_list;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(faction_rank);
     		buffer.write(faction_points_rebel);
@@ -40,7 +40,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		faction_rank = buffer.read<std::string>();
     		faction_points_rebel = buffer.read<uint32_t>();

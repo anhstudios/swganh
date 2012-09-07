@@ -71,16 +71,16 @@ vector<string> TreReader::GetResourceNames() const
     return resource_names;
 }
 
-anh::ByteBuffer TreReader::GetResource(const std::string& resource_name)
+swganh::ByteBuffer TreReader::GetResource(const std::string& resource_name)
 {
-    anh::ByteBuffer data; 
+    swganh::ByteBuffer data; 
     
     GetResource(resource_name, data);
 
     return data;
 }
 
-void TreReader::GetResource(const std::string& resource_name, anh::ByteBuffer& buffer)
+void TreReader::GetResource(const std::string& resource_name, swganh::ByteBuffer& buffer)
 {    
     auto file_info = GetResourceInfo(resource_name);
 

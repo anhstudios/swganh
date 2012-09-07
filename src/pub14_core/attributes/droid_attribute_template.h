@@ -9,7 +9,7 @@ namespace attributes {
 	class DroidAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		DroidAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		DroidAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

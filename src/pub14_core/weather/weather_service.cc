@@ -32,8 +32,8 @@ using namespace swganh::weather;
 using namespace swganh::galaxy;
 using namespace swganh::scripting;
 
-using anh::app::KernelInterface;
-using anh::service::ServiceDescription;
+using swganh::app::KernelInterface;
+using swganh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
 using swganh::simulation::SimulationServiceInterface;
 
@@ -43,7 +43,7 @@ WeatherService::WeatherService(SwganhKernel* kernel)
 {
 	player_selected_callback_ = kernel_->GetEventDispatcher()->Subscribe(
 		"ObjectReadyEvent",
-		[this] (shared_ptr<anh::EventInterface> incoming_event)
+		[this] (shared_ptr<swganh::EventInterface> incoming_event)
 		{
 			const auto& player_obj = static_pointer_cast<ValueEvent<shared_ptr<Object>>>(incoming_event)->Get();
 			OnPlayerEnter(player_obj);
@@ -103,7 +103,7 @@ void WeatherService::SetSceneWeather(uint32_t scene_id, std::vector<WeatherEvent
 
 void WeatherService::SendServerWeatherMessagePlayer_(
 	WeatherEvent weatherdata_,
-	std::shared_ptr<anh::observer::ObserverInterface> observer)
+	std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
 	auto controller = static_pointer_cast<swganh::object::ObjectController>(observer);
 	if (controller)

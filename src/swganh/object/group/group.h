@@ -95,7 +95,7 @@ public:
     const static uint32_t type = 0x47525550;
 
 private:
-	typedef anh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
+	typedef swganh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
     swganh::messages::containers::NetworkSortedVector<Member> member_list_;                     // update 6 variable 1
     std::atomic<uint16_t> difficulty_;                                                                       // update 6 variable 4
     std::atomic<uint64_t> loot_master_;                                                                      // update 6 variable 6

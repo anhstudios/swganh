@@ -65,7 +65,7 @@ void ObjectController::SetRemoteClient(shared_ptr<ConnectionClientInterface> rem
 
 void ObjectController::Notify(BaseSwgMessage* message)
 {
-	anh::ByteBuffer buffer;
+	swganh::ByteBuffer buffer;
 	message->Serialize(buffer);
     client_->SendTo(buffer);
 }

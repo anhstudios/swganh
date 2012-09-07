@@ -8,7 +8,7 @@
 namespace swganh {
 namespace database {
 class DatabaseManagerInterface;
-}} // anh::database
+}} // swganh::database
 
 namespace sql {
     class Statement;
@@ -24,8 +24,8 @@ namespace creature {
     public:
 		typedef Creature ObjectType;
 
-        CreatureFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher);
+        CreatureFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 

@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-FoodAttributeTemplate::FoodAttributeTemplate(anh::EventDispatcher* dispatcher)
+FoodAttributeTemplate::FoodAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();

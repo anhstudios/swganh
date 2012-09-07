@@ -9,8 +9,8 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::resource_container;
 
-ResourceContainerFactory::ResourceContainerFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher)
+ResourceContainerFactory::ResourceContainerFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher)
 	: TangibleFactory(db_manager, event_dispatcher)
 {
 }

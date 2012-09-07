@@ -18,13 +18,13 @@ namespace messages {
     	uint64_t travel_terminal_id;
     	std::string planet_name;
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(travel_terminal_id);
     		buffer.write(planet_name);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		travel_terminal_id = buffer.read<uint64_t>();
     		planet_name = buffer.read<std::string>();

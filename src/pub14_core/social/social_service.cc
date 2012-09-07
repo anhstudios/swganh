@@ -28,8 +28,8 @@ using namespace swganh::object;
 using namespace swganh::object::player;
 using namespace swganh_core::social;
 
-using anh::app::KernelInterface;
-using anh::service::ServiceDescription;
+using swganh::app::KernelInterface;
+using swganh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
 using swganh::character::CharacterProviderInterface;
 

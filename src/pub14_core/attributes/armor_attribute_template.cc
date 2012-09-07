@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-ArmorAttributeTemplate::ArmorAttributeTemplate(anh::EventDispatcher* dispatcher)
+ArmorAttributeTemplate::ArmorAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();

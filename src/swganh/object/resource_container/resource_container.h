@@ -43,7 +43,7 @@ public:
     void SetResourceName(const std::wstring& name);
 
 private:
-	typedef anh::ValueEvent<std::shared_ptr<ResourceContainer>> ResourceContainerEvent;
+	typedef swganh::ValueEvent<std::shared_ptr<ResourceContainer>> ResourceContainerEvent;
 
     uint32_t current_quantity_;			                    // update 3
     uint64_t global_resource_id_;		                    // update 3

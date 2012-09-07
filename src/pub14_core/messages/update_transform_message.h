@@ -21,7 +21,7 @@ namespace messages {
         uint8_t posture_id;
         uint8_t heading;
         
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(object_id);
             buffer.write<int16_t>(static_cast<int16_t>(position.x * 4.0f + 0.5f));
@@ -32,7 +32,7 @@ namespace messages {
             buffer.write(heading);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
             object_id = buffer.read<uint64_t>();
             position.x = buffer.read<int16_t>();

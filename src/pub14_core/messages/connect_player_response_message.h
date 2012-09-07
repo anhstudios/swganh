@@ -21,13 +21,13 @@ namespace messages {
     		: unknown1(5)
     	{}
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(unknown1);
     		buffer.write(unknown2);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		unknown1 = buffer.read<uint32_t>();
     		unknown2 = buffer.read<uint32_t>();

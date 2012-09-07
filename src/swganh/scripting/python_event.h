@@ -9,14 +9,14 @@
 namespace swganh {
 namespace scripting {
 
-    struct PythonEvent : anh::BaseEvent
+    struct PythonEvent : swganh::BaseEvent
     {
         PythonEvent()
-            : anh::BaseEvent("PythonEvent")
+            : swganh::BaseEvent("PythonEvent")
         {}
 
         PythonEvent(boost::python::object callback_, float timer_)
-            : anh::BaseEvent("PythonEvent")
+            : swganh::BaseEvent("PythonEvent")
             , callback(callback_)
             , timer(timer_)
         {}

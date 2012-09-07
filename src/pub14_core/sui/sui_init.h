@@ -21,12 +21,12 @@ namespace sui {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
 {    
-    anh::plugin::ObjectRegistration registration;
+    swganh::plugin::ObjectRegistration registration;
     registration.version.major = VERSION_MAJOR;
     registration.version.minor = VERSION_MINOR;
 
 	// Register
-    registration.CreateObject = [kernel] (anh::plugin::ObjectParams* params) -> void * {
+    registration.CreateObject = [kernel] (swganh::plugin::ObjectParams* params) -> void * {
         return new SUIService(kernel);
     };
 

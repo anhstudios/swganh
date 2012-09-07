@@ -17,13 +17,13 @@ struct UpdateCellPermissionMessage : public BaseSwgMessage
     uint8_t permission_flag;
     uint64_t cell_id;
     
-    void OnSerialize(anh::ByteBuffer& buffer) const
+    void OnSerialize(swganh::ByteBuffer& buffer) const
     {
         buffer.write(permission_flag);
         buffer.write(cell_id);
     }
 
-    void OnDeserialize(anh::ByteBuffer& buffer)
+    void OnDeserialize(swganh::ByteBuffer& buffer)
     {
         permission_flag = buffer.read<uint8_t>();
         cell_id = buffer.read<uint64_t>();

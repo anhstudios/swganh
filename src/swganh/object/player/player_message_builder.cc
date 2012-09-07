@@ -175,7 +175,7 @@ void PlayerMessageBuilder::RegisterEventHandlers()
     });
 }
 
-void PlayerMessageBuilder::SendBaselines(const shared_ptr<Player>& player, const shared_ptr<anh::observer::ObserverInterface>& observer)
+void PlayerMessageBuilder::SendBaselines(const shared_ptr<Player>& player, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
     player->AddBaselineToCache(&BuildBaseline3(player));
     player->AddBaselineToCache(&BuildBaseline6(player));

@@ -76,7 +76,7 @@ namespace command {
 
         std::shared_ptr<swganh::command::BaseSwgCommand> default_command_;
 
-        anh::ActiveObject active_;
+        swganh::ActiveObject active_;
     };
 
 }}  // namespace pub14_core::command

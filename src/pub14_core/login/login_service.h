@@ -17,11 +17,11 @@ public:
         swganh::app::SwganhKernel* kernel);
     ~LoginService();
     
-    anh::service::ServiceDescription GetServiceDescription();
+    swganh::service::ServiceDescription GetServiceDescription();
     
-    bool RemoveSession(std::shared_ptr<anh::network::soe::Session> session);
+    bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session);
 
-    std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
 
     uint32_t GetAccountBySessionKey(const std::string& session_key);
         
@@ -41,7 +41,7 @@ public:
 private:
     LoginService();
     
-    std::shared_ptr<anh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
+    std::shared_ptr<swganh::network::soe::Session> CreateSession(const boost::asio::ip::udp::endpoint& endpoint);
         
     void HandleLoginClientId_(const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, swganh::messages::LoginClientId* message);
 
@@ -74,7 +74,7 @@ private:
     
     std::string listen_address_;
     uint16_t listen_port_;
-    anh::ActiveObject active_;
+    swganh::ActiveObject active_;
 };
 
 }} // namespace swganh::login

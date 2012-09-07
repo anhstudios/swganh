@@ -12,7 +12,7 @@ using namespace std;
 using namespace swganh::object::cell;
 using namespace swganh::messages;
 
-void CellMessageBuilder::SendBaselines(const std::shared_ptr<Cell>& cell, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+void CellMessageBuilder::SendBaselines(const std::shared_ptr<Cell>& cell, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
 	cell->AddBaselineToCache(&BuildBaseline3(cell));
     cell->AddBaselineToCache(&BuildBaseline6(cell));

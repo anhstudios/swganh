@@ -9,7 +9,7 @@
 #include "swganh/object/object.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
-using anh::observer::ObserverInterface;
+using swganh::observer::ObserverInterface;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandProperties;
 using swganh::object::Object;
@@ -33,7 +33,7 @@ const std::shared_ptr<ObserverInterface> BaseSwgCommand::GetController() const
 	return controller_;
 }
 
-void BaseSwgCommand::SetController(std::shared_ptr<anh::observer::ObserverInterface> controller)
+void BaseSwgCommand::SetController(std::shared_ptr<swganh::observer::ObserverInterface> controller)
 {
 	controller_ = controller;
 }

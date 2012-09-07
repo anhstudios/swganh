@@ -71,7 +71,7 @@ void TangibleMessageBuilder::RegisterEventHandlers()
         BuildDefendersDelta(value_event->Get());
     });
 }
-void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible, const shared_ptr<anh::observer::ObserverInterface>& observer)
+void TangibleMessageBuilder::SendBaselines(const shared_ptr<Tangible>& tangible, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
     tangible->AddBaselineToCache(&BuildBaseline3(tangible));
     tangible->AddBaselineToCache(&BuildBaseline6(tangible));

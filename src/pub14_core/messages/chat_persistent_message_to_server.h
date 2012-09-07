@@ -34,7 +34,7 @@ namespace messages {
     	uint32_t spacer;
     	std::string recipient_name;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(mail_message_body);
     		buffer.write(chat_parameter_size);
@@ -57,7 +57,7 @@ namespace messages {
     		buffer.write(recipient_name);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		mail_message_body = buffer.read<std::wstring>();
     		chat_parameter_size = buffer.read<uint32_t>();

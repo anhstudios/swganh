@@ -18,12 +18,12 @@ namespace player {
     class PlayerMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
     {
     public:
-        PlayerMessageBuilder(anh::EventDispatcher* dispatcher) :
+        PlayerMessageBuilder(swganh::EventDispatcher* dispatcher) :
             IntangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
         }
-        virtual void SendBaselines(const std::shared_ptr<Player>& player, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+        virtual void SendBaselines(const std::shared_ptr<Player>& player, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
         virtual void RegisterEventHandlers();
         // deltas
         static void BuildStatusBitmaskDelta(const std::shared_ptr<Player>& object);
@@ -60,7 +60,7 @@ namespace player {
         static swganh::messages::BaselinesMessage BuildBaseline8(const std::shared_ptr<Player>& object);
         static swganh::messages::BaselinesMessage BuildBaseline9(const std::shared_ptr<Player>& object);
 
-        typedef anh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
+        typedef swganh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
     };
 
 }}}  // swganh::object::player

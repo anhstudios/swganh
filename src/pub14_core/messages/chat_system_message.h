@@ -18,12 +18,12 @@ namespace messages {
         std::wstring message;
         std::wstring out_of_band;
 
-        void AddProsePackage(const anh::ByteBuffer* prose_package)
+        void AddProsePackage(const swganh::ByteBuffer* prose_package)
         {
             prose_package_ = prose_package;
         }
 
-        void OnSerialize(anh::ByteBuffer& buffer) const 
+        void OnSerialize(swganh::ByteBuffer& buffer) const 
         {
             buffer.write(display_type);
             if (message.size())
@@ -40,7 +40,7 @@ namespace messages {
                 buffer.write(out_of_band);
             }
         }
-        void OnDeserialize(anh::ByteBuffer& buffer) 
+        void OnDeserialize(swganh::ByteBuffer& buffer) 
         {
             display_type = buffer.read<uint8_t>();
             message = buffer.read<std::wstring>();
@@ -49,7 +49,7 @@ namespace messages {
         }
 
     private :
-        const anh::ByteBuffer* prose_package_;
+        const swganh::ByteBuffer* prose_package_;
     };
 
 }}

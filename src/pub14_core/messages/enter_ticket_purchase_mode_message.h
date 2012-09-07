@@ -18,13 +18,13 @@ namespace messages {
     	std::string planet_name; // planet on which the terminal is located
     	std::string city_name; // city in which the terminal is located
     
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(planet_name);
     		buffer.write(city_name);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		planet_name = buffer.read<std::string>();
     		city_name = buffer.read<std::string>();

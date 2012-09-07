@@ -6,20 +6,20 @@
 #include <memory>
 
 namespace swganh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
+}}  // swganh::database
 
 namespace swganh_core {
 namespace galaxy {
 
 class MysqlGalaxyProvider : public swganh::galaxy::providers::GalaxyProviderInterface {
 public:
-    explicit MysqlGalaxyProvider(anh::database::DatabaseManagerInterface* db_manager);
+    explicit MysqlGalaxyProvider(swganh::database::DatabaseManagerInterface* db_manager);
     ~MysqlGalaxyProvider();
 
 	virtual uint32_t GetPopulation();
 	
 private:
-    anh::database::DatabaseManagerInterface* db_manager_;
+    swganh::database::DatabaseManagerInterface* db_manager_;
 };
 
 }}  // namespace swganh::galaxy::providers

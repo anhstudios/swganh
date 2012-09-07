@@ -11,7 +11,7 @@ namespace object
 
 namespace equipment
 {
-	class EquipmentServiceInterface : public anh::service::ServiceInterface
+	class EquipmentServiceInterface : public swganh::service::ServiceInterface
 	{
 	public:
 

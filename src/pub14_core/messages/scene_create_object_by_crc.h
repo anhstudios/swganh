@@ -24,7 +24,7 @@ namespace messages {
         uint32_t object_crc;
         uint8_t byte_flag;
         
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
         	buffer.write(object_id);
             buffer.write(orientation.x);
@@ -38,7 +38,7 @@ namespace messages {
             buffer.write(byte_flag);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
         	object_id = buffer.read<uint64_t>();
             orientation.x = buffer.read<float>();

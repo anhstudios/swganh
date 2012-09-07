@@ -14,13 +14,13 @@ namespace installation {
     class InstallationMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
     {
     public:
-        InstallationMessageBuilder(anh::EventDispatcher* dispatcher) :
+        InstallationMessageBuilder(swganh::EventDispatcher* dispatcher) :
             TangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendBaselines(const std::shared_ptr<Installation>& installation, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+        virtual void SendBaselines(const std::shared_ptr<Installation>& installation, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
         // deltas
 
         static void BuildActiveDelta(const std::shared_ptr<Installation>& installation);
@@ -42,7 +42,7 @@ namespace installation {
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Installation>& installation);
         static swganh::messages::BaselinesMessage BuildBaseline7(const std::shared_ptr<Installation>& installation);
     private:
-        typedef anh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;
+        typedef swganh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;
     };
 
 }}}  // swganh::object::tangible

@@ -9,7 +9,7 @@ namespace attributes {
 	class DeedAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		DeedAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		DeedAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 }}

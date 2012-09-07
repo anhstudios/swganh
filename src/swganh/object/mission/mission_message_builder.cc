@@ -233,7 +233,7 @@ void MissionMessageBuilder::BuildMissionWaypointDelta(const std::shared_ptr<Miss
 	}
 }
 
-void MissionMessageBuilder::SendBaselines(const std::shared_ptr<Mission>& mission, const std::shared_ptr<anh::observer::ObserverInterface>& observer)
+void MissionMessageBuilder::SendBaselines(const std::shared_ptr<Mission>& mission, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
 	mission->AddBaselineToCache(&BuildBaseline3(mission));
     mission->AddBaselineToCache(&BuildBaseline6(mission));

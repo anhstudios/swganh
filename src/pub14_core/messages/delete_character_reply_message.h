@@ -16,12 +16,12 @@ namespace messages {
     
         int32_t failure_flag;
         
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write<int32_t>(failure_flag);
         }
     
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
             failure_flag = buffer.read<int32_t>();
         }

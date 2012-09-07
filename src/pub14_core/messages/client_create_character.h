@@ -27,7 +27,7 @@ namespace messages {
         uint8_t tutorial_flag;
 
 
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(character_customization);
             buffer.write(character_name);
@@ -43,7 +43,7 @@ namespace messages {
             buffer.write(tutorial_flag);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
             character_customization = buffer.read<std::string>();
             character_name = buffer.read<std::wstring>();

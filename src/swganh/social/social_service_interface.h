@@ -27,7 +27,7 @@ class CharacterProviderInterface;
 namespace swganh {
 namespace social {
     
-    class SocialServiceInterface : public anh::service::ServiceInterface
+    class SocialServiceInterface : public swganh::service::ServiceInterface
     {
     public:
         

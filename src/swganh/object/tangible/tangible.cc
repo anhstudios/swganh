@@ -270,7 +270,7 @@ bool Tangible::IsAutoAttacking()
 {
     return auto_attack_ == true;
 }
-void Tangible::CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer)
+void Tangible::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
     GetEventDispatcher()->Dispatch(make_shared<ObserverEvent>
         ("Tangible::Baselines",shared_from_this(), observer));

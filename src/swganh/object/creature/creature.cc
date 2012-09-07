@@ -1219,7 +1219,7 @@ std::vector<uint64_t> Creature::GetDuelList()
     return duel_list_;
 }
 
-void Creature::CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer)
+void Creature::CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
 
     GetEventDispatcher()->Dispatch(make_shared<swganh::object::ObserverEvent>

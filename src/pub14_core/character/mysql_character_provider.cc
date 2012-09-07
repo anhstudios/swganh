@@ -134,7 +134,7 @@ vector<CharacterData> MysqlCharacterProvider::GetCharactersForAccount(uint64_t a
 					non_shared_template.erase(23, 7);
 				}
 
-                character.race_crc = anh::memcrc(non_shared_template);
+                character.race_crc = swganh::memcrc(non_shared_template);
                 character.galaxy_id = kernel_->GetServiceDirectory()->galaxy().id();
                 character.status = 1;
                 characters.push_back(character);

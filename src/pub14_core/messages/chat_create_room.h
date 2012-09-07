@@ -22,7 +22,7 @@ namespace messages {
     	std::string channel_name;
     	uint32_t attempts_counter;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(public_flag);
     		buffer.write(moderation_flag);
@@ -32,7 +32,7 @@ namespace messages {
     		buffer.write(attempts_counter);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		public_flag = buffer.read<uint8_t>();
     		moderation_flag = buffer.read<uint8_t>();

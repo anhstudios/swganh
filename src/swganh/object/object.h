@@ -52,7 +52,7 @@ typedef std::vector<
 > DeltasCacheContainer;
 
 typedef std::map<
-	anh::HashString,
+	swganh::HashString,
 	boost::variant<float, int32_t, std::wstring>
 > AttributesMap;
 
@@ -63,14 +63,14 @@ typedef std::map<
 
 typedef std::vector<std::vector<int32_t>> ObjectArrangements;
 
-typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
+typedef swganh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 
 class ObjectFactory;
 class ObjectMessageBuilder;
 class ContainerPermissionsInterface;
 
 class Object : 
-	public anh::observer::ObservableInterface, 
+	public swganh::observer::ObservableInterface, 
 	public swganh::object::ContainerInterface, 
 	public std::enable_shared_from_this<Object>
 {
@@ -134,14 +134,14 @@ public:
      *
      * @TODO Consider returning a null object instead of nullptr.
      */
-    std::shared_ptr<anh::observer::ObserverInterface> GetController();
+    std::shared_ptr<swganh::observer::ObserverInterface> GetController();
 
     /**
      * Sets the controller for this Object instance.
      *
      * @param controller
      */
-    void SetController(const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+    void SetController(const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
 
     /**
      * Clears the active current controller, if one exists, for this instance.
@@ -176,14 +176,14 @@ public:
      *
      * @param observer The object interested in receiving state change notifications.
      */
-    void Subscribe(const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+    void Subscribe(const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 
     /**
      * Stop receiving state notification changes for the observable object.
      *
      * @param observer The object that no longer wants state change notifications.
      */
-    void Unsubscribe(const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+    void Unsubscribe(const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 
     /**
      * Notifies observers that the observable object has changed state.
@@ -424,8 +424,8 @@ public:
 	 */
 	void SetSlotInformation(ObjectSlots slots, ObjectArrangements arrangements);
 
-	anh::EventDispatcher* GetEventDispatcher();
-    void SetEventDispatcher(anh::EventDispatcher* dispatcher);
+	swganh::EventDispatcher* GetEventDispatcher();
+    void SetEventDispatcher(swganh::EventDispatcher* dispatcher);
 
     void ClearBaselines();
     void ClearDeltas();
@@ -438,19 +438,19 @@ public:
 	/**
 	 * @brief Creates and fires off the Baseline event to send the Baselines for the given object
 	 */
-	virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
+	virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 	/**
 	 * @brief Sends the create by crc message to the observer of 'this' object
 	 */
-	virtual void SendCreateByCrc(std::shared_ptr<anh::observer::ObserverInterface> observer);
+	virtual void SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 	/**
 	 * @brief sends the update containment message for the given observer of this object
 	 */
-	virtual void SendUpdateContainmentMessage(std::shared_ptr<anh::observer::ObserverInterface> observer);
+	virtual void SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 	/**
 	 * @brief sends the destroy message for the given observer of this object
 	 */
-	virtual void SendDestroy(std::shared_ptr<anh::observer::ObserverInterface> observer);
+	virtual void SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 	/**
 	 * @brief Sets the menu response aka 'radials' for this object 
 	 */
@@ -573,7 +573,7 @@ protected:
 
 private:
     
-    typedef std::set<std::shared_ptr<anh::observer::ObserverInterface>> ObserverContainer;
+    typedef std::set<std::shared_ptr<swganh::observer::ObserverInterface>> ObserverContainer;
 	typedef std::set<std::shared_ptr<swganh::object::Object>> AwareObjectContainer;
 
 	AttributesMap attributes_map_;
@@ -583,13 +583,13 @@ private:
 
     ObserverContainer observers_;
 	AwareObjectContainer aware_objects_;
-	std::shared_ptr<anh::observer::ObserverInterface> controller_;
+	std::shared_ptr<swganh::observer::ObserverInterface> controller_;
 
     BaselinesCacheContainer baselines_;
     DeltasCacheContainer deltas_;
 
     std::shared_ptr<ContainerInterface> container_;
-    anh::EventDispatcher* event_dispatcher_;
+    swganh::EventDispatcher* event_dispatcher_;
 
     bool is_dirty_;
 

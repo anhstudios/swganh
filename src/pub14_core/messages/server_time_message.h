@@ -16,12 +16,12 @@ namespace messages {
 
     	uint64_t galactic_time; // number of seconds from server start to present galactic time
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(galactic_time);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		galactic_time = buffer.read<uint64_t>();
     	}

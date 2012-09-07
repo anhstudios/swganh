@@ -19,7 +19,7 @@ namespace object {
 namespace swganh {
 namespace chat {
 
-    class ChatServiceInterface: public anh::service::ServiceInterface
+    class ChatServiceInterface: public swganh::service::ServiceInterface
     {
     public:
         

@@ -19,13 +19,13 @@ namespace resource_container {
 class ResourceContainerMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
 {
 public:
-    ResourceContainerMessageBuilder(anh::EventDispatcher* event_dispatcher_)
+    ResourceContainerMessageBuilder(swganh::EventDispatcher* event_dispatcher_)
         : TangibleMessageBuilder(event_dispatcher_) 
     {
         RegisterEventHandlers();
     }
     virtual void RegisterEventHandlers();
-    virtual void SendBaselines(const std::shared_ptr<ResourceContainer>& resource_container, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+    virtual void SendBaselines(const std::shared_ptr<ResourceContainer>& resource_container, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
 
     // deltas
     static void BuildCurrentUnitsDelta(const std::shared_ptr<ResourceContainer>& resource_container);
@@ -38,7 +38,7 @@ public:
     static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<ResourceContainer>& resource_container);
     static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<ResourceContainer>& resource_container);
 private:
-    typedef anh::ValueEvent<std::shared_ptr<ResourceContainer>> ResourceContainerEvent;
+    typedef swganh::ValueEvent<std::shared_ptr<ResourceContainer>> ResourceContainerEvent;
 };
 
 }}} // swganh::object::creature

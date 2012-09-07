@@ -21,12 +21,12 @@ namespace messages {
     		: client_ready("clientReady")
     	{}
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(client_ready);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		client_ready = buffer.read<std::string>();
     	}

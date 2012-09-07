@@ -28,7 +28,7 @@ namespace messages {
     	std::string resources_type; // type of all resources in the list
     	uint64_t surveyor_object_id;
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write<uint32_t>(resources.size());
     		std::for_each(resources.begin(), resources.end(), [&buffer] (ResourceInfo resource) {
@@ -40,7 +40,7 @@ namespace messages {
     		buffer.write(surveyor_object_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		uint32_t resources_count = buffer.read<uint32_t>();
     		for (uint32_t i = 0; i < resources_count; i++) {

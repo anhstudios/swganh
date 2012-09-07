@@ -17,13 +17,13 @@ struct CancelTicketResponseMessage : public BaseSwgMessage
 	uint32_t message_flag; // 0 = success message, 1 = failure message
 	uint32_t ticket_id;
 
-	void OnSerialize(anh::ByteBuffer& buffer) const 
+	void OnSerialize(swganh::ByteBuffer& buffer) const 
 	{
 		buffer.write(message_flag);
 		buffer.write(ticket_id);
 	}
 
-	void OnDeserialize(anh::ByteBuffer& buffer)
+	void OnDeserialize(swganh::ByteBuffer& buffer)
 	{
 		message_flag = buffer.read<uint32_t>();
 		ticket_id = buffer.read<uint32_t>();

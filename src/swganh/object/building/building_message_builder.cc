@@ -16,7 +16,7 @@ void BuildingMessageBuilder::RegisterEventHandlers()
 {
 }
 
-void BuildingMessageBuilder::SendBaselines(const shared_ptr<Building>& tangible, const shared_ptr<anh::observer::ObserverInterface>& observer)
+void BuildingMessageBuilder::SendBaselines(const shared_ptr<Building>& tangible, const shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
     tangible->AddBaselineToCache(&BuildBaseline3(tangible));
     tangible->AddBaselineToCache(&BuildBaseline6(tangible));

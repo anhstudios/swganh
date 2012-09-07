@@ -7,7 +7,7 @@ namespace swganh
 {
 namespace spawn
 {
-	class SpawnServiceInterface : public anh::service::ServiceInterface
+	class SpawnServiceInterface : public swganh::service::ServiceInterface
 	{
 	public:
 		//Nothing for now...

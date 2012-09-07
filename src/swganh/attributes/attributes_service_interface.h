@@ -33,7 +33,7 @@ namespace attributes {
 		WEARABLE 
 	};
 
-    class AttributesServiceInterface: public anh::service::ServiceInterface
+    class AttributesServiceInterface: public swganh::service::ServiceInterface
     {
     public:        
         virtual std::shared_ptr<AttributeTemplateInterface> GetAttributeTemplate(AttributeTemplateId template_id) = 0;

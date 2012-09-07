@@ -14,19 +14,19 @@ namespace building {
     class BuildingMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
     {
     public:
-        BuildingMessageBuilder(anh::EventDispatcher* dispatcher) :
+        BuildingMessageBuilder(swganh::EventDispatcher* dispatcher) :
             TangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendBaselines(const std::shared_ptr<Building>& tangible, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+        virtual void SendBaselines(const std::shared_ptr<Building>& tangible, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
         
         // baselines
         static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Building>& building);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Building>& building);
     private:
-        typedef anh::ValueEvent<std::shared_ptr<Building>> BuildingEvent;
+        typedef swganh::ValueEvent<std::shared_ptr<Building>> BuildingEvent;
     };
 
 }}}  // swganh::object::tangible

@@ -20,12 +20,12 @@ namespace mission {
     class MissionMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
     {
     public:
-        MissionMessageBuilder(anh::EventDispatcher* dispatcher) :
+        MissionMessageBuilder(swganh::EventDispatcher* dispatcher) :
             IntangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
         }
-        virtual void SendBaselines(const std::shared_ptr<Mission>& mission, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+        virtual void SendBaselines(const std::shared_ptr<Mission>& mission, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
         virtual void RegisterEventHandlers();
 		//deltas
 		static void BuildDifficultyLevelDelta(const std::shared_ptr<Mission>& mission);
@@ -45,7 +45,7 @@ namespace mission {
         static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Mission>& object);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Mission>& object);
 	private:
-		typedef anh::ValueEvent<std::shared_ptr<Mission>> MissionEvent;
+		typedef swganh::ValueEvent<std::shared_ptr<Mission>> MissionEvent;
     };
 
 }}}  // swganh::object::player

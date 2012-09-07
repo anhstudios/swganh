@@ -21,13 +21,13 @@ namespace tre
 	{
 	public:
 
-		static void loadIFF(anh::ByteBuffer& input, std::shared_ptr<VisitorInterface> visitor=nullptr);
+		static void loadIFF(swganh::ByteBuffer& input, std::shared_ptr<VisitorInterface> visitor=nullptr);
 
 	private:
 		static bool isNodeNameCharacter_(char c);
 		static unsigned int getNameSize_(char namedata[], unsigned int size);
 		static bool isFolderNode_(std::string& name);
-		static std::string getIFFName_(anh::ByteBuffer& input);
+		static std::string getIFFName_(swganh::ByteBuffer& input);
 	};
 }
 }

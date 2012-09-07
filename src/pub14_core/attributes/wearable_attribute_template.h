@@ -9,7 +9,7 @@ namespace attributes {
 	class WearableAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		WearableAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		WearableAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

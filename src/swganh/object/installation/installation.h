@@ -357,7 +357,7 @@ public:
 	swganh::messages::containers::NetworkSortedVector<ResourceString> GetResourceTypes_();
 
 private:
-	typedef anh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;
+	typedef swganh::ValueEvent<std::shared_ptr<Installation>> InstallationEvent;
 
     std::atomic<bool> is_active_;
     float power_reserve_;

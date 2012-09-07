@@ -28,7 +28,7 @@ protected:
 	virtual void SetUp() { }
 
 	Node root_node_;
-	anh::EventDispatcher event_dispatcher_;
+	swganh::EventDispatcher event_dispatcher_;
 	boost::asio::io_service io_service_;
 };
 

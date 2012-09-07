@@ -14,7 +14,7 @@ namespace character {
 
 class MysqlCharacterProvider : public swganh::character::CharacterProviderInterface{
 public:
-    explicit MysqlCharacterProvider(anh::app::KernelInterface* kernel);
+    explicit MysqlCharacterProvider(swganh::app::KernelInterface* kernel);
     ~MysqlCharacterProvider(){};
 
     virtual std::vector<swganh::character::CharacterData> GetCharactersForAccount(uint64_t account_id);
@@ -28,7 +28,7 @@ public:
 private:
     std::string setCharacterCreateErrorCode_(uint32_t error_code);
 	
-    anh::app::KernelInterface* kernel_;
+    swganh::app::KernelInterface* kernel_;
 	std::vector<std::string> reserved_names_;
 	std::vector<std::string> developer_names_;
 	std::vector<std::string> profane_names_;

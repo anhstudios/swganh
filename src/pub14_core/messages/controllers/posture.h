@@ -28,13 +28,13 @@ namespace controllers {
         
         uint8_t posture_id;
         
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(posture_id);
     		buffer.write<uint8_t>(1);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             posture_id = buffer.read<uint8_t>();
         }

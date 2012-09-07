@@ -32,13 +32,13 @@ namespace controllers {
         std::wstring biography;
         
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(owner_id);
             buffer.write<std::wstring>(biography);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             owner_id = buffer.read<uint64_t>();
             biography = buffer.read<std::wstring>();

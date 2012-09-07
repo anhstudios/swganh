@@ -19,7 +19,7 @@ namespace messages {
     	
     	std::list<glm::vec3> path_coordinates;
     
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write<uint32_t>(path_coordinates.size());
     		std::for_each(path_coordinates.begin(), path_coordinates.end(), [&buffer] (glm::vec3 coordinate){
@@ -29,7 +29,7 @@ namespace messages {
     		});
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		uint32_t coordinate_count = buffer.read<uint32_t>();
     		for (uint32_t i = 0; i < coordinate_count; i++) {

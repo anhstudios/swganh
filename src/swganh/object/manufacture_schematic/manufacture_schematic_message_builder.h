@@ -11,16 +11,16 @@
 namespace swganh {
 namespace object {
 namespace manufacture_schematic {
-    typedef anh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
+    typedef swganh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
     class ManufactureSchematicMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
     {
     public:
-        ManufactureSchematicMessageBuilder(anh::EventDispatcher* dispatcher) :
+        ManufactureSchematicMessageBuilder(swganh::EventDispatcher* dispatcher) :
             IntangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
         }
-        virtual void SendBaselines(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+        virtual void SendBaselines(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
         virtual void RegisterEventHandlers();
 		//deltas
 		static void BuildSchematicQuantityDelta(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);

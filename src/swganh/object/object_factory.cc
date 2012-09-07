@@ -27,7 +27,7 @@ using namespace swganh::object;
 using namespace swganh::simulation;
 
 ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
-                             anh::EventDispatcher* event_dispatcher)
+                             swganh::EventDispatcher* event_dispatcher)
     : db_manager_(db_manager)
     , event_dispatcher_(event_dispatcher)
 {	

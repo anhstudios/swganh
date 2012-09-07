@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-ShipAttributeTemplate::ShipAttributeTemplate(anh::EventDispatcher* dispatcher)
+ShipAttributeTemplate::ShipAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();

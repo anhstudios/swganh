@@ -30,7 +30,7 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this interpreter.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this interpreter.
@@ -65,8 +65,8 @@ namespace tre
 		std::vector<std::string> names;
 
 		//Internal Node Handling functions
-		void _handleOTNL(anh::ByteBuffer& buffer);
-		void _handle0000DATA(anh::ByteBuffer& buffer);
+		void _handleOTNL(swganh::ByteBuffer& buffer);
+		void _handle0000DATA(swganh::ByteBuffer& buffer);
 	};
 }
 }

@@ -57,7 +57,7 @@ namespace messages {
     		: game_name("SWG")
     	{}
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(error);
     		buffer.write(channel_id);
@@ -88,7 +88,7 @@ namespace messages {
     		buffer.write(request_id);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
             error = buffer.read<uint32_t>();
     		channel_id = buffer.read<uint32_t>();

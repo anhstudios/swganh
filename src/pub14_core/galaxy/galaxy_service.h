@@ -17,7 +17,7 @@ namespace galaxy {
 		
 		uint64_t GetGalaxyTimeInMilliseconds();
 
-    	anh::service::ServiceDescription GetServiceDescription();
+    	swganh::service::ServiceDescription GetServiceDescription();
         
         void Startup();
 
@@ -28,8 +28,8 @@ namespace galaxy {
 
     	std::shared_ptr<swganh::galaxy::providers::GalaxyProviderInterface> galaxy_provider_;
         swganh::app::SwganhKernel* kernel_;
-        anh::service::ServiceDirectoryInterface* service_directory_;
-        anh::EventDispatcherInterface* event_dispatcher_;
+        swganh::service::ServiceDirectoryInterface* service_directory_;
+        swganh::EventDispatcherInterface* event_dispatcher_;
         std::shared_ptr<boost::asio::deadline_timer> galaxy_timer_;
     };
 

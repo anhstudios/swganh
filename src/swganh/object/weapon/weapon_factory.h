@@ -14,8 +14,8 @@ namespace weapon {
     public:
 		typedef Weapon ObjectType;
 
-		 WeaponFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher);
+		 WeaponFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher);
 
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 

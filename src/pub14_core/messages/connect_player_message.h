@@ -20,12 +20,12 @@ namespace messages {
     		: unknown(0)
     	{}
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(unknown);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		unknown = buffer.read<uint32_t>();
     	}

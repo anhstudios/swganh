@@ -139,7 +139,7 @@ std::string Mission::GetTargetObjectTemplate() const
 uint32_t Mission::GetTargetObjectTemplateCrc() const
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return anh::memcrc(target_object_template_);
+    return swganh::memcrc(target_object_template_);
 }
 
 void Mission::SetTargetObjectTemplate(std::string object_template)
@@ -238,7 +238,7 @@ std::string Mission::GetMissionType()
 uint32_t Mission::GetMissionTypeCrc()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
-    return anh::memcrc(mission_type_);
+    return swganh::memcrc(mission_type_);
 }
 
 void Mission::SetMissionType(std::string mission_type)

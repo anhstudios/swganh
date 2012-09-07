@@ -20,7 +20,7 @@ namespace messages {
 
     	std::vector<swganh::character::CharacterData> characters;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write<uint32_t>(characters.size());
     		std::for_each(
@@ -36,7 +36,7 @@ namespace messages {
     		});
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer) {
+    	void OnDeserialize(swganh::ByteBuffer& buffer) {
     		uint32_t character_count = buffer.read<uint32_t>();
     		for (uint32_t i = 0; i < character_count; i++)
     		{

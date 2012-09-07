@@ -23,8 +23,8 @@ using namespace swganh::object;
 using namespace swganh::object::tangible;
 using namespace swganh::simulation;
 
- TangibleFactory::TangibleFactory(anh::database::DatabaseManagerInterface* db_manager,
-            anh::EventDispatcher* event_dispatcher)
+ TangibleFactory::TangibleFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher)
     : ObjectFactory(db_manager, event_dispatcher)
 {
 }

@@ -28,17 +28,17 @@ namespace command {
         explicit CommandService(swganh::app::SwganhKernel* kernel);
         ~CommandService();
 
-        anh::service::ServiceDescription GetServiceDescription();
+        swganh::service::ServiceDescription GetServiceDescription();
 
         void AddCommandEnqueueFilter(swganh::command::CommandFilter&& filter);
         
         void AddCommandProcessFilter(swganh::command::CommandFilter&& filter);
         
-        void AddCommandCreator(anh::HashString command, swganh::command::CommandCreator&& creator);
+        void AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator&& creator);
 
-        void RemoveCommandCreator(anh::HashString command);
+        void RemoveCommandCreator(swganh::HashString command);
         
-        std::shared_ptr<swganh::command::CommandInterface> CreateCommand(anh::HashString command);
+        std::shared_ptr<swganh::command::CommandInterface> CreateCommand(swganh::HashString command);
 
         void EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
 
@@ -55,7 +55,7 @@ namespace command {
         
         swganh::command::CommandPropertiesMap LoadCommandPropertiesMap();
 
-        boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command);
+        boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(swganh::HashString command);
 
         void Startup();
         
@@ -71,9 +71,9 @@ namespace command {
         bool HasDefaultCommand(uint64_t queue_owner_id);
 
     private:
-        void SubscribeObjectReadyEvent(anh::EventDispatcher* dispatcher);
+        void SubscribeObjectReadyEvent(swganh::EventDispatcher* dispatcher);
 
-        void SubscribeObjectRemovedEvent(anh::EventDispatcher* dispatcher);
+        void SubscribeObjectRemovedEvent(swganh::EventDispatcher* dispatcher);
                         
         swganh::app::SwganhKernel* kernel_;
         std::shared_ptr<swganh::command::CommandFactoryInterface> command_factory_impl_;
@@ -82,8 +82,8 @@ namespace command {
         std::shared_ptr<swganh::command::CommandValidatorInterface> command_validator_impl_;
         swganh::simulation::SimulationServiceInterface* simulation_service_;
         std::string script_prefix_;
-        anh::CallbackId obj_ready_id_;
-        anh::CallbackId obj_removed_id_;
+        swganh::CallbackId obj_ready_id_;
+        swganh::CallbackId obj_removed_id_;
     };
 
 }}  // namespace pub14_core::command

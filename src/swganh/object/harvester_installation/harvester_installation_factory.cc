@@ -10,7 +10,7 @@ using namespace swganh::object;
 using namespace swganh::object::installation;
 using namespace swganh::object::harvester_installation;
 
-HarvesterInstallationFactory::HarvesterInstallationFactory(anh::database::DatabaseManagerInterface* db_manager, anh::EventDispatcher* event_dispatcher)
+HarvesterInstallationFactory::HarvesterInstallationFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
 	: InstallationFactory(db_manager, event_dispatcher)
 {
 }

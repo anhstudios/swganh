@@ -20,7 +20,7 @@ using namespace swganh::connection;
 using namespace swganh_core::login;
 using namespace std;
 
-MysqlSessionProvider::MysqlSessionProvider(anh::database::DatabaseManagerInterface* db_manager)
+MysqlSessionProvider::MysqlSessionProvider(swganh::database::DatabaseManagerInterface* db_manager)
     : SessionProviderInterface()
     , db_manager_(db_manager) {}
 

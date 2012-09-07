@@ -36,7 +36,7 @@ namespace messages {
     	std::list<Cluster> servers;
     	uint32_t max_account_chars;
 
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
             buffer.write<uint32_t>(servers.size());
             std::for_each(servers.begin(), servers.end(), [&buffer] (Cluster cluster){
@@ -47,7 +47,7 @@ namespace messages {
             buffer.write<uint32_t>(max_account_chars);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
             uint32_t server_count = buffer.read<uint32_t>();
             for(uint32_t i = 0; i < server_count; i++)

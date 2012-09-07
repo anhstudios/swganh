@@ -48,7 +48,7 @@ namespace command {
     
 namespace combat {
 
-    class CombatServiceInterface : public anh::service::ServiceInterface
+    class CombatServiceInterface : public swganh::service::ServiceInterface
     {
     public:
         virtual void SetIncapacitated(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target) = 0;

@@ -864,9 +864,9 @@ public:
     void SetGender(Gender gender);
 
     // baselines
-    virtual void CreateBaselines(std::shared_ptr<anh::observer::ObserverInterface> observer);
+    virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 
-    typedef anh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
+    typedef swganh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
 
 private:
     void SetDeltaBitmask_(uint32_t bitmask, uint16_t update_type, swganh::object::Object::ViewType view_type);

@@ -6,20 +6,20 @@
 #include <memory>
 
 namespace swganh { namespace database { class DatabaseManagerInterface; 
-}}  // anh::database
+}}  // swganh::database
 
 namespace swganh_core {
 namespace login {
 
 class Sha512Encoder : public swganh::login::encoders::EncoderInterface {
 public:
-    explicit Sha512Encoder(anh::database::DatabaseManagerInterface* db_manager);
+    explicit Sha512Encoder(swganh::database::DatabaseManagerInterface* db_manager);
     ~Sha512Encoder();
 
     std::string EncodePassword(std::string raw, std::string salt);
     bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
 private:
-    anh::database::DatabaseManagerInterface* db_manager_;
+    swganh::database::DatabaseManagerInterface* db_manager_;
 };
 
 }}  // namespace swganh_core::login

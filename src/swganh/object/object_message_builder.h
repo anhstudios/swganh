@@ -24,13 +24,13 @@ namespace object {
     class ObjectMessageBuilder
     {
     public:
-        ObjectMessageBuilder(anh::EventDispatcher* event_dispatcher_)
+        ObjectMessageBuilder(swganh::EventDispatcher* event_dispatcher_)
             : event_dispatcher(event_dispatcher_)
         {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendEndBaselines(const std::shared_ptr<Object>& object, const std::shared_ptr<anh::observer::ObserverInterface>& observer);
+        virtual void SendEndBaselines(const std::shared_ptr<Object>& object, const std::shared_ptr<swganh::observer::ObserverInterface>& observer);
         static void BuildComplexityDelta(const std::shared_ptr<Object>& object);
         static void BuildStfNameDelta(const std::shared_ptr<Object>& object);
         static void BuildCustomNameDelta(const std::shared_ptr<Object>& object);
@@ -44,9 +44,9 @@ namespace object {
 
         static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Object>& object);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Object>& object);
-        typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
+        typedef swganh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
     protected:
-        anh::EventDispatcher* event_dispatcher;        
+        swganh::EventDispatcher* event_dispatcher;        
 	};
 
 }}  // swganh::object

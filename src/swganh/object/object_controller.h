@@ -42,7 +42,7 @@ namespace object {
     class Object;
     class ObjectController;
 
-    class ObjectController : public anh::observer::ObserverInterface, public std::enable_shared_from_this<ObjectController>
+    class ObjectController : public swganh::observer::ObserverInterface, public std::enable_shared_from_this<ObjectController>
     {
     public:
         typedef std::runtime_error InvalidControllerMessage;
@@ -73,7 +73,7 @@ namespace object {
          */
         void SetRemoteClient(std::shared_ptr<swganh::connection::ConnectionClientInterface> remote_client);
 
-        using anh::observer::ObserverInterface::Notify;
+        using swganh::observer::ObserverInterface::Notify;
 
         /**
          * Notifies the controller when the object has been updated.

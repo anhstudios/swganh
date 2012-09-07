@@ -40,7 +40,7 @@ namespace controllers {
         uint64_t target_id;
         std::wstring command_options;
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(action_counter);
             buffer.write(command_crc);
@@ -48,7 +48,7 @@ namespace controllers {
             buffer.write(command_options);
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {
             action_counter = buffer.read<uint32_t>();
             command_crc = buffer.read<uint32_t>();

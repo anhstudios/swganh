@@ -35,8 +35,8 @@
 #include "weather/weather_init.h"
 #include "terrain/terrain_init.h"
 
-using anh::app::KernelInterface;
-using anh::plugin::ExitFunc;
+using swganh::app::KernelInterface;
+using swganh::plugin::ExitFunc;
 using boost::any_cast;
 using boost::program_options::options_description;
 using boost::program_options::variables_map;

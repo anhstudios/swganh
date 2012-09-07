@@ -17,13 +17,13 @@ namespace messages {
     	uint64_t item_id;
     	uint32_t success_flag; // 00 = success, 01 = You are not allowed to retrieve that item, 12 = Inventory full
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(item_id);
     		buffer.write(success_flag);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		success_flag = buffer.read<uint32_t>();

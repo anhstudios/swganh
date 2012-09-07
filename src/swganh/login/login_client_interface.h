@@ -12,9 +12,9 @@ namespace login {
 
 class Account;
 
-class LoginClientInterface : public anh::network::soe::Session {
+class LoginClientInterface : public swganh::network::soe::Session {
 public:    
-    LoginClientInterface(anh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
+    LoginClientInterface(swganh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)
 		:Session(server, io_service, remote_endpoint)
 	{
 	}

@@ -14,19 +14,19 @@ namespace weapon {
     class WeaponMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
     {
     public:
-        WeaponMessageBuilder(anh::EventDispatcher* dispatcher) :
+        WeaponMessageBuilder(swganh::EventDispatcher* dispatcher) :
             TangibleMessageBuilder(dispatcher)
         {
             RegisterEventHandlers();
         }
         virtual void RegisterEventHandlers();
-        virtual void SendBaselines(const std::shared_ptr<Weapon>& weapon, const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+        virtual void SendBaselines(const std::shared_ptr<Weapon>& weapon, const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
         
         // baselines
         static swganh::messages::BaselinesMessage BuildBaseline3(const std::shared_ptr<Weapon>& weapon);
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Weapon>& weapon);
     private:
-        typedef anh::ValueEvent<std::shared_ptr<Weapon>> WeaponEvent;
+        typedef swganh::ValueEvent<std::shared_ptr<Weapon>> WeaponEvent;
     };
 
 }}}  // swganh::object::tangible

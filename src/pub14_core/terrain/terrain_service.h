@@ -51,7 +51,7 @@ namespace terrain
 
 		virtual bool IsWater(uint32_t scene_id, float x, float z, bool raw=false);
 
-		anh::service::ServiceDescription GetServiceDescription();
+		swganh::service::ServiceDescription GetServiceDescription();
         
 
 	private:

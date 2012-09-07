@@ -42,7 +42,7 @@ namespace controllers {
     	uint8_t color_flag;
         std::wstring unicode_string;
     
-    	void OnControllerSerialize(anh::ByteBuffer& buffer) const {
+    	void OnControllerSerialize(swganh::ByteBuffer& buffer) const {
     		buffer.write(attacker_id);
     		buffer.write(defender_id);
     		buffer.write(weapon_id);
@@ -55,7 +55,7 @@ namespace controllers {
     
     	}
     
-    	void OnControllerDeserialize(anh::ByteBuffer& buffer) {
+    	void OnControllerDeserialize(swganh::ByteBuffer& buffer) {
     		attacker_id = buffer.read<uint64_t>();
     		defender_id = buffer.read<uint64_t>();
     		weapon_id = buffer.read<uint64_t>();

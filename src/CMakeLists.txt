@@ -10,9 +10,6 @@ else()
     include(PosixPostBuild)
 endif()
 
-## project libraries
-add_subdirectory(anh)
-
 ## project executables
 add_subdirectory(swganh)
 

@@ -17,13 +17,13 @@ namespace messages {
     	uint8_t update_status; // 0 = not updated; 1 = updated
     	uint64_t ticket_id;
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(update_status);
     		buffer.write(ticket_id);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		update_status = buffer.read<uint8_t>();
     		ticket_id = buffer.read<uint64_t>();

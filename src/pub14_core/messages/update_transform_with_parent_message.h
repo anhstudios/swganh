@@ -22,7 +22,7 @@ namespace messages {
         uint8_t posture_id;
         uint8_t heading;
 
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(cell_id);
             buffer.write(object_id);
@@ -34,7 +34,7 @@ namespace messages {
             buffer.write(heading);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
             cell_id = buffer.read<uint64_t>();
             object_id = buffer.read<uint64_t>();

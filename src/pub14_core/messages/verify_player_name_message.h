@@ -19,14 +19,14 @@ namespace messages {
     	uint32_t attempts_counter;
     	uint32_t unknown;
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(name);
     		buffer.write(attempts_counter);
     		buffer.write(unknown);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		name = buffer.read<std::wstring>();
     		attempts_counter = buffer.read<uint32_t>();

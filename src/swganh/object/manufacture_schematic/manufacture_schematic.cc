@@ -201,7 +201,7 @@ std::string ManufactureSchematic::GetPrototypeModel() const
 
 uint32_t ManufactureSchematic::GetPrototypeCrc() const
 {
-    return anh::memcrc(prototype_model_);
+    return swganh::memcrc(prototype_model_);
 }
 
 void ManufactureSchematic::SetPrototypeModel(std::string prototype_model)

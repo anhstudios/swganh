@@ -22,7 +22,7 @@ namespace messages {
     	std::wstring item_description;
     	uint8_t premium_auction_flag; // 0 = non-premium, 1 = premium
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(item_id);
     		buffer.write(bazaar_terminal_id);
@@ -32,7 +32,7 @@ namespace messages {
     		buffer.write(premium_auction_flag);
     	}
 
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		bazaar_terminal_id = buffer.read<uint64_t>();

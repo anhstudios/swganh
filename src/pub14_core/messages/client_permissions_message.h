@@ -18,14 +18,14 @@ namespace messages {
         uint8_t available_character_slots;
         uint8_t unlimited_characters;
         
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
         	buffer.write(galaxy_available);
         	buffer.write(available_character_slots);
         	buffer.write(unlimited_characters);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
         	galaxy_available = buffer.read<uint8_t>();
         	available_character_slots = buffer.read<uint8_t>();

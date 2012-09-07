@@ -14,7 +14,7 @@ using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh_core::attributes;
 
-FurnitureAttributeTemplate::FurnitureAttributeTemplate(anh::EventDispatcher* dispatcher)
+FurnitureAttributeTemplate::FurnitureAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)
 {
 	RegisterEventHandlers();

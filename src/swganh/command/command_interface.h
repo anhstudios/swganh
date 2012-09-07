@@ -60,7 +60,7 @@ namespace command {
         /**
          * @return The controller associated with this command invocation.
          */
-        virtual const std::shared_ptr<anh::observer::ObserverInterface> GetController() const = 0;
+        virtual const std::shared_ptr<swganh::observer::ObserverInterface> GetController() const = 0;
         
         virtual void SetCommandProperties(const CommandProperties& properties) = 0;
 

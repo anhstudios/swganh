@@ -9,7 +9,7 @@ namespace attributes {
 	class MedsAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		MedsAttributeTemplate(anh::EventDispatcher* dispatcher);            
+		MedsAttributeTemplate(swganh::EventDispatcher* dispatcher);            
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

@@ -17,13 +17,13 @@ namespace messages {
     	uint64_t item_id;
     	uint64_t bazaar_terminal_id;
     	
-    	void OnSerialize(anh::ByteBuffer& buffer) const
+    	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
     		buffer.write(item_id);
     		buffer.write(bazaar_terminal_id);
     	}
     
-    	void OnDeserialize(anh::ByteBuffer& buffer)
+    	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
     		item_id = buffer.read<uint64_t>();
     		bazaar_terminal_id = buffer.read<uint64_t>();

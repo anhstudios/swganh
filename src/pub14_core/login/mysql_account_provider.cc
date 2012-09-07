@@ -22,7 +22,7 @@ using namespace providers;
 using namespace swganh_core::login;
 using namespace std;
 
-MysqlAccountProvider::MysqlAccountProvider(anh::database::DatabaseManagerInterface* db_manager)
+MysqlAccountProvider::MysqlAccountProvider(swganh::database::DatabaseManagerInterface* db_manager)
     : AccountProviderInterface()
     , db_manager_(db_manager) {}
 

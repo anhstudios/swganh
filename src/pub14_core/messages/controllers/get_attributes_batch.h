@@ -26,12 +26,12 @@ namespace controllers {
         static uint32_t message_type() { return 0x164550EF; }
                 
 
-        void OnControllerSerialize(anh::ByteBuffer& buffer) const
+        void OnControllerSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write<uint32_t>(0);            
         }
 
-        void OnControllerDeserialize(anh::ByteBuffer& buffer)
+        void OnControllerDeserialize(swganh::ByteBuffer& buffer)
         {            
         }
     };

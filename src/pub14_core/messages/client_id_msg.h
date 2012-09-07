@@ -17,14 +17,14 @@ namespace messages {
         
         std::string session_hash;
         
-        void OnSerialize(anh::ByteBuffer& buffer) const
+        void OnSerialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write<uint32_t>(0);
             buffer.write<uint32_t>(0);
             buffer.write(session_hash);
         }
 
-        void OnDeserialize(anh::ByteBuffer& buffer)
+        void OnDeserialize(swganh::ByteBuffer& buffer)
         {
             buffer.read<uint32_t>();  // unknown
             buffer.read<uint32_t>();  // size @TODO Investigate if this is proper usage.

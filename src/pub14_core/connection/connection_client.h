@@ -13,7 +13,7 @@ class ConnectionClient : public swganh::connection::ConnectionClientInterface
 {
 public:
 
-    ConnectionClient(anh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
+    ConnectionClient(swganh::network::soe::ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint);
     
     State GetState() const;
 
@@ -23,9 +23,9 @@ public:
 
     void Connect(uint32_t account_id, uint64_t player_id);
     
-    const std::shared_ptr<anh::observer::ObserverInterface>& GetController() const;
+    const std::shared_ptr<swganh::observer::ObserverInterface>& GetController() const;
 
-    void SetController(const std::shared_ptr<anh::observer::ObserverInterface>& controller);
+    void SetController(const std::shared_ptr<swganh::observer::ObserverInterface>& controller);
 
 private:
 
@@ -34,7 +34,7 @@ private:
    State state_;
     uint32_t account_id_;
     uint64_t player_id_;
-    std::shared_ptr<anh::observer::ObserverInterface> controller_;
+    std::shared_ptr<swganh::observer::ObserverInterface> controller_;
 };
 
 }}  // namespace swganh::connection
