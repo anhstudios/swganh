@@ -16,8 +16,8 @@
 
 #include "swganh/scripting/utilities.h"
 
-#include "pub14_core/messages/controllers/object_menu_request.h"
-#include "pub14_core/messages/controllers/object_menu_response.h"
+#include "swganh_core/messages/controllers/object_menu_request.h"
+#include "swganh_core/messages/controllers/object_menu_response.h"
 
 
 

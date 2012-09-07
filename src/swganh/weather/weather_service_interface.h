@@ -12,7 +12,7 @@
 #include "weather_data.h"
 #include "swganh/app/swganh_kernel.h"
 #include <boost/asio.hpp>
-namespace swganh_core{
+namespace swganh{
 namespace weather{
 
 }

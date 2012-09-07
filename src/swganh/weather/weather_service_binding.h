@@ -15,7 +15,7 @@
 #include <boost/python.hpp>
 
 using namespace swganh::weather;
-using namespace swganh_core::weather;
+using namespace swganh::weather;
 using namespace boost::python;
 using namespace std;
 

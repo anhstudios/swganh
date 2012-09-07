@@ -7,8 +7,8 @@
 #endif
 
 #include "swganh/object/object_controller.h"
-#include "pub14_core/messages/controllers/show_fly_text.h"
-#include "pub14_core/messages/out_of_band.h"
+#include "swganh_core/messages/controllers/show_fly_text.h"
+#include "swganh_core/messages/out_of_band.h"
 
 #include <boost/python.hpp>
 

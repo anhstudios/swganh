@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "pub14_core/messages/controllers/command_queue_enqueue.h"
+#include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
 #include "command_interface.h"
 #include "command_properties.h"

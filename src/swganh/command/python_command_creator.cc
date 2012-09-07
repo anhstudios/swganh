@@ -6,7 +6,7 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/command/command_interface.h"
 #include "swganh/command/command_properties.h"
-#include "pub14_core/messages/controllers/command_queue_enqueue.h"
+#include "swganh_core/messages/controllers/command_queue_enqueue.h"
 #include "swganh/object/object_controller.h"
 #include "swganh/scripting/utilities.h"
 

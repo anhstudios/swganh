@@ -6,7 +6,7 @@
 #include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object.h"
+#include "swganh/object/object_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 using swganh::observer::ObserverInterface;

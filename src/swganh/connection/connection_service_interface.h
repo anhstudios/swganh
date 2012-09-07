@@ -20,13 +20,13 @@
 
 #include "swganh/login/login_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
-#include "pub14_core/messages/cmd_scene_ready.h"
+#include "swganh_core/messages/cmd_scene_ready.h"
 
 #include "swganh/connection/providers/session_provider_interface.h"
 
-#include "pub14_core/messages/client_permissions_message.h"
-#include "pub14_core/messages/client_id_msg.h"
-#include "pub14_core/messages/heart_beat.h"
+#include "swganh_core/messages/client_permissions_message.h"
+#include "swganh_core/messages/client_id_msg.h"
+#include "swganh_core/messages/heart_beat.h"
 
 namespace swganh {
 namespace network {
