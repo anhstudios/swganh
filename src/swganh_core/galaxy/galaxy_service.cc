@@ -17,7 +17,7 @@ using namespace swganh;
 using namespace app;
 using namespace service;
 using namespace swganh::app;
-using namespace swganh_core::galaxy;
+using namespace swganh::galaxy;
 using namespace std;
 
 GalaxyService::GalaxyService(SwganhKernel* kernel)

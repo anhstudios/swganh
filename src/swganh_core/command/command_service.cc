@@ -20,10 +20,10 @@
 #include "swganh/command/command_queue_interface.h"
 #include "swganh/command/command_queue_manager_interface.h"
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 using swganh::service::ServiceDescription;
-using swganh_core::command::CommandService;
+using swganh::command::CommandService;
 using swganh::app::SwganhKernel;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCreator;

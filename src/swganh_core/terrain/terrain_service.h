@@ -19,7 +19,7 @@ namespace tre
 }
 
 
-namespace swganh_core
+namespace swganh
 {
 
 

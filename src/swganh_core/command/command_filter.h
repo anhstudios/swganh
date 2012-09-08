@@ -12,7 +12,7 @@ class CommandInterface;
 
 }}
 
-namespace swganh_core {
+namespace swganh {
 namespace command {
 
 enum ERROR
@@ -56,4 +56,4 @@ struct CommandFilters {
     static uint32_t  GetLowestCommonBit(uint64_t creature_mask, uint64_t cmd_properties_mask);
 };
 
-}} // swganh_core::command
+}} // swganh::command

@@ -17,7 +17,7 @@ namespace simulation {
 	class SimulationServiceInterface;
 }} // swganh::simulation
 
-namespace swganh_core {
+namespace swganh {
 namespace player {
 
 	class PlayerService : public swganh::player::PlayerServiceInterface
@@ -47,4 +47,4 @@ namespace player {
 		swganh::CallbackId player_removed_;
 	};
 
-}} // swganh_core::player
+}} // swganh::player

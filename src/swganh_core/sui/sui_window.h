@@ -7,7 +7,7 @@
 
 #include "swganh/sui/sui_window_interface.h"
 
-namespace swganh_core 
+namespace swganh 
 {
 namespace sui
 {

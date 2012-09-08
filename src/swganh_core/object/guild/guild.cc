@@ -1,11 +1,11 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/object/guild/guild.h"
+#include "guild.h"
 
 #include <sstream>
 
-#include <swganh/object/guild/guild_message_builder.h>
+#include "guild_message_builder.h"
 
 using namespace std;
 using namespace swganh::messages;

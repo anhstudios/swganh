@@ -19,7 +19,7 @@ namespace observer {
 }
 }
 
-namespace swganh_core {
+namespace swganh {
 namespace command {
 
     class CommandService: public swganh::command::CommandServiceInterface
@@ -86,4 +86,4 @@ namespace command {
         swganh::CallbackId obj_removed_id_;
     };
 
-}}  // namespace swganh_core::command
+}}  // namespace swganh::command

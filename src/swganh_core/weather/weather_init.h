@@ -17,7 +17,7 @@
 #include "weather_service.h"
 #include "version.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace weather {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
@@ -44,6 +44,6 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	}
 }
 
-}}  // namespace swganh_core::chat
+}}  // namespace swganh::chat
 
 #endif  // SWGANH_CORE_WEATHER_INITIALIZATION_H_

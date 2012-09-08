@@ -1,12 +1,12 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/object/intangible/intangible_message_builder.h"
+#include "intangible_message_builder.h"
 
 #include <cstdint>
 
-#include "swganh/object/object.h"
-#include "swganh/object/intangible/intangible.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/intangible/intangible.h"
 
 using namespace std;
 using namespace swganh::messages;

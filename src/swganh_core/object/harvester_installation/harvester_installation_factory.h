@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/object/installation/installation_factory.h"
+#include "swganh_core/object/installation/installation_factory.h"
 
 namespace swganh {
 namespace object {

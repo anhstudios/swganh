@@ -8,14 +8,14 @@
 #include "swganh/service/service_description.h"
 #include "swganh/service/service_manager.h"
 #include "swganh/connection/connection_client_interface.h"
-#include "swganh/object/player/player.h"
-#include "swganh/object/object_controller.h"
+#include "swganh_core/object/player/player.h"
+#include "swganh_core/object/object_controller.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;
 using namespace swganh;
 using namespace swganh::service;
-using namespace swganh_core::player;
+using namespace swganh::player;
 using namespace swganh::object::player;
 
 

@@ -8,7 +8,7 @@
 namespace swganh { namespace database { class DatabaseManagerInterface; 
 }}  // swganh::database
 
-namespace swganh_core {
+namespace swganh {
 namespace login {
 
 class MysqlSessionProvider : public swganh::connection::providers::SessionProviderInterface {

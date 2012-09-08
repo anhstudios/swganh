@@ -6,7 +6,7 @@
 #include <string>
 #include <boost/optional.hpp>
 
-#include "swganh/object/tangible/tangible_message_builder.h"
+#include "swganh_core/object/tangible/tangible_message_builder.h"
 
 #include "creature.h"
 

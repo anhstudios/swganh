@@ -7,7 +7,7 @@
 #include <memory>
 #include <boost/optional.hpp>
 
-#include "swganh/object/intangible/intangible_message_builder.h"
+#include "swganh_core/object/intangible/intangible_message_builder.h"
 
 namespace swganh {
 namespace messages {

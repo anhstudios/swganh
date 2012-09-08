@@ -3,7 +3,7 @@
 
 #include "tangible.h"
 
-#include "swganh/object/object_events.h"
+#include "swganh_core/object/object_events.h"
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::object::tangible;

@@ -1,6 +1,6 @@
 #include "creature_permission.h"
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 #include "swganh/object/container_interface.h"
 
 using namespace swganh::object;

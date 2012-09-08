@@ -2,13 +2,12 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "login_client.h"
-#include "swganh/object/object_controller.h"
+#include "swganh/observer/observer_interface.h"
 
 using namespace swganh::network::soe;
 using namespace std;
-using namespace swganh_core::login;
 using namespace swganh::login;
-using namespace swganh::object;
+using namespace swganh::login;
 
 LoginClient::LoginClient(
     ServerInterface* server, boost::asio::io_service& io_service, boost::asio::ip::udp::endpoint remote_endpoint)

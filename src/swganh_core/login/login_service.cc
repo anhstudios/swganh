@@ -34,7 +34,7 @@
 
 using namespace swganh;
 using namespace app;
-using namespace swganh_core::login;
+using namespace swganh::login;
 using namespace swganh::login;
 using namespace swganh::messages;
 using namespace network::soe;

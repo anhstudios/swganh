@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/object/player/player_factory.h"
+#include "player_factory.h"
 
 #include <sstream>
 
@@ -15,10 +15,10 @@
 
 #include "swganh/crc.h"
 #include "swganh/database/database_manager.h"
-#include "swganh/object/player/player.h"
-#include "swganh/object/player/player_events.h"
+#include "swganh_core/object/player/player.h"
+#include "player_events.h"
 
-#include "swganh/object/exception.h"
+#include "swganh_core/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;

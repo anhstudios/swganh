@@ -6,7 +6,7 @@
 
 #include "swganh/command/base_swg_command.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace chat {
 
     class ChatService;

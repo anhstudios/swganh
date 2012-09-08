@@ -17,7 +17,7 @@
 #include "mysql_session_provider.h"
 #include "sha512_encoder.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace login {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 

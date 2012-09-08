@@ -22,7 +22,7 @@
 
 #include "version.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace combat {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
@@ -45,6 +45,6 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     kernel->GetPluginManager()->RegisterObject("Combat::CombatService", &registration);    
 }
 
-}}  // namespace swganh_core::galaxy
+}}  // namespace swganh::galaxy
 
 #endif  // SWGANH_CORE_GALAXY_INITIALIZATION_H_

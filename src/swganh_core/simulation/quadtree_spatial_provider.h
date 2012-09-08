@@ -6,7 +6,7 @@
 #include "swganh/object/permissions/container_permissions_interface.h"
 #include "node.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace simulation {
 
 class QuadtreeSpatialProvider 
@@ -42,4 +42,4 @@ private:
 	quadtree::QueryBox GetQueryBoxViewRange(std::shared_ptr<swganh::object::Object> object);
 };
 
-}} // swganh_core::simulation
+}} // swganh::simulation

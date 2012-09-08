@@ -20,10 +20,10 @@
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/object_controller.h"
-#include "swganh/object/tangible/tangible.h"
-#include "swganh/object/weapon/weapon.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh/observer/observer_interface.h"
+#include "swganh_core/object/tangible/tangible.h"
+#include "swganh_core/object/weapon/weapon.h"
 
 #include "swganh/command/command_service_interface.h"
 #include "swganh/command/python_command_creator.h"
@@ -48,7 +48,7 @@ using namespace swganh::object::creature;
 using namespace swganh::object::weapon;
 using namespace swganh::object::tangible;
 using namespace swganh::simulation;
-using namespace swganh_core::combat;
+using namespace swganh::combat;
 using namespace swganh::command;
 
 using swganh::app::SwganhKernel;

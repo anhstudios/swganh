@@ -10,7 +10,7 @@
 
 #include "swganh/command/command_queue_manager_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace command {
     
     class CommandQueueManager : public swganh::command::CommandQueueManagerInterface

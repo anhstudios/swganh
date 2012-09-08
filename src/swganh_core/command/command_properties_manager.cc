@@ -14,7 +14,7 @@
 using namespace swganh::tre;
 
 using swganh::HashString;
-using swganh_core::command::CommandPropertiesManager;
+using swganh::command::CommandPropertiesManager;
 using swganh::command::CommandProperties;
 using swganh::command::CommandPropertiesMap;
 using std::exception;

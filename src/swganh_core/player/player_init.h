@@ -11,7 +11,7 @@
 
 #include "player_service.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace player {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
@@ -38,4 +38,4 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	}
 }
 
-}}  // namespace swganh_core::player
+}}  // namespace swganh::player

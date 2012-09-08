@@ -4,7 +4,7 @@
 #ifndef SWGANH_OBJECT_MISSION_MISSION_MESSAGE_BUILDER_H_
 #define SWGANH_OBJECT_MISSION_MISSION_MESSAGE_BUILDER_H_
 
-#include "swganh/object/intangible/intangible_message_builder.h"
+#include "swganh_core/object/intangible/intangible_message_builder.h"
 
 #include "mission.h"
 

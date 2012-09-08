@@ -13,6 +13,9 @@
 #include <string>
 #include <vector>
 
+#include "container_interface.h"
+#include "swganh/object/slot_interface.h"
+
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 #include <boost/thread/mutex.hpp>
@@ -28,11 +31,6 @@
 #include "swganh_core/messages/baselines_message.h"
 #include "swganh_core/messages/deltas_message.h"
 #include "swganh_core/messages/obj_controller_message.h"
-
-#include "swganh/object/object_controller.h"
-#include "swganh/object/container_interface.h"
-
-#include "swganh/object/slot_interface.h"
 
 namespace swganh {
 

@@ -15,7 +15,7 @@
 #include "connection_service.h"
 #include "version.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace connection {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
@@ -49,4 +49,4 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	}
 }
 
-}}  // namespace swganh_core::connection
+}}  // namespace swganh::connection

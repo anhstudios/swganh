@@ -7,7 +7,7 @@
 
 #include "swganh/command/base_swg_command.h"
 
-using swganh_core::command::CommandValidator;
+using swganh::command::CommandValidator;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandFilter;
 using swganh::command::CommandInterface;

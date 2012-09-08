@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/object/waypoint/waypoint_factory.h"
+#include "waypoint_factory.h"
 
 #include <cppconn/exception.h>
 #include <cppconn/connection.h>
@@ -12,10 +12,10 @@
 #include "swganh/logger.h"
 
 #include "swganh/database/database_manager.h"
-#include "swganh/object/waypoint/waypoint.h"
-#include "swganh/object/player/player_events.h"
-#include "swganh/object/player/player.h"
-#include "swganh/object/exception.h"
+#include "swganh_core/object/waypoint/waypoint.h"
+#include "swganh_core/object/player/player_events.h"
+#include "swganh_core/object/player/player.h"
+#include "swganh_core/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
 #include "swganh_core/messages/containers/network_map.h"
 

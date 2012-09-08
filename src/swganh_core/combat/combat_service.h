@@ -36,7 +36,7 @@ namespace Concurrency {
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
 
-namespace swganh_core {
+namespace swganh {
     
 namespace combat {
     

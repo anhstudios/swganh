@@ -16,7 +16,7 @@ namespace command {
     class CommandServiceInterface;
 }}
 
-namespace swganh_core {
+namespace swganh {
 namespace command {
     
     class CommandFactory : public swganh::command::CommandFactoryInterface

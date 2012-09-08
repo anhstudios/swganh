@@ -10,7 +10,7 @@
 #include "scene.h"
 #include "swganh/simulation/scene_manager_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace simulation {
     
     class SceneManager : public swganh::simulation::SceneManagerInterface
@@ -45,4 +45,4 @@ namespace simulation {
         SceneMap scenes_;
     };
 
-}}  // namespace swganh_core::simulation
+}}  // namespace swganh::simulation

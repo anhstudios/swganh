@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include "swganh/object/intangible/intangible.h"
+#include "swganh_core/object/intangible/intangible.h"
 
 namespace swganh {
 namespace object {

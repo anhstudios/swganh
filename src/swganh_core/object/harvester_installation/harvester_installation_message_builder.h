@@ -4,7 +4,7 @@
 #ifndef SWGANH_OBJECT_HARVESTER_INSTALLATION_HARVESTER_INSTALLATION_MESSAGE_BUILDER_H_
 #define SWGANH_OBJECT_HARVESTER_INSTALLATION_HARVESTER_INSTALLATION_MESSAGE_BUILDER_H_
 
-#include "swganh/object/installation/installation_message_builder.h"
+#include "swganh_core/object/installation/installation_message_builder.h"
 
 namespace swganh {
 namespace object {

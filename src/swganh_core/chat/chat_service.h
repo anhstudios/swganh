@@ -17,7 +17,7 @@ namespace object {
 	class Object;
 }}  // namespace swganh::object
 
-namespace swganh_core {
+namespace swganh {
 namespace chat {
 
     class ChatService: public swganh::chat::ChatServiceInterface
@@ -41,4 +41,4 @@ namespace chat {
         swganh::app::SwganhKernel* kernel_;
     };
 
-}}  // namespace swganh_core::chat
+}}  // namespace swganh::chat

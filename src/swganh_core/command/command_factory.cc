@@ -10,9 +10,9 @@
 #include "swganh/command/command_properties.h"
 #include "swganh/command/command_service_interface.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
-#include "swganh/object/object_controller.h"
+#include "swganh/observer/observer_interface.h"
 
-using swganh_core::command::CommandFactory;
+using swganh::command::CommandFactory;
 using swganh::app::SwganhKernel;
 using swganh::command::CommandCreator;
 using swganh::command::CommandInterface;

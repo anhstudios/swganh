@@ -9,7 +9,7 @@
 #include <boost/random.hpp>
 
 #include "node.h"
-#include <swganh/object/object.h>
+#include "swganh_core/object/object.h"
 
 using namespace quadtree;
 

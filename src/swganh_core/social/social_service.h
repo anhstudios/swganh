@@ -9,9 +9,9 @@
 #include "swganh/social/social_service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object_controller.h"
+#include "swganh/observer/observer_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace social {
     
     class SocialService : public swganh::social::SocialServiceInterface

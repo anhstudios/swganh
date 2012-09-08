@@ -33,7 +33,7 @@ namespace creature {
 }
 }
 
-namespace swganh_core {
+namespace swganh {
 namespace attributes {
 	typedef std::map<
 		swganh::attributes::AttributeTemplateId, 
@@ -62,4 +62,4 @@ namespace attributes {
 		swganh::app::SwganhKernel* kernel_;
     };
 
-}}  // namespace swganh_core::attributes
+}}  // namespace swganh::attributes

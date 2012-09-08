@@ -24,7 +24,7 @@ namespace command {
     class CommandServiceInterface;
 }}
 
-namespace swganh_core {
+namespace swganh {
 namespace command {
 
     class CommandQueue : public swganh::command::CommandQueueInterface
@@ -79,4 +79,4 @@ namespace command {
         swganh::ActiveObject active_;
     };
 
-}}  // namespace swganh_core::command
+}}  // namespace swganh::command

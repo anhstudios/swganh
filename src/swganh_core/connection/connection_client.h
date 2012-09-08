@@ -6,7 +6,7 @@
 
 #include "swganh/connection/connection_client_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace connection {
 
 class ConnectionClient : public swganh::connection::ConnectionClientInterface

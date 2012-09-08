@@ -3,8 +3,8 @@
 
 #include "group_message_builder.h"
 
-#include <swganh/object/group/group.h>
-#include <swganh/object/tangible/tangible.h>
+#include "group.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 using namespace std;
 using namespace swganh::object::group;

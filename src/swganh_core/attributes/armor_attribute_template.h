@@ -6,7 +6,7 @@
 
 #include "base_attribute_template.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace attributes {
 	class ArmorAttributeTemplate : public BaseAttributeTemplate
 	{

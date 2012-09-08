@@ -5,7 +5,7 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/permissions/permission_type.h"
 
-namespace swganh_core
+namespace swganh
 {
 namespace spawn
 {

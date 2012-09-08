@@ -7,7 +7,7 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 #include "swganh_core/messages/containers/network_array.h"
 #include "swganh_core/messages/containers/network_sorted_list.h"

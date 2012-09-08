@@ -7,7 +7,7 @@
 #include "swganh/attributes/attribute_template_interface.h"
 #include "swganh_core/messages/attribute_list_message.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace attributes {
 	typedef std::map<uint64_t,
 		swganh::messages::AttributeListMessage

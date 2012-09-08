@@ -4,7 +4,7 @@
 #ifndef SWGANH_OBJECT_INSTALLATION_INSTALLATION_MESSAGE_BUILDER_H_
 #define SWGANH_OBJECT_INSTALLATION_INSTALLATION_MESSAGE_BUILDER_H_
 
-#include "swganh/object/tangible/tangible_message_builder.h"
+#include "swganh_core/object/tangible/tangible_message_builder.h"
 
 namespace swganh {
 namespace object {

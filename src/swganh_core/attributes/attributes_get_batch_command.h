@@ -11,7 +11,7 @@ namespace simulation {
 	class SimulationServiceInterface;
 }}
 
-namespace swganh_core {
+namespace swganh {
 namespace attributes {
 
     class AttributesService;

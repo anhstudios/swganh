@@ -6,7 +6,7 @@
 #include "swganh/login/account.h"
 #include "swganh/login/login_client_interface.h"
 
-using namespace swganh_core::login;
+using namespace swganh::login;
 using namespace swganh::login;
 using namespace std;
 

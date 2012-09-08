@@ -10,7 +10,7 @@
 #include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object_controller.h"
+#include "swganh/object/object_controller_interface.h"
 #include "swganh/object/permissions/permission_type.h"
 
 namespace swganh {

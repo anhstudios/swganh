@@ -9,7 +9,7 @@
 #include <vector>
 #include <list>
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 #include "swganh_core/messages/containers/network_sorted_vector.h"
 #include "swganh_core/messages/containers/network_list.h"
 

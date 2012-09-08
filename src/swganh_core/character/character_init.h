@@ -16,7 +16,7 @@
 #include "mysql_character_provider.h"
 #include "version.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace character {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
@@ -57,4 +57,4 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	}
 }
 
-}}  // namespace swganh_core::mysql_auth
+}}  // namespace swganh::mysql_auth

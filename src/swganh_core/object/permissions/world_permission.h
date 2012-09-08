@@ -1,6 +1,6 @@
 #pragma once
 
-#include "container_permissions_interface.h"
+#include "swganh/object/permissions/container_permissions_interface.h"
 
 namespace swganh
 {

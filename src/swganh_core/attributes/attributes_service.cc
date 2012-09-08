@@ -23,7 +23,7 @@
 #include "swganh/database/database_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/creature/creature.h"
+#include "swganh_core/object/creature/creature.h"
 #include "swganh/connection/connection_service_interface.h"
 #include "swganh/connection/connection_client_interface.h"
 
@@ -36,8 +36,8 @@
 
 using swganh::app::SwganhKernel;
 using namespace swganh::app;
-using namespace swganh_core::attributes;
-using namespace swganh_core::connection;
+using namespace swganh::attributes;
+using namespace swganh::connection;
 using namespace swganh::attributes;
 using namespace sql;
 using namespace std;

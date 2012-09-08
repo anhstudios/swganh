@@ -15,7 +15,7 @@
 #include "attributes_service.h"
 #include "version.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace attributes {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
@@ -42,4 +42,4 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	}
 }
 
-}}  // namespace swganh_core::attribute
+}}  // namespace swganh::attribute

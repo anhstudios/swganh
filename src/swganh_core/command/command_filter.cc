@@ -6,12 +6,12 @@
 #include "swganh/command/base_swg_command.h"
 #include "swganh/command/command_interface.h"
 #include "swganh/command/command_properties.h"
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible.h"
-#include "swganh/object/player/player.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh_core/object/tangible/tangible.h"
+#include "swganh_core/object/player/player.h"
 #include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
-using swganh_core::command::CommandFilters;
+using swganh::command::CommandFilters;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandInterface;
 using swganh::object::creature::Creature;

@@ -7,7 +7,7 @@
 #include "swganh_core/messages/deltas_message.h"
 #include "swganh_core/messages/baselines_message.h"
 #include "swganh_core/messages/scene_end_baselines.h"
-#include "swganh/object/object_events.h"
+#include "swganh_core/object/object_events.h"
 
 using namespace swganh;
 using namespace std;

@@ -11,8 +11,8 @@
 #include "swganh/tre/visitors/objects/object_visitor.h"
 #include "swganh/tre/visitors/slots/slot_arrangement_visitor.h"
 #include "swganh/tre/visitors/slots/slot_descriptor_visitor.h"
-#include "swganh/object/slot_exclusive.h"
-#include "swganh/object/slot_container.h"
+#include "swganh_core/object/slot_exclusive.h"
+#include "swganh_core/object/slot_container.h"
 
 #include "swganh/database/database_manager_interface.h"
 #include <cppconn/exception.h>

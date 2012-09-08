@@ -9,7 +9,7 @@
 #include "swganh_core/messages/containers/network_sorted_vector.h"
 #include "swganh_core/messages/containers/network_map.h"
 
-#include "swganh/object/intangible/intangible.h"
+#include "swganh_core/object/intangible/intangible.h"
 
 namespace swganh {
 namespace object {

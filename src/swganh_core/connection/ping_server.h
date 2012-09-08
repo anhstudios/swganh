@@ -8,7 +8,7 @@
 
 #include <boost/asio.hpp>
 
-namespace swganh_core {
+namespace swganh {
 namespace connection {
 
 class PingServer

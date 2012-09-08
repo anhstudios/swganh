@@ -4,7 +4,7 @@
 
 #include "swganh/login/login_service_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace login {
 
 class LoginService 

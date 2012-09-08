@@ -4,7 +4,7 @@
 
 #include "swganh/login/login_client_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace login {
 
 class LoginClient : public swganh::login::LoginClientInterface {

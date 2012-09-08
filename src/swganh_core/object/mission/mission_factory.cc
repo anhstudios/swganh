@@ -1,9 +1,9 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/object/mission/mission_factory.h"
+#include "mission_factory.h"
 
-#include "swganh/object/mission/mission.h"
+#include "mission.h"
 
 using namespace std;
 using namespace swganh::object;

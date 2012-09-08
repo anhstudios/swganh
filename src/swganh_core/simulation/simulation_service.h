@@ -4,7 +4,7 @@
 
 #include "swganh/simulation/simulation_service_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace simulation {
     
     class SimulationServiceImpl;
@@ -78,4 +78,4 @@ namespace simulation {
         swganh::app::SwganhKernel* kernel_;
     };
 
-}}  // namespace swganh_core::simulation
+}}  // namespace swganh::simulation

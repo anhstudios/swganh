@@ -12,7 +12,7 @@ namespace app {
 	class SwganhKernel;
 }}
 
-namespace swganh_core {
+namespace swganh {
 namespace simulation {
 	class SpatialProviderInterface;
 

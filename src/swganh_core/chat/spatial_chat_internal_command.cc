@@ -12,14 +12,14 @@
 #include "swganh/logger.h"
 #include "swganh/service/service_manager.h"
 
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 #include "chat_service.h"
 
 using swganh::app::SwganhKernel;
-using swganh_core::chat::ChatService;
-using swganh_core::chat::SpatialChatInternalCommand;
+using swganh::chat::ChatService;
+using swganh::chat::SpatialChatInternalCommand;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCallback;
 using swganh::command::CommandProperties;

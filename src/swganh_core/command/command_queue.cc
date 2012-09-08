@@ -13,14 +13,14 @@
 #include "swganh/command/command_interface.h"
 #include "swganh/command/command_service_interface.h"
 
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible.h"
-#include "swganh/object/object_controller.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh_core/object/tangible/tangible.h"
+#include "swganh/observer/observer_interface.h"
 
 #include "command_service.h"
 
-using swganh_core::command::CommandQueue;
-using swganh_core::command::CommandService;
+using swganh::command::CommandQueue;
+using swganh::command::CommandService;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCallback;
 using swganh::command::CommandInterface;

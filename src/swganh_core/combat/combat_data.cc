@@ -5,7 +5,7 @@
 
 #include "swganh/command/base_combat_command.h"
 
-using namespace swganh_core::combat;
+using namespace swganh::combat;
 using namespace boost::python;
 
 CombatData::CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties )

@@ -5,7 +5,7 @@
 
 #include <sstream>
 
-#include <swganh/object/guild/guild.h>
+#include "swganh_core/object/guild/guild.h"
 
 using namespace std;
 using namespace swganh::object::guild;

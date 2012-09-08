@@ -24,7 +24,7 @@ namespace simulation {
 	class SimulationServiceInterface;
 }} // swganh::simulation
 
-namespace swganh_core {
+namespace swganh {
 namespace simulation {
 	class MovementManager : public swganh::simulation::MovementManagerInterface
     {

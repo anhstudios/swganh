@@ -18,7 +18,7 @@
 #include "swganh_core/messages/controllers/spatial_chat.h"
 #include "swganh_core/messages/obj_controller_message.h"
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 #include "swganh/command/command_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
@@ -28,7 +28,7 @@
 using namespace swganh::app;
 using namespace swganh::service;
 using namespace std;
-using namespace swganh_core::chat;
+using namespace swganh::chat;
 using namespace swganh::command;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;

@@ -9,7 +9,7 @@ namespace app {
 class KernelInterface;
 }}  // namespace swganh::app
 
-namespace swganh_core {
+namespace swganh {
 namespace character {
 
 class MysqlCharacterProvider : public swganh::character::CharacterProviderInterface{
@@ -36,4 +36,4 @@ private:
 	std::vector<std::string> racially_inappropriate_;
 };
 
-}}  // namespace swganh_core::character
+}}  // namespace swganh::character

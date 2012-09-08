@@ -5,7 +5,7 @@
 #include <memory>
 #include <boost/optional.hpp>
 
-#include "swganh/object/object_message_builder.h"
+#include "swganh_core/object/object_message_builder.h"
 
 namespace swganh {
 namespace messages {

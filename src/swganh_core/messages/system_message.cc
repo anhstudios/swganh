@@ -3,7 +3,7 @@
 #include "system_message.h"
 #include "out_of_band.h"
 #include "chat_system_message.h"
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 #ifndef WIN32
 #include <boost/regex.hpp>

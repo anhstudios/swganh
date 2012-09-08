@@ -9,7 +9,7 @@
 #include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object_controller.h"
+#include "swganh/observer/observer_interface.h"
 
 namespace swganh {
 namespace object {

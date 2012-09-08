@@ -14,10 +14,10 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh_core/messages/out_of_band.h"
 #include "swganh/simulation/simulation_service_interface.h"
-#include "swganh/object/player/player.h"
-#include "swganh/object/object_controller.h"
+#include "swganh_core/object/player/player.h"
+#include "swganh_core/object/object_controller.h"
 #include "swganh/connection/connection_client_interface.h"
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 using namespace std;
 using namespace swganh;
@@ -25,7 +25,7 @@ using namespace swganh::service;
 using namespace swganh::plugin;
 using namespace swganh::messages;
 using namespace swganh::simulation;
-using namespace swganh_core::weather;
+using namespace swganh::weather;
 using namespace swganh::object::player;
 using namespace swganh::object;
 using namespace swganh::weather;

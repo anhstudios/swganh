@@ -11,7 +11,7 @@ namespace command {
     class BaseSwgCommand;
 }}
 
-namespace swganh_core {
+namespace swganh {
 namespace command {
 
     class CommandValidator : public swganh::command::CommandValidatorInterface

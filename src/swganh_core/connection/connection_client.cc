@@ -4,13 +4,13 @@
 #include "connection_client.h"
 
 #include "swganh/observer/observer_interface.h"
-#include "swganh/object/object_controller.h"
-#include "swganh/object/object.h"
-#include "swganh/object/player/player.h"
+#include "swganh/observer/observer_interface.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/player/player.h"
 
 using namespace swganh::network::soe;
 using namespace std;
-using namespace swganh_core::connection;
+using namespace swganh::connection;
 using namespace swganh::object;
 using namespace swganh::observer;
 

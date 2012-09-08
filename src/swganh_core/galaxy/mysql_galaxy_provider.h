@@ -8,7 +8,7 @@
 namespace swganh { namespace database { class DatabaseManagerInterface; 
 }}  // swganh::database
 
-namespace swganh_core {
+namespace swganh {
 namespace galaxy {
 
 class MysqlGalaxyProvider : public swganh::galaxy::providers::GalaxyProviderInterface {

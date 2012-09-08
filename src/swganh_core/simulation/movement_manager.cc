@@ -9,9 +9,9 @@
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/service/service_manager.h"
-#include "swganh/object/object.h"
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/object_controller.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh/observer/observer_interface.h"
 
 #include "swganh_core/messages/update_containment_message.h"
 #include "swganh_core/messages/update_transform_message.h"
@@ -27,7 +27,7 @@ using namespace swganh::messages::controllers;
 using namespace swganh::object;
 using namespace swganh::object::creature;
 using namespace swganh::simulation;
-using namespace swganh_core::simulation;
+using namespace swganh::simulation;
 
 MovementManager::MovementManager(swganh::app::SwganhKernel* kernel)
 	: kernel_(kernel)

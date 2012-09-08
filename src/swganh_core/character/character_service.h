@@ -29,7 +29,7 @@ namespace swganh {
 namespace character {
 	class CharacterProviderInterface;
 }}
-namespace swganh_core {
+namespace swganh {
 namespace character {
     
 class CharacterService : public swganh::character::CharacterServiceInterface {

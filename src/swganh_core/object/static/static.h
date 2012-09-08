@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 namespace swganh {
 namespace object {

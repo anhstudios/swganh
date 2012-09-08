@@ -27,10 +27,10 @@ namespace concurrency {
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/tre/visitors/slots/slot_definition_visitor.h"
 
-#include "swganh/object/object.h"
-#include "swganh/object/exception.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/exception.h"
 #include "swganh/object/object_factory_interface.h"
-#include "swganh/object/object_message_builder.h"
+#include "swganh_core/object/object_message_builder.h"
 #include "swganh/object/permissions/permission_type.h"
 
 namespace swganh {

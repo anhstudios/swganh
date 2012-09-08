@@ -32,7 +32,7 @@
 #include "swganh_core/messages/client_random_name_request.h"
 #include "swganh_core/messages/client_random_name_response.h"
 
-#include "swganh/object/player/player.h"
+#include "swganh_core/object/player/player.h"
 
 #include "swganh/logger.h"
 
@@ -41,7 +41,7 @@ using namespace swganh;
 using namespace swganh::app;
 using namespace swganh::database;
 using namespace swganh::character;
-using namespace swganh_core::character;
+using namespace swganh::character;
 using namespace swganh::messages;
 
 #ifdef WIN32

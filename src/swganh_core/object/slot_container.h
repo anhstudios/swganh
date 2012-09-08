@@ -1,7 +1,7 @@
 #ifndef SLOT_CONTAINER_H_
 #define SLOT_CONTAINER_H_
 
-#include "slot_interface.h"
+#include "swganh/object/slot_interface.h"
 
 #include <set>
 

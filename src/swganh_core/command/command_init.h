@@ -22,7 +22,7 @@
 
 #include "version.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace command {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
@@ -130,5 +130,5 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
     }
 }
 
-}}  // namespace swganh_core::command
+}}  // namespace swganh::command
 

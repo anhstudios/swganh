@@ -17,7 +17,7 @@
 #include "spawn_service.h"
 #include "version.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace spawn {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
@@ -42,6 +42,6 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 	}
 }
 
-}}  // namespace swganh_core::spawn
+}}  // namespace swganh::spawn
 
 #endif  // SWGANH_CORE_SPAWN_INITIALIZATION_H_

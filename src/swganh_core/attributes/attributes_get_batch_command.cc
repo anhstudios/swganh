@@ -9,16 +9,16 @@
 #include "swganh/service/service_manager.h"
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 #include "swganh/simulation/simulation_service_interface.h"
 
 #include "attributes_service.h"
 
 using swganh::app::SwganhKernel;
-using swganh_core::attributes::AttributesService;
-using swganh_core::attributes::GetAttributesBatchCommand;
+using swganh::attributes::AttributesService;
+using swganh::attributes::GetAttributesBatchCommand;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCallback;
 using swganh::command::CommandProperties;

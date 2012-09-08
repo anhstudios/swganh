@@ -6,13 +6,13 @@
 #include <sstream>
 
 #include "swganh/event_dispatcher.h"
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 using namespace std;
 using namespace swganh;
 using namespace swganh::object;
 using namespace swganh::messages;
-using namespace swganh_core::attributes;
+using namespace swganh::attributes;
 
 ArmorAttributeTemplate::ArmorAttributeTemplate(swganh::EventDispatcher* dispatcher)
 	: BaseAttributeTemplate(dispatcher)

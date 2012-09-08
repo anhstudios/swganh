@@ -5,7 +5,7 @@
 #include "creature.h"
 #include "swganh_core/messages/update_pvp_status_message.h"
 #include "swganh_core/messages/controllers/posture.h"
-#include "swganh/object/object_events.h"
+#include "swganh_core/object/object_events.h"
 
 using namespace std;
 using namespace swganh;

@@ -13,10 +13,10 @@
 #include "swganh/connection/connection_service_interface.h"
 #include "swganh/character/character_provider_interface.h"
 
-#include "swganh/object/player/player.h"
-#include "swganh/object/object.h"
-#include "swganh/object/object_controller.h"
-#include "swganh/object/object_manager.h"
+#include "swganh_core/object/player/player.h"
+#include "swganh_core/object/object.h"
+#include "swganh/observer/observer_interface.h"
+#include "swganh_core/object/object_manager.h"
 
 #include "swganh_core/messages/out_of_band.h"
 
@@ -26,7 +26,7 @@ using namespace std;
 using namespace swganh::connection;
 using namespace swganh::object;
 using namespace swganh::object::player;
-using namespace swganh_core::social;
+using namespace swganh::social;
 
 using swganh::app::KernelInterface;
 using swganh::service::ServiceDescription;

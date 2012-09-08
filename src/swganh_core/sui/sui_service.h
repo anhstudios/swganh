@@ -49,7 +49,7 @@ namespace messages
 
 }
 
-namespace swganh_core
+namespace swganh
 {
 namespace sui
 {

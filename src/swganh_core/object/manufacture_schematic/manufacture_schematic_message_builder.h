@@ -4,7 +4,7 @@
 #ifndef SWGANH_OBJECT_MANUFACTURE_SCHEMATIC_MANUFACTURE_SCHEMATIC_MESSAGE_BUILDER_H_
 #define SWGANH_OBJECT_MANUFACTURE_SCHEMATIC_MANUFACTURE_SCHEMATIC_MESSAGE_BUILDER_H_
 
-#include "swganh/object/intangible/intangible_message_builder.h"
+#include "swganh_core/object/intangible/intangible_message_builder.h"
 
 #include "manufacture_schematic.h"
 

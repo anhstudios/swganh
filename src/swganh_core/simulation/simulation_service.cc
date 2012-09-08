@@ -12,7 +12,7 @@
 #include "swganh/database/database_manager.h"
 #include "swganh/network/soe/server_interface.h"
 #include "swganh/plugin/plugin_manager.h"
-#include "swganh/observer/observer_interface.h"
+#include "swganh_core/object/object_controller.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -25,77 +25,77 @@
 
 #include "swganh_core/messages/select_character.h"
 
-#include "swganh/object/object.h"
-#include "swganh/object/object_manager.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/object_manager.h"
 
 // Objects
-#include "swganh/object/building/building.h"
-#include "swganh/object/building/building_factory.h"
-#include "swganh/object/building/building_message_builder.h"
+#include "swganh_core/object/building/building.h"
+#include "swganh_core/object/building/building_factory.h"
+#include "swganh_core/object/building/building_message_builder.h"
 
-#include "swganh/object/cell/cell.h"
-#include "swganh/object/cell/cell_factory.h"
-#include "swganh/object/cell/cell_message_builder.h"
+#include "swganh_core/object/cell/cell.h"
+#include "swganh_core/object/cell/cell_factory.h"
+#include "swganh_core/object/cell/cell_message_builder.h"
 
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/creature/creature_factory.h"
-#include "swganh/object/creature/creature_message_builder.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh_core/object/creature/creature_factory.h"
+#include "swganh_core/object/creature/creature_message_builder.h"
 
-#include "swganh/object/factory_crate/factory_crate.h"
-#include "swganh/object/factory_crate/factory_crate_factory.h"
-#include "swganh/object/factory_crate/factory_crate_message_builder.h"
+#include "swganh_core/object/factory_crate/factory_crate.h"
+#include "swganh_core/object/factory_crate/factory_crate_factory.h"
+#include "swganh_core/object/factory_crate/factory_crate_message_builder.h"
 
-#include "swganh/object/group/group.h"
-#include "swganh/object/group/group_factory.h"
-#include "swganh/object/group/group_message_builder.h"
+#include "swganh_core/object/group/group.h"
+#include "swganh_core/object/group/group_factory.h"
+#include "swganh_core/object/group/group_message_builder.h"
 
-#include "swganh/object/guild/guild.h"
-#include "swganh/object/guild/guild_factory.h"
-#include "swganh/object/guild/guild_message_builder.h"
+#include "swganh_core/object/guild/guild.h"
+#include "swganh_core/object/guild/guild_factory.h"
+#include "swganh_core/object/guild/guild_message_builder.h"
 
-#include "swganh/object/installation/installation.h"
-#include "swganh/object/installation/installation_factory.h"
-#include "swganh/object/installation/installation_message_builder.h"
+#include "swganh_core/object/installation/installation.h"
+#include "swganh_core/object/installation/installation_factory.h"
+#include "swganh_core/object/installation/installation_message_builder.h"
 
-#include "swganh/object/harvester_installation/harvester_installation.h"
-#include "swganh/object/harvester_installation/harvester_installation_factory.h"
-#include "swganh/object/harvester_installation/harvester_installation_message_builder.h"
+#include "swganh_core/object/harvester_installation/harvester_installation.h"
+#include "swganh_core/object/harvester_installation/harvester_installation_factory.h"
+#include "swganh_core/object/harvester_installation/harvester_installation_message_builder.h"
 
-#include "swganh/object/installation/installation.h"
-#include "swganh/object/installation/installation_factory.h"
-#include "swganh/object/installation/installation_message_builder.h"
+#include "swganh_core/object/installation/installation.h"
+#include "swganh_core/object/installation/installation_factory.h"
+#include "swganh_core/object/installation/installation_message_builder.h"
 
-#include "swganh/object/intangible/intangible.h"
-#include "swganh/object/intangible/intangible_factory.h"
-#include "swganh/object/intangible/intangible_message_builder.h"
+#include "swganh_core/object/intangible/intangible.h"
+#include "swganh_core/object/intangible/intangible_factory.h"
+#include "swganh_core/object/intangible/intangible_message_builder.h"
 
-#include "swganh/object/mission/mission.h"
-#include "swganh/object/mission/mission_factory.h"
-#include "swganh/object/mission/mission_message_builder.h"
+#include "swganh_core/object/mission/mission.h"
+#include "swganh_core/object/mission/mission_factory.h"
+#include "swganh_core/object/mission/mission_message_builder.h"
 
-#include "swganh/object/player/player.h"
-#include "swganh/object/player/player_factory.h"
-#include "swganh/object/player/player_message_builder.h"
+#include "swganh_core/object/player/player.h"
+#include "swganh_core/object/player/player_factory.h"
+#include "swganh_core/object/player/player_message_builder.h"
 
-#include "swganh/object/resource_container/resource_container.h"
-#include "swganh/object/resource_container/resource_container_factory.h"
-#include "swganh/object/resource_container/resource_container_message_builder.h"
+#include "swganh_core/object/resource_container/resource_container.h"
+#include "swganh_core/object/resource_container/resource_container_factory.h"
+#include "swganh_core/object/resource_container/resource_container_message_builder.h"
 
-#include "swganh/object/static/static.h"
-#include "swganh/object/static/static_factory.h"
-#include "swganh/object/static/static_message_builder.h"
+#include "swganh_core/object/static/static.h"
+#include "swganh_core/object/static/static_factory.h"
+#include "swganh_core/object/static/static_message_builder.h"
 
-#include "swganh/object/tangible/tangible.h"
-#include "swganh/object/tangible/tangible_factory.h"
-#include "swganh/object/tangible/tangible_message_builder.h"
+#include "swganh_core/object/tangible/tangible.h"
+#include "swganh_core/object/tangible/tangible_factory.h"
+#include "swganh_core/object/tangible/tangible_message_builder.h"
 
-#include "swganh/object/waypoint/waypoint.h"
-#include "swganh/object/waypoint/waypoint_factory.h"
-#include "swganh/object/waypoint/waypoint_message_builder.h"
+#include "swganh_core/object/waypoint/waypoint.h"
+#include "swganh_core/object/waypoint/waypoint_factory.h"
+#include "swganh_core/object/waypoint/waypoint_message_builder.h"
 
-#include "swganh/object/weapon/weapon.h"
-#include "swganh/object/weapon/weapon_factory.h"
-#include "swganh/object/weapon/weapon_message_builder.h"
+#include "swganh_core/object/weapon/weapon.h"
+#include "swganh_core/object/weapon/weapon_factory.h"
+#include "swganh_core/object/weapon/weapon_message_builder.h"
 
 #include "swganh/simulation/scene_manager_interface.h"
 #include "swganh/simulation/scene_interface.h"
@@ -122,8 +122,8 @@ using namespace swganh::messages::controllers;
 using namespace swganh::network;
 using namespace swganh::object;
 using namespace swganh::simulation;
-using namespace swganh_core::equipment;
-using namespace swganh_core::simulation;
+using namespace swganh::equipment;
+using namespace swganh::simulation;
 
 using namespace swganh::tre;
 
@@ -133,7 +133,7 @@ using swganh::network::soe::Session;
 using swganh::service::ServiceDescription;
 using swganh::app::SwganhKernel;
 
-namespace swganh_core {
+namespace swganh {
 namespace simulation {
 
 class SimulationServiceImpl {
@@ -494,7 +494,7 @@ private:
     Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
 };
 
-}}  // namespace swganh_core::simulation
+}}  // namespace swganh::simulation
 
 SimulationService::SimulationService(SwganhKernel* kernel)
     : impl_(new SimulationServiceImpl(kernel))

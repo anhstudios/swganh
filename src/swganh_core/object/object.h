@@ -22,14 +22,14 @@
 
 #include "swganh/event_dispatcher.h"
 #include "swganh/observer/observable_interface.h"
-#include "swganh/observer/observer_interface.h"
+#include "swganh_core/object/object_controller.h"
 
 #include "swganh_core/messages/base_baselines_message.h"
 #include "swganh_core/messages/baselines_message.h"
 #include "swganh_core/messages/deltas_message.h"
 #include "swganh_core/messages/obj_controller_message.h"
 
-#include "swganh/object/object_controller.h"
+#include "swganh/observer/observer_interface.h"
 #include "swganh/object/container_interface.h"
 
 #include "swganh/object/slot_interface.h"

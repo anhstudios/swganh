@@ -9,7 +9,7 @@
 #include "swganh/observer/observer_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 #include "swganh_core/messages/scene_destroy_object.h"
 #include "swganh_core/simulation/quadtree_spatial_provider.h"
@@ -21,7 +21,7 @@ using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object;
 using namespace swganh::simulation;
-using namespace swganh_core::simulation;
+using namespace swganh::simulation;
 using namespace swganh::messages::controllers;
 using namespace swganh::observer;
 
@@ -33,7 +33,7 @@ public:
         , description_(move(description))
 		
     {
-		auto tmp = kernel_->GetPluginManager()->CreateObject<swganh_core::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");
+		auto tmp = kernel_->GetPluginManager()->CreateObject<swganh::simulation::QuadtreeSpatialProvider>("Simulation::SpatialProvider");
 		tmp->SetThis(tmp);
 		spatial_index_ = tmp;
 

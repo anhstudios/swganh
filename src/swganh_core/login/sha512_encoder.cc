@@ -13,7 +13,7 @@
 #include "swganh/database/database_manager.h"
 
 using namespace swganh::database;
-using namespace swganh_core::login;
+using namespace swganh::login;
 using namespace std;
 
 Sha512Encoder::Sha512Encoder(DatabaseManagerInterface* db_manager)

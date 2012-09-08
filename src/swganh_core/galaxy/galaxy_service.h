@@ -4,7 +4,7 @@
 
 #include "swganh/galaxy/galaxy_service_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace galaxy {
 
     class GalaxyService : public swganh::galaxy::GalaxyServiceInterface

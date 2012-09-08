@@ -8,7 +8,7 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 #include "swganh_core/messages/containers/network_sorted_vector.h"
 
 namespace swganh {

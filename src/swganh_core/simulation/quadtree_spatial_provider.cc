@@ -5,14 +5,14 @@
 
 #include "swganh/logger.h"
 
-#include "swganh/object/object.h"
-#include "swganh/object/permissions/world_permission.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/permissions/world_permission.h"
 
 using std::shared_ptr;
 
 using namespace swganh::observer;
 using namespace swganh::object;
-using namespace swganh_core::simulation;
+using namespace swganh::simulation;
 using namespace quadtree;
 
 static int VIEWING_RANGE = 128;

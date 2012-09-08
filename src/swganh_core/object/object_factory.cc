@@ -13,9 +13,9 @@
 #include "swganh/logger.h"
 
 #include "swganh/database/database_manager.h"
-#include "swganh/object/object.h"
-#include "swganh/object/object_manager.h"
-#include "swganh/object/exception.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/object_manager.h"
+#include "swganh_core/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 #include "swganh/object/permissions/container_permissions_interface.h"

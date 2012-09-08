@@ -1,7 +1,7 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include "swganh/object/tangible/tangible_factory.h"
+#include "swganh_core/object/tangible/tangible_factory.h"
 #include <sstream>
 
 #include <cppconn/exception.h>
@@ -13,8 +13,8 @@
 #include "swganh/logger.h"
 
 #include "swganh/database/database_manager.h"
-#include "swganh/object/tangible/tangible.h"
-#include "swganh/object/exception.h"
+#include "swganh_core/object/tangible/tangible.h"
+#include "swganh_core/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 using namespace std;

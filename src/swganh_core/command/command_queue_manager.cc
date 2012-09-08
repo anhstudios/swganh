@@ -6,9 +6,9 @@
 #include "swganh/command/command_interface.h"
 #include "swganh/command/command_queue_interface.h"
 
-#include "swganh/object/object_controller.h"
+#include "swganh/observer/observer_interface.h"
 
-using swganh_core::command::CommandQueueManager;
+using swganh::command::CommandQueueManager;
 using swganh::command::CommandInterface;
 using swganh::command::CommandQueueInterface;
 

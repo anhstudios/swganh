@@ -8,7 +8,7 @@
 namespace swganh { namespace database { class DatabaseManagerInterface; 
 }}  // swganh::database
 
-namespace swganh_core {
+namespace swganh {
 namespace login {
 
 class Sha512Encoder : public swganh::login::encoders::EncoderInterface {
@@ -22,5 +22,5 @@ private:
     swganh::database::DatabaseManagerInterface* db_manager_;
 };
 
-}}  // namespace swganh_core::login
+}}  // namespace swganh::login
 

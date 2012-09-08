@@ -14,7 +14,7 @@ namespace tre {
     class ResourceManager;
 }}  // namespace swganh::resource
 
-namespace swganh_core {
+namespace swganh {
 namespace command {
 
     /**
@@ -52,4 +52,4 @@ namespace command {
         swganh::command::CommandPropertiesMap command_properties_map_;
     };
 
-}}  // namespace swganh_core::command
+}}  // namespace swganh::command

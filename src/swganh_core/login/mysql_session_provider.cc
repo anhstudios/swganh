@@ -17,7 +17,7 @@
 
 
 using namespace swganh::connection;
-using namespace swganh_core::login;
+using namespace swganh::login;
 using namespace std;
 
 MysqlSessionProvider::MysqlSessionProvider(swganh::database::DatabaseManagerInterface* db_manager)

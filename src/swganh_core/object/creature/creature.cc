@@ -5,8 +5,8 @@
 
 #include "swganh/crc.h"
 
-#include "swganh/object/object_events.h"
-#include "swganh/object/player/player.h"
+#include "swganh_core/object/object_events.h"
+#include "swganh_core/object/player/player.h"
 #include "creature_message_builder.h"
 
 

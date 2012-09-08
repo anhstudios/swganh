@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 namespace swganh {
 namespace object {

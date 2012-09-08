@@ -17,8 +17,8 @@
 #include "swganh/connection/connection_service_interface.h"
 #include "swganh/sui/sui_window_interface.h"
 #include "swganh/sui/radial_interface.h"
-#include "swganh/object/object.h"
-#include "swganh/object/player/player.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/player/player.h"
 
 #include "swganh/simulation/simulation_service_interface.h"
 
@@ -33,7 +33,7 @@
 using namespace swganh::service;
 using namespace swganh::app;
 
-using namespace swganh_core::sui;
+using namespace swganh::sui;
 using namespace swganh::sui;
 using namespace swganh::object;
 using namespace swganh::object::player;

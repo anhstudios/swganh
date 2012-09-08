@@ -9,6 +9,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include "swganh_core/messages/server_weather_message.h"
+#include "swganh_core/object/object.h"
 #include "swganh/weather/weather_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/weather/weather_data.h"
@@ -19,7 +20,7 @@
 #include "swganh/scripting/python_script.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object_controller.h"
+#include "swganh/observer/observer_interface.h"
 #include "swganh/player/player_service_interface.h"
 
 
@@ -28,7 +29,7 @@ namespace simulation {
 	class SimulationServiceInterface;
 }} // namespace swganh::simulation
 
-namespace swganh_core {
+namespace swganh {
 namespace weather {
 
 	class PlanetWeather
@@ -51,7 +52,7 @@ namespace weather {
 		
 		swganh::weather::Weather GetSceneWeather(uint32_t scene_id);
 		void SetSceneWeather(uint32_t scene_id,  std::vector<swganh::weather::WeatherEvent> weather_sequence_);
-		void swganh_core::weather::WeatherService::RunWeatherSequence();
+		void swganh::weather::WeatherService::RunWeatherSequence();
 		void Startup();
 
     private:
@@ -61,7 +62,7 @@ namespace weather {
 		void SendServerWeatherMessagePlayer_(swganh::weather::WeatherEvent weatherdata_, std::shared_ptr<swganh::observer::ObserverInterface> obj_controller);
 		void SendServerWeatherMessageAll_(swganh::weather::Weather weather_type, glm::vec3 cloud_vector, uint32_t scene_id);
 		void OnPlayerEnter(std::shared_ptr<swganh::object::Object> player_obj);
-		void swganh_core::weather::WeatherService::RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);
+		void swganh::weather::WeatherService::RunWeatherSequenceTimer(const boost::system::error_code& e, uint32_t count);
 
 		swganh::app::SwganhKernel* kernel_;
 		swganh::scripting::PythonScript script_;

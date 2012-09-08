@@ -40,7 +40,7 @@ using namespace swganh;
 using namespace swganh::app;
 using namespace swganh::event_dispatcher;
 using namespace std;
-using namespace swganh_core::character;
+using namespace swganh::character;
 using namespace swganh::character;
 using namespace swganh::connection;
 using namespace swganh::login;

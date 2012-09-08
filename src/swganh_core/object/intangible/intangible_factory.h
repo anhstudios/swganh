@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/object/object_factory.h"
+#include "swganh_core/object/object_factory.h"
 #include <unordered_map>
 
 namespace swganh {

@@ -13,7 +13,7 @@ namespace object {
     class Object;
 }}
 
-namespace swganh_core {
+namespace swganh {
 namespace attributes {
 	class AttributesHelper
 	{	

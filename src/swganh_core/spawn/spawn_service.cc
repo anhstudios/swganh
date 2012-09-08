@@ -11,8 +11,8 @@
 #include "swganh_core/simulation/scene_events.h"
 
 #include "swganh/object/permissions/permission_type.h"
-#include "swganh/object/object_manager.h"
-#include "swganh/object/object.h"
+#include "swganh_core/object/object_manager.h"
+#include "swganh_core/object/object.h"
 
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/snapshot/ws_visitor.h"
@@ -24,14 +24,14 @@ using namespace swganh::simulation;
 using namespace swganh::object;
 using namespace swganh::tre;
 
-using namespace swganh_core::spawn;
-using namespace swganh_core::simulation;
+using namespace swganh::spawn;
+using namespace swganh::simulation;
 
 SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 {
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
-		auto real_event = std::static_pointer_cast<swganh_core::simulation::NewSceneEvent>(newEvent);
+		auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
 		
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		
@@ -81,7 +81,7 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 	
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:DestroyScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
-		auto real_event = std::static_pointer_cast<swganh_core::simulation::DestroySceneEvent>(newEvent);
+		auto real_event = std::static_pointer_cast<swganh::simulation::DestroySceneEvent>(newEvent);
 		
 	});*/
 }

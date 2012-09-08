@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <string>
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 namespace swganh {
 namespace object {

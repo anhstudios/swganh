@@ -4,7 +4,7 @@
 
 #include "swganh/login/authentication_manager_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace login {
 
 class AuthenticationManager : public swganh::login::AuthenticationManagerInterface {

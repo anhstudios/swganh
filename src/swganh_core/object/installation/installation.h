@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "swganh/object/object.h"
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 namespace swganh {
 namespace object {

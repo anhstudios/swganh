@@ -1,7 +1,7 @@
 #ifndef SLOT_EXCLUSIVE_H_
 #define SLOT_EXCLUSIVE_H_
 
-#include "slot_interface.h"
+#include "swganh/object/slot_interface.h"
 
 namespace swganh {
 namespace object {

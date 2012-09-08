@@ -13,14 +13,14 @@
 
 #include "swganh/logger.h"
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 #include "swganh/simulation/scene_interface.h"
 
 using namespace sql;
 using namespace std;
 using namespace swganh::object;
-using namespace swganh_core::simulation;
+using namespace swganh::simulation;
 
 void SceneManager::LoadSceneDescriptionsFromDatabase(const std::shared_ptr<sql::Connection>& connection)
 {

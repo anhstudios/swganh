@@ -4,12 +4,12 @@
 #include "swganh/logger.h"
 #include <swganh/tre/resource_manager.h>
 #include <swganh/tre/visitors/slots/slot_definition_visitor.h>
-#include <swganh/object/object.h>
+#include "swganh_core/object/object.h"
 
 using namespace swganh::service;
 using namespace swganh::object;
 using namespace swganh::tre;
-using namespace swganh_core::equipment;
+using namespace swganh::equipment;
 
 EquipmentService::EquipmentService(swganh::tre::ResourceManager* resourceManager)
 {

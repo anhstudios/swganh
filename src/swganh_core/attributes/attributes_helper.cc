@@ -2,12 +2,12 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "attributes_helper.h"
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;
-using namespace swganh_core::attributes;
+using namespace swganh::attributes;
 
 void AttributesHelper::SetOptionalAttribute(
     vector<Attribute>& attributes_,

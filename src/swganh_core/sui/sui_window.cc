@@ -5,7 +5,7 @@
 
 using namespace swganh::object;
 using namespace swganh::sui;
-using namespace swganh_core::sui;
+using namespace swganh::sui;
 
 SUIWindow::SUIWindow(std::string script_name, std::shared_ptr<Object> owner, std::shared_ptr<Object> ranged_object, float max_distance)
 	: SUIWindowInterface(script_name, owner, ranged_object, max_distance)

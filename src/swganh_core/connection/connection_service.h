@@ -11,7 +11,7 @@
 
 #include "swganh/connection/connection_service_interface.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace connection {
 
 class PingServer;
@@ -62,7 +62,7 @@ private:
     SessionMap session_map_;
 
     swganh::app::SwganhKernel* kernel_;
-    std::shared_ptr<swganh_core::connection::PingServer> ping_server_;
+    std::shared_ptr<swganh::connection::PingServer> ping_server_;
     
     std::shared_ptr<swganh::connection::providers::SessionProviderInterface> session_provider_;
     std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;

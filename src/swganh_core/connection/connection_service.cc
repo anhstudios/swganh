@@ -23,8 +23,8 @@
 #include "connection_client.h"
 #include "swganh/connection/providers/session_provider_interface.h"
 
-#include "swganh/object/object.h"
-#include "swganh/object/player/player.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/player/player.h"
 
 using namespace swganh::app;
 using namespace swganh::event_dispatcher;
@@ -32,7 +32,7 @@ using namespace swganh::network::soe;
 using namespace swganh::service;
 using namespace swganh::character;
 using namespace swganh::connection;
-using namespace swganh_core::connection;
+using namespace swganh::connection;
 using namespace swganh::login;
 using namespace swganh::messages;
 using namespace swganh::object;

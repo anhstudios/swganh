@@ -2,7 +2,7 @@
 
 #include "swganh/event_dispatcher.h"
 
-namespace swganh_core
+namespace swganh
 {
 namespace simulation
 {

@@ -17,7 +17,7 @@
 
 #include "version.h"
 
-namespace swganh_core {
+namespace swganh {
 namespace galaxy {
 
 inline void Initialize(swganh::app::SwganhKernel* kernel) 
@@ -54,4 +54,4 @@ inline void Initialize(swganh::app::SwganhKernel* kernel)
 
 }
 
-}}  // namespace swganh_core::galaxy
+}}  // namespace swganh::galaxy

@@ -18,14 +18,14 @@
 #include "swganh/tre/visitors/terrain/detail/boundary_polygon.h"
 #include "swganh/tre/visitors/terrain/detail/header.h"
 
-using namespace swganh_core::terrain;
+using namespace swganh::terrain;
 using namespace swganh::tre;
 
 TerrainService::TerrainService(swganh::app::SwganhKernel* kernel) : kernel_(kernel)
 {
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
-		auto real_event = std::static_pointer_cast<swganh_core::simulation::NewSceneEvent>(newEvent);
+		auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
 		try
 		{
 			SceneEntry entry;
@@ -40,7 +40,7 @@ TerrainService::TerrainService(swganh::app::SwganhKernel* kernel) : kernel_(kern
 
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:DestroyScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
-		auto real_event = std::static_pointer_cast<swganh_core::simulation::DestroySceneEvent>(newEvent);
+		auto real_event = std::static_pointer_cast<swganh::simulation::DestroySceneEvent>(newEvent);
 		this->scenes_.erase(real_event->scene_id);
 	});
 }
