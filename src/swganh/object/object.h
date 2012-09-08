@@ -587,20 +587,22 @@ public:
 	virtual void OnCollisionStay(std::shared_ptr<Object> collider) { }
 	virtual void OnCollisionLeave(std::shared_ptr<Object> collider) { }
 
-	virtual void __BuildCollisionBox(void)
+	void BuildSpatialProfile(void)
 	{
-			local_collision_box_.clear();
-			boost::geometry::append(local_collision_box_, Point(-1.0f, -1.0f));
-			boost::geometry::append(local_collision_box_, Point(-1.0f, 1.0f));
-			boost::geometry::append(local_collision_box_, Point(1.0f, 1.0f));
-			boost::geometry::append(local_collision_box_, Point(-1.0f, -1.0f));
-			UpdateWorldCollisionBox();
+		BuildBoundingVolume();
+		BuildCollisionBox();
 	}
 
-	virtual void __BuildBoundingVolume(void)
+	void BuildBoundingVolume(void)
 	{
-		local_bounding_volume_ = BoundingVolume(Point(-1.0f, -1.0f), Point(1.0f, 1.0f));
+		__BuildBoundingVolume();
 		UpdateWorldBoundingVolume();
+	}
+
+	void BuildCollisionBox(void)
+	{
+		__BuildCollisionBox();
+		UpdateWorldCollisionBox();
 	}
 
 	void UpdateWorldBoundingVolume() 
@@ -669,6 +671,20 @@ protected:
 
 	BoundingVolume local_bounding_volume_;
 	BoundingVolume world_bounding_volume_;
+
+	virtual void __BuildCollisionBox(void)
+	{
+			local_collision_box_.clear();
+			boost::geometry::append(local_collision_box_, Point(-1.0f, -1.0f));
+			boost::geometry::append(local_collision_box_, Point(-1.0f, 1.0f));
+			boost::geometry::append(local_collision_box_, Point(1.0f, 1.0f));
+			boost::geometry::append(local_collision_box_, Point(-1.0f, -1.0f));
+	}
+
+	virtual void __BuildBoundingVolume(void)
+	{
+		local_bounding_volume_ = BoundingVolume(Point(-1.0f, -1.0f), Point(1.0f, 1.0f));
+	}
 
 private:
     

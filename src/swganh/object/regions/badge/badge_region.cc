@@ -38,11 +38,9 @@ void BadgeRegion::__BuildCollisionBox(void)
 	boost::geometry::append(local_collision_box_, Point(-25, 25));
 	boost::geometry::append(local_collision_box_, Point(25, 25));
 	boost::geometry::append(local_collision_box_, Point(25, -25));
-	UpdateWorldCollisionBox();
 }
 
 void BadgeRegion::__BuildBoundingVolume(void)
 {
 	local_bounding_volume_ = BoundingVolume(Point(-25, -25), Point(25, 25));
-	UpdateWorldBoundingVolume();
 }

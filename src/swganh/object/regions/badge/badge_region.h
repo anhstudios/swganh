@@ -15,6 +15,8 @@ public:
 	~BadgeRegion(void);
 
 	void OnCollisionEnter(std::shared_ptr<swganh::object::Object> collider);
+
+protected:
 	void __BuildCollisionBox();
 	void __BuildBoundingVolume();
 

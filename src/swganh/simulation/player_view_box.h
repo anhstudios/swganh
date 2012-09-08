@@ -15,6 +15,8 @@ namespace simulation {
 
 		void OnCollisionEnter(std::shared_ptr<swganh::object::Object> collider);
 		void OnCollisionLeave(std::shared_ptr<swganh::object::Object> collider);
+
+	protected:
 		void __BuildCollisionBox();
 		void __BuildBoundingVolume();
 

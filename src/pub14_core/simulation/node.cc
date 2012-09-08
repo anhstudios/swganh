@@ -27,8 +27,7 @@ Node::~Node(void)
 
 void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 {
-	obj->__BuildCollisionBox();
-	obj->__BuildBoundingVolume();
+	obj->BuildSpatialProfile();
 
 	// If the amount of objects contained is equal to or exceeds (in the case of objects not fitting
 	// completely into one node), and we havn't reached the "maximum level" count, and we are a LEAF
