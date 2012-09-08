@@ -98,9 +98,15 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old
 
 	for(auto& to_delete : deleted_objects)
 	{
-		std::cout <<  "Id: " << to_delete->GetObjectId() << std::endl;
-		std::cout <<  "Position: " << to_delete->GetPosition().x << "," << to_delete->GetPosition().z << std::endl;
-		std::cout <<  "VolumnBounds: (" << to_delete->GetWorldBoundingVolume().min_corner().x() << "," << to_delete->GetWorldBoundingVolume().min_corner().y() << ") (" << to_delete->GetWorldBoundingVolume().max_corner().x() << "," << to_delete->GetWorldBoundingVolume().max_corner().y() << ") " << std::endl;
+		if(to_delete->GetObjectId() == obj->GetObjectId())
+		{
+			std::cout << "Trying to delete myself!?" << std::endl;
+			std::cout << "Position: " << to_delete->GetPosition().x << ", " << to_delete->GetPosition().y << ", " << to_delete->GetPosition().z << std::endl;
+			std::cout << "Bounding Volume (World): " << to_delete->GetWorldBoundingVolume().min_corner().x() << ", " << to_delete->GetWorldBoundingVolume().min_corner().y() << ":" << to_delete->GetWorldBoundingVolume().max_corner().x() << ", " << to_delete->GetWorldBoundingVolume().max_corner().y() << std::endl;
+			auto view_box = GetQueryBoxViewRange(obj);
+			std::cout << "Viewing Box: " <<  view_box.min_corner().x() << ", " << view_box.min_corner().y() << ":" << view_box.max_corner().x() << ", " << view_box.max_corner().y() << std::endl;
+		}
+
 		//Send Destroy
 		obj->__InternalRemoveAwareObject(to_delete);
 		to_delete->__InternalRemoveAwareObject(obj);

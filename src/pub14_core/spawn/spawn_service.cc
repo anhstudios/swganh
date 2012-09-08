@@ -18,6 +18,10 @@
 #include "swganh/tre/visitors/snapshot/ws_visitor.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 
+// Temp
+#include "swganh/object/regions/badge/badge_region.h"
+#include "swganh/object/permissions/world_permission.h"
+
 using namespace anh::service;
 using namespace swganh::app;
 using namespace swganh::simulation;
@@ -36,6 +40,16 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 		
 		LOG(info) << "SpawnService: Loading static objects for planet: " << real_event->scene_label;
+
+		//Temp
+		std::shared_ptr<swganh::object::regions::BadgeRegion> badge_region = std::make_shared<swganh::object::regions::BadgeRegion>();
+		badge_region->SetEventDispatcher(kernel_->GetEventDispatcher());
+		badge_region->SetPosition(glm::vec3(1084, 0, 4176));
+		badge_region->SetSceneId(real_event->scene_id);
+		badge_region->SetObjectId(0xDEADBABE);
+		badge_region->SetInSnapshot(true);
+		badge_region->SetPermissions(std::make_shared<swganh::object::WorldPermission>());
+		simulation_service->TransferObjectToScene(badge_region, real_event->scene_label);
 
 		//Load objects from snapshot	
 		std::string snapshot_filename = "snapshot/"+real_event->scene_label+".ws";

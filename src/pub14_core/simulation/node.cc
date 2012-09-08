@@ -197,9 +197,6 @@ void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::
 		auto node_obj = (*i);
 		if(node_obj->GetObjectId() == obj->GetObjectId())
 		{
-			node_obj->UpdateWorldBoundingVolume();
-			node_obj->UpdateWorldCollisionBox();
-
 			// If we are in the same node, we don't need to do anything.
 			if(boost::geometry::within(new_bounding_volumn, region_))
 			{
