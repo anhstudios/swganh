@@ -18,7 +18,7 @@
 #include "sui_service_interface.h"
 #include "sui_window_interface.h"
 
-#include "swganh/object/object_interface.h"
+#include "swganh_core/object/object.h"
 
 #include "swganh/scripting/utilities.h"
 
