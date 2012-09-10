@@ -6,8 +6,7 @@ class RemoveFriendCommand(BaseSwgCommand):
     def Run(self):
         split = re.split('\W+', self.GetCommandString())
         friend_name = split[0]
-
-		actor = self.GetActor()
+        actor = self.GetActor()
         player = actor.get_player()
         if player:
             # Check if the name is already our friend
