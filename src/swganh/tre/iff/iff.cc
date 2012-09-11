@@ -7,7 +7,7 @@
 
 using namespace swganh::tre;
 
-void iff_file::loadIFF(anh::ByteBuffer& inputstream, std::shared_ptr<VisitorInterface> visitor)
+void iff_file::loadIFF(swganh::ByteBuffer& inputstream, std::shared_ptr<VisitorInterface> visitor)
 {
 	//We use a stack instead of recursion to make things more straightforward to follow.
 	std::stack<uint32_t> loader;
@@ -58,7 +58,7 @@ void iff_file::loadIFF(anh::ByteBuffer& inputstream, std::shared_ptr<VisitorInte
 	}
 }
 
-std::string iff_file::getIFFName_(anh::ByteBuffer& input)
+std::string iff_file::getIFFName_(swganh::ByteBuffer& input)
 {
 	//Lets read ahead 8 bytes. We could peek here, but we'll need to adjust our stream position anyway
 	//so lets just read.

@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include "anh/service/service_interface.h"
+#include "swganh/service/service_interface.h"
 #include "attribute_template_interface.h"
 
 namespace swganh {
@@ -33,7 +33,7 @@ namespace attributes {
 		WEARABLE 
 	};
 
-    class AttributesServiceInterface: public anh::service::ServiceInterface
+    class AttributesServiceInterface: public swganh::service::ServiceInterface
     {
     public:        
         virtual std::shared_ptr<AttributeTemplateInterface> GetAttributeTemplate(AttributeTemplateId template_id) = 0;

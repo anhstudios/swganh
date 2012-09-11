@@ -5,7 +5,7 @@
 #include <functional>
 #include <memory>
 
-#include "anh/hash_string.h"
+#include "swganh/hash_string.h"
 
 namespace swganh {
 namespace app {
@@ -47,14 +47,14 @@ namespace command {
          * @param command The name/crc of the command.
          * @param creator The creator associated with the specified command.
          */
-        virtual void AddCommandCreator(anh::HashString command, CommandCreator&& creator) = 0;
+        virtual void AddCommandCreator(swganh::HashString command, CommandCreator&& creator) = 0;
 
         /**
          * Removes the creator for a given command type if one is set.
          *
          * @param command The name/crc of the command.
          */
-        virtual void RemoveCommandCreator(anh::HashString command) = 0;
+        virtual void RemoveCommandCreator(swganh::HashString command) = 0;
 
         /**
          * Creates a new instance of a command.
@@ -62,7 +62,7 @@ namespace command {
          * @param command The name/crc of the command.
          * @return New instance of the specified command.
          */
-        virtual std::shared_ptr<CommandInterface> CreateCommand(anh::HashString command) = 0;
+        virtual std::shared_ptr<CommandInterface> CreateCommand(swganh::HashString command) = 0;
     };
 
 }}

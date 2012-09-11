@@ -1,7 +1,7 @@
 server_mode = all
 
 # Provides the core swganh functionality
-plugin = pub14_core
+plugin = swganh_core
 
 galaxy_name = A New Hope
 

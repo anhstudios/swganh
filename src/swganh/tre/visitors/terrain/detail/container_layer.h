@@ -15,7 +15,7 @@ namespace tre
 	{
 	public:
 
-		virtual void Deserialize(anh::ByteBuffer& buffer)
+		virtual void Deserialize(swganh::ByteBuffer& buffer)
 		{
 			//Read ADTA
 			invert_boundaries = buffer.read<uint32_t>() == 1;

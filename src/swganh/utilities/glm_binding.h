@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-namespace anh
+namespace swganh
 {
 namespace utilities
 {
@@ -10,4 +10,4 @@ namespace utilities
 void define_class_glm_vec3();
 void define_class_glm_quat();
 
-}} // namespace anh::utilities
+}} // namespace swganh::utilities

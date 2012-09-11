@@ -2,7 +2,7 @@
 
 using namespace swganh::tre;
 
-void BoundaryPolygon::Deserialize(anh::ByteBuffer& buffer)
+void BoundaryPolygon::Deserialize(swganh::ByteBuffer& buffer)
 {
 	uint32_t sizeTemp = buffer.read<uint32_t>();
 

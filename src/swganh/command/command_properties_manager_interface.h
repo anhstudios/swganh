@@ -31,7 +31,7 @@ namespace command {
          * @param command A command name/crc to find.
          * @return An optional value containing a reference to the properties requested.
          */
-        virtual boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(anh::HashString command) = 0;
+        virtual boost::optional<const swganh::command::CommandProperties&> FindPropertiesForCommand(swganh::HashString command) = 0;
 };
     
 }}  // namespace swganh::command

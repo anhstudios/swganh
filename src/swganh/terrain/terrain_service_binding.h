@@ -6,8 +6,8 @@
 #include <Python.h>
 #endif
 
-#include "anh/logger.h"
-#include "anh/python_shared_ptr.h"
+#include "swganh/logger.h"
+#include "swganh/python_shared_ptr.h"
 
 #include <memory>
 #include <boost/python.hpp>

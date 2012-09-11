@@ -25,7 +25,7 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this interpreter.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data);
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data);
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this interpreter.

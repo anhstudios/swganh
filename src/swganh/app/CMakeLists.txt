@@ -4,8 +4,7 @@ AddANHPythonBinding(app
     PREFIX_NAME swgpy
     DEPENDS
         swganh_lib
-	anh_lib
-    ADDITIONAL_INCLUDE_DIRS
+	ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
         ${MYSQL_INCLUDE_DIR}

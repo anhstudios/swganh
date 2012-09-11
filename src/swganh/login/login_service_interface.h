@@ -7,12 +7,12 @@
 #include <boost/asio.hpp>
 #include <boost/thread/mutex.hpp>
 
-#include "anh/active_object.h"
-#include "anh/logger.h"
+#include "swganh/active_object.h"
+#include "swganh/logger.h"
 
-#include "anh/network/soe/packet_utilities.h"
-#include "anh/network/soe/server.h"
-#include "anh/service/service_interface.h"
+#include "swganh/network/soe/packet_utilities.h"
+#include "swganh/network/soe/server.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/network/base_swg_server.h"
 
@@ -20,23 +20,23 @@
 #include "swganh/galaxy/galaxy_service_interface.h"
 
 #include "swganh/login/galaxy_status.h"
-#include "pub14_core/messages/login_client_id.h"
+#include "swganh_core/messages/login_client_id.h"
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
 class Server;
-}}}  // namespace anh::network::soe
+}}}  // namespace swganh::network::soe
 
-namespace anh {
+namespace swganh {
 namespace database {
 class DatabaseManagerInterface; 
-}}  // namespace anh::database
+}}  // namespace swganh::database
 
-namespace anh {
+namespace swganh {
 namespace event_dispatcher {
 class EventInterface;
-}}  // namespace anh::event_dispatcher
+}}  // namespace swganh::event_dispatcher
 
 namespace swganh {
 namespace character {
@@ -53,7 +53,7 @@ class AccountProviderInterface;
 }
 
 class LoginServiceInterface
-    : public anh::service::ServiceInterface
+    : public swganh::service::ServiceInterface
     , public swganh::network::BaseSwgServer
 {
 public:
@@ -62,11 +62,11 @@ public:
 	{
 	}
     
-    virtual anh::service::ServiceDescription GetServiceDescription() = 0;
+    virtual swganh::service::ServiceDescription GetServiceDescription() = 0;
     
-    virtual bool RemoveSession(std::shared_ptr<anh::network::soe::Session> session) = 0;
+    virtual bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session) = 0;
 
-    virtual std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
+    virtual std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
 
     virtual uint32_t GetAccountBySessionKey(const std::string& session_key) = 0;
         

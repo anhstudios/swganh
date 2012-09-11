@@ -6,14 +6,14 @@
 #include <tuple>
 #include <vector>
 
-#include "anh/service/service_interface.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "pub14_core/messages/delete_character_message.h"
-#include "pub14_core/messages/client_create_character.h"
-#include "pub14_core/messages/client_random_name_request.h"
+#include "swganh_core/messages/delete_character_message.h"
+#include "swganh_core/messages/client_create_character.h"
+#include "swganh_core/messages/client_random_name_request.h"
 
-namespace anh { namespace database { class DatabaseManagerInterface; } }
+namespace swganh { namespace database { class DatabaseManagerInterface; } }
 
 namespace swganh {
 namespace connection {
@@ -30,7 +30,7 @@ namespace character {
 
 class CharacterProviderInterface;
     
-class CharacterServiceInterface : public anh::service::ServiceInterface {
+class CharacterServiceInterface : public swganh::service::ServiceInterface {
 private:
     virtual void HandleClientRandomNameRequest_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 

@@ -10,7 +10,7 @@
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
 
-#include "anh/app/kernel_interface.h"
+#include "swganh/app/kernel_interface.h"
 
 namespace swganh {
 namespace tre {
@@ -65,24 +65,24 @@ struct AppConfig {
     boost::program_options::options_description BuildConfigDescription();
 };
     
-class SwganhKernel : public anh::app::KernelInterface {
+class SwganhKernel : public swganh::app::KernelInterface {
 public:
     explicit SwganhKernel(boost::asio::io_service& io_service);
     virtual ~SwganhKernel();
 
-    const anh::app::Version& GetVersion();
+    const swganh::app::Version& GetVersion();
 
     AppConfig& GetAppConfig();
 
-    anh::database::DatabaseManagerInterface* GetDatabaseManager();
+    swganh::database::DatabaseManagerInterface* GetDatabaseManager();
     
-    anh::EventDispatcher* GetEventDispatcher();
+    swganh::EventDispatcher* GetEventDispatcher();
 
-    anh::plugin::PluginManager* GetPluginManager();
+    swganh::plugin::PluginManager* GetPluginManager();
 
-    anh::service::ServiceManager* GetServiceManager();
+    swganh::service::ServiceManager* GetServiceManager();
     
-    anh::service::ServiceDirectoryInterface* GetServiceDirectory();
+    swganh::service::ServiceDirectoryInterface* GetServiceDirectory();
     
     boost::asio::io_service& GetIoService();
 
@@ -90,17 +90,17 @@ public:
 
 private:
     SwganhKernel();
-    anh::app::Version version_;
+    swganh::app::Version version_;
     swganh::app::AppConfig app_config_;
     
-    std::unique_ptr<anh::database::DatabaseManagerInterface> database_manager_;
-    std::unique_ptr<anh::EventDispatcher> event_dispatcher_;
-    std::unique_ptr<anh::plugin::PluginManager> plugin_manager_;
-    std::unique_ptr<anh::service::ServiceManager> service_manager_;
-    std::unique_ptr<anh::service::ServiceDirectoryInterface> service_directory_;
+    std::unique_ptr<swganh::database::DatabaseManagerInterface> database_manager_;
+    std::unique_ptr<swganh::EventDispatcher> event_dispatcher_;
+    std::unique_ptr<swganh::plugin::PluginManager> plugin_manager_;
+    std::unique_ptr<swganh::service::ServiceManager> service_manager_;
+    std::unique_ptr<swganh::service::ServiceDirectoryInterface> service_directory_;
     std::unique_ptr<swganh::tre::ResourceManager> resource_manager_;
 
     boost::asio::io_service& io_service_;
 };
 
-}}  // namespace anh::app
+}}  // namespace swganh::app

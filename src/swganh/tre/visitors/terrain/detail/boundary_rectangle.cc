@@ -2,7 +2,7 @@
 
 using namespace swganh::tre;
 
-void BoundaryRectangle::Deserialize(anh::ByteBuffer& buffer)
+void BoundaryRectangle::Deserialize(swganh::ByteBuffer& buffer)
 {
 	x1 = buffer.read<float>();
 	z1 = buffer.read<float>();

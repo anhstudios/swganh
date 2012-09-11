@@ -2,7 +2,7 @@
 
 using namespace swganh::tre;
 
-void BoundaryCircle::Deserialize(anh::ByteBuffer& buffer)
+void BoundaryCircle::Deserialize(swganh::ByteBuffer& buffer)
 {
 	this->x = buffer.read<float>();
 	this->z = buffer.read<float>();

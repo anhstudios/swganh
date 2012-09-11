@@ -7,12 +7,9 @@
 namespace swganh {
 
 namespace object {
-namespace creature {
     class Creature;
-}  // namespace creature
-namespace tangible {
     class Tangible;
-}}  // namespace object::tangible
+}  // namespace object
 
 namespace messages {
 namespace controllers {

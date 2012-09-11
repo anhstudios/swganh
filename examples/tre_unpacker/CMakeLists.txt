@@ -3,8 +3,7 @@ include(ANHExecutable)
 
 AddANHExecutable(tre_unpacker
     DEPENDS 
-        swganh_lib
-        anh_lib
+        swganh_lib        
     FOLDER
         "examples"
 	ADDITIONAL_INCLUDE_DIRS

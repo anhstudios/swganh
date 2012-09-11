@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "swganh/character/character_data.h"
-#include "pub14_core/messages/client_create_character.h"
+#include "swganh_core/messages/client_create_character.h"
 
 namespace swganh {
 namespace character {

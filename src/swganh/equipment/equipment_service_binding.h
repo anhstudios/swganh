@@ -7,10 +7,10 @@
 #endif
 
 
-#include "anh/python_shared_ptr.h"
+#include "swganh/python_shared_ptr.h"
 #include "equipment_service_interface.h"
-#include <swganh/object/object.h>
-#include "swganh/object/player/player.h"
+#include "swganh_core/object/object.h"
+#include "swganh_core/object/player/player.h"
 
 #include <boost/python.hpp>
 
@@ -31,9 +31,9 @@ void exportEquipmentService()
 		.def("ClearSlot", ClearFunc,"Utility method that gets the slot id for a slot name and then clears that slot from an object.")
 		.def("GetEquippedObject", GetFunc,"Utility method that gets the slot id for a slot name and then returns the object in that slot for a given object.")
 		.def("GetPlayerObject", make_function(
-			std::bind(&EquipmentServiceInterface::GetEquippedObject<player::Player>, std::placeholders::_1, std::placeholders::_2, "ghost"),
+			std::bind(&EquipmentServiceInterface::GetEquippedObject<Player>, std::placeholders::_1, std::placeholders::_2, "ghost"),
 			return_value_policy<return_by_value>(),
-            boost::mpl::vector<shared_ptr<player::Player>, EquipmentServiceInterface*, shared_ptr<Object>>()),
+            boost::mpl::vector<shared_ptr<Player>, EquipmentServiceInterface*, shared_ptr<Object>>()),
 			"returns the :class:`.Player` equipped by this creature object")
         ;
 }

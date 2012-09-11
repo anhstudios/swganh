@@ -9,30 +9,30 @@
 
 #include <boost/thread/mutex.hpp>
 
-#include "anh/active_object.h"
-#include "anh/hash_string.h"
+#include "swganh/active_object.h"
+#include "swganh/hash_string.h"
 
-#include "anh/network/soe/packet_utilities.h"
-#include "anh/network/soe/session.h"
-#include "anh/service/service_interface.h"
+#include "swganh/network/soe/packet_utilities.h"
+#include "swganh/network/soe/session.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/network/base_swg_server.h"
 
 #include "swganh/login/login_service_interface.h"
 #include "swganh/simulation/simulation_service_interface.h"
-#include "pub14_core/messages/cmd_scene_ready.h"
+#include "swganh_core/messages/cmd_scene_ready.h"
 
 #include "swganh/connection/providers/session_provider_interface.h"
 
-#include "pub14_core/messages/client_permissions_message.h"
-#include "pub14_core/messages/client_id_msg.h"
-#include "pub14_core/messages/heart_beat.h"
+#include "swganh_core/messages/client_permissions_message.h"
+#include "swganh_core/messages/client_id_msg.h"
+#include "swganh_core/messages/heart_beat.h"
 
-namespace anh {
+namespace swganh {
 namespace network {
 namespace soe {
 class Server;
-}}}  // namespace anh::network::soe
+}}}  // namespace swganh::network::soe
 
 namespace swganh {
 namespace character {
@@ -45,7 +45,7 @@ namespace connection {
     
 class ConnectionClientInterface;
 
-class ConnectionServiceInterface : public anh::service::ServiceInterface, public swganh::network::BaseSwgServer
+class ConnectionServiceInterface : public swganh::service::ServiceInterface, public swganh::network::BaseSwgServer
 {
 public:
     
@@ -54,9 +54,9 @@ public:
 	{
 	}
 
-    virtual bool RemoveSession(std::shared_ptr<anh::network::soe::Session> session) = 0;
+    virtual bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session) = 0;
 
-    virtual std::shared_ptr<anh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
+    virtual std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint) = 0;
     
     virtual std::shared_ptr<ConnectionClientInterface> FindConnectionByPlayerId(uint64_t player_id) = 0;
     

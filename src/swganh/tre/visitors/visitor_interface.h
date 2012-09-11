@@ -7,7 +7,7 @@
 #include "visitor_types.h" //For visitor types
 
 //Forward Declarations
-namespace anh
+namespace swganh
 {
 	class ByteBuffer;
 }
@@ -24,7 +24,7 @@ namespace tre
 			@brief interprets a IFF::FileNode associated with this visitor.
 			This should only be called by the IFFFile code.
 		*/
-		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data) = 0;
+		virtual void visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data) = 0;
 
 		/**
 			@brief interprets a IFF::FolderNode associated with this visitor.

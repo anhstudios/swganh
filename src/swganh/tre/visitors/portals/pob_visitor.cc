@@ -29,7 +29,7 @@ void PobVisitor::visit_folder(uint32_t depth, std::string name, uint32_t size)
 {
 }
 
-void PobVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
+void PobVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
 	NodeNameIndexIterator it = nameLookup_.find(name);
 	if( it != nameLookup_.cend())
@@ -38,7 +38,7 @@ void PobVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh
 	}
 }
 
-void PobVisitor::_handle0003DATA(PobVisitor* pob, anh::ByteBuffer& data)
+void PobVisitor::_handle0003DATA(PobVisitor* pob, swganh::ByteBuffer& data)
 {
 	int test = data.read<std::uint32_t>();
 
@@ -46,7 +46,7 @@ void PobVisitor::_handle0003DATA(PobVisitor* pob, anh::ByteBuffer& data)
 	pob->cells_.reserve(data.read<std::uint32_t>());
 }
 
-void PobVisitor::_handlePRTL(PobVisitor* pob, anh::ByteBuffer& data)
+void PobVisitor::_handlePRTL(PobVisitor* pob, swganh::ByteBuffer& data)
 {
 	Portal newP;
 
@@ -64,7 +64,7 @@ void PobVisitor::_handlePRTL(PobVisitor* pob, anh::ByteBuffer& data)
 	pob->portals_.push_back(newP);
 }
 
-void PobVisitor::_handle0005DATA(PobVisitor* pob, anh::ByteBuffer& data)
+void PobVisitor::_handle0005DATA(PobVisitor* pob, swganh::ByteBuffer& data)
 {
 	Cell cell;
 	cell.links.reserve(data.read<std::uint32_t>());
@@ -76,7 +76,7 @@ void PobVisitor::_handle0005DATA(PobVisitor* pob, anh::ByteBuffer& data)
 	pob->cells_.push_back(std::move(cell));
 }
 
-void PobVisitor::_handle0000VERT(PobVisitor* pob, anh::ByteBuffer& data)
+void PobVisitor::_handle0000VERT(PobVisitor* pob, swganh::ByteBuffer& data)
 {
 	if(!(pob->cells_.size() > 0))
 		return;
@@ -96,7 +96,7 @@ void PobVisitor::_handle0000VERT(PobVisitor* pob, anh::ByteBuffer& data)
 	}
 }
 
-void PobVisitor::_handleINDX(PobVisitor* pob, anh::ByteBuffer& data)
+void PobVisitor::_handleINDX(PobVisitor* pob, swganh::ByteBuffer& data)
 {
 	if(!(pob->cells_.size() > 0))
 		return;
@@ -116,7 +116,7 @@ void PobVisitor::_handleINDX(PobVisitor* pob, anh::ByteBuffer& data)
 	}
 }
 
-void PobVisitor::_handlePRTL0004(PobVisitor* pob, anh::ByteBuffer& data)
+void PobVisitor::_handlePRTL0004(PobVisitor* pob, swganh::ByteBuffer& data)
 {
 	if(!(pob->cells_.size() > 0))
 		return;

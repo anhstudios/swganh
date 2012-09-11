@@ -15,7 +15,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include <anh/logger.h>
+#include <swganh/logger.h>
 
 using namespace swganh::tre;
 

@@ -30,12 +30,11 @@ set_target_properties(swgpy
 	PROPERTIES
 	FOLDER "cmake_targets"
 )
-
 include(ANHExecutable)
 
 AddANHExecutable(swganh
-    DEPENDS
-        anh_lib
+	DEPENDS
+		swganh_lib
     ADDITIONAL_INCLUDE_DIRS
         ${Boost_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
@@ -45,7 +44,7 @@ AddANHExecutable(swganh
         ${TBB_INCLUDE_DIRS}
         ${ZLIB_INCLUDE_DIR}
     ADDITIONAL_LIBRARY_DIRS
-        ${Boost_LIBRARY_DIRS}
+        ${Boost_LIBRARY_DIRS}	
     DEBUG_LIBRARIES
         ${Boost_CHRONO_LIBRARY_DEBUG}
         ${Boost_DATE_TIME_LIBRARY_DEBUG}
@@ -57,7 +56,8 @@ AddANHExecutable(swganh
         ${Boost_REGEX_LIBRARY_DEBUG}
         ${Boost_SYSTEM_LIBRARY_DEBUG}
         ${Boost_THREAD_LIBRARY_DEBUG}
-        ${MYSQL_LIBRARY_DEBUG}
+		${Boost_UNIT_TEST_FRAMEWORK_LIBRARY_DEBUG}
+        ${MYSQL_LIBRARY_DEBUG}		
         ${MYSQLCONNECTORCPP_LIBRARY_DEBUG}
         ${PYTHON_LIBRARY}
         ${TBB_DEBUG_LIBRARIES}
@@ -73,6 +73,7 @@ AddANHExecutable(swganh
         ${Boost_REGEX_LIBRARY_RELEASE}
         ${Boost_SYSTEM_LIBRARY_RELEASE}
         ${Boost_THREAD_LIBRARY_RELEASE}
+		${Boost_UNIT_TEST_FRAMEWORK_LIBRARY_RELEASE}
         ${MYSQL_LIBRARY_RELEASE}
         ${MYSQLCONNECTORCPP_LIBRARY_RELEASE}
         ${PYTHON_LIBRARY}

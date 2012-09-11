@@ -4,7 +4,7 @@
 #include <memory>
 #include <functional>
 
-#include <anh/observer/observer_interface.h>
+#include <swganh/observer/observer_interface.h>
 #include <boost/thread/shared_mutex.hpp>
 #include <glm/glm.hpp>
 

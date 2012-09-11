@@ -8,11 +8,11 @@
 #include <map>
 #include <memory>
 
-#include "anh/service/service_interface.h"
+#include "swganh/service/service_interface.h"
 #include "weather_data.h"
 #include "swganh/app/swganh_kernel.h"
 #include <boost/asio.hpp>
-namespace swganh_core{
+namespace swganh{
 namespace weather{
 
 }
@@ -26,7 +26,7 @@ class WeatherProviderInterface;
 namespace swganh {
 namespace weather {
     
-    class WeatherServiceInterface : public anh::service::ServiceInterface
+    class WeatherServiceInterface : public swganh::service::ServiceInterface
     {
     public:
 

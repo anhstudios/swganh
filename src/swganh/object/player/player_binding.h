@@ -1,17 +1,16 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_OBJECT_PLAYER_PLAYER_BINDING_H_
-#define SWGANH_OBJECT_PLAYER_PLAYER_BINDING_H_
+#pragma once
 
-#include "swganh/object/player/player.h"
+#include "swganh_core/object/player/player.h"
 #include "swganh/object/creature/creature_binding.h"
 
 #include <boost/python.hpp>
 
 using namespace boost::python;
 using namespace std;
-using namespace swganh::object::player;
+using namespace swganh::object;
 
 
 struct PlayerWrapper : Player,  wrapper<Player>
@@ -61,7 +60,7 @@ void exportPlayer()
 		.def_readwrite("schematic_id", &DraftSchematicData::schematic_id)
 		.def_readwrite("schematic_crc", &DraftSchematicData::schematic_crc)
 		;
-	class_<PlayerWaypointSerializer>("PlayerWaypointSerializer", "Describes a single Waypoint", init<std::shared_ptr<waypoint::Waypoint>>())
+	class_<PlayerWaypointSerializer>("PlayerWaypointSerializer", "Describes a single Waypoint", init<std::shared_ptr<Waypoint>>())
 		.def_readwrite("waypoint", &PlayerWaypointSerializer::waypoint)
 		;
 
@@ -135,5 +134,3 @@ void exportPlayer()
 	implicitly_convertible<std::shared_ptr<Player>, std::shared_ptr<Object>>();
 	implicitly_convertible<std::shared_ptr<Player>, std::shared_ptr<ContainerInterface>>();
 }
-
-#endif //SWGANH_OBJECT_PLAYER_PLAYER_BINDING_H_

@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-#include "anh/byte_buffer.h"
+#include "swganh/byte_buffer.h"
 #include "random.h"
 #include "perlin_noise.h"
 
@@ -17,7 +17,7 @@ namespace tre
 		int fractal_id;
 		std::string fractal_label;
 
-		Fractal(anh::ByteBuffer& buffer)
+		Fractal(swganh::ByteBuffer& buffer)
 		{
 			fractal_id = buffer.read<int32_t>();
 			fractal_label = buffer.read<std::string>(false, true);
@@ -42,7 +42,7 @@ namespace tre
 		Random			rand;				// Random generator
 		PerlinNoise		noise;				// Noise generator
 
-		void Deserialize(anh::ByteBuffer& buffer)
+		void Deserialize(swganh::ByteBuffer& buffer)
 		{
 			seed = buffer.read<int32_t>();
 

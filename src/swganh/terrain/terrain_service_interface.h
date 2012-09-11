@@ -1,12 +1,12 @@
 #pragma once
 
-#include "anh/service/service_interface.h"
+#include "swganh/service/service_interface.h"
 
 namespace swganh
 {
 namespace terrain
 {
-	class TerrainServiceInterface : public anh::service::ServiceInterface
+	class TerrainServiceInterface : public swganh::service::ServiceInterface
 	{
 	public:
 

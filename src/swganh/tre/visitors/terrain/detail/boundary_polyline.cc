@@ -2,7 +2,7 @@
 
 using namespace swganh::tre;
 
-void BoundaryPolyline::Deserialize(anh::ByteBuffer& buffer)
+void BoundaryPolyline::Deserialize(swganh::ByteBuffer& buffer)
 {
 	unsigned int sizeTemp = buffer.read<uint32_t>();
 	

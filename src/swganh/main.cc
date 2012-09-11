@@ -8,8 +8,8 @@
 #include <boost/thread.hpp>
 #include <boost/python.hpp>
 
-#include "anh/logger.h"
-#include "anh/utilities.h"
+#include "swganh/logger.h"
+#include "swganh/utilities.h"
 
 #include "swganh/app/swganh_app.h"
 #include "swganh/scripting/utilities.h"
@@ -31,10 +31,10 @@ int main(int argc, char* argv[])
 
         for (;;) {
 
-            if (anh::KeyboardHit())
+            if (swganh::KeyboardHit())
             {
-                char input = anh::GetHitKey();
-                if (input == '`')
+                char input = swganh::GetHitKey();
+                if (input == '`' || input =='~')
                 {
                     app.StartInteractiveConsole();
                 }

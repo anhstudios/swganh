@@ -7,7 +7,7 @@
 
 #include "base_combat_command.h"
 
-#include "anh/service/service_manager.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/combat/combat_service_interface.h"
 

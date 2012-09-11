@@ -17,21 +17,21 @@ namespace Concurrency {
 
 #endif
 
-#include "anh/byte_buffer.h"
-#include "anh/hash_string.h"
-#include "anh/network/soe/server.h"
+#include "swganh/byte_buffer.h"
+#include "swganh/hash_string.h"
+#include "swganh/network/soe/server.h"
 
-namespace anh {
+namespace swganh {
 
     class ByteBuffer;
 
-}  // namespace anh::network::soe
+}  // namespace swganh::network::soe
 
 
 namespace swganh {
 namespace network {
 
-    class BaseSwgServer : public anh::network::soe::Server
+    class BaseSwgServer : public swganh::network::soe::Server
     {
     public:
         BaseSwgServer(boost::asio::io_service& io_service);
@@ -45,8 +45,8 @@ namespace network {
         };
 
         typedef std::function<void (
-            const std::shared_ptr<anh::network::soe::Session>&,
-            anh::ByteBuffer message)
+            const std::shared_ptr<swganh::network::soe::Session>&,
+            swganh::ByteBuffer message)
         > SwgMessageHandler;
 
         typedef std::runtime_error HandlerAlreadyDefined;
@@ -54,8 +54,8 @@ namespace network {
         typedef std::runtime_error ValidClientRequired;
 
         void HandleMessage(
-            const std::shared_ptr<anh::network::soe::Session>& connection,
-            anh::ByteBuffer message);
+            const std::shared_ptr<swganh::network::soe::Session>& connection,
+            swganh::ByteBuffer message);
 
         /**
          * Register's a message handler for processing SWG protocol messages.
@@ -91,8 +91,8 @@ namespace network {
             auto shared_handler = std::make_shared<typename GenericMessageHandler<ConnectionType, MessageType*>::HandlerType>(std::move(handler));
 
             auto wrapped_handler = [this, shared_handler] (
-                const std::shared_ptr<anh::network::soe::Session>& client,
-                anh::ByteBuffer message)
+                const std::shared_ptr<swganh::network::soe::Session>& client,
+                swganh::ByteBuffer message)
             {
                 MessageType tmp;
                 tmp.Deserialize(std::move(message));
@@ -113,14 +113,14 @@ namespace network {
          * \param handler The SWG protocol handler.
          */
         void RegisterMessageHandler(
-            anh::HashString handler_id,
+            swganh::HashString handler_id,
             SwgMessageHandler&& handler);
 
-        bool HasHandler(anh::HashString handler_id);
+        bool HasHandler(swganh::HashString handler_id);
 
     private:
         typedef Concurrency::concurrent_unordered_map<
-            anh::HashString,
+            swganh::HashString,
             SwgMessageHandler
         > MessageHandlerMap;
 

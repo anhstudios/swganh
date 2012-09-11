@@ -3,7 +3,7 @@
 
 using namespace swganh::tre;
 
-void HeightFractal::Deserialize(anh::ByteBuffer& buffer)
+void HeightFractal::Deserialize(swganh::ByteBuffer& buffer)
 {
 	this->fractal_id = buffer.read<uint32_t>();
 	this->transform_type = buffer.read<uint32_t>();

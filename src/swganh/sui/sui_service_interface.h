@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <anh/service/service_interface.h>
+#include <swganh/service/service_interface.h>
 
 
 namespace swganh
@@ -33,7 +33,7 @@ namespace sui
 		INPUT_BOX_OKCANCEL
 	};
 
-	class SUIServiceInterface : public anh::service::ServiceInterface
+	class SUIServiceInterface : public swganh::service::ServiceInterface
 	{
 	public:
 

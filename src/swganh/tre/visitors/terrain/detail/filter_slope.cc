@@ -5,7 +5,7 @@
 
 using namespace swganh::tre;
 
-void SlopeFilter::Deserialize(anh::ByteBuffer& buffer)
+void SlopeFilter::Deserialize(swganh::ByteBuffer& buffer)
 {
 	default_value = 1.5707964f;
 

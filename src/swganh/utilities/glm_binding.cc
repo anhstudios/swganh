@@ -1,13 +1,13 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#include <anh/utility_python.h>
+#include <swganh/utility_python.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 #include <boost/python.hpp>
 using namespace boost::python;
-namespace anh
+namespace swganh
 {
 namespace utilities
 {
@@ -60,4 +60,4 @@ void define_class_glm_quat()
 		.def(self /= glm::float_t());
 		//.def(self_ns::str(self));
 }
-}} // namespace anh::utilities
+}} // namespace swganh::utilities

@@ -13,8 +13,8 @@
 #include <boost/noncopyable.hpp>
 #include <boost/thread/thread.hpp>
 
-#include "anh/app/app_interface.h"
-#include "anh/service/service_directory.h"
+#include "swganh/app/app_interface.h"
+#include "swganh/service/service_directory.h"
 #include "swganh/app/swganh_kernel.h"
 
 namespace swganh {
@@ -22,9 +22,9 @@ namespace app {
     
 /*!
  * @Brief Base SWGANH Application that starts up serverices, initializes resources and handles the lifetime of objects"
- * @see anh::app::AppInterface
+ * @see swganh::app::AppInterface
  */
-class SwganhApp : public anh::app::AppInterface, private boost::noncopyable {
+class SwganhApp : public swganh::app::AppInterface, private boost::noncopyable {
 public:    
     /*!
      * @Brief Default constructor
@@ -41,7 +41,7 @@ public:
 
     /*!
      * @Brief Starts the application, ServiceManager and begins the processing
-     * @see anh::service::ServiceManager
+     * @see swganh::service::ServiceManager
      */
     void Start();
 
@@ -58,8 +58,8 @@ public:
 
     /*!
      * @Brief Gets the Application's Kernel
-     * @return std::shared_ptr of the anh::app::KernelInterface
-     * @see anh::app::KernelInterface
+     * @return std::shared_ptr of the swganh::app::KernelInterface
+     * @see swganh::app::KernelInterface
      */
     SwganhKernel* GetAppKernel() const;
 

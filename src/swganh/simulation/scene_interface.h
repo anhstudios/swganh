@@ -11,7 +11,7 @@
 
 #include <boost/noncopyable.hpp>
 
-namespace anh {
+namespace swganh {
 namespace observer {
 	class ObserverInterface;
 }}

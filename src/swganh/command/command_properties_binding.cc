@@ -3,7 +3,7 @@
 
 #include "command_properties_binding.h"
 
-#include "anh/python_shared_ptr.h"
+#include "swganh/python_shared_ptr.h"
 #include <boost/python.hpp>
 
 #include "command_properties.h"
