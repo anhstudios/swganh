@@ -6,7 +6,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::group;
+using namespace swganh::object;
 
 uint32_t GroupFactory::PersistObject(const shared_ptr<Object>& object)
 {

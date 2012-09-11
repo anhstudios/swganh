@@ -3,7 +3,7 @@
 #include "static.h"
 
 using namespace std;
-using namespace swganh::object::static_object;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 void StaticMessageBuilder::RegisterEventHandlers()

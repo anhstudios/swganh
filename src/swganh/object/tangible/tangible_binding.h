@@ -11,7 +11,7 @@
 
 using namespace boost::python;
 using namespace std;
-using namespace swganh::object::tangible;
+using namespace swganh::object;
 
 void exportTangible()
 {

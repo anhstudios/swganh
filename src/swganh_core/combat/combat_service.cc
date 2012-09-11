@@ -44,9 +44,9 @@ using namespace swganh::service;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;
-using namespace swganh::object::creature;
-using namespace swganh::object::weapon;
-using namespace swganh::object::tangible;
+using namespace swganh::object;
+using namespace swganh::object;
+using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh::combat;
 using namespace swganh::command;
@@ -383,12 +383,12 @@ uint16_t CombatService::GetHitResult(
     }
     return HIT;
 }
-uint16_t CombatService::GetPostureModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker){
+uint16_t CombatService::GetPostureModifier(const std::shared_ptr<swganh::object::Creature>& attacker){
     uint16_t accuracy = 0;
     uint32_t posture = attacker->GetPosture();
-    if (posture == creature::CROUCHED)
+    if (posture == CROUCHED)
         accuracy += 16;
-    else if (posture == creature::PRONE)
+    else if (posture == PRONE)
         accuracy += 50;
     // If Running
     // accuracy -= 50;
@@ -401,21 +401,21 @@ uint16_t CombatService::GetTargetPostureModifier(const shared_ptr<Creature>& att
     uint32_t posture = attacker->GetPosture();
     auto weapon = attacker->GetEquipmentItem(attacker->GetWeaponId());
     
-    if (posture == creature::CROUCHED)
+    if (posture == CROUCHED)
         
         accuracy += 16;
-    else if (posture == creature::PRONE)
+    else if (posture == PRONE)
         accuracy += 25;
 
     return accuracy;
 
 }
-uint16_t CombatService::GetAccuracyModifier(const std::shared_ptr<swganh::object::creature::Creature>& attacker) { 
+uint16_t CombatService::GetAccuracyModifier(const std::shared_ptr<swganh::object::Tangible>& attacker) { 
     //@TODO: Get weapon calculation modifiers
     // Get Accuracy Modifiers from weapon and add up the modifiers the creature has
     return 0; 
 }
-uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::creature::Creature>& attacker) { 
+uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::Tangible>& attacker) { 
     // get base attacker accuracy mods
 
     // give additional mods based on Posture and weapon type

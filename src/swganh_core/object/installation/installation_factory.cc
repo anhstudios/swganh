@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::installation;
+using namespace swganh::object;
 
 uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object)
 {

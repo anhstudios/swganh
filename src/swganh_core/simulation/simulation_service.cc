@@ -412,13 +412,13 @@ public:
         auto object = GetObjectById(message->character_id);
         if (!object)
         {
-            object = LoadObjectById(message->character_id, creature::Creature::type);
+            object = LoadObjectById(message->character_id, Creature::type);
         }
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
-		auto player = GetEquipmentService()->GetEquippedObject<player::Player>(object, "ghost");
+		auto player = GetEquipmentService()->GetEquippedObject<Player>(object, "ghost");
 		event_dispatcher->Dispatch(
-					make_shared<ValueEvent<shared_ptr<player::Player>>>("Simulation::PlayerSelected", player));
+					make_shared<ValueEvent<shared_ptr<Player>>>("Simulation::PlayerSelected", player));
 
         auto scene = scene_manager_->GetScene(object->GetSceneId());
         if (!scene)
@@ -535,20 +535,20 @@ void SimulationService::RegisterObjectFactories()
     auto object_manager = impl_->GetObjectManager();
 
     object_manager->RegisterObjectType<Object>();
-	object_manager->RegisterObjectType<static_object::Static>();
-	object_manager->RegisterObjectType<tangible::Tangible>();
-	object_manager->RegisterObjectType<intangible::Intangible>();
-	object_manager->RegisterObjectType<mission::Mission>();
-	object_manager->RegisterObjectType<guild::Guild>();
-	object_manager->RegisterObjectType<group::Group>();
-	object_manager->RegisterObjectType<waypoint::Waypoint>();
-    object_manager->RegisterObjectType<creature::Creature>();
-	object_manager->RegisterObjectType<cell::Cell>();
-    object_manager->RegisterObjectType<player::Player>();
-	object_manager->RegisterObjectType<resource_container::ResourceContainer>();
-	object_manager->RegisterObjectType<factory_crate::FactoryCrate>();
-	object_manager->RegisterObjectType<weapon::Weapon>();
-	object_manager->RegisterObjectType<building::Building>();
+	object_manager->RegisterObjectType<Static>();
+	object_manager->RegisterObjectType<Tangible>();
+	object_manager->RegisterObjectType<Intangible>();
+	object_manager->RegisterObjectType<Mission>();
+	object_manager->RegisterObjectType<Guild>();
+	object_manager->RegisterObjectType<Group>();
+	object_manager->RegisterObjectType<Waypoint>();
+    object_manager->RegisterObjectType<Creature>();
+	object_manager->RegisterObjectType<Cell>();
+    object_manager->RegisterObjectType<Player>();
+	object_manager->RegisterObjectType<ResourceContainer>();
+	object_manager->RegisterObjectType<FactoryCrate>();
+	object_manager->RegisterObjectType<Weapon>();
+	object_manager->RegisterObjectType<Building>();
 	
 }
 

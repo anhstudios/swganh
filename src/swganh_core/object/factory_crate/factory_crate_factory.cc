@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::factory_crate;
+using namespace swganh::object;
 
 FactoryCrateFactory::FactoryCrateFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
 	: TangibleFactory(db_manager, event_dispatcher)

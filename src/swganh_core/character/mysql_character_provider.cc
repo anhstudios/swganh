@@ -378,7 +378,7 @@ uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
             conn->prepareStatement("SELECT id FROM object where custom_name like ? and type_id = ?;")
             );
         statement->setString(1, name + '%');
-        statement->setUInt(2, swganh::object::player::Player::type);
+        statement->setUInt(2, swganh::object::Player::type);
         auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {

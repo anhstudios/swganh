@@ -33,12 +33,9 @@ class CommandServiceInterface;
 namespace object {
     class Object;
     class ObjectController;
-namespace tangible {
-    class Tangible;
-}
-namespace creature {
 	class Creature;
-}}}  // namespace swganh::object::creature;
+	class Tangible;
+}}  // namespace swganh::object;
 
 
 namespace swganh {
@@ -51,12 +48,12 @@ namespace combat {
     class CombatServiceInterface : public swganh::service::ServiceInterface
     {
     public:
-        virtual void SetIncapacitated(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target) = 0;
+        virtual void SetIncapacitated(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
         
-        virtual void SetDead(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target) = 0;
+        virtual void SetDead(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
 
-        virtual void EndDuel(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target) = 0;
-        virtual void EndCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target) = 0;
+        virtual void EndDuel(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
+        virtual void EndCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
         
 		virtual void Startup() = 0;
 

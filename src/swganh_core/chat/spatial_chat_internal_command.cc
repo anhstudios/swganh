@@ -25,8 +25,8 @@ using swganh::command::CommandCallback;
 using swganh::command::CommandProperties;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::ObjectController;
-using swganh::object::creature::Creature;
-using swganh::object::tangible::Tangible;
+
+using swganh::object::Tangible;
 
 #ifdef WIN32
 using std::wregex;

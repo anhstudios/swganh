@@ -10,14 +10,14 @@
 
 namespace swganh {
 namespace object {
-namespace waypoint {
+
     class Waypoint;
-}}} // swganh::object::waypoint
+}} // swganh::object
 
 namespace swganh {
 namespace object {
-namespace mission {
-    class MissionMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
+
+    class MissionMessageBuilder : public swganh::object::IntangibleMessageBuilder
     {
     public:
         MissionMessageBuilder(swganh::EventDispatcher* dispatcher) :
@@ -48,6 +48,6 @@ namespace mission {
 		typedef swganh::ValueEvent<std::shared_ptr<Mission>> MissionEvent;
     };
 
-}}}  // swganh::object::player
+}}  // swganh::object
 
 #endif  // SWGANH_OBJECT_PLAYER_PLAYER_MESSAGE_BUILDER_H_

@@ -16,11 +16,11 @@ namespace messages {
 
 namespace swganh {
 namespace object {
-namespace cell {
+
 
     class Cell;
 
-    class CellMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
+    class CellMessageBuilder : public swganh::object::IntangibleMessageBuilder
     {
     public:
         CellMessageBuilder(swganh::EventDispatcher* dispatcher) :
@@ -37,6 +37,6 @@ namespace cell {
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Cell>& cell);
     };
 
-}}}  // swganh::object::intangible
+}}  // swganh::object
 
 #endif  // SWGANH_OBJECT_INTANGIBLE_INTANGIBLE_MESSAGE_BUILDER_H_

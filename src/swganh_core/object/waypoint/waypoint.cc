@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace swganh::messages;
-using namespace swganh::object::waypoint;
+using namespace swganh::object;
 
 Waypoint::Waypoint()
     : coordinates_(glm::vec3(0,0,0))

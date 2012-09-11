@@ -11,11 +11,11 @@ namespace messages {
 
 namespace swganh {
 namespace object {
-namespace waypoint {
+
 
     class Waypoint;
 
-    class WaypointMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
+    class WaypointMessageBuilder : public swganh::object::IntangibleMessageBuilder
     {
     public:
         WaypointMessageBuilder(swganh::EventDispatcher* dispatcher) : 
@@ -37,4 +37,4 @@ namespace waypoint {
 		typedef swganh::ValueEvent<std::shared_ptr<Waypoint>> WaypointEvent;
     };
 
-}}}  // swganh::object::waypoint
+}}  // swganh::object

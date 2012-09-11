@@ -8,7 +8,7 @@ namespace sql { class ResultSet; }
 
 namespace swganh {
 namespace object {
-namespace player {
+
     class Player;
 
     struct NameEvent : swganh::BaseEvent 
@@ -35,4 +35,4 @@ namespace player {
 
 
 
-}}}
+}}

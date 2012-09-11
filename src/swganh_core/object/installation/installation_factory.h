@@ -6,10 +6,10 @@
 
 namespace swganh {
 namespace object {
-namespace installation {
+
 
 	class Installation;
-    class InstallationFactory : public swganh::object::tangible::TangibleFactory
+    class InstallationFactory : public swganh::object::TangibleFactory
     {
     public:
 		typedef Installation ObjectType;
@@ -28,4 +28,4 @@ namespace installation {
 		virtual void RegisterEventHandlers(){}
     };
 
-}}}  // namespace swganh::object::installation
+}}  // namespace swganh::object

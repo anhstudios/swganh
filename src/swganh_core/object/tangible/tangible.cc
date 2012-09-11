@@ -6,7 +6,7 @@
 #include "swganh_core/object/object_events.h"
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::tangible;
+using namespace swganh::object;
 using namespace swganh::messages;
 using namespace swganh::messages::containers;
 

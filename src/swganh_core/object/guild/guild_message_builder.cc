@@ -8,7 +8,7 @@
 #include "swganh_core/object/guild/guild.h"
 
 using namespace std;
-using namespace swganh::object::guild;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 void GuildMessageBuilder::RegisterEventHandlers()

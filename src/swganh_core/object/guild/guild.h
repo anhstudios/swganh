@@ -12,7 +12,7 @@
 
 namespace swganh {
 namespace object {
-namespace guild {
+
 
 struct GuildTag
 {
@@ -68,4 +68,4 @@ private:
     swganh::messages::containers::NetworkList<GuildTag>     guild_list_;
 };
 
-}}}  // namespaces swganh::object::guild
+}}  // namespaces swganh::object

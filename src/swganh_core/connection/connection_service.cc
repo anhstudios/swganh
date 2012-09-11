@@ -148,8 +148,8 @@ bool ConnectionService::RemoveSession(std::shared_ptr<Session> session) {
     auto controller = connection_client->GetController();
     if (controller)
     {
-		auto player = simulation_service_->GetObjectById<swganh::object::player::Player>(controller->GetId() + 1);
-		kernel_->GetEventDispatcher()->Dispatch(make_shared<swganh::ValueEvent<shared_ptr<swganh::object::player::Player>>>("Connection::PlayerRemoved", player));
+		auto player = simulation_service_->GetObjectById<swganh::object::Player>(controller->GetId() + 1);
+		kernel_->GetEventDispatcher()->Dispatch(make_shared<swganh::ValueEvent<shared_ptr<swganh::object::Player>>>("Connection::PlayerRemoved", player));
         
 		simulation_service_->PersistRelatedObjects(controller->GetId());
 	}

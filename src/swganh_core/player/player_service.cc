@@ -16,7 +16,7 @@ using namespace std;
 using namespace swganh;
 using namespace swganh::service;
 using namespace swganh::player;
-using namespace swganh::object::player;
+using namespace swganh::object;
 
 
 ServiceDescription PlayerService::GetServiceDescription()
@@ -60,12 +60,12 @@ void PlayerService::Startup()
 		GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
 }
 
-void PlayerService::CleanupPlayerState(shared_ptr<swganh::object::player::Player> player)
+void PlayerService::CleanupPlayerState(shared_ptr<swganh::object::Player> player)
 {
 
 }
 
-void PlayerService::OnPlayerEnter(shared_ptr<swganh::object::player::Player> player)
+void PlayerService::OnPlayerEnter(shared_ptr<swganh::object::Player> player)
 {
     if (player)
     {
@@ -73,12 +73,12 @@ void PlayerService::OnPlayerEnter(shared_ptr<swganh::object::player::Player> pla
     }
 }
 
-void PlayerService::OnPlayerExit(shared_ptr<swganh::object::player::Player> player)
+void PlayerService::OnPlayerExit(shared_ptr<swganh::object::Player> player)
 {
     if (player)
     {
 	    player->ClearStatusFlags();
-	    player->AddStatusFlag(swganh::object::player::LD);
+	    player->AddStatusFlag(swganh::object::LD);
 	    // set a timer to 30 seconds to destroy the object, unless logged back in.
         auto deadline_timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(30));
 		auto parent = std::static_pointer_cast<swganh::object::Object>(player->GetContainer());

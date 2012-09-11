@@ -4,7 +4,7 @@
 #include "installation.h"
 
 using namespace std;
-using namespace swganh::object::installation;
+using namespace swganh::object;
 using namespace swganh::messages::containers;
 
 Installation::Installation()

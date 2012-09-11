@@ -14,7 +14,7 @@
 using namespace swganh;
 using namespace std;
 using namespace swganh::messages;
-using namespace swganh::object::waypoint;
+using namespace swganh::object;
 
 void WaypointMessageBuilder::RegisterEventHandlers()
 {

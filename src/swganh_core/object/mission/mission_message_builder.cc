@@ -13,8 +13,6 @@
 using namespace swganh;
 using namespace std;
 using namespace swganh::object;
-using namespace mission;
-using namespace waypoint;
 using namespace swganh::messages;
 
 void MissionMessageBuilder::RegisterEventHandlers()

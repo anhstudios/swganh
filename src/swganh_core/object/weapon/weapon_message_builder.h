@@ -8,10 +8,10 @@
 
 namespace swganh {
 namespace object {
-namespace weapon {
+
 
     class Weapon;
-    class WeaponMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
+    class WeaponMessageBuilder : public swganh::object::TangibleMessageBuilder
     {
     public:
         WeaponMessageBuilder(swganh::EventDispatcher* dispatcher) :
@@ -29,6 +29,6 @@ namespace weapon {
         typedef swganh::ValueEvent<std::shared_ptr<Weapon>> WeaponEvent;
     };
 
-}}}  // swganh::object::tangible
+}}  // swganh::object
 
 #endif  // SWGANH_OBJECT_TANGIBLE_TANGIBLE_MESSAGE_BUILDER_H_

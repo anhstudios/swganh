@@ -6,7 +6,7 @@
 
 namespace swganh {
 namespace object {
-namespace group {
+
 
 	class Group;
     class GroupFactory : public swganh::object::ObjectFactoryInterface
@@ -23,4 +23,4 @@ namespace group {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
-}}}  // namespace swganh::object::group
+}}  // namespace swganh::object

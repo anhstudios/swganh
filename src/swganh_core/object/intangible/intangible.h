@@ -9,7 +9,7 @@
 
 namespace swganh {
 namespace object {
-namespace intangible {
+
 
 class IntangibleFactory;
 class IntangibleMessageBuilder;
@@ -36,4 +36,4 @@ protected:
 	std::atomic<uint32_t> generic_int_;
 };
     
-}}}  // namespace swganh::object::intangible
+}}  // namespace swganh::object

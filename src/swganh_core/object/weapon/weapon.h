@@ -6,9 +6,9 @@
 
 namespace swganh {
 namespace object {
-namespace weapon {
+
     
-class Weapon : public swganh::object::tangible::Tangible
+class Weapon : public swganh::object::Tangible
 {
 public:
     Weapon();
@@ -18,4 +18,4 @@ public:
     const static uint32_t type = 0x6AAC0CFE;    
 };
     
-}}}  // namespace swganh::object::weapon
+}}  // namespace swganh::object

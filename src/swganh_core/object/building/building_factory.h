@@ -9,11 +9,11 @@ namespace object {
 
 	class ObjectManager;
 
-namespace building {
+
 
 	class Building;
 
-    class BuildingFactory : public swganh::object::tangible::TangibleFactory
+    class BuildingFactory : public swganh::object::TangibleFactory
     {
     public:
 		typedef Building ObjectType;
@@ -33,4 +33,4 @@ namespace building {
 
     };
 
-}}}  // namespace swganh::object::building
+}}  // namespace swganh::object

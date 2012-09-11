@@ -6,10 +6,8 @@
 
 namespace swganh {
 namespace object {
-namespace player {
 	class Player;
-}}}
-
+}}
 
 namespace swganh {
 namespace player {
@@ -17,13 +15,13 @@ namespace player {
 class PlayerServiceInterface : swganh::service::ServiceInterface
 {
 public:
-	virtual void CleanupPlayerState(std::shared_ptr<swganh::object::player::Player> player) = 0;
+	virtual void CleanupPlayerState(std::shared_ptr<swganh::object::Player> player) = 0;
 
-	virtual void OnPlayerEnter(std::shared_ptr<swganh::object::player::Player> player) = 0;
+	virtual void OnPlayerEnter(std::shared_ptr<swganh::object::Player> player) = 0;
 
-	virtual void OnPlayerExit(std::shared_ptr<swganh::object::player::Player> player) = 0;
+	virtual void OnPlayerExit(std::shared_ptr<swganh::object::Player> player) = 0;
 };
 
 
 
-}}// swganh::player
+}}// swganh:

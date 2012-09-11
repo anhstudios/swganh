@@ -9,7 +9,7 @@
 #include "swganh_core/messages/baselines_message.h"
 
 using namespace std;
-using namespace swganh::object::cell;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 void CellMessageBuilder::SendBaselines(const std::shared_ptr<Cell>& cell, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)

@@ -15,10 +15,9 @@ class Statement;
 
 namespace swganh {
 namespace object {
-namespace resource_container {
 
 	class ResourceContainer;
-    class ResourceContainerFactory : public swganh::object::tangible::TangibleFactory
+    class ResourceContainerFactory : public swganh::object::TangibleFactory
     {
     public:
 		typedef ResourceContainer ObjectType;
@@ -37,4 +36,4 @@ namespace resource_container {
 		virtual void RegisterEventHandlers(){}
     };
 
-}}}  // namespace swganh::object::resource_container
+}}  // namespace swganh::object

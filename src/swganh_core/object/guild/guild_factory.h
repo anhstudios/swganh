@@ -6,7 +6,7 @@
 
 namespace swganh {
 namespace object {
-namespace guild {
+
 
 	class Guild;
     class GuildFactory : public swganh::object::ObjectFactoryInterface
@@ -23,4 +23,4 @@ namespace guild {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
-}}}  // namespace swganh::object::guild
+}}  // namespace swganh::object

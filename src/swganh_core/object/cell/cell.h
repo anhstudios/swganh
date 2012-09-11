@@ -8,9 +8,9 @@
 
 namespace swganh {
 namespace object {
-namespace cell {
 
-class Cell : public swganh::object::intangible::Intangible {
+
+class Cell : public swganh::object::Intangible {
 
 public:
     // SCLT
@@ -31,4 +31,4 @@ public:
 
 };
 
-}}} // swganh::object::cell
+}} // swganh::object

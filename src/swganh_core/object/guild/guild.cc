@@ -9,7 +9,7 @@
 
 using namespace std;
 using namespace swganh::messages;
-using namespace swganh::object::guild;
+using namespace swganh::object;
 
 Guild::Guild()
     : Object()

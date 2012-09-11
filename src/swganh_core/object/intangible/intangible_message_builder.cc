@@ -10,7 +10,7 @@
 
 using namespace std;
 using namespace swganh::messages;
-using namespace swganh::object::intangible;
+using namespace swganh::object;
 
 void IntangibleMessageBuilder::RegisterEventHandlers()
 {

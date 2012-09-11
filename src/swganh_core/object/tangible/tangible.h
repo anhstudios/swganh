@@ -15,7 +15,7 @@
 
 namespace swganh {
 namespace object {
-namespace tangible {
+
 
 enum StaticType {
     MOVEABLE = 0,
@@ -157,4 +157,4 @@ private:
     std::atomic<bool> auto_attack_;
 };
     
-}}}  // namespace swganh::object::tangible
+}}  // namespace swganh::object

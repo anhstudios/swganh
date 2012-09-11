@@ -11,12 +11,11 @@
 
 namespace swganh {
 namespace object {
-namespace building {
 
 class BuildingFactory;
 class BuildingMessageBuilder;
 
-class Building : public swganh::object::tangible::Tangible
+class Building : public swganh::object::Tangible
 {
 public:
 	typedef BuildingFactory FactoryType;
@@ -29,4 +28,4 @@ private:
 
 };
 
-}}}  // namespace swganh::object::building
+}}  // namespace swganh::object

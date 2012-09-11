@@ -22,7 +22,6 @@
 
 namespace swganh {
 namespace object {
-namespace player {
 
 enum Gender
 {
@@ -275,7 +274,7 @@ struct DraftSchematicData
 struct PlayerWaypointSerializer {
     PlayerWaypointSerializer()
         : waypoint(nullptr){}
-    PlayerWaypointSerializer(std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint_)
+    PlayerWaypointSerializer(std::shared_ptr<swganh::object::Waypoint> waypoint_)
         : waypoint(waypoint_){}
 
     void Serialize(swganh::messages::BaselinesMessage& message);
@@ -283,13 +282,13 @@ struct PlayerWaypointSerializer {
     void Serialize(swganh::messages::DeltasMessage& message);
     bool operator==(const PlayerWaypointSerializer& other);
 
-    std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint;
+    std::shared_ptr<swganh::object::Waypoint> waypoint;
 };
 
 class PlayerFactory;
 class PlayerMessageBuilder;
 
-class Player : public swganh::object::intangible::Intangible
+class Player : public swganh::object::Intangible
 {
 public:
     typedef PlayerFactory FactoryType;
@@ -902,4 +901,4 @@ private:
     Gender gender_;
 };
 
-}}}  // namespace swganh::object::player
+}}  // namespace swganh::object

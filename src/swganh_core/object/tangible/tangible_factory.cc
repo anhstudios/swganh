@@ -20,7 +20,7 @@
 using namespace std;
 using namespace swganh::database;
 using namespace swganh::object;
-using namespace swganh::object::tangible;
+using namespace swganh::object;
 using namespace swganh::simulation;
 
  TangibleFactory::TangibleFactory(swganh::database::DatabaseManagerInterface* db_manager,

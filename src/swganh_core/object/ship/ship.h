@@ -9,7 +9,7 @@
 
 namespace swganh {
 namespace object {
-namespace ship {
+
 
 template<class ValueType> 
 struct ShipList {
@@ -18,7 +18,7 @@ struct ShipList {
     ValueType value;
 };
     
-class Ship : public swganh::object::creature::Creature
+class Ship : public swganh::object::Object
 {
 public:
     // SHIP
@@ -68,4 +68,4 @@ private:
 
 };
     
-}}}  // namespace swganh::object::ship
+}}  // namespace swganh::object

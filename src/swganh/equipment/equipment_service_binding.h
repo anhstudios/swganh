@@ -31,9 +31,9 @@ void exportEquipmentService()
 		.def("ClearSlot", ClearFunc,"Utility method that gets the slot id for a slot name and then clears that slot from an object.")
 		.def("GetEquippedObject", GetFunc,"Utility method that gets the slot id for a slot name and then returns the object in that slot for a given object.")
 		.def("GetPlayerObject", make_function(
-			std::bind(&EquipmentServiceInterface::GetEquippedObject<player::Player>, std::placeholders::_1, std::placeholders::_2, "ghost"),
+			std::bind(&EquipmentServiceInterface::GetEquippedObject<Player>, std::placeholders::_1, std::placeholders::_2, "ghost"),
 			return_value_policy<return_by_value>(),
-            boost::mpl::vector<shared_ptr<player::Player>, EquipmentServiceInterface*, shared_ptr<Object>>()),
+            boost::mpl::vector<shared_ptr<Player>, EquipmentServiceInterface*, shared_ptr<Object>>()),
 			"returns the :class:`.Player` equipped by this creature object")
         ;
 }

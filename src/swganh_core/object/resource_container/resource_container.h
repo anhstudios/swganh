@@ -8,11 +8,10 @@
 
 namespace swganh {
 namespace object {
-namespace resource_container {
 
 class ResourceContainerFactory;
 class ResourceContainerMessageBuilder;
-class ResourceContainer : public swganh::object::tangible::Tangible
+class ResourceContainer : public swganh::object::Tangible
 {
 public:
 	typedef ResourceContainerFactory FactoryType;
@@ -52,4 +51,4 @@ private:
     std::wstring variation_name_;		                    // update 6
 };
 
-}}} // swganh::object::resource_container
+}} // swganh::object

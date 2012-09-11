@@ -6,9 +6,9 @@
 
 namespace swganh {
 namespace object {
-namespace factory_crate {
 
-class FactoryCrate : public swganh::object::tangible::Tangible 
+
+class FactoryCrate : public swganh::object::Tangible 
 {
 public:
     // FCYT
@@ -16,4 +16,4 @@ public:
     const static uint32_t type = 0x46435954;
 };
 
-}}} // swganh::object::factory_crate
+}} // swganh::object

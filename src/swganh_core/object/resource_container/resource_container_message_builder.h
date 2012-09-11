@@ -14,9 +14,7 @@
 
 namespace swganh {
 namespace object {
-namespace resource_container {
-
-class ResourceContainerMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
+class ResourceContainerMessageBuilder : public swganh::object::TangibleMessageBuilder
 {
 public:
     ResourceContainerMessageBuilder(swganh::EventDispatcher* event_dispatcher_)
@@ -41,6 +39,6 @@ private:
     typedef swganh::ValueEvent<std::shared_ptr<ResourceContainer>> ResourceContainerEvent;
 };
 
-}}} // swganh::object::creature
+}} // swganh::object
 
 #endif // SWGANH_OBJECT_CREATURE_CREATURE_MESSAGE_BUILDER_H_

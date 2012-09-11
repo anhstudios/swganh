@@ -6,7 +6,7 @@
 
 namespace swganh {
 namespace object {
-namespace static_object {
+
   
 class StaticFactory;
 class StaticMessageBuilder;
@@ -22,4 +22,4 @@ public:
     const static uint32_t type = 0x5354414F;
 };
 
-}}}  // namespace swganh::object::static_obj
+}}  // namespace swganh::object_obj

@@ -6,10 +6,9 @@
 
 namespace swganh {
 namespace object {
-namespace harvester_installation {
 
 	class HarvesterInstallation;
-    class HarvesterInstallationFactory : public swganh::object::installation::InstallationFactory
+    class HarvesterInstallationFactory : public swganh::object::InstallationFactory
     {
     public:
 		typedef HarvesterInstallation ObjectType;
@@ -25,4 +24,4 @@ namespace harvester_installation {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
-}}}  // namespace swganh::object::installation
+}}  // namespace swganh::object

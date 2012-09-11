@@ -15,7 +15,7 @@ class Statement;
 
 namespace swganh {
 namespace object {
-namespace static_object {
+
 
 	class Static;
     class StaticFactory : public swganh::object::ObjectFactory
@@ -35,4 +35,4 @@ namespace static_object {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
-}}}  // namespace swganh::object::static
+}}  // namespace swganh::object

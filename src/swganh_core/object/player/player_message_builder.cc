@@ -17,8 +17,6 @@
 using namespace swganh;
 using namespace std;
 using namespace swganh::object;
-using namespace player;
-using namespace waypoint;
 using namespace swganh::messages;
 
 void PlayerMessageBuilder::RegisterEventHandlers()

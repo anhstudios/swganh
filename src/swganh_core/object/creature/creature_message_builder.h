@@ -12,9 +12,9 @@
 
 namespace swganh {
 namespace object {
-namespace creature {
 
-class CreatureMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
+
+class CreatureMessageBuilder : public swganh::object::TangibleMessageBuilder
 {
 public:
     CreatureMessageBuilder(swganh::EventDispatcher* event_dispatcher_)
@@ -78,4 +78,4 @@ private:
     typedef swganh::ValueEvent<std::shared_ptr<Creature>> CreatureEvent;
 };
 
-}}} // swganh::object::creature
+}} // swganh::object

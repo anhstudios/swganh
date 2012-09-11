@@ -26,7 +26,7 @@ using namespace swganh::plugin;
 using namespace swganh::messages;
 using namespace swganh::simulation;
 using namespace swganh::weather;
-using namespace swganh::object::player;
+using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::weather;
 using namespace swganh::galaxy;

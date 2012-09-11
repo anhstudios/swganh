@@ -9,7 +9,7 @@
 using namespace swganh;
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::installation;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 void InstallationMessageBuilder::RegisterEventHandlers()

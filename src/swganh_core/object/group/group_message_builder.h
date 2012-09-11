@@ -13,13 +13,13 @@ namespace messages {
 
 namespace swganh {
 namespace object {
-namespace tangible {
+
     class Tangible;
-}}} // swganh::object::tangible
+}} // swganh::object
 
 namespace swganh {
 namespace object {
-namespace group {
+
 
 class Group;
 class GroupMessageBuilder : public ObjectMessageBuilder
@@ -45,4 +45,4 @@ private:
 	typedef swganh::ValueEvent<std::shared_ptr<Group>> GroupEvent;
 };
 
-}}} // swganh::object::group
+}} // swganh::object

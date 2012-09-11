@@ -13,15 +13,15 @@
 
 namespace swganh {
 namespace object {
-namespace tangible {
+
 
     class Tangible;
 
-}}}  // namespace swganh::object::tangible
+}}  // namespace swganh::object
 
 namespace swganh {
 namespace object {
-namespace group {
+
 
 enum LootMode
 {
@@ -102,4 +102,4 @@ private:
     std::atomic<uint32_t> loot_mode_;                                                                        // update 6 variable 7 
 };
 
-}}} // namespace swganh::object::group
+}} // namespace swganh::object

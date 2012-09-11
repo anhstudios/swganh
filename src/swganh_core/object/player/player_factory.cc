@@ -24,7 +24,7 @@
 using namespace std;
 using namespace swganh::database;
 using namespace swganh::object;
-using namespace swganh::object::player;
+using namespace swganh::object;
 using namespace swganh::simulation;
 
 PlayerFactory::PlayerFactory(swganh::database::DatabaseManagerInterface* db_manager,

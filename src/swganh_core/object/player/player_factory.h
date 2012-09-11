@@ -16,10 +16,10 @@ class ResultSet;
 
 namespace swganh {
 namespace object {
-namespace player {
+
     
     class Player;
-    class PlayerFactory : public swganh::object::intangible::IntangibleFactory
+    class PlayerFactory : public swganh::object::IntangibleFactory
     {
     public:
 		typedef Player ObjectType;
@@ -57,4 +57,4 @@ namespace player {
         void PersistIgnoredList_(const std::shared_ptr<Player>& player);
     };
 
-}}}  // namespace swganh::object::player
+}}  // namespace swganh::object

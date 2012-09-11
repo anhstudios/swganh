@@ -21,7 +21,7 @@
 using namespace std;
 using namespace swganh::database;
 using namespace swganh::object;
-using namespace swganh::object::intangible;
+using namespace swganh::object;
 using namespace swganh::simulation;
 
 IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,

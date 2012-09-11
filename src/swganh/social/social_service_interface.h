@@ -14,9 +14,7 @@
 namespace swganh {
 namespace object {
     class Object;
-namespace player {
     class Player;
-}
 }}  // namespace swganh::object
 
 namespace swganh {
@@ -31,9 +29,9 @@ namespace social {
     {
     public:
         
-        virtual bool AddFriend(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& friend_name) = 0;
+        virtual bool AddFriend(const std::shared_ptr<swganh::object::Player>& player, const std::string& friend_name) = 0;
         
-		virtual bool AddIgnore(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& player_name) = 0;
+		virtual bool AddIgnore(const std::shared_ptr<swganh::object::Player>& player, const std::string& player_name) = 0;
         
     };
 

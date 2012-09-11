@@ -9,11 +9,11 @@ namespace object {
 
 	class ObjectManager;
 
-namespace factory_crate {
+
 
 	class FactoryCrate;
 
-    class FactoryCrateFactory : public swganh::object::tangible::TangibleFactory
+    class FactoryCrateFactory : public swganh::object::TangibleFactory
     {
     public:
 		typedef FactoryCrate ObjectType;
@@ -34,4 +34,4 @@ namespace factory_crate {
     };
 
 
-}}}  // namespace swganh::object::factory_crate
+}}  // namespace swganh::object

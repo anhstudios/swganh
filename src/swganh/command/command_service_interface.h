@@ -18,17 +18,12 @@
 namespace swganh {
 namespace observer {
 	class ObserverInterface;
-}}
-
-namespace swganh {
+}
 namespace object {
     class Object;
-namespace tangible {
-    class Tangible;
-}
-namespace creature {
+	class Tangible;
 	class Creature;
-}} // namespace object::creature
+} // namespace object
 
 namespace simulation {
     class SimulationServiceInterface;

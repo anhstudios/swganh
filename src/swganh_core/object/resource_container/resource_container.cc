@@ -5,7 +5,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::resource_container;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 ResourceContainer::ResourceContainer() : Tangible()

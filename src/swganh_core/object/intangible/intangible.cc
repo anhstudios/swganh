@@ -5,7 +5,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::intangible;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 Intangible::Intangible()

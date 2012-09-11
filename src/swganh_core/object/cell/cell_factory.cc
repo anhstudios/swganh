@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::cell;
+using namespace swganh::object;
 
 uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object)
 {

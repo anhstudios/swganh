@@ -6,10 +6,10 @@
 
 namespace swganh {
 namespace object {
-namespace mission {
+
 
 	class Mission;
-    class MissionFactory : public swganh::object::intangible::IntangibleFactory
+    class MissionFactory : public swganh::object::IntangibleFactory
     {
     public:
 		typedef Mission ObjectType;
@@ -26,4 +26,4 @@ namespace mission {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
-}}}  // namespace swganh::object::mission
+}}  // namespace swganh::object

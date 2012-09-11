@@ -8,14 +8,14 @@
 
 namespace swganh {
 namespace object {
-namespace waypoint {
+
     class Waypoint;
-}}} // swganh::object::waypoint
+}} // swganh::object
 
 namespace swganh {
 namespace object {
-namespace player {
-    class PlayerMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
+
+    class PlayerMessageBuilder : public swganh::object::IntangibleMessageBuilder
     {
     public:
         PlayerMessageBuilder(swganh::EventDispatcher* dispatcher) :
@@ -63,4 +63,4 @@ namespace player {
         typedef swganh::ValueEvent<std::shared_ptr<Player>> PlayerEvent;
     };
 
-}}}  // swganh::object::player
+}}  // swganh::object

@@ -7,7 +7,7 @@
 #include "swganh/crc.h"
 
 using namespace std;
-using namespace swganh::object::manufacture_schematic;
+using namespace swganh::object;
 using namespace swganh::messages;
 using namespace containers;
 

@@ -16,10 +16,10 @@ namespace sql {
 
 namespace swganh {
 namespace object {
-namespace creature {
+
 
     class Creature;
-    class CreatureFactory : public swganh::object::tangible::TangibleFactory
+    class CreatureFactory : public swganh::object::TangibleFactory
     {
     public:
 		typedef Creature ObjectType;
@@ -46,4 +46,4 @@ namespace creature {
             const std::shared_ptr<sql::Statement>& statement);
     };
 
-}}}  // namespace swganh::object::creature
+}}  // namespace swganh::object

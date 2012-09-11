@@ -12,7 +12,6 @@
 using namespace swganh;
 using namespace std;
 using namespace swganh::object;
-using namespace resource_container;
 using namespace swganh::messages;
 
 void ResourceContainerMessageBuilder::RegisterEventHandlers()

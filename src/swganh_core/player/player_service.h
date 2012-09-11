@@ -29,11 +29,11 @@ namespace player {
 
 		swganh::service::ServiceDescription GetServiceDescription();
 
-		void CleanupPlayerState(std::shared_ptr<swganh::object::player::Player> player);
+		void CleanupPlayerState(std::shared_ptr<swganh::object::Player> player);
 
-		void OnPlayerEnter(std::shared_ptr<swganh::object::player::Player> player);
+		void OnPlayerEnter(std::shared_ptr<swganh::object::Player> player);
 
-		void OnPlayerExit(std::shared_ptr<swganh::object::player::Player> player);
+		void OnPlayerExit(std::shared_ptr<swganh::object::Player> player);
 	private:
 		void RemoveClientTimerHandler_(
 			const boost::system::error_code& e, 

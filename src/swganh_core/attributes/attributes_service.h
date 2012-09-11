@@ -27,11 +27,8 @@ namespace simulation {
 }
 namespace object {
 	class ObjectController;
-namespace creature {
 	class Creature;
-}
-}
-}
+}}
 
 namespace swganh {
 namespace attributes {

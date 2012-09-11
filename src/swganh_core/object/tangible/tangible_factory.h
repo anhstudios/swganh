@@ -17,7 +17,7 @@ class Statement;
 
 namespace swganh {
 namespace object {
-namespace tangible {
+
 
     class Tangible;
     class TangibleFactory : public swganh::object::ObjectFactory
@@ -40,4 +40,4 @@ namespace tangible {
     private:
     };
 
-}}}  // namespace swganh::object::tangible
+}}  // namespace swganh::object

@@ -4,7 +4,7 @@
 #include "ship.h"
 
 using namespace std;
-using namespace swganh::object::ship;
+using namespace swganh::object;
 
 uint32_t Ship::GetType() const 
 { 

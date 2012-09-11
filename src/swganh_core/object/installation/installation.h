@@ -11,7 +11,7 @@
 
 namespace swganh {
 namespace object {
-namespace installation {
+
 
 struct ResourceId
 {
@@ -80,7 +80,7 @@ struct ResourceString
 
 class InstallationFactory;
 class InstallationMessageBuilder;
-class Installation : public swganh::object::tangible::Tangible
+class Installation : public swganh::object::Tangible
 {
 public:
 	typedef InstallationFactory FactoryType;
@@ -382,4 +382,4 @@ private:
     std::atomic<uint8_t> condition_percent_;
 };
 
-}}}  // namespace swganh::object::installation
+}}  // namespace swganh::object

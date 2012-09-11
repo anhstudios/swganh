@@ -4,7 +4,7 @@
 #include "building.h"
 
 using namespace std;
-using namespace swganh::object::building;
+using namespace swganh::object;
 
 uint32_t Building::GetType() const
 {

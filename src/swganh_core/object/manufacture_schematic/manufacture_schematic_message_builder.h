@@ -10,9 +10,9 @@
 
 namespace swganh {
 namespace object {
-namespace manufacture_schematic {
+
     typedef swganh::ValueEvent<std::shared_ptr<ManufactureSchematic>> ManufactureSchematicEvent;
-    class ManufactureSchematicMessageBuilder : public swganh::object::intangible::IntangibleMessageBuilder
+    class ManufactureSchematicMessageBuilder : public swganh::object::IntangibleMessageBuilder
     {
     public:
         ManufactureSchematicMessageBuilder(swganh::EventDispatcher* dispatcher) :
@@ -43,6 +43,6 @@ namespace manufacture_schematic {
 		static swganh::messages::BaselinesMessage BuildBaseline7(const std::shared_ptr<ManufactureSchematic>& manufacture_schematic);		
     };
 
-}}}  // swganh::object::manufacture_schematic
+}}  // swganh::object
 
 #endif  // SWGANH_OBJECT_MANUFACTURE_SCHEMATIC_MANUFACTURE_SCHEMATIC_MESSAGE_BUILDER_H_

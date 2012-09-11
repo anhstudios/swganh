@@ -6,7 +6,7 @@
 
 namespace swganh {
 namespace object {
-namespace ship {
+
 
     class ShipFactory : public swganh::object::ObjectFactoryInterface
     {
@@ -20,4 +20,4 @@ namespace ship {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
-}}}  // namespace swganh::object::ship
+}}  // namespace swganh::object

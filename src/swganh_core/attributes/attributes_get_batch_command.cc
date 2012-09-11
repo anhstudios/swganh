@@ -25,7 +25,7 @@ using swganh::command::CommandProperties;
 using swganh::simulation::SimulationServiceInterface;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::object::ObjectController;
-using swganh::object::creature::Creature;
+
 
 GetAttributesBatchCommand::GetAttributesBatchCommand(
     SwganhKernel* kernel,

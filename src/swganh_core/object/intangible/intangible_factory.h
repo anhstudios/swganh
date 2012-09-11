@@ -12,7 +12,7 @@ class DatabaseManagerInterface;
 
 namespace swganh {
 namespace object {
-namespace intangible {
+
     class Intangible;
 
     class IntangibleFactory : public swganh::object::ObjectFactory
@@ -32,4 +32,4 @@ namespace intangible {
     private:
     };
 
-}}}  // namespace swganh::object::intangible
+}}  // namespace swganh::object

@@ -23,8 +23,8 @@ namespace social {
 
         swganh::service::ServiceDescription GetServiceDescription();
 
-        virtual bool AddFriend(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& friend_name);
-        virtual bool AddIgnore(const std::shared_ptr<swganh::object::player::Player>& player, const std::string& player_name);
+        virtual bool AddFriend(const std::shared_ptr<swganh::object::Player>& player, const std::string& friend_name);
+        virtual bool AddIgnore(const std::shared_ptr<swganh::object::Player>& player, const std::string& player_name);
         
     private:
         std::shared_ptr<swganh::character::CharacterProviderInterface> character_provider_;

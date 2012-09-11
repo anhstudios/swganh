@@ -6,7 +6,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::resource_container;
+using namespace swganh::object;
 
 ResourceContainerFactory::ResourceContainerFactory(swganh::database::DatabaseManagerInterface* db_manager,
             swganh::EventDispatcher* event_dispatcher)

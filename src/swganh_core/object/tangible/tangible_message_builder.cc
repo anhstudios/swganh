@@ -14,7 +14,7 @@
 using namespace swganh;
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::tangible;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 

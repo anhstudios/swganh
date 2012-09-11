@@ -6,11 +6,10 @@
 
 namespace swganh {
 namespace object {
-namespace harvester_installation {
 
 class HarvesterInstallationFactory;
 class HarvesterInstallationMessageBuilder;
-class HarvesterInstallation : public swganh::object::installation::Installation
+class HarvesterInstallation : public swganh::object::Installation
 {
 public:
 	typedef HarvesterInstallationFactory FactoryType;
@@ -28,5 +27,5 @@ public:
 private:
 };
 
-}}}  // namespace swganh::object::installation
+}}  // namespace swganh::object
 

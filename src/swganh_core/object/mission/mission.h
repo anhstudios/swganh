@@ -12,12 +12,12 @@
 
 namespace swganh {
 namespace object {
-namespace mission {
+
 
 class MissionFactory;
 class MissionMessageBuilder;
 
-class Mission : public swganh::object::intangible::Intangible
+class Mission : public swganh::object::Intangible
 {
 public:
 	typedef MissionFactory FactoryType;
@@ -235,9 +235,9 @@ public:
      */
     void SetTargetName(std::string target_name);
 
-	std::shared_ptr<swganh::object::waypoint::Waypoint> GetMissionWaypoint();
+	std::shared_ptr<swganh::object::Waypoint> GetMissionWaypoint();
 
-	void SetMissionWaypoint(std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint);
+	void SetMissionWaypoint(std::shared_ptr<swganh::object::Waypoint> waypoint);
 
 protected:
 	typedef swganh::ValueEvent<std::shared_ptr<Mission>> MissionEvent;
@@ -257,7 +257,7 @@ protected:
     uint32_t repeat_counter_;
     std::string mission_type_;
     std::string target_name_;
-    std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint_;
+    std::shared_ptr<swganh::object::Waypoint> waypoint_;
 };
 
-}}}  // swganh::object::mission
+}}  // swganh::object

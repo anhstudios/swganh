@@ -36,7 +36,7 @@ using namespace swganh::app;
 using namespace swganh::sui;
 using namespace swganh::sui;
 using namespace swganh::object;
-using namespace swganh::object::player;
+using namespace swganh::object;
 using namespace swganh::connection;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;

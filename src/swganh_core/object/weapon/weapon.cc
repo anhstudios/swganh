@@ -8,7 +8,7 @@
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object;
-using namespace swganh::object::weapon;
+using namespace swganh::object;
 
 uint32_t Weapon::GetType() const 
 { 

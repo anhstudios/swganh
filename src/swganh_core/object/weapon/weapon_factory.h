@@ -6,10 +6,10 @@
 
 namespace swganh {
 namespace object {
-namespace weapon {
+
 
 	class Weapon;
-    class WeaponFactory : public swganh::object::tangible::TangibleFactory
+    class WeaponFactory : public swganh::object::TangibleFactory
     {
     public:
 		typedef Weapon ObjectType;
@@ -26,4 +26,4 @@ namespace weapon {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
-}}}  // namespace swganh::object::weapon
+}}  // namespace swganh::object

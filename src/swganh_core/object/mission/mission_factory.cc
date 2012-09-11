@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::mission;
+using namespace swganh::object;
 
 MissionFactory::MissionFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
 	: IntangibleFactory(db_manager, event_dispatcher)

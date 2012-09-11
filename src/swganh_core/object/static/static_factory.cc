@@ -6,7 +6,7 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::static_object;
+using namespace swganh::object;
 
 StaticFactory::StaticFactory(swganh::database::DatabaseManagerInterface* db_manager,
             swganh::EventDispatcher* event_dispatcher)

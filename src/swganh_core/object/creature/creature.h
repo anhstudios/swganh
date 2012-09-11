@@ -16,7 +16,7 @@
 
 namespace swganh {
 namespace object {
-namespace creature {
+
 
 /**
  * Represents a Stats index.
@@ -353,7 +353,7 @@ class CreatureMessageBuilder;
 /**
  *
  */
-class Creature : public swganh::object::tangible::Tangible
+class Creature : public swganh::object::Tangible
 {
 public:
     typedef CreatureFactory FactoryType;
@@ -642,4 +642,4 @@ private:
     std::vector<uint64_t> duel_list_;
 };
 
-}}}  // namespace swganh::object::creature
+}}  // namespace swganh::object

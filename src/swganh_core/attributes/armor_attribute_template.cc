@@ -32,7 +32,7 @@ swganh::messages::AttributeListMessage ArmorAttributeTemplate::BuildAttributeTem
 	attribute_list_message.object_id = object->GetObjectId();
 
 	// condition is special
-	auto tano = static_pointer_cast<tangible::Tangible>(object);
+	auto tano = static_pointer_cast<Tangible>(object);
 	std::wstring condition = object->GetAttributeAsString("condition");
 	wstringstream ss;
 	if (tano)

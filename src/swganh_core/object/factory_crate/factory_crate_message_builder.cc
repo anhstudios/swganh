@@ -9,7 +9,7 @@
 using namespace swganh;
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::factory_crate;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 void FactoryCrateMessageBuilder::RegisterEventHandlers()

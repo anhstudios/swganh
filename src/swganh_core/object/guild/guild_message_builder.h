@@ -17,7 +17,7 @@ namespace object {
     // Forward Declarations
     class Tangible;
 
-namespace guild {
+
 
 class Guild;
 class GuildMessageBuilder : public ObjectMessageBuilder
@@ -41,4 +41,4 @@ private:
 	typedef swganh::ValueEvent<std::shared_ptr<Guild>> GuildEvent;
 };
 
-}}} // swganh::object::guild
+}} // swganh::object

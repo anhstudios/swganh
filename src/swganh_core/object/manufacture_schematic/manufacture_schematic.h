@@ -13,8 +13,8 @@
 
 namespace swganh {
 namespace object {
-namespace manufacture_schematic {
-class ManufactureSchematic : public swganh::object::intangible::Intangible
+
+class ManufactureSchematic : public swganh::object::Intangible
 {
 public:
     struct Property
@@ -496,4 +496,4 @@ private:
     std::atomic<bool> is_ready_;
 };
 
-}}}  // namespace swganh::object::manufacture_schematic
+}}  // namespace swganh::object

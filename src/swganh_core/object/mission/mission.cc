@@ -8,8 +8,8 @@
 using namespace glm;
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::mission;
-using namespace swganh::object::waypoint;
+using namespace swganh::object;
+using namespace swganh::object;
 
 uint32_t Mission::GetDifficultyLevel() const
 {
@@ -269,13 +269,13 @@ void Mission::SetTargetName(std::string target_name)
         ("Mission::TargetName", static_pointer_cast<Mission>(shared_from_this())));
 }
 
-std::shared_ptr<swganh::object::waypoint::Waypoint> Mission::GetMissionWaypoint()
+std::shared_ptr<swganh::object::Waypoint> Mission::GetMissionWaypoint()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return waypoint_;
 }
 
-void Mission::SetMissionWaypoint(std::shared_ptr<swganh::object::waypoint::Waypoint> waypoint)
+void Mission::SetMissionWaypoint(std::shared_ptr<swganh::object::Waypoint> waypoint)
 {
 	{
 		boost::lock_guard<boost::mutex> lock(object_mutex_);

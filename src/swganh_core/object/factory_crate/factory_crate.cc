@@ -3,7 +3,7 @@
 
 #include "factory_crate.h"
 
-using namespace swganh::object::factory_crate;
+using namespace swganh::object;
 
 uint32_t FactoryCrate::GetType() const 
 { 

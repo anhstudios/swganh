@@ -15,7 +15,7 @@ namespace messages {
 
 namespace swganh {
 namespace object {
-namespace static_object {
+
 
 class Static;
 class StaticMessageBuilder : public ObjectMessageBuilder
@@ -37,6 +37,6 @@ private:
 	typedef swganh::ValueEvent<std::shared_ptr<Static>> StaticEvent;
 };
 
-}}} // swganh::object::guild
+}} // swganh::object
 
 #endif // SWGANH_OBJECT_GUILD_GUILD_MESSAGE_BUILDER_H_

@@ -23,7 +23,7 @@ using namespace std;
 using namespace swganh;
 using namespace swganh::database;
 using namespace swganh::object;
-using namespace swganh::object::waypoint;
+using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh::messages::containers;
 
@@ -37,7 +37,7 @@ void WaypointFactory::RegisterEventHandlers()
 {
     event_dispatcher_->Subscribe("PersistWaypoints", [this] (shared_ptr<swganh::EventInterface> incoming_event)
     {
-        auto value_event = static_pointer_cast<ValueEvent<NetworkMap<uint64_t, player::PlayerWaypointSerializer>>>(incoming_event);
+        auto value_event = static_pointer_cast<ValueEvent<NetworkMap<uint64_t, PlayerWaypointSerializer>>>(incoming_event);
         auto waypoints = value_event->Get();
         for(auto& waypoint_pair : waypoints)
         {
@@ -46,12 +46,12 @@ void WaypointFactory::RegisterEventHandlers()
     });
     event_dispatcher_->Subscribe("LoadWaypoints", [this] (shared_ptr<swganh::EventInterface> incoming_event)
     {
-        auto waypoint_event = static_pointer_cast<player::WaypointEvent>(incoming_event);
+        auto waypoint_event = static_pointer_cast<WaypointEvent>(incoming_event);
 
     });
 }
 
-void WaypointFactory::LoadWaypoints(const shared_ptr<player::Player>& player, const shared_ptr<sql::ResultSet> result_set)
+void WaypointFactory::LoadWaypoints(const shared_ptr<Player>& player, const shared_ptr<sql::ResultSet> result_set)
 {
     while (result_set->next())
     {
@@ -69,7 +69,7 @@ void WaypointFactory::LoadWaypoints(const shared_ptr<player::Player>& player, co
         activated == 0 ? waypoint->DeActivate() : waypoint->Activate();
         waypoint->SetColorByte(result_set->getUInt("color"));
             
-        player->AddWaypoint(move(player::PlayerWaypointSerializer(waypoint)));
+        player->AddWaypoint(move(PlayerWaypointSerializer(waypoint)));
     }
 }
 

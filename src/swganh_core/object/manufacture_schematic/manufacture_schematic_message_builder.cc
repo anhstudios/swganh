@@ -15,7 +15,7 @@ using namespace std;
 using namespace swganh;
 using namespace swganh::messages;
 using namespace swganh::object;
-using namespace swganh::object::manufacture_schematic;
+using namespace swganh::object;
 
 
 void ManufactureSchematicMessageBuilder::RegisterEventHandlers()

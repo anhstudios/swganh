@@ -14,8 +14,8 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::player;
-using namespace swganh::object::waypoint;
+using namespace swganh::object;
+using namespace swganh::object;
 using namespace swganh::messages;
 using namespace containers;
 
@@ -484,7 +484,7 @@ void Player::ClearAllQuests()
 
 swganh::messages::containers::NetworkSortedList<Ability> Player::GetAbilityList() 
 {
-    auto creature = GetContainer<creature::Creature>();
+    auto creature = GetContainer<Creature>();
 	auto skill_commands = creature->GetSkillCommands();
 	
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -497,7 +497,7 @@ swganh::messages::containers::NetworkSortedList<Ability> Player::GetAbilityList(
 
 bool Player::HasAbility(string ability)
 {
-    auto creature = GetContainer<creature::Creature>();
+    auto creature = GetContainer<Creature>();
     auto abilities = creature->GetSkillCommands();
     
     boost::lock_guard<boost::mutex> lock(object_mutex_);

@@ -3,7 +3,7 @@
 
 #include "harvester_installation.h"
 
-using namespace swganh::object::harvester_installation;
+using namespace swganh::object;
 
 HarvesterInstallation::HarvesterInstallation()
 	: Installation()

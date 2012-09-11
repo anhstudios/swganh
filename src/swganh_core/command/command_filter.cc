@@ -14,9 +14,8 @@
 using swganh::command::CommandFilters;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandInterface;
-using swganh::object::creature::Creature;
-using swganh::object::player::Player;
-using swganh::object::tangible::Tangible;
+
+using namespace swganh::object;
 
 
 std::tuple<bool, uint32_t, uint32_t> CommandFilters::TargetCheckFilter(CommandInterface* command)

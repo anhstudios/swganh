@@ -7,8 +7,8 @@
 using namespace std;
 using namespace swganh::messages;
 using namespace swganh::object;
-using namespace swganh::object::group;
-using namespace swganh::object::tangible;
+using namespace swganh::object;
+using namespace swganh::object;
 
 Group::Group()
     : member_list_(5)

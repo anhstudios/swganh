@@ -8,10 +8,10 @@
 
 namespace swganh {
 namespace object {
-namespace factory_crate {
+
 
     class FactoryCrate;
-    class FactoryCrateMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
+    class FactoryCrateMessageBuilder : public swganh::object::TangibleMessageBuilder
     {
     public:
         FactoryCrateMessageBuilder(swganh::EventDispatcher* dispatcher) :
@@ -29,6 +29,6 @@ namespace factory_crate {
         typedef swganh::ValueEvent<std::shared_ptr<FactoryCrate>> FactoryCrateEvent;
     };
 
-}}}  // swganh::object::tangible
+}}  // swganh::object
 
 #endif  // SWGANH_OBJECT_TANGIBLE_TANGIBLE_MESSAGE_BUILDER_H_

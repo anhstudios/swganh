@@ -6,7 +6,7 @@
 
 namespace swganh {
 namespace object {
-namespace tangible {
+
 
     class Tangible;
     class TangibleMessageBuilder : public ObjectMessageBuilder
@@ -37,4 +37,4 @@ namespace tangible {
         typedef swganh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
     };
 
-}}}  // swganh::object::tangible
+}}  // swganh::object

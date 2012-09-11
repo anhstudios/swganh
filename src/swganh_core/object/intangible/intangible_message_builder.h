@@ -14,7 +14,7 @@ namespace messages {
 
 namespace swganh {
 namespace object {
-namespace intangible {
+
 
     class Intangible;
 
@@ -34,4 +34,4 @@ namespace intangible {
         static swganh::messages::BaselinesMessage BuildBaseline6(const std::shared_ptr<Intangible>& intangible);
     };
 
-}}}  // swganh::object::intangible
+}}  // swganh::object

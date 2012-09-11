@@ -24,8 +24,8 @@ using swganh::command::CommandService;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandCallback;
 using swganh::command::CommandInterface;
-using swganh::object::creature::Creature;
-using swganh::object::tangible::Tangible;
+
+using swganh::object::Tangible;
 
 CommandQueue::CommandQueue(
     swganh::app::SwganhKernel* kernel)

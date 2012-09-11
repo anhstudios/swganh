@@ -25,7 +25,7 @@ using namespace swganh::plugin;
 using namespace std;
 using namespace swganh::connection;
 using namespace swganh::object;
-using namespace swganh::object::player;
+using namespace swganh::object;
 using namespace swganh::social;
 
 using swganh::app::KernelInterface;

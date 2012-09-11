@@ -7,12 +7,12 @@
 #include "swganh_core/object/tangible/tangible.h"
 
 using namespace std;
-using namespace swganh::object::group;
+using namespace swganh::object;
 using namespace swganh::messages;
 
 namespace swganh {
 namespace object {
-namespace group {
+
 
 void GroupMessageBuilder::RegisterEventHandlers()
 {
@@ -101,4 +101,4 @@ BaselinesMessage GroupMessageBuilder::BuildBaseline6(const std::shared_ptr<Group
 	return BaselinesMessage(std::move(message));
 }
 
-}}} // swganh::object::group
+}} // swganh::object

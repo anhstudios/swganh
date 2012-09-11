@@ -8,10 +8,10 @@
 
 namespace swganh {
 namespace object {
-namespace building {
+
 
     class Building;
-    class BuildingMessageBuilder : public swganh::object::tangible::TangibleMessageBuilder
+    class BuildingMessageBuilder : public swganh::object::TangibleMessageBuilder
     {
     public:
         BuildingMessageBuilder(swganh::EventDispatcher* dispatcher) :
@@ -29,6 +29,6 @@ namespace building {
         typedef swganh::ValueEvent<std::shared_ptr<Building>> BuildingEvent;
     };
 
-}}}  // swganh::object::tangible
+}}  // swganh::object
 
 #endif  // SWGANH_OBJECT_TANGIBLE_TANGIBLE_MESSAGE_BUILDER_H_

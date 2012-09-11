@@ -6,10 +6,10 @@
 
 namespace swganh {
 namespace object {
-namespace manufacture_schematic {
+
 
 	class ManufactureSchematic;
-    class ManufactureSchematicFactory : public swganh::object::intangible::IntangibleFactory
+    class ManufactureSchematicFactory : public swganh::object::IntangibleFactory
     {
     public:
 		typedef ManufactureSchematic ObjectType;
@@ -26,4 +26,4 @@ namespace manufacture_schematic {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
     };
 
-}}}  // namespace swganh::object::manufacture_schematic
+}}  // namespace swganh::object

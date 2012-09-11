@@ -6,10 +6,10 @@
 
 namespace swganh {
 namespace object {
-namespace cell {
+
 
 	class Cell;
-    class CellFactory : public swganh::object::intangible::IntangibleFactory
+    class CellFactory : public swganh::object::IntangibleFactory
     {
     public:
 		typedef Cell ObjectType;
@@ -28,4 +28,4 @@ namespace cell {
 		virtual void RegisterEventHandlers(){}
     };
 
-}}}  // namespace swganh::object::cell
+}}  // namespace swganh::object

@@ -10,7 +10,7 @@
 
 namespace swganh {
 namespace object {
-namespace waypoint {
+
 
 enum WaypointStatus
 {
@@ -24,7 +24,7 @@ class WaypointMessageBuilder;
 /**
 * @brief Object that defines the data in a Waypoint
 */
-class Waypoint : public swganh::object::intangible::Intangible {
+class Waypoint : public swganh::object::Intangible {
 
 public:
 	typedef WaypointFactory FactoryType;
@@ -142,4 +142,4 @@ private:
     std::string color_;				                    //update 3
 };
 
-}}} // swganh::object::waypoint
+}} // swganh::object
