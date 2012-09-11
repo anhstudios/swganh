@@ -45,7 +45,7 @@ void Server::SendTo(const udp::endpoint& endpoint, ByteBuffer buffer) {
     {
         if (bytes_transferred == 0)
         {
-            LOG(warning) << "Sent 0 bytes";
+            DLOG(warning) << "Sent 0 bytes";
         }
 		
         bytes_sent_ += bytes_transferred;

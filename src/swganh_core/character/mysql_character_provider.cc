@@ -243,7 +243,7 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
         std::unique_ptr<sql::PreparedStatement> statement(conn->prepareStatement(
             "CALL sp_CharacterCreate(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @output)"));
 
-        LOG(warning) << "Creating character with location " << account_id;
+        DLOG(info) << "Creating character with location " << account_id;
 
         statement->setUInt(1, account_id);
         statement->setUInt(2, kernel_->GetServiceDirectory()->galaxy().id());

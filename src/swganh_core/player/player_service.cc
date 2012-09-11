@@ -103,7 +103,7 @@ void PlayerService::RemoveClientTimerHandler_(
         if (controller->GetRemoteClient() == nullptr || !controller->GetRemoteClient()->connected())
         {
             auto object = controller->GetObject();
-            LOG(warning) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
+            DLOG(info) << "Destroying Object " << object->GetObjectId() << " after " << delay_in_secs << " seconds.";
 
             simulation_service_->RemoveObject(object);
 

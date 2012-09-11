@@ -281,7 +281,7 @@ void LoginService::HandleLoginClientId_(const std::shared_ptr<LoginClientInterfa
 			{
                 login_client->Close();
 
-				LOG(warning) << "Closing connection";
+				DLOG(info) << "Closing connection";
 			}
         });
 

@@ -98,7 +98,7 @@ std::shared_ptr<swganh::attributes::AttributeTemplateInterface> AttributesServic
 {
 	if (HasAttributeTemplate(template_id))
 		return attribute_templates_[template_id];
-	LOG(warning) << "Attribute template not found with id " << template_id;
+	DLOG(warning) << "Attribute template not found with id " << template_id;
 	return nullptr;
 }
 void AttributesService::SetAttributeTemplate(const std::shared_ptr<swganh::attributes::AttributeTemplateInterface> template_, swganh::attributes::AttributeTemplateId template_id)
@@ -109,7 +109,7 @@ void AttributesService::SetAttributeTemplate(const std::shared_ptr<swganh::attri
 	}
 	else
 	{
-		LOG(warning) << "Error Attribute Template already exists for template id " << template_id;
+		DLOG(warning) << "Error Attribute Template already exists for template id " << template_id;
 	}
 }
 

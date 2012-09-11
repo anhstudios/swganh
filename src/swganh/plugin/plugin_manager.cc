@@ -116,7 +116,7 @@ void PluginManager::ConfigurePlugin(std::string plugin_name, ConfigFunc config_f
     ifstream config_file("config/plugins/" + plugin_name + ".cfg");
     
     if (!config_file.is_open()) {
-        LOG(warning) << "No configuration loaded for plugin: " + plugin_name;
+        DLOG(warning) << "No configuration loaded for plugin: " + plugin_name;
         return;
     }
     

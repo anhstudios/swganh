@@ -227,7 +227,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 	auto permission_itr = permissions_objects_.find(type);
 	if(permission_itr == permissions_objects_.end())
 	{
-		LOG(warning) << "Bad permission type requested in CreateObjectFromTemplate";
+		DLOG(warning) << "Bad permission type requested in CreateObjectFromTemplate";
 		return nullptr;
 	}
 

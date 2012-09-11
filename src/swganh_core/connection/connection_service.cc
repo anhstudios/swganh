@@ -203,7 +203,7 @@ void ConnectionService::HandleCmdSceneReady_(
     const shared_ptr<ConnectionClientInterface>& client, 
     CmdSceneReady* message)
 {
-    LOG(warning) << "Handling CmdSceneReady";
+    DLOG(info) << "Handling CmdSceneReady";
 
     client->SendTo(CmdSceneReady());
 
@@ -217,7 +217,7 @@ void ConnectionService::HandleClientIdMsg_(
     const shared_ptr<ConnectionClientInterface>& client, 
     ClientIdMsg* message)
 {
-    LOG(warning) << "Handling ClientIdMsg";
+    DLOG(info) << "Handling ClientIdMsg";
 
     // get session key from login service
     uint32_t account_id = login_service_->GetAccountBySessionKey(message->session_hash);
@@ -245,7 +245,7 @@ void ConnectionService::HandleClientIdMsg_(
 
     // creates a new session and stores it for later use
     if (!session_provider_->CreateGameSession(player_id, client->connection_id())) {
-        LOG(warning) << "Player Not Inserted into Session Map because No Game Session Created!";
+        DLOG(warning) << "Player Not Inserted into Session Map because No Game Session Created!";
     }
 
     client->Connect(account_id, player_id);
