@@ -5,17 +5,17 @@
 #include <cstdint>
 #include <map>
 
-#include "anh/hash_string.h"
+#include "swganh/hash_string.h"
 
 namespace swganh {
 namespace command {
 
 	struct CommandProperties
     {
-        anh::HashString command_name;
+        swganh::HashString command_name;
         uint32_t default_priority;
         float default_time;
-        anh::HashString character_ability;
+        swganh::HashString character_ability;
         uint64_t allow_in_locomotion;
         uint64_t allow_in_state;
         uint32_t target_type;
@@ -91,6 +91,6 @@ namespace command {
         //}
     };
 
-    typedef std::map<anh::HashString, CommandProperties> CommandPropertiesMap;
+    typedef std::map<swganh::HashString, CommandProperties> CommandPropertiesMap;
 
 }}  // namespace swganh::command

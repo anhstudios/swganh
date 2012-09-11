@@ -8,7 +8,7 @@
 #include <iostream>
 #include <iterator>
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 
 #include <boost/python.hpp>
 #include <Python.h>

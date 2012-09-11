@@ -12,7 +12,7 @@ void SlotDefinitionVisitor::visit_folder(uint32_t depth, std::string name, uint3
 {
 }
 
-void SlotDefinitionVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
+void SlotDefinitionVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
 	if(name == "0006DATA")
 	{

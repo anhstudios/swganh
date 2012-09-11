@@ -6,10 +6,9 @@
 #include <Python.h>
 #endif
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 #include "swganh/object/object_controller_binding.h"
 #include "swganh/object/permissions/container_permissions_interface.h"
-#include "swganh/object/permissions/default_permission.h"
 
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
@@ -17,7 +16,7 @@
 
 #include "swganh/sui/radial_binding.h"
 
-#include "pub14_core/messages/system_message.h"
+#include "swganh_core/messages/system_message.h"
 
 using namespace boost::python;
 using namespace std;
@@ -31,11 +30,6 @@ boost::python::tuple AddObject(std::shared_ptr<Object> requester, std::shared_pt
 boost::python::tuple TransferObject(std::shared_ptr<Object> requester, std::shared_ptr<Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2)
 {
 	return boost::python::make_tuple(requester, object, newContainer, arrangement_id);
-}
-
-void SetDefaultPermissions(std::shared_ptr<Object> requester)
-{
-	requester->SetPermissions(make_shared<DefaultPermission>());	
 }
 
 void SendSystemMessage1(std::shared_ptr<Object> requester, std::string filename, std::string label)

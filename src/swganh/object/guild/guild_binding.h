@@ -1,16 +1,15 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
 
-#ifndef SWGANH_OBJECT_GUILD_GUILD_BINDING_H_
-#define SWGANH_OBJECT_GUILD_GUILD_BINDING_H_
+#pragma once
 
-#include "swganh/object/guild/guild.h"
+#include "swganh_core/object/guild/guild.h"
 
 #include <boost/python.hpp>
 
 using namespace boost::python;
 using namespace std;
-using namespace swganh::object::guild;
+using namespace swganh::object;
 
 struct GuildWrapper : Guild,  wrapper<Guild>
 {
@@ -23,5 +22,3 @@ void exportGuild()
 		.def("remove_guild_tag", &GuildWrapper::RemoveGuildTag, "remove guild tag")
 		;	
 }
-
-#endif // SWGANH_OBJECT_GUILD_GUILD_BINDING_H_

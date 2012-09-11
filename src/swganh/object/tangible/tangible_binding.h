@@ -5,13 +5,13 @@
 #define SWGANH_OBJECT_TANGIBLE_TANGIBLE_BINDING_H_
 
 #include "swganh/object/object_binding.h"
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 #include <boost/python.hpp>
 
 using namespace boost::python;
 using namespace std;
-using namespace swganh::object::tangible;
+using namespace swganh::object;
 
 void exportTangible()
 {

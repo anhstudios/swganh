@@ -6,14 +6,14 @@
 #include <map>
 #include <memory>
 
-#include "anh/network/soe/server.h"
-#include "anh/service/service_interface.h"
+#include "swganh/network/soe/server.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/object_controller.h"
+#include "swganh/object/object_controller_interface.h"
 #include "swganh/object/permissions/permission_type.h"
 
-namespace anh {
+namespace swganh {
 	class ByteBuffer;
 }
 
@@ -41,7 +41,7 @@ namespace object {
 namespace swganh {
 namespace simulation {
     
-    class SimulationServiceInterface : public anh::service::ServiceInterface
+    class SimulationServiceInterface : public swganh::service::ServiceInterface
     {
     public:
         virtual void StartScene(const std::string& scene_label) = 0;
@@ -99,7 +99,7 @@ namespace simulation {
         virtual void RemoveObjectById(uint64_t object_id) = 0;
         virtual void RemoveObject(const std::shared_ptr<swganh::object::Object>& object) = 0;
         
-        virtual std::shared_ptr<anh::observer::ObserverInterface> StartControllingObject(
+        virtual std::shared_ptr<swganh::observer::ObserverInterface> StartControllingObject(
             const std::shared_ptr<swganh::object::Object>& object,
             std::shared_ptr<swganh::connection::ConnectionClientInterface> client) = 0;
 
@@ -171,23 +171,23 @@ namespace simulation {
 
         virtual void UnregisterControllerHandler(uint32_t handler_id) = 0;
 
-        virtual void SendToAll(anh::ByteBuffer message) = 0;
+        virtual void SendToAll(swganh::ByteBuffer message) = 0;
 
         template <typename T>
         void SendToAll(const T& message)
         {
-            anh::ByteBuffer message_buffer;
+            swganh::ByteBuffer message_buffer;
             message.Serialize(message_buffer);
 
             SendToAll(message_buffer);
         }
 
-        virtual void SendToAllInScene(anh::ByteBuffer message, uint32_t scene_id) = 0;
+        virtual void SendToAllInScene(swganh::ByteBuffer message, uint32_t scene_id) = 0;
 
         template<typename T>
         void SendToAllInScene(const T& message, uint32_t scene_id)
         {
-            anh::ByteBuffer message_buffer;
+            swganh::ByteBuffer message_buffer;
             message.Serialize(message_buffer);
 
             SendToAllInScene(message_buffer, scene_id);

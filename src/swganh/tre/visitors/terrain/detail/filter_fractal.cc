@@ -4,7 +4,7 @@
 
 using namespace swganh::tre;
 
-void FractalFilter::Deserialize(anh::ByteBuffer& buffer)
+void FractalFilter::Deserialize(swganh::ByteBuffer& buffer)
 {
 	fractal_id = buffer.read<uint32_t>();
 	

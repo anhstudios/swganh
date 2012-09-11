@@ -1,6 +1,6 @@
 #pragma once
 
-#include <anh/service/service_interface.h>
+#include <swganh/service/service_interface.h>
 
 namespace swganh
 {
@@ -11,7 +11,7 @@ namespace object
 
 namespace equipment
 {
-	class EquipmentServiceInterface : public anh::service::ServiceInterface
+	class EquipmentServiceInterface : public swganh::service::ServiceInterface
 	{
 	public:
 

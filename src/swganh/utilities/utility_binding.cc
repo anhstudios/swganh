@@ -6,7 +6,7 @@
 #include "glm_binding.h"
 
 using namespace boost::python;
-using namespace anh::utilities;
+using namespace swganh::utilities;
 
 BOOST_PYTHON_MODULE(py_utility) 
 {

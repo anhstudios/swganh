@@ -6,9 +6,9 @@
 #include <Python.h>
 #endif
 
-#include "swganh/object/object_controller.h"
-#include "pub14_core/messages/controllers/show_fly_text.h"
-#include "pub14_core/messages/out_of_band.h"
+#include "swganh/object/object_controller_interface.h"
+#include "swganh_core/messages/controllers/show_fly_text.h"
+#include "swganh_core/messages/out_of_band.h"
 
 #include <boost/python.hpp>
 
@@ -17,14 +17,14 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;
 
-struct ObjectControllerWrapper : ObjectController, wrapper<ObjectController>
+struct ObjectControllerWrapper : ObjectControllerInterface, wrapper<ObjectControllerInterface>
 {
 };
 
 void exportObjectController()
 {
-    typedef void (ObjectController::*NotifyFunc)(const anh::ByteBuffer& message);
-    class_<ObjectController, std::shared_ptr<ObjectController>, boost::noncopyable>("ObjectController", "Object that describes the Controller of an object", no_init)
-        .def("Notify", NotifyFunc(&ObjectController::Notify), "Notifies the controller whent he object has been updated")
+    typedef void (ObjectControllerInterface::*NotifyFunc)(const swganh::ByteBuffer& message);
+    class_<ObjectControllerInterface, std::shared_ptr<ObjectControllerInterface>, boost::noncopyable>("ObjectController", "Object that describes the Controller of an object", no_init)
+        .def("Notify", NotifyFunc(&ObjectControllerInterface::Notify), "Notifies the controller whent he object has been updated")
     ;
 }

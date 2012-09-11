@@ -4,8 +4,8 @@
 #include <Python.h>
 #endif
 
-#include "anh/logger.h"
-#include "anh/python_shared_ptr.h"
+#include "swganh/logger.h"
+#include "swganh/python_shared_ptr.h"
 
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
@@ -16,8 +16,8 @@
 
 #include "swganh/scripting/utilities.h"
 
-#include "pub14_core/messages/controllers/object_menu_request.h"
-#include "pub14_core/messages/controllers/object_menu_response.h"
+#include "swganh_core/messages/controllers/object_menu_request.h"
+#include "swganh_core/messages/controllers/object_menu_response.h"
 
 
 

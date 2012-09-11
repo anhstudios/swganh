@@ -14,13 +14,13 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/python.hpp>
 
-#include "anh/active_object.h"
-#include "anh/random_generator.h"
-#include "anh/service/service_interface.h"
+#include "swganh/active_object.h"
+#include "swganh/random_generator.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/command/command_properties.h"
-#include "pub14_core/messages/controllers/command_queue_enqueue.h"
+#include "swganh_core/messages/controllers/command_queue_enqueue.h"
 
 
 namespace swganh {
@@ -33,12 +33,9 @@ class CommandServiceInterface;
 namespace object {
     class Object;
     class ObjectController;
-namespace tangible {
-    class Tangible;
-}
-namespace creature {
 	class Creature;
-}}}  // namespace swganh::object::creature;
+	class Tangible;
+}}  // namespace swganh::object;
 
 
 namespace swganh {
@@ -48,15 +45,15 @@ namespace command {
     
 namespace combat {
 
-    class CombatServiceInterface : public anh::service::ServiceInterface
+    class CombatServiceInterface : public swganh::service::ServiceInterface
     {
     public:
-        virtual void SetIncapacitated(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target) = 0;
+        virtual void SetIncapacitated(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
         
-        virtual void SetDead(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target) = 0;
+        virtual void SetDead(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
 
-        virtual void EndDuel(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target) = 0;
-        virtual void EndCombat(const std::shared_ptr<swganh::object::creature::Creature>& attacker, const std::shared_ptr<swganh::object::creature::Creature>& target) = 0;
+        virtual void EndDuel(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
+        virtual void EndCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target) = 0;
         
 		virtual void Startup() = 0;
 

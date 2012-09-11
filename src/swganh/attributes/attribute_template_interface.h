@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include "anh/event_dispatcher.h"
+#include "swganh/event_dispatcher.h"
 
 namespace swganh {
 namespace messages {
@@ -20,12 +20,12 @@ namespace attributes {
     class AttributeTemplateInterface 
     {
     public:
-		AttributeTemplateInterface(anh::EventDispatcher* dispatcher)
+		AttributeTemplateInterface(swganh::EventDispatcher* dispatcher)
 			: event_dispatcher_(dispatcher){}
         virtual void RegisterEventHandlers() = 0;
         virtual swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object) = 0;		
     protected:
-        anh::EventDispatcher* event_dispatcher_; 
+        swganh::EventDispatcher* event_dispatcher_; 
     };
 
 }}

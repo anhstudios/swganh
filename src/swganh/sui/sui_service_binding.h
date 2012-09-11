@@ -6,8 +6,8 @@
 #include <Python.h>
 #endif
 
-#include "anh/logger.h"
-#include "anh/python_shared_ptr.h"
+#include "swganh/logger.h"
+#include "swganh/python_shared_ptr.h"
 
 
 #include <boost/python.hpp>
@@ -18,7 +18,7 @@
 #include "sui_service_interface.h"
 #include "sui_window_interface.h"
 
-#include "swganh/object/object.h"
+#include "swganh_core/object/object.h"
 
 #include "swganh/scripting/utilities.h"
 

@@ -6,9 +6,8 @@
 #include <Python.h>
 #endif
 
-#include "anh/python_shared_ptr.h"
+#include "swganh/python_shared_ptr.h"
 #include "simulation_service_interface.h"
-#include "swganh/object/object_manager.h"
 
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>

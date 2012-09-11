@@ -3,12 +3,12 @@
 
 #include "base_combat_command_binding.h"
 
-#include "anh/python_shared_ptr.h"
+#include "swganh/python_shared_ptr.h"
 #include <boost/python.hpp>
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh_core/object/tangible/tangible.h"
 #include "swganh/scripting/utilities.h"
 
 #include "base_combat_command.h"
@@ -18,7 +18,6 @@ using swganh::command::BaseCombatCommand;
 using swganh::command::CommandCallback;
 using swganh::command::CommandInterface;
 using swganh::command::CommandProperties;
-using swganh::object::ObjectController;
 using swganh::scripting::ScopedGilLock;
 
 struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatCommand>

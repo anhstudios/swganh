@@ -21,12 +21,12 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
 
-#include "anh/logger.h"
-#include "anh/database/database_manager_interface.h"
-#include "anh/event_dispatcher.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/datastore.h"
-#include "anh/service/service_manager.h"
+#include "swganh/logger.h"
+#include "swganh/database/database_manager_interface.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/service/datastore.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -40,11 +40,10 @@
 
 #include "version.h"
 
-using namespace anh;
-using namespace anh::app;
 using namespace boost::asio;
 using namespace boost::program_options;
 using namespace std;
+using namespace swganh;
 using namespace swganh::app;
 using namespace swganh::chat;
 using namespace swganh::login;
@@ -53,7 +52,7 @@ using namespace swganh::connection;
 using namespace swganh::simulation;
 using namespace swganh::galaxy;
 
-using anh::plugin::RegistrationMap;
+using swganh::plugin::RegistrationMap;
 
 #ifdef WIN32
 using std::regex;
@@ -243,7 +242,7 @@ SwganhKernel* SwganhApp::GetAppKernel() const {
 void SwganhApp::StartInteractiveConsole()
 {
     swganh::scripting::ScopedGilLock lock;
-    anh::Logger::getInstance().DisableConsoleLogging();
+    swganh::Logger::getInstance().DisableConsoleLogging();
 
 #ifdef WIN32
     std::system("cls");
@@ -265,7 +264,7 @@ void SwganhApp::StartInteractiveConsole()
     
     PyRun_InteractiveLoop(stdin, "<stdin>");
     
-    anh::Logger::getInstance().EnableConsoleLogging();
+    swganh::Logger::getInstance().EnableConsoleLogging();
 }
 
 void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
@@ -322,7 +321,7 @@ void SwganhApp::CleanupServices_() {
 
     LOG(warning) << "Services were not shutdown properly";
 
-    for_each(services.begin(), services.end(), [this, &service_directory] (anh::service::ServiceDescription& service) {
+    for_each(services.begin(), services.end(), [this, &service_directory] (swganh::service::ServiceDescription& service) {
         service_directory->removeService(service);
     });
 }
@@ -342,7 +341,7 @@ void SwganhApp::LoadCoreServices_()
         if (entry.first.length() > 7 && regex_match(name, m, rx)) {
             auto service_name = m[1].str();
 			LOG(info) << "Loading Service " << name << "...";
-            auto service = kernel_->GetPluginManager()->CreateObject<anh::service::ServiceInterface>(name);
+            auto service = kernel_->GetPluginManager()->CreateObject<swganh::service::ServiceInterface>(name);
 			
             kernel_->GetServiceManager()->AddService(service_name, service);
 			LOG(info) << "Loaded Service " << name;
@@ -360,5 +359,5 @@ void SwganhApp::LoadCoreServices_()
 
 void SwganhApp::SetupLogging_()
 {
-    anh::Logger::getInstance().init("swganh");    
+    swganh::Logger::getInstance().init("swganh");    
 }

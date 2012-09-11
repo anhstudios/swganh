@@ -7,7 +7,7 @@
 
 #include "detail/layer_loader.h"
 
-#include "anh/logger.h"
+#include "swganh/logger.h"
 #include "detail/header.h"
 
 using namespace swganh::tre;
@@ -32,7 +32,7 @@ TerrainVisitor::~TerrainVisitor()
 	}
 }
 
-void TerrainVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
+void TerrainVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
 	if(name == "MFAMDATA")
 	{

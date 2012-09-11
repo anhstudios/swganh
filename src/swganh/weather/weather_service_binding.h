@@ -8,14 +8,14 @@
 #include <Python.h>
 #endif
 
-#include "anh/python_shared_ptr.h"
+#include "swganh/python_shared_ptr.h"
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "weather_service_interface.h"
 #include "weather_data.h"
 #include <boost/python.hpp>
 
 using namespace swganh::weather;
-using namespace swganh_core::weather;
+using namespace swganh::weather;
 using namespace boost::python;
 using namespace std;
 

@@ -2,7 +2,7 @@
 
 using namespace swganh::tre;
 
-void HeightConstant::Deserialize(anh::ByteBuffer& buffer)
+void HeightConstant::Deserialize(swganh::ByteBuffer& buffer)
 {
 	this->transform_type = buffer.read<uint32_t>();
 	this->height_val = buffer.read<float>();

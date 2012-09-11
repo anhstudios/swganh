@@ -12,7 +12,7 @@ void SlotArrangementVisitor::visit_folder(uint32_t depth, std::string name, uint
 {
 }
 
-void SlotArrangementVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, anh::ByteBuffer& data)
+void SlotArrangementVisitor::visit_data(uint32_t depth, std::string name, uint32_t size, swganh::ByteBuffer& data)
 {
 	if(name == "0000ARG ")
 	{

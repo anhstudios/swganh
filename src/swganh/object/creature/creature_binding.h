@@ -4,16 +4,14 @@
 #ifndef SWGANH_OBJECT_CREATURE_CREATURE_BINDING_H_
 #define SWGANH_OBJECT_CREATURE_CREATURE_BINDING_H_
 
-#include "swganh/object/creature/creature.h"
-#include "swganh/object/tangible/tangible.h"
+#include "swganh_core/object/creature/creature.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 #include <boost/python.hpp>
 
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object::creature;
-using namespace swganh::object::tangible;
 
 void exportCreature()
 {

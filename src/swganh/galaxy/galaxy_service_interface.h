@@ -5,22 +5,22 @@
 #include <memory>
 #include <boost/asio/deadline_timer.hpp>
 
-#include "anh/service/service_interface.h"
+#include "swganh/service/service_interface.h"
 
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/galaxy/providers/galaxy_provider_interface.h"
 
-namespace anh {
+namespace swganh {
     class EventDispatcherInterface;
 namespace app {
 class KernelInterface;
-}}  // namespace anh::app
+}}  // namespace swganh::app
 
 
 namespace swganh {
 namespace galaxy {
 
-    class GalaxyServiceInterface : public anh::service::ServiceInterface
+    class GalaxyServiceInterface : public swganh::service::ServiceInterface
     {
     public:    
 
@@ -28,7 +28,7 @@ namespace galaxy {
 		
 		virtual uint64_t GetGalaxyTimeInMilliseconds() = 0;
 
-    	virtual anh::service::ServiceDescription GetServiceDescription() = 0;
+    	virtual swganh::service::ServiceDescription GetServiceDescription() = 0;
         
         virtual void Startup() = 0;
 
