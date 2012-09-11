@@ -6,7 +6,7 @@
 #include <Python.h>
 #endif
 
-#include "swganh/object/object_interface.h"
+#include "swganh_core/object/object.h"
 #include "swganh/object/object_controller_binding.h"
 #include "swganh/object/permissions/container_permissions_interface.h"
 
