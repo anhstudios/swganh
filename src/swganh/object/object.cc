@@ -506,8 +506,8 @@ void Object::SetPosition(glm::vec3 position)
     {
 	    boost::lock_guard<boost::mutex> lock(object_mutex_);
         position_ = position;
-		UpdateWorldBoundingVolume();
 		UpdateWorldCollisionBox();
+		UpdateWorldBoundingVolume();
     }
 
     GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>

@@ -589,8 +589,8 @@ public:
 
 	void BuildSpatialProfile(void)
 	{
-		BuildBoundingVolume();
 		BuildCollisionBox();
+		BuildBoundingVolume();
 	}
 
 	void BuildBoundingVolume(void)
@@ -607,14 +607,43 @@ public:
 
 	void UpdateWorldBoundingVolume() 
 	{ 
-		boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
-		boost::geometry::transform(local_bounding_volume_, world_bounding_volume_, translate);
+		//boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
+		//boost::geometry::transform(local_bounding_volume_, world_bounding_volume_, translate);
+		boost::geometry::envelope(world_collision_box_, world_bounding_volume_);
+
+		//boost::geometry::box_view<BoundingVolume> box_view(world_bounding_volume_);
+		//std::cout << "BoundingVolume:";
+		//for(boost::range_iterator<boost::geometry::box_view<BoundingVolume> const>::type it = boost::begin(box_view); it != boost::end(box_view); ++it)
+		//{
+		//	std::cout << " " << boost::geometry::dsv(*it);
+		//}
+		//std::cout << std::endl;
 	}
 
 	void UpdateWorldCollisionBox() 
 	{ 
+		auto rot = glm::yaw(orientation_);
+		//std::cout << "Position: " << position_.x << "," << position_.y << "," << position_.z << std::endl;
+
 		boost::geometry::strategy::transform::translate_transformer<Point, Point> translate(position_.x, position_.z);
-		boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
+
+		if(rot > 0 || rot < 0)
+		{
+			std::cout << "Orientation: " << rot << std::endl;
+			boost::geometry::strategy::transform::rotate_transformer<Point, Point, boost::geometry::degree> rotation(rot);
+			boost::geometry::strategy::transform::ublas_transformer<Point, Point, 2, 2> rotationTranslate(boost::numeric::ublas::prod(translate.matrix(), rotation.matrix()));
+			boost::geometry::transform(local_collision_box_, world_collision_box_, rotationTranslate);
+		}
+		else
+		{
+			boost::geometry::transform(local_collision_box_, world_collision_box_, translate);
+		}
+
+		//std::cout << "CollisionBox: (" << object_id_ << ")";
+		//boost::geometry::for_each_point(world_collision_box_, [=](Point& p) {
+		//	std::cout << " " << boost::geometry::dsv(p);
+		//});
+		//std::cout << std::endl;
 	}
 
 	const std::set<std::shared_ptr<Object>>& GetCollidedObjects(void) const { return collided_objects_; }
@@ -678,7 +707,7 @@ protected:
 			boost::geometry::append(local_collision_box_, Point(-1.0f, -1.0f));
 			boost::geometry::append(local_collision_box_, Point(-1.0f, 1.0f));
 			boost::geometry::append(local_collision_box_, Point(1.0f, 1.0f));
-			boost::geometry::append(local_collision_box_, Point(-1.0f, -1.0f));
+			boost::geometry::append(local_collision_box_, Point(1.0f, -1.0f));
 	}
 
 	virtual void __BuildBoundingVolume(void)

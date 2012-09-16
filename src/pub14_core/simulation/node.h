@@ -5,6 +5,7 @@
 #include <list>
 #include <set>
 #include <memory>
+#include <fstream>
 
 #include <boost/array.hpp>
 #include <boost/geometry.hpp>
@@ -56,8 +57,13 @@ public:
 
 	void InsertObject(std::shared_ptr<swganh::object::Object> obj);
 	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
-	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::vec3& old_position, const glm::vec3& new_position);
+	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::BoundingVolume& old_bounding_volume, const swganh::object::BoundingVolume& new_bounding_volume);
 	void Split();
+
+	void SvgDump(void);
+	void SvgDumpRegions(std::ofstream& file);
+	void SvgDumpObjects(std::ofstream& file);
+
 	std::list<std::shared_ptr<swganh::object::Object>> Query(QueryBox query_box);
 
 	const NodeQuadrant& GetQuadrant(void) { return quadrant_; }

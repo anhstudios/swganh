@@ -5,6 +5,14 @@
 
 #include <swganh/object/object.h>
 
+std::stringstream current_collision_points;
+
+template <typename Point>
+void GetCollisionBoxPoints(Point const& p)
+{
+	current_collision_points << " " << p.x() << "," << p.y();
+}
+
 namespace quadtree
 {
 
@@ -15,6 +23,7 @@ Node::Node(NodeQuadrant quadrant, Region region, uint32_t level, uint32_t max_le
 	, max_level_(max_level)
 	, state_(LEAF)
 	, parent_(parent)
+	, leaf_nodes_()
 {
 	// If this is the root node, we need to do an initial split.
 	if(quadrant_ == ROOT)
@@ -183,27 +192,21 @@ std::list<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(voi
 	return objs;
 }
 
-void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::vec3& old_position, const glm::vec3& new_position)
+void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::BoundingVolume& old_bounding_volume, const swganh::object::BoundingVolume& new_bounding_volume)
 {
-	swganh::object::BoundingVolume new_bounding_volumn;
-	boost::geometry::transform(obj->GetLocalBoundingVolume(), new_bounding_volumn, boost::geometry::strategy::transform::translate_transformer<Point, Point>(new_position.x, new_position.z));
-	
-	swganh::object::BoundingVolume old_bounding_volumn;
-	boost::geometry::transform(obj->GetLocalBoundingVolume(), old_bounding_volumn, boost::geometry::strategy::transform::translate_transformer<Point, Point>(old_position.x, old_position.z));
-
 	// Check the objects of this node.
 	for(auto i = objects_.begin(); i != objects_.end(); i++) {
 		auto node_obj = (*i);
 		if(node_obj->GetObjectId() == obj->GetObjectId())
 		{
 			// If we are in the same node, we don't need to do anything.
-			if(boost::geometry::within(new_bounding_volumn, region_))
+			if(boost::geometry::within(new_bounding_volume, region_))
 			{
 				return;
 			}
 
 			// Move our object from this node to a new node.
-			std::shared_ptr<Node> node = GetRootNode_()->GetNodeContainingVolume_(new_bounding_volumn);
+			std::shared_ptr<Node> node = GetRootNode_()->GetNodeContainingVolume_(new_bounding_volume);
 			objects_.erase(i);
 			node->InsertObject(obj);
 			return;
@@ -215,9 +218,9 @@ void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const glm::
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
 			// Go further into the tree if our point is within our child node.
-			if(boost::geometry::within(old_bounding_volumn, node->GetRegion()))
+			if(boost::geometry::within(old_bounding_volume, node->GetRegion()))
 			{
-				node->UpdateObject(obj, old_position, new_position);
+				node->UpdateObject(obj, old_bounding_volume, new_bounding_volume);
 				return;
 			}
 		}
@@ -244,6 +247,80 @@ std::shared_ptr<Node> Node::GetNodeContainingVolume_(swganh::object::BoundingVol
 
 	// If not, we are between or in this node.
 	return std::shared_ptr<Node>(shared_from_this());
+}
+
+void Node::SvgDump(void)
+{
+	std::ofstream file;
+	file.open("swganh_si_dump.svg");
+	file << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1440\" height=\"900\" version=\"1.1\" viewBox=\"-8300 -8300 16600 16600\" overflow=\"visible\">\n";
+	
+	file << "<g transform=\"scale(1 -1)\">\n";
+	SvgDumpRegions(file);
+	file << "<" << '/' << "g>\n";
+	
+	file << "<g transform=\"scale(1 -1)\">\n";
+	SvgDumpObjects(file);
+	file << "<" << '/' << "g>\n";
+
+	file << "<" << '/' << "svg>";
+	file.close();
+}
+
+void Node::SvgDumpRegions(std::ofstream& file)
+{
+	std::stringstream region_points;
+	boost::geometry::box_view<Region> box_view(region_);
+	for(boost::range_iterator<boost::geometry::box_view<Region> const>::type it = boost::begin(box_view); it != boost::end(box_view); ++it)
+	{
+		region_points << " " << (float)(*it).x() << "," << (float)(*it).y();
+	}
+
+	file << "<polygon points=\"" << region_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:green;stroke-width:5px\"" << '/' << "> \n";
+
+	if(state_ == BRANCH)
+	{
+		for(std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			if(node != nullptr)
+				node->SvgDumpRegions(file);
+		}
+	}
+}
+
+void Node::SvgDumpObjects(std::ofstream& file)
+{
+
+	for(std::shared_ptr<swganh::object::Object> obj : objects_)
+	{
+		std::stringstream bounding_volume_points;
+
+		auto bounding_volume = obj->GetWorldBoundingVolume();
+		auto collision_box = obj->GetWorldCollisionBox();
+
+		current_collision_points = std::stringstream();
+		boost::geometry::for_each_point(collision_box, GetCollisionBoxPoints<Point>);
+		
+		boost::geometry::box_view<swganh::object::BoundingVolume> bounding_volume_view(bounding_volume);
+		for(boost::range_iterator<boost::geometry::box_view<swganh::object::BoundingVolume>>::type it = boost::begin(bounding_volume_view); it != boost::end(bounding_volume_view); ++it) 
+		{
+			bounding_volume_points << " " << (*it).x() << "," << (*it).y();
+		}
+
+		auto name = obj->GetCustomName();
+		file << "<text x=\"" << obj->GetPosition().x << "\" y=\"" << obj->GetPosition().z << "\" fill=\"black\" transform=\"scale(1, -1)\" style=\"text-anchor: middle;\" >" << std::string(name.begin(), name.end()) << "<" << '/' << "text>\n";
+		file << "<polygon points=\"" << bounding_volume_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:red;stroke-width:0.4px\"" << '/' << "> \n";
+		file << "<polygon points=\"" << current_collision_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:blue;stroke-width:0.4px\"" << '/' << "> \n";
+	}
+
+	if(state_ == BRANCH)
+	{
+		for(std::shared_ptr<Node> node : leaf_nodes_)
+		{
+			if(node != nullptr)
+				node->SvgDumpObjects(file);
+		}
+	}
 }
 
 } // namespace quadtree

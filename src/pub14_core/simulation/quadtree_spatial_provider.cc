@@ -52,6 +52,8 @@ void QuadtreeSpatialProvider::RemoveObject(std::shared_ptr<swganh::object::Objec
 {
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 
+	root_node_.SvgDump();
+
     __InternalViewObjects(object, 0, false, [&](shared_ptr<Object> found_object){
 		found_object->__InternalRemoveAwareObject(object);
 		object->__InternalRemoveAwareObject(found_object);
@@ -64,14 +66,14 @@ void QuadtreeSpatialProvider::RemoveObject(std::shared_ptr<swganh::object::Objec
 	}
 }
 
-void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, glm::vec3 old_position, glm::vec3 new_position)
+void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh::object::BoundingVolume& old_bounding_volume, const swganh::object::BoundingVolume& new_bounding_volume)
 {
 	std::vector<std::shared_ptr<Object>> deleted_objects;
 
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 	{
 		boost::upgrade_to_unique_lock<boost::shared_mutex> unique(uplock);
-		root_node_.UpdateObject(obj, old_position, new_position);
+		root_node_.UpdateObject(obj, old_bounding_volume, new_bounding_volume);
 	}
 
 	CheckCollisions(obj);

@@ -50,7 +50,7 @@ void MovementManager::HandleDataTransform(
 
     counter_map_[object->GetObjectId()] = message.counter;
     
-	glm::vec3 old_position = object->GetPosition();
+	auto old_bounding_volume = object->GetWorldBoundingVolume();
 
 	object->SetPosition(message.position);
     object->SetOrientation(message.orientation);
@@ -59,7 +59,7 @@ void MovementManager::HandleDataTransform(
 	if(object->GetContainer() != spatial_provider_)
 		object->GetContainer()->TransferObject(object, object, spatial_provider_);
 	else
-		spatial_provider_->UpdateObject(controller->GetObject(), old_position, message.position);
+		spatial_provider_->UpdateObject(controller->GetObject(), old_bounding_volume, object->GetWorldBoundingVolume());
 
     SendUpdateDataTransformMessage(object);
 }
