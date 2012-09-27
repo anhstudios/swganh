@@ -18,6 +18,8 @@ public:
 
 	uint64_t GetObjectId() { return 0; }
 
+	void SvgToFile() { root_node_.SvgDump(); }
+
 	//Object Management
 	virtual void AddObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> newObject, int32_t arrangement_id=-2);
 	virtual void RemoveObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> oldObject);

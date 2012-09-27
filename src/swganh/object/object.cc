@@ -32,7 +32,7 @@ Object::Object()
     : object_id_(0)
     , template_string_("")
     , position_(glm::vec3(0,0,0))
-    , orientation_(glm::quat(0,0,0,0))
+    , orientation_(glm::quat())
     , complexity_(0)
     , stf_name_file_("")
     , stf_name_string_("")
@@ -41,6 +41,8 @@ Object::Object()
 	, arrangement_id_(-2)
 	, database_persisted_(true)
 	, in_snapshot_(false)
+	, collision_height_(0.0f)
+	, collision_length_(0.0f)
 {
 	menu_response_ = make_shared<swganh::messages::controllers::ObjectMenuResponse>();
 }

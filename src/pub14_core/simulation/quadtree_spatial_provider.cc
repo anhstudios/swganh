@@ -52,8 +52,6 @@ void QuadtreeSpatialProvider::RemoveObject(std::shared_ptr<swganh::object::Objec
 {
 	boost::upgrade_lock<boost::shared_mutex> uplock(global_container_lock_);
 
-	root_node_.SvgDump();
-
     __InternalViewObjects(object, 0, false, [&](shared_ptr<Object> found_object){
 		found_object->__InternalRemoveAwareObject(object);
 		object->__InternalRemoveAwareObject(found_object);

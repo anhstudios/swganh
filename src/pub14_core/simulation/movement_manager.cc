@@ -169,6 +169,13 @@ void MovementManager::RegisterEvents(anh::EventDispatcher* event_dispatcher)
             SendDataTransformMessage(object);
         }
     });
+
+	event_dispatcher->Subscribe(
+		"SpatialIndexSvgDump",
+		[this] (shared_ptr<anh::EventInterface> incoming_event)
+	{
+		spatial_provider_->SvgToFile();
+	});
 }
 
 bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)

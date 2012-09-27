@@ -210,6 +210,15 @@ void ObjectVisitor::_handleUnhandled(ObjectVisitor* dst, std::string& name, anh:
 	//@TODO: PRINT A MESSAGE
 }
 
+bool ObjectVisitor::has_attribute(std::string key)
+{
+	auto iter = attributes_.find(key);
+	if(iter != attributes_.end())
+		return true;
+	else
+		return false;
+}
+
 void ObjectVisitor::load_aggregate_data(swganh::tre::ResourceManager* f)
 {
 	if(!has_aggregate_)

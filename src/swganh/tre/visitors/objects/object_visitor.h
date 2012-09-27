@@ -84,6 +84,8 @@ namespace tre
 		float attribute_float(std::string& key);
 		bool attribute_bool(std::string& key);
 
+		bool has_attribute(std::string key);
+
 
 		/**
 			@brief A function which causes this OIFFInterpreter to load parent files it needs and then copy

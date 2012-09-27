@@ -308,7 +308,7 @@ void Node::SvgDumpObjects(std::ofstream& file)
 		}
 
 		auto name = obj->GetCustomName();
-		file << "<text x=\"" << obj->GetPosition().x << "\" y=\"" << obj->GetPosition().z << "\" fill=\"black\" transform=\"scale(1, -1)\" style=\"text-anchor: middle;\" >" << std::string(name.begin(), name.end()) << "<" << '/' << "text>\n";
+		file << "<text x=\"" << obj->GetPosition().x << "\" y=\"" << obj->GetPosition().z << "\" fill=\"black\" style=\"text-anchor: middle;\" >" << std::string(name.begin(), name.end()) << "<" << '/' << "text>\n";
 		file << "<polygon points=\"" << bounding_volume_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:red;stroke-width:0.4px\"" << '/' << "> \n";
 		file << "<polygon points=\"" << current_collision_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:blue;stroke-width:0.4px\"" << '/' << "> \n";
 	}
