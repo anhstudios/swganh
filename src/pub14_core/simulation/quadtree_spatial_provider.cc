@@ -64,7 +64,7 @@ void QuadtreeSpatialProvider::RemoveObject(std::shared_ptr<swganh::object::Objec
 	}
 }
 
-void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh::object::BoundingVolume& old_bounding_volume, const swganh::object::BoundingVolume& new_bounding_volume)
+void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume)
 {
 	std::vector<std::shared_ptr<Object>> deleted_objects;
 
@@ -102,7 +102,7 @@ void QuadtreeSpatialProvider::UpdateObject(shared_ptr<Object> obj, const swganh:
 		{
 			std::cout << "Trying to delete myself!?" << std::endl;
 			std::cout << "Position: " << to_delete->GetPosition().x << ", " << to_delete->GetPosition().y << ", " << to_delete->GetPosition().z << std::endl;
-			std::cout << "Bounding Volume (World): " << to_delete->GetWorldBoundingVolume().min_corner().x() << ", " << to_delete->GetWorldBoundingVolume().min_corner().y() << ":" << to_delete->GetWorldBoundingVolume().max_corner().x() << ", " << to_delete->GetWorldBoundingVolume().max_corner().y() << std::endl;
+			std::cout << "Bounding Volume (World): " << to_delete->GetAABB().min_corner().x() << ", " << to_delete->GetAABB().min_corner().y() << ":" << to_delete->GetAABB().max_corner().x() << ", " << to_delete->GetAABB().max_corner().y() << std::endl;
 			auto view_box = GetQueryBoxViewRange(obj);
 			std::cout << "Viewing Box: " <<  view_box.min_corner().x() << ", " << view_box.min_corner().y() << ":" << view_box.max_corner().x() << ", " << view_box.max_corner().y() << std::endl;
 		}
@@ -219,7 +219,7 @@ QueryBox QuadtreeSpatialProvider::GetQueryBoxViewRange(std::shared_ptr<Object> o
 
 void QuadtreeSpatialProvider::CheckCollisions(std::shared_ptr<swganh::object::Object> object)
 {
-	auto objects = root_node_.Query(object->GetWorldBoundingVolume());
+	auto objects = root_node_.Query(object->GetAABB());
 	auto collided_objects = object->GetCollidedObjects();
 	std::for_each(collided_objects.begin(), collided_objects.end(), [=, &objects](std::shared_ptr<swganh::object::Object> other) {
 		auto iter = std::find(objects.begin(), objects.end(), other);

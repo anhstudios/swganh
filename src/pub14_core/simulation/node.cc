@@ -55,7 +55,7 @@ void Node::InsertObject(std::shared_ptr<swganh::object::Object> obj)
 	{
 		std::for_each(leaf_nodes_.begin(), leaf_nodes_.end(), [=, &obj, &success](std::shared_ptr<Node> node){
 			// If we can fit within the node, traverse.
-			if(boost::geometry::within( obj->GetWorldBoundingVolume(), node->GetRegion() ))
+			if(boost::geometry::within( obj->GetAABB(), node->GetRegion() ))
 			{
 				node->InsertObject(obj);
 				success = true;
@@ -89,7 +89,7 @@ void Node::RemoveObject(std::shared_ptr<swganh::object::Object> obj)
 	// each leaf node if we are a BRANCH.
 	if(state_ == BRANCH)
 	{
-		auto bounding_volume = obj->GetWorldBoundingVolume();
+		auto bounding_volume = obj->GetAABB();
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
 			// If we can actually fit inside the node, traverse farther.
@@ -123,7 +123,7 @@ void Node::Split()
 	for(auto i = objects_.begin(); i != objects_.end();)
 	{
 		auto obj = (*i);
-		auto bounding_volume = obj->GetWorldBoundingVolume();
+		auto bounding_volume = obj->GetAABB();
 		bool success = false;
 		for(std::shared_ptr<Node> node : leaf_nodes_)
 		{
@@ -146,7 +146,7 @@ std::list<std::shared_ptr<swganh::object::Object>> Node::Query(QueryBox query_bo
 	std::list<std::shared_ptr<swganh::object::Object>> return_list;
 
 	std::for_each(objects_.begin(), objects_.end(), [=,& return_list](std::shared_ptr<swganh::object::Object> obj) {
-		if(boost::geometry::intersects(obj->GetWorldBoundingVolume(), query_box))
+		if(boost::geometry::intersects(obj->GetAABB(), query_box))
 			return_list.push_back(obj);
 	});
 
@@ -192,7 +192,7 @@ std::list<std::shared_ptr<swganh::object::Object>> Node::GetContainedObjects(voi
 	return objs;
 }
 
-void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::BoundingVolume& old_bounding_volume, const swganh::object::BoundingVolume& new_bounding_volume)
+void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume)
 {
 	// Check the objects of this node.
 	for(auto i = objects_.begin(); i != objects_.end(); i++) {
@@ -227,7 +227,7 @@ void Node::UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swgan
 	}
 }
 
-std::shared_ptr<Node> Node::GetNodeContainingVolume_(swganh::object::BoundingVolume volumn)
+std::shared_ptr<Node> Node::GetNodeContainingVolume_(swganh::object::AABB volumn)
 {
 	// If we don't within the actual Spatial Indexing area, bail.
 	if(!boost::geometry::within(volumn, region_))
@@ -255,11 +255,11 @@ void Node::SvgDump(void)
 	file.open("swganh_si_dump.svg");
 	file << "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1440\" height=\"900\" version=\"1.1\" viewBox=\"-8300 -8300 16600 16600\" overflow=\"visible\">\n";
 	
-	file << "<g transform=\"scale(1 -1)\">\n";
+	file << "<g>\n";
 	SvgDumpRegions(file);
 	file << "<" << '/' << "g>\n";
 	
-	file << "<g transform=\"scale(1 -1)\">\n";
+	file << "<g>\n";
 	SvgDumpObjects(file);
 	file << "<" << '/' << "g>\n";
 
@@ -273,7 +273,7 @@ void Node::SvgDumpRegions(std::ofstream& file)
 	boost::geometry::box_view<Region> box_view(region_);
 	for(boost::range_iterator<boost::geometry::box_view<Region> const>::type it = boost::begin(box_view); it != boost::end(box_view); ++it)
 	{
-		region_points << " " << (float)(*it).x() << "," << (float)(*it).y();
+		region_points << " " << (float)(*it).x() << "," << (float)(*it).y() * -1.0f;
 	}
 
 	file << "<polygon points=\"" << region_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:green;stroke-width:5px\"" << '/' << "> \n";
@@ -295,20 +295,20 @@ void Node::SvgDumpObjects(std::ofstream& file)
 	{
 		std::stringstream bounding_volume_points;
 
-		auto bounding_volume = obj->GetWorldBoundingVolume();
+		auto bounding_volume = obj->GetAABB();
 		auto collision_box = obj->GetWorldCollisionBox();
 
 		current_collision_points = std::stringstream();
 		boost::geometry::for_each_point(collision_box, GetCollisionBoxPoints<Point>);
 		
-		boost::geometry::box_view<swganh::object::BoundingVolume> bounding_volume_view(bounding_volume);
-		for(boost::range_iterator<boost::geometry::box_view<swganh::object::BoundingVolume>>::type it = boost::begin(bounding_volume_view); it != boost::end(bounding_volume_view); ++it) 
+		boost::geometry::box_view<swganh::object::AABB> bounding_volume_view(bounding_volume);
+		for(boost::range_iterator<boost::geometry::box_view<swganh::object::AABB>>::type it = boost::begin(bounding_volume_view); it != boost::end(bounding_volume_view); ++it) 
 		{
-			bounding_volume_points << " " << (*it).x() << "," << (*it).y();
+			bounding_volume_points << " " << (*it).x() << "," << (*it).y() * -1.0f;
 		}
 
 		auto name = obj->GetCustomName();
-		file << "<text x=\"" << obj->GetPosition().x << "\" y=\"" << obj->GetPosition().z << "\" fill=\"black\" style=\"text-anchor: middle;\" >" << std::string(name.begin(), name.end()) << "<" << '/' << "text>\n";
+		file << "<text x=\"" << obj->GetPosition().x << "\" y=\"" << obj->GetPosition().z * -1.0f << "\" fill=\"black\" style=\"text-anchor: middle;\" font-size=\"8px\">" << std::string(name.begin(), name.end()) << "<" << '/' << "text>\n";
 		file << "<polygon points=\"" << bounding_volume_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:red;stroke-width:0.4px\"" << '/' << "> \n";
 		file << "<polygon points=\"" << current_collision_points.str() << "\" style=\"fill-opacity:0;fill:none;stroke:blue;stroke-width:0.4px\"" << '/' << "> \n";
 	}

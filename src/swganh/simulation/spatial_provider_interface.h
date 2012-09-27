@@ -20,7 +20,7 @@ class SpatialProviderInterface : public swganh::object::ContainerInterface
 {
 public:
 	virtual void SvgToFile()=0;
-	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::BoundingVolume& old_bounding_volume, const swganh::object::BoundingVolume& new_bounding_volume) = 0;
+	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume) = 0;
 };
 
 }} // namespace swganh::simulation

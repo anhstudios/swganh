@@ -57,7 +57,7 @@ public:
 
 	void InsertObject(std::shared_ptr<swganh::object::Object> obj);
 	void RemoveObject(std::shared_ptr<swganh::object::Object> obj);
-	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::BoundingVolume& old_bounding_volume, const swganh::object::BoundingVolume& new_bounding_volume);
+	void UpdateObject(std::shared_ptr<swganh::object::Object> obj, const swganh::object::AABB& old_bounding_volume, const swganh::object::AABB& new_bounding_volume);
 	void Split();
 
 	void SvgDump(void);
@@ -77,7 +77,7 @@ public:
 protected:
 	void InsertObject_(std::shared_ptr<swganh::object::Object> obj);
 	void RemoveObject_(std::shared_ptr<swganh::object::Object> obj);
-	std::shared_ptr<Node> GetNodeContainingVolume_(swganh::object::BoundingVolume volumn);
+	std::shared_ptr<Node> GetNodeContainingVolume_(swganh::object::AABB volumn);
 	
 	Node* GetRootNode_(void) { 	
 		// Go to the root.

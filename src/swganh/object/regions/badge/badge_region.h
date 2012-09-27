@@ -18,7 +18,6 @@ public:
 
 protected:
 	void __BuildCollisionBox();
-	void __BuildBoundingVolume();
 
 private:
 

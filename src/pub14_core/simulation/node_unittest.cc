@@ -126,9 +126,9 @@ BOOST_AUTO_TEST_CASE(CanUpdateObject)
 	BOOST_CHECK_EQUAL(0, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());
 
 	glm::vec3 new_position(10.0f, 0.0f, -10.0f);
-	auto old_bounding_volume = obj->GetWorldBoundingVolume();
+	auto old_bounding_volume = obj->GetAABB();
 	obj->SetPosition(new_position);
-	root_node_.UpdateObject(obj, old_bounding_volume, obj->GetWorldBoundingVolume());
+	root_node_.UpdateObject(obj, old_bounding_volume, obj->GetAABB());
 
 	BOOST_CHECK_EQUAL(0, root_node_.GetLeafNodes()[NE_QUADRANT]->GetObjects().size());
 	BOOST_CHECK_EQUAL(1, root_node_.GetLeafNodes()[SE_QUADRANT]->GetObjects().size());

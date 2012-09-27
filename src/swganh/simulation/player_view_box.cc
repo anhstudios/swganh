@@ -40,8 +40,3 @@ void PlayerViewBox::__BuildCollisionBox()
 	boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(VIEWING_RANGE, -1.0f * VIEWING_RANGE));
 	boost::geometry::append(local_collision_box_, boost::geometry::make<Point>(-1.0f * VIEWING_RANGE, -1.0f * VIEWING_RANGE));
 }
-
-void PlayerViewBox::__BuildBoundingVolume()
-{
-	local_bounding_volume_ = BoundingVolume(Point(-1.0f * VIEWING_RANGE, -1.0f * VIEWING_RANGE), Point(VIEWING_RANGE, VIEWING_RANGE));
-}

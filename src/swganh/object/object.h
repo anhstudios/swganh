@@ -71,7 +71,7 @@ typedef anh::ValueEvent<std::shared_ptr<Object>> ObjectEvent;
 
 typedef boost::geometry::model::d2::point_xy<double> Point;
 typedef boost::geometry::model::polygon<Point> CollisionBox;
-typedef boost::geometry::model::box<Point> BoundingVolume;
+typedef boost::geometry::model::box<Point> AABB;
 
 class ObjectFactory;
 class ObjectMessageBuilder;
@@ -595,8 +595,7 @@ public:
 
 	void BuildBoundingVolume(void)
 	{
-		__BuildBoundingVolume();
-		UpdateWorldBoundingVolume();
+		UpdateAABB();
 	}
 
 	void BuildCollisionBox(void)
@@ -605,9 +604,9 @@ public:
 		UpdateWorldCollisionBox();
 	}
 
-	void UpdateWorldBoundingVolume() 
+	void UpdateAABB() 
 	{ 
-		boost::geometry::envelope(world_collision_box_, world_bounding_volume_);
+		boost::geometry::envelope(world_collision_box_, aabb_);
 	}
 
 	void UpdateWorldCollisionBox() 
@@ -652,8 +651,7 @@ public:
 
 	const CollisionBox& GetLocalCollisionBox(void) const { return local_collision_box_; }
 	const CollisionBox& GetWorldCollisionBox(void) const { return world_collision_box_; }
-	const BoundingVolume& GetLocalBoundingVolume(void) const { return local_bounding_volume_; }
-	const BoundingVolume& GetWorldBoundingVolume(void) const { return world_bounding_volume_; }
+	const AABB& GetAABB(void) const { return aabb_; }
 
 	void SetCollisionBoxSize(float length, float height)
 	{
@@ -689,8 +687,7 @@ protected:
 	CollisionBox local_collision_box_;
 	CollisionBox world_collision_box_;
 
-	BoundingVolume local_bounding_volume_;
-	BoundingVolume world_bounding_volume_;
+	AABB aabb_;
 
 	float collision_length_;
 	float collision_height_;
@@ -714,11 +711,6 @@ protected:
 			{
 				boost::geometry::append(local_collision_box_, Point(0.0f, 0.0f));
 			}
-	}
-
-	virtual void __BuildBoundingVolume(void)
-	{
-		local_bounding_volume_ = BoundingVolume(Point(-1.0f, -1.0f), Point(1.0f, 1.0f));
 	}
 
 private:

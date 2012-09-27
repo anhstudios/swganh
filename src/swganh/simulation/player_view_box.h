@@ -18,7 +18,6 @@ namespace simulation {
 
 	protected:
 		void __BuildCollisionBox();
-		void __BuildBoundingVolume();
 
 	private:
 		std::shared_ptr<swganh::object::Object> player_;

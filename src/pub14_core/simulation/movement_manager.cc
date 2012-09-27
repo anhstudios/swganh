@@ -50,7 +50,7 @@ void MovementManager::HandleDataTransform(
 
     counter_map_[object->GetObjectId()] = message.counter;
     
-	auto old_bounding_volume = object->GetWorldBoundingVolume();
+	auto old_bounding_volume = object->GetAABB();
 
 	object->SetPosition(message.position);
     object->SetOrientation(message.orientation);
@@ -59,7 +59,7 @@ void MovementManager::HandleDataTransform(
 	if(object->GetContainer() != spatial_provider_)
 		object->GetContainer()->TransferObject(object, object, spatial_provider_);
 	else
-		spatial_provider_->UpdateObject(controller->GetObject(), old_bounding_volume, object->GetWorldBoundingVolume());
+		spatial_provider_->UpdateObject(controller->GetObject(), old_bounding_volume, object->GetAABB());
 
     SendUpdateDataTransformMessage(object);
 }
