@@ -21,10 +21,14 @@ namespace messages {
         virtual void Serialize(swganh::ByteBuffer& buffer) const
         {
             buffer.write(swganh::hostToLittle(Opcount()));
-            buffer.write(Opcode());
+            buffer.write(Opcode());			
             
             OnSerialize(buffer);
         }
+
+		virtual void SetObserverId(uint64_t observer_id)
+		{
+		}
     
         virtual void Deserialize(swganh::ByteBuffer buffer)
         {
