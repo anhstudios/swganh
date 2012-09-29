@@ -22,6 +22,7 @@ namespace app {
 
 namespace object {
 	class Object;
+	class Creature;
 }
 
 namespace messages {
@@ -71,6 +72,7 @@ namespace command {
 		void SetActor(std::shared_ptr<object::Object> object);
 
         const std::shared_ptr<object::Object>& GetTarget() const;
+		std::shared_ptr<object::Creature> GetTargetCreature();
 		void SetTarget(std::shared_ptr<object::Object> target);
 
         const std::wstring& GetCommandString() const;

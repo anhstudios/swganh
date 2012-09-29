@@ -149,7 +149,7 @@ charCreate:BEGIN
             CALL sp_CharacterXpCreate(object_id,base_skill_id);
         END IF;
 
-        CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender);
+        CALL sp_CharacterStartingItems(object_id, race_id, profession_id, gender, start_scene);
     COMMIT;
 END//
 DELIMITER ;
