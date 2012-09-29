@@ -24,6 +24,8 @@ namespace messages {
         {
             controller_type = controller_type_;
             message_type = message_type_;
+			observable_id = 0;
+			tick_count = 0;
         }
 
 		ObjControllerMessage(const ObjControllerMessage& other)
@@ -68,6 +70,10 @@ namespace messages {
             tick_count = buffer.read<uint32_t>();
             OnControllerDeserialize(buffer);
         }
+		virtual void SetObserverId(uint64_t observer_id)
+		{
+			observable_id = observer_id;
+		}
     };
 
 }}  // namespace swganh::messages

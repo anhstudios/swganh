@@ -6,13 +6,14 @@
 #include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
-#include "swganh_core/object/object.h"
+#include "swganh_core/object/creature/creature.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
 using swganh::observer::ObserverInterface;
 using swganh::command::BaseSwgCommand;
 using swganh::command::CommandProperties;
 using swganh::object::Object;
+using swganh::object::Creature;
 using swganh::messages::controllers::CommandQueueEnqueue;
 using swganh::simulation::SimulationServiceInterface;
 
@@ -123,6 +124,12 @@ const std::shared_ptr<Object>& BaseSwgCommand::GetTarget() const
     }
 
     return target_;
+}
+std::shared_ptr<Creature> BaseSwgCommand::GetTargetCreature()
+{
+	auto creatureTarget = std::static_pointer_cast<Creature>(GetTarget());
+
+	return creatureTarget;
 }
 
 void BaseSwgCommand::SetTarget(std::shared_ptr<Object> object)
