@@ -159,14 +159,14 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
 {
 	std::list<std::shared_ptr<Object>> contained_objects;
-	if (requester)
-	{
-		contained_objects = root_node_.Query(GetQueryBoxViewRange(requester));		
-	}
-	else
-	{
+	//if (requester)
+	//{
+		//contained_objects = root_node_.Query(GetQueryBoxViewRange(requester));		
+	//}
+	//else
+	//{
 		contained_objects = root_node_.GetContainedObjects();
-	}
+	//}
 
 	for (auto& object : contained_objects)
 	{

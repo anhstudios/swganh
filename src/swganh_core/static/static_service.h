@@ -17,6 +17,7 @@ namespace statics
 		virtual swganh::service::ServiceDescription GetServiceDescription();
 
 	private:
+		swganh::app::SwganhKernel* kernel_;
 		std::vector<std::string> attributes_;
 	};
 }

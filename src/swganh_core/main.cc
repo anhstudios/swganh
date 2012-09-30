@@ -72,7 +72,7 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
 	swganh::player::Initialize(swganh_kernel);
 	swganh::social::Initialize(swganh_kernel);
 	swganh::spawn::Initialize(swganh_kernel);
-	//swganh::statics::Initialize(swganh_kernel);
+	swganh::statics::Initialize(swganh_kernel);
 	swganh::sui::Initialize(swganh_kernel);
 	swganh::weather::Initialize(swganh_kernel);
 	swganh::terrain::Initialize(swganh_kernel);

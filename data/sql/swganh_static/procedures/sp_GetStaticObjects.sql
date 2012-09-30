@@ -1,4 +1,4 @@
-﻿DROP PROCEDURE IF EXISTS `sp_GetPersistentNpcs`;
+﻿DROP PROCEDURE IF EXISTS `sp_GetStaticObjects`;
 
 DELIMITER //
 CREATE PROCEDURE `sp_GetStaticObjects`(IN `parent_id` BIGINT, IN `planet_id` INT)
@@ -6,21 +6,21 @@ BEGIN
     
 	/*Load Static Buildings*/
 	SELECT buildings.id,buildings.oX,buildings.oY,buildings.oZ,buildings.oW,buildings.x,
-		buildings.y,buildings.z,building_types.model,building_types.width,building_types.height,
-		building_types.file,building_types.name,building_types.family 
+		buildings.y,buildings.z,building_types.model,building_types.width,building_types.length,
+		building_types.file,building_types.name,building_types.family_id
 		FROM buildings INNER JOIN building_types ON buildings.type_id = building_types.id
 		WHERE buildings.planet_id = planet_id;
 	
-	SELECT cells.id, cells.parent_id 
+	SELECT cells.id, cells.building_id 
 		FROM cells
-		INNER JOIN buildings ON cells.parent_id = buildings.id
+		INNER JOIN buildings ON cells.building_id = buildings.id
 		WHERE buildings.planet_id = planet_id;
 	
 	SELECT spawn_clone.parentId,spawn_clone.oX,spawn_clone.oY,spawn_clone.oZ,spawn_clone.oW,
 		spawn_clone.cell_x,spawn_clone.cell_y,spawn_clone.cell_z,spawn_clone.city 
 		FROM  spawn_clone 
 		INNER JOIN cells ON spawn_clone.parentid = cells.id 
-		INNER JOIN buildings ON cells.parent_id = buildings.id 
+		INNER JOIN buildings ON cells.building_id = buildings.id 
 		WHERE buildings.planet_id = planet_id;
 	
 	/*Load Static Terminals*/
@@ -28,7 +28,7 @@ BEGIN
 		terminals.y,terminals.z,terminals.terminal_type,terminal_types.object_string,terminal_types.name,terminal_types.file,
 		terminals.dataStr,terminals.dataInt1,terminals.customName
 		FROM terminals INNER JOIN terminal_types ON (terminals.terminal_type = terminal_types.id)
-		WHERE (terminal_types.name NOT LIKE 'unknown') AND (terminals.parent_id = parent_id) AND (terminals.planet_id = planet_id)
+		WHERE (terminal_types.name NOT LIKE 'unknown') AND (terminals.parent_id = parent_id) AND (terminals.planet_id = planet_id);
 	
 	SELECT * FROM terminal_elevator_data ORDER BY direction;
 			
@@ -46,18 +46,10 @@ BEGIN
 	persistent_npcs.moodId,persistent_npcs.family,persistent_npcs.scale 
 	FROM persistent_npcs 
 	INNER JOIN faction ON (persistent_npcs.faction = faction.id) 
-	WHERE WHERE (persistent_npcs.parentId=parent_id) AND (persistent_npcs.planet_id = planet_id))
-	
-	
+	WHERE (persistent_npcs.parentId=parent_id) AND (persistent_npcs.planet_id = planet_id);
 	
 	/*Load Static Shuttles*/
 	SELECT shuttles.id FROM shuttles WHERE (parentId=parent_id) AND (planet_id = planet_id);
-	
-	/*Load Static Items*/
-	SELECT items.id FROM items WHERE (parent_id=parent_id) AND (planet_id = planet_id);
-	
-	/*Load Static Resource Containers*/
-	SELECT resource_containers.id FROM resource_containers WHERE (parent_id=parent_id) AND (planet_id = planet_id);
 
 END//
 DELIMITER ;
