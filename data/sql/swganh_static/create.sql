@@ -4,7 +4,7 @@ This source file is part of SWG:ANH (Star Wars Galaxies - A New Hope - Server Em
 
 For more information, visit http://www.swganh.com
 
-Copyright (c) 2006 - 2011 The SWG:ANH Team
+Copyright (c) 2006 - 2012 The SWG:ANH Team
 ---------------------------------------------------------------------------------------
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -32,11 +32,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
 --
--- Create database galaxy
+-- Create database swganh_static
 --
 
-DROP DATABASE galaxy;
-CREATE DATABASE IF NOT EXISTS galaxy CHARACTER SET utf8 COLLATE utf8_general_ci;
+DROP DATABASE swganh_static;
+CREATE DATABASE IF NOT EXISTS swganh_static CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
