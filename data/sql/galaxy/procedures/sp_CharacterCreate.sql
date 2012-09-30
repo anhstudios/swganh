@@ -136,7 +136,7 @@ charCreate:BEGIN
 
         -- EQUIPED ??
         -- PLAYER 1
-        INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, player_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'string_id_table', '', start_custom_name,0, NOW(), NOW(), null, 1347174745, -2, 1);
+        INSERT INTO `object` VALUES (object_id + 1, start_scene, object_id, player_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'string_id_table', '', '',0, NOW(), NOW(), null, 1347174745, -2, 1);
         INSERT INTO `player` (id, profession_tag, born_date, csr_tag, current_language, jedi_state)
             VALUES (object_id + 1, start_profession, NOW(), 0, 0, 0);
         -- PLAYER ACCOUNT
