@@ -96,18 +96,7 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
 
 void PlayerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
-    try 
-    {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_DeletePlayer(?);");
-        statement->setUInt64(1, object->GetObjectId());
-        statement->execute();
-    }
-        catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
+    ObjectFactory::DeleteObjectFromStorage(object);
 }
 
 shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)

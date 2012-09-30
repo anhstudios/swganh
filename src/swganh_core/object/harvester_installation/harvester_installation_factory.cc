@@ -23,7 +23,9 @@ uint32_t HarvesterInstallationFactory::PersistObject(const shared_ptr<Object>& o
 }
 
 void HarvesterInstallationFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> HarvesterInstallationFactory::CreateObjectFromStorage(uint64_t object_id)
 {

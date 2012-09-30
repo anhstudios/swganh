@@ -19,7 +19,9 @@ uint32_t FactoryCrateFactory::PersistObject(const shared_ptr<Object>& object)
 }
 
 void FactoryCrateFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> FactoryCrateFactory::CreateObjectFromStorage(uint64_t object_id)
 {

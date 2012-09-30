@@ -4,6 +4,15 @@
 #include "cell_factory.h"
 
 #include "cell.h"
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+#include "swganh/logger.h"
+
+#include "swganh/database/database_manager.h"
 
 using namespace std;
 using namespace swganh::object;
@@ -11,11 +20,31 @@ using namespace swganh::object;
 
 uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object)
 {
-	return 0;
+	// Persist Intangible and Base Object First
+    uint32_t counter = 1;
+	IntangibleFactory::PersistObject(object);
+	try 
+    {
+		auto conn = db_manager_->getConnection("galaxy");
+		auto statement = shared_ptr<sql::PreparedStatement>
+			(conn->prepareStatement("CALL sp_PersistCell(?);"));
+		
+		auto cell = static_pointer_cast<Cell>(object);
+		statement->setInt(counter++, cell->GetCell());
+		statement->executeUpdate();
+	}
+	catch(sql::SQLException &e)
+	{
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+	return counter;
 }
 
 void CellFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> CellFactory::CreateObjectFromStorage(uint64_t object_id)
 {

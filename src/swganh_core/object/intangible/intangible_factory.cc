@@ -32,20 +32,72 @@ IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
 
 uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
 {
-	return 0;
+	// Persist Intangible and Base Object First
+    uint32_t counter = 1;
+
+	try 
+    {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>
+            (conn->prepareStatement("CALL sp_PersistIntangible(?,?,?);"));
+        counter = ObjectFactory::PersistObject(object, statement);
+		auto tangible = static_pointer_cast<Intangible>(object);
+		statement->setString(counter++, tangible->GetStfNameFile());
+		statement->setString(counter++, tangible->GetStfNameString());
+		statement->setInt(counter++, tangible->GetGenericInt());
+		statement->executeUpdate();
+	}
+	catch(sql::SQLException &e)
+	{
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+	}
+	return counter;
 }
 
 void IntangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 {
-    //@TODO: Load me from storage
-    return make_shared<Intangible>();
+    auto intangible = make_shared<Intangible>();
+    intangible->SetObjectId(object_id);
+    try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_GetIntangible(?);"));
+        
+        auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
+
+		CreateBaseObjectFromStorage(intangible, result);
+        if (statement->getMoreResults())
+        {
+            result.reset(statement->getResultSet());
+            while (result->next())
+            {
+				intangible->SetStfName(result->getString("stf_detail_file"), result->getString("stf_detail_string"));
+                intangible->SetGenericInt(result->getInt("generic_int"));
+            }
+        }
+    }
+    catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
+    }
+    return intangible;
 }
 
 shared_ptr<Object> IntangibleFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-	//@TODO: Create me with help from db
-    return make_shared<Intangible>();
+	if(db_persisted || db_initialized)
+	{
+		//@TODO: Create me with help from db
+		return make_shared<Intangible>();
+	}
+	else
+	{
+		return make_shared<Intangible>();
+	}
 }

@@ -17,7 +17,9 @@ uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object)
 }
 
 void InstallationFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> InstallationFactory::CreateObjectFromStorage(uint64_t object_id)
 {

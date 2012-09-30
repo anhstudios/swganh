@@ -2,14 +2,14 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
-#include "swganh/object/object_factory_interface.h"
+#include "swganh_core/object/object_factory.h"
 
 namespace swganh {
 namespace object {
 
 
-    class ShipFactory : public swganh::object::ObjectFactoryInterface
-    {
+    class ShipFactory : public swganh::object::ObjectFactory
+	{
     public:
         uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 

@@ -5,8 +5,17 @@
 
 #include "building.h"
 
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+#include "swganh/logger.h"
+
+#include "swganh/database/database_manager.h"
+
 using namespace std;
-using namespace swganh::object;
 using namespace swganh::object;
 
 BuildingFactory::BuildingFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
@@ -15,16 +24,18 @@ BuildingFactory::BuildingFactory(swganh::database::DatabaseManagerInterface* db_
 }
 uint32_t BuildingFactory::PersistObject(const shared_ptr<Object>& object)
 {
-	return 0;
+	// Persist Tangible and Base Object First
+    return TangibleFactory::PersistObject(object);
 }
 
 void BuildingFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> BuildingFactory::CreateObjectFromStorage(uint64_t object_id)
 {
-	//@TODO: Load me from storage
-    return make_shared<Building>();
+    return TangibleFactory::CreateObjectFromStorage(object_id);
 }
 
 shared_ptr<Object> BuildingFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)

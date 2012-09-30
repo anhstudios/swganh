@@ -22,7 +22,9 @@ uint32_t StaticFactory::PersistObject(const shared_ptr<Object>& object)
 }
 
 void StaticFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> StaticFactory::CreateObjectFromStorage(uint64_t object_id)
 {

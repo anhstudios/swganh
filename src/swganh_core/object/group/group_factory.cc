@@ -16,7 +16,9 @@ uint32_t GroupFactory::PersistObject(const shared_ptr<Object>& object)
 }
 
 void GroupFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> GroupFactory::CreateObjectFromStorage(uint64_t object_id)
 {
