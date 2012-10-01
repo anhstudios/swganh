@@ -22,31 +22,3 @@ BuildingFactory::BuildingFactory(swganh::database::DatabaseManagerInterface* db_
 	: TangibleFactory(db_manager, event_dispatcher)
 {
 }
-uint32_t BuildingFactory::PersistObject(const shared_ptr<Object>& object)
-{
-	// Persist Tangible and Base Object First
-    return TangibleFactory::PersistObject(object);
-}
-
-void BuildingFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{
-	ObjectFactory::DeleteObjectFromStorage(object);
-}
-
-shared_ptr<Object> BuildingFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    return TangibleFactory::CreateObjectFromStorage(object_id);
-}
-
-shared_ptr<Object> BuildingFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
-{
-	if(db_persisted || db_initialized)
-	{
-		//TODO: Have to hit the db to make this
-		return make_shared<Building>();
-	}
-	else
-	{
-		return make_shared<Building>();
-	}
-}

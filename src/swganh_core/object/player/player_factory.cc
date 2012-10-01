@@ -86,7 +86,7 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
         PersistQuestJournal_(player);
         PersistWaypoints_(player);
     }
-        catch(sql::SQLException &e)
+    catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();

@@ -4,36 +4,15 @@
 #include "group_factory.h"
 #include "group.h"
 
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+#include "swganh/logger.h"
+
+#include "swganh/database/database_manager.h"
+
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object;
-
-uint32_t GroupFactory::PersistObject(const shared_ptr<Object>& object)
-{
-	uint32_t counter = 1;
-
-	return counter;
-}
-
-void GroupFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{
-	ObjectFactory::DeleteObjectFromStorage(object);
-}
-
-shared_ptr<Object> GroupFactory::CreateObjectFromStorage(uint64_t object_id)
-{
-    return make_shared<Group>();
-}
-
-shared_ptr<Object> GroupFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
-{
-	if(db_persisted || db_initialized)
-	{
-		//TODO: Have to hit the db to make this
-		return make_shared<Group>();
-	}
-	else
-	{
-		return make_shared<Group>();
-	}
-}
