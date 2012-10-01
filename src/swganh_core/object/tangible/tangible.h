@@ -80,6 +80,16 @@ struct ComponentCustomization
 class TangibleFactory;
 class TangibleMessageBuilder;
 
+enum OptionsMask
+{
+	OPTION_PLAYER = 0x01,
+	OPTION_VENDOR = 0x02,
+	OPTION_TRAINER = 0x08,
+	OPTION_NO_HAM = 0x100,
+	OPTION_QUEST_NPC = 0x800,
+	OPTION_TIE_XWING = 0x8000
+};
+
 /**
  * 
  */

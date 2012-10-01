@@ -21,7 +21,9 @@
 #include "swganh_core/simulation/simulation_service.h"
 #include "swganh_core/simulation/scene_events.h"
 #include "swganh_core/object/object.h"
+
 #include "swganh_core/object/creature/creature.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 using namespace swganh::object;
 using namespace swganh::statics;
@@ -55,184 +57,23 @@ StaticService::StaticService(SwganhKernel* kernel)
 		try {
 
 		std::stringstream ss;
-
-		ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id << ");";
+		ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
 
 		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
 		statement->execute(ss.str());
 
 		std::unique_ptr<sql::ResultSet> result;
 
-		LOG(warning) << "Loading Buildings for Planet: " << real_event->scene_label;
-		
-		uint32_t tats = 0;
-
-		result.reset(statement->getResultSet());
-		while (result->next())
-		{
-			tats += 1;
-			//Load Building Row
-			auto object = simulation_service->CreateObjectFromTemplate(result->getString(9), 
-				STATIC_CONTAINER_PERMISSION, false, false, result->getInt64(1));
-			
-			object->SetOrientation(glm::quat(
-				static_cast<float>(result->getDouble(2)),
-				static_cast<float>(result->getDouble(3)),
-				static_cast<float>(result->getDouble(4)),
-				static_cast<float>(result->getDouble(5))));
-
-			object->SetPosition(glm::vec3(result->getDouble(6), result->getDouble(7), result->getDouble(8)));
-			object->SetStfName(result->getString(12), result->getString(13));
-			object->SetSceneId(real_event->scene_id);
-			object->SetInSnapshot(true);
-			object->SetDatabasePersisted(false);
-			
-			//Put it into the scene
-			simulation_service->AddObjectToScene(object, real_event->scene_label);
-		}
-
-		LOG(warning) << tats;
-		/*
-		if(statement->getMoreResults())
-		{
-			result.reset(statement->getResultSet());      
-			while(result->next())
-			{
-				//Load Cells
-				auto object = simulation_service->CreateObjectFromTemplate("object/cell/shared_cell.iff",
-					WORLD_CELL_PERMISSION, false, false, result->getInt64(1));
-
-				object->SetSceneId(real_event->scene_id);
-				object->SetInSnapshot(true);
-				object->SetDatabasePersisted(false);
-
-				auto parent = simulation_service->GetObjectById(result->getInt64(1));
-				if(parent != nullptr)
-				{
-					parent->AddObject(nullptr, object);
-				}
-
-			}
-		}
-
-		if(statement->getMoreResults())
-		{
-			result.reset(statement->getResultSet());           
-			while(result->next())
-			{
-				//TODO: Load Spawn Points
-			}
-		}
-
-		LOG(warning) << "Loading Terminals for Planet: " << real_event->scene_label;
-
-		if(statement->getMoreResults())
-		{
-			result.reset(statement->getResultSet());        
-			while(result->next())
-			{
-				//TODO: Load Terminals
-
-			}
-		}
-
-		if(statement->getMoreResults())
-		{
-			result.reset(statement->getResultSet());        
-			while(result->next())
-			{
-				//TODO:: Load Elevator Data
-
-			}
-		}
-
-		LOG(warning) << "Loading Containers for Planet: " << real_event->scene_label;
-		if(statement->getMoreResults())
-		{
-			result.reset(statement->getResultSet());        
-			while(result->next())
-			{
-				//TODO:: Load Containers
-
-			}
-		}
-		
-		LOG(warning) << "Loading Ticket Collectors for Planet: " << real_event->scene_label;
-		if(statement->getMoreResults())
-		{
-			result.reset(statement->getResultSet());        
-			while(result->next())
-			{
-				//TODO:: Load Ticket Collectors
-
-			}
-		}*/
-
-		LOG(warning) << "Loading NPCs for Planet: " << real_event->scene_label;
-		uint32_t tits = 0;
-		if(statement->getMoreResults())
-		{
-			result.reset(statement->getResultSet());        
-			while(result->next())
-			{
-				//Load NPCS
-				tits += 1;
-
-				auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(15),
-					CREATURE_PERMISSION, false, false, result->getUInt64(1)));
-
-				std::string firstname = result->getString(3).asStdString(), lastname = result->getString(4).asStdString();
-				std::string name(firstname + " " + lastname);
-				object->SetCustomName(std::wstring(name.begin(), name.end()));
-
-				object->SetStfName(result->getString(17), result->getString(16));
-
-				object->SetPosture((Posture)result->getUInt(5));
-				object->SetStateBitmask(result->getUInt(6));
-				object->SetCombatLevel(result->getUInt(7));
-
-				object->SetOrientation(glm::quat(
-					static_cast<float>(result->getDouble(8)),
-					static_cast<float>(result->getDouble(9)),
-					static_cast<float>(result->getDouble(10)),
-					static_cast<float>(result->getDouble(11))));
-
-				object->SetPosition(glm::vec3(result->getDouble(12),result->getDouble(13),result->getDouble(14)));
-				object->SetMoodId(result->getUInt(19));
-				object->SetScale(static_cast<float>(result->getDouble(21)));
-
-				switch(result->getUInt(20))
-				{
-				case TRAINER:
-				case FILLER:
-				case QUEST_GIVER:
-				case JUNK_DEALER:
-				case CHASSIS_DEALER:
-				case RECRUITER:
-					break;
-				};
-
-				object->SetSceneId(real_event->scene_id);
-				object->SetInSnapshot(false);
-				object->SetDatabasePersisted(false);
-
-				//Put it into the scene
-				simulation_service->AddObjectToScene(object, real_event->scene_label);
-			}
-		}
-
-		LOG(warning) << tits;
-
-		LOG(warning) << "Loading Shuttles for Planet: " << real_event->scene_label;
-		if(statement->getMoreResults())
-		{
-			result.reset(statement->getResultSet());        
-			while(result->next())
-			{
-				//TODO:: Load Shuttles
-
-			}
-		}
+		LOG(warning) << "Loading static data for: " << real_event->scene_label;
+		_loadBuildings(simulation_service, statement->getResultSet());
+		_loadCells(simulation_service, statement->getResultSet());
+		_loadCloneLocations(simulation_service, statement->getResultSet());
+		_loadTerminals(simulation_service, statement->getResultSet());
+		_loadElevatorData(simulation_service, statement->getResultSet());
+		_loadContainers(simulation_serivce, statement->getResultSet());
+		_loadTicketCollectors(simulation_service, statement->getResultSet());
+		_loadNPCS(simulation_service, statement->getResultSet());
+		_loadShuttles(simulation_serivce, statement->getResultSet());
 
 		} catch(std::exception& e) {
 			LOG(warning) << e.what();
@@ -256,4 +97,252 @@ ServiceDescription StaticService::GetServiceDescription()
         0);
 
     return service_description;
+}
+
+void StaticService::_loadBuildings(std::shared_ptr<SimulationServiceInterface> simulation_service, std::unique_ptr<sql::ResultSet>& result)
+{
+	while (result->next())
+	{
+		//Load Building Row
+		auto object = simulation_service->CreateObjectFromTemplate(result->getString(9), 
+			STATIC_CONTAINER_PERMISSION, false, false, result->getInt64(1));
+			
+		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(2)),
+			static_cast<float>(result->getDouble(3)),
+			static_cast<float>(result->getDouble(4)),
+			static_cast<float>(result->getDouble(5))));
+
+		object->SetPosition(glm::vec3(result->getDouble(6), result->getDouble(7), result->getDouble(8)));
+		object->SetStfName(result->getString(12), result->getString(13));
+		object->SetSceneId(real_event->scene_id);
+		object->SetInSnapshot(true);
+		object->SetDatabasePersisted(false);
+			
+		//Put it into the scene
+		simulation_service->AddObjectToScene(object, real_event->scene_label);
+	}
+}
+
+void StaticService::_loadCells(std::shared_ptr<SimulationServiceInterface> simulation_service, std::unique_ptr<sql::ResultSet>& result)
+{
+	while(result->next())
+	{
+		//Load Cells
+		auto object = simulation_service->CreateObjectFromTemplate("object/cell/shared_cell.iff",
+			WORLD_CELL_PERMISSION, false, false, result->getInt64(1));
+
+		object->SetSceneId(real_event->scene_id);
+		object->SetInSnapshot(true);
+		object->SetDatabasePersisted(false);
+
+		auto parent = simulation_service->GetObjectById(result->getInt64(2));
+		if(parent != nullptr)
+		{
+			parent->AddObject(nullptr, object);
+		}
+
+	}
+}
+
+void StaticService::_loadCloneLocations(std::shared_ptr<SimulationServiceInterface> simulation_service, std::unique_ptr<sql::ResultSet>& result)
+{
+	while(result->next())
+	{
+		//TODO: Fill me in
+	}
+}
+
+void StaticService::_loadTerminals(std::shared_ptr<SimulationServiceInterface> simulation_service, std::unique_ptr<sql::ResultSet>& result)
+{
+	while(result->next())
+	{
+		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(11),
+			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+
+		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(3)),
+			static_cast<float>(result->getDouble(4)),
+			static_cast<float>(result->getDouble(5)),
+			static_cast<float>(result->getDouble(6))));
+
+		object->SetOrientation(glm::rotate(object->GetOrientation(), 180, glm::vec3(1.0f, 0.0f, 0.0f)));
+		object->SetOrientation(glm::rotate(object->GetOrientation(), 180, glm::vec3(0.0f, 1.0f, 0.0f)));
+
+		object->SetPosition(glm::vec3(result->getDouble(7),result->getDouble(8),result->getDouble(9)));
+
+		object->SetStfName(result->getString(13), result->getString(12)); 
+
+		std::string name = result->getString(16);
+		object->SetCustomName(std::wstring(name.begin(), name.end()));
+
+		//Put it into the scene
+		uint64_t parent_id = result->getUInt64(2);
+		if(parent_id == 0)
+		{
+			simulation_service->AddObjectToScene(object, real_event->scene_label);
+		}
+		else
+		{
+			auto parent = simulation_service->GetObjectById(parent_id);
+			if(parent != nullptr)
+			{
+				parent->AddObject(nullptr, object);
+			}
+		}
+	}
+}
+
+void StaticService::_loadElevatorData(std::shared_ptr<SimulationServiceInterface> simulation_service, std::unique_ptr<sql::ResultSet>& result)
+{
+	while(result->next())
+	{
+		//TODO: Fill me in
+	}
+}
+
+void StaticService::_loadTicketCollectors(std::shared_ptr<SimulationServiceInterface> simulation_service, std::unique_ptr<sql::ResultSet>& result)
+{
+	while(result->next())
+	{
+		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(3),
+			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+
+		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(4)),
+			static_cast<float>(result->getDouble(5)),
+			static_cast<float>(result->getDouble(6)),
+			static_cast<float>(result->getDouble(7))));
+
+		object->SetOrientation(glm::rotate(object->GetOrientation(), 180, glm::vec3(1.0f, 0.0f, 0.0f)));
+		object->SetOrientation(glm::rotate(object->GetOrientation(), 180, glm::vec3(0.0f, 1.0f, 0.0f)));
+
+		object->SetPosition(glm::vec3(result->getDouble(8),result->getDouble(9),result->getDouble(10)));
+
+		object->SetStfName(result->getString(13), result->getString(12));
+
+		uint64_t parent_id = result->getUInt64(2);
+		if(parent_id == 0)
+		{
+			simulation_service->AddObjectToScene(object, real_event->scene_label);
+		}
+		else
+		{
+			auto parent = simulation_service->GetObjectById(parent_id);
+			if(parent != nullptr)
+			{
+				parent->AddObject(nullptr, object);
+			}
+		}
+	}
+}
+
+void StaticService::_loadNPCS(std::shared_ptr<SimulationServiceInterface> simulation_service, std::unique_ptr<sql::ResultSet>& result)
+{
+	while(result->next())
+	{
+		//Load NPCS
+		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(15),
+			CREATURE_PERMISSION, false, false, result->getUInt64(1)));
+
+		std::string firstname = result->getString(3).asStdString(), lastname = result->getString(4).asStdString();
+
+		if(firstname.size() != 0) {
+			std::string name(firstname + " " + lastname);
+			object->SetCustomName(std::wstring(name.begin(), name.end()));
+		}
+
+		object->SetStfName(result->getString(17), result->getString(16));
+
+		object->SetPosture((Posture)result->getUInt(5));
+		object->SetStateBitmask(result->getUInt(6));
+		object->SetCombatLevel(result->getUInt(7));
+
+		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(8)),
+			static_cast<float>(result->getDouble(9)),
+			static_cast<float>(result->getDouble(10)),
+			static_cast<float>(result->getDouble(11))));
+
+		object->SetPosition(glm::vec3(result->getDouble(12),result->getDouble(13),result->getDouble(14)));
+		object->SetMoodId(result->getUInt(19));
+		object->SetScale(static_cast<float>(result->getDouble(21)));
+
+		object->SetPvPStatus(PvPStatus_None);
+
+		switch(result->getUInt(20))
+		{
+		case TRAINER:
+			object->SetOptionsMask(OPTION_TRAINER | OPTION_NO_HAM);
+			break;
+		case FILLER:
+			object->SetOptionsMask(OPTION_NO_HAM);
+			break;
+		case QUEST_GIVER:
+			object->SetOptionsMask(OPTION_QUEST_NPC | OPTION_NO_HAM);
+			break;
+		case JUNK_DEALER:
+		case CHASSIS_DEALER:
+			object->SetOptionsMask(OPTION_VENDOR | OPTION_NO_HAM);
+			break;
+		};
+
+		object->SetSceneId(real_event->scene_id);
+		object->SetInSnapshot(false);
+		object->SetDatabasePersisted(false);
+
+		//Put it into the scene
+		uint64_t parent_id = result->getUInt64(2);
+		if(parent_id == 0)
+		{
+			simulation_service->AddObjectToScene(object, real_event->scene_label);
+		}
+		else
+		{
+			auto parent = simulation_service->GetObjectById(parent_id);
+			if(parent != nullptr)
+			{
+				parent->AddObject(nullptr, object);
+			}
+		}
+	}
+}
+
+void StaticService::_loadShuttles(std::shared_ptr<SimulationServiceInterface> simulation_service, std::unique_ptr<sql::ResultSet>& result)
+{
+	while(result->next())
+	{
+		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(12),
+			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+
+		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(5)),
+			static_cast<float>(result->getDouble(6)),
+			static_cast<float>(result->getDouble(7)),
+			static_cast<float>(result->getDouble(8))));
+
+		object->SetPosition(glm::vec3(result->getDouble(9),result->getDouble(10),result->getDouble(11)));
+
+		object->SetStfName(result->getString(14), result->getString(13));
+
+		uint64_t awayTime = result->getUInt64(15);
+		uint64_t inPortTime = result->getUInt64(16);
+		uint64_t collectorId = result->getUInt64(17);
+
+		object->SetOptionsMask(OPTION_NO_HAM);
+
+		uint64_t parent_id = result->getUInt64(2);
+		if(parent_id == 0)
+		{
+			simulation_service->AddObjectToScene(object, real_event->scene_label);
+		}
+		else
+		{
+			auto parent = simulation_service->GetObjectById(parent_id);
+			if(parent != nullptr)
+			{
+				parent->AddObject(nullptr, object);
+			}
+		}
+	}
 }

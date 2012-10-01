@@ -23,6 +23,12 @@ schema = galaxy
 username = swganh
 password = swganh
 
+[db.swganh_static]
+host = localhost
+schema = swganh_static
+username = swganh
+password = swganh
+
 [service.login]
 udp_port = 44453
 address = 127.0.0.1
