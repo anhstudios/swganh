@@ -34,7 +34,7 @@ namespace object {
         static void BuildComplexityDelta(const std::shared_ptr<Object>& object);
         static void BuildStfNameDelta(const std::shared_ptr<Object>& object);
         static void BuildCustomNameDelta(const std::shared_ptr<Object>& object);
-        static void BuildVolumeDelta(const std::shared_ptr<Object>& object);
+        static void BuildVolumeDelta(const std::shared_ptr<Object>& object);		
         // delta 6
         static void BuildServerIDDelta(const std::shared_ptr<Object>& object);
 
