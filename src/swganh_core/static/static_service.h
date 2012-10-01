@@ -10,6 +10,8 @@ namespace sql
 
 namespace swganh
 {
+class EventInterface;
+
 namespace simulation
 {
 	class SimulationServiceInterface;
@@ -28,31 +30,24 @@ namespace statics
 
 	private:
 
-		void _loadBuildings(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, 
-			std::unique_ptr<sql::ResultSet>& result);
-
-		void _loadCells(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, 
-			std::unique_ptr<sql::ResultSet>& result);
-		
-		void _loadCloneLocations(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, 
-			std::unique_ptr<sql::ResultSet>& result);
-
-		void _loadTerminals(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, 
-			std::unique_ptr<sql::ResultSet>& result);
-		
-		void _loadElevatorData(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, 
-			std::unique_ptr<sql::ResultSet>& result);
-		
-		void _loadTicketCollectors(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, 
-			std::unique_ptr<sql::ResultSet>& result);
-		
-		void _loadNPCS(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, 
-			std::unique_ptr<sql::ResultSet>& result);
-		
-		void _loadShuttles(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, 
-			std::unique_ptr<sql::ResultSet>& result);
-
-
+		void _loadBuildings(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+			uint32_t scene_id, std::string scene_name);
+		void _loadCells(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+			uint32_t scene_id, std::string scene_name);
+		void _loadCloneLocations(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+			uint32_t scene_id, std::string scene_name);
+		void _loadTerminals(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+			uint32_t scene_id, std::string scene_name);
+		void _loadElevatorData(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+			uint32_t scene_id, std::string scene_name);
+		void _loadContainers(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+			uint32_t scene_id, std::string scene_name);
+		void _loadTicketCollectors(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+			uint32_t scene_id, std::string scene_name);
+		void _loadNPCS(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+			uint32_t scene_id, std::string scene_name);
+		void _loadShuttles(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+			uint32_t scene_id, std::string scene_name);
 
 		swganh::app::SwganhKernel* kernel_;
 	};
