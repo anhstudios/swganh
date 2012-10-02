@@ -17,7 +17,11 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object;
+
+InstallationFactory::InstallationFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* dispatcher)
+	: TangibleFactory(db_manager, event_dispatcher_)
+{
+}
 
 uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object)
 {
