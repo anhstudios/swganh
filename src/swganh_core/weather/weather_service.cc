@@ -202,3 +202,10 @@ void WeatherService::Startup()
 	RunWeatherSequence();
 }
 
+void WeatherService::Shutdown()
+{
+	sceneLookup_.clear();
+	weather_sequence_.clear();
+	weather_timer_->cancel();	
+}
+

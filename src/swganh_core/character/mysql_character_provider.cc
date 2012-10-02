@@ -66,42 +66,42 @@ MysqlCharacterProvider::MysqlCharacterProvider(KernelInterface* kernel)
 
 	// Load each table of restricted names.
 	auto statement = std::shared_ptr<sql::PreparedStatement>(
-		conn->prepareStatement("SELECT * FROM `name_profane`;")
+		conn->prepareStatement("CALL sp_LoadProfaneNames();")
 		);
 
 	auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
 	while(result_set->next())
 	{
 		profane_names_.push_back(result_set->getString("name"));
-	}
+	}while(statement->getMoreResults());
 
-	statement.reset(conn->prepareStatement("SELECT * FROM `name_reserved`;"));
+	statement.reset(conn->prepareStatement("CALL sp_LoadReservedNames();"));
 	result_set.reset(statement->executeQuery());
 	while(result_set->next())
 	{
 		reserved_names_.push_back(result_set->getString("name"));
-	}
+	}while(statement->getMoreResults());
 
-	statement.reset(conn->prepareStatement("SELECT * FROM `name_fictionally_reserved`;"));
+	statement.reset(conn->prepareStatement("CALL sp_LoadFictionallyReservedNames();"));
 	result_set.reset(statement->executeQuery());
 	while(result_set->next())
 	{
 		fictionally_reserved_names_.push_back(result_set->getString("name"));
-	}
+	}while(statement->getMoreResults());
 
-	statement.reset(conn->prepareStatement("SELECT * FROM `name_racially_inappropriate`;"));
+	statement.reset(conn->prepareStatement("CALL sp_LoadRaciallyInnapropriateNames();"));
 	result_set.reset(statement->executeQuery());
 	while(result_set->next())
 	{
         racially_inappropriate_.push_back(result_set->getString("name"));
-	}
+	}while(statement->getMoreResults());
 
-	statement.reset(conn->prepareStatement("SELECT * FROM `name_developer`;"));	
+	statement.reset(conn->prepareStatement("CALL sp_LoadDeveloperNames();"));	
 	result_set.reset(statement->executeQuery());
 	while(result_set->next())
 	{
 		developer_names_.push_back(result_set->getString("name"));
-	}
+	}while(statement->getMoreResults());
 }
 
 vector<CharacterData> MysqlCharacterProvider::GetCharactersForAccount(uint64_t account_id) {
@@ -162,6 +162,7 @@ bool MysqlCharacterProvider::DeleteCharacter(uint64_t character_id, uint64_t acc
         {
            rows_updated = result_set->getInt(1);
         }
+		while(statement->getMoreResults());
     }
      catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
@@ -182,7 +183,7 @@ std::wstring MysqlCharacterProvider::GetRandomNameRequest(const std::string& bas
             std::string str = result_set->getString(1);
             std::wstring wstr(str.begin(), str.end());
             return wstr;
-        }
+        }while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -194,14 +195,14 @@ uint16_t MysqlCharacterProvider::GetMaxCharacters(uint64_t player_id) {
     try {
         auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::shared_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("SELECT max_characters from player_account where id = ?")
+            conn->prepareStatement("CALL sp_GetMaxCharacters(?);")
             );
         statement->setUInt64(1, player_id);
         auto result_set = std::unique_ptr<sql::ResultSet>(statement->executeQuery());
         if (result_set->next())
         {
             max_chars = result_set->getUInt(1);
-        }
+        }while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -275,6 +276,7 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
             }
             return make_tuple(char_id, "");
         }
+
     }
     catch(sql::SQLException &e)
     {
@@ -375,7 +377,7 @@ uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
     try {
         auto conn = kernel_->GetDatabaseManager()->getConnection("galaxy");
         auto statement = std::unique_ptr<sql::PreparedStatement>(
-            conn->prepareStatement("SELECT id FROM object where custom_name like ? and type_id = ?;")
+            conn->prepareStatement("sp_GetCharacterIdByName(?,?);")
             );
         statement->setString(1, name + '%');
         statement->setUInt(2, swganh::object::Player::type);
@@ -384,7 +386,7 @@ uint64_t MysqlCharacterProvider::GetCharacterIdByName(const string& name)
         {
            character_id = result_set->getUInt64(1);
         }
-
+		while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
