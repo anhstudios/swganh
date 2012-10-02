@@ -3,6 +3,8 @@
 
 #include "object_manager.h"
 
+#include <boost/asio.hpp>
+
 #include "swganh/logger.h"
 
 #include "object_factory.h"
@@ -108,7 +110,12 @@ void ObjectManager::RegisterMessageBuilder(uint32_t object_type, std::shared_ptr
     
     message_builders_.insert(make_pair(object_type, message_builder));
 }
-
+void ObjectManager::PersistObjectByTimer(const boost::system::error_code& e, uint32_t count, uint64_t object_id)
+{
+	PersistObject(object_id);
+	delayed_update_[object_id]->expires_at(delayed_update_[object_id]->expires_at() + boost::posix_time::minutes(5));
+	delayed_update_[object_id]->async_wait(boost::bind(&ObjectManager::PersistObjectByTimer, this, boost::asio::placeholders::error, 1, object_id));
+}
 shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
 {
     auto object = GetObjectById(object_id);
@@ -140,6 +147,10 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
 		LoadContainedObjects(object);		
     }
 
+	// Setup a timer to persist the object every x minutes
+	delayed_update_[object->GetObjectId()] = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
+	delayed_update_[object->GetObjectId()]->async_wait(boost::bind(&ObjectManager::PersistObjectByTimer, this, boost::asio::placeholders::error, 1, object->GetObjectId()));
+
     return object;
 }
 
@@ -159,7 +170,6 @@ shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
     {
         return nullptr;
     }
-
     return find_iter->second;
 }
 
@@ -204,8 +214,8 @@ shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id)
         throw InvalidObjectType("Cannot create object for an unregistered type.");
     }
     object = find_iter->second->CreateObjectFromStorage(object_id);
-
-    return object;
+	
+	return object;
 }
 
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, uint32_t object_type)
@@ -265,6 +275,12 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 			}
 		}
 	}
+	if (created_object)
+	{
+		// Setup a timer to persist the object every x minutes
+		delayed_update_[created_object->GetObjectId()] = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
+		delayed_update_[created_object->GetObjectId()]->async_wait(boost::bind(&ObjectManager::PersistObjectByTimer, this, boost::asio::placeholders::error, 1, created_object->GetObjectId()));
+	}
 	return created_object;
 }
 
@@ -289,7 +305,10 @@ void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
         throw InvalidObjectType("Cannot persist object to storage for an unregistered type.");
     }
 
-    find_iter->second->PersistObject(object);
+	if(object->IsDatabasePersisted())
+    {
+		find_iter->second->PersistObject(object);
+	}
 }
 
 void ObjectManager::PersistObject(uint64_t object_id)

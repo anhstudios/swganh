@@ -11,6 +11,7 @@
 #include <string>
 
 #include <boost/thread/shared_mutex.hpp>
+#include <boost/asio/deadline_timer.hpp>
 
 #ifdef WIN32
 #include <concurrent_unordered_map.h>
@@ -266,6 +267,8 @@ namespace object {
 		virtual void PrepareToAccomodate(uint32_t delta);
 
     private:
+
+		void PersistObjectByTimer(const boost::system::error_code& e, uint32_t count, uint64_t object_id);
 		
 		typedef std::map<
             uint32_t, 
@@ -315,6 +318,7 @@ namespace object {
 
         boost::shared_mutex object_map_mutex_;
         std::unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
+		std::unordered_map<uint64_t, std::shared_ptr<boost::asio::deadline_timer>> delayed_update_;
 
 		PermissionsObjectMap permissions_objects_;
     };

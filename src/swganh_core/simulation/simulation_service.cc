@@ -140,7 +140,7 @@ class SimulationServiceImpl {
 public:
     SimulationServiceImpl(SwganhKernel* kernel)
         : kernel_(kernel)
-    {		
+    {			
     }
 
     const shared_ptr<ObjectManager>& GetObjectManager()
@@ -211,8 +211,8 @@ public:
         if (scene)
         {
             scene->AddObject(object);
-        }
-	}
+        }		
+	}	
 	
     void PersistObject(uint64_t object_id)
     {
@@ -409,11 +409,7 @@ public:
         const shared_ptr<ConnectionClientInterface>& client,
         SelectCharacter* message)
     {
-        auto object = GetObjectById(message->character_id);
-        if (!object)
-        {
-            object = LoadObjectById(message->character_id, Creature::type);
-        }
+        auto object = LoadObjectById(message->character_id, Creature::type);        
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
 		auto player = GetEquipmentService()->GetEquippedObject<Player>(object, "ghost");
@@ -492,6 +488,7 @@ private:
     ObjControllerHandlerMap controller_handlers_;
 
     Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
+	Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<boost::asio::deadline_timer>> delayed_update_;
 };
 
 }}  // namespace swganh::simulation

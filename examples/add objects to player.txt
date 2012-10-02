@@ -4,7 +4,7 @@ armor = simulation.createObject('object/tangible/wearables/armor/composite/share
 armor.condition = 0
 armor.max_condition = 1000
 
-actor = simulation.findObject('fatso')
+actor = simulation.findObject('Kayope Seemec')
 equipment = kernel.service_manager().equipment_service()
 inventory = equipment.GetEquippedObject(actor, "inventory")
 inventory.Add(actor, armor)
