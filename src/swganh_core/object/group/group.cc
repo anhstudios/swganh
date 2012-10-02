@@ -32,8 +32,10 @@ Group::~Group()
 
 void Group::AddGroupMember(uint64_t member, std::string name)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-    member_list_.Add(Member(member, name));
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		member_list_.Add(Member(member, name));
+	}
     
     GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
         ("Group::Member",static_pointer_cast<Group>(shared_from_this())));
@@ -41,17 +43,19 @@ void Group::AddGroupMember(uint64_t member, std::string name)
 
 void Group::RemoveGroupMember(uint64_t member)
 {
-    boost::lock_guard<boost::mutex> lock(object_mutex_);
-    auto iter = std::find_if(begin(member_list_), end(member_list_), [=](const Member& x)->bool {
-        return member == x.object_id;
-    });
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto iter = std::find_if(begin(member_list_), end(member_list_), [=](const Member& x)->bool {
+			return member == x.object_id;
+		});
 
-    if(iter == end(member_list_))
-    {
-        return;
-    }
+		if(iter == end(member_list_))
+		{
+			return;
+		}
         
-    member_list_.Remove(iter);
+		member_list_.Remove(iter);
+	}
     
     GetEventDispatcher()->Dispatch(make_shared<GroupEvent>
         ("Group::Member",static_pointer_cast<Group>(shared_from_this())));

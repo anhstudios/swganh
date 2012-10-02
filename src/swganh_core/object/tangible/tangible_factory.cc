@@ -59,18 +59,7 @@ uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)
 
 void TangibleFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
-    try 
-    {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_DeleteTangible(?);");
-        statement->setUInt64(1, object->GetObjectId());
-        statement->execute();
-    }
-        catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
+	ObjectFactory::DeleteObjectFromStorage(object);
 }
 void TangibleFactory::CreateTangible(const shared_ptr<Tangible>& tangible, const std::shared_ptr<sql::Statement>& statement)
 {
@@ -121,6 +110,14 @@ shared_ptr<Object> TangibleFactory::CreateObjectFromStorage(uint64_t object_id)
 
 shared_ptr<Object> TangibleFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
 {
-	//@TODO: Create me with help from db
-	return make_shared<Tangible>();
+	if(db_persisted || db_initialized)
+	{
+		//@TODO: Create me with help from db
+		return make_shared<Tangible>();
+	}
+	else
+	{
+		return make_shared<Tangible>();
+	}
+
 }

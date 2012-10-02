@@ -58,7 +58,7 @@ namespace object {
          * @param PreparedStatement to add values to.
          */
         uint32_t PersistObject(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::PreparedStatement>& prepared_statement);
-        virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object){}
+        virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object);
         virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
         virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted, bool db_initialized) { return nullptr; }
         uint32_t LookupType(uint64_t object_id) const;

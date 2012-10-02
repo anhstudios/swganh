@@ -127,7 +127,9 @@ uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object)
 }
 
 void CreatureFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> CreatureFactory::CreateObjectFromStorage(uint64_t object_id)
 {

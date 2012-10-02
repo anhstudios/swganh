@@ -20,7 +20,9 @@ uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object)
 }
 
 void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> WeaponFactory::CreateObjectFromStorage(uint64_t object_id)
 {
