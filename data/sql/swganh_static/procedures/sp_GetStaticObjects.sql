@@ -23,36 +23,41 @@ BEGIN
 		INNER JOIN buildings ON cells.building_id = buildings.id
 		WHERE buildings.planet_id = planet_id;
 
-
+  /* Load Terminals */
 	SELECT terminals.id, terminals.parent_id, terminals.oX, terminals.oY, terminals.oZ,terminals.oW,terminals.x,
 		terminals.y,terminals.z,terminals.terminal_type,terminal_types.object_string,terminal_types.name,terminal_types.file,
 		terminals.dataStr,terminals.dataInt1,terminals.customName
 		FROM terminals INNER JOIN terminal_types ON (terminals.terminal_type = terminal_types.id)
-		WHERE terminals.id >= 4294967297 AND (terminal_types.name NOT LIKE 'unknown') AND
-          (terminals.parent_id = parent_id) AND (terminals.planet_id = planet_id);
+		WHERE terminals.id >= 4294967297 AND (terminal_types.name NOT LIKE 'unknown') AND (terminals.planet_id = planet_id);
 
+  /* Load Elevator Data */
 	SELECT * FROM terminal_elevator_data ORDER BY direction;
-
 
 	SELECT containers.id FROM containers INNER JOIN container_types ON (containers.container_type = container_types.id)
 		WHERE (container_types.name NOT LIKE 'unknown') AND (containers.parent_id = parent_id) AND (containers.planet_id = planet_id);
 
 
   /* Ticket collectors */
-	SELECT ticket_collectors.id FROM ticket_collectors WHERE (parent_id=parent_id) AND (planet_id=planet_id);
+  SELECT * FROM ticket_collectors tc WHERE tc.planet_id = planet_id;
 
 
   	/*Load Static Persistent NPCS*/
 	SELECT persistent_npcs.id,persistent_npcs.parentId,persistent_npcs.firstName,persistent_npcs.lastName,persistent_npcs.posture,persistent_npcs.state,persistent_npcs.cl,
 	persistent_npcs.oX,persistent_npcs.oY,persistent_npcs.oZ,persistent_npcs.oW,persistent_npcs.x,persistent_npcs.y,persistent_npcs.z,
 	persistent_npcs.type,persistent_npcs.stf_variable_id,persistent_npcs.stf_file_id,faction.name,
-	persistent_npcs.moodId,persistent_npcs.family,persistent_npcs.scale 
+	persistent_npcs.moodId,persistent_npcs.family,persistent_npcs.scale
 	FROM persistent_npcs
 	INNER JOIN faction ON (persistent_npcs.faction = faction.id)
 	WHERE (persistent_npcs.planet_id = planet_id);
-	
+
 	/*Load Static Shuttles */
-	SELECT shuttles.id FROM shuttles WHERE (parentId=parent_id) AND (planet_id = planet_id);
+	SELECT shuttles.id,shuttles.parentId,shuttles.firstName,shuttles.lastName,
+  shuttles.oX,shuttles.oY,shuttles.oZ,shuttles.oW,shuttles.x,shuttles.y,shuttles.z,
+  shuttle_types.object_string,shuttle_types.name,shuttle_types.file,
+  shuttles.awayTime,shuttles.inPortTime,shuttles.collectorId
+  FROM shuttles
+  INNER JOIN shuttle_types ON (shuttles.shuttle_type = shuttle_types.id)
+  WHERE (shuttles.planet_id = planet_id);
 
 
 END $$
