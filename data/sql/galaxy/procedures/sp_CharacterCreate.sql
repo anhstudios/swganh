@@ -53,6 +53,10 @@ charCreate:BEGIN
     DECLARE mind INT;
     DECLARE focus INT;
     DECLARE willpower INT;
+	
+	-- 
+	-- Transactional Support
+	--	
 
     SELECT sf_CharacterNameInUseCheck(start_firstname) INTO nameCheck;
     IF nameCheck <> 666 THEN

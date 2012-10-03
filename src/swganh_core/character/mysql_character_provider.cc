@@ -368,6 +368,7 @@ std::string MysqlCharacterProvider::setCharacterCreateErrorCode_(uint32_t error_
         error_string = "name_declined_internal_error";
         break;
     }
+	LOG(warning) << "Errored occured in CharacterCreate: " << error_string;
     return error_string;
 }
 
