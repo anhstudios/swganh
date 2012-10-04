@@ -116,7 +116,7 @@ uint32_t CreatureFactory::PersistObject(const shared_ptr<Object>& object)
 
         int updated = statement->executeUpdate();
 				
-        LOG(warning) << "Updated " << updated << " rows in sp_PersistCreature";
+        LOG(warning) << "Updated " << updated << " rows in sp_PersistCreature with object id = " << object->GetObjectId();
     }
     catch(sql::SQLException &e)
     {

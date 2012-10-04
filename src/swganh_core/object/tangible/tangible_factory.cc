@@ -27,6 +27,15 @@ using namespace swganh::simulation;
             swganh::EventDispatcher* event_dispatcher)
     : ObjectFactory(db_manager, event_dispatcher)
 {
+	event_dispatcher->Subscribe("Tangible::Customization", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Tangible::ComponentCustomization", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Tangible::OptionsMask", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Tangible::IncapTimer", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Tangible::ConditionDamage", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Tangible::UpdateAttribute", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Tangible::MaxCondition", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Tangible::Static", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Tangible::Defenders", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
 }
 
 uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)
@@ -36,10 +45,10 @@ uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-            (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
-        counter = ObjectFactory::PersistObject(object, statement);
+            (conn->prepareStatement("CALL sp_PersistTangible(?,?,?,?,?,?,?);"));
         // cast to tangible
         auto tangible = static_pointer_cast<Tangible>(object);
+		statement->setUInt64(counter++, tangible->GetObjectId());
         statement->setString(counter++, tangible->GetCustomization());
         statement->setInt(counter++, tangible->GetOptionsMask());
         statement->setInt(counter++, tangible->GetIncapTimer());

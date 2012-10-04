@@ -76,7 +76,7 @@ charCreate:BEGIN
     SET oZ = 0;
     SET oW = 0;
 
-    START TRANSACTION;
+    
         SELECT MAX(id) + 10 FROM object INTO object_id FOR UPDATE;
 
         IF object_id IS NULL THEN

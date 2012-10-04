@@ -31,8 +31,34 @@ ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
     : db_manager_(db_manager)
     , event_dispatcher_(event_dispatcher)
 {	
+	event_dispatcher->Subscribe("Object::CustomName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher->Subscribe("Object::StfName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher->Subscribe("Object::Complexity", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher->Subscribe("Object::Volume", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Object::Template", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Object::Position", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Object::Orientation", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Object::Container", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Object::StfName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher->Subscribe("Object::SceneId", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
 }
 
+void ObjectFactory::PersistChangedObjects()
+{
+	for (auto& object : persisted_objects_)
+	{
+		PersistObject(object);
+	}
+	persisted_objects_.clear();
+}
+void ObjectFactory::PersistHandler(const shared_ptr<swganh::EventInterface>& incoming_event)
+{
+	auto object = static_pointer_cast<ObjectEvent>(incoming_event)->Get();
+	if (object)
+	{
+		persisted_objects_.insert(object);
+	}
+}
 uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;

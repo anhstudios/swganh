@@ -36,17 +36,35 @@ PlayerFactory::PlayerFactory(swganh::database::DatabaseManagerInterface* db_mana
 
 void PlayerFactory::RegisterEventHandlers()
 {
-    event_dispatcher_->Subscribe("Player::RemoveFriend", [this] (shared_ptr<swganh::EventInterface> incoming_event)
-    {
-        auto name_event = static_pointer_cast<NameEvent>(incoming_event);
-        RemoveFriend_(name_event->player, name_event->name_id);
-    });
-
-    event_dispatcher_->Subscribe("Player::RemoveIgnoredPlayer", [this] (shared_ptr<swganh::EventInterface> incoming_event)
-    {
-        auto name_event = static_pointer_cast<NameEvent>(incoming_event);
-        RemoveFromIgnoredList_(name_event->player, name_event->name_id);
-    });
+    event_dispatcher_->Subscribe("Player::StatusBitmask", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Player::ProfileFlag", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Player::ProfessionTag", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Player::BornDate", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::TotalPlayTime", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::AdminTag", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::Experience", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::Waypoint", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::ForcePower", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::MaxForcePower", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::ForceSensitiveQuests", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::CompletedForceSensitiveQuests", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::QuestJournal", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::ExperimentationFlag", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::CraftingStage", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::NearestCraftingStation", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::DraftSchematic", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::ExperimentationPoints", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::AccomplishmentCounter", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::Friend", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::RemoveFriend", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::IgnorePlayer", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::RemoveIgnoredPlayer", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::Language", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::CurrentStomach", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::MaxStomach", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::CurrentDrink", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::MaxDrink", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::JediState", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
 }
 
 uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
@@ -56,10 +74,11 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-			(conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+			(conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         counter = ObjectFactory::PersistObject(object, statement);
 
 		auto player = static_pointer_cast<Player>(object);
+		statement->setUInt64(counter++, player->GetObjectId());
 		statement->setString(counter++, player->GetProfessionTag());
 		statement->setUInt64(counter++, player->GetTotalPlayTime());
 		statement->setUInt(counter++, player->GetAdminTag());

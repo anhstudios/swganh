@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <queue>
 
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/asio/deadline_timer.hpp>
@@ -267,8 +268,8 @@ namespace object {
 		virtual void PrepareToAccomodate(uint32_t delta);
 
     private:
-
-		void PersistObjectByTimer(const boost::system::error_code& e, uint32_t count, uint64_t object_id);
+		void PersistObjectsByTimer(const boost::system::error_code& e);
+		void InsertObject(std::shared_ptr<swganh::object::Object> object);
 		
 		typedef std::map<
             uint32_t, 
@@ -317,8 +318,9 @@ namespace object {
 		uint64_t next_dynamic_id_;
 
         boost::shared_mutex object_map_mutex_;
-        std::unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
-		std::unordered_map<uint64_t, std::shared_ptr<boost::asio::deadline_timer>> delayed_update_;
+		std::unordered_map<uint64_t, std::shared_ptr<Object>> object_map_;
+		std::shared_ptr<boost::asio::deadline_timer> persist_timer_;
+		
 
 		PermissionsObjectMap permissions_objects_;
     };

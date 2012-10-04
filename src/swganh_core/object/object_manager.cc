@@ -74,6 +74,8 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 		type_lookup_.insert(make_pair(key, value));
 	}
 
+	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
+	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 }
 
 ObjectManager::~ObjectManager()
@@ -110,12 +112,38 @@ void ObjectManager::RegisterMessageBuilder(uint32_t object_type, std::shared_ptr
     
     message_builders_.insert(make_pair(object_type, message_builder));
 }
-void ObjectManager::PersistObjectByTimer(const boost::system::error_code& e, uint32_t count, uint64_t object_id)
+void ObjectManager::InsertObject(std::shared_ptr<swganh::object::Object> object)
 {
-	PersistObject(object_id);
-	delayed_update_[object_id]->expires_at(delayed_update_[object_id]->expires_at() + boost::posix_time::minutes(5));
-	delayed_update_[object_id]->async_wait(boost::bind(&ObjectManager::PersistObjectByTimer, this, boost::asio::placeholders::error, 1, object_id));
+	boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
+    object_map_.insert(make_pair(object->GetObjectId(), object));
+
+	if (object && object->IsDatabasePersisted())
+	{
+		// Setup a timer to persist the object every x minutes
+		/*auto timer = AddPersistTimer(std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5)), object->GetObjectId());
+		timer->expires_from_now(boost::posix_time::minutes(5));
+		LOG(warning) << "InsertObject timer expires in " << timer->expires_from_now().seconds();*/
+	}
 }
+
+void ObjectManager::PersistObjectsByTimer(const boost::system::error_code& e)
+{
+	if (!e)
+	{
+		for (auto& factory : factories_)
+		{
+			factory.second->PersistChangedObjects();
+		}
+		persist_timer_->expires_from_now(boost::posix_time::minutes(5));
+		persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
+	}
+	else
+	{
+		LOG(warning) << "PersistObjectsByTimer error: " << e.message();
+	}
+
+}
+
 shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
 {
     auto object = GetObjectById(object_id);
@@ -124,8 +152,7 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
     {
         object = CreateObjectFromStorage(object_id);
 
-        boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-        object_map_.insert(make_pair(object_id, object));
+       
 		
 		LoadContainedObjects(object);
     }
@@ -141,15 +168,10 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
     {
         object = CreateObjectFromStorage(object_id, object_type);
 
-        boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-        object_map_.insert(make_pair(object_id, object));
+        InsertObject(object);
 
 		LoadContainedObjects(object);		
-    }
-
-	// Setup a timer to persist the object every x minutes
-	delayed_update_[object->GetObjectId()] = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
-	delayed_update_[object->GetObjectId()]->async_wait(boost::bind(&ObjectManager::PersistObjectByTimer, this, boost::asio::placeholders::error, 1, object->GetObjectId()));
+    }	
 
     return object;
 }
@@ -157,7 +179,7 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
 void ObjectManager::LoadContainedObjects(std::shared_ptr<Object> object)
 {	
 	object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> contained_object){
-		object_map_.insert(make_pair(contained_object->GetObjectId(), contained_object));
+		InsertObject(object);
 	});
 }
 
@@ -270,17 +292,10 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 				}
 
 				//Insert it into the object map
-				boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-				object_map_.insert(make_pair(created_object->GetObjectId(), created_object));
+				InsertObject(created_object);
 			}
 		}
-	}
-	if (created_object)
-	{
-		// Setup a timer to persist the object every x minutes
-		delayed_update_[created_object->GetObjectId()] = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
-		delayed_update_[created_object->GetObjectId()]->async_wait(boost::bind(&ObjectManager::PersistObjectByTimer, this, boost::asio::placeholders::error, 1, created_object->GetObjectId()));
-	}
+	}	
 	return created_object;
 }
 
