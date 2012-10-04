@@ -169,20 +169,28 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 
     auto app_config = kernel_->GetAppConfig();
 
-    // Initialize kernel resources    
-    kernel_->GetDatabaseManager()->registerStorageType(
-        "galaxy_manager",
-        app_config.galaxy_manager_db.schema,
-        app_config.galaxy_manager_db.host,
-        app_config.galaxy_manager_db.username,
-        app_config.galaxy_manager_db.password);
-
-    kernel_->GetDatabaseManager()->registerStorageType(
-        "galaxy",
-        app_config.galaxy_db.schema,
-        app_config.galaxy_db.host,
-        app_config.galaxy_db.username,
-        app_config.galaxy_db.password);
+    try {
+    
+	// Initialize kernel resources    
+        kernel_->GetDatabaseManager()->registerStorageType(
+	    "galaxy_manager",
+	    app_config.galaxy_manager_db.schema,
+	    app_config.galaxy_manager_db.host,
+	    app_config.galaxy_manager_db.username,
+	    app_config.galaxy_manager_db.password);
+	
+	kernel_->GetDatabaseManager()->registerStorageType(
+	    "galaxy",
+	    app_config.galaxy_db.schema,
+	    app_config.galaxy_db.host,
+	    app_config.galaxy_db.username,
+	    app_config.galaxy_db.password);
+    
+    } 
+    catch(...)
+    {
+    	LOG(fatal) << "Database connection errors occurred. Did you forget to populate the db?";
+    }
     
     CleanupServices_();
     
