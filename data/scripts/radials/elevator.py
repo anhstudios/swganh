@@ -36,8 +36,6 @@ def handleElevatorAction(self, target, owner, expected_elevator_action):
 		if data.going_down == expected_elevator_action:
 			#Move the player
 			destination_cell = simulation_service.findObjectById(data.dst_cell)
-			owner.orientation = data.dst_orientation
-			owner.position = data.dst_position
-			owner.Container().Transfer(owner, owner, destination_cell)
+			owner.UpdatePosition(destination_cell, data.dst_position, data.dst_orientation)
 			
 			#Perform Effect

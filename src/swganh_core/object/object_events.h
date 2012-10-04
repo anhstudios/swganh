@@ -28,4 +28,19 @@ struct ObserverEvent : swganh::BaseEvent
     std::shared_ptr<swganh::object::Object> object;
     std::shared_ptr<swganh::observer::ObserverInterface> observer;
 };
+
+struct UpdatePositionEvent : swganh::BaseEvent
+{
+	UpdatePositionEvent(swganh::EventType type, std::shared_ptr<swganh::object::Object> contained_object_, std::shared_ptr<swganh::object::Object> object_, glm::vec3 new_position)
+		: BaseEvent(type)
+		, contained_object(contained_object_)
+		, object(object_)
+		, position(new_position)
+	{}
+
+	std::shared_ptr<swganh::object::Object> object;
+	std::shared_ptr<swganh::object::Object> contained_object;
+	glm::vec3 position;
+};
+
 }} // swganh::object

@@ -10,6 +10,7 @@
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/service/service_manager.h"
 #include "swganh_core/object/object.h"
+#include "swganh_core/object/object_events.h"
 #include "swganh_core/object/creature/creature.h"
 #include "swganh/observer/observer_interface.h"
 
@@ -37,11 +38,55 @@ MovementManager::MovementManager(swganh::app::SwganhKernel* kernel)
 	RegisterEvents(kernel_->GetEventDispatcher());
 }
 
+void MovementManager::HandleDataTransformServer(
+	const shared_ptr<Object>& contained_object,
+    const shared_ptr<Object>& object,
+	const glm::vec3& new_position)
+{
+    counter_map_[object->GetObjectId()] = counter_map_[object->GetObjectId()];
+    
+	glm::vec3 old_position = object->GetPosition();
+
+	object->SetPosition(new_position);
+	
+	//If the object was inside a container we need to move it out
+	if(object->GetContainer() != spatial_provider_)
+		object->GetContainer()->TransferObject(object, object, spatial_provider_);
+	else
+		spatial_provider_->UpdateObject(object, old_position, new_position);
+
+    SendDataTransformMessage(object);
+}
+
+void MovementManager::HandleDataTransformWithParentServer(
+    const shared_ptr<Object>& contained_object, 
+    const shared_ptr<Object>& object,
+	const glm::vec3& new_position)
+	
+{
+	if(contained_object != nullptr)
+	{
+		//Set the new position and orientation
+		object->SetPosition(new_position);
+		
+		//Perform the transfer
+		if(object->GetContainer() != contained_object)
+			object->GetContainer()->TransferObject(object, object, contained_object);
+		
+		//Send the update transform
+		SendDataTransformWithParentMessage(object);
+
+	}
+	else
+	{
+		LOG(error) << "Error occured in HandleDataTransformWithParentServer...";
+	}
+}
+
 void MovementManager::HandleDataTransform(
     const shared_ptr<Object>& object, 
     DataTransform message)
-{
-    
+{    
     if (!ValidateCounter_(object->GetObjectId(), message.counter))
     {
         return;
@@ -167,6 +212,19 @@ void MovementManager::RegisterEvents(swganh::EventDispatcher* event_dispatcher)
             SendDataTransformMessage(object);
         }
     });
+	event_dispatcher->Subscribe("Object::UpdatePosition", [this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+		const auto& update_event = static_pointer_cast<swganh::object::UpdatePositionEvent>(incoming_event);
+		if (update_event->contained_object && update_event->contained_object->GetObjectId() != 0)
+		{
+			HandleDataTransformWithParentServer(update_event->contained_object, update_event->object, update_event->position);
+		}
+		else
+		{
+			HandleDataTransformServer(update_event->contained_object, update_event->object, update_event->position);
+		}
+		
+	});
 }
 
 bool MovementManager::ValidateCounter_(uint64_t object_id, uint32_t counter)

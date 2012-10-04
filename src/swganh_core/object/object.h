@@ -255,6 +255,14 @@ public:
     void SetPosition(glm::vec3 position);
 
 	/**
+	 * Updates the objects position (server initiated)
+	 *
+	 * @param contained object
+	 * @param position of the updated position
+	 */
+	void UpdatePosition(std::shared_ptr<Object> contained_object, const glm::vec3& new_position, const glm::quat& quaternion);
+
+	/**
 	* @return bool if the object is in range
 	*/
 	bool InRange(glm::vec3 target, float range);
@@ -269,6 +277,7 @@ public:
      *
      */
     void FaceObject(const std::shared_ptr<Object>& object);
+	void FacePosition(const glm::vec3& position);
 
     /**
      * Updates the object's orientation.
@@ -542,7 +551,6 @@ public:
 
 
 protected:
-
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
     std::string template_string_;                    // create
