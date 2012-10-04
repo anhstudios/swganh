@@ -35,12 +35,6 @@
 #include "swganh/object/slot_interface.h"
 
 namespace swganh {
-
-namespace messages {
-namespace controllers {
-	class ObjectMenuResponse;
-	struct RadialOptions;
-}}
 namespace object {
 
 typedef std::vector<
@@ -451,14 +445,6 @@ public:
 	 * @brief sends the destroy message for the given observer of this object
 	 */
 	virtual void SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer);
-	/**
-	 * @brief Sets the menu response aka 'radials' for this object 
-	 */
-	virtual void SetMenuResponse(std::vector<swganh::messages::controllers::RadialOptions> radials); 
-	/**
-	 * @brief Gets the Menu response aka 'radials' for this object
-	 */
-	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> GetMenuResponse();
 
 	bool operator< (const std::shared_ptr<Object>& other)
 	{ 
@@ -500,6 +486,8 @@ public:
 	 * @brief Gets the Attribute Map
 	 */ 
 	AttributesMap GetAttributeMap();
+
+	bool HasAttribute(const std::string& name);
 
 	/**
 	 * @brief Sets an attribute of the specified type
@@ -554,8 +542,6 @@ public:
 
 
 protected:
-	// Radials
-	std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> menu_response_;
 
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create

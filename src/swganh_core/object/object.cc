@@ -42,7 +42,6 @@ Object::Object()
 	, database_persisted_(true)
 	, in_snapshot_(false)
 {
-	menu_response_ = make_shared<swganh::messages::controllers::ObjectMenuResponse>();
 }
 
 bool Object::HasController()
@@ -323,7 +322,7 @@ void Object::__InternalAddAwareObject(std::shared_ptr<swganh::object::Object> ob
 		{
 			if(!IsInSnapshot())
 			{
-				DLOG(info) << "SENDING " << GetObjectId() << " TO " << observer->GetId();
+				//DLOG(info) << "SENDING " << GetObjectId() << " TO " << observer->GetId();
 				Subscribe(observer);
 				SendCreateByCrc(observer);
 				CreateBaselines(observer);
@@ -366,7 +365,7 @@ void Object::__InternalRemoveAwareObject(std::shared_ptr<swganh::object::Object>
 
 			if(!IsInSnapshot())
 			{
-				DLOG(info) << "DELETING " << GetObjectId() << " FOR " << observer->GetId();
+				//DLOG(info) << "DELETING " << GetObjectId() << " FOR " << observer->GetId();
 				SendDestroy(observer);
 				Unsubscribe(observer);
 			}
@@ -714,7 +713,7 @@ void Object::CreateBaselines( std::shared_ptr<swganh::observer::ObserverInterfac
 
 void Object::SendCreateByCrc(std::shared_ptr<swganh::observer::ObserverInterface> observer) 
 {
-	DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
+	//DLOG(info) << "SEND " << GetObjectId() << " TO " << observer->GetId();
 
 	swganh::messages::SceneCreateObjectByCrc scene_object;
     scene_object.object_id = GetObjectId();
@@ -736,7 +735,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 	if (GetContainer())
 		container_id = GetContainer()->GetObjectId();
 
-	DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
+	//DLOG(info) << "CONTAINMENT " << GetObjectId() << " INTO " << container_id << " ARRANGEMENT " << arrangement_id_;
 
 	UpdateContainmentMessage containment_message;
 	containment_message.container_id = container_id;
@@ -747,7 +746,7 @@ void Object::SendUpdateContainmentMessage(std::shared_ptr<swganh::observer::Obse
 
 void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> observer)
 {
-	DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
+	//DLOG(info) << "DESTROY " << GetObjectId() << " FOR " << observer->GetId();
 
 	swganh::messages::SceneDestroyObject scene_object;
 	scene_object.object_id = GetObjectId();
@@ -867,22 +866,6 @@ shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
 		}
 	}
 	return found;
-}
-
-void Object::SetMenuResponse(std::vector<swganh::messages::controllers::RadialOptions> radials)
-{
-	{
-		boost::lock_guard<boost::mutex> lg(object_mutex_);
-		menu_response_->radial_options = radials;
-	}
-	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::SetMenuResponse", shared_from_this()));
-}
-
-std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> Object::GetMenuResponse()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	return menu_response_;
 }
 
 bool Object::IsDatabasePersisted()
@@ -1007,4 +990,9 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const
 		}	
 		return boost::get<wstring>(val);
 	}
+}
+
+bool Object::HasAttribute(const std::string& name)
+{
+	return attributes_map_.find(name) != attributes_map_.end();
 }

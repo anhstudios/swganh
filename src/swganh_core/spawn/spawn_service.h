@@ -18,7 +18,6 @@ namespace spawn
 		 swganh::service::ServiceDescription GetServiceDescription();
 	
 	private:
-
 		swganh::object::PermissionType FindProperPermission_(const std::string& iff_name);
 		swganh::app::SwganhKernel* kernel_;
 	};
