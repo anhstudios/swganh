@@ -42,7 +42,15 @@ SwganhKernel::SwganhKernel(boost::asio::io_service& io_service)
 
 SwganhKernel::~SwganhKernel()
 {
-    service_manager_->Stop();
+    
+}
+
+void SwganhKernel::Shutdown()
+{
+	service_manager_->Stop();
+	exit(0);
+
+	event_dispatcher_->Shutdown();
 
     resource_manager_.reset();
     event_dispatcher_.reset();

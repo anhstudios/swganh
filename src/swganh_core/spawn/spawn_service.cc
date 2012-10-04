@@ -29,7 +29,7 @@ using namespace swganh::simulation;
 
 SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 {
-	kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
+	/*kernel_->GetEventDispatcher()->Subscribe("SceneManager:NewScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)
 	{
 		auto real_event = std::static_pointer_cast<swganh::simulation::NewSceneEvent>(newEvent);
 		
@@ -76,7 +76,7 @@ SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
 			}
 		}
 	});
-
+	*/
 	/* Dont need this now, but we might later.
 	
 	kernel_->GetEventDispatcher()->Subscribe("SceneManager:DestroyScene", [&] (const std::shared_ptr<swganh::EventInterface>& newEvent)

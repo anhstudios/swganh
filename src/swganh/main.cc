@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
 
                     if (cmd.compare("exit") == 0 || cmd.compare("quit") == 0 || cmd.compare("q") == 0) {
                         LOG(info) << "Exit command received from command line. Shutting down.";
-        
-                        break;
+						
+						break;
                     } else {
                         LOG(warning) << "Invalid command received: " << cmd;
                         std::cout << "Type exit or (q)uit to quit" << std::endl;

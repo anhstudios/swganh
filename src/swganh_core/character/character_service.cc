@@ -56,7 +56,7 @@ CharacterService::CharacterService(SwganhKernel* kernel)
 
 service::ServiceDescription CharacterService::GetServiceDescription() {
     service::ServiceDescription service_description(
-        "ANH Character Service",
+        "Character Service",
         "character",
         "0.1",
         "127.0.0.1",

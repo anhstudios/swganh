@@ -50,7 +50,9 @@ WeatherService::WeatherService(SwganhKernel* kernel)
 		});
 }
 
-WeatherService::~WeatherService(){
+WeatherService::~WeatherService()
+{
+	weather_timer_->cancel();
 }
 
 void WeatherService::OnPlayerEnter(shared_ptr<Object> player_obj)

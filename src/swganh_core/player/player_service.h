@@ -20,31 +20,47 @@ namespace simulation {
 namespace swganh {
 namespace player {
 
-	class PlayerService : public swganh::player::PlayerServiceInterface
-	{
-	public:
-		PlayerService(swganh::app::SwganhKernel* kernel);
+/**
+* Provides basic functionality of player logout
+*/
+class PlayerService : public swganh::player::PlayerServiceInterface
+{
+public:
+	/**
+	* Creates a new instance
+	*/
+	PlayerService(swganh::app::SwganhKernel* kernel);
 		
-		void Startup();
+	/**
+	* Called on startup
+	*/
+	void Startup();
 
-		swganh::service::ServiceDescription GetServiceDescription();
+	/**
+	* @return the service description for this service
+	*/
+	swganh::service::ServiceDescription GetServiceDescription();
 
-		void CleanupPlayerState(std::shared_ptr<swganh::object::Player> player);
+	/**
+	* Called when a player enters the game
+	*/
+	void OnPlayerEnter(std::shared_ptr<swganh::object::Player> player);
 
-		void OnPlayerEnter(std::shared_ptr<swganh::object::Player> player);
+	/**
+	* Called when a player exits the game
+	*/
+	void OnPlayerExit(std::shared_ptr<swganh::object::Player> player);
+private:
+	void RemoveClientTimerHandler_(
+		const boost::system::error_code& e, 
+		std::shared_ptr<boost::asio::deadline_timer> timer, 
+		int delay_in_secs, 
+		std::shared_ptr<swganh::object::ObjectController> controller);
 
-		void OnPlayerExit(std::shared_ptr<swganh::object::Player> player);
-	private:
-		void RemoveClientTimerHandler_(
-			const boost::system::error_code& e, 
-			std::shared_ptr<boost::asio::deadline_timer> timer, 
-			int delay_in_secs, 
-			std::shared_ptr<swganh::object::ObjectController> controller);
-
-		swganh::app::SwganhKernel* kernel_;
-		swganh::simulation::SimulationServiceInterface* simulation_service_;
-		swganh::CallbackId player_selected_callback_;
-		swganh::CallbackId player_removed_;
-	};
+	swganh::app::SwganhKernel* kernel_;
+	swganh::simulation::SimulationServiceInterface* simulation_service_;
+	swganh::CallbackId player_selected_callback_;
+	swganh::CallbackId player_removed_;
+};
 
 }} // swganh::player

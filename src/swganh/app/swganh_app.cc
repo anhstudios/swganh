@@ -151,21 +151,22 @@ SwganhApp::~SwganhApp()
 {
     Stop();
 	// Shutdown Event Dispatcher
-	kernel_->GetEventDispatcher()->Shutdown();
+	kernel_->Shutdown();
 
-    kernel_.reset();
-    io_work_.reset();
-    
-    // join the threadpool threads until each one has exited.
-    for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
+	io_work_.reset();
+	
+	// join the threadpool threads until each one has exited.
+	for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
+
+	kernel_.reset();
 }
 
 void SwganhApp::Initialize(int argc, char* argv[]) {
     // Init Logging
     SetupLogging_();
     
-    std::cout << "Ben Kenobi : That team is our last hope." << std::endl;
-    std::cout << "      Yoda :  NO! There is another..." << std::endl << std::endl;
+    std::cout << "Ben Kenobi : That boy was our last hope." << std::endl;
+    std::cout << "      Yoda : No! There is another..." << std::endl << std::endl;
     std::cout << " .d8888b.  888       888  .d8888b.         d8888 888b    888 888    888 " << std::endl;
 	std::cout << "d88P  Y88b 888   o   888 d88P  Y88b       d88888 8888b   888 888    888 " << std::endl;
 	std::cout << "Y88b.      888  d8b  888 888    888      d88P888 88888b  888 888    888 " << std::endl;
@@ -316,8 +317,6 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
 }
 
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
-    LOG(info) << "Loading plugins...";
-
     if (!plugins.empty()) {
         auto plugin_manager = kernel_->GetPluginManager();
         auto plugin_directory = kernel_->GetAppConfig().plugin_directory;
@@ -327,7 +326,6 @@ void SwganhApp::LoadPlugins_(vector<string> plugins) {
             plugin_manager->LoadPlugin(plugin, plugin_directory);
         });
     }
-	LOG(info) << "Finished Loading plugins...";
 }
 
 void SwganhApp::CleanupServices_() {
@@ -361,9 +359,7 @@ void SwganhApp::LoadCoreServices_()
 
         if (entry.first.length() > 7 && regex_match(name, m, rx)) {
             auto service_name = m[1].str();
-			LOG(info) << "Loading Service " << name << "...";
             auto service = kernel_->GetPluginManager()->CreateObject<swganh::service::ServiceInterface>(name);
-			
             kernel_->GetServiceManager()->AddService(service_name, service);
 			LOG(info) << "Loaded Service " << name;
         }
