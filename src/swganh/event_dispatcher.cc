@@ -94,7 +94,7 @@ CallbackId EventDispatcher::GenerateCallbackId()
 
 void EventDispatcher::InvokeCallbacks(const shared_ptr<EventInterface>& dispatch_event)
 {
-    boost::lock_guard<boost::shared_mutex> lg(event_handlers_mutex_);
+    boost::shared_lock<boost::shared_mutex> lg(event_handlers_mutex_);
 
     auto event_type_iter = event_handlers_.find(dispatch_event->Type());
     
