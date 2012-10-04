@@ -12,10 +12,10 @@ namespace bp = boost::python;
 void swganh::command::ExportCommandService()
 {
     bp::class_<CommandServiceInterface, boost::noncopyable>("CommandService", bp::no_init)
-        .def("CreateCommand", &CommandServiceInterface::CreateCommand)
-        .def("EnqueueCommand", &CommandServiceInterface::EnqueueCommand)
-        .def("SetDefaultCommand", &CommandServiceInterface::SetDefaultCommand)
-        .def("HasDefaultCommand", &CommandServiceInterface::HasDefaultCommand)
-        .def("ClearDefaultCommand", &CommandServiceInterface::ClearDefaultCommand)
+        .def("createCommand", &CommandServiceInterface::CreateCommand)
+        .def("enqueueCommand", &CommandServiceInterface::EnqueueCommand)
+        .def("setDefaultCommand", &CommandServiceInterface::SetDefaultCommand)
+        .def("hasDefaultCommand", &CommandServiceInterface::HasDefaultCommand)
+        .def("clearDefaultCommand", &CommandServiceInterface::ClearDefaultCommand)
         ;
 }

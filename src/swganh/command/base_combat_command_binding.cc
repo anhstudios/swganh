@@ -146,6 +146,6 @@ void swganh::command::ExportBaseCombatCommand()
 {
     bp::class_<BaseCombatCommand, BaseCombatCommandWrapper, bp::bases<BaseSwgCommand>, boost::noncopyable>
         ("BaseCombatCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&>())
-        .def("Run", &BaseCombatCommandWrapper::Run)
+        .def("run", &BaseCombatCommandWrapper::Run)
     ;
 }

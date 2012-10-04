@@ -54,8 +54,6 @@ CharacterService::CharacterService(SwganhKernel* kernel)
     character_provider_ = kernel->GetPluginManager()->CreateObject<CharacterProviderInterface>("Character::CharacterProvider");
 }
 
-CharacterService::~CharacterService() {}
-
 service::ServiceDescription CharacterService::GetServiceDescription() {
     service::ServiceDescription service_description(
         "ANH Character Service",

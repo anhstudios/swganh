@@ -20,25 +20,46 @@ namespace object {
 namespace swganh {
 namespace chat {
 
-    class ChatService: public swganh::chat::ChatServiceInterface
-    {
-    public:
-        explicit ChatService(swganh::app::SwganhKernel* kernel);
-        virtual ~ChatService();
-        swganh::service::ServiceDescription GetServiceDescription();
+/*
+* The chat service handles chat related functions
+*/
+class ChatService: public swganh::chat::ChatServiceInterface
+{
+public:
 
-        void SendSpatialChat(
-		    const std::shared_ptr<swganh::object::Object>& actor, // creature object
-		    const std::shared_ptr<swganh::object::Object>& target,	// target object
-            std::wstring chat_message,
-            uint16_t chat_type,
-            uint16_t mood);
+	/**
+	* Creates a new instance
+	*/
+    explicit ChatService(swganh::app::SwganhKernel* kernel);
 
-        void Startup();
+	/**
+	* @return the service description for this service
+	*/
+    swganh::service::ServiceDescription GetServiceDescription();
 
-    private:
-		swganh::command::CommandServiceInterface* command_service_;
-        swganh::app::SwganhKernel* kernel_;
-    };
+	/**
+	* Sends a spatial chat message
+	* @param actor the speaker
+	* @param target the target
+	* @param chat_message the message
+	* @param chat_type the type of chat
+	* @param mood the mood used
+	*/
+    void SendSpatialChat(
+		const std::shared_ptr<swganh::object::Object>& actor, // creature object
+		const std::shared_ptr<swganh::object::Object>& target,	// target object
+        std::wstring chat_message,
+        uint16_t chat_type,
+        uint16_t mood);
+
+	/**
+	* Called on startup
+	*/
+    void Startup();
+
+private:
+	swganh::command::CommandServiceInterface* command_service_;
+    swganh::app::SwganhKernel* kernel_;
+};
 
 }}  // namespace swganh::chat

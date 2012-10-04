@@ -26,8 +26,6 @@ MysqlAccountProvider::MysqlAccountProvider(swganh::database::DatabaseManagerInte
     : AccountProviderInterface()
     , db_manager_(db_manager) {}
 
-MysqlAccountProvider::~MysqlAccountProvider() {}
-
 shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
     shared_ptr<Account> account = nullptr;
 

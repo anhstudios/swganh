@@ -18,7 +18,6 @@ using namespace std;
 
 Sha512Encoder::Sha512Encoder(DatabaseManagerInterface* db_manager)
     : db_manager_(db_manager) {}
-Sha512Encoder::~Sha512Encoder() {}
 
 string Sha512Encoder::EncodePassword(string raw, string salt) {
     string result;

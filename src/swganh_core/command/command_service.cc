@@ -49,14 +49,6 @@ CommandService::CommandService(SwganhKernel* kernel)
     command_validator_impl_ = kernel->GetPluginManager()->CreateObject<CommandValidatorInterface>("Command::CommandValidator");
 }
 
-CommandService::~CommandService()
-{    
-    auto event_dispatcher = kernel_->GetEventDispatcher();
-
-    event_dispatcher->Unsubscribe("ObjectReadyEvent", obj_ready_id_);
-    event_dispatcher->Unsubscribe("ObjectRemovedEvent", obj_removed_id_);
-}
-
 ServiceDescription CommandService::GetServiceDescription()
 {
     ServiceDescription service_description(
