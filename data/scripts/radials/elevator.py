@@ -25,11 +25,11 @@ class PyRadialMenu(RadialMenu):
 		
 	def HandleRadial(self, owner, target, action):
 		if action == RadialIdentifier.elevatorUp and target.has_attribute("elevator_can_go_up"):
-			handleElevatorAction(target, owner, False)
+			handleElevatorAction(self,target, owner, False)
 		elif action == RadialIdentifier.elevatorDown and target.has_attribute("elevator_can_go_down"):
-			handleElevatorAction(target, owner, True)
+			handleElevatorAction(self,target, owner, True)
 			
-def handleElevatorAction(target, owner, expected_elevator_action):
+def handleElevatorAction(self, target, owner, expected_elevator_action):
 	static_service = self.GetKernel().service_manager().static_service()
 	simulation_service = self.GetKernel().service_manager().simulation_service()
 	for data in static_service.GetElevatorDataForObject(target.id):

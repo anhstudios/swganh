@@ -142,8 +142,7 @@ void StaticService::_loadBuildings(SimulationServiceInterface* simulation_servic
 		object->SetPosition(glm::vec3(result->getDouble(6), result->getDouble(7), result->getDouble(8)));
 		object->SetStfName(result->getString(12), result->getString(13));
 		object->SetSceneId(scene_id);
-		object->SetInSnapshot(true);
-		object->SetDatabasePersisted(false);
+		object->SetInSnapshot(true);		
 			
 		//Put it into the scene
 		simulation_service->AddObjectToScene(object, scene_name);
@@ -161,8 +160,7 @@ void StaticService::_loadCells(SimulationServiceInterface* simulation_service, s
 
 		object->SetSceneId(scene_id);
 		object->SetInSnapshot(true);
-		object->SetDatabasePersisted(false);
-
+		
 		auto parent = simulation_service->GetObjectById(result->getInt64(2));
 		if(parent != nullptr)
 		{
@@ -207,8 +205,6 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 
 		if(object->GetObjectId() < 4294967297)
 			object->SetInSnapshot(true);
-
-		object->SetDatabasePersisted(false);
 
 		//Put it into the scene
 		uint64_t parent_id = result->getUInt64(2);
@@ -358,8 +354,7 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 
 		object->SetSceneId(scene_id);
 		object->SetInSnapshot(false);
-		object->SetDatabasePersisted(false);
-
+		
 		//Put it into the scene
 		uint64_t parent_id = result->getUInt64(2);
 		if(parent_id == 0)
@@ -401,7 +396,7 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 
 		object->SetPvPStatus(PvPStatus_None);
 		object->SetOptionsMask(OPTION_NO_HAM);
-
+		
 		uint64_t parent_id = result->getUInt64(2);
 		if(parent_id == 0)
 		{
