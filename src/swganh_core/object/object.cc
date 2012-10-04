@@ -887,13 +887,11 @@ std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> Object::GetMe
 
 bool Object::IsDatabasePersisted()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return database_persisted_;
 }
 
 bool Object::IsInSnapshot()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	return in_snapshot_;
 }
 

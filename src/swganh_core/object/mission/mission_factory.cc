@@ -22,7 +22,9 @@ uint32_t MissionFactory::PersistObject(const shared_ptr<Object>& object)
 }
 
 void MissionFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> MissionFactory::CreateObjectFromStorage(uint64_t object_id)
 {

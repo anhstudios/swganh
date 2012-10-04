@@ -33,29 +33,48 @@ ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
 {	
 }
 
+void ObjectFactory::RegisterEventHandlers()
+{
+	event_dispatcher_->Subscribe("Object::CustomName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Object::StfName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Object::Complexity", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Object::Volume", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Object::Template", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Object::Position", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Object::Orientation", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Object::Container", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Object::StfName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Object::SceneId", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+}
+
+void ObjectFactory::PersistChangedObjects()
+{
+	std::set<shared_ptr<Object>> persisted;
+	{
+		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+		persisted = move(persisted_objects_);
+	}
+	for (auto& object : persisted)
+	{
+		PersistObject(object);
+	}
+}
+void ObjectFactory::PersistHandler(const shared_ptr<swganh::EventInterface>& incoming_event)
+{
+	auto object = static_pointer_cast<ObjectEvent>(incoming_event)->Get();
+	if (object && object->IsDatabasePersisted())
+	{
+		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+		persisted_objects_.insert(object);
+	}
+}
 uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
     try {
         auto conn = db_manager_->getConnection("galaxy");
-        auto statement = shared_ptr<sql::PreparedStatement>
-            (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
-        counter = PersistObject(object, statement);
-        // Now execute the update
-        statement->executeUpdate();
-	}
-    catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
-	return counter;
-}
-
-uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, const shared_ptr<sql::PreparedStatement>& prepared_statement)
-{
-	uint32_t counter = 1;
-    try {		
+        auto prepared_statement = shared_ptr<sql::PreparedStatement>
+            (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         prepared_statement->setUInt64(counter++, object->GetObjectId());
 		if (object->GetContainer() != nullptr)
 		{
@@ -85,7 +104,9 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, const sh
         prepared_statement->setUInt(counter++, object->GetVolume());
 		prepared_statement->setInt(counter++, object->GetArrangementId());
 		prepared_statement->setInt(counter++, object->GetPermissions()->GetType());
-    }
+        // Now execute the update
+        prepared_statement->executeUpdate();
+	}
     catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
@@ -93,6 +114,7 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object, const sh
     }
 	return counter;
 }
+
 void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object, const shared_ptr<sql::ResultSet>& result)
 {
     try {
@@ -196,5 +218,20 @@ void ObjectFactory::LoadContainedObjects(
 			}
 
         }
+    }
+}
+void ObjectFactory::DeleteObjectFromStorage(const std::shared_ptr<Object>& object)
+{
+	try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = conn->prepareStatement("CALL sp_DeleteObject(?,?);");
+        statement->setUInt64(1, object->GetObjectId());
+		statement->setInt(2, object->GetType());
+        statement->execute();                
+    }
+    catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
     }
 }

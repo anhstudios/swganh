@@ -32,9 +32,8 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
     shared_ptr<Account> account = nullptr;
 
     try {
-        string sql = "select id, username, password, salt, enabled from account where username = ?";
         auto conn = db_manager_->getConnection("galaxy_manager");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_FindAccountByUsername(?);"));
         statement->setString(1, username);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
 
@@ -55,7 +54,7 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
         } else {
             LOG(warning) << "No account information found for user: " << username << endl;
         }
-
+		while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -65,9 +64,8 @@ shared_ptr<Account> MysqlAccountProvider::FindByUsername(string username) {
 void MysqlAccountProvider::EndSessions()
 {
     try {
-        string sql = "delete from account_session";
         auto conn = db_manager_->getConnection("galaxy_manager");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_DeleteSessions();"));
         /* int rows_updated = */statement->executeUpdate();
 
     } catch(sql::SQLException &e) {
@@ -79,9 +77,8 @@ uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
     uint32_t account_id = 0;
 
      try {
-        string sql = "select account from account_session where session_key = ?";
         auto conn = db_manager_->getConnection("galaxy_manager");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_FindAccountBySessionKey(?)"));
         statement->setString(1, session_key);
         auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
 
@@ -91,7 +88,7 @@ uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
         } else {
             LOG(warning) << "No account found for session_key: " << session_key << endl;
         }
-
+		while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -101,7 +98,7 @@ uint32_t MysqlAccountProvider::FindBySessionKey(const string& session_key) {
 bool MysqlAccountProvider::CreateAccountSession(uint32_t account_id, const std::string& session_key) {
     bool success = false;
     try {
-        string sql = "INSERT INTO account_session(account, session_key) VALUES(?,?);";
+        string sql = "call sp_CreateAccountSession(?,?);";
         auto conn = db_manager_->getConnection("galaxy_manager");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, account_id);
@@ -133,6 +130,7 @@ bool MysqlAccountProvider::AutoRegisterAccount(std::string username, std::string
 			if (CreatePlayerAccount(results->getUInt64(1)))
 				success = true;
 		}
+		while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();

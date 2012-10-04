@@ -6,6 +6,8 @@
 
 #include "swganh/object/object_factory_interface.h"
 #include "swganh/event_dispatcher.h"
+#include <set>
+#include <boost/thread/mutex.hpp>
 
 namespace swganh {
 namespace database {
@@ -51,28 +53,25 @@ namespace object {
          */
         void CreateBaseObjectFromStorage(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::ResultSet>& result);
         virtual uint32_t PersistObject(const std::shared_ptr<Object>& object);
-        /**
-         * Persists the Base Object Data
-         *
-         * @param object data to persist
-         * @param PreparedStatement to add values to.
-         */
-        uint32_t PersistObject(const std::shared_ptr<Object>& object, const std::shared_ptr<sql::PreparedStatement>& prepared_statement);
-        virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object){}
+        
+        virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object);
         virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
         virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted, bool db_initialized) { return nullptr; }
         uint32_t LookupType(uint64_t object_id) const;
 
-        virtual void RegisterEventHandlers(){}
+		virtual void PersistChangedObjects();
+		void PersistHandler(const std::shared_ptr<swganh::EventInterface>& incoming_event);
+        virtual void RegisterEventHandlers();
         void SetTreArchive(swganh::tre::TreArchive* tre_archive);
     protected:
-
         void LoadContainedObjects(const std::shared_ptr<Object>& object,
             const std::shared_ptr<sql::Statement>& statement);
         
         ObjectManager* object_manager_;
+		boost::mutex persisted_objects_mutex_;
         swganh::database::DatabaseManagerInterface* db_manager_;   
         swganh::EventDispatcher* event_dispatcher_;
+		std::set<std::shared_ptr<Object>> persisted_objects_;
     };
 
 }}  // namespace swganh::object

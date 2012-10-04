@@ -27,10 +27,11 @@ namespace object {
         CreatureFactory(swganh::database::DatabaseManagerInterface* db_manager,
             swganh::EventDispatcher* event_dispatcher);
 
-        uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
-
+		virtual void PersistChangedObjects();
+		virtual void RegisterEventHandlers();
         std::shared_ptr<swganh::object::Object> CreateObjectFromStorage(uint64_t object_id);
 
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);

@@ -28,10 +28,8 @@ public:
      */
     virtual uint32_t GetType() const { return Intangible::type; }
     const static uint32_t type = 0x494E534F;
-    
 	uint32_t GetGenericInt();
 	void SetGenericInt(uint32_t generic_int);
-
 protected:
 	std::atomic<uint32_t> generic_int_;
 };

@@ -53,6 +53,10 @@ charCreate:BEGIN
     DECLARE mind INT;
     DECLARE focus INT;
     DECLARE willpower INT;
+	
+	-- 
+	-- Transactional Support
+	--	
 
     SELECT sf_CharacterNameInUseCheck(start_firstname) INTO nameCheck;
     IF nameCheck <> 666 THEN
@@ -72,7 +76,7 @@ charCreate:BEGIN
     SET oZ = 0;
     SET oW = 0;
 
-    START TRANSACTION;
+    
         SELECT MAX(id) + 10 FROM object INTO object_id FOR UPDATE;
 
         IF object_id IS NULL THEN

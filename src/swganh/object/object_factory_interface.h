@@ -57,6 +57,17 @@ namespace object {
          */
         virtual uint32_t LookupType(uint64_t object_id) const = 0;
 
+		/**
+		 * Builds an update query for all the objects that have changed.
+		 * 
+		 */
+		virtual void PersistChangedObjects() = 0;
+
+		/**
+		 *  Registers events for a specific factory 
+		 */
+		virtual void RegisterEventHandlers() = 0;
+
     };
 
 }}  // namespace swganh::object

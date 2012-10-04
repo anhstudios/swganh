@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `creature` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 DELETE FROM `creature`;
-    
+
 /*!40000 ALTER TABLE `creature` DISABLE KEYS */;
 INSERT INTO `creature` (`id`, `owner_id`, `musician_id`, `bank_credits`, `cash_credits`, `posture`, `faction_rank`, `scale`, `battle_fatigue`, `state`, `acceleration_base`, `acceleration_modifier`, `speed_base`, `speed_modifier`, `run_speed`, `slope_modifier_angle`, `slope_modifier_percent`, `walking_speed`, `water_modifier_percent`) VALUES
 (0, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);

@@ -6,6 +6,7 @@
 #include <cppconn/connection.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
 #include <cppconn/sqlstring.h>
 
 #include "swganh/logger.h"
@@ -23,17 +24,19 @@ Sha512Encoder::~Sha512Encoder() {}
 string Sha512Encoder::EncodePassword(string raw, string salt) {
     string result;
 
-    string sql = "SELECT SHA1(CONCAT('" + raw + "', '{" + salt + "}'))";
+    string sql = "CALL sp_EncodePassword(?,?)";
     auto conn = db_manager_->getConnection("galaxy_manager");
-    auto statement = shared_ptr<sql::Statement>(conn->createStatement());
-    auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery(sql));
+    auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
+	statement->setString(1, raw);
+	statement->setString(2, salt);
+    auto result_set = unique_ptr<sql::ResultSet>(statement->executeQuery());
     if (result_set->next())
     {
         result = result_set->getString(1);
     }
     else
         LOG(warning) << "Sha512Encoder::EncodePassword failed to encode password" << endl;
-
+	while(statement->getMoreResults());
     return result;
 }
 

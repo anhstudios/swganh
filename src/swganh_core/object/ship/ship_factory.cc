@@ -16,7 +16,9 @@ uint32_t ShipFactory::PersistObject(const shared_ptr<Object>& object)
 }
 
 void ShipFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> ShipFactory::CreateObjectFromStorage(uint64_t object_id)
 {

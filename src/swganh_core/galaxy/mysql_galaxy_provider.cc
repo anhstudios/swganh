@@ -35,6 +35,8 @@ uint32_t MysqlGalaxyProvider::GetPopulation()
 		if (result_set->next())
 			population = result_set->getUInt(1);
 
+		while(statement->getMoreResults());
+
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();

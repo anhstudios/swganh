@@ -30,7 +30,7 @@ uint64_t MysqlSessionProvider::GetPlayerId(uint32_t account_id) {
     uint64_t player_id = 0;
 
     try {
-        string sql = "select id from player_account where reference_id = ?";
+        string sql = "CALL sp_GetPlayerFromAccount(?);";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt(1, account_id);
@@ -42,7 +42,7 @@ uint64_t MysqlSessionProvider::GetPlayerId(uint32_t account_id) {
         } else {
             LOG(warning) << "No Player Id found for account_id: " << account_id << endl;
         }
-
+		while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -58,7 +58,7 @@ bool MysqlSessionProvider::CreateGameSession(uint64_t player_id, uint32_t sessio
         + boost::lexical_cast<std::string>(session_id);
 
     try {
-        string sql = "INSERT INTO player_session(player,session_key) VALUES (?,?)";
+        string sql = "CALL sp_CreateGameSession(?,?);";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, player_id);
@@ -81,7 +81,7 @@ bool MysqlSessionProvider::CreateGameSession(uint64_t player_id, uint32_t sessio
 void MysqlSessionProvider::EndGameSession(uint64_t player_id)
 {
 	try {
-        string sql = "DELETE FROM player_session where player = ?";
+        string sql = "CALL sp_EndGameSession(?);";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, player_id);
@@ -100,7 +100,7 @@ uint32_t MysqlSessionProvider::GetAccountId(uint64_t player_id) {
     uint32_t account_id = 0;
 
     try {
-        string sql = "select reference_id from player_account where id = ?";
+        string sql = "CALL sp_GetAccountId(?);";
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement(sql));
         statement->setUInt64(1, player_id);
@@ -112,7 +112,7 @@ uint32_t MysqlSessionProvider::GetAccountId(uint64_t player_id) {
         } else {
             LOG(warning) << "No account Id found for player id : " << player_id << endl;
         }
-
+		while(statement->getMoreResults());
     } catch(sql::SQLException &e) {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();

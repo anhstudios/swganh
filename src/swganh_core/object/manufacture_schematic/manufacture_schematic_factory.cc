@@ -20,7 +20,9 @@ uint32_t ManufactureSchematicFactory::PersistObject(const shared_ptr<Object>& ob
 }
 
 void ManufactureSchematicFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> ManufactureSchematicFactory::CreateObjectFromStorage(uint64_t object_id)
 {

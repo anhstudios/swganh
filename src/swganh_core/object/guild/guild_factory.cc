@@ -5,15 +5,28 @@
 
 #include "guild.h"
 
+#include <cppconn/exception.h>
+#include <cppconn/connection.h>
+#include <cppconn/resultset.h>
+#include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
+#include <cppconn/sqlstring.h>
+#include "swganh/logger.h"
+
+#include "swganh/database/database_manager.h"
+
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object;
+
+GuildFactory::GuildFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher)
+			: ObjectFactory(db_manager, event_dispatcher)
+{	
+}
 
 uint32_t GuildFactory::PersistObject(const shared_ptr<Object>& object)
-{
-	uint32_t counter = 1;
-
-	return counter;
+{	
+	return 0;
 }
 
 void GuildFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
