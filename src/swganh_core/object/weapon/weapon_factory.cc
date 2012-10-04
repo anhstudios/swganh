@@ -14,13 +14,28 @@ WeaponFactory::WeaponFactory(swganh::database::DatabaseManagerInterface* db_mana
 {
 }
 
+void WeaponFactory::PersistChangedObjects()
+{
+	std::set<shared_ptr<Object>> persisted;
+	{
+		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+		persisted = move(persisted_objects_);
+	}
+	for (auto& object : persisted)
+	{
+		PersistObject(object);
+	}
+}
+
 uint32_t WeaponFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	return 1;
 }
 
 void WeaponFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> WeaponFactory::CreateObjectFromStorage(uint64_t object_id)
 {

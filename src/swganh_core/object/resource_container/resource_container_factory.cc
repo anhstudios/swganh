@@ -21,7 +21,9 @@ uint32_t ResourceContainerFactory::PersistObject(const shared_ptr<Object>& objec
 }
 
 void ResourceContainerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
-{}
+{
+	ObjectFactory::DeleteObjectFromStorage(object);
+}
 
 shared_ptr<Object> ResourceContainerFactory::CreateObjectFromStorage(uint64_t object_id)
 {

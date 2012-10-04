@@ -54,6 +54,7 @@ namespace weather {
 		void SetSceneWeather(uint32_t scene_id,  std::vector<swganh::weather::WeatherEvent> weather_sequence_);
 		void swganh::weather::WeatherService::RunWeatherSequence();
 		void Startup();
+		void Shutdown();
 
     private:
 		void WeatherService::tickPlanetWeather_();
