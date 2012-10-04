@@ -26,16 +26,34 @@ using namespace swganh::simulation;
  TangibleFactory::TangibleFactory(swganh::database::DatabaseManagerInterface* db_manager,
             swganh::EventDispatcher* event_dispatcher)
     : ObjectFactory(db_manager, event_dispatcher)
+{	
+}
+
+ void TangibleFactory::RegisterEventHandlers()
+ {
+	event_dispatcher_->Subscribe("Tangible::Customization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Tangible::ComponentCustomization", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Tangible::OptionsMask", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Tangible::IncapTimer", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Tangible::ConditionDamage", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Tangible::UpdateAttribute", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Tangible::MaxCondition", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Tangible::Static", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Tangible::Defenders", std::bind(&TangibleFactory::PersistHandler, this, std::placeholders::_1));
+ }
+
+ 
+void TangibleFactory::PersistChangedObjects()
 {
-	event_dispatcher->Subscribe("Tangible::Customization", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher->Subscribe("Tangible::ComponentCustomization", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher->Subscribe("Tangible::OptionsMask", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher->Subscribe("Tangible::IncapTimer", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher->Subscribe("Tangible::ConditionDamage", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher->Subscribe("Tangible::UpdateAttribute", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher->Subscribe("Tangible::MaxCondition", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher->Subscribe("Tangible::Static", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher->Subscribe("Tangible::Defenders", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	std::set<shared_ptr<Object>> persisted;
+	{
+		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+		persisted = move(persisted_objects_);
+	}
+	for (auto& object : persisted)
+	{
+		PersistObject(object);
+	}
 }
 
 uint32_t TangibleFactory::PersistObject(const shared_ptr<Object>& object)

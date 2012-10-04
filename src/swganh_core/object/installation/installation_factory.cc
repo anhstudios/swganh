@@ -18,15 +18,42 @@
 using namespace std;
 using namespace swganh::object;
 
-InstallationFactory::InstallationFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* dispatcher)
-	: TangibleFactory(db_manager, event_dispatcher_)
-{
+InstallationFactory::InstallationFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
+	: TangibleFactory(db_manager, event_dispatcher)
+{		
 }
-
+void InstallationFactory::RegisterEventHandlers()
+{
+	event_dispatcher_->Subscribe("Installation::Active", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Installation::PowerReserve", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Installation::PowerCost", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Installation::AvailableResource", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Installation::DisplayedMaxExtraction", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Installation::MaxExtraction", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Installation::CurrentExtraction", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Installation::CurrentHopperSize", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Installation::MaxHopperSize", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Installation::IsUpdating", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Installation::Hopper", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Installation::IsUpdating", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Installation::ConditionPercent", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Installation::SelectedResource", std::bind(&InstallationFactory::PersistHandler, this, std::placeholders::_1));	
+}
+void InstallationFactory::PersistChangedObjects()
+{
+	std::set<shared_ptr<Object>> persisted;
+	{
+		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+		persisted = move(persisted_objects_);
+	}
+	for (auto& object : persisted)
+	{
+		PersistObject(object);
+	}
+}
 uint32_t InstallationFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
-	ObjectFactory::PersistObject(object);
 	try 
     {
         auto conn = db_manager_->getConnection("galaxy");

@@ -63,6 +63,11 @@ namespace object {
 		 */
 		virtual void PersistChangedObjects() = 0;
 
+		/**
+		 *  Registers events for a specific factory 
+		 */
+		virtual void RegisterEventHandlers() = 0;
+
     };
 
 }}  // namespace swganh::object

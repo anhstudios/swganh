@@ -32,7 +32,7 @@ IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
 
 uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
 {
-	// Persist Intangible and Base Object First
+	// Persist Intangible
     uint32_t counter = 1;
 
 	try 
@@ -40,8 +40,7 @@ uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
             (conn->prepareStatement("CALL sp_PersistIntangible(?,?,?);"));
-        counter = ObjectFactory::PersistObject(object, statement);
-		auto tangible = static_pointer_cast<Intangible>(object);
+        auto tangible = static_pointer_cast<Intangible>(object);
 		statement->setString(counter++, tangible->GetStfNameFile());
 		statement->setString(counter++, tangible->GetStfNameString());
 		statement->setInt(counter++, tangible->GetGenericInt());

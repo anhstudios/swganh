@@ -74,7 +74,7 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 		type_lookup_.insert(make_pair(key, value));
 	}
 
-	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
+	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(1));
 	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 }
 
@@ -91,6 +91,7 @@ void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<Ob
     }
 
     factories_.insert(make_pair(object_type, factory));
+	factory->RegisterEventHandlers();
 }
 
 void ObjectManager::UnregisterObjectType(uint32_t object_type)
@@ -110,20 +111,12 @@ void ObjectManager::RegisterMessageBuilder(uint32_t object_type, std::shared_ptr
     if (find_iter != end(message_builders_))
         throw InvalidObjectType("A message builder for the specified type already exists.");
     
-    message_builders_.insert(make_pair(object_type, message_builder));
+    message_builders_.insert(make_pair(object_type, message_builder));	
 }
 void ObjectManager::InsertObject(std::shared_ptr<swganh::object::Object> object)
 {
 	boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
     object_map_.insert(make_pair(object->GetObjectId(), object));
-
-	if (object && object->IsDatabasePersisted())
-	{
-		// Setup a timer to persist the object every x minutes
-		/*auto timer = AddPersistTimer(std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5)), object->GetObjectId());
-		timer->expires_from_now(boost::posix_time::minutes(5));
-		LOG(warning) << "InsertObject timer expires in " << timer->expires_from_now().seconds();*/
-	}
 }
 
 void ObjectManager::PersistObjectsByTimer(const boost::system::error_code& e)

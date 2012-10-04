@@ -12,9 +12,11 @@ namespace object {
     class GuildFactory : public swganh::object::ObjectFactory
     {
     public:
+		GuildFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher);
 		typedef Guild ObjectType;
 
-        uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 

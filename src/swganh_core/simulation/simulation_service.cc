@@ -260,10 +260,11 @@ public:
         }
 		StopControllingObject(object);
 
-		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> viewObject){
+		// We're ok with the object existing in the object_manager until server shutdown
+		/*object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> viewObject){
 			object_manager_->RemoveObject(viewObject);
 		});
-        object_manager_->RemoveObject(object);
+        object_manager_->RemoveObject(object);*/
 		
     }
 
@@ -548,7 +549,6 @@ void SimulationService::RegisterObjectFactories()
 	object_manager->RegisterObjectType<FactoryCrate>();
 	object_manager->RegisterObjectType<Weapon>();
 	object_manager->RegisterObjectType<Building>();
-	
 }
 
 void SimulationService::PersistObject(uint64_t object_id)

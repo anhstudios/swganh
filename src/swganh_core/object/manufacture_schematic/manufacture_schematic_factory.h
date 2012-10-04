@@ -17,7 +17,7 @@ namespace object {
 		ManufactureSchematicFactory(swganh::database::DatabaseManagerInterface* db_manager,
             swganh::EventDispatcher* event_dispatcher);
 
-        uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
+        virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);
 

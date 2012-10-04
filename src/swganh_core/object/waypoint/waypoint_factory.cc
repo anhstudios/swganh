@@ -35,20 +35,19 @@ WaypointFactory::WaypointFactory(DatabaseManagerInterface* db_manager,
 }
 void WaypointFactory::RegisterEventHandlers()
 {
-    event_dispatcher_->Subscribe("PersistWaypoints", [this] (shared_ptr<swganh::EventInterface> incoming_event)
-    {
-        auto value_event = static_pointer_cast<ValueEvent<NetworkMap<uint64_t, PlayerWaypointSerializer>>>(incoming_event);
-        auto waypoints = value_event->Get();
-        for(auto& waypoint_pair : waypoints)
-        {
-            PersistObject(waypoint_pair.second.waypoint);
-        };
-    });
-    event_dispatcher_->Subscribe("LoadWaypoints", [this] (shared_ptr<swganh::EventInterface> incoming_event)
-    {
-        auto waypoint_event = static_pointer_cast<WaypointEvent>(incoming_event);
-
-    });
+	event_dispatcher_->Subscribe("PersistWaypoints", std::bind(&WaypointFactory::PersistHandler, this, std::placeholders::_1));
+}
+void WaypointFactory::PersistChangedObjects()
+{
+	std::set<shared_ptr<Object>> persisted;
+	{
+		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+		persisted = move(persisted_objects_);
+	}
+	for (auto& object : persisted)
+	{
+		PersistObject(object);
+	}
 }
 
 void WaypointFactory::LoadWaypoints(const shared_ptr<Player>& player, const shared_ptr<sql::ResultSet> result_set)
@@ -76,7 +75,7 @@ void WaypointFactory::LoadWaypoints(const shared_ptr<Player>& player, const shar
 uint32_t WaypointFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
-    if (object->IsDirty() && object->GetType() ==  Waypoint::type)
+    if (object)
     {
         try 
         {			

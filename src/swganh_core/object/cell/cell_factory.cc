@@ -16,7 +16,31 @@
 
 using namespace std;
 using namespace swganh::object;
-using namespace swganh::object;
+
+CellFactory::CellFactory(swganh::database::DatabaseManagerInterface* db_manager,
+            swganh::EventDispatcher* event_dispatcher)
+			: IntangibleFactory(db_manager, event_dispatcher)
+{
+}
+
+void CellFactory::RegisterEventHandlers()
+{
+	event_dispatcher_->Subscribe("Cell::Cell", std::bind(&CellFactory::PersistHandler, this, std::placeholders::_1));
+}
+
+
+void CellFactory::PersistChangedObjects()
+{
+	std::set<shared_ptr<Object>> persisted;
+	{
+		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+		persisted = move(persisted_objects_);
+	}
+	for (auto& object : persisted)
+	{
+		PersistObject(object);
+	}
+}
 
 uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object)
 {

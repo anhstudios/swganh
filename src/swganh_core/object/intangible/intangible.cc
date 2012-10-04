@@ -21,6 +21,9 @@ uint32_t Intangible::GetGenericInt()
 
 void Intangible::SetGenericInt(uint32_t generic_int)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	generic_int_ = generic_int;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		generic_int_ = generic_int;
+	}
+
 }
