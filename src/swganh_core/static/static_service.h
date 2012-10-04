@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include <vector>
+
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/static/static_service_interface.h"
 
@@ -28,6 +31,8 @@ namespace statics
 
 		virtual swganh::service::ServiceDescription GetServiceDescription();
 
+		std::vector<std::shared_ptr<ElevatorData>> GetElevatorDataForObject(uint64_t terminal_id);
+
 	private:
 
 		void _loadBuildings(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
@@ -50,6 +55,8 @@ namespace statics
 			uint32_t scene_id, std::string scene_name);
 
 		swganh::app::SwganhKernel* kernel_;
+
+		std::map<uint64_t, std::vector<std::shared_ptr<ElevatorData>>> elevator_lookup_;
 	};
 }
 }

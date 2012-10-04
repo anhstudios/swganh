@@ -59,22 +59,44 @@ void SendFlyText(std::shared_ptr<Object> requester, const std::string& fly_text,
 void UpdatePosition(std::shared_ptr<Object> object, glm::vec3 pos)
 {
 	object->SetPosition(pos);
-	UpdateTransformMessage transform_update;
-	transform_update.object_id = object->GetObjectId();
-	transform_update.heading = object->GetHeading();
-	transform_update.position = pos;		
-    
-	object->NotifyObservers(&transform_update);
+	if(object->GetContainer()->GetObjectId() == 0)
+	{
+		UpdateTransformMessage transform_update;
+		transform_update.object_id = object->GetObjectId();
+		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
+		transform_update.position = pos;
+		object->NotifyObservers(&transform_update);
+	}
+	else
+	{
+		UpdateTransformWithParentMessage transform_update;
+		transform_update.object_id = object->GetObjectId();
+		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
+		transform_update.position = pos;
+		transform_update.cell_id = object->GetContainer()->GetObjectId();
+		object->NotifyObservers(&transform_update);
+	}
 }
 void UpdateOrientation(std::shared_ptr<Object> object, glm::quat orientation)
 {
 	object->SetOrientation(orientation);
-	UpdateTransformMessage transform_update;
-	transform_update.object_id = object->GetObjectId();
-	transform_update.heading = static_cast<uint8_t>(object->GetHeading());
-	transform_update.position = object->GetPosition();		
-    
-	object->NotifyObservers(&transform_update);
+
+	if(object->GetContainer()->GetObjectId() == 0) {
+		UpdateTransformMessage transform_update;
+		transform_update.object_id = object->GetObjectId();
+		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
+		transform_update.position = object->GetPosition();
+		object->NotifyObservers(&transform_update);
+	}
+	else
+	{
+		UpdateTransformWithParentMessage transform_update;
+		transform_update.object_id = object->GetObjectId();
+		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
+		transform_update.position = object->GetPosition();
+		transform_update.cell_id = object->GetContainer()->GetObjectId();
+		object->NotifyObservers(&transform_update);
+	}
 }
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
@@ -137,7 +159,7 @@ void exportObject()
         .def("HasFlag", &Object::HasFlag, "Checks if the object has a specific flag set on it")
         .def("SetFlag", &Object::SetFlag, "Sets a flag on the object")
         .def("RemoveFlag", &Object::RemoveFlag, "Removes a flag from the object")
-		.def("SetMenuResponse", &Object::SetMenuResponse, "Sets the radial menu response from a python list")
+		.def("has_attribute", &Object::HasAttribute, "Returns true if the object has the given attribute.")
 		.def("get_float_attribute", &Object::GetAttribute<float>, "Gets the float attribute value")
 		.def("set_float_attribute", &Object::SetAttribute<float>, "Sets the float attribute value")
 		.def("get_int_attribute", &Object::GetAttribute<int32_t>, "Gets the int attribute value")

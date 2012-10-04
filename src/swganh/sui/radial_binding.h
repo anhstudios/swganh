@@ -6,6 +6,7 @@
 
 #include "swganh/logger.h"
 #include "swganh/python_shared_ptr.h"
+#include "swganh/app/swganh_kernel.h"
 
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
@@ -32,19 +33,25 @@ namespace sui {
 
 	struct RadialWrap : RadialInterface, bp::wrapper<RadialInterface>
 	{
-		void BuildRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, std::vector<RadialOptions> radials)
+		RadialWrap(PyObject* obj, swganh::app::SwganhKernel* kernel)
+			: RadialInterface(kernel), self_(bp::handle<>(bp::borrowed(obj)))
+		{
+			ScopedGilLock lock;
+			bp::detail::initialize_wrapper(obj, this);
+		}
+
+		std::vector<RadialOptions> BuildRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, std::vector<RadialOptions> radials)
 		{
 			ScopedGilLock lock;
 			try 
 			{
-				
-
-				this->get_override("BuildRadial")(owner, target, radials);
+				return this->get_override("BuildRadial")(owner, target, radials);
 			}
 			catch (bp::error_already_set& )
 			{
 				PyErr_Print();
 			}
+			return std::vector<RadialOptions>();
 		}
 		void HandleRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, uint8_t action)
 		{
@@ -58,13 +65,16 @@ namespace sui {
 				PyErr_Print();				
 			}
 		}
+	private:
+		bp::object self_;
 	};
 
 	void exportRadial()
 	{
-		bp::class_<RadialWrap, boost::noncopyable>("RadialMenu", "A radial class purely used in python.")
+		bp::class_<RadialInterface, RadialWrap, boost::noncopyable>("RadialMenu", bp::init<swganh::app::SwganhKernel*>())
 			.def("BuildRadial", bp::pure_virtual(&RadialWrap::BuildRadial), "Builds a radial for the target :class:`Object`")
-			.def("HandleRadial", bp::pure_virtual(&RadialWrap::HandleRadial), "Handles a specific radial action");
+			.def("HandleRadial", bp::pure_virtual(&RadialWrap::HandleRadial), "Handles a specific radial action")
+			.def("GetKernel", &RadialInterface::GetKernel, bp::return_internal_reference<>());
 
 		bp::class_<RadialOptions>("RadialOptions", "class defining the options needed for radials", 
 			bp::init<uint8_t, uint8_t, uint8_t, std::wstring>())

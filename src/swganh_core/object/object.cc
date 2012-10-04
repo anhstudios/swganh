@@ -42,7 +42,6 @@ Object::Object()
 	, database_persisted_(true)
 	, in_snapshot_(false)
 {
-	menu_response_ = make_shared<swganh::messages::controllers::ObjectMenuResponse>();
 }
 
 bool Object::HasController()
@@ -869,22 +868,6 @@ shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
 	return found;
 }
 
-void Object::SetMenuResponse(std::vector<swganh::messages::controllers::RadialOptions> radials)
-{
-	{
-		boost::lock_guard<boost::mutex> lg(object_mutex_);
-		menu_response_->radial_options = radials;
-	}
-	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
-        ("Object::SetMenuResponse", shared_from_this()));
-}
-
-std::shared_ptr<swganh::messages::controllers::ObjectMenuResponse> Object::GetMenuResponse()
-{
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	return menu_response_;
-}
-
 bool Object::IsDatabasePersisted()
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
@@ -1009,4 +992,9 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const
 		}	
 		return boost::get<wstring>(val);
 	}
+}
+
+bool Object::HasAttribute(const std::string& name)
+{
+	return attributes_map_.find(name) != attributes_map_.end();
 }

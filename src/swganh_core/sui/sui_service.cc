@@ -8,6 +8,7 @@
 
 #include "swganh_core/messages/sui_create_page_message.h"
 #include "swganh_core/messages/sui_event_notification.h"
+#include "swganh_core/messages/radial_menu_selection.h"
 #include "swganh_core/messages/sui_update_page_message.h"
 #include "swganh_core/messages/sui_force_close.h"
 #include "swganh_core/messages/controllers/object_menu_request.h"
@@ -54,6 +55,7 @@ void SUIService::Startup()
 	//Subscribe to EventNotifcation
 	auto connection_service = kernel_->GetServiceManager()->GetService<ConnectionServiceInterface>("ConnectionService");
 	connection_service->RegisterMessageHandler(&SUIService::_handleEventNotifyMessage, this);
+	connection_service->RegisterMessageHandler(&SUIService::_handleObjectMenuSelection, this);
 	
 	// Register Radial Events
 	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
@@ -92,29 +94,66 @@ void SUIService::_handleEventNotifyMessage(const std::shared_ptr<swganh::connect
 	};
 }
 
+std::shared_ptr<RadialInterface> SUIService::GetRadialInterfaceForObject(std::shared_ptr<Object> target)
+{
+	//Get the proper filename
+	std::string radial_filename;
+	if(target->HasAttribute("radial_filename"))
+	{
+		std::wstring filenames = target->GetAttribute<std::wstring>("radial_filename");
+		radial_filename.insert(radial_filename.end(), filenames.begin(), filenames.end());
+	}
+	else
+	{
+		radial_filename.insert(0, "radials.default_radial");
+	}
+
+	//Find or build the appropriate creator
+	std::shared_ptr<RadialInterface> radial_creator;
+	auto find_itr = radial_menus_.find(radial_filename);
+	if(find_itr == radial_menus_.end())
+	{
+		auto creator = std::make_shared<PythonRadialCreator>(radial_filename, "PyRadialMenu");
+		radial_creator = (*creator)(kernel_);
+		radial_menus_.insert(std::make_pair(radial_filename, creator));
+	} 
+	else 
+	{
+		radial_creator = (*find_itr->second)(kernel_);
+	}
+	return radial_creator;
+}
+
 void SUIService::_handleObjectMenuRequest(
 	const std::shared_ptr<swganh::object::Object>& controller,
 	ObjectMenuRequest* message)
 {
-	PythonRadialCreator creator("radials.radial_menu", "PyRadialMenu");
-	auto radial = creator();
-	
-	auto owner = simulation_service_->GetObjectById(message->owner_id);
 	auto target = simulation_service_->GetObjectById(message->target_id);
-
-	radial->BuildRadial(owner, target, message->radial_options);
 	
-	// Get the response filled in by python
-	auto response = *owner->GetMenuResponse();
+	// Fill it in
+	ObjectMenuResponse response;
+	response.radial_options = GetRadialInterfaceForObject(target)->BuildRadial(controller, target, message->radial_options);
 	response.owner_id = message->owner_id;
 	response.target_id = message->target_id;
 	response.response_count = message->response_count;
+
 	// send it
-	if (owner)
+	if (controller->GetController())
 	{
-		owner->GetController()->Notify(&response);
-	}
+		controller->GetController()->Notify(&response);
+	}	
+}
+
+void SUIService::_handleObjectMenuSelection(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::RadialMenuSelection* message)
+{
+	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 	
+	//Get Get the proper objects
+	auto requester = simulation_service->GetObjectById(client->GetController()->GetId());
+	auto target = simulation_service->GetObjectById(message->object_id);
+
+	//Handle the radial.
+	GetRadialInterfaceForObject(target)->HandleRadial(requester, target, message->radial_choice);
 }
 
 ServiceDescription SUIService::GetServiceDescription()

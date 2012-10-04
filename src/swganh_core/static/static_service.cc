@@ -205,6 +205,11 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 		std::string name = result->getString(16);
 		object->SetCustomName(std::wstring(name.begin(), name.end()));
 
+		if(object->GetObjectId() < 4294967297)
+			object->SetInSnapshot(true);
+
+		object->SetDatabasePersisted(false);
+
 		//Put it into the scene
 		uint64_t parent_id = result->getUInt64(2);
 		if(parent_id == 0)
@@ -227,7 +232,31 @@ void StaticService::_loadElevatorData(SimulationServiceInterface* simulation_ser
 {
 	while(result->next())
 	{
-		//TODO: Fill me in
+		std::shared_ptr<ElevatorData> elevator_data = std::make_shared<ElevatorData>();
+
+		uint64_t terminal_id = result->getUInt64(1);
+		auto terminal = simulation_service->GetObjectById(terminal_id);
+		terminal->SetAttribute<std::wstring>("radial_filename", L"radials.elevator");
+
+		elevator_data->dst_cell = result->getUInt64(2);
+		elevator_data->dst_orientation = glm::quat(static_cast<float>(result->getDouble(3)),
+			static_cast<float>(result->getDouble(4)),
+			static_cast<float>(result->getDouble(5)),
+			static_cast<float>(result->getDouble(6)));
+		elevator_data->dst_position = glm::vec3(result->getDouble(7),result->getDouble(8),result->getDouble(9));
+		elevator_data->effect_id = result->getUInt(10);
+		elevator_data->going_down = result->getUInt(11) != 0;
+
+		if(elevator_data->going_down)
+			terminal->SetAttribute<int32_t>("elevator_can_go_down", 0);
+		else
+			terminal->SetAttribute<int32_t>("elevator_can_go_up", 0);
+
+		auto find_itr = elevator_lookup_.find(terminal_id);
+		if(find_itr == elevator_lookup_.end())
+			find_itr = elevator_lookup_.insert(std::make_pair(terminal_id, std::vector<std::shared_ptr<ElevatorData>>())).first;
+
+		find_itr->second.push_back(elevator_data);
 	}
 }
 
@@ -387,4 +416,14 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 			}
 		}
 	}
+}
+
+std::vector<std::shared_ptr<ElevatorData>> StaticService::GetElevatorDataForObject(uint64_t terminal_id)
+{
+	auto find_itr = elevator_lookup_.find(terminal_id);
+	if(find_itr != elevator_lookup_.end())
+	{
+		return find_itr->second;
+	}
+	return std::vector<std::shared_ptr<ElevatorData>>();
 }

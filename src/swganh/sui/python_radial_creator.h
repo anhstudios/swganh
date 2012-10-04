@@ -7,6 +7,11 @@
 
 #include <boost/python/object.hpp>
 namespace swganh {
+namespace app
+{
+	class SwganhKernel;
+}
+
 namespace sui {
 
     class RadialInterface;
@@ -15,7 +20,7 @@ namespace sui {
     public:
         PythonRadialCreator(std::string module_name, std::string class_name);
 
-        std::shared_ptr<RadialInterface> operator()();
+        std::shared_ptr<RadialInterface> operator()(swganh::app::SwganhKernel* kernel);
     private:
         std::string module_name_;
         std::string class_name_;

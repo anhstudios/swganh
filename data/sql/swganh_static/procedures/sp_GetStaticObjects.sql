@@ -28,10 +28,10 @@ BEGIN
 		terminals.y,terminals.z,terminals.terminal_type,terminal_types.object_string,terminal_types.name,terminal_types.file,
 		terminals.dataStr,terminals.dataInt1,terminals.customName
 		FROM terminals INNER JOIN terminal_types ON (terminals.terminal_type = terminal_types.id)
-		WHERE terminals.id >= 4294967297 AND (terminal_types.name NOT LIKE 'unknown') AND (terminals.planet_id = planet_id);
+		WHERE (terminal_types.name NOT LIKE 'unknown') AND (terminals.planet_id = planet_id);
 
   /* Load Elevator Data */
-	SELECT * FROM terminal_elevator_data ORDER BY direction;
+	SELECT ted.* FROM terminal_elevator_data ted INNER JOIN terminals t ON t.id = ted.id WHERE t.planet_id = planet_id;
 
 	SELECT containers.id FROM containers INNER JOIN container_types ON (containers.container_type = container_types.id)
 		WHERE (container_types.name NOT LIKE 'unknown') AND (containers.parent_id = parent_id) AND (containers.planet_id = planet_id);
