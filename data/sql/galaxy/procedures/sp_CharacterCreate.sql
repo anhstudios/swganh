@@ -92,9 +92,9 @@ charCreate:BEGIN
         SELECT id from species where species.name like shortSpecies into race_id;
 
         SET longSpecies = REPLACE(base_model_string, 'object/creature/player/', 'object/creature/player/shared_');
-        SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longSpecies INTO iff_template_id;
+        SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE longSpecies INTO iff_template_id;
 
-        SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE 'object/player/shared_player.iff' INTO player_iff_template_id;
+        SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE 'object/player/shared_player.iff' INTO player_iff_template_id;
 
         SELECT creation_attributes.health, creation_attributes.strength, creation_attributes.constitution, creation_attributes.action,
         creation_attributes.quickness, creation_attributes.stamina, creation_attributes.mind, creation_attributes.focus, creation_attributes.willpower
@@ -131,7 +131,7 @@ charCreate:BEGIN
 
         IF start_hair_model != '' THEN
             SET longHair = REPLACE(start_hair_model, '/hair_', '/shared_hair_');
-            SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE longHair INTO hair_iff_template_id;
+            SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE longHair INTO hair_iff_template_id;
 
             INSERT INTO `object` VALUES (object_id + 6, start_scene, object_id, hair_iff_template_id, start_x,start_y,start_z,oX,oY,oZ,oW, 0, 'hair_detail', 'hair', '' ,0, NOW(), NOW(), null, 1413566031, -2, 1);
             INSERT INTO `tangible` VALUES (object_id + 6, hair_customization, 0, 0, 0, 0, 0);

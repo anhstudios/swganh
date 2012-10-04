@@ -62,7 +62,7 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 	slot_definition_ = kernel->GetResourceManager()->GetResourceByName<SlotDefinitionVisitor>("abstract/slot/slot_definition/slot_definitions.iff");
 
 	//Load Object Templates
-	auto conn = kernel->GetDatabaseManager()->getConnection("galaxy");
+	auto conn = kernel->GetDatabaseManager()->getConnection("swganh_static");
     auto statement = shared_ptr<sql::Statement>(conn->createStatement());
     statement->execute("SELECT i.iff_template, i.object_type FROM iff_templates i WHERE i.object_type != 0;");
 	auto result = shared_ptr<sql::ResultSet>(statement->getResultSet());

@@ -73,7 +73,7 @@ CREATE PROCEDURE `sp_PersistCreature`(
 BEGIN
 -- Get Disguise Template
     DECLARE disguise_iff_template INT;
-    SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE in_disguise INTO disguise_iff_template;
+    SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE in_disguise INTO disguise_iff_template;
 --
     update creature set owner_id = in_owner_id, musician_id = in_musician_id, bank_credits = in_bank_credits, cash_credits = in_cash_credits,
         posture = in_posture, faction_rank = in_faction_rank, scale = in_scale, battle_fatigue = in_battle_fatigue, `state` = in_state,

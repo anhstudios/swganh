@@ -273,7 +273,7 @@ GOTO:MainMenu
 		)
 	GOTO:MainMenu
 	
-:SWGANH_STATIC
+:SchemaSWGANH_STATIC
 	cd "%PROJECT_BASE%swganh_static"
 		mysql --password=%db_pass% --host=%db_host% --user=%db_user% --default-character-set=utf8 < "create.sql"
 		
