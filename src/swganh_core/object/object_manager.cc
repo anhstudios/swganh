@@ -3,6 +3,8 @@
 
 #include "object_manager.h"
 
+#include <boost/asio.hpp>
+
 #include "swganh/logger.h"
 
 #include "object_factory.h"
@@ -72,6 +74,8 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 		type_lookup_.insert(make_pair(key, value));
 	}
 
+	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
+	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 }
 
 ObjectManager::~ObjectManager()
@@ -87,6 +91,7 @@ void ObjectManager::RegisterObjectType(uint32_t object_type, const shared_ptr<Ob
     }
 
     factories_.insert(make_pair(object_type, factory));
+	factory->RegisterEventHandlers();
 }
 
 void ObjectManager::UnregisterObjectType(uint32_t object_type)
@@ -106,7 +111,30 @@ void ObjectManager::RegisterMessageBuilder(uint32_t object_type, std::shared_ptr
     if (find_iter != end(message_builders_))
         throw InvalidObjectType("A message builder for the specified type already exists.");
     
-    message_builders_.insert(make_pair(object_type, message_builder));
+    message_builders_.insert(make_pair(object_type, message_builder));	
+}
+void ObjectManager::InsertObject(std::shared_ptr<swganh::object::Object> object)
+{
+	boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
+    object_map_.insert(make_pair(object->GetObjectId(), object));
+}
+
+void ObjectManager::PersistObjectsByTimer(const boost::system::error_code& e)
+{
+	if (!e)
+	{
+		for (auto& factory : factories_)
+		{
+			factory.second->PersistChangedObjects();
+		}
+		persist_timer_->expires_from_now(boost::posix_time::minutes(5));
+		persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
+	}
+	else
+	{
+		LOG(warning) << "PersistObjectsByTimer error: " << e.message();
+	}
+
 }
 
 shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
@@ -117,8 +145,7 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id)
     {
         object = CreateObjectFromStorage(object_id);
 
-        boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-        object_map_.insert(make_pair(object_id, object));
+       
 		
 		LoadContainedObjects(object);
     }
@@ -134,11 +161,10 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
     {
         object = CreateObjectFromStorage(object_id, object_type);
 
-        boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-        object_map_.insert(make_pair(object_id, object));
+        InsertObject(object);
 
 		LoadContainedObjects(object);		
-    }
+    }	
 
     return object;
 }
@@ -146,7 +172,7 @@ shared_ptr<Object> ObjectManager::LoadObjectById(uint64_t object_id, uint32_t ob
 void ObjectManager::LoadContainedObjects(std::shared_ptr<Object> object)
 {	
 	object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> contained_object){
-		object_map_.insert(make_pair(contained_object->GetObjectId(), contained_object));
+		InsertObject(object);
 	});
 }
 
@@ -159,7 +185,6 @@ shared_ptr<Object> ObjectManager::GetObjectById(uint64_t object_id)
     {
         return nullptr;
     }
-
     return find_iter->second;
 }
 
@@ -204,8 +229,8 @@ shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id)
         throw InvalidObjectType("Cannot create object for an unregistered type.");
     }
     object = find_iter->second->CreateObjectFromStorage(object_id);
-
-    return object;
+	
+	return object;
 }
 
 shared_ptr<Object> ObjectManager::CreateObjectFromStorage(uint64_t object_id, uint32_t object_type)
@@ -248,6 +273,7 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 				created_object->SetPermissions(permission_itr->second);
 				created_object->SetEventDispatcher(kernel_->GetEventDispatcher());
 				created_object->SetTemplate(template_name);
+				created_object->SetDatabasePersisted(is_persisted);
 				LoadSlotsForObject(created_object);
 
 				//Set the ID based on the inputs
@@ -260,11 +286,10 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 				}
 
 				//Insert it into the object map
-				boost::lock_guard<boost::shared_mutex> lg(object_map_mutex_);
-				object_map_.insert(make_pair(created_object->GetObjectId(), created_object));
+				InsertObject(created_object);
 			}
 		}
-	}
+	}	
 	return created_object;
 }
 
@@ -289,7 +314,10 @@ void ObjectManager::PersistObject(const std::shared_ptr<Object>& object)
         throw InvalidObjectType("Cannot persist object to storage for an unregistered type.");
     }
 
-    find_iter->second->PersistObject(object);
+	if(object->IsDatabasePersisted())
+    {
+		find_iter->second->PersistObject(object);
+	}
 }
 
 void ObjectManager::PersistObject(uint64_t object_id)

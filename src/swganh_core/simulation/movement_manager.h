@@ -26,40 +26,71 @@ namespace simulation {
 
 namespace swganh {
 namespace simulation {
-	class MovementManager : public swganh::simulation::MovementManagerInterface
-    {
-    public:
-		explicit MovementManager(swganh::app::SwganhKernel* kernel);
 
-        void HandleDataTransform(
-            const std::shared_ptr<swganh::object::Object>& object, 
-            swganh::messages::controllers::DataTransform message);
+/**
+* Handles movement related messages
+*/
+class MovementManager : public swganh::simulation::MovementManagerInterface
+{
+public:
+	/*
+	* Creates a new instance
+	*/
+	explicit MovementManager(swganh::app::SwganhKernel* kernel);
 
-        void HandleDataTransformWithParent(
-            const std::shared_ptr<swganh::object::Object>& object, 
-            swganh::messages::controllers::DataTransformWithParent message);
-        
-        void SendDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B);
-        void SendUpdateDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object);
-        
-        void SendDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B);
-        void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object);
+	/*
+	* Handles the normal data transform (used while outside).
+	*/
+    void HandleDataTransform(
+        const std::shared_ptr<swganh::object::Object>& object, 
+        swganh::messages::controllers::DataTransform message);
+	
+	/**
+	* Handles the with parent data transform (used while inside)
+	*/
+    void HandleDataTransformWithParent(
+        const std::shared_ptr<swganh::object::Object>& object, 
+        swganh::messages::controllers::DataTransformWithParent message);
 
-		void SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider);
+	/**
+	* Used internally for server movements (ie: NPCS)
+	*/
+	void HandleDataTransformServer(
+		const std::shared_ptr<swganh::object::Object>& contained_object,
+        const std::shared_ptr<swganh::object::Object>& object,
+		const glm::vec3& new_position);
 
-    private:
-        void RegisterEvents(swganh::EventDispatcher* event_dispatcher);
+	/**
+	* Used internally for server movements (ie: NPCS)
+	*/
+    void HandleDataTransformWithParentServer(
+        const std::shared_ptr<swganh::object::Object>& contained_object, 
+        const std::shared_ptr<swganh::object::Object>& object,
+		const glm::vec3& new_position);
+      
+	/**
+	* Sends the data transform message
+	*/
+    void SendDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B);
+	void SendUpdateDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object);
+    void SendDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B);
+    void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object);
 
-        bool ValidateCounter_(uint64_t object_id, uint32_t counter);
+	void SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider);
 
-        typedef Concurrency::concurrent_unordered_map<
-            uint64_t, uint32_t
-        > UpdateCounterMap;
+private:
+    void RegisterEvents(swganh::EventDispatcher* event_dispatcher);
 
-        UpdateCounterMap counter_map_;
-		std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider_;
-		swganh::simulation::SimulationServiceInterface* simulation_service_;
-		swganh::app::SwganhKernel* kernel_;
-    };
+    bool ValidateCounter_(uint64_t object_id, uint32_t counter);
+
+    typedef Concurrency::concurrent_unordered_map<
+        uint64_t, uint32_t
+    > UpdateCounterMap;
+
+    UpdateCounterMap counter_map_;
+	std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider_;
+	swganh::simulation::SimulationServiceInterface* simulation_service_;
+	swganh::app::SwganhKernel* kernel_;
+};
 
 }}  // namespace swganh::simulation

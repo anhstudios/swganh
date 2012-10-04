@@ -108,6 +108,15 @@ options_description AppConfig::BuildConfigDescription() {
         ("db.galaxy.password", boost::program_options::value<std::string>(&galaxy_db.password),
             "Password for authentication with the galaxy datastore")
             
+		("db.swganh_static.host", boost::program_options::value<std::string>(&swganh_static_db.host),
+            "Host address for the swganh_static datastore")
+        ("db.swganh_static.schema", boost::program_options::value<std::string>(&swganh_static_db.schema),
+            "Schema name for the swganh_static datastore")
+        ("db.swganh_static.username", boost::program_options::value<std::string>(&swganh_static_db.username),
+            "Username for authentication with the swganh_static datastore")
+        ("db.swganh_static.password", boost::program_options::value<std::string>(&swganh_static_db.password),
+            "Password for authentication with the swganh_static datastore")
+
         ("service.login.udp_port", 
             boost::program_options::value<uint16_t>(&login_config.listen_port),
             "The port the login service will listen for incoming client connections on")
@@ -199,6 +208,13 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 	    app_config.galaxy_db.username,
 	    app_config.galaxy_db.password);
     
+	kernel_->GetDatabaseManager()->registerStorageType(
+        "swganh_static",
+        app_config.swganh_static_db.schema,
+        app_config.swganh_static_db.host,
+        app_config.swganh_static_db.username,
+        app_config.swganh_static_db.password);
+
     } 
     catch(std::exception& e)
     {

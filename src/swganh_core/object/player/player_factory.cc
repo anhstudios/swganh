@@ -30,25 +30,53 @@ using namespace swganh::simulation;
 PlayerFactory::PlayerFactory(swganh::database::DatabaseManagerInterface* db_manager,
             swganh::EventDispatcher* event_dispatcher)
     : IntangibleFactory(db_manager, event_dispatcher)
-{
-    RegisterEventHandlers();
+{    
 }
 
 void PlayerFactory::RegisterEventHandlers()
 {
-    event_dispatcher_->Subscribe("Player::RemoveFriend", [this] (shared_ptr<swganh::EventInterface> incoming_event)
-    {
-        auto name_event = static_pointer_cast<NameEvent>(incoming_event);
-        RemoveFriend_(name_event->player, name_event->name_id);
-    });
-
-    event_dispatcher_->Subscribe("Player::RemoveIgnoredPlayer", [this] (shared_ptr<swganh::EventInterface> incoming_event)
-    {
-        auto name_event = static_pointer_cast<NameEvent>(incoming_event);
-        RemoveFromIgnoredList_(name_event->player, name_event->name_id);
-    });
+    event_dispatcher_->Subscribe("Player::StatusBitmask", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Player::ProfileFlag", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Player::ProfessionTag", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+    event_dispatcher_->Subscribe("Player::BornDate", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::TotalPlayTime", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::AdminTag", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::Experience", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::Waypoint", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::ForcePower", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));
+	event_dispatcher_->Subscribe("Player::MaxForcePower", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::ForceSensitiveQuests", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::CompletedForceSensitiveQuests", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::QuestJournal", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::ExperimentationFlag", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::CraftingStage", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::NearestCraftingStation", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::DraftSchematic", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::ExperimentationPoints", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::AccomplishmentCounter", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::Friend", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::RemoveFriend", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::IgnorePlayer", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::RemoveIgnoredPlayer", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::Language", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::CurrentStomach", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::MaxStomach", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::CurrentDrink", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::MaxDrink", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
+	event_dispatcher_->Subscribe("Player::JediState", std::bind(&PlayerFactory::PersistHandler, this, std::placeholders::_1));	
 }
-
+void PlayerFactory::PersistChangedObjects()
+{
+	std::set<shared_ptr<Object>> persisted;
+	{
+		boost::lock_guard<boost::mutex> lg(persisted_objects_mutex_);
+		persisted = move(persisted_objects_);
+	}
+	for (auto& object : persisted)
+	{
+		PersistObject(object);
+	}
+}
 uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
@@ -56,10 +84,10 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
     {
         auto conn = db_manager_->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
-			(conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
-        counter = ObjectFactory::PersistObject(object, statement);
-
+			(conn->prepareStatement("CALL sp_PersistPlayer(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
+        
 		auto player = static_pointer_cast<Player>(object);
+		statement->setUInt64(counter++, player->GetObjectId());
 		statement->setString(counter++, player->GetProfessionTag());
 		statement->setUInt64(counter++, player->GetTotalPlayTime());
 		statement->setUInt(counter++, player->GetAdminTag());
@@ -86,7 +114,7 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
         PersistQuestJournal_(player);
         PersistWaypoints_(player);
     }
-        catch(sql::SQLException &e)
+    catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
@@ -96,18 +124,7 @@ uint32_t PlayerFactory::PersistObject(const shared_ptr<Object>& object)
 
 void PlayerFactory::DeleteObjectFromStorage(const shared_ptr<Object>& object)
 {
-    try 
-    {
-        auto conn = db_manager_->getConnection("galaxy");
-        auto statement = conn->prepareStatement("CALL sp_DeletePlayer(?);");
-        statement->setUInt64(1, object->GetObjectId());
-        statement->execute();
-    }
-        catch(sql::SQLException &e)
-    {
-        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
-        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
-    }
+    ObjectFactory::DeleteObjectFromStorage(object);
 }
 
 shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)

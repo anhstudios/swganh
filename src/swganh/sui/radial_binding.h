@@ -6,6 +6,7 @@
 
 #include "swganh/logger.h"
 #include "swganh/python_shared_ptr.h"
+#include "swganh/app/swganh_kernel.h"
 
 #include <boost/python.hpp>
 #include <boost/python/overloads.hpp>
@@ -32,39 +33,48 @@ namespace sui {
 
 	struct RadialWrap : RadialInterface, bp::wrapper<RadialInterface>
 	{
-		void BuildRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, std::vector<RadialOptions> radials)
+		RadialWrap(PyObject* obj, swganh::app::SwganhKernel* kernel)
+			: RadialInterface(kernel), self_(bp::handle<>(bp::borrowed(obj)))
+		{
+			ScopedGilLock lock;
+			bp::detail::initialize_wrapper(obj, this);
+		}
+
+		std::vector<RadialOptions> BuildRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, std::vector<RadialOptions> radials)
 		{
 			ScopedGilLock lock;
 			try 
 			{
-				
-
-				this->get_override("BuildRadial")(owner, target, radials);
+				return this->get_override("buildRadial")(owner, target, radials);
 			}
 			catch (bp::error_already_set& )
 			{
 				PyErr_Print();
 			}
+			return std::vector<RadialOptions>();
 		}
 		void HandleRadial(std::shared_ptr<swganh::object::Object> owner, std::shared_ptr<swganh::object::Object> target, uint8_t action)
 		{
 			ScopedGilLock lock;
 			try 
 			{				
-				this->get_override("HandleRadial")(owner, target, action);
+				this->get_override("handleRadial")(owner, target, action);
 			}
 			catch (bp::error_already_set& )
 			{
 				PyErr_Print();				
 			}
 		}
+	private:
+		bp::object self_;
 	};
 
 	void exportRadial()
 	{
-		bp::class_<RadialWrap, boost::noncopyable>("RadialMenu", "A radial class purely used in python.")
-			.def("BuildRadial", bp::pure_virtual(&RadialWrap::BuildRadial), "Builds a radial for the target :class:`Object`")
-			.def("HandleRadial", bp::pure_virtual(&RadialWrap::HandleRadial), "Handles a specific radial action");
+		bp::class_<RadialInterface, RadialWrap, boost::noncopyable>("RadialMenu", bp::init<swganh::app::SwganhKernel*>())
+			.def("buildRadial", bp::pure_virtual(&RadialWrap::BuildRadial), "Builds a radial for the target :class:`Object`")
+			.def("handleRadial", bp::pure_virtual(&RadialWrap::HandleRadial), "Handles a specific radial action")
+			.def("getKernel", &RadialInterface::GetKernel, bp::return_internal_reference<>());
 
 		bp::class_<RadialOptions>("RadialOptions", "class defining the options needed for radials", 
 			bp::init<uint8_t, uint8_t, uint8_t, std::wstring>())
@@ -77,7 +87,7 @@ namespace sui {
 			.def(bp::vector_indexing_suite<std::vector<RadialOptions>>());
 
 		bp::enum_<RadialIdentifier>("RadialIdentifier", "defines a radial")
-			.value("Unknown",Unknown)
+			.value("unknown",Unknown)
 			.value("combatTarget",combatTarget)
 			.value("combatUntarget",combatUntarget)
 			.value("combatAttack",combatAttack)

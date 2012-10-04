@@ -36,11 +36,13 @@ namespace simulation
 namespace sui
 {
 	class SUIWindowInterface;
+	class PythonRadialCreator;
 }
 
 namespace messages
 {
 	struct SUIEventNotification;
+	struct RadialMenuSelection;
 	namespace controllers 
 	{
 		class ObjectMenuRequest;
@@ -54,6 +56,8 @@ namespace swganh
 namespace sui
 {
 	
+	class RadialInterface;
+
 	typedef std::multimap<uint64_t,std::shared_ptr<swganh::sui::SUIWindowInterface>> WindowMap;
 	typedef std::pair<WindowMap::iterator, WindowMap::iterator> WindowMapRange;
 
@@ -97,9 +101,15 @@ namespace sui
 
 	private:
 		void _handleEventNotifyMessage(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::SUIEventNotification* message);
+		void _handleObjectMenuSelection(const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, swganh::messages::RadialMenuSelection* message);
+
+		std::shared_ptr<RadialInterface> GetRadialInterfaceForObject(std::shared_ptr<swganh::object::Object> target);
+
 		// Radials
 		void _handleObjectMenuRequest(const std::shared_ptr<swganh::object::Object>& object, swganh::messages::controllers::ObjectMenuRequest* message);
 		void _handlePlayerLogoutEvent();
+
+		std::map<std::string, std::shared_ptr<PythonRadialCreator>> radial_menus_;
 
 		swganh::app::SwganhKernel* kernel_;
 		std::string script_directory_;

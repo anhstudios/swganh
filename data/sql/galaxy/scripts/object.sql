@@ -1,11 +1,3 @@
--- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               5.5.24-MariaDB - mariadb.org binary distribution
--- Server OS:                    Win32
--- HeidiSQL version:             7.0.0.4053
--- Date/time:                    2012-08-12 16:17:22
--- --------------------------------------------------------
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET FOREIGN_KEY_CHECKS=0 */;
@@ -40,7 +32,6 @@ CREATE TABLE IF NOT EXISTS `object` (
   KEY `IDX_A8ADABEC727ACA70` (`parent_id`),
   KEY `IDX_A8ADABEC1220ACE89` (`type_id`),
   CONSTRAINT `FK_A8ADABEC166053B4` FOREIGN KEY (`scene_id`) REFERENCES `scene` (`id`),
-  CONSTRAINT `FK_A8ADABEC727ACA70` FOREIGN KEY (`parent_id`) REFERENCES `object` (`id`),
   CONSTRAINT `FK_A8ADABEC727AB45A` FOREIGN KEY (`iff_template_id`) REFERENCES `iff_templates` (`id`),
   CONSTRAINT `FK_A8ADABEC1220ACE89` FOREIGN KEY (`type_id`) REFERENCES `types` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

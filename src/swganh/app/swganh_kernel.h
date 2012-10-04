@@ -41,7 +41,7 @@ struct AppConfig {
         std::string schema;
         std::string username;
         std::string password;
-    } galaxy_manager_db, galaxy_db;
+    } galaxy_manager_db, galaxy_db, swganh_static_db;
 
     /*!
     * @Brief Contains information about the Login config"

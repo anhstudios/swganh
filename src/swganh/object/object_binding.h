@@ -18,6 +18,9 @@
 
 #include "swganh_core/messages/system_message.h"
 
+#include "swganh_core/messages/update_transform_message.h"
+#include "swganh_core/messages/update_transform_with_parent_message.h"
+
 using namespace boost::python;
 using namespace std;
 using namespace swganh::object;
@@ -51,6 +54,49 @@ void SendSystemMessage4(std::shared_ptr<Object> requester, std::wstring custom_m
 void SendFlyText(std::shared_ptr<Object> requester, const std::string& fly_text, controllers::FlyTextColor color)
 {
 	SystemMessage::FlyText(requester, fly_text, color);
+}
+
+void UpdatePosition(std::shared_ptr<Object> object, glm::vec3 pos)
+{
+	object->SetPosition(pos);
+	if(object->GetContainer()->GetObjectId() == 0)
+	{
+		UpdateTransformMessage transform_update;
+		transform_update.object_id = object->GetObjectId();
+		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
+		transform_update.position = pos;
+		object->NotifyObservers(&transform_update);
+	}
+	else
+	{
+		UpdateTransformWithParentMessage transform_update;
+		transform_update.object_id = object->GetObjectId();
+		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
+		transform_update.position = pos;
+		transform_update.cell_id = object->GetContainer()->GetObjectId();
+		object->NotifyObservers(&transform_update);
+	}
+}
+void UpdateOrientation(std::shared_ptr<Object> object, glm::quat orientation)
+{
+	object->SetOrientation(orientation);
+
+	if(object->GetContainer()->GetObjectId() == 0) {
+		UpdateTransformMessage transform_update;
+		transform_update.object_id = object->GetObjectId();
+		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
+		transform_update.position = object->GetPosition();
+		object->NotifyObservers(&transform_update);
+	}
+	else
+	{
+		UpdateTransformWithParentMessage transform_update;
+		transform_update.object_id = object->GetObjectId();
+		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
+		transform_update.position = object->GetPosition();
+		transform_update.cell_id = object->GetContainer()->GetObjectId();
+		object->NotifyObservers(&transform_update);
+	}
 }
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
@@ -94,15 +140,16 @@ void exportObject()
 		.def("transfer", &ContainerInterface::TransferObject, transferObjectOverload(args("object", "newContainer", "arrangement_id"), "Transfer an object to a different object"))
 		.def("swapSlots", &Object::SwapSlots, "Change an objects current arrangement")	
 		.def("container", &Object::GetContainer, "Gets the :class:`ContainerInterface` object of the current object")
+		.def_readonly("id", &ContainerInterface::GetObjectId, "Gets the object id of the container")
 		;
 	
     class_<Object, bases<ContainerInterface>, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from")
 		.add_property("id", &Object::GetObjectId, &Object::SetObjectId, "Gets or sets The id of the object")
 		.add_property("scene_id", &Object::GetSceneId, "Gets the scene id the object is in")
 		.add_property("type", &Object::GetType, "Gets the type of the object")
-		.add_property("position", &Object::GetPosition, &Object::SetPosition, "Gets and Sets the position of the object, using :class:`.Vec3`")
+		.add_property("position", &Object::GetPosition, UpdatePosition, "Gets and Sets the position of the object, using :class:`.Vec3`")
 		.add_property("heading", &Object::GetHeading, "Gets the heading as an int of the object")
-		.add_property("orientation", &Object::GetOrientation, &Object::SetOrientation, "Property to get or set the orientation of the object")
+		.add_property("orientation", &Object::GetOrientation, UpdateOrientation, "Property to get or set the orientation of the object")
 		.add_property("template", &Object::GetTemplate, &Object::SetTemplate, "the .iff file associated with this object"					)
 		.add_property("volume", &Object::GetVolume, &Object::SetVolume, "Property to get or set the volume of the object (how much it can store)")
 		.add_property("stf_name_file", &Object::GetStfNameFile, "gets the stf name file of the object")
@@ -113,7 +160,7 @@ void exportObject()
         .def("hasFlag", &Object::HasFlag, "Checks if the object has a specific flag set on it")
         .def("setFlag", &Object::SetFlag, "Sets a flag on the object")
         .def("removeFlag", &Object::RemoveFlag, "Removes a flag from the object")
-		.def("setMenuResponse", &Object::SetMenuResponse, "Sets the radial menu response from a python list")
+		.def("hasAttribute", &Object::HasAttribute, "Returns true if the object has the given attribute.")
 		.def("getFloatAttribute", &Object::GetAttribute<float>, "Gets the float attribute value")
 		.def("setFloatAttribute", &Object::SetAttribute<float>, "Sets the float attribute value")
 		.def("getIntAttribute", &Object::GetAttribute<int32_t>, "Gets the int attribute value")
@@ -127,7 +174,7 @@ void exportObject()
 		.def("sendSystemMessage", SendSystemMessage3, "Send a system message to the requester")
 		.def("sendSystemMessage", SendSystemMessage4, "Send a system message to the requester")
 		.def("sendFlyText", SendFlyText, "Sends Fly Text to the player, see :class:`.FlyTextColor`")
-		
+		.def("updatePosition", &Object::UpdatePosition, "Updates the position and sends an update to the player")
 		;
 
 	implicitly_convertible<std::shared_ptr<Object>, std::shared_ptr<ContainerInterface>>();

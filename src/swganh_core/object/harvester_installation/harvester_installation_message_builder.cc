@@ -44,3 +44,10 @@ BaselinesMessage HarvesterInstallationMessageBuilder::BuildBaseline6(const share
     message.data.append(InstallationMessageBuilder::BuildBaseline6(harvester_installation).data);
     return BaselinesMessage(std::move(message));
 }
+
+BaselinesMessage HarvesterInstallationMessageBuilder::BuildBaseline7(const shared_ptr<HarvesterInstallation>& harvester_installation)
+{
+	auto message = CreateBaselinesMessage(harvester_installation, Object::VIEW_7, 16);
+	message.data.append(InstallationMessageBuilder::BuildBaseline7(harvester_installation).data);
+	return BaselinesMessage(std::move(message));
+}

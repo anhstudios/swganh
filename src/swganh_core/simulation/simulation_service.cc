@@ -140,7 +140,7 @@ class SimulationServiceImpl {
 public:
     SimulationServiceImpl(SwganhKernel* kernel)
         : kernel_(kernel)
-    {		
+    {			
     }
 
     const shared_ptr<ObjectManager>& GetObjectManager()
@@ -211,8 +211,8 @@ public:
         if (scene)
         {
             scene->AddObject(object);
-        }
-	}
+        }		
+	}	
 	
     void PersistObject(uint64_t object_id)
     {
@@ -260,10 +260,11 @@ public:
         }
 		StopControllingObject(object);
 
-		object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> viewObject){
+		// We're ok with the object existing in the object_manager until server shutdown
+		/*object->ViewObjects(nullptr, 0, true, [&](shared_ptr<Object> viewObject){
 			object_manager_->RemoveObject(viewObject);
 		});
-        object_manager_->RemoveObject(object);
+        object_manager_->RemoveObject(object);*/
 		
     }
 
@@ -409,11 +410,7 @@ public:
         const shared_ptr<ConnectionClientInterface>& client,
         SelectCharacter* message)
     {
-        auto object = GetObjectById(message->character_id);
-        if (!object)
-        {
-            object = LoadObjectById(message->character_id, Creature::type);
-        }
+        auto object = LoadObjectById(message->character_id, Creature::type);        
 
         auto event_dispatcher = kernel_->GetEventDispatcher();
 		auto player = GetEquipmentService()->GetEquippedObject<Player>(object, "ghost");
@@ -492,6 +489,7 @@ private:
     ObjControllerHandlerMap controller_handlers_;
 
     Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<ObjectController>> controlled_objects_;
+	Concurrency::concurrent_unordered_map<uint64_t, shared_ptr<boost::asio::deadline_timer>> delayed_update_;
 };
 
 }}  // namespace swganh::simulation
@@ -538,6 +536,8 @@ void SimulationService::RegisterObjectFactories()
 	object_manager->RegisterObjectType<Static>();
 	object_manager->RegisterObjectType<Tangible>();
 	object_manager->RegisterObjectType<Intangible>();
+	object_manager->RegisterObjectType<Installation>();
+	object_manager->RegisterObjectType<HarvesterInstallation>();
 	object_manager->RegisterObjectType<Mission>();
 	object_manager->RegisterObjectType<Guild>();
 	object_manager->RegisterObjectType<Group>();
@@ -549,7 +549,6 @@ void SimulationService::RegisterObjectFactories()
 	object_manager->RegisterObjectType<FactoryCrate>();
 	object_manager->RegisterObjectType<Weapon>();
 	object_manager->RegisterObjectType<Building>();
-	
 }
 
 void SimulationService::PersistObject(uint64_t object_id)
