@@ -74,7 +74,7 @@ ObjectManager::ObjectManager(swganh::app::SwganhKernel* kernel)
 		type_lookup_.insert(make_pair(key, value));
 	}
 
-	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(1));
+	persist_timer_ = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::minutes(5));
 	persist_timer_->async_wait(boost::bind(&ObjectManager::PersistObjectsByTimer, this, boost::asio::placeholders::error));
 }
 
