@@ -6,10 +6,24 @@
 
 namespace swganh {
 namespace attributes {
+
+	/* 
+	* The attribute template used for wearables.
+	*/
 	class WearableAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
-		WearableAttributeTemplate(swganh::EventDispatcher* dispatcher);            
+		
+		/**
+		* Creates a new instance
+		*/
+		WearableAttributeTemplate(swganh::EventDispatcher* dispatcher);
+		
+		/**
+		* Builds an attribute list message using this template.
+		* @param object the object to buid the message for
+		* @Override
+		*/
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

@@ -25,16 +25,34 @@ enum ERROR
 	GOD_LEVEL = 6
 };
 
+/**
+* Defines a set of filters that can be run on a command
+*/
 struct CommandFilters {
 
+	/**
+	* Checks the target of a command matches what is expected
+	*/
     static std::tuple<bool, uint32_t, uint32_t> TargetCheckFilter(swganh::command::CommandInterface* command);
     
+	/**
+	* Checks that the actor of a command is in the proper posture to execute that command
+	*/
     static std::tuple<bool, uint32_t, uint32_t> PostureCheckFilter(swganh::command::CommandInterface* command);
     
+	/**
+	* Checks that the actor of a command is in the proper state to execute that command
+	*/
     static std::tuple<bool, uint32_t, uint32_t> StateCheckFilter(swganh::command::CommandInterface* command);
     
+	/**
+	* Checks that the actor of a command has necessary abilities to execute that command
+	*/
     static std::tuple<bool, uint32_t, uint32_t> AbilityCheckFilter(swganh::command::CommandInterface* command);
     
+	/**
+	* Checks that the target of a combat command can be attacked
+	*/
     static std::tuple<bool, uint32_t, uint32_t> CombatTargetCheckFilter(swganh::command::CommandInterface* command);
 
     /**

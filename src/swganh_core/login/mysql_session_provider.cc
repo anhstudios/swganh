@@ -24,8 +24,6 @@ MysqlSessionProvider::MysqlSessionProvider(swganh::database::DatabaseManagerInte
     : SessionProviderInterface()
     , db_manager_(db_manager) {}
 
-MysqlSessionProvider::~MysqlSessionProvider() {}
-
 uint64_t MysqlSessionProvider::GetPlayerId(uint32_t account_id) {
     uint64_t player_id = 0;
 

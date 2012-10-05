@@ -5,53 +5,53 @@ class BurstRunCommand(BaseSwgCommand):
     base_run_duration_ms = 15000
     base_cooldate_timer_ms = 60000
 
-    def Validate(self):
-        actor = self.GetActor()
+    def validate(self):
+        actor = self.getActor()
 
         if actor == None:
             return False
 
-        if actor.HasFlag("BurstRunning"):
-            actor.SendSystemMessage('combat_effects', 'burst_run_no')
+        if actor.hasFlag("BurstRunning"):
+            actor.sendSystemMessage('combat_effects', 'burst_run_no')
             return False
 
-        if actor.HasFlag("BurstRunCooldown"):
-            actor.SendSystemMessage('combat_effects', 'burst_run_wait')
+        if actor.hasFlag("BurstRunCooldown"):
+            actor.sendSystemMessage('combat_effects', 'burst_run_wait')
             return False
 
         # @TODO Check for mounts and whether or not in a space station/vehicle
 
         return True
 
-    def Run(self):
-        actor = self.GetActor()            
+    def run(self):
+        actor = self.getActor()            
         
-        actor.SetFlag("BurstRunning")
-        actor.SetFlag("BurstRunCooldown")
+        actor.setFlag("BurstRunning")
+        actor.setFlag("BurstRunCooldown")
         
         # increase the actor's run speed
         actor.run_speed *= self.base_run_multiplier
 
-        actor.SendSystemMessage('cbt_spam', 'burstrun_start_single')
+        actor.sendSystemMessage('cbt_spam', 'burstrun_start_single')
    
-        return Callback(self.EndBurstRun, self.base_run_duration_ms)
+        return Callback(self.endBurstRun, self.base_run_duration_ms)
 
-    def EndBurstRun(self):        
-        actor = self.GetActor()
+    def endBurstRun(self):        
+        actor = self.getActor()
         
-        actor.RemoveFlag("BurstRunning")
+        actor.removeFlag("BurstRunning")
         
         # decrease the actor's run speed by the increased amount
         actor.run_speed /= self.base_run_multiplier
 
-        actor.SendSystemMessage('cbt_spam', 'burstrun_stop_single')
-        actor.SendSystemMessage('combat_effects', 'burst_run_tired')
+        actor.sendSystemMessage('cbt_spam', 'burstrun_stop_single')
+        actor.sendSystemMessage('combat_effects', 'burst_run_tired')
  
-        return Callback(self.EndBurstRunCooldown, self.base_cooldate_timer_ms - self.base_run_duration_ms)
+        return Callback(self.endBurstRunCooldown, self.base_cooldate_timer_ms - self.base_run_duration_ms)
 
-    def EndBurstRunCooldown(self):
-        actor = self.GetActor()
+    def endBurstRunCooldown(self):
+        actor = self.getActor()
         
-        actor.RemoveFlag("BurstRunCooldown")
+        actor.removeFlag("BurstRunCooldown")
         
-        actor.SendSystemMessage('combat_effects', 'burst_run_not_tired')
+        actor.sendSystemMessage('combat_effects', 'burst_run_not_tired')

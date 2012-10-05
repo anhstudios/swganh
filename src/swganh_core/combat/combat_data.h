@@ -23,6 +23,9 @@ namespace command {
 namespace swganh {
 namespace combat {
     
+/**
+* Data used in combat
+*/
 struct CombatData : swganh::command::CommandProperties
 {
     // TEMP
@@ -50,8 +53,15 @@ struct CombatData : swganh::command::CommandProperties
     {
     }
 
+	/**
+	* Create a combat data from a given command
+	*/
     explicit CombatData(swganh::command::BaseCombatCommand* command);
-    CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties );
+    
+	/**
+	* Create combat data from a python object
+	*/
+	CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties );
 
     int min_damage;
     int max_damage;
@@ -88,6 +98,9 @@ struct CombatData : swganh::command::CommandProperties
     bool IsRandomPool();
     int GetDamagingPool();
     
+	/**
+	* Extracts combat data from a python object
+	*/
     template <typename T>
     void ExtractData(boost::python::object& p_object, std::string key, T& extract_value)
     {

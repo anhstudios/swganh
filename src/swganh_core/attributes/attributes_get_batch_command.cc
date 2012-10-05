@@ -51,7 +51,7 @@ boost::optional<std::shared_ptr<CommandCallback>> GetAttributesBatchCommand::Run
 		auto found = simulation_service_->GetObjectById(boost::lexical_cast<uint64_t>(object));
 		if (found)
 		{
-			attributes_service_->HandleGetAttributesBatch(found, actor);
+			attributes_service_->SendAttributesMessage(found, actor);
 		}
 	}
 

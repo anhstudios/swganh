@@ -12,9 +12,6 @@ using swganh::command::BaseSwgCommand;
 using swganh::command::CommandFilter;
 using swganh::command::CommandInterface;
 
-CommandValidator::~CommandValidator()
-{}
-
 void CommandValidator::AddCommandEnqueueFilter(swganh::command::CommandFilter&& filter)
 {
 	enqueue_filters_.push_back(std::move(filter));

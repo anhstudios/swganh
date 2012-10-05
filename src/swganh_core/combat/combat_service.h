@@ -54,34 +54,69 @@ namespace combat {
         MISS
     };
 
+	/**
+	* The service used for combat
+	*/
     class CombatService: public swganh::combat::CombatServiceInterface
     {
     public:
-        explicit CombatService(swganh::app::SwganhKernel* kernel);
         
+		/**
+		* Creates a new instance
+		*/
+		explicit CombatService(swganh::app::SwganhKernel* kernel);
+        
+		/**
+		* @return the service description of this service
+		*/
         swganh::service::ServiceDescription GetServiceDescription();
 
+		/**
+		* Attacker incapacitates target
+		* @param attacker the object that caused the incapacitation
+		* @param target the object that has become incapacitated
+		*/
         void SetIncapacitated(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target);
         
+		/**
+		* Attacker kills target
+		* @param attacker the object that caused the kill
+		* @param target the object that has been killed
+		*/
         void SetDead(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target);
 
+		/**
+		* Ends a duel
+		* @param attacker the object that has ended the duel
+		* @param target the object that has had it's duel ended
+		*/
         void EndDuel(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target);
-        void EndCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target);
         
+		/**
+		* Ends combat
+		* @param attacker the object that has ended combat
+		* @param target the object that has had combat ended
+		*/
+		void EndCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target);
+        
+		/**
+		* Called on startup.
+		*/
 		void Startup();
 
+		/**
+		* Executes a combat action
+		* @param command the command of the combat action to execute
+		*/
         void SendCombatAction(swganh::command::BaseCombatCommand* command);
 
     private:
-		typedef Concurrency::concurrent_unordered_map<
-            uint32_t, 
-            CombatHandler
-        > HandlerMap;
-        
+		typedef Concurrency::concurrent_unordered_map<uint32_t, CombatHandler> HandlerMap;
+      
         bool InitiateCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const swganh::HashString& command);
-        
+    
         bool InitiateCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
-        void SendCombatAction(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message, boost::python::object p_object);
+		void SendCombatAction(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message, boost::python::object p_object);
         void SendCombatActionMessage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, CombatData& properties, std::string animation = std::string(""));
         int SingleTargetCombatAction(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, CombatData& properties);
         int SingleTargetCombatAction(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature> & target, CombatData& properties);

@@ -272,7 +272,7 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
             {
                 // if we get a special character_id back it means there was an error.
                 /// @TODO Change this to return a separate output value for the error code
-                return make_tuple(0, setCharacterCreateErrorCode_(static_cast<uint32_t>(char_id)));
+                return make_tuple(0, getCharacterCreateErrorCode_(static_cast<uint32_t>(char_id)));
             }
             return make_tuple(char_id, "");
         }
@@ -287,7 +287,7 @@ tuple<uint64_t, string> MysqlCharacterProvider::CreateCharacter(const ClientCrea
     return make_tuple(0, "name_declined_internal_error");
 }
 
-std::string MysqlCharacterProvider::setCharacterCreateErrorCode_(uint32_t error_code)
+std::string MysqlCharacterProvider::getCharacterCreateErrorCode_(uint32_t error_code)
 {
     std::string error_string;
     switch(error_code)
