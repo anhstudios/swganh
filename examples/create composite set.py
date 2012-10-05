@@ -56,7 +56,7 @@ gloves.condition = 0
 gloves.max_condition = 1000
 inventory.add(actor, gloves)
 
-leggings.stfName('wearables_name', 'armor_mandalorian_pants')
+leggings.stfName('wearables_name', 'armor_mandalorian_leggings')
 leggings.condition = 0
 leggings.max_condition = 1000
 inventory.add(actor, leggings)

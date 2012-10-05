@@ -399,6 +399,11 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
     {
         return true;
     }
+	// are we more than 50 packets out of sequence?
+	else if(sequence > (next_client_sequence_ + 50) )
+	{
+		Close();
+	}
     else if (next_client_sequence_ < sequence)
     {
 		// Tell the client we have received an Out of Order sequence.
@@ -407,6 +412,7 @@ bool Session::SequenceIsValid_(const uint16_t& sequence)
 		out_of_order.serialize(buffer);
 		SendSoePacket_(move(buffer));        
     }
+	
 	return false;
 }
 

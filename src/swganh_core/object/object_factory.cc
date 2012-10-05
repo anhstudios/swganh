@@ -182,7 +182,7 @@ void ObjectFactory::LoadAttributes(std::shared_ptr<Object> object)
 				{
 					object->SetAttribute(attr_name, boost::lexical_cast<float>(unparsed_value));
 				}
-				else if (std::string::npos != unparsed_value.find_first_of("0123456789"))
+				else if (unparsed_value.find_first_of("0123456789") == 0)
 				{
 					object->SetAttribute(attr_name, boost::lexical_cast<int>(unparsed_value));
 				}
@@ -194,6 +194,7 @@ void ObjectFactory::LoadAttributes(std::shared_ptr<Object> object)
 			catch (std::exception& e)
 			{
 				LOG(error) << "Error parsing attribute " << attr_name <<" for object_id:" << object->GetObjectId() << " error message:" << e.what();
+				object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
 			}
         }          
     }
