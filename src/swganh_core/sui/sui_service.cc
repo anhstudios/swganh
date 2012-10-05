@@ -129,6 +129,8 @@ void SUIService::_handleObjectMenuRequest(
 	ObjectMenuRequest* message)
 {
 	auto target = simulation_service_->GetObjectById(message->target_id);
+	if (!target)
+		return;
 	
 	// Fill it in
 	ObjectMenuResponse response;

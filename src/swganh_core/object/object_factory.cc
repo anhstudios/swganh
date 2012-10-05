@@ -157,12 +157,73 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 		{
 			parent->AddObject(nullptr, object);
 		}
+		LoadAttributes(object);
     }
     catch(sql::SQLException &e)
     {
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();
     }
+}
+
+void ObjectFactory::LoadAttributes(std::shared_ptr<Object> object)
+{
+	 try {
+        auto conn = db_manager_->getConnection("galaxy");
+        auto statement = conn->prepareStatement("CALL sp_GetAttributes(?,?);");
+		statement->setString(1, object->GetTemplate());
+        statement->setUInt64(2, object->GetObjectId());
+        auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());        
+        while (result->next())
+        {
+			string attr_name = result->getString("name");
+			string unparsed_value = result->getString("attribute_value");
+			try {				
+				if (std::string::npos != unparsed_value.find("."))
+				{
+					object->SetAttribute(attr_name, boost::lexical_cast<float>(unparsed_value));
+				}
+				else if (std::string::npos != unparsed_value.find_first_of("0123456789"))
+				{
+					object->SetAttribute(attr_name, boost::lexical_cast<int>(unparsed_value));
+				}
+				else
+				{
+					object->SetAttribute(attr_name, std::wstring(unparsed_value.begin(), unparsed_value.end()));
+				}
+			}
+			catch (std::exception& e)
+			{
+				LOG(error) << "Error parsing attribute " << attr_name <<" for object_id:" << object->GetObjectId() << " error message:" << e.what();
+			}
+        }          
+    }
+    catch(sql::SQLException &e)
+    {
+        LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+        LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
+    }
+}
+void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
+{
+	try 
+	{
+		auto conn = db_manager_->getConnection("galaxy");
+		for (auto& attribute : object->GetAttributeMap())
+		{
+			auto statement = conn->prepareStatement("CALL sp_PersistAttribute(?,?,?);");
+			statement->setUInt64(1, object->GetObjectId());
+			statement->setString(2, attribute.first.ident_string());
+			std::wstring attr = boost::get<wstring>(attribute.second);
+			statement->setString(3, std::string(attr.begin(), attr.end()));
+			statement->executeQuery();    
+		}		
+	}
+	catch(sql::SQLException &e)
+	{
+		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
+		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
+	}
 }
 
 uint32_t ObjectFactory::LookupType(uint64_t object_id) const
