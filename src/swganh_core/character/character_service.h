@@ -31,25 +31,51 @@ namespace character {
 }}
 namespace swganh {
 namespace character {
-    
+   
+/**
+* The character service is used to handle character creation, deletion and random
+* name generation.
+*/
 class CharacterService : public swganh::character::CharacterServiceInterface {
 public:
-    explicit CharacterService(swganh::app::SwganhKernel* kernel);
-    ~CharacterService();
+
+	/** 
+	* Creates a new instance
+	*/
+	explicit CharacterService(swganh::app::SwganhKernel* kernel);
     
+	/**
+	* @return the service description for this service
+	*/
     swganh::service::ServiceDescription GetServiceDescription();
 
+	/**
+	* Called on startup of the server
+	*/
     void Startup();
 
 private:
+
+	/**
+	* Message handler for Random name requests.
+	* This will reply with a RandomNameResponse
+	*/
     void HandleClientRandomNameRequest_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::ClientRandomNameRequest* message);
 
+	/**
+	* Message handler for ClientCreateCharacter.
+	* This will respond with a CharacterCreateSuccess or CreateCharacterFailed
+	*/
     void HandleClientCreateCharacter_(
         const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
         swganh::messages::ClientCreateCharacter* message);
 
+	/**
+	* Message handler for character deletion.
+	* This will reply with DeleteCharacterReplyMessage
+	*/
     void HandleDeleteCharacterMessage_(
         const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, 
         swganh::messages::DeleteCharacterMessage* message);

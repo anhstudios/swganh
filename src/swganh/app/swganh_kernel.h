@@ -70,6 +70,8 @@ public:
     explicit SwganhKernel(boost::asio::io_service& io_service);
     virtual ~SwganhKernel();
 
+	void Shutdown();
+
     const swganh::app::Version& GetVersion();
 
     AppConfig& GetAppConfig();

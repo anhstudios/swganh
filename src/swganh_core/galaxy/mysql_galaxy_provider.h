@@ -11,11 +11,19 @@ namespace swganh { namespace database { class DatabaseManagerInterface;
 namespace swganh {
 namespace galaxy {
 
+/**
+* Provides basic galaxy functionality via mysql
+*/
 class MysqlGalaxyProvider : public swganh::galaxy::providers::GalaxyProviderInterface {
 public:
+	/**
+	* Creates a new instance
+	*/
     explicit MysqlGalaxyProvider(swganh::database::DatabaseManagerInterface* db_manager);
-    ~MysqlGalaxyProvider();
 
+	/**
+	* @return the population of the galaxy
+	*/
 	virtual uint32_t GetPopulation();
 	
 private:

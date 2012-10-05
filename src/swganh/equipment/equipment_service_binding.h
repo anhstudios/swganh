@@ -26,11 +26,11 @@ void exportEquipmentService()
 	std::shared_ptr<Object> (EquipmentServiceInterface::*GetFunc)(std::shared_ptr<Object>, std::string) = &EquipmentServiceInterface::GetEquippedObject;
 	
     class_<EquipmentServiceInterface, shared_ptr<EquipmentServiceInterface>, boost::noncopyable>("EquipmentService", "The equipment service is a utility class for helping with equipping.", no_init)
-        .def("GetSlotIdByName", &EquipmentServiceInterface::GetSlotIdByName,"Returns the slot id associated with a slot name. This slot_id can then be used by objects to do equipment operations.")
-		.def("GetSlotNameById", &EquipmentServiceInterface::GetSlotNameById,"Returns the slot name by the slot_id. This can be used to 'undo' GetSlotIdByName")
-		.def("ClearSlot", ClearFunc,"Utility method that gets the slot id for a slot name and then clears that slot from an object.")
-		.def("GetEquippedObject", GetFunc,"Utility method that gets the slot id for a slot name and then returns the object in that slot for a given object.")
-		.def("GetPlayerObject", make_function(
+        .def("getSlotIdByName", &EquipmentServiceInterface::GetSlotIdByName,"Returns the slot id associated with a slot name. This slot_id can then be used by objects to do equipment operations.")
+		.def("getSlotNameById", &EquipmentServiceInterface::GetSlotNameById,"Returns the slot name by the slot_id. This can be used to 'undo' GetSlotIdByName")
+		.def("clearSlot", ClearFunc,"Utility method that gets the slot id for a slot name and then clears that slot from an object.")
+		.def("getEquippedObject", GetFunc,"Utility method that gets the slot id for a slot name and then returns the object in that slot for a given object.")
+		.def("getPlayerObject", make_function(
 			std::bind(&EquipmentServiceInterface::GetEquippedObject<Player>, std::placeholders::_1, std::placeholders::_2, "ghost"),
 			return_value_policy<return_by_value>(),
             boost::mpl::vector<shared_ptr<Player>, EquipmentServiceInterface*, shared_ptr<Object>>()),

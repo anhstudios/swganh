@@ -51,11 +51,6 @@ ChatService::ChatService(SwganhKernel* kernel)
     : kernel_(kernel)
 {}
 
-ChatService::~ChatService()
-{    
-}
-
-
 ServiceDescription ChatService::GetServiceDescription()
 {
     ServiceDescription service_description(

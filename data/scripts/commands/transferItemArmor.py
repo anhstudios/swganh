@@ -3,9 +3,8 @@ import swgpy
 from swgpy.command import BaseSwgCommand
 
 class TransferItemArmor(BaseSwgCommand):
-    def Run(self):
-        print('transfer item armor entered')
-        split = re.split('\W+', self.GetCommandString())
+    def run(self):
+        split = re.split('\W+', self.getCommandString())
         container_id = split[1]
-        container = self.GetKernel().service_manager().simulation_service().findObjectById(int(container_id))
-        self.GetTarget().Container().Transfer(self.GetActor(), self.GetTarget(), container)
+        container = self.getKernel().serviceManager().simulationService().findObjectById(int(container_id))
+        self.getTarget().container().transfer(self.getActor(), self.getTarget(), container)

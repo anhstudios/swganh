@@ -60,11 +60,6 @@ void PlayerService::Startup()
 		GetService<swganh::simulation::SimulationServiceInterface>("SimulationService");
 }
 
-void PlayerService::CleanupPlayerState(shared_ptr<swganh::object::Player> player)
-{
-
-}
-
 void PlayerService::OnPlayerEnter(shared_ptr<swganh::object::Player> player)
 {
     if (player)

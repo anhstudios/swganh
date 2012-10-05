@@ -21,8 +21,6 @@ MysqlGalaxyProvider::MysqlGalaxyProvider(swganh::database::DatabaseManagerInterf
     : GalaxyProviderInterface()
     , db_manager_(db_manager) {}
 
-MysqlGalaxyProvider::~MysqlGalaxyProvider() {}
-
 uint32_t MysqlGalaxyProvider::GetPopulation()
 {
 	uint32_t population = 0;

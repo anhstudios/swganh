@@ -19,16 +19,33 @@ namespace command {
 namespace swganh {
 namespace command {
     
+	/**
+	* Implementation that associates a command name with creation of a command
+	*/
     class CommandFactory : public swganh::command::CommandFactoryInterface
     {
     public:
+		/**
+		* Creates a new instance
+		*/
         explicit CommandFactory(swganh::app::SwganhKernel* kernel);
-        ~CommandFactory();
 
+		/**
+		* Associates a particular command name with a creator
+		* @param command the name
+		* @param creator the creator
+		*/
         virtual void AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator&& creator);
 
+		/**
+		* Disassociates a particular command name with a creator
+		* @param command the command name to disassociate
+		*/
         virtual void RemoveCommandCreator(swganh::HashString command);
 
+		/**
+		* Create a command by name
+		*/
         virtual std::shared_ptr<swganh::command::CommandInterface> CreateCommand(swganh::HashString command);
 
     private:
@@ -46,9 +63,7 @@ namespace command {
             const swganh::command::CommandProperties& properties;
         };
 
-        typedef std::map<
-            swganh::HashString, CreatorData
-        > CreatorMap;
+        typedef std::map<swganh::HashString, CreatorData> CreatorMap;
 
         swganh::app::SwganhKernel* kernel_;
         swganh::command::CommandServiceInterface* command_service_;

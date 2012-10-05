@@ -160,45 +160,67 @@ SwganhApp::~SwganhApp()
 {
     Stop();
 	// Shutdown Event Dispatcher
-	kernel_->GetEventDispatcher()->Shutdown();
+	kernel_->Shutdown();
 
-    kernel_.reset();
-    io_work_.reset();
-    
-    // join the threadpool threads until each one has exited.
-    for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
+	io_work_.reset();
+	
+	// join the threadpool threads until each one has exited.
+	for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
+
+	kernel_.reset();
 }
 
 void SwganhApp::Initialize(int argc, char* argv[]) {
     // Init Logging
     SetupLogging_();
     
+    std::cout << "Ben Kenobi : That boy was our last hope." << std::endl;
+    std::cout << "      Yoda : No! There is another..." << std::endl << std::endl;
+    std::cout << " .d8888b.  888       888  .d8888b.         d8888 888b    888 888    888 " << std::endl;
+	std::cout << "d88P  Y88b 888   o   888 d88P  Y88b       d88888 8888b   888 888    888 " << std::endl;
+	std::cout << "Y88b.      888  d8b  888 888    888      d88P888 88888b  888 888    888 " << std::endl;
+	std::cout << " \"Y888b.   888 d888b 888 888            d88P 888 888Y88b 888 8888888888 " << std::endl;
+	std::cout << "    \"Y88b. 888d88888b888 888  88888    d88P  888 888 Y88b888 888    888 " << std::endl;
+	std::cout << "      \"888 88888P Y88888 888    888   d88P   888 888  Y88888 888    888 " << std::endl;
+	std::cout << "Y88b  d88P 8888P   Y8888 Y88b  d88P  d8888888888 888   Y8888 888    888 " << std::endl;
+	std::cout << " \"Y8888P\"  888P     Y888  \"Y8888P88 d88P     888 888    Y888 888    888 " << std::endl << std::endl;
+ 
+    
     // Load the configuration    
     LoadAppConfig_(argc, argv);
 
     auto app_config = kernel_->GetAppConfig();
 
-    // Initialize kernel resources    
-    kernel_->GetDatabaseManager()->registerStorageType(
-        "galaxy_manager",
-        app_config.galaxy_manager_db.schema,
-        app_config.galaxy_manager_db.host,
-        app_config.galaxy_manager_db.username,
-        app_config.galaxy_manager_db.password);
-
-    kernel_->GetDatabaseManager()->registerStorageType(
-        "galaxy",
-        app_config.galaxy_db.schema,
-        app_config.galaxy_db.host,
-        app_config.galaxy_db.username,
-        app_config.galaxy_db.password);
-
+    try {
+    
+	// Initialize kernel resources    
+        kernel_->GetDatabaseManager()->registerStorageType(
+	    "galaxy_manager",
+	    app_config.galaxy_manager_db.schema,
+	    app_config.galaxy_manager_db.host,
+	    app_config.galaxy_manager_db.username,
+	    app_config.galaxy_manager_db.password);
+	
+	kernel_->GetDatabaseManager()->registerStorageType(
+	    "galaxy",
+	    app_config.galaxy_db.schema,
+	    app_config.galaxy_db.host,
+	    app_config.galaxy_db.username,
+	    app_config.galaxy_db.password);
+    
 	kernel_->GetDatabaseManager()->registerStorageType(
         "swganh_static",
         app_config.swganh_static_db.schema,
         app_config.swganh_static_db.host,
         app_config.swganh_static_db.username,
         app_config.swganh_static_db.password);
+
+    } 
+    catch(std::exception& e)
+    {
+    	LOG(fatal) << "Database connection errors occurred. Did you forget to populate the db?";
+    	throw e;
+    }
     
     CleanupServices_();
     
@@ -311,8 +333,6 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
 }
 
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
-    LOG(info) << "Loading plugins...";
-
     if (!plugins.empty()) {
         auto plugin_manager = kernel_->GetPluginManager();
         auto plugin_directory = kernel_->GetAppConfig().plugin_directory;
@@ -322,7 +342,6 @@ void SwganhApp::LoadPlugins_(vector<string> plugins) {
             plugin_manager->LoadPlugin(plugin, plugin_directory);
         });
     }
-	LOG(info) << "Finished Loading plugins...";
 }
 
 void SwganhApp::CleanupServices_() {
@@ -356,9 +375,7 @@ void SwganhApp::LoadCoreServices_()
 
         if (entry.first.length() > 7 && regex_match(name, m, rx)) {
             auto service_name = m[1].str();
-			LOG(info) << "Loading Service " << name << "...";
             auto service = kernel_->GetPluginManager()->CreateObject<swganh::service::ServiceInterface>(name);
-			
             kernel_->GetServiceManager()->AddService(service_name, service);
 			LOG(info) << "Loaded Service " << name;
         }

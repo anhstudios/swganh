@@ -7,10 +7,24 @@
 
 namespace swganh {
 namespace attributes {
+
+	/**
+	* The attribute template used for furniture
+	*/
 	class FurnitureAttributeTemplate : public BaseAttributeTemplate
 	{
 	public:
+
+		/**
+		* Creates a new instance
+		*/
 		FurnitureAttributeTemplate(swganh::EventDispatcher* dispatcher);            
+		
+		/**
+		* Builds an attribute list message using this template.
+		* @param object the object to buid the message for
+		* @Override
+		*/
 		swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object);		
 	};
 

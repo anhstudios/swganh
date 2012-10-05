@@ -34,7 +34,7 @@ GalaxyService::~GalaxyService()
 ServiceDescription GalaxyService::GetServiceDescription()
 {
 	ServiceDescription service_description(        
-		"ANH Galaxy Service",
+		"Galaxy Service",
         "galaxy",
         "0.1",
         "127.0.0.1", 

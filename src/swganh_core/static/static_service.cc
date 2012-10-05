@@ -134,10 +134,10 @@ void StaticService::_loadBuildings(SimulationServiceInterface* simulation_servic
 			STATIC_CONTAINER_PERMISSION, false, false, result->getInt64(1));
 			
 		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(5)),
 			static_cast<float>(result->getDouble(2)),
 			static_cast<float>(result->getDouble(3)),
-			static_cast<float>(result->getDouble(4)),
-			static_cast<float>(result->getDouble(5))));
+			static_cast<float>(result->getDouble(4))));
 
 		object->SetPosition(glm::vec3(result->getDouble(6), result->getDouble(7), result->getDouble(8)));
 		object->SetStfName(result->getString(12), result->getString(13));
@@ -188,13 +188,10 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
 
 		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(6)),
 			static_cast<float>(result->getDouble(3)),
 			static_cast<float>(result->getDouble(4)),
-			static_cast<float>(result->getDouble(5)),
-			static_cast<float>(result->getDouble(6))));
-
-		object->SetOrientation(glm::rotate(object->GetOrientation(), 180, glm::vec3(1.0f, 0.0f, 0.0f)));
-		object->SetOrientation(glm::rotate(object->GetOrientation(), 180, glm::vec3(0.0f, 1.0f, 0.0f)));
+			static_cast<float>(result->getDouble(5))));
 
 		object->SetPosition(glm::vec3(result->getDouble(7),result->getDouble(8),result->getDouble(9)));
 
@@ -235,10 +232,11 @@ void StaticService::_loadElevatorData(SimulationServiceInterface* simulation_ser
 		terminal->SetAttribute<std::wstring>("radial_filename", L"radials.elevator");
 
 		elevator_data->dst_cell = result->getUInt64(2);
-		elevator_data->dst_orientation = glm::quat(static_cast<float>(result->getDouble(3)),
+		elevator_data->dst_orientation = glm::quat(
+			static_cast<float>(result->getDouble(6)),
+			static_cast<float>(result->getDouble(3)),
 			static_cast<float>(result->getDouble(4)),
-			static_cast<float>(result->getDouble(5)),
-			static_cast<float>(result->getDouble(6)));
+			static_cast<float>(result->getDouble(5)));
 		elevator_data->dst_position = glm::vec3(result->getDouble(7),result->getDouble(8),result->getDouble(9));
 		elevator_data->effect_id = result->getUInt(10);
 		elevator_data->going_down = result->getUInt(11) != 0;
@@ -273,13 +271,10 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
 
 		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(7)),
 			static_cast<float>(result->getDouble(4)),
 			static_cast<float>(result->getDouble(5)),
-			static_cast<float>(result->getDouble(6)),
-			static_cast<float>(result->getDouble(7))));
-
-		object->SetOrientation(glm::rotate(object->GetOrientation(), 180, glm::vec3(1.0f, 0.0f, 0.0f)));
-		object->SetOrientation(glm::rotate(object->GetOrientation(), 180, glm::vec3(0.0f, 1.0f, 0.0f)));
+			static_cast<float>(result->getDouble(6))));
 
 		object->SetPosition(glm::vec3(result->getDouble(8),result->getDouble(9),result->getDouble(10)));
 
@@ -324,10 +319,10 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 		object->SetCombatLevel(result->getUInt(7));
 
 		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(11)),
 			static_cast<float>(result->getDouble(8)),
 			static_cast<float>(result->getDouble(9)),
-			static_cast<float>(result->getDouble(10)),
-			static_cast<float>(result->getDouble(11))));
+			static_cast<float>(result->getDouble(10))));
 
 		object->SetPosition(glm::vec3(result->getDouble(12),result->getDouble(13),result->getDouble(14)));
 		object->SetMoodId(result->getUInt(19));
@@ -381,10 +376,10 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
 
 		object->SetOrientation(glm::quat(
+			static_cast<float>(result->getDouble(8)),
 			static_cast<float>(result->getDouble(5)),
 			static_cast<float>(result->getDouble(6)),
-			static_cast<float>(result->getDouble(7)),
-			static_cast<float>(result->getDouble(8))));
+			static_cast<float>(result->getDouble(7))));
 
 		object->SetPosition(glm::vec3(result->getDouble(9),result->getDouble(10),result->getDouble(11)));
 

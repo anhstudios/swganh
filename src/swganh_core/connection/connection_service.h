@@ -16,30 +16,67 @@ namespace connection {
 
 class PingServer;
 
+/**
+* Manages remote connections
+*/
 class ConnectionService : public swganh::connection::ConnectionServiceInterface
 {
 public:
+	/**
+	* Create a new instance
+	*/
     ConnectionService(
         std::string listen_address, 
         uint16_t listen_port, 
         uint16_t ping_port, 
         swganh::app::SwganhKernel* kernel);
     
+	/**
+	* Custom destructor
+	*/
     ~ConnectionService();
 
+	/**
+	* @return the service description for this service
+	*/
     swganh::service::ServiceDescription GetServiceDescription();
     
+	/**
+	* Removes a session (ie. ends)
+	*/
     bool RemoveSession(std::shared_ptr<swganh::network::soe::Session> session);
 
+	/**
+	* Returns the session by endpoint (ie. ip address)
+	* @param endpoint the ip address to find
+	* @return the session associated with the ip or nullptr
+	*/
     std::shared_ptr<swganh::network::soe::Session> GetSession(const boost::asio::ip::udp::endpoint& endpoint);
     
+	/**
+	* Finds a connection client based on player id
+	* @param player_id the id of the player to find the connection for
+	*/
     std::shared_ptr<swganh::connection::ConnectionClientInterface> FindConnectionByPlayerId(uint64_t player_id);
     
+	/**
+	* Called on startup
+	*/
     void Startup();
+
+	/**
+	* Called on shutdown
+	*/
     void Shutdown();
 
+	/**
+	* @return the string name of the address this connection service is using
+	*/
     const std::string& listen_address();
 
+	/**
+	* @return the port this connection service is using
+	*/
     uint16_t listen_port();
         
 private:        

@@ -73,7 +73,7 @@ ServiceDescription ConnectionService::GetServiceDescription() {
     auto listen_address = Resolve(listen_address_);
 
     ServiceDescription service_description(
-        "ANH Connection Service",
+        "Connection Service",
         "connection",
         "0.1",
         listen_address,

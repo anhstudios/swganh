@@ -14,17 +14,37 @@ namespace command {
 namespace swganh {
 namespace command {
 
+	/**
+	* Validates commands based on a series of filters
+	*/
     class CommandValidator : public swganh::command::CommandValidatorInterface
     {
     public:
-        virtual ~CommandValidator();
 
+		/**
+		* Adds a new pre-enqueue filter
+		* @param filter the filter to add
+		*/
         virtual void AddCommandEnqueueFilter(swganh::command::CommandFilter&& filter);
         
+		/**
+		* Adds a new process filter
+		* @param filter the filter to add
+		*/
         virtual void AddCommandProcessFilter(swganh::command::CommandFilter&& filter);
 
+		/**
+		* Runs the command through a series of filters in prep for enqueue
+		* @param command the command to validate
+		* @return a tuple representing success or failure.
+		*/
         virtual std::tuple<bool, uint32_t, uint32_t> ValidateForEnqueue(swganh::command::CommandInterface* command);
         
+		/**
+		* Runs the command through a series of filters in prep for processing
+		* @param command the command to validate
+		* @return a tuple representing success or failure.
+		*/
         virtual std::tuple<bool, uint32_t, uint32_t> ValidateForProcessing(swganh::command::CommandInterface* command);
         
     private:

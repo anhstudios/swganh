@@ -12,9 +12,6 @@ using swganh::command::CommandQueueManager;
 using swganh::command::CommandInterface;
 using swganh::command::CommandQueueInterface;
 
-CommandQueueManager::~CommandQueueManager()
-{}
-
 void CommandQueueManager::EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command)
 {
     CommandQueueInterface* queue = nullptr;

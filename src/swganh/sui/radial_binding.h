@@ -45,7 +45,7 @@ namespace sui {
 			ScopedGilLock lock;
 			try 
 			{
-				return this->get_override("BuildRadial")(owner, target, radials);
+				return this->get_override("buildRadial")(owner, target, radials);
 			}
 			catch (bp::error_already_set& )
 			{
@@ -58,7 +58,7 @@ namespace sui {
 			ScopedGilLock lock;
 			try 
 			{				
-				this->get_override("HandleRadial")(owner, target, action);
+				this->get_override("handleRadial")(owner, target, action);
 			}
 			catch (bp::error_already_set& )
 			{
@@ -72,9 +72,9 @@ namespace sui {
 	void exportRadial()
 	{
 		bp::class_<RadialInterface, RadialWrap, boost::noncopyable>("RadialMenu", bp::init<swganh::app::SwganhKernel*>())
-			.def("BuildRadial", bp::pure_virtual(&RadialWrap::BuildRadial), "Builds a radial for the target :class:`Object`")
-			.def("HandleRadial", bp::pure_virtual(&RadialWrap::HandleRadial), "Handles a specific radial action")
-			.def("GetKernel", &RadialInterface::GetKernel, bp::return_internal_reference<>());
+			.def("buildRadial", bp::pure_virtual(&RadialWrap::BuildRadial), "Builds a radial for the target :class:`Object`")
+			.def("handleRadial", bp::pure_virtual(&RadialWrap::HandleRadial), "Handles a specific radial action")
+			.def("getKernel", &RadialInterface::GetKernel, bp::return_internal_reference<>());
 
 		bp::class_<RadialOptions>("RadialOptions", "class defining the options needed for radials", 
 			bp::init<uint8_t, uint8_t, uint8_t, std::wstring>())
@@ -87,7 +87,7 @@ namespace sui {
 			.def(bp::vector_indexing_suite<std::vector<RadialOptions>>());
 
 		bp::enum_<RadialIdentifier>("RadialIdentifier", "defines a radial")
-			.value("Unknown",Unknown)
+			.value("unknown",Unknown)
 			.value("combatTarget",combatTarget)
 			.value("combatUntarget",combatUntarget)
 			.value("combatAttack",combatAttack)

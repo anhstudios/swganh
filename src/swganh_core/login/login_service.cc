@@ -74,7 +74,7 @@ service::ServiceDescription LoginService::GetServiceDescription() {
     auto listen_address = Resolve(listen_address_);
 
     service::ServiceDescription service_description(
-        "ANH Login Service",
+        "Login Service",
         "login",
         "0.1",
         listen_address,

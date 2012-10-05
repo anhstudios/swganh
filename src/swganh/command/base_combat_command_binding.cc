@@ -41,7 +41,7 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
         ScopedGilLock lock;
         try 
         {
-            if (bp::override run = this->get_override("Run"))
+            if (bp::override run = this->get_override("run"))
             {
                 bp::object result = run();
 
@@ -146,6 +146,6 @@ void swganh::command::ExportBaseCombatCommand()
 {
     bp::class_<BaseCombatCommand, BaseCombatCommandWrapper, bp::bases<BaseSwgCommand>, boost::noncopyable>
         ("BaseCombatCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&>())
-        .def("Run", &BaseCombatCommandWrapper::Run)
+        .def("run", &BaseCombatCommandWrapper::Run)
     ;
 }

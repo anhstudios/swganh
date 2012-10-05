@@ -30,6 +30,6 @@ void exportStaticService()
 			.def(vector_indexing_suite<std::vector<shared_ptr<ElevatorData>>, true>());
 
     class_<StaticServiceInterface, shared_ptr<StaticServiceInterface>, boost::noncopyable>("StaticService", "The static service loads and holds data that never changes.", no_init)
-		.def("GetElevatorDataForObject", &StaticServiceInterface::GetElevatorDataForObject, "Returns elevator data for a particular terminal id.")
+		.def("getElevatorDataForObject", &StaticServiceInterface::GetElevatorDataForObject, "Returns elevator data for a particular terminal id.")
         ;
 }

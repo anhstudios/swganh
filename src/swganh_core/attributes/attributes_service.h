@@ -37,20 +37,60 @@ namespace attributes {
 		std::shared_ptr<swganh::attributes::AttributeTemplateInterface>
 	> AttributeTemplates;
 	
+	/*!
+	* Service that pushes attribute listings to the clients
+	* when requested.
+	*/
     class AttributesService: public swganh::attributes::AttributesServiceInterface
     {
     public:
+
+		/*!
+		* Creates a new instance
+		*/
         explicit AttributesService(swganh::app::SwganhKernel* kernel);
-        virtual ~AttributesService();
-        swganh::service::ServiceDescription GetServiceDescription();
+        
+		/*!
+		* Returns the service description for this service
+		*/
+		swganh::service::ServiceDescription GetServiceDescription();
 		
+		/*!
+		* @param template_id the attribute to fetch
+		* @return the attribute template associated with a particular id
+		*/
 		std::shared_ptr<swganh::attributes::AttributeTemplateInterface> GetAttributeTemplate(swganh::attributes::AttributeTemplateId template_id);
-        void SetAttributeTemplate(const std::shared_ptr<swganh::attributes::AttributeTemplateInterface> template_, swganh::attributes::AttributeTemplateId template_id); 
+        
+		/*!
+		* Adds an attribute to the lookup with the given id
+		* @param template_ the new template
+		* @param template_id_ the new template's id
+		*/
+		void SetAttributeTemplate(const std::shared_ptr<swganh::attributes::AttributeTemplateInterface> template_, swganh::attributes::AttributeTemplateId template_id); 
+		
+		/*!
+		* Returns true if the given template id is bound to a template
+		* @param template_id the id to check
+		*/
 		bool HasAttributeTemplate(swganh::attributes::AttributeTemplateId template_id);
-        void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor);
+        
+		/*!
+		* Send the attributes list message for object to actor
+		* @param object the object to build the attribute list from
+		* @param actor the object to send the attribute list to
+		*/
+		void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor);
+		
+		/*!
+		* Method called on the service at start up.
+		*/
 		void Startup();
-		void HandleGetAttributesBatch(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor);
+		
     private:		
+
+		/*!
+		* Loads a static list of attribute templates
+		*/
 		void LoadAttributeTemplates_();
 		
 		AttributeTemplates attribute_templates_;

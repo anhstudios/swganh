@@ -124,11 +124,10 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
         object->SetSceneId(result->getUInt("scene_id"));
         object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
         object->SetOrientation(glm::quat(
-            static_cast<float>(result->getDouble("x_orientation")),
+            static_cast<float>(result->getDouble("w_orientation")),
+			static_cast<float>(result->getDouble("x_orientation")),
             static_cast<float>(result->getDouble("y_orientation")),
-            static_cast<float>(result->getDouble("z_orientation")), 
-            static_cast<float>(result->getDouble("w_orientation")))
-            );
+            static_cast<float>(result->getDouble("z_orientation"))));
 
         object->SetComplexity(static_cast<float>(result->getDouble("complexity")));
         object->SetStfName(result->getString("stf_name_file"),

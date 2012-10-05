@@ -26,9 +26,6 @@ CommandFactory::CommandFactory(SwganhKernel* kernel)
     , command_service_(nullptr)
 {}
 
-CommandFactory::~CommandFactory()
-{}
-
 void CommandFactory::AddCommandCreator(swganh::HashString command, swganh::command::CommandCreator&& creator)
 {    
     auto properties = GetCommandService()->FindPropertiesForCommand(command);

@@ -11,12 +11,25 @@ namespace swganh { namespace database { class DatabaseManagerInterface;
 namespace swganh {
 namespace login {
 
+/**
+* Provides Sha512 encoding for password checking via MYSQL
+*/
 class Sha512Encoder : public swganh::login::encoders::EncoderInterface {
 public:
-    explicit Sha512Encoder(swganh::database::DatabaseManagerInterface* db_manager);
-    ~Sha512Encoder();
 
+	/**
+	* Creates a new instance
+	*/
+    explicit Sha512Encoder(swganh::database::DatabaseManagerInterface* db_manager);
+
+	/**
+	* Encodes a password with the given salt and returns the value
+	*/
     std::string EncodePassword(std::string raw, std::string salt);
+
+	/**
+	* Compares the encoded string to the raw when encoded with the salt
+	*/
     bool IsPasswordValid(std::string encoded, std::string raw, std::string salt);
 private:
     swganh::database::DatabaseManagerInterface* db_manager_;

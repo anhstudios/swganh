@@ -18,6 +18,16 @@ namespace attributes {
 	class AttributesHelper
 	{	
 	public:
+
+		/*!
+		* Adds the attribute to the given attributes list
+		* iff it exists in the object.
+		* @param attributes the attribute list to add to
+		* @param attribute_label the label of the attribute
+		* @param the name of the attribute to add
+		* @param the object to check
+		* @param recursive true iff the attribute should be populated recursively
+		*/
         static void SetOptionalAttribute(
             std::vector<swganh::messages::Attribute>& attributes,
 			const std::string& attribute_label,
