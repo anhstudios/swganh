@@ -46,9 +46,6 @@ SpatialChatInternalCommand::SpatialChatInternalCommand(
     chat_service_ = kernel->GetServiceManager()->GetService<ChatService>("ChatService");
 }
 
-SpatialChatInternalCommand::~SpatialChatInternalCommand()
-{}
-
 boost::optional<std::shared_ptr<CommandCallback>> SpatialChatInternalCommand::Run()
 {
     // This regular expression searches for 5 numbers separated by spaces

@@ -76,11 +76,6 @@ void AttributesService::Startup()
 	LoadAttributeTemplates_();
 }
 
-AttributesService::~AttributesService()
-{    
-	attribute_templates_.clear();
-}
-
 bool AttributesService::HasAttributeTemplate(AttributeTemplateId template_id)
 {
 	auto found = find_if(begin(attribute_templates_), end(attribute_templates_), [&template_id](AttributeTemplates::value_type entry)
@@ -138,9 +133,3 @@ void AttributesService::LoadAttributeTemplates_()
 	SetAttributeTemplate(make_shared<WeaponAttributeTemplate>(kernel_->GetEventDispatcher()), WEAPON);
 	SetAttributeTemplate(make_shared<WearableAttributeTemplate>(kernel_->GetEventDispatcher()), WEARABLE);
 }
-
-void AttributesService::HandleGetAttributesBatch(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor)
-{
-	SendAttributesMessage(object, actor);
-}
-

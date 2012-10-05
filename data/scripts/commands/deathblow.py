@@ -2,12 +2,12 @@ from swgpy.command import BaseSwgCommand
 from swgpy import POSTURE
 
 class DeathBlowCommand(BaseSwgCommand):
-    def Run(self):
-        target = self.GetTarget()
+    def run(self):
+        target = self.getTarget()
         if target:
-            if target.is_incap():
+            if target.isIncap():
                 target.posture = POSTURE.DEAD
-                target.clear_auto_attack()
-                actor.target_id = 0
-                actor.remove_duel_list(target.id)
-                target.remove_duel_list(actor.id)
+                target.clearAutoAttack()
+                actor.targetId = 0
+                actor.removeDuelList(target.id)
+                target.removeDuelList(actor.id)

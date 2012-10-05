@@ -73,9 +73,8 @@ void ServiceManager::AddService(string name, shared_ptr<ServiceInterface> servic
 void ServiceManager::Start() {
     for_each(services_.begin(), services_.end(), [this] (ServiceMap::value_type& entry) {
         if (entry.second.second) {
-			LOG(warning) << "Starting " << entry.second.first->name();
             entry.second.second->Startup();
-			LOG(warning) << "Started...";
+			LOG(info) << "Started " << entry.second.first->name();
 			entry.second.first->status(swganh::service::Galaxy::ONLINE);
             service_directory_->updateService(*entry.second.first);
         } 

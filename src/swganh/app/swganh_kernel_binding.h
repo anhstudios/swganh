@@ -37,53 +37,53 @@ void exportSWGANHKernel()
     class_<KernelInterface, boost::noncopyable>("Kernel", no_init)
         ;
     class_<SwganhKernel, bases<KernelInterface>, boost::noncopyable>("SWGKernel", "Provides an interface to access the Service Manager and App Configuration", no_init)
-        .def("app_config", &swganh::app::SwganhKernel::GetAppConfig, return_value_policy<copy_non_const_reference>(), "gets the app configuration")
-        .def("service_manager", &swganh::app::SwganhKernel::GetServiceManager,return_internal_reference<>(), "Gets the application's :class:`.ServiceManager`")
-        .def("event_dispatcher", &swganh::app::SwganhKernel::GetEventDispatcher, return_value_policy<reference_existing_object>(), "gets the applications :class:`.EventDispatcher`")
+        .def("appConfig", &swganh::app::SwganhKernel::GetAppConfig, return_value_policy<copy_non_const_reference>(), "gets the app configuration")
+        .def("serviceManager", &swganh::app::SwganhKernel::GetServiceManager,return_internal_reference<>(), "Gets the application's :class:`.ServiceManager`")
+        .def("eventDispatcher", &swganh::app::SwganhKernel::GetEventDispatcher, return_value_policy<reference_existing_object>(), "gets the applications :class:`.EventDispatcher`")
         ;
 
     class_<swganh::service::ServiceManager, boost::noncopyable>("ServiceManager", "provides an interface to common services", no_init)
-       .def("combat_service", make_function(
+       .def("combatService", make_function(
                std::bind(&swganh::service::ServiceManager::GetService<swganh::combat::CombatServiceInterface>, std::placeholders::_1, "CombatService"),
                return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::combat::CombatServiceInterface*, swganh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.CombatServiceInterface`")
-       .def("command_service", make_function(
+       .def("commandService", make_function(
                std::bind(&swganh::service::ServiceManager::GetService<swganh::command::CommandServiceInterface>, std::placeholders::_1, "CommandService"),
                return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::command::CommandServiceInterface*, swganh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.CommandService`")
-        .def("simulation_service", make_function(
+        .def("simulationService", make_function(
                std::bind(&swganh::service::ServiceManager::GetService<swganh::simulation::SimulationServiceInterface>, std::placeholders::_1, "SimulationService"),
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::simulation::SimulationServiceInterface*, swganh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SimulationService`")
-        .def("social_service", make_function(
+        .def("socialService", make_function(
                std::bind(&swganh::service::ServiceManager::GetService<swganh::social::SocialServiceInterface>, std::placeholders::_1, "SocialService"),
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::social::SocialServiceInterface*, swganh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.SocialService`")
-		.def("static_service", make_function(
+		.def("suiService", make_function(
+			  std::bind(&swganh::service::ServiceManager::GetService<swganh::sui::SUIServiceInterface>, std::placeholders::_1, "SuiService"),
+                return_value_policy<reference_existing_object>(),
+                boost::mpl::vector<swganh::sui::SUIServiceInterface*, swganh::service::ServiceManager*>()),
+				"returns an internal refrence of the :class:`.SUIService`")
+		.def("staticService", make_function(
                std::bind(&swganh::service::ServiceManager::GetService<swganh::statics::StaticServiceInterface>, std::placeholders::_1, "StaticService"),
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::statics::StaticServiceInterface*, swganh::service::ServiceManager*>()),
                 "returns an internal refrence of the :class:`.StaticService`")
-		.def("sui_service", make_function(
-				std::bind(&swganh::service::ServiceManager::GetService<swganh::sui::SUIServiceInterface>, std::placeholders::_1, "SuiService"),
-                return_value_policy<reference_existing_object>(),
-                boost::mpl::vector<swganh::sui::SUIServiceInterface*, swganh::service::ServiceManager*>()),
-				"returns an internal refrence of the :class:`.SUIService`")
-		.def("terrain_service", make_function(
+		.def("terrainService", make_function(
 				std::bind(&swganh::service::ServiceManager::GetService<swganh::terrain::TerrainServiceInterface>, std::placeholders::_1, "TerrainService"),
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::terrain::TerrainServiceInterface*, swganh::service::ServiceManager*>()),
 				"returns an internal refrence of the :class:`.TerrainService`")
-		.def("equipment_service", make_function(
+		.def("equipmentService", make_function(
 				std::bind(&swganh::service::ServiceManager::GetService<swganh::equipment::EquipmentServiceInterface>, std::placeholders::_1, "EquipmentService"),
                 return_value_policy<reference_existing_object>(),
                 boost::mpl::vector<swganh::equipment::EquipmentServiceInterface*, swganh::service::ServiceManager*>()),
 				"returns an internal refrence of the :class:`.EquipmentService`")
-		.def("weather_service", make_function(
+		.def("weatherService", make_function(
 				std::bind(&swganh::service::ServiceManager::GetService<swganh::weather::WeatherServiceInterface>, std::placeholders::_1, "WeatherService"),
 				return_value_policy<reference_existing_object>(),
 				boost::mpl::vector<swganh::weather::WeatherServiceInterface*, swganh::service::ServiceManager*>()),

@@ -27,15 +27,43 @@ namespace command {
 namespace swganh {
 namespace command {
 
+	/**
+	* Represents the queue of commands for a particular client
+	* This class wraps a simple queue and adds proper client updating functionality
+	*/
     class CommandQueue : public swganh::command::CommandQueueInterface
     {
     public:
+		/**
+		* Create a new instance
+		*/
         CommandQueue(swganh::app::SwganhKernel* kernel);
-        ~CommandQueue();
         
+		/**
+		* Custom destructor
+		*/
+		~CommandQueue();
+        
+		/**
+		* Adds a command to this queue
+		* @param command the command to add
+		*/
         virtual void EnqueueCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
-        virtual void SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
-        virtual void ClearDefaultCommand();
+        
+		/**
+		* Sets the default command for this queue.
+		* @param command the default
+		*/
+		virtual void SetDefaultCommand(const std::shared_ptr<swganh::command::CommandInterface>& command);
+        
+		/**
+		* Clears the default command for this queue
+		*/
+		virtual void ClearDefaultCommand();
+
+		/*
+		* @return true if this queue has a default command
+		*/
         virtual bool HasDefaultCommand();
 
     private:
