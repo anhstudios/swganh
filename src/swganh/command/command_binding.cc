@@ -40,7 +40,7 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
         ScopedGilLock lock;
         try 
         {
-            auto validate = this->get_override("Validate");
+            auto validate = this->get_override("validate");
             if (validate)
             {
                 validated = validate();
@@ -66,7 +66,7 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
         ScopedGilLock lock;
         try 
         {
-            bp::object result = this->get_override("Run")();
+            bp::object result = this->get_override("run")();
 
             if (!result.is_none())
             {

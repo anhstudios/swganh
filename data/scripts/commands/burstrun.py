@@ -5,7 +5,7 @@ class BurstRunCommand(BaseSwgCommand):
     base_run_duration_ms = 15000
     base_cooldate_timer_ms = 60000
 
-    def Validate(self):
+    def validate(self):
         actor = self.getActor()
 
         if actor == None:
@@ -23,7 +23,7 @@ class BurstRunCommand(BaseSwgCommand):
 
         return True
 
-    def Run(self):
+    def run(self):
         actor = self.getActor()            
         
         actor.setFlag("BurstRunning")
@@ -34,9 +34,9 @@ class BurstRunCommand(BaseSwgCommand):
 
         actor.sendSystemMessage('cbt_spam', 'burstrun_start_single')
    
-        return Callback(self.EndBurstRun, self.base_run_duration_ms)
+        return Callback(self.endBurstRun, self.base_run_duration_ms)
 
-    def EndBurstRun(self):        
+    def endBurstRun(self):        
         actor = self.getActor()
         
         actor.removeFlag("BurstRunning")
@@ -47,9 +47,9 @@ class BurstRunCommand(BaseSwgCommand):
         actor.sendSystemMessage('cbt_spam', 'burstrun_stop_single')
         actor.sendSystemMessage('combat_effects', 'burst_run_tired')
  
-        return Callback(self.EndBurstRunCooldown, self.base_cooldate_timer_ms - self.base_run_duration_ms)
+        return Callback(self.endBurstRunCooldown, self.base_cooldate_timer_ms - self.base_run_duration_ms)
 
-    def EndBurstRunCooldown(self):
+    def endBurstRunCooldown(self):
         actor = self.getActor()
         
         actor.removeFlag("BurstRunCooldown")

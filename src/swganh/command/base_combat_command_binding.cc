@@ -41,7 +41,7 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
         ScopedGilLock lock;
         try 
         {
-            if (bp::override run = this->get_override("Run"))
+            if (bp::override run = this->get_override("run"))
             {
                 bp::object result = run();
 
