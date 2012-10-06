@@ -705,12 +705,12 @@ uint32_t Object::GetSceneId()
 	return scene_id_;
 }
 
-uint32_t GetInstanceId()
+uint32_t Object::GetInstanceId()
 {
 	return instance_id_;
 }
 
-void SetInstanceId(uint32_t instance_id)
+void Object::SetInstanceId(uint32_t instance_id)
 {
 	instance_id_ = instance_id;
 
