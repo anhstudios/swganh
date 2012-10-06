@@ -461,22 +461,60 @@ public:
 		});
     }
 
-	void SendToAll(ByteBuffer message)
+	void SendToAll(swganh::messages::BaseSwgMessage* message)
 	{
-		for_each(begin(controlled_objects_), end(controlled_objects_), [=] (const pair<uint64_t, shared_ptr<ObjectController>>& pair) {
-            auto controller = pair.second;
-            controller->GetRemoteClient()->SendTo(message);
-        });
+		scene_manager_->ViewScenes([&] (std::string name, std::shared_ptr<Scene> scene) {
+			scene->ViewObjects(nullptr, 0, true,[&] (std::shared_ptr<Object> object) {
+				auto controller = object->GetController();
+				if(controller)
+					controller->Notify(message);
+			});
+		});
 	}
 
-    void SendToAllInScene(ByteBuffer message, uint32_t scene_id)
-    {
-        for_each(begin(controlled_objects_), end(controlled_objects_), [=] (const pair<uint64_t, shared_ptr<ObjectController>>& pair) {
-            auto controller = pair.second;
-            if (controller->GetObject()->GetSceneId() == scene_id)
-                controller->GetRemoteClient()->SendTo(message);
-        });
-    }
+    void SendToScene(swganh::messages::BaseSwgMessage* message, uint32_t scene_id)
+	{
+		scene_manager_->GetScene(scene_id)->ViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
+			auto controller = object->GetController();
+			if(controller)
+				controller->Notify(message);
+		});
+	}
+
+	void SendToScene(swganh::messages::BaseSwgMessage* message, std::string scene_name)
+	{
+		scene_manager_->GetScene(scene_name)->ViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
+			auto controller = object->GetController();
+			if(controller)
+				controller->Notify(message);
+		});
+	}
+
+	void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, uint32_t scene_id, glm::vec3 position, float radius)
+	{
+		scene_manager_->GetScene(scene_id)->ViewObjects(position, radius, 0, true, [&] (std::shared_ptr<Object> object) {
+			auto controller = object->GetController();
+			if(controller)
+				controller->Notify(message);
+		});
+	}
+
+	void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, std::string scene_name, glm::vec3 position, float radius)
+	{
+		scene_manager_->GetScene(scene_name)->ViewObjects(position, radius, 0, true, [&] (std::shared_ptr<Object> object) {
+			auto controller = object->GetController();
+			if(controller)
+				controller->Notify(message);
+		});
+	}
+
+	uint32_t SceneIdByName(const std::string& scene_label)
+	{
+	}
+
+	std::string SceneNameById(uint32_t scene_id)
+	{
+	}
 
 private:
     shared_ptr<ObjectManager> object_manager_;
@@ -528,6 +566,17 @@ void SimulationService::StopScene(const std::string& scene_label)
 {
     impl_->GetSceneManager()->StopScene(scene_label, kernel_);
 }
+
+uint32_t SimulationService::SceneIdByName(const std::string& scene_label)
+{
+	return impl_->GetSceneManager()->GetScene(scene_label)->GetSceneId();
+}
+
+std::string SimulationService::SceneNameById(uint32_t scene_id)
+{
+	return impl_->GetSceneManager()->GetScene(scene_id)->GetLabel();
+}
+
 void SimulationService::RegisterObjectFactories()
 {
     auto object_manager = impl_->GetObjectManager();
@@ -633,15 +682,31 @@ void SimulationService::UnregisterControllerHandler(uint32_t handler_id)
     impl_->UnregisterControllerHandler(handler_id);
 }
 
-void SimulationService::SendToAll(ByteBuffer message)
+void SimulationService::SendToAll(swganh::messages::BaseSwgMessage* message)
 {
-    impl_->SendToAll(message);
+	impl_->SendToAll(message);
 }
 
-void SimulationService::SendToAllInScene(ByteBuffer message, uint32_t scene_id)
+void SimulationService::SendToScene(swganh::messages::BaseSwgMessage* message, uint32_t scene_id)
 {
-    impl_->SendToAllInScene(message, scene_id);
+	impl_->SendToScene(message, scene_id);
 }
+
+void SimulationService::SendToScene(swganh::messages::BaseSwgMessage* message, std::string scene_name)
+{
+	impl_->SendToScene(message, scene_name);
+}
+
+void SimulationService::SendToSceneInRange(swganh::messages::BaseSwgMessage* message, uint32_t scene_id, glm::vec3 position, float radius)
+{
+	impl_->SendToSceneInRange(message, scene_id, position, radius);
+}
+
+void SimulationService::SendToSceneInRange(swganh::messages::BaseSwgMessage* message, std::string scene_name, glm::vec3 position, float radius)
+{
+	impl_->SendToSceneInRange(message, scene_name, position, radius);
+}
+
 void SimulationService::AddObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene_label)
 {
 	impl_->AddObjectToScene(object, scene_label);

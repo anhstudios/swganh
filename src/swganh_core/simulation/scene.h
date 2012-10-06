@@ -47,6 +47,8 @@ namespace simulation {
         void RemoveObject(std::shared_ptr<swganh::object::Object> object);
 		virtual void ViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, 
 			bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
+		virtual void ViewObjects(glm::vec3 position, float radius, uint32_t max_depth, bool topDown,
+			std::function<void(std::shared_ptr<swganh::object::Object>)> func);
 
 		void HandleDataTransform(const std::shared_ptr<swganh::object::Object>& controller, swganh::messages::controllers::DataTransform message);
 		void HandleDataTransformWithParent(const std::shared_ptr<swganh::object::Object>& controller, swganh::messages::controllers::DataTransformWithParent message);

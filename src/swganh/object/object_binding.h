@@ -39,22 +39,97 @@ void SendSystemMessage1(std::shared_ptr<Object> requester, std::string filename,
 {
 	SystemMessage::Send(requester, filename, label);
 }
-void SendSystemMessage2(std::shared_ptr<Object> requester, std::wstring& custom_message, bool chatbox_only, bool send_to_inrange)
+
+void SendSystemMessage2(std::shared_ptr<Object> requester, std::wstring custom_message, bool chatbox_only=true, bool send_to_inrange=true)
 {
 	SystemMessage::Send(requester, custom_message, chatbox_only, send_to_inrange);
 }
-void SendSystemMessage3(std::shared_ptr<Object> requester, swganh::messages::OutOfBand& out_of_band, bool chatbox_only, bool send_to_inrange)
+
+BOOST_PYTHON_FUNCTION_OVERLOADS(SysMsg2Overloads, SendSystemMessage2, 2, 4);
+
+void SendSystemMessage3(std::shared_ptr<Object> requester, swganh::messages::OutOfBand out_of_band, bool chatbox_only=true, bool send_to_inrange=true)
 {
 	SystemMessage::Send(requester, out_of_band, chatbox_only, send_to_inrange);
 }
-void SendSystemMessage4(std::shared_ptr<Object> requester, std::wstring custom_message, swganh::messages::OutOfBand& out_of_band, bool chatbox_only, bool send_to_inrange)
+BOOST_PYTHON_FUNCTION_OVERLOADS(SysMsg3Overloads, SendSystemMessage3, 2, 4);
+
+void SendSystemMessage4(std::shared_ptr<Object> requester, std::wstring custom_message, swganh::messages::OutOfBand out_of_band, bool chatbox_only=true, bool send_to_inrange=true)
 {
 	SystemMessage::Send(requester, custom_message, out_of_band, chatbox_only, send_to_inrange);
 }
-void SendFlyText(std::shared_ptr<Object> requester, const std::string& fly_text, controllers::FlyTextColor color)
+BOOST_PYTHON_FUNCTION_OVERLOADS(SysMsg4Overloads, SendSystemMessage4, 3, 5);
+
+void SendFlyText(std::shared_ptr<Object> requester, std::string fly_text, controllers::FlyTextColor color)
 {
 	SystemMessage::FlyText(requester, fly_text, color);
 }
+
+void SendClientEffect1(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service,
+		std::string client_effect_file, std::string planet_name, glm::vec3 location_coordinates, float range, uint64_t cell_id=0)
+{
+	SystemMessage::ClientEffect(simulation_service, client_effect_file, planet_name, location_coordinates, range, cell_id);
+}
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect1Overload, SendClientEffect1, 5, 6);
+
+void SendClientEffect2(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service,
+		std::string client_effect_file, uint32_t planet_id, glm::vec3 location_coordinates, float range, uint64_t cell_id=0)
+{
+	SystemMessage::ClientEffect(simulation_service, client_effect_file, planet_id, location_coordinates, range, cell_id);
+}
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect2Overload, SendClientEffect2, 5, 6);
+
+void SendClientEffect3(std::shared_ptr<swganh::object::Object> object, std::string client_effect_file, 
+		std::string auxiliary_string="head", bool send_in_range=true)
+{
+	SystemMessage::ClientEffect(object, client_effect_file, auxiliary_string, send_in_range);
+}
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect3Overload, SendClientEffect3, 2, 4);
+
+void SendClientEffect4(std::shared_ptr<swganh::object::Object> object, std::string client_effect_file, 
+		glm::quat orientation, glm::vec3 offset, bool send_in_range=true)
+{
+	SystemMessage::ClientEffect(object, client_effect_file, orientation, offset, send_in_range);
+}
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEffect4Overload, SendClientEffect4, 4, 5);
+
+void ClientEvent1(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, std::string event_group_string,
+    std::string event_string, std::string planet_name_string, glm::vec3 location_coordinates, float range, uint64_t cell_id=0)
+{
+	SystemMessage::ClientEvent(simulation_service, event_group_string, event_string, planet_name_string, location_coordinates, range, cell_id);
+}
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEvent1Overload, ClientEvent1, 6, 7);
+
+void ClientEvent2(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, std::string event_group_string,
+    std::string event_string, uint32_t planet_id, glm::vec3 location_coordinates, float range, uint64_t cell_id=0)
+{
+	SystemMessage::ClientEvent(simulation_service, event_group_string, event_string, planet_id, location_coordinates, range, cell_id);
+}
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEvent2Overload, ClientEvent2, 6, 7);
+
+void ClientEvent3(std::shared_ptr<swganh::object::Object> object, std::string event_string,
+	std::string hardpoint_string="head", bool send_in_range=true)
+{
+	SystemMessage::ClientEvent(object, event_string, hardpoint_string, send_in_range);
+}
+BOOST_PYTHON_FUNCTION_OVERLOADS(ClientEvent3Overload, ClientEvent3, 2, 4);
+
+void PlayMusic1(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, std::string planet_name,
+				glm::vec3 point, float range, std::string music_name, uint32_t channel)
+{
+	SystemMessage::PlayMusic(simulation_service, planet_name, point, range, music_name, channel);
+}
+
+void PlayMusic2(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, uint32_t planet_id,
+				glm::vec3 point, float range, std::string music_name, uint32_t channel)
+{
+	SystemMessage::PlayMusic(simulation_service, planet_id, point, range, music_name, channel);
+}
+
+void PlayMusic3(std::shared_ptr<swganh::object::Object> object, std::string music_name, uint32_t channel, bool send_in_range=false)
+{
+	SystemMessage::PlayMusic(object, music_name, channel, send_in_range);
+}
+BOOST_PYTHON_FUNCTION_OVERLOADS(PlayMusic3Overload, PlayMusic3, 3, 4);
 
 void UpdatePosition(std::shared_ptr<Object> object, glm::vec3 pos)
 {
@@ -143,6 +218,29 @@ void exportObject()
 		.def_readonly("id", &ContainerInterface::GetObjectId, "Gets the object id of the container")
 		;
 	
+	class_<SystemMessage, boost::noncopyable>("SystemMessage", "Static class that deals with system messages.", no_init)
+		.def("sendSystemMessage", SendSystemMessage1, "Send a system message to the requester, see :class:`")
+		.def("sendSystemMessage", SendSystemMessage2, SysMsg2Overloads(args("requester", "custom_message", "chatbox_only", "send_to_inrange"), "Send a system message to the requester"))
+		.def("sendSystemMessage", SendSystemMessage3, SysMsg3Overloads(args("requester", "out_of_band", "chatbox_only", "send_to_inrange"), "Send a system message to the requester"))
+		.def("sendSystemMessage", SendSystemMessage4, SysMsg4Overloads(args("requester", "custom_message", "out_of_band", "chatbox_only", "send_to_inrange"), "Send a system message to the requester"))
+		.def("sendFlyText", SendFlyText, "Sends Fly Text to the player, see :class:`.FlyTextColor`")
+		.def("sendEffect", SendClientEffect1, ClientEffect1Overload(args("simulation_service", "client_effect_file", "planet_name", "location_coordinates", "range", "cell_id"), "Sends client effect to a particular location (planet as name)"))
+		.def("sendEffect", SendClientEffect2, ClientEffect2Overload(args("simulation_service", "client_effect_file", "planet_id", "location_coordinates", "range", "cell_id"), "Sends client effect to a particular location (planet as id)"))
+		.def("sendEffect", SendClientEffect3, ClientEffect3Overload(args("object", "client_effect_file", "auxiliary_string", "send_in_range"), "Sends client effect for a particular object"))
+		.def("sendEffect", SendClientEffect4, ClientEffect4Overload(args("object", "client_effect_file", "orientation", "offset", "send_in_range"), "Sends client effect for a particular object"))
+		.def("sendEvent", ClientEvent1, ClientEvent1Overload(args("simulation_service", "event_group_string", "event_string", "planet_name_string", "location_coordinates", "range", "cell_id"), "Sends client effect for a particular object"))
+		.def("sendEvent", ClientEvent2, ClientEvent2Overload(args("simulation_service", "event_group_string", "event_string", "planet_id", "location_coordinates", "range", "cell_id"), "Sends client effect for a particular object"))
+		.def("sendEvent", ClientEvent3, ClientEvent3Overload(args("object", "event_string", "hardpoint_string", "send_in_range"), "Sends client effect for a particular object"))
+		.def("playMusic", PlayMusic1, "Plays music for objects in a particular range")
+		.def("playMusic", PlayMusic2, "Plays music for objects in a particular range")
+		.def("playMusic", PlayMusic3, PlayMusic3Overload(args("object", "music_name", "channel", "send_in_range"), "Plays music for a particular object (or in range of a particular object"))
+		.staticmethod("sendSystemMessage")
+		.staticmethod("sendFlyText")
+		.staticmethod("sendEffect")
+		.staticmethod("sendEvent")
+		.staticmethod("playMusic")
+		;
+
     class_<Object, bases<ContainerInterface>, std::shared_ptr<Object>, boost::noncopyable>("Object", "The Base SWG Object that all Objects inherit from")
 		.add_property("id", &Object::GetObjectId, &Object::SetObjectId, "Gets or sets The id of the object")
 		.add_property("scene_id", &Object::GetSceneId, "Gets the scene id the object is in")
@@ -169,11 +267,6 @@ void exportObject()
 		.def("setStringAttribute", &Object::SetAttribute<wstring>, "sets the string attribute value")
 		.add_property("attribute_template_id", &Object::GetAttributeTemplateId, &Object::SetAttributeTemplateId, "Gets and Sets the attribute template_id")
 		.def("eventDispatcher", &Object::SetEventDispatcher, "Sets the event dispatcher pointer")
-		.def("sendSystemMessage", SendSystemMessage1, "Send a system message to the requester, see :class:`")
-		.def("sendSystemMessage", SendSystemMessage2, "Send a system message to the requester")
-		.def("sendSystemMessage", SendSystemMessage3, "Send a system message to the requester")
-		.def("sendSystemMessage", SendSystemMessage4, "Send a system message to the requester")
-		.def("sendFlyText", SendFlyText, "Sends Fly Text to the player, see :class:`.FlyTextColor`")
 		.def("updatePosition", &Object::UpdatePosition, "Updates the position and sends an update to the player")
 		;
 

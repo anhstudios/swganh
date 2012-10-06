@@ -187,3 +187,8 @@ void Scene::ViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, b
 {
 	impl_->GetSpatialIndex()->ViewObjects(requester, max_depth, topDown, func);
 }
+
+void Scene::ViewObjects(glm::vec3 position, float radius, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func)
+{
+	impl_->GetSpatialIndex()->ViewObjectsInRange(position, radius, max_depth, topDown, func);
+}
