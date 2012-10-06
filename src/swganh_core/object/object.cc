@@ -41,6 +41,7 @@ Object::Object()
 	, arrangement_id_(-2)
 	, database_persisted_(true)
 	, in_snapshot_(false)
+	, attributes_template_id(-1)
 {
 }
 
@@ -948,12 +949,12 @@ std::wstring Object::GetAttributeAsString(const std::string& name)
 	return L"";
 }
 
-uint8_t Object::GetAttributeTemplateId()
+int8_t Object::GetAttributeTemplateId()
 {
 	return attributes_template_id;
 }
 
-void Object::SetAttributeTemplateId(uint8_t attribute_template_id)
+void Object::SetAttributeTemplateId(int8_t attribute_template_id)
 {
 	attributes_template_id = attribute_template_id;
 }

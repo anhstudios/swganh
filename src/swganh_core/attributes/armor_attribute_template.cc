@@ -26,7 +26,7 @@ swganh::messages::AttributeListMessage ArmorAttributeTemplate::BuildAttributeTem
 	if (HasAttributeListMessage(object_id))
 		return object_attribute_list_messages_[object_id];
 
-	swganh::messages::AttributeListMessage attribute_list_message;
+	AttributeListMessage attribute_list_message;
 	
 	std::vector<Attribute> attribute_list;
 	attribute_list_message.object_id = object->GetObjectId();

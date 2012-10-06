@@ -118,6 +118,20 @@ void AttributesService::SendAttributesMessage(const std::shared_ptr<swganh::obje
 		// Append Slicing
 		actor->NotifyObservers(&message);
 	}
+	else
+	{
+		// Send a message to the client saying this object doesn't have an attribute template id
+		swganh::messages::AttributeListMessage attribute_list_message;
+	
+		std::vector<swganh::messages::Attribute> attribute_list;
+		attribute_list_message.object_id = object->GetObjectId();
+		std::string template_str = object->GetTemplate();
+		std::wstring val = std::wstring(template_str.begin(), template_str.end());
+		std::wstring error = L"Object " + val + L" doesn't have attribute_template_id value, database needs updating...";
+		attribute_list.push_back(swganh::messages::Attribute("Error:", error));
+		attribute_list_message.attributes = attribute_list;
+		actor->NotifyObservers(&attribute_list_message);
+	}
 }
 void AttributesService::LoadAttributeTemplates_()
 {

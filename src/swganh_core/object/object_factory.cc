@@ -159,6 +159,10 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 		{
 			parent->AddObject(nullptr, object);
 		}
+		// Attribute Template ID
+		int attribute_template_id = result->getInt("attribute_template_id");
+		object->SetAttributeTemplateId(attribute_template_id);
+
 		LoadAttributes(object);
     }
     catch(sql::SQLException &e)

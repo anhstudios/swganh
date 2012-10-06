@@ -546,8 +546,8 @@ public:
 		return val;
 	}
 
-	uint8_t GetAttributeTemplateId();
-	void SetAttributeTemplateId(uint8_t attribute_template_id);
+	int8_t GetAttributeTemplateId();
+	void SetAttributeTemplateId(int8_t attribute_template_id);
 
 
 protected:
@@ -562,7 +562,7 @@ protected:
     std::wstring custom_name_;                       // update 3
     std::atomic<uint32_t> volume_;                   // update 3
     std::atomic<int32_t> arrangement_id_;
-	std::atomic<uint8_t> attributes_template_id;	 // Used to determine which attribute template to use
+	std::atomic<int8_t> attributes_template_id;	 // Used to determine which attribute template to use
 	mutable boost::mutex object_mutex_;
 
 private:

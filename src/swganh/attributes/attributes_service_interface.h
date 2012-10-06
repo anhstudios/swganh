@@ -17,7 +17,7 @@ namespace object {
 namespace swganh {
 namespace attributes {
 
-	enum AttributeTemplateId : uint8_t
+	enum AttributeTemplateId : int8_t
 	{
 		ARMOR = 0,
 		CRAFTING_TOOL,
