@@ -27,7 +27,7 @@ void _buildShuttleMachine(FsmManager& manager_, uint32_t SHUTTLE_AWAY_TIME_SECON
 			return true;
 	});
 
-	away_state->AddTimedTransition(boost::posix_time::seconds(20), landing_state,
+	away_state->AddTimedTransition(boost::posix_time::seconds(SHUTTLE_AWAY_TIME_SECONDS), landing_state,
 		[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {
 			auto shuttle = std::static_pointer_cast<Creature>(object);
 			if(shuttle)

@@ -58,6 +58,7 @@ void FiniteStateMachine::StartManagingObject(std::shared_ptr<swganh::object::Obj
 	{
 		lock_guard<mutex> lock(mutex_);
 		controllers_.insert(controller);
+		object->SetController(controller);
 
 		if(controller->IsDirty())
 			dirty_controllers_.insert(controller);
@@ -72,6 +73,7 @@ void FiniteStateMachine::StopManagingObject(std::shared_ptr<swganh::object::Obje
 		lock_guard<mutex> lock(mutex_);
 		controllers_.erase(controller);
 		dirty_controllers_.erase(controller);
+		object->SetController(nullptr);
 	}
 }
 

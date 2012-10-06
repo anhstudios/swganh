@@ -288,7 +288,8 @@ void CreatureMessageBuilder::BuildPostureUpdate(const shared_ptr<Creature>& crea
 		// Update the posture message
 		controllers::Posture posture;
 		posture.posture_id = creature->GetPosture();
-		creature->GetController()->Notify(&posture);
+		if(creature->HasController())
+			creature->GetController()->Notify(&posture);
 	}
 }
 
