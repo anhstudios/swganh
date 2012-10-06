@@ -25,8 +25,7 @@ namespace object {
     public:
         typedef Tangible ObjectType;
 
-        TangibleFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        TangibleFactory(swganh::app::SwganhKernel* kernel);
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

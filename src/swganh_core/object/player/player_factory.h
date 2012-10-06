@@ -24,8 +24,7 @@ namespace object {
     public:
 		typedef Player ObjectType;
 
-        PlayerFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        PlayerFactory(swganh::app::SwganhKernel* kernel);
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

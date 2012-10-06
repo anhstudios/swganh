@@ -22,29 +22,28 @@
 
 using namespace sql;
 using namespace std;
+using namespace swganh::app;
 using namespace swganh::database;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
-ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
-                             swganh::EventDispatcher* event_dispatcher)
-    : db_manager_(db_manager)
-    , event_dispatcher_(event_dispatcher)
+ObjectFactory::ObjectFactory(SwganhKernel* kernel)
+	: kernel_(kernel)
 {
 }
 
 void ObjectFactory::RegisterEventHandlers()
 {
-	event_dispatcher_->Subscribe("Object::CustomName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-    event_dispatcher_->Subscribe("Object::StfName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-    event_dispatcher_->Subscribe("Object::Complexity", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-    event_dispatcher_->Subscribe("Object::Volume", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Object::Template", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Object::Position", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Object::Orientation", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Object::Container", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Object::StfName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
-	event_dispatcher_->Subscribe("Object::SceneId", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
+	GetEventDispatcher()->Subscribe("Object::CustomName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Object::StfName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Object::Complexity", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+    GetEventDispatcher()->Subscribe("Object::Volume", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Object::Template", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Object::Position", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Object::Orientation", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Object::Container", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Object::StfName", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Object::SceneId", std::bind(&ObjectFactory::PersistHandler, this, std::placeholders::_1));	
 }
 
 void ObjectFactory::PersistChangedObjects()
@@ -72,7 +71,7 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
 {
 	uint32_t counter = 1;
     try {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto prepared_statement = shared_ptr<sql::PreparedStatement>
             (conn->prepareStatement("CALL sp_PersistObject(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"));
         prepared_statement->setUInt64(counter++, object->GetObjectId());
@@ -123,7 +122,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
     try {
         result->next();
         // Set Event Dispatcher
-        object->SetEventDispatcher(event_dispatcher_);
+        object->SetEventDispatcher(GetEventDispatcher());
         object->SetSceneId(result->getUInt("scene_id"));
         object->SetPosition(glm::vec3(result->getDouble("x_position"),result->getDouble("y_position"), result->getDouble("z_position")));
         object->SetOrientation(glm::quat(
@@ -175,7 +174,7 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 void ObjectFactory::LoadAttributes(std::shared_ptr<Object> object)
 {
 	 try {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = conn->prepareStatement("CALL sp_GetAttributes(?,?);");
 		statement->setString(1, object->GetTemplate());
         statement->setUInt64(2, object->GetObjectId());
@@ -215,7 +214,7 @@ void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
 {
 	try 
 	{
-		auto conn = db_manager_->getConnection("galaxy");
+		auto conn = GetDatabaseManager()->getConnection("galaxy");
 		for (auto& attribute : object->GetAttributeMap())
 		{
 			auto statement = conn->prepareStatement("CALL sp_PersistAttribute(?,?,?);");
@@ -238,11 +237,11 @@ void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
 	}
 }
 
-uint32_t ObjectFactory::LookupType(uint64_t object_id) const
+uint32_t ObjectFactory::LookupType(uint64_t object_id)
 {
     uint32_t type = 0;
     try {
-        auto conn = db_manager_->getConnection("galaxy");
+		auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = conn->prepareStatement("CALL sp_GetType(?);");
         statement->setUInt64(1, object_id);
         auto result = unique_ptr<sql::ResultSet>(statement->executeQuery());        
@@ -296,7 +295,7 @@ void ObjectFactory::LoadContainedObjects(
 void ObjectFactory::DeleteObjectFromStorage(const std::shared_ptr<Object>& object)
 {
 	try {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = conn->prepareStatement("CALL sp_DeleteObject(?,?);");
         statement->setUInt64(1, object->GetObjectId());
 		statement->setInt(2, object->GetType());
