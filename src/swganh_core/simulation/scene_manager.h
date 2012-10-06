@@ -25,6 +25,8 @@ namespace simulation {
         void StartScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel);
         void StopScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel);
 
+		void ViewScenes(std::function<void(const std::string&, std::shared_ptr<Scene>)> func);
+
     private:
         typedef std::map<
             std::string,

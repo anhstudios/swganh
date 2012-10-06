@@ -127,6 +127,8 @@ ServiceDescription StaticService::GetServiceDescription()
 void StaticService::_loadBuildings(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
+	simulation_service->PrepareToAccomodate(result->rowsCount());
+
 	while (result->next())
 	{
 		//Load Building Row
@@ -182,6 +184,8 @@ void StaticService::_loadCloneLocations(SimulationServiceInterface* simulation_s
 void StaticService::_loadTerminals(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
+	simulation_service->PrepareToAccomodate(result->rowsCount());
+
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(11),
@@ -265,6 +269,8 @@ void StaticService::_loadContainers(SimulationServiceInterface* simulation_servi
 void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
+	simulation_service->PrepareToAccomodate(result->rowsCount());
+
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(3),
@@ -299,6 +305,8 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
+	simulation_service->PrepareToAccomodate(result->rowsCount());
+
 	while(result->next())
 	{
 		//Load NPCS
@@ -370,6 +378,8 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
+	simulation_service->PrepareToAccomodate(result->rowsCount());
+
 	while(result->next())
 	{
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(12),

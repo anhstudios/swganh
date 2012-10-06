@@ -20,6 +20,8 @@ namespace simulation {
 
         void StartScene(const std::string& scene_label);
         void StopScene(const std::string& scene_label);
+		virtual uint32_t SceneIdByName(const std::string& scene_label);
+		virtual std::string SceneNameById(uint32_t scene_id);
 
         void RegisterObjectFactories();
 
@@ -59,17 +61,19 @@ namespace simulation {
 
         void UnregisterControllerHandler(uint32_t handler_id);
 
-        void SendToAll(swganh::ByteBuffer message);
-
-        void SendToAllInScene(swganh::ByteBuffer message, uint32_t scene_id);
-
-        void Startup();
+		virtual void SendToAll(swganh::messages::BaseSwgMessage* message);
+        virtual void SendToScene(swganh::messages::BaseSwgMessage* message, uint32_t scene_id);
+		virtual void SendToScene(swganh::messages::BaseSwgMessage* message, std::string scene_name);
+		virtual void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, uint32_t scene_id, glm::vec3 position, float radius);
+		virtual void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, std::string scene_name, glm::vec3 position, float radius);
 
         virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
 			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, 
 			bool is_initialized=true, uint64_t object_id=0);
 		
 		virtual void PrepareToAccomodate(uint32_t delta);
+
+		void Startup();
 
     private:
 

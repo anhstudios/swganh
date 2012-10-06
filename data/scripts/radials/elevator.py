@@ -26,18 +26,17 @@ class PyRadialMenu(RadialMenu):
 		
 	def handleRadial(self, owner, target, action):
 		if action == RadialIdentifier.elevatorUp and target.hasAttribute("elevator_can_go_up"):
-			handleElevatorAction(self,target, owner, False)
+			handleElevatorAction(self,target, owner, False, "elevator_rise")
 		elif action == RadialIdentifier.elevatorDown and target.hasAttribute("elevator_can_go_down"):
-			handleElevatorAction(self,target, owner, True)
+			handleElevatorAction(self,target, owner, True, "elevator_descend")
 			
-def handleElevatorAction(self, target, owner, expected_elevator_action):
+def handleElevatorAction(self, target, owner, expected_elevator_action, effect_name):
 	static_service = self.getKernel().serviceManager().staticService()
 	simulation_service = self.getKernel().serviceManager().simulationService()
 	for data in static_service.getElevatorDataForObject(target.id):
 		if data.going_down == expected_elevator_action:
 			#Move the player
 			destination_cell = simulation_service.findObjectById(data.dst_cell)
-			new_position = vector3(owner.getPosition().x, data.dst_position.y, owner.getPosition().z)
-			owner.updatePosition(destination_cell, new_position, owner.getOrientation())
-			
-			#Perform Effect
+			new_position = vector3(owner.position.x, data.dst_position.y, owner.position.z)
+			owner.updatePosition(destination_cell, new_position, owner.orientation)
+			SystemMessage.sendEffect(owner, effect_name, data.dst_orientation, data.dst_position)

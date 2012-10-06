@@ -76,6 +76,14 @@ std::shared_ptr<swganh::simulation::SceneInterface> SceneManager::GetScene(uint3
 	return find_iter->second;
 }
 
+void SceneManager::ViewScenes(std::function<void(const std::string&, std::shared_ptr<Scene>)> func)
+{
+	std::for_each(scenes_.begin(), scenes_.end(), [&] (std::pair<std::string, std::shared_ptr<Scene>> pair)
+	{
+		func(pair.first, pair.second);
+	});
+}
+
 void SceneManager::StartScene(const std::string& scene_label, swganh::app::SwganhKernel* kernel)
 {
 	auto description_iter = scene_descriptions_.find(scene_label);

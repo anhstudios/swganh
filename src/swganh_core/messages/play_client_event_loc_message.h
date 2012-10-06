@@ -16,32 +16,34 @@ namespace messages {
     	uint16_t Opcount() const { return 9; }
     	uint32_t Opcode() const { return 0x0A4E222C; }
 
-    	std::string client_effect_file; // uncertain, because PlayClientEffectLocMessage is used for clienteffect files already
-    	std::string planet_name; // e.g. "naboo"
+		std::string event_group_string;
+    	std::string event_string; 
+    	std::string planet_name_string;
     	glm::vec3 location_coordinates;
-    	uint64_t unknown1;
-    	uint32_t unknown2;
+    	uint64_t cell_id;
 
     	void OnSerialize(swganh::ByteBuffer& buffer) const
     	{
-    		buffer.write(client_effect_file);
-    		buffer.write(planet_name);
+			buffer.write(event_group_string);
+    		buffer.write(event_string);
+    		buffer.write(planet_name_string);
     		buffer.write(location_coordinates.x);
+    		buffer.write(0.0f);
     		buffer.write(location_coordinates.z);
+			buffer.write(cell_id);
     		buffer.write(location_coordinates.y);
-    		buffer.write(unknown1);
-    		buffer.write(unknown2);
     	}
 
     	void OnDeserialize(swganh::ByteBuffer& buffer)
     	{
-    		client_effect_file = buffer.read<std::string>();
-    		planet_name = buffer.read<std::string>();
+			event_group_string = buffer.read<std::string>();
+    		event_string = buffer.read<std::string>();
+    		planet_name_string = buffer.read<std::string>();
     		location_coordinates.x = buffer.read<float>();
-    		location_coordinates.z = buffer.read<float>();
+    		buffer.read<float>(); //This value is ignored by the client and the server
+			location_coordinates.z = buffer.read<float>();
+    		cell_id = buffer.read<uint64_t>();
     		location_coordinates.y = buffer.read<float>();
-    		unknown1 = buffer.read<uint64_t>();
-    		unknown2 = buffer.read<uint32_t>();
     	}
     };
 
