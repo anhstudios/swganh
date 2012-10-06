@@ -7,6 +7,9 @@ using namespace swganh::spawn;
 
 FsmController::FsmController(FiniteStateMachine* parent, std::shared_ptr<swganh::object::Object> object, 
 							 std::shared_ptr<FsmBundleInterface> bundle)
+	: parent_machine_(parent)
+	, bundle_(bundle)
+	, object_(object)
 {
 }
 

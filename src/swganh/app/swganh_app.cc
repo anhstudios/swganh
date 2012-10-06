@@ -236,7 +236,8 @@ void SwganhApp::Initialize(int argc, char* argv[]) {
 
     // Load core services
     LoadCoreServices_();
-    
+   
+
     initialized_ = true;
 }
 
@@ -263,6 +264,10 @@ void SwganhApp::Start() {
     }
     
     kernel_->GetServiceManager()->Start();
+
+	//Now that we've loaded core services, start planets.
+	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+	simulation_service->StartScene("corellia");
 }
 
 void SwganhApp::Stop() {
@@ -380,14 +385,6 @@ void SwganhApp::LoadCoreServices_()
 			LOG(info) << "Loaded Service " << name;
         }
     });
-
-    auto app_config = kernel_->GetAppConfig();
-
-	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
-		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-		simulation_service->StartScene("corellia");
-	}
 }
 
 void SwganhApp::SetupLogging_()
