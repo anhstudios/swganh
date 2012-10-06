@@ -391,6 +391,10 @@ public:
      */
 	void SetSceneId(uint32_t scene_id);
 
+	uint32_t GetInstanceId();
+
+	void SetInstanceId(uint32_t instance_id);
+
     /**
      * Stores a deltas message update for the object.
      *
@@ -553,7 +557,8 @@ public:
 protected:
 	std::atomic<uint64_t> object_id_;                // create
 	std::atomic<uint32_t> scene_id_;				 // create
-    std::string template_string_;                    // create
+    std::atomic<uint32_t> instance_id_;
+	std::string template_string_;                    // create
     glm::vec3 position_;                             // create
     glm::quat orientation_;                          // create
     float complexity_;                               // update 3
