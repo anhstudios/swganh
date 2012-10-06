@@ -62,11 +62,12 @@ struct Member
     std::string name;
 };
 
-class GroupFactory;
 class GroupMessageBuilder;
 class Group : public swganh::object::Object
 {
 public:
+	typedef GroupMessageBuilder MessageBuilderType;
+
     Group();
     Group(uint32_t max_member_size);
     ~Group();

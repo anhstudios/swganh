@@ -46,7 +46,6 @@
 #include "swganh_core/object/factory_crate/factory_crate_message_builder.h"
 
 #include "swganh_core/object/group/group.h"
-#include "swganh_core/object/group/group_factory.h"
 #include "swganh_core/object/group/group_message_builder.h"
 
 #include "swganh_core/object/guild/guild.h"
@@ -123,7 +122,6 @@ using namespace swganh::network;
 using namespace swganh::object;
 using namespace swganh::simulation;
 using namespace swganh::equipment;
-using namespace swganh::simulation;
 
 using namespace swganh::tre;
 
@@ -540,7 +538,6 @@ void SimulationService::RegisterObjectFactories()
 	object_manager->RegisterObjectType<HarvesterInstallation>();
 	object_manager->RegisterObjectType<Mission>();
 	object_manager->RegisterObjectType<Guild>();
-	object_manager->RegisterObjectType<Group>();
 	object_manager->RegisterObjectType<Waypoint>();
     object_manager->RegisterObjectType<Creature>();
 	object_manager->RegisterObjectType<Cell>();

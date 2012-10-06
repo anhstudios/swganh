@@ -17,10 +17,15 @@ struct ShipList {
     uint32_t component_index;
     ValueType value;
 };
-    
+
+class ShipFactory;
+class ShipMessageBuilder;
+
 class Ship : public swganh::object::Object
 {
 public:
+	typedef ShipFactory FactoryType;
+    typedef ShipMessageBuilder MessageBuilderType;
     // SHIP
     uint32_t GetType() const;
     const static uint32_t type = 0x6FB799E0; 

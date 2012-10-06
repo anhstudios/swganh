@@ -26,6 +26,7 @@ namespace object {
 		 StaticFactory(swganh::database::DatabaseManagerInterface* db_manager,
             swganh::EventDispatcher* event_dispatcher);
 
+		virtual void PersistChangedObjects(){}
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

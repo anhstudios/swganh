@@ -12,6 +12,11 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::messages;
 
+void CellMessageBuilder::RegisterEventHandlers()
+{
+    // TODO: Register Handlers for Cells
+}
+
 void CellMessageBuilder::SendBaselines(const std::shared_ptr<Cell>& cell, const std::shared_ptr<swganh::observer::ObserverInterface>& observer)
 {
 	cell->AddBaselineToCache(&BuildBaseline3(cell));

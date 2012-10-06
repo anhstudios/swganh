@@ -53,6 +53,8 @@ class GuildFactory;
 class GuildMessageBuilder;
 class Guild : public swganh::object::Object {
 public:
+	typedef GuildFactory FactoryType;
+	typedef GuildMessageBuilder MessageBuilderType;
     Guild();
     ~Guild();
 

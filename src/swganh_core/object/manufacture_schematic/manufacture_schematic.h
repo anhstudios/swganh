@@ -14,9 +14,13 @@
 namespace swganh {
 namespace object {
 
+class ManufactureSchematicFactory;
+class ManufactureSchematicMessageBuilder;
 class ManufactureSchematic : public swganh::object::Intangible
 {
 public:
+	typedef ManufactureSchematicFactory FactoryType;
+	typedef ManufactureSchematicMessageBuilder MessageBuilderType;
     struct Property
     {
         std::string property_stf_file;
@@ -105,6 +109,7 @@ public:
     };
 
 public:
+
 	ManufactureSchematic();
     // MSCO
     /**

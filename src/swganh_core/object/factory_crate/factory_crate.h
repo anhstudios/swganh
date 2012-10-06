@@ -7,10 +7,14 @@
 namespace swganh {
 namespace object {
 
+class FactoryCrateFactory;
+class FactoryCrateMessageBuilder;
 
 class FactoryCrate : public swganh::object::Tangible 
 {
 public:
+	typedef FactoryCrateFactory FactoryType;
+	typedef FactoryCrateMessageBuilder MessageBuilderType;
     // FCYT
     uint32_t GetType() const;
     const static uint32_t type = 0x46435954;

@@ -12,7 +12,7 @@ namespace object {
     {
     public:
 		typedef HarvesterInstallation ObjectType;
-
+		virtual void PersistChangedObjects(){}
         HarvesterInstallationFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher);
     };
 

@@ -30,7 +30,7 @@ ObjectFactory::ObjectFactory(DatabaseManagerInterface* db_manager,
                              swganh::EventDispatcher* event_dispatcher)
     : db_manager_(db_manager)
     , event_dispatcher_(event_dispatcher)
-{	
+{
 }
 
 void ObjectFactory::RegisterEventHandlers()
@@ -106,6 +106,9 @@ uint32_t ObjectFactory::PersistObject(const shared_ptr<Object>& object)
 		prepared_statement->setInt(counter++, object->GetPermissions()->GetType());
         // Now execute the update
         prepared_statement->executeUpdate();
+
+		// Now Persist the objects
+		PersistAttributes(object);
 	}
     catch(sql::SQLException &e)
     {
@@ -213,16 +216,21 @@ void ObjectFactory::PersistAttributes(std::shared_ptr<Object> object)
 		{
 			auto statement = conn->prepareStatement("CALL sp_PersistAttribute(?,?,?);");
 			statement->setUInt64(1, object->GetObjectId());
-			statement->setString(2, attribute.first.ident_string());
-			std::wstring attr = boost::get<wstring>(attribute.second);
+			std::string name = attribute.first.ident_string();
+			statement->setString(2, name);
+			std::wstring attr = object->GetAttributeRecursiveAsString(name);
 			statement->setString(3, std::string(attr.begin(), attr.end()));
-			statement->executeQuery();    
+			statement->executeUpdate();    
 		}		
 	}
 	catch(sql::SQLException &e)
 	{
 		LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
 		LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
+	}
+	catch (std::exception& ex)
+	{
+		LOG(error) << "error persisting attributes for object " << object->GetObjectId() + " " << ex.what();
 	}
 }
 

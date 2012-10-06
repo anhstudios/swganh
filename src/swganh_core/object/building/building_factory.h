@@ -20,7 +20,8 @@ namespace object {
 
         BuildingFactory(swganh::database::DatabaseManagerInterface* db_manager,
             swganh::EventDispatcher* event_dispatcher);
-
+		
+		virtual void PersistChangedObjects(){}
 		virtual void RegisterEventHandlers(){}
 
     };

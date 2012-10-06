@@ -7,11 +7,14 @@
 namespace swganh {
 namespace object {
 
-    
+class WeaponFactory;
+class WeaponMessageBuilder;
 class Weapon : public swganh::object::Tangible
 {
 public:
-    Weapon();
+	typedef WeaponFactory FactoryType;
+    typedef WeaponMessageBuilder MessageBuilderType;
+    
 
     // WEAO
     virtual uint32_t GetType() const;
