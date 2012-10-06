@@ -24,9 +24,12 @@ public:
 	virtual void TransferObject(std::shared_ptr<swganh::object::Object> requester, std::shared_ptr<swganh::object::Object> object, std::shared_ptr<ContainerInterface> newContainer, int32_t arrangement_id=-2);
 	virtual void UpdateObject(std::shared_ptr<swganh::object::Object> obj, glm::vec3 old_position, glm::vec3 new_position);
 
+	virtual void ViewObjectsInRange(glm::vec3 position, float radius, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
+
 	// FOR USE BY TRANSFER OBJECT DO NOT CALL IN OUTSIDE CODE
 	virtual int32_t __InternalInsert(std::shared_ptr<swganh::object::Object> object, int32_t arrangement_id=-2);
 	virtual void __InternalViewObjects(std::shared_ptr<swganh::object::Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func);
+
 
 	virtual void __InternalViewAwareObjects(std::function<void(std::shared_ptr<swganh::object::Object>)> func, std::shared_ptr<swganh::object::Object> hint=nullptr);
 

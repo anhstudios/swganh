@@ -149,7 +149,10 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                     di_integer, df_float, display_flag);
 }
 
-OutOfBand::~OutOfBand() {}
+OutOfBand::~OutOfBand() 
+{
+	delete data_;
+}
 
 uint16_t OutOfBand::Count() const {
     return count_;
@@ -312,7 +315,7 @@ void OutOfBand::AddProsePackage(const string& base_stf_file, const string& base_
 }
 
 const ByteBuffer* OutOfBand::Pack() const {
-    return data_.get();
+    return data_;
 }
 
 

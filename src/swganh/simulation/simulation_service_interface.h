@@ -6,6 +6,9 @@
 #include <map>
 #include <memory>
 
+#include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include "swganh/network/soe/server.h"
 #include "swganh/service/service_interface.h"
 
@@ -20,9 +23,13 @@ namespace swganh {
 namespace swganh {
 namespace connection {
     class ConnectionClient;
-}}  // namespace swganh::network
+}
 
-namespace swganh {
+namespace messages
+{
+	struct BaseSwgMessage;
+}
+
 namespace object {
 
 	typedef std::function<
@@ -36,9 +43,8 @@ namespace object {
 
     class Object;
 	class ObjectManager;
-}}  // namespace swganh::object
+}
 
-namespace swganh {
 namespace simulation {
     
     class SimulationServiceInterface : public swganh::service::ServiceInterface
@@ -46,6 +52,9 @@ namespace simulation {
     public:
         virtual void StartScene(const std::string& scene_label) = 0;
         virtual void StopScene(const std::string& scene_label) = 0;
+
+		virtual uint32_t SceneIdByName(const std::string& scene_label) = 0;
+		virtual std::string SceneNameById(uint32_t scene_id) = 0;
 
 		virtual void AddObjectToScene(std::shared_ptr<swganh::object::Object> object, const std::string& scene_label) = 0;
 
@@ -168,30 +177,13 @@ namespace simulation {
          * \param handler The object controller handler.
          */
         virtual void RegisterControllerHandler(uint32_t handler_id, swganh::object::ObjControllerHandler&& handler) = 0;
-
         virtual void UnregisterControllerHandler(uint32_t handler_id) = 0;
 
-        virtual void SendToAll(swganh::ByteBuffer message) = 0;
-
-        template <typename T>
-        void SendToAll(const T& message)
-        {
-            swganh::ByteBuffer message_buffer;
-            message.Serialize(message_buffer);
-
-            SendToAll(message_buffer);
-        }
-
-        virtual void SendToAllInScene(swganh::ByteBuffer message, uint32_t scene_id) = 0;
-
-        template<typename T>
-        void SendToAllInScene(const T& message, uint32_t scene_id)
-        {
-            swganh::ByteBuffer message_buffer;
-            message.Serialize(message_buffer);
-
-            SendToAllInScene(message_buffer, scene_id);
-        }
+        virtual void SendToAll(swganh::messages::BaseSwgMessage* message) = 0;
+        virtual void SendToScene(swganh::messages::BaseSwgMessage* message, uint32_t scene_id) = 0;
+		virtual void SendToScene(swganh::messages::BaseSwgMessage* message, std::string scene_name) = 0;
+		virtual void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, uint32_t scene_id, glm::vec3 position, float radius) = 0;
+		virtual void SendToSceneInRange(swganh::messages::BaseSwgMessage* message, std::string scene_name, glm::vec3 position, float radius) = 0;
 
 		virtual std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, 
 			swganh::object::PermissionType type=swganh::object::DEFAULT_PERMISSION, bool is_persisted=true, bool is_initialized=true, uint64_t object_id=0) = 0;

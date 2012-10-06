@@ -3,7 +3,16 @@
 #include "system_message.h"
 #include "out_of_band.h"
 #include "chat_system_message.h"
+#include "play_client_effect_loc_message.h"
+#include "play_client_effect_object_message.h"
+#include "play_client_effect_object_with_transform_message.h"
+#include "play_client_event_loc_message.h"
+#include "play_client_event_object_message.h"
+#include "play_music_message.h"
+
 #include "swganh_core/object/object.h"
+
+#include "swganh/simulation/simulation_service_interface.h"
 
 #ifndef WIN32
 #include <boost/regex.hpp>
@@ -18,6 +27,7 @@ using namespace std;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;
+using namespace swganh::simulation;
 
 void SystemMessage::Send(
 	std::shared_ptr<swganh::object::Object> sender, 
@@ -125,4 +135,146 @@ void SystemMessage::FlyText(
         fly_text.display_flag = (display_flag == true) ? 0 : 1;
         sender->NotifyObservers(&fly_text);
     }
+}
+
+void SystemMessage::ClientEffect(std::shared_ptr<SimulationServiceInterface> simulation_service, std::string client_effect_file, 
+	std::string planet_name, glm::vec3 location_coordinates, float range, uint64_t cell_id)
+{
+	PlayClientEffectLocMessage msg;
+	msg.client_effect_file = "clienteffect/"+client_effect_file+".cef";
+	msg.planet_name = planet_name;
+	msg.location_coordinates = location_coordinates;
+	msg.cell_id = cell_id;
+	simulation_service->SendToSceneInRange( &msg, planet_name, location_coordinates, range );
+}
+	
+void SystemMessage::ClientEffect(std::shared_ptr<SimulationServiceInterface> simulation_service, std::string client_effect_file,
+	uint32_t planet_id, glm::vec3 location_coordinates, float range, uint64_t cell_id)
+{
+	ClientEffect(simulation_service, client_effect_file, simulation_service->SceneNameById(planet_id), location_coordinates, range, cell_id);
+}
+
+void SystemMessage::ClientEffect(std::shared_ptr<swganh::object::Object> object, const std::string& client_effect_file, 
+	const std::string& auxiliary_string, bool send_in_range)
+{
+	PlayClientEffectObjectMessage msg;
+	msg.client_effect_file = "clienteffect/"+client_effect_file+".cef";
+	msg.auxiliary_string = auxiliary_string;
+	msg.object_id = object->GetObjectId();
+
+	if(send_in_range) 
+	{
+		object->NotifyObservers(&msg);
+	}
+	else
+	{
+		auto controller = object->GetController();
+		if(controller)
+		{
+			controller->Notify(&msg);
+		}
+	}
+}
+
+void SystemMessage::ClientEffect(std::shared_ptr<swganh::object::Object> object, const std::string& client_effect_file, 
+	glm::quat orientation, glm::vec3 offset, bool send_in_range)
+{
+	PlayClientEffectObjectWithTransformMessage msg;
+	msg.effect_string = "clienteffect/"+client_effect_file+".cef";
+	msg.orientation = orientation;
+	msg.offset = offset;
+	msg.object_id = object->GetObjectId();
+
+	if(send_in_range) 
+	{
+		object->NotifyObservers(&msg);
+	}
+	else
+	{
+		auto controller = object->GetController();
+		if(controller)
+		{
+			controller->Notify(&msg);
+		}
+	}
+}
+
+void SystemMessage::ClientEvent(std::shared_ptr<SimulationServiceInterface> simulation_service, 
+	const std::string& event_group_string, const std::string& event_string, 
+	const std::string& planet_name_string, glm::vec3 location_coordinates, float range,  uint64_t cell_id)
+{
+	PlayClientEventLocMessage msg;
+	msg.event_group_string = event_group_string;
+	msg.event_string = event_string;
+	msg.planet_name_string = planet_name_string;
+	msg.location_coordinates = location_coordinates;
+	msg.cell_id = cell_id;
+	simulation_service->SendToSceneInRange( &msg, planet_name_string, location_coordinates, range );
+}
+
+void SystemMessage::ClientEvent(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, 
+		const std::string& event_group_string, const std::string& event_string, 
+		uint32_t planet_id, glm::vec3 location_coordinates, float range, uint64_t cell_id)
+{
+	ClientEvent(simulation_service, event_group_string, event_string, simulation_service->SceneNameById(planet_id), 
+		location_coordinates, range, cell_id);
+}
+
+void SystemMessage::ClientEvent(std::shared_ptr<swganh::object::Object> object, std::string event_string,
+	std::string hardpoint_string, bool send_in_range)
+{
+	PlayClientEventObjectMessage msg;
+	msg.event_string = event_string;
+	msg.hardpoint_string = hardpoint_string;
+	msg.object_id = object->GetObjectId();
+
+	if(send_in_range) 
+	{
+		object->NotifyObservers(&msg);
+	}
+	else
+	{
+		auto controller = object->GetController();
+		if(controller)
+		{
+			controller->Notify(&msg);
+		}
+	}
+}
+
+void SystemMessage::PlayMusic(std::shared_ptr<SimulationServiceInterface> simulation_service, std::string planet_name,
+	glm::vec3 point, float range,const std::string& music_name, uint32_t channel)
+{
+	PlayMusicMessage msg;
+	msg.music_file = "sound/"+music_name+".snd";
+	msg.channel = channel;
+
+	simulation_service->SendToSceneInRange( &msg, planet_name, point, range );
+}
+
+void SystemMessage::PlayMusic(std::shared_ptr<swganh::simulation::SimulationServiceInterface> simulation_service, uint32_t planet_id,
+	glm::vec3 point, float range, const std::string& music_name, uint32_t channel)
+{
+	PlayMusic(simulation_service, simulation_service->SceneNameById(planet_id), point, range, music_name, channel);
+}
+
+void SystemMessage::PlayMusic(std::shared_ptr<swganh::object::Object> object, const std::string& music_name, 
+	uint32_t channel, bool send_in_range)
+{
+	PlayMusicMessage msg;
+	msg.music_file = "sound/"+music_name+".snd";
+	msg.channel = channel;
+
+	if(send_in_range) 
+	{
+		object->NotifyObservers(&msg);
+	}
+	else
+	{
+		auto controller = object->GetController();
+		if(controller)
+		{
+			controller->Notify(&msg);
+		}
+	}
 }

@@ -127,7 +127,7 @@ void WeatherService::SendServerWeatherMessageAll_(
 	server_weather_message.cloud_vector = cloud_vector;
 
 	simulation_service_ = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
-	simulation_service_->SendToAllInScene(server_weather_message, scene_id);
+	simulation_service_->SendToScene(&server_weather_message, scene_id);
 }
 
 void WeatherService::tickPlanetWeather_()

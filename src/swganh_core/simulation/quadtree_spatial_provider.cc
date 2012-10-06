@@ -156,6 +156,28 @@ void QuadtreeSpatialProvider::TransferObject(std::shared_ptr<swganh::object::Obj
 	}
 }
 
+void QuadtreeSpatialProvider::ViewObjectsInRange(glm::vec3 position, float radius, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<swganh::object::Object>)> func)
+{
+	std::list<std::shared_ptr<Object>> contained_objects;
+
+	boost::shared_lock<boost::shared_mutex> lock(global_container_lock_);
+	contained_objects = root_node_.Query(QueryBox(Point(position.x - radius, position.z - radius), 
+		Point(position.x + radius, position.z + radius)));
+
+	for (auto& object : contained_objects)
+	{
+		if (topDown)
+			func(object);
+
+		if (max_depth != 1)
+			object->__InternalViewObjects(nullptr, (max_depth == 0 ? 0 : max_depth - 1), topDown, func);
+
+		if (!topDown)
+			func(object);
+	}
+
+}
+
 void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t max_depth, bool topDown, std::function<void(std::shared_ptr<Object>)> func)
 {
 	std::list<std::shared_ptr<Object>> contained_objects;
