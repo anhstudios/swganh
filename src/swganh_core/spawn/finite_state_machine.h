@@ -1,7 +1,17 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
+#include <atomic>
 #include <map>
+#include <set>
+#include <boost/thread/mutex.hpp>
 #include <swganh/event_dispatcher.h>
+
+namespace boost
+{
+class thread;
+}
 
 namespace swganh
 {
@@ -12,37 +22,35 @@ namespace object
 
 namespace spawn
 {
-	typedef std::function<void(std::shared_ptr<EventInterface>,std::shared_ptr<swganh::object::Object>)> TransitionHandler;
-
+	class FsmBundleInterface;
 	class FsmStateInterface;
-	
-	struct StateTransition
-	{
-		std::shared_ptr<FsmStateInterface> start_state_;
-		TransitionHandler handler_;
-		std::shared_ptr<FsmStateInterface> end_state_;
-	};
+	class FsmController;
+
+	typedef std::function<std::shared_ptr<FsmBundleInterface>(std::shared_ptr<FsmStateInterface>)> BundleGenerator;
 
 	class FiniteStateMachine
 	{
 	public:
-		FiniteStateMachine(swganh::EventDispatcher* dispatch);
-		
+	
+		FiniteStateMachine(uint32_t threads_required, std::shared_ptr<FsmStateInterface> initial_state,
+			BundleGenerator bundle_factory);
+
+		~FiniteStateMachine();
+
 		void StartManagingObject(std::shared_ptr<swganh::object::Object> object);
-		
 		void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
-		
-		void AddTransition(std::shared_ptr<FsmStateInterface> start_state, 
-			EventType event_type, TransitionHandler handler, std::shared_ptr<FsmStateInterface> end_state);
-	
+
+		void MarkDirty(std::shared_ptr<FsmController> controller_);
+
 	private:
-		void HandleEvent_(const std::shared_ptr<EventInterface>& event);
-	
-		swganh::EventDispatcher* dispatch_;
+		std::atomic<bool> shutdown_;
+		std::vector<boost::thread> threads_;
+		boost::mutex mutex_;
+
+		std::set<std::shared_ptr<FsmController>> controllers_, dirty_controllers_;
+
+		BundleGenerator bundle_factory_;
 		std::shared_ptr<FsmStateInterface> initial_state_;
-	
-		std::multi_map<EventType, StateTransition> transitionLookup_;
-		std::multi_map<std::shared_ptr<FsmStateInterface>, std::shared_ptr<swganh::object::Object>> managed_objects_;
 	};
 }
 }

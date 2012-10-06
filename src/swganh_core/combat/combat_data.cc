@@ -4,9 +4,11 @@
 #include "combat_data.h"
 
 #include "swganh/command/base_combat_command.h"
+#include "swganh/scripting/utilities.h"
 
 using namespace swganh::combat;
 using namespace boost::python;
+using namespace swganh::scripting;
 
 CombatData::CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties )
     : swganh::command::CommandProperties(properties)
@@ -44,25 +46,25 @@ void CombatData::GetPythonData(boost::python::object global)
 {
     try {
         // Exception Safe way to pull out data
-        ExtractData(global, "min_damage", min_damage);
-        ExtractData(global, "max_damage", max_damage);
-        ExtractData(global, "damage_multiplier", damage_multiplier);
-        ExtractData(global, "accuracy_bonus", accuracy_bonus);
-        ExtractData(global, "speed_multiplier", speed_multiplier);
-        ExtractData(global, "pool", pool);
-        ExtractData(global, "attack_delay_chance", attack_delay_chance);
-        ExtractData(global, "state_duration", state_duration);
+        GetValue(global, "min_damage", min_damage);
+        GetValue(global, "max_damage", max_damage);
+        GetValue(global, "damage_multiplier", damage_multiplier);
+        GetValue(global, "accuracy_bonus", accuracy_bonus);
+        GetValue(global, "speed_multiplier", speed_multiplier);
+        GetValue(global, "pool", pool);
+        GetValue(global, "attack_delay_chance", attack_delay_chance);
+        GetValue(global, "state_duration", state_duration);
         /// DOTS
-        ExtractData(global, "dot_duration", dot_duration);
-        ExtractData(global, "dot_type", dot_type);
-        ExtractData(global, "dot_pool", dot_pool);
-        ExtractData(global, "dot_strength", dot_strength);
-        ExtractData(global, "dot_potency", dot_potency);
+        GetValue(global, "dot_duration", dot_duration);
+        GetValue(global, "dot_type", dot_type);
+        GetValue(global, "dot_pool", dot_pool);
+        GetValue(global, "dot_strength", dot_strength);
+        GetValue(global, "dot_potency", dot_potency);
         /// End DOTS
-        ExtractData(global, "range", range);
-        ExtractData(global, "cone_angle", cone_angle);
-        ExtractData(global, "area_range", area_range);
-        ExtractData(global, "animation_string", animation_crc);
+        GetValue(global, "range", range);
+        GetValue(global, "cone_angle", cone_angle);
+        GetValue(global, "area_range", area_range);
+        GetValue(global, "animation_string", animation_crc);
     }
     catch (...)
     {

@@ -1,7 +1,12 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 #include "spawn_service.h"
 
 #include <algorithm>
 #include <memory>
+
+#include <boost/python.hpp>
+#include "swganh/scripting/utilities.h"
 
 #include "swganh/logger.h"
 
@@ -26,8 +31,10 @@ using namespace swganh::tre;
 
 using namespace swganh::spawn;
 using namespace swganh::simulation;
+using namespace swganh::scripting;
 
-SpawnService::SpawnService(SwganhKernel* kernel) : kernel_(kernel)
+SpawnService::SpawnService(SwganhKernel* kernel) 
+	: kernel_(kernel)
 {
 }
 
@@ -49,11 +56,24 @@ ServiceDescription SpawnService::GetServiceDescription()
     return service_description;
 }
 
-PermissionType SpawnService::FindProperPermission_(const std::string& iff_name)
+void SpawnService::Startup()
 {
-	if(iff_name.compare("object/cell/shared_cell.iff") == 0)
-	{
-		return WORLD_CELL_PERMISSION;
-	}
-	return STATIC_CONTAINER_PERMISSION;
+	//Load some defaults from python
+	uint32_t SHUTTLE_AWAY_TIME_SECONDS = 60;
+	uint32_t SHUTTLE_IN_PORT_TIME_SECONDS = 60;
+
+	ScopedGilLock lock;
+    try 
+    {
+        auto config = boost::python::import("spawn_config");
+		GetValue(config, "SHUTTLE_AWAY_TIME_SECONDS", SHUTTLE_AWAY_TIME_SECONDS);
+		GetValue(config, "SHUTTLE_IN_PORT_TIME_SECONDS", SHUTTLE_IN_PORT_TIME_SECONDS);
+    }
+    catch(boost::python::error_already_set& /*e*/)
+    {
+        PyErr_Print();
+    }
+
+	//Build the default machines
+
 }

@@ -1,7 +1,11 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 #pragma once
 
+#include <vector>
 #include <map>
 #include <swganh/event_dispatcher.h>
+#include <boost/thread/mutex.hpp>
 
 #include "finite_state_machine.h"
 
@@ -21,17 +25,18 @@ namespace spawn
 		
 		FsmManager(EventDispatcher* event_dispatch);
 	
-		void RegisterAutomaton(const std::string& name, std::shared_ptr<FiniteStateMachine> automaton);
-		void GetAutomatonByName(const std::string& name);
-		void DeregisterAutomaton(const std::string& name);
+		void RegisterAutomaton(const std::wstring& name, std::shared_ptr<FiniteStateMachine> automaton);
+		std::shared_ptr<FiniteStateMachine> GetAutomatonByName(const std::wstring& name);
+		void DeregisterAutomaton(const std::wstring& name);
 		
-		void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::string machine);
+		void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine);
 		void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
-		
+
 	private:
+		boost::shared_mutex mutex_;
 		EventDispatcher* dispatch_;
 		
-		std::map<std::string, std::shared_ptr<FiniteStateMachine>> machines_;
+		std::map<std::wstring, std::shared_ptr<FiniteStateMachine>> machines_;
 	};
 }
 }

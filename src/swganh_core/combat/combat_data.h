@@ -98,21 +98,6 @@ struct CombatData : swganh::command::CommandProperties
     bool IsRandomPool();
     int GetDamagingPool();
     
-	/**
-	* Extracts combat data from a python object
-	*/
-    template <typename T>
-    void ExtractData(boost::python::object& p_object, std::string key, T& extract_value)
-    {
-        swganh::scripting::ScopedGilLock lock;
-        if (p_object.contains(key))
-        {
-            boost::python::extract<T> tmp_x(p_object[key]);
-            if (tmp_x.check())
-                extract_value = tmp_x();
-        }
-    }
-    
     static std::string HIT_spam() { return "_hit"; }
     static std::string BLOCK_spam() { return "_block"; }
     static std::string DODGE_spam() { return "_evade"; }
