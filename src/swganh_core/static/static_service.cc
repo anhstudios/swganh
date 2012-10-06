@@ -18,9 +18,11 @@
 #include "swganh/service/service_manager.h"
 #include "swganh/object/permissions/permission_type.h"
 
-#include "swganh_core/simulation/simulation_service.h"
+#include "swganh/simulation/simulation_service_interface.h"
 #include "swganh_core/simulation/scene_events.h"
 #include "swganh_core/object/object.h"
+
+#include "swganh/spawn/spawn_service_interface.h"
 
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"
@@ -30,6 +32,7 @@ using namespace swganh::statics;
 using namespace swganh::service;
 using namespace swganh::app;
 using namespace swganh::simulation;
+using namespace swganh::spawn;
 
 enum PERSISTENT_NPC_TYPE
 {
@@ -53,6 +56,7 @@ StaticService::StaticService(SwganhKernel* kernel)
 		auto conn = database_manager->getConnection("swganh_static");
 
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+		auto spawn_service = kernel_->GetServiceManager()->GetService<SpawnServiceInterface>("SpawnService");
 
 		try {
 
@@ -93,11 +97,11 @@ StaticService::StaticService(SwganhKernel* kernel)
 			real_event->scene_id, real_event->scene_label);
 		
 		statement->getMoreResults();
-		_loadNPCS(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
+		_loadNPCS(simulation_service, spawn_service,  std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
 			real_event->scene_id, real_event->scene_label);
 		
 		statement->getMoreResults();
-		_loadShuttles(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
+		_loadShuttles(simulation_service, spawn_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
 			real_event->scene_id, real_event->scene_label);
 
 		} catch(std::exception& e) {
@@ -302,7 +306,7 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 	}
 }
 
-void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, SpawnServiceInterface* spawn_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
 	simulation_service->PrepareToAccomodate(result->rowsCount());
@@ -375,7 +379,7 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 	}
 }
 
-void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
+void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service, SpawnServiceInterface* spawn_service, std::unique_ptr<sql::ResultSet> result,
 	uint32_t scene_id, std::string scene_name)
 {
 	simulation_service->PrepareToAccomodate(result->rowsCount());
@@ -415,6 +419,8 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 				parent->AddObject(nullptr, object);
 			}
 		}
+
+		spawn_service->StartManagingObject(object, L"shuttle");
 	}
 }
 

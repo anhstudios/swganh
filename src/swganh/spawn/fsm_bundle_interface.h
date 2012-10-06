@@ -23,16 +23,18 @@ namespace spawn
 class FsmStateInterface;
 class FsmBundleInterface
 {
-
+public:
 	/**
 	* @return true when this object requires post-processing
 	*/
-	virtual bool HandleNotify(std::shared_ptr<swganh::object::Object>& object_, swganh::messages::BaseSwgMessage* message) = 0;
+	virtual void HandleNotify(std::shared_ptr<swganh::object::Object>& object_, swganh::messages::BaseSwgMessage* message) = 0;
 	
 	/*
 	* @return true when this object still requires processing
 	*/
-	virtual bool HandleCleanup(std::shared_ptr<swganh::object::Object>& object_, boost::posix_time::ptime current_time_) = 0;	
+	virtual void HandleCleanup(std::shared_ptr<swganh::object::Object>& object_, boost::posix_time::ptime current_time_) = 0;	
+
+	virtual bool IsDirty() = 0;
 
 protected:
 	std::shared_ptr<FsmStateInterface> current_state_;

@@ -17,11 +17,14 @@
 
 #include "swganh/object/permissions/permission_type.h"
 #include "swganh_core/object/object_manager.h"
+
 #include "swganh_core/object/object.h"
 
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/snapshot/ws_visitor.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
+
+#include "build_shuttle_machine.h"
 
 using namespace swganh::service;
 using namespace swganh::app;
@@ -35,6 +38,7 @@ using namespace swganh::scripting;
 
 SpawnService::SpawnService(SwganhKernel* kernel) 
 	: kernel_(kernel)
+	, fsm_manager_(kernel->GetEventDispatcher())
 {
 }
 
@@ -75,5 +79,5 @@ void SpawnService::Startup()
     }
 
 	//Build the default machines
-
+	_buildShuttleMachine(fsm_manager_, SHUTTLE_AWAY_TIME_SECONDS, SHUTTLE_IN_PORT_TIME_SECONDS);
 }

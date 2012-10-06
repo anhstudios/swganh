@@ -5,12 +5,18 @@
 
 namespace swganh
 {
+namespace object
+{
+	class Object;
+}
+
 namespace spawn
 {
 	class SpawnServiceInterface : public swganh::service::ServiceInterface
 	{
 	public:
-		//Nothing for now...
+		virtual void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine) = 0;
+		virtual void StopManagingObject(std::shared_ptr<swganh::object::Object> object) = 0;
 	};
 }
 }

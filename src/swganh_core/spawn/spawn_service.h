@@ -6,6 +6,7 @@
 #include "swganh/spawn/spawn_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/permissions/permission_type.h"
+#include "fsm_manager.h"
 
 namespace swganh
 {
@@ -19,10 +20,21 @@ namespace spawn
 		
 		 swganh::service::ServiceDescription GetServiceDescription();
 	
+		 virtual void StartManagingObject(std::shared_ptr<swganh::object::Object> object, std::wstring machine)
+		 {
+			 fsm_manager_.StartManagingObject(object, machine);
+		 }
+
+		virtual void StopManagingObject(std::shared_ptr<swganh::object::Object> object)
+		{
+			fsm_manager_.StopManagingObject(object);
+		}
+
 		 void Startup();
 
 	private:
-		swganh::object::PermissionType FindProperPermission_(const std::string& iff_name);
+		FsmManager fsm_manager_;
+
 		swganh::app::SwganhKernel* kernel_;
 	};
 }

@@ -22,17 +22,20 @@ struct timeOrder
 
 class TimerOnlyBundle : public FsmBundleInterface
 {
+public:
 	TimerOnlyBundle(std::shared_ptr<FsmStateInterface> initial_state);
 
 	/**
 	* @return true when this object requires post-processing
 	*/
-	virtual bool HandleNotify(std::shared_ptr<swganh::object::Object>& object_, swganh::messages::BaseSwgMessage* message);
+	virtual void HandleNotify(std::shared_ptr<swganh::object::Object>& object_, swganh::messages::BaseSwgMessage* message);
 	
 	/*
 	* @return true when this object still requires processing
 	*/
-	virtual bool HandleCleanup(std::shared_ptr<swganh::object::Object>& object_, boost::posix_time::ptime current_time_);
+	virtual void HandleCleanup(std::shared_ptr<swganh::object::Object>& object_, boost::posix_time::ptime current_time_);
+
+	virtual bool IsDirty();
 
 	void SetCurrentState(std::shared_ptr<FsmStateInterface> new_state, boost::posix_time::ptime current_time);
 

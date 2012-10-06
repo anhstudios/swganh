@@ -3,6 +3,7 @@
 #pragma once
 
 #include <swganh/observer/observer_interface.h>
+#include "boost/date_time/posix_time/posix_time_types.hpp"
 
 namespace swganh
 {
@@ -13,6 +14,7 @@ namespace object
 
 namespace spawn
 {
+class FiniteStateMachine;
 class FsmBundleInterface;
 class FsmController : public swganh::observer::ObserverInterface
 {

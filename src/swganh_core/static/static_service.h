@@ -20,6 +20,11 @@ namespace simulation
 	class SimulationServiceInterface;
 }
 
+namespace spawn
+{
+	class SpawnServiceInterface;
+}
+
 namespace statics
 {
 	class StaticService : public swganh::statics::StaticServiceInterface
@@ -49,10 +54,10 @@ namespace statics
 			uint32_t scene_id, std::string scene_name);
 		void _loadTicketCollectors(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
 			uint32_t scene_id, std::string scene_name);
-		void _loadNPCS(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
-			uint32_t scene_id, std::string scene_name);
-		void _loadShuttles(swganh::simulation::SimulationServiceInterface* simulation_service, std::unique_ptr<sql::ResultSet> result,
-			uint32_t scene_id, std::string scene_name);
+		void _loadNPCS(swganh::simulation::SimulationServiceInterface* simulation_service, swganh::spawn::SpawnServiceInterface* spawn_service,
+			std::unique_ptr<sql::ResultSet> result, uint32_t scene_id, std::string scene_name);
+		void _loadShuttles(swganh::simulation::SimulationServiceInterface* simulation_service, swganh::spawn::SpawnServiceInterface* spawn_service,
+			std::unique_ptr<sql::ResultSet> result, uint32_t scene_id, std::string scene_name);
 
 		swganh::app::SwganhKernel* kernel_;
 

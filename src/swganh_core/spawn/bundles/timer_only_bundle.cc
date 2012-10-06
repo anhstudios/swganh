@@ -10,11 +10,15 @@ TimerOnlyBundle::TimerOnlyBundle(std::shared_ptr<FsmStateInterface> initial_stat
 	SetCurrentState(initial_state, boost::posix_time::second_clock::local_time());
 }
 
-bool TimerOnlyBundle::HandleNotify(std::shared_ptr<Object>& object_, swganh::messages::BaseSwgMessage* message) 
+void TimerOnlyBundle::HandleNotify(std::shared_ptr<Object>& object_, swganh::messages::BaseSwgMessage* message) 
 {
-	return false;
 }
 	
+bool TimerOnlyBundle::IsDirty()
+{
+	return !timed.empty();
+}
+
 void TimerOnlyBundle::SetCurrentState(std::shared_ptr<FsmStateInterface> new_state, boost::posix_time::ptime current_time)
 {
 	current_state_ = new_state;
@@ -32,7 +36,7 @@ void TimerOnlyBundle::SetCurrentState(std::shared_ptr<FsmStateInterface> new_sta
 	}
 }
 
-bool TimerOnlyBundle::HandleCleanup(std::shared_ptr<Object>& object_, boost::posix_time::ptime current_time_)
+void TimerOnlyBundle::HandleCleanup(std::shared_ptr<Object>& object_, boost::posix_time::ptime current_time_)
 {
 	if(!timed.empty())
 	{
@@ -46,7 +50,7 @@ bool TimerOnlyBundle::HandleCleanup(std::shared_ptr<Object>& object_, boost::pos
 			if(t.handler_(this, object_))
 			{
 				SetCurrentState(t.end_state_, current_time_);
-				return timed.size() > 0;
+				return;
 			}
 
 			//Pop type off
@@ -59,5 +63,4 @@ bool TimerOnlyBundle::HandleCleanup(std::shared_ptr<Object>& object_, boost::pos
 			timed.push(type);
 		}
 	}
-	return false;
 }

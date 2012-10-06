@@ -46,7 +46,7 @@ namespace spawn
 		*/
 
 		virtual void AddEventTransition(swganh::EventType type, std::shared_ptr<FsmStateInterface> end_state, TransitionHandler handler) = 0;
-		virtual void AddTimedTransition(uint64_t offset_secs, std::shared_ptr<FsmStateInterface> end_state, TransitionHandler handler) = 0;
+		virtual void AddTimedTransition(boost::posix_time::time_duration offset_secs, std::shared_ptr<FsmStateInterface> end_state, TransitionHandler handler) = 0;
 		virtual std::map<swganh::EventType, Transition>& GetEventTransitions() = 0;
 		virtual std::multimap<boost::posix_time::time_duration, Transition>& GetTimedTransitions() = 0;
 	};
