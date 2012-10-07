@@ -35,6 +35,9 @@ namespace attributes {
             const std::shared_ptr<swganh::object::Object> object,
 			bool recursive = false
         );
+		
+		static std::wstring GetCondition(const std::shared_ptr<swganh::object::Object> object);
+		static std::wstring GetVolume(const std::shared_ptr<swganh::object::Object> object);
 	};
 
 }}

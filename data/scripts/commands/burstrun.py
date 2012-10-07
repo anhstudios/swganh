@@ -1,3 +1,4 @@
+from swgpy.object import *
 from swgpy.command import BaseSwgCommand, Callback
 
 class BurstRunCommand(BaseSwgCommand):
@@ -12,11 +13,11 @@ class BurstRunCommand(BaseSwgCommand):
             return False
 
         if actor.hasFlag("BurstRunning"):
-            actor.sendSystemMessage('combat_effects', 'burst_run_no')
+            SystemMessage.sendSystemMessage(actor, 'combat_effects', 'burst_run_no')
             return False
 
         if actor.hasFlag("BurstRunCooldown"):
-            actor.sendSystemMessage('combat_effects', 'burst_run_wait')
+            SystemMessage.sendSystemMessage(actor, 'combat_effects', 'burst_run_wait')
             return False
 
         # @TODO Check for mounts and whether or not in a space station/vehicle
@@ -32,7 +33,7 @@ class BurstRunCommand(BaseSwgCommand):
         # increase the actor's run speed
         actor.run_speed *= self.base_run_multiplier
 
-        actor.sendSystemMessage('cbt_spam', 'burstrun_start_single')
+        SystemMessage.sendSystemMessage(actor, 'cbt_spam', 'burstrun_start_single')
    
         return Callback(self.endBurstRun, self.base_run_duration_ms)
 
@@ -44,8 +45,8 @@ class BurstRunCommand(BaseSwgCommand):
         # decrease the actor's run speed by the increased amount
         actor.run_speed /= self.base_run_multiplier
 
-        actor.sendSystemMessage('cbt_spam', 'burstrun_stop_single')
-        actor.sendSystemMessage('combat_effects', 'burst_run_tired')
+        SystemMessage.sendSystemMessage(actor, 'cbt_spam', 'burstrun_stop_single')
+        SystemMessage.sendSystemMessage(actor, 'combat_effects', 'burst_run_tired')
  
         return Callback(self.endBurstRunCooldown, self.base_cooldate_timer_ms - self.base_run_duration_ms)
 
@@ -54,4 +55,4 @@ class BurstRunCommand(BaseSwgCommand):
         
         actor.removeFlag("BurstRunCooldown")
         
-        actor.sendSystemMessage('combat_effects', 'burst_run_not_tired')
+        SystemMessage.sendSystemMessage(actor, 'combat_effects', 'burst_run_not_tired')

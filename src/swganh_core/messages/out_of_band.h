@@ -266,6 +266,6 @@ protected:
 
     uint16_t count_;
 
-    swganh::ByteBuffer* data_;
+    std::shared_ptr<swganh::ByteBuffer> data_;
 };
 }} // swganh::messages

@@ -2,7 +2,7 @@
 // See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "attributes_helper.h"
-#include "swganh_core/object/object.h"
+#include "swganh_core/object/tangible/tangible.h"
 
 using namespace std;
 using namespace swganh::object;
@@ -27,4 +27,35 @@ void AttributesHelper::SetOptionalAttribute(
 	{
 		attributes_.push_back(Attribute(attribute_label, attr_val));
 	}
+}
+
+std::wstring AttributesHelper::GetCondition(const std::shared_ptr<swganh::object::Object> object)
+{
+	// condition is special
+	auto tano = static_pointer_cast<Tangible>(object);
+	std::wstring condition = object->GetAttributeAsString("condition");
+	wstringstream ss;
+	if (tano)
+	{
+		int32_t max_condition = tano->GetMaxCondition();
+		ss << tano->GetCondition() << L"/" << max_condition;
+		condition = ss.str();
+		return condition;		
+	}
+	else
+		return L"";
+}
+std::wstring AttributesHelper::GetVolume(const std::shared_ptr<swganh::object::Object> object)
+{
+	// volume is special
+	auto tano = static_pointer_cast<Tangible>(object);
+	std::wstring volume = object->GetAttributeAsString("volume");
+	wstringstream ss;
+	if (tano && volume.length() > 0)
+	{
+		object->SetAttribute<wstring>("volume", volume);
+		return volume;		
+	}
+	else
+		return volume;
 }

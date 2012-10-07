@@ -66,6 +66,9 @@ namespace object {
 		void PersistHandler(const std::shared_ptr<swganh::EventInterface>& incoming_event);
         virtual void RegisterEventHandlers();
         void SetTreArchive(swganh::tre::TreArchive* tre_archive);
+		// Fiils in missing data for the object from the client file...
+		void GetClientData(const std::shared_ptr<Object>& object);
+
 		swganh::database::DatabaseManagerInterface* GetDatabaseManager() { return kernel_->GetDatabaseManager(); }
 		swganh::EventDispatcher* GetEventDispatcher() { return kernel_->GetEventDispatcher(); }
     protected:

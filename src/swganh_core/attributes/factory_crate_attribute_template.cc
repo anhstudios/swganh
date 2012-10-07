@@ -4,7 +4,7 @@
 #include "factory_crate_attribute_template.h"
 
 #include <sstream>
-
+#include "attributes_helper.h"
 #include "swganh/event_dispatcher.h"
 #include "swganh_core/object/tangible/tangible.h"
 
@@ -28,17 +28,17 @@ swganh::messages::AttributeListMessage FactoryCrateAttributeTemplate::BuildAttri
 
 	swganh::messages::AttributeListMessage attribute_list_message;
 	
-	std::vector<Attribute> attribue_list;
+	std::vector<Attribute> attribute_list;
 	attribute_list_message.object_id = object->GetObjectId();
 
-	attribue_list.push_back(Attribute("@obj_attr_n:original_name", object->GetAttributeAsString("original_name")));
-	attribue_list.push_back(Attribute("@obj_attr_n:volume", object->GetAttributeAsString("volume")));
-	attribue_list.push_back(Attribute("@obj_attr_n:crafter", object->GetAttributeAsString("crafter")));
-	attribue_list.push_back(Attribute("@obj_attr_n:serial_number", object->GetAttributeAsString("serial_number")));
-    attribue_list.push_back(Attribute("@obj_attr_n:factory_count", object->GetAttributeAsString("factory_count")));
-    attribue_list.push_back(Attribute("@obj_attr_n:factory_attribs", object->GetAttributeAsString("factory_attribs")));
-    attribue_list.push_back(Attribute("@obj_attr_n:type", object->GetAttributeAsString("type")));
-	attribute_list_message.attributes = move(attribue_list);
+	attribute_list.push_back(Attribute("@obj_attr_n:original_name", object->GetAttributeAsString("original_name")));
+	attribute_list.push_back(Attribute("@obj_attr_n:volume", AttributesHelper::GetVolume(object)));
+	AttributesHelper::SetOptionalAttribute(attribute_list,"@obj_attr_n:crafter", "crafter", object, false);
+	AttributesHelper::SetOptionalAttribute(attribute_list,"@obj_attr_n:serial_number", "serial_number", object, false);
+    attribute_list.push_back(Attribute("@obj_attr_n:factory_count", object->GetAttributeAsString("factory_count")));
+    attribute_list.push_back(Attribute("@obj_attr_n:factory_attribs", object->GetAttributeAsString("factory_attribs")));
+    attribute_list.push_back(Attribute("@obj_attr_n:type", object->GetAttributeAsString("type")));
+	attribute_list_message.attributes = move(attribute_list);
 
 	object_attribute_list_messages_[object_id] = move(attribute_list_message);
 	return attribute_list_message;

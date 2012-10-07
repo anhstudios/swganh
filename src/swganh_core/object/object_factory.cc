@@ -17,6 +17,8 @@
 #include "swganh_core/object/object_manager.h"
 #include "swganh_core/object/exception.h"
 #include "swganh/simulation/simulation_service_interface.h"
+#include "swganh/tre/resource_manager.h"
+#include "swganh/tre/visitors/objects/object_visitor.h"
 
 #include "swganh/object/permissions/container_permissions_interface.h"
 
@@ -26,6 +28,7 @@ using namespace swganh::app;
 using namespace swganh::database;
 using namespace swganh::object;
 using namespace swganh::simulation;
+using namespace swganh::tre;
 
 ObjectFactory::ObjectFactory(SwganhKernel* kernel)
 	: kernel_(kernel)
@@ -163,6 +166,8 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 		object->SetAttributeTemplateId(attribute_template_id);
 
 		LoadAttributes(object);
+
+		GetClientData(object);
     }
     catch(sql::SQLException &e)
     {
@@ -306,4 +311,19 @@ void ObjectFactory::DeleteObjectFromStorage(const std::shared_ptr<Object>& objec
         LOG(error) << "SQLException at " << __FILE__ << " (" << __LINE__ << ": " << __FUNCTION__ << ")";
         LOG(error) << "MySQL Error: (" << e.getErrorCode() << ": " << e.getSQLState() << ") " << e.what();        
     }
+}
+void ObjectFactory::GetClientData(const std::shared_ptr<Object>& object)
+{
+	try {
+
+		auto oiff = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(object->GetTemplate());
+		auto object_name = oiff->attribute<shared_ptr<ObjectVisitor::ClientString>>("objectName");
+		if (object->GetStfNameFile().length() == 0)
+		{
+			object->SetStfName(object_name->file, object_name->entry);
+		}
+
+	} catch (std::exception& ex) {
+		LOG(warning) << "Client data not found for object: " << object->GetObjectId() << " with error:" << ex.what();
+	}
 }

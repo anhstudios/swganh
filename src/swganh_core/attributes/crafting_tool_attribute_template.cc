@@ -4,7 +4,7 @@
 #include "crafting_tool_attribute_template.h"
 
 #include <sstream>
-
+#include "attributes_helper.h"
 #include "swganh/event_dispatcher.h"
 #include "swganh_core/object/tangible/tangible.h"
 
@@ -28,29 +28,17 @@ swganh::messages::AttributeListMessage CraftingToolAttributeTemplate::BuildAttri
 
 	swganh::messages::AttributeListMessage attribute_list_message;
 	
-	std::vector<Attribute> attribue_list;
-	attribute_list_message.object_id = object->GetObjectId();
-
-	// condition is special
-	auto tano = static_pointer_cast<Tangible>(object);
-	std::wstring condition = object->GetAttributeAsString("condition");
-	wstringstream ss;
-	if (tano)
-	{
-		int32_t max_condition = tano->GetMaxCondition();
-		ss << max_condition - tano->GetCondition() << L"/" << max_condition;
-		condition = ss.str();
-		object->SetAttribute<wstring>("condition", condition);
-	}
+	std::vector<Attribute> attribute_list;
+	attribute_list_message.object_id = object->GetObjectId();	
     
-	attribue_list.push_back(Attribute("@obj_attr_n:original_name", object->GetAttributeAsString("original_name")));
-	attribue_list.push_back(Attribute("@obj_attr_n:condition", condition));
-	attribue_list.push_back(Attribute("@obj_attr_n:volume", object->GetAttributeAsString("volume")));
-    attribue_list.push_back(Attribute("@obj_attr_n:craft_tool_effectiveness", object->GetAttributeAsString("craft_tool_effectiveness")));
-    attribue_list.push_back(Attribute("@obj_attr_n:craft_tool_status", object->GetAttributeAsString("craft_tool_status")));
-    attribue_list.push_back(Attribute("@obj_attr_n:crafter", object->GetAttributeAsString("crafter")));
-	attribue_list.push_back(Attribute("@obj_attr_n:serial_number", object->GetAttributeAsString("serial_number")));
-	attribute_list_message.attributes = move(attribue_list);
+	attribute_list.push_back(Attribute("@obj_attr_n:original_name", object->GetAttributeAsString("original_name")));
+	attribute_list.push_back(Attribute("@obj_attr_n:condition", AttributesHelper::GetCondition(object)));
+	attribute_list.push_back(Attribute("@obj_attr_n:volume", AttributesHelper::GetVolume(object)));
+    attribute_list.push_back(Attribute("@obj_attr_n:craft_tool_effectiveness", object->GetAttributeAsString("craft_tool_effectiveness")));
+    attribute_list.push_back(Attribute("@obj_attr_n:craft_tool_status", object->GetAttributeAsString("craft_tool_status")));
+    AttributesHelper::SetOptionalAttribute(attribute_list,"@obj_attr_n:crafter", "crafter", object, false);
+	AttributesHelper::SetOptionalAttribute(attribute_list, "@obj_attr_n:serial_number", "serial_number", object, false);
+	attribute_list_message.attributes = move(attribute_list);
 
 	object_attribute_list_messages_[object_id] = move(attribute_list_message);
 	return attribute_list_message;

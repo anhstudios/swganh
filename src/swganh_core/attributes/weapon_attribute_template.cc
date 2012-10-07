@@ -4,7 +4,7 @@
 #include "weapon_attribute_template.h"
 
 #include <sstream>
-
+#include "attributes_helper.h"
 #include "swganh/event_dispatcher.h"
 #include "swganh_core/object/tangible/tangible.h"
 
@@ -28,40 +28,28 @@ swganh::messages::AttributeListMessage WeaponAttributeTemplate::BuildAttributeTe
 
 	swganh::messages::AttributeListMessage attribute_list_message;
 	
-	std::vector<Attribute> attribue_list;
+	std::vector<Attribute> attribute_list;
 	attribute_list_message.object_id = object->GetObjectId();
 
-	// condition is special
-	auto tano = static_pointer_cast<Tangible>(object);
-	std::wstring condition = object->GetAttributeAsString("condition");
-	wstringstream ss;
-	if (tano)
-	{
-		int32_t max_condition = tano->GetMaxCondition();
-		ss << max_condition - tano->GetCondition() << L"/" << max_condition;
-		condition = ss.str();
-		object->SetAttribute<wstring>("condition", condition);
-	}
-
-	attribue_list.push_back(Attribute("@obj_attr_n:original_name", object->GetAttributeAsString("original_name")));
-    attribue_list.push_back(Attribute("@obj_attr_n:weapon_cert_status", object->GetAttributeAsString("weapon_cert_status")));
-	attribue_list.push_back(Attribute("@obj_attr_n:condition", condition));
-	attribue_list.push_back(Attribute("@obj_attr_n:volume", object->GetAttributeAsString("volume")));
-	attribue_list.push_back(Attribute("@obj_attr_n:crafter", object->GetAttributeAsString("crafter")));
-	attribue_list.push_back(Attribute("@obj_attr_n:serial_number", object->GetAttributeAsString("serial_number")));
-    attribue_list.push_back(Attribute("@obj_attr_n:wpn_armor_pierce_rating", object->GetAttributeAsString("wpn_armor_pierce_rating")));
-    attribue_list.push_back(Attribute("@obj_attr_n:wpn_attack_speed", object->GetAttributeAsString("wpn_attack_speed")));
-    attribue_list.push_back(Attribute("cat_wpn_damage.@obj_attr_n:cat_wpn_damage", object->GetAttributeAsString("cat_wpn_damage.wpn_damage_type")));
-    attribue_list.push_back(Attribute("cat_wpn_damage.@obj_attr_n:wpn_damage_min", object->GetAttributeAsString("cat_wpn_damage.wpn_damage_min")));
-    attribue_list.push_back(Attribute("cat_wpn_damage.@obj_attr_n:wpn_damage_max", object->GetAttributeAsString("cat_wpn_damage.wpn_damage_max")));
-    attribue_list.push_back(Attribute("cat_wpn_damage.@obj_attr_n:wpn_wound_chance", object->GetAttributeAsString("cat_wpn_damage.wpn_wound_chance")));
-    attribue_list.push_back(Attribute("cat_wpn_rangemods.@obj_attr_n:wpn_range_zero", object->GetAttributeAsString("cat_wpn_rangemods.wpn_range_zero")));
-    attribue_list.push_back(Attribute("cat_wpn_rangemods.@obj_attr_n:wpn_range_mid", object->GetAttributeAsString("cat_wpn_rangemods.wpn_range_mid")));
-    attribue_list.push_back(Attribute("cat_wpn_rangemods.@obj_attr_n:wpn_range_max", object->GetAttributeAsString("cat_wpn_rangemods.wpn_range_max")));
-    attribue_list.push_back(Attribute("cat_wpn_attack_cost.@obj_attr_n:wpn_attack_cost_health", object->GetAttributeAsString("cat_wpn_attack_cost.wpn_attack_cost_health")));
-    attribue_list.push_back(Attribute("cat_wpn_attack_cost.@obj_attr_n:wpn_attack_cost_action", object->GetAttributeAsString("cat_wpn_attack_cost.wpn_attack_cost_action")));
-    attribue_list.push_back(Attribute("cat_wpn_attack_cost.@obj_attr_n:wpn_attack_cost_mind", object->GetAttributeAsString("cat_wpn_attack_cost.wpn_attack_cost_mind")));
-	attribute_list_message.attributes = move(attribue_list);
+	attribute_list.push_back(Attribute("@obj_attr_n:original_name", object->GetAttributeAsString("original_name")));
+    attribute_list.push_back(Attribute("@obj_attr_n:weapon_cert_status", object->GetAttributeAsString("weapon_cert_status")));
+	attribute_list.push_back(Attribute("@obj_attr_n:condition", AttributesHelper::GetCondition(object)));
+	attribute_list.push_back(Attribute("@obj_attr_n:volume", AttributesHelper::GetVolume(object)));
+	AttributesHelper::SetOptionalAttribute(attribute_list, "@obj_attr_n:crafter", "crafter", object, false);
+	AttributesHelper::SetOptionalAttribute(attribute_list, "@obj_attr_n:serial_number", "serial_number", object, false);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "@obj_attr_n:wpn_armor_pierce_rating", "wpn_armor_pierce_rating", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "@obj_attr_n:wpn_attack_speed", "wpn_attack_speed", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_damage.@obj_attr_n:cat_wpn_damage", "cat_wpn_damage.wpn_damage_type", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_damage.@obj_attr_n:wpn_damage_min", "cat_wpn_damage.wpn_damage_min", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_damage.@obj_attr_n:wpn_damage_max", "cat_wpn_damage.wpn_damage_max", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_damage.@obj_attr_n:wpn_wound_chance", "cat_wpn_damage.wpn_wound_chance", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_rangemods.@obj_attr_n:wpn_range_zero", "cat_wpn_rangemods.wpn_range_zero", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_rangemods.@obj_attr_n:wpn_range_mid", "cat_wpn_rangemods.wpn_range_mid", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_rangemods.@obj_attr_n:wpn_range_max", "cat_wpn_rangemods.wpn_range_max", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_attack_cost.@obj_attr_n:wpn_attack_cost_health", "cat_wpn_attack_cost.wpn_attack_cost_health", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_attack_cost.@obj_attr_n:wpn_attack_cost_action", "cat_wpn_attack_cost.wpn_attack_cost_action", object, true);
+    AttributesHelper::SetOptionalAttribute(attribute_list, "cat_wpn_attack_cost.@obj_attr_n:wpn_attack_cost_mind", "cat_wpn_attack_cost.wpn_attack_cost_mind", object, true);
+	attribute_list_message.attributes = move(attribute_list);
 
 	object_attribute_list_messages_[object_id] = move(attribute_list_message);
 	return attribute_list_message;

@@ -963,7 +963,7 @@ void Creature::DeductStatCurrent(StatIndex stat_index, int32_t value)
         }
     }
     GetEventDispatcher()->Dispatch(make_shared<CreatureEvent>
-        ("Creature::StatCurrent",static_pointer_cast<Creature>(static_pointer_cast<Creature>(shared_from_this()))));
+        ("Creature::StatCurrent", static_pointer_cast<Creature>(static_pointer_cast<Creature>(shared_from_this()))));
 }
 
 NetworkArray<Stat> Creature::GetCurrentStats(void)

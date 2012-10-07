@@ -31,22 +31,10 @@ swganh::messages::AttributeListMessage ArmorAttributeTemplate::BuildAttributeTem
 	std::vector<Attribute> attribute_list;
 	attribute_list_message.object_id = object->GetObjectId();
 
-	// condition is special
-	auto tano = static_pointer_cast<Tangible>(object);
-	std::wstring condition = object->GetAttributeAsString("condition");
-	wstringstream ss;
-	if (tano)
-	{
-		int32_t max_condition = tano->GetMaxCondition();
-		ss << max_condition - tano->GetCondition() << L"/" << max_condition;
-		condition = ss.str();
-		object->SetAttribute<wstring>("condition", condition);
-	}
-
 	attribute_list.push_back(Attribute("@obj_attr_n:original_name", object->GetAttributeAsString("original_name")));
-	attribute_list.push_back(Attribute("@obj_attr_n:condition", condition));
+	attribute_list.push_back(Attribute("@obj_attr_n:condition", AttributesHelper::GetCondition(object)));
 	attribute_list.push_back(Attribute("@obj_attr_n:volume", object->GetAttributeAsString("volume")));
-	AttributesHelper::SetOptionalAttribute(attribute_list, "obj_attr_n:sockets", "sockets", object, true);
+	AttributesHelper::SetOptionalAttribute(attribute_list, "@obj_attr_n:sockets", "sockets", object, true);
 	attribute_list.push_back(Attribute("@obj_attr_n:armor_rating", object->GetAttributeAsString("armor_rating")));
 	AttributesHelper::SetOptionalAttribute(attribute_list, "cat_armor_special_protection.@obj_attr_n:armor_eff_kinetic", "cat_armor_special_protection.armor_eff_kinetic", object, true);
 	AttributesHelper::SetOptionalAttribute(attribute_list, "cat_armor_special_protection.@obj_attr_n:armor_eff_energy", "cat_armor_special_protection.armor_eff_energy", object, true);
@@ -78,8 +66,8 @@ swganh::messages::AttributeListMessage ArmorAttributeTemplate::BuildAttributeTem
 	AttributesHelper::SetOptionalAttribute(attribute_list, "cat_armor_encumbrance.@obj_attr_n:armor_health_encumbrance", "cat_armor_encumbrance.armor_health_encumbrance", object, true);
 	AttributesHelper::SetOptionalAttribute(attribute_list, "cat_armor_encumbrance.@obj_attr_n:armor_action_encumbrance", "cat_armor_encumbrance.armor_action_encumbrance", object, true);
 	AttributesHelper::SetOptionalAttribute(attribute_list, "cat_armor_encumbrance.@obj_attr_n:armor_mind_encumbrance", "cat_armor_encumbrance.armor_mind_encumbrance", object, true);
-	attribute_list.push_back(Attribute("@obj_attr_n:crafter", object->GetAttributeAsString("crafter")));
-	attribute_list.push_back(Attribute("@obj_attr_n:serial_number", object->GetAttributeAsString("serial_number")));
+	AttributesHelper::SetOptionalAttribute(attribute_list,"@obj_attr_n:crafter", "crafter", object, false);
+	AttributesHelper::SetOptionalAttribute(attribute_list, "@obj_attr_n:serial_number", "serial_number", object, false);
 	attribute_list_message.attributes = move(attribute_list);
 
 	object_attribute_list_messages_[object_id] = move(attribute_list_message);
