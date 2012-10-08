@@ -1,20 +1,11 @@
-# --------------------------------------------------------
-# Host:                         127.0.0.1
-# Server version:               5.3.1-MariaDB
-# Server OS:                    Win32
-# HeidiSQL version:             6.0.0.3603
-# Date/time:                    2012-03-10 18:36:54
-# --------------------------------------------------------
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-# Dumping structure for procedure galaxy_manager.sp_CreateBotAccount
 DROP PROCEDURE IF EXISTS `sp_CreateBotAccount`;
 DELIMITER //
-CREATE DEFINER=`swganh`@`localhost` PROCEDURE `sp_CreateBotAccount`(
+CREATE PROCEDURE `sp_CreateBotAccount`(
 IN username char(32),
     IN password_ char(32))
 BEGIN

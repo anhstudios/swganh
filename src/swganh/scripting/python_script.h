@@ -1,6 +1,10 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
-#ifndef SWGANH_SCRIPTING_PYTHON_SCRIPT_H_
-#define SWGANH_SCRIPTING_PYTHON_SCRIPT_H_
+#ifndef WIN32
+#include <Python.h>
+#endif
 
 #include <string>
 #include <memory>
@@ -34,6 +38,8 @@ namespace scripting {
 		}
 
         boost::python::object GetGlobals() { return globals_; }
+
+		boost::python::object GetFileObject() { return file_object_; }
     private:
         PythonScript();
 
@@ -49,5 +55,3 @@ namespace scripting {
     };
 
 }}  // namespace swganh::scripting
-
-#endif  // SWGANH_SCRIPTING_PYTHON_SCRIPT_H_

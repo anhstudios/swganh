@@ -1,0 +1,41 @@
+server_mode = all
+
+# Provides the core swganh functionality
+plugin = swganh_core
+
+galaxy_name = A New Hope
+
+tre_config = C:/Star Wars Galaxies/live.cfg
+
+script_directory = @PROJECT_SOURCE_DIR@/data/scripts
+
+resource_cache_size = 500
+
+[db.galaxy_manager]
+host = localhost
+schema = galaxy_manager
+username = swganh
+password = swganh
+
+[db.galaxy]
+host = localhost
+schema = galaxy
+username = swganh
+password = swganh
+
+[db.swganh_static]
+host = localhost
+schema = swganh_static
+username = swganh
+password = swganh
+
+[service.login]
+udp_port = 44453
+address = 127.0.0.1
+status_check_duration_secs = 30
+auto_registration = true
+
+[service.connection]
+udp_port = 44463
+address = 127.0.0.1
+ping_port = 44462

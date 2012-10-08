@@ -1,0 +1,15 @@
+from swgpy import *
+simulation = kernel.serviceManager().simulationService()
+armor = simulation.createObject('object/tangible/wearables/armor/composite/shared_armor_composite_helmet.iff', ContainerPermission.DEFAULT, False, False)
+armor.condition = 0
+armor.max_condition = 1000
+
+actor = simulation.findObject('Skivossk Iskorx')
+equipment = kernel.serviceManager().equipmentService()
+inventory = equipment.getEquippedObject(actor, "inventory")
+inventory.add(actor, armor)
+
+boots = simulation.createObject('object/tangible/wearables/boots/shared_boots_s15.iff', ContainerPermission.DEFAULT, False, False)
+inventory.add(actor, boots)
+boots.condition = 0
+boots.max_condition = 1000

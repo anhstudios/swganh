@@ -14,9 +14,9 @@ BEGIN
     SELECT 
         creature.*, 
         mood.name as mood_animation, 
-        iff_templates.iff_template as disguise_template
+        swganh_static.iff_templates.iff_template as disguise_template
     FROM creature 
-    LEFT JOIN iff_templates ON (creature.disguise_template_id = iff_templates.id)
+    LEFT JOIN swganh_static.iff_templates ON (creature.disguise_template_id = swganh_static.iff_templates.id)
     LEFT JOIN mood ON (creature.mood_id = mood.id)
     WHERE creature.id = object_id;
 

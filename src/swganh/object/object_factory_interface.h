@@ -1,6 +1,6 @@
-
-#ifndef SWGANH_OBJECT_OBJECT_FACTORY_INTERFACE_H_
-#define SWGANH_OBJECT_OBJECT_FACTORY_INTERFACE_H_
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -16,25 +16,13 @@ namespace object {
     {
     public:
         virtual ~ObjectFactoryInterface() {}
-        
-        /**
-         * Loads templates from storage into memory. Templates are preconfigured
-         * object instances with no ID assigned. These templates are used as
-         * prototypes in the construction of new objects.
-         */
-        virtual void LoadTemplates() = 0;
-
-        /**
-         * @return true if the requested template exists in this factory, false if not.
-         */
-        virtual bool HasTemplate(const std::string& template_name) = 0;
 
         /**
          * Persists the object's state to storage.
          *
          * @param object the object instance to persist.
          */
-        virtual void PersistObject(const std::shared_ptr<Object>& object) = 0;
+        virtual uint32_t PersistObject(const std::shared_ptr<Object>& object) = 0;
 
         /**
          * Deletes the requested object from storage.
@@ -57,7 +45,8 @@ namespace object {
          * @return the created object instance.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
-        virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name) = 0;
+        virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true) = 0;
+
         /**
          * Gets the type of the object from a db lookup call
          *
@@ -66,10 +55,17 @@ namespace object {
          */
         virtual uint32_t LookupType(uint64_t object_id) const = 0;
 
-        virtual uint32_t GetType() const = 0;
+		/**
+		 * Builds an update query for all the objects that have changed.
+		 * 
+		 */
+		virtual void PersistChangedObjects() = 0;
+
+		/**
+		 *  Registers events for a specific factory 
+		 */
+		virtual void RegisterEventHandlers() = 0;
 
     };
 
 }}  // namespace swganh::object
-
-#endif  // SWGANH_OBJECT_OBJECT_FACTORY_INTERFACE_H_

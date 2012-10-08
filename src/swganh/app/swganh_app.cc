@@ -1,3 +1,10 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
+#ifndef WIN32
+#include <Python.h>
+#endif
+
 #include "swganh/app/swganh_app.h"
 
 #include <algorithm>
@@ -5,42 +12,57 @@
 #include <fstream>
 #include <iostream>
 
+#ifdef WIN32
+#include <regex>
+#else
+#include <boost/regex.hpp>
+#endif
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/program_options.hpp>
-#include <boost/log/trivial.hpp>
 
-#include "anh/database/database_manager_interface.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/datastore.h"
-#include "anh/service/service_manager.h"
+#include "swganh/logger.h"
+#include "swganh/database/database_manager_interface.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/service/datastore.h"
+#include "swganh/service/service_manager.h"
 
 #include "swganh/app/swganh_kernel.h"
 
-#include "swganh/chat/chat_service.h"
-#include "swganh/character/character_service.h"
-#include "swganh/command/command_service.h"
-#include "swganh/command/command_filter.h"
-#include "swganh/connection/connection_service.h"
-#include "swganh/login/login_service.h"
-#include "swganh/simulation/simulation_service.h"
-#include "swganh/galaxy/galaxy_service.h"
-#include "swganh/combat/combat_service.h"
+#include "swganh/combat/combat_service_interface.h"
+#include "swganh/chat/chat_service_interface.h"
+#include "swganh/character/character_service_interface.h"
+#include "swganh/login/login_service_interface.h"
+#include "swganh/connection/connection_service_interface.h"
+#include "swganh/simulation/simulation_service_interface.h"
+#include "swganh/scripting/utilities.h"
 
+#include "version.h"
 
-using namespace anh;
-using namespace anh::app;
 using namespace boost::asio;
 using namespace boost::program_options;
 using namespace std;
+using namespace swganh;
 using namespace swganh::app;
 using namespace swganh::chat;
-using namespace swganh::command;
 using namespace swganh::login;
 using namespace swganh::character;
 using namespace swganh::connection;
-using namespace swganh::combat;
 using namespace swganh::simulation;
 using namespace swganh::galaxy;
+
+using swganh::plugin::RegistrationMap;
+
+#ifdef WIN32
+using std::regex;
+using std::smatch;
+using std::regex_match;
+#else
+using boost::regex;
+using boost::smatch;
+using boost::regex_match;
+#endif
 
 options_description AppConfig::BuildConfigDescription() {
     options_description desc;
@@ -53,11 +75,20 @@ options_description AppConfig::BuildConfigDescription() {
 
         ("plugin,p", boost::program_options::value<std::vector<std::string>>(&plugins),
             "Only used when single_server_mode is disabled, loads a module of the specified name")
-        ("plugin_directory", value<string>(&plugin_directory)->default_value("plugins"),
+        ("plugin_directory", value<string>(&plugin_directory)->default_value("plugins/"),
             "Directory containing the application plugins")
+
+        ("script_directory", value<string>(&script_directory)->default_value("scripts"),
+            "Directory containing the application scripts")
+
+        ("tre_config", boost::program_options::value<std::string>(&tre_config),
+            "File containing the tre configuration (live.cfg)")
 
         ("galaxy_name", boost::program_options::value<std::string>(&galaxy_name),
             "Name of the galaxy (cluster) to this process should run")
+            
+        ("resource_cache_size", boost::program_options::value<uint32_t>(&resource_cache_size),
+            "Available cache size for the resource manager (in Megabytes)")
 
         ("db.galaxy_manager.host", boost::program_options::value<std::string>(&galaxy_manager_db.host),
             "Host address for the galaxy_manager datastore")
@@ -77,6 +108,15 @@ options_description AppConfig::BuildConfigDescription() {
         ("db.galaxy.password", boost::program_options::value<std::string>(&galaxy_db.password),
             "Password for authentication with the galaxy datastore")
             
+		("db.swganh_static.host", boost::program_options::value<std::string>(&swganh_static_db.host),
+            "Host address for the swganh_static datastore")
+        ("db.swganh_static.schema", boost::program_options::value<std::string>(&swganh_static_db.schema),
+            "Schema name for the swganh_static datastore")
+        ("db.swganh_static.username", boost::program_options::value<std::string>(&swganh_static_db.username),
+            "Username for authentication with the swganh_static datastore")
+        ("db.swganh_static.password", boost::program_options::value<std::string>(&swganh_static_db.password),
+            "Password for authentication with the swganh_static datastore")
+
         ("service.login.udp_port", 
             boost::program_options::value<uint16_t>(&login_config.listen_port),
             "The port the login service will listen for incoming client connections on")
@@ -104,37 +144,93 @@ options_description AppConfig::BuildConfigDescription() {
     return desc;
 }
 
-SwganhApp::SwganhApp() {
-    kernel_ = make_shared<SwganhKernel>();
+SwganhApp::SwganhApp(int argc, char* argv[])
+    : io_service_()
+    , io_work_(new boost::asio::io_service::work(io_service_))
+{
+    kernel_ = make_shared<SwganhKernel>(io_service_);
     running_ = false;
     initialized_ = false;
+
+    Initialize(argc, argv);
+    Start();
 }
 
 SwganhApp::~SwganhApp() 
-{}
+{
+    Stop();
+	// Shutdown Event Dispatcher
+	kernel_->Shutdown();
+
+	io_work_.reset();
+	
+	// join the threadpool threads until each one has exited.
+	for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
+
+	kernel_.reset();
+}
 
 void SwganhApp::Initialize(int argc, char* argv[]) {
+    // Init Logging
+    SetupLogging_();
+    
+    std::cout << "Ben Kenobi : That boy was our last hope." << std::endl;
+    std::cout << "      Yoda : No! There is another..." << std::endl << std::endl;
+    std::cout << " .d8888b.  888       888  .d8888b.         d8888 888b    888 888    888 " << std::endl;
+	std::cout << "d88P  Y88b 888   o   888 d88P  Y88b       d88888 8888b   888 888    888 " << std::endl;
+	std::cout << "Y88b.      888  d8b  888 888    888      d88P888 88888b  888 888    888 " << std::endl;
+	std::cout << " \"Y888b.   888 d888b 888 888            d88P 888 888Y88b 888 8888888888 " << std::endl;
+	std::cout << "    \"Y88b. 888d88888b888 888  88888    d88P  888 888 Y88b888 888    888 " << std::endl;
+	std::cout << "      \"888 88888P Y88888 888    888   d88P   888 888  Y88888 888    888 " << std::endl;
+	std::cout << "Y88b  d88P 8888P   Y8888 Y88b  d88P  d8888888888 888   Y8888 888    888 " << std::endl;
+	std::cout << " \"Y8888P\"  888P     Y888  \"Y8888P88 d88P     888 888    Y888 888    888 " << std::endl << std::endl;
+	std::cout << "                             Release 0.5.1 "<< std::endl << std::endl << std::endl;
+ 
+    
     // Load the configuration    
     LoadAppConfig_(argc, argv);
 
     auto app_config = kernel_->GetAppConfig();
 
-    // Initialize kernel resources    
-    kernel_->GetDatabaseManager()->registerStorageType(
-        "galaxy_manager",
-        app_config.galaxy_manager_db.schema,
-        app_config.galaxy_manager_db.host,
-        app_config.galaxy_manager_db.username,
-        app_config.galaxy_manager_db.password);
+    try {
+    
+	// Initialize kernel resources    
+        kernel_->GetDatabaseManager()->registerStorageType(
+	    "galaxy_manager",
+	    app_config.galaxy_manager_db.schema,
+	    app_config.galaxy_manager_db.host,
+	    app_config.galaxy_manager_db.username,
+	    app_config.galaxy_manager_db.password);
+	
+	kernel_->GetDatabaseManager()->registerStorageType(
+	    "galaxy",
+	    app_config.galaxy_db.schema,
+	    app_config.galaxy_db.host,
+	    app_config.galaxy_db.username,
+	    app_config.galaxy_db.password);
+    
+	kernel_->GetDatabaseManager()->registerStorageType(
+        "swganh_static",
+        app_config.swganh_static_db.schema,
+        app_config.swganh_static_db.host,
+        app_config.swganh_static_db.username,
+        app_config.swganh_static_db.password);
 
-    kernel_->GetDatabaseManager()->registerStorageType(
-        "galaxy",
-        app_config.galaxy_db.schema,
-        app_config.galaxy_db.host,
-        app_config.galaxy_db.username,
-        app_config.galaxy_db.password);
+    } 
+    catch(std::exception& e)
+    {
+    	LOG(fatal) << "Database connection errors occurred. Did you forget to populate the db?";
+    	throw e;
+    }
     
     CleanupServices_();
+    
+    // append command dir
+    std::string py_path = "import sys; sys.path.append('.'); sys.path.append('" + app_config.script_directory + "');";
+    {
+        swganh::scripting::ScopedGilLock lock;
+        PyRun_SimpleString(py_path.c_str());
+    }
 
     // Load the plugin configuration.
     LoadPlugins_(app_config.plugins);
@@ -151,51 +247,92 @@ void SwganhApp::Start() {
     }
 
     running_ = true;
-    
-    // Create a work object so that io_service doesn't prematurely exit.
-    boost::asio::io_service::work io_work(kernel_->GetIoService());
 
     // Start up a threadpool for running io_service based tasks/active objects
-    // The increment starts at 1 because the main thread of execution already counts
-    // as thread in use.
+    // The increment starts at 2 because the main thread of execution already counts
+    // as thread in use as does the console thread.
     for (uint32_t i = 1; i < boost::thread::hardware_concurrency(); ++i) {
-        auto t = make_shared<boost::thread>([this] () {
-            kernel_->GetIoService().run();
+        boost::thread t([this] () {
+            io_service_.run();
         });
         
 #ifdef _WIN32
-        HANDLE mtheHandle = t->native_handle();
-        SetPriorityClass(mtheHandle, REALTIME_PRIORITY_CLASS);
+        SetPriorityClass(t.native_handle(), REALTIME_PRIORITY_CLASS);
 #endif
 
-        io_threads_.push_back(t);
+        io_threads_.push_back(move(t));
     }
     
     kernel_->GetServiceManager()->Start();
-    
-    auto timer = std::make_shared<boost::asio::deadline_timer>(kernel_->GetIoService(), boost::posix_time::seconds(10));
 
-    timer->async_wait(boost::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, boost::asio::placeholders::error, timer, 10));
+	//Now that services are started, start the scenes.
+	auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+	
+	//Ground Zones
+	simulation_service->StartScene("corellia");
+	//simulation_service->StartScene("dantooine");
+	//simulation_service->StartScene("dathomir");
+	//simulation_service->StartScene("endor");
+	//simulation_service->StartScene("lok");
+	//simulation_service->StartScene("naboo");
+	//simulation_service->StartScene("rori");
+	//simulation_service->StartScene("talus");
+	//simulation_service->StartScene("tatooine");
+	//simulation_service->StartScene("yavin4");
+	//simulation_service->StartScene("taanab");
+
+	//Space Zones
+	//simulation_service->StartScene("space_corellia");
+	//simulation_service->StartScene("space_dantooine");
+	//simulation_service->StartScene("space_dathomir");
+	//simulation_service->StartScene("space_endor");
+	//simulation_service->StartScene("space_lok");
+	//simulation_service->StartScene("space_naboo");
+	//simulation_service->StartScene("space_tatooine");
+	//simulation_service->StartScene("space_yavin4");
+	
+	//Special
+	//simulation_service->StartScene("tutorial");
 }
 
 void SwganhApp::Stop() {
-    running_ = false;
-      
-    kernel_->GetServiceManager()->Stop();
-
-    // stop io handling    
-    kernel_->GetIoService().stop();
-    
-    // join the threadpool threads until each one has exited.
-    for_each(io_threads_.begin(), io_threads_.end(), std::mem_fn(&boost::thread::join));
+    running_ = false;	
 }
 
 bool SwganhApp::IsRunning() {
     return running_;
 }
 
-std::shared_ptr<KernelInterface> SwganhApp::GetAppKernel() {
-    return kernel_;
+SwganhKernel* SwganhApp::GetAppKernel() const {
+    return kernel_.get();
+}
+
+void SwganhApp::StartInteractiveConsole()
+{
+    swganh::scripting::ScopedGilLock lock;
+    swganh::Logger::getInstance().DisableConsoleLogging();
+
+#ifdef WIN32
+    std::system("cls");
+#else
+    if (std::system("clear") != 0)
+    {
+        LOG(::error) << "Error clearing screen, ignoring console mode";
+        return;
+    }
+#endif
+
+    std::cout << "swgpy console " << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << std::endl;
+    
+    boost::python::object main = boost::python::object (boost::python::handle<>(boost::python::borrowed(
+        PyImport_AddModule("__main__")
+    )));
+    auto global_dict = main.attr("__dict__");
+    global_dict["kernel"] = boost::python::ptr(GetAppKernel());
+    
+    PyRun_InteractiveLoop(stdin, "<stdin>");
+    
+    swganh::Logger::getInstance().EnableConsoleLogging();
 }
 
 void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
@@ -226,13 +363,13 @@ void SwganhApp::LoadAppConfig_(int argc, char* argv[]) {
 }
 
 void SwganhApp::LoadPlugins_(vector<string> plugins) {    
-    BOOST_LOG_TRIVIAL(info) << "Loading plugins";
-
     if (!plugins.empty()) {
         auto plugin_manager = kernel_->GetPluginManager();
+        auto plugin_directory = kernel_->GetAppConfig().plugin_directory;
 
-        for_each(plugins.begin(), plugins.end(), [plugin_manager] (const string& plugin) {
-            plugin_manager->LoadPlugin(plugin);
+        for_each(plugins.begin(), plugins.end(), [plugin_manager, plugin_directory] (const string& plugin) {
+			LOG(info) << "Loading plugin " << plugin;
+            plugin_manager->LoadPlugin(plugin, plugin_directory);
         });
     }
 }
@@ -247,88 +384,37 @@ void SwganhApp::CleanupServices_() {
         return;
     }
 
-    BOOST_LOG_TRIVIAL(warning) << "Services were not shutdown properly";
+    LOG(warning) << "Services were not shutdown properly";
 
-    for_each(services.begin(), services.end(), [this, &service_directory] (anh::service::ServiceDescription& service) {
+    for_each(services.begin(), services.end(), [this, &service_directory] (swganh::service::ServiceDescription& service) {
         service_directory->removeService(service);
     });
 }
 
 void SwganhApp::LoadCoreServices_() 
 {
-    auto app_config = kernel_->GetAppConfig();
-
-	if(strcmp("login", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
-		auto login_service = make_shared<LoginService>(
-		app_config.login_config.listen_address, 
-		app_config.login_config.listen_port, 
-		kernel_.get());
-
-		login_service->galaxy_status_check_duration_secs(app_config.login_config.galaxy_status_check_duration_secs);
-		login_service->login_error_timeout_secs(app_config.login_config.login_error_timeout_secs);
-        login_service->login_auto_registration(app_config.login_config.login_auto_registration);
     
-		kernel_->GetServiceManager()->AddService("LoginService", login_service);
-	} 
-	if(strcmp("connection", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
-		auto connection_service = make_shared<ConnectionService>(
-			app_config.connection_config.listen_address, 
-			app_config.connection_config.listen_port, 
-			app_config.connection_config.ping_port, 
-			kernel_.get());
+    auto plugin_manager = kernel_->GetPluginManager();
+    auto registration_map = plugin_manager->registration_map();
 
-		kernel_->GetServiceManager()->AddService("ConnectionService", connection_service);
-	}
-	if(strcmp("simulation", app_config.server_mode.c_str()) == 0 || strcmp("all", app_config.server_mode.c_str()) == 0)
-	{
-		auto command_service = make_shared<CommandService>(kernel_.get());
-		// add filters
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-		command_service->AddCommandEnqueueFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-        command_service->AddCommandEnqueueFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::TargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::PostureCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::StateCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-		command_service->AddCommandProcessFilter(bind(&CommandFilters::AbilityCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
-        command_service->AddCommandProcessFilter(bind(&CommandFilters::CombatTargetCheckFilter, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+    regex rx("(?:.*\\:\\:)(.*Service)");
+    smatch m;
+    
+    for_each(registration_map.begin(), registration_map.end(), [this, &rx, &m] (RegistrationMap::value_type& entry) {
+        std::string name = entry.first;
 
-		// These will be loaded in alphabetical order because of how std::map generates its keys
-		kernel_->GetServiceManager()->AddService(
-            "CommandService", 
-            command_service);
+        if (entry.first.length() > 7 && regex_match(name, m, rx)) {
+            auto service_name = m[1].str();
+            auto service = kernel_->GetPluginManager()->CreateObject<swganh::service::ServiceInterface>(name);
+            kernel_->GetServiceManager()->AddService(service_name, service);
+			LOG(info) << "Loaded Service " << name;
+        }
+    });
 
-		kernel_->GetServiceManager()->AddService(
-			"CombatService",
-			make_shared<CombatService>(kernel_.get()));
-		
-		kernel_->GetServiceManager()->AddService(
-            "CharacterService", 
-            make_shared<CharacterService>(kernel_.get()));
-        
-		kernel_->GetServiceManager()->AddService(
-            "ChatService", 
-            make_shared<ChatService>(kernel_.get()));
-
-		auto simulation_service = make_shared<SimulationService>(kernel_.get());
-		simulation_service->StartScene("corellia");
-
-		kernel_->GetServiceManager()->AddService("SimulationService", simulation_service);
-
-	}
-	// always need a galaxy service running
-	auto galaxy_service = make_shared<GalaxyService>(kernel_.get());
-	kernel_->GetServiceManager()->AddService("GalaxyService", galaxy_service);
+    auto app_config = kernel_->GetAppConfig();
 }
 
-    
-void SwganhApp::GalaxyStatusTimerHandler_(const boost::system::error_code& e, shared_ptr<deadline_timer> timer, int delay_in_secs)
+void SwganhApp::SetupLogging_()
 {
-    kernel_->GetServiceDirectory()->updateGalaxyStatus();
-
-    timer->expires_at(timer->expires_at() + boost::posix_time::seconds(delay_in_secs));    
-    timer->async_wait(std::bind(&SwganhApp::GalaxyStatusTimerHandler_, this, std::placeholders::_1, timer, delay_in_secs));
+    swganh::Logger::getInstance().init("swganh");    
 }

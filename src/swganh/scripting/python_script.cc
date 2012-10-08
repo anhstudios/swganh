@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "python_script.h"
 
@@ -6,10 +8,12 @@
 #include <iostream>
 #include <iterator>
 
-#include <boost/log/trivial.hpp>
+#include "swganh/logger.h"
 
 #include <boost/python.hpp>
 #include <Python.h>
+
+#include "swganh/scripting/utilities.h"
 
 using namespace boost::python;
 using namespace std;
@@ -19,8 +23,7 @@ PythonScript::PythonScript(const string& filename)
         : filename_(filename)
 {
     ReadFileContents();
-
-    Py_Initialize();
+    swganh::scripting::ScopedGilLock lock;
 
 	try
     {
@@ -31,24 +34,26 @@ PythonScript::PythonScript(const string& filename)
 		)));
 
         globals_ = main.attr("__dict__");
-        globals_["swganh"] = boost::python::import("py_swganh");
-		globals_["context"] = dict();
+        globals_["swgpy"] = boost::python::import("swgpy");
+        globals_["context"] = dict();
     }
     catch (error_already_set &)
     {
+		ScopedGilLock lock;
         PyErr_Print();
     }
 }
 
 void PythonScript::Run()
 {
+	swganh::scripting::ScopedGilLock lock;
 	try
     {
 #ifdef _DEBUG
         ReadFileContents();
 #endif
-        BOOST_LOG_TRIVIAL(info) << "Executing script: " << filename_;
-		file_object_ = exec(filecontents_.c_str(), globals_, globals_);
+        LOG(info) << "Executing script: " << filename_;
+        file_object_ = exec(filecontents_.c_str(), globals_, globals_);
     }
     catch (error_already_set &)
     {
@@ -68,6 +73,8 @@ void PythonScript::ReadFileContents()
 
 void PythonScript::GetPythonException()
 {
+    swganh::scripting::ScopedGilLock lock;
+
     std::ostringstream os;
     os << "Python error:\n  " << std::flush;
 
@@ -113,5 +120,5 @@ void PythonScript::GetPythonException()
     }
     PyErr_Clear();
     std::cerr << os.str() << endl;
-    BOOST_LOG_TRIVIAL(warning) << os.str();
+    LOG(warning) << os.str();
 }

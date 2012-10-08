@@ -9,7 +9,7 @@ DROP PROCEDURE IF EXISTS `sp_GetQuestJournal`;
 DELIMITER //
 CREATE PROCEDURE `sp_GetQuestJournal`(IN `object_id` BIGINT)
 BEGIN
-    select q.quest_owner_id, q.name, q.active_step_bitmask, q.completed_step_bitmask, q.completed from quest_journal_list q where q.player_id = object_id;
+    select q.quest_owner_id, q.quest_crc, q.active_step_bitmask, q.completed_step_bitmask, q.completed from quest_journal_list q where q.player_id = object_id;
 END//
 DELIMITER ;
 

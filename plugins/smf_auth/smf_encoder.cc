@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "smf_encoder.h"
 
@@ -6,7 +8,7 @@
 #include <cppconn/statement.h>
 #include <cppconn/sqlstring.h>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/database/database_manager_interface.h"
 
@@ -34,7 +36,7 @@ string SmfEncoder::EncodePassword(
         result = result_set->getString(1);
     }
     else
-        BOOST_LOG_TRIVIAL(warning) << "SmfEncoder::EncodePassword failed to encode password" << endl;
+        LOG(warning) << "SmfEncoder::EncodePassword failed to encode password" << endl;
 
     return result;
 }

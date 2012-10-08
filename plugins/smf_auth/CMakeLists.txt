@@ -2,7 +2,6 @@ include(ANHPlugin)
 
 AddANHPlugin(smf_auth
     DEPENDS
-        anh_lib
         swganh_lib
 	ADDITIONAL_INCLUDE_DIRS
 	    ${Boost_INCLUDE_DIR}
@@ -17,7 +16,6 @@ AddANHPlugin(smf_auth
 	    ${Boost_FILESYSTEM_LIBRARY_DEBUG}
 	    ${Boost_PROGRAM_OPTIONS_LIBRARY_DEBUG}
 	    ${Boost_SYSTEM_LIBRARY_DEBUG}
-	    ${Boost_THREAD_LIBRARY_DEBUG}
         ${MYSQL_LIBRARY_DEBUG}
         ${MYSQLCONNECTORCPP_LIBRARY_DEBUG}
 		${PYTHON_LIBRARY}
@@ -26,7 +24,6 @@ AddANHPlugin(smf_auth
 	    ${Boost_FILESYSTEM_LIBRARY_RELEASE}
 	    ${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}
 	    ${Boost_SYSTEM_LIBRARY_RELEASE}
-	    ${Boost_THREAD_LIBRARY_RELEASE}
         ${MYSQL_LIBRARY_RELEASE}
         ${MYSQLCONNECTORCPP_LIBRARY_RELEASE}
 		${PYTHON_LIBRARY}      

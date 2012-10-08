@@ -76,12 +76,12 @@ CREATE TABLE IF NOT EXISTS `creature` (
   CONSTRAINT `FK_2A6C6AF47E3C61F9` FOREIGN KEY (`owner_id`) REFERENCES `creature` (`id`),
   CONSTRAINT `FK_2A6C6AF49523AA8A` FOREIGN KEY (`musician_id`) REFERENCES `creature` (`id`),
   CONSTRAINT `FK_2A6C6AF49582386B` FOREIGN KEY (`mood_id`) REFERENCES `mood` (`id`),
-  CONSTRAINT `FK_A8ADABEC727AC32D` FOREIGN KEY (`disguise_template_id`) REFERENCES `iff_templates` (`id`),
+  CONSTRAINT `FK_A8ADABEC727AC32D` FOREIGN KEY (`disguise_template_id`) REFERENCES `swganh_static.iff_templates` (`id`),
   CONSTRAINT `FK_2A6C6AF4BF396750` FOREIGN KEY (`id`) REFERENCES `object` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 DELETE FROM `creature`;
-    
+
 /*!40000 ALTER TABLE `creature` DISABLE KEYS */;
 INSERT INTO `creature` (`id`, `owner_id`, `musician_id`, `bank_credits`, `cash_credits`, `posture`, `faction_rank`, `scale`, `battle_fatigue`, `state`, `acceleration_base`, `acceleration_modifier`, `speed_base`, `speed_modifier`, `run_speed`, `slope_modifier_angle`, `slope_modifier_percent`, `walking_speed`, `water_modifier_percent`) VALUES
 (0, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);

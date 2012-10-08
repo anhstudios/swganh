@@ -1,11 +1,9 @@
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET NAMES utf8 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40014 SET FOREIGN_KEY_CHECKS=0 */;
 
+-- Dumping structure for procedure galaxy.sp_PersistCreature
 DROP PROCEDURE IF EXISTS `sp_PersistCreature`;
-
 DELIMITER //
 CREATE PROCEDURE `sp_PersistCreature`(
     IN `object_id` BIGINT, 
@@ -75,7 +73,7 @@ CREATE PROCEDURE `sp_PersistCreature`(
 BEGIN
 -- Get Disguise Template
     DECLARE disguise_iff_template INT;
-    SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE in_disguise INTO disguise_iff_template;
+    SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE in_disguise INTO disguise_iff_template;
 --
     update creature set owner_id = in_owner_id, musician_id = in_musician_id, bank_credits = in_bank_credits, cash_credits = in_cash_credits,
         posture = in_posture, faction_rank = in_faction_rank, scale = in_scale, battle_fatigue = in_battle_fatigue, `state` = in_state,
@@ -97,7 +95,5 @@ BEGIN
     where creature.id = object_id;
 END//
 DELIMITER ;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET FOREIGN_KEY_CHECKS=1 */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

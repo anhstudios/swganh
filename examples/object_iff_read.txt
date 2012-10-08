@@ -1,0 +1,30 @@
+// TEMP
+#include <fstream>
+std::ifstream infile("iffs.csv");
+std::string line;
+std::vector<std::string> iff_vec;
+iff_vec.reserve(15856);
+while (std::getline(infile, line))
+{
+	iff_vec.push_back(line);			
+}
+std::ofstream iffOut;
+iffOut.open("object_data.csv");
+
+for (auto& iff : iff_vec)
+{
+	try {
+	auto visitor = kernel_->GetResourceManager()->GetResourceByName<ObjectVisitor>(iff, false);
+	visitor->load_aggregate_data(kernel_->GetResourceManager());
+	auto obj_name = visitor->attribute<std::shared_ptr<swganh::tre::ObjectVisitor::ClientString>>("objectName");
+	auto detail_desc = visitor->attribute<std::shared_ptr<swganh::tre::ObjectVisitor::ClientString>>("detailedDescription");
+	auto look_at = visitor->attribute<std::shared_ptr<swganh::tre::ObjectVisitor::ClientString>>("lookAtText");
+	iffOut << iff << "," << obj_name->file << "," << obj_name->entry<< "," << detail_desc->file << "," << detail_desc->entry << "," << look_at->file << "," << look_at->entry <<std::endl;
+
+	}
+	catch(...)
+	{	
+		iffOut << iff << ",,,,,," << std::endl;
+	}			
+}
+iffOut.close();

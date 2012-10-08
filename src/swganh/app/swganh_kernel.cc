@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "swganh/app/swganh_kernel.h"
 
@@ -5,28 +7,32 @@
 #include <cppconn/connection.h>
 #include <cppconn/driver.h>
 
-#include "anh/database/database_manager.h"
-#include "anh/event_dispatcher.h"
-#include "anh/plugin/plugin_manager.h"
-#include "anh/service/datastore.h"
-#include "anh/service/service_directory.h"
-#include "anh/service/service_manager.h"
+#include "swganh/database/database_manager.h"
+#include "swganh/event_dispatcher.h"
+#include "swganh/plugin/plugin_manager.h"
+#include "swganh/service/datastore.h"
+#include "swganh/service/service_directory.h"
+#include "swganh/service/service_manager.h"
+
+#include "swganh/tre/resource_manager.h"
 
 #include "version.h"
 
-using namespace anh::service;
+using namespace swganh::service;
 using namespace swganh::app;
 
-using anh::app::Version;
-using anh::database::DatabaseManagerInterface;
-using anh::database::DatabaseManager;
-using anh::plugin::PluginManager;
-using anh::service::ServiceManager;
+using swganh::app::Version;
+using swganh::database::DatabaseManagerInterface;
+using swganh::database::DatabaseManager;
+using swganh::plugin::PluginManager;
+using swganh::service::ServiceManager;
 
 using std::make_shared;
 using std::shared_ptr;
 
-SwganhKernel::SwganhKernel() {
+SwganhKernel::SwganhKernel(boost::asio::io_service& io_service)
+    : io_service_(io_service)
+{
     version_.major = VERSION_MAJOR;
     version_.minor = VERSION_MINOR;
 
@@ -36,7 +42,21 @@ SwganhKernel::SwganhKernel() {
 
 SwganhKernel::~SwganhKernel()
 {
+    
+}
+
+void SwganhKernel::Shutdown()
+{
+	service_manager_->Stop();
+	exit(0);
+
+	event_dispatcher_->Shutdown();
+
+    resource_manager_.reset();
+    event_dispatcher_.reset();
     service_manager_.reset();
+    service_directory_.reset();
+    plugin_manager_.reset();
 }
 
 const Version& SwganhKernel::GetVersion() {
@@ -55,9 +75,9 @@ DatabaseManagerInterface* SwganhKernel::GetDatabaseManager() {
     return database_manager_.get();
 }
 
-anh::EventDispatcher* SwganhKernel::GetEventDispatcher() {
+swganh::EventDispatcher* SwganhKernel::GetEventDispatcher() {
     if (!event_dispatcher_) {
-        event_dispatcher_.reset(new anh::EventDispatcher(GetIoService()));
+        event_dispatcher_.reset(new swganh::EventDispatcher(GetIoService()));
     }
 
     return event_dispatcher_.get();
@@ -97,3 +117,12 @@ boost::asio::io_service& SwganhKernel::GetIoService() {
     return io_service_;
 }
 
+swganh::tre::ResourceManager* SwganhKernel::GetResourceManager()
+{
+    if (!resource_manager_)
+    {
+        resource_manager_.reset(new swganh::tre::ResourceManager(std::make_shared<swganh::tre::TreArchive>(GetAppConfig().tre_config)));
+    }
+
+    return resource_manager_.get();
+}
