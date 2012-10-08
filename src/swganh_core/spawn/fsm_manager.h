@@ -23,7 +23,7 @@ namespace spawn
 	{
 	public:
 		
-		FsmManager(EventDispatcher* event_dispatch);
+		FsmManager(swganh::app::SwganhKernel* kernel_);
 	
 		void RegisterAutomaton(const std::wstring& name, std::shared_ptr<FiniteStateMachine> automaton);
 		std::shared_ptr<FiniteStateMachine> GetAutomatonByName(const std::wstring& name);
@@ -35,6 +35,7 @@ namespace spawn
 	private:
 		boost::shared_mutex mutex_;
 		EventDispatcher* dispatch_;
+		swganh::app::SwganhKernel* kernel_;
 		
 		std::map<std::wstring, std::shared_ptr<FiniteStateMachine>> machines_;
 	};

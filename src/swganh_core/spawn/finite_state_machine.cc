@@ -11,9 +11,10 @@
 using namespace boost;
 using namespace swganh::spawn;
 
-FiniteStateMachine::FiniteStateMachine(uint32_t threads_required, std::shared_ptr<FsmStateInterface> initial_state,
+FiniteStateMachine::FiniteStateMachine(swganh::app::SwganhKernel* kernel, uint32_t threads_required, std::shared_ptr<FsmStateInterface> initial_state,
 			BundleGenerator bundle_factory)
-	: initial_state_(initial_state)
+	: kernel_(kernel)
+	, initial_state_(initial_state)
 	, bundle_factory_(bundle_factory)
 	, shutdown_(false)
 {

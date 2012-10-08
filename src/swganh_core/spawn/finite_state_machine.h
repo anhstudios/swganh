@@ -15,6 +15,11 @@ class thread;
 
 namespace swganh
 {
+namespace app
+{
+	class SwganhKernel;
+}
+
 namespace object
 {
 	class Object;
@@ -32,7 +37,8 @@ namespace spawn
 	{
 	public:
 	
-		FiniteStateMachine(uint32_t threads_required, std::shared_ptr<FsmStateInterface> initial_state,
+		FiniteStateMachine(swganh::app::SwganhKernel* kernel_, uint32_t threads_required, 
+			std::shared_ptr<FsmStateInterface> initial_state,
 			BundleGenerator bundle_factory);
 
 		~FiniteStateMachine();
@@ -41,6 +47,8 @@ namespace spawn
 		void StopManagingObject(std::shared_ptr<swganh::object::Object> object);
 
 		void MarkDirty(std::shared_ptr<FsmController> controller_);
+
+		swganh::app::SwganhKernel* GetKernel() { return kernel_; }
 
 	private:
 		std::atomic<bool> shutdown_;
@@ -51,6 +59,8 @@ namespace spawn
 
 		BundleGenerator bundle_factory_;
 		std::shared_ptr<FsmStateInterface> initial_state_;
+
+		swganh::app::SwganhKernel* kernel_;
 	};
 }
 }

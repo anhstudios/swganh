@@ -12,7 +12,7 @@
 using namespace swganh::spawn;
 using namespace swganh::object;
 
-void _buildNpcNeutralMachine(FsmManager& manager_)
+void _buildNpcNeutralMachine(swganh::app::SwganhKernel* kernel, FsmManager& manager_)
 {
 	auto frozen = std::make_shared<FsmState>();
 	auto amble_neutral = std::make_shared<FsmState>();
@@ -39,7 +39,7 @@ void _buildNpcNeutralMachine(FsmManager& manager_)
 		return true;
 	});
 
-	manager_.RegisterAutomaton(L"npc_neutral", std::make_shared<FiniteStateMachine>(1, frozen,
+	manager_.RegisterAutomaton(L"npc_neutral", std::make_shared<FiniteStateMachine>(kernel, 1, frozen,
 	[] (std::shared_ptr<FsmStateInterface> initial_state) -> std::shared_ptr<FsmBundleInterface>
 	{
 		return std::make_shared<NpcNeutralBundle>(initial_state);

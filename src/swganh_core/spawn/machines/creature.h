@@ -9,6 +9,6 @@
 using namespace swganh::spawn;
 using namespace swganh::object;
 
-void _buildCreatureMachine(FsmManager& manager_)
+void _buildCreatureMachine(swganh::app::SwganhKernel* kernel, FsmManager& manager_)
 {
 }

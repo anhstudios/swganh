@@ -9,6 +9,6 @@
 using namespace swganh::spawn;
 using namespace swganh::object;
 
-void _buildNpcFactionedMachine(FsmManager& manager_)
+void _buildNpcFactionedMachine(swganh::app::SwganhKernel* kernel, FsmManager& manager_)
 {
 }

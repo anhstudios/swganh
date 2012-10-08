@@ -3,13 +3,14 @@
 #include "fsm_manager.h"
 #include "swganh/spawn/fsm_state_interface.h"
 #include "swganh_core/object/object.h"
-
+#include "swganh/app/swganh_kernel.h"
 
 using namespace swganh;
 using namespace swganh::spawn;
 
-FsmManager::FsmManager(EventDispatcher* event_dispatch)
-	: dispatch_(event_dispatch)
+FsmManager::FsmManager(swganh::app::SwganhKernel* kernel)
+	: dispatch_(kernel->GetEventDispatcher())
+	, kernel_(kernel)
 {
 }
 	

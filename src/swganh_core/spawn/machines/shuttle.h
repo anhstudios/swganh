@@ -9,7 +9,7 @@
 using namespace swganh::spawn;
 using namespace swganh::object;
 
-void _buildShuttleMachine(FsmManager& manager_, uint32_t SHUTTLE_AWAY_TIME_SECONDS, uint32_t SHUTTLE_IN_PORT_TIME_SECONDS)
+void _buildShuttleMachine(swganh::app::SwganhKernel* kernel, FsmManager& manager_, uint32_t SHUTTLE_AWAY_TIME_SECONDS, uint32_t SHUTTLE_IN_PORT_TIME_SECONDS)
 {
 	std::shared_ptr<FsmState> in_port_state = std::make_shared<FsmState>();
 	std::shared_ptr<FsmState> away_state = std::make_shared<FsmState>();
@@ -44,7 +44,7 @@ void _buildShuttleMachine(FsmManager& manager_, uint32_t SHUTTLE_AWAY_TIME_SECON
 	landing_state->AddTimedTransition(boost::posix_time::seconds(20), in_port_state,
 	[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {return true;});
 
-	manager_.RegisterAutomaton(L"shuttle", std::make_shared<FiniteStateMachine>(1, in_port_state,
+	manager_.RegisterAutomaton(L"shuttle", std::make_shared<FiniteStateMachine>(kernel, 1, in_port_state,
 	[] (std::shared_ptr<FsmStateInterface> initial_state) -> std::shared_ptr<FsmBundleInterface>
 	{
 		return std::make_shared<ShuttleBundle>(initial_state);

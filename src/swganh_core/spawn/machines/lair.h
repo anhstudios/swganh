@@ -9,7 +9,7 @@
 using namespace swganh::spawn;
 using namespace swganh::object;
 
-void _buildLairMachine(FsmManager& manager_)
+void _buildLairMachine(swganh::app::SwganhKernel* kernel, FsmManager& manager_)
 {
 	auto lair_latent = std::make_shared<FsmState>();
 	auto initial_spawned = std::make_shared<FsmState>();
@@ -20,6 +20,7 @@ void _buildLairMachine(FsmManager& manager_)
 	lair_latent->AddTimedTransition(boost::posix_time::seconds(0), initial_spawned,
 	[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {
 		//Spawn some initial babies
+		return true;
 	});
 
 	initial_spawned->AddEventTransition(swganh::messages::DeltasMessage::opcode, spawn_delay,
@@ -28,12 +29,16 @@ void _buildLairMachine(FsmManager& manager_)
 			//Return true
 		//Else
 			//Return false
+
+		return true;
 	});
 
 	//Enter Combat
 	initial_spawned->AddEventTransition(swganh::messages::DeltasMessage::opcode, in_combat,
 	[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {
 		//Tell our babies we need some help
+
+		return true;
 	});
 
 	spawn_delay->AddTimedTransition(boost::posix_time::seconds(30), in_combat,
@@ -43,6 +48,8 @@ void _buildLairMachine(FsmManager& manager_)
 			//return true
 		//Else 
 			//return false
+
+		return true;
 	});
 
 	spawn_delay->AddTimedTransition(boost::posix_time::seconds(30), initial_spawned,
@@ -52,6 +59,8 @@ void _buildLairMachine(FsmManager& manager_)
 			//return false
 		//Else 
 			//return true
+
+		return true;
 	});
 
 	//Our hp is sufficiently low
@@ -62,6 +71,8 @@ void _buildLairMachine(FsmManager& manager_)
 			//return true 
 		//else 
 			//return false
+
+		return true;
 	});
 
 	//Our hp reaches 0
@@ -71,6 +82,8 @@ void _buildLairMachine(FsmManager& manager_)
 			//return true
 		//else
 			//return false
+
+		return true;
 	});
 
 }

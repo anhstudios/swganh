@@ -3,6 +3,8 @@
 #ifndef SWGANH_SPAWN_SERVICE_H_
 #define SWGANH_SPAWN_SERVICE_H_
 
+#include <boost/asio/deadline_timer.hpp>
+
 #include "swganh/spawn/spawn_service_interface.h"
 #include "swganh/app/swganh_kernel.h"
 #include "swganh/object/permissions/permission_type.h"
@@ -33,9 +35,13 @@ namespace spawn
 		 void Startup();
 
 	private:
+		void _timerTick(const boost::system::error_code& e);
+
 		FsmManager fsm_manager_;
 
 		swganh::app::SwganhKernel* kernel_;
+
+		boost::asio::deadline_timer timer_;
 	};
 }
 }
