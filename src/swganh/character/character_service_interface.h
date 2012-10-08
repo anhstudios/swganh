@@ -1,48 +1,48 @@
-/*
- This file is part of SWGANH. For more information, visit http://swganh.com
- 
- Copyright (c) 2006 - 2011 The SWG:ANH Team
-
- This program is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License
- as published by the Free Software Foundation; either version 2
- of the License, or (at your option) any later version.
-
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
-#ifndef SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
-#define SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
 #include <cstdint>
 #include <tuple>
 #include <vector>
 
-#include "swganh/character/character_data.h"
-#include "connection/messages/client_create_character.h"
+#include "swganh/service/service_interface.h"
+
+#include "swganh/app/swganh_kernel.h"
+#include "swganh_core/messages/delete_character_message.h"
+#include "swganh_core/messages/client_create_character.h"
+#include "swganh_core/messages/client_random_name_request.h"
+
+namespace swganh { namespace database { class DatabaseManagerInterface; } }
+
+namespace swganh {
+namespace connection {
+class ConnectionClientInterface;
+}}  // namespace swganh::connection
+
+namespace swganh {
+namespace login {
+class LoginClientInterface;
+}}  // namespace swganh::login
 
 namespace swganh {
 namespace character {
+
+class CharacterProviderInterface;
     
-class CharacterServiceInterface {
-public:
-    virtual ~CharacterServiceInterface() {}
-    
-    virtual std::vector<CharacterData> GetCharactersForAccount(uint64_t account_id) = 0;
-    virtual CharacterLoginData GetLoginCharacter(uint64_t character_id) = 0;
-    virtual bool DeleteCharacter(uint64_t character_id) = 0;
-    virtual std::wstring GetRandomNameRequest(const std::string& base_model) = 0;
-    virtual std::tuple<uint64_t, std::string> CreateCharacter(const connection::messages::ClientCreateCharacter& character_info) = 0;
+class CharacterServiceInterface : public swganh::service::ServiceInterface {
+private:
+    virtual void HandleClientRandomNameRequest_(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
+        swganh::messages::ClientRandomNameRequest* message) = 0;
+
+    virtual void HandleClientCreateCharacter_(
+        const std::shared_ptr<swganh::connection::ConnectionClientInterface>& client, 
+        swganh::messages::ClientCreateCharacter* message) = 0;
+
+    virtual void HandleDeleteCharacterMessage_(
+        const std::shared_ptr<swganh::login::LoginClientInterface>& login_client, 
+        swganh::messages::DeleteCharacterMessage* message) = 0;
 };
 
 }}  // namespace swganh::character
-
-#endif  // SWGANH_CHARACTER_CHARACTER_SERVICE_INTERFACE_H_
-

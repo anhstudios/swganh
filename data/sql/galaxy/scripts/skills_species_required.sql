@@ -4,6 +4,7 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+DROP TABLE IF EXISTS `skills_species_required`;
 CREATE TABLE IF NOT EXISTS `skills_species_required` (
   `skill_id` int(11) NOT NULL,
   `species_id` int(11) NOT NULL default '0',

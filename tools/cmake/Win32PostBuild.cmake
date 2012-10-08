@@ -6,6 +6,11 @@ string(REPLACE "/" "\\" WIN_PROJECT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
 ## dependencies and places them in the runtime directory for this project
 add_custom_target(DEPS)
 
+set_target_properties(DEPS
+	PROPERTIES
+	FOLDER "cmake_targets"
+)
+
 get_filename_component(BOOST_PYTHON_DLL_PATH ${Boost_PYTHON3_LIBRARY_DEBUG} PATH)
 string(REPLACE "/" "\\" BOOST_PYTHON_DLL_PATH "${BOOST_PYTHON_DLL_PATH}")
 add_custom_command(
@@ -21,10 +26,10 @@ string(REPLACE "/" "\\" MYSQL_CONNECTOR_C_DLL_PATH "${MYSQL_CONNECTOR_C_DLL_PATH
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\$\(Configuration\)\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
+    COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\Debug\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
+    COMMAND xcopy "${MYSQL_CONNECTOR_C_DLL_PATH}\\opt\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
     VERBATIM
 )
-
 
 get_filename_component(MYSQL_CONNECTOR_CPP_DLL_PATH ${MYSQLCONNECTORCPP_LIBRARY_DEBUG} PATH)
 string(REPLACE "/" "\\" MYSQL_CONNECTOR_CPP_DLL_PATH "${MYSQL_CONNECTOR_CPP_DLL_PATH}\\..")
@@ -35,13 +40,12 @@ add_custom_command(
     VERBATIM
 )
 
-
 get_filename_component(PYTHON_DLL_PATH ${PYTHON_LIBRARY} PATH)
-string(REPLACE "/" "\\" PYTHON_DLL_PATH "${PYTHON_DLL_PATH}")
+string(REPLACE "/" "\\" PYTHON_DLL_PATH "${PYTHON_DLL_PATH}\\..\\DLLs")
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND xcopy "${PYTHON_DLL_PATH}\\*.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
+    COMMAND xcopy "${PYTHON_DLL_PATH}\\python3.dll" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)" /D /I /Y /s
     VERBATIM
 )
 
@@ -54,23 +58,23 @@ add_custom_command(
     VERBATIM
 )    
 
-add_custom_command(
-    TARGET DEPS
-    POST_BUILD
-    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\data\\config" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config" /D /I /Y /s
-    VERBATIM
-)  
+foreach(configuration ${CMAKE_CONFIGURATION_TYPES})    
+    if(NOT EXISTS "${PROJECT_BINARY_DIR}/bin/${configuration}/config/swganh.cfg")
+    configure_file(
+        "${PROJECT_SOURCE_DIR}/data/config/swganh.cfg.in"
+        "${PROJECT_BINARY_DIR}/bin/${configuration}/config/swganh.cfg"
+        @ONLY)
+    endif()
+endforeach()
 
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND for /d %a in ("${WIN_PROJECT_SOURCE_DIR}\\plugins") do xcopy "%a\\*.cfg" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config\\plugins" /D /I /Y /s
-    VERBATIM
-)  
+    COMMAND for /R \"${WIN_PROJECT_SOURCE_DIR}\\plugins\\\" %%a IN \(*.cfg\) do \(xcopy \"%%a\" \"${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config\\plugins\\\" /D /I /Y\)
+)
 
 add_custom_command(
     TARGET DEPS
     POST_BUILD
-    COMMAND xcopy "${WIN_PROJECT_SOURCE_DIR}\\data\\scripts" "${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\scripts" /D /I /Y /s
-    VERBATIM
-)    
+    COMMAND for /R \"${WIN_PROJECT_SOURCE_DIR}\\src\\\" %%a IN \(*.cfg\) do \(xcopy \"%%a\" \"${WIN_PROJECT_BINARY_DIR}\\bin\\$\(Configuration\)\\config\\plugins\\\" /D /I /Y\)
+)

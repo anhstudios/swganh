@@ -1,3 +1,4 @@
+
 if(WIN32)
     cmake_minimum_required(VERSION 2.8.7)
 else()
@@ -8,11 +9,11 @@ project(swganh CXX)
 
 # current version
 set(swganh_VERSION_MAJOR 0)
-set(swganh_VERSION_MINOR 4)
-set(swganh_VERSION_PATCH 0)
-set(swganh_VERSION 
+set(swganh_VERSION_MINOR 5)
+set(swganh_VERSION_PATCH 1)
+set(swganh_VERSION
 	${swganh_VERSION_MAJOR}.${swganh_VERSION_MINOR}.${swganh_VERSION_PATCH})
-	
+
 # set the path for custom cmake scripts
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tools/cmake")
 
@@ -40,19 +41,25 @@ option(ENABLE_TEST_REPORT
 
 option(USE_SYSTEM_LIBRARIES
     "Uses system libraries instead of downloading them" OFF)
-    
+
 option(BUILD_PLUGINS
-    "Build plugins" ON)
+    "Build additional plugins" OFF)
 
 option(BUILD_DOCS
     "Explicitly force building the documentation" OFF)
 
+option(BUILD_EXAMPLES
+    "Explicitly force building of examples" OFF)
+    
 option(TREAT_WARNINGS_AS_ERRORS
     "Treat all warnings as errors" ON)
 
 if(ENABLE_TEST_REPORT)
     enable_testing()
 endif()
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "cmake_targets")
 
 ## compiler checks
 include(CheckCXXCompilerFlag)
@@ -79,36 +86,47 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         message(STATUS "- Treating all warnings as errors")
     endif()
 
-    set(AdditionalBoostLibs chrono)
+    set(AdditionalBoostLibs chrono regex)
+
+    find_library(PTHREAD_LIBRARY NAMES pthread)
 endif()
 
 if(MSVC)
     message(STATUS " - MSVC: Version ${MSVC_VERSION}")
-    
+
     if(MSVC_VERSION LESS 1700)
-    	message(FATAL_ERROR "Visual Studio 11 or newer is required ")
+        message(FATAL_ERROR "Visual Studio 11 or newer is required ")
     endif()
-    
+
     SET(_WIN32_WINNT 0x0601 CACHE INTERNAL "Setting _WIN32_WINNT to 0x0601 for Windows Vista minimum APIs")
     SET(WINVER ${_WIN32_WINNT} CACHE INTERNAL "Setting WINVER to 0x0601 for Windows Vista minimum APIs")
-	
+
     ADD_DEFINITIONS (/D _WIN32_WINNT=${_WIN32_WINNT})
     MESSAGE(STATUS "- MSVC: Set minimum Windows API version")
-    
+
     ADD_DEFINITIONS (/D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D WIN32_LEAN_AND_MEAN /D NOGDI)
     MESSAGE(STATUS "- MSVC: Disabled NON-SECURE warnings")
-        
+
     ADD_DEFINITIONS (/D _VARIADIC_MAX=10)
     MESSAGE(STATUS "- MSVC: Set variadic max to 10 for compatibility with dependencies")
 
     if(TREAT_WARNINGS_AS_ERRORS)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /WX")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /WX")
         message(STATUS "- MSVC: Treating all warnings as errors")
 	endif()
-    
+
     ADD_DEFINITIONS (/D BOOST_ALL_DYN_LINK)
     MESSAGE(STATUS "- BOOST: Enable dynamic linking")
+    
+    add_definitions(/D BOOST_ALL_NO_LIB)
+    message(status "- BOOST: Disable automatic linking")
+    
+    ADD_DEFINITIONS (/D _HAS_ITERATOR_DEBUGGING=0)
+    MESSAGE(STATUS "- MSVC: set iterator debugging to 0")
+    
+    ADD_DEFINITIONS (/D _SECURE_SCL=0)
+    MESSAGE(STATUS "- MSVC: set iterator debugging to 0")
 endif()
 
 # Use the static/multithreaded libraries.
@@ -117,20 +135,21 @@ set(Boost_USE_MULTITHREADED ON)
 
 # Check for a vendor directory in the source directory and in
 # the directory above.
-if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
-    set(VENDOR_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
-elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../vendor)
-    set(VENDOR_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/../vendor)
+if(NOT DEFINED VENDOR_PREFIX)
+    if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
+        set(VENDOR_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/vendor)
+    elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../vendor)
+        set(VENDOR_PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/../vendor)
+    endif()
 endif()
 
 if(DEFINED VENDOR_PREFIX)
     set(BOOST_ROOT ${VENDOR_PREFIX}/boost)
     set(GLM_ROOT ${VENDOR_PREFIX}/glm)
-    set(GTEST_ROOT ${VENDOR_PREFIX}/gtest)
-    set(GMOCK_ROOT ${VENDOR_PREFIX}/gmock)
-    set(ENV{MYSQL_DIR} ${VENDOR_PREFIX}/mysql-connector-c)
+	set(ENV{MYSQL_DIR} ${VENDOR_PREFIX}/mysql-connector-c)
     set(MysqlConnectorCpp_ROOT ${VENDOR_PREFIX}/mysql-connector-cpp)
-    set(PYTHON_ROOT ${VENDOR_PREFIX}/python)    
+    set(PYTHON_ROOT ${VENDOR_PREFIX}/python)
+    set(TURTLE_ROOT ${VENDOR_PREFIX}/turtle)
     set(ZLIB_ROOT ${VENDOR_PREFIX}/zlib)
 endif()
 
@@ -138,19 +157,13 @@ if (NOT WIN32)
     find_package(TBB REQUIRED)
 endif()
 
-if (BUILD_DOCS)
-    set(IS_REQUIRED REQUIRED)
-endif()
-
-find_package(Boost 1.49.0 COMPONENTS date_time filesystem log program_options python3 regex system thread ${AdditionalBoostLibs} REQUIRED)
+find_package(Boost 1.51.0 COMPONENTS date_time filesystem log log_setup program_options python3 system thread unit_test_framework ${AdditionalBoostLibs} REQUIRED)
 find_package(Glm REQUIRED)
-find_package(GTest REQUIRED)
-find_package(GMock REQUIRED)
 find_package(MysqlConnectorC REQUIRED)
 find_package(MysqlConnectorCpp REQUIRED)
 find_package(PythonLibs REQUIRED)
+find_package(Turtle REQUIRED)
 find_package(ZLib REQUIRED)
-find_package(Sphinx ${IS_REQUIRED})
 
 # make sure the source directory and the binary directory (where any generated
 # files will be found) are automatically searched for includes
@@ -162,6 +175,10 @@ if(BUILD_PLUGINS)
     add_subdirectory(plugins)
 endif()
 
-if(SPHINX_FOUND)
-    add_subdirectory(data/docs)
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
+
+if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+    add_subdirectory(docs)
 endif()

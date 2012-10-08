@@ -67,12 +67,16 @@ FUNCTION(AddANHPlugin name)
     LIST(LENGTH ANHPLUGIN_ADDITIONAL_INCLUDE_DIRS _includes_list_length)
     LIST(LENGTH ANHPLUGIN_ADDITIONAL_LIBRARY_DIRS _librarydirs_list_length)
     LIST(LENGTH ANHPLUGIN_ADDITIONAL_SOURCE_DIRS _sources_list_length)
-            
+
     # Grab all of the source files and all of the unit test files.
-    FILE(GLOB_RECURSE SOURCES *.cc *.cpp *.h)   
-    FILE(GLOB_RECURSE HEADERS *.h)
+    FILE(GLOB_RECURSE SOURCES *.cc *.cpp *.h)  
+    list(APPEND SOURCES ${ANHPLUGIN_SOURCES}) 
+    FILE(GLOB_RECURSE HEADERS *.h) 
+    list(APPEND HEADERS ${ANHPLUGIN_HEADERS}) 
     FILE(GLOB_RECURSE TEST_SOURCES *_unittest.cc *_unittest.cpp mock_*.h)
-    FILE(GLOB_RECURSE BINDINGS *_binding.cc *_binding.cpp)
+    list(APPEND TEST_SOURCES ${ANHPLUGIN_TEST_SOURCES}) 
+    FILE(GLOB_RECURSE BINDINGS *_binding.cc *_binding.cpp py_*.h py_*.cc)
+    list(APPEND BINDINGS ${ANHPLUGIN_BINDINGS})
         
     FOREACH(__source_file ${SOURCES})
         STRING(REGEX REPLACE "(${CMAKE_CURRENT_SOURCE_DIR}/)((.*/)*)(.*)" "\\2" __source_dir "${__source_file}")
@@ -109,13 +113,13 @@ FUNCTION(AddANHPlugin name)
     ENDIF()
 	    
     # if unit tests have been specified break out the project into a library to make it testable
-    LIST(LENGTH TEST_SOURCES _test_sources_list_length)    
-    IF(ENABLE_TEST_REPORT AND _test_sources_list_length GREATER 1)        
-        SET(__project_library "lib${name}")
+    LIST(LENGTH TEST_SOURCES _test_sources_list_length)
+    IF(_test_sources_list_length GREATER 0)   
+        SET(__project_library "${name}_lib")
         
         list(REMOVE_ITEM SOURCES ${MAIN_EXISTS})
     
-        AddANHLibrary(${__project_library}
+        AddANHLibrary(${name}
             DEPENDS
                 ${ANHPLUGIN_DEPENDS}
             SOURCES
@@ -126,6 +130,8 @@ FUNCTION(AddANHPlugin name)
                 ${TEST_SOURCES}
             ADDITIONAL_INCLUDE_DIRS
                 ${ANHPLUGIN_ADDITIONAL_INCLUDE_DIRS}
+            ADDITIONAL_LIBRARY_DIRS
+                ${ANHPLUGIN_ADDITIONAL_LIBRARY_DIRS}
             DEBUG_LIBRARIES
                 ${ANHPLUGIN_DEBUG_LIBRARIES}
             OPTIMIZED_LIBRARIES
@@ -133,6 +139,8 @@ FUNCTION(AddANHPlugin name)
         )
     
         set(SOURCES ${MAIN_EXISTS})
+        list(APPEND ANHPLUGIN_DEPENDS ${__project_library})
+        list(REVERSE ANHPLUGIN_DEPENDS)
     ENDIF()
         
     IF(_includes_list_length GREATER 0)
@@ -144,7 +152,14 @@ FUNCTION(AddANHPlugin name)
     ENDIF()
 	    
     # Create the Common library
-    ADD_LIBRARY(${name} SHARED ${SOURCES})    
+    ADD_LIBRARY(${name} MODULE ${SOURCES})    
+    SET_TARGET_PROPERTIES(${name} PROPERTIES 
+        PREFIX ""
+	    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugins/
+	    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/plugins
+	    LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/plugins
+	    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/plugins
+	    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/plugins)
     
     # If a project library was created link to it
     IF(DEFINED __project_library)

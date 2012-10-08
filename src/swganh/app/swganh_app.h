@@ -1,6 +1,6 @@
-
-#ifndef SWGANH_APP_SWGANH_APP_H_
-#define SWGANH_APP_SWGANH_APP_H_
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
 #include <atomic>
 #include <list>
@@ -8,33 +8,28 @@
 #include <string>
 #include <vector>
 
+#include <boost/asio/io_service.hpp>
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/thread/thread.hpp>
 
-#include "anh/app/app_interface.h"
-#include "anh/service/service_directory.h"
-
-namespace anh {
-namespace app {
-class KernelInterface;
-}}  // namespace anh::app
+#include "swganh/app/app_interface.h"
+#include "swganh/service/service_directory.h"
+#include "swganh/app/swganh_kernel.h"
 
 namespace swganh {
 namespace app {
-
-class SwganhKernel;
-
+    
 /*!
  * @Brief Base SWGANH Application that starts up serverices, initializes resources and handles the lifetime of objects"
- * @see anh::app::AppInterface
+ * @see swganh::app::AppInterface
  */
-class SwganhApp : public anh::app::AppInterface, private boost::noncopyable {
+class SwganhApp : public swganh::app::AppInterface, private boost::noncopyable {
 public:    
     /*!
      * @Brief Default constructor
      */
-    SwganhApp();
+    SwganhApp(int argc, char* argv[]);
     ~SwganhApp();
 
     /*!
@@ -46,7 +41,7 @@ public:
 
     /*!
      * @Brief Starts the application, ServiceManager and begins the processing
-     * @see anh::service::ServiceManager
+     * @see swganh::service::ServiceManager
      */
     void Start();
 
@@ -63,27 +58,32 @@ public:
 
     /*!
      * @Brief Gets the Application's Kernel
-     * @return std::shared_ptr of the anh::app::KernelInterface
-     * @see anh::app::KernelInterface
+     * @return std::shared_ptr of the swganh::app::KernelInterface
+     * @see swganh::app::KernelInterface
      */
-    std::shared_ptr<anh::app::KernelInterface> GetAppKernel();
+    SwganhKernel* GetAppKernel() const;
+
+    /** Starts an interactive scripting console
+     */
+    void StartInteractiveConsole();
 
 private:
+    SwganhApp();
+
     void LoadAppConfig_(int argc, char* argv[]);
     void LoadPlugins_(std::vector<std::string> plugins);
     void LoadCoreServices_();
 
     void CleanupServices_();
-
-    void GalaxyStatusTimerHandler_(const boost::system::error_code& e,
-        std::shared_ptr<boost::asio::deadline_timer> timer, int delay_in_secs);
     
-    std::list<std::shared_ptr<boost::thread>> io_threads_;
+    void SetupLogging_();
+    
+    boost::asio::io_service io_service_;
+    std::unique_ptr<boost::asio::io_service::work> io_work_;
+    std::vector<boost::thread> io_threads_;
     std::shared_ptr<SwganhKernel> kernel_;
     std::atomic<bool> running_;
     bool initialized_;
 };
 
 }}  // namespace swganh::app
-
-#endif  // SWGANH_APP_SWGANH_APP_H_

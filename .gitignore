@@ -1,10 +1,10 @@
 # ignore directories created for the build process
-bin/*
-build*/
-vendor/*
-swgtk/
-docs/*
+bin/
+build/
+vendor/
+docs/
 nbproject/
+__pycache__/
 
 # ignore configuration files
 data/sql/setup.cfg

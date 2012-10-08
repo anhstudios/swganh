@@ -12,7 +12,8 @@ CREATE PROCEDURE `sp_CharacterStartingItems`(
 	IN owner_id BIGINT(20),
 	IN race_id INT(8),
 	IN profession_id INT(8),
-	IN gender_id INT(3))
+	IN gender_id INT(3),
+	IN scene_id INT)
 BEGIN
 
     DECLARE object_id BIGINT(20);
@@ -29,10 +30,10 @@ BEGIN
             IF NOT loopEnd THEN
                 SELECT MAX(id) + 10 FROM object INTO object_id FOR UPDATE;
 
-                SELECT iff_templates.id FROM iff_templates WHERE iff_templates.iff_template LIKE template INTO iff_template_id;
+                SELECT swganh_static.iff_templates.id FROM swganh_static.iff_templates WHERE swganh_static.iff_templates.iff_template LIKE template INTO iff_template_id;
 
-                INSERT INTO `object` VALUES (object_id, NULL, owner_id, iff_template_id, 0,0,0,0,0,0,1, 0, '', '', '' ,0, NOW(), NOW(), null, 1413566031);
-                INSERT INTO `tangible` VALUES (object_id, '', 0, 0, 0, 0, 0);
+                INSERT INTO `object` VALUES (object_id, scene_id, owner_id, iff_template_id, 0,0,0,0,0,0,1, 0, '', '', '' ,0, NOW(), NOW(), null, 1413566031, -2, 1);
+                INSERT INTO `tangible` VALUES (object_id, '', 0, 0, 100, 100, 0);
             END IF;
         UNTIL loopEnd END REPEAT;
     CLOSE cur_1;

@@ -1,10 +1,12 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #include <iostream>
 
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include <boost/thread.hpp>
 
-#include <boost/log/trivial.hpp>
+#include "anh/logger.h"
 
 #include "anh/app/kernel_interface.h"
 #include "anh/database/database_manager_interface.h"
@@ -14,6 +16,8 @@
 #include "smf_account_provider.h"
 #include "smf_encoder.h"
 #include "smf_session_provider.h"
+
+#include "version.h"
 
 using namespace anh::app;
 using namespace anh::plugin;
@@ -67,8 +71,8 @@ extern "C" PLUGIN_API ExitFunc InitializePlugin(KernelInterface* kernel)
         config.password);
 
     ObjectRegistration registration;
-    registration.version.major = 1;
-    registration.version.minor = 0;
+    registration.version.major = VERSION_MAJOR;
+    registration.version.minor = VERSION_MINOR;
 
     // Register TestObj
     registration.CreateObject = [kernel] (ObjectParams* params) -> void * {

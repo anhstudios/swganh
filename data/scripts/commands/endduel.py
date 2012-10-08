@@ -1,4 +1,12 @@
-service_mgr = kernel.service_manager()
-combat_svc = service_mgr.combat_service()
-if (actor and creature_target):
-	combat_svc.end_duel(actor, creature_target)
+from swgpy.command import BaseSwgCommand
+from swgpy import combat
+class EndDuelCommand(BaseSwgCommand):
+    def run(self):
+        actor = self.getActor()
+        target = self.getTargetCreature()
+        
+        service_mgr = self.getKernel().serviceManager()
+        
+        combat_svc = service_mgr.combatService()
+        if (actor and target):
+            combat_svc.endDuel(actor, target)

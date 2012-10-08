@@ -6,10 +6,12 @@ configure_file (
 
 if(WIN32)
     include(Win32PostBuild)
+else()
+    include(PosixPostBuild)
 endif()
-
-## project libraries
-add_subdirectory(anh)
 
 ## project executables
 add_subdirectory(swganh)
+
+## publish 14 core implementation
+add_subdirectory(swganh_core)

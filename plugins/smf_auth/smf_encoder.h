@@ -1,3 +1,6 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+
 #ifndef PLUGINS_SMF_AUTH_SMF_ENCODER_H_
 #define PLUGINS_SMF_AUTH_SMF_ENCODER_H_
 
