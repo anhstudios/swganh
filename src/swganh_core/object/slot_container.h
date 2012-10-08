@@ -1,5 +1,6 @@
-#ifndef SLOT_CONTAINER_H_
-#define SLOT_CONTAINER_H_
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
+#pragma once
 
 #include "swganh/object/slot_interface.h"
 
@@ -25,5 +26,3 @@ namespace object {
 
 }
 }
-
-#endif

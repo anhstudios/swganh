@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_BASE_OBJECT_CONTROLLER_INTERFACE_H_
-#define SWGANH_OBJECT_BASE_OBJECT_CONTROLLER_INTERFACE_H_
+#pragma once
 
 #include <exception>
 #include <functional>
@@ -90,5 +88,3 @@ namespace object {
     };
 
 }}  // namespace swganh::object
-
-#endif  // SWGANH_OBJECT_BASE_OBJECT_CONTROLLER_INTERFACE_H_
