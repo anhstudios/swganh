@@ -12,18 +12,18 @@ namespace spawn
 {
 typedef std::tuple<boost::posix_time::ptime, boost::posix_time::time_duration, Transition> TimedType;
 
-struct timeOrder
-{
-	bool operator()(const TimedType& lhs, const TimedType& rhs) const
-	{
-		return std::get<0>(lhs) < std::get<0>(rhs);
-	}
-};
-
-class TimerOnlyBundle : public FsmBundleInterface
+class LairBundle : public FsmBundleInterface
 {
 public:
-	TimerOnlyBundle(std::shared_ptr<FsmStateInterface> initial_state);
+	struct timeOrder
+	{
+		bool operator()(const TimedType& lhs, const TimedType& rhs) const
+		{
+			return std::get<0>(lhs) < std::get<0>(rhs);
+		}
+	};
+
+	LairBundle(std::shared_ptr<FsmStateInterface> initial_state);
 
 	/**
 	* @return true when this object requires post-processing

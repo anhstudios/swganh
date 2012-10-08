@@ -1,25 +1,25 @@
-#include "timer_only_bundle.h"
+#include "shuttle_bundle.h"
 
 #include "boost/date_time/posix_time/posix_time_types.hpp"
 
 using namespace swganh::object;
 using namespace swganh::spawn;
 
-TimerOnlyBundle::TimerOnlyBundle(std::shared_ptr<FsmStateInterface> initial_state)
+ShuttleBundle::ShuttleBundle(std::shared_ptr<FsmStateInterface> initial_state)
 {
 	SetCurrentState(initial_state, boost::posix_time::second_clock::local_time());
 }
 
-void TimerOnlyBundle::HandleNotify(std::shared_ptr<Object>& object_, swganh::messages::BaseSwgMessage* message) 
+void ShuttleBundle::HandleNotify(std::shared_ptr<Object>& object_, swganh::messages::BaseSwgMessage* message) 
 {
 }
 	
-bool TimerOnlyBundle::IsDirty()
+bool ShuttleBundle::IsDirty()
 {
 	return !timed.empty();
 }
 
-void TimerOnlyBundle::SetCurrentState(std::shared_ptr<FsmStateInterface> new_state, boost::posix_time::ptime current_time)
+void ShuttleBundle::SetCurrentState(std::shared_ptr<FsmStateInterface> new_state, boost::posix_time::ptime current_time)
 {
 	current_state_ = new_state;
 	
@@ -36,7 +36,7 @@ void TimerOnlyBundle::SetCurrentState(std::shared_ptr<FsmStateInterface> new_sta
 	}
 }
 
-void TimerOnlyBundle::HandleCleanup(std::shared_ptr<Object>& object_, boost::posix_time::ptime current_time_)
+void ShuttleBundle::HandleCleanup(std::shared_ptr<Object>& object_, boost::posix_time::ptime current_time_)
 {
 	if(!timed.empty())
 	{

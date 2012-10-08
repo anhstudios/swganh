@@ -3,7 +3,7 @@
 #include "swganh_core/spawn/fsm_manager.h"
 #include "swganh_core/spawn/finite_state_machine.h"
 #include "swganh_core/spawn/fsm_state.h"
-#include "swganh_core/spawn/bundles/timer_only_bundle.h"
+#include "swganh_core/spawn/bundles/shuttle_bundle.h"
 #include "swganh_core/object/creature/creature.h"
 
 using namespace swganh::spawn;
@@ -17,7 +17,7 @@ void _buildShuttleMachine(FsmManager& manager_, uint32_t SHUTTLE_AWAY_TIME_SECON
 	std::shared_ptr<FsmState> landing_state = std::make_shared<FsmState>();
 
 	in_port_state->AddTimedTransition(boost::posix_time::seconds(SHUTTLE_IN_PORT_TIME_SECONDS), takeoff_state, 
-		[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {
+	[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {
 			auto shuttle = std::static_pointer_cast<Creature>(object);
 			if(shuttle)
 			{
@@ -28,7 +28,7 @@ void _buildShuttleMachine(FsmManager& manager_, uint32_t SHUTTLE_AWAY_TIME_SECON
 	});
 
 	away_state->AddTimedTransition(boost::posix_time::seconds(SHUTTLE_AWAY_TIME_SECONDS), landing_state,
-		[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {
+	[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {
 			auto shuttle = std::static_pointer_cast<Creature>(object);
 			if(shuttle)
 			{
@@ -39,14 +39,14 @@ void _buildShuttleMachine(FsmManager& manager_, uint32_t SHUTTLE_AWAY_TIME_SECON
 	});
 
 	takeoff_state->AddTimedTransition(boost::posix_time::seconds(20), away_state,
-		[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {return true;});
+	[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {return true;});
 
 	landing_state->AddTimedTransition(boost::posix_time::seconds(20), in_port_state,
-		[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {return true;});
+	[] (FsmBundleInterface* bundle, std::shared_ptr<swganh::object::Object> object) -> bool {return true;});
 
 	manager_.RegisterAutomaton(L"shuttle", std::make_shared<FiniteStateMachine>(1, in_port_state,
-		[] (std::shared_ptr<FsmStateInterface> initial_state) -> std::shared_ptr<FsmBundleInterface>
+	[] (std::shared_ptr<FsmStateInterface> initial_state) -> std::shared_ptr<FsmBundleInterface>
 	{
-		return std::make_shared<TimerOnlyBundle>(initial_state);
+		return std::make_shared<ShuttleBundle>(initial_state);
 	}));
 }

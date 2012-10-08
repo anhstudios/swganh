@@ -24,7 +24,11 @@
 #include "swganh/tre/visitors/snapshot/ws_visitor.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 
-#include "build_shuttle_machine.h"
+#include "machines/creature.h"
+#include "machines/lair.h"
+#include "machines/npc_factioned.h"
+#include "machines/npc_neutral.h"
+#include "machines/shuttle.h"
 
 using namespace swganh::service;
 using namespace swganh::app;
@@ -79,5 +83,9 @@ void SpawnService::Startup()
     }
 
 	//Build the default machines
+	_buildCreatureMachine(fsm_manager_);
+	_buildLairMachine(fsm_manager_);
+	_buildNpcFactionedMachine(fsm_manager_);
+	_buildNpcNeutralMachine(fsm_manager_);
 	_buildShuttleMachine(fsm_manager_, SHUTTLE_AWAY_TIME_SECONDS, SHUTTLE_IN_PORT_TIME_SECONDS);
 }
