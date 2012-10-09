@@ -18,8 +18,7 @@ namespace object {
     class IntangibleFactory : public swganh::object::ObjectFactory
     {
     public:
-        IntangibleFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        IntangibleFactory(swganh::app::SwganhKernel* kernel);
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 
         void DeleteObjectFromStorage(const std::shared_ptr<swganh::object::Object>& object);

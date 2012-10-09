@@ -488,7 +488,7 @@ int CombatService::ApplyDamage(
     if (pool == HEALTH) {
         //health_damage = GetArmorReduction(attacker, defender, damage, HEALTH) * damage_multiplier;
         health_damage = damage * properties.damage_multiplier;
-        if (defender->GetStatCurrent(HEALTH) - health_damage <= 0)
+        if (defender->GetStatCurrent(HEALTH) - damage <= 0)
         {
             SetIncapacitated(attacker, defender);
         }
@@ -503,7 +503,7 @@ int CombatService::ApplyDamage(
     if (pool == ACTION) {
         //action_damage = GetArmorReduction(attacker, defender, damage, ACTION) * damage_multiplier;
         action_damage = damage * properties.damage_multiplier;
-        if (defender->GetStatCurrent(ACTION) - action_damage <= 0)
+        if (defender->GetStatCurrent(ACTION) - damage <= 0)
         {
             SetIncapacitated(attacker, defender);
         }
@@ -517,7 +517,7 @@ int CombatService::ApplyDamage(
     if (pool == MIND) {
         //mind_damage = GetArmorReduction(attacker, defender, damage, MIND) * damage_multiplier;
         mind_damage = damage * properties.damage_multiplier;
-        if (defender->GetStatCurrent(MIND) - mind_damage <= 0)
+        if (defender->GetStatCurrent(MIND) - damage <= 0)
         {
             SetIncapacitated(attacker, defender);
         }

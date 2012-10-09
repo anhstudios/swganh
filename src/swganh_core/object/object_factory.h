@@ -6,6 +6,8 @@
 
 #include "swganh/object/object_factory_interface.h"
 #include "swganh/event_dispatcher.h"
+#include "swganh/app/swganh_kernel.h"
+
 #include <set>
 #include <boost/thread/mutex.hpp>
 
@@ -39,8 +41,7 @@ namespace object {
     class ObjectFactory : public ObjectFactoryInterface
     {
     public:
-        ObjectFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        ObjectFactory(swganh::app::SwganhKernel* kernel);
         virtual ~ObjectFactory() {}
 
         void SetObjectManager(ObjectManager* object_manager) { object_manager_ = object_manager; }
@@ -57,7 +58,7 @@ namespace object {
         virtual void DeleteObjectFromStorage(const std::shared_ptr<Object>& object);
         virtual std::shared_ptr<Object> CreateObjectFromStorage(uint64_t object_id){ return nullptr; }
         virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted, bool db_initialized) { return nullptr; }
-        uint32_t LookupType(uint64_t object_id) const;
+        uint32_t LookupType(uint64_t object_id);
 		void LoadAttributes(std::shared_ptr<Object> object);
 		void PersistAttributes(std::shared_ptr<Object> object);
 
@@ -65,15 +66,19 @@ namespace object {
 		void PersistHandler(const std::shared_ptr<swganh::EventInterface>& incoming_event);
         virtual void RegisterEventHandlers();
         void SetTreArchive(swganh::tre::TreArchive* tre_archive);
+		// Fiils in missing data for the object from the client file...
+		void GetClientData(const std::shared_ptr<Object>& object);
+
+		swganh::database::DatabaseManagerInterface* GetDatabaseManager() { return kernel_->GetDatabaseManager(); }
+		swganh::EventDispatcher* GetEventDispatcher() { return kernel_->GetEventDispatcher(); }
     protected:
         void LoadContainedObjects(const std::shared_ptr<Object>& object,
             const std::shared_ptr<sql::Statement>& statement);
         
         ObjectManager* object_manager_;
 		boost::mutex persisted_objects_mutex_;
-        swganh::database::DatabaseManagerInterface* db_manager_;   
-        swganh::EventDispatcher* event_dispatcher_;
-		std::set<std::shared_ptr<Object>> persisted_objects_;
+		swganh::app::SwganhKernel* kernel_;         
+        std::set<std::shared_ptr<Object>> persisted_objects_;
     };
 
 }}  // namespace swganh::object

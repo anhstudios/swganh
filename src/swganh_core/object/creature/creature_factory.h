@@ -24,8 +24,7 @@ namespace object {
     public:
 		typedef Creature ObjectType;
 
-        CreatureFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        CreatureFactory(swganh::app::SwganhKernel* kernel);
 
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 

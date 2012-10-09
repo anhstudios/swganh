@@ -18,9 +18,8 @@
 using namespace std;
 using namespace swganh::object;
 
-GuildFactory::GuildFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher)
-			: ObjectFactory(db_manager, event_dispatcher)
+GuildFactory::GuildFactory(swganh::app::SwganhKernel* kernel)
+			: ObjectFactory(kernel)
 {	
 }
 

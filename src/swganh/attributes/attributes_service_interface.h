@@ -17,29 +17,14 @@ namespace object {
 namespace swganh {
 namespace attributes {
 
-	enum AttributeTemplateId : int8_t
-	{
-		ARMOR = 0,
-		CRAFTING_TOOL,
-		DEED,
-		DROID,
-		FACTORY_CRATE,
-		FOOD,
-		FURNITURE,
-		MEDS,
-		SHIP,
-		SURVEY_TOOL,
-		WEAPON,
-		WEARABLE 
-	};
-
     class AttributesServiceInterface: public swganh::service::ServiceInterface
     {
     public:        
-        virtual std::shared_ptr<AttributeTemplateInterface> GetAttributeTemplate(AttributeTemplateId template_id) = 0;
-        virtual void SetAttributeTemplate(const std::shared_ptr<AttributeTemplateInterface> template_, AttributeTemplateId template_id) = 0;        
-		virtual bool HasAttributeTemplate(AttributeTemplateId template_id) = 0;
+        virtual std::shared_ptr<AttributeTemplateInterface> GetAttributeTemplate(int8_t template_id) = 0;
+        virtual void SetAttributeTemplate(const std::shared_ptr<AttributeTemplateInterface> template_, int8_t template_id) = 0;        
+		virtual bool HasAttributeTemplate(int8_t template_id) = 0;
 		virtual void SendAttributesMessage(const std::shared_ptr<swganh::object::Object> object, const std::shared_ptr<swganh::object::Object> actor) = 0;
+		virtual std::shared_ptr<AttributeTemplateInterface> GetPythonAttributeTemplate(std::string filename) = 0;
     };
 
 }}  // namespace swganh::attributes

@@ -9,6 +9,9 @@
 #include "swganh/event_dispatcher.h"
 
 namespace swganh {
+namespace app {
+	class SwganhKernel;
+}
 namespace messages {
 	struct AttributeListMessage;
 }
@@ -20,12 +23,12 @@ namespace attributes {
     class AttributeTemplateInterface 
     {
     public:
-		AttributeTemplateInterface(swganh::EventDispatcher* dispatcher)
-			: event_dispatcher_(dispatcher){}
-        virtual void RegisterEventHandlers() = 0;
-        virtual swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object) = 0;		
-    protected:
-        swganh::EventDispatcher* event_dispatcher_; 
+		AttributeTemplateInterface(swganh::app::SwganhKernel* kernel)
+			: kernel_(kernel){}
+        virtual swganh::messages::AttributeListMessage BuildAttributeTemplate(std::shared_ptr<swganh::object::Object> object) = 0;        		
+		virtual swganh::app::SwganhKernel* GetKernel() { return kernel_; }
+	private:
+		swganh::app::SwganhKernel* kernel_;
     };
 
 }}

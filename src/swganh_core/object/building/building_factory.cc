@@ -18,7 +18,7 @@
 using namespace std;
 using namespace swganh::object;
 
-BuildingFactory::BuildingFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
-	: TangibleFactory(db_manager, event_dispatcher)
+BuildingFactory::BuildingFactory(swganh::app::SwganhKernel* kernel)
+	: TangibleFactory(kernel)
 {
 }

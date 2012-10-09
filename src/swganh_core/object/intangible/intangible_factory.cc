@@ -24,9 +24,8 @@ using namespace swganh::object;
 using namespace swganh::object;
 using namespace swganh::simulation;
 
-IntangibleFactory::IntangibleFactory(DatabaseManagerInterface* db_manager,
-                             swganh::EventDispatcher* event_dispatcher)
-    : ObjectFactory(db_manager, event_dispatcher)
+IntangibleFactory::IntangibleFactory(swganh::app::SwganhKernel* kernel)
+    : ObjectFactory(kernel)
 {
 }
 
@@ -37,7 +36,7 @@ uint32_t IntangibleFactory::PersistObject(const shared_ptr<Object>& object)
 
 	try 
     {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>
             (conn->prepareStatement("CALL sp_PersistIntangible(?,?,?);"));
         auto tangible = static_pointer_cast<Intangible>(object);
@@ -64,7 +63,7 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
     auto intangible = make_shared<Intangible>();
     intangible->SetObjectId(object_id);
     try {
-        auto conn = db_manager_->getConnection("galaxy");
+        auto conn = GetDatabaseManager()->getConnection("galaxy");
         auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_GetIntangible(?);"));
         
         auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());

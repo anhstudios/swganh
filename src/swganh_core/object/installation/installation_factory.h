@@ -14,8 +14,7 @@ namespace object {
     public:
 		typedef Installation ObjectType;
 
-        InstallationFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        InstallationFactory(swganh::app::SwganhKernel* kernel);
 
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 		virtual void PersistChangedObjects();

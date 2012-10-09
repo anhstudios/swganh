@@ -14,8 +14,7 @@ namespace object {
     public:
 		typedef Mission ObjectType;
 
-		MissionFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+		MissionFactory(swganh::app::SwganhKernel* kernel);
 
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 		virtual void PersistChangedObjects(){}

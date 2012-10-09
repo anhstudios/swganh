@@ -9,8 +9,8 @@ using namespace std;
 using namespace swganh::object;
 using namespace swganh::object;
 
-WeaponFactory::WeaponFactory(swganh::database::DatabaseManagerInterface* db_manager, swganh::EventDispatcher* event_dispatcher)
-	: TangibleFactory(db_manager, event_dispatcher)
+WeaponFactory::WeaponFactory(swganh::app::SwganhKernel* kernel)
+	: TangibleFactory(kernel)
 {
 }
 

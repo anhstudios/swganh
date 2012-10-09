@@ -22,8 +22,7 @@ namespace object {
     public:
 		typedef ResourceContainer ObjectType;
 
-		 ResourceContainerFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+		 ResourceContainerFactory(swganh::app::SwganhKernel* kernel);
 
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);
 		virtual void PersistChangedObjects(){}

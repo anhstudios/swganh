@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS `object_attribute_defaults` (
   `attribute_value` varchar(255) NOT NULL DEFAULT '0' COMMENT 'Item Attribute Value',
   `attribute_value_max` varchar(255) NOT NULL DEFAULT '0' COMMENT 'Item Attribute Value Max',
   `attribute_order` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Item Attribute Order',
-  `attribute_type` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Item Attribute Type'
+  `attribute_type` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'Item Attribute Type',
+  PRIMARY KEY (id, attribute_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Dumping data for table swganh_static.object_attribute_defaults: ~19,347 rows (approximately)
@@ -797,14 +798,8 @@ INSERT INTO `object_attribute_defaults` (`id`, `family_id`, `attribute_id`, `att
 	(10007, 6, 566, '@food_name:bio_kwi_adrenal_boost', '', 1, 2),
 	(10008, 6, 1, '1', '', 2, 0),
 	(10008, 6, 566, '@food_name:edible_berries', '', 1, 2),
-	(10009, 6, 1, '1', '', 2, 0),
-	(10009, 6, 566, '@food_name:edible_bugs', '', 1, 2),
 	(10010, 6, 1, '1', '', 2, 0),
 	(10010, 6, 566, '@food_name:edible_fungus', '', 1, 2),
-	(10011, 6, 1, '1', '', 2, 0),
-	(10011, 6, 566, '@food_name:edible_funk', '', 1, 2),
-	(10012, 6, 1, '1', '', 2, 0),
-	(10012, 6, 566, '@food_name:edible_livers', '', 1, 2),
 	(10013, 6, 1, '1', '', 2, 0),
 	(10013, 6, 566, '@food_name:foraged_fruit_1', '', 1, 2),
 	(10014, 6, 1, '1', '', 2, 0),
@@ -19415,8 +19410,6 @@ INSERT INTO `object_attribute_defaults` (`id`, `family_id`, `attribute_id`, `att
 	(3381, 30, 400, '0', '', 2, 0),
 	(3381, 30, 566, '@factory_n:furniture_crate', '', 1, 2),
 	(3381, 30, 775, 'Furniture', '', 7, 0),
-	(3383, 30, 400, '0', '', 2, 0),
-	(3383, 30, 566, '@factory_n:installation_crate', '', 1, 2),
 	(3384, 30, 1, '1', '', 2, 0),
 	(3384, 30, 16, '', '', 4, 1),
 	(3384, 30, 17, '', '', 3, 1),
@@ -19427,9 +19420,6 @@ INSERT INTO `object_attribute_defaults` (`id`, `family_id`, `attribute_id`, `att
 	(10009, 12, 1, '1', '', 2, 0),
 	(10009, 12, 23, '0', '', 3, 0),
 	(10009, 12, 566, '@item_n:fishing_bait', '', 1, 2),
-	(10011, 12, 1, '1', '', 2, 0),
-	(10011, 12, 23, '0', '', 3, 0),
-	(10011, 12, 566, '@item_n:fishing_bait', '', 1, 2),
 	(10011, 12, 1, '1', '', 2, 0),
 	(10011, 12, 23, '0', '', 3, 0),
 	(10011, 12, 566, '@item_n:fishing_bait', '', 1, 2),

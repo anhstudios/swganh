@@ -18,8 +18,7 @@ namespace object {
     public:
 		typedef FactoryCrate ObjectType;
 
-        FactoryCrateFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+        FactoryCrateFactory(swganh::app::SwganhKernel* kernel);
 
 		virtual void PersistChangedObjects(){}
 

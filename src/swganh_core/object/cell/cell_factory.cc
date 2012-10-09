@@ -17,15 +17,14 @@
 using namespace std;
 using namespace swganh::object;
 
-CellFactory::CellFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher)
-			: IntangibleFactory(db_manager, event_dispatcher)
+CellFactory::CellFactory(swganh::app::SwganhKernel* kernel)
+			: IntangibleFactory(kernel)
 {
 }
 
 void CellFactory::RegisterEventHandlers()
 {
-	event_dispatcher_->Subscribe("Cell::Cell", std::bind(&CellFactory::PersistHandler, this, std::placeholders::_1));
+	GetEventDispatcher()->Subscribe("Cell::Cell", std::bind(&CellFactory::PersistHandler, this, std::placeholders::_1));
 }
 
 
@@ -49,7 +48,7 @@ uint32_t CellFactory::PersistObject(const shared_ptr<Object>& object)
 	IntangibleFactory::PersistObject(object);
 	try 
     {
-		auto conn = db_manager_->getConnection("galaxy");
+		auto conn = GetDatabaseManager()->getConnection("galaxy");
 		auto statement = shared_ptr<sql::PreparedStatement>
 			(conn->prepareStatement("CALL sp_PersistCell(?);"));
 		

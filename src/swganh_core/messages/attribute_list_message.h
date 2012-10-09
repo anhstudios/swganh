@@ -19,6 +19,10 @@ namespace messages {
 			, value(val) { }
     	std::string name;
     	std::wstring value;
+		bool operator==(const Attribute& new_attr)
+		{
+			return new_attr.name == name;
+		}
     };
 
     struct AttributeListMessage : public BaseSwgMessage

@@ -53,7 +53,7 @@ namespace object {
          * @param the object_id of which to find the type
          * @return the object type
          */
-        virtual uint32_t LookupType(uint64_t object_id) const = 0;
+        virtual uint32_t LookupType(uint64_t object_id) = 0;
 
 		/**
 		 * Builds an update query for all the objects that have changed.
