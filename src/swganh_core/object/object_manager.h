@@ -82,7 +82,7 @@ namespace object {
         template<typename T>
         void RegisterObjectType(uint32_t object_type = T::type)
         {
-            auto factory = std::make_shared<typename T::FactoryType>(kernel_->GetDatabaseManager(), kernel_->GetEventDispatcher());
+            auto factory = std::make_shared<typename T::FactoryType>(kernel_);
             factory->SetObjectManager(this);
 
             RegisterObjectType(object_type, factory);

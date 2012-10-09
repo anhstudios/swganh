@@ -1,3 +1,5 @@
+// This file is part of SWGANH which is released under the MIT license.
+// See file LICENSE or go to http://swganh.com/LICENSE
 
 #include "swganh/byte_buffer.h"
 #include "resource_manager.h"

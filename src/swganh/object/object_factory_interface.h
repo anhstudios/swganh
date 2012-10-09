@@ -1,8 +1,6 @@
 // This file is part of SWGANH which is released under the MIT license.
 // See file LICENSE or go to http://swganh.com/LICENSE
-
-#ifndef SWGANH_OBJECT_OBJECT_FACTORY_INTERFACE_H_
-#define SWGANH_OBJECT_OBJECT_FACTORY_INTERFACE_H_
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -55,7 +53,7 @@ namespace object {
          * @param the object_id of which to find the type
          * @return the object type
          */
-        virtual uint32_t LookupType(uint64_t object_id) const = 0;
+        virtual uint32_t LookupType(uint64_t object_id) = 0;
 
 		/**
 		 * Builds an update query for all the objects that have changed.
@@ -71,5 +69,3 @@ namespace object {
     };
 
 }}  // namespace swganh::object
-
-#endif  // SWGANH_OBJECT_OBJECT_FACTORY_INTERFACE_H_

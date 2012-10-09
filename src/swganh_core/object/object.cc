@@ -30,6 +30,7 @@ using namespace swganh::messages;
 
 Object::Object()
     : object_id_(0)
+	, instance_id_(0)
     , template_string_("")
     , position_(glm::vec3(0,0,0))
     , orientation_(glm::quat(0,0,0,0))
@@ -188,17 +189,25 @@ void Object::__InternalViewObjects(std::shared_ptr<Object> requester, uint32_t m
 {
 	if(requester == nullptr || container_permissions_->canView(shared_from_this(), requester))
 	{
+		uint32_t requester_instance = 0;
+		if(requester)
+			requester_instance = requester->GetInstanceId();
+
 		for(auto& slot : slot_descriptor_)
 		{
 			slot.second->view_objects([&] (const std::shared_ptr<Object>& object) {
-				if(topDown)
-					func(object);
+				uint32_t object_instance = object->GetInstanceId();
+				if(object_instance == 0 || object_instance == requester_instance)
+				{
+					if(topDown)
+						func(object);
 
-				if(max_depth != 1)
-					object->__InternalViewObjects(requester, (max_depth == 0) ? 0 : max_depth-1, topDown, func);
+					if(max_depth != 1)
+						object->__InternalViewObjects(requester, (max_depth == 0) ? 0 : max_depth-1, topDown, func);
 
-				if(!topDown)
-					func(object);
+					if(!topDown)
+						func(object);
+				}
 			});
 		}
 	}
@@ -695,6 +704,19 @@ void Object::SetSceneId(uint32_t scene_id)
 uint32_t Object::GetSceneId()
 {
 	return scene_id_;
+}
+
+uint32_t Object::GetInstanceId()
+{
+	return instance_id_;
+}
+
+void Object::SetInstanceId(uint32_t instance_id)
+{
+	instance_id_ = instance_id;
+
+	GetEventDispatcher()->Dispatch(make_shared<ObjectEvent>
+        ("Object::InstanceId",shared_from_this()));
 }
 
 int32_t Object::GetArrangementId()

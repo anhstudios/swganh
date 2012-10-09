@@ -12,8 +12,7 @@ namespace object {
     class GuildFactory : public swganh::object::ObjectFactory
     {
     public:
-		GuildFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+		GuildFactory(swganh::app::SwganhKernel* kernel);
 		typedef Guild ObjectType;
 
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);

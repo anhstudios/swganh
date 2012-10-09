@@ -2,6 +2,7 @@
 set(ANH_PYTHON_BINDINGS "")
 
 add_subdirectory(app)
+add_subdirectory(attributes)
 add_subdirectory(command)
 add_subdirectory(combat)
 add_subdirectory(equipment)
