@@ -286,10 +286,10 @@ public:
 		// Get Next Scene
 		auto scene_obj = scene_manager_->GetScene(scene);
 
-        if (!scene_obj)
-        {
-            throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
-        }
+	        if (!scene_obj)
+	        {
+	            throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
+	        }
 
 		// Remove from existing scene
 		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
@@ -309,9 +309,12 @@ public:
 
 			obj->GetController()->Notify(&start_scene);
 		}
+		
+		//Update the object's scene_id
+		obj->SetSceneId(scene_obj->GetSceneId());		
 
-        // Add object to scene and send baselines
-        scene_obj->AddObject(obj);
+	        // Add object to scene and send baselines
+	        scene_obj->AddObject(obj);
 	}
 
 	shared_ptr<Object> TransferObjectToScene(uint64_t object_id, const string& scene)
