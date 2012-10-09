@@ -23,8 +23,7 @@ namespace object {
     public:
 		typedef Static ObjectType;
 
-		 StaticFactory(swganh::database::DatabaseManagerInterface* db_manager,
-            swganh::EventDispatcher* event_dispatcher);
+		 StaticFactory(swganh::app::SwganhKernel* kernel);
 
 		virtual void PersistChangedObjects(){}
         virtual uint32_t PersistObject(const std::shared_ptr<swganh::object::Object>& object);

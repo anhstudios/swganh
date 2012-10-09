@@ -31,13 +31,13 @@ ProsePackage::~ProsePackage() {}
 
 OutOfBand::OutOfBand()
     : count_(0)
-    , data_(new ByteBuffer()) {
+    , data_(make_shared<ByteBuffer>()) {
     Initialize_();
 }
 
 OutOfBand::OutOfBand(const ProsePackage& prose)
     : count_(0)
-    , data_(new ByteBuffer()) {
+    , data_(make_shared<ByteBuffer>()) {
     Initialize_();
 
     AddProsePackage(prose);
@@ -62,7 +62,7 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
 OutOfBand::OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
               ProseType prose_type, uint64_t object_id, bool display_flag)
     : count_(0)
-    , data_(new ByteBuffer())
+    , data_(make_shared<ByteBuffer>())
 {
     Initialize_();
     switch (prose_type)
@@ -86,7 +86,7 @@ OutOfBand::OutOfBand(const std::string& base_stf_file, const std::string& base_s
 OutOfBand::OutOfBand(const std::string& base_stf_file, const std::string& base_stf_string,
               ProseType prose_type, const std::wstring& message, bool display_flag)
     : count_(0)
-    , data_(new ByteBuffer())
+    , data_(make_shared<ByteBuffer>())
 {
     Initialize_();
     switch (prose_type)
@@ -111,7 +111,7 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                      uint64_t tu_object_id, uint64_t tt_object_id, uint64_t to_object_id,
                      int32_t di_integer, float df_float, bool display_flag)
     : count_(0)
-    , data_(new ByteBuffer()) {
+    , data_(make_shared<ByteBuffer>()) {
     Initialize_();
 
     AddProsePackage(base_stf_file, base_stf_label,
@@ -125,7 +125,7 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                      const string& to_stf_file, const string& to_stf_label,
                      int32_t di_integer, float df_float, bool display_flag)
     : count_(0)
-    , data_(new ByteBuffer()) {
+    , data_(make_shared<ByteBuffer>()) {
     Initialize_();
 
     AddProsePackage(base_stf_file, base_stf_label,
@@ -141,7 +141,7 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
                      const wstring& to_custom_string,
                      int32_t di_integer, float df_float, bool display_flag)
     : count_(0)
-    , data_(new ByteBuffer()) {
+    , data_(make_shared<ByteBuffer>()) {
     Initialize_();
 
     AddProsePackage(base_stf_file, base_stf_label,
@@ -151,7 +151,6 @@ OutOfBand::OutOfBand(const string& base_stf_file, const string& base_stf_label,
 
 OutOfBand::~OutOfBand() 
 {
-	delete data_;
 }
 
 uint16_t OutOfBand::Count() const {
@@ -315,7 +314,7 @@ void OutOfBand::AddProsePackage(const string& base_stf_file, const string& base_
 }
 
 const ByteBuffer* OutOfBand::Pack() const {
-    return data_;
+    return data_.get();
 }
 
 

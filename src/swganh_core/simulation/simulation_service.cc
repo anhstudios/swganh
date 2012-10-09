@@ -393,7 +393,7 @@ public:
 
         if (find_iter == controller_handlers_.end())
         {
-            DLOG(warning) << "No handler registered to process the given message. " << message->data;
+            DLOG(warning) << "No handler registered to process the given message. " << message->data << std::endl;
             return;
         }
 
@@ -725,7 +725,6 @@ void SimulationService::Startup()
     SimulationServiceInterface::RegisterControllerHandler(
 		&SimulationServiceImpl::HandleDataTransformWithParent, impl_.get());
 
-    
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
     command_service->AddCommandCreator("burstrun", swganh::command::PythonCommandCreator("commands.burstrun", "BurstRunCommand"));

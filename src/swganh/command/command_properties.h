@@ -16,6 +16,8 @@ namespace command {
         uint32_t default_priority;
         float default_time;
         swganh::HashString character_ability;
+		std::string client_effect_self;
+		std::string client_effect_target;
         uint64_t allow_in_locomotion;
         uint64_t allow_in_state;
         uint32_t target_type;
