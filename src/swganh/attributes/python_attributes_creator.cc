@@ -30,7 +30,7 @@ PythonAttributesCreator::PythonAttributesCreator(std::string module_name, std::s
 
 std::shared_ptr<AttributeTemplateInterface> PythonAttributesCreator::operator() (swganh::app::SwganhKernel* kernel)
 {
-    std::shared_ptr<AttributeTemplateInterface> radial = nullptr;
+    std::shared_ptr<AttributeTemplateInterface> attribute_template = nullptr;
     
     ScopedGilLock lock;
 
@@ -46,7 +46,7 @@ std::shared_ptr<AttributeTemplateInterface> PythonAttributesCreator::operator() 
         if (!new_instance.is_none())
         {
             AttributeTemplateInterface* obj_pointer = bp::extract<AttributeTemplateInterface*>(new_instance);
-            radial.reset(obj_pointer, [new_instance] (AttributeTemplateInterface*) {});
+            attribute_template.reset(obj_pointer, [new_instance] (AttributeTemplateInterface*) {});
         }
     }
     catch(bp::error_already_set& /*e*/)
@@ -54,5 +54,5 @@ std::shared_ptr<AttributeTemplateInterface> PythonAttributesCreator::operator() 
         PyErr_Print();
     }
 
-    return radial;
+    return attribute_template;
 }

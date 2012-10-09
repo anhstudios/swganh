@@ -92,6 +92,7 @@ namespace attributes {
 		*/
 		void LoadAttributeTemplates_();
 		AttributeTemplateMap attribute_templates_;
+		std::vector<std::string> python_attribute_templates_;
 		swganh::simulation::SimulationServiceInterface* simulation_service_;
 		swganh::app::SwganhKernel* kernel_;		
     };

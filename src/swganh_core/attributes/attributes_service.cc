@@ -76,6 +76,10 @@ void AttributesService::Startup()
 
 bool AttributesService::HasAttributeTemplate(int8_t template_id)
 {
+// if in debug we want to reload the template each time so it's not stale...
+#ifdef _DEBUG
+	return python_attribute_templates_.size() >= static_cast<uint16_t>(template_id);
+#endif
 	auto found = find_if(begin(attribute_templates_), end(attribute_templates_), [&template_id](AttributeTemplateMap::value_type entry)
 	{
 		return entry.first == template_id;
@@ -110,7 +114,15 @@ void AttributesService::SendAttributesMessage(const std::shared_ptr<swganh::obje
 {
 	if (HasAttributeTemplate(object->GetAttributeTemplateId()))
 	{
-		auto message = attribute_templates_[object->GetAttributeTemplateId()]->BuildAttributeTemplate(object);
+		swganh::messages::AttributeListMessage message;
+// if in debug we want to reload the template each time so it's not stale...
+#ifdef _DEBUG
+		auto debug_template = GetPythonAttributeTemplate(python_attribute_templates_[object->GetAttributeTemplateId()]);
+		message = debug_template->BuildAttributeTemplate(object);
+#else
+		message = attribute_templates_[object->GetAttributeTemplateId()]->BuildAttributeTemplate(object);
+#endif
+		
 		// Append Pups
 		// Append Slicing
 		actor->NotifyObservers(&message);
@@ -137,13 +149,15 @@ void AttributesService::LoadAttributeTemplates_()
 	auto module = bp::import(module_filename);
 	auto filename = "attributeTemplates";
 	auto new_instance = module.attr(filename);
-	std::vector<std::string> python_attribute_templates = bp::extract<std::vector<std::string>>(new_instance);		
-
+	python_attribute_templates_ = bp::extract<std::vector<std::string>>(new_instance);		
+	// If Not debug load these up here and not again
+#ifndef _DEBUG
 	int template_id = 0;
-	for (auto& attr_template :  python_attribute_templates)
+	for (auto& attr_template :  python_attribute_templates_)
 	{
 		attribute_templates_[template_id++] = GetPythonAttributeTemplate(attr_template);
 	}
+#endif
 }
 std::shared_ptr<AttributeTemplateInterface> AttributesService::GetPythonAttributeTemplate(std::string filename)
 {

@@ -22,7 +22,7 @@
 using namespace swganh::attributes;
 using namespace swganh::messages;
 namespace bp = boost::python;
-using namespace std;
+using namespace std;	
 using swganh::scripting::ScopedGilLock;
 
 namespace swganh {
@@ -69,8 +69,8 @@ namespace attributes {
 			.def_readwrite("name", &Attribute::name, "name of the attribute ex: original_name")
 			.def_readwrite("value", &Attribute::value, "value of the attribute")
 		;
-		bp::class_<vector<shared_ptr<Attribute>>>("AttributeList", "List for attributes data")
-			.def(bp::vector_indexing_suite<vector<shared_ptr<Attribute>>, true>());
+		bp::class_<vector<Attribute>>("AttributeList", "List for attributes data")
+			.def(bp::vector_indexing_suite<vector<Attribute>, true>());
 		;
 	}
 }}
