@@ -108,6 +108,8 @@
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 
+#include "swganh_core/object/object_events.h"
+
 #include "swganh_core/equipment/equipment_service.h"
 #include "movement_manager.h"
 #include "scene_manager.h"
@@ -727,6 +729,22 @@ void SimulationService::Startup()
 
     SimulationServiceInterface::RegisterControllerHandler(
 		&SimulationServiceImpl::HandleDataTransformWithParent, impl_.get());
+
+	kernel_->GetEventDispatcher()->Subscribe("Object::UpdatePosition", [this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+		const auto& update_event = static_pointer_cast<swganh::object::UpdatePositionEvent>(incoming_event);
+		auto scene = impl_->GetSceneManager()->GetScene(update_event->object->GetSceneId());
+		
+		if (update_event->contained_object && update_event->contained_object->GetObjectId() != 0)
+		{
+			scene->HandleDataTransformWithParentServer(update_event->contained_object, update_event->object, update_event->position);
+		}
+		else
+		{
+			scene->HandleDataTransformServer(update_event->object, update_event->position);
+		}
+		
+	});
 
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 
