@@ -176,6 +176,11 @@ shared_ptr<Object> PlayerFactory::CreateObjectFromStorage(uint64_t object_id)
             LoadXP_(player, statement);
         }
 
+		//Clear us from the db persist update queue.
+		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
+		auto find_itr = persisted_objects_.find(player);
+		if(find_itr != persisted_objects_.end())
+			persisted_objects_.erase(find_itr);
     }
     catch(sql::SQLException &e)
     {

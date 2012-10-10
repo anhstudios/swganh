@@ -53,6 +53,15 @@ namespace simulation {
 		void HandleDataTransform(const std::shared_ptr<swganh::object::Object>& controller, swganh::messages::controllers::DataTransform message);
 		void HandleDataTransformWithParent(const std::shared_ptr<swganh::object::Object>& controller, swganh::messages::controllers::DataTransformWithParent message);
 
+		void HandleDataTransformServer(
+			const std::shared_ptr<swganh::object::Object>& object,
+			const glm::vec3& new_position);
+
+		void HandleDataTransformWithParentServer(
+			const std::shared_ptr<swganh::object::Object>& parent, 
+			const std::shared_ptr<swganh::object::Object>& object,
+			const glm::vec3& new_position);
+
     private:
         Scene();
 

@@ -47,6 +47,15 @@ namespace simulation {
         virtual void SendDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B) = 0;
         virtual void SendUpdateDataTransformMessage(const std::shared_ptr<swganh::object::Object>& object) = 0;
         
+		virtual void HandleDataTransformServer(
+			const std::shared_ptr<swganh::object::Object>& object,
+			const glm::vec3& new_position) = 0;
+
+		virtual void HandleDataTransformWithParentServer(
+			const std::shared_ptr<swganh::object::Object>& parent, 
+			const std::shared_ptr<swganh::object::Object>& object,
+			const glm::vec3& new_position) = 0;
+
         virtual void SendDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object, uint32_t unknown = 0x0000000B) = 0;
         virtual void SendUpdateDataTransformWithParentMessage(const std::shared_ptr<swganh::object::Object>& object) = 0;
 		virtual void SetSpatialProvider(std::shared_ptr<swganh::simulation::SpatialProviderInterface> spatial_provider) = 0;

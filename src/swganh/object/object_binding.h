@@ -131,49 +131,6 @@ void PlayMusic3(std::shared_ptr<swganh::object::Object> object, std::string musi
 }
 BOOST_PYTHON_FUNCTION_OVERLOADS(PlayMusic3Overload, PlayMusic3, 3, 4);
 
-void UpdatePosition(std::shared_ptr<Object> object, glm::vec3 pos)
-{
-	object->SetPosition(pos);
-	if(object->GetContainer()->GetObjectId() == 0)
-	{
-		UpdateTransformMessage transform_update;
-		transform_update.object_id = object->GetObjectId();
-		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
-		transform_update.position = pos;
-		object->NotifyObservers(&transform_update);
-	}
-	else
-	{
-		UpdateTransformWithParentMessage transform_update;
-		transform_update.object_id = object->GetObjectId();
-		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
-		transform_update.position = pos;
-		transform_update.cell_id = object->GetContainer()->GetObjectId();
-		object->NotifyObservers(&transform_update);
-	}
-}
-void UpdateOrientation(std::shared_ptr<Object> object, glm::quat orientation)
-{
-	object->SetOrientation(orientation);
-
-	if(object->GetContainer()->GetObjectId() == 0) {
-		UpdateTransformMessage transform_update;
-		transform_update.object_id = object->GetObjectId();
-		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
-		transform_update.position = object->GetPosition();
-		object->NotifyObservers(&transform_update);
-	}
-	else
-	{
-		UpdateTransformWithParentMessage transform_update;
-		transform_update.object_id = object->GetObjectId();
-		transform_update.heading = static_cast<uint8_t>(object->GetHeading());
-		transform_update.position = object->GetPosition();
-		transform_update.cell_id = object->GetContainer()->GetObjectId();
-		object->NotifyObservers(&transform_update);
-	}
-}
-
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addObjectOverload, AddObject, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(transferObjectOverload, TransferObject, 3, 4)
 
@@ -245,9 +202,9 @@ void exportObject()
 		.add_property("id", &Object::GetObjectId, &Object::SetObjectId, "Gets or sets The id of the object")
 		.add_property("scene_id", &Object::GetSceneId, "Gets the scene id the object is in")
 		.add_property("type", &Object::GetType, "Gets the type of the object")
-		.add_property("position", &Object::GetPosition, UpdatePosition, "Gets and Sets the position of the object, using :class:`.Vec3`")
+		.add_property("position", &Object::GetPosition, &Object::SetPosition, "Gets and Sets the position of the object, using :class:`.Vec3`")
 		.add_property("heading", &Object::GetHeading, "Gets the heading as an int of the object")
-		.add_property("orientation", &Object::GetOrientation, UpdateOrientation, "Property to get or set the orientation of the object")
+		.add_property("orientation", &Object::GetOrientation, &Object::SetOrientation, "Property to get or set the orientation of the object")
 		.add_property("template", &Object::GetTemplate, &Object::SetTemplate, "the .iff file associated with this object"					)
 		.add_property("volume", &Object::GetVolume, &Object::SetVolume, "Property to get or set the volume of the object (how much it can store)")
 		.add_property("stf_name_file", &Object::GetStfNameFile, "gets the stf name file of the object")

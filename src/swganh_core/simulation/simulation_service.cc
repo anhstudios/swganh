@@ -108,6 +108,8 @@
 #include "swganh/tre/resource_manager.h"
 #include "swganh/tre/visitors/objects/object_visitor.h"
 
+#include "swganh_core/object/object_events.h"
+
 #include "swganh_core/equipment/equipment_service.h"
 #include "movement_manager.h"
 #include "scene_manager.h"
@@ -286,10 +288,10 @@ public:
 		// Get Next Scene
 		auto scene_obj = scene_manager_->GetScene(scene);
 
-        if (!scene_obj)
-        {
-            throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
-        }
+	        if (!scene_obj)
+	        {
+	            throw std::runtime_error("Requested transfer to an invalid scene: " + scene);
+	        }
 
 		// Remove from existing scene
 		scene_manager_->GetScene(obj->GetSceneId())->RemoveObject(obj);
@@ -309,9 +311,12 @@ public:
 
 			obj->GetController()->Notify(&start_scene);
 		}
+		
+		//Update the object's scene_id
+		obj->SetSceneId(scene_obj->GetSceneId());		
 
-        // Add object to scene and send baselines
-        scene_obj->AddObject(obj);
+	        // Add object to scene and send baselines
+	        scene_obj->AddObject(obj);
 	}
 
 	shared_ptr<Object> TransferObjectToScene(uint64_t object_id, const string& scene)
@@ -724,6 +729,22 @@ void SimulationService::Startup()
 
     SimulationServiceInterface::RegisterControllerHandler(
 		&SimulationServiceImpl::HandleDataTransformWithParent, impl_.get());
+
+	kernel_->GetEventDispatcher()->Subscribe("Object::UpdatePosition", [this] (shared_ptr<swganh::EventInterface> incoming_event)
+	{
+		const auto& update_event = static_pointer_cast<swganh::object::UpdatePositionEvent>(incoming_event);
+		auto scene = impl_->GetSceneManager()->GetScene(update_event->object->GetSceneId());
+		
+		if (update_event->contained_object && update_event->contained_object->GetObjectId() != 0)
+		{
+			scene->HandleDataTransformWithParentServer(update_event->contained_object, update_event->object, update_event->position);
+		}
+		else
+		{
+			scene->HandleDataTransformServer(update_event->object, update_event->position);
+		}
+		
+	});
 
 	auto command_service = kernel_->GetServiceManager()->GetService<swganh::command::CommandServiceInterface>("CommandService");
 

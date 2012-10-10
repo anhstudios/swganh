@@ -192,3 +192,13 @@ void Scene::ViewObjects(glm::vec3 position, float radius, uint32_t max_depth, bo
 {
 	impl_->GetSpatialIndex()->ViewObjectsInRange(position, radius, max_depth, topDown, func);
 }
+
+void Scene::HandleDataTransformServer(const std::shared_ptr<swganh::object::Object>& object, const glm::vec3& new_position)
+{
+	impl_->GetMovementManager()->HandleDataTransformServer(object, new_position);
+}
+
+void Scene::HandleDataTransformWithParentServer(const std::shared_ptr<swganh::object::Object>& parent, const std::shared_ptr<swganh::object::Object>& object, const glm::vec3& new_position)
+{
+	impl_->GetMovementManager()->HandleDataTransformWithParentServer(parent, object, new_position);
+}
