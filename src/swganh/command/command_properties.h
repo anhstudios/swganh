@@ -12,6 +12,38 @@ namespace command {
 
 	struct CommandProperties
     {
+		CommandProperties()
+			: command_name("")
+			, default_priority(0)
+			, default_time(1.0)
+			, character_ability("")
+			, client_effect_self("")
+			, client_effect_target("")
+			, allow_in_locomotion(0)
+			, allow_in_state(0)
+			, target_type(0)
+			, call_on_target(0)
+			, command_group(0)
+			, max_range_to_target(0.0f)
+			, god_level(0)
+			, add_to_combat_queue(0)
+		{}
+		CommandProperties(const CommandProperties& properties)
+			: command_name(properties.command_name)
+			, default_priority(properties.default_priority)
+			, default_time(properties.default_time)
+			, character_ability(properties.character_ability)
+			, client_effect_self(properties.client_effect_self)
+			, client_effect_target(properties.client_effect_target)
+			, allow_in_locomotion(properties.allow_in_locomotion)
+			, allow_in_state(properties.allow_in_state)
+			, target_type(properties.target_type)
+			, call_on_target(properties.call_on_target)
+			, command_group(properties.command_group)
+			, max_range_to_target(properties.max_range_to_target)
+			, god_level(properties.god_level)
+			, add_to_combat_queue(properties.add_to_combat_queue)
+		{}
         swganh::HashString command_name;
         uint32_t default_priority;
         float default_time;

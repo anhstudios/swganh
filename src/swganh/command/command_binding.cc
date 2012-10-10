@@ -81,6 +81,26 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
 
         return callback;
     }
+	void SetCommandProperties(const CommandProperties& properties)
+	{
+		ScopedGilLock lock;
+        try 
+        {
+            auto setup = this->get_override("setup");
+            if (setup)
+            {
+                setup();
+            }
+            else
+            {
+                this->BaseSwgCommand::SetCommandProperties(properties);
+            }
+        }
+        catch(bp::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }        
+	}
 };
 
 class CommandCallbackWrapper : public CommandCallback, bp::wrapper<CommandCallback>
@@ -134,9 +154,25 @@ void swganh::command::ExportCommand()
         .def("run", bp::pure_virtual(&CommandInterface::Run))
     ;
     
+	bp::class_<CommandProperties>("CommandProperties", bp::no_init)
+		.def_readwrite("default_time", &CommandProperties::default_time)
+		.def_readwrite("ability", &CommandProperties::character_ability)
+		.def_readwrite("client_effect_self", &CommandProperties::client_effect_self)
+		.def_readwrite("client_effect_target", &CommandProperties::client_effect_target)
+		.def_readwrite("allow_in_locomotion", &CommandProperties::allow_in_locomotion)
+		.def_readwrite("allow_in_state", &CommandProperties::allow_in_state)
+		.def_readwrite("target_type", &CommandProperties::target_type)
+		.def_readwrite("call_on_target", &CommandProperties::call_on_target)
+		.def_readwrite("command_group", &CommandProperties::command_group)
+		.def_readwrite("max_range_to_target", &CommandProperties::max_range_to_target)
+		.def_readwrite("god_level", &CommandProperties::god_level)
+		.def_readwrite("add_to_combat_queue", &CommandProperties::add_to_combat_queue)
+	;
+
     bp::class_<BaseSwgCommand, BaseSwgCommandWrapper, bp::bases<CommandInterface>, boost::noncopyable>
         ("BaseSwgCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&>())
         .def("validate", &BaseSwgCommandWrapper::Validate)
+		.def("setup", &BaseSwgCommand::SetCommandProperties)
         .def("getKernel", &BaseSwgCommandWrapper::GetKernel, bp::return_internal_reference<>())
         .def("getCommandName", &BaseSwgCommandWrapper::GetCommandName)
         .def("getActionCounter", &BaseSwgCommandWrapper::GetActionCounter)

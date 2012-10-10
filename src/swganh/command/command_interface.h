@@ -76,7 +76,7 @@ namespace command {
          *
          * @return Optional callback to be invoked after a given amount of time.
          */
-        virtual boost::optional<std::shared_ptr<CommandCallback>> Run() = 0;
+        virtual boost::optional<std::shared_ptr<CommandCallback>> Run() = 0;		
     };
 
 }}

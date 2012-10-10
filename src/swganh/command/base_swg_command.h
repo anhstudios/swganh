@@ -77,7 +77,7 @@ namespace command {
 
         const std::wstring& GetCommandString() const;
 
-        void SetCommandProperties(const CommandProperties& properties);
+        virtual void SetCommandProperties(const CommandProperties& properties);
         
         const swganh::messages::controllers::CommandQueueEnqueue& GetCommandRequest() const;
 

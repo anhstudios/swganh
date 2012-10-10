@@ -15,60 +15,46 @@
 #include <boost/python.hpp>
 
 namespace swganh {
-namespace command {
-    class BaseCombatCommand;
-}
-}
-
-namespace swganh {
 namespace combat {
     
 /**
 * Data used in combat
 */
-struct CombatData : swganh::command::CommandProperties
+struct CombatData : public swganh::command::CommandProperties
 {
-    // TEMP
-    class StateEffect;
-    class DotEffect;
-    CombatData(swganh::command::CommandProperties&& properties) 
-        : swganh::command::CommandProperties(properties)
-        , min_damage(0)
-        , max_damage(0)
-        , damage_multiplier(0)
-        , accuracy_bonus(0)
-        , speed_multiplier(0)
-        , pool(0)
-        , attack_delay_chance(0)
-        , state_duration(0)
-        , dot_duration(0)
-        , dot_type(0)
-        , dot_pool(0)
-        , dot_strength(0)
-        , dot_potency(0)
-        , range (0)
-        , cone_angle(0)
-        , area_range(0)
-        , animation_crc(swganh::HashString(""))
-    {
-    }
-
-	/**
-	* Create a combat data from a given command
-	*/
-    explicit CombatData(swganh::command::BaseCombatCommand* command);
-    
-	/**
-	* Create combat data from a python object
-	*/
-	CombatData(boost::python::object p_object, swganh::command::CommandProperties& properties );
-
+	CombatData(swganh::command::CommandProperties properties)
+		: swganh::command::CommandProperties(properties)
+		, min_damage(0)
+		, max_damage(0)
+		, damage_multiplier(0.0f)
+		, accuracy_bonus(0)
+		, speed_multiplier(0.0f)
+		, attack_speed(0.0f)
+		, pool(0)
+		, attack_delay_chance(0)
+		, state_duration(0)
+		, dot_duration(0)
+		, dot_type(0)
+		, dot_pool(0)
+		, dot_strength(0)
+		, dot_potency(0.0f)
+		, range(0)
+		, cone_angle(0)
+		, area_range(0)
+		, animation_crc("")
+		, combat_spam("")
+		, health_hit_chance(0.0f)
+		, action_hit_chance(0.0f)
+		, mind_hit_chance(0.0f)
+	{}
+	
     int min_damage;
     int max_damage;
 
     float damage_multiplier;
     int accuracy_bonus;
     float speed_multiplier;
+	float attack_speed;
     int pool;
     
     int attack_delay_chance;
@@ -97,21 +83,6 @@ struct CombatData : swganh::command::CommandProperties
 
     bool IsRandomPool();
     int GetDamagingPool();
-    
-	/**
-	* Extracts combat data from a python object
-	*/
-    template <typename T>
-    void ExtractData(boost::python::object& p_object, std::string key, T& extract_value)
-    {
-        swganh::scripting::ScopedGilLock lock;
-        if (p_object.contains(key))
-        {
-            boost::python::extract<T> tmp_x(p_object[key]);
-            if (tmp_x.check())
-                extract_value = tmp_x();
-        }
-    }
     
     static std::string HIT_spam() { return "_hit"; }
     static std::string BLOCK_spam() { return "_block"; }

@@ -12,12 +12,14 @@
 #include "swganh/scripting/utilities.h"
 
 #include "base_combat_command.h"
+#include "swganh_core/combat/combat_data.h"
 
 namespace bp = boost::python;
 using swganh::command::BaseCombatCommand;
 using swganh::command::CommandCallback;
 using swganh::command::CommandInterface;
 using swganh::command::CommandProperties;
+using swganh::combat::CombatData;
 using swganh::scripting::ScopedGilLock;
 
 struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatCommand>
@@ -25,7 +27,7 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
     BaseCombatCommandWrapper(
         PyObject* obj,
         swganh::app::SwganhKernel* kernel,
-        const CommandProperties& properties)
+        CommandProperties& properties)
         : BaseCombatCommand(kernel, properties)
         , self_(bp::handle<>(bp::borrowed(obj)))
     {
@@ -61,6 +63,26 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
 
         return callback;
     }
+	void SetCommandProperties(const CommandProperties& properties)
+	{
+		ScopedGilLock lock;
+        try 
+        {
+            auto setup = this->get_override("setup");
+            if (setup)
+            {
+                setup(properties);
+            }
+            else
+            {
+                this->BaseCombatCommand::SetCommandProperties(properties);
+            }
+        }
+        catch(bp::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }        
+	}
 
 private:
     bp::object self_;
@@ -69,27 +91,31 @@ private:
 void swganh::command::ExportBaseCombatCommand()
 {
     bp::class_<BaseCombatCommand, BaseCombatCommandWrapper, bp::bases<BaseSwgCommand>, boost::noncopyable>
-        ("BaseCombatCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&>())
+        ("BaseCombatCommand", bp::init<swganh::app::SwganhKernel*, CommandProperties&>())
         .def("run", &BaseCombatCommandWrapper::Run)
-		.def_readwrite("min_damage", &BaseCombatCommand::min_damage)
-		.def_readwrite("max_damage", &BaseCombatCommand::max_damage)
-		.def_readwrite("damage_multiplier", &BaseCombatCommand::damage_multiplier)
-		.def_readwrite("accuracy_bonus", &BaseCombatCommand::accuracy_bonus)
-		.def_readwrite("speed_multiplier", &BaseCombatCommand::speed_multiplier)
-		.def_readwrite("attack_speed", &BaseCombatCommand::attack_speed)
-		.def_readwrite("attack_delay_chance", &BaseCombatCommand::attack_delay_chance)
-		.def_readwrite("dot_duration", &BaseCombatCommand::dot_duration)
-		.def_readwrite("dot_type", &BaseCombatCommand::dot_type)
-		.def_readwrite("dot_pool", &BaseCombatCommand::dot_pool)
-		.def_readwrite("dot_strength", &BaseCombatCommand::dot_strength)
-		.def_readwrite("range", &BaseCombatCommand::range)
-		.def_readwrite("cone_angle", &BaseCombatCommand::cone_angle)
-		.def_readwrite("area_range", &BaseCombatCommand::area_range)
-		.def_readwrite("animation_crc", &BaseCombatCommand::animation_crc)
-		.def_readwrite("combat_spam", &BaseCombatCommand::combat_spam)
-		.def_readwrite("attack_delay_chance", &BaseCombatCommand::attack_delay_chance)
-		.def_readwrite("health_hit_chance", &BaseCombatCommand::health_hit_chance)
-		.def_readwrite("action_hit_chance", &BaseCombatCommand::action_hit_chance)
-		.def_readwrite("mind_hit_chance", &BaseCombatCommand::mind_hit_chance)
+		.def("setup", &BaseCombatCommandWrapper::SetCommandProperties)
+		.def_readwrite("properties", &BaseCombatCommandWrapper::combat_data)
     ;
+	bp::class_<CombatData>("CombatData", bp::no_init)
+		.def_readwrite("min_damage", &CombatData::min_damage)
+		.def_readwrite("max_damage", &CombatData::max_damage)
+		.def_readwrite("damage_multiplier", &CombatData::damage_multiplier)
+		.def_readwrite("accuracy_bonus", &CombatData::accuracy_bonus)
+		.def_readwrite("speed_multiplier", &CombatData::speed_multiplier)
+		.def_readwrite("attack_speed", &CombatData::attack_speed)
+		.def_readwrite("attack_delay_chance", &CombatData::attack_delay_chance)
+		.def_readwrite("dot_duration", &CombatData::dot_duration)
+		.def_readwrite("dot_type", &CombatData::dot_type)
+		.def_readwrite("dot_pool", &CombatData::dot_pool)
+		.def_readwrite("dot_strength", &CombatData::dot_strength)
+		.def_readwrite("range", &CombatData::range)
+		.def_readwrite("cone_angle", &CombatData::cone_angle)
+		.def_readwrite("area_range", &CombatData::area_range)
+		.def_readwrite("animation_crc", &CombatData::animation_crc)
+		.def_readwrite("combat_spam", &CombatData::combat_spam)
+		.def_readwrite("attack_delay_chance", &CombatData::attack_delay_chance)
+		.def_readwrite("health_hit_chance", &CombatData::health_hit_chance)
+		.def_readwrite("action_hit_chance", &CombatData::action_hit_chance)
+		.def_readwrite("mind_hit_chance", &CombatData::mind_hit_chance)
+	;	
 }
