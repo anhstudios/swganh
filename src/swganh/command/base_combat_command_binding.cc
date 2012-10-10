@@ -62,82 +62,6 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
         return callback;
     }
 
-    template <typename T>
-    void ExtractData(boost::python::object& p_object, std::string key, T& extract_value)
-    {
-        swganh::scripting::ScopedGilLock lock;
-        
-        try 
-        {
-            if (PyObject_HasAttrString(self_.ptr(), key.c_str()))
-            {
-                boost::python::extract<T> tmp_x(p_object.attr(key.c_str()));
-                if (tmp_x.check())
-                    extract_value = tmp_x();
-            }
-        }
-        catch(bp::error_already_set& /*e*/)
-        {
-            PyErr_Print();
-        }
-    }
-        
-    virtual int GetMinDamage()
-    {
-        int min_damage = 0;
-        ExtractData(self_, "min_damage", min_damage);
-        return min_damage;
-    }
-
-    virtual int GetMaxDamage()
-    {
-        int max_damage = 0;
-        ExtractData(self_, "max_damage", max_damage);
-        return max_damage;
-    }
-
-    virtual float GetDamageMultiplier()
-    {
-        float damage_multiplier = 0.0f;
-        ExtractData(self_, "damage_multiplier", damage_multiplier);
-        return damage_multiplier;
-    }
-
-    virtual int GetAccuracyBonus()
-    {
-        int accuracy_bonus = 0;
-        ExtractData(self_, "accuracy_bonus", accuracy_bonus);
-        return accuracy_bonus;
-    }
-
-    virtual float GetSpeedMultiplier()
-    {
-        float speed_multiplier = 0.0f;
-        ExtractData(self_, "speed_multiplier", speed_multiplier);
-        return speed_multiplier;
-    }
-
-    virtual float GetHealthHitChance()
-    {
-        float health_hit_chance = 0.0f;
-        ExtractData(self_, "health_hit_chance", health_hit_chance);
-        return health_hit_chance;
-    }
-
-    virtual float GetActionHitChance()
-    {
-        float action_hit_chance = 0.0f;
-        ExtractData(self_, "action_hit_chance", action_hit_chance);
-        return action_hit_chance;
-    }
-
-    virtual float GetMindHitChance()
-    {
-        float mind_hit_chance = 0.0f;
-        ExtractData(self_, "mind_hit_chance", mind_hit_chance);
-        return mind_hit_chance;
-    }
-
 private:
     bp::object self_;
 };
@@ -147,5 +71,25 @@ void swganh::command::ExportBaseCombatCommand()
     bp::class_<BaseCombatCommand, BaseCombatCommandWrapper, bp::bases<BaseSwgCommand>, boost::noncopyable>
         ("BaseCombatCommand", bp::init<swganh::app::SwganhKernel*, const CommandProperties&>())
         .def("run", &BaseCombatCommandWrapper::Run)
+		.def_readwrite("min_damage", &BaseCombatCommand::min_damage)
+		.def_readwrite("max_damage", &BaseCombatCommand::max_damage)
+		.def_readwrite("damage_multiplier", &BaseCombatCommand::damage_multiplier)
+		.def_readwrite("accuracy_bonus", &BaseCombatCommand::accuracy_bonus)
+		.def_readwrite("speed_multiplier", &BaseCombatCommand::speed_multiplier)
+		.def_readwrite("attack_speed", &BaseCombatCommand::attack_speed)
+		.def_readwrite("attack_delay_chance", &BaseCombatCommand::attack_delay_chance)
+		.def_readwrite("dot_duration", &BaseCombatCommand::dot_duration)
+		.def_readwrite("dot_type", &BaseCombatCommand::dot_type)
+		.def_readwrite("dot_pool", &BaseCombatCommand::dot_pool)
+		.def_readwrite("dot_strength", &BaseCombatCommand::dot_strength)
+		.def_readwrite("range", &BaseCombatCommand::range)
+		.def_readwrite("cone_angle", &BaseCombatCommand::cone_angle)
+		.def_readwrite("area_range", &BaseCombatCommand::area_range)
+		.def_readwrite("animation_crc", &BaseCombatCommand::animation_crc)
+		.def_readwrite("combat_spam", &BaseCombatCommand::combat_spam)
+		.def_readwrite("attack_delay_chance", &BaseCombatCommand::attack_delay_chance)
+		.def_readwrite("health_hit_chance", &BaseCombatCommand::health_hit_chance)
+		.def_readwrite("action_hit_chance", &BaseCombatCommand::action_hit_chance)
+		.def_readwrite("mind_hit_chance", &BaseCombatCommand::mind_hit_chance)
     ;
 }
