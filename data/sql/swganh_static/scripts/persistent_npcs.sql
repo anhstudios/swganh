@@ -1313,7 +1313,6 @@ INSERT INTO `persistent_npcs` VALUES (47244640257,2365800,1,'object/mobile/share
 (47513077419,1256061,2,'object/mobile/shared_dressed_commoner_old_twilek_female_02.iff',NULL,NULL,0,0,0,1,1,0,1,0,0,2.17,-0.89,-14.97,8,'dim_u_abbot','mob/creature_names',0.95),
 (47513077421,1256056,2,'object/mobile/shared_dressed_stormtrooper_m.iff',NULL,NULL,0,0,0,1,3,0,0.68,0,0.73,48.13,0.1,2.47,8,'crackdown_stormtrooper','mob/creature_names',1),
 (47513077423,1256058,2,'object/mobile/shared_dressed_commoner_naboo_human_male_05.iff','Fakopige','Pesagatwo',0,0,0,1,1,0,-0.56,0,0.83,7.08,-0.89,2.17,8,'human_base_male','npc_name',1.1),
-(47513077425,1256058,2,'object/mobile/shared_dressed_naboo_twilek_female_02.iff','Jilljoo','Jab',0,0,0,1,1,0,0.61,0,0.8,10.58,-0.89,-3.56,8,'twilek_base_female','npc_name',1),
 (47513077427,1256058,2,'object/mobile/shared_dressed_doctor_trainer_moncal_female_01.iff',NULL,NULL,0,0,0,1,1,0,0,0,1,12.17,-0.89,2.94,8,'scientist','mob/creature_names',1),
 (47513077429,1256058,2,'object/mobile/shared_dressed_mercenary_messanger_hum_f.iff',NULL,NULL,0,0,0,1,1,0,1,0,0,12.17,-0.89,3.94,8,'mercenary','mob/creature_names',0.95),
 (47513077431,1256058,2,'object/mobile/shared_dressed_commoner_fat_human_male_02.iff','Dorn','Gestros',0,0,0,1,1,0,0.9,0,0.43,-6.01,-0.89,-5.35,8,'commoner_human_male','mob/creature_names',1),

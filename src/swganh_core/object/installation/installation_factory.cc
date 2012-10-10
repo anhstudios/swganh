@@ -123,6 +123,12 @@ shared_ptr<Object> InstallationFactory::CreateObjectFromStorage(uint64_t object_
 				installation->SetConditionPercentage(result->getInt("condition_percentage"));
 			}
 		}
+
+		//Clear us from the db persist update queue.
+		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
+		auto find_itr = persisted_objects_.find(installation);
+		if(find_itr != persisted_objects_.end())
+			persisted_objects_.erase(find_itr);
 	}
 	catch(sql::SQLException &e)
     {
