@@ -168,6 +168,12 @@ void ObjectFactory::CreateBaseObjectFromStorage(const shared_ptr<Object>& object
 		LoadAttributes(object);
 
 		GetClientData(object);
+
+		//Clear us from the db persist update queue.
+		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
+		auto find_itr = persisted_objects_.find(object);
+		if(find_itr != persisted_objects_.end())
+			persisted_objects_.erase(find_itr);
     }
     catch(sql::SQLException &e)
     {
