@@ -18,4 +18,4 @@ class PeaceCommand(BaseSwgCommand):
 			
 			SystemMessage.sendFlyText(actor, "@combat_effects:go_peace", FlyTextColor.WHITE)
 		else:
-			actor.stateBitmask = ACTION.NONE   
+			actor.toggleStateOff(ACTION.PEACE)

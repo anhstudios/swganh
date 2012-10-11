@@ -1001,29 +1001,64 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 	
 	return ss.str();
 }
+boost::variant<float, int32_t, std::wstring> Object::AddAttributeRecursive(
+	boost::variant<float, int32_t, std::wstring> val, 
+	const std::string& name)
+{
+	// Add Values
+	float float_val = 0.0f;
+	int32_t int_val = 0;
+	wstring attr_val = L"";
+	boost::variant<float, int32_t, std::wstring> found_val;
+	ViewObjects(nullptr, 1, false, [&](std::shared_ptr<Object> recurse)
+	{
+
+		if (recurse->HasAttribute(name))
+		{
+			found_val = GetAttribute(name);
+
+			switch(val.which())
+			{
+				// float
+				case 0:
+					float_val = boost::get<float>(found_val);
+					if (!val.empty())
+						float_val += boost::get<float>(val);
+				case 1:
+					int_val = boost::get<int32_t>(found_val);
+					if (!val.empty())
+						int_val += boost::get<int32_t>(val);			
+				case 2:
+					attr_val = boost::get<wstring>(found_val);
+					if (!val.empty())
+						attr_val +=  boost::get<int32_t>(val);
+			}	
+		}
+	});
+	if (float_val > 0.0f)
+		return float_val;
+	else if(int_val > 0)
+		return int_val;
+	else if (attr_val.length() > 0)
+		return attr_val;
+	else
+		return val;
+}
 boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
 {
+	try {
 	auto val = GetAttribute(name);
 	{
-		boost::lock_guard<boost::mutex> lock(object_mutex_);
-		float float_val;
-		int32_t int_val;
-		wstring attr_val;
-		switch(val.which())
-		{
-			// float
-			case 0:
-				 float_val = boost::get<float>(val);
-				return AddAttributeRecursive<float>(float_val, name);			
-			case 1:
-				int_val = boost::get<int32_t>(val);
-				return AddAttributeRecursive<int32_t>(int_val, name);			
-			case 2:
-				attr_val = boost::get<wstring>(val);
-				return AddAttributeRecursive<wstring>(attr_val, name);			
-		}	
-		return boost::get<wstring>(val);
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	return AddAttributeRecursive(val, name);		
 	}
+	if (!val.empty())
+		return boost::get<int32_t>(val);
+	} catch(std::exception& e)
+	{
+		LOG(warning) << "Error:" << e.what() << " Getting Recursive Attribute: " << name << std::endl;
+	}
+	return 0;
 }
 
 bool Object::HasAttribute(const std::string& name)

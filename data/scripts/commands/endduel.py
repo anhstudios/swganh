@@ -5,8 +5,7 @@ class EndDuelCommand(BaseSwgCommand):
         actor = self.getActor()
         target = self.getTargetCreature()
         
-        service_mgr = self.getKernel().serviceManager()
+        combat_service = self.getKernel().serviceManager().combatService()
         
-        combat_svc = service_mgr.combatService()
         if (actor and target):
-            combat_svc.endDuel(actor, target)
+            combat_service.endDuel(actor, target)

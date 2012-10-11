@@ -549,6 +549,7 @@ public:
 
 		return val;
 	}
+	boost::variant<float, int32_t, std::wstring> AddAttributeRecursive(boost::variant<float, int32_t, std::wstring> val, const std::string& name);
 
 	int8_t GetAttributeTemplateId();
 	void SetAttributeTemplateId(int8_t attribute_template_id);
