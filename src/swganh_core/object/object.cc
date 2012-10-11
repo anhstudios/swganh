@@ -549,6 +549,10 @@ bool Object::InRange(glm::vec3 target, float range)
 	}
 	return true;
 }
+float Object::RangeTo(glm::vec3 target)
+{
+	return glm::distance(GetPosition(), target);
+}
 void Object::SetOrientation(glm::quat orientation)
 {
     {
@@ -942,7 +946,7 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::str
 		return find_iter->second;
 	}	
 	LOG(error) << "Attribute "<< name << " does not exist";	
-	return L"";
+	return 0;
 	//throw std::runtime_error("Attribute " + name + " does not exist");
 }
 
@@ -1024,6 +1028,8 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const
 		}	
 		return boost::get<wstring>(val);
 	}
+	// Doesn't Exist
+	return 0;
 }
 
 bool Object::HasAttribute(const std::string& name)

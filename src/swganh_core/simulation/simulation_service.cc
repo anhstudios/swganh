@@ -747,3 +747,8 @@ void SimulationService::PrepareToAccomodate(uint32_t delta)
 {
 	impl_->GetObjectManager()->PrepareToAccomodate(delta);
 }
+
+const shared_ptr<swganh::equipment::EquipmentServiceInterface>& SimulationService::GetEquipmentService()
+{
+	return impl_->GetEquipmentService();
+}

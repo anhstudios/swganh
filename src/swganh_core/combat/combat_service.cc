@@ -32,6 +32,8 @@
 #include "swganh/command/command_properties.h"
 #include "swganh/simulation/simulation_service_interface.h"
 
+#include "swganh_core/equipment/equipment_service.h"
+
 #include "swganh_core/messages/controllers/combat_action_message.h"
 #include "swganh_core/messages/controllers/combat_spam_message.h"
 #include "swganh_core/messages/controllers/show_fly_text.h"
@@ -46,7 +48,7 @@ using namespace swganh::service;
 using namespace swganh::messages;
 using namespace swganh::messages::controllers;
 using namespace swganh::object;
-using namespace swganh::object;
+using namespace swganh::equipment;
 using namespace swganh::simulation;
 using namespace swganh::combat;
 using namespace swganh::command;
@@ -81,6 +83,8 @@ void CombatService::Startup()
 
 	command_service_ = kernel_->GetServiceManager()
 		->GetService<CommandServiceInterface>("CommandService");
+	
+	equipment_service_ = simulation_service_->GetEquipmentService();
     
     command_service_->AddCommandCreator("attack", swganh::command::PythonCommandCreator("commands.attack", "AttackCommand"));
     command_service_->AddCommandCreator("deathblow", swganh::command::PythonCommandCreator("commands.deathblow", "DeathBlowCommand")); 
@@ -115,48 +119,47 @@ void CombatService::DoCombat(
 	const shared_ptr<Tangible>& target,
 	std::shared_ptr<CombatData> combat_data)
 {
+	string combat_spam, effect;
+	FlyTextColor color = GREEN;
+	HIT_TYPE hit_type = HIT;
 	if (target->GetType() == Creature::type)
 	{
 		auto creature_target = static_pointer_cast<Creature>(target);
-		HIT_TYPE hit_type = GetHitResult(attacker, creature_target, combat_data);
+		hit_type = GetHitResult(attacker, creature_target, combat_data);
 		HIT_LOCATION hit_location = GetHitLocation(combat_data);
-		//switch (hit_type)
-		//{
-		//	case HIT:
-		//		BroadcastCombatSpam(attacker, target, combat_data, damage, CombatData::HIT_spam());
-		//		break;
-		//		// Block
-		//	case BLOCK:
-		//		SendCombatActionMessage(defender, attacker, combat_data, "block");
-		//		SystemMessage::FlyText(defender, "@combat_effects:block", FlyTextColor::GREEN); 
-		//		BroadcastCombatSpam(attacker, defender, combat_data, damage, CombatData::BLOCK_spam());
-		//		damage_multiplier = 0.5f;
-		//		break;
-		//	case DODGE:
-		//		// Dodge
-		//		SendCombatActionMessage(defender, attacker, combat_data, "dodge");
-		//		SystemMessage::FlyText(defender, "@combat_effects:dodge", FlyTextColor::GREEN); 
-		//		damage_multiplier = 0.0f;
-		//		BroadcastCombatSpam(attacker, defender, combat_data, damage, CombatData::DODGE_spam());
-		//		break;
-		//	case COUNTER:
-		//		SystemMessage::FlyText(defender, "@combat_effects:counterattack", FlyTextColor::GREEN); 
-		//		BroadcastCombatSpam(attacker, defender, combat_data, damage, CombatData::COUNTER_spam());
-		//		damage_multiplier = 0.0f;
-		//	case MISS:
-		//		// Miss
-		//		SystemMessage::FlyText(defender, "@combat_effects:miss", FlyTextColor::WHITE); 
-		//		BroadcastCombatSpam(attacker, defender, combat_data, damage, CombatData::MISS_spam());
-		//		damage_multiplier = 0.0f;
-		//		return 0;
-		//}
+		switch (hit_type)
+		{
+			case HIT:
+				combat_spam = CombatData::HIT_spam();
+				break;
+			case BLOCK:
+				combat_spam = CombatData::BLOCK_spam();
+				combat_data->damage_multiplier *= 0.5f;
+				break;
+			case DODGE:
+				combat_spam = CombatData::DODGE_spam();
+				combat_data->damage_multiplier = 0.0f;
+				break;
+			case COUNTER:
+				effect = "counterattack";
+				combat_spam = CombatData::COUNTER_spam();
+				combat_data->damage_multiplier = 0.0f;
+			case MISS:
+				combat_spam = CombatData::MISS_spam();
+				combat_data->damage_multiplier = 0.0f;			
+				color = WHITE;
+		}
 	}
 	else
 	{
 		// we always hit tangibles
-		
+		combat_spam = CombatData::HIT_spam();
 	}
-	
+	float initial_damage = CalculateDamage(attacker, target, combat_data);
+	int damage = ApplyDamage(attacker, target, combat_data, static_cast<int>(initial_damage), hit_type);
+	BroadcastCombatSpam(attacker, target, combat_data, damage, combat_spam);
+	SendCombatActionMessage(attacker, target, combat_data, effect);
+	SystemMessage::FlyText(attacker, combat_spam, color);
 }
 
 bool CombatService::InitiateCombat(
@@ -181,13 +184,7 @@ bool CombatService::InitiateCombat(
     shared_ptr<Creature> creature_target = nullptr;
     if (target->GetType() == Creature::type)
         creature_target = static_pointer_cast<Creature>(target);
-    // Check if mounted
-	/*if (attacker->HasState(RIDING_CREATURE || RIDING_MOUNT))
-		attacker->Dismount();*/
 
-    // Check if target can be attacked
-    if (creature_target != nullptr  && (creature_target->IsDead() || creature_target->IsIncapacitated()))
-        return false;
     if (!attacker->CanAttack(creature_target.get()))
         return false;
 
@@ -223,10 +220,10 @@ bool CombatService::InitiateCombat(
         CommandQueueEnqueue request;
         request.observable_id = creature_target->GetObjectId();
         request.target_id = attacker->GetObjectId();
-
+		
         swg_command->SetCommandRequest(request);
 
-        command_service_->SetDefaultCommand(creature_target->GetObjectId(), swg_command);
+        command_service_->SetDefaultCommand(creature_target->GetObjectId(), swg_command);		
     }
 
     return true;
@@ -271,96 +268,12 @@ vector<shared_ptr<Tangible>> CombatService::GetCombatTargets(
 
 	return targets_in_range;	
 }
-
-int CombatService::SingleTargetCombatAction(
-    const shared_ptr<Creature>& attacker, 
-    const shared_ptr<Tangible>& target, 
-    std::shared_ptr<CombatData> combat_data)
+float CombatService::CalculateDamage(
+	const shared_ptr<Creature>& attacker, 
+	const shared_ptr<Tangible>& target, 
+	shared_ptr<CombatData> combat_data)
 {
-    /*int damage = 0;
-    if (target->GetType() == Creature::type)
-    {
-        auto creature = static_pointer_cast<Creature>(target);
-        SingleTargetCombatAction(attacker, creature, combat_data);
-    }
-    else
-    {
-        int pool = GetDamagingPool(combat_data);
-        damage = ApplyDamage(attacker, target, combat_data, damage, pool);
-
-        BroadcastCombatSpam(attacker, target, combat_data, damage, CombatData::HIT_spam());
-    }
-    return damage;*/
-	return 0;
-}
-int CombatService::SingleTargetCombatAction(
-    const shared_ptr<Creature>& attacker, 
-    const shared_ptr<Creature>& defender, 
-    std::shared_ptr<CombatData> combat_data)
-{
-	return 0;
-    // Entertaining?
-
-    //int hit = 0;
-    //float damage_multiplier = combat_data->damage_multiplier;
-    //int total_damage = 0;
-    //int damage = 0;
-
-    //if (damage_multiplier != 0)
-    //    damage = 16; /*CalculateDamage(attacker, defender) * damage_multiplier);*/
-    //else
-    //{
-    //    damage = 10; // obviously temp
-    //}
-    //if (damage_multiplier < 1.0f)
-    //    damage_multiplier = 1.0f;
-
-    //hit = GetHitResult(attacker, defender, damage, combat_data->accuracy_bonus + GetAccuracyModifier(attacker)); 
-    //    
-    //switch (hit)
-    //{
-    //case HIT:
-    //    BroadcastCombatSpam(attacker, defender, combat_data, damage, CombatData::HIT_spam());
-    //    break;
-    //    // Block
-    //case BLOCK:
-    //    SendCombatActionMessage(defender, attacker, combat_data, "block");
-    //    SystemMessage::FlyText(defender, "@combat_effects:block", FlyTextColor::GREEN); 
-    //    BroadcastCombatSpam(attacker, defender, combat_data, damage, CombatData::BLOCK_spam());
-    //    damage_multiplier = 0.5f;
-    //    break;
-    //case DODGE:
-    //    // Dodge
-    //    SendCombatActionMessage(defender, attacker, combat_data, "dodge");
-    //    SystemMessage::FlyText(defender, "@combat_effects:dodge", FlyTextColor::GREEN); 
-    //    damage_multiplier = 0.0f;
-    //    BroadcastCombatSpam(attacker, defender, combat_data, damage, CombatData::DODGE_spam());
-    //    break;
-    //case COUNTER:
-    //    SystemMessage::FlyText(defender, "@combat_effects:counterattack", FlyTextColor::GREEN); 
-    //    BroadcastCombatSpam(attacker, defender, combat_data, damage, CombatData::COUNTER_spam());
-    //    damage_multiplier = 0.0f;
-    //case MISS:
-    //    // Miss
-    //    SystemMessage::FlyText(defender, "@combat_effects:miss", FlyTextColor::WHITE); 
-    //    BroadcastCombatSpam(attacker, defender, combat_data, damage, CombatData::MISS_spam());
-    //    damage_multiplier = 0.0f;
-    //    return 0;
-    //default:
-    //    return 0;
-    //}
-    //int pool = GetDamagingPool(combat_data);
-    //total_damage = ApplyDamage(attacker, defender, combat_data, damage, pool);
-
-    //// If they aren't auto-attacking they should
-    //if (!defender->IsAutoAttacking())
-    //    defender->ActivateAutoAttack();
-
-    //ApplyStates(attacker, defender, combat_data);
-    //
-    //// Apply Dots
-    //// Attack Delay?
-    //return total_damage;
+	return 15.0f;
 }
 
 HIT_TYPE CombatService::GetHitResult(
@@ -368,19 +281,32 @@ HIT_TYPE CombatService::GetHitResult(
     const shared_ptr<Creature>& defender, 
     std::shared_ptr<CombatData> combat_data)
 {
-//    int hit_outcome = 0;
-    // Get Weapon Attack Type
-    float weapon_accuracy = 15.0f;
-    // Get Weapon Accuracy Mods
+	auto weapon = equipment_service_->GetEquippedObject<Weapon>(attacker, "hold_l");
+	// Accuracy Mods
+	int weapon_accuracy = combat_data->weapon_accuracy + static_cast<int>(GetWeaponRangeModifier(weapon, attacker->RangeTo(defender->GetPosition())));
+    int attacker_accuracy = combat_data->accuracy_bonus;
+	attacker_accuracy += combat_data->weapon_accuracy;
+    combat_data->accuracy_bonus += GetAccuracyBonus(attacker, weapon);
 
-    int attacker_accuracy = GetAccuracyModifier(defender);
-
-    combat_data->accuracy_bonus += GetAccuracyBonus(attacker);
-
-    float target_defense = 15;//GetDefenseModifier(attacker, target);
-    float accuracy_total = GetHitChance(attacker_accuracy + weapon_accuracy, static_cast<float>(combat_data->accuracy_bonus), target_defense);
+	int target_defense = 0;
+	if (weapon && weapon->GetWeaponType() == WeaponType::MELEE)
+	{
+		target_defense += defender->GetAttributeRecursive<int>("melee_defense");
+	}
+	else
+	{
+		target_defense += defender->GetAttributeRecursive<int>("ranged_defense");
+	}
+    
+    float accuracy_total = GetHitChance(attacker_accuracy, combat_data->accuracy_bonus, target_defense);
 
     // Scout/Ranger creature hit bonus
+	accuracy_total += attacker->GetAttributeRecursive<int>("creature_hit_bonus");
+
+	accuracy_total -= defender->GetAttributeRecursive<int>("dodge_attack");
+	accuracy_total -= defender->GetAttributeRecursive<int>("private_center_of_being");
+
+	LOG(warning) << "Final Hit chance is " << accuracy_total << " for attacker " << attacker->GetObjectId() << std::endl;
 
     if (accuracy_total > 100.0)
         accuracy_total = 100.0;
@@ -390,15 +316,10 @@ HIT_TYPE CombatService::GetHitResult(
     if (generator_.Rand(1,100) > accuracy_total) 
         return MISS;
 
-    //// Successful hit
-    //if (damage > 0)
-    //{
-    // Get Secondary Defense Modifiers
-
     if (target_defense <= 0)
         return HIT;
 
-    accuracy_total = GetHitChance(attacker_accuracy + weapon_accuracy, static_cast<float>(combat_data->accuracy_bonus), target_defense);
+    accuracy_total = GetHitChance(attacker_accuracy, combat_data->accuracy_bonus, target_defense);
     if (accuracy_total > 100.0)
         accuracy_total = 100.0;
     else if(accuracy_total < 0.0f)
@@ -436,12 +357,14 @@ HIT_LOCATION CombatService::GetHitLocation(std::shared_ptr<CombatData> combat_da
 	else
 	{
 		int generated = generator_.Rand(1, 100);
-        if (generated < combat_data->health_hit_chance) {
-            LOG(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << combat_data->health_hit_chance;
+		int health_hit_chance = combat_data->health_hit_chance == 0 ? 55 : static_cast<int>(combat_data->health_hit_chance);
+		int action_hit_chance = combat_data->action_hit_chance == 0 ? 32 : static_cast<int>(combat_data->action_hit_chance);
+        if (generated < health_hit_chance) {
+            LOG(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << health_hit_chance;
             location = HEALTH;
         }
-        else if (generated < combat_data->action_hit_chance) {
-            LOG(info)  << "Damaging Pool picked ACTION with " << generated << " number and " << combat_data->action_hit_chance;
+        else if (generated < action_hit_chance) {
+            LOG(info)  << "Damaging Pool picked ACTION with " << generated << " number and " << action_hit_chance;
             location = ACTION;
         }
         else {
@@ -450,6 +373,38 @@ HIT_LOCATION CombatService::GetHitLocation(std::shared_ptr<CombatData> combat_da
         }
 	}
 	return location;
+}
+// http://wiki.swganh.org/index.php/Accuracy_%28Game_Mechanics%29
+float CombatService::GetWeaponRangeModifier(shared_ptr<Weapon>& weapon, float range_to_target)
+{
+	float min_range = 0;
+	float ideal_range = 2;
+	float max_range = 5;
+	float small_modifier = 6.5;
+	float big_modifier = 7;
+
+	if (weapon)
+	{
+		min_range = weapon->GetAttributeRecursive<float>("wpn_range_zero");
+		ideal_range = weapon->GetAttributeRecursive<float>("wpn_range_mid");
+		max_range = weapon->GetAttributeRecursive<float>("wpn_range_max");
+	}
+	float small_range = min_range;
+	float big_range = ideal_range;
+	if (range_to_target > ideal_range)
+	{
+		if (weapon)
+		{
+			small_modifier = weapon->GetAttributeRecursive<float>("wpn_accuracy_mid");	// Get Ideal Accuracy
+			big_modifier = weapon->GetAttributeRecursive<float>("wpn_accuracy_max");	// Get Max Range Accuracy
+		}
+		small_range = ideal_range;
+		big_range = max_range;
+	} 
+	else if (range_to_target <= min_range)
+		return small_modifier;
+
+	return small_modifier + ((range_to_target - small_range) / (big_range - small_range) * (big_modifier - small_modifier));
 }
 uint16_t CombatService::GetPostureModifier(const std::shared_ptr<swganh::object::Creature>& attacker){
     uint16_t accuracy = 0;
@@ -467,27 +422,38 @@ uint16_t CombatService::GetTargetPostureModifier(const shared_ptr<Creature>& att
 {
     uint16_t accuracy = 0;
     uint32_t posture = attacker->GetPosture();
-    auto weapon = attacker->GetEquipmentItem(attacker->GetWeaponId());
     
     if (posture == CROUCHED)
-        
-        accuracy += 16;
+        accuracy -= 16;
     else if (posture == PRONE)
-        accuracy += 25;
+        accuracy -= 25;
+
+	// if running +25
 
     return accuracy;
 
 }
-uint16_t CombatService::GetAccuracyModifier(const std::shared_ptr<swganh::object::Tangible>& attacker) { 
-    //@TODO: Get weapon calculation modifiers
-    // Get Accuracy Modifiers from weapon and add up the modifiers the creature has
-    return 0; 
-}
-uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::Tangible>& attacker) { 
-    // get base attacker accuracy mods
 
-    // give additional mods based on Posture and weapon type
-    return 0; 
+uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<Weapon>& weapon) { 
+    uint16_t bonus = 0;
+	// get base attacker accuracy mods
+	bonus += attacker->GetAttributeRecursive<int>("attack_accuracy");
+	bonus += attacker->GetAttributeRecursive<int>("private_accuracy_bonus");
+
+	if (weapon)
+	{
+		if (weapon->GetWeaponType() == WeaponType::MELEE)
+		{
+			bonus += attacker->GetAttributeRecursive<int>("private_melee_accuracy_bonus");
+		}
+		else
+		{
+			bonus += attacker->GetAttributeRecursive<int>("private_ranged_accuracy_bonus");
+		}
+	}
+	bonus += GetPostureModifier(attacker);
+
+    return bonus; 
 }
 void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target, std::shared_ptr<CombatData> combat_data) {
     //auto states = move(combat_data->getStates());
@@ -513,16 +479,15 @@ void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shar
     //    // Check Equilibrium
     //});
 }
-float CombatService::GetHitChance(float attacker_accuracy, float attacker_bonus, float target_defence) 
+float CombatService::GetHitChance(int attacker_accuracy, int attacker_bonus, int target_defence) 
 {
-    //@TODO: Verify this is the appropriate formula
-    return (66.0f + attacker_bonus + (attacker_accuracy - target_defence) / 2.0f);
+    return (66.0f + static_cast<float>(attacker_bonus) + static_cast<float>((attacker_accuracy - target_defence)) / 2.0f);
 }
 int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Tangible>& target, 
     std::shared_ptr<CombatData> combat_data,
-    int damage, int pool)
+    int damage, HIT_TYPE pool)
 {
     // Sanity Check
     if (damage == 0 || pool < 0)
@@ -536,7 +501,7 @@ int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Creature>& defender,
     std::shared_ptr<CombatData> combat_data,
-    int damage, int pool)
+    int damage, HIT_TYPE pool)
 {
     // Sanity Check
     if (damage == 0 || pool < 0)
@@ -615,7 +580,7 @@ void CombatService::BroadcastCombatSpam(
     spam.defender_id = target->GetObjectId();
     spam.weapon_id = attacker->GetWeaponId();
     spam.damage = damage;
-    spam.file = "cbt_spam";
+    spam.file = "cbt_spam_";
     if (combat_data->combat_spam.length() > 0)
         spam.text = combat_data->combat_spam + string_file;
     attacker->NotifyObservers(&spam);

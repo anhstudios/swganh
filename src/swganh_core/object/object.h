@@ -267,6 +267,11 @@ public:
 	*/
 	bool InRange(glm::vec3 target, float range);
 
+	/**
+	* @return float of the range to the given target
+	*/
+	float RangeTo(glm::vec3 target);
+
     /**
      * @return The object orientation as a quaternion.
      */
@@ -521,7 +526,9 @@ public:
 	T GetAttribute(const std::string& name)
 	{
 		auto val = GetAttribute(name);
-		return boost::get<T>(val);
+		if (!val.empty())
+			return boost::get<T>(val);
+		return 0;
 	}
 	/**
 	 * @brief Gets an attribute value and then converts it to a wstring for printing
@@ -535,16 +542,20 @@ public:
 	T GetAttributeRecursive(const std::string& name)
 	{
 		auto val = GetAttributeRecursive(name);
-		return boost::get<T>(val);
+		if (!val.empty())
+			return boost::get<T>(val);
+		return 0;
 	}
 	template<typename T>
 	T AddAttributeRecursive(T val, const std::string& name)
 	{
 		ViewObjects(nullptr, 1, false, [&](std::shared_ptr<Object> recurse)
 		{
-			T found_val = recurse->GetAttribute<T>(name);
-			// Add Values
-			val += found_val;
+			if (recurse->HasAttribute(name))
+			{
+				// Add Values
+				val += recurse->GetAttribute<T>(name);
+			}
 		});
 
 		return val;

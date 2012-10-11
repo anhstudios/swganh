@@ -28,6 +28,7 @@ struct CombatData : public swganh::command::CommandProperties
 		, max_damage(0)
 		, damage_multiplier(0.0f)
 		, accuracy_bonus(0)
+		, weapon_accuracy(0)
 		, speed_multiplier(0.0f)
 		, attack_speed(0.0f)
 		, pool(0)
@@ -53,6 +54,7 @@ struct CombatData : public swganh::command::CommandProperties
 
     float damage_multiplier;
     int accuracy_bonus;
+	int weapon_accuracy;
     float speed_multiplier;
 	float attack_speed;
     int pool;
@@ -84,11 +86,11 @@ struct CombatData : public swganh::command::CommandProperties
     bool IsRandomPool();
     int GetDamagingPool();
     
-    static std::string HIT_spam() { return "_hit"; }
-    static std::string BLOCK_spam() { return "_block"; }
-    static std::string DODGE_spam() { return "_evade"; }
-    static std::string COUNTER_spam() { return "_counter"; }
-    static std::string MISS_spam() { return "_miss"; }
+    static std::string HIT_spam() { return "hit"; }
+    static std::string BLOCK_spam() { return "block"; }
+    static std::string DODGE_spam() { return "evade"; }
+    static std::string COUNTER_spam() { return "counter"; }
+    static std::string MISS_spam() { return "miss"; }
         
     const static uint32_t DefaultAttacks[9];
 };
