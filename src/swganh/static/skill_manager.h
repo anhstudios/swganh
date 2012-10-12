@@ -45,24 +45,26 @@ namespace statics
 
 		void Start(std::shared_ptr<sql::Statement> statement);
 
+
+
 		/*
 		 * @brief Checks to see if the creature has access to the skill mod based on the given creature and it's skill levels
 		 */
-		virtual bool HasSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
+		bool HasSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
 		/*
 		 * @brief Gets a given skill mod value if exists
 		 */
-		virtual uint32_t GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
+		uint32_t GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
 		/*
 		 * @brief Gets a given skill mod and any affected Attributes if exist
 		 */
-		virtual uint32_t GetTotalSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
+		uint32_t GetTotalSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name);
 		/*
 		 * @brief Gets All SkillMods that are applicable for this creature.
 		 */
-		virtual std::map<std::string, uint32_t> GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature);
+		std::map<std::string, uint32_t> GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature);
 
-		virtual std::map<std::string, uint32_t> GetSkillModTotals(const std::shared_ptr<swganh::object::Creature>& creature);
+		std::map<std::string, uint32_t> GetSkillModTotals(const std::shared_ptr<swganh::object::Creature>& creature);
 
 	private:
 		void _loadSkills(std::unique_ptr<sql::ResultSet> results);
