@@ -101,6 +101,26 @@ struct BaseSwgCommandWrapper : BaseSwgCommand, bp::wrapper<BaseSwgCommand>
             PyErr_Print();
         }        
 	}
+	void PostRun(bool success)
+	{
+		ScopedGilLock lock;
+        try 
+        {
+            auto postRun = this->get_override("postRun");
+            if (postRun)
+            {
+                postRun(success);
+            }
+            else
+            {
+                this->BaseSwgCommand::PostRun(success);
+            }
+        }
+        catch(bp::error_already_set& /*e*/)
+        {
+            PyErr_Print();
+        }        
+	}
 };
 
 class CommandCallbackWrapper : public CommandCallback, bp::wrapper<CommandCallback>
@@ -152,6 +172,7 @@ void swganh::command::ExportCommand()
     bp::class_<CommandInterface, boost::noncopyable>("CommandInterface", bp::no_init)
         .def("validate", bp::pure_virtual(&CommandInterface::Validate))
         .def("run", bp::pure_virtual(&CommandInterface::Run))
+		.def("postRun", bp::pure_virtual(&CommandInterface::PostRun))
     ;
     
 	bp::class_<CommandProperties>("CommandProperties", bp::no_init)

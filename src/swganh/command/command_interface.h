@@ -77,6 +77,13 @@ namespace command {
          * @return Optional callback to be invoked after a given amount of time.
          */
         virtual boost::optional<std::shared_ptr<CommandCallback>> Run() = 0;		
+
+		/**
+         * Executes the Post Run handler for the request
+         *
+         * @param success if the Run command was process successfully
+         */
+		virtual void PostRun(bool success) = 0;
     };
 
 }}

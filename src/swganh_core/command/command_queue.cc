@@ -110,12 +110,18 @@ void CommandQueue::ProcessCommand(const std::shared_ptr<swganh::command::BaseSwg
                 {
                     HandleCallback(*callback);
                 }
+				command->PostRun(true);
             }
             else
             {
                 action = 1; // indicates a general error
+				command->PostRun(false);
             }
         }
+		else
+		{
+			command->PostRun(false);
+		}
 
         command_service_->SendCommandQueueRemove(command->GetActor(), command->GetActionCounter(), command->GetDefaultTime(), error, action);
     } catch(const std::exception& e) {

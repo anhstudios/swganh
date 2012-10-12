@@ -199,8 +199,8 @@ bool CombatService::InitiateCombat(
     {
         attacker->AddDefender(creature_target->GetObjectId());
         
-        auto auto_command = command_service_->CreateCommand("attack");
-        auto swg_command = std::static_pointer_cast<BaseSwgCommand>(auto_command);
+        auto auto_command = command_service_->CreateCommand("defaultattack");
+        auto swg_command = std::static_pointer_cast<BaseCombatCommand>(auto_command);
         
         CommandQueueEnqueue request;
         request.observable_id = attacker->GetObjectId();
@@ -215,8 +215,8 @@ bool CombatService::InitiateCombat(
     {
         creature_target->AddDefender(attacker->GetObjectId());
         
-        auto auto_command = command_service_->CreateCommand("attack");
-        auto swg_command = std::static_pointer_cast<BaseSwgCommand>(auto_command);
+        auto auto_command = command_service_->CreateCommand("defaultattack");
+        auto swg_command = std::static_pointer_cast<BaseCombatCommand>(auto_command);
         
         CommandQueueEnqueue request;
         request.observable_id = creature_target->GetObjectId();

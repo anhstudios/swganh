@@ -68,10 +68,11 @@ struct BaseCombatCommandWrapper : BaseCombatCommand, bp::wrapper<BaseCombatComma
 		ScopedGilLock lock;
         try 
         {
+			combat_data = std::make_shared<CombatData>(properties);
             auto setup = this->get_override("setup");
             if (setup)
             {
-                setup(properties);
+                setup(combat_data);
             }
             else
             {
@@ -93,10 +94,10 @@ void swganh::command::ExportBaseCombatCommand()
     bp::class_<BaseCombatCommand, BaseCombatCommandWrapper, bp::bases<BaseSwgCommand>, boost::noncopyable>
         ("BaseCombatCommand", bp::init<swganh::app::SwganhKernel*, CommandProperties&>())
         .def("run", &BaseCombatCommandWrapper::Run)
-		.def("setup", &BaseCombatCommandWrapper::SetCommandProperties)
+		.def("postRun", &BaseCombatCommandWrapper::PostRun)
 		.def_readwrite("properties", &BaseCombatCommandWrapper::combat_data)
     ;
-	bp::class_<CombatData>("CombatData", bp::no_init)
+	bp::class_<CombatData, std::shared_ptr<CombatData>, bp::bases<CommandProperties>>("CombatData", bp::no_init)
 		.def_readwrite("min_damage", &CombatData::min_damage)
 		.def_readwrite("max_damage", &CombatData::max_damage)
 		.def_readwrite("damage_multiplier", &CombatData::damage_multiplier)

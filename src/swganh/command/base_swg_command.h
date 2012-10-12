@@ -78,10 +78,12 @@ namespace command {
         const std::wstring& GetCommandString() const;
 
         virtual void SetCommandProperties(const CommandProperties& properties);
-        
+        virtual void PostRun(bool success) {}
+
         const swganh::messages::controllers::CommandQueueEnqueue& GetCommandRequest() const;
 
         void SetCommandRequest(swganh::messages::controllers::CommandQueueEnqueue command_request);
+		
     private:    
         swganh::app::SwganhKernel* kernel_;
         const CommandProperties* properties_;
