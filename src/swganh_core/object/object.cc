@@ -945,7 +945,7 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::str
 	{
 		return find_iter->second;
 	}	
-	LOG(error) << "Attribute "<< name << " does not exist";	
+	LOG(info) << "Attribute "<< name << " does not exist";	
 	return 0;
 	//throw std::runtime_error("Attribute " + name + " does not exist");
 }

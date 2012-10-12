@@ -65,6 +65,7 @@ CommandPropertiesMap CommandPropertiesManager::LoadCommandPropertiesMap()
             properties.command_name = HashString(tmp_command_name);
             properties.default_priority = row.GetValue<uint32_t>(1);
             properties.default_time = row.GetValue<float>(6);
+			properties.default_time = float(properties.default_time < 2.0 ? 2.0 : properties.default_time);
             properties.character_ability = HashString(row.GetValue<string>(7));
 
 			//Locomotion

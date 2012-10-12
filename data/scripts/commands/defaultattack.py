@@ -2,4 +2,8 @@ from swgpy.command import BaseCombatCommand
 from swgpy import ACTION
 
 class DefaultAttackCommand(BaseCombatCommand):
-    base_attack_speed = 0.25
+	def setup(self, properties):
+		print(properties)
+		properties.default_time = 2.0
+		print(properties.default_time)
+		properties.accuracy_bonus = 155

@@ -136,7 +136,9 @@ void CommandQueue::Notify()
             ProcessCommand(command);
 
 			std::shared_ptr<swganh::object::Creature> actor = std::static_pointer_cast<swganh::object::Creature>(command->GetActor());
-            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>((actor->HasState(swganh::object::COMBAT)) ? command->GetDefaultTime() * 1000 : 0)));
+			uint64_t default_time = actor->HasState(swganh::object::COMBAT) ? static_cast<uint64_t>(command->GetDefaultTime() * 1000) : 0;
+			LOG(info) << "Command " << command->GetCommandName() << " executed with delay of " << default_time;
+            timer_.expires_from_now(boost::posix_time::milliseconds(static_cast<uint64_t>(default_time)));
             timer_.async_wait([this] (const boost::system::error_code& ec) 
             {
                 if (!ec && this)

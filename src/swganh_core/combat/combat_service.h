@@ -151,8 +151,8 @@ namespace combat {
 
 		///
         void ApplyStates(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& defender, std::shared_ptr<CombatData> combat_data);
-        int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& defender, std::shared_ptr<CombatData> combat_data, int damage, HIT_TYPE pool);
-        int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& target, std::shared_ptr<CombatData> combat_data, int damage, HIT_TYPE pool);
+        int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& defender, std::shared_ptr<CombatData> combat_data, int damage, HIT_LOCATION pool);
+        int ApplyDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& target, std::shared_ptr<CombatData> combat_data, int damage, HIT_LOCATION pool);
         // Message Helpers
         void BroadcastCombatSpam(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible>& target, const std::shared_ptr<CombatData> combat_data, uint32_t damage, const std::string& string_file);
 

@@ -10,7 +10,7 @@
 #include "swganh_core/object/creature/creature.h"
 #include "swganh_core/object/tangible/tangible.h"
 #include "swganh/scripting/utilities.h"
-
+ 
 #include "base_combat_command.h"
 #include "swganh_core/combat/combat_data.h"
 

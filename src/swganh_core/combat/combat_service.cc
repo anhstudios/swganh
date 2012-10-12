@@ -122,11 +122,12 @@ void CombatService::DoCombat(
 	string combat_spam, effect;
 	FlyTextColor color = GREEN;
 	HIT_TYPE hit_type = HIT;
+	HIT_LOCATION hit_location;
 	if (target->GetType() == Creature::type)
 	{
 		auto creature_target = static_pointer_cast<Creature>(target);
 		hit_type = GetHitResult(attacker, creature_target, combat_data);
-		HIT_LOCATION hit_location = GetHitLocation(combat_data);
+		hit_location = GetHitLocation(combat_data);
 		switch (hit_type)
 		{
 			case HIT:
@@ -156,7 +157,7 @@ void CombatService::DoCombat(
 		combat_spam = CombatData::HIT_spam();
 	}
 	float initial_damage = CalculateDamage(attacker, target, combat_data);
-	int damage = ApplyDamage(attacker, target, combat_data, static_cast<int>(initial_damage), hit_type);
+	int damage = ApplyDamage(attacker, target, combat_data, static_cast<int>(initial_damage), hit_location);
 	BroadcastCombatSpam(attacker, target, combat_data, damage, combat_spam);
 	SendCombatActionMessage(attacker, target, combat_data, effect);
 	SystemMessage::FlyText(attacker, combat_spam, color);
@@ -198,7 +199,7 @@ bool CombatService::InitiateCombat(
     {
         attacker->AddDefender(creature_target->GetObjectId());
         
-        auto auto_command = command_service_->CreateCommand("defaultattack");
+        auto auto_command = command_service_->CreateCommand("attack");
         auto swg_command = std::static_pointer_cast<BaseSwgCommand>(auto_command);
         
         CommandQueueEnqueue request;
@@ -214,7 +215,7 @@ bool CombatService::InitiateCombat(
     {
         creature_target->AddDefender(attacker->GetObjectId());
         
-        auto auto_command = command_service_->CreateCommand("defaultattack");
+        auto auto_command = command_service_->CreateCommand("attack");
         auto swg_command = std::static_pointer_cast<BaseSwgCommand>(auto_command);
         
         CommandQueueEnqueue request;
@@ -225,7 +226,6 @@ bool CombatService::InitiateCombat(
 
         command_service_->SetDefaultCommand(creature_target->GetObjectId(), swg_command);		
     }
-
     return true;
 }
 
@@ -285,7 +285,7 @@ HIT_TYPE CombatService::GetHitResult(
 	// Accuracy Mods
 	int weapon_accuracy = combat_data->weapon_accuracy + static_cast<int>(GetWeaponRangeModifier(weapon, attacker->RangeTo(defender->GetPosition())));
     int attacker_accuracy = combat_data->accuracy_bonus;
-	attacker_accuracy += combat_data->weapon_accuracy;
+	attacker_accuracy += weapon_accuracy;
     combat_data->accuracy_bonus += GetAccuracyBonus(attacker, weapon);
 
 	int target_defense = 0;
@@ -359,18 +359,22 @@ HIT_LOCATION CombatService::GetHitLocation(std::shared_ptr<CombatData> combat_da
 		int generated = generator_.Rand(1, 100);
 		int health_hit_chance = combat_data->health_hit_chance == 0 ? 55 : static_cast<int>(combat_data->health_hit_chance);
 		int action_hit_chance = combat_data->action_hit_chance == 0 ? 32 : static_cast<int>(combat_data->action_hit_chance);
-        if (generated < health_hit_chance) {
-            LOG(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << health_hit_chance;
-            location = HEALTH;
+		int mind_hit_chance = combat_data->mind_hit_chance == 0 ? 13 : static_cast<int>(combat_data->mind_hit_chance);
+		
+		if (generated < mind_hit_chance){
+            LOG(info)  << "Damaging Pool picked MIND with " << generated << " number and " << combat_data->mind_hit_chance;
+            location = MIND;
         }
-        else if (generated < action_hit_chance) {
+		else if (generated < (action_hit_chance + mind_hit_chance)) {
             LOG(info)  << "Damaging Pool picked ACTION with " << generated << " number and " << action_hit_chance;
             location = ACTION;
         }
         else {
-            LOG(info)  << "Damaging Pool picked MIND with " << generated << " number and " << combat_data->mind_hit_chance;
-            location = MIND;
+            LOG(info) << "Damaging Pool picked HEALTH with " << generated << " number and " << health_hit_chance;
+            location = HEALTH;
         }
+        
+        
 	}
 	return location;
 }
@@ -442,13 +446,13 @@ uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::C
 
 	if (weapon)
 	{
-		if (weapon->GetWeaponType() == WeaponType::MELEE)
+		if (weapon->GetWeaponType() == WeaponType::RANGED)
 		{
-			bonus += attacker->GetAttributeRecursive<int>("private_melee_accuracy_bonus");
+			bonus += attacker->GetAttributeRecursive<int>("private_ranged_accuracy_bonus");
 		}
 		else
 		{
-			bonus += attacker->GetAttributeRecursive<int>("private_ranged_accuracy_bonus");
+			bonus += attacker->GetAttributeRecursive<int>("private_melee_accuracy_bonus");			
 		}
 	}
 	bonus += GetPostureModifier(attacker);
@@ -487,8 +491,10 @@ int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Tangible>& target, 
     std::shared_ptr<CombatData> combat_data,
-    int damage, HIT_TYPE pool)
+    int damage, HIT_LOCATION pool)
 {
+	if (target->GetType() == Creature::type)
+		return ApplyDamage(attacker, static_pointer_cast<Creature>(target), combat_data, damage, pool);
     // Sanity Check
     if (damage == 0 || pool < 0)
         return 0;
@@ -501,7 +507,7 @@ int CombatService::ApplyDamage(
     const shared_ptr<Creature>& attacker,
     const shared_ptr<Creature>& defender,
     std::shared_ptr<CombatData> combat_data,
-    int damage, HIT_TYPE pool)
+    int damage, HIT_LOCATION pool)
 {
     // Sanity Check
     if (damage == 0 || pool < 0)
@@ -511,6 +517,7 @@ int CombatService::ApplyDamage(
 
     float wounds_ratio = 0; /*attacker->GetWeapon()->GetWoundsRatio();*/
     float health_damage = 0.0f, action_damage = 0.0f, mind_damage = 0.0f;
+	float damage_multiplier = combat_data->damage_multiplier == 0 ? 1.0f : combat_data->damage_multiplier;
     bool wounded = false;
 
     // Check For Player && PVP Status
@@ -520,43 +527,43 @@ int CombatService::ApplyDamage(
 
     if (pool == HEALTH) {
         //health_damage = GetArmorReduction(attacker, defender, damage, HEALTH) * damage_multiplier;
-        health_damage = damage * combat_data->damage_multiplier;
-        if (defender->GetStatCurrent(StatIndex::HEALTH) - damage <= 0)
+        health_damage = damage * damage_multiplier;
+        if (defender->GetStatCurrent(StatIndex::HEALTH) - health_damage <= 0)
         {
             SetIncapacitated(attacker, defender);
         }
         else
-            defender->DeductStatCurrent(StatIndex::HEALTH, damage);
+            defender->DeductStatCurrent(StatIndex::HEALTH, static_cast<int>(health_damage));
         // Will this reduce this pool <= 0 ?
-        if (!wounded && damage < wounds_ratio) {
+        if (!wounded && health_damage < wounds_ratio) {
             defender->AddStatWound(StatIndex::HEALTH, generator_.Rand(1,2));
             wounded = true;
         }
     }
     if (pool == ACTION) {
         //action_damage = GetArmorReduction(attacker, defender, damage, ACTION) * damage_multiplier;
-        action_damage = damage * combat_data->damage_multiplier;
-        if (defender->GetStatCurrent(StatIndex::ACTION) - damage <= 0)
+        action_damage = damage * damage_multiplier;
+        if (defender->GetStatCurrent(StatIndex::ACTION) - action_damage <= 0)
         {
             SetIncapacitated(attacker, defender);
         }
         else
-            defender->DeductStatCurrent(StatIndex::HEALTH, damage);
-        if (!wounded && damage < wounds_ratio) {
+            defender->DeductStatCurrent(StatIndex::ACTION, static_cast<int>(action_damage));
+        if (!wounded && action_damage < wounds_ratio) {
             defender->AddStatWound(StatIndex::ACTION, generator_.Rand(1,2));
             wounded = true;
         }
     }
     if (pool == MIND) {
         //mind_damage = GetArmorReduction(attacker, defender, damage, MIND) * damage_multiplier;
-        mind_damage = damage * combat_data->damage_multiplier;
-        if (defender->GetStatCurrent(StatIndex::MIND) - damage <= 0)
+        mind_damage = damage * damage_multiplier;
+        if (defender->GetStatCurrent(StatIndex::MIND) - mind_damage <= 0)
         {
             SetIncapacitated(attacker, defender);
         }
         else
-            defender->DeductStatCurrent(StatIndex::HEALTH, damage);
-        if (!wounded && damage < wounds_ratio) {
+            defender->DeductStatCurrent(StatIndex::MIND, static_cast<int>(mind_damage));
+        if (!wounded && mind_damage < wounds_ratio) {
             defender->AddStatWound(StatIndex::MIND, generator_.Rand(1,2));
             wounded = true;
         }
@@ -580,9 +587,10 @@ void CombatService::BroadcastCombatSpam(
     spam.defender_id = target->GetObjectId();
     spam.weapon_id = attacker->GetWeaponId();
     spam.damage = damage;
-    spam.file = "cbt_spam_";
+    spam.file = "cbt_spam";
     if (combat_data->combat_spam.length() > 0)
         spam.text = combat_data->combat_spam + string_file;
+	
     attacker->NotifyObservers(&spam);
 }
 

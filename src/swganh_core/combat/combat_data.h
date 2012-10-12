@@ -26,7 +26,7 @@ struct CombatData : public swganh::command::CommandProperties
 		: swganh::command::CommandProperties(properties)
 		, min_damage(0)
 		, max_damage(0)
-		, damage_multiplier(0.0f)
+		, damage_multiplier(1.0f)
 		, accuracy_bonus(0)
 		, weapon_accuracy(0)
 		, speed_multiplier(0.0f)
@@ -44,9 +44,9 @@ struct CombatData : public swganh::command::CommandProperties
 		, area_range(0)
 		, animation_crc("")
 		, combat_spam("")
-		, health_hit_chance(0.0f)
-		, action_hit_chance(0.0f)
-		, mind_hit_chance(0.0f)
+		, health_hit_chance(55.0f)
+		, action_hit_chance(32.0f)
+		, mind_hit_chance(13.0f)
 	{}
 	
     int min_damage;

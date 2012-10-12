@@ -60,7 +60,7 @@ StaticService::StaticService(SwganhKernel* kernel)
 		try {
 
 		std::stringstream ss;
-		ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
+		ss << "CALL sp_GetStaticObjectsForScene(0," << real_event->scene_id-1 << ");";
 
 		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
 		statement->execute(ss.str());
@@ -106,9 +106,46 @@ StaticService::StaticService(SwganhKernel* kernel)
 		} catch(std::exception& e) {
 			LOG(warning) << e.what();
 		}
+		if (real_event->scene_id-1 == 0)
+		{
+			// Create a combat dummy
+			auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
+			auto combat_dummy = simulation_service->CreateObjectFromTemplate("object/mobile/shared_juvenile_canyon_krayt.iff", CREATURE_PERMISSION, false, false);
+			auto creature_dummy = std::static_pointer_cast<Creature>(combat_dummy);
+			creature_dummy->SetPosition(glm::vec3(-137,0,-4723));
+			creature_dummy->SetCustomName(L"Combat Dummy");
+			creature_dummy->SetStatMax(HEALTH, 999999);
+			creature_dummy->SetStatCurrent(HEALTH, 999999);
+			creature_dummy->SetStatMax(ACTION, 999999);
+			creature_dummy->SetStatCurrent(ACTION, 999999);
+			creature_dummy->SetStatMax(MIND, 999999);
+			creature_dummy->SetStatCurrent(MIND, 999999);
+			creature_dummy->SetScale(0.5);
+			
+			creature_dummy->SetPvPStatus(PvPStatus_Attackable);
+			simulation_service->AddObjectToScene(combat_dummy, "corellia");
+		}
 	});
 }
 
+void StaticService::Startup()
+{
+
+	auto database_manager = kernel_->GetDatabaseManager();
+	auto conn = database_manager->getConnection("swganh_static");
+
+	try {
+		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+		statement->execute("CALL sp_GetStaticObjects();");
+
+		std::unique_ptr<sql::ResultSet> result;
+		LOG(warning) << "Loading static data ";
+
+
+	} catch(std::exception& e) {
+		LOG(warning) << e.what();
+	}
+}
 StaticService::~StaticService()
 {
 }
