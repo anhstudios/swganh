@@ -26,6 +26,7 @@ namespace Concurrency {
 #endif
 
 #include "swganh/combat/combat_service_interface.h"
+#include "swganh_core/combat/buff_manager.h"
 
 #include "swganh/random_generator.h"
 #include "swganh/service/service_interface.h"
@@ -142,6 +143,8 @@ namespace combat {
 		swganh::command::CommandPropertiesMap combat_properties_map_;
 
         swganh::RandomGenerator generator_;
+
+		swganh::combat::BuffManager buff_manager_;
 
         swganh::ActiveObject active_;
         swganh::app::SwganhKernel* kernel_;

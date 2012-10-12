@@ -189,7 +189,8 @@ void QuadtreeSpatialProvider::__InternalViewObjects(std::shared_ptr<Object> requ
 	}
 	else
 	{
-		contained_objects = root_node_.GetContainedObjects();
+		LOG(warning) << "REQUESTER IS NULL PTR";
+		//contained_objects = root_node_.GetContainedObjects();
 	}
 
 	for (auto& object : contained_objects)

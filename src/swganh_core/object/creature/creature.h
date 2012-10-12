@@ -15,6 +15,11 @@
 #include "swganh_core/messages/containers/network_map.h"
 
 namespace swganh {
+namespace combat
+{
+	class BuffInterface;
+}
+
 namespace object {
 
 
@@ -347,6 +352,9 @@ struct SkillCommands
 
 };
 
+typedef std::multimap<boost::posix_time::ptime, std::shared_ptr<swganh::combat::BuffInterface>> BuffMap;
+typedef std::function<void(BuffMap::value_type)> BuffIterator;
+
 class CreatureFactory;
 class CreatureMessageBuilder;
 
@@ -590,6 +598,15 @@ public:
     bool InDuelList(uint64_t id);
     std::vector<uint64_t> GetDuelList();
 
+	//Buffs
+	bool HasBuff(std::string buff_name);
+	void AddBuff(std::string buff_name, uint32_t duration=0);
+	void __AddBuffInternal(boost::posix_time::ptime time, std::shared_ptr<swganh::combat::BuffInterface> buff, uint32_t duration);
+	void RemoveBuff(std::string name);
+	void ClearBuffs();
+	void ClearBuffs(boost::posix_time::ptime current_time);
+	void ViewBuffs(BuffIterator functor);
+
     // Baselines
     virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
 	
@@ -640,6 +657,8 @@ private:
     std::atomic<bool> stationary_;                                                                        // update 6 variable 17
     PvpStatus pvp_status_;
     std::vector<uint64_t> duel_list_;
+
+	BuffMap buffs_;
 };
 
 }}  // namespace swganh::object

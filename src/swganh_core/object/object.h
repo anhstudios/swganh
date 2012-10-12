@@ -570,6 +570,8 @@ protected:
 	std::atomic<int8_t> attributes_template_id;	 // Used to determine which attribute template to use
 	mutable boost::mutex object_mutex_;
 
+	std::shared_ptr<swganh::observer::ObserverInterface> controller_;
+
 private:
     
     typedef std::set<std::shared_ptr<swganh::observer::ObserverInterface>> ObserverContainer;
@@ -582,7 +584,6 @@ private:
 
     ObserverContainer observers_;
 	AwareObjectContainer aware_objects_;
-	std::shared_ptr<swganh::observer::ObserverInterface> controller_;
 
     BaselinesCacheContainer baselines_;
     DeltasCacheContainer deltas_;
