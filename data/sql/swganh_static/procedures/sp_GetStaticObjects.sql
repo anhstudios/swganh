@@ -1,7 +1,7 @@
 ﻿DELIMITER $$
 
 DROP PROCEDURE IF EXISTS `sp_GetStaticObjects` $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_GetStaticObjects`(IN `parent_id` BIGINT, IN `planet_id` INT)
+CREATE PROCEDURE `sp_GetStaticObjects`(IN `parent_id` BIGINT, IN `planet_id` INT)
 BEGIN
     
 	/*Load Static Buildings*/

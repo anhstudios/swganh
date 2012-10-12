@@ -109,6 +109,45 @@ StaticService::StaticService(SwganhKernel* kernel)
 	});
 }
 
+void StaticService::Startup()
+{
+	auto database_manager = kernel_->GetDatabaseManager();
+	auto conn = database_manager->getConnection("swganh_static");
+
+	std::stringstream ss;
+	ss << "CALL sp_GetStaticData();";
+
+	auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+	statement->execute(ss.str());
+
+	skill_mod_manager_.Start(statement);
+}
+
+bool StaticService::HasSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
+{
+	return skill_mod_manager_.HasSkillMod(creature, skill_mod_name);
+}
+
+uint32_t StaticService::GetSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
+{
+	return skill_mod_manager_.GetSkillMod(creature, skill_mod_name);
+}
+
+uint32_t StaticService::GetTotalSkillMod(const std::shared_ptr<swganh::object::Creature>& creature, const std::string& skill_mod_name)
+{
+	return skill_mod_manager_.GetTotalSkillMod(creature, skill_mod_name);
+}
+
+std::map<std::string, uint32_t> StaticService::GetSkillMods(const std::shared_ptr<swganh::object::Creature>& creature)
+{
+	return skill_mod_manager_.GetSkillMods(creature);
+}
+
+std::map<std::string, uint32_t> StaticService::GetSkillModTotals(const std::shared_ptr<swganh::object::Creature>& creature)
+{
+	return skill_mod_manager_.GetSkillModTotals(creature);
+}
+
 StaticService::~StaticService()
 {
 }
