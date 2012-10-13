@@ -605,6 +605,7 @@ public:
 	void RemoveBuff(std::string name);
 	void ClearBuffs();
 	void ClearBuffs(boost::posix_time::ptime current_time);
+	void CleanUpBuffs();
 	void ViewBuffs(BuffIterator functor);
 
     // Baselines

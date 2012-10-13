@@ -37,7 +37,10 @@ void BuffManager::Start()
 	std::for_each(buffs.begin(), buffs.end(), [this] (std::string& filename) {
 		LOG(warning) << "Loading buff script " << filename;
 		if(auto buff = PythonBuffCreator("buffs."+filename, filename)())
+		{
+			buff->filename = filename;
 			buffs_.insert(std::make_pair(filename, buff));
+		}
 	});
 
 	//Setup Dispatcher Callback

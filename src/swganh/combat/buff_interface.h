@@ -26,6 +26,8 @@ class BuffInterface
 	virtual std::string GetName() = 0;
 
 	virtual uint32_t GetDuration() = 0;
+
+	std::string filename;
 };
 
 }

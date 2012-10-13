@@ -36,6 +36,9 @@ namespace object {
         std::shared_ptr<swganh::object::Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true);
         
     private:
+		void LoadBuffs_(const std::shared_ptr<swganh::object::Creature>& creature,
+			const std::shared_ptr<sql::Statement>& statement);
+
         void LoadSkills_(const std::shared_ptr<Creature>& creature, 
             const std::shared_ptr<sql::Statement>& statement);
 

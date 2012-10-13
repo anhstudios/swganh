@@ -1246,8 +1246,9 @@ bool Creature::HasBuff(std::string buff_name)
 
 void Creature::AddBuff(std::string buff_name, uint32_t duration)
 {
-	GetEventDispatcher()->Dispatch(std::make_shared<swganh::combat::BuffEvent>
-		("CombatService::AddBuff", std::static_pointer_cast<Creature>(shared_from_this()), buff_name, duration));
+	if(!HasBuff(buff_name))
+		GetEventDispatcher()->Dispatch(std::make_shared<swganh::combat::BuffEvent>
+			("CombatService::AddBuff", std::static_pointer_cast<Creature>(shared_from_this()), buff_name, duration));
 }
 
 void Creature::__AddBuffInternal(boost::posix_time::ptime time, std::shared_ptr<swganh::combat::BuffInterface> buff, uint32_t duration)
@@ -1302,35 +1303,50 @@ void Creature::RemoveBuff(std::string name)
 
 void Creature::ClearBuffs()
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	std::set<std::shared_ptr<swganh::combat::BuffInterface>> removed_buffs_;
+	{
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
 
-	std::for_each(buffs_.begin(), buffs_.end(), [&] (BuffMap::value_type& entry) {
-		if(controller_)
-		{
-			RemoveBuffMessage msg;
-			msg.buff = entry.second->GetName();
-			controller_->Notify(&msg);
+		std::for_each(buffs_.begin(), buffs_.end(), [&] (BuffMap::value_type& entry) {
+			if(controller_)
+			{
+				RemoveBuffMessage msg;
+				msg.buff = entry.second->GetName();
+				controller_->Notify(&msg);
 
-			entry.second->RemoveBuff(std::static_pointer_cast<Creature>(shared_from_this()));
-		}
-	});
+				removed_buffs_.insert(entry.second);
+			}
+		});
 
-	buffs_.clear();
+		buffs_.clear();
+	}
 
+	for(auto& v : removed_buffs_)
+	{
+		v->RemoveBuff(std::static_pointer_cast<Creature>(shared_from_this()));
+	}
 }
 
 void Creature::ClearBuffs(boost::posix_time::ptime current_time)
 {
-	boost::lock_guard<boost::mutex> lock(object_mutex_);
-	auto lower_bound = buffs_.lower_bound(current_time);
-	auto end = buffs_.end();
-
-	auto begin = buffs_.begin();
-	while(begin != end && begin != lower_bound)
+	std::set<std::shared_ptr<swganh::combat::BuffInterface>> removed_buffs_;
 	{
-		begin->second->RemoveBuff(std::static_pointer_cast<Creature>(shared_from_this()));
-		buffs_.erase(begin);
-		begin = buffs_.begin();
+		boost::lock_guard<boost::mutex> lock(object_mutex_);
+		auto lower_bound = buffs_.lower_bound(current_time);
+		auto end = buffs_.end();
+
+		auto begin = buffs_.begin();
+		while(begin != end && begin != lower_bound)
+		{
+			removed_buffs_.insert(begin->second);
+			buffs_.erase(begin);
+			begin = buffs_.begin();
+		}
+	}
+
+	for(auto& v : removed_buffs_)
+	{
+		v->RemoveBuff(std::static_pointer_cast<Creature>(shared_from_this()));
 	}
 }
 
@@ -1338,4 +1354,10 @@ void Creature::ViewBuffs(BuffIterator functor)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	for_each(buffs_.begin(), buffs_.end(), functor);
+}
+
+void Creature::CleanUpBuffs()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	buffs_.clear();
 }
