@@ -13,3 +13,4 @@ class Berserk1Command(BaseCombatCommand):
 		actor = self.getActor()
 		SystemMessage.sendEffect(actor, "combat_special_attacker_berserk", "root")
 		SystemMessage.sendFlyText(actor, "@combat_effects:go_berserk", FlyTextColor.GREEN)
+		# TODO: Set Buff...

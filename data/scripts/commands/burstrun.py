@@ -2,10 +2,9 @@ from swgpy.object import *
 from swgpy.command import BaseSwgCommand, Callback
 
 class BurstRunCommand(BaseSwgCommand):
-	def setup(self):
-		base_run_multiplier = 2.0
-		base_run_duration_ms = 15000
-		base_cooldate_timer_ms = 60000
+	base_run_multiplier = 2.0
+	base_run_duration_ms = 15000
+	base_cooldate_timer_ms = 60000
 
 	def validate(self):
 		actor = self.getActor()

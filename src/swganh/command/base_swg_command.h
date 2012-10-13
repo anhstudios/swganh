@@ -54,11 +54,13 @@ namespace command {
 
         uint32_t GetPriority() const;
 
-        uint32_t GetCommandGroup() const;
+        CommandGroup GetCommandGroup() const;
         
         uint32_t GetTargetRequiredType() const;
 
         uint64_t GetAllowedStateBitmask() const;
+
+		uint64_t GetAllowedLocomotionBitmask() const;
         
         float GetMaxRangeToTarget() const;
         

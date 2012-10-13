@@ -105,8 +105,9 @@ void CombatService::SendCombatAction(BaseCombatCommand* command)
     auto actor = std::static_pointer_cast<Creature>(command->GetActor());
     auto target = std::static_pointer_cast<Tangible>(command->GetTarget());
 
-    if (actor != nullptr && InitiateCombat(actor, target, command->GetCommandName()))
+    if (actor != nullptr && InitiateCombat(actor, target, command->combat_data))
     {
+		std::vector<CombatDefender> defender_data;
         for (auto& target_ : GetCombatTargets(actor, target, command->combat_data))
 		{
 			DoCombat(actor, target_, command->combat_data);	
@@ -159,23 +160,15 @@ void CombatService::DoCombat(
 	float initial_damage = CalculateDamage(attacker, target, combat_data);
 	int damage = ApplyDamage(attacker, target, combat_data, static_cast<int>(initial_damage), hit_location);
 	BroadcastCombatSpam(attacker, target, combat_data, damage, combat_spam);
-	SendCombatActionMessage(attacker, target, combat_data, effect);
+	SendCombatActionMessage(attacker, target, combat_data, hit_type, effect);
 	SystemMessage::FlyText(attacker, combat_spam, color);
 }
 
 bool CombatService::InitiateCombat(
     const std::shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible>& target, 
-    const swganh::HashString& command)
-{
-    // check to see if we are able to start combat ( are we in peace? )
-    if (command == swganh::HashString("peace")) {
-        return false;
-    }
-
-    if (target == nullptr)
-        return false;
-    
+    const std::shared_ptr<CombatData> combat_data)
+{    
     if (attacker->GetObjectId() == target->GetObjectId())
     {
         SystemMessage::Send(attacker, OutOfBand("cbt_spam", "shoot_self"));
@@ -186,9 +179,16 @@ bool CombatService::InitiateCombat(
     if (target->GetType() == Creature::type)
         creature_target = static_pointer_cast<Creature>(target);
 
+	int range = combat_data->range > 0 ? combat_data->range : 7;
+	if (!attacker->InRange(target->GetPosition(), static_cast<float>(range)))
+	{
+		SystemMessage::Send(attacker, OutOfBand("cbt_spam", "out_of_range_single"), false, false);
+		return false;
+	}
+
     if (!attacker->CanAttack(creature_target.get()))
         return false;
-
+	
     // Add Combat
     attacker->ToggleStateOn(COMBAT);
     attacker->ToggleStateOff(PEACE);
@@ -227,14 +227,6 @@ bool CombatService::InitiateCombat(
         command_service_->SetDefaultCommand(creature_target->GetObjectId(), swg_command);		
     }
     return true;
-}
-
-bool CombatService::InitiateCombat(
-    const std::shared_ptr<Creature>& attacker, 
-    const shared_ptr<Tangible>& target, 
-    const CommandQueueEnqueue& command_message)
-{
-    return InitiateCombat(attacker, target, command_message.command_crc);
 }
 
 vector<shared_ptr<Tangible>> CombatService::GetCombatTargets(
@@ -588,8 +580,9 @@ void CombatService::BroadcastCombatSpam(
     spam.weapon_id = attacker->GetWeaponId();
     spam.damage = damage;
     spam.file = "cbt_spam";
+	spam.text ="melee_" + string_file;
     if (combat_data->combat_spam.length() > 0)
-        spam.text = combat_data->combat_spam + string_file;
+        spam.text = combat_data->combat_spam + "_"  + string_file;
 	
     attacker->NotifyObservers(&spam);
 }
@@ -598,6 +591,7 @@ void CombatService::SendCombatActionMessage(
     const shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible> & target, 
     std::shared_ptr<CombatData> command_property,
+	HIT_TYPE hit_type,
     string animation)
 {
         CombatActionMessage cam;
@@ -623,12 +617,9 @@ void CombatService::SendCombatActionMessage(
             CombatDefender def_list;
             def_list.defender_id = defender.object_id;
             def_list.defender_end_posture = simulation_service_->GetObjectById<Creature>(defender.object_id)->GetPosture();
-            def_list.hit_type = 0x1;
-            def_list.defender_special_move_effect = 0;
+            def_list.hit_type = hit_type;
             cam.defender_list.push_back(def_list);
-        }
-        cam.combat_special_move_effect = 0;
-        
+        }        
         attacker->NotifyObservers(&cam);
 }
 

@@ -52,12 +52,13 @@ namespace combat {
     > CombatHandler;
 
 	enum HIT_TYPE {
-        HIT = 0,
-        BLOCK,
-        DODGE,
-        COUNTER,
-        MISS,
-		DEFLECT
+		MISS = 0x1,
+        HIT = 0x2,
+        BLOCK = 0x3,
+        DODGE = 0x5,
+        COUNTER = 0x7,
+        RICHOCHET = 0x8,
+		REFLECT = 0x9,
     };
 
 	enum HIT_LOCATION {
@@ -126,8 +127,7 @@ namespace combat {
     private:
 		typedef Concurrency::concurrent_unordered_map<uint32_t, CombatHandler> HandlerMap;
       
-        bool InitiateCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const swganh::HashString& command);
-		bool InitiateCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const swganh::messages::controllers::CommandQueueEnqueue& command_message);
+        bool InitiateCombat(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, const std::shared_ptr<CombatData> combat_data);
 		
 		std::vector<std::shared_ptr<swganh::object::Tangible>> GetCombatTargets(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, std::shared_ptr<CombatData> combat_data);
 		
@@ -137,7 +137,7 @@ namespace combat {
 		// This stage calculates all weapon, buff, and ability modifiers to calculate the aggregate damage
 		float CalculateDamage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, std::shared_ptr<CombatData> combat_data);
 		//
-        void SendCombatActionMessage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, std::shared_ptr<CombatData> combat_data, std::string animation = std::string(""));
+        void SendCombatActionMessage(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Tangible> & target, std::shared_ptr<CombatData> combat_data, HIT_TYPE hit_type, std::string animation = std::string(""));
         
         uint16_t GetPostureModifier(const std::shared_ptr<swganh::object::Creature>& attacker);
         uint16_t GetTargetPostureModifier(const std::shared_ptr<swganh::object::Creature>& attacker, const std::shared_ptr<swganh::object::Creature>& target);

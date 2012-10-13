@@ -10,6 +10,20 @@
 namespace swganh {
 namespace command {
 
+	enum CommandGroup 
+	{
+		COMBAT_MELEE  = 0,
+		BASE_PLAYER,
+		COMBAT_NON_LOOP,
+		COMBAT_GENERAL,
+		CRAFTING,
+		SHIP,
+		COMBAT_RANGED,
+		POSTURE,
+		RESOURCE,
+		ENTERTAINER
+	};
+
 	struct CommandProperties
     {
 		CommandProperties()
@@ -23,7 +37,7 @@ namespace command {
 			, allow_in_state(0)
 			, target_type(0)
 			, call_on_target(0)
-			, command_group(0)
+			, command_group(COMBAT_MELEE)
 			, max_range_to_target(0.0f)
 			, god_level(0)
 			, add_to_combat_queue(0)
@@ -39,7 +53,7 @@ namespace command {
 			, allow_in_state(properties.allow_in_state)
 			, target_type(properties.target_type)
 			, call_on_target(properties.call_on_target)
-			, command_group(properties.command_group)
+			, command_group((CommandGroup)properties.command_group)
 			, max_range_to_target(properties.max_range_to_target)
 			, god_level(properties.god_level)
 			, add_to_combat_queue(properties.add_to_combat_queue)
@@ -54,7 +68,7 @@ namespace command {
         uint64_t allow_in_state;
         uint32_t target_type;
         uint32_t call_on_target;
-        uint32_t command_group;
+        CommandGroup command_group;
         float max_range_to_target;
         uint32_t god_level;
         uint32_t add_to_combat_queue;

@@ -83,7 +83,7 @@ CommandPropertiesMap CommandPropertiesManager::LoadCommandPropertiesMap()
 
             properties.target_type = row.GetValue<uint32_t>(65);
             properties.call_on_target = row.GetValue<uint32_t>(68);
-            properties.command_group = row.GetValue<uint32_t>(69);
+            properties.command_group = (CommandGroup) row.GetValue<uint32_t>(69);
             properties.max_range_to_target = row.GetValue<float>(71);
             properties.god_level = row.GetValue<uint32_t>(72);
             properties.add_to_combat_queue = row.GetValue<uint32_t>(74);
