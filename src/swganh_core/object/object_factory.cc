@@ -329,7 +329,7 @@ void ObjectFactory::GetClientData(const std::shared_ptr<Object>& object)
 			object->SetStfName(object_name->file, object_name->entry);
 		}
 
-	} catch (std::exception& ex) {
-		LOG(warning) << "Client data not found for object: " << object->GetObjectId() << " with error:" << ex.what();
+	} catch (std::exception& /*ex*/) {
+		//LOG(warning) << "Client data not found for object: " << object->GetObjectId() << " with error:" << ex.what();
 	}
 }

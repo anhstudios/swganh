@@ -64,8 +64,10 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
     intangible->SetObjectId(object_id);
     try {
         auto conn = GetDatabaseManager()->getConnection("galaxy");
-        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_GetIntangible(?);"));
+        auto statement = shared_ptr<sql::PreparedStatement>(conn->prepareStatement("CALL sp_GetIntangible(?)"));
         
+		statement->setUInt64(1, object_id);
+
         auto result = shared_ptr<sql::ResultSet>(statement->executeQuery());
 
 		CreateBaseObjectFromStorage(intangible, result);
