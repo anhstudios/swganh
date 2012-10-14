@@ -58,50 +58,49 @@ StaticService::StaticService(SwganhKernel* kernel)
 		auto simulation_service = kernel_->GetServiceManager()->GetService<SimulationServiceInterface>("SimulationService");
 
 		try {
+			std::stringstream ss;
+			ss << "CALL sp_GetStaticObjects(0," << real_event->scene_id-1 << ");";
 
-		std::stringstream ss;
-		ss << "CALL sp_GetStaticObjectsForScene(0," << real_event->scene_id-1 << ");";
+			auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
+			statement->execute(ss.str());
 
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-		statement->execute(ss.str());
+			std::unique_ptr<sql::ResultSet> result;
 
-		std::unique_ptr<sql::ResultSet> result;
+			LOG(warning) << "Loading static data for: " << real_event->scene_label;
+			_loadBuildings(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
+				real_event->scene_id, real_event->scene_label);
 
-		LOG(warning) << "Loading static data for: " << real_event->scene_label;
-		_loadBuildings(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
-
-		statement->getMoreResults();
-		_loadCells(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
+			statement->getMoreResults();
+			_loadCells(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
+				real_event->scene_id, real_event->scene_label);
 		
-		statement->getMoreResults();
-		_loadCloneLocations(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
+			statement->getMoreResults();
+			_loadCloneLocations(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
+				real_event->scene_id, real_event->scene_label);
 		
-		statement->getMoreResults();
-		_loadTerminals(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-			real_event->scene_id, real_event->scene_label);
+			statement->getMoreResults();
+			_loadTerminals(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
+				real_event->scene_id, real_event->scene_label);
 		
-		statement->getMoreResults();
-		_loadElevatorData(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
+			statement->getMoreResults();
+			_loadElevatorData(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
+				real_event->scene_id, real_event->scene_label);
 		
-		statement->getMoreResults();
-		_loadContainers(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
+			statement->getMoreResults();
+			_loadContainers(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
+				real_event->scene_id, real_event->scene_label);
 		
-		statement->getMoreResults();
-		_loadTicketCollectors(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-			real_event->scene_id, real_event->scene_label);
+			statement->getMoreResults();
+			_loadTicketCollectors(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
+				real_event->scene_id, real_event->scene_label);
 		
-		statement->getMoreResults();
-		_loadNPCS(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
-			real_event->scene_id, real_event->scene_label);
+			statement->getMoreResults();
+			_loadNPCS(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())), 
+				real_event->scene_id, real_event->scene_label);
 		
-		statement->getMoreResults();
-		_loadShuttles(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
-			real_event->scene_id, real_event->scene_label);
+			statement->getMoreResults();
+			_loadShuttles(simulation_service, std::move(std::unique_ptr<sql::ResultSet>(statement->getResultSet())),
+				real_event->scene_id, real_event->scene_label);
 
 		} catch(std::exception& e) {
 			LOG(warning) << e.what();
@@ -130,21 +129,6 @@ StaticService::StaticService(SwganhKernel* kernel)
 
 void StaticService::Startup()
 {
-
-	auto database_manager = kernel_->GetDatabaseManager();
-	auto conn = database_manager->getConnection("swganh_static");
-
-	try {
-		auto statement = std::shared_ptr<sql::Statement>(conn->createStatement());
-		statement->execute("CALL sp_GetStaticObjects();");
-
-		std::unique_ptr<sql::ResultSet> result;
-		LOG(warning) << "Loading static data ";
-
-
-	} catch(std::exception& e) {
-		LOG(warning) << e.what();
-	}
 }
 StaticService::~StaticService()
 {
@@ -174,7 +158,10 @@ void StaticService::_loadBuildings(SimulationServiceInterface* simulation_servic
 		//Load Building Row
 		auto object = simulation_service->CreateObjectFromTemplate(result->getString(9), 
 			STATIC_CONTAINER_PERMISSION, false, false, result->getInt64(1));
-			
+		
+		if(object == nullptr)
+			continue;
+
 		object->SetOrientation(glm::quat(
 			static_cast<float>(result->getDouble(5)),
 			static_cast<float>(result->getDouble(2)),
@@ -199,6 +186,9 @@ void StaticService::_loadCells(SimulationServiceInterface* simulation_service, s
 		//Load Cells
 		auto object = simulation_service->CreateObjectFromTemplate("object/cell/shared_cell.iff",
 			WORLD_CELL_PERMISSION, false, false, result->getInt64(1));
+
+		if(object == nullptr)
+			continue;
 
 		object->SetSceneId(scene_id);
 		object->SetInSnapshot(true);
@@ -230,6 +220,9 @@ void StaticService::_loadTerminals(SimulationServiceInterface* simulation_servic
 	{
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(11),
 			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+
+		if(object == nullptr)
+			continue;
 
 		object->SetOrientation(glm::quat(
 			static_cast<float>(result->getDouble(6)),
@@ -273,6 +266,9 @@ void StaticService::_loadElevatorData(SimulationServiceInterface* simulation_ser
 
 		uint64_t terminal_id = result->getUInt64(1);
 		auto terminal = simulation_service->GetObjectById(terminal_id);
+		if(terminal == nullptr)
+			continue;
+		
 		terminal->SetAttribute<std::wstring>("radial_filename", L"radials.elevator");
 
 		elevator_data->dst_cell = result->getUInt64(2);
@@ -316,6 +312,9 @@ void StaticService::_loadTicketCollectors(SimulationServiceInterface* simulation
 		auto object = std::static_pointer_cast<Tangible>(simulation_service->CreateObjectFromTemplate(result->getString(3),
 			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
 
+		if(object == nullptr)
+			continue;
+
 		object->SetOrientation(glm::quat(
 			static_cast<float>(result->getDouble(7)),
 			static_cast<float>(result->getDouble(4)),
@@ -352,6 +351,9 @@ void StaticService::_loadNPCS(SimulationServiceInterface* simulation_service, st
 		//Load NPCS
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(15),
 			CREATURE_PERMISSION, false, false, result->getUInt64(1)));
+
+		if(object == nullptr)
+			continue;
 
 		std::string firstname = result->getString(3).asStdString(), lastname = result->getString(4).asStdString();
 
@@ -424,6 +426,9 @@ void StaticService::_loadShuttles(SimulationServiceInterface* simulation_service
 	{
 		auto object = std::static_pointer_cast<Creature>(simulation_service->CreateObjectFromTemplate(result->getString(12),
 			DEFAULT_PERMISSION, false, false, result->getInt64(1)));
+
+		if(object == nullptr)
+			continue;
 
 		object->SetOrientation(glm::quat(
 			static_cast<float>(result->getDouble(8)),

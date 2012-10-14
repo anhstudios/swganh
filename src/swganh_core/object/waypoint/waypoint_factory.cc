@@ -136,6 +136,12 @@ shared_ptr<Object> WaypointFactory::CreateObjectFromStorage(uint64_t object_id)
                 waypoint->SetColor(result->getString("color"));
             }
         }
+
+		//Clear us from the db persist update queue.
+		boost::lock_guard<boost::mutex> lock(persisted_objects_mutex_);
+		auto find_itr = persisted_objects_.find(waypoint);
+		if(find_itr != persisted_objects_.end())
+			persisted_objects_.erase(find_itr);
     }
     catch(sql::SQLException &e)
     {

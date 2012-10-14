@@ -260,7 +260,7 @@ public:
 	 * @param contained object
 	 * @param position of the updated position
 	 */
-	void UpdatePosition(std::shared_ptr<Object> contained_object, const glm::vec3& new_position, const glm::quat& quaternion);
+	void UpdatePosition(const glm::vec3& new_position, const glm::quat& quaternion, std::shared_ptr<Object> parent=nullptr);
 
 	/**
 	* @return bool if the object is in range
