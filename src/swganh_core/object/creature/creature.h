@@ -378,8 +378,8 @@ public:
     void SetStatBase(StatIndex stat_index, int32_t value);
     void AddStatBase(StatIndex stat_index, int32_t value);
     void DeductStatBase(StatIndex stat_index, int32_t value);
-    swganh::messages::containers::NetworkArray<Stat>& GetBaseStats(void);
-    int32_t GetStatBase(StatIndex stat_index);
+	swganh::messages::containers::NetworkArray<Stat>& GetBaseStats(void);
+	int32_t GetStatBase(StatIndex stat_index);
 
     // Skills
     void AddSkill(std::string skill);

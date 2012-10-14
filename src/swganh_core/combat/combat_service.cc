@@ -610,9 +610,8 @@ void CombatService::SendCombatActionMessage(
         cam.weapon_id = attacker->GetWeaponId();
         cam.attacker_end_posture = attacker->GetPosture();
         
-        auto defenders = attacker->GetDefenders();
         // build up the defenders
-        for(auto& defender : defenders)
+        for(auto& defender : attacker->GetDefenders())
         {
             CombatDefender def_list;
             def_list.defender_id = defender.object_id;

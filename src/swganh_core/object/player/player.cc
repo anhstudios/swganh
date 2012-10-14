@@ -199,7 +199,7 @@ void Player::SetAdminTag(uint8_t tag)
         ("Player::AdminTag", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkMap<string, XpData> Player::GetXp() 
+NetworkMap<string, XpData>& Player::GetXp() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return experience_;
@@ -269,7 +269,7 @@ void Player::ClearAllXp()
         ("Player::Experience", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkMap<uint64_t, PlayerWaypointSerializer> Player::GetWaypoints() 
+NetworkMap<uint64_t, PlayerWaypointSerializer>& Player::GetWaypoints() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return waypoints_;
@@ -422,7 +422,7 @@ void Player::ClearCompletedForceSensitiveQuests()
         ("Player::CompletedForceSensitiveQuests", static_pointer_cast<Player>(shared_from_this())));
 }
 
-swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> Player::GetQuests() 
+swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData>& Player::GetQuests() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return quest_journal_;
@@ -549,7 +549,7 @@ void Player::SetNearestCraftingStation(uint64_t crafting_station_id)
         ("Player::NearestCraftingStation", static_pointer_cast<Player>(shared_from_this())));
 }
 
-swganh::messages::containers::NetworkSortedList<DraftSchematicData> Player::GetDraftSchematics() 
+swganh::messages::containers::NetworkSortedList<DraftSchematicData>& Player::GetDraftSchematics() 
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return draft_schematics_;
@@ -641,7 +641,7 @@ void Player::IncrementAccomplishmentCounter()
         ("Player::AccomplishmentCounter", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkSortedVector<Name> Player::GetFriends()
+NetworkSortedVector<Name>& Player::GetFriends()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return friends_;
@@ -700,7 +700,7 @@ void Player::ClearFriends()
         ("Player::Friend", static_pointer_cast<Player>(shared_from_this())));
 }
 
-NetworkSortedVector<Name> Player::GetIgnoredPlayers()
+NetworkSortedVector<Name>& Player::GetIgnoredPlayers()
 {
     boost::lock_guard<boost::mutex> lock(object_mutex_);
     return ignored_players_;

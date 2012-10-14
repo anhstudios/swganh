@@ -5,6 +5,8 @@
 #include "swganh/byte_buffer.h"
 
 #include <list>
+#include <boost/thread/mutex.hpp>
+#include <boost/noncopyable.hpp>
 
 #include "swganh_core/messages/baselines_message.h"
 #include "swganh_core/messages/deltas_message.h"
@@ -25,9 +27,6 @@ public:
     NetworkArray(uint16_t size)
         : update_counter_(0)
         , items_(size)
-        , items_added_(std::list<uint16_t>())
-        , items_removed_(std::list<uint16_t>())
-        , items_changed_(std::list<uint16_t>())
         , clear_(false)
     {
     }
@@ -41,10 +40,10 @@ public:
      */
     void Set(uint16_t index, T item)
     {
-        if(index < 0 || index > Size())
-            throw std::out_of_range("NetworkArray::Set index out of range.");
-    
-        items_[index] = item;
+		boost::lock_guard<boost::mutex> lock(mutex_);
+		if(index < 0 || index > Size())
+			throw std::out_of_range("NetworkArray::Set index out of range.");
+			items_[index] = item;
     }
 
     /**
@@ -52,6 +51,7 @@ public:
      */
     void Update(uint16_t index, T item)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         if(index < 0 || index > Size())
             throw std::out_of_range("NetworkArray::Update index out of range.");
     
@@ -61,6 +61,7 @@ public:
 
     T At(uint16_t index)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         if(index < 0 || index > Size())
             throw std::out_of_range("NetworkArray::At index out of range.");
     
@@ -69,6 +70,7 @@ public:
 
     void Resize(uint16_t size)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         // Queue added indices.
         if(size > items_.size())
         {
@@ -92,7 +94,7 @@ public:
 
     T operator[](uint16_t index)
     {
-        return At(index);
+		return At(index);
     }
 
     /**
@@ -102,6 +104,7 @@ public:
      */
     void ClearDeltas(void)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         items_added_.clear();
         items_removed_.clear();
         items_changed_.clear();
@@ -110,6 +113,7 @@ public:
 
     void Serialize(swganh::messages::BaselinesMessage& message)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         message.data.write<uint32_t>(items_.size());
         message.data.write<uint32_t>(0);
         std::for_each(items_.begin(), items_.end(), [=, &message](T& item){
@@ -119,28 +123,32 @@ public:
 
     void Serialize(swganh::messages::DeltasMessage& message)
     {
+		boost::lock_guard<boost::mutex> lock(mutex_);
         message.data.write<uint32_t>(items_added_.size() + items_removed_.size() + items_changed_.size() + clear_);
         message.data.write<uint32_t>(++update_counter_);
 
         // Removed Items
-        std::for_each(items_removed_.begin(), items_removed_.end(), [=, &message](uint16_t index) {
+        for (auto& index : items_removed_)
+		{
             message.data.write<uint8_t>(0);
             message.data.write<uint16_t>(index);
-        });
+        }
 
         // Added Items
-        std::for_each(items_added_.begin(), items_added_.end(), [=, &message](uint16_t index) {
+        for(auto& index : items_added_)
+		{
             message.data.write<uint8_t>(1);
             message.data.write<uint16_t>(index);
             items_[index].Serialize(message);
-        });
+        }
 
         // Changed Items
-        std::for_each(items_changed_.begin(), items_changed_.end(), [=, &message](uint16_t index) {
+        for(auto& index : items_changed_)
+		{
             message.data.write<uint8_t>(2);
             message.data.write<uint16_t>(index);
             items_[index].Serialize(message);
-        });
+        }
 
         ClearDeltas();
     }
@@ -155,6 +163,7 @@ private:
     std::list<uint16_t> items_removed_;
     std::list<uint16_t> items_changed_;
     bool clear_;
+	mutable boost::mutex mutex_;
 };
 
 }}} // namespace swganh::messages::containers

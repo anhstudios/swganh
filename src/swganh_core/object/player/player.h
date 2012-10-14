@@ -436,7 +436,7 @@ public:
     /**
      * @return the current experience for the player.
      */
-    swganh::messages::containers::NetworkMap<std::string, XpData> GetXp() ;
+    swganh::messages::containers::NetworkMap<std::string, XpData>& GetXp() ;
     
     /**
      * Adds experience to the player.
@@ -474,7 +474,7 @@ public:
     /**
      * @return The waypoints currently held by the player.
      */
-    swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer> GetWaypoints() ;
+    swganh::messages::containers::NetworkMap<uint64_t, PlayerWaypointSerializer>& GetWaypoints() ;
     
     /**
      * Adds a waypoint to the player.
@@ -546,7 +546,7 @@ public:
     /**
      * @return The quests currently in the quest journal.
      */
-    swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData> GetQuests() ;
+    swganh::messages::containers::NetworkMap<uint32_t, QuestJournalData>& GetQuests() ;
     
     /**
      * Adds a quest to the journal.
@@ -628,7 +628,7 @@ public:
     /**
      * @return The draft schematics assigned to this player.
      */
-    swganh::messages::containers::NetworkSortedList<DraftSchematicData> GetDraftSchematics() ;
+    swganh::messages::containers::NetworkSortedList<DraftSchematicData>& GetDraftSchematics() ;
     
     /**
      * Adds a draft schematic.
@@ -696,7 +696,7 @@ public:
     /**
      * @return the list of friends.
      */
-    swganh::messages::containers::NetworkSortedVector<Name> GetFriends();
+    swganh::messages::containers::NetworkSortedVector<Name>& GetFriends();
 
     /**
      * Checks to see if the name is already a friend
@@ -727,7 +727,7 @@ public:
     /**
      * @return the list of ignored players.
      */
-    swganh::messages::containers::NetworkSortedVector<Name> GetIgnoredPlayers();
+    swganh::messages::containers::NetworkSortedVector<Name>& GetIgnoredPlayers();
 
     /**
      * Checks to see if the name is already being ignored
