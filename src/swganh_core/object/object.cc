@@ -789,19 +789,19 @@ void Object::SendDestroy(std::shared_ptr<swganh::observer::ObserverInterface> ob
 
 void Object::SetFlag(std::string flag)
 {
-    boost::lock_guard<boost::mutex> lg(flags_mutex_);
+    boost::lock_guard<boost::mutex> lg(object_mutex_);
     flags_.insert(flag);
 }
 
 void Object::RemoveFlag(std::string flag)
 {
-    boost::lock_guard<boost::mutex> lg(flags_mutex_);
+    boost::lock_guard<boost::mutex> lg(object_mutex_);
     flags_.erase(flag);
 }
 
 bool Object::HasFlag(std::string flag)
 {
-    boost::lock_guard<boost::mutex> lg(flags_mutex_);
+    boost::lock_guard<boost::mutex> lg(object_mutex_);
 
     return flags_.find(flag) != flags_.end();
 }
@@ -1029,4 +1029,38 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const
 bool Object::HasAttribute(const std::string& name)
 {
 	return attributes_map_.find(name) != attributes_map_.end();
+}
+
+std::shared_ptr<Object> Object::Clone()
+{
+	boost::lock_guard<boost::mutex> lock(object_mutex_);
+	auto other = make_shared<Object>();
+	Clone(other);
+	return other;
+}
+
+void Object::Clone(std::shared_ptr<Object> other)
+{
+	other->object_id_.store(object_id_);
+	other->scene_id_.store(scene_id_);
+    other->instance_id_.store(instance_id_);
+	other->template_string_ = template_string_;
+    other->position_ = position_;
+    other->orientation_ = orientation_;
+    other->complexity_ = complexity_;
+    other->stf_name_file_ = stf_name_file_;
+    other->stf_name_string_ = stf_name_string_;
+    other->custom_name_ = custom_name_;
+    other->volume_.store(volume_);
+    other->arrangement_id_.store(arrangement_id_);
+	other->attributes_template_id.store(attributes_template_id);
+	other->attributes_map_ = attributes_map_;
+	other->database_persisted_ = database_persisted_;
+	other->in_snapshot_ = in_snapshot_;
+    other->flags_ = flags_;
+	other->slot_arrangements_ = slot_arrangements_;
+
+	__InternalViewObjects(nullptr, 0, true, [&] (std::shared_ptr<Object> object) {
+		other->AddObject(nullptr, object->Clone());
+	});
 }

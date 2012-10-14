@@ -138,8 +138,7 @@ shared_ptr<Object> InstallationFactory::CreateObjectFromStorage(uint64_t object_
     return make_shared<Installation>();
 }
 
-shared_ptr<Object> InstallationFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> InstallationFactory::CreateObject()
 {
-	//@TODO: Create me with help from db
     return make_shared<Installation>();
 }

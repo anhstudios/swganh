@@ -553,6 +553,8 @@ public:
 	int8_t GetAttributeTemplateId();
 	void SetAttributeTemplateId(int8_t attribute_template_id);
 
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Object> other);
 
 protected:
 	std::atomic<uint64_t> object_id_;                // create
@@ -595,7 +597,6 @@ private:
 	bool database_persisted_;
 	bool in_snapshot_;
 
-    boost::mutex flags_mutex_;
     std::set<std::string> flags_;
 };
 

@@ -93,15 +93,7 @@ shared_ptr<Object> IntangibleFactory::CreateObjectFromStorage(uint64_t object_id
     return intangible;
 }
 
-shared_ptr<Object> IntangibleFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> IntangibleFactory::CreateObject()
 {
-	if(db_persisted || db_initialized)
-	{
-		//@TODO: Create me with help from db
-		return make_shared<Intangible>();
-	}
-	else
-	{
-		return make_shared<Intangible>();
-	}
+	return make_shared<Intangible>();
 }

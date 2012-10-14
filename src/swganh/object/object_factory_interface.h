@@ -45,7 +45,7 @@ namespace object {
          * @return the created object instance.
          * @throws InvalidObjectTemplate when the specified template does not exist.
          */
-        virtual std::shared_ptr<Object> CreateObjectFromTemplate(const std::string& template_name, bool db_persisted=true, bool db_initialized=true) = 0;
+        virtual std::shared_ptr<Object> CreateObject() = 0;
 
         /**
          * Gets the type of the object from a db lookup call

@@ -42,8 +42,7 @@ shared_ptr<Object> WeaponFactory::CreateObjectFromStorage(uint64_t object_id)
     return make_shared<Weapon>();
 }
 
-shared_ptr<Object> WeaponFactory::CreateObjectFromTemplate(const string& template_name, bool db_persisted, bool db_initialized)
+shared_ptr<Object> WeaponFactory::CreateObject()
 {
-	//@TODO: Create me with help from db
     return make_shared<Weapon>();
 }

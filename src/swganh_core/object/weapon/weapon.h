@@ -19,6 +19,9 @@ public:
     // WEAO
     virtual uint32_t GetType() const;
     const static uint32_t type = 0x6AAC0CFE;    
+	
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Weapon> other);
 };
     
 }}  // namespace swganh::object

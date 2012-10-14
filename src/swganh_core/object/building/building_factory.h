@@ -23,6 +23,8 @@ namespace object {
 		virtual void PersistChangedObjects(){}
 		virtual void RegisterEventHandlers(){}
 
+		std::shared_ptr<swganh::object::Object> CreateObject();
+
     };
 
 }}  // namespace swganh::object

@@ -152,6 +152,10 @@ public:
     bool IsAutoAttacking();
 
     virtual void CreateBaselines(std::shared_ptr<swganh::observer::ObserverInterface> observer);
+
+	virtual std::shared_ptr<Object> Clone();
+	void Clone(std::shared_ptr<Tangible> other);
+
 private:
     typedef swganh::ValueEvent<std::shared_ptr<Tangible>> TangibleEvent;
 
