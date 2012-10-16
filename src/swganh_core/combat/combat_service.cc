@@ -110,16 +110,19 @@ void CombatService::SendCombatAction(BaseCombatCommand* command)
 		std::vector<CombatDefender> defender_data;
         for (auto& target_ : GetCombatTargets(actor, target, command->combat_data))
 		{
-			DoCombat(actor, target_, command->combat_data);	
+			defender_data.push_back(DoCombat(actor, target_, command->combat_data));	
 		}
+		// Send Combat message
+		SendCombatActionMessage(actor, target, command->combat_data, defender_data);
     }
 }
 
-void CombatService::DoCombat(
+CombatDefender CombatService::DoCombat(
 	const shared_ptr<Creature>& attacker,
 	const shared_ptr<Tangible>& target,
 	std::shared_ptr<CombatData> combat_data)
 {
+	CombatDefender defender;
 	string combat_spam, effect;
 	FlyTextColor color = GREEN;
 	HIT_TYPE hit_type = HIT;
@@ -159,9 +162,17 @@ void CombatService::DoCombat(
 	}
 	float initial_damage = CalculateDamage(attacker, target, combat_data);
 	int damage = ApplyDamage(attacker, target, combat_data, static_cast<int>(initial_damage), hit_location);
+	CombatSpecialMoveEffect csme = ApplyStates(attacker, target, combat_data);
 	BroadcastCombatSpam(attacker, target, combat_data, damage, combat_spam);
-	SendCombatActionMessage(attacker, target, combat_data, hit_type, effect);
 	SystemMessage::FlyText(attacker, combat_spam, color);
+
+	// Set Defender values
+	defender.defender_id = target->GetObjectId();
+	defender.defender_special_move_effect = csme;
+	defender.hit_type = hit_type;
+	defender.defender_end_posture = simulation_service_->GetObjectById<Creature>(defender.defender_id)->GetPosture();
+
+	return defender;
 }
 
 bool CombatService::InitiateCombat(
@@ -273,10 +284,10 @@ HIT_TYPE CombatService::GetHitResult(
     const shared_ptr<Creature>& defender, 
     std::shared_ptr<CombatData> combat_data)
 {
-	auto weapon = equipment_service_->GetEquippedObject<Weapon>(attacker, "hold_l");
+	auto weapon = equipment_service_->GetEquippedObject<Weapon>(attacker, "hold_r");
 	// Accuracy Mods
 	int weapon_accuracy = combat_data->weapon_accuracy + static_cast<int>(GetWeaponRangeModifier(weapon, attacker->RangeTo(defender->GetPosition())));
-    int attacker_accuracy = combat_data->accuracy_bonus;
+	int attacker_accuracy = combat_data->accuracy_bonus;
 	attacker_accuracy += weapon_accuracy;
     combat_data->accuracy_bonus += GetAccuracyBonus(attacker, weapon);
 
@@ -451,7 +462,8 @@ uint16_t CombatService::GetAccuracyBonus(const std::shared_ptr<swganh::object::C
 
     return bonus; 
 }
-void CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Creature>& target, std::shared_ptr<CombatData> combat_data) {
+CombatSpecialMoveEffect CombatService::ApplyStates(const shared_ptr<Creature>& attacker, const shared_ptr<Tangible>& target, std::shared_ptr<CombatData> combat_data) {
+	return TARGET_HEAD;
     //auto states = move(combat_data->getStates());
     //for_each(begin(states), end(states),[=](pair<float, string> state){
     //    int generated = generator_.Rand(1, 100);
@@ -564,7 +576,7 @@ int CombatService::ApplyDamage(
     if (wounded)
         defender->AddBattleFatigue(1);
 
-    return damage;
+    return static_cast<int32_t>(health_damage + action_damage + mind_damage);
 
 }
 
@@ -591,32 +603,27 @@ void CombatService::SendCombatActionMessage(
     const shared_ptr<Creature>& attacker, 
     const shared_ptr<Tangible> & target, 
     std::shared_ptr<CombatData> command_property,
-	HIT_TYPE hit_type,
-    string animation)
+	std::vector<CombatDefender> defenders)
 {
         CombatActionMessage cam;
-        if ((uint32_t)command_property->animation_crc == 0 && animation.length() == 0)
+        if ((uint32_t)command_property->animation_crc == 0)
             cam.action_crc = CombatData::DefaultAttacks[generator_.Rand(0, 9)];
         else
         {
-            if (animation.length() > 0)
-            {
-                cam.action_crc = swganh::HashString(animation);
-            }
-            else
-                cam.action_crc = command_property->animation_crc;
+			cam.action_crc = command_property->animation_crc;
         }
         cam.attacker_id = attacker->GetObjectId();
         cam.weapon_id = attacker->GetWeaponId();
         cam.attacker_end_posture = attacker->GetPosture();
         
         // build up the defenders
-        for(auto& defender : attacker->GetDefenders())
+        for(auto& defender : defenders)
         {
             CombatDefender def_list;
-            def_list.defender_id = defender.object_id;
-            def_list.defender_end_posture = simulation_service_->GetObjectById<Creature>(defender.object_id)->GetPosture();
-            def_list.hit_type = hit_type;
+            def_list.defender_id = defender.defender_id;
+            def_list.defender_end_posture = defender.defender_end_posture;
+            def_list.hit_type = defender.hit_type;
+			def_list.defender_special_move_effect = defender.defender_special_move_effect;
             cam.defender_list.push_back(def_list);
         }        
         attacker->NotifyObservers(&cam);

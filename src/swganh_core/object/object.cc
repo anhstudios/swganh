@@ -896,12 +896,9 @@ shared_ptr<Object> Object::GetSlotObject(int32_t slot_id)
 	if (slot_iter != slot_descriptor_.end())
 	{
 		auto slot = slot_iter->second;
-		if (!slot->is_filled())
-		{			
-			slot->view_objects([&](shared_ptr<Object> object){
-				found = object;
-			});
-		}
+		slot->view_objects([&](shared_ptr<Object> object){
+			found = object;
+		});
 	}
 	return found;
 }
@@ -934,7 +931,7 @@ AttributesMap Object::GetAttributeMap()
 	return attributes_map_;
 }
 
-boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::string& name)
+AttributeVariant Object::GetAttribute(const std::string& name)
 {
 	boost::lock_guard<boost::mutex> lock(object_mutex_);
 	auto find_iter = find_if(attributes_map_.begin(), attributes_map_.end(), [&](AttributesMap::value_type key_value)
@@ -946,7 +943,7 @@ boost::variant<float, int32_t, std::wstring> Object::GetAttribute(const std::str
 		return find_iter->second;
 	}	
 	LOG(info) << "Attribute "<< name << " does not exist";	
-	return 0;
+	return AttributeVariant();
 	//throw std::runtime_error("Attribute " + name + " does not exist");
 }
 
@@ -1005,7 +1002,7 @@ std::wstring Object::GetAttributeRecursiveAsString(const std::string& name)
 	
 	return ss.str();
 }
-boost::variant<float, int32_t, std::wstring> Object::GetAttributeRecursive(const std::string& name)
+AttributeVariant Object::GetAttributeRecursive(const std::string& name)
 {
 	auto val = GetAttribute(name);
 	{
