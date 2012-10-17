@@ -285,7 +285,6 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 			}
 		}
 
-
 		if(created_object != nullptr)
 		{
 			//Set the required stuff
@@ -296,12 +295,17 @@ shared_ptr<Object> ObjectManager::CreateObjectFromTemplate(const string& templat
 			LoadSlotsForObject(created_object);
 
 			//Set the ID based on the inputs
-			if(!is_persisted)
+			if(is_persisted)
 			{
-				if(object_id == 0)
-					created_object->SetObjectId(next_dynamic_id_++);
-				else
-					created_object->SetObjectId(object_id);
+
+			}
+			else if(object_id == 0)
+			{
+				created_object->SetObjectId(next_dynamic_id_++);
+			}
+			else 
+			{
+				created_object->SetObjectId(object_id);
 			}
 
 			//Insert it into the object map
